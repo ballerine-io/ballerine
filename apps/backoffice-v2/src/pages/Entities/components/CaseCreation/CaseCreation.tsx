@@ -28,7 +28,11 @@ export const CaseCreation = withCaseCreation(() => {
           <span>Add case manually</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" style={{ right: 0, top: 0 }} className="max-w-[620px]">
+      <SheetContent
+        side="right"
+        style={{ right: 0, top: 0 }}
+        className="max-w-[620px] overflow-y-auto"
+      >
         {!isLoading && workflowDefinition ? (
           <div className="flex flex-col px-[60px] py-[72px]">
             <div className="flex flex-col">

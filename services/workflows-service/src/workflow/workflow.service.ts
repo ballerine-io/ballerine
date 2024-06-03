@@ -94,6 +94,7 @@ import {
 import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-document';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
+import dayjs from 'dayjs';
 
 type TEntityId = string;
 
@@ -1774,10 +1775,11 @@ export class WorkflowService {
 
     const { id } = await this.endUserService.create({
       data: {
-        correlationId: entity.id,
+        correlationId: entity.id ? entity.id : undefined,
         email: data.email,
         firstName: data.firstName,
         lastName: data.lastName,
+        dateOfBirth: data.dateOfBirth ? dayjs(data.dateOfBirth as string).toDate() : undefined,
         nationalId: data.nationalId,
         additionalInfo: data.additionalInfo,
         project: { connect: { id: projectId } },
@@ -1795,7 +1797,7 @@ export class WorkflowService {
   ) {
     const { id } = await this.businessService.create({
       data: {
-        correlationId: entity.id,
+        correlationId: entity.id ? entity.id : undefined,
         ...(context.entity.data as object),
         project: { connect: { id: currentProjectId } },
       } as Prisma.BusinessCreateInput,

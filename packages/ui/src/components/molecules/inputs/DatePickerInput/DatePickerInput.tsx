@@ -28,6 +28,7 @@ export interface DatePickerProps {
   disabled?: boolean;
   params?: DatePickerParams;
   testId?: string;
+  outputFormat?: 'iso' | 'date';
   onChange: (event: DatePickerChangeEvent) => void;
   onBlur?: (event: FocusEvent<any>) => void;
 }
@@ -37,15 +38,23 @@ export const DatePickerInput = ({
   name,
   disabled = false,
   params,
+  outputFormat = 'iso',
   testId,
   onChange,
   onBlur,
 }: DatePickerProps) => {
   const [isFocused, setFocused] = useState(false);
 
-  const serializeValue = useCallback((value: Dayjs): string => {
-    return value.toISOString();
-  }, []);
+  const serializeValue = useCallback(
+    (value: Dayjs): string => {
+      if (outputFormat === 'iso') {
+        return value.toISOString();
+      }
+
+      return value.format('YYYY-MM-DD');
+    },
+    [outputFormat],
+  );
 
   const deserializeValue = useCallback((value: DatePickerValue) => {
     return dayjs(value);

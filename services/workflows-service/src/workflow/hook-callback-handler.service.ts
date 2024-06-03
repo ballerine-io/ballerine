@@ -60,7 +60,9 @@ export class HookCallbackHandlerService {
         currentProjectId,
       );
 
-      const aml = data.aml as { endUserId: string; hits: unknown[] } | undefined;
+      const aml = data.aml as
+        | { endUserId: string; hits: Array<Record<string, unknown>> }
+        | undefined;
 
       if (aml) {
         await this.updateEndUserWithAmlData({
@@ -69,10 +71,36 @@ export class HookCallbackHandlerService {
           withActiveMonitoring: workflowRuntime.config.hasUboOngoingMonitoring ?? false,
           endUserId: aml.endUserId,
           projectId: currentProjectId,
+          vendor: data.vendor as string,
         });
       }
 
       return context;
+    }
+
+    if (processName === 'aml-unified-api') {
+      const aml = data.data as {
+        id: string;
+        endUserId: string;
+        hits: Array<Record<string, unknown>>;
+      };
+
+      const attributePath = resultDestinationPath.split('.');
+
+      const newContext = structuredClone(workflowRuntime.context);
+
+      this.setNestedProperty(newContext, attributePath, aml);
+
+      await this.updateEndUserWithAmlData({
+        sessionId: aml.id,
+        amlHits: aml.hits,
+        withActiveMonitoring: workflowRuntime.context.ongoingMonitoring ?? false,
+        endUserId: aml.endUserId,
+        projectId: currentProjectId,
+        vendor: data.vendor as string,
+      });
+
+      return newContext;
     }
 
     if (processName === 'website-monitoring') {
@@ -546,25 +574,27 @@ export class HookCallbackHandlerService {
     amlHits,
     withActiveMonitoring,
     projectId,
+    vendor,
   }: {
     sessionId: string;
     endUserId: string;
-    amlHits: unknown[];
+    amlHits: Array<Record<string, unknown>>;
     withActiveMonitoring: boolean;
     projectId: TProjectId;
+    vendor: string;
   }) {
     const endUser = await this.endUserService.getById(endUserId, {}, [projectId]);
 
     return await this.endUserService.updateById(endUserId, {
       data: {
-        amlHits: amlHits as InputJsonValue,
+        amlHits: amlHits.map(hit => ({ ...hit, vendor })) as InputJsonValue,
         ...(withActiveMonitoring
           ? {
               activeMonitorings: [
                 ...(endUser.activeMonitorings as z.infer<typeof EndUserActiveMonitoringsSchema>),
                 {
                   type: 'aml',
-                  vendor: 'veriff',
+                  vendor,
                   monitoredUntil: new Date(
                     new Date().setFullYear(new Date().getFullYear() + 3),
                   ).toISOString(),
