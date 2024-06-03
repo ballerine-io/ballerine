@@ -575,6 +575,46 @@ export const ALERT_DEFINITIONS = {
       },
     },
   },
+  MGAV_CC: {
+    enabled: false,
+    defaultSeverity: AlertSeverity.high,
+    description: `Merchant's average credit card transaction volume deviating significantly from the norm within their segment`,
+    inlineRule: {
+      id: 'MGAV_CC',
+      fnName: 'evaluateMerchantGroupAverage',
+      subjects: ['counterpartyId'],
+      options: {
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '=',
+        },
+        transactionFactor: 5,
+        minimumCount: 2,
+        timeAmount: SEVEN_DAYS,
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  MGAV_APM: {
+    enabled: false,
+    defaultSeverity: AlertSeverity.high,
+    description: `Merchant's average non credit card transaction volume deviating significantly from the norm within their segment`,
+    inlineRule: {
+      id: 'MGAV_APM',
+      fnName: 'evaluateMerchantGroupAverage',
+      subjects: ['counterpartyId'],
+      options: {
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '!=',
+        },
+        transactionFactor: 5,
+        minimumCount: 2,
+        timeAmount: SEVEN_DAYS,
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
 } as const satisfies Record<string, Parameters<typeof getAlertDefinitionCreateData>[0]>;
 
 export const MERCHANT_MONITORING_ALERT_DEFINITIONS = {
@@ -692,14 +732,13 @@ export const generateAlertDefinitions = async (
   {
     project,
     createdBy = 'SYSTEM',
-    alertsDef = ALERT_DEFINITIONS,
+    alertsDef,
   }: {
-    alertsDefConfiguration?:
-      | typeof ALERT_DEFINITIONS
-      | typeof MERCHANT_MONITORING_ALERT_DEFINITIONS;
     createdBy?: string;
     project: Project;
-    alertsDef?: Partial<typeof ALERT_DEFINITIONS>;
+    alertsDef:
+      | Partial<typeof ALERT_DEFINITIONS>
+      | Partial<typeof MERCHANT_MONITORING_ALERT_DEFINITIONS>;
   },
   {
     crossEnvKeyPrefix = undefined,
@@ -765,15 +804,15 @@ const generateFakeAlert = (
 ): Omit<Prisma.AlertCreateManyAlertDefinitionInput, 'projectId'> => {
   const { severity, agentUserIds } = options;
 
-  let businessId: { businessId: string } | {} = {};
-  let counterpartyId: { counterpartyId: string } | {} = {};
+  let business: { businessId: string } | {} = {};
+  let counterparty: { counterpartyId: string } | {} = {};
 
   if ('businessIds' in options) {
     // For merchant monitoring alerts
-    businessId = faker.helpers.arrayElement(options.businessIds.map(id => ({ businessId: id })));
+    business = faker.helpers.arrayElement(options.businessIds.map(id => ({ businessId: id })));
   } else if ('counterpartyIds' in options) {
     // For transaction alerts
-    counterpartyId = faker.helpers.arrayElement(
+    counterparty = faker.helpers.arrayElement(
       options.counterpartyIds.map(id => ({ counterpartyId: id })),
     );
   }
@@ -797,8 +836,8 @@ const generateFakeAlert = (
     } as InputJsonValue,
     severity,
     assigneeId,
-    ...counterpartyId,
-    ...businessId,
+    ...counterparty,
+    ...business,
   };
 };
 
@@ -817,13 +856,13 @@ export const seedTransactionsAlerts = async (
   },
 ) => {
   const transactionsAlertDef = await generateAlertDefinitions(prisma, {
-    alertsDefConfiguration: ALERT_DEFINITIONS,
+    alertsDef: ALERT_DEFINITIONS,
     project,
     createdBy: faker.internet.userName(),
   });
 
   const merchantMonitoringAlertDef = await generateAlertDefinitions(prisma, {
-    alertsDefConfiguration: MERCHANT_MONITORING_ALERT_DEFINITIONS,
+    alertsDef: MERCHANT_MONITORING_ALERT_DEFINITIONS,
     project,
     createdBy: faker.internet.userName(),
   });
@@ -840,6 +879,25 @@ export const seedTransactionsAlerts = async (
             projectId: project.id,
             ...generateFakeAlert({
               counterpartyIds,
+              agentUserIds,
+              severity: faker.helpers.arrayElement(Object.values(AlertSeverity)),
+            }),
+          }),
+        ),
+        skipDuplicates: true,
+      }),
+    ),
+    ...merchantMonitoringAlertDef.map(alertDefinition =>
+      prisma.alert.createMany({
+        data: Array.from(
+          {
+            length: faker.datatype.number({ min: 3, max: 5 }),
+          },
+          () => ({
+            alertDefinitionId: alertDefinition.id,
+            projectId: project.id,
+            ...generateFakeAlert({
+              businessIds,
               agentUserIds,
               severity: faker.helpers.arrayElement(Object.values(AlertSeverity)),
             }),

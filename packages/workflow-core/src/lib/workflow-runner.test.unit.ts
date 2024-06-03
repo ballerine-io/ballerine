@@ -6,6 +6,7 @@ import { ApiPlugin } from './plugins';
 import { JmespathTransformer } from './utils';
 import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plugin';
 import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
+import { WorkflowEvents } from './types';
 
 const generateWorkflow = (options?: Partial<Parameters<typeof createWorkflow>[0]>) => {
   return createWorkflow({
@@ -95,6 +96,7 @@ describe('sendEvent #unit', () => {
           apiPlugins: [
             {
               name: 'test',
+              displayName: 'Test',
               stateNames: ['second'],
               method: 'GET',
               request: {
@@ -144,6 +146,7 @@ describe('sendEvent #unit', () => {
           apiPlugins: [
             {
               name: 'test',
+              displayName: 'Test',
               stateNames: ['second'],
               method: 'GET',
               request: {
@@ -243,7 +246,7 @@ describe('sendEvent #unit', () => {
       const callback = vi.fn();
 
       // Act
-      workflow.subscribe(callback);
+      workflow.subscribe(WorkflowEvents.STATE_UPDATE, callback);
       await workflow.sendEvent({ type: 'NEXT' });
 
       // Assert
@@ -264,6 +267,7 @@ describe('initiateApiPlugins #unit', () => {
       const apiPluginSchemas = [
         {
           name: 'TestPlugin1',
+          displayName: 'Test',
           stateNames: ['state1', 'state2'],
           url: 'http://example.com/api1',
           method: 'GET' as const,
@@ -333,6 +337,8 @@ describe('initiateApiPlugins #unit', () => {
         const childPluginSchemas = [
           {
             name: 'TestPlugin1',
+            pluginKind: 'child',
+            parentWorkflowRuntimeConfig: {},
             stateNames: ['state1', 'state2'],
             definitionId: 'definitionId1',
             initEvent: 'initEvent1',
@@ -353,7 +359,7 @@ describe('initiateApiPlugins #unit', () => {
         };
 
         // Act
-        const result = workflow.initiateChildPlugin(childPluginSchemas, 'parent');
+        const result = workflow.initiateChildPlugin(childPluginSchemas, 'parent', {});
 
         // Assert
         const actualPluginStructure = {
@@ -378,6 +384,7 @@ describe('initiateApiPlugins #unit', () => {
         const workflow = generateWorkflow();
         const commonPluginSchemas = [
           {
+            pluginKind: 'iterative',
             name: 'TestPlugin1',
             stateNames: ['state1', 'state2'],
             actionPluginName: 'actionPluginName1',

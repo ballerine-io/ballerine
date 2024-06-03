@@ -50,6 +50,7 @@ export class TransactionService {
         }
 
         let errorMessage = 'Unknown error';
+
         if (isPrismaClientKnownRequestError(error)) {
           errorMessage = getErrorMessageFromPrismaError(error);
         } else {
