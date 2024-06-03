@@ -27,6 +27,7 @@ import { WorkflowEventDecisionInput } from '@/workflow/dtos/workflow-event-decis
 import * as common from '@nestjs/common';
 import { UseGuards, UsePipes } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
+import { ApiExcludeController, ApiResponse } from '@nestjs/swagger';
 import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 // import * as nestAccessControl from 'nest-access-control';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
@@ -47,6 +48,7 @@ import { Validate } from 'ballerine-nestjs-typebox';
 import { type Static, Type } from '@sinclair/typebox';
 import { WorkflowEventInputSchema } from '@/workflow/dtos/workflow-event-input';
 
+@ApiExcludeController()
 @common.Controller('internal/workflows')
 export class WorkflowControllerInternal {
   constructor(
@@ -137,9 +139,20 @@ export class WorkflowControllerInternal {
   }
 
   @common.Post('/:id/event')
-  @swagger.ApiOkResponse()
-  @common.HttpCode(200)
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation error',
+    schema: Type.Object({
+      errorCode: Type.Literal('BadRequest'),
+      message: Type.String(),
+      statusCode: Type.Literal(400),
+      timestamp: Type.String({
+        format: 'date-time',
+      }),
+      path: Type.String(),
+      errors: Type.Array(Type.Object({ message: Type.String(), path: Type.String() })),
+    }),
+  })
   @Validate({
     request: [
       {
