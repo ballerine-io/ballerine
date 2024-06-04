@@ -84,7 +84,7 @@ import mime from 'mime';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
-import { WorkflowEventInput } from './dtos/workflow-event-input';
+import { WorkflowEventInputSchema } from './dtos/workflow-event-input';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import {
   ListRuntimeDataResult,
@@ -95,6 +95,7 @@ import {
 import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-document';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
+import { Static } from '@sinclair/typebox';
 import dayjs from 'dayjs';
 import { entitiesUpdate } from './utils/entities-update';
 
@@ -1873,7 +1874,7 @@ export class WorkflowService {
   }
 
   async event(
-    { name: type, id, payload }: WorkflowEventInput & IObjectWithId,
+    { name: type, id, payload }: Static<typeof WorkflowEventInputSchema> & IObjectWithId,
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
     transaction?: PrismaTransaction,

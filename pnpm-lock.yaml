@@ -2457,8 +2457,8 @@ importers:
         specifier: ^7.52.1
         version: 7.80.1
       '@sinclair/typebox':
-        specifier: ^0.31.7
-        version: 0.31.26
+        specifier: 0.32.4
+        version: 0.32.4
       '@t3-oss/env-core':
         specifier: ^0.6.1
         version: 0.6.1(typescript@4.9.3)(zod@3.22.4)
@@ -2480,6 +2480,9 @@ importers:
       axios-retry:
         specifier: ^4.0.0
         version: 4.0.0(axios@1.6.8)
+      ballerine-nestjs-typebox:
+        specifier: 3.0.1-next.8
+        version: 3.0.1-next.8(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.4)(ajv@8.12.0)(fast-uri@2.3.0)(rxjs@7.8.1)
       base64-stream:
         specifier: ^1.0.0
         version: 1.0.0
@@ -9231,7 +9234,6 @@ packages:
       class-transformer: 0.5.1
       class-validator: 0.14.0
       reflect-metadata: 0.1.13
-    dev: true
 
   /@nestjs/passport@9.0.3(@nestjs/common@9.4.3)(passport@0.6.0):
     resolution: {integrity: sha512-HplSJaimEAz1IOZEu+pdJHHJhQyBOPAYWXYHfAPQvRqWtw4FJF1VXl1Qtk9dcXQX1eKytDtH+qBzNQc19GWNEg==}
@@ -9350,7 +9352,6 @@ packages:
       path-to-regexp: 3.2.0
       reflect-metadata: 0.1.13
       swagger-ui-dist: 4.15.5
-    dev: true
 
   /@nestjs/testing@9.4.3(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/platform-express@9.4.3):
     resolution: {integrity: sha512-LDT8Ai2eKnTzvnPaJwWOK03qTaFap5uHHsJCv6dL0uKWk6hyF9jms8DjyVaGsaujCaXDG8izl1mDEER0OmxaZA==}
@@ -12281,6 +12282,10 @@ packages:
 
   /@sinclair/typebox@0.31.26:
     resolution: {integrity: sha512-0S5BGB/Tle1kVa1pT2k2sc+wHTCB28+ivuetmZDCRV8I0iFKaNfk6HbvVyLEFBzZy56dp0dw+YDJ9Ed+YAAL7A==}
+    dev: false
+
+  /@sinclair/typebox@0.32.4:
+    resolution: {integrity: sha512-Q2Pex6H+HGuyxIGuFadkpqwtjZFXiVZlvy1rVX9XgAzUrDmUDEM69M2c4CkWUgMJ1NaFPvUf+cMBljY96GJVNQ==}
     dev: false
 
   /@sinonjs/commons@3.0.0:
@@ -18136,6 +18141,26 @@ packages:
       - ts-node
     dev: false
 
+  /ballerine-nestjs-typebox@3.0.1-next.8(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.4)(ajv@8.12.0)(fast-uri@2.3.0)(rxjs@7.8.1):
+    resolution: {integrity: sha512-rYkkAdq69t5j0xFXQPAXsDmQqQjMeY4Mf2TIbzKMjcAVnxM/2XNMlhJYiK2wx3RgbOXgGnRO7iU6vok/YlwqwA==}
+    peerDependencies:
+      '@nestjs/common': ^9.0.1 || ^10.0.3
+      '@nestjs/core': ^9.0.1 || ^10.0.3
+      '@nestjs/swagger': ^6.1.1 || ^7.0.11
+      '@sinclair/typebox': ^0.32.4
+      ajv: ^8.14.0
+      fast-uri: ^2.3.0
+      rxjs: ^7.5.6
+    dependencies:
+      '@nestjs/common': 9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+      '@nestjs/core': 9.4.3(@nestjs/common@9.4.3)(@nestjs/platform-express@9.4.3)(@nestjs/websockets@9.4.3)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+      '@nestjs/swagger': 6.2.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)
+      '@sinclair/typebox': 0.32.4
+      ajv: 8.12.0
+      fast-uri: 2.3.0
+      rxjs: 7.8.1
+    dev: false
+
   /base16@1.0.0:
     resolution: {integrity: sha512-pNdYkNPiJUnEhnfXV56+sQy8+AaPcG3POZAUnwr4EeqCUZFz4u2PePbo3e5Gj4ziYPCWGUZT9RHisvJKnwFuBQ==}
     dev: false
@@ -22249,6 +22274,10 @@ packages:
 
   /fast-safe-stringify@2.1.1:
     resolution: {integrity: sha512-W+KJc2dmILlPplD/H4K9l9LcAHAfPtP6BY84uVLXQ6Evcz9Lcg33Y2z1IVblT6xdY54PXYVHEv+0Wpq8Io6zkA==}
+
+  /fast-uri@2.3.0:
+    resolution: {integrity: sha512-eel5UKGn369gGEWOqBShmFJWfq/xSJvsgDzgLYC845GneayWvXBf0lJCBn5qTABfewy1ZDPoaR5OZCP+kssfuw==}
+    dev: false
 
   /fast-xml-parser@4.2.4:
     resolution: {integrity: sha512-fbfMDvgBNIdDJLdLOwacjFAPYt67tr31H9ZhWSm45CDAxvd0I6WTlSOUo7K2P/K5sA5JgMKG64PI3DMcaFdWpQ==}
@@ -30613,7 +30642,6 @@ packages:
 
   /swagger-ui-dist@4.15.5:
     resolution: {integrity: sha512-V3eIa28lwB6gg7/wfNvAbjwJYmDXy1Jo1POjyTzlB6wPcHiGlRxq39TSjYGVjQrUSAzpv+a7nzp7mDxgNy57xA==}
-    dev: true
 
   /symbol-observable@4.0.0:
     resolution: {integrity: sha512-b19dMThMV4HVFynSAM1++gBHAbk2Tc/osgLIBZMKsyqh34jb2e8Os7T6ZW/Bt3pJFdBTd2JwAnAAEQV7rSNvcQ==}
