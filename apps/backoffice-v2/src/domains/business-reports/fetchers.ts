@@ -95,6 +95,11 @@ export const BusinessReportSchema = z
           }),
           z.undefined(),
         ]),
+        websiteCompanyAnalysis: z.object({
+          scamOrFraud: z.object({
+            indicators: z.array(z.string()),
+          }),
+        }),
       }),
     }),
     business: z

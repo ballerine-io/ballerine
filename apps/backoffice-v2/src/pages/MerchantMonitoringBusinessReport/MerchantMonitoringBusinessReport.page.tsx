@@ -280,37 +280,30 @@ export const RiskIndicators: FunctionComponent<{
 };
 
 export const Analysis: FunctionComponent<{
-  companyActivityAnalysis: string[];
   companyReputationAnalysis: string[];
   violations: Array<{
     label: string;
     severity: string;
   }>;
-}> = ({ companyActivityAnalysis, companyReputationAnalysis, violations }) => {
+}> = ({ companyReputationAnalysis, violations }) => {
   return (
     <div className={'space-y-8'}>
       <RiskIndicators violations={violations} />
       <Card>
-        <CardHeader className={'pt-4 font-bold'}>Company Activity Assessment</CardHeader>
-        <CardContent>
-          <ol className={'ps-4'}>
-            {companyActivityAnalysis.map(warning => (
-              <li key={warning} className={'list-decimal'}>
-                {warning}
-              </li>
-            ))}
-          </ol>
-        </CardContent>
-      </Card>
-      <Card>
         <CardHeader className={'pt-4 font-bold'}>Company Reputation Analysis</CardHeader>
         <CardContent>
-          <ol className={'ps-4'}>
-            {companyReputationAnalysis.map(warning => (
-              <li key={warning} className={'list-decimal'}>
-                {warning}
-              </li>
-            ))}
+          <ol
+            className={ctw({
+              'ps-4': !!companyReputationAnalysis?.length,
+            })}
+          >
+            {!!companyReputationAnalysis?.length &&
+              companyReputationAnalysis.map(warning => (
+                <li key={warning} className={'list-decimal'}>
+                  {warning}
+                </li>
+              ))}
+            {!companyReputationAnalysis?.length && <li>No reputation analysis found.</li>}
           </ol>
         </CardContent>
       </Card>
@@ -319,29 +312,13 @@ export const Analysis: FunctionComponent<{
 };
 
 export const WebsitesCompany: FunctionComponent<{
+  companyReputationAnalysis: string[];
   violations: Array<{
     label: string;
     severity: string;
   }>;
-}> = ({ violations }) => {
-  const companyActivityAnalysis = [
-    '"Adolescentm.com is a fraudulent website that lures victims through deceptive promotions."',
-    '"Adolescentm.com has a safety score of 0 out of 100."',
-    '"Highly unusual and suspicious lack of accounts on Adolescentm.com."',
-  ];
-  const companyReputationAnalysis = [
-    '"Adolescentm.com is a fraudulent website that lures victims through deceptive promotions."',
-    '"Adolescentm.com has a safety score of 0 out of 100."',
-    '"Highly unusual and suspicious lack of accounts on Adolescentm.com."',
-  ];
-
-  return (
-    <Analysis
-      companyActivityAnalysis={companyActivityAnalysis}
-      companyReputationAnalysis={companyReputationAnalysis}
-      violations={violations}
-    />
-  );
+}> = ({ companyReputationAnalysis, violations }) => {
+  return <Analysis companyReputationAnalysis={companyReputationAnalysis} violations={violations} />;
 };
 
 export const WebsiteLineOfBusiness: FunctionComponent<{
@@ -383,24 +360,13 @@ export const WebsiteCredibility: FunctionComponent<{
     severity: string;
   }>;
 }> = ({ violations }) => {
-  const companyActivityAnalysis = [
-    '"Adolescentm.com is a fraudulent website that lures victims through deceptive promotions."',
-    '"Adolescentm.com has a safety score of 0 out of 100."',
-    '"Highly unusual and suspicious lack of accounts on Adolescentm.com."',
-  ];
   const companyReputationAnalysis = [
     '"Adolescentm.com is a fraudulent website that lures victims through deceptive promotions."',
     '"Adolescentm.com has a safety score of 0 out of 100."',
     '"Highly unusual and suspicious lack of accounts on Adolescentm.com."',
   ];
 
-  return (
-    <Analysis
-      companyActivityAnalysis={companyActivityAnalysis}
-      companyReputationAnalysis={companyReputationAnalysis}
-      violations={violations}
-    />
-  );
+  return <Analysis companyReputationAnalysis={companyReputationAnalysis} violations={violations} />;
 };
 
 export const AdsAndSocialMedia: FunctionComponent<{
@@ -409,11 +375,6 @@ export const AdsAndSocialMedia: FunctionComponent<{
     severity: string;
   }>;
 }> = () => {
-  const companyActivityAnalysis = [
-    '"Adolescentm.com is a fraudulent website that lures victims through deceptive promotions."',
-    '"Adolescentm.com has a safety score of 0 out of 100."',
-    '"Highly unusual and suspicious lack of accounts on Adolescentm.com."',
-  ];
   const companyReputationAnalysis = [
     '"Adolescentm.com is a fraudulent website that lures victims through deceptive promotions."',
     '"Adolescentm.com has a safety score of 0 out of 100."',
@@ -429,13 +390,7 @@ export const AdsAndSocialMedia: FunctionComponent<{
     severity: string;
   }>;
 
-  return (
-    <Analysis
-      companyActivityAnalysis={companyActivityAnalysis}
-      companyReputationAnalysis={companyReputationAnalysis}
-      violations={violations}
-    />
-  );
+  return <Analysis companyReputationAnalysis={companyReputationAnalysis} violations={violations} />;
 };
 
 export const EcosystemAndTransactions: FunctionComponent<{
@@ -696,7 +651,14 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     {
       label: "Website's Company",
       value: 'websitesCompany',
-      content: <WebsitesCompany violations={websitesCompanyAnalysis ?? []} />,
+      content: (
+        <WebsitesCompany
+          companyReputationAnalysis={
+            businessReport?.report?.data?.websiteCompanyAnalysis?.scamOrFraud?.indicators ?? []
+          }
+          violations={websitesCompanyAnalysis ?? []}
+        />
+      ),
     },
     {
       label: 'Website Line of Business',
