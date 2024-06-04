@@ -43,6 +43,7 @@
     "db:data-migration:import": "tsx ./src/data-migration/scripts/import"
   },
   "dependencies": {
+    "ballerine-nestjs-typebox": "3.0.1-next.8",
     "@aws-sdk/client-s3": "3.347.1",
     "@aws-sdk/lib-storage": "3.347.1",
     "@aws-sdk/s3-request-presigner": "3.347.1",
@@ -65,7 +66,7 @@
     "@sentry/cli": "^2.17.5",
     "@sentry/integrations": "^7.52.1",
     "@sentry/node": "^7.52.1",
-    "@sinclair/typebox": "^0.31.7",
+    "@sinclair/typebox": "0.32.4",
     "@t3-oss/env-core": "^0.6.1",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
