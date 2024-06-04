@@ -350,7 +350,8 @@ jobs:
           git checkout -b ${{ needs.determine_branch.outputs.branch }} origin/${{ needs.determine_branch.outputs.branch }}
           git config --global user.email "github-actions@example.com"
           git config --global user.name "GitHub Actions"
-          git pull origin ${{ needs.determine_branch.outputs.branch }}
+          git reset --hard HEAD
+          git pull origin ${{ needs.determine_branch.outputs.branch }} --rebase
           WF_M_SHORT_SHA=$(git rev-parse --short HEAD)
           echo "sha_short=$WF_M_SHORT_SHA"
           echo "wf_m_sha_short=$WF_M_SHORT_SHA" >> $GITHUB_OUTPUT
