@@ -430,33 +430,16 @@ export const EcosystemAndTransactions: FunctionComponent<{
     label: string;
     severity: string;
   }>;
-}> = ({ violations }) => {
-  const data = [
-    {
-      matchedName: 'Email Address',
-      relatedNodeType: 'info@3irdeyeplants.com',
-      relatedNode: 'info@3irdeyeplants.com',
-      indicators: {
-        label: 'Illegal Substances',
-        severity: 'high',
-      },
-    },
-    {
-      matchedName: 'adpey.com',
-      relatedNodeType: 'Phone Number',
-      relatedNode: '+86 15869188024',
-    },
-    {
-      matchedName: 'trypunk.com',
-      relatedNodeType: 'Phone Number',
-      relatedNode: '+86 15869188024',
-    },
-    {
-      matchedName: 'swimsuitmenu.com',
-      relatedNodeType: 'Phone Number',
-      relatedNode: '+86 15869188024',
-    },
-  ];
+  matches: Array<{
+    matchedName: string;
+    relatedNodeType: string;
+    relatedNode: string;
+    indicators: {
+      label: string;
+      severity: string;
+    };
+  }>;
+}> = ({ violations, matches }) => {
   const columnHelper = createColumnHelper<{
     matchedName: string;
     relatedNodeType: string;
@@ -563,7 +546,7 @@ export const EcosystemAndTransactions: FunctionComponent<{
         <CardHeader className={'pt-4 font-bold'}>Ecosystem</CardHeader>
         <CardContent>
           <DataTable
-            data={data}
+            data={matches}
             columns={columns}
             options={{
               enableSorting: false,
@@ -620,6 +603,21 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
         }),
       ),
     [businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.ecosystemViolations],
+  );
+  const ecosystemAndTransactionsMatches = useMemo(
+    () =>
+      businessReport?.report?.data?.ecosystem?.domains?.map(
+        ({ domain, relatedNode, relatedNodeType, indicator }) => ({
+          matchedName: domain,
+          relatedNode,
+          relatedNodeType: relatedNodeType,
+          indicators: {
+            label: indicator?.name,
+            severity: indicator?.riskLevel,
+          },
+        }),
+      ),
+    [businessReport?.report?.data?.ecosystem?.domains],
   );
   const websiteCredibilityAnalysis = useMemo(
     () =>
@@ -710,7 +708,12 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     {
       label: 'Ecosystem and Transactions',
       value: 'ecosystemAndTransactions',
-      content: <EcosystemAndTransactions violations={ecosystemAndTransactionsAnalysis ?? []} />,
+      content: (
+        <EcosystemAndTransactions
+          violations={ecosystemAndTransactionsAnalysis ?? []}
+          matches={ecosystemAndTransactionsMatches ?? []}
+        />
+      ),
     },
     {
       label: 'Ads and Social Media',

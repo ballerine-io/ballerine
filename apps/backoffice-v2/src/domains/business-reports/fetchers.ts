@@ -98,6 +98,19 @@ export const BusinessReportSchema = z
             indicators: z.array(z.string()),
           }),
         }),
+        ecosystem: z.object({
+          domains: z.array(
+            z.object({
+              domain: z.string(),
+              relatedNode: z.string(),
+              relatedNodeType: z.string(),
+              indicator: z.object({
+                name: z.string(),
+                riskLevel: z.string(),
+              }),
+            }),
+          ),
+        }),
       }),
     }),
     business: z
