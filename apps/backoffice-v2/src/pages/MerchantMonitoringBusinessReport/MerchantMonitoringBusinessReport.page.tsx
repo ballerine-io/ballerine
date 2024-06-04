@@ -279,7 +279,7 @@ export const RiskIndicators: FunctionComponent<{
   );
 };
 
-export const Analysis: FunctionComponent<{
+export const WebsitesCompany: FunctionComponent<{
   companyReputationAnalysis: string[];
   violations: Array<{
     label: string;
@@ -311,16 +311,6 @@ export const Analysis: FunctionComponent<{
   );
 };
 
-export const WebsitesCompany: FunctionComponent<{
-  companyReputationAnalysis: string[];
-  violations: Array<{
-    label: string;
-    severity: string;
-  }>;
-}> = ({ companyReputationAnalysis, violations }) => {
-  return <Analysis companyReputationAnalysis={companyReputationAnalysis} violations={violations} />;
-};
-
 export const WebsiteLineOfBusiness: FunctionComponent<{
   violations: Array<{
     label: string;
@@ -340,6 +330,14 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
           </div>
         </CardContent>
       </Card>
+      <Card>
+        <CardHeader className={'pt-4 font-bold'}>Content Violations Summary</CardHeader>
+        <CardContent className={'flex flex-col space-y-4'}>
+          <div>
+            <h4 className={'mb-4 font-semibold'}>Findings</h4>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
@@ -350,13 +348,35 @@ export const WebsiteCredibility: FunctionComponent<{
     severity: string;
   }>;
 }> = ({ violations }) => {
-  const companyReputationAnalysis = [
-    '"Adolescentm.com is a fraudulent website that lures victims through deceptive promotions."',
-    '"Adolescentm.com has a safety score of 0 out of 100."',
-    '"Highly unusual and suspicious lack of accounts on Adolescentm.com."',
-  ];
-
-  return <Analysis companyReputationAnalysis={companyReputationAnalysis} violations={violations} />;
+  return (
+    <div className={'space-y-8'}>
+      <RiskIndicators violations={violations} />
+      <Card>
+        <CardHeader className={'pt-4 font-bold'}>Online Reputation Analysis</CardHeader>
+        <CardContent>
+          <h4>What&apos;s in this check?</h4>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className={'pt-4 font-bold'}>Pricing Analysis</CardHeader>
+        <CardContent>
+          <h4>What&apos;s in this check?</h4>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className={'pt-4 font-bold'}>
+          Website Structure and Content Evaluation
+        </CardHeader>
+        <CardContent>
+          <h4>What&apos;s in this check?</h4>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className={'pt-4 font-bold'}>Traffic Analysis</CardHeader>
+        <CardContent></CardContent>
+      </Card>
+    </div>
+  );
 };
 
 export const AdsAndSocialMedia: FunctionComponent<{
@@ -380,7 +400,29 @@ export const AdsAndSocialMedia: FunctionComponent<{
     severity: string;
   }>;
 
-  return <Analysis companyReputationAnalysis={companyReputationAnalysis} violations={violations} />;
+  return (
+    <div className={'space-y-8'}>
+      <RiskIndicators violations={violations} />
+      <Card>
+        <CardHeader className={'pt-4 font-bold'}>Company Reputation Analysis</CardHeader>
+        <CardContent>
+          <ol
+            className={ctw({
+              'ps-4': !!companyReputationAnalysis?.length,
+            })}
+          >
+            {!!companyReputationAnalysis?.length &&
+              companyReputationAnalysis.map(warning => (
+                <li key={warning} className={'list-decimal'}>
+                  {warning}
+                </li>
+              ))}
+            {!companyReputationAnalysis?.length && <li>No reputation analysis found.</li>}
+          </ol>
+        </CardContent>
+      </Card>
+    </div>
+  );
 };
 
 export const EcosystemAndTransactions: FunctionComponent<{
