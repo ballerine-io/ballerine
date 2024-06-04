@@ -296,6 +296,8 @@ jobs:
           cd services/workflows-service/prisma/data-migrations
           git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/${{ needs.determine_branch.outputs.branch }}
           git checkout -b ${{ needs.determine_branch.outputs.branch }} origin/${{ needs.determine_branch.outputs.branch }}
+          git config --global user.email "github-actions@example.com"
+          git config --global user.name "GitHub Actions"
           git pull origin ${{ needs.determine_branch.outputs.branch }}
 
           is_exists=$(git ls-remote --exit-code --heads -t --ref -q origin "${{ needs.determine_branch.outputs.branch }}" | wc -l)
@@ -345,6 +347,8 @@ jobs:
           cd services/workflows-service/prisma/data-migrations
           git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/${{ needs.determine_branch.outputs.branch }}
           git checkout -b ${{ needs.determine_branch.outputs.branch }} origin/${{ needs.determine_branch.outputs.branch }}
+          git config --global user.email "github-actions@example.com"
+          git config --global user.name "GitHub Actions"
           git pull origin ${{ needs.determine_branch.outputs.branch }}
           WF_M_SHORT_SHA=$(git rev-parse --short HEAD)
           echo "sha_short=$WF_M_SHORT_SHA"
