@@ -1945,9 +1945,8 @@ export class WorkflowService {
 
       service.subscribe('ENTITIES_UPDATE', async ({ payload }) => {
         if (
-          !payload ||
-          !payload.ubos ||
-          !payload.directors ||
+          !payload?.ubos ||
+          !payload?.directors ||
           !Array.isArray(payload.ubos) ||
           !Array.isArray(payload.directors)
         ) {
@@ -1963,7 +1962,7 @@ export class WorkflowService {
           endUserService: this.endUserService,
           projectId: currentProjectId,
           businessId: workflowRuntimeData.businessId,
-          sendEvent: service.sendEvent,
+          sendEvent: e => service.sendEvent(e),
           payload: typedPayload,
         });
       });
