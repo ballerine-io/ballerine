@@ -69,7 +69,7 @@ export class WorkflowRunner {
   #__subscriptions: Partial<Record<string, Array<(event: WorkflowEvent) => Promise<void>>>>;
   #__workflow: StateMachine<any, any, any>;
   #__currentState: string | undefined | symbol | number | any;
-  #__context: any;
+  context: any;
   #__config: any;
   #__extensions: WorkflowExtensions;
   #__debugMode: boolean;
@@ -78,10 +78,6 @@ export class WorkflowRunner {
 
   public get workflow() {
     return this.#__workflow;
-  }
-
-  public get context() {
-    return this.#__context;
   }
 
   public get state() {
@@ -136,7 +132,7 @@ export class WorkflowRunner {
     });
 
     // use initial context or provided context
-    this.#__context = {
+    this.context = {
       ...(workflowContext && Object.keys(workflowContext.machineContext ?? {})?.length
         ? workflowContext.machineContext
         : definition.context ?? {}),
@@ -490,8 +486,8 @@ export class WorkflowRunner {
           };
         },
       ) => {
-        this.#__context = event.payload.context;
-        return this.#__context;
+        this.context = event.payload.context;
+        return this.context;
       },
     );
 
@@ -513,7 +509,7 @@ export class WorkflowRunner {
           payload.arrayMergeOption,
         );
 
-        this.#__context = mergedContext;
+        this.context = mergedContext;
 
         return mergedContext;
       },
@@ -537,7 +533,7 @@ export class WorkflowRunner {
   }
 
   async sendEvent(event: WorkflowEventWithoutState) {
-    const workflow = this.#__workflow.withContext(this.#__context);
+    const workflow = this.#__workflow.withContext(this.context);
 
     logger.log('Received event', {
       event,
@@ -611,7 +607,7 @@ export class WorkflowRunner {
     service.send(event);
 
     const postSendSnapshot = service.getSnapshot();
-    this.#__context = postSendSnapshot.context;
+    this.context = postSendSnapshot.context;
 
     if (previousState === postSendSnapshot.value) {
       logger.log('No transition occurred, skipping plugins');
@@ -649,7 +645,7 @@ export class WorkflowRunner {
     }
 
     if (this.#__debugMode) {
-      logger.log('context:', this.#__context);
+      logger.log('context:', this.context);
     }
 
     // Intentionally positioned after service.start() and service.send()
@@ -667,21 +663,21 @@ export class WorkflowRunner {
         plugin: postPlugin,
         // TODO: Might want to refactor to use this.#__runtimeId
         workflowId: postSendSnapshot.machine?.id,
-      })(this.#__context, event);
+      })(this.context, event);
     }
   }
 
   private async __invokeCommonPlugin(commonPlugin: CommonPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
     const { callbackAction, error } = await commonPlugin.invoke?.({
-      ...this.#__context,
+      ...this.context,
       workflowRuntimeConfig: this.#__config,
       workflowRuntimeId: this.#__runtimeId,
     });
 
     if (!!error) {
-      this.#__context.pluginsOutput = {
-        ...(this.#__context.pluginsOutput || {}),
+      this.context.pluginsOutput = {
+        ...(this.context.pluginsOutput || {}),
         ...{ [commonPlugin.name]: { error: error } },
       };
     }
@@ -694,7 +690,7 @@ export class WorkflowRunner {
   private async __invokeApiPlugin(apiPlugin: HttpPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
     const { callbackAction, responseBody, error } = await apiPlugin.invoke?.({
-      ...this.#__context,
+      ...this.context,
       workflowRuntimeConfig: this.#__config,
       workflowRuntimeId: this.#__runtimeId,
     });
@@ -703,7 +699,7 @@ export class WorkflowRunner {
       logger.error('Error invoking plugin', {
         error,
         name: apiPlugin.name,
-        context: this.#__context,
+        context: this.context,
       });
     }
 
@@ -715,14 +711,14 @@ export class WorkflowRunner {
     }
 
     if (apiPlugin.persistResponseDestination && responseBody) {
-      this.#__context = this.mergeToContext(
-        this.#__context,
+      this.context = this.mergeToContext(
+        this.context,
         responseBody,
         apiPlugin.persistResponseDestination,
       );
     } else {
-      this.#__context.pluginsOutput = {
-        ...(this.#__context.pluginsOutput || {}),
+      this.context.pluginsOutput = {
+        ...(this.context.pluginsOutput || {}),
         ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
       };
     }
@@ -731,7 +727,7 @@ export class WorkflowRunner {
   }
 
   private async __dispatchEvent(dispatchEventPlugin: DispatchEventPlugin) {
-    const { eventName, event } = await dispatchEventPlugin.getPluginEvent(this.#__context);
+    const { eventName, event } = await dispatchEventPlugin.getPluginEvent(this.context);
 
     try {
       logger.log('Dispatching event', {
@@ -764,13 +760,13 @@ export class WorkflowRunner {
   }
 
   getSnapshot() {
-    const service = interpret(this.#__workflow.withContext(this.#__context));
+    const service = interpret(this.#__workflow.withContext(this.context));
     service.start(this.#__currentState);
     return service.getSnapshot();
   }
 
   overrideContext(context: any) {
-    return (this.#__context = context);
+    return (this.context = context);
   }
 
   async invokePlugin(pluginName: string) {
