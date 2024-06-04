@@ -299,7 +299,7 @@ jobs:
           git config --global user.email "github-actions@example.com"
           git config --global user.name "GitHub Actions"
           git reset --hard HEAD
-          git pull origin ${{ needs.determine_branch.outputs.branch }}
+          git pull origin ${{ needs.determine_branch.outputs.branch }} --rebase
 
           is_exists=$(git ls-remote --exit-code --heads -t --ref -q origin "${{ needs.determine_branch.outputs.branch }}" | wc -l)
 
