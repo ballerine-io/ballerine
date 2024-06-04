@@ -327,9 +327,7 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
     severity: string;
   }>;
   summary: string;
-  mccProvided: string | null;
-  mccMatching: string | null;
-}> = ({ violations, summary, mccProvided, mccMatching }) => {
+}> = ({ violations, summary }) => {
   return (
     <div className={'space-y-8'}>
       <RiskIndicators violations={violations} />
@@ -339,14 +337,6 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
           <div>
             <h4 className={'mb-4 font-semibold'}>LOB Description</h4>
             <p>{summary}</p>
-          </div>
-          <div>
-            <h4 className={'mb-4 font-semibold'}>MCC Provided</h4>
-            <p>{mccProvided}</p>
-          </div>
-          <div>
-            <h4 className={'mb-4 font-semibold'}>MCC Matching</h4>
-            <p>{mccMatching}</p>
           </div>
         </CardContent>
       </Card>
@@ -667,8 +657,6 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
         <WebsiteLineOfBusiness
           violations={websiteLineOfBusinessAnalysis ?? []}
           summary={businessReport?.report?.data?.lineOfBusiness?.lobDescription}
-          mccMatching={businessReport?.report?.data?.lineOfBusiness?.mccMatching}
-          mccProvided={businessReport?.report?.data?.lineOfBusiness?.mccProvided}
         />
       ),
     },

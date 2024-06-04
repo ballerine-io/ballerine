@@ -90,8 +90,6 @@ export const BusinessReportSchema = z
         lineOfBusiness: z.union([
           z.object({
             lobDescription: z.string(),
-            mccProvided: z.string().nullable(),
-            mccMatching: z.string().nullable(),
           }),
           z.undefined(),
         ]),
