@@ -95,7 +95,3 @@
     --radius: 0.5rem;
   }
 }
-
-.MuiPopper-root {
-  pointer-events: all;
-}

@@ -164,6 +164,12 @@ export const DatePickerInput = ({
               component: Paper,
               className: 'mt-2 mb-2',
             },
+            dialog: {
+              className: 'pointer-events-auto',
+            },
+            popper: {
+              className: 'pointer-events-auto',
+            },
           }}
         />
       </LocalizationProvider>
