@@ -42,7 +42,7 @@ fi
 
 
 # Export the secret values to the current shell environment
-echo "Secret fetched successfully. Setting environment variables...$skip_keys"
+echo "Secret fetched successfully. Setting environment variables...${skip_keys[@]}"
 
 # Use jq to parse the JSON and export the key-value pairs
 echo "$secret_value" | jq -r 'to_entries | .[] | "export \(.key)=\(.value)"' | while read -r line; do
