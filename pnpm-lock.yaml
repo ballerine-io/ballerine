@@ -1058,7 +1058,7 @@ importers:
         version: 3.7.2(eslint@8.57.0)(typescript@5.1.6)
       eslint-plugin-import:
         specifier: ^2.22.0
-        version: 2.29.1(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
+        version: 2.29.1(@typescript-eslint/parser@5.62.0)(eslint@8.57.0)
       eslint-plugin-storybook:
         specifier: ^0.6.13
         version: 0.6.15(eslint@8.57.0)(typescript@5.1.6)
@@ -1209,7 +1209,7 @@ importers:
         version: 3.7.2(eslint@8.57.0)(typescript@4.9.5)
       eslint-plugin-import:
         specifier: ^2.22.0
-        version: 2.29.1(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
+        version: 2.29.1(@typescript-eslint/parser@5.62.0)(eslint@8.57.0)
       eslint-plugin-unused-imports:
         specifier: ^2.0.0
         version: 2.0.0(@typescript-eslint/eslint-plugin@5.62.0)(eslint@8.57.0)
@@ -1477,7 +1477,7 @@ importers:
         version: 3.7.2(eslint@8.57.0)(typescript@4.9.5)
       eslint-plugin-import:
         specifier: ^2.22.0
-        version: 2.29.1(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
+        version: 2.29.1(@typescript-eslint/parser@5.62.0)(eslint@8.57.0)
       eslint-plugin-unused-imports:
         specifier: ^2.0.0
         version: 2.0.0(@typescript-eslint/eslint-plugin@5.62.0)(eslint@8.57.0)
@@ -1830,7 +1830,7 @@ importers:
         version: 3.7.2(eslint@8.57.0)(typescript@5.1.6)
       eslint-plugin-import:
         specifier: ^2.22.0
-        version: 2.29.1(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
+        version: 2.29.1(@typescript-eslint/parser@5.62.0)(eslint@8.57.0)
       eslint-plugin-unused-imports:
         specifier: ^2.0.0
         version: 2.0.0(@typescript-eslint/eslint-plugin@5.62.0)(eslint@8.57.0)
@@ -2241,7 +2241,7 @@ importers:
         version: 3.7.2(eslint@8.57.0)(typescript@5.1.6)
       eslint-plugin-import:
         specifier: ^2.22.0
-        version: 2.29.1(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
+        version: 2.29.1(@typescript-eslint/parser@5.62.0)(eslint@8.57.0)
       eslint-plugin-unused-imports:
         specifier: ^2.0.0
         version: 2.0.0(@typescript-eslint/eslint-plugin@5.62.0)(eslint@8.57.0)
@@ -2481,8 +2481,8 @@ importers:
         specifier: ^4.0.0
         version: 4.3.0(axios@1.7.2)
       ballerine-nestjs-typebox:
-        specifier: file:~/repos/ballerine-nestjs-typebox/ballerine-nestjs-typebox.tgz
-        version: file:../ballerine-nestjs-typebox/ballerine-nestjs-typebox.tgz(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.4)(ajv@8.14.0)(fast-uri@2.3.0)(rxjs@7.8.1)
+        specifier: 3.0.0-next.8
+        version: 3.0.0-next.8(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.4)(ajv@8.14.0)(fast-uri@2.3.0)(rxjs@7.8.1)
       base64-stream:
         specifier: ^1.0.0
         version: 1.0.0
@@ -19247,6 +19247,26 @@ packages:
       - ts-node
     dev: false
 
+  /ballerine-nestjs-typebox@3.0.0-next.8(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.4)(ajv@8.14.0)(fast-uri@2.3.0)(rxjs@7.8.1):
+    resolution: {integrity: sha512-HlVbg439thGukHloJuuU/2nimy0Pih2rHFweXe7xybnn9FLsdblVJknVjCjT8jlnxXElGk092UhbMlqP/Hv2WQ==}
+    peerDependencies:
+      '@nestjs/common': ^9.0.1 || ^10.0.3
+      '@nestjs/core': ^9.0.1 || ^10.0.3
+      '@nestjs/swagger': ^6.1.1 || ^7.0.11
+      '@sinclair/typebox': ^0.32.4
+      ajv: ^8.14.0
+      fast-uri: ^2.3.0
+      rxjs: ^7.5.6
+    dependencies:
+      '@nestjs/common': 9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+      '@nestjs/core': 9.4.3(@nestjs/common@9.4.3)(@nestjs/platform-express@9.4.3)(@nestjs/websockets@9.4.3)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+      '@nestjs/swagger': 6.2.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)
+      '@sinclair/typebox': 0.32.4
+      ajv: 8.14.0
+      fast-uri: 2.3.0
+      rxjs: 7.8.1
+    dev: false
+
   /base16@1.0.0:
     resolution: {integrity: sha512-pNdYkNPiJUnEhnfXV56+sQy8+AaPcG3POZAUnwr4EeqCUZFz4u2PePbo3e5Gj4ziYPCWGUZT9RHisvJKnwFuBQ==}
     dev: false
@@ -22124,7 +22144,7 @@ packages:
       '@typescript-eslint/parser': 5.62.0(eslint@8.57.0)(typescript@4.9.5)
       eslint: 8.57.0
       eslint-config-standard: 17.1.0(eslint-plugin-import@2.29.1)(eslint-plugin-n@16.6.2)(eslint-plugin-promise@6.1.1)(eslint@8.57.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@5.62.0)(eslint@8.57.0)
       eslint-plugin-n: 16.6.2(eslint@8.57.0)
       eslint-plugin-promise: 6.1.1(eslint@8.57.0)
       typescript: 4.9.5
@@ -22142,7 +22162,7 @@ packages:
       eslint-plugin-promise: ^6.0.0
     dependencies:
       eslint: 8.57.0
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@5.62.0)(eslint@8.57.0)
       eslint-plugin-n: 16.6.2(eslint@8.57.0)
       eslint-plugin-promise: 6.1.1(eslint@8.57.0)
     dev: true
@@ -22263,6 +22283,35 @@ packages:
       '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.5)
       debug: 3.2.7
       eslint: 8.54.0
+      eslint-import-resolver-node: 0.3.9
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
+  /eslint-module-utils@2.8.0(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-node@0.3.9)(eslint@8.57.0):
+    resolution: {integrity: sha512-aWajIYfsqCKRDgUfjEXNN/JlrzauMuSEy5sbd7WXbtW3EH6A6MpwEh42c7qD+MqQo9QMJ6fWLAeIJynx0g6OAw==}
+    engines: {node: '>=4'}
+    peerDependencies:
+      '@typescript-eslint/parser': '*'
+      eslint: '*'
+      eslint-import-resolver-node: '*'
+      eslint-import-resolver-typescript: '*'
+      eslint-import-resolver-webpack: '*'
+    peerDependenciesMeta:
+      '@typescript-eslint/parser':
+        optional: true
+      eslint:
+        optional: true
+      eslint-import-resolver-node:
+        optional: true
+      eslint-import-resolver-typescript:
+        optional: true
+      eslint-import-resolver-webpack:
+        optional: true
+    dependencies:
+      '@typescript-eslint/parser': 5.62.0(eslint@8.57.0)(typescript@5.1.6)
+      debug: 3.2.7
+      eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
     transitivePeerDependencies:
       - supports-color
@@ -22481,6 +22530,41 @@ packages:
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
       eslint-module-utils: 2.8.0(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
+      hasown: 2.0.0
+      is-core-module: 2.13.1
+      is-glob: 4.0.3
+      minimatch: 3.1.2
+      object.fromentries: 2.0.7
+      object.groupby: 1.0.1
+      object.values: 1.1.7
+      semver: 6.3.1
+      tsconfig-paths: 3.15.0
+    transitivePeerDependencies:
+      - eslint-import-resolver-typescript
+      - eslint-import-resolver-webpack
+      - supports-color
+    dev: true
+
+  /eslint-plugin-import@2.29.1(@typescript-eslint/parser@5.62.0)(eslint@8.57.0):
+    resolution: {integrity: sha512-BbPC0cuExzhiMo4Ff1BTVwHpjjv28C5R+btTOGaCRC7UEz801up0JadwkeSk5Ued6TG34uaczuVuH6qyy5YUxw==}
+    engines: {node: '>=4'}
+    peerDependencies:
+      '@typescript-eslint/parser': '*'
+      eslint: ^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8
+    peerDependenciesMeta:
+      '@typescript-eslint/parser':
+        optional: true
+    dependencies:
+      '@typescript-eslint/parser': 5.62.0(eslint@8.57.0)(typescript@5.1.6)
+      array-includes: 3.1.7
+      array.prototype.findlastindex: 1.2.3
+      array.prototype.flat: 1.3.2
+      array.prototype.flatmap: 1.3.2
+      debug: 3.2.7
+      doctrine: 2.1.0
+      eslint: 8.57.0
+      eslint-import-resolver-node: 0.3.9
+      eslint-module-utils: 2.8.0(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-node@0.3.9)(eslint@8.57.0)
       hasown: 2.0.0
       is-core-module: 2.13.1
       is-glob: 4.0.3
@@ -22752,7 +22836,7 @@ packages:
       '@typescript-eslint/eslint-plugin':
         optional: true
     dependencies:
-      '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.57.0)(typescript@4.9.5)
+      '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.57.0)(typescript@5.1.6)
       eslint: 8.57.0
       eslint-rule-composer: 0.3.0
     dev: true
@@ -35378,29 +35462,6 @@ packages:
 
   /zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
-    dev: false
-
-  file:../ballerine-nestjs-typebox/ballerine-nestjs-typebox.tgz(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.4)(ajv@8.14.0)(fast-uri@2.3.0)(rxjs@7.8.1):
-    resolution: {integrity: sha512-HlVbg439thGukHloJuuU/2nimy0Pih2rHFweXe7xybnn9FLsdblVJknVjCjT8jlnxXElGk092UhbMlqP/Hv2WQ==, tarball: file:../ballerine-nestjs-typebox/ballerine-nestjs-typebox.tgz}
-    id: file:../ballerine-nestjs-typebox/ballerine-nestjs-typebox.tgz
-    name: ballerine-nestjs-typebox
-    version: 3.0.0-next.8
-    peerDependencies:
-      '@nestjs/common': ^9.0.1 || ^10.0.3
-      '@nestjs/core': ^9.0.1 || ^10.0.3
-      '@nestjs/swagger': ^6.1.1 || ^7.0.11
-      '@sinclair/typebox': ^0.32.4
-      ajv: ^8.14.0
-      fast-uri: ^2.3.0
-      rxjs: ^7.5.6
-    dependencies:
-      '@nestjs/common': 9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
-      '@nestjs/core': 9.4.3(@nestjs/common@9.4.3)(@nestjs/platform-express@9.4.3)(@nestjs/websockets@9.4.3)(reflect-metadata@0.1.13)(rxjs@7.8.1)
-      '@nestjs/swagger': 6.2.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)
-      '@sinclair/typebox': 0.32.4
-      ajv: 8.14.0
-      fast-uri: 2.3.0
-      rxjs: 7.8.1
     dev: false
 
   file:services/workflows-service/plugins/verify-repository-project-scoped:
