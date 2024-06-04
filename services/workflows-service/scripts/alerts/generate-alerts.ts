@@ -732,11 +732,11 @@ export const generateAlertDefinitions = async (
   {
     project,
     createdBy = 'SYSTEM',
-    alertsDef,
+    alertsDef = ALERT_DEFINITIONS,
   }: {
     createdBy?: string;
     project: Project;
-    alertsDef:
+    alertsDef?:
       | Partial<typeof ALERT_DEFINITIONS>
       | Partial<typeof MERCHANT_MONITORING_ALERT_DEFINITIONS>;
   },

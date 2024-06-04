@@ -1,5 +1,6 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import {
+  checkIsAmlVariant,
   checkIsOngoingVariant,
   checkIsWebsiteMonitoringVariant,
 } from '@/lib/blocks/variants/variant-checkers';
@@ -10,10 +11,11 @@ import { FunctionComponent } from 'react';
 export const ActionsVariant: FunctionComponent<{
   workflowDefinition: Pick<TWorkflowById['workflowDefinition'], 'variant' | 'config' | 'version'>;
 }> = ({ workflowDefinition }) => {
-  const isOngoingVariant = checkIsOngoingVariant(workflowDefinition);
+  const noActions =
+    checkIsOngoingVariant(workflowDefinition) || checkIsAmlVariant(workflowDefinition);
   const isWebsiteMontiroingVariant = checkIsWebsiteMonitoringVariant(workflowDefinition);
 
-  if (isOngoingVariant) {
+  if (noActions) {
     return null;
   }
 

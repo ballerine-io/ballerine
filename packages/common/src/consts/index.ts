@@ -60,6 +60,7 @@ export const WorkflowDefinitionVariant = {
   KYC: 'KYC',
   DEFAULT: 'DEFAULT',
   ONGOING: 'ONGOING',
+  AML: 'AML',
 } as const;
 
 export type TStateTags = typeof StateTags;
