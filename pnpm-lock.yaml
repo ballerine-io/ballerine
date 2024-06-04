@@ -2481,8 +2481,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(axios@1.6.8)
       ballerine-nestjs-typebox:
-        specifier: 3.0.0-next.8
-        version: 3.0.0-next.8(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.4)(ajv@8.12.0)(fast-uri@2.3.0)(rxjs@7.8.1)
+        specifier: 3.0.1-next.8
+        version: 3.0.1-next.8(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.4)(ajv@8.12.0)(fast-uri@2.3.0)(rxjs@7.8.1)
       base64-stream:
         specifier: ^1.0.0
         version: 1.0.0
@@ -18141,8 +18141,8 @@ packages:
       - ts-node
     dev: false
 
-  /ballerine-nestjs-typebox@3.0.0-next.8(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.4)(ajv@8.12.0)(fast-uri@2.3.0)(rxjs@7.8.1):
-    resolution: {integrity: sha512-HlVbg439thGukHloJuuU/2nimy0Pih2rHFweXe7xybnn9FLsdblVJknVjCjT8jlnxXElGk092UhbMlqP/Hv2WQ==}
+  /ballerine-nestjs-typebox@3.0.1-next.8(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.4)(ajv@8.12.0)(fast-uri@2.3.0)(rxjs@7.8.1):
+    resolution: {integrity: sha512-rYkkAdq69t5j0xFXQPAXsDmQqQjMeY4Mf2TIbzKMjcAVnxM/2XNMlhJYiK2wx3RgbOXgGnRO7iU6vok/YlwqwA==}
     peerDependencies:
       '@nestjs/common': ^9.0.1 || ^10.0.3
       '@nestjs/core': ^9.0.1 || ^10.0.3
