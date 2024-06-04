@@ -69,7 +69,7 @@ export class WorkflowRunner {
   #__subscriptions: Partial<Record<string, Array<(event: WorkflowEvent) => Promise<void>>>>;
   #__workflow: StateMachine<any, any, any>;
   #__currentState: string | undefined | symbol | number | any;
-  context: any;
+  private context: any;
   #__config: any;
   #__extensions: WorkflowExtensions;
   #__debugMode: boolean;
