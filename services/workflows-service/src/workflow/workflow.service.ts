@@ -1775,9 +1775,12 @@ export class WorkflowService {
   ) {
     const data = context.entity.data as Record<PropertyKey, unknown>;
 
+    const correlationId =
+      typeof entity.id === 'string' && entity.id.length > 0 ? entity.id : undefined;
+
     const { id } = await this.endUserService.create({
       data: {
-        correlationId: entity.id ? entity.id : undefined,
+        correlationId,
         email: data.email,
         firstName: data.firstName,
         lastName: data.lastName,
@@ -1797,9 +1800,12 @@ export class WorkflowService {
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
   ) {
+    const correlationId =
+      typeof entity.id === 'string' && entity.id.length > 0 ? entity.id : undefined;
+
     const { id } = await this.businessService.create({
       data: {
-        correlationId: entity.id ? entity.id : undefined,
+        correlationId,
         ...(context.entity.data as object),
         project: { connect: { id: currentProjectId } },
       } as Prisma.BusinessCreateInput,

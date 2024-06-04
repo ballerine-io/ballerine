@@ -22,7 +22,7 @@ export const BlocksVariant: FunctionComponent<{
   const isKybExampleVariant = checkIsKybExampleVariant(workflowDefinition);
   const isManualReviewVariant = checkIsManualReviewVariant(workflowDefinition);
   const isWebsiteMonitoringVariant = checkIsWebsiteMonitoringVariant(workflowDefinition);
-  const displayAmlBlockOnly =
+  const isOngoingVariant =
     checkIsOngoingVariant(workflowDefinition) || checkIsAmlVariant(workflowDefinition);
 
   if (isWebsiteMonitoringVariant) {
@@ -37,7 +37,7 @@ export const BlocksVariant: FunctionComponent<{
     return <ManualReviewBlocks />;
   }
 
-  if (displayAmlBlockOnly) {
+  if (isOngoingVariant) {
     return <OngoingBlocks />;
   }
 

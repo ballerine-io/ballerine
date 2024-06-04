@@ -32,7 +32,7 @@ export const SelectField = ({
         value: item.const as string,
       };
     }) as DropdownOption[];
-  }, [schema.oneOf]);
+  }, [schema.oneOf, schema.enumNames, schema.enum]);
 
   const handleBlur = useCallback(() => {
     // @ts-ignore

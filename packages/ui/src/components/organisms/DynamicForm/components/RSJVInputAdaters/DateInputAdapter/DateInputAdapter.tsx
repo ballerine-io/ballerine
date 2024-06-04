@@ -52,7 +52,7 @@ export const DateInputAdapter: RJSFInputAdapter<string | null> = ({
   );
 
   const datePickerOutputFormat: DatePickerProps['outputFormat'] = useMemo(
-    () => (uiSchema?.outputFormat === 'date' ? 'date' : 'iso'),
+    () => uiSchema?.outputFormat,
     [uiSchema?.outputFormat],
   );
 
