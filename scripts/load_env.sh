@@ -45,12 +45,12 @@ fi
 echo "Secret fetched successfully. Setting environment variables...$skip_keys"
 
 # Use jq to parse the JSON and export the key-value pairs
-echo $secret_value | jq -r 'to_entries | .[] | "export \(.key)=\(.value)"' | while read -r line; do
-  key=$(echo $line | cut -d'=' -f1 | sed 's/export //')
-  if [[ " ${skip_keys[@]} " =~ " $key " ]]; then
+echo "$secret_value" | jq -r 'to_entries | .[] | "export \(.key)=\(.value)"' | while read -r line; do
+  key=$(echo "$line" | cut -d'=' -f1 | sed 's/export //')
+  if [[ " ${skip_keys[*]} " =~ $key ]]; then
     continue
   fi
-  eval $line
+  eval "$line"
 done
 
 echo "Environment variables set."
