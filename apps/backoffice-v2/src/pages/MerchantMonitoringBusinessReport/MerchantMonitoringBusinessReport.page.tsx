@@ -1,763 +1,69 @@
-import React, {
-  ComponentProps,
-  ElementType,
-  forwardRef,
-  FunctionComponent,
-  ReactNode,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { FunctionComponent, ReactNode, useCallback, useMemo } from 'react';
 import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
 import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
 import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
-import { Button, buttonVariants } from '@/common/components/atoms/Button/Button';
+import { Button } from '@/common/components/atoms/Button/Button';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { z } from 'zod';
 import { Badge } from '@ballerine/ui';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { BusinessReportStatus } from '@/domains/business-reports/fetchers';
 import dayjs from 'dayjs';
-import { Card } from '@/common/components/atoms/Card/Card';
-import { CardContent } from '@/common/components/atoms/Card/Card.Content';
-import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
-import { WarningFilledSvg } from '@/common/components/atoms/icons';
-import { CheckCircle } from '@/common/components/atoms/CheckCircle/CheckCircle';
-import { DataTable } from '@/common/components/organisms/DataTable/DataTable';
-import { createColumnHelper } from '@tanstack/react-table';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
-import { getSeverityFromRiskScore } from '@/common/utils/get-severity-from-risk-score';
-import { severityToClassName, severityToTextClassName } from '@/common/constants';
-import { titleCase } from 'string-ts';
-import {
-  PolymorphicComponentProps,
-  PolymorphicComponentPropsWithRef,
-  PolymorphicRef,
-  Severity,
-  TObjectValues,
-  TSeverity,
-} from '@/common/types';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/common/components/atoms/Table';
 import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
-import { BallerineImage } from '@/common/components/atoms/BallerineImage';
-import { isType } from '@ballerine/common';
-import { BallerineLink } from '@/common/components/atoms/BallerineLink/BallerineLink';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
-
-export const checkIsUrl = isType(z.string().url());
-
-export type TAnchorIfUrl = <TElement extends ElementType = 'span'>(
-  props: PolymorphicComponentPropsWithRef<TElement> & ComponentProps<'a'>,
-) => ReactNode;
-
-const AnchorIfUrl: TAnchorIfUrl = forwardRef(
-  <TElement extends ElementType = 'span'>(
-    { as, children, ...props }: PolymorphicComponentProps<TElement> & ComponentProps<'a'>,
-    ref?: PolymorphicRef<TElement>,
-  ) => {
-    const Component = as ?? 'span';
-
-    if (checkIsUrl(children)) {
-      return (
-        <BallerineLink ref={ref} {...props}>
-          {children}
-        </BallerineLink>
-      );
-    }
-
-    return (
-      <Component ref={ref} {...props}>
-        {children}
-      </Component>
-    );
-  },
-);
-
-// @ts-ignore
-AnchorIfUrl.displayName = 'AnchorIfUrl';
-
-const RiskIndicator = ({
-  title,
-  to,
-  violations,
-}: {
-  title: string;
-  to: string;
-  violations: Array<{
-    label: string;
-    severity: string;
-  }>;
-}) => {
-  return (
-    <div>
-      <h3 className="mb-3 space-x-4 font-bold text-slate-500">
-        <span>{title}</span>
-        <Link
-          className={buttonVariants({
-            variant: 'link',
-            className: 'h-[unset] cursor-pointer !p-0 !text-blue-500',
-          })}
-          to={to}
-        >
-          View
-        </Link>
-      </h3>
-      <ul className="list-inside list-disc">
-        {!!violations?.length &&
-          violations.map(violation => (
-            <li key={violation.label} className="flex list-none items-center text-slate-500">
-              <WarningFilledSvg
-                className={ctw('me-3 mt-px', {
-                  'text-slate-300 [&>:not(:first-child)]:stroke-background':
-                    violation.severity === 'low',
-                })}
-                width={'20'}
-                height={'20'}
-              />
-              {violation.label}
-            </li>
-          ))}
-        {!violations?.length && (
-          <li className="flex list-none items-center text-slate-500">
-            <CheckCircle
-              size={18}
-              className={`stroke-background`}
-              containerProps={{
-                className: 'me-3 bg-success',
-              }}
-            />
-            No violations found
-          </li>
-        )}
-      </ul>
-    </div>
-  );
-};
-
-const BusinessReportSummary: FunctionComponent<{
-  summary: string;
-  riskLevels: {
-    legalRisk: TSeverity;
-    chargebackRisk: TSeverity;
-    reputationRisk: TSeverity;
-    transactionLaunderingRisk: TSeverity;
-  };
-  riskIndicators: Array<{
-    title: string;
-    to: string;
-    violations: Array<{
-      label: string;
-      severity: string;
-    }>;
-  }>;
-  riskScore: number;
-  recommendations: string[];
-}> = ({ riskIndicators, summary, riskLevels, riskScore, recommendations }) => {
-  const severity = getSeverityFromRiskScore(riskScore);
-
-  return (
-    <div className={'grid grid-cols-[340px_1fr] gap-8'}>
-      <Card>
-        <CardHeader className={'pb-2 pt-4 font-bold'}>Overall Risk Level</CardHeader>
-        <CardContent>
-          <div className="mb-8 flex items-center space-x-2">
-            <TextWithNAFallback
-              className={ctw(
-                {
-                  [severityToTextClassName[
-                    (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
-                  ]]: riskScore || riskScore === 0,
-                },
-                'text-4xl font-bold',
-              )}
-              checkFalsy={false}
-            >
-              {riskScore}
-            </TextWithNAFallback>
-            {(riskScore || riskScore === 0) && (
-              <Badge
-                className={ctw(
-                  severityToClassName[
-                    (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
-                  ],
-                  'min-w-20 rounded-lg font-bold',
-                )}
-              >
-                {titleCase(severity ?? '')} Risk
-              </Badge>
-            )}
-          </div>
-          <Table>
-            <TableHeader className={'[&_tr]:border-b-0'}>
-              <TableRow className={'hover:bg-[unset]'}>
-                <TableHead className={'h-0 ps-0 font-bold text-foreground'}>Risk Type</TableHead>
-                <TableHead className={'h-0 ps-0 font-bold text-foreground'}>Risk Level</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {Object.entries(riskLevels ?? {}).map(([riskType, riskLevel]) => (
-                <TableRow
-                  key={`${riskType}:${riskLevel}`}
-                  className={'border-b-0 hover:bg-[unset]'}
-                >
-                  <TableCell className={'pb-0 ps-0'}>{titleCase(riskType ?? '')}</TableCell>
-                  <TableCell
-                    className={ctw(
-                      'pb-0 ps-0 font-bold',
-                      severityToTextClassName[
-                        riskLevel.toUpperCase() as keyof typeof severityToTextClassName
-                      ],
-                    )}
-                  >
-                    {titleCase(riskLevel ?? '')}
-                  </TableCell>
-                </TableRow>
-              ))}
-              {!Object.keys(riskLevels ?? {}).length && (
-                <TableRow>
-                  <TableCell colSpan={2} className={'ps-0'}>
-                    No results found.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className={'pt-4 font-bold'}>Merchant Risk Summary</CardHeader>
-        <CardContent>{summary ?? 'No summary found.'}</CardContent>
-      </Card>
-      <Card className={'col-span-full'}>
-        <CardHeader className={'pt-4 font-bold'}>Risk Indicators</CardHeader>
-        <CardContent className={'grid grid-cols-3 gap-4'}>
-          {riskIndicators?.map(riskIndicator => (
-            <RiskIndicator
-              key={riskIndicator.title}
-              title={riskIndicator.title}
-              to={riskIndicator.to}
-              violations={riskIndicator.violations}
-            />
-          ))}
-        </CardContent>
-      </Card>
-      <Card className={'col-span-full'}>
-        <CardHeader className={'pt-4 font-bold'}>Recommendations</CardHeader>
-        <CardContent>
-          <ul className={'space-y-2'}>
-            {!!recommendations?.length &&
-              recommendations.map(recommendation => (
-                <li key={recommendation} className={'flex list-none items-center'}>
-                  <CheckCircle
-                    size={20}
-                    className={`stroke-transparent`}
-                    containerProps={{
-                      className: 'me-3 bg-info/20',
-                    }}
-                  />
-                  {recommendation}
-                </li>
-              ))}
-            {!recommendations?.length && (
-              <li className={'flex list-none items-center'}>
-                <CheckCircle
-                  size={20}
-                  className={`stroke-transparent`}
-                  containerProps={{
-                    className: 'me-3 bg-info/20',
-                  }}
-                />
-                No recommendations found.
-              </li>
-            )}
-          </ul>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
-export const RiskIndicators: FunctionComponent<{
-  violations: Array<{
-    label: string;
-    severity: string;
-  }>;
-}> = ({ violations }) => {
-  return (
-    <Card>
-      <CardHeader className={'pt-4 font-bold'}>Risk Indicators</CardHeader>
-      <CardContent>
-        <ul className="list-inside list-disc">
-          {!!violations?.length &&
-            violations.map(violation => (
-              <li key={violation.label} className="flex list-none items-center text-slate-500">
-                <WarningFilledSvg
-                  className={ctw('me-3 mt-px', {
-                    'text-slate-300 [&>:not(:first-child)]:stroke-background':
-                      violation.severity === Severity.MEDIUM,
-                  })}
-                  width={'20'}
-                  height={'20'}
-                />
-                {violation.label}
-              </li>
-            ))}
-          {!violations?.length && (
-            <li className="flex list-none items-center text-slate-500">
-              <CheckCircle
-                size={18}
-                className={`stroke-background`}
-                containerProps={{
-                  className: 'me-3 bg-success',
-                }}
-              />
-              No violations found
-            </li>
-          )}
-        </ul>
-      </CardContent>
-    </Card>
-  );
-};
-
-export const WebsitesCompany: FunctionComponent<{
-  companyReputationAnalysis: string[];
-  violations: Array<{
-    label: string;
-    severity: string;
-  }>;
-}> = ({ companyReputationAnalysis, violations }) => {
-  return (
-    <div className={'space-y-8'}>
-      <RiskIndicators violations={violations} />
-      <Card>
-        <CardHeader className={'pt-4 font-bold'}>Company Reputation Analysis</CardHeader>
-        <CardContent>
-          <ol
-            className={ctw({
-              'ps-4': !!companyReputationAnalysis?.length,
-            })}
-          >
-            {!!companyReputationAnalysis?.length &&
-              companyReputationAnalysis.map(warning => (
-                <li key={warning} className={'list-decimal'}>
-                  {warning}
-                </li>
-              ))}
-            {!companyReputationAnalysis?.length && <li>No reputation analysis found.</li>}
-          </ol>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
-export const WebsiteLineOfBusiness: FunctionComponent<{
-  violations: Array<{
-    label: string;
-    severity: string;
-  }>;
-  summary: string;
-}> = ({ violations, summary }) => {
-  return (
-    <div className={'space-y-8'}>
-      <RiskIndicators violations={violations} />
-      <Card>
-        <CardHeader className={'pt-4 font-bold'}>Line of Business Summary</CardHeader>
-        <CardContent className={'flex flex-col space-y-4'}>
-          <div>
-            <h4 className={'mb-4 font-semibold'}>LOB Description</h4>
-            <p>{summary}</p>
-          </div>
-        </CardContent>
-      </Card>
-      {/*<Card>*/}
-      {/*  <CardHeader className={'pt-4 font-bold'}>Content Violations Summary</CardHeader>*/}
-      {/*  <CardContent className={'flex flex-col space-y-4'}>*/}
-      {/*    <div>*/}
-      {/*      <h4 className={'mb-4 font-semibold'}>Findings</h4>*/}
-      {/*    </div>*/}
-      {/*  </CardContent>*/}
-      {/*</Card>*/}
-    </div>
-  );
-};
-
-export const WebsiteCredibility: FunctionComponent<{
-  violations: Array<{
-    label: string;
-    severity: string;
-  }>;
-  onlineReputationAnalysis: string;
-}> = ({ violations, onlineReputationAnalysis }) => {
-  return (
-    <div className={'space-y-8'}>
-      <RiskIndicators violations={violations} />
-      <Card>
-        <CardHeader className={'pt-4 font-bold'}>Online Reputation Analysis</CardHeader>
-        <CardContent>
-          <h4>What&apos;s in this check?</h4>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className={'pt-4 font-bold'}>Pricing Analysis</CardHeader>
-        <CardContent>
-          <h4>What&apos;s in this check?</h4>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className={'pt-4 font-bold'}>
-          Website Structure and Content Evaluation
-        </CardHeader>
-        <CardContent>
-          <h4>What&apos;s in this check?</h4>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className={'pt-4 font-bold'}>Traffic Analysis</CardHeader>
-        <CardContent></CardContent>
-      </Card>
-    </div>
-  );
-};
-
-export const AdsAndSocialMedia: FunctionComponent<{
-  violations: Array<{
-    label: string;
-    severity: string;
-  }>;
-  mediaPresence: Array<{
-    label: string;
-    items: Array<{
-      label: string;
-      value: string;
-    }>;
-  }>;
-  adsImages: Array<{
-    provider: string;
-    src: string;
-    link: string;
-  }>;
-  relatedAdsSummary: string;
-  relatedAdsImages: string[];
-}> = ({ violations, mediaPresence, adsImages, relatedAdsSummary, relatedAdsImages }) => {
-  return (
-    <div className={'space-y-8'}>
-      <RiskIndicators violations={violations} />
-      <Card>
-        <CardHeader className={'pt-4 font-bold'}>Social Media Presence</CardHeader>
-        <CardContent className={'space-y-8'}>
-          <div className={'grid grid-cols-2 gap-8'}>
-            {!!mediaPresence?.length &&
-              mediaPresence?.map(({ label, items }) => (
-                <div key={label}>
-                  <TextWithNAFallback as={'h3'} className="mb-3 font-bold">
-                    {titleCase(label ?? '')}
-                  </TextWithNAFallback>
-                  <ul
-                    className={ctw('space-y-1', {
-                      'ps-4': !!items?.length,
-                    })}
-                  >
-                    {!!items?.length &&
-                      items.map(({ label, value }) => {
-                        return (
-                          <li key={label} className={'list-disc'}>
-                            <TextWithNAFallback className={'me-2 font-semibold'}>
-                              {titleCase(label ?? '')}:
-                            </TextWithNAFallback>
-                            <TextWithNAFallback as={AnchorIfUrl}>{value}</TextWithNAFallback>
-                          </li>
-                        );
-                      })}
-                    {!items?.length && <li>No media presence found.</li>}
-                  </ul>
-                </div>
-              ))}
-          </div>
-          <div className={'grid grid-cols-4 gap-8'}>
-            {adsImages.map(({ provider, src, link }, index) => (
-              <AdImageWithLink
-                title={`${valueOrNA(titleCase(provider ?? ''))} Image`}
-                key={src}
-                src={src}
-                alt={`${provider} ad ${index + 1}`}
-                link={link}
-              />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className={'pt-4 font-bold'}>Related Ads</CardHeader>
-        <CardContent className={'flex flex-col space-y-4'}>
-          <div>
-            <h4 className={'mb-4 font-bold'}>Ads Summary</h4>
-            <p>{relatedAdsSummary}</p>
-          </div>
-          <div className={'grid grid-cols-4 gap-8'}>
-            {relatedAdsImages.map((src, index) => (
-              <AdExample key={src} src={src} alt={`Ad Example ${index + 1}`} />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
-export const AdImageWithLink: FunctionComponent<{
-  title: string;
-  src: string;
-  alt: string;
-  link: string;
-}> = ({ title, src, alt, link }) => {
-  return (
-    <div>
-      <h4 className={'mb-4 font-semibold'}>{title}</h4>
-      <BallerineImage src={src} alt={alt} className={'mb-4'} />
-      <a
-        className={buttonVariants({
-          variant: 'link',
-          className: 'h-[unset] cursor-pointer !p-0 !text-[#14203D] underline decoration-[1.5px]',
-        })}
-        href={src}
-      >
-        {link}
-      </a>
-    </div>
-  );
-};
-
-export const AdExample: FunctionComponent<{
-  src: string;
-  alt: string;
-}> = ({ src, alt }) => {
-  return (
-    <div>
-      <h4 className={'mb-4 font-semibold'}>Ad Example</h4>
-      <BallerineImage src={src} alt={alt} />
-    </div>
-  );
-};
-
-export const EcosystemAndTransactions: FunctionComponent<{
-  violations: Array<{
-    label: string;
-    severity: string;
-  }>;
-  matches: Array<{
-    matchedName: string;
-    relatedNodeType: string;
-    relatedNode: string;
-    indicators: {
-      label: string;
-      severity: string;
-    };
-  }>;
-}> = ({ violations, matches }) => {
-  const columnHelper = createColumnHelper<{
-    matchedName: string;
-    relatedNodeType: string;
-    relatedNode: string;
-    indicators: {
-      label: string;
-      severity: string;
-    };
-  }>();
-  const columns = [
-    columnHelper.display({
-      id: 'index',
-      cell: info => {
-        const index = info.cell.row.index + 1;
-
-        return <TextWithNAFallback className={`ps-8`}>{index}</TextWithNAFallback>;
-      },
-      header: 'Match',
-    }),
-    columnHelper.accessor('matchedName', {
-      header: 'Matched Name',
-      cell: info => {
-        const matchedName = info.getValue();
-        const matchedNameWithProtocol = `http://${matchedName}`;
-
-        if (checkIsUrl(matchedNameWithProtocol)) {
-          return <BallerineLink href={matchedNameWithProtocol}>{matchedName}</BallerineLink>;
-        }
-
-        return <TextWithNAFallback>{matchedName}</TextWithNAFallback>;
-      },
-    }),
-    columnHelper.accessor('relatedNodeType', {
-      header: 'Related Node Type',
-      cell: info => {
-        const relatedNodeType = info.getValue();
-
-        return <TextWithNAFallback>{relatedNodeType}</TextWithNAFallback>;
-      },
-    }),
-    columnHelper.accessor('relatedNode', {
-      header: 'Related Node',
-      cell: info => {
-        const relatedNode = info.getValue();
-
-        return <TextWithNAFallback>{relatedNode}</TextWithNAFallback>;
-      },
-    }),
-    columnHelper.accessor('indicators', {
-      header: 'Indicators',
-      cell: info => {
-        const indicators = info.getValue();
-
-        return (
-          <div className={'flex items-center'}>
-            {indicators && (
-              <WarningFilledSvg
-                className={ctw('me-3 mt-px', {
-                  'text-slate-300 [&>:not(:first-child)]:stroke-background':
-                    indicators?.severity === 'low',
-                })}
-                width={'20'}
-                height={'20'}
-              />
-            )}
-            <TextWithNAFallback>{indicators?.label}</TextWithNAFallback>
-          </div>
-        );
-      },
-    }),
-  ];
-
-  return (
-    <div className={'space-y-8'}>
-      <Card>
-        <CardHeader className={'pt-4 font-bold'}>Risk Indicators</CardHeader>
-        <CardContent>
-          <ul className="list-inside list-disc">
-            {!!violations?.length &&
-              violations.map(violation => (
-                <li key={violation.label} className="flex list-none items-center text-slate-500">
-                  <WarningFilledSvg
-                    className={ctw('me-3 mt-px', {
-                      'text-slate-300 [&>:not(:first-child)]:stroke-background':
-                        violation.severity.toUpperCase() === Severity.MEDIUM,
-                    })}
-                    width={'20'}
-                    height={'20'}
-                  />
-                  {violation.label}
-                </li>
-              ))}
-            {!violations.length && (
-              <li className="flex list-none items-center text-slate-500">
-                <CheckCircle
-                  size={18}
-                  className={`stroke-background`}
-                  containerProps={{
-                    className: 'me-3 bg-success',
-                  }}
-                />
-                No violations found
-              </li>
-            )}
-          </ul>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className={'pt-4 font-bold'}>Ecosystem</CardHeader>
-        <CardContent>
-          <DataTable
-            data={matches}
-            columns={columns}
-            options={{
-              enableSorting: false,
-            }}
-            props={{ scroll: { className: 'h-full' }, cell: { className: '!p-0' } }}
-          />
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
-const AdsProvider = {
-  FACEBOOK: 'FACEBOOK',
-  INSTAGRAM: 'INSTAGRAM',
-} as const;
-
-const AdsProviders = [AdsProvider.FACEBOOK, AdsProvider.INSTAGRAM] as const satisfies ReadonlyArray<
-  TObjectValues<typeof AdsProvider>
->;
-
-type TAdsProvider = TObjectValues<typeof AdsProvider>;
-
-type TAdsProviders = TAdsProvider[];
-
-const booleanToYesNo = (value: boolean | null | undefined) => {
-  if (typeof value !== 'boolean') {
-    return value;
-  }
-
-  return value ? 'Yes' : 'No';
-};
-
-const AdsProviderAdapter = {
-  FACEBOOK: data => ({
-    page: data?.adsInformation?.link,
-    id: data?.adsInformation?.id,
-    creationDate: data?.adsInformation?.creationDate,
-    categories: data?.adsInformation?.pageInformation?.categories,
-    address: data?.adsInformation?.address,
-    phoneNumber: data?.adsInformation?.phoneNumber,
-    email: data?.adsInformation?.email,
-    likes: data?.adsInformation?.numberOfLikes,
-    followers: data?.adsInformation?.numberOfFollowers,
-  }),
-  INSTAGRAM: data => ({
-    page: data?.adsInformation?.link,
-    fullName: data?.adsInformation?.pageInformation?.fullName,
-    creationDate: data?.adsInformation?.creationDate,
-    businessCategoryName: data?.adsInformation?.pageInformation?.businessCategoryName,
-    biography: data?.adsInformation?.pageInformation?.biography,
-    followers: data?.adsInformation?.numberOfFollowers,
-    isBusinessAccount: booleanToYesNo(data?.adsInformation?.pageInformation?.isBusinessAccount),
-  }),
-} as const satisfies Record<TAdsProvider, (data: Record<string, any>) => Record<string, unknown>>;
+import { BusinessReportSummary } from '@/common/components/molecules/BusinessReportSummary/BusinessReportSummary';
+import { WebsiteLineOfBusiness } from '@/domains/business-reports/components/WebsiteLineOfBusiness/WebsiteLineOfBusiness';
+import { WebsitesCompany } from '@/domains/business-reports/components/WebsitesCompany/WebsitesCompany';
+import { WebsiteCredibility } from '@/domains/business-reports/components/WebsiteCredibility/WebsiteCredibility';
+import { EcosystemAndTransactions } from '@/domains/business-reports/components/EcosystemAndTransactions/EcosystemAndTransactions';
+import { AdsProviders } from '@/domains/business-reports/constants';
+import { TAdsProvider } from '@/domains/business-reports/types';
+import { reportAdapter } from '@/domains/business-reports/adapters/report-adapter/report-adapter';
+import { adsProviderAdapter } from '@/domains/business-reports/adapters/ads-provider-adapter/ads-provider-adapter';
+import { AdsAndSocialMedia } from '@/domains/business-reports/components/AdsAndSocialMedia/AdsAndSocialMedia';
 
 export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
   const { businessReportId } = useParams();
   const { data: businessReport } = useBusinessReportByIdQuery({
     id: businessReportId ?? '',
   });
+  const adapter =
+    reportAdapter[`v${businessReport?.report?.version}` as keyof typeof reportAdapter] ??
+    reportAdapter.DEFAULT;
+  const {
+    companyNameViolations,
+    adsAndSocialViolations,
+    ads,
+    lineOfBusinessViolations,
+    ecosystemViolations,
+    ecosystemDomains,
+    tldViolations,
+    summary,
+    riskScore,
+    recommendations,
+    riskLevels,
+    scamOrFraudIndicators,
+    relatedAdsSummary,
+    lineOfBusinessDescription,
+  } = adapter(businessReport ?? {});
   const websitesCompanyAnalysis = useMemo(
     () =>
-      businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.companyNameViolations?.map(
-        ({ name, riskLevel }) => ({
-          label: name,
-          severity: riskLevel,
-        }),
-      ),
-    [businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.companyNameViolations],
+      companyNameViolations?.map(({ name, riskLevel }) => ({
+        label: name,
+        severity: riskLevel,
+      })),
+    [companyNameViolations],
   );
   const adsAndSocialMediaAnalysis = useMemo(
     () =>
-      businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.adsAndSocialViolations?.map(
-        ({ name, riskLevel }) => ({
-          label: name,
-          severity: riskLevel,
-        }),
-      ),
-    [businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.adsAndSocialViolations],
+      adsAndSocialViolations?.map(({ name, riskLevel }) => ({
+        label: name,
+        severity: riskLevel,
+      })),
+    [adsAndSocialViolations],
   );
   const getLabel = ({ label, provider }: { label: string; provider: string }) => {
     if (label === 'page') {
@@ -768,75 +74,64 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
   };
   const adsAndSocialMediaPresence = useMemo(
     () =>
-      Object.entries(businessReport?.report?.data?.socialMedia?.ads ?? {}).map(
-        ([provider, data]) => {
-          if (!AdsProviders.includes(provider.toUpperCase() as TAdsProvider)) {
-            return;
-          }
+      Object.entries(ads ?? {}).map(([provider, data]) => {
+        if (!AdsProviders.includes(provider.toUpperCase() as TAdsProvider)) {
+          return;
+        }
 
-          const adapter =
-            AdsProviderAdapter[provider.toUpperCase() as keyof typeof AdsProviderAdapter];
+        const adapter = adsProviderAdapter[provider as keyof typeof adsProviderAdapter];
 
-          const adaptedData = adapter(data);
+        const adaptedData = adapter(data);
 
-          return {
-            label: provider,
-            items: Object.entries(adaptedData).map(([label, value]) => ({
-              label: getLabel({
-                label,
-                provider,
-              }),
-              value,
-            })),
-          };
-        },
-      ),
-    [businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.adsAndSocialViolations],
+        return {
+          label: provider,
+          items: Object.entries(adaptedData).map(([label, value]) => ({
+            label: getLabel({
+              label,
+              provider,
+            }),
+            value,
+          })),
+        };
+      }),
+    [adsAndSocialViolations],
   );
   const websiteLineOfBusinessAnalysis = useMemo(
     () =>
-      businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.lineOfBusinessViolations?.map(
-        ({ name, riskLevel }) => ({
-          label: name,
-          severity: riskLevel,
-        }),
-      ),
-    [businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.lineOfBusinessViolations],
+      lineOfBusinessViolations?.map(({ name, riskLevel }) => ({
+        label: name,
+        severity: riskLevel,
+      })),
+    [lineOfBusinessViolations],
   );
   const ecosystemAndTransactionsAnalysis = useMemo(
     () =>
-      businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.ecosystemViolations?.map(
-        ({ name, riskLevel }) => ({
-          label: name,
-          severity: riskLevel,
-        }),
-      ),
-    [businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.ecosystemViolations],
+      ecosystemViolations?.map(({ name, riskLevel }) => ({
+        label: name,
+        severity: riskLevel,
+      })),
+    [ecosystemViolations],
   );
   const ecosystemAndTransactionsMatches = useMemo(
     () =>
-      businessReport?.report?.data?.ecosystem?.domains?.map(
-        ({ domain, relatedNode, relatedNodeType, indicator }) => ({
-          matchedName: domain,
-          relatedNode,
-          relatedNodeType: relatedNodeType,
-          indicators: {
-            label: indicator?.name,
-            severity: indicator?.riskLevel,
-          },
-        }),
-      ),
-    [businessReport?.report?.data?.ecosystem?.domains],
+      ecosystemDomains?.map(({ domain, relatedNode, relatedNodeType, indicator }) => ({
+        matchedName: domain,
+        relatedNode,
+        relatedNodeType: relatedNodeType,
+        indicators: {
+          label: indicator?.name,
+          severity: indicator?.riskLevel,
+        },
+      })),
+    [ecosystemDomains],
   );
   const websiteCredibilityAnalysis = useMemo(
     () =>
-      businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.tldViolations?.map(
-        ({ name, riskLevel }) => ({
-          label: name,
-          severity: riskLevel,
-        }),
-      ),
-    [businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.tldViolations],
+      tldViolations?.map(({ name, riskLevel }) => ({
+        label: name,
+        severity: riskLevel,
+      })),
+    [tldViolations],
   );
   const riskIndicators = [
     {
@@ -872,7 +167,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
       severity: string;
     }>;
   }>;
-  const adsImages = Object.entries(businessReport?.report?.data?.socialMedia?.ads ?? {})
+  const adsImages = Object.entries(ads ?? {})
     .map(([provider, data]) => ({
       provider,
       src: data?.imageUrl,
@@ -880,9 +175,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     }))
     .filter(Boolean);
 
-  const relatedAdsImages = Object.values(businessReport?.report?.data?.socialMedia?.ads ?? {}).map(
-    data => data?.pickedAd?.link,
-  );
+  const relatedAdsImages = Object.values(ads ?? {}).map(data => data?.pickedAd?.link);
 
   const tabs = [
     {
@@ -890,11 +183,11 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
       value: 'summary',
       content: (
         <BusinessReportSummary
-          summary={businessReport?.report?.data?.summary?.summary}
-          riskScore={businessReport?.report?.data?.summary?.riskScore}
+          summary={summary}
+          riskScore={riskScore}
           riskIndicators={riskIndicators}
-          recommendations={businessReport?.report?.data?.summary?.recommendations}
-          riskLevels={businessReport?.report?.data?.summary?.riskLevels}
+          recommendations={recommendations ?? []}
+          riskLevels={riskLevels}
         />
       ),
     },
@@ -903,9 +196,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
       value: 'websitesCompany',
       content: (
         <WebsitesCompany
-          companyReputationAnalysis={
-            businessReport?.report?.data?.websiteCompanyAnalysis?.scamOrFraud?.indicators ?? []
-          }
+          companyReputationAnalysis={scamOrFraudIndicators ?? []}
           violations={websitesCompanyAnalysis ?? []}
         />
       ),
@@ -916,7 +207,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
       content: (
         <WebsiteLineOfBusiness
           violations={websiteLineOfBusinessAnalysis ?? []}
-          summary={businessReport?.report?.data?.lineOfBusiness?.lobDescription}
+          summary={lineOfBusinessDescription}
         />
       ),
     },
@@ -944,7 +235,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
           mediaPresence={adsAndSocialMediaPresence ?? []}
           adsImages={adsImages}
           relatedAdsImages={relatedAdsImages}
-          relatedAdsSummary={businessReport?.report?.data?.socialMedia?.relatedAds?.summary}
+          relatedAdsSummary={relatedAdsSummary}
         />
       ),
     },

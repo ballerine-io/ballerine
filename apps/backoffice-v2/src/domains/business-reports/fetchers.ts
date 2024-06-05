@@ -172,6 +172,7 @@ export const BusinessReportSchema = z
           summary: z.string(),
         }),
       }),
+      version: z.number().int().positive().catch(1),
     }),
     business: z
       .object({
