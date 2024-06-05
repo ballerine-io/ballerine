@@ -25,6 +25,10 @@ export const SeveritySchema = z.preprocess(value => {
     return 'medium';
   }
 
+  if (value === 'positive') {
+    return 'low';
+  }
+
   return value;
 }, z.enum(Severities));
 
@@ -104,12 +108,68 @@ export const BusinessReportSchema = z
               domain: z.string(),
               relatedNode: z.string(),
               relatedNodeType: z.string(),
-              indicator: z.object({
-                name: z.string(),
-                riskLevel: z.string(),
-              }),
+              indicator: z
+                .object({
+                  name: z.string(),
+                  riskLevel: z.string(),
+                })
+                .nullable(),
             }),
           ),
+        }),
+        socialMedia: z.object({
+          ads: z.object({
+            facebook: z.object({
+              adsInformation: z.object({
+                id: z.string(),
+                link: z.string().url(),
+                creationDate: z.string(),
+                pageInformation: z
+                  .object({
+                    categories: z.array(z.string()),
+                  })
+                  .optional(),
+                address: z.string(),
+                phoneNumber: z.string().optional(),
+                email: z.string().email().optional(),
+                numberOfLikes: z.number(),
+                numberOfFollowers: z.number(),
+              }),
+              imageUrl: z.string().url().optional(),
+              link: z.string().url(),
+              pickedAd: z.object({
+                link: z.string().url(),
+              }),
+            }),
+            instagram: z.object({
+              adsInformation: z.object({
+                id: z.string(),
+                link: z.string().url(),
+                creationDate: z.string().optional(),
+                numberOfFollowers: z.number().optional(),
+                pageInformation: z
+                  .object({
+                    fullName: z.string().optional(),
+                    businessCategoryName: z.string(),
+                    biography: z.string(),
+                    isBusinessAccount: z.boolean(),
+                    verified: z.boolean(),
+                  })
+                  .optional(),
+              }),
+              imageUrl: z.string().url().optional(),
+              link: z.string().url(),
+              pickedAd: z.object({
+                link: z.string().url(),
+              }),
+            }),
+          }),
+          relatedAds: z.object({
+            summary: z.string(),
+          }),
+        }),
+        reputation: z.object({
+          summary: z.string(),
         }),
       }),
     }),

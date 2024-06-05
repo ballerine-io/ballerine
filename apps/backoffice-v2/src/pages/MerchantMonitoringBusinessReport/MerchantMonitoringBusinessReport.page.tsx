@@ -1,4 +1,12 @@
-import React, { FunctionComponent, ReactNode, useCallback, useMemo } from 'react';
+import React, {
+  ComponentProps,
+  ElementType,
+  forwardRef,
+  FunctionComponent,
+  ReactNode,
+  useCallback,
+  useMemo,
+} from 'react';
 import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
 import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
@@ -24,7 +32,14 @@ import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/que
 import { getSeverityFromRiskScore } from '@/common/utils/get-severity-from-risk-score';
 import { severityToClassName, severityToTextClassName } from '@/common/constants';
 import { titleCase } from 'string-ts';
-import { Severity, TSeverity } from '@/common/types';
+import {
+  PolymorphicComponentProps,
+  PolymorphicComponentPropsWithRef,
+  PolymorphicRef,
+  Severity,
+  TObjectValues,
+  TSeverity,
+} from '@/common/types';
 import {
   Table,
   TableBody,
@@ -34,6 +49,42 @@ import {
   TableRow,
 } from '@/common/components/atoms/Table';
 import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
+import { BallerineImage } from '@/common/components/atoms/BallerineImage';
+import { isType } from '@ballerine/common';
+import { BallerineLink } from '@/common/components/atoms/BallerineLink/BallerineLink';
+import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+
+export const checkIsUrl = isType(z.string().url());
+
+export type TAnchorIfUrl = <TElement extends ElementType = 'span'>(
+  props: PolymorphicComponentPropsWithRef<TElement> & ComponentProps<'a'>,
+) => ReactNode;
+
+const AnchorIfUrl: TAnchorIfUrl = forwardRef(
+  <TElement extends ElementType = 'span'>(
+    { as, children, ...props }: PolymorphicComponentProps<TElement> & ComponentProps<'a'>,
+    ref?: PolymorphicRef<TElement>,
+  ) => {
+    const Component = as ?? 'span';
+
+    if (checkIsUrl(children)) {
+      return (
+        <BallerineLink ref={ref} {...props}>
+          {children}
+        </BallerineLink>
+      );
+    }
+
+    return (
+      <Component ref={ref} {...props}>
+        {children}
+      </Component>
+    );
+  },
+);
+
+// @ts-ignore
+AnchorIfUrl.displayName = 'AnchorIfUrl';
 
 const RiskIndicator = ({
   title,
@@ -330,14 +381,14 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
           </div>
         </CardContent>
       </Card>
-      <Card>
-        <CardHeader className={'pt-4 font-bold'}>Content Violations Summary</CardHeader>
-        <CardContent className={'flex flex-col space-y-4'}>
-          <div>
-            <h4 className={'mb-4 font-semibold'}>Findings</h4>
-          </div>
-        </CardContent>
-      </Card>
+      {/*<Card>*/}
+      {/*  <CardHeader className={'pt-4 font-bold'}>Content Violations Summary</CardHeader>*/}
+      {/*  <CardContent className={'flex flex-col space-y-4'}>*/}
+      {/*    <div>*/}
+      {/*      <h4 className={'mb-4 font-semibold'}>Findings</h4>*/}
+      {/*    </div>*/}
+      {/*  </CardContent>*/}
+      {/*</Card>*/}
     </div>
   );
 };
@@ -347,7 +398,8 @@ export const WebsiteCredibility: FunctionComponent<{
     label: string;
     severity: string;
   }>;
-}> = ({ violations }) => {
+  onlineReputationAnalysis: string;
+}> = ({ violations, onlineReputationAnalysis }) => {
   return (
     <div className={'space-y-8'}>
       <RiskIndicators violations={violations} />
@@ -384,43 +436,117 @@ export const AdsAndSocialMedia: FunctionComponent<{
     label: string;
     severity: string;
   }>;
-}> = () => {
-  const companyReputationAnalysis = [
-    '"Adolescentm.com is a fraudulent website that lures victims through deceptive promotions."',
-    '"Adolescentm.com has a safety score of 0 out of 100."',
-    '"Highly unusual and suspicious lack of accounts on Adolescentm.com."',
-  ];
-  const violations = [
-    {
-      label: 'IP Infringement',
-      severity: 'high',
-    },
-  ] as const satisfies ReadonlyArray<{
+  mediaPresence: Array<{
     label: string;
-    severity: string;
+    items: Array<{
+      label: string;
+      value: string;
+    }>;
   }>;
-
+  adsImages: Array<{
+    provider: string;
+    src: string;
+    link: string;
+  }>;
+  relatedAdsSummary: string;
+  relatedAdsImages: string[];
+}> = ({ violations, mediaPresence, adsImages, relatedAdsSummary, relatedAdsImages }) => {
   return (
     <div className={'space-y-8'}>
       <RiskIndicators violations={violations} />
       <Card>
-        <CardHeader className={'pt-4 font-bold'}>Company Reputation Analysis</CardHeader>
-        <CardContent>
-          <ol
-            className={ctw({
-              'ps-4': !!companyReputationAnalysis?.length,
-            })}
-          >
-            {!!companyReputationAnalysis?.length &&
-              companyReputationAnalysis.map(warning => (
-                <li key={warning} className={'list-decimal'}>
-                  {warning}
-                </li>
+        <CardHeader className={'pt-4 font-bold'}>Social Media Presence</CardHeader>
+        <CardContent className={'space-y-8'}>
+          <div className={'grid grid-cols-2 gap-8'}>
+            {!!mediaPresence?.length &&
+              mediaPresence?.map(({ label, items }) => (
+                <div key={label}>
+                  <TextWithNAFallback as={'h3'} className="mb-3 font-bold">
+                    {titleCase(label ?? '')}
+                  </TextWithNAFallback>
+                  <ul
+                    className={ctw('space-y-1', {
+                      'ps-4': !!items?.length,
+                    })}
+                  >
+                    {!!items?.length &&
+                      items.map(({ label, value }) => {
+                        return (
+                          <li key={label} className={'list-disc'}>
+                            <TextWithNAFallback className={'me-2 font-semibold'}>
+                              {titleCase(label ?? '')}:
+                            </TextWithNAFallback>
+                            <TextWithNAFallback as={AnchorIfUrl}>{value}</TextWithNAFallback>
+                          </li>
+                        );
+                      })}
+                    {!items?.length && <li>No media presence found.</li>}
+                  </ul>
+                </div>
               ))}
-            {!companyReputationAnalysis?.length && <li>No reputation analysis found.</li>}
-          </ol>
+          </div>
+          <div className={'grid grid-cols-4 gap-8'}>
+            {adsImages.map(({ provider, src, link }, index) => (
+              <AdImageWithLink
+                title={`${valueOrNA(titleCase(provider ?? ''))} Image`}
+                key={src}
+                src={src}
+                alt={`${provider} ad ${index + 1}`}
+                link={link}
+              />
+            ))}
+          </div>
         </CardContent>
       </Card>
+      <Card>
+        <CardHeader className={'pt-4 font-bold'}>Related Ads</CardHeader>
+        <CardContent className={'flex flex-col space-y-4'}>
+          <div>
+            <h4 className={'mb-4 font-bold'}>Ads Summary</h4>
+            <p>{relatedAdsSummary}</p>
+          </div>
+          <div className={'grid grid-cols-4 gap-8'}>
+            {relatedAdsImages.map((src, index) => (
+              <AdExample key={src} src={src} alt={`Ad Example ${index + 1}`} />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export const AdImageWithLink: FunctionComponent<{
+  title: string;
+  src: string;
+  alt: string;
+  link: string;
+}> = ({ title, src, alt, link }) => {
+  return (
+    <div>
+      <h4 className={'mb-4 font-semibold'}>{title}</h4>
+      <BallerineImage src={src} alt={alt} className={'mb-4'} />
+      <a
+        className={buttonVariants({
+          variant: 'link',
+          className: 'h-[unset] cursor-pointer !p-0 !text-[#14203D] underline decoration-[1.5px]',
+        })}
+        href={src}
+      >
+        {link}
+      </a>
+    </div>
+  );
+};
+
+export const AdExample: FunctionComponent<{
+  src: string;
+  alt: string;
+}> = ({ src, alt }) => {
+  return (
+    <div>
+      <h4 className={'mb-4 font-semibold'}>Ad Example</h4>
+      <BallerineImage src={src} alt={alt} />
     </div>
   );
 };
@@ -463,6 +589,11 @@ export const EcosystemAndTransactions: FunctionComponent<{
       header: 'Matched Name',
       cell: info => {
         const matchedName = info.getValue();
+        const matchedNameWithProtocol = `http://${matchedName}`;
+
+        if (checkIsUrl(matchedNameWithProtocol)) {
+          return <BallerineLink href={matchedNameWithProtocol}>{matchedName}</BallerineLink>;
+        }
 
         return <TextWithNAFallback>{matchedName}</TextWithNAFallback>;
       },
@@ -559,6 +690,50 @@ export const EcosystemAndTransactions: FunctionComponent<{
   );
 };
 
+const AdsProvider = {
+  FACEBOOK: 'FACEBOOK',
+  INSTAGRAM: 'INSTAGRAM',
+} as const;
+
+const AdsProviders = [AdsProvider.FACEBOOK, AdsProvider.INSTAGRAM] as const satisfies ReadonlyArray<
+  TObjectValues<typeof AdsProvider>
+>;
+
+type TAdsProvider = TObjectValues<typeof AdsProvider>;
+
+type TAdsProviders = TAdsProvider[];
+
+const booleanToYesNo = (value: boolean | null | undefined) => {
+  if (typeof value !== 'boolean') {
+    return value;
+  }
+
+  return value ? 'Yes' : 'No';
+};
+
+const AdsProviderAdapter = {
+  FACEBOOK: data => ({
+    page: data?.adsInformation?.link,
+    id: data?.adsInformation?.id,
+    creationDate: data?.adsInformation?.creationDate,
+    categories: data?.adsInformation?.pageInformation?.categories,
+    address: data?.adsInformation?.address,
+    phoneNumber: data?.adsInformation?.phoneNumber,
+    email: data?.adsInformation?.email,
+    likes: data?.adsInformation?.numberOfLikes,
+    followers: data?.adsInformation?.numberOfFollowers,
+  }),
+  INSTAGRAM: data => ({
+    page: data?.adsInformation?.link,
+    fullName: data?.adsInformation?.pageInformation?.fullName,
+    creationDate: data?.adsInformation?.creationDate,
+    businessCategoryName: data?.adsInformation?.pageInformation?.businessCategoryName,
+    biography: data?.adsInformation?.pageInformation?.biography,
+    followers: data?.adsInformation?.numberOfFollowers,
+    isBusinessAccount: booleanToYesNo(data?.adsInformation?.pageInformation?.isBusinessAccount),
+  }),
+} as const satisfies Record<TAdsProvider, (data: Record<string, any>) => Record<string, unknown>>;
+
 export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
   const { businessReportId } = useParams();
   const { data: businessReport } = useBusinessReportByIdQuery({
@@ -581,6 +756,40 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
           label: name,
           severity: riskLevel,
         }),
+      ),
+    [businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.adsAndSocialViolations],
+  );
+  const getLabel = ({ label, provider }: { label: string; provider: string }) => {
+    if (label === 'page') {
+      return `${provider} Page`;
+    }
+
+    return label;
+  };
+  const adsAndSocialMediaPresence = useMemo(
+    () =>
+      Object.entries(businessReport?.report?.data?.socialMedia?.ads ?? {}).map(
+        ([provider, data]) => {
+          if (!AdsProviders.includes(provider.toUpperCase() as TAdsProvider)) {
+            return;
+          }
+
+          const adapter =
+            AdsProviderAdapter[provider.toUpperCase() as keyof typeof AdsProviderAdapter];
+
+          const adaptedData = adapter(data);
+
+          return {
+            label: provider,
+            items: Object.entries(adaptedData).map(([label, value]) => ({
+              label: getLabel({
+                label,
+                provider,
+              }),
+              value,
+            })),
+          };
+        },
       ),
     [businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.adsAndSocialViolations],
   );
@@ -663,6 +872,17 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
       severity: string;
     }>;
   }>;
+  const adsImages = Object.entries(businessReport?.report?.data?.socialMedia?.ads ?? {})
+    .map(([provider, data]) => ({
+      provider,
+      src: data?.imageUrl,
+      link: data?.adsInformation?.link,
+    }))
+    .filter(Boolean);
+
+  const relatedAdsImages = Object.values(businessReport?.report?.data?.socialMedia?.ads ?? {}).map(
+    data => data?.pickedAd?.link,
+  );
 
   const tabs = [
     {
@@ -718,7 +938,15 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     {
       label: 'Ads and Social Media',
       value: 'adsAndSocialMedia',
-      content: <AdsAndSocialMedia violations={adsAndSocialMediaAnalysis ?? []} />,
+      content: (
+        <AdsAndSocialMedia
+          violations={adsAndSocialMediaAnalysis ?? []}
+          mediaPresence={adsAndSocialMediaPresence ?? []}
+          adsImages={adsImages}
+          relatedAdsImages={relatedAdsImages}
+          relatedAdsSummary={businessReport?.report?.data?.socialMedia?.relatedAds?.summary}
+        />
+      ),
     },
   ] as const satisfies ReadonlyArray<{
     label: string;
