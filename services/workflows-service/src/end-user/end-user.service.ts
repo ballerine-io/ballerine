@@ -3,7 +3,7 @@ import { EndUserRepository } from './end-user.repository';
 import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
 import type { TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { Business, EndUser, Prisma } from '@prisma/client';
+import { Business, BusinessPosition, EndUser, Prisma } from '@prisma/client';
 import { EndUserActiveMonitoringsSchema, EndUserAmlHitsSchema } from '@/end-user/end-user.schema';
 
 @Injectable()
@@ -33,9 +33,11 @@ export class EndUserService {
     {
       endUser,
       business,
+      position,
     }: {
       endUser: Omit<EndUserCreateDto, 'companyName' | 'correlationId'>;
       business: Prisma.BusinessUncheckedCreateWithoutEndUsersInput;
+      position?: BusinessPosition;
     },
     projectId: TProjectId,
     businessId?: string,
@@ -51,6 +53,16 @@ export class EndUserService {
             create: business,
           },
         },
+        ...(position
+          ? {
+              endUsersOnBusinesses: {
+                create: {
+                  businessId: businessId ?? '',
+                  position,
+                },
+              },
+            }
+          : {}),
         projectId,
       },
       include: {

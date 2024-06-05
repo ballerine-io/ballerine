@@ -69,6 +69,7 @@ import {
 } from '@nestjs/common';
 import {
   ApprovalState,
+  BusinessPosition,
   EndUser,
   Prisma,
   PrismaClient,
@@ -1533,6 +1534,7 @@ export class WorkflowService {
                 workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative,
               currentProjectId,
               entityId,
+              position: BusinessPosition.representative,
             });
 
             entities.push({
@@ -1667,12 +1669,14 @@ export class WorkflowService {
     currentProjectId,
     entityType,
     entityId,
+    position,
   }: {
     entityType: string;
     workflowRuntimeData: WorkflowRuntimeData;
     entityData?: { firstName: string; lastName: string };
     currentProjectId: string;
     entityId: string;
+    position?: BusinessPosition;
   }) {
     if (entityData && entityType === 'business')
       return (
@@ -1687,6 +1691,7 @@ export class WorkflowService {
               ...workflowRuntimeData.context.entity.data,
               projectId: currentProjectId,
             },
+            position,
           },
           currentProjectId,
           entityId,
