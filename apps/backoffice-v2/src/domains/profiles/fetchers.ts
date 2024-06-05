@@ -5,14 +5,14 @@ import { Method } from '../../common/enums';
 import qs from 'qs';
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
 import { env } from '@/common/env/env';
-import { KYCs, Roles } from '@/pages/Profiles/Individuals/components/ProfilesTable/columns';
+import { KYCs } from '@/pages/Profiles/Individuals/components/ProfilesTable/columns';
 
 export const IndividualProfileSchema = z.object({
   correlationId: z.string().nullable().optional(),
   createdAt: z.string(),
   name: z.string(),
   businesses: z.string().optional(),
-  role: z.enum(Roles),
+  roles: z.array(z.string()).optional(),
   kyc: z.enum(KYCs).optional(),
   isMonitored: z.boolean(),
   matches: z.string(),
