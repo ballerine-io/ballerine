@@ -87,6 +87,16 @@ export class CaseManagementController {
           createdAt: true,
           firstName: true,
           lastName: true,
+          endUsersOnBusinesses: {
+            select: {
+              position: true,
+              business: {
+                select: {
+                  companyName: true,
+                },
+              },
+            },
+          },
           businesses: {
             select: {
               companyName: true,
@@ -96,6 +106,13 @@ export class CaseManagementController {
           activeMonitorings: true,
           updatedAt: true,
         },
+        where: {
+          Counterparty: {
+            every: {
+              endUserId: null,
+            },
+          },
+        },
         take: searchQueryParams.page.size,
         skip: (searchQueryParams.page.number - 1) * searchQueryParams.page.size,
       },
@@ -103,6 +120,12 @@ export class CaseManagementController {
     );
     const typedEndUsers = endUsers as Array<
       (typeof endUsers)[number] & {
+        endUsersOnBusinesses: Array<{
+          position: string[];
+          business: {
+            companyName: string;
+          };
+        }>;
         businesses: Array<{
           companyName: string;
         }>;
@@ -120,7 +143,8 @@ export class CaseManagementController {
       Exclude<TStateTag, 'failure' | 'flagged' | 'resolved' | 'dismissed'>,
       'APPROVED' | 'REJECTED' | 'REVISIONS' | 'PROCESSED' | 'PENDING'
     >;
-    const formattedEndUsers = await Promise.all(
+
+    return await Promise.all(
       typedEndUsers.map(async endUser => {
         const workflowRuntimeData = await this.workflowService.getByEntityId(endUser.id, projectId);
         const tag = (workflowRuntimeData?.tags as string[])?.find(
@@ -138,12 +162,20 @@ export class CaseManagementController {
         const isMonitored = checkIsMonitored();
         const matches = getMatches();
 
+        const businesses = endUser.businesses?.length
+          ? endUser.businesses.map(business => business.companyName).join(', ')
+          : endUser.endUsersOnBusinesses
+              ?.map(endUserOnBusiness => endUserOnBusiness.business.companyName)
+              .join(', ');
+
         return {
           correlationId: endUser.correlationId,
           createdAt: endUser.createdAt,
           name: `${endUser.firstName} ${endUser.lastName}`,
-          businesses: endUser.businesses?.map(business => business.companyName).join(', '),
-          role: 'UBO',
+          businesses,
+          roles: endUser.endUsersOnBusinesses?.flatMap(
+            endUserOnBusiness => endUserOnBusiness.position,
+          ),
           kyc: tagToKyc[tag as keyof typeof tagToKyc],
           isMonitored,
           matches,
@@ -152,7 +184,5 @@ export class CaseManagementController {
         };
       }),
     );
-
-    return formattedEndUsers;
   }
 }
