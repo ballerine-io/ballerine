@@ -27,6 +27,7 @@ import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { ListIndividualsProfilesSchema } from '@/case-management/dtos/list-individuals-profiles.dto';
 import { z } from 'zod';
 import { EndUserAmlHitsSchema } from '@/end-user/end-user.schema';
+import { Business, EndUsersOnBusinesses } from '@prisma/client';
 
 @Controller('case-management')
 @ApiExcludeController()
@@ -118,19 +119,17 @@ export class CaseManagementController {
       },
       [projectId],
     );
+
     const typedEndUsers = endUsers as Array<
       (typeof endUsers)[number] & {
         endUsersOnBusinesses: Array<{
-          position: string[];
-          business: {
-            companyName: string;
-          };
+          position: EndUsersOnBusinesses['position'];
+          business: Pick<Business, 'companyName'>;
         }>;
-        businesses: Array<{
-          companyName: string;
-        }>;
+        businesses: Array<Pick<Business, 'companyName'>>;
       }
     >;
+
     const tagToKyc = {
       [StateTag.COLLECTION_FLOW]: 'PENDING',
       [StateTag.APPROVED]: 'APPROVED',
