@@ -12,7 +12,7 @@ import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { Checkbox_ } from '@/common/components/atoms/Checkbox_/Checkbox_';
 import { Combobox } from '@/common/components/organisms/Combobox/Combobox';
-import { ChevronDown, ChevronLeft, HelpCircle } from 'lucide-react';
+import { ChevronDown, ChevronLeft, HelpCircle, Loader2 } from 'lucide-react';
 import { useMerchantMonitoringCreateBusinessReportPageLogic } from '@/pages/MerchantMonitoringCreateCheck/hooks/useMerchantMonitoringCreateBusinessReportPageLogic/useMerchantMonitoringCreateBusinessReportPageLogic';
 import { RiskDropdown } from '@/pages/MerchantMonitoringCreateCheck/components/RiskDropdown/RiskDropdown';
 import { SwitchesList } from '@/pages/MerchantMonitoringCreateCheck/components/SwitchesList/SwitchesList';
@@ -33,6 +33,7 @@ export const MerchantMonitoringCreateCheckPage: FunctionComponent = () => {
     checksConfiguration,
     riskLabels,
     industries,
+    isLoadingCustomer,
   } = useMerchantMonitoringCreateBusinessReportPageLogic();
 
   return (
@@ -206,7 +207,13 @@ export const MerchantMonitoringCreateCheckPage: FunctionComponent = () => {
                   </div>
                 </div>
               )}
-              <Button type="submit" size={`wide`}>
+              <Button
+                type="submit"
+                size={`wide`}
+                aria-disabled={isLoadingCustomer}
+                className={'aria-disabled:pointer-events-none aria-disabled:opacity-50'}
+              >
+                {isLoadingCustomer && <Loader2 className={'mr-2 h-4 w-4 animate-spin'} />}
                 Start Analyzing
               </Button>
             </form>

@@ -8,6 +8,7 @@ import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { useCallback, useMemo } from 'react';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { MerchantMonitoringCreateBusinessReportPageSearchSchema } from '@/pages/MerchantMonitoringCreateCheck/hooks/useMerchantMonitoringCreateBusinessReportPageLogic/merchant-monitoring-create-business-report-page-search-schema';
+import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/userCustomerQuery';
 
 export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
   const form = useForm({
@@ -19,6 +20,7 @@ export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
     },
     resolver: zodResolver(CreateBusinessReportSchema),
   });
+  const { isLoading: isLoadingCustomer } = useCustomerQuery();
   const { mutate: mutateCreateBusinessReport } = useCreateBusinessReportMutation({
     reportType: 'MERCHANT_REPORT_T1',
     onSuccess: () => {
@@ -174,5 +176,6 @@ export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
     checksConfiguration: disabledChecksConfiguration,
     riskLabels,
     industries,
+    isLoadingCustomer,
   };
 };
