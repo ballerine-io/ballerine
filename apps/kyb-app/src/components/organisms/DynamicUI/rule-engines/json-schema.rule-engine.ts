@@ -7,6 +7,7 @@ import { AnyObject } from '@ballerine/ui';
 import ajvErrors from 'ajv-errors';
 import addFormats, { FormatName } from 'ajv-formats';
 import Ajv, { ErrorObject } from 'ajv/dist/2019';
+import uniqBy from 'lodash/uniqBy';
 
 export class JsonSchemaRuleEngine implements RuleEngine {
   static ALLOWED_FORMATS: FormatName[] = ['email', 'uri', 'date', 'date-time'];
@@ -74,7 +75,10 @@ export class JsonSchemaRuleEngine implements RuleEngine {
       return fieldErrors;
     });
 
-    return result?.flat()?.filter(result => Boolean(result.message));
+    return uniqBy(
+      result?.flat()?.filter(result => Boolean(result.message)),
+      'message',
+    );
   }
 
   private buildFieldDestination(
