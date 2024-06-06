@@ -1,6 +1,6 @@
+import { IsNullable } from '@/common/decorators/is-nullable.decorator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsOptional, IsString } from 'class-validator';
-import { IsNullable } from '@/common/decorators/is-nullable.decorator';
 
 export class DocumentDecisionUpdateInput {
   @ApiProperty({
@@ -18,4 +18,12 @@ export class DocumentDecisionUpdateInput {
   @IsOptional()
   @IsString()
   reason?: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
+  @IsString()
+  comment?: string;
 }

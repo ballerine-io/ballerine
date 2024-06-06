@@ -1,10 +1,10 @@
 import { FunctionComponent, PropsWithChildren } from 'react';
 import { Actions } from './Case.Actions';
-import { Documents } from './Case.Documents';
-import { Info } from './Case.Info';
 import { Content } from './Case.Content';
-import { ICaseChildren } from './interfaces';
+import { Documents } from './Case.Documents';
 import { FaceMatch } from './Case.FaceMatch';
+import { Info } from './Case.Info';
+import { ICaseChildren } from './interfaces';
 
 /**
  * @description A component which handles a single case's reject/approve mutation, and displays the entity's information and documents.

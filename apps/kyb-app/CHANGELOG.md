@@ -1,10 +1,40 @@
 # kyb-app
 
+## 0.3.13
+
+### Patch Changes
+
+- @ballerine/workflow-browser-sdk@0.6.13
+
+## 0.3.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.7
+  - @ballerine/ui@0.5.3
+  - @ballerine/workflow-browser-sdk@0.6.12
+
+## 0.3.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/workflow-browser-sdk@0.6.11
+
+## 0.3.10
+
+### Patch Changes
+
+- @ballerine/workflow-browser-sdk@0.6.10
+
 ## 0.3.9
 
 ### Patch Changes
 
 - Updated dependencies
+  - @ballerine/common@0.9.6
+  - @ballerine/workflow-browser-sdk@0.6.9
   - @ballerine/blocks@0.2.3
 
 ## 0.3.8
