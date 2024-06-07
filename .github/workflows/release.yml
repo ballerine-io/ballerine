@@ -1,6 +1,12 @@
 name: Release
 
 on:
+  workflow_call:
+    inputs:
+      run-tests:
+        description: 'Run tests'
+        required: true
+        type: boolean
   push:
     branches:
       - dev
