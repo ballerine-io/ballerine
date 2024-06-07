@@ -1,15 +1,10 @@
 name: Release
 
 on:
-  workflow_call:
-    inputs:
-      run-tests:
-        description: 'Run tests'
-        required: true
-        type: boolean
   push:
     branches:
       - dev
+  workflow_call:
       
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
