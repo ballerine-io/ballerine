@@ -69,6 +69,8 @@ import {
 } from '@nestjs/common';
 import {
   ApprovalState,
+  BusinessPosition,
+  EndUser,
   Prisma,
   PrismaClient,
   UiDefinitionContext,
@@ -83,7 +85,7 @@ import mime from 'mime';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
-import { WorkflowEventInput } from './dtos/workflow-event-input';
+import { WorkflowEventInputSchema } from './dtos/workflow-event-input';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import {
   ListRuntimeDataResult,
@@ -94,6 +96,9 @@ import {
 import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-document';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
+import { Static } from '@sinclair/typebox';
+import dayjs from 'dayjs';
+import { entitiesUpdate } from './utils/entities-update';
 
 type TEntityId = string;
 
@@ -131,7 +136,7 @@ export class WorkflowService {
     private readonly prismaService: PrismaService,
   ) {}
 
-  async createWorkflowDefinition(data: WorkflowDefinitionCreateDto, projectId: TProjectId) {
+  async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
     const select = {
       id: true,
       name: true,
@@ -142,14 +147,31 @@ export class WorkflowService {
       extensions: true,
       persistStates: true,
       submitStates: true,
-      parentRuntimeDataId: true,
     };
 
+    const createWorkflowDefinitionPayload = {
+      data: {
+        ...data,
+        definition: data.definition as InputJsonValue,
+        contextSchema: data.contextSchema as InputJsonValue,
+        documentsSchema: data.documentsSchema as InputJsonValue,
+        config: data.config as InputJsonValue,
+        supportedPlatforms: data.supportedPlatforms as InputJsonValue,
+        extensions: data.extensions as InputJsonValue,
+        backend: data.backend as InputJsonValue,
+        persistStates: data.persistStates as InputJsonValue,
+        submitStates: data.submitStates as InputJsonValue,
+      },
+      select,
+    } satisfies Parameters<WorkflowDefinitionRepository['create']>['0'];
+
     if (data.isPublic) {
-      return await this.workflowDefinitionRepository.createUnscoped({ data, select });
+      return await this.workflowDefinitionRepository.createUnscoped(
+        createWorkflowDefinitionPayload,
+      );
     }
 
-    return await this.workflowDefinitionRepository.create({ data, select });
+    return await this.workflowDefinitionRepository.create(createWorkflowDefinitionPayload);
   }
 
   async cloneWorkflowDefinition(data: WorkflowDefinitionCloneDto, projectId: string) {
@@ -780,6 +802,7 @@ export class WorkflowService {
     decision: {
       status: 'approve' | 'reject' | 'revision' | 'revised' | null;
       reason?: string;
+      comment?: string;
     },
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
@@ -810,6 +833,7 @@ export class WorkflowService {
           return {
             revisionReason: null,
             rejectionReason: null,
+            comment: decision.comment,
           };
         }
 
@@ -817,6 +841,7 @@ export class WorkflowService {
           return {
             revisionReason: null,
             rejectionReason: decision?.reason,
+            comment: decision.comment,
           };
         }
 
@@ -824,6 +849,7 @@ export class WorkflowService {
           return {
             revisionReason: decision?.reason,
             rejectionReason: null,
+            comment: decision.comment,
           };
         }
 
@@ -1508,6 +1534,7 @@ export class WorkflowService {
                 workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative,
               currentProjectId,
               entityId,
+              position: BusinessPosition.representative,
             });
 
             entities.push({
@@ -1642,12 +1669,14 @@ export class WorkflowService {
     currentProjectId,
     entityType,
     entityId,
+    position,
   }: {
     entityType: string;
     workflowRuntimeData: WorkflowRuntimeData;
     entityData?: { firstName: string; lastName: string };
     currentProjectId: string;
     entityId: string;
+    position?: BusinessPosition;
   }) {
     if (entityData && entityType === 'business')
       return (
@@ -1662,6 +1691,7 @@ export class WorkflowService {
               ...workflowRuntimeData.context.entity.data,
               projectId: currentProjectId,
             },
+            position,
           },
           currentProjectId,
           entityId,
@@ -1751,12 +1781,16 @@ export class WorkflowService {
   ) {
     const data = context.entity.data as Record<PropertyKey, unknown>;
 
+    const correlationId =
+      typeof entity.id === 'string' && entity.id.length > 0 ? entity.id : undefined;
+
     const { id } = await this.endUserService.create({
       data: {
-        correlationId: entity.id,
+        correlationId,
         email: data.email,
         firstName: data.firstName,
         lastName: data.lastName,
+        dateOfBirth: data.dateOfBirth ? dayjs(data.dateOfBirth as string).toDate() : undefined,
         nationalId: data.nationalId,
         additionalInfo: data.additionalInfo,
         project: { connect: { id: projectId } },
@@ -1772,9 +1806,12 @@ export class WorkflowService {
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
   ) {
+    const correlationId =
+      typeof entity.id === 'string' && entity.id.length > 0 ? entity.id : undefined;
+
     const { id } = await this.businessService.create({
       data: {
-        correlationId: entity.id,
+        correlationId,
         ...(context.entity.data as object),
         project: { connect: { id: currentProjectId } },
       } as Prisma.BusinessCreateInput,
@@ -1791,6 +1828,8 @@ export class WorkflowService {
   ): Promise<TEntityId | null> {
     if (entity.ballerineEntityId) {
       return entity.ballerineEntityId as TEntityId;
+    } else if ('data' in entity && isObject(entity.data) && entity.data.ballerineEntityId) {
+      return entity.data.ballerineEntityId as TEntityId;
     } else if (!entity.id) {
       return null;
     } else {
@@ -1839,7 +1878,7 @@ export class WorkflowService {
   }
 
   async event(
-    { name: type, id, payload }: WorkflowEventInput & IObjectWithId,
+    { name: type, id, payload }: Static<typeof WorkflowEventInputSchema> & IObjectWithId,
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
     transaction?: PrismaTransaction,
@@ -1852,12 +1891,14 @@ export class WorkflowService {
 
     return await beginTransactionIfNotExist(async transaction => {
       this.logger.log('Workflow event received', { id, type });
+
       const workflowRuntimeData = await this.workflowRuntimeDataRepository.findByIdAndLock(
         id,
         {},
         projectIds,
         transaction,
       );
+
       const workflowDefinition = await this.workflowDefinitionRepository.findById(
         workflowRuntimeData.workflowDefinitionId,
         {},
@@ -1906,6 +1947,30 @@ export class WorkflowService {
         },
       });
 
+      service.subscribe('ENTITIES_UPDATE', async ({ payload }) => {
+        if (
+          !payload?.ubos ||
+          !payload?.directors ||
+          !Array.isArray(payload.ubos) ||
+          !Array.isArray(payload.directors)
+        ) {
+          return;
+        }
+
+        const typedPayload = payload as {
+          ubos: Array<Partial<EndUser>>;
+          directors: Array<Partial<EndUser>>;
+        };
+
+        await entitiesUpdate({
+          endUserService: this.endUserService,
+          projectId: currentProjectId,
+          businessId: workflowRuntimeData.businessId,
+          sendEvent: e => service.sendEvent(e),
+          payload: typedPayload,
+        });
+      });
+
       if (!service.getSnapshot().nextEvents.includes(type)) {
         throw new BadRequestException(
           `Event ${type} does not exist for workflow ${workflowDefinition.id}'s state: ${workflowRuntimeData.state}`,
@@ -1919,9 +1984,10 @@ export class WorkflowService {
 
       const snapshot = service.getSnapshot();
       const currentState = snapshot.value;
-      const context = snapshot.machine.context;
+      const context = snapshot.machine?.context;
       // TODO: Refactor to use snapshot.done instead
-      const isFinal = snapshot.machine.states[currentState].type === 'final';
+      // @ts-ignore
+      const isFinal = snapshot.machine?.states[currentState].type === 'final';
       const entityType = aliasIndividualAsEndUser(context?.entity?.type);
       const entityId = workflowRuntimeData[`${entityType}Id`];
 
@@ -1935,6 +2001,7 @@ export class WorkflowService {
         workflowRuntimeData.id,
         {
           context,
+          // @ts-ignore
           state: currentState,
           tags: Array.from(snapshot.tags) as unknown as WorkflowDefinitionUpdateInput['tags'],
           status: isFinal ? 'completed' : workflowRuntimeData.status,
@@ -1951,6 +2018,7 @@ export class WorkflowService {
           projectIds,
           currentProjectId,
           transaction,
+          // @ts-ignore
           currentState,
         );
       }

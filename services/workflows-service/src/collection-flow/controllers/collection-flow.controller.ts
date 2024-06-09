@@ -1,24 +1,22 @@
-import * as common from '@nestjs/common';
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
-import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
-import { UnsupportedFlowTypeException } from '@/collection-flow/exceptions/unsupported-flow-type.exception';
-import { UpdateFlowDto, UpdateFlowLanguageDto } from '@/collection-flow/dto/update-flow-input.dto';
-import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
-import { UpdateConfigurationDto } from '@/collection-flow/dto/update-configuration-input.dto';
-import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import type { TProjectId, TProjectIds } from '@/types';
-import { CurrentProject } from '@/common/decorators/current-project.decorator';
-import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
-import { Public } from '@/common/decorators/public.decorator';
-import { type ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
-import { WorkflowService } from '@/workflow/workflow.service';
 import { FinishFlowDto } from '@/collection-flow/dto/finish-flow.dto';
 import { GetFlowConfigurationInputDto } from '@/collection-flow/dto/get-flow-configuration-input.dto';
+import { UpdateConfigurationDto } from '@/collection-flow/dto/update-configuration-input.dto';
 import { UpdateContextInputDto } from '@/collection-flow/dto/update-context-input.dto';
+import { UpdateFlowDto, UpdateFlowLanguageDto } from '@/collection-flow/dto/update-flow-input.dto';
+import { UnsupportedFlowTypeException } from '@/collection-flow/exceptions/unsupported-flow-type.exception';
+import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
+import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { TokenScope, type ITokenScope } from '@/common/decorators/token-scope.decorator';
+import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
+import type { TProjectId, TProjectIds } from '@/types';
+import { WorkflowService } from '@/workflow/workflow.service';
+import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
+import * as common from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
-import { BUILT_IN_EVENT, ARRAY_MERGE_OPTION } from '@ballerine/workflow-core';
 
-@Public()
 @UseTokenAuthGuard()
 @ApiExcludeController()
 @common.Controller('collection-flow')
