@@ -70,10 +70,10 @@ importers:
         specifier: ^0.5.3
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.12
+        specifier: 0.6.13
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.12
+        specifier: 0.6.13
         version: link:../../sdks/workflow-node-sdk
       '@fontsource/inter':
         specifier: ^4.5.15
@@ -398,7 +398,7 @@ importers:
         specifier: 0.5.3
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.12
+        specifier: 0.6.13
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -826,7 +826,7 @@ importers:
         specifier: 0.9.7
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.12
+        specifier: 0.6.13
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -2019,7 +2019,7 @@ importers:
         specifier: 0.9.7
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.12
+        specifier: 0.6.13
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -2158,7 +2158,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.6.12
+        specifier: 0.6.13
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2403,10 +2403,10 @@ importers:
         specifier: 0.9.7
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.12
+        specifier: 0.6.13
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.12
+        specifier: 0.6.13
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -2481,8 +2481,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(axios@1.6.8)
       ballerine-nestjs-typebox:
-        specifier: 3.0.1-next.8
-        version: 3.0.1-next.8(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.4)(ajv@8.12.0)(fast-uri@2.3.0)(rxjs@7.8.1)
+        specifier: 3.0.2-next.8
+        version: 3.0.2-next.8(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.4)(ajv@8.12.0)(rxjs@7.8.1)
       base64-stream:
         specifier: ^1.0.0
         version: 1.0.0
@@ -18141,15 +18141,14 @@ packages:
       - ts-node
     dev: false
 
-  /ballerine-nestjs-typebox@3.0.1-next.8(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.4)(ajv@8.12.0)(fast-uri@2.3.0)(rxjs@7.8.1):
-    resolution: {integrity: sha512-rYkkAdq69t5j0xFXQPAXsDmQqQjMeY4Mf2TIbzKMjcAVnxM/2XNMlhJYiK2wx3RgbOXgGnRO7iU6vok/YlwqwA==}
+  /ballerine-nestjs-typebox@3.0.2-next.8(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.4)(ajv@8.12.0)(rxjs@7.8.1):
+    resolution: {integrity: sha512-KZkB/KPjAdgZIjrkNirzN2dhXmnoqCI3PKygTI61AGH7+CCQy400+ykUV/3NuMls0sbdyWh6c2U/li9oLjXHyQ==}
     peerDependencies:
       '@nestjs/common': ^9.0.1 || ^10.0.3
       '@nestjs/core': ^9.0.1 || ^10.0.3
       '@nestjs/swagger': ^6.1.1 || ^7.0.11
       '@sinclair/typebox': ^0.32.4
       ajv: ^8.14.0
-      fast-uri: ^2.3.0
       rxjs: ^7.5.6
     dependencies:
       '@nestjs/common': 9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)

@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflows-service",
   "private": false,
-  "version": "0.7.11",
+  "version": "0.7.12",
   "description": "workflow-service",
   "scripts": {
     "spellcheck": "cspell \"*\"",
@@ -43,13 +43,13 @@
     "db:data-migration:import": "tsx ./src/data-migration/scripts/import"
   },
   "dependencies": {
-    "ballerine-nestjs-typebox": "3.0.1-next.8",
+    "ballerine-nestjs-typebox": "3.0.2-next.8",
     "@aws-sdk/client-s3": "3.347.1",
     "@aws-sdk/lib-storage": "3.347.1",
     "@aws-sdk/s3-request-presigner": "3.347.1",
     "@ballerine/common": "0.9.7",
-    "@ballerine/workflow-core": "0.6.12",
-    "@ballerine/workflow-node-sdk": "0.6.12",
+    "@ballerine/workflow-core": "0.6.13",
+    "@ballerine/workflow-node-sdk": "0.6.13",
     "@faker-js/faker": "^7.6.0",
     "@nestjs/axios": "^2.0.0",
     "@nestjs/common": "^9.3.12",
