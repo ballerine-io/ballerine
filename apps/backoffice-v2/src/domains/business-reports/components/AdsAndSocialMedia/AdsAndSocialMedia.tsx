@@ -65,6 +65,13 @@ export const AdsAndSocialMedia: FunctionComponent<{
                   </ul>
                 </div>
               ))}
+            {!mediaPresence?.length && (
+              <div>
+                <ul>
+                  <li>No media presence found.</li>
+                </ul>
+              </div>
+            )}
           </div>
           <div className={'grid grid-cols-4 gap-8'}>
             {adsImages.map(({ provider, src, link }, index) => (

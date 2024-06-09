@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactNode, useCallback, useMemo } from 'react';
+import React, { FunctionComponent, ReactNode, useCallback } from 'react';
 import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
 import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
@@ -19,10 +19,7 @@ import { WebsiteLineOfBusiness } from '@/domains/business-reports/components/Web
 import { WebsitesCompany } from '@/domains/business-reports/components/WebsitesCompany/WebsitesCompany';
 import { WebsiteCredibility } from '@/domains/business-reports/components/WebsiteCredibility/WebsiteCredibility';
 import { EcosystemAndTransactions } from '@/domains/business-reports/components/EcosystemAndTransactions/EcosystemAndTransactions';
-import { AdsProviders } from '@/domains/business-reports/constants';
-import { TAdsProvider } from '@/domains/business-reports/types';
 import { reportAdapter } from '@/domains/business-reports/adapters/report-adapter/report-adapter';
-import { adsProviderAdapter } from '@/domains/business-reports/adapters/ads-provider-adapter/ads-provider-adapter';
 import { AdsAndSocialMedia } from '@/domains/business-reports/components/AdsAndSocialMedia/AdsAndSocialMedia';
 
 export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
@@ -34,105 +31,27 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     reportAdapter[`v${businessReport?.report?.version}` as keyof typeof reportAdapter] ??
     reportAdapter.DEFAULT;
   const {
-    companyNameViolations,
-    adsAndSocialViolations,
-    ads,
-    lineOfBusinessViolations,
-    ecosystemViolations,
-    ecosystemDomains,
-    tldViolations,
+    websitesCompanyAnalysis,
+    websiteCredibilityAnalysis,
+    adsAndSocialMediaAnalysis,
+    adsAndSocialMediaPresence,
+    websiteLineOfBusinessAnalysis,
+    ecosystemAndTransactionsAnalysis,
     summary,
     riskScore,
     recommendations,
     riskLevels,
-    scamOrFraudIndicators,
+    companyReputationAnalysis,
     relatedAdsSummary,
     lineOfBusinessDescription,
+    onlineReputationAnalysis,
+    pricingAnalysis,
+    websiteStructureAndContentEvaluation,
+    trafficAnalysis,
+    ecosystemAndTransactionsMatches,
+    adsImages,
+    relatedAdsImages,
   } = adapter(businessReport ?? {});
-  const websitesCompanyAnalysis = useMemo(
-    () =>
-      companyNameViolations?.map(({ name, riskLevel }) => ({
-        label: name,
-        severity: riskLevel,
-      })),
-    [companyNameViolations],
-  );
-  const adsAndSocialMediaAnalysis = useMemo(
-    () =>
-      adsAndSocialViolations?.map(({ name, riskLevel }) => ({
-        label: name,
-        severity: riskLevel,
-      })),
-    [adsAndSocialViolations],
-  );
-  const getLabel = ({ label, provider }: { label: string; provider: string }) => {
-    if (label === 'page') {
-      return `${provider} Page`;
-    }
-
-    return label;
-  };
-  const adsAndSocialMediaPresence = useMemo(
-    () =>
-      Object.entries(ads ?? {}).map(([provider, data]) => {
-        if (!AdsProviders.includes(provider.toUpperCase() as TAdsProvider)) {
-          return;
-        }
-
-        const adapter = adsProviderAdapter[provider as keyof typeof adsProviderAdapter];
-
-        const adaptedData = adapter(data);
-
-        return {
-          label: provider,
-          items: Object.entries(adaptedData).map(([label, value]) => ({
-            label: getLabel({
-              label,
-              provider,
-            }),
-            value,
-          })),
-        };
-      }),
-    [adsAndSocialViolations],
-  );
-  const websiteLineOfBusinessAnalysis = useMemo(
-    () =>
-      lineOfBusinessViolations?.map(({ name, riskLevel }) => ({
-        label: name,
-        severity: riskLevel,
-      })),
-    [lineOfBusinessViolations],
-  );
-  const ecosystemAndTransactionsAnalysis = useMemo(
-    () =>
-      ecosystemViolations?.map(({ name, riskLevel }) => ({
-        label: name,
-        severity: riskLevel,
-      })),
-    [ecosystemViolations],
-  );
-  const ecosystemAndTransactionsMatches = useMemo(
-    () =>
-      ecosystemDomains?.map(({ domain, relatedNode, relatedNodeType, indicator }) => ({
-        matchedName: domain,
-        relatedNode,
-        relatedNodeType: relatedNodeType,
-        indicators: {
-          label: indicator?.name,
-          severity: indicator?.riskLevel,
-        },
-      })),
-    [ecosystemDomains],
-  );
-  const websiteCredibilityAnalysis = useMemo(
-    () =>
-      tldViolations?.map(({ name, riskLevel }) => ({
-        label: name,
-        severity: riskLevel,
-      })),
-    [tldViolations],
-  );
   const riskIndicators = [
     {
       title: "Website's Company Analysis",
@@ -167,15 +86,6 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
       severity: string;
     }>;
   }>;
-  const adsImages = Object.entries(ads ?? {})
-    .map(([provider, data]) => ({
-      provider,
-      src: data?.imageUrl,
-      link: data?.adsInformation?.link,
-    }))
-    .filter(Boolean);
-
-  const relatedAdsImages = Object.values(ads ?? {}).map(data => data?.pickedAd?.link);
 
   const tabs = [
     {
@@ -196,7 +106,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
       value: 'websitesCompany',
       content: (
         <WebsitesCompany
-          companyReputationAnalysis={scamOrFraudIndicators ?? []}
+          companyReputationAnalysis={companyReputationAnalysis ?? []}
           violations={websitesCompanyAnalysis ?? []}
         />
       ),
@@ -214,7 +124,15 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     {
       label: 'Website Credibility',
       value: 'websiteCredibility',
-      content: <WebsiteCredibility violations={websiteCredibilityAnalysis ?? []} />,
+      content: (
+        <WebsiteCredibility
+          violations={websiteCredibilityAnalysis ?? []}
+          onlineReputationAnalysis={onlineReputationAnalysis ?? []}
+          pricingAnalysis={pricingAnalysis}
+          websiteStructureAndContentEvaluation={websiteStructureAndContentEvaluation}
+          trafficAnalysis={trafficAnalysis}
+        />
+      ),
     },
     {
       label: 'Ecosystem and Transactions',
