@@ -93,6 +93,10 @@ async function createCustomer(
       faviconImageUri,
       country: 'GB',
       language: 'en',
+      config: {
+        isMerchantMonitoringEnabled: true,
+        isExample: true,
+      },
     },
   });
 }

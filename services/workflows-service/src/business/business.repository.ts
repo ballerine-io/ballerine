@@ -53,10 +53,20 @@ export class BusinessRepository {
     );
   }
 
+  async findByCorrelationIdUnscoped<T extends Omit<Prisma.BusinessFindFirstOrThrowArgs, 'where'>>(
+    correlationId: string,
+    args: Prisma.SelectSubset<T, Omit<Prisma.BusinessFindFirstOrThrowArgs, 'where'>>,
+  ) {
+    return await this.prisma.business.findFirstOrThrow({
+      where: { correlationId },
+      ...args,
+    });
+  }
+
   async findByCorrelationId<T extends Omit<Prisma.BusinessFindFirstArgs, 'where'>>(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.BusinessFindFirstArgs, 'where'>>,
     projectIds: TProjectIds,
+    args?: Prisma.SelectSubset<T, Omit<Prisma.BusinessFindFirstArgs, 'where'>>,
   ) {
     return await this.prisma.business.findFirst(
       this.scopeService.scopeFindFirst(

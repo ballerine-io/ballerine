@@ -26,14 +26,24 @@ const createFilterSchema = (authenticatedUserId: string) =>
       caseStatus: [],
     });
 
+export const MonitoringReportsTabs = [
+  'websitesCompany',
+  'websiteLineOfBusiness',
+  'websiteCredibility',
+  'ecosystemAndTransactions',
+  'adsAndSocialMedia',
+] as const;
+
 export const IndividualsSearchSchema = (authenticatedUserId: string) =>
   SearchSchema.extend({
     sortBy: z.enum(['firstName', 'lastName', 'email', 'createdAt']).catch('createdAt'),
     filter: createFilterSchema(authenticatedUserId),
+    activeTab: z.enum(MonitoringReportsTabs).catch(MonitoringReportsTabs[0]).optional(),
   });
 
 export const BusinessesSearchSchema = (authenticatedUserId: string) =>
   SearchSchema.extend({
     sortBy: z.enum(['createdAt', 'companyName']).catch('createdAt'),
     filter: createFilterSchema(authenticatedUserId),
+    activeTab: z.enum(MonitoringReportsTabs).catch(MonitoringReportsTabs[0]).optional(),
   });
