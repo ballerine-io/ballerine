@@ -7,11 +7,11 @@ import React from 'react';
 
 export const RiskIndicator = ({
   title,
-  to,
+  search,
   violations,
 }: {
   title: string;
-  to: string;
+  search: string;
   violations: Array<{
     label: string;
     severity: string;
@@ -26,7 +26,9 @@ export const RiskIndicator = ({
             variant: 'link',
             className: 'h-[unset] cursor-pointer !p-0 !text-blue-500',
           })}
-          to={to}
+          to={{
+            search,
+          }}
         >
           View
         </Link>

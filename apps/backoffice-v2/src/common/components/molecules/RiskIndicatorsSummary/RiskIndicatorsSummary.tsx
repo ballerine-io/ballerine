@@ -7,7 +7,7 @@ import { RiskIndicator } from '@/common/components/molecules/RiskIndicator/RiskI
 export const RiskIndicatorsSummary: FunctionComponent<{
   riskIndicators: Array<{
     title: string;
-    to: string;
+    search: string;
     violations: Array<{
       label: string;
       severity: string;
@@ -22,7 +22,7 @@ export const RiskIndicatorsSummary: FunctionComponent<{
           <RiskIndicator
             key={riskIndicator.title}
             title={riskIndicator.title}
-            to={riskIndicator.to}
+            search={riskIndicator.search}
             violations={riskIndicator.violations}
           />
         ))}

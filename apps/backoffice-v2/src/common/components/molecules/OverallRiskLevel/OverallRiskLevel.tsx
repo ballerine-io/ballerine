@@ -41,6 +41,10 @@ export const OverallRiskLevel: FunctionComponent<{
                   (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
                 ]]: riskScore || riskScore === 0,
               },
+              {
+                // Tailwind does not generate the class when used in a map
+                'text-orange-300': severity === Severity.MEDIUM,
+              },
               'text-4xl font-bold',
             )}
             checkFalsy={false}
@@ -53,6 +57,10 @@ export const OverallRiskLevel: FunctionComponent<{
                 severityToClassName[
                   (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
                 ],
+                {
+                  // Tailwind does not generate the class when used in a map
+                  'bg-orange-100': severity === Severity.MEDIUM,
+                },
                 'min-w-20 rounded-lg font-bold',
               )}
             >

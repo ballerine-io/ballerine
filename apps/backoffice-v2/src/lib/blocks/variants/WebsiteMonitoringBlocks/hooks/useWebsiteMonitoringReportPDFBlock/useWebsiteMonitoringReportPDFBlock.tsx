@@ -1,17 +1,21 @@
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
+import { useStorageFileByIdQuery } from '@/domains/storage/hooks/queries/useStorageFileByIdQuery/useStorageFileByIdQuery';
 import { useLatestBusinessReportQuery } from '@/domains/business-reports/hooks/queries/useLatestBusinessReportQuery/useLatestBusinessReportQuery';
-import { WebsiteMonitoringBusinessReportTab } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/WebsiteMonitoringBusinessReportTab';
 
-export const useWebsiteMonitoringReportBlock = () => {
+export const useWebsiteMonitoringReportPDFBlock = () => {
   const { data: workflow } = useCurrentCaseQuery();
   const { data: businessReport } = useLatestBusinessReportQuery({
     businessId: workflow?.context?.entity?.ballerineEntityId,
     reportType: 'MERCHANT_REPORT_T1',
   });
+  const { data: reportUrl } = useStorageFileByIdQuery(businessReport?.report?.reportFileId ?? '', {
+    isEnabled: !!businessReport?.report?.reportFileId,
+    withSignedUrl: true,
+  });
   const blocks = useMemo(() => {
-    if (!businessReport?.report?.data) {
+    if (!reportUrl) {
       return [];
     }
 
@@ -25,13 +29,18 @@ export const useWebsiteMonitoringReportBlock = () => {
         value: createBlocksTyped()
           .addBlock()
           .addCell({
-            type: 'node',
-            value: <WebsiteMonitoringBusinessReportTab businessReport={businessReport} />,
+            type: 'pdfViewer',
+            props: {
+              width: '100%',
+              height: '100%',
+            },
+            value: `${reportUrl}#navpanes=0` || '',
           })
-          .buildFlat(),
+          .build()
+          .flat(1),
       })
       .build();
-  }, [businessReport]);
+  }, [reportUrl]);
 
   return blocks;
 };

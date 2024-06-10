@@ -185,6 +185,21 @@ export class BusinessReportControllerInternal {
         orderBy: {
           createdAt: 'desc',
         },
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          report: true,
+          riskScore: true,
+          status: true,
+          business: {
+            select: {
+              companyName: true,
+              country: true,
+              website: true,
+            },
+          },
+        },
       },
       [currentProjectId],
     );

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactNode, useCallback } from 'react';
+import React, { FunctionComponent, ReactNode, useCallback, useMemo } from 'react';
 import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
 import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
@@ -19,19 +19,20 @@ import { WebsiteLineOfBusiness } from '@/domains/business-reports/components/Web
 import { WebsitesCompany } from '@/domains/business-reports/components/WebsitesCompany/WebsitesCompany';
 import { WebsiteCredibility } from '@/domains/business-reports/components/WebsiteCredibility/WebsiteCredibility';
 import { EcosystemAndTransactions } from '@/domains/business-reports/components/EcosystemAndTransactions/EcosystemAndTransactions';
-import { reportAdapter } from '@/domains/business-reports/adapters/report-adapter/report-adapter';
 import { AdsAndSocialMedia } from '@/domains/business-reports/components/AdsAndSocialMedia/AdsAndSocialMedia';
 import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import { safeUrl } from '@/common/utils/safe-url/safe-url';
+
+import { createReportAdapter } from '@/domains/business-reports/create-report-adapter/create-report-adapter';
 
 export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
   const { businessReportId } = useParams();
   const { data: businessReport } = useBusinessReportByIdQuery({
     id: businessReportId ?? '',
   });
-  const adapter =
-    reportAdapter[`v${businessReport?.report?.version}` as keyof typeof reportAdapter] ??
-    reportAdapter.DEFAULT;
+  const adapter = createReportAdapter({
+    reportVersion: businessReport?.report?.version,
+  });
   const {
     websitesCompanyAnalysis,
     websiteCredibilityAnalysis,
@@ -57,114 +58,140 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
   const riskIndicators = [
     {
       title: "Website's Company Analysis",
-      to: '?activeTab=websitesCompany',
+      search: '?activeTab=websitesCompany',
       violations: websitesCompanyAnalysis ?? [],
     },
     {
       title: 'Website Credibility Analysis',
-      to: '?activeTab=websiteCredibility',
+      search: '?activeTab=websiteCredibility',
       violations: websiteCredibilityAnalysis,
     },
     {
       title: 'Ads and Social Media Analysis',
-      to: '?activeTab=adsAndSocialMedia',
+      search: '?activeTab=adsAndSocialMedia',
       violations: adsAndSocialMediaAnalysis ?? [],
     },
     {
       title: 'Website Line of Business Analysis',
-      to: '?activeTab=websiteLineOfBusiness',
+      search: '?activeTab=websiteLineOfBusiness',
       violations: websiteLineOfBusinessAnalysis ?? [],
     },
     {
       title: 'Ecosystem and Transactions Analysis View',
-      to: '?activeTab=ecosystemAndTransactions',
+      search: '?activeTab=ecosystemAndTransactions',
       violations: ecosystemAndTransactionsAnalysis ?? [],
     },
   ] as const satisfies ReadonlyArray<{
     title: string;
-    to: string;
+    search: string;
     violations: Array<{
       label: string;
       severity: string;
     }>;
   }>;
 
-  const tabs = [
-    {
-      label: 'Summary',
-      value: 'summary',
-      content: (
-        <BusinessReportSummary
-          summary={summary}
-          riskScore={riskScore}
-          riskIndicators={riskIndicators}
-          recommendations={recommendations ?? []}
-          riskLevels={riskLevels}
-        />
-      ),
-    },
-    {
-      label: "Website's Company",
-      value: 'websitesCompany',
-      content: (
-        <WebsitesCompany
-          companyReputationAnalysis={companyReputationAnalysis ?? []}
-          violations={websitesCompanyAnalysis ?? []}
-        />
-      ),
-    },
-    {
-      label: 'Website Line of Business',
-      value: 'websiteLineOfBusiness',
-      content: (
-        <WebsiteLineOfBusiness
-          violations={websiteLineOfBusinessAnalysis ?? []}
-          summary={lineOfBusinessDescription}
-        />
-      ),
-    },
-    {
-      label: 'Website Credibility',
-      value: 'websiteCredibility',
-      content: (
-        <WebsiteCredibility
-          violations={websiteCredibilityAnalysis ?? []}
-          onlineReputationAnalysis={onlineReputationAnalysis ?? []}
-          pricingAnalysis={pricingAnalysis}
-          websiteStructureAndContentEvaluation={websiteStructureAndContentEvaluation}
-          trafficAnalysis={trafficAnalysis}
-        />
-      ),
-    },
-    {
-      label: 'Ecosystem and Transactions',
-      value: 'ecosystemAndTransactions',
-      content: (
-        <EcosystemAndTransactions
-          violations={ecosystemAndTransactionsAnalysis ?? []}
-          matches={ecosystemAndTransactionsMatches ?? []}
-        />
-      ),
-    },
-    {
-      label: 'Ads and Social Media',
-      value: 'adsAndSocialMedia',
-      content: (
-        <AdsAndSocialMedia
-          violations={adsAndSocialMediaAnalysis ?? []}
-          mediaPresence={adsAndSocialMediaPresence ?? []}
-          adsImages={adsImages}
-          relatedAdsImages={relatedAdsImages}
-          relatedAdsSummary={relatedAdsSummary}
-        />
-      ),
-    },
-  ] as const satisfies ReadonlyArray<{
-    label: string;
-    value: string;
-    content: ReactNode | ReactNode[];
-  }>;
-  const tabsValues = tabs.map(tab => tab.value);
+  const tabs = useMemo(
+    () =>
+      [
+        {
+          label: 'Summary',
+          value: 'summary',
+          content: (
+            <BusinessReportSummary
+              summary={summary}
+              riskScore={riskScore}
+              riskIndicators={riskIndicators}
+              recommendations={recommendations ?? []}
+              riskLevels={riskLevels}
+            />
+          ),
+        },
+        {
+          label: "Website's Company",
+          value: 'websitesCompany',
+          content: (
+            <WebsitesCompany
+              companyReputationAnalysis={companyReputationAnalysis ?? []}
+              violations={websitesCompanyAnalysis ?? []}
+            />
+          ),
+        },
+        {
+          label: 'Website Line of Business',
+          value: 'websiteLineOfBusiness',
+          content: (
+            <WebsiteLineOfBusiness
+              violations={websiteLineOfBusinessAnalysis ?? []}
+              summary={lineOfBusinessDescription}
+            />
+          ),
+        },
+        {
+          label: 'Website Credibility',
+          value: 'websiteCredibility',
+          content: (
+            <WebsiteCredibility
+              violations={websiteCredibilityAnalysis ?? []}
+              onlineReputationAnalysis={onlineReputationAnalysis ?? []}
+              pricingAnalysis={pricingAnalysis}
+              websiteStructureAndContentEvaluation={websiteStructureAndContentEvaluation}
+              trafficAnalysis={trafficAnalysis}
+            />
+          ),
+        },
+        {
+          label: 'Ecosystem and Transactions',
+          value: 'ecosystemAndTransactions',
+          content: (
+            <EcosystemAndTransactions
+              violations={ecosystemAndTransactionsAnalysis ?? []}
+              matches={ecosystemAndTransactionsMatches ?? []}
+            />
+          ),
+        },
+        {
+          label: 'Ads and Social Media',
+          value: 'adsAndSocialMedia',
+          content: (
+            <AdsAndSocialMedia
+              violations={adsAndSocialMediaAnalysis ?? []}
+              mediaPresence={adsAndSocialMediaPresence ?? []}
+              adsImages={adsImages}
+              relatedAdsImages={relatedAdsImages}
+              relatedAdsSummary={relatedAdsSummary}
+            />
+          ),
+        },
+      ] as const satisfies ReadonlyArray<{
+        label: string;
+        value: string;
+        content: ReactNode | ReactNode[];
+      }>,
+    [
+      adsAndSocialMediaAnalysis,
+      adsAndSocialMediaPresence,
+      adsImages,
+      companyReputationAnalysis,
+      ecosystemAndTransactionsAnalysis,
+      ecosystemAndTransactionsMatches,
+      lineOfBusinessDescription,
+      onlineReputationAnalysis,
+      pricingAnalysis,
+      recommendations,
+      relatedAdsImages,
+      relatedAdsSummary,
+      riskIndicators,
+      riskLevels,
+      riskScore,
+      summary,
+      trafficAnalysis,
+      websiteCredibilityAnalysis,
+      websiteLineOfBusinessAnalysis,
+      websiteStructureAndContentEvaluation,
+      websitesCompanyAnalysis,
+    ],
+  );
+  const tabsValues = useMemo(() => tabs.map(tab => tab.value), [tabs]);
   const MerchantMonitoringBusinessReportSearchSchema = z.object({
     activeTab: z
       .enum(
