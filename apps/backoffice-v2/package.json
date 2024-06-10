@@ -50,8 +50,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ballerine/common": "0.9.7",
     "@ballerine/blocks": "0.2.3",
+    "@ballerine/common": "0.9.7",
     "@ballerine/ui": "^0.5.3",
     "@ballerine/workflow-browser-sdk": "0.6.13",
     "@ballerine/workflow-node-sdk": "0.6.13",
@@ -97,8 +97,10 @@
     "qs": "^6.11.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-error-boundary": "^4.0.13",
     "react-hook-form": "^7.43.9",
     "react-i18next": "^12.1.4",
+    "react-image": "^4.1.0",
     "react-image-crop": "^10.0.9",
     "react-json-view": "^1.21.3",
     "react-leaflet": "^4.2.1",

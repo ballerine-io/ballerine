@@ -26,6 +26,7 @@ import { Individuals } from '@/pages/Profiles/Individuals/Individuals.page';
 import { MerchantMonitoring } from '@/pages/MerchantMonitoring/MerchantMonitoring.page';
 import { MerchantMonitoringCreateCheckPage } from '@/pages/MerchantMonitoringCreateCheck/MerchantMonitoringCreateCheck.page';
 import { MerchantMonitoringBusinessReport } from '@/pages/MerchantMonitoringBusinessReport/MerchantMonitoringBusinessReport.page';
+import { MerchantMonitoringLayout } from '@/domains/business-reports/components/MerchantMonitoringLayout/MerchantMonitoringLayout';
 
 const router = createBrowserRouter([
   {
@@ -73,19 +74,25 @@ const router = createBrowserRouter([
             errorElement: <RouteError />,
             children: [
               {
-                path: '/:locale/merchant-monitoring',
-                element: <MerchantMonitoring />,
+                element: <MerchantMonitoringLayout />,
                 errorElement: <RouteError />,
-              },
-              {
-                path: '/:locale/merchant-monitoring/:businessReportId',
-                element: <MerchantMonitoringBusinessReport />,
-                errorElement: <RouteError />,
-              },
-              {
-                path: '/:locale/merchant-monitoring/create-check',
-                element: <MerchantMonitoringCreateCheckPage />,
-                errorElement: <RouteError />,
+                children: [
+                  {
+                    path: '/:locale/merchant-monitoring',
+                    element: <MerchantMonitoring />,
+                    errorElement: <RouteError />,
+                  },
+                  {
+                    path: '/:locale/merchant-monitoring/:businessReportId',
+                    element: <MerchantMonitoringBusinessReport />,
+                    errorElement: <RouteError />,
+                  },
+                  {
+                    path: '/:locale/merchant-monitoring/create-check',
+                    element: <MerchantMonitoringCreateCheckPage />,
+                    errorElement: <RouteError />,
+                  },
+                ],
               },
               {
                 path: '/:locale/case-management',

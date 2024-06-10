@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { t } from 'i18next';
 import { createBusinessReport } from '@/domains/business-reports/fetchers';
 import { TBusinessReportType } from '@/domains/business-reports/types';
+import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/userCustomerQuery';
 
 export const useCreateBusinessReportMutation = ({
   reportType,
@@ -12,6 +13,7 @@ export const useCreateBusinessReportMutation = ({
   onSuccess?: <TData>(data: TData) => void;
 }) => {
   const queryClient = useQueryClient();
+  const { data: customer } = useCustomerQuery();
 
   return useMutation({
     mutationFn: ({
@@ -36,8 +38,13 @@ export const useCreateBusinessReportMutation = ({
         companyName,
         businessCorrelationId,
         reportType,
+        isExample: customer?.config?.isExample,
       }),
     onSuccess: data => {
+      if (customer?.config?.isExample) {
+        return;
+      }
+
       void queryClient.invalidateQueries();
 
       toast.success(t(`toast:business_report_creation.success`));

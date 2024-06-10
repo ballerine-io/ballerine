@@ -3,7 +3,7 @@ import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
 import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
 import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { Button } from '@/common/components/atoms/Button/Button';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
@@ -12,38 +12,152 @@ import { Badge } from '@ballerine/ui';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { BusinessReportStatus } from '@/domains/business-reports/fetchers';
 import dayjs from 'dayjs';
+import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
+import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
+import { BusinessReportSummary } from '@/common/components/molecules/BusinessReportSummary/BusinessReportSummary';
+import { WebsiteLineOfBusiness } from '@/domains/business-reports/components/WebsiteLineOfBusiness/WebsiteLineOfBusiness';
+import { WebsitesCompany } from '@/domains/business-reports/components/WebsitesCompany/WebsitesCompany';
+import { WebsiteCredibility } from '@/domains/business-reports/components/WebsiteCredibility/WebsiteCredibility';
+import { EcosystemAndTransactions } from '@/domains/business-reports/components/EcosystemAndTransactions/EcosystemAndTransactions';
+import { reportAdapter } from '@/domains/business-reports/adapters/report-adapter/report-adapter';
+import { AdsAndSocialMedia } from '@/domains/business-reports/components/AdsAndSocialMedia/AdsAndSocialMedia';
+import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
+import { safeUrl } from '@/common/utils/safe-url/safe-url';
 
 export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
+  const { businessReportId } = useParams();
+  const { data: businessReport } = useBusinessReportByIdQuery({
+    id: businessReportId ?? '',
+  });
+  const adapter =
+    reportAdapter[`v${businessReport?.report?.version}` as keyof typeof reportAdapter] ??
+    reportAdapter.DEFAULT;
+  const {
+    websitesCompanyAnalysis,
+    websiteCredibilityAnalysis,
+    adsAndSocialMediaAnalysis,
+    adsAndSocialMediaPresence,
+    websiteLineOfBusinessAnalysis,
+    ecosystemAndTransactionsAnalysis,
+    summary,
+    riskScore,
+    recommendations,
+    riskLevels,
+    companyReputationAnalysis,
+    relatedAdsSummary,
+    lineOfBusinessDescription,
+    onlineReputationAnalysis,
+    pricingAnalysis,
+    websiteStructureAndContentEvaluation,
+    trafficAnalysis,
+    ecosystemAndTransactionsMatches,
+    adsImages,
+    relatedAdsImages,
+  } = adapter(businessReport ?? {});
+  const riskIndicators = [
+    {
+      title: "Website's Company Analysis",
+      to: '?activeTab=websitesCompany',
+      violations: websitesCompanyAnalysis ?? [],
+    },
+    {
+      title: 'Website Credibility Analysis',
+      to: '?activeTab=websiteCredibility',
+      violations: websiteCredibilityAnalysis,
+    },
+    {
+      title: 'Ads and Social Media Analysis',
+      to: '?activeTab=adsAndSocialMedia',
+      violations: adsAndSocialMediaAnalysis ?? [],
+    },
+    {
+      title: 'Website Line of Business Analysis',
+      to: '?activeTab=websiteLineOfBusiness',
+      violations: websiteLineOfBusinessAnalysis ?? [],
+    },
+    {
+      title: 'Ecosystem and Transactions Analysis View',
+      to: '?activeTab=ecosystemAndTransactions',
+      violations: ecosystemAndTransactionsAnalysis ?? [],
+    },
+  ] as const satisfies ReadonlyArray<{
+    title: string;
+    to: string;
+    violations: Array<{
+      label: string;
+      severity: string;
+    }>;
+  }>;
+
   const tabs = [
     {
       label: 'Summary',
       value: 'summary',
-      content: 'Summary content',
+      content: (
+        <BusinessReportSummary
+          summary={summary}
+          riskScore={riskScore}
+          riskIndicators={riskIndicators}
+          recommendations={recommendations ?? []}
+          riskLevels={riskLevels}
+        />
+      ),
     },
     {
       label: "Website's Company",
       value: 'websitesCompany',
-      content: 'Website content',
+      content: (
+        <WebsitesCompany
+          companyReputationAnalysis={companyReputationAnalysis ?? []}
+          violations={websitesCompanyAnalysis ?? []}
+        />
+      ),
     },
     {
       label: 'Website Line of Business',
-      value: 'lineOfBusiness',
-      content: 'Line of Business content',
+      value: 'websiteLineOfBusiness',
+      content: (
+        <WebsiteLineOfBusiness
+          violations={websiteLineOfBusinessAnalysis ?? []}
+          summary={lineOfBusinessDescription}
+        />
+      ),
     },
     {
       label: 'Website Credibility',
-      value: 'credibility',
-      content: 'Credibility content',
+      value: 'websiteCredibility',
+      content: (
+        <WebsiteCredibility
+          violations={websiteCredibilityAnalysis ?? []}
+          onlineReputationAnalysis={onlineReputationAnalysis ?? []}
+          pricingAnalysis={pricingAnalysis}
+          websiteStructureAndContentEvaluation={websiteStructureAndContentEvaluation}
+          trafficAnalysis={trafficAnalysis}
+        />
+      ),
     },
     {
       label: 'Ecosystem and Transactions',
       value: 'ecosystemAndTransactions',
-      content: 'Ecosystem and Transactions content',
+      content: (
+        <EcosystemAndTransactions
+          violations={ecosystemAndTransactionsAnalysis ?? []}
+          matches={ecosystemAndTransactionsMatches ?? []}
+        />
+      ),
     },
     {
       label: 'Ads and Social Media',
       value: 'adsAndSocialMedia',
-      content: 'Ads and Social Media content',
+      content: (
+        <AdsAndSocialMedia
+          violations={adsAndSocialMediaAnalysis ?? []}
+          mediaPresence={adsAndSocialMediaPresence ?? []}
+          adsImages={adsImages}
+          relatedAdsImages={relatedAdsImages}
+          relatedAdsSummary={relatedAdsSummary}
+        />
+      ),
     },
   ] as const satisfies ReadonlyArray<{
     label: string;
@@ -75,12 +189,11 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     navigate(previousPath);
     sessionStorage.removeItem('merchant-monitoring:business-report:previous-path');
   }, [navigate]);
-  const status = BusinessReportStatus.COMPLETED;
   const statusToBadgeData = {
     [BusinessReportStatus.COMPLETED]: { variant: 'info', text: 'Manual Review' },
     [BusinessReportStatus.IN_PROGRESS]: { variant: 'violet', text: 'In-progress' },
-  };
-  const createdAt = '2021-09-01T12:00:00Z';
+  } as const;
+  const websiteWithNoProtocol = safeUrl(businessReport?.business?.website ?? '')?.hostname;
 
   return (
     <section className="flex h-full flex-col px-6 pb-6 pt-4">
@@ -93,26 +206,31 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
           <ChevronLeft size={18} /> <span>Back</span>
         </Button>
       </div>
-      <h2 className="pb-4 text-2xl font-bold">ACME Corp.</h2>
+      <TextWithNAFallback as={'h2'} className="pb-4 text-2xl font-bold">
+        {websiteWithNoProtocol}
+      </TextWithNAFallback>
       <div className={`flex space-x-8`}>
         <div className={`flex items-center pb-4`}>
           <span className={`me-4 text-sm leading-6 text-slate-400`}>Status</span>
           <Badge
-            variant={statusToBadgeData[status].variant}
+            variant={
+              statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]?.variant
+            }
             className={ctw(`text-sm font-bold`, {
-              'bg-info/20 text-info': status === BusinessReportStatus.COMPLETED,
+              'bg-info/20 text-info': businessReport?.status === BusinessReportStatus.COMPLETED,
             })}
           >
-            {statusToBadgeData[status].text}
+            {statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]?.text}
           </Badge>
         </div>
         <div>
           <span className={`me-2 text-sm leading-6 text-slate-400`}>Created at</span>
-          {dayjs(new Date(createdAt)).format('HH:mm MMM Do, YYYY')}
+          {businessReport?.createdAt &&
+            dayjs(new Date(businessReport?.createdAt)).format('HH:mm MMM Do, YYYY')}
         </div>
       </div>
-      <Tabs defaultValue={activeTab} className="w-[400px]">
-        <TabsList>
+      <Tabs defaultValue={activeTab} className="w-full" key={activeTab}>
+        <TabsList className={'mb-4'}>
           {tabs.map(tab => (
             <TabsTrigger key={tab.value} value={tab.value} asChild>
               <Link
@@ -125,11 +243,13 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
             </TabsTrigger>
           ))}
         </TabsList>
-        {tabs.map(tab => (
-          <TabsContent key={tab.value} value={tab.value}>
-            {tab.content}
-          </TabsContent>
-        ))}
+        <ScrollArea orientation={'vertical'} className={'h-[75vh]'}>
+          {tabs.map(tab => (
+            <TabsContent key={tab.value} value={tab.value}>
+              {tab.content}
+            </TabsContent>
+          ))}
+        </ScrollArea>
       </Tabs>
     </section>
   );

@@ -6,6 +6,7 @@ import {
   PolymorphicRef,
 } from '@/common/types';
 import { valueOrFallback } from '@/common/utils/value-or-fallback/value-or-fallback';
+import { isNullish } from '@ballerine/common';
 
 export type TTextWithNAFallback = <TElement extends ElementType = 'span'>(
   props: PolymorphicComponentPropsWithRef<TElement> & {
@@ -15,7 +16,13 @@ export type TTextWithNAFallback = <TElement extends ElementType = 'span'>(
 
 export const TextWithNAFallback: TTextWithNAFallback = forwardRef(
   <TElement extends ElementType = 'span'>(
-    { as, children, className, checkFalsy = true, ...props }: PolymorphicComponentProps<TElement>,
+    {
+      as,
+      children,
+      className,
+      checkFalsy = true,
+      ...props
+    }: PolymorphicComponentProps<TElement> & { checkFalsy?: boolean },
     ref?: PolymorphicRef<TElement>,
   ) => {
     const Component = as ?? 'span';
@@ -25,7 +32,7 @@ export const TextWithNAFallback: TTextWithNAFallback = forwardRef(
         {...props}
         className={ctw(
           {
-            'text-slate-400': !children,
+            'text-slate-400': checkFalsy ? !children : isNullish(children),
           },
           className,
         )}

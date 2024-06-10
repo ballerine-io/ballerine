@@ -4,7 +4,9 @@ import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { TBusinessReportType } from '@/domains/business-reports/types';
 import qs from 'qs';
-import { TObjectValues } from '@/common/types';
+import { Severities, TObjectValues } from '@/common/types';
+import { toast } from 'sonner';
+import { t } from 'i18next';
 
 export const BusinessReportStatus = {
   IN_PROGRESS: 'in_progress',
@@ -20,6 +22,18 @@ export const BusinessReportStatuses = [
   BusinessReportStatus.COMPLETED,
 ] as const satisfies readonly TBusinessReportStatus[];
 
+export const SeveritySchema = z.preprocess(value => {
+  if (value === 'moderate') {
+    return 'medium';
+  }
+
+  if (value === 'positive') {
+    return 'low';
+  }
+
+  return value;
+}, z.enum(Severities));
+
 export const BusinessReportSchema = z
   .object({
     id: z.string(),
@@ -29,6 +43,7 @@ export const BusinessReportSchema = z
     status: z.enum(BusinessReportStatuses),
     report: z.object({
       reportFileId: z.string(),
+      data: z.record(z.string(), z.unknown()),
     }),
     business: z
       .object({
@@ -90,25 +105,44 @@ export const fetchBusinessReports = async ({
   return handleZodError(error, filter);
 };
 
+export const fetchBusinessReportById = async ({ id }: { id: string }) => {
+  const [filter, error] = await apiClient({
+    endpoint: `business-reports/${id}`,
+    method: Method.GET,
+    schema: BusinessReportSchema,
+  });
+
+  return handleZodError(error, filter);
+};
+
 export const createBusinessReport = async ({
   websiteUrl,
   operatingCountry,
   companyName,
   businessCorrelationId,
   reportType,
+  isExample,
 }:
   | {
       websiteUrl: string;
       operatingCountry?: string;
       reportType: TBusinessReportType;
       companyName: string;
+      isExample: boolean;
     }
   | {
       websiteUrl: string;
       operatingCountry?: string;
       reportType: TBusinessReportType;
       businessCorrelationId: string;
+      isExample: boolean;
     }) => {
+  if (isExample) {
+    toast.info(t('toast:business_report_creation.is_example'));
+
+    return;
+  }
+
   const [businessReport, error] = await apiClient({
     endpoint: `business-reports`,
     method: Method.POST,

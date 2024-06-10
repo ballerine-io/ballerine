@@ -52,7 +52,11 @@ export const useUbosRegistryProvidedBlock = (
         type: 'paragraph',
         value: (
           <span className="flex text-sm text-black/60">
-            <WarningFilledSvg className={'me-2 mt-px text-black/20'} width={'20'} height={'20'} />
+            <WarningFilledSvg
+              className={'me-2 mt-px text-black/20 [&>:not(:first-child)]:stroke-background'}
+              width={'20'}
+              height={'20'}
+            />
             <span>{message}</span>
           </span>
         ),
@@ -69,7 +73,11 @@ export const useUbosRegistryProvidedBlock = (
         type: 'paragraph',
         value: (
           <span className="flex text-sm text-black/60">
-            <WarningFilledSvg className={'me-2 mt-px text-black/20'} width={'20'} height={'20'} />
+            <WarningFilledSvg
+              className={'me-2 mt-px text-black/20 [&>:not(:first-child)]:stroke-background'}
+              width={'20'}
+              height={'20'}
+            />
             <span>
               The request timed out either because the company was not found in the registry, or the
               information is currently unavailable.

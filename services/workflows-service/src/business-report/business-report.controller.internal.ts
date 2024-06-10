@@ -1,5 +1,5 @@
 import * as common from '@nestjs/common';
-import { BadRequestException, Body, Query } from '@nestjs/common';
+import { BadRequestException, Body, Param, Query } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import type { InputJsonValue, TProjectId } from '@/types';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -92,7 +92,7 @@ export class BusinessReportControllerInternal {
         countryCode,
         merchantName,
         reportType,
-        callbackUrl: `${env.APP_API_URL}/business-reports/hook?businessId=${business?.id}`,
+        callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${business?.id}`,
       },
       {
         headers: {
@@ -225,5 +225,32 @@ export class BusinessReportControllerInternal {
       },
       [currentProjectId],
     );
+  }
+
+  @common.Get(':id')
+  @swagger.ApiOkResponse({ type: [String] })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
+  async getBusinessReportById(
+    @CurrentProject() currentProjectId: TProjectId,
+    @Param('id') id: string,
+  ) {
+    return await this.businessReportService.findById(id, [currentProjectId], {
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        report: true,
+        riskScore: true,
+        status: true,
+        business: {
+          select: {
+            companyName: true,
+            country: true,
+            website: true,
+          },
+        },
+      },
+    });
   }
 }

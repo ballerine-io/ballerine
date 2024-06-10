@@ -4,6 +4,7 @@ import { useCallback, useMemo } from 'react';
 import { Building, Goal, Users } from 'lucide-react';
 import { TRoutes, TRouteWithChildren } from '@/Router/types';
 import { useLocation } from 'react-router-dom';
+import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/userCustomerQuery';
 
 export const useNavbarLogic = () => {
   const { data: filters } = useFiltersQuery();
@@ -16,16 +17,22 @@ export const useNavbarLogic = () => {
     () => filters?.filter(({ entity }) => entity === 'businesses'),
     [filters],
   );
+  const { data: customer } = useCustomerQuery();
+
   const navItems = [
     {
       text: 'Businesses',
       icon: <Building size={20} />,
       children: [
-        {
-          text: 'Merchant Monitoring',
-          href: `/en/merchant-monitoring`,
-          key: 'nav-item-merchant-monitoring',
-        },
+        ...(customer?.config?.isMerchantMonitoringEnabled
+          ? [
+              {
+                text: 'Merchant Monitoring',
+                href: `/en/merchant-monitoring`,
+                key: 'nav-item-merchant-monitoring',
+              },
+            ]
+          : []),
         ...(businessesFilters?.map(({ id, name }) => ({
           filterId: id,
           text: name,
