@@ -58,32 +58,32 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
   const riskIndicators = [
     {
       title: "Website's Company Analysis",
-      to: '?activeTab=websitesCompany',
+      search: '?activeTab=websitesCompany',
       violations: websitesCompanyAnalysis ?? [],
     },
     {
       title: 'Website Credibility Analysis',
-      to: '?activeTab=websiteCredibility',
+      search: '?activeTab=websiteCredibility',
       violations: websiteCredibilityAnalysis,
     },
     {
       title: 'Ads and Social Media Analysis',
-      to: '?activeTab=adsAndSocialMedia',
+      search: '?activeTab=adsAndSocialMedia',
       violations: adsAndSocialMediaAnalysis ?? [],
     },
     {
       title: 'Website Line of Business Analysis',
-      to: '?activeTab=websiteLineOfBusiness',
+      search: '?activeTab=websiteLineOfBusiness',
       violations: websiteLineOfBusinessAnalysis ?? [],
     },
     {
       title: 'Ecosystem and Transactions Analysis View',
-      to: '?activeTab=ecosystemAndTransactions',
+      search: '?activeTab=ecosystemAndTransactions',
       violations: ecosystemAndTransactionsAnalysis ?? [],
     },
   ] as const satisfies ReadonlyArray<{
     title: string;
-    to: string;
+    search: string;
     violations: Array<{
       label: string;
       severity: string;

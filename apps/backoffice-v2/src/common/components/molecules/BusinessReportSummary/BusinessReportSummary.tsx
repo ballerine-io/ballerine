@@ -16,7 +16,7 @@ export const BusinessReportSummary: FunctionComponent<{
   };
   riskIndicators: Array<{
     title: string;
-    to: string;
+    search: string;
     violations: Array<{
       label: string;
       severity: string;

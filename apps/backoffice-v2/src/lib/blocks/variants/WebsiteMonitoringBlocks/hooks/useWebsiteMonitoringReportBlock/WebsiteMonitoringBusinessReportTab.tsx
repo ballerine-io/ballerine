@@ -141,32 +141,32 @@ export const WebsiteMonitoringBusinessReportTab = ({
   const riskIndicators = [
     {
       title: "Website's Company Analysis",
-      to: updateActiveTab({ tab: 'websitesCompany', search }),
+      search: updateActiveTab({ tab: 'websitesCompany', search }),
       violations: websitesCompanyAnalysis ?? [],
     },
     {
       title: 'Website Credibility Analysis',
-      to: updateActiveTab({ tab: 'websiteCredibility', search }),
+      search: updateActiveTab({ tab: 'websiteCredibility', search }),
       violations: websiteCredibilityAnalysis,
     },
     {
       title: 'Ads and Social Media Analysis',
-      to: updateActiveTab({ tab: 'adsAndSocialMedia', search }),
+      search: updateActiveTab({ tab: 'adsAndSocialMedia', search }),
       violations: adsAndSocialMediaAnalysis ?? [],
     },
     {
       title: 'Website Line of Business Analysis',
-      to: updateActiveTab({ tab: 'websiteLineOfBusiness', search }),
+      search: updateActiveTab({ tab: 'websiteLineOfBusiness', search }),
       violations: websiteLineOfBusinessAnalysis ?? [],
     },
     {
       title: 'Ecosystem and Transactions Analysis View',
-      to: updateActiveTab({ tab: 'ecosystemAndTransactions', search }),
+      search: updateActiveTab({ tab: 'ecosystemAndTransactions', search }),
       violations: ecosystemAndTransactionsAnalysis ?? [],
     },
   ] as const satisfies ReadonlyArray<{
     title: string;
-    to: string;
+    search: string;
     violations: Array<{
       label: string;
       severity: string;
