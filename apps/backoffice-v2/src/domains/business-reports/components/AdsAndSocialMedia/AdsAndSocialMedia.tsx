@@ -57,7 +57,9 @@ export const AdsAndSocialMedia: FunctionComponent<{
                             <TextWithNAFallback className={'me-2 font-semibold'}>
                               {titleCase(label ?? '')}:
                             </TextWithNAFallback>
-                            <TextWithNAFallback as={AnchorIfUrl}>{value}</TextWithNAFallback>
+                            <TextWithNAFallback as={AnchorIfUrl} className={'break-all'}>
+                              {value}
+                            </TextWithNAFallback>
                           </li>
                         );
                       })}
@@ -73,7 +75,7 @@ export const AdsAndSocialMedia: FunctionComponent<{
               </div>
             )}
           </div>
-          <div className={'grid grid-cols-4 gap-8'}>
+          <div className={'grid grid-cols-[400px_400px] gap-8'}>
             {adsImages.map(({ provider, src, link }, index) => (
               <AdImageWithLink
                 title={`${valueOrNA(titleCase(provider ?? ''))} Image`}
@@ -90,7 +92,7 @@ export const AdsAndSocialMedia: FunctionComponent<{
         <CardHeader className={'pt-4 font-bold'}>Related Ads</CardHeader>
         <CardContent className={'flex flex-col space-y-4'}>
           <SubtitleAndParagraph subtitle={'Ads Summary'} paragraph={relatedAdsSummary} />
-          <div className={'grid grid-cols-4 gap-8'}>
+          <div className={'grid grid-cols-[400px_400px] gap-8'}>
             {relatedAdsImages.map((src, index) => (
               <AdExample key={src} src={src} alt={`Ad Example ${index + 1}`} />
             ))}

@@ -19,19 +19,20 @@ import { WebsiteLineOfBusiness } from '@/domains/business-reports/components/Web
 import { WebsitesCompany } from '@/domains/business-reports/components/WebsitesCompany/WebsitesCompany';
 import { WebsiteCredibility } from '@/domains/business-reports/components/WebsiteCredibility/WebsiteCredibility';
 import { EcosystemAndTransactions } from '@/domains/business-reports/components/EcosystemAndTransactions/EcosystemAndTransactions';
-import { reportAdapter } from '@/domains/business-reports/adapters/report-adapter/report-adapter';
 import { AdsAndSocialMedia } from '@/domains/business-reports/components/AdsAndSocialMedia/AdsAndSocialMedia';
 import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import { safeUrl } from '@/common/utils/safe-url/safe-url';
+
+import { createReportAdapter } from '@/domains/business-reports/create-report-adapter/create-report-adapter';
 
 export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
   const { businessReportId } = useParams();
   const { data: businessReport } = useBusinessReportByIdQuery({
     id: businessReportId ?? '',
   });
-  const adapter =
-    reportAdapter[`v${businessReport?.report?.version}` as keyof typeof reportAdapter] ??
-    reportAdapter.DEFAULT;
+  const adapter = createReportAdapter({
+    reportVersion: businessReport?.report?.version,
+  });
   const {
     websitesCompanyAnalysis,
     websiteCredibilityAnalysis,
