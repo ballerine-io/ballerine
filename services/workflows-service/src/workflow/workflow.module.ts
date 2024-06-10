@@ -1,7 +1,8 @@
+// eslint-disable-next-line import/no-cycle
+import { BusinessReportModule } from '@/business-report/business-report.module';
 import { AuthModule } from '@/auth/auth.module';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
-import { BusinessReportModule } from '@/business-report/business-report.module';
 import { BusinessModule } from '@/business/business.module';
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';

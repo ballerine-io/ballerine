@@ -9,7 +9,12 @@ import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-nam
 import { WorkflowService } from '@/workflow/workflow.service';
 import { AnyRecord, ProcessStatus, TDocument } from '@ballerine/common';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { BusinessReportType, Customer, WorkflowRuntimeData } from '@prisma/client';
+import {
+  BusinessReportStatus,
+  BusinessReportType,
+  Customer,
+  WorkflowRuntimeData,
+} from '@prisma/client';
 import fs from 'fs';
 import { get, isObject, set } from 'lodash';
 import * as tmp from 'tmp';
@@ -18,7 +23,7 @@ import { EndUserService } from '@/end-user/end-user.service';
 import { z } from 'zod';
 import { EndUserActiveMonitoringsSchema } from '@/end-user/end-user.schema';
 
-const ReportWithRiskScoreSchema = z
+export const ReportWithRiskScoreSchema = z
   .object({
     summary: z.object({
       riskScore: z.number(),
@@ -161,14 +166,12 @@ export class HookCallbackHandlerService {
     const reportData = ReportWithRiskScoreSchema.parse(unvalidatedReportData);
 
     const { documents, pdfReportBallerineFileId } =
-      await this.__peristPDFReportDocumentWithWorkflowDocuments({
+      await this.persistPDFReportDocumentWithWorkflowDocuments({
         context,
         customer,
         projectId: currentProjectId,
         base64PDFString: base64Pdf as string,
       });
-
-    const reportRiskScore = reportData?.summary?.riskScore;
 
     const business = await this.businessService.getByCorrelationId(context.entity.id, [
       currentProjectId,
@@ -191,7 +194,8 @@ export class HookCallbackHandlerService {
       {
         create: {
           type: reportType as BusinessReportType,
-          riskScore: reportRiskScore as number,
+          riskScore: reportData.summary.riskScore,
+          status: BusinessReportStatus.completed,
           report: {
             reportFileId: pdfReportBallerineFileId,
             data: reportData as InputJsonValue,
@@ -202,7 +206,7 @@ export class HookCallbackHandlerService {
         },
         update: {
           type: reportType as BusinessReportType,
-          riskScore: reportRiskScore,
+          riskScore: reportData.summary.riskScore,
           report: {
             reportFileId: pdfReportBallerineFileId,
             data: reportData as InputJsonValue,
@@ -274,7 +278,7 @@ export class HookCallbackHandlerService {
       };
     }
 
-    const { pdfReportBallerineFileId } = await this.__peristPDFReportDocumentWithWorkflowDocuments({
+    const { pdfReportBallerineFileId } = await this.persistPDFReportDocumentWithWorkflowDocuments({
       context,
       customer,
       projectId: currentProjectId,
@@ -285,25 +289,24 @@ export class HookCallbackHandlerService {
       data: reportData,
       reportFileId: pdfReportBallerineFileId,
       reportId,
-    } as Record<string, object | string>;
-
-    const reportRiskScore = reportData.summary.riskScore;
+    };
 
     await this.businessReportService.create({
       data: {
         type: reportType as BusinessReportType,
-        report: reportContent,
+        report: reportContent as InputJsonValue,
         businessId: businessId,
         reportId: reportId as string,
         projectId: currentProjectId,
-        riskScore: reportRiskScore,
+        riskScore: reportData.summary.riskScore,
+        status: BusinessReportStatus.completed,
       },
     });
 
     return context;
   }
 
-  private async __peristPDFReportDocumentWithWorkflowDocuments({
+  async persistPDFReportDocumentWithWorkflowDocuments({
     context,
     base64PDFString,
     projectId,

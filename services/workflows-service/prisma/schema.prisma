@@ -847,6 +847,11 @@ model Counterparty {
   @@index([correlationId])
 }
 
+enum BusinessReportStatus {
+  in_progress
+  completed
+}
+
 model BusinessReport {
   id       String             @id @default(cuid())
   type     BusinessReportType
@@ -854,6 +859,7 @@ model BusinessReport {
   report   Json
 
   riskScore  Int
+  status BusinessReportStatus
   businessId String
   business   Business @relation(fields: [businessId], references: [id])
 

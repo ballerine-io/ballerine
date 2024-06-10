@@ -53,7 +53,7 @@ export const useUbosRegistryProvidedBlock = (
         value: (
           <span className="flex text-sm text-black/60">
             <WarningFilledSvg
-              className={'mr-[8px] mt-px text-black/20'}
+              className={'me-2 mt-px text-black/20 [&>:not(:first-child)]:stroke-background'}
               width={'20'}
               height={'20'}
             />
@@ -74,7 +74,7 @@ export const useUbosRegistryProvidedBlock = (
         value: (
           <span className="flex text-sm text-black/60">
             <WarningFilledSvg
-              className={'mr-[8px] mt-px text-black/20'}
+              className={'me-2 mt-px text-black/20 [&>:not(:first-child)]:stroke-background'}
               width={'20'}
               height={'20'}
             />

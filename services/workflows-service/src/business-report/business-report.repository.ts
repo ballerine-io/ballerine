@@ -45,4 +45,20 @@ export class BusinessReportRepository {
       this.scopeService.scopeFindFirst(args, projectIds),
     );
   }
+
+  async findById<T extends Omit<Prisma.BusinessReportFindFirstOrThrowArgs, 'where'>>(
+    id: string,
+    projectIds: TProjectIds,
+    args?: Prisma.SelectSubset<T, Omit<Prisma.BusinessReportFindFirstOrThrowArgs, 'where'>>,
+  ) {
+    return await this.prisma.businessReport.findFirstOrThrow(
+      this.scopeService.scopeFindFirst(
+        {
+          where: { id },
+          ...args,
+        },
+        projectIds,
+      ),
+    );
+  }
 }

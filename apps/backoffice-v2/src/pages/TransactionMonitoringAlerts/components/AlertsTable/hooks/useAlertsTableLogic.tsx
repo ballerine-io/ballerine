@@ -20,8 +20,7 @@ export const useAlertsTableLogic = ({ data }: IUseAlertsTableLogic) => {
   }, [pathname, search]);
 
   const Cell: IDataTableProps<typeof data>['CellContentWrapper'] = ({ cell, children }) => {
-    const itemId = cell.id.replace(`_${cell.column.id}`, '');
-    const item = data.find(item => item.id === itemId);
+    const item = data.find(item => item.id === cell.row.id);
 
     if (cell.column.id === 'select') {
       return children;
@@ -29,7 +28,7 @@ export const useAlertsTableLogic = ({ data }: IUseAlertsTableLogic) => {
 
     return (
       <Link
-        to={`/${locale}/transaction-monitoring/alerts/${itemId}${search}&businessId=${
+        to={`/${locale}/transaction-monitoring/alerts/${cell.row.id}${search}&businessId=${
           item?.merchant?.id ?? ''
         }&counterpartyId=${item?.counterpartyId ?? ''}`}
         onClick={onClick}

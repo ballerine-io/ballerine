@@ -18,6 +18,16 @@ export const fetchCustomer = async () => {
         customerStatus: z.string().optional(),
         country: z.union([z.string(), z.null()]).optional(),
         language: z.union([z.string(), z.null()]).optional(),
+        config: z
+          .object({
+            isMerchantMonitoringEnabled: z.boolean().default(false),
+            isExample: z.boolean().default(false),
+          })
+          .nullable()
+          .default({
+            isMerchantMonitoringEnabled: false,
+            isExample: false,
+          }),
       })
       .optional(),
   });

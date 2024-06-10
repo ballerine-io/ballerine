@@ -6,7 +6,7 @@ import { PaginationFirst } from '@/common/components/molecules/Pagination/Pagina
 import { PaginationPrevious } from '@/common/components/molecules/Pagination/Pagination.Previous';
 import { PaginationNext } from '@/common/components/molecules/Pagination/Pagination.Next';
 
-export const AlertsPagination: FunctionComponent<{
+export const UrlPagination: FunctionComponent<{
   page: number;
   /**
    * Expects string search params to be returned.

@@ -86,4 +86,12 @@ export class BusinessReportService {
       [projectId],
     );
   }
+
+  async findById<T extends Omit<Prisma.BusinessReportFindFirstOrThrowArgs, 'where'>>(
+    id: string,
+    projectIds: TProjectIds,
+    args?: Prisma.SelectSubset<T, Omit<Prisma.BusinessReportFindFirstOrThrowArgs, 'where'>>,
+  ) {
+    return await this.businessReportRepository.findById(id, projectIds, args);
+  }
 }
