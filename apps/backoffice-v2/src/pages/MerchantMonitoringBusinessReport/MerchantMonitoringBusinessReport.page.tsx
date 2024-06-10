@@ -21,6 +21,8 @@ import { WebsiteCredibility } from '@/domains/business-reports/components/Websit
 import { EcosystemAndTransactions } from '@/domains/business-reports/components/EcosystemAndTransactions/EcosystemAndTransactions';
 import { reportAdapter } from '@/domains/business-reports/adapters/report-adapter/report-adapter';
 import { AdsAndSocialMedia } from '@/domains/business-reports/components/AdsAndSocialMedia/AdsAndSocialMedia';
+import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
+import { safeUrl } from '@/common/utils/safe-url/safe-url';
 
 export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
   const { businessReportId } = useParams();
@@ -191,6 +193,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     [BusinessReportStatus.COMPLETED]: { variant: 'info', text: 'Manual Review' },
     [BusinessReportStatus.IN_PROGRESS]: { variant: 'violet', text: 'In-progress' },
   } as const;
+  const websiteWithNoProtocol = safeUrl(businessReport?.business?.website ?? '')?.hostname;
 
   return (
     <section className="flex h-full flex-col px-6 pb-6 pt-4">
@@ -203,7 +206,9 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
           <ChevronLeft size={18} /> <span>Back</span>
         </Button>
       </div>
-      <h2 className="pb-4 text-2xl font-bold">{businessReport?.business?.companyName}</h2>
+      <TextWithNAFallback as={'h2'} className="pb-4 text-2xl font-bold">
+        {websiteWithNoProtocol}
+      </TextWithNAFallback>
       <div className={`flex space-x-8`}>
         <div className={`flex items-center pb-4`}>
           <span className={`me-4 text-sm leading-6 text-slate-400`}>Status</span>

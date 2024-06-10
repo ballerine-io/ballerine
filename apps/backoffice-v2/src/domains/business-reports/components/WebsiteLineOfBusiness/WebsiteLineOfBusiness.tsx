@@ -23,14 +23,6 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
           </div>
         </CardContent>
       </Card>
-      {/*<Card>*/}
-      {/*  <CardHeader className={'pt-4 font-bold'}>Content Violations Summary</CardHeader>*/}
-      {/*  <CardContent className={'flex flex-col space-y-4'}>*/}
-      {/*    <div>*/}
-      {/*      <h4 className={'mb-4 font-semibold'}>Findings</h4>*/}
-      {/*    </div>*/}
-      {/*  </CardContent>*/}
-      {/*</Card>*/}
     </div>
   );
 };

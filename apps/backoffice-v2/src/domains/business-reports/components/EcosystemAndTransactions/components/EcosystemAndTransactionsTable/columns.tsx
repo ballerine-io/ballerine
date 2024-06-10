@@ -31,7 +31,14 @@ export const columns = [
     header: 'Matched Name',
     cell: info => {
       const matchedName = info.getValue();
-      const matchedNameWithProtocol = `http://${matchedName}`;
+      const addProtocolIfMissing = (url: string) => {
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+          return url;
+        }
+
+        return `http://${url}`;
+      };
+      const matchedNameWithProtocol = addProtocolIfMissing(matchedName);
 
       if (checkIsUrl(matchedNameWithProtocol)) {
         return <BallerineLink href={matchedNameWithProtocol}>{matchedName}</BallerineLink>;

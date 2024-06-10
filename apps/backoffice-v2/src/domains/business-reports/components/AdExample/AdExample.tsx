@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { BallerineImage } from '@/common/components/atoms/BallerineImage';
+import { Image } from '@/common/components/atoms/Image';
 
 export const AdExample: FunctionComponent<{
   src: string;
@@ -8,7 +8,7 @@ export const AdExample: FunctionComponent<{
   return (
     <div>
       <h4 className={'mb-4 font-semibold'}>Ad Example</h4>
-      <BallerineImage src={src} alt={alt} />
+      <Image key={src} src={src} alt={alt} width={'369px'} height={'369px'} />
     </div>
   );
 };

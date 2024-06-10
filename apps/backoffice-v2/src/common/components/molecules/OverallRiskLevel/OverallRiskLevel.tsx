@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { TSeverity } from '@/common/types';
+import { Severity, TSeverity } from '@/common/types';
 import { getSeverityFromRiskScore } from '@/common/utils/get-severity-from-risk-score';
 import { Card } from '@/common/components/atoms/Card/Card';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
@@ -77,6 +77,9 @@ export const OverallRiskLevel: FunctionComponent<{
                     severityToTextClassName[
                       riskLevel.toUpperCase() as keyof typeof severityToTextClassName
                     ],
+                    {
+                      'text-destructive': riskLevel === Severity.CRITICAL,
+                    },
                   )}
                 >
                   {titleCase(riskLevel ?? '')}

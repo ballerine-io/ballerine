@@ -10,23 +10,26 @@ const getLabel = ({ label, provider }: { label: string; provider: string }) => {
   return label;
 };
 
+const toRiskLabels = (riskIndicators: Array<{ name: string; riskLevel: string }>) => {
+  if (!Array.isArray(riskIndicators) || !riskIndicators.length) {
+    return [];
+  }
+
+  return riskIndicators.map(({ name, riskLevel }) => ({
+    label: name,
+    severity: riskLevel,
+  }));
+};
+
 export const reportAdapter = {
   DEFAULT: (data: Record<string, any>) => {
     return {
-      websitesCompanyAnalysis:
-        data?.report?.data?.summary?.riskIndicatorsByDomain?.companyNameViolations?.map(
-          ({ name, riskLevel }) => ({
-            label: name,
-            severity: riskLevel,
-          }),
-        ),
-      adsAndSocialMediaAnalysis:
-        data?.report?.data?.summary?.riskIndicatorsByDomain?.adsAndSocialViolations?.map(
-          ({ name, riskLevel }) => ({
-            label: name,
-            severity: riskLevel,
-          }),
-        ),
+      websitesCompanyAnalysis: toRiskLabels(
+        data?.report?.data?.summary?.riskIndicatorsByDomain?.companyNameViolations,
+      ),
+      adsAndSocialMediaAnalysis: toRiskLabels(
+        data?.report?.data?.summary?.riskIndicatorsByDomain?.adsAndSocialViolations,
+      ),
       adsAndSocialMediaPresence: Object.entries(data?.report?.data?.socialMedia?.ads ?? {})
         .map(([provider, data]) => {
           if (!AdsProviders.includes(provider.toUpperCase() as TAdsProvider)) {
@@ -49,20 +52,12 @@ export const reportAdapter = {
           };
         })
         ?.filter(Boolean),
-      websiteLineOfBusinessAnalysis:
-        data?.report?.data?.summary?.riskIndicatorsByDomain?.lineOfBusinessViolations?.map(
-          ({ name, riskLevel }) => ({
-            label: name,
-            severity: riskLevel,
-          }),
-        ),
-      ecosystemAndTransactionsAnalysis:
-        data?.report?.data?.summary?.riskIndicatorsByDomain?.ecosystemViolations?.map(
-          ({ name, riskLevel }) => ({
-            label: name,
-            severity: riskLevel,
-          }),
-        ),
+      websiteLineOfBusinessAnalysis: toRiskLabels(
+        data?.report?.data?.summary?.riskIndicatorsByDomain?.lineOfBusinessViolations,
+      ),
+      ecosystemAndTransactionsAnalysis: toRiskLabels(
+        data?.report?.data?.summary?.riskIndicatorsByDomain?.ecosystemViolations,
+      ),
       ecosystemAndTransactionsMatches: data?.report?.data?.ecosystem?.domains?.map(
         ({ domain, relatedNode, relatedNodeType, indicator }) => ({
           matchedName: domain,
@@ -74,13 +69,9 @@ export const reportAdapter = {
           },
         }),
       ),
-      websiteCredibilityAnalysis:
-        data?.report?.data?.summary?.riskIndicatorsByDomain?.tldViolations?.map(
-          ({ name, riskLevel }) => ({
-            label: name,
-            severity: riskLevel,
-          }),
-        ),
+      websiteCredibilityAnalysis: toRiskLabels(
+        data?.report?.data?.summary?.riskIndicatorsByDomain?.tldViolations,
+      ),
       adsImages: Object.entries(data?.report?.data?.socialMedia?.ads ?? {} ?? {})
         .map(([provider, data]) => ({
           provider,
@@ -92,7 +83,7 @@ export const reportAdapter = {
         data => data?.pickedAd?.link,
       ),
       onlineReputationAnalysis: data?.report?.data?.websiteScamAnalysis?.riskIndicators?.map(
-        ({ name }) => name,
+        ({ name, sourceUrl }) => ({ label: name, url: sourceUrl }),
       ),
       summary: data?.report?.data?.summary?.summary,
       riskScore: data?.report?.data?.summary?.riskScore,
@@ -127,20 +118,12 @@ export const reportAdapter = {
   },
   v1: (data: Record<string, any>) => {
     return {
-      websitesCompanyAnalysis:
-        data?.report?.data?.summary?.riskIndicatorsByDomain?.companyNameViolations?.map(
-          ({ name, riskLevel }) => ({
-            label: name,
-            severity: riskLevel,
-          }),
-        ),
-      adsAndSocialMediaAnalysis:
-        data?.report?.data?.summary?.riskIndicatorsByDomain?.adsAndSocialViolations?.map(
-          ({ name, riskLevel }) => ({
-            label: name,
-            severity: riskLevel,
-          }),
-        ),
+      websitesCompanyAnalysis: toRiskLabels(
+        data?.report?.data?.summary?.riskIndicatorsByDomain?.companyNameViolations,
+      ),
+      adsAndSocialMediaAnalysis: toRiskLabels(
+        data?.report?.data?.summary?.riskIndicatorsByDomain?.adsAndSocialViolations,
+      ),
       adsAndSocialMediaPresence: Object.entries(data?.report?.data?.socialMedia?.ads ?? {})
         .map(([provider, data]) => {
           if (!AdsProviders.includes(provider.toUpperCase() as TAdsProvider)) {
@@ -163,20 +146,12 @@ export const reportAdapter = {
           };
         })
         ?.filter(Boolean),
-      websiteLineOfBusinessAnalysis:
-        data?.report?.data?.summary?.riskIndicatorsByDomain?.lineOfBusinessViolations?.map(
-          ({ name, riskLevel }) => ({
-            label: name,
-            severity: riskLevel,
-          }),
-        ),
-      ecosystemAndTransactionsAnalysis:
-        data?.report?.data?.summary?.riskIndicatorsByDomain?.ecosystemViolations?.map(
-          ({ name, riskLevel }) => ({
-            label: name,
-            severity: riskLevel,
-          }),
-        ),
+      websiteLineOfBusinessAnalysis: toRiskLabels(
+        data?.report?.data?.summary?.riskIndicatorsByDomain?.lineOfBusinessViolations,
+      ),
+      ecosystemAndTransactionsAnalysis: toRiskLabels(
+        data?.report?.data?.summary?.riskIndicatorsByDomain?.ecosystemViolations,
+      ),
       ecosystemAndTransactionsMatches: data?.report?.data?.ecosystem?.domains?.map(
         ({ domain, relatedNode, relatedNodeType, indicator }) => ({
           matchedName: domain,
@@ -188,13 +163,9 @@ export const reportAdapter = {
           },
         }),
       ),
-      websiteCredibilityAnalysis:
-        data?.report?.data?.summary?.riskIndicatorsByDomain?.tldViolations?.map(
-          ({ name, riskLevel }) => ({
-            label: name,
-            severity: riskLevel,
-          }),
-        ),
+      websiteCredibilityAnalysis: toRiskLabels(
+        data?.report?.data?.summary?.riskIndicatorsByDomain?.tldViolations,
+      ),
       adsImages: Object.entries(data?.report?.data?.socialMedia?.ads ?? {} ?? {})
         .map(([provider, data]) => ({
           provider,
@@ -206,7 +177,7 @@ export const reportAdapter = {
         data => data?.pickedAd?.link,
       ),
       onlineReputationAnalysis: data?.report?.data?.websiteScamAnalysis?.riskIndicators?.map(
-        ({ name }) => name,
+        ({ name, sourceUrl }) => ({ label: name, url: sourceUrl }),
       ),
       summary: data?.report?.data?.summary?.summary,
       riskScore: data?.report?.data?.summary?.riskScore,

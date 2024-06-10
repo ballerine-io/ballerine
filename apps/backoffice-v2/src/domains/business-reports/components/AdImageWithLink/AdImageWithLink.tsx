@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
-import { BallerineImage } from '@/common/components/atoms/BallerineImage';
 import { buttonVariants } from '@/common/components/atoms/Button/Button';
+import { Image } from '@/common/components/atoms/Image';
 
 export const AdImageWithLink: FunctionComponent<{
   title: string;
@@ -11,7 +11,7 @@ export const AdImageWithLink: FunctionComponent<{
   return (
     <div>
       <h4 className={'mb-4 font-semibold'}>{title}</h4>
-      <BallerineImage src={src} alt={alt} className={'mb-4'} />
+      <Image key={src} src={src} alt={alt} width={'369px'} height={'369px'} className={'mb-4'} />
       <a
         className={buttonVariants({
           variant: 'link',
