@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactNode, useCallback } from 'react';
+import React, { FunctionComponent, ReactNode, useCallback, useMemo } from 'react';
 import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
 import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
@@ -90,82 +90,108 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     }>;
   }>;
 
-  const tabs = [
-    {
-      label: 'Summary',
-      value: 'summary',
-      content: (
-        <BusinessReportSummary
-          summary={summary}
-          riskScore={riskScore}
-          riskIndicators={riskIndicators}
-          recommendations={recommendations ?? []}
-          riskLevels={riskLevels}
-        />
-      ),
-    },
-    {
-      label: "Website's Company",
-      value: 'websitesCompany',
-      content: (
-        <WebsitesCompany
-          companyReputationAnalysis={companyReputationAnalysis ?? []}
-          violations={websitesCompanyAnalysis ?? []}
-        />
-      ),
-    },
-    {
-      label: 'Website Line of Business',
-      value: 'websiteLineOfBusiness',
-      content: (
-        <WebsiteLineOfBusiness
-          violations={websiteLineOfBusinessAnalysis ?? []}
-          summary={lineOfBusinessDescription}
-        />
-      ),
-    },
-    {
-      label: 'Website Credibility',
-      value: 'websiteCredibility',
-      content: (
-        <WebsiteCredibility
-          violations={websiteCredibilityAnalysis ?? []}
-          onlineReputationAnalysis={onlineReputationAnalysis ?? []}
-          pricingAnalysis={pricingAnalysis}
-          websiteStructureAndContentEvaluation={websiteStructureAndContentEvaluation}
-          trafficAnalysis={trafficAnalysis}
-        />
-      ),
-    },
-    {
-      label: 'Ecosystem and Transactions',
-      value: 'ecosystemAndTransactions',
-      content: (
-        <EcosystemAndTransactions
-          violations={ecosystemAndTransactionsAnalysis ?? []}
-          matches={ecosystemAndTransactionsMatches ?? []}
-        />
-      ),
-    },
-    {
-      label: 'Ads and Social Media',
-      value: 'adsAndSocialMedia',
-      content: (
-        <AdsAndSocialMedia
-          violations={adsAndSocialMediaAnalysis ?? []}
-          mediaPresence={adsAndSocialMediaPresence ?? []}
-          adsImages={adsImages}
-          relatedAdsImages={relatedAdsImages}
-          relatedAdsSummary={relatedAdsSummary}
-        />
-      ),
-    },
-  ] as const satisfies ReadonlyArray<{
-    label: string;
-    value: string;
-    content: ReactNode | ReactNode[];
-  }>;
-  const tabsValues = tabs.map(tab => tab.value);
+  const tabs = useMemo(
+    () =>
+      [
+        {
+          label: 'Summary',
+          value: 'summary',
+          content: (
+            <BusinessReportSummary
+              summary={summary}
+              riskScore={riskScore}
+              riskIndicators={riskIndicators}
+              recommendations={recommendations ?? []}
+              riskLevels={riskLevels}
+            />
+          ),
+        },
+        {
+          label: "Website's Company",
+          value: 'websitesCompany',
+          content: (
+            <WebsitesCompany
+              companyReputationAnalysis={companyReputationAnalysis ?? []}
+              violations={websitesCompanyAnalysis ?? []}
+            />
+          ),
+        },
+        {
+          label: 'Website Line of Business',
+          value: 'websiteLineOfBusiness',
+          content: (
+            <WebsiteLineOfBusiness
+              violations={websiteLineOfBusinessAnalysis ?? []}
+              summary={lineOfBusinessDescription}
+            />
+          ),
+        },
+        {
+          label: 'Website Credibility',
+          value: 'websiteCredibility',
+          content: (
+            <WebsiteCredibility
+              violations={websiteCredibilityAnalysis ?? []}
+              onlineReputationAnalysis={onlineReputationAnalysis ?? []}
+              pricingAnalysis={pricingAnalysis}
+              websiteStructureAndContentEvaluation={websiteStructureAndContentEvaluation}
+              trafficAnalysis={trafficAnalysis}
+            />
+          ),
+        },
+        {
+          label: 'Ecosystem and Transactions',
+          value: 'ecosystemAndTransactions',
+          content: (
+            <EcosystemAndTransactions
+              violations={ecosystemAndTransactionsAnalysis ?? []}
+              matches={ecosystemAndTransactionsMatches ?? []}
+            />
+          ),
+        },
+        {
+          label: 'Ads and Social Media',
+          value: 'adsAndSocialMedia',
+          content: (
+            <AdsAndSocialMedia
+              violations={adsAndSocialMediaAnalysis ?? []}
+              mediaPresence={adsAndSocialMediaPresence ?? []}
+              adsImages={adsImages}
+              relatedAdsImages={relatedAdsImages}
+              relatedAdsSummary={relatedAdsSummary}
+            />
+          ),
+        },
+      ] as const satisfies ReadonlyArray<{
+        label: string;
+        value: string;
+        content: ReactNode | ReactNode[];
+      }>,
+    [
+      adsAndSocialMediaAnalysis,
+      adsAndSocialMediaPresence,
+      adsImages,
+      companyReputationAnalysis,
+      ecosystemAndTransactionsAnalysis,
+      ecosystemAndTransactionsMatches,
+      lineOfBusinessDescription,
+      onlineReputationAnalysis,
+      pricingAnalysis,
+      recommendations,
+      relatedAdsImages,
+      relatedAdsSummary,
+      riskIndicators,
+      riskLevels,
+      riskScore,
+      summary,
+      trafficAnalysis,
+      websiteCredibilityAnalysis,
+      websiteLineOfBusinessAnalysis,
+      websiteStructureAndContentEvaluation,
+      websitesCompanyAnalysis,
+    ],
+  );
+  const tabsValues = useMemo(() => tabs.map(tab => tab.value), [tabs]);
   const MerchantMonitoringBusinessReportSearchSchema = z.object({
     activeTab: z
       .enum(
