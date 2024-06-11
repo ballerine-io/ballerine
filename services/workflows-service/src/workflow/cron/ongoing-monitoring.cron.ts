@@ -83,14 +83,6 @@ export class OngoingMonitoringCron {
               ),
             );
 
-            if (!lastReceivedReport.reportId) {
-              this.logger.error(
-                `Failed to Invoke Ongoing Report for businessId: ${business.id} - Last report id not found`,
-              );
-
-              continue;
-            }
-
             if (dateToRunReport <= new Date()) {
               await this.invokeOngoingAuditReport({
                 business: business as Business & {
