@@ -19,7 +19,7 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
         <CardContent className={'flex flex-col space-y-4'}>
           <div>
             <h4 className={'mb-4 font-semibold'}>LOB Description</h4>
-            <p>{description ?? 'No description found.'}</p>
+            <p>{description || 'No description found.'}</p>
           </div>
         </CardContent>
       </Card>
