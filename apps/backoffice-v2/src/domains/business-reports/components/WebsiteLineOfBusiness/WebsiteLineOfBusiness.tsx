@@ -9,8 +9,8 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
     label: string;
     severity: string;
   }>;
-  summary: string;
-}> = ({ violations, summary }) => {
+  description: string;
+}> = ({ violations, description }) => {
   return (
     <div className={'space-y-8'}>
       <RiskIndicators violations={violations} />
@@ -19,7 +19,7 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
         <CardContent className={'flex flex-col space-y-4'}>
           <div>
             <h4 className={'mb-4 font-semibold'}>LOB Description</h4>
-            <p>{summary}</p>
+            <p>{description ?? 'No description found.'}</p>
           </div>
         </CardContent>
       </Card>
