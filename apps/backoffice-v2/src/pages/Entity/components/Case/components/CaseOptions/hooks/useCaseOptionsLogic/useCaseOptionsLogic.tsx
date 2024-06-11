@@ -5,11 +5,7 @@ import { useGeneratePDFMutation } from '@/pages/Entity/components/Case/component
 export const useCaseOptionsLogic = () => {
   const { data: workflow } = useCurrentCaseQuery();
   const { data: customer } = useCustomerQuery();
-  const {
-    isLoading,
-    mutate: generateAndOpenPDFInNewTab,
-    data: pdfUrl,
-  } = useGeneratePDFMutation({
+  const { isLoading, mutate: generateAndOpenPDFInNewTab } = useGeneratePDFMutation({
     workflow,
     customer,
   });
@@ -17,6 +13,5 @@ export const useCaseOptionsLogic = () => {
   return {
     isGeneratingPDF: isLoading,
     generateAndOpenPDFInNewTab,
-    pdfUrl,
   };
 };
