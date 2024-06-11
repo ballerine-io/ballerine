@@ -19,7 +19,7 @@ export const SubscriptionSchema = z.discriminatedUnion('type', [
 ]);
 
 type SortableProperties<T> = {
-  [K in keyof T]: T[K] extends Prisma.SortOrder | undefined ? K : never;
+  [K in keyof T]: T[K] extends Prisma.SortOrder | Prisma.SortOrderInput | undefined ? K : never;
 }[keyof T];
 
 export type SortableByModel<T> = Array<Exclude<SortableProperties<T>, undefined>>;

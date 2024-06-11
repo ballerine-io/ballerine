@@ -94,4 +94,8 @@ export class BusinessReportService {
   ) {
     return await this.businessReportRepository.findById(id, projectIds, args);
   }
+
+  async updateById(...args: Parameters<BusinessReportRepository['updateById']>) {
+    return await this.businessReportRepository.updateById(...args);
+  }
 }

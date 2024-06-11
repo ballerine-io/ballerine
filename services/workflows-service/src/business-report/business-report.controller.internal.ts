@@ -85,18 +85,38 @@ export class BusinessReportControllerInternal {
         })) ?? undefined;
     }
 
-    await axios.post(
+    const businessReport = await this.businessReportService.create({
+      data: {
+        type: reportType,
+        status: BusinessReportStatus.new,
+        report: {},
+        businessId: business!.id,
+        projectId: currentProjectId,
+      },
+    });
+
+    const response = await axios.post(
       `${env.UNIFIED_API_URL}/tld/reports`,
       {
         websiteUrl,
         countryCode,
         merchantName,
         reportType,
-        callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${business?.id}`,
+        callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${business?.id}&businessReportId=${businessReport.id}`,
       },
       {
         headers: {
           Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
+        },
+      },
+    );
+
+    await this.businessReportService.updateById(
+      { id: businessReport.id },
+      {
+        data: {
+          reportId: response.data.reportId,
+          status: BusinessReportStatus.in_progress,
         },
       },
     );
@@ -110,25 +130,18 @@ export class BusinessReportControllerInternal {
   @Public()
   @VerifyUnifiedApiSignatureDecorator()
   async createBusinessReportCallback(
-    @Query() searchQueryParams: BusinessReportHookSearchQueryParamsDto,
+    @Query() { businessReportId, businessId }: BusinessReportHookSearchQueryParamsDto,
     @Body()
-    {
-      reportData: unvalidatedReportData,
-      base64Pdf,
-      reportId,
-      reportType,
-    }: BusinessReportHookBodyDto,
+    { reportData: unvalidatedReportData, base64Pdf, reportId }: BusinessReportHookBodyDto,
   ) {
-    const business = await this.businessService.getByCorrelationIdUnscoped(
-      searchQueryParams.businessId,
-      {
-        select: {
-          id: true,
-          companyName: true,
-          projectId: true,
-        },
+    const business = await this.businessService.getByCorrelationIdUnscoped(businessId, {
+      select: {
+        id: true,
+        companyName: true,
+        projectId: true,
       },
-    );
+    });
+
     const customer = await this.customerService.getByProjectId(business.projectId);
     const reportData = ReportWithRiskScoreSchema.parse(unvalidatedReportData);
     const { pdfReportBallerineFileId } =
@@ -144,20 +157,19 @@ export class BusinessReportControllerInternal {
         base64PDFString: base64Pdf as string,
       });
 
-    const businessReport = await this.businessReportService.create({
-      data: {
-        type: reportType,
-        riskScore: reportData.summary.riskScore,
-        status: BusinessReportStatus.completed,
-        report: {
-          reportFileId: pdfReportBallerineFileId,
-          data: reportData as InputJsonValue,
+    const businessReport = await this.businessReportService.updateById(
+      { id: businessReportId },
+      {
+        data: {
+          riskScore: reportData.summary.riskScore,
+          status: BusinessReportStatus.completed,
+          report: {
+            reportFileId: pdfReportBallerineFileId,
+            data: reportData as InputJsonValue,
+          },
         },
-        reportId,
-        businessId: business.id,
-        projectId: business.projectId,
       },
-    });
+    );
 
     this.alertService
       .checkOngoingMonitoringAlert(businessReport, business.companyName)

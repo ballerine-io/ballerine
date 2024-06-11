@@ -17,10 +17,14 @@ export class BusinessReportRepository {
     return await this.prisma.businessReport.create(args);
   }
 
-  async update<T extends Prisma.BusinessReportUpdateArgs>(
+  async updateById<T extends Omit<Prisma.BusinessReportUpdateArgs, 'where'>>(
+    { id }: { id: string },
     args: Prisma.SelectSubset<T, Prisma.BusinessReportUpdateArgs>,
   ) {
-    return await this.prisma.businessReport.update(args);
+    return await this.prisma.businessReport.update({
+      ...args,
+      where: { id },
+    });
   }
   async updateMany<T extends Prisma.BusinessReportUpdateManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessReportUpdateManyArgs>,

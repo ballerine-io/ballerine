@@ -115,6 +115,7 @@ describe('OngoingMonitoringCron', () => {
       return Promise.resolve([
         {
           id: 'mockReport1',
+          reportId: 'mockReport1',
           createdAt: new Date(new Date().setDate(new Date().getDate() - 30)),
           report: { reportId: 'mockReport1' },
         },
