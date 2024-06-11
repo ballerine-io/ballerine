@@ -4,9 +4,13 @@ import { Card } from '@/common/components/atoms/Card/Card';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { ctw } from '@/common/utils/ctw/ctw';
+import { BallerineLink } from '@/common/components/atoms/BallerineLink/BallerineLink';
 
 export const WebsitesCompany: FunctionComponent<{
-  companyReputationAnalysis: string[];
+  companyReputationAnalysis: Array<{
+    label: string;
+    url: string;
+  }>;
   violations: Array<{
     label: string;
     severity: string;
@@ -24,9 +28,14 @@ export const WebsitesCompany: FunctionComponent<{
             })}
           >
             {!!companyReputationAnalysis?.length &&
-              companyReputationAnalysis.map(warning => (
-                <li key={warning} className={'list-decimal'}>
-                  {warning}
+              companyReputationAnalysis.map(({ label, url }) => (
+                <li key={label} className={'list-decimal'}>
+                  {label}
+                  {!!url && (
+                    <span className={'ms-4'}>
+                      (<BallerineLink href={url}>source</BallerineLink>)
+                    </span>
+                  )}
                 </li>
               ))}
             {!companyReputationAnalysis?.length && <li>No reputation analysis found.</li>}

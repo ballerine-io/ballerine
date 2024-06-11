@@ -122,7 +122,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
           content: (
             <WebsiteLineOfBusiness
               violations={websiteLineOfBusinessAnalysis ?? []}
-              summary={lineOfBusinessDescription}
+              description={lineOfBusinessDescription}
             />
           ),
         },

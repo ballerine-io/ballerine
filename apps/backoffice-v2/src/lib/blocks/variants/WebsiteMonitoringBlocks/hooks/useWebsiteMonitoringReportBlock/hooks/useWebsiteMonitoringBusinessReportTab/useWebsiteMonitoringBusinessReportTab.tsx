@@ -58,7 +58,7 @@ export const useWebsiteMonitoringBusinessReportTab = ({
           content: (
             <WebsiteLineOfBusiness
               violations={websiteLineOfBusinessAnalysis ?? []}
-              summary={lineOfBusinessDescription}
+              description={lineOfBusinessDescription}
             />
           ),
         },
