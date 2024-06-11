@@ -245,6 +245,8 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
             }
             className={ctw(`text-sm font-bold`, {
               'bg-info/20 text-info': businessReport?.status === BusinessReportStatus.COMPLETED,
+              'bg-violet-500/20 text-violet-500':
+                businessReport?.status === BusinessReportStatus.IN_PROGRESS,
             })}
           >
             {statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]?.text}

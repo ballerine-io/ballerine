@@ -9,6 +9,7 @@ import { useCallback, useMemo } from 'react';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { MerchantMonitoringCreateBusinessReportPageSearchSchema } from '@/pages/MerchantMonitoringCreateCheck/hooks/useMerchantMonitoringCreateBusinessReportPageLogic/merchant-monitoring-create-business-report-page-search-schema';
 import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/userCustomerQuery';
+import { useNavigate } from 'react-router-dom';
 
 export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
   const form = useForm({
@@ -21,10 +22,11 @@ export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
     resolver: zodResolver(CreateBusinessReportSchema),
   });
   const { isLoading: isLoadingCustomer } = useCustomerQuery();
+  const navigate = useNavigate();
   const { mutate: mutateCreateBusinessReport } = useCreateBusinessReportMutation({
     reportType: 'MERCHANT_REPORT_T1',
     onSuccess: () => {
-      form.reset();
+      navigate(`/${locale}/merchant-monitoring`);
     },
   });
   const onSubmit: SubmitHandler<z.output<typeof CreateBusinessReportSchema>> = data => {

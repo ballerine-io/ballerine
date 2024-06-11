@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { t } from 'i18next';
 
 export const BusinessReportStatus = {
+  NEW: 'new',
   IN_PROGRESS: 'in_progress',
   COMPLETED: 'completed',
 } as const;
@@ -18,6 +19,7 @@ export type TBusinessReportStatus = TObjectValues<typeof BusinessReportStatus>;
 export type TBusinessReportStatuses = TBusinessReportStatus[];
 
 export const BusinessReportStatuses = [
+  BusinessReportStatus.NEW,
   BusinessReportStatus.IN_PROGRESS,
   BusinessReportStatus.COMPLETED,
 ] as const satisfies readonly TBusinessReportStatus[];
@@ -39,11 +41,11 @@ export const BusinessReportSchema = z
     id: z.string(),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
-    riskScore: z.number(),
+    riskScore: z.number().nullable(),
     status: z.enum(BusinessReportStatuses),
     report: z.object({
-      reportFileId: z.string(),
-      data: z.record(z.string(), z.unknown()),
+      reportFileId: z.union([z.string(), z.undefined()]),
+      data: z.union([z.record(z.string(), z.unknown()), z.undefined()]),
     }),
     business: z
       .object({
