@@ -207,6 +207,7 @@ export class HookCallbackHandlerService {
         update: {
           type: reportType as BusinessReportType,
           riskScore: reportData.summary.riskScore,
+          status: BusinessReportStatus.completed,
           report: {
             reportFileId: pdfReportBallerineFileId,
             data: reportData as InputJsonValue,

@@ -42,6 +42,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { AlertModule } from '@/alert/alert.module';
 import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
 import { AlertDefinitionModule } from '@/alert-definition/alert-definition.module';
+import { BusinessReportService } from '@/business-report/business-report.service';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
@@ -52,7 +53,7 @@ import { AlertDefinitionModule } from '@/alert-definition/alert-definition.modul
     ProjectModule,
     PrismaModule,
     CustomerModule,
-    BusinessReportModule,
+    forwardRef(() => BusinessReportModule),
     WorkflowDefinitionModule,
     AlertModule,
     BusinessModule,
@@ -65,6 +66,7 @@ import { AlertDefinitionModule } from '@/alert-definition/alert-definition.modul
     ProjectScopeService,
     EndUserRepository,
     EndUserService,
+    BusinessReportService,
     BusinessRepository,
     BusinessService,
     EntityRepository,

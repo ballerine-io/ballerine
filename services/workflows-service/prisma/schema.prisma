@@ -848,6 +848,7 @@ model Counterparty {
 }
 
 enum BusinessReportStatus {
+  new
   in_progress
   completed
 }
@@ -855,10 +856,10 @@ enum BusinessReportStatus {
 model BusinessReport {
   id       String             @id @default(cuid())
   type     BusinessReportType
-  reportId String             @unique
+  reportId String?            @unique
   report   Json
 
-  riskScore  Int
+  riskScore  Int?
   status BusinessReportStatus
   businessId String
   business   Business @relation(fields: [businessId], references: [id])

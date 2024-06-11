@@ -77,7 +77,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
       violations: websiteLineOfBusinessAnalysis ?? [],
     },
     {
-      title: 'Ecosystem and Transactions Analysis View',
+      title: 'Ecosystem and Transactions Analysis',
       search: '?activeTab=ecosystemAndTransactions',
       violations: ecosystemAndTransactionsAnalysis ?? [],
     },

@@ -153,7 +153,7 @@ export const useWebsiteMonitoringBusinessReportTab = ({
       violations: websiteLineOfBusinessAnalysis ?? [],
     },
     {
-      title: 'Ecosystem and Transactions Analysis View',
+      title: 'Ecosystem and Transactions Analysis',
       search: updateActiveTab({ tab: 'ecosystemAndTransactions', search }),
       violations: ecosystemAndTransactionsAnalysis ?? [],
     },

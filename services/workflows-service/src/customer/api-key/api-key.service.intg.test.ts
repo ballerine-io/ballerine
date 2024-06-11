@@ -10,7 +10,6 @@ import { Customer, PrismaClient } from '@prisma/client';
 import { ClsModule } from 'nestjs-cls';
 import { ApiKeyService } from './api-key.service';
 import { ApiKeyRepository } from './api-key.repository';
-import { SALT } from './utils';
 
 describe('#ApiKeyService', () => {
   let app: INestApplication;

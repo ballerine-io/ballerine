@@ -9,4 +9,12 @@ export class BusinessReportHookSearchQueryParamsDto {
   @IsString()
   @MinLength(1)
   businessId!: string;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @MinLength(1)
+  businessReportId!: string;
 }

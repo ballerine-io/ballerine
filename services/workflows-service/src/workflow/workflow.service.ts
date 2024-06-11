@@ -70,6 +70,8 @@ import {
 import {
   ApprovalState,
   BusinessPosition,
+  BusinessReportStatus,
+  BusinessReportType,
   EndUser,
   Prisma,
   PrismaClient,
@@ -99,6 +101,7 @@ import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repositor
 import { Static } from '@sinclair/typebox';
 import dayjs from 'dayjs';
 import { entitiesUpdate } from './utils/entities-update';
+import { BusinessReportService } from '@/business-report/business-report.service';
 
 type TEntityId = string;
 
@@ -121,6 +124,7 @@ export class WorkflowService {
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly endUserRepository: EndUserRepository,
     protected readonly endUserService: EndUserService,
+    protected readonly businessReportService: BusinessReportService,
     protected readonly businessRepository: BusinessRepository,
     protected readonly businessService: BusinessService,
     protected readonly entityRepository: EntityRepository,
@@ -1968,6 +1972,28 @@ export class WorkflowService {
           businessId: workflowRuntimeData.businessId,
           sendEvent: e => service.sendEvent(e),
           payload: typedPayload,
+        });
+      });
+
+      service.subscribe('PERSIST_BUSINESS_REPORT', async ({ payload }) => {
+        if (!payload?.reportId || !payload.reportType) {
+          return;
+        }
+
+        const typedPayload = payload as {
+          reportId: string;
+          reportType: BusinessReportType;
+        };
+
+        await this.businessReportService.create({
+          data: {
+            report: {},
+            businessId: workflowRuntimeData.context.entity.ballerineEntityId,
+            projectId: currentProjectId,
+            reportId: typedPayload.reportId,
+            type: typedPayload.reportType,
+            status: BusinessReportStatus.in_progress,
+          },
         });
       });
 

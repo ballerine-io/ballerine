@@ -10,7 +10,9 @@ import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
 // eslint-disable-next-line import/no-cycle
 import { WorkflowModule } from '@/workflow/workflow.module';
 import { AlertModule } from '@/alert/alert.module';
+// eslint-disable-next-line import/no-cycle
 import { EndUserModule } from '@/end-user/end-user.module';
+// eslint-disable-next-line import/no-cycle
 import { BusinessModule } from '@/business/business.module';
 import { CustomerModule } from '@/customer/customer.module';
 
@@ -18,7 +20,7 @@ import { CustomerModule } from '@/customer/customer.module';
   controllers: [BusinessReportControllerInternal],
   imports: [
     forwardRef(() => WorkflowModule),
-    EndUserModule,
+    forwardRef(() => EndUserModule),
     PrismaModule,
     ProjectModule,
     HttpModule,
