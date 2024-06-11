@@ -134,7 +134,7 @@ export class BusinessReportControllerInternal {
     @Body()
     { reportData: unvalidatedReportData, base64Pdf, reportId }: BusinessReportHookBodyDto,
   ) {
-    const business = await this.businessService.getByCorrelationIdUnscoped(businessId, {
+    const business = await this.businessService.getByIdUnscoped(businessId, {
       select: {
         id: true,
         companyName: true,

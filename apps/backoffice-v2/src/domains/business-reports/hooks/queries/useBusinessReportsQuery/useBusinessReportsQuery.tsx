@@ -30,5 +30,6 @@ export const useBusinessReportsQuery = ({
       !!page &&
       !!pageSize,
     staleTime: 100_000,
+    refetchInterval: 1_000_000,
   });
 };

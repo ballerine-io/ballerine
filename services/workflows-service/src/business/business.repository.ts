@@ -53,12 +53,12 @@ export class BusinessRepository {
     );
   }
 
-  async findByCorrelationIdUnscoped<T extends Omit<Prisma.BusinessFindFirstOrThrowArgs, 'where'>>(
-    correlationId: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.BusinessFindFirstOrThrowArgs, 'where'>>,
+  async findByIdUnscoped<T extends Omit<Prisma.BusinessFindUniqueOrThrowArgs, 'where'>>(
+    id: string,
+    args: Prisma.SelectSubset<T, Omit<Prisma.BusinessFindUniqueOrThrowArgs, 'where'>>,
   ) {
-    return await this.prisma.business.findFirstOrThrow({
-      where: { correlationId },
+    return await this.prisma.business.findUniqueOrThrow({
+      where: { id },
       ...args,
     });
   }
