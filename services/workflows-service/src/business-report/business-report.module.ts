@@ -12,6 +12,7 @@ import { WorkflowModule } from '@/workflow/workflow.module';
 import { AlertModule } from '@/alert/alert.module';
 // eslint-disable-next-line import/no-cycle
 import { EndUserModule } from '@/end-user/end-user.module';
+// eslint-disable-next-line import/no-cycle
 import { BusinessModule } from '@/business/business.module';
 import { CustomerModule } from '@/customer/customer.module';
 
