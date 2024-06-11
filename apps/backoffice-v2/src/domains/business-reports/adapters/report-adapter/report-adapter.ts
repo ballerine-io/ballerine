@@ -90,7 +90,9 @@ export const reportAdapter = {
       riskLevels: data?.report?.data?.summary?.riskLevels,
       recommendations: data?.report?.data?.summary?.recommendations,
       companyReputationAnalysis:
-        data?.report?.data?.websiteCompanyAnalysis?.scamOrFraud?.indicators,
+        data?.report?.data?.websiteCompanyAnalysis?.scamOrFraud?.indicators?.map(
+          ({ violation, sourceUrl }) => ({ label: violation, url: sourceUrl }),
+        ),
       lineOfBusinessDescription: data?.report?.data?.lineOfBusiness?.lobDescription,
       relatedAdsSummary: data?.report?.data?.socialMedia?.relatedAds?.summary,
       pricingAnalysis: data?.report?.data?.pricing?.riskIndicators?.map(({ name }) => name),
@@ -184,7 +186,9 @@ export const reportAdapter = {
       riskLevels: data?.report?.data?.summary?.riskLevels,
       recommendations: data?.report?.data?.summary?.recommendations,
       companyReputationAnalysis:
-        data?.report?.data?.websiteCompanyAnalysis?.scamOrFraud?.indicators,
+        data?.report?.data?.websiteCompanyAnalysis?.scamOrFraud?.indicators?.map(
+          ({ violation, sourceUrl }) => ({ label: violation, url: sourceUrl }),
+        ),
       lineOfBusinessDescription: data?.report?.data?.lineOfBusiness?.lobDescription,
       relatedAdsSummary: data?.report?.data?.socialMedia?.relatedAds?.summary,
       pricingAnalysis: data?.report?.data?.pricing?.riskIndicators?.map(({ name }) => name),
