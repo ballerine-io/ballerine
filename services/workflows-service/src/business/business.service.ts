@@ -46,11 +46,8 @@ export class BusinessService {
     return await this.repository.findById(id, args, projectIds);
   }
 
-  async getByCorrelationIdUnscoped(
-    id: string,
-    args: Parameters<BusinessRepository['findByCorrelationIdUnscoped']>[1],
-  ) {
-    return await this.repository.findByCorrelationIdUnscoped(id, args);
+  async getByIdUnscoped(id: string, args: Parameters<BusinessRepository['findByIdUnscoped']>[1]) {
+    return await this.repository.findByIdUnscoped(id, args);
   }
 
   async getByCorrelationId(
