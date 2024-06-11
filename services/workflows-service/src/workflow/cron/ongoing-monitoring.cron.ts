@@ -70,7 +70,7 @@ export class OngoingMonitoringCron {
             const intervalInDays = processConfig.intervalInDays;
             const lastReceivedReport = await this.findLastBusinessReport(business, projectIds);
 
-            if (!lastReceivedReport) {
+            if (!lastReceivedReport?.reportId) {
               this.logger.debug(`No initial report found for business: ${business.id}`);
 
               continue;
@@ -82,14 +82,6 @@ export class OngoingMonitoringCron {
                 lastReportFinishedDate.getTime() + intervalInDays * 24 * 60 * 60 * 1000,
               ),
             );
-
-            if (!lastReceivedReport.reportId) {
-              this.logger.error(
-                `Failed to Invoke Ongoing Report for businessId: ${business.id} - Last report id not found`,
-              );
-
-              continue;
-            }
 
             if (dateToRunReport <= new Date()) {
               await this.invokeOngoingAuditReport({
