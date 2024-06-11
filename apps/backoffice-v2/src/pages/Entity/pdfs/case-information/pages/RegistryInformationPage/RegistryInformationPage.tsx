@@ -6,26 +6,18 @@ import { CaseInformationPageSectionHeader } from '@/pages/Entity/pdfs/case-infor
 import { ValueOrNone } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage/components/IndividualSanctionsItem/ValueOrNone';
 import { TRegistryInformationData } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/registry-information.schema';
 import { registryItemsAdapter } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/utils/create-registry-items';
-import { Link, Typography, tw } from '@ballerine/react-pdf-toolkit';
+import { Link, tw, Typography } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
 import dayjs from 'dayjs';
 import { FunctionComponent } from 'react';
 
-export interface IRegistryInformationPageProps {
-  data: TRegistryInformationData;
-}
-
-export const RegistryInformationPage: FunctionComponent<IRegistryInformationPageProps> = ({
-  data,
-}) => {
-  const { companyName, logoUrl } = data;
-
+export const RegistryInformationPage: FunctionComponent<TRegistryInformationData> = data => {
   const registryItems = registryItemsAdapter(data);
 
   return (
     <CaseInformationPageContainer>
       <View style={tw('mb-3')}>
-        <CaseInformationPageHeader companyLogo={logoUrl} companyName={companyName} />
+        <CaseInformationPageHeader companyLogo={data.logoUrl} companyName={data.companyName} />
       </View>
       <View style={tw('flex flex-col gap-5')}>
         <CaseInformationPageSection>

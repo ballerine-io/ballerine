@@ -1,7 +1,9 @@
 export const svgToPng = (imageUrl: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
+
     img.crossOrigin = 'Anonymous';
+
     img.onload = () => {
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
@@ -14,9 +16,11 @@ export const svgToPng = (imageUrl: string): Promise<string> => {
 
       resolve(dataUrl);
     };
+
     img.onerror = error => {
       reject(error);
     };
+
     img.src = imageUrl;
   });
 };

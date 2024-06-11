@@ -13,9 +13,9 @@ export class CompanyOwnershipPagePDF extends IPDFRenderer<TCompanyOwnershipData>
     const pdfData = await this.getData();
     this.isValid(pdfData);
 
-    if (this.isEmpty(pdfData)) return <EmptyCompanyOwnershipPage data={pdfData} />;
+    if (this.isEmpty(pdfData)) return <EmptyCompanyOwnershipPage {...pdfData} />;
 
-    return <CompanyOwnershipPage data={pdfData} />;
+    return <CompanyOwnershipPage {...pdfData} />;
   }
 
   async getData() {

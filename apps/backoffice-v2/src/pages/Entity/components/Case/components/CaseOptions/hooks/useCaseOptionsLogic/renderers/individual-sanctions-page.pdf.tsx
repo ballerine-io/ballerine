@@ -16,9 +16,9 @@ export class IndividualSantcionsPagePDF extends IPDFRenderer<TIndividualSanction
     const pdfData = await this.getData();
     this.isValid(pdfData);
 
-    if (this.isEmpty(pdfData)) return <EmptyIndividualSanctionsPage data={pdfData} />;
+    if (this.isEmpty(pdfData)) return <EmptyIndividualSanctionsPage {...pdfData} />;
 
-    return <IndividualSanctionsPage data={pdfData} />;
+    return <IndividualSanctionsPage {...pdfData} />;
   }
 
   async getData() {

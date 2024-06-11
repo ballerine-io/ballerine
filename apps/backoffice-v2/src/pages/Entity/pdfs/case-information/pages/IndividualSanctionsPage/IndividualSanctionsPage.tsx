@@ -10,15 +10,7 @@ import { View } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
 import poweredByLogo from '../../assets/title-page-ballerine-logo.png';
 
-interface IIndividualSanctionsPageProps {
-  data: TIndividualSanctionsData;
-}
-
-export const IndividualSanctionsPage: FunctionComponent<IIndividualSanctionsPageProps> = ({
-  data,
-}) => {
-  const { items } = data;
-
+export const IndividualSanctionsPage: FunctionComponent<TIndividualSanctionsData> = ({ items }) => {
   return (
     <CaseInformationPageContainer>
       <View style={tw('mb-3')}>
@@ -34,7 +26,7 @@ export const IndividualSanctionsPage: FunctionComponent<IIndividualSanctionsPage
             <CaseInformationPageSectionHeader title="Individual PEP/Sanctions" />
             <View style={tw('flex flex-col gap-6')}>
               {items.map((item, index) => (
-                <IndividualSanctionsItem key={index} item={item} />
+                <IndividualSanctionsItem key={index} {...item} />
               ))}
             </View>
             {/* Company Sanctions section --- end */}

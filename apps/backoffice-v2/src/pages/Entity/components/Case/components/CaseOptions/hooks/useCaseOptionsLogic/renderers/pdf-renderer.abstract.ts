@@ -1,6 +1,7 @@
 import { svgToPng } from '@/common/utils/svg-to-png/svg-to-png';
 import { TCustomer } from '@/domains/customer/fetchers';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
+import poweredByLogo from '../../../../../../../pdfs/case-information/assets/title-page-ballerine-logo.png';
 
 export abstract class IPDFRenderer<TPDFData = unknown> {
   static PDF_NAME: string;
@@ -13,7 +14,13 @@ export abstract class IPDFRenderer<TPDFData = unknown> {
 
   abstract isValid(data: TPDFData): void;
 
-  getLogoUrl(): Promise<string> {
-    return svgToPng(this.customer?.logoImageUri || '');
+  async getLogoUrl() {
+    try {
+      return await svgToPng(this.customer?.logoImageUri || '');
+    } catch (error) {
+      console.error(`Failed to convert logo to PNG: ${JSON.stringify(error)}`);
+
+      return poweredByLogo;
+    }
   }
 }

@@ -9,15 +9,11 @@ import { tw } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
 
-interface IIDentityVerificationPageProps {
-  data: TIdentityVerificationsData;
-}
-
-export const IdentityVerificationsPage: FunctionComponent<IIDentityVerificationPageProps> = ({
-  data,
+export const IdentityVerificationsPage: FunctionComponent<TIdentityVerificationsData> = ({
+  logoUrl,
+  companyName,
+  items,
 }) => {
-  const { logoUrl, companyName, items } = data;
-
   return (
     <CaseInformationPageContainer>
       <View style={tw('mb-3')}>
@@ -30,7 +26,7 @@ export const IdentityVerificationsPage: FunctionComponent<IIDentityVerificationP
             <CaseInformationPageSectionHeader title="Individual Identity verifications" />
             <View style={tw('flex flex-col gap-6')}>
               {items.map((item, index) => (
-                <IdentityItem key={index} item={item} />
+                <IdentityItem key={index} {...item} />
               ))}
             </View>
             {/* Individual Identity verifications section --- end */}

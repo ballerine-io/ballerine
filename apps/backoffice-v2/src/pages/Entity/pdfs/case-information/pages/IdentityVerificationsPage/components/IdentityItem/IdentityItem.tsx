@@ -1,17 +1,20 @@
 import { TIdentityVerificationsItemData } from '@/pages/Entity/pdfs/case-information/pages/IdentityVerificationsPage/identity-verifications.schema';
 import { ValueOrNone } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage/components/IndividualSanctionsItem/ValueOrNone';
-import { Typography, tw } from '@ballerine/react-pdf-toolkit';
+import { tw, Typography } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
 
-interface IIdentityItemProps {
-  item: TIdentityVerificationsItemData;
-}
-
-export const IdentityItem: FunctionComponent<IIdentityItemProps> = ({ item }) => {
-  const { checkDate, reason, status, firstName, lastName, dateOfBirth, id, gender, nationality } =
-    item;
-
+export const IdentityItem: FunctionComponent<TIdentityVerificationsItemData> = ({
+  checkDate,
+  reason,
+  status,
+  firstName,
+  lastName,
+  dateOfBirth,
+  id,
+  gender,
+  nationality,
+}) => {
   return (
     <View style={tw('flex flex-col')}>
       <View>

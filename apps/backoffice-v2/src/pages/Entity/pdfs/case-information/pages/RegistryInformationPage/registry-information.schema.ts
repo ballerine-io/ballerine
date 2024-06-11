@@ -1,7 +1,7 @@
 import { BaseCaseInformationPdfSchema } from '@/pages/Entity/pdfs/case-information/schemas/base-case-information-pdf.schema';
 import { z } from 'zod';
 
-export const ReigstryInformationSchema = BaseCaseInformationPdfSchema.extend({
+export const RegistryInformationSchema = BaseCaseInformationPdfSchema.extend({
   companyName: z.string(),
   registrationNumber: z.string(),
   incorporationDate: z.string(),
@@ -13,4 +13,4 @@ export const ReigstryInformationSchema = BaseCaseInformationPdfSchema.extend({
   registryPage: z.string(),
 });
 
-export type TRegistryInformationData = z.infer<typeof ReigstryInformationSchema>;
+export type TRegistryInformationData = z.infer<typeof RegistryInformationSchema>;

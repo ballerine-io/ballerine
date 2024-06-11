@@ -3,20 +3,15 @@ import { CaseInformationPageContainer } from '@/pages/Entity/pdfs/case-informati
 import { CaseInformationPageHeader } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageHeader/CaseInformationPageHeader';
 import { CaseInformationPageSection } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageSection/CaseInformationPageSection';
 import { CaseInformationPageSectionHeader } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageSectionHeader/CaseInformationPageSectionHeader';
-import { TEmptyIdentityVerificationsPageData } from '@/pages/Entity/pdfs/case-information/pages/IdentityVerificationsPage/empty-identity-verfications.schema';
-import { Typography, tw } from '@ballerine/react-pdf-toolkit';
+import { tw, Typography } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
+import { TBaseCaseInformationPdf } from '@/pages/Entity/pdfs/case-information/schemas/base-case-information-pdf.schema';
 
-interface IEmptyIdentityVerificationPageProps {
-  data: TEmptyIdentityVerificationsPageData;
-}
-
-export const EmptyIdentityVerificationsPage: FunctionComponent<
-  IEmptyIdentityVerificationPageProps
-> = ({ data }) => {
-  const { logoUrl, companyName } = data;
-
+export const EmptyIdentityVerificationsPage: FunctionComponent<TBaseCaseInformationPdf> = ({
+  logoUrl,
+  companyName,
+}) => {
   return (
     <CaseInformationPageContainer>
       <View style={tw('mb-3')}>

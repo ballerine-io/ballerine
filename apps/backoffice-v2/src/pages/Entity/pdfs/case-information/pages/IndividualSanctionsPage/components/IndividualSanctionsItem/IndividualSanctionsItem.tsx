@@ -1,18 +1,19 @@
 import { ValueOrNone } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage/components/IndividualSanctionsItem/ValueOrNone';
 import { TIndividualSanctionsItemData } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage/individual-sanctions.schema';
-import { Link, Typography, tw } from '@ballerine/react-pdf-toolkit';
+import { Link, tw, Typography } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
 
-interface IIndividualSanctionsItemProps {
-  item: TIndividualSanctionsItemData;
-}
-
-export const IndividualSanctionsItem: FunctionComponent<IIndividualSanctionsItemProps> = ({
-  item,
+export const IndividualSanctionsItem: FunctionComponent<TIndividualSanctionsItemData> = ({
+  checkDate,
+  matchesCount,
+  names,
+  warnings,
+  sanctions,
+  PEP,
+  adverseMedia,
+  fullName,
 }) => {
-  const { checkDate, matchesCount, names, warnings, sanctions, PEP, adverseMedia, fullName } = item;
-
   return (
     <View style={tw('flex flex-col')}>
       <View>

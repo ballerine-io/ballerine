@@ -6,18 +6,16 @@ import { CaseInformationPageSection } from '@/pages/Entity/pdfs/case-information
 import { CaseInformationPageSectionHeader } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageSectionHeader/CaseInformationPageSectionHeader';
 import { TCompanySanctionsData } from '@/pages/Entity/pdfs/case-information/pages/CompanySanctionsPage/company-sanctions.schema';
 import { CompanySanctionsMatchSection } from '@/pages/Entity/pdfs/case-information/pages/CompanySanctionsPage/components/CompanySanctionsMatchSection/CompanySanctionsMatchSection';
-import { Typography, tw } from '@ballerine/react-pdf-toolkit';
+import { tw, Typography } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
 import dayjs from 'dayjs';
 import { FunctionComponent } from 'react';
 
-interface ICompanySanctionsPageProps {
-  data: TCompanySanctionsData;
-}
-
-export const CompanySanctionsPage: FunctionComponent<ICompanySanctionsPageProps> = ({ data }) => {
-  const { sanctions, companyName, logoUrl } = data;
-
+export const CompanySanctionsPage: FunctionComponent<TCompanySanctionsData> = ({
+  sanctions,
+  companyName,
+  logoUrl,
+}) => {
   return (
     <CaseInformationPageContainer>
       <View style={tw('mb-3')}>

@@ -5,3 +5,5 @@ export const BaseCaseInformationPdfSchema = z.object({
   creationDate: z.date(),
   logoUrl: z.string(),
 });
+
+export type TBaseCaseInformationPdf = z.infer<typeof BaseCaseInformationPdfSchema>;

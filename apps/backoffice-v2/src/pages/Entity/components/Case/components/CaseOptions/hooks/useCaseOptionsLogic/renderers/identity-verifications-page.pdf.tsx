@@ -12,9 +12,9 @@ export class IdentityVerificationsPagePDF extends IPDFRenderer<TIdentityVerifica
     const pdfData = await this.getData();
     this.isValid(pdfData);
 
-    if (this.isEmpty(pdfData)) return <EmptyIdentityVerificationsPage data={pdfData} />;
+    if (this.isEmpty(pdfData)) return <EmptyIdentityVerificationsPage {...pdfData} />;
 
-    return <IdentityVerificationsPage data={pdfData} />;
+    return <IdentityVerificationsPage {...pdfData} />;
   }
 
   async getData() {

@@ -79,6 +79,6 @@
     "error": "Error occurred while reverting the alerts decision."
   },
   "pdf_certificate": {
-    "error": "Failed to download PDF certificate."
+    "error": "Failed to open PDF certificate."
   }
 }

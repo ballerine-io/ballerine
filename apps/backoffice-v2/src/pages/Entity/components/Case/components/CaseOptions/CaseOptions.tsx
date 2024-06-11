@@ -6,7 +6,7 @@ import { DropdownMenuTrigger } from '@/common/components/molecules/DropdownMenu/
 import { useCaseOptionsLogic } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/useCaseOptionsLogic';
 
 export const CaseOptions = () => {
-  const { isGeneratingPDF, generateAndOpenPDFInNewTab } = useCaseOptionsLogic();
+  const { isGeneratingPDF, generateAndOpenPDFInNewTab, pdfUrl } = useCaseOptionsLogic();
 
   return (
     <DropdownMenu>
@@ -14,12 +14,10 @@ export const CaseOptions = () => {
         <Button variant="outline">Options</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem
-          className="px-8 py-1"
-          onClick={generateAndOpenPDFInNewTab}
-          disabled={isGeneratingPDF}
-        >
-          Download PDF Certificate
+        <DropdownMenuItem className="px-8 py-1" asChild>
+          <Button onClick={generateAndOpenPDFInNewTab} disabled={isGeneratingPDF} variant={'ghost'}>
+            Open PDF Certificate
+          </Button>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

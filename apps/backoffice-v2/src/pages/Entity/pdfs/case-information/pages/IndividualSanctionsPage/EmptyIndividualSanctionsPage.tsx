@@ -3,21 +3,15 @@ import { CaseInformationPageContainer } from '@/pages/Entity/pdfs/case-informati
 import { CaseInformationPageHeader } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageHeader/CaseInformationPageHeader';
 import { CaseInformationPageSection } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageSection/CaseInformationPageSection';
 import { CaseInformationPageSectionHeader } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageSectionHeader/CaseInformationPageSectionHeader';
-import { TEmptyIndividualSanctionsPageData } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage/empty-individual-sanctions.schema';
-import { Typography, tw } from '@ballerine/react-pdf-toolkit';
+import { tw, Typography } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
 import poweredByLogo from '../../assets/title-page-ballerine-logo.png';
+import { TBaseCaseInformationPdf } from '@/pages/Entity/pdfs/case-information/schemas/base-case-information-pdf.schema';
 
-interface IEmptyIndividualSanctionsPageProps {
-  data: TEmptyIndividualSanctionsPageData;
-}
-
-export const EmptyIndividualSanctionsPage: FunctionComponent<
-  IEmptyIndividualSanctionsPageProps
-> = ({ data }) => {
-  const { companyName } = data;
-
+export const EmptyIndividualSanctionsPage: FunctionComponent<TBaseCaseInformationPdf> = ({
+  companyName,
+}) => {
   return (
     <CaseInformationPageContainer>
       <View style={tw('mb-3')}>

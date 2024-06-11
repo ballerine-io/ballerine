@@ -1,16 +1,14 @@
-import { TTitlePageData } from '@/pages/Entity/pdfs/case-information/pages/TitlePage/title-page.schema';
-import { List, ListItem, Typography, tw } from '@ballerine/react-pdf-toolkit';
+import { List, ListItem, tw, Typography } from '@ballerine/react-pdf-toolkit';
 import { Image, Page, View } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
 import poweredByLogo from '../../assets/title-page-ballerine-logo.png';
+import { TBaseCaseInformationPdf } from '@/pages/Entity/pdfs/case-information/schemas/base-case-information-pdf.schema';
 
-export interface ITitlePageProps {
-  data: TTitlePageData;
-}
-
-export const TitlePage: FunctionComponent<ITitlePageProps> = ({ data }) => {
-  const { companyName, creationDate, logoUrl } = data;
-
+export const TitlePage: FunctionComponent<TBaseCaseInformationPdf> = ({
+  companyName,
+  creationDate,
+  logoUrl,
+}) => {
   return (
     <Page wrap={false}>
       <View style={tw('flex flex-col p-5')}>

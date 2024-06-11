@@ -1,6 +1,6 @@
 import { valueOrFallback } from '@/common/utils/value-or-fallback/value-or-fallback';
-import { valueOrNone } from '@/pages/Entity/pdfs/case-information/utils/value-or-none';
-import { Typography, tw } from '@ballerine/react-pdf-toolkit';
+import { valueOrNone } from '@/common/utils/value-or-none/value-or-none';
+import { tw, Typography } from '@ballerine/react-pdf-toolkit';
 import { AnyChildren } from '@ballerine/ui';
 import { FunctionComponent } from 'react';
 

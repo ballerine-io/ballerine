@@ -13,9 +13,9 @@ export class CompanySanctionsPagePDF extends IPDFRenderer<TCompanySanctionsData>
     const pdfData = await this.getData();
     this.isValid(pdfData);
 
-    if (this.isEmpty(pdfData)) return <EmptyCompanySanctionsPage data={pdfData} />;
+    if (this.isEmpty(pdfData)) return <EmptyCompanySanctionsPage {...pdfData} />;
 
-    return <CompanySanctionsPage data={pdfData} />;
+    return <CompanySanctionsPage {...pdfData} />;
   }
 
   async getData() {

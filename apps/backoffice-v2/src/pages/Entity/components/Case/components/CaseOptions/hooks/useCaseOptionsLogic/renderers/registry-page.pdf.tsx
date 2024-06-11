@@ -4,7 +4,7 @@ import {
   RegistryInformationPage,
 } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage';
 import { TRegistryInformationData } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/registry-information.schema';
-import { TitlePageSchema } from '@/pages/Entity/pdfs/case-information/pages/TitlePage';
+import { BaseCaseInformationPdfSchema } from '@/pages/Entity/pdfs/case-information/schemas/base-case-information-pdf.schema';
 
 export class RegistryPagePDF extends IPDFRenderer<TRegistryInformationData> {
   static PDF_NAME = 'titlePage';
@@ -13,9 +13,9 @@ export class RegistryPagePDF extends IPDFRenderer<TRegistryInformationData> {
     const pdfData = await this.getData();
     this.isValid(pdfData);
 
-    if (this.isEmpty(pdfData)) return <EmptyRegistryInformationPage data={pdfData} />;
+    if (this.isEmpty(pdfData)) return <EmptyRegistryInformationPage {...pdfData} />;
 
-    return <RegistryInformationPage data={pdfData} />;
+    return <RegistryInformationPage {...pdfData} />;
   }
 
   async getData() {
@@ -47,7 +47,7 @@ export class RegistryPagePDF extends IPDFRenderer<TRegistryInformationData> {
   }
 
   isValid(data: TRegistryInformationData) {
-    TitlePageSchema.parse(data);
+    BaseCaseInformationPdfSchema.parse(data);
   }
 
   private isEmpty(data: TRegistryInformationData) {
