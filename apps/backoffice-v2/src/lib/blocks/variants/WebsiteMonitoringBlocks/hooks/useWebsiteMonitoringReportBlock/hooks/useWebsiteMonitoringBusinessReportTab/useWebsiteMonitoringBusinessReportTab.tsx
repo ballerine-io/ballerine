@@ -175,5 +175,6 @@ export const useWebsiteMonitoringBusinessReportTab = ({
     tabs,
     summary,
     updateActiveTab,
+    search,
   };
 };

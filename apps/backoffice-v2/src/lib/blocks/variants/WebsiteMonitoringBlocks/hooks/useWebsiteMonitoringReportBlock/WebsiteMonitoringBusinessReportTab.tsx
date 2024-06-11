@@ -7,7 +7,6 @@ import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
-import { search } from '@/common/hooks/useSearch/search';
 import { useWebsiteMonitoringBusinessReportTab } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/hooks/useWebsiteMonitoringBusinessReportTab/useWebsiteMonitoringBusinessReportTab';
 
 export const WebsiteMonitoringBusinessReportTab = ({
@@ -24,6 +23,7 @@ export const WebsiteMonitoringBusinessReportTab = ({
     tabs,
     summary,
     updateActiveTab,
+    search,
   } = useWebsiteMonitoringBusinessReportTab({
     businessReport,
   });
