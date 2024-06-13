@@ -163,6 +163,7 @@ export class BusinessReportControllerInternal {
         data: {
           riskScore: reportData.summary.riskScore,
           status: BusinessReportStatus.completed,
+          reportId,
           report: {
             reportFileId: pdfReportBallerineFileId,
             data: reportData as InputJsonValue,

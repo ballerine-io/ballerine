@@ -88,7 +88,6 @@ export const reportAdapter = {
       summary: data?.report?.data?.summary?.summary,
       riskScore: data?.report?.data?.summary?.riskScore,
       riskLevels: data?.report?.data?.summary?.riskLevels,
-      recommendations: data?.report?.data?.summary?.recommendations,
       companyReputationAnalysis:
         data?.report?.data?.websiteCompanyAnalysis?.scamOrFraud?.indicators?.map(
           ({ violation, sourceUrl }) => ({ label: violation, url: sourceUrl }),
@@ -184,7 +183,6 @@ export const reportAdapter = {
       summary: data?.report?.data?.summary?.summary,
       riskScore: data?.report?.data?.summary?.riskScore,
       riskLevels: data?.report?.data?.summary?.riskLevels,
-      recommendations: data?.report?.data?.summary?.recommendations,
       companyReputationAnalysis:
         data?.report?.data?.websiteCompanyAnalysis?.scamOrFraud?.indicators?.map(
           ({ violation, sourceUrl }) => ({ label: violation, url: sourceUrl }),
