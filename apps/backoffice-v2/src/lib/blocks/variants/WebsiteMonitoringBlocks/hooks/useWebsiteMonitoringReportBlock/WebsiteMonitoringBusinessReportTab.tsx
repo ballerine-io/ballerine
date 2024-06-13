@@ -19,7 +19,6 @@ export const WebsiteMonitoringBusinessReportTab = ({
     riskIndicators,
     riskLevels,
     riskScore,
-    recommendations,
     tabs,
     summary,
     updateActiveTab,
@@ -35,7 +34,6 @@ export const WebsiteMonitoringBusinessReportTab = ({
         riskLevels={riskLevels}
         riskIndicators={riskIndicators}
         riskScore={riskScore}
-        recommendations={recommendations}
       />
       <Tabs defaultValue={activeTab} className="w-full" key={activeTab}>
         <TabsList className={'mb-4 bg-transparent'}>

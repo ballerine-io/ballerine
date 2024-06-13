@@ -10,5 +10,6 @@ export const useBusinessReportByIdQuery = ({ id }: { id: string }) => {
     ...businessReportsQueryKey.byId({ id }),
     enabled: isAuthenticated && isString(id) && !!id.length,
     staleTime: 100_000,
+    refetchInterval: 1_000_000,
   });
 };

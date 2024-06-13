@@ -42,7 +42,6 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     ecosystemAndTransactionsAnalysis,
     summary,
     riskScore,
-    recommendations,
     riskLevels,
     companyReputationAnalysis,
     relatedAdsSummary,
@@ -101,7 +100,6 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
               summary={summary}
               riskScore={riskScore}
               riskIndicators={riskIndicators}
-              recommendations={recommendations ?? []}
               riskLevels={riskLevels}
             />
           ),
@@ -177,7 +175,6 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
       lineOfBusinessDescription,
       onlineReputationAnalysis,
       pricingAnalysis,
-      recommendations,
       relatedAdsImages,
       relatedAdsSummary,
       riskIndicators,
@@ -220,7 +217,9 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     [BusinessReportStatus.COMPLETED]: { variant: 'info', text: 'Manual Review' },
     [BusinessReportStatus.IN_PROGRESS]: { variant: 'violet', text: 'In-progress' },
   } as const;
-  const websiteWithNoProtocol = safeUrl(businessReport?.business?.website ?? '')?.hostname;
+  const websiteWithNoProtocol = safeUrl(
+    businessReport?.business?.website || businessReport?.report?.data?.summary?.website?.url || '',
+  )?.hostname;
 
   return (
     <section className="flex h-full flex-col px-6 pb-6 pt-4">
