@@ -249,7 +249,7 @@ export class HookCallbackHandlerService {
     return setPluginStatusToSuccess({
       resultDestinationPath,
       context: workflowRuntime.context,
-      data: reportData,
+      data,
     });
   }
 
