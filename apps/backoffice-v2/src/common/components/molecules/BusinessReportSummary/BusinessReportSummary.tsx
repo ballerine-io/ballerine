@@ -2,7 +2,6 @@ import React, { FunctionComponent } from 'react';
 import { TSeverity } from '@/common/types';
 import { TitleAndParagraph } from '@/common/components/molecules/TitleAndParagraph/TitleAndParagraph';
 import { RiskIndicatorsSummary } from '@/common/components/molecules/RiskIndicatorsSummary/RiskIndicatorsSummary';
-import { Recommendations } from '@/common/components/molecules/Recommendations/Recommendations';
 
 import { OverallRiskLevel } from '@/common/components/molecules/OverallRiskLevel/OverallRiskLevel';
 
@@ -23,8 +22,7 @@ export const BusinessReportSummary: FunctionComponent<{
     }>;
   }>;
   riskScore: number;
-  recommendations: string[];
-}> = ({ riskIndicators, summary, riskLevels, riskScore, recommendations }) => {
+}> = ({ riskIndicators, summary, riskLevels, riskScore }) => {
   return (
     <div className={'grid grid-cols-[340px_1fr] gap-8'}>
       <OverallRiskLevel riskScore={riskScore} riskLevels={riskLevels} />
@@ -33,7 +31,6 @@ export const BusinessReportSummary: FunctionComponent<{
         paragraph={summary ?? 'No summary found.'}
       />
       <RiskIndicatorsSummary riskIndicators={riskIndicators} />
-      <Recommendations recommendations={recommendations} />
     </div>
   );
 };

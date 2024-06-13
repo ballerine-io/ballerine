@@ -25,11 +25,43 @@ import { EndUserActiveMonitoringsSchema } from '@/end-user/end-user.schema';
 
 export const ReportWithRiskScoreSchema = z
   .object({
-    summary: z.object({
-      riskScore: z.number(),
-    }),
+    summary: z
+      .object({
+        riskScore: z.number(),
+      })
+      .passthrough(),
   })
   .passthrough();
+
+const setPluginStatusToSuccess = ({
+  resultDestinationPath,
+  context,
+  data,
+}: {
+  resultDestinationPath: string;
+  context: Record<string, unknown>;
+  data: Record<string, unknown>;
+}) => {
+  const removeLastKeyFromPath = (path: string) => {
+    return path?.split('.')?.slice(0, -1)?.join('.');
+  };
+
+  const resultDestinationPathWithoutLastKey = removeLastKeyFromPath(resultDestinationPath);
+  const result = get(context, resultDestinationPathWithoutLastKey);
+
+  const resultWithData = set({}, resultDestinationPath, data);
+
+  //@ts-ignore
+  if (isObject(result) && result.status) {
+    return set(
+      resultWithData,
+      `${resultDestinationPathWithoutLastKey}.status`,
+      ProcessStatus.SUCCESS,
+    );
+  }
+
+  return resultWithData;
+};
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -132,25 +164,11 @@ export class HookCallbackHandlerService {
       );
     }
 
-    const removeLastKeyFromPath = (path: string) => {
-      return path?.split('.')?.slice(0, -1)?.join('.');
-    };
-
-    const resultDestinationPathWithoutLastKey = removeLastKeyFromPath(resultDestinationPath);
-    const result = get(workflowRuntime.context, resultDestinationPathWithoutLastKey);
-
-    const resultWithData = set({}, resultDestinationPath, data);
-
-    //@ts-ignore
-    if (isObject(result) && result.status) {
-      return set(
-        resultWithData,
-        `${resultDestinationPathWithoutLastKey}.status`,
-        ProcessStatus.SUCCESS,
-      );
-    }
-
-    return resultWithData;
+    return setPluginStatusToSuccess({
+      resultDestinationPath,
+      context: workflowRuntime.context,
+      data,
+    });
   }
 
   async prepareWebsiteMonitoringContext(
@@ -165,13 +183,12 @@ export class HookCallbackHandlerService {
     const { reportData: unvalidatedReportData, base64Pdf, reportId, reportType } = data;
     const reportData = ReportWithRiskScoreSchema.parse(unvalidatedReportData);
 
-    const { documents, pdfReportBallerineFileId } =
-      await this.persistPDFReportDocumentWithWorkflowDocuments({
-        context,
-        customer,
-        projectId: currentProjectId,
-        base64PDFString: base64Pdf as string,
-      });
+    const { pdfReportBallerineFileId } = await this.persistPDFReportDocumentWithWorkflowDocuments({
+      context,
+      customer,
+      projectId: currentProjectId,
+      base64PDFString: base64Pdf as string,
+    });
 
     const business = await this.businessService.getByCorrelationId(context.entity.id, [
       currentProjectId,
@@ -180,7 +197,7 @@ export class HookCallbackHandlerService {
     if (!business) throw new BadRequestException('Business not found.');
 
     const currentReportId = reportId as string;
-    const existantBusinessReport = await this.businessReportService.findFirstOrThrow(
+    const existentBusinessReport = await this.businessReportService.findFirstOrThrow(
       {
         where: {
           businessId: business.id,
@@ -214,14 +231,11 @@ export class HookCallbackHandlerService {
           },
         },
         where: {
-          id: existantBusinessReport?.id,
+          id: existentBusinessReport?.id,
         },
       },
       [currentProjectId],
     );
-
-    set(workflowRuntime.context, resultDestinationPath, { reportData });
-    workflowRuntime.context.documents = documents;
 
     this.alertService
       .checkOngoingMonitoringAlert(businessReport, business.companyName)
@@ -232,7 +246,11 @@ export class HookCallbackHandlerService {
         this.logger.error(error);
       });
 
-    return context;
+    return setPluginStatusToSuccess({
+      resultDestinationPath,
+      context: workflowRuntime.context,
+      data,
+    });
   }
 
   async prepareMerchantAuditReportContext(
@@ -337,48 +355,27 @@ export class HookCallbackHandlerService {
       properties: {},
     };
 
-    contextClone.documents = [...contextClone.documents, pdfDocument];
-
-    let persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
+    const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
       [pdfDocument] as unknown as TDocumentsWithoutPageType,
       contextClone.entity.id || context.entity.ballerineEntityId,
       projectId,
       customer.name,
     );
 
-    let pdfReportBallerineFileId = '';
+    let pdfReportBallerineFileId: string | undefined;
 
-    //@ts-ignore
-    persistedDocuments = persistedDocuments.map(document => {
-      const isPDFReportDocument = document.pages.find(
+    persistedDocuments.forEach(document => {
+      const pdfReportDocument = document.pages.find(
         //@ts-ignore
         documentPage => documentPage.uri === base64PDFString,
       );
 
-      if (isPDFReportDocument) {
-        return {
-          ...document,
-          pages: document.pages.map(documentPage => {
-            pdfReportBallerineFileId = documentPage.ballerineFileId as string;
+      if (!pdfReportDocument?.ballerineFileId) return;
 
-            //@ts-ignore
-            if (documentPage.uri === base64PDFString) {
-              return {
-                //@ts-ignore
-                type: documentPage.type,
-                ballerineFileId: documentPage.ballerineFileId,
-                fileName: documentPage.fileName,
-              };
-            }
-          }),
-        };
-      }
-
-      return document;
+      pdfReportBallerineFileId = pdfReportDocument.ballerineFileId;
     });
 
     return {
-      documents: persistedDocuments,
       pdfReportBallerineFileId,
     };
   }
