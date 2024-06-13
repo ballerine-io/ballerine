@@ -44,6 +44,7 @@ export const OverallRiskLevel: FunctionComponent<{
               {
                 // Tailwind does not generate the class when used in a map
                 'text-orange-300': severity === Severity.MEDIUM,
+                'text-destructive': severity === Severity.CRITICAL,
               },
               'text-4xl font-bold',
             )}
@@ -60,6 +61,7 @@ export const OverallRiskLevel: FunctionComponent<{
                 {
                   // Tailwind does not generate the class when used in a map
                   'bg-orange-100': severity === Severity.MEDIUM,
+                  'text-background': severity === Severity.CRITICAL,
                 },
                 'min-w-20 rounded-lg font-bold',
               )}
