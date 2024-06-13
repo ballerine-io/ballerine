@@ -9,6 +9,7 @@ import { severityToClassName, severityToTextClassName } from '@/common/constants
 import { ctw } from '@/common/utils/ctw/ctw';
 import { getSeverityFromRiskScore } from '@/common/utils/get-severity-from-risk-score';
 import { Badge } from '@ballerine/ui';
+import { Severity } from '@/common/types';
 
 const columnHelper = createColumnHelper<TBusinessReport>();
 
@@ -90,6 +91,7 @@ export const columns = [
                 [severityToTextClassName[
                   (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
                 ]]: riskScore || riskScore === 0,
+                'text-destructive': severity === Severity.CRITICAL,
               },
               'py-0.5 font-bold',
             )}

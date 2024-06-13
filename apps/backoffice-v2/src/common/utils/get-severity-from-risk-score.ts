@@ -13,5 +13,5 @@ export const getSeverityFromRiskScore = (riskScore: number): TSeverity => {
     return Severity.HIGH;
   }
 
-  return Severity.HIGH;
+  return Severity.CRITICAL;
 };
