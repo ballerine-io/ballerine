@@ -15,6 +15,15 @@ export const SelectField = ({
   onBlur,
 }: WithTestId<FieldProps<string>>) => {
   const options = useMemo((): DropdownOption[] => {
+    if (Array.isArray(schema.enum)) {
+      return schema.enum.map((value, index) => {
+        return {
+          label: schema.enumNames ? schema.enumNames[index] : value,
+          value: value as string,
+        };
+      });
+    }
+
     if (!Array.isArray(schema.oneOf)) return [];
 
     return (schema.oneOf as TOneOfItem[]).map(item => {
@@ -23,7 +32,7 @@ export const SelectField = ({
         value: item.const as string,
       };
     }) as DropdownOption[];
-  }, [schema.oneOf]);
+  }, [schema.oneOf, schema.enumNames, schema.enum]);
 
   const handleBlur = useCallback(() => {
     // @ts-ignore

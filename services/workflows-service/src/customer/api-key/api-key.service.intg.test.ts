@@ -56,7 +56,11 @@ describe('#ApiKeyService', () => {
     });
 
     await expect(
-      async () => await apiKeyService.createHashedApiKey(customer.id, { key: 'blabla' }),
+      async () =>
+        await apiKeyService.createHashedApiKey(customer.id, {
+          key: 'blabla',
+          salt: `$2b$10$FovZTB91/QQ4Yu28nvL8e.`,
+        }),
     ).rejects.toThrow(`Unique constraint failed on the fields: (\`hashedKey\`)`);
   });
 

@@ -104,7 +104,7 @@ export const DataTable = <TData extends RowData, TValue = any>({
         const newSortingState = sortingUpdaterOrValue(prevSortingState);
 
         onSort({
-          sortBy: newSortingState[0]?.id || sortBy,
+          sortBy: newSortingState[0]?.id?.replace(/_/g, '.') || sortBy,
           sortDir: newSortingState[0]?.desc ? 'desc' : 'asc',
         });
 

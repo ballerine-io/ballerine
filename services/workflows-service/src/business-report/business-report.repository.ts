@@ -17,10 +17,14 @@ export class BusinessReportRepository {
     return await this.prisma.businessReport.create(args);
   }
 
-  async update<T extends Prisma.BusinessReportUpdateArgs>(
+  async updateById<T extends Omit<Prisma.BusinessReportUpdateArgs, 'where'>>(
+    { id }: { id: string },
     args: Prisma.SelectSubset<T, Prisma.BusinessReportUpdateArgs>,
   ) {
-    return await this.prisma.businessReport.update(args);
+    return await this.prisma.businessReport.update({
+      ...args,
+      where: { id },
+    });
   }
   async updateMany<T extends Prisma.BusinessReportUpdateManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessReportUpdateManyArgs>,
@@ -43,6 +47,22 @@ export class BusinessReportRepository {
   ) {
     return await this.prisma.businessReport.findFirstOrThrow(
       this.scopeService.scopeFindFirst(args, projectIds),
+    );
+  }
+
+  async findById<T extends Omit<Prisma.BusinessReportFindFirstOrThrowArgs, 'where'>>(
+    id: string,
+    projectIds: TProjectIds,
+    args?: Prisma.SelectSubset<T, Omit<Prisma.BusinessReportFindFirstOrThrowArgs, 'where'>>,
+  ) {
+    return await this.prisma.businessReport.findFirstOrThrow(
+      this.scopeService.scopeFindFirst(
+        {
+          where: { id },
+          ...args,
+        },
+        projectIds,
+      ),
     );
   }
 }

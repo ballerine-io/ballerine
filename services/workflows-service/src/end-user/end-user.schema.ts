@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const ActiveMonitoringSchema = z.object({
   type: z.literal('aml'),
-  vendor: z.literal('veriff'),
+  vendor: z.enum(['veriff', 'test']),
   monitoredUntil: z.string().datetime(),
   sessionId: z.string(),
 });
@@ -16,7 +16,7 @@ const SourceSchema = z.object({
 });
 
 const AmlHitSchema = z.object({
-  vendor: z.literal('veriff'),
+  vendor: z.enum(['veriff', 'test']),
   matchedName: z.string(),
   countries: z.array(z.string()),
   matchTypes: z.array(z.string()),

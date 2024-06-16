@@ -1,5 +1,13 @@
 # @ballerine/ui
 
+## 0.5.3
+
+### Patch Changes
+
+- update for sanctions screening
+- Updated dependencies
+  - @ballerine/common@0.9.7
+
 ## 0.5.2
 
 ### Patch Changes

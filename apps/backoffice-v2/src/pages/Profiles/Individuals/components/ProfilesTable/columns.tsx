@@ -14,14 +14,16 @@ import { XCircle } from '@/common/components/atoms/XCircle/XCircle';
 import { TIndividualProfile } from '@/domains/profiles/fetchers';
 
 export const Role = {
-  UBO: 'UBO',
-  DIRECTOR: 'DIRECTOR',
-  AUTHORIZED_SIGNATORY: 'AUTHORIZED_SIGNATORY',
+  UBO: 'ubo',
+  DIRECTOR: 'director',
+  REPRESENTATIVE: 'representative',
+  AUTHORIZED_SIGNATORY: 'authorized_signatory',
 } as const;
 
 export const Roles = [
   Role.UBO,
   Role.DIRECTOR,
+  Role.REPRESENTATIVE,
   Role.AUTHORIZED_SIGNATORY,
 ] as const satisfies ReadonlyArray<TObjectValues<typeof Role>>;
 
@@ -50,6 +52,13 @@ export const Sanctions = [
   Sanction.MONITORED,
   Sanction.NOT_MONITORED,
 ] as const satisfies ReadonlyArray<TObjectValues<typeof Sanction>>;
+
+const roleNameToDisplayName = {
+  [Role.UBO]: 'UBO',
+  [Role.DIRECTOR]: 'Director',
+  [Role.REPRESENTATIVE]: 'Representative',
+  [Role.AUTHORIZED_SIGNATORY]: 'Authorized Signatory',
+} as const;
 
 const columnHelper = createColumnHelper<TIndividualProfile>();
 
@@ -114,14 +123,20 @@ export const columns = [
     },
     header: 'Businesses',
   }),
-  // columnHelper.accessor('role', {
-  //   cell: info => {
-  //     const role = info.getValue();
-  //
-  //     return <TextWithNAFallback>{titleCase(role ?? '')}</TextWithNAFallback>;
-  //   },
-  //   header: 'Role',
-  // }),
+  columnHelper.accessor('roles', {
+    cell: info => {
+      const roles = info.getValue();
+
+      return (
+        <TextWithNAFallback>
+          {roles
+            ?.map(role => roleNameToDisplayName[role as keyof typeof roleNameToDisplayName])
+            .join(', ') ?? ''}
+        </TextWithNAFallback>
+      );
+    },
+    header: 'Roles',
+  }),
   columnHelper.accessor('kyc', {
     cell: info => {
       const kyc = info.getValue();

@@ -35,6 +35,8 @@ import { ClsModule } from 'nestjs-cls';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { BusinessService } from '@/business/business.service';
+import { BusinessReportService } from '@/business-report/business-report.service';
+import { BusinessReportRepository } from '@/business-report/business-report.repository';
 
 const API_KEY = faker.datatype.uuid();
 
@@ -54,6 +56,8 @@ describe('#EndUserControllerExternal', () => {
       EntityRepository,
       FilterService,
       ProjectScopeService,
+      BusinessReportService,
+      BusinessReportRepository,
       FilterRepository,
       FileRepository,
       FileService,

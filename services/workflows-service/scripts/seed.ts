@@ -93,6 +93,10 @@ async function createCustomer(
       faviconImageUri,
       country: 'GB',
       language: 'en',
+      config: {
+        isMerchantMonitoringEnabled: true,
+        isExample: true,
+      },
     },
   });
 }
@@ -138,9 +142,6 @@ async function seed() {
   const project1 = (await createProject(client, customer, '1')) as Project;
 
   const ids1 = await generateTransactions(client, {
-    projectId: project1.id,
-  });
-  const ids2 = await generateTransactions(client, {
     projectId: project1.id,
   });
 
@@ -981,30 +982,14 @@ async function seed() {
   await seedTransactionsAlerts(client, {
     project: project1,
     businessIds: businessRiskIds,
-    counterpartyIds: [...ids1, ...ids2]
-      .map(({ counterpartyOriginatorId }) => counterpartyOriginatorId)
+    counterpartyIds: ids1
+      .map(
+        ({ counterpartyOriginatorId, counterpartyBeneficiaryId }) =>
+          counterpartyOriginatorId || counterpartyBeneficiaryId,
+      )
       .filter(Boolean) as string[],
     agentUserIds: agentUsers.map(({ id }) => id),
   });
-  // TODO: create business with enduser attched to them
-  // await client.business.create({
-  //   data: {
-  //     ...generateBusiness({}),
-  //     endUsers: {
-  //       create: [
-  //         {
-  //           assignedBy: 'Bob',
-  //           assignedAt: new Date(),
-  //           endUser: {
-  //             create: {
-  //                 ...generateEndUser({}),
-  //             },
-  //           },
-  //         },
-  //       ],
-  //     },
-  //   },
-  // });
 
   await client.$transaction(async () =>
     endUserIds.map(async (id, index) =>

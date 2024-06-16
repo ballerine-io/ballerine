@@ -4,6 +4,8 @@ import console from 'console';
 import { TestGlobal } from '@/test/test-global';
 import { execSync } from 'child_process';
 
+process.env.LOG_LEVEL = 'error';
+
 const DATABASE_NAME = 'test';
 
 module.exports = async () => {

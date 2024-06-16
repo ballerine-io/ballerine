@@ -30,6 +30,7 @@ env:
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
 
 jobs:
+
   determine_branch:
     runs-on: ubuntu-latest
     outputs:
@@ -47,7 +48,7 @@ jobs:
 
   build-and-push-image:
     runs-on: ubuntu-latest
-    needs: determine_branch
+    needs: [determine_branch]
     permissions:
       contents: read
       packages: write
@@ -296,7 +297,10 @@ jobs:
           cd services/workflows-service/prisma/data-migrations
           git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/${{ needs.determine_branch.outputs.branch }}
           git checkout -b ${{ needs.determine_branch.outputs.branch }} origin/${{ needs.determine_branch.outputs.branch }}
-          git pull origin ${{ needs.determine_branch.outputs.branch }}
+          git config --global user.email "github-actions@example.com"
+          git config --global user.name "GitHub Actions"
+          git reset --hard HEAD
+          git pull origin ${{ needs.determine_branch.outputs.branch }} --rebase
 
           is_exists=$(git ls-remote --exit-code --heads -t --ref -q origin "${{ needs.determine_branch.outputs.branch }}" | wc -l)
 
@@ -345,7 +349,10 @@ jobs:
           cd services/workflows-service/prisma/data-migrations
           git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/${{ needs.determine_branch.outputs.branch }}
           git checkout -b ${{ needs.determine_branch.outputs.branch }} origin/${{ needs.determine_branch.outputs.branch }}
-          git pull origin ${{ needs.determine_branch.outputs.branch }}
+          git config --global user.email "github-actions@example.com"
+          git config --global user.name "GitHub Actions"
+          git reset --hard HEAD
+          git pull origin ${{ needs.determine_branch.outputs.branch }} --rebase
           WF_M_SHORT_SHA=$(git rev-parse --short HEAD)
           echo "sha_short=$WF_M_SHORT_SHA"
           echo "wf_m_sha_short=$WF_M_SHORT_SHA" >> $GITHUB_OUTPUT

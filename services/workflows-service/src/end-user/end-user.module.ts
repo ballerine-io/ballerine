@@ -27,9 +27,12 @@ import { HttpModule } from '@nestjs/axios';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { BusinessService } from '@/business/business.service';
+import { BusinessReportService } from '@/business-report/business-report.service';
+// eslint-disable-next-line import/no-cycle
+import { BusinessReportModule } from '@/business-report/business-report.module';
 
 @Module({
-  imports: [ProjectModule, CustomerModule, HttpModule],
+  imports: [ProjectModule, CustomerModule, HttpModule, BusinessReportModule],
   controllers: [EndUserControllerInternal, EndUserControllerExternal],
   providers: [
     EndUserRepository,
@@ -42,6 +45,7 @@ import { BusinessService } from '@/business/business.service';
     StorageService,
     WorkflowEventEmitterService,
     BusinessRepository,
+    BusinessReportService,
     BusinessService,
     WorkflowDefinitionRepository,
     WorkflowRuntimeDataRepository,

@@ -122,14 +122,16 @@ const getTransactionCreateData = ({ projectId }: { projectId: string }): Transac
   };
 };
 
-const createBusinessCounterparty = async ({
+export const createBusinessCounterparty = async ({
   prismaService,
   projectId,
   correlationIdFn,
+  businessTypeFn,
 }: {
   prismaService: PrismaService;
   projectId: string;
   correlationIdFn?: (...args: any[]) => string;
+  businessTypeFn?: (...args: any[]) => string;
 }) => {
   const correlationId = correlationIdFn ? correlationIdFn() : faker.datatype.uuid();
 
@@ -143,7 +145,7 @@ const createBusinessCounterparty = async ({
           companyName: faker.company.name(),
           registrationNumber: faker.datatype.uuid(),
           mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
-          businessType: faker.lorem.word(),
+          businessType: businessTypeFn ? businessTypeFn() : faker.lorem.word(),
           project: { connect: { id: projectId } },
         },
       },
@@ -257,7 +259,13 @@ export class TransactionFactory {
     return factory;
   }
 
-  public withBusinessOriginator({ correlationIdFn }: { correlationIdFn?: () => string } = {}) {
+  public withBusinessOriginator({
+    correlationIdFn,
+    businessTypeFn,
+  }: {
+    correlationIdFn?: () => string;
+    businessTypeFn?: () => string;
+  } = {}) {
     const factory = this.clone();
 
     factory.runBeforeCreate.push(async () => {
@@ -265,6 +273,7 @@ export class TransactionFactory {
         prismaService: this.prisma,
         projectId: this.projectId,
         correlationIdFn,
+        businessTypeFn,
       });
 
       factory.data.counterpartyOriginator = {
@@ -275,7 +284,10 @@ export class TransactionFactory {
     return factory;
   }
 
-  public withBusinessBeneficiary({ correlationIdFn }: { correlationIdFn?: () => string } = {}) {
+  public withBusinessBeneficiary({
+    correlationIdFn,
+    businessTypeFn,
+  }: { correlationIdFn?: () => string; businessTypeFn?: () => string } = {}) {
     const factory = this.clone();
 
     factory.runBeforeCreate.push(async () => {
@@ -283,6 +295,7 @@ export class TransactionFactory {
         prismaService: this.prisma,
         projectId: this.projectId,
         correlationIdFn,
+        businessTypeFn,
       });
 
       factory.data.counterpartyBeneficiary = {
@@ -369,6 +382,7 @@ export class TransactionFactory {
     for (const runBeforeCreate of this.runBeforeCreate) {
       await runBeforeCreate();
     }
+
     const promiseArray = new Array(this.number).fill(null).map(async () => {
       return this.prisma.transactionRecord.create({
         data: {

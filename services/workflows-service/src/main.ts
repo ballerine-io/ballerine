@@ -17,6 +17,14 @@ import { ConfigService } from '@nestjs/config';
 import { AppLoggerService } from './common/app-logger/app-logger.service';
 import { exceptionValidationFactory } from './errors';
 import swagger from '@/swagger/swagger';
+import { applyFormats, patchNestJsSwagger } from 'ballerine-nestjs-typebox';
+
+// provide swagger OpenAPI generator support
+patchNestJsSwagger();
+
+// provide custom JSON schema string format support
+// currently only "email".
+applyFormats();
 
 // This line is used to improve Sentry's stack traces
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
