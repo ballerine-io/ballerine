@@ -1,6 +1,6 @@
 import { Severity, TSeverity } from '@/common/types';
 
-export const getSeverityFromRiskScore = (riskScore: number): TSeverity => {
+export const getSeverityFromRiskScore = (riskScore: number): TSeverity | undefined => {
   if (riskScore <= 39) {
     return Severity.LOW;
   }
@@ -13,5 +13,7 @@ export const getSeverityFromRiskScore = (riskScore: number): TSeverity => {
     return Severity.HIGH;
   }
 
-  return Severity.CRITICAL;
+  if (riskScore >= 85) {
+    return Severity.CRITICAL;
+  }
 };
