@@ -77,7 +77,7 @@ We believe in enabling companies to manage user  identity  and risk according to
 **Getting started**
 To set up a local environment, follow these steps:
 1. #### Install prerequisites:
-   - Node.js ([Install NVM](https://github.com/nvm-sh/nvm))
+   - Node.js ([Install NVM](https://github.com/nvm-sh/nvm), then install node "nvm install --lts")
    - Latest PNPM version ([Install PNPM](https://pnpm.io/installation))
    - Docker and docker compose ([Docker](https://docs.docker.com/desktop), [Docker Compose](https://docs.docker.com/compose/install))
 

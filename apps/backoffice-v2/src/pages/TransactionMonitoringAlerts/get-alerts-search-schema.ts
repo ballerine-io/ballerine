@@ -2,6 +2,7 @@ import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validat
 import { z } from 'zod';
 import { AlertStatus, AlertStatuses, TAlertsList } from '@/domains/alerts/fetchers';
 import { BooleanishSchema } from '@/lib/zod/utils/checkers';
+
 export const getAlertsSearchSchema = (authenticatedUserId: string | undefined) =>
   BaseSearchSchema.extend({
     sortBy: z

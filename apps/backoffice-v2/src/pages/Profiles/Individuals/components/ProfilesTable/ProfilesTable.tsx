@@ -8,11 +8,9 @@ export const ProfilesTable: FunctionComponent<IProfilesTableProps> = ({ data }) 
   // const { search } = useLocation();
 
   const Cell: IDataTableProps<typeof data>['CellContentWrapper'] = ({ cell, children }) => {
-    // const itemId = cell.id.replace(`_${cell.column.id}`, '');
-
     return (
       <span
-        // to={`/${locale}/profiles/individuals/${itemId}${search}`}
+        // to={`/${locale}/profiles/individuals/${cell.row.id}${search}`}
         className={`d-full flex p-4`}
       >
         {children}

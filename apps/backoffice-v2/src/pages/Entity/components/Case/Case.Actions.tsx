@@ -63,7 +63,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           </h2>
           {tag && (
             <div className={`flex items-center`}>
-              <span className={`mr-[8px] text-sm leading-6`}>Status</span>
+              <span className={`me-2 text-sm leading-6`}>Status</span>
               <Badge
                 variant={tagToBadgeData[tag].variant}
                 className={ctw(`whitespace-nowrap text-sm font-bold`, {
