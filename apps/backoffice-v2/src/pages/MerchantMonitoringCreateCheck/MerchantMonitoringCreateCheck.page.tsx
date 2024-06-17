@@ -14,7 +14,7 @@ import { Checkbox_ } from '@/common/components/atoms/Checkbox_/Checkbox_';
 import { Combobox } from '@/common/components/organisms/Combobox/Combobox';
 import { ChevronDown, ChevronLeft, HelpCircle, Loader2 } from 'lucide-react';
 import { useMerchantMonitoringCreateBusinessReportPageLogic } from '@/pages/MerchantMonitoringCreateCheck/hooks/useMerchantMonitoringCreateBusinessReportPageLogic/useMerchantMonitoringCreateBusinessReportPageLogic';
-import { RiskDropdown } from '@/pages/MerchantMonitoringCreateCheck/components/RiskDropdown/RiskDropdown';
+import { RiskSelect } from '@/pages/MerchantMonitoringCreateCheck/components/RiskSelect/RiskSelect';
 import { SwitchesList } from '@/pages/MerchantMonitoringCreateCheck/components/SwitchesList/SwitchesList';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { Dropdown } from '@/common/components/molecules/Dropdown/Dropdown';
@@ -188,7 +188,7 @@ export const MerchantMonitoringCreateCheckPage: FunctionComponent = () => {
               />
               {isChangeChecksConfigurationOpen && (
                 <div
-                  className={ctw('grid grid-cols-4', {
+                  className={ctw('grid grid-cols-4 gap-y-8', {
                     '!mb-10': isChangeRiskAppetiteConfigurationOpen,
                   })}
                 >
@@ -201,8 +201,13 @@ export const MerchantMonitoringCreateCheckPage: FunctionComponent = () => {
                 <div>
                   <h3 className={'mb-8 font-bold'}>Risk Appetite Configurations</h3>
                   <div className={'grid grid-cols-5 gap-x-8 gap-y-6'}>
-                    {riskLabels.map(label => (
-                      <RiskDropdown key={label} label={label} disabled />
+                    {riskLabels.map(({ label, defaultValue, disabled }) => (
+                      <RiskSelect
+                        key={label}
+                        label={label}
+                        defaultValue={defaultValue}
+                        disabled={disabled}
+                      />
                     ))}
                   </div>
                 </div>

@@ -6,4 +6,5 @@ export interface ISelect_Props extends ComponentProps<typeof Select> {
     label: string;
     value: string;
   }>;
+  placeholder?: string;
 }
