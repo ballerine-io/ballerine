@@ -26,8 +26,10 @@
     "node": ">=12"
   },
   "dependencies": {
+    "@types/lodash.get": "^4.4.9",
     "jmespath": "^0.16.0",
     "json-logic-js": "^2.0.2",
+    "lodash.get": "^4.4.2",
     "safe-eval": "^0.4.1",
     "xstate": "^4.35.2"
   },

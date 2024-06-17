@@ -27,5 +27,7 @@ const invokeRule = (rule: CustomRuleInput, context: Record<string, unknown>) => 
       return evaluate({ rule, context });
     case 'uboHasWarning':
       return uboHasWarning({ rule, context, ...rule.options });
+    default:
+      rule.type satisfies never;
   }
 };
