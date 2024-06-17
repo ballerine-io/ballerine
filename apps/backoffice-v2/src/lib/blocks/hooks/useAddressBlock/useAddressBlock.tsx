@@ -21,8 +21,10 @@ export const useAddressBlock = ({
     return createBlocksTyped()
       .addBlock()
       .addCell({
-        id: 'map-container',
         type: 'container',
+        props: {
+          className: 'grid grid-cols-2',
+        },
         value: createBlocksTyped()
           .addBlock()
           .addCell({

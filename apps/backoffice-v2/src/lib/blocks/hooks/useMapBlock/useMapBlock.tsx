@@ -24,11 +24,16 @@ export const useMapBlock = ({ address, entityType, workflow }) => {
       })
       .buildFlat();
 
+    const addressWithMapBlock = addressBlock.flat(1).map(block => ({
+      ...block,
+      value: block.value.concat(mapBlock),
+    }));
+
     return createBlocksTyped()
       .addBlock()
       .addCell({
         type: 'block',
-        value: addressBlock.flat(1).concat(mapBlock),
+        value: addressWithMapBlock.flat(1),
       })
       .build();
   }, [address, isLoading, locations, addressBlock]);

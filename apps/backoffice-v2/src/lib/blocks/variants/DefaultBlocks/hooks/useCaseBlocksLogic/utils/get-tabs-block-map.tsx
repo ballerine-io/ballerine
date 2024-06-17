@@ -54,6 +54,7 @@ export const getTabsToBlocksMap = (
     ],
     company_information: [
       ...entityInfoBlock,
+      // ...mapBlock,
       ...addressWithContainerBlock,
       ...registryInfoBlock,
       ...kybRegistryInfoBlock,

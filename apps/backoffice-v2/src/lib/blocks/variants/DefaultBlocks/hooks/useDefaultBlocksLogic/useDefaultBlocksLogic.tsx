@@ -45,9 +45,9 @@ import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/us
 import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
 import { DEFAULT_PROCESS_TRACKER_PROCESSES } from '@/common/components/molecules/ProcessTracker/constants';
 import { useWebsiteMonitoringReportBlock } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/useWebsiteMonitoringReportBlock';
-import { getAddressDeep } from '@/pages/Entity/hooks/useEntityLogic/utils/get-address-deep/get-address-deep';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { useAddressBlock } from '@/lib/blocks/hooks/useAddressBlock/useAddressBlock';
+import { getAddressDeep } from '@/pages/Entity/hooks/useEntityLogic/utils/get-address-deep/get-address-deep';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -250,9 +250,7 @@ export const useDefaultBlocksLogic = () => {
   });
 
   const addressBlock = useAddressBlock({
-    address: getAddressDeep(filteredPluginsOutput, {
-      propertyName: 'registeredAddressInFull',
-    }),
+    address: workflow?.context?.entity?.data?.additionalInfo?.headquarters,
     entityType: workflow?.context?.entity?.type,
     workflow,
   });
