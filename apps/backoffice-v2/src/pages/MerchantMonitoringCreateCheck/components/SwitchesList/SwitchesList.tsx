@@ -8,7 +8,7 @@ import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
 
 export const SwitchesList: FunctionComponent<{
   label: string;
-  options: Array<{ name: string; label: string; disabled?: boolean }>;
+  options: Array<{ name: string; label: string; disabled?: boolean; defaultChecked: boolean }>;
 }> = ({ label, options }) => {
   const { control } = useFormContext();
 
@@ -20,7 +20,7 @@ export const SwitchesList: FunctionComponent<{
           <li key={option.name}>
             <FormField
               control={control}
-              name={option.name}
+              name={`${label}.${option.name}`}
               render={({ field }) => (
                 <FormItem className={`flex max-w-md items-center space-x-4`}>
                   <FormControl>
@@ -29,6 +29,7 @@ export const SwitchesList: FunctionComponent<{
                       {...field}
                       disabled={option.disabled}
                       checked={field.value}
+                      defaultChecked={option.defaultChecked}
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
