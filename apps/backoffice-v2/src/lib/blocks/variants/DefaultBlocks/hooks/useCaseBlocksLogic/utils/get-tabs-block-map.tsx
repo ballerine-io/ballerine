@@ -36,6 +36,7 @@ export const getTabsToBlocksMap = (
     mainContactBlock,
     mainRepresentativeBlock,
     mapBlock,
+    addressWithContainerBlock,
     parentDocumentBlocks,
     associatedCompaniesBlock,
     associatedCompaniesInformationBlock,
@@ -53,6 +54,7 @@ export const getTabsToBlocksMap = (
     ],
     company_information: [
       ...entityInfoBlock,
+      ...addressWithContainerBlock,
       ...registryInfoBlock,
       ...kybRegistryInfoBlock,
       ...companySanctionsBlock,
