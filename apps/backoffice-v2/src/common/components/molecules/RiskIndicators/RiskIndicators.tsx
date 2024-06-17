@@ -21,14 +21,25 @@ export const RiskIndicators: FunctionComponent<{
           {!!violations?.length &&
             violations.map(violation => (
               <li key={violation.label} className="flex list-none items-center text-slate-500">
-                <WarningFilledSvg
-                  className={ctw('me-3 mt-px', {
-                    'text-slate-300 [&>:not(:first-child)]:stroke-background':
-                      violation.severity === Severity.MEDIUM,
-                  })}
-                  width={'20'}
-                  height={'20'}
-                />
+                {violation.severity !== Severity.LOW && (
+                  <WarningFilledSvg
+                    className={ctw('me-3 mt-px', {
+                      'text-slate-300 [&>:not(:first-child)]:stroke-background':
+                        violation.severity === Severity.MEDIUM,
+                    })}
+                    width={'20'}
+                    height={'20'}
+                  />
+                )}
+                {violation.severity === Severity.LOW && (
+                  <CheckCircle
+                    size={18}
+                    className={`stroke-background`}
+                    containerProps={{
+                      className: 'me-4 bg-success mt-px',
+                    }}
+                  />
+                )}
                 {violation.label}
               </li>
             ))}
@@ -38,10 +49,10 @@ export const RiskIndicators: FunctionComponent<{
                 size={18}
                 className={`stroke-background`}
                 containerProps={{
-                  className: 'me-3 bg-success',
+                  className: 'me-3 bg-success mt-px',
                 }}
               />
-              No violations found
+              No Violations Detected
             </li>
           )}
         </ul>

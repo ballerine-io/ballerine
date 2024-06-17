@@ -24,6 +24,11 @@ export const BusinessReportStatuses = [
   BusinessReportStatus.COMPLETED,
 ] as const satisfies readonly TBusinessReportStatus[];
 
+export const severityToDisplaySeverity = {
+  positive: 'low',
+  moderate: 'medium',
+} as const;
+
 export const SeveritySchema = z.preprocess(value => {
   if (value === 'moderate') {
     return 'medium';

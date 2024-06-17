@@ -29,6 +29,7 @@ export const WebsiteCredibility: FunctionComponent<{
 
   return (
     <div className={'space-y-8'}>
+      <h3 className={'col-span-full text-lg font-bold'}>Website Credibility Analysis</h3>
       <RiskIndicators violations={violations} />
       <Card>
         <CardHeader className={'pt-4 font-bold'}>Online Reputation Analysis</CardHeader>
@@ -49,7 +50,7 @@ export const WebsiteCredibility: FunctionComponent<{
                   )}
                 </li>
               ))}
-            {!onlineReputationAnalysis?.length && <li>No online reputation analysis found.</li>}
+            {!onlineReputationAnalysis?.length && <li>No Indications Detected.</li>}
           </ol>
         </CardContent>
       </Card>
@@ -67,7 +68,7 @@ export const WebsiteCredibility: FunctionComponent<{
                   {warning}
                 </li>
               ))}
-            {!pricingAnalysis?.length && <li>No pricing analysis found.</li>}
+            {!pricingAnalysis?.length && <li>No Indications Detected.</li>}
           </ol>
         </CardContent>
       </Card>
@@ -87,9 +88,7 @@ export const WebsiteCredibility: FunctionComponent<{
                   {warning}
                 </li>
               ))}
-            {!websiteStructureAndContentEvaluation?.length && (
-              <li>No website structure and content evaluation found.</li>
-            )}
+            {!websiteStructureAndContentEvaluation?.length && <li>No Indications Detected.</li>}
           </ol>
         </CardContent>
       </Card>
@@ -111,7 +110,7 @@ export const WebsiteCredibility: FunctionComponent<{
                 </ul>
               </ul>
             ))}
-          {isEmptyTrafficAnalysis && <>No traffic analysis found.</>}
+          {isEmptyTrafficAnalysis && <>No Indications Detected.</>}
         </CardContent>
       </Card>
     </div>
