@@ -9,7 +9,6 @@ import { ctw } from '@/common/utils/ctw/ctw';
 import { AnchorIfUrl } from '@/common/components/atoms/AnchorIfUrl/AnchorIfUrl';
 import { AdImageWithLink } from '@/domains/business-reports/components/AdImageWithLink/AdImageWithLink';
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
-import { SubtitleAndParagraph } from '@/common/components/molecules/SubtitleAndParagraph/SubtitleAndParagraph';
 import { AdExample } from '@/domains/business-reports/components/AdExample/AdExample';
 
 export const AdsAndSocialMedia: FunctionComponent<{
@@ -34,6 +33,7 @@ export const AdsAndSocialMedia: FunctionComponent<{
 }> = ({ violations, mediaPresence, adsImages, relatedAdsSummary, relatedAdsImages }) => {
   return (
     <div className={'space-y-8'}>
+      <h3 className={'text-lg font-bold'}>Ads and Social Media Analysis</h3>
       <RiskIndicators violations={violations} />
       <Card>
         <CardHeader className={'pt-4 font-bold'}>Social Media Presence</CardHeader>
@@ -63,14 +63,14 @@ export const AdsAndSocialMedia: FunctionComponent<{
                           </li>
                         );
                       })}
-                    {!items?.length && <li>No media presence found.</li>}
+                    {!items?.length && <li>No social media presence detected.</li>}
                   </ul>
                 </div>
               ))}
             {!mediaPresence?.length && (
               <div>
                 <ul>
-                  <li>No media presence found.</li>
+                  <li>No social media presence detected.</li>
                 </ul>
               </div>
             )}
@@ -91,11 +91,12 @@ export const AdsAndSocialMedia: FunctionComponent<{
       <Card>
         <CardHeader className={'pt-4 font-bold'}>Related Ads</CardHeader>
         <CardContent className={'flex flex-col space-y-4'}>
-          <SubtitleAndParagraph subtitle={'Ads Summary'} paragraph={relatedAdsSummary} />
           <div className={'grid grid-cols-[400px_400px] gap-8'}>
-            {relatedAdsImages.map((src, index) => (
-              <AdExample key={src} src={src} alt={`Ad Example ${index + 1}`} />
-            ))}
+            {!!relatedAdsImages?.length &&
+              relatedAdsImages.map((src, index) => (
+                <AdExample key={src} src={src} alt={`Ad Example ${index + 1}`} />
+              ))}
+            {!relatedAdsImages?.length && <>No ads detected.</>}
           </div>
         </CardContent>
       </Card>
