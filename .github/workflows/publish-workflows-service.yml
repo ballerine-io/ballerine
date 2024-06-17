@@ -32,6 +32,7 @@ env:
 jobs:
   call_release:
     uses: ./.github/workflows/release.yml
+    secrets: inherit
 
   determine_branch:
     runs-on: ubuntu-latest
