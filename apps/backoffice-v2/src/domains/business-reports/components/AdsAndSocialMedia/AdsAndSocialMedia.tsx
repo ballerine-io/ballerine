@@ -63,7 +63,7 @@ export const AdsAndSocialMedia: FunctionComponent<{
                           </li>
                         );
                       })}
-                    {!items?.length && <li>No media presence detected.</li>}
+                    {!items?.length && <li>No social media presence detected.</li>}
                   </ul>
                 </div>
               ))}
