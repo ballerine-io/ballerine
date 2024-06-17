@@ -28,6 +28,7 @@
   "dependencies": {
     "jmespath": "^0.16.0",
     "json-logic-js": "^2.0.2",
+    "safe-eval": "^0.4.1",
     "xstate": "^4.35.2"
   },
   "devDependencies": {

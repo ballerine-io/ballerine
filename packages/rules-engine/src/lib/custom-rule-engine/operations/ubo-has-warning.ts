@@ -3,7 +3,7 @@ import { DefaultContextPaths } from '@/lib/custom-rule-engine/consts/default-con
 
 export const uboHasWarning: CustomRule = ({
   context,
-  fieldPath = DefaultContextPaths.ubos_default_path,
+  fieldPath = DefaultContextPaths.ubosPath,
 }) => {
-  return !!context[fieldPath].any((ubo: { warnings: Array<unknown> }) => ubo.warnings.length > 0);
+  return !!context[fieldPath].some((ubo: { warnings: Array<unknown> }) => ubo.warnings.length > 0);
 };

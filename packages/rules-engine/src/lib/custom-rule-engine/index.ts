@@ -10,13 +10,15 @@ export const CustomRuleEngine = ({
   context: Record<string, unknown>;
   ruleset: CustomRuleSet;
 }) => {
-  const operationMethod = ruleset.operator === 'or' ? 'some' : 'every';
+  const ruleResults = ruleset.rules.map(rule => {
+    return invokeRule(rule, context);
+  });
 
-  return ruleset.rules
-    .map(rule => {
-      return invokeRule(rule, context);
-    })
-    [operationMethod](Boolean);
+  if (ruleset.operator === 'or') {
+    return ruleResults.some(Boolean);
+  }
+
+  return ruleResults.every(Boolean);
 };
 
 const invokeRule = (rule: CustomRuleInput, context: Record<string, unknown>) => {

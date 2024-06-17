@@ -1,6 +1,10 @@
 import { CustomRuleInput } from '@/lib/custom-rule-engine/types/custom-rule-input';
 
 export const castValue = (options: CustomRuleInput['options'], value: string) => {
+  if (value === 'undefined') {
+    throw new Error(`Invalid value: ${value}`);
+  }
+
   switch (options.cast) {
     case 'String':
       return String(value);
@@ -9,7 +13,12 @@ export const castValue = (options: CustomRuleInput['options'], value: string) =>
     case 'Boolean':
       return Boolean(value);
     case 'Date':
-      return new Date(value);
+      const date = new Date(value);
+      if (isNaN(date.getTime())) {
+        throw new Error(`Invalid date value: ${value}`);
+      }
+
+      return date;
     default:
       return value;
   }
