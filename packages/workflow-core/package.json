@@ -41,6 +41,7 @@
   "devDependencies": {
     "@babel/core": "7.17.9",
     "@babel/preset-env": "7.16.11",
+    "@ballerine/rules-engine-lib": "0.5.2",
     "@babel/preset-typescript": "7.16.7",
     "@ballerine/config": "^1.1.2",
     "@ballerine/eslint-config": "^1.1.2",

@@ -1,0 +1,64 @@
+import { logger } from 'nx/src/utils/logger';
+import { CustomRule } from '@/lib/custom-rule-engine/types/custom-rule';
+import { castValue } from '@/lib/custom-rule-engine/helpers/cast-value';
+import { castCompareWithEval } from '../helpers/cast-compare-value';
+
+export const evaluate: CustomRule = ({ rule, context, fieldPath }) => {
+  const { options } = rule;
+  const { operations, compareValue: comparableValue } = options;
+  if (!fieldPath) {
+    logger.warn('Field path is not provided');
+
+    return false;
+  }
+  if (!comparableValue) {
+    logger.warn('Comparable value is not provided');
+
+    return false;
+  }
+
+  const fieldValue = context.entity[fieldPath];
+  const compareValue = castValue(options, fieldValue);
+  const targetValue = castCompareWithEval(options, comparableValue);
+
+  switch (operations) {
+    case 'equal':
+      return compareValue === targetValue;
+    case 'not_equal':
+      return compareValue !== targetValue;
+    case 'contains':
+      if (!(typeof compareValue === 'string' || Array.isArray(compareValue))) {
+        logger.warn(`Invalid formattedCompareValue: ${compareValue}`);
+
+        return false;
+      }
+
+      if (Array.isArray(compareValue)) {
+        return compareValue.includes(targetValue);
+      }
+
+      return compareValue.includes(String(targetValue));
+    case 'not_contains':
+      if (!(typeof compareValue === 'string' || Array.isArray(compareValue))) {
+        logger.warn(`Invalid formattedCompareValue: ${compareValue}`);
+
+        return false;
+      }
+
+      if (Array.isArray(compareValue)) {
+        return !compareValue.includes(targetValue);
+      }
+
+      return !compareValue.includes(String(targetValue));
+    case 'greater_than':
+      return targetValue > compareValue;
+    case 'less_than':
+      return compareValue < targetValue;
+    case undefined:
+      return true;
+    default:
+      operations satisfies never;
+
+      throw new Error(`Invalid operation: ${operations}`);
+  }
+};
