@@ -1,3 +1,3 @@
-export const DefaultContextPaths = {
+export const DefaultContextPath = {
   ubosPath: 'entity.ubos',
 };
