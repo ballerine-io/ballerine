@@ -46,6 +46,7 @@ export const useWebsiteMonitoringBusinessReportTab = ({
           value: 'websitesCompany',
           content: (
             <WebsitesCompany
+              companyName={businessReport?.business?.companyName ?? ''}
               companyReputationAnalysis={companyReputationAnalysis ?? []}
               violations={websitesCompanyAnalysis ?? []}
             />

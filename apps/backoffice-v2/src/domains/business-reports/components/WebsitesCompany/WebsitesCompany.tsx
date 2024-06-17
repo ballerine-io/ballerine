@@ -7,6 +7,7 @@ import { ctw } from '@/common/utils/ctw/ctw';
 import { BallerineLink } from '@/common/components/atoms/BallerineLink/BallerineLink';
 
 export const WebsitesCompany: FunctionComponent<{
+  companyName: string;
   companyReputationAnalysis: Array<{
     label: string;
     url: string;
@@ -15,9 +16,12 @@ export const WebsitesCompany: FunctionComponent<{
     label: string;
     severity: string;
   }>;
-}> = ({ companyReputationAnalysis, violations }) => {
+}> = ({ companyName, companyReputationAnalysis, violations }) => {
   return (
     <div className={'space-y-8'}>
+      <h3 className={'text-lg font-bold'}>
+        Website&apos;s Company Analysis{companyName && companyName !== `N/A` && ` - ${companyName}`}
+      </h3>
       <RiskIndicators violations={violations} />
       <Card>
         <CardHeader className={'pt-4 font-bold'}>Company Reputation Analysis</CardHeader>
@@ -38,7 +42,7 @@ export const WebsitesCompany: FunctionComponent<{
                   )}
                 </li>
               ))}
-            {!companyReputationAnalysis?.length && <li>No reputation analysis found.</li>}
+            {!companyReputationAnalysis?.length && <li>No Indications Detected.</li>}
           </ol>
         </CardContent>
       </Card>

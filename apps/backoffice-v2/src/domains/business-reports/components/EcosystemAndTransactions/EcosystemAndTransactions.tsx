@@ -26,6 +26,7 @@ export const EcosystemAndTransactions: FunctionComponent<{
 }> = ({ violations, matches }) => {
   return (
     <div className={'space-y-8'}>
+      <h3 className={'col-span-full text-lg font-bold'}>Ecosystem and Transactions Analysis</h3>
       <Card>
         <CardHeader className={'pt-4 font-bold'}>Risk Indicators</CardHeader>
         <CardContent>
@@ -36,7 +37,7 @@ export const EcosystemAndTransactions: FunctionComponent<{
                   <WarningFilledSvg
                     className={ctw('me-3 mt-px', {
                       'text-slate-300 [&>:not(:first-child)]:stroke-background':
-                        violation.severity.toUpperCase() === Severity.MEDIUM,
+                        violation.severity === Severity.MEDIUM,
                     })}
                     width={'20'}
                     height={'20'}
@@ -53,7 +54,7 @@ export const EcosystemAndTransactions: FunctionComponent<{
                     className: 'me-3 bg-success',
                   }}
                 />
-                No violations found
+                No Violations Detected
               </li>
             )}
           </ul>
