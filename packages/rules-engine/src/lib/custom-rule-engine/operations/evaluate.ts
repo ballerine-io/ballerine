@@ -7,17 +7,17 @@ export const evaluate: CustomRule = ({ rule, context, fieldPath }) => {
   const { options } = rule;
   const { operations, compareValue: comparableValue } = options;
   if (!fieldPath) {
-    logger.warn('Field path is not provided');
+    logger.warn('Field path is not provided for rule evaluation');
 
     return false;
   }
-  if (!comparableValue) {
-    logger.warn('Comparable value is not provided');
+  if (comparableValue === null || comparableValue === undefined) {
+    logger.warn('Comparable value is not provided for rule evaluation');
 
     return false;
   }
 
-  const fieldValue = context.entity[fieldPath];
+  const fieldValue = context[fieldPath];
   const compareValue = castValue(options, fieldValue);
   const targetValue = castCompareWithEval(options, comparableValue);
 
