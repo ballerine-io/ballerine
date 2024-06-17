@@ -8,7 +8,7 @@ import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
 
 export const SwitchesList: FunctionComponent<{
   label: string;
-  options: Array<{ name: string; label: string; disabled?: boolean }>;
+  options: Array<{ name: string; label: string; disabled?: boolean; defaultChecked: boolean }>;
 }> = ({ label, options }) => {
   const { control } = useFormContext();
 
@@ -28,7 +28,8 @@ export const SwitchesList: FunctionComponent<{
                       className={`data-[state=checked]:bg-blue-500`}
                       {...field}
                       disabled={option.disabled}
-                      checked={field.value}
+                      // checked={field.value}
+                      defaultChecked={option.defaultChecked}
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
