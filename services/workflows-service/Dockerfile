@@ -1,7 +1,7 @@
 FROM node:18.17.1-bullseye-slim as dev
 
-RUN apt-get update
-RUN apt-get install dumb-init
+RUN apt-get update && apt-get install -y dumb-init \
+  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -16,8 +16,7 @@ RUN npm install --legacy-peer-deps
 
 COPY . .
 
-RUN npm run prisma:generate
-RUN npm run build
+RUN npm run prisma:generate && npm run build
 
 CMD [ "dumb-init", "npm", "run", "dev", "--host" ]
 
@@ -39,6 +38,12 @@ COPY --from=dev /app/scripts ./scripts
 COPY --from=dev /app/src ./src
 COPY --from=dev /app/tsconfig.build.json ./tsconfig.build.json
 COPY --from=dev /app/tsconfig.json ./tsconfig.json
+
+# Create a non-root user and group and Change ownership of the app directory to the non-root user
+RUN groupadd -r app && useradd -r -g app -s /bin/bash app && chown -R app:app /app
+
+# Switch to the non-root user
+USER app
 
 EXPOSE 3000
 
