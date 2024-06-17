@@ -20,7 +20,7 @@ export const SwitchesList: FunctionComponent<{
           <li key={option.name}>
             <FormField
               control={control}
-              name={option.name}
+              name={`${label}.${option.name}`}
               render={({ field }) => (
                 <FormItem className={`flex max-w-md items-center space-x-4`}>
                   <FormControl>
@@ -28,7 +28,7 @@ export const SwitchesList: FunctionComponent<{
                       className={`data-[state=checked]:bg-blue-500`}
                       {...field}
                       disabled={option.disabled}
-                      // checked={field.value}
+                      checked={field.value}
                       defaultChecked={option.defaultChecked}
                       onCheckedChange={field.onChange}
                     />
