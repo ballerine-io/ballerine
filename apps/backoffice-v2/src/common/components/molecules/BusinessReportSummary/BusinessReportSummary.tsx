@@ -46,8 +46,6 @@ export const BusinessReportSummary: FunctionComponent<{
                   ]]: riskScore || riskScore === 0,
                 },
                 {
-                  // Tailwind does not generate the class when used in a map
-                  'text-orange-300': severity === Severity.MEDIUM,
                   'text-destructive': severity === Severity.CRITICAL,
                 },
                 'text-4xl font-bold',
@@ -63,8 +61,6 @@ export const BusinessReportSummary: FunctionComponent<{
                     (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
                   ],
                   {
-                    // Tailwind does not generate the class when used in a map
-                    'bg-orange-100': severity === Severity.MEDIUM,
                     'text-background': severity === Severity.CRITICAL,
                   },
                   'min-w-20 rounded-lg font-bold',
