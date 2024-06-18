@@ -106,7 +106,9 @@ export const WebsiteCredibility: FunctionComponent<{
                         {item}
                       </li>
                     ))}
-                  {!isEmptyTrafficAnalysis && !items?.length && <li>No {label} found.</li>}
+                  {!isEmptyTrafficAnalysis && !items?.length && (
+                    <li>No {label?.toLowerCase()} detected.</li>
+                  )}
                 </ul>
               </ul>
             ))}
