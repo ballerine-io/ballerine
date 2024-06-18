@@ -33,7 +33,6 @@ export const BusinessReportSummary: FunctionComponent<{
 
   return (
     <div className={'grid grid-cols-[340px_1fr] gap-8'}>
-      <h3 className={'col-span-full text-lg font-bold'}>Summary</h3>
       <Card className={'col-span-full'}>
         <CardHeader className={'pt-4 font-bold'}>
           <span className={'mb-1'}>Overall Risk Level</span>

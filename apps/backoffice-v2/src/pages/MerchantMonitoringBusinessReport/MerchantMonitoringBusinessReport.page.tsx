@@ -96,12 +96,15 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
           label: 'Summary',
           value: 'summary',
           content: (
-            <BusinessReportSummary
-              summary={summary}
-              riskScore={riskScore}
-              riskIndicators={riskIndicators}
-              riskLevels={riskLevels}
-            />
+            <>
+              <h3 className={'mb-8 text-lg font-bold'}>Summary</h3>
+              <BusinessReportSummary
+                summary={summary}
+                riskScore={riskScore}
+                riskIndicators={riskIndicators}
+                riskLevels={riskLevels}
+              />
+            </>
           ),
         },
         {
