@@ -43,6 +43,7 @@ import { AlertModule } from '@/alert/alert.module';
 import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
 import { AlertDefinitionModule } from '@/alert-definition/alert-definition.module';
 import { BusinessReportService } from '@/business-report/business-report.service';
+import { NotionModule } from '@/integrations/notion/notion.service';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
@@ -59,6 +60,7 @@ import { BusinessReportService } from '@/business-report/business-report.service
     BusinessModule,
     DataAnalyticsModule,
     AlertDefinitionModule,
+    NotionModule,
   ],
   providers: [
     WorkflowDefinitionRepository,

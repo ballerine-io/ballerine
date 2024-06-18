@@ -18,6 +18,7 @@ export type {
   THelperFormatingLogic,
   BuiltInEvent,
   ArrayMergeOption,
+  RiskCalculationInput,
 } from './lib';
 export {
   createWorkflow,

@@ -6,6 +6,7 @@ import { assign, createMachine, interpret } from 'xstate';
 import { HttpError } from './errors';
 import {
   ChildPluginCallbackOutput,
+  Error as ErrorEnum,
   ObjectValues,
   WorkflowEvent,
   WorkflowEvents,
@@ -13,7 +14,6 @@ import {
   WorkflowExtensions,
   WorkflowRunnerArgs,
 } from './types';
-import { Error as ErrorEnum } from './types';
 import { JmespathTransformer } from './utils/context-transformers/jmespath-transformer';
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
 import {
@@ -42,10 +42,10 @@ import {
 } from './plugins/common-plugin/types';
 import {
   ArrayMergeOption,
+  deepMergeWithOptions,
   HelpersTransformer,
   TContext,
   THelperFormatingLogic,
-  Transformers,
 } from './utils';
 import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
 import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plugin';
@@ -57,7 +57,6 @@ import {
   TransformerPlugin,
   TransformerPluginParams,
 } from './plugins/common-plugin/transformer-plugin';
-import { deepMergeWithOptions } from './utils';
 import { BUILT_IN_EVENT } from './index';
 import { logger } from './logger';
 
@@ -65,6 +64,9 @@ export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
 }
 
+export interface ChildCallabackable {
+  invokeRiskCalculation?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
+}
 export class WorkflowRunner {
   #__subscriptions: Partial<Record<string, Array<(event: WorkflowEvent) => Promise<void>>>>;
   #__workflow: StateMachine<any, any, any>;
