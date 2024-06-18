@@ -13,6 +13,10 @@ import { Router } from './Router/Router';
 import { env } from './common/env/env';
 import './i18n';
 import './index.css';
+import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+
+dayjs.extend(advancedFormat);
 
 registerFont(Font);
 

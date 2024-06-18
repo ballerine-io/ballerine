@@ -10,12 +10,12 @@ import { AvatarImage } from '@/common/components/atoms/Avatar_/Avatar.Image';
 import { AvatarFallback } from '@/common/components/atoms/Avatar_/Avatar.Fallback';
 import { createInitials } from '@/common/utils/create-initials/create-initials';
 import React, { ComponentProps } from 'react';
-import { severityToClassName } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/severity-to-class-name';
 import { IndeterminateCheckbox } from '@/common/components/atoms/IndeterminateCheckbox/IndeterminateCheckbox';
 import { SnakeCase, titleCase } from 'string-ts';
 import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-screaming-snake-case';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import { buttonVariants } from '@/common/components/atoms/Button/Button';
+import { severityToClassName } from '@/common/constants';
 
 const columnHelper = createColumnHelper<
   TAlertsList[number] & {
