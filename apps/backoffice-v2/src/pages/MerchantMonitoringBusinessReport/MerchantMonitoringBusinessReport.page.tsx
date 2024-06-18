@@ -96,12 +96,15 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
           label: 'Summary',
           value: 'summary',
           content: (
-            <BusinessReportSummary
-              summary={summary}
-              riskScore={riskScore}
-              riskIndicators={riskIndicators}
-              riskLevels={riskLevels}
-            />
+            <>
+              <h3 className={'mb-8 text-lg font-bold'}>Summary</h3>
+              <BusinessReportSummary
+                summary={summary}
+                riskScore={riskScore}
+                riskIndicators={riskIndicators}
+                riskLevels={riskLevels}
+              />
+            </>
           ),
         },
         {
@@ -109,6 +112,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
           value: 'websitesCompany',
           content: (
             <WebsitesCompany
+              companyName={businessReport?.business?.companyName ?? ''}
               companyReputationAnalysis={companyReputationAnalysis ?? []}
               violations={websitesCompanyAnalysis ?? []}
             />
@@ -216,6 +220,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
   const statusToBadgeData = {
     [BusinessReportStatus.COMPLETED]: { variant: 'info', text: 'Manual Review' },
     [BusinessReportStatus.IN_PROGRESS]: { variant: 'violet', text: 'In-progress' },
+    [BusinessReportStatus.NEW]: { variant: 'secondary', text: 'New' },
   } as const;
   const websiteWithNoProtocol = safeUrl(
     businessReport?.business?.website || businessReport?.report?.data?.summary?.website?.url || '',
@@ -246,6 +251,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
               'bg-info/20 text-info': businessReport?.status === BusinessReportStatus.COMPLETED,
               'bg-violet-500/20 text-violet-500':
                 businessReport?.status === BusinessReportStatus.IN_PROGRESS,
+              'bg-slate-200 text-slate-500': businessReport?.status === BusinessReportStatus.NEW,
             })}
           >
             {statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]?.text}

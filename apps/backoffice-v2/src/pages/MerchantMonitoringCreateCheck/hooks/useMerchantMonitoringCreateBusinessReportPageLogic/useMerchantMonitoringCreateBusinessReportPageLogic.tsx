@@ -65,88 +65,215 @@ export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
     });
   }, [isChangeRiskAppetiteConfigurationOpen, setSearchQueryParams]);
 
-  const checksConfiguration = useMemo(
-    () =>
-      [
-        {
-          label: 'KYC (Requires collection flow)',
-          options: [
-            { label: 'Identity Verification', name: 'identityVerification' },
-            { label: 'Sanctions', name: 'sanctions' },
-            { label: 'Adverse Media', name: 'adverseMedia' },
-            { label: 'Politically Exposed Person (PEP)', name: 'politicallyExposedPerson' },
-          ],
-        },
-        {
-          label: 'KYB (Requires collection flow)',
-          options: [
-            { label: 'Registry Check', name: 'registryCheck' },
-            { label: 'Address Check', name: 'addressCheck' },
-            { label: 'Contact Information Check', name: 'contactInformationCheck' },
-            { label: 'Ultimate Beneficial Ownership (UBO)', name: 'ultimateBeneficialOwnership' },
-          ],
-        },
-        {
-          label: 'Ecosystem',
-          options: [
-            { label: 'Connectors Extraction', name: 'connectorsExtraction' },
-            { label: 'Test Transactions', name: 'testTransactions' },
-          ],
-        },
-        {
-          label: 'Line of Business Analysis',
-          options: [
-            { label: 'Line of Business Extraction', name: 'lineOfBusinessExtraction' },
-            { label: 'Content Violations', name: 'contentViolations' },
-          ],
-        },
-      ] as const,
-    [],
-  );
   const riskLabels = useMemo(
     () =>
       [
-        'Adult Content',
-        'Drug Paraphernalia',
-        'Illegal Substances',
-        'Negative Option Billing',
-        'Racism',
-        'Beastiality',
-        'ENDS Products',
-        'Child Pornography',
-        'Firearms',
-        'IP Rights Infringement',
-        'Cold Weapons',
-        'Forex',
-        'IPTV',
-        'Nutraceuticals',
-        'Violence',
-        'Illegal Wildlife Trade',
-        'Online Gaming',
-        'Pharmaceuticals/Prescription Drugs',
-        'Sanctions',
-        'Cyber Lockers',
-        'Gambling',
-        'Marijuana',
-        'Pharma OTC (Over the Counter)',
-        'Adult Live Streaming',
-        'Dating Services',
-        'Government Documents & IDs',
-        'Medical Devices',
-        'Prostitution',
+        { label: 'Adult Content', defaultValue: 'criticalRisk', disabled: false },
+        { label: 'Drug Paraphernalia', defaultValue: 'highRisk', disabled: false },
+        { label: 'Illegal Substances', defaultValue: 'criticalRisk', disabled: false },
+        { label: 'Negative Option Billing', defaultValue: 'highRisk', disabled: false },
+        { label: 'Racism', defaultValue: 'highRisk', disabled: false },
+        { label: 'Beastiality', defaultValue: 'criticalRisk', disabled: true },
+        { label: 'ENDS Products', defaultValue: 'highRisk', disabled: false },
+        { label: 'Illegal Wildlife Trade', defaultValue: 'criticalRisk', disabled: false },
+        { label: 'Nutraceuticals', defaultValue: 'moderateRisk', disabled: false },
+        { label: 'Child Pornography', defaultValue: 'criticalRisk', disabled: true },
+        { label: 'Firearms', defaultValue: 'highRisk', disabled: false },
+        { label: 'IP Rights Infringement', defaultValue: 'criticalRisk', disabled: false },
+        { label: 'Online Gaming', defaultValue: 'highRisk', disabled: false },
+        { label: 'Cold Weapons', defaultValue: 'moderateRisk', disabled: false },
+        { label: 'Forex', defaultValue: 'highRisk', disabled: false },
+        { label: 'IPTV', defaultValue: 'highRisk', disabled: false },
+        { label: 'Pharmaceuticals/Prescription', defaultValue: 'criticalRisk', disabled: false },
+        { label: 'Violence', defaultValue: 'criticalRisk', disabled: true },
+        { label: 'Cyber Lockers', defaultValue: 'highRisk', disabled: false },
+        { label: 'Gambling', defaultValue: 'criticalRisk', disabled: false },
+        { label: 'Marijuana', defaultValue: 'criticalRisk', disabled: false },
+        { label: 'Pharma OTC (Over the Counter)', defaultValue: 'moderateRisk', disabled: false },
+        { label: 'Sanctions', defaultValue: 'criticalRisk', disabled: true },
+        { label: 'Dating Services', defaultValue: 'moderateRisk', disabled: false },
+        { label: 'Government Documents & IDs', defaultValue: 'highRisk', disabled: false },
+        { label: 'Medical Devices', defaultValue: 'moderateRisk', disabled: false },
+        { label: 'Prostitution', defaultValue: 'criticalRisk', disabled: true },
+        { label: 'Adult Live Streaming', defaultValue: 'criticalRisk', disabled: false },
       ] as const,
     [],
   );
-  const disabledChecksConfiguration = useMemo(
-    () =>
-      checksConfiguration?.map(config => ({
-        ...config,
-        options: config.options.map(option => ({
-          ...option,
-          disabled: true,
-        })),
-      })),
-    [checksConfiguration],
+  const checksConfiguration = useMemo(
+    () => [
+      {
+        label: 'KYC (Requires collection flow)',
+        options: [
+          {
+            label: 'Identity Verification',
+            name: 'identityVerification',
+            defaultChecked: false,
+            disabled: false,
+          },
+          { label: 'Sanctions', name: 'sanctions', defaultChecked: false, disabled: false },
+          { label: 'Adverse Media', name: 'adverseMedia', defaultChecked: false, disabled: false },
+          {
+            label: 'Politically Exposed Person (PEP)',
+            name: 'politicallyExposedPerson',
+            defaultChecked: false,
+            disabled: false,
+          },
+        ],
+      },
+      {
+        label: 'KYB (Requires collection flow)',
+        options: [
+          {
+            label: 'Registry Check',
+            name: 'registryCheck',
+            defaultChecked: false,
+            disabled: false,
+          },
+          { label: 'Address Check', name: 'addressCheck', defaultChecked: false, disabled: false },
+          {
+            label: 'Contact Information Check',
+            name: 'contactInformationCheck',
+            defaultChecked: false,
+            disabled: false,
+          },
+          {
+            label: 'Ultimate Beneficial Ownership (UBO)',
+            name: 'ultimateBeneficialOwnership',
+            defaultChecked: false,
+            disabled: false,
+          },
+        ],
+      },
+      {
+        label: 'Ecosystem',
+        options: [
+          {
+            label: 'Connectors Extraction',
+            name: 'connectorsExtraction',
+            defaultChecked: true,
+            disabled: false,
+          },
+          {
+            label: 'Test Transactions',
+            name: 'testTransactions',
+            defaultChecked: false,
+            disabled: true,
+          },
+        ],
+      },
+      {
+        label: 'Line of Business Analysis',
+        options: [
+          {
+            label: 'Line of Business Extraction',
+            name: 'lineOfBusinessExtraction',
+            defaultChecked: true,
+            disabled: false,
+          },
+          {
+            label: 'Content Violations',
+            name: 'contentViolations',
+            defaultChecked: true,
+            disabled: false,
+          },
+        ],
+      },
+      {
+        label: 'Transaction Laundering Risk',
+        options: [
+          {
+            label: 'Business Consistency',
+            name: 'businessConsistency',
+            defaultChecked: true,
+            disabled: false,
+          },
+          {
+            label: 'Scam and Fraud Indicators',
+            name: 'scamAndFraudIndicators',
+            defaultChecked: true,
+            disabled: false,
+          },
+          { label: 'MATCH Query', name: 'matchQuery', defaultChecked: false, disabled: true },
+          { label: 'VMSS Query', name: 'vmssQuery', defaultChecked: false, disabled: true },
+          {
+            label: 'Pricing Analysis',
+            name: 'pricingAnalysis',
+            defaultChecked: true,
+            disabled: false,
+          },
+          {
+            label: 'Website Structure',
+            name: 'websiteStructure',
+            defaultChecked: true,
+            disabled: false,
+          },
+          {
+            label: 'Transactions Analysis',
+            name: 'transactionsAnalysis',
+            defaultChecked: false,
+            disabled: true,
+          },
+        ],
+      },
+      {
+        label: "Website's Company Analysis",
+        options: [
+          {
+            label: 'Line of Business Extraction',
+            name: 'lineOfBusinessExtraction',
+            defaultChecked: true,
+            disabled: false,
+          },
+          {
+            label: 'Scam and Fraud Indicators',
+            name: 'scamAndFraudIndicators',
+            defaultChecked: true,
+            disabled: false,
+          },
+        ],
+      },
+      {
+        label: 'Ads and Social Media Analysis',
+        options: [
+          {
+            label: 'Social Media Presence',
+            name: 'socialMediaPresence',
+            defaultChecked: true,
+            disabled: false,
+          },
+          {
+            label: 'Related Ads Extractions',
+            name: 'relatedAdsExtractions',
+            defaultChecked: true,
+            disabled: false,
+          },
+          {
+            label: 'Violations Detection',
+            name: 'violationsDetection',
+            defaultChecked: true,
+            disabled: false,
+          },
+        ],
+      },
+      {
+        label: 'Payment Environment Analysis',
+        options: [
+          {
+            label: 'Payment Gateways Extraction',
+            name: 'paymentGatewaysExtraction',
+            defaultChecked: false,
+            disabled: true,
+          },
+          {
+            label: 'Payment Environment Risk',
+            name: 'paymentEnvironmentRisk',
+            defaultChecked: false,
+            disabled: true,
+          },
+        ],
+      },
+    ],
+    [],
   );
 
   const industries = useMemo(
@@ -175,7 +302,7 @@ export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
     toggleIsChangeChecksConfigurationOpen,
     isChangeRiskAppetiteConfigurationOpen,
     toggleIsChangeRiskAppetiteConfigurationOpen,
-    checksConfiguration: disabledChecksConfiguration,
+    checksConfiguration,
     riskLabels,
     industries,
     isLoadingCustomer,

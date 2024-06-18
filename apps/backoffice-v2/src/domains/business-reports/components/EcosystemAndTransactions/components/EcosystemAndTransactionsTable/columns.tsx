@@ -6,6 +6,7 @@ import { ctw } from '@/common/utils/ctw/ctw';
 import React from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
 import { safeEvery } from '@ballerine/common';
+import { Severity } from '@/common/types';
 
 const columnHelper = createColumnHelper<{
   matchedName: string;
@@ -71,16 +72,18 @@ export const columns = [
       return (
         <div className={'flex items-center'}>
           {safeEvery(Object.values(indicators), indicator => !!indicator) && (
-            <WarningFilledSvg
-              className={ctw('me-3 mt-px', {
-                'text-slate-300 [&>:not(:first-child)]:stroke-background':
-                  indicators?.severity === 'low',
-              })}
-              width={'20'}
-              height={'20'}
-            />
+            <>
+              <WarningFilledSvg
+                className={ctw('me-3 mt-px', {
+                  'text-slate-300 [&>:not(:first-child)]:stroke-background':
+                    indicators?.severity === Severity.MEDIUM,
+                })}
+                width={'20'}
+                height={'20'}
+              />
+            </>
           )}
-          <TextWithNAFallback>{indicators?.label}</TextWithNAFallback>
+          {indicators?.label ?? 'No Violations Detected'}
         </div>
       );
     },
