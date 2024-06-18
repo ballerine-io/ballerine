@@ -91,9 +91,10 @@ export const columns = [
                 [severityToTextClassName[
                   (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
                 ]]: riskScore || riskScore === 0,
+                'font-bold': riskScore || riskScore === 0,
                 'text-destructive': severity === Severity.CRITICAL || severity === Severity.HIGH,
               },
-              'py-0.5 font-bold',
+              'py-0.5',
             )}
             checkFalsy={false}
           >
