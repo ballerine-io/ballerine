@@ -97,22 +97,20 @@ export const reportAdapter = {
       relatedAdsImages: Object.values(data?.report?.data?.socialMedia?.ads ?? {}).map(
         data => data?.pickedAd?.imageUrl,
       ),
-      onlineReputationAnalysis: data?.report?.data?.websiteScamAnalysis?.riskIndicators?.map(
-        ({ name, sourceUrl }) => ({ label: name, url: sourceUrl }),
-      ),
+      onlineReputationAnalysis: data?.report?.data?.transactionLaundering?.scamOrFraud?.indicators
+        ?.filter(({ violation }) => !!violation)
+        ?.map(({ violation, sourceUrl }) => ({ label: violation, url: sourceUrl })),
       summary: data?.report?.data?.summary?.summary,
       riskScore: data?.report?.data?.summary?.riskScore,
       riskLevels: normalizeRiskLevel(data?.report?.data?.summary?.riskLevels ?? {}),
-      companyReputationAnalysis:
-        data?.report?.data?.websiteCompanyAnalysis?.scamOrFraud?.indicators?.map(
-          ({ violation, sourceUrl }) => ({ label: violation, url: sourceUrl }),
-        ),
+      companyReputationAnalysis: data?.report?.data?.websiteCompanyAnalysis?.scamOrFraud?.indicators
+        ?.filter(({ violation }) => !!violation)
+        ?.map(({ violation, sourceUrl }) => ({ label: violation, url: sourceUrl })),
       lineOfBusinessDescription: data?.report?.data?.lineOfBusiness?.lobDescription,
       relatedAdsSummary: data?.report?.data?.socialMedia?.relatedAds?.summary,
-      pricingAnalysis: data?.report?.data?.pricing?.riskIndicators?.map(({ name }) => name),
-      websiteStructureAndContentEvaluation: data?.report?.data?.structure?.riskIndicators?.map(
-        ({ name }) => name,
-      ),
+      pricingAnalysis: data?.report?.data?.transactionLaundering?.pricingAnalysis?.indicators,
+      websiteStructureAndContentEvaluation:
+        data?.report?.data?.transactionLaundering?.websiteStructureEvaluation?.indicators,
       trafficAnalysis: [
         {
           label: 'Estimated Monthly Visits',
@@ -197,22 +195,20 @@ export const reportAdapter = {
       relatedAdsImages: Object.values(data?.report?.data?.socialMedia?.ads ?? {}).map(
         data => data?.pickedAd?.imageUrl,
       ),
-      onlineReputationAnalysis: data?.report?.data?.websiteScamAnalysis?.riskIndicators?.map(
-        ({ name, sourceUrl }) => ({ label: name, url: sourceUrl }),
-      ),
+      onlineReputationAnalysis: data?.report?.data?.transactionLaundering?.scamOrFraud?.indicators
+        ?.filter(({ violation }) => !!violation)
+        ?.map(({ violation, sourceUrl }) => ({ label: violation, url: sourceUrl })),
       summary: data?.report?.data?.summary?.summary,
       riskScore: data?.report?.data?.summary?.riskScore,
       riskLevels: normalizeRiskLevel(data?.report?.data?.summary?.riskLevels ?? {}),
-      companyReputationAnalysis:
-        data?.report?.data?.websiteCompanyAnalysis?.scamOrFraud?.indicators?.map(
-          ({ violation, sourceUrl }) => ({ label: violation, url: sourceUrl }),
-        ),
+      companyReputationAnalysis: data?.report?.data?.websiteCompanyAnalysis?.scamOrFraud?.indicators
+        ?.filter(({ violation }) => !!violation)
+        ?.map(({ violation, sourceUrl }) => ({ label: violation, url: sourceUrl })),
       lineOfBusinessDescription: data?.report?.data?.lineOfBusiness?.lobDescription,
       relatedAdsSummary: data?.report?.data?.socialMedia?.relatedAds?.summary,
-      pricingAnalysis: data?.report?.data?.pricing?.riskIndicators?.map(({ name }) => name),
-      websiteStructureAndContentEvaluation: data?.report?.data?.structure?.riskIndicators?.map(
-        ({ name }) => name,
-      ),
+      pricingAnalysis: data?.report?.data?.transactionLaundering?.pricingAnalysis?.indicators,
+      websiteStructureAndContentEvaluation:
+        data?.report?.data?.transactionLaundering?.websiteStructureEvaluation?.indicators,
       trafficAnalysis: [
         {
           label: 'Estimated Monthly Visits',
