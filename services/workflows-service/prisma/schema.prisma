@@ -95,11 +95,19 @@ model EndUser {
   @@index([projectId])
 }
 
+enum BusinessPosition {
+  ubo
+  director
+  representative
+  authorized_signatory
+}
+
 model EndUsersOnBusinesses {
   endUser    EndUser  @relation(fields: [endUserId], references: [id])
   endUserId  String
   business   Business @relation(fields: [businessId], references: [id])
   businessId String
+  position BusinessPosition[]
 
   @@id([endUserId, businessId])
   @@index([businessId])
@@ -449,6 +457,7 @@ enum DataVersionStatus {
 model DataMigrationVersion {
   id            String            @id @default(cuid())
   version       String
+  fileName      String?
   migratedAt    DateTime          @default(now())
   status        DataVersionStatus @default(completed)
   failureReason String?
@@ -838,13 +847,20 @@ model Counterparty {
   @@index([correlationId])
 }
 
+enum BusinessReportStatus {
+  new
+  in_progress
+  completed
+}
+
 model BusinessReport {
   id       String             @id @default(cuid())
   type     BusinessReportType
-  reportId String             @unique
+  reportId String?            @unique
   report   Json
 
-  riskScore  Int
+  riskScore  Int?
+  status BusinessReportStatus
   businessId String
   business   Business @relation(fields: [businessId], references: [id])
 

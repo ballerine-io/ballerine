@@ -2,8 +2,8 @@ import { isNonEmptyArray } from '@ballerine/common';
 import { useIndividualsLogic } from '@/pages/Profiles/Individuals/hooks/useIndividualsLogic/useIndividualsLogic';
 import { ProfilesTable } from '@/pages/Profiles/Individuals/components/ProfilesTable';
 import { NoProfiles } from '@/pages/Profiles/Individuals/components/NoProfiles/NoProfiles';
-import { ProfilesPagination } from '@/pages/Profiles/Individuals/components/ProfilesPagination/ProfilesPagination';
 import { ProfilesHeader } from './components/ProfilesHeader';
+import { UrlPagination } from '@/common/components/molecules/UrlPagination/UrlPagination';
 
 export const Individuals = () => {
   const {
@@ -27,8 +27,8 @@ export const Individuals = () => {
         {Array.isArray(individualsProfiles) &&
           !individualsProfiles.length &&
           !isLoadingIndividualsProfiles && <NoProfiles />}
-        <div className={`flex items-center gap-x-2`}>
-          <ProfilesPagination
+        <div className={`mt-auto flex items-center gap-x-2`}>
+          <UrlPagination
             page={page}
             onPrevPage={onPrevPage}
             onNextPage={onNextPage}

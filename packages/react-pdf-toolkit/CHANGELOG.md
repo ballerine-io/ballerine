@@ -5,6 +5,8 @@
 ### Patch Changes
 
 - Updated readme
+- Updated dependencies
+  - @ballerine/ui@0.5.3
 
 ## 1.2.2
 

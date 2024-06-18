@@ -1,8 +1,9 @@
-import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
+// eslint-disable-next-line import/no-cycle
 import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
+import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { PasswordService } from '@/auth/password/password.service';
 import { UserService } from '@/user/user.service';
-import { HttpStatus, Module } from '@nestjs/common';
+import { forwardRef, HttpStatus, Module } from '@nestjs/common';
 import { ACLModule } from '@/common/access-control/acl.module';
 import { AlertControllerInternal } from '@/alert/alert.controller.internal';
 import { AlertRepository } from '@/alert/alert.repository';
@@ -23,12 +24,10 @@ import { ProjectModule } from '@/project/project.module';
 import { UserRepository } from '@/user/user.repository';
 import { AlertDefinitionModule } from '@/alert-definition/alert-definition.module';
 import { SentryModule } from '@/sentry/sentry.module';
-import { BusinessReportModule } from '@/business-report/business-report.module';
 
 @Module({
   imports: [
-    BusinessReportModule,
-    DataAnalyticsModule,
+    forwardRef(() => DataAnalyticsModule),
     ACLModule,
     PrismaModule,
     SentryModule,

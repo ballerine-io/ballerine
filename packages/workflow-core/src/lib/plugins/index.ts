@@ -12,4 +12,4 @@ export type {
   ValidatableTransformer,
   SerializableValidatableTransformer,
 } from './external-plugin';
-export { ApiPlugin, WebhookPlugin } from './external-plugin';
+export { ApiPlugin, WebhookPlugin, DispatchEventPlugin } from './external-plugin';

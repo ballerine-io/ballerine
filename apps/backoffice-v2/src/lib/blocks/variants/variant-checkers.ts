@@ -24,3 +24,8 @@ export const checkIsOngoingVariant = (
 ) =>
   workflowDefinition?.version >= 0 &&
   workflowDefinition?.variant === WorkflowDefinitionVariant.ONGOING;
+
+export const checkIsAmlVariant = (
+  workflowDefinition: Pick<TWorkflowById['workflowDefinition'], 'variant' | 'config' | 'version'>,
+) =>
+  workflowDefinition?.version >= 0 && workflowDefinition?.variant === WorkflowDefinitionVariant.AML;

@@ -70,7 +70,7 @@ export class OngoingMonitoringCron {
             const intervalInDays = processConfig.intervalInDays;
             const lastReceivedReport = await this.findLastBusinessReport(business, projectIds);
 
-            if (!lastReceivedReport) {
+            if (!lastReceivedReport?.reportId) {
               this.logger.debug(`No initial report found for business: ${business.id}`);
 
               continue;
