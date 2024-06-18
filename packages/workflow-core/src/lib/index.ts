@@ -13,7 +13,9 @@ export type {
   WorkflowExtensions,
   Workflow,
   ObjectValues,
+  RiskCalculationInput,
 } from './types';
+
 export type {
   StatePlugin,
   ExtensionRunOrder,

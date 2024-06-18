@@ -1,9 +1,13 @@
+import { CustomRulesTypes } from '@/lib/custom-rule-engine/consts/custom-rule-type';
+import { CustomRuleOperations } from '@/lib/custom-rule-engine/consts/custom-rule-operations';
+import { CustomRuleCastOptions } from '@/lib/custom-rule-engine/consts/custom-rule-cast-options';
+
 export type CustomRuleInput = {
-  type: 'evaluate' | 'uboHasWarning';
+  type: (typeof CustomRulesTypes)[number];
   options: {
     fieldPath?: string;
-    cast?: 'String' | 'Number' | 'Boolean' | 'Date';
-    operations?: 'greater_than' | 'less_than' | 'equal' | 'not_equal' | 'contains' | 'not_contains';
+    cast?: (typeof CustomRuleCastOptions)[number];
+    operations?: (typeof CustomRuleOperations)[number];
     compareValue?: string;
   };
 };

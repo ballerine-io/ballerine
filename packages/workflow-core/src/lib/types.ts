@@ -1,5 +1,5 @@
 import type { MachineConfig, MachineOptions } from 'xstate';
-import type { HttpPlugins, CommonPlugins, StatePlugins } from './plugins/types';
+import type { CommonPlugins, HttpPlugins, StatePlugins } from './plugins/types';
 import type {
   IDispatchEventPluginParams,
   ISerializableChildPluginParams,
@@ -104,6 +104,12 @@ export type ChildPluginCallbackOutput = {
     config: AnyRecord;
   };
 };
+
+export type TNotionTableRiskCalculation = {
+  notionTableId: string;
+};
+
+export type RiskCalculationInput = TNotionTableRiskCalculation;
 
 export type SerializableTransformer = {
   transformer: string;

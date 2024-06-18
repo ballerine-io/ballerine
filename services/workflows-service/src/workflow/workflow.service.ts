@@ -57,6 +57,7 @@ import {
   createWorkflow,
   HelpersTransformer,
   JmespathTransformer,
+  RiskCalculationInput,
   SerializableTransformer,
   THelperFormatingLogic,
   Transformer,
@@ -102,6 +103,10 @@ import { Static } from '@sinclair/typebox';
 import dayjs from 'dayjs';
 import { entitiesUpdate } from './utils/entities-update';
 import { BusinessReportService } from '@/business-report/business-report.service';
+import { NotionService } from '@/integrations/notion/notion.module';
+import { CUSTOM_VIOLATION_RULES_SCHEMA } from '@/workflow/schemas/ruleset-input-schema';
+import { formatRuleViolations } from '@/workflow/helpers/format-rule-violations';
+import { createRuleEngine, TRuleEngine } from '@ballerine/rules-engine-lib';
 
 type TEntityId = string;
 
@@ -138,6 +143,7 @@ export class WorkflowService {
     private readonly workflowTokenService: WorkflowTokenService,
     private readonly uiDefinitionService: UiDefinitionService,
     private readonly prismaService: PrismaService,
+    private readonly notionService: NotionService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -1923,6 +1929,36 @@ export class WorkflowService {
         },
         // @ts-expect-error - error from Prisma types fix
         extensions: workflowDefinition.extensions,
+        invokeRiskCalculation: async (riskOptions: RiskCalculationInput) => {
+          const unformmatedViolations = await this.notionService.getAllDatabaseRecordsValues({
+            databaseId: riskOptions.notionTableId,
+            schema: CUSTOM_VIOLATION_RULES_SCHEMA,
+          });
+
+          const formattedViolations = formatRuleViolations(unformmatedViolations);
+          const violationsWithRuleResult = formattedViolations.map(violationWithRuleset => {
+            const { ruleSet, ...violation } = violationWithRuleset;
+
+            try {
+              const result = createRuleEngine(ruleSet as TRuleEngine[]);
+              return { success: true, result, violation, ruleSet };
+            } catch (ex) {
+              return {
+                error: isErrorWithMessage(ex) && ex.message,
+                result: false,
+                violation,
+                ruleSet,
+              };
+            }
+          });
+
+          // TODO calculate risk score for those that passed & result is true
+
+          return {
+            riskSCore: 0,
+            violationsWithRuleResult,
+          };
+        },
         invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
           const runnableChildWorkflow = await this.persistChildEvent(
             childPluginConfiguration,
