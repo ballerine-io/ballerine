@@ -95,11 +95,19 @@ model EndUser {
   @@index([projectId])
 }
 
+enum BusinessPosition {
+  ubo
+  director
+  representative
+  authorized_signatory
+}
+
 model EndUsersOnBusinesses {
   endUser    EndUser  @relation(fields: [endUserId], references: [id])
   endUserId  String
   business   Business @relation(fields: [businessId], references: [id])
   businessId String
+  position BusinessPosition[]
 
   @@id([endUserId, businessId])
   @@index([businessId])
@@ -145,7 +153,7 @@ model Business {
   project         Project          @relation(fields: [projectId], references: [id])
   Counterparty    Counterparty[]
   businessReports BusinessReport[]
-  alerts     Alert[]
+  alerts          Alert[]
 
   @@unique([projectId, correlationId])
   @@index([companyName])
@@ -449,6 +457,7 @@ enum DataVersionStatus {
 model DataMigrationVersion {
   id            String            @id @default(cuid())
   version       String
+  fileName      String?
   migratedAt    DateTime          @default(now())
   status        DataVersionStatus @default(completed)
   failureReason String?
@@ -714,13 +723,13 @@ enum MonitoringType {
 }
 
 model AlertDefinition {
-  id          String  @id @default(cuid())
-  crossEnvKey String? @unique
-  correlationId     String
-  monitoringType    MonitoringType
-  name        String
-  enabled     Boolean @default(true)
-  description String?
+  id             String         @id @default(cuid())
+  crossEnvKey    String         @unique
+  correlationId  String
+  monitoringType MonitoringType
+  name           String
+  enabled        Boolean        @default(true)
+  description    String?
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
@@ -838,21 +847,28 @@ model Counterparty {
   @@index([correlationId])
 }
 
-model BusinessReport {
-  id     String             @id @default(cuid())
-  type   BusinessReportType
-  reportId String           @unique
-  report Json
+enum BusinessReportStatus {
+  new
+  in_progress
+  completed
+}
 
-  riskScore  Int
+model BusinessReport {
+  id       String             @id @default(cuid())
+  type     BusinessReportType
+  reportId String?            @unique
+  report   Json
+
+  riskScore  Int?
+  status BusinessReportStatus
   businessId String
   business   Business @relation(fields: [businessId], references: [id])
 
-  projectId  String
-  project    Project @relation(fields: [projectId], references: [id])
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([createdAt])
   @@index([businessId])

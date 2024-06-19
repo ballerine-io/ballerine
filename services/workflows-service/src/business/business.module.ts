@@ -24,14 +24,22 @@ import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.s
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { BusinessControllerExternal } from './business.controller.external';
 import { BusinessControllerInternal } from './business.controller.internal';
 import { BusinessRepository } from './business.repository';
 import { BusinessService } from './business.service';
+// eslint-disable-next-line import/no-cycle
+import { BusinessReportModule } from '@/business-report/business-report.module';
 
 @Module({
-  imports: [HttpModule, AppLoggerModule, ProjectModule, CustomerModule],
+  imports: [
+    HttpModule,
+    AppLoggerModule,
+    ProjectModule,
+    CustomerModule,
+    forwardRef(() => BusinessReportModule),
+  ],
   controllers: [BusinessControllerInternal, BusinessControllerExternal],
   providers: [
     BusinessRepository,

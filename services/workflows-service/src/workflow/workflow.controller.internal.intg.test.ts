@@ -34,6 +34,8 @@ import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-defi
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { BusinessService } from '@/business/business.service';
+import { BusinessReportRepository } from '@/business-report/business-report.repository';
+import { BusinessReportService } from '@/business-report/business-report.service';
 
 describe('/api/v1/internal/workflows #api #integration', () => {
   let app: INestApplication;
@@ -61,6 +63,8 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       StorageService,
       WorkflowEventEmitterService,
       BusinessRepository,
+      BusinessReportRepository,
+      BusinessReportService,
       BusinessService,
       WorkflowDefinitionRepository,
       WorkflowRuntimeDataRepository,

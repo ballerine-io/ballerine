@@ -4,6 +4,7 @@ import { useCallback, useMemo } from 'react';
 import { Building, Goal, Home, Users } from 'lucide-react';
 import { TRoutes, TRouteWithChildren } from '@/Router/types';
 import { useLocation } from 'react-router-dom';
+import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/userCustomerQuery';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
 export const useNavbarLogic = () => {
@@ -18,6 +19,8 @@ export const useNavbarLogic = () => {
     () => filters?.filter(({ entity }) => entity === 'businesses'),
     [filters],
   );
+  const { data: customer } = useCustomerQuery();
+
   const navItems = [
     {
       text: 'Home',
@@ -28,13 +31,23 @@ export const useNavbarLogic = () => {
     {
       text: 'Businesses',
       icon: <Building size={20} />,
-      children:
-        businessesFilters?.map(({ id, name }) => ({
+      children: [
+        ...(customer?.config?.isMerchantMonitoringEnabled
+          ? [
+              {
+                text: 'Merchant Monitoring',
+                href: `/en/merchant-monitoring`,
+                key: 'nav-item-merchant-monitoring',
+              },
+            ]
+          : []),
+        ...(businessesFilters?.map(({ id, name }) => ({
           filterId: id,
           text: name,
           href: `/${locale}/case-management/entities?filterId=${id}`,
           key: `nav-item-${id}`,
-        })) ?? [],
+        })) ?? []),
+      ],
       key: 'nav-item-businesses',
     },
     {

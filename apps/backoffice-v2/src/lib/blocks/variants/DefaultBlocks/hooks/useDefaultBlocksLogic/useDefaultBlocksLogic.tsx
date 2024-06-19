@@ -34,7 +34,6 @@ import { useUbosUserProvidedBlock } from '@/lib/blocks/hooks/useUbosUserProvided
 import { useWebsiteBasicRequirementBlock } from '@/lib/blocks/hooks/useWebsiteBasicRequirementBlock/useWebsiteBasicRequirementBlock';
 import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
 import { useCaseBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/useCaseBlocks';
-import { useWebsiteMonitoringReportBlock } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/useWebsiteMonitoringReportBlock';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
@@ -45,12 +44,17 @@ import { toast } from 'sonner';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
 import { DEFAULT_PROCESS_TRACKER_PROCESSES } from '@/common/components/molecules/ProcessTracker/constants';
+import { useWebsiteMonitoringReportBlock } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/useWebsiteMonitoringReportBlock';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { useAddressBlock } from '@/lib/blocks/hooks/useAddressBlock/useAddressBlock';
+import { getAddressDeep } from '@/pages/Entity/hooks/useEntityLogic/utils/get-address-deep/get-address-deep';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
   'directors',
   'ubo',
   'businessInformation',
+  'merchantMonitoring',
   'website_monitoring',
 ] as const;
 
@@ -238,10 +242,32 @@ export const useDefaultBlocksLogic = () => {
   });
 
   const mapBlock = useMapBlock({
-    filteredPluginsOutput,
+    address: getAddressDeep(filteredPluginsOutput, {
+      propertyName: 'registeredAddressInFull',
+    }),
     entityType: workflow?.context?.entity?.type,
     workflow,
   });
+
+  const addressBlock = useAddressBlock({
+    address: workflow?.context?.entity?.data?.additionalInfo?.headquarters,
+    entityType: workflow?.context?.entity?.type,
+    workflow,
+  });
+
+  const addressWithContainerBlock = useMemo(() => {
+    if (!addressBlock?.length) {
+      return [];
+    }
+
+    return createBlocksTyped()
+      .addBlock()
+      .addCell({
+        type: 'block',
+        value: addressBlock.flat(1),
+      })
+      .build();
+  }, [addressBlock]);
 
   const storeInfoBlock = useStoreInfoBlock({
     storeInfo,
@@ -393,6 +419,7 @@ export const useDefaultBlocksLogic = () => {
       mainContactBlock,
       mainRepresentativeBlock,
       mapBlock,
+      addressWithContainerBlock,
       parentDocumentBlocks,
       associatedCompaniesBlock,
       associatedCompaniesInformationBlock,
@@ -414,6 +441,7 @@ export const useDefaultBlocksLogic = () => {
     mainContactBlock,
     mainRepresentativeBlock,
     mapBlock,
+    addressWithContainerBlock,
     parentDocumentBlocks,
     processingDetailsBlock,
     registryInfoBlock,

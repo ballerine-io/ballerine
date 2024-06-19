@@ -1,16 +1,16 @@
+import { apiClient } from '@/common/api-client/api-client';
+import { Method, States } from '@/common/enums';
 import { env } from '@/common/env/env';
+import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
+import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
+import { WorkflowDefinitionByIdSchema } from '@/domains/workflow-definitions/fetchers';
+import { AmlSchema } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
+import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
+import { zPropertyKey } from '@/lib/zod/utils/z-property-key/z-property-key';
 import qs from 'qs';
 import { deepCamelKeys } from 'string-ts';
 import { z } from 'zod';
-import { apiClient } from '@/common/api-client/api-client';
-import { Method, States } from '@/common/enums';
-import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
-import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
-import { zPropertyKey } from '@/lib/zod/utils/z-property-key/z-property-key';
 import { IWorkflowId } from './interfaces';
-import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
-import { WorkflowDefinitionByIdSchema } from '@/domains/workflow-definitions/fetchers';
-import { AmlSchema } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
 
 export const fetchWorkflows = async (params: {
   filterId: string;
@@ -239,6 +239,7 @@ export const updateWorkflowDecision = async ({
   body: {
     decision: string | null;
     reason?: string;
+    comment?: string;
   };
   contextUpdateMethod: 'base' | 'director';
 }) => {
