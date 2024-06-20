@@ -66,6 +66,7 @@
     "dateHint": "DD/MM/YYYY",
     "mobileAppName": "App Name",
     "differentFromPhysicalAddress": "Different from physical address",
+    "sameAsPhysicalAddress": "Same as physical address?",
     "hasActiveWebsite": "I declare that the website's business activity does not require a license",
     "storeInfoDescription": "Leaving the last checkbox 'Unchecked' will require providing extra licenses documents",
     "associatedCompanies": "Associated companies",
@@ -97,6 +98,26 @@
       "label": "Street",
       "hint": "Downing Street"
     },
+    "physicalStreet": {
+      "label": "Physical Address Street",
+      "hint": "Downing Street"
+    },
+    "physicalNumber": {
+      "label": "Physical Address Number",
+      "hint": "10"
+    },
+    "physicalCity": {
+      "label": "Physical Address City",
+      "hint": "London"
+    },
+    "physicalAddressCountry": {
+      "label": "Physical Address Country",
+      "hint": "United Kingdom"
+    },
+    "physicalZip": {
+      "label": "ZIP/Postal Code",
+      "hint": "SW1A 1AA"
+    },
     "jobTitle": {
       "label": "Title",
       "hint": "CEO / Manager / Partner"
@@ -118,7 +139,8 @@
     },
     "companyName": {
       "label": "Company English Name",
-      "hint": "English Name"
+      "hint": "English Name",
+      "placeholder": "XYZ Pte Ltd"
     },
     "taxIdentificationNumber": {
       "label": "Tax Identity Number",
@@ -151,6 +173,10 @@
       "label": "Registered capital (in USD)",
       "hint": "2,000,000"
     },
+    "registeredCapitalInSgd": {
+      "label": "Registered capital (SGD)",
+      "hint": "1,000,000"
+    },
     "holderName": {
       "label": "Cardholder Name",
       "hint": "John W. Doe"
@@ -158,6 +184,10 @@
     "companyAccountHolderName": {
       "label": "Company Account Holder Name",
       "hint": "OpenAI Technologies, Inc."
+    },
+    "residentAddress": {
+      "label": "Resident Address",
+      "hint": "1 Raffles Place, #01-01, Singapore 048616"
     },
     "accountHolderName": {
       "label": "Account Holder Name",
@@ -420,6 +450,12 @@
       "hint": "United Kingdom",
       "placeholder": "Choose"
     },
+    "registeredCountrySP": {
+      "label": "Registered Country",
+      "hint": "Singapore",
+      "placeholder": "Singapore"
+    },
+
     "bankCountry": {
       "label": "Bank Country",
       "hint": "United Kingdom",
@@ -448,6 +484,17 @@
     "averageTransactionValueInput": {
       "label": "Average Transaction Value (USD)",
       "hint": "$10,00"
+    },
+    "registeredStreetNumber": {
+      "label": "Registered Address Number"
+    },
+    "registeredAddressCity": {
+      "label": "Registered Address City",
+      "hint": "London"
+    },
+    "registeredAddressCountry": {
+      "label": "Registered Address Country",
+      "hint": "United Kingdom"
     },
     "documents": {
       "bankStatement": {
@@ -514,6 +561,52 @@
       "firstName": "John",
       "lastName": "Doe",
       "email": "email@gmail.com"
+    },
+    "uboLegalName": {
+      "label": "UBO Legal Name",
+      "hint": "First name, Last name"
+    },
+    "uboNationality": {
+      "label": "UBO Nationality",
+      "hint": "Chinese"
+    },
+    "uboIdentityNumber": {
+      "label": "UBO Identity Number",
+      "hint": "1101021982051975X"
+    },
+    "uboAddress": {
+      "label": "UBO Address of Residence",
+      "hint": "22, Chaoyangmen, Chaoyang District, Beijing"
+    },
+    "uboOwnershipPercentage": {
+      "label": "UBO % of Ownership",
+      "hint": "25"
+    },
+    "directorLegalName": {
+      "label": "Director Legal Name",
+      "hint": "First name, Last name"
+    },
+    "directorNationality": {
+      "label": "Director Nationality",
+      "hint": "Chinese"
+    },
+    "directorIdentityNumber": {
+      "label": "Director Identity Number",
+      "hint": "1101021982051975X"
+    },
+    "directorAddress": {
+      "label": "Director Address of Residence",
+      "hint": "22, Chaoyangmen, Chaoyang District, Beijing"
+    },
+    "directorEmail": {
+      "label": "Director Email",
+      "hint": "example@example.cn"
+    },
+    "directorPassport": {
+      "label": "Director ID/Passport Photo"
+    },
+    "directorSelfie": {
+      "label": "Director Selfie with ID/Passport Photo"
     }
   },
   "errorMessage": {
