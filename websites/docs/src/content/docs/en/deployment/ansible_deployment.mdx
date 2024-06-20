@@ -47,7 +47,7 @@ After completing the above steps, the remaining action is to run the Ansible pla
 You can run the Ansible playbook with the following command
 
 <CodeBlock lang={`shell`}  code={`cd ballerine/deploy/ansible/ballerine_playbook;
-ansible-playbook -i inventory.txt ballerine-playbook.yml`}/>
+ansible-playbook -i inventory.txt ballerine-playbook.yml --skip-tags packer`}/>
 
 The default username and password for the backoffice are:
 
