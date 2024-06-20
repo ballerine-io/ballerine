@@ -75,6 +75,7 @@ export const serverEnvSchema = {
     .string()
     .optional()
     .describe('Bucket name of Data migration folders'),
+  NOTION_API_KEY: z.string().optional().describe('Notion API key'),
 };
 
 if (!process.env['ENVIRONMENT_NAME'] || process.env['ENVIRONMENT_NAME'] === 'local') {
