@@ -1,12 +1,12 @@
-import { useMemo } from 'react';
 import i18next from 'i18next';
+import { useMemo } from 'react';
 
-import { GlobeIcon } from '@/common/icons';
-import { DropdownInput } from '@ballerine/ui';
-import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { LoadingSpinner } from '@/common/components/atoms/LoadingSpinner';
+import { GlobeIcon } from '@/common/icons';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 import { useLanguageQuery } from '@/hooks/useLanguageQuery';
+import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
+import { DropdownInput } from '@ballerine/ui';
 
 const countryCodeToLanguage = {
   en: 'English',
@@ -41,7 +41,14 @@ export const LanguagePicker = () => {
       props={{
         item: { variant: 'inverted' },
         content: { className: 'w-[204px] p-1', align: 'start' },
-        trigger: { icon: <GlobeIcon />, className: 'px-3 gap-x-2 bg-black/5' },
+        trigger: {
+          icon: (
+            <span className="!text-primary-foreground">
+              <GlobeIcon />
+            </span>
+          ),
+          className: 'px-3 gap-x-2 text-primary-foreground bg-primary',
+        },
       }}
       onChange={selectedLanguage => {
         updateLanguage(selectedLanguage);

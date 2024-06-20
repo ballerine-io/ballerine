@@ -1,9 +1,9 @@
-import { Logo } from '@/components/layouts/AppShell/Logo';
 import { Content } from '@/components/layouts/AppShell/Content';
-import { Sidebar } from '@/components/layouts/AppShell/Sidebar';
-import { Navigation } from '@/components/layouts/AppShell/Navigation';
 import { FormContainer } from '@/components/layouts/AppShell/FormContainer';
 import { LanguagePicker } from '@/components/layouts/AppShell/LanguagePicker';
+import { Logo } from '@/components/layouts/AppShell/Logo';
+import { Navigation } from '@/components/layouts/AppShell/Navigation';
+import { Sidebar } from '@/components/layouts/AppShell/Sidebar';
 
 interface Props {
   children: React.ReactNode | React.ReactNode[];

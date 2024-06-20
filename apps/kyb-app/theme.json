@@ -1,0 +1,24 @@
+{
+  "theme": {
+    "pallete": {
+      "primary": {
+        "color": "0, 0%, 100%",
+        "foreground": "0, 0%, 0%"
+      },
+      "secondary": {
+        "color": "0, 0%, 0%",
+        "foreground": "0, 0%, 100%"
+      },
+      "accent": {
+        "color": "226, 100%, 97%",
+        "foreground": "222.2 47.4% 11.2%"
+      }
+    },
+    "elements": {
+      "ring": "215 20.2% 65.1%",
+      "border": "214.3 31.8% 91.4%",
+      "input": "214.3 31.8% 91.4%",
+      "radius": "0.5rem"
+    }
+  }
+}

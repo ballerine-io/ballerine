@@ -1,3 +1,4 @@
+import { ITheme } from '@/common/types/settings';
 import { Action, Rule, UIElement } from '@/domains/collection-flow/types/ui-schema.types';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
@@ -141,6 +142,7 @@ export interface UISchema {
   config: UISchemaConfig;
   uiSchema: {
     elements: UIPage[];
+    theme?: ITheme;
   };
   definition: {
     definitionType: string;
