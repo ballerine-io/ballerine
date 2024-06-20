@@ -75,10 +75,10 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
 
   return (
     <Button
-      variant="secondary"
       onClick={handleClick}
       disabled={state.isLoading || uiElementState.isLoading}
       data-testid={definition.name}
+      className="text-primary bg-primary-foreground"
     >
       {definition.options.text || 'Submit'}
     </Button>

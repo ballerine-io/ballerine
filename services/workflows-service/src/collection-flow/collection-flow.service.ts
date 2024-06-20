@@ -1,4 +1,5 @@
 import { BusinessService } from '@/business/business.service';
+import { UpdateConfigurationDto } from '@/collection-flow/dto/update-configuration-input.dto';
 import { UpdateFlowDto } from '@/collection-flow/dto/update-flow-input.dto';
 import { recursiveMerge } from '@/collection-flow/helpers/recursive-merge';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
@@ -6,6 +7,7 @@ import { UiDefDefinition, UiSchemaStep } from '@/collection-flow/models/flow-ste
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { type ITokenScope } from '@/common/decorators/token-scope.decorator';
 import { CustomerService } from '@/customer/customer.service';
+import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
 import { EndUserService } from '@/end-user/end-user.service';
 import { NotFoundException } from '@/errors';
 import { FileService } from '@/providers/file/file.service';
@@ -16,14 +18,12 @@ import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-defi
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { AnyRecord } from '@ballerine/common';
+import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
 import { EndUser, UiDefinitionContext, WorkflowRuntimeData } from '@prisma/client';
-import { plainToClass } from 'class-transformer';
 import { randomUUID } from 'crypto';
-import keyBy from 'lodash/keyBy';
 import get from 'lodash/get';
-import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
-import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
+import keyBy from 'lodash/keyBy';
 
 @Injectable()
 export class CollectionFlowService {
@@ -108,6 +108,7 @@ export class CollectionFlowService {
           context,
           language,
         ) as UiSchemaStep[],
+        theme: uiDefintion.theme,
       },
       definition: uiDefintion.definition
         ? (uiDefintion.definition as unknown as UiDefDefinition)
@@ -115,23 +116,22 @@ export class CollectionFlowService {
     };
   }
 
-  async updateFlowConfiguration(
-    configurationId: string,
-    steps: UiSchemaStep[],
+  async updateUIDefinition(
+    definitionId: string,
+    payload: UpdateConfigurationDto,
     projectIds: TProjectIds,
-    projectId: TProjectId,
-  ): Promise<FlowConfigurationModel> {
-    const definition = await this.workflowDefinitionRepository.findById(
-      configurationId,
-      {},
-      projectIds,
-    );
+  ) {
+    const { steps, theme } = payload;
+
+    const definition = await this.uiDefinitionService.getById(definitionId, {}, projectIds);
+
+    if (!definition) throw new NotFoundException('UI Definition not found');
 
     const providedStepsMap = keyBy(steps, 'key');
 
-    const persistedSteps =
-      // @ts-expect-error - error from Prisma types fix
-      definition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm?.steps || [];
+    const persistedTheme = definition.theme || {};
+    //@ts-expect-error - untyped JSON
+    const persistedSteps = definition.uiSchema?.elements || [];
 
     const mergedSteps = persistedSteps.map((step: any) => {
       const stepToMergeIn = providedStepsMap[step.key];
@@ -143,38 +143,18 @@ export class CollectionFlowService {
       return step;
     });
 
-    const updatedDefinition = await this.workflowDefinitionRepository.updateById(configurationId, {
+    const mergedTheme = theme === null ? null : recursiveMerge(persistedTheme, theme);
+
+    const updatedDefinition = await this.uiDefinitionService.updateById(definitionId, {
       data: {
-        definition: {
-          // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
-          ...definition?.definition,
-          states: {
-            // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
-            ...definition.definition?.states,
-            data_collection: {
-              // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
-              ...definition.definition?.states?.data_collection,
-              metadata: {
-                uiSettings: {
-                  multiForm: {
-                    steps: mergedSteps,
-                  },
-                },
-              },
-            },
-          },
+        uiSchema: {
+          elements: mergedSteps,
         },
-        projectId,
+        theme: mergedTheme,
       },
     });
 
-    return plainToClass(FlowConfigurationModel, {
-      id: updatedDefinition.id,
-      steps:
-        // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
-        updatedDefinition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm
-          ?.steps || [],
-    });
+    return updatedDefinition;
   }
 
   async getActiveFlow(workflowRuntimeId: string, projectIds: TProjectIds) {

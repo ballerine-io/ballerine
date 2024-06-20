@@ -1,20 +1,20 @@
 import { Stepper } from '@/components/atoms/Stepper';
-import { VerticalLayout } from '@/components/atoms/Stepper/layouts/Vertical';
-import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
-import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { useEffect, useMemo, useState } from 'react';
-import { usePageContext } from '@/components/organisms/DynamicUI/Page';
-import { UIPage } from '@/domains/collection-flow';
-import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
-import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
-import { isPageCompleted } from '@/helpers/prepareInitialUIState';
-import { UIElementState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
 import {
   BreadcrumbItemInput,
   Breadcrumbs,
 } from '@/components/atoms/Stepper/components/atoms/Breadcrumbs';
+import { VerticalLayout } from '@/components/atoms/Stepper/layouts/Vertical';
+import { usePageContext } from '@/components/organisms/DynamicUI/Page';
+import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
+import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { UIElementState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
+import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
+import { UIPage } from '@/domains/collection-flow';
+import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
+import { isPageCompleted } from '@/helpers/prepareInitialUIState';
 import { ScrollArea, ScrollBar, ctw } from '@ballerine/ui';
+import { useEffect, useMemo, useState } from 'react';
 
 export const StepperUI = () => {
   const { state: uiState } = useDynamicUIContext();
@@ -92,7 +92,7 @@ export const StepperUI = () => {
                   return (
                     <div
                       data-breadcrumb-id={itemProps.active ? itemProps.id : undefined}
-                      className={ctw('last:bg- flex flex-row items-center gap-4 first:bg-white')}
+                      className={ctw('last:bg- flex flex-row items-center gap-4')}
                       key={itemProps.id}
                     >
                       <Breadcrumbs.Item

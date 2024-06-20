@@ -1,8 +1,8 @@
+import type { TProjectIds } from '@/types';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
-import type { TProjectIds } from '@/types';
-import { Prisma, UiDefinitionContext } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
+import { Prisma, UiDefinitionContext } from '@prisma/client';
 
 @Injectable()
 export class UiDefinitionService {
@@ -51,5 +51,12 @@ export class UiDefinitionService {
       projectIds,
       args,
     );
+  }
+
+  async updateById<T extends Omit<Prisma.UiDefinitionUpdateArgs, 'where'>>(
+    id: string,
+    args: Prisma.SelectSubset<T, Omit<Prisma.UiDefinitionUpdateArgs, 'where'>>,
+  ) {
+    return await this.repository.updateById(id, args);
   }
 }
