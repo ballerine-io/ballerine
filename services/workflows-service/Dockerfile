@@ -39,13 +39,11 @@ COPY --from=dev /app/src ./src
 COPY --from=dev /app/tsconfig.build.json ./tsconfig.build.json
 COPY --from=dev /app/tsconfig.json ./tsconfig.json
 
-# Create a non-root user and group and Change ownership of the app directory to the non-root user
-RUN groupadd -r app && useradd -r -g app -s /bin/bash app && chown -R app:app /app
-
+RUN chown node:node /app 
 # Switch to the non-root user
-USER app
+USER node
+
 
 EXPOSE 3000
 
 CMD [ "dumb-init", "npm", "run", "prod" ]
-
