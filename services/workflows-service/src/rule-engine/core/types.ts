@@ -16,8 +16,6 @@ export interface ICondition {
   key: string;
   type: ConditionType;
   value?: any;
-  min?: number;
-  max?: number;
   customFn?: (dataValue: any) => boolean;
   conditions?: ICondition[]; // Nested conditions
   operator?: ConditionOperator; // Operator for nested conditions
@@ -37,6 +35,9 @@ export type IConditionResult = {
   passed: boolean;
   conditionResults?: { [key: string]: IConditionResult }; // Nested condition results
 };
+
+// TODO: Add more fields to the rule result, decide on the final structure
+type RuleStatus = 'PASSED' | 'FAILED' | 'SKIPPED';
 
 export type IRuleResult = {
   id: string;
