@@ -17,6 +17,4 @@ export class RuleEngineService {
 
     return output;
   }
-
-  validateRules(rules: RuleSet) {}
 }

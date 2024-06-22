@@ -1,5 +1,3 @@
-import { LAST_YEAR } from './helpers';
-
 export enum ConditionType {
   EQUALS = 'EQUALS',
   BETWEEN = 'BETWEEN',
