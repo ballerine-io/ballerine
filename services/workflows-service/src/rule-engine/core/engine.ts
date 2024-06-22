@@ -62,6 +62,7 @@ const evaluateRule = (data: any, rule: IRule, helpers: IConditionHelpers): IRule
 
   const ruleResults = conditionResultsArray.reduce((acc, cur) => {
     acc[cur.key] = cur;
+
     return acc;
   }, {} as { [key: string]: IConditionResult });
 

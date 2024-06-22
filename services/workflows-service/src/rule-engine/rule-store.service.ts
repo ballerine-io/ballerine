@@ -8,8 +8,6 @@ export type RuleStoreServiceFindAllOptions = {
 
 @Injectable()
 export class RuleStoreService {
-  constructor() {}
-
   public async findAll({ databaseId, source }: RuleStoreServiceFindAllOptions): Promise<RuleSet> {
     throw new Error('Unsupported source');
   }
