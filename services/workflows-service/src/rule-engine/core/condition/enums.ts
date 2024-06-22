@@ -1,3 +1,5 @@
+import { LAST_YEAR } from './helpers';
+
 export enum ConditionType {
   EQUALS = 'EQUALS',
   BETWEEN = 'BETWEEN',
@@ -5,7 +7,9 @@ export enum ConditionType {
   LT = 'LT',
   GTE = 'GTE',
   LTE = 'LTE',
+  LAST_YEAR = 'LAST_YEAR',
 }
+
 export enum ConditionOperator {
   AND = 'and',
   OR = 'or',

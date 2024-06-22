@@ -2,9 +2,13 @@
 
 export type primitive = number | string | boolean;
 
-export type IBetweenParams = {
+export type BetweenParams = {
   min: number;
   max: number;
+};
+
+export type LastYearsParams = {
+  years: number;
 };
 
 // type IConditionBase = {
