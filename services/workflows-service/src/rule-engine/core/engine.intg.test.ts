@@ -60,10 +60,6 @@ describe('Engine', () => {
     service = module.get<RuleEngineService>(RuleEngineService);
   });
 
-  it('Should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
   describe('Rule Engine', () => {
     it('should run', async () => {
       const formData = {
@@ -75,7 +71,7 @@ describe('Engine', () => {
 
       expect(output).toMatchObject([
         {
-          conditionResults: {
+          ruleResults: {
             age: {
               conditionResults: {
                 country: {
@@ -93,7 +89,7 @@ describe('Engine', () => {
           passed: true,
         },
         {
-          conditionResults: {
+          ruleResults: {
             age: {
               key: 'age',
               passed: false,
@@ -109,7 +105,7 @@ describe('Engine', () => {
           passed: false,
         },
         {
-          conditionResults: {
+          ruleResults: {
             age: {
               key: 'age',
               passed: false,

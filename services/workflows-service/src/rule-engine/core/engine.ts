@@ -59,7 +59,8 @@ const evaluateRule = (data: any, rule: IRule, helpers: IConditionHelpers): IRule
   const conditionResultsArray = rule.conditions.map(condition =>
     evaluateCondition(data, condition, helpers),
   );
-  const conditionResults = conditionResultsArray.reduce((acc, cur) => {
+
+  const ruleResults = conditionResultsArray.reduce((acc, cur) => {
     acc[cur.key] = cur;
     return acc;
   }, {} as { [key: string]: IConditionResult });
@@ -71,7 +72,7 @@ const evaluateRule = (data: any, rule: IRule, helpers: IConditionHelpers): IRule
       ? conditionResultsArray.every(cr => cr.passed)
       : conditionResultsArray.some(cr => cr.passed);
 
-  return { id: rule.id, passed, conditionResults };
+  return { id: rule.id, passed, ruleResults };
 };
 
 const runRuleEngine = (
