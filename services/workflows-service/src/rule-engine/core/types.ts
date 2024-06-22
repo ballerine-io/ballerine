@@ -41,7 +41,7 @@ export type IConditionResult = {
 export type IRuleResult = {
   id: string;
   passed: boolean;
-  conditionResults: { [key: string]: IConditionResult };
+  ruleResults: { [key: string]: IConditionResult };
 };
 
 export type RuleSetResult = IRuleResult[];
