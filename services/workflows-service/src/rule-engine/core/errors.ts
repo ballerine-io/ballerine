@@ -23,10 +23,10 @@ export class MissingKeyError extends Error {
 
 export class ValidationFailedError extends Error {
   errors:
-    | {
+    | Array<{
         message: string;
         path: string;
-      }[]
+      }>
     | undefined;
 
   constructor(key: string, operation: string, error?: ZodError) {

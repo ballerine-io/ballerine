@@ -45,6 +45,7 @@ export abstract class BaseOperator<T = primitive> {
 
   protected validateSchema(schema: ZodSchema<any>, value: unknown, message: string) {
     const result = schema.safeParse(value);
+
     if (!result.success) {
       throw new ValidationFailedError(this.operator, message, result.error);
     }
@@ -180,6 +181,7 @@ class LastYear extends BaseOperator<LastYearsParams> {
       const date = new Date(dataValue);
       const oneYearAgo = new Date();
       oneYearAgo.setFullYear(oneYearAgo.getFullYear() - conditionValue.years);
+
       return date >= oneYearAgo;
     }
 
