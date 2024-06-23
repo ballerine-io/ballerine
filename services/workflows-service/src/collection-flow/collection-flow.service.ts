@@ -1,7 +1,6 @@
 import { BusinessService } from '@/business/business.service';
 import { UpdateConfigurationDto } from '@/collection-flow/dto/update-configuration-input.dto';
 import { UpdateFlowDto } from '@/collection-flow/dto/update-flow-input.dto';
-import { recursiveMerge } from '@/collection-flow/helpers/recursive-merge';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { UiDefDefinition, UiSchemaStep } from '@/collection-flow/models/flow-step.model';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -23,7 +22,6 @@ import { Injectable } from '@nestjs/common';
 import { EndUser, UiDefinitionContext, WorkflowRuntimeData } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import get from 'lodash/get';
-import keyBy from 'lodash/keyBy';
 
 @Injectable()
 export class CollectionFlowService {
@@ -127,30 +125,17 @@ export class CollectionFlowService {
 
     if (!definition) throw new NotFoundException('UI Definition not found');
 
-    const providedStepsMap = keyBy(steps, 'key');
-
-    const persistedTheme = definition.theme || {};
-    //@ts-expect-error - untyped JSON
-    const persistedSteps = definition.uiSchema?.elements || [];
-
-    const mergedSteps = persistedSteps.map((step: any) => {
-      const stepToMergeIn = providedStepsMap[step.key];
-
-      if (stepToMergeIn) {
-        return recursiveMerge(step, stepToMergeIn);
-      }
-
-      return step;
-    });
-
-    const mergedTheme = theme === null ? null : recursiveMerge(persistedTheme, theme);
-
     const updatedDefinition = await this.uiDefinitionService.updateById(definitionId, {
       data: {
-        uiSchema: {
-          elements: mergedSteps,
-        },
-        theme: mergedTheme,
+        ...(steps !== undefined
+          ? {
+              uiSchema: {
+                elements: steps,
+              },
+            }
+          : undefined),
+        //@ts-ignore
+        theme: theme ? theme : definition.theme,
       },
     });
 
