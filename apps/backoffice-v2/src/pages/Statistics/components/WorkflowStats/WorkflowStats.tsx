@@ -17,9 +17,7 @@ import { Card } from '@/common/components/atoms/Card/Card';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { Show } from '@/common/components/atoms/Show/Show';
-
-import { assignColorToItem } from '@/common/utils/assign-color-to-item/assign-color-to-item';
+import { HSL_PIE_COLORS } from '@/pages/Statistics/constants';
 
 export const WorkflowStats: FunctionComponent = () => {
   const tags = [
@@ -46,14 +44,13 @@ export const WorkflowStats: FunctionComponent = () => {
   ];
   const tagsWithColors = useMemo(
     () =>
-      assignColorToItem({
-        items: tags,
-        baseLightnessOffset: 32,
-        duplicateLightnessOffsetStep: 8,
-        baseRgbColor: { red: 0, green: 122, blue: 255 },
-      })
+      tags
         ?.slice()
-        ?.sort((a, b) => b.value - a.value),
+        ?.sort((a, b) => b.value - a.value)
+        ?.map((filter, index) => ({
+          ...filter,
+          color: HSL_PIE_COLORS[index],
+        })),
     [tags],
   );
   const assignedTags = useMemo(
@@ -75,14 +72,13 @@ export const WorkflowStats: FunctionComponent = () => {
   ];
   const filtersPendingManualReviewWithColors = useMemo(
     () =>
-      assignColorToItem({
-        items: filtersPendingManualReview,
-        baseLightnessOffset: 32,
-        duplicateLightnessOffsetStep: 8,
-        baseRgbColor: { red: 0, green: 122, blue: 255 },
-      })
+      filtersPendingManualReview
         ?.slice()
-        ?.sort((a, b) => b.value - a.value),
+        ?.sort((a, b) => b.value - a.value)
+        ?.map((filter, index) => ({
+          ...filter,
+          color: HSL_PIE_COLORS[index],
+        })),
     [filtersPendingManualReview],
   );
   const assignedCasesPendingManualReview = useMemo(
@@ -125,6 +121,15 @@ export const WorkflowStats: FunctionComponent = () => {
       </ul>
     </div>
   );
+  const resolvedCasesByMonth = [
+    { month: 'Jan 22', category1: 650 },
+    { month: 'Feb 22', category1: 1300 },
+    { month: 'Mar 22', category1: 2600 },
+    { month: 'Apr 22', category1: 300 },
+    { month: 'May 22', category1: 1300 },
+    { month: 'Jun 22', category1: 1950 },
+    { month: 'Jul 22', category1: 100 },
+  ];
 
   return (
     <div>
@@ -140,15 +145,7 @@ export const WorkflowStats: FunctionComponent = () => {
               </p>
               <ResponsiveContainer width="100%" height={400}>
                 <BarChart
-                  data={[
-                    { month: 'Jan 22', category1: 650 },
-                    { month: 'Feb 22', category1: 1300 },
-                    { month: 'Mar 22', category1: 2600 },
-                    { month: 'Apr 22', category1: 300 },
-                    { month: 'May 22', category1: 1300 },
-                    { month: 'Jun 22', category1: 1950 },
-                    { month: 'Jul 22', category1: 100 },
-                  ]}
+                  data={resolvedCasesByMonth}
                   margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                   barSize={46}
                 >
@@ -195,9 +192,10 @@ export const WorkflowStats: FunctionComponent = () => {
                       {tagsWithColors?.map(filter => {
                         return (
                           <Cell
+                            className={'outline-none'}
                             key={filter.id}
                             style={{
-                              fill: `rgb(${filter.color})`,
+                              fill: filter.color,
                             }}
                           />
                         );
@@ -211,21 +209,21 @@ export const WorkflowStats: FunctionComponent = () => {
                           <span
                             className="flex h-2 w-2 rounded-full"
                             style={{
-                              backgroundColor: `rgb(${color})`,
+                              backgroundColor: color,
                             }}
                           />
                           <div className={'flex w-full justify-between'}>
                             <span className={'text-slate-500'}>{name}</span>
-                            <span>{value}</span>
+                            {value}
                           </div>
                         </li>
                       );
                     })}
-                    <Show when={tags?.length > visibleActiveCasesAmount}>
+                    {tags?.length > visibleActiveCasesAmount && (
                       <li className={'ms-6 text-xs'}>
                         {tags?.length - visibleActiveCasesAmount} More
                       </li>
-                    </Show>
+                    )}
                   </ul>
                 </div>
               </CardContent>
@@ -263,8 +261,9 @@ export const WorkflowStats: FunctionComponent = () => {
                         return (
                           <Cell
                             key={filter.id}
+                            className={'outline-none'}
                             style={{
-                              fill: `rgb(${filter.color})`,
+                              fill: filter.color,
                             }}
                           />
                         );
@@ -278,7 +277,7 @@ export const WorkflowStats: FunctionComponent = () => {
                           <span
                             className="flex h-2 w-2 rounded-full"
                             style={{
-                              backgroundColor: `rgb(${color})`,
+                              backgroundColor: color,
                             }}
                           />
                           <div className={'flex w-full justify-between'}>
@@ -288,16 +287,12 @@ export const WorkflowStats: FunctionComponent = () => {
                         </li>
                       );
                     })}
-                    <Show
-                      when={
-                        filtersPendingManualReview?.length > visibleCasesPendingManualReviewAmount
-                      }
-                    >
+                    {filtersPendingManualReview?.length > visibleCasesPendingManualReviewAmount && (
                       <li className={'ms-6 text-xs'}>
                         {filtersPendingManualReview?.length - visibleCasesPendingManualReviewAmount}{' '}
                         More
                       </li>
-                    </Show>
+                    )}
                   </ul>
                 </div>
               </CardContent>

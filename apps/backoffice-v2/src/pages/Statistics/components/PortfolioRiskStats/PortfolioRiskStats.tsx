@@ -52,6 +52,47 @@ export const PortfolioRiskStats: FunctionComponent = () => {
       item.amount === 0 ? 0 : Math.max((item.amount / maxValue) * 100, 2),
     );
   }, [sortedData]);
+  const filters = [
+    {
+      name: 'Merchant Monitoring',
+      riskLevels: {
+        low: 15,
+        medium: 50,
+        high: 32,
+        critical: 12,
+      },
+    },
+    {
+      name: 'Merchant Onboarding',
+      riskLevels: {
+        low: 15,
+        medium: 50,
+        high: 32,
+        critical: 12,
+      },
+    },
+  ];
+  const riskLevelToFillColor = {
+    low: 'fill-success',
+    medium: 'fill-warning',
+    high: 'fill-destructive',
+    critical: 'fill-foreground',
+  } as const;
+  const riskLevelToBackgroundColor = {
+    low: 'bg-success',
+    medium: 'bg-warning',
+    high: 'bg-destructive',
+    critical: 'bg-foreground',
+  } as const;
+  const totalIndicators = 10234;
+  const portfolio = {
+    riskLevels: {
+      low: 15,
+      medium: 50,
+      high: 32,
+      critical: 12,
+    },
+  };
 
   return (
     <div>
@@ -73,12 +114,10 @@ export const PortfolioRiskStats: FunctionComponent = () => {
                     103
                   </text>
                   <Pie
-                    data={[
-                      { name: 'Low Risk', value: 2 },
-                      { name: 'Medium Risk', value: 3 },
-                      { name: 'High Risk', value: 4 },
-                      { name: 'Critical Risk', value: 5 },
-                    ]}
+                    data={Object.entries(portfolio?.riskLevels ?? {}).map(([riskLevel, value]) => ({
+                      name: `${titleCase(riskLevel)} Risk`,
+                      value,
+                    }))}
                     cx={87}
                     cy={87}
                     innerRadius={78}
@@ -88,200 +127,136 @@ export const PortfolioRiskStats: FunctionComponent = () => {
                     dataKey="value"
                     cornerRadius={9999}
                   >
-                    <Cell className={'fill-success'} />
-                    <Cell className={'fill-warning'} />
-                    <Cell className={'fill-destructive'} />
-                    <Cell className={'fill-foreground'} />
+                    {Object.keys(riskLevelToFillColor).map(riskLevel => (
+                      <Cell
+                        key={riskLevel}
+                        className={ctw(
+                          riskLevelToFillColor[riskLevel as keyof typeof riskLevelToFillColor],
+                          'outline-none',
+                        )}
+                      />
+                    ))}
                   </Pie>
                 </PieChart>
                 <ul className={'flex w-full max-w-sm flex-col space-y-2'}>
-                  <li className={'flex items-center space-x-4 border-b py-1 text-xs'}>
-                    <span className="flex h-2 w-2 rounded-full bg-success" />
-                    <div className={'flex w-full justify-between'}>
-                      <span className={'text-slate-500'}>Low Risk</span>
-                      <span>15</span>
-                    </div>
-                  </li>
-                  <li className={'flex items-center space-x-4 border-b py-1 text-xs'}>
-                    <span className="flex h-2 w-2 rounded-full bg-warning" />
-                    <div className={'flex w-full justify-between'}>
-                      <span className={'text-slate-500'}>Medium Risk</span>
-                      <span>50</span>
-                    </div>
-                  </li>
-                  <li className={'flex items-center space-x-4 border-b py-1 text-xs'}>
-                    <span className="flex h-2 w-2 rounded-full bg-destructive" />
-                    <div className={'flex w-full justify-between'}>
-                      <span className={'text-slate-500'}>High Risk</span>
-                      <span>32</span>
-                    </div>
-                  </li>
-                  <li className={'flex items-center space-x-4 border-b py-1 text-xs'}>
-                    <span className="flex h-2 w-2 rounded-full bg-foreground" />
-                    <div className={'flex w-full justify-between'}>
-                      <span className={'text-slate-500'}>Critical Risk</span>
-                      <span>12</span>
-                    </div>
-                  </li>
+                  {Object.entries(portfolio?.riskLevels).map(([riskLevel, value]) => (
+                    <li
+                      key={riskLevel}
+                      className={'flex items-center space-x-4 border-b py-1 text-xs'}
+                    >
+                      <span
+                        className={ctw(
+                          'flex h-2 w-2 rounded-full',
+                          riskLevelToBackgroundColor[
+                            riskLevel as keyof typeof riskLevelToBackgroundColor
+                          ],
+                        )}
+                      />
+                      <div className={'flex w-full justify-between'}>
+                        <span className={'text-slate-500'}>{titleCase(riskLevel)} Risk</span>
+                        <span>{value}</span>
+                      </div>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </CardContent>
           </Card>
         </div>
         <div className={'grid grid-cols-2 gap-3'}>
-          <div className={'col-span-full min-h-[13.125rem] rounded-xl bg-[#F6F6F6] p-2'}>
-            <Card className={'flex h-full flex-col px-3'}>
-              <CardHeader className={'pb-1'}>Merchant Monitoring Risk</CardHeader>
-              <CardContent>
-                <div className={'flex space-x-5 pt-3'}>
-                  <PieChart width={104} height={104}>
-                    <text
-                      x={52}
-                      y={52}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      className={ctw('font-bold', {
-                        'text-sm': 103?.toString().length >= 5,
-                      })}
-                    >
-                      103
-                    </text>
-                    <Pie
-                      data={[
-                        { name: 'Low Risk', value: 2 },
-                        { name: 'Medium Risk', value: 3 },
-                        { name: 'High Risk', value: 4 },
-                        { name: 'Critical Risk', value: 5 },
-                      ]}
-                      cx={47}
-                      cy={47}
-                      innerRadius={43}
-                      outerRadius={52}
-                      fill="#8884d8"
-                      paddingAngle={5}
-                      dataKey="value"
-                      cornerRadius={9999}
-                    >
-                      <Cell className={'fill-success'} />
-                      <Cell className={'fill-warning'} />
-                      <Cell className={'fill-destructive'} />
-                      <Cell className={'fill-foreground'} />
-                    </Pie>
-                  </PieChart>
-                  <ul className={'w-full max-w-sm '}>
-                    <li className={'flex items-center space-x-4  text-xs'}>
-                      <span className="flex h-2 w-2 rounded-full bg-success" />
-                      <div className={'flex w-full justify-between'}>
-                        <span className={'text-slate-500'}>Low Risk</span>
-                        <span>15</span>
-                      </div>
-                    </li>
-                    <li className={'flex items-center space-x-4 text-xs'}>
-                      <span className="flex h-2 w-2 rounded-full bg-warning" />
-                      <div className={'flex w-full justify-between'}>
-                        <span className={'text-slate-500'}>Medium Risk</span>
-                        <span>50</span>
-                      </div>
-                    </li>
-                    <li className={'flex items-center space-x-4 text-xs'}>
-                      <span className="flex h-2 w-2 rounded-full bg-destructive" />
-                      <div className={'flex w-full justify-between'}>
-                        <span className={'text-slate-500'}>High Risk</span>
-                        <span>32</span>
-                      </div>
-                    </li>
-                    <li className={'flex items-center space-x-4 text-xs'}>
-                      <span className="flex h-2 w-2 rounded-full bg-foreground" />
-                      <div className={'flex w-full justify-between'}>
-                        <span className={'text-slate-500'}>Critical Risk</span>
-                        <span>12</span>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          <div className={'col-span-full min-h-[13.125rem] rounded-xl bg-[#F6F6F6] p-2'}>
-            <Card className={'flex h-full flex-col px-3'}>
-              <CardHeader className={'pb-1'}>Merchant Onboarding Risk</CardHeader>
-              <CardContent>
-                <div className={'flex space-x-5 pt-3'}>
-                  <PieChart width={104} height={104}>
-                    <text
-                      x={52}
-                      y={52}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      className={ctw('font-bold', {
-                        'text-sm': 103?.toString().length >= 5,
-                      })}
-                    >
-                      103
-                    </text>
-                    <Pie
-                      data={[
-                        { name: 'Low Risk', value: 2 },
-                        { name: 'Medium Risk', value: 3 },
-                        { name: 'High Risk', value: 4 },
-                        { name: 'Critical Risk', value: 5 },
-                      ]}
-                      cx={47}
-                      cy={47}
-                      innerRadius={43}
-                      outerRadius={52}
-                      fill="#8884d8"
-                      paddingAngle={5}
-                      dataKey="value"
-                      cornerRadius={9999}
-                    >
-                      <Cell className={'fill-success'} />
-                      <Cell className={'fill-warning'} />
-                      <Cell className={'fill-destructive'} />
-                      <Cell className={'fill-foreground'} />
-                    </Pie>
-                  </PieChart>
-                  <ul className={'w-full max-w-sm '}>
-                    <li className={'flex items-center space-x-4  text-xs'}>
-                      <span className="flex h-2 w-2 rounded-full bg-success" />
-                      <div className={'flex w-full justify-between'}>
-                        <span className={'text-slate-500'}>Low Risk</span>
-                        <span>15</span>
-                      </div>
-                    </li>
-                    <li className={'flex items-center space-x-4 text-xs'}>
-                      <span className="flex h-2 w-2 rounded-full bg-warning" />
-                      <div className={'flex w-full justify-between'}>
-                        <span className={'text-slate-500'}>Medium Risk</span>
-                        <span>50</span>
-                      </div>
-                    </li>
-                    <li className={'flex items-center space-x-4 text-xs'}>
-                      <span className="flex h-2 w-2 rounded-full bg-destructive" />
-                      <div className={'flex w-full justify-between'}>
-                        <span className={'text-slate-500'}>High Risk</span>
-                        <span>32</span>
-                      </div>
-                    </li>
-                    <li className={'flex items-center space-x-4 text-xs'}>
-                      <span className="flex h-2 w-2 rounded-full bg-foreground" />
-                      <div className={'flex w-full justify-between'}>
-                        <span className={'text-slate-500'}>Critical Risk</span>
-                        <span>12</span>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {filters?.map(filter => {
+            const totalRisk = Object.values(filter?.riskLevels ?? {}).reduce(
+              (acc, curr) => acc + curr,
+              0,
+            );
+
+            return (
+              <div
+                key={filter.name}
+                className={'col-span-full min-h-[13.125rem] rounded-xl bg-[#F6F6F6] p-2'}
+              >
+                <Card className={'flex h-full flex-col px-3'}>
+                  <CardHeader className={'pb-1'}>{filter.name} Risk</CardHeader>
+                  <CardContent>
+                    <div className={'flex items-center space-x-5 pt-3'}>
+                      <PieChart width={104} height={104}>
+                        <text
+                          x={52}
+                          y={52}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          className={ctw('font-bold', {
+                            'text-sm': totalRisk?.toString().length >= 5,
+                          })}
+                        >
+                          {totalRisk}
+                        </text>
+                        <Pie
+                          data={Object.entries(filter?.riskLevels ?? {}).map(
+                            ([riskLevel, value]) => ({
+                              name: `${titleCase(riskLevel)} Risk`,
+                              value,
+                            }),
+                          )}
+                          cx={47}
+                          cy={47}
+                          innerRadius={43}
+                          outerRadius={52}
+                          fill="#8884d8"
+                          paddingAngle={5}
+                          dataKey="value"
+                          cornerRadius={9999}
+                        >
+                          {Object.keys(riskLevelToFillColor).map(riskLevel => (
+                            <Cell
+                              key={riskLevel}
+                              className={ctw(
+                                riskLevelToFillColor[
+                                  riskLevel as keyof typeof riskLevelToFillColor
+                                ],
+                                'outline-none',
+                              )}
+                            />
+                          ))}
+                        </Pie>
+                      </PieChart>
+                      <ul className={'w-full max-w-sm'}>
+                        {Object.entries(filter?.riskLevels ?? {}).map(([riskLevel, value]) => {
+                          return (
+                            <li key={riskLevel} className={'flex items-center space-x-4  text-xs'}>
+                              <span
+                                className={ctw(
+                                  'flex h-2 w-2 rounded-full',
+                                  riskLevelToBackgroundColor[
+                                    riskLevel as keyof typeof riskLevelToBackgroundColor
+                                  ],
+                                )}
+                              />
+                              <div className={'flex w-full justify-between'}>
+                                <span className={'text-slate-500'}>
+                                  {titleCase(riskLevel)} Risk
+                                </span>
+                                {value}
+                              </div>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          })}
         </div>
         <div className={'min-h-[10.125rem] rounded-xl bg-[#F6F6F6] p-2'}>
           <Card className={'flex h-full flex-col px-3'}>
             <CardHeader className={'pb-1'}>Risk Indicators</CardHeader>
             <CardContent>
               <div className={'mb-7 flex items-end space-x-2'}>
-                <span className={'text-3xl font-semibold'}>10,234</span>
+                <span className={'text-3xl font-semibold'}>
+                  {Intl.NumberFormat().format(totalIndicators)}
+                </span>
                 <span className={'text-sm leading-7 text-slate-500'}>Total indicators</span>
               </div>
               <div className={'mb-6'}>

@@ -1,14 +1,12 @@
 import React, { FunctionComponent, ReactNode, useMemo } from 'react';
 import { Cell, Pie, PieChart } from 'recharts';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { Show } from '@/common/components/atoms/Show/Show';
 import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import { Card } from '@/common/components/atoms/Card/Card';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { CardFooter } from '@/common/components/atoms/Card/Card.Footer';
-
-import { assignColorToItem } from '@/common/utils/assign-color-to-item/assign-color-to-item';
+import { HSL_PIE_COLORS } from '@/pages/Statistics/constants';
 
 export const UserStats: FunctionComponent<{
   fullName: string;
@@ -39,14 +37,13 @@ export const UserStats: FunctionComponent<{
   ];
   const filtersWithColors = useMemo(
     () =>
-      assignColorToItem({
-        items: filters,
-        baseLightnessOffset: 32,
-        duplicateLightnessOffsetStep: 8,
-        baseRgbColor: { red: 0, green: 122, blue: 255 },
-      })
+      filters
         ?.slice()
-        ?.sort((a, b) => b.value - a.value),
+        ?.sort((a, b) => b.value - a.value)
+        ?.map((filter, index) => ({
+          ...filter,
+          color: HSL_PIE_COLORS[index],
+        })),
     [filters],
   );
   const assignedFilters = useMemo(
@@ -67,7 +64,7 @@ export const UserStats: FunctionComponent<{
     {
       title: 'Cases Assigned to you by Workflow',
       stat: (
-        <div className={'flex space-x-5 pt-3'}>
+        <div className={'flex items-center space-x-5 pt-3'}>
           <PieChart width={70} height={70}>
             <text
               x={35}
@@ -95,8 +92,9 @@ export const UserStats: FunctionComponent<{
                 return (
                   <Cell
                     key={filter.id}
+                    className={'outline-none'}
                     style={{
-                      fill: `rgb(${filter.color})`,
+                      fill: filter.color,
                     }}
                   />
                 );
@@ -110,7 +108,7 @@ export const UserStats: FunctionComponent<{
                   <span
                     className="flex h-2 w-2 rounded-full"
                     style={{
-                      backgroundColor: `rgb(${color})`,
+                      backgroundColor: color,
                     }}
                   />
                   <div className={'flex w-full justify-between'}>
@@ -120,11 +118,11 @@ export const UserStats: FunctionComponent<{
                 </li>
               );
             })}
-            <Show when={filters?.length > visibleCasesAssignedToYouByWorkflowAmount}>
+            {filters?.length > visibleCasesAssignedToYouByWorkflowAmount && (
               <li className={'ms-6 text-xs'}>
                 {filters?.length - visibleCasesAssignedToYouByWorkflowAmount} More
               </li>
-            </Show>
+            )}
           </ul>
         </div>
       ),
@@ -151,11 +149,11 @@ export const UserStats: FunctionComponent<{
             <Card className={'flex h-full flex-col px-3'}>
               <CardHeader className={'pb-1'}>{title}</CardHeader>
               <CardContent>{stat}</CardContent>
-              <Show when={!!description}>
+              {!!description && (
                 <CardFooter className={'mt-auto'}>
                   <p className={'text-sm text-slate-500'}>{description}</p>
                 </CardFooter>
-              </Show>
+              )}
             </Card>
           </div>
         ))}
