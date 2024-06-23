@@ -24,6 +24,7 @@ on:
       - staging
       - sb
       - demo
+      - test-ci
 
 env:
   REGISTRY: ghcr.io
