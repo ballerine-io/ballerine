@@ -135,7 +135,7 @@ async function seed() {
     client,
     '2',
     `${env.API_KEY}2`,
-    'https://cdn.ballerine.io/images/ballerine§_logo.svg',
+    'https://cdn.ballerine.io/images/ballerine_logo.svg',
     '',
     `webhook-shared-secret-${env.API_KEY}2`,
   )) as Customer;
