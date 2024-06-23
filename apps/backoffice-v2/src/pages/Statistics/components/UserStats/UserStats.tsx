@@ -55,11 +55,14 @@ export const UserStats: FunctionComponent<{
     () => filtersWithColors?.slice(0, visibleCasesAssignedToYouByWorkflowAmount),
     [filtersWithColors],
   );
+  const activeCases = 30;
+  const casesAssignedToUser = 3;
+  const casesResolvedByUser = 3;
   const stats = [
     {
       title: 'Cases Assigned to you',
-      stat: <span className={'text-2xl font-bold'}>12</span>,
-      description: 'Out of 300 active cases',
+      stat: <span className={'text-2xl font-bold'}>{casesAssignedToUser}</span>,
+      description: `Out of ${activeCases} active cases`,
     },
     {
       title: 'Cases Assigned to you by Workflow',
@@ -129,7 +132,7 @@ export const UserStats: FunctionComponent<{
     },
     {
       title: 'Cases Resolved by you',
-      stat: <span className={'text-2xl font-bold'}>31</span>,
+      stat: <span className={'text-2xl font-bold'}>{casesResolvedByUser}</span>,
       description: 'During the selected time period',
     },
   ] satisfies ReadonlyArray<{

@@ -93,15 +93,15 @@ export const WorkflowStats: FunctionComponent = () => {
   const assignees = [
     {
       name: 'John Doe',
-      value: 12,
+      value: 3,
     },
     {
       name: 'Jane Doe',
-      value: 2,
+      value: 8,
     },
     {
       name: 'Bob Smith',
-      value: 1,
+      value: 0,
     },
   ];
   const CustomLegend: ComponentProps<typeof Legend>['content'] = ({ payload }) => (

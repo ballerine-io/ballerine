@@ -29,11 +29,11 @@ export const PortfolioRiskStats: FunctionComponent = () => {
   const sortedData = useMemo(
     () =>
       [
-        { riskType: 'Scam and fraud', amount: 1230 },
-        { riskType: 'IP Rights Infringement', amount: 751 },
-        { riskType: 'Missing Terms and Conditions', amount: 471 },
-        { riskType: 'Counterfeit Goods', amount: 280 },
-        { riskType: 'Sanctions', amount: 87 },
+        { riskType: 'Scam and fraud', amount: 15 },
+        { riskType: 'IP Rights Infringement', amount: 12 },
+        { riskType: 'Missing Terms and Conditions', amount: 10 },
+        { riskType: 'Counterfeit Goods', amount: 8 },
+        { riskType: 'Sanctions', amount: 4 },
       ]
         ?.slice()
         .sort((a, b) => {
@@ -65,10 +65,10 @@ export const PortfolioRiskStats: FunctionComponent = () => {
     {
       name: 'Merchant Onboarding',
       riskLevels: {
-        low: 15,
-        medium: 50,
-        high: 32,
-        critical: 12,
+        low: 3,
+        medium: 5,
+        high: 6,
+        critical: 4,
       },
     },
   ];
@@ -84,13 +84,13 @@ export const PortfolioRiskStats: FunctionComponent = () => {
     high: 'bg-destructive',
     critical: 'bg-foreground',
   } as const;
-  const totalIndicators = 10234;
+  const totalIndicators = 49;
   const portfolio = {
     riskLevels: {
-      low: 15,
-      medium: 50,
-      high: 32,
-      critical: 12,
+      low: 10,
+      medium: 30,
+      high: 25,
+      critical: 15,
     },
   };
 
@@ -316,7 +316,9 @@ export const PortfolioRiskStats: FunctionComponent = () => {
                           <span className={'relative z-50 ms-4'}>{titleCase(riskType ?? '')}</span>
                         </div>
                       </TableCell>
-                      <TableCell className={'pb-0 ps-0'}>{amount}</TableCell>
+                      <TableCell className={'pb-0 ps-0'}>
+                        {Intl.NumberFormat().format(amount)}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
