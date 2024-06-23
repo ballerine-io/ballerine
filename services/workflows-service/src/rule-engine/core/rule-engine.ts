@@ -1,9 +1,8 @@
-import { OPERATION, OPERATOR } from './operators/enums';
-import { OperationNotFoundError, DataValueNotFoundError, MissingKeyError } from './errors';
-import { Rule, RuleResult, RuleSet, RuleResultSet, FailedRuleResult } from './types';
-import { operationHelpers } from './operators/constants';
 import { get, isEmpty } from 'lodash';
-import { error } from 'console';
+import { DataValueNotFoundError, MissingKeyError, OperationNotFoundError } from './errors';
+import { operationHelpers } from './operators/constants';
+import { OPERATOR } from './operators/enums';
+import { Rule, RuleResult, RuleResultSet, RuleSet } from './types';
 
 export const validateRule = (rule: Rule, data: any): RuleResult => {
   if (isEmpty(rule.key)) {
@@ -36,7 +35,7 @@ export const validateRule = (rule: Rule, data: any): RuleResult => {
   }
 };
 
-export const validateRuleSet = (ruleSet: RuleSet, data: any): RuleResultSet => {
+export const runRuleSet = (ruleSet: RuleSet, data: any): RuleResultSet => {
   return ruleSet.rules.map(rule => {
     if ('key' in rule) {
       // Rule
@@ -58,7 +57,7 @@ export const validateRuleSet = (ruleSet: RuleSet, data: any): RuleResultSet => {
       }
     } else {
       // RuleSet
-      const nestedResults = validateRuleSet(rule, data);
+      const nestedResults = runRuleSet(rule, data);
 
       const passed =
         rule.operator === OPERATOR.AND
@@ -70,9 +69,21 @@ export const validateRuleSet = (ruleSet: RuleSet, data: any): RuleResultSet => {
       return {
         passed,
         status,
-        message: JSON.stringify(nestedResults),
         rule,
       };
     }
   });
+};
+
+export const RuleEngine = (ruleSets: RuleSet, helpers?: typeof operationHelpers) => {
+  // TODO: inject helpers
+  const allHelpers = { ...(helpers || {}), ...operationHelpers };
+
+  const run = (data: object = {}) => {
+    return runRuleSet(ruleSets, data);
+  };
+
+  return {
+    run,
+  };
 };

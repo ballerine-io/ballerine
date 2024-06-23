@@ -12,4 +12,4 @@ export const operationHelpers = {
   [OPERATION.LAST_YEAR]: LAST_YEAR,
 } as const;
 
-export type ConditionHelper = (typeof operationHelpers)[keyof typeof operationHelpers];
+export type OperationHelper = (typeof operationHelpers)[keyof typeof operationHelpers];
