@@ -15,9 +15,9 @@ export class DataValueNotFoundError extends Error {
 }
 
 export class MissingKeyError extends Error {
-  constructor(key: string) {
-    super(`Rule is missing the '${key}' field`);
-    this.name = 'MissingKeyError';
+  constructor() {
+    super(`Rule is missing the key field`);
+    this.name = MissingKeyError.name;
   }
 }
 
@@ -30,7 +30,7 @@ export class ValidationFailedError extends Error {
     | undefined;
 
   constructor(key: string, operation: string, error?: ZodError) {
-    super(`Validation failed for ${key} with operation ${operation}`);
+    super(`Validation failed for '${key}', message: ${operation}`);
     this.name = 'ValidationFailedError';
 
     this.errors = error?.errors.map(zodIssue => ({

@@ -4,7 +4,7 @@ import { ZodSchema } from 'zod';
 import { BetweenSchema, LastYearsSchema, PrimitiveSchema } from './schemas';
 import { ValidationFailedError } from '../errors';
 
-abstract class BaseOperator<T = primitive> {
+export abstract class BaseOperator<T = primitive> {
   operator: string;
   conditionValueSchema?: ZodSchema<any>;
   dataValueSchema?: ZodSchema<any>;
