@@ -1,22 +1,17 @@
 import { OPERATION, OPERATOR } from './operators/enums';
-import {
-  OperationNotFoundError,
-  DataValueNotFoundError,
-  MissingKeyError,
-  ValidationFailedError,
-  EngineErrors,
-} from './errors';
-import { z } from 'zod';
-import { Rule, RuleResult, RuleSet, ValidationResultSet } from './types';
+import { OperationNotFoundError, DataValueNotFoundError, MissingKeyError } from './errors';
+import { Rule, RuleResult, RuleSet, RuleResultSet, FailedRuleResult } from './types';
 import { operationHelpers } from './operators/constants';
+import { get, isEmpty } from 'lodash';
+import { error } from 'console';
 
 export const validateRule = (rule: Rule, data: any): RuleResult => {
-  if (!rule.key) {
-    throw new MissingKeyError(rule.key);
+  if (isEmpty(rule.key)) {
+    throw new MissingKeyError();
   }
 
   // TODO: we might want to extract the key value in the rule itself?
-  const value = data[rule.key];
+  const value = get(data, rule.key);
 
   if (value === undefined || value === null) {
     throw new DataValueNotFoundError(rule.key);
@@ -28,62 +23,56 @@ export const validateRule = (rule: Rule, data: any): RuleResult => {
     throw new OperationNotFoundError(rule.operation);
   }
 
-  const result = operation.execute(value, rule.value);
+  try {
+    const result = operation.execute(value, rule.value);
 
-  if (!result) {
-    const error = new ValidationFailedError(rule.key, rule.operation);
-    return { status: 'FAILED', message: error.message, passed: false, error };
+    return { status: result ? 'PASSED' : 'FAILED', passed: result, error: undefined };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { status: 'FAILED', message: error.message, passed: false, error };
+    }
+
+    throw error;
   }
-
-  return { status: 'PASSED', passed: true };
 };
 
-export const validateRuleSet = (
-  ruleSet: RuleSet,
-  data: any,
-  depth: number = 0,
-): ValidationResultSet => {
-  const results: ValidationResultSet = {};
-
-  for (const rule of ruleSet.rules) {
+export const validateRuleSet = (ruleSet: RuleSet, data: any): RuleResultSet => {
+  return ruleSet.rules.map(rule => {
     if ('key' in rule) {
+      // Rule
       try {
-        const result = validateRule(rule, data);
-        results[`${rule.key}_${depth}`] = result;
-        if (ruleSet.operator === OPERATOR.AND && result.status === 'FAILED') {
-          break;
-        }
+        return { ...validateRule(rule, data), rule };
       } catch (error) {
         // TODO: Would we want to throw when error instanceof OperationNotFoundError?
         if (error instanceof Error) {
-          results[`${rule.key}_${depth}`] = {
+          return {
             status: 'FAILED',
             message: error.message,
             passed: false,
             error,
+            rule,
           };
         } else {
           throw error;
         }
       }
     } else {
-      const nestedResults = validateRuleSet(rule, data, depth + 1);
+      // RuleSet
+      const nestedResults = validateRuleSet(rule, data);
 
       const passed =
-        ruleSet.operator === 'and'
-          ? Object.values(nestedResults).every(r => r.status === 'PASSED')
-          : Object.values(nestedResults).some(r => r.status === 'PASSED');
+        rule.operator === OPERATOR.AND
+          ? nestedResults.every(r => r.passed)
+          : nestedResults.some(r => r.passed);
 
-      results[`nested_${depth}`] = {
+      const status = passed ? 'PASSED' : 'SKIPPED';
+
+      return {
         passed,
-        status: passed ? 'PASSED' : 'SKIPPED',
+        status,
         message: JSON.stringify(nestedResults),
+        rule,
       };
-      if (ruleSet.operator === 'and' && passed) {
-        break;
-      }
     }
-  }
-
-  return results;
+  });
 };

@@ -11,3 +11,5 @@ export const operationHelpers = {
   [OPERATION.LTE]: LTE,
   [OPERATION.LAST_YEAR]: LAST_YEAR,
 } as const;
+
+export type ConditionHelper = (typeof operationHelpers)[keyof typeof operationHelpers];

@@ -15,22 +15,21 @@ export type RuleSet = {
   rules: Array<Rule | RuleSet>;
 };
 
-type PassedRuleResult = {
+export type PassedRuleResult = {
   status: 'PASSED' | 'SKIPPED';
   message?: string;
   passed: boolean;
-  // error?: never;  // 'error' should not be present
+  error?: never; // 'error' should not be present
+  rules?: Rule | RuleSet; // 'rules' should be present
 };
 
-type FailedRuleResult = {
+export type FailedRuleResult = {
   status: 'FAILED';
   message?: string;
   passed: boolean;
-  error: EngineErrors; // 'error' must be present
+  error: EngineErrors | undefined; // 'error' should be present
 };
 
 export type RuleResult = PassedRuleResult | FailedRuleResult;
 
-export type ValidationResultSet = {
-  [key: string]: RuleResult;
-};
+export type RuleResultSet = RuleResult[];
