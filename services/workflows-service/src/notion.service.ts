@@ -1,11 +1,9 @@
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { ConfigService } from '@nestjs/config';
 import { Client } from '@notionhq/client';
 import {
   PageObjectResponse,
   QueryDatabaseResponse,
 } from '@notionhq/client/build/src/api-endpoints';
-import { z } from 'zod';
 import { env } from '@/env';
 import { Injectable } from '@nestjs/common';
 
@@ -13,29 +11,16 @@ import { Injectable } from '@nestjs/common';
 export class NotionService {
   private readonly client: Client;
 
-  constructor(
-    private readonly configService: ConfigService,
-    private readonly logger: AppLoggerService,
-  ) {
-    if (!env.NOTION_API_KEY) {
-      throw new Error('NOTION_API_KEY is not set');
-    }
-
+  constructor(private readonly logger: AppLoggerService) {
     this.client = new Client({
-      auth: this.configService.get(env.NOTION_API_KEY),
+      auth: env.NOTION_API_KEY,
     });
   }
 
-  public async getAllDatabaseRecordsValues<TSchema extends z.ZodType>({
-    databaseId,
-    schema,
-  }: {
-    databaseId: string;
-    schema: TSchema;
-  }) {
+  public async getAllDatabaseRecordsValues({ databaseId }: { databaseId: string }) {
     const data = await this.extractDatabaseContent(databaseId);
 
-    const transformedData = data.map(record => {
+    return data.map(record => {
       return Object.fromEntries(
         Object.entries(record)
           .map(([fieldName, notionFieldPageObjectResponse]) => {
@@ -44,8 +29,6 @@ export class NotionService {
           .filter(([, value]) => value === 0 || !!value),
       );
     });
-
-    return schema.parse(transformedData) as z.infer<TSchema>;
   }
 
   private async extractDatabaseContent(databaseId: string) {
