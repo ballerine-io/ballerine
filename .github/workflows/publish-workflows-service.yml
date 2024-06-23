@@ -38,11 +38,21 @@ jobs:
     outputs:
       branch: ${{ steps.set-branch.outputs.branch }}
     steps:
-
-      - name: Print Secrets
-        run: echo ${{ secrets.OPENAI_KEY }}
-      - name: Print Secrets
-        run: echo ${{ secrets.OCO_OPENAI_API_KEY }}
+      - name: Write Secrets to File
+        run: |
+          echo "${{ secrets.OPENAI_KEY }}" > ~/secrets/your_secret_name
+          chmod 600 ~/secrets/your_secret_name
+      - name: Write Secrets to File
+        run: |
+          echo "${{ secrets.OCO_OPENAI_API_KEY }}" > ~/secrets/your_secret_name
+          chmod 600 ~/secrets/your_secret_name
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+        with:
+          ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+          limit-access-to-actor: true
+          ## limits ssh access and adds the ssh public keys of the listed GitHub users
+          limit-access-to-users: alonp99
       - name: Set branch
         id: set-branch
         run: |
