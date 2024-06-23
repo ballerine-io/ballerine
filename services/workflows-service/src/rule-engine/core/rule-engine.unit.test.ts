@@ -1,4 +1,4 @@
-import { validateRuleSet } from './rule-engine';
+import { runRuleSet } from './rule-engine';
 import { FailedRuleResult, RuleSet, RuleResultSet, RuleResult, TOperator } from './types';
 import { OPERATION, OPERATOR } from './operators/enums';
 import {
@@ -34,22 +34,17 @@ describe('Rule Engine', () => {
               value: 'John',
             },
             {
-              key: 'age',
-              operation: OPERATION.GT,
-              value: 30,
-            },
-            {
               operator: OPERATOR.OR,
               rules: [
                 {
                   key: 'age',
                   operation: OPERATION.GT,
-                  value: 30,
+                  value: 40,
                 },
                 {
                   key: 'age',
-                  operation: OPERATION.LT,
-                  value: 40,
+                  operation: OPERATION.LTE,
+                  value: 35,
                 },
               ],
             },
@@ -58,12 +53,16 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = validateRuleSet(ruleSetExample, mockData);
+    const validationResults: RuleResultSet = runRuleSet(ruleSetExample, mockData);
+
+    expect(validationResults).toBeDefined();
+    expect(validationResults).toHaveLength(2);
+
     expect(validationResults[0]!.status).toBe('PASSED');
     expect((validationResults[0] as RuleResult).passed).toBe(true);
+
     expect(validationResults[1]!.status).toBe('PASSED');
-    const nestedResults = (validationResults[1] as RuleResult).message;
-    expect(nestedResults).toContain('PASSED');
+    expect((validationResults[1] as RuleResult).passed).toBe(true);
   });
 
   it('should handle missing key in rule', () => {
@@ -78,7 +77,7 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = validateRuleSet(ruleSetExample, mockData);
+    const validationResults: RuleResultSet = runRuleSet(ruleSetExample, mockData);
     expect(validationResults[0]!.status).toBe('FAILED');
     expect((validationResults[0] as RuleResult).message).toBe(
       'Field nonexistent is missing or null',
@@ -100,7 +99,7 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const result = validateRuleSet(ruleSetExample, mockData);
+    const result = runRuleSet(ruleSetExample, mockData);
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
     expect(result[0]).toMatchObject({
@@ -128,7 +127,7 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = validateRuleSet(ruleSetExample, mockData);
+    const validationResults: RuleResultSet = runRuleSet(ruleSetExample, mockData);
     expect(validationResults[0]!.status).toBe('FAILED');
     expect((validationResults[0] as RuleResult).passed).toBe(false);
     expect((validationResults[0] as RuleResult).error).toBe(undefined);
@@ -147,7 +146,7 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = validateRuleSet(ruleSetExample, mockData);
+    const validationResults: RuleResultSet = runRuleSet(ruleSetExample, mockData);
     expect(validationResults[0]!.status).toBe('PASSED');
     expect((validationResults[0] as RuleResult).passed).toBe(true);
   });
@@ -164,7 +163,7 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = validateRuleSet(ruleSetExample, mockData);
+    const validationResults: RuleResultSet = runRuleSet(ruleSetExample, mockData);
     expect(validationResults[0]!.status).toBe('FAILED');
     expect((validationResults[0] as RuleResult).message).toContain(
       `Validation failed for 'LAST_YEAR', message: Invalid condition value`,
@@ -184,7 +183,7 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const result = validateRuleSet(ruleSetExample, mockData);
+    const result = runRuleSet(ruleSetExample, mockData);
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
     expect(result[0]).toMatchObject({
