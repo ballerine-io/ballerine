@@ -1,4 +1,4 @@
-const hashString = (str: string) => {
+export const hashString = (str: string) => {
   let hash = 0;
 
   for (let i = 0; i < str.length; i++) {
