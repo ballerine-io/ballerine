@@ -1,8 +1,8 @@
-import { TemplatesType } from '@rjsf/utils';
+import { ArrayFieldsLayout } from '@/components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout';
 import { FieldLayout } from '@/components/organisms/DynamicForm/components/layouts/FieldLayout';
 import { TitleLayout } from '@/components/organisms/DynamicForm/components/layouts/TitleLayout';
-import { ArrayFieldsLayout } from '@/components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout';
 import { SubmitLayout } from '@/components/organisms/DynamicForm/components/layouts/buttons/SubmitLayout';
+import { TemplatesType } from '@rjsf/utils';
 
 const Filler = () => <div>Not Implemented</div>;
 
