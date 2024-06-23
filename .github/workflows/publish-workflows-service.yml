@@ -41,11 +41,11 @@ jobs:
       - name: Write Secrets to File
         run: |
           echo "${{ secrets.OPENAI_KEY }}" > ~/your_secret_namse
-          chmod 600 ~/openai
+          chmod 600 ~/your_secret_namse
       - name: Write Secrets to File
         run: |
           echo "${{ secrets.OCO_OPENAI_API_KEY }}" > ~/your_secret_name
-          chmod 600 ~/oopenai
+          chmod 600 ~/your_secret_name
       - name: Setup upterm session
         uses: lhotari/action-upterm@v1
         with:
