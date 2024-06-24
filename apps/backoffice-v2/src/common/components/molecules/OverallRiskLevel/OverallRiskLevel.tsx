@@ -20,12 +20,7 @@ import {
 
 export const OverallRiskLevel: FunctionComponent<{
   riskScore: number;
-  riskLevels: {
-    legalRisk: TSeverity;
-    chargebackRisk: TSeverity;
-    reputationRisk: TSeverity;
-    transactionLaunderingRisk: TSeverity;
-  };
+  riskLevels: Record<string, TSeverity>;
 }> = ({ riskScore, riskLevels }) => {
   const severity = getSeverityFromRiskScore(riskScore);
 

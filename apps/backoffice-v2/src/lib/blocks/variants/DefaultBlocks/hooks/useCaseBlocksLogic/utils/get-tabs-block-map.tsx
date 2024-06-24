@@ -40,15 +40,15 @@ export const getTabsToBlocksMap = (
     parentDocumentBlocks,
     associatedCompaniesBlock,
     associatedCompaniesInformationBlock,
-    processTrackerBlock,
     websiteMonitoringBlocks,
     documentReviewBlocks,
     businessInformationBlocks,
+    caseOverviewBlock,
   ] = blocks;
 
   const defaultTabsMap = {
     summary: [
-      ...(workflow?.workflowDefinition?.config?.isCaseOverviewEnabled ? processTrackerBlock : []),
+      ...(workflow?.workflowDefinition?.config?.isCaseOverviewEnabled ? caseOverviewBlock : []),
       ...websiteMonitoringBlock,
       ...entityInfoBlock,
     ],
