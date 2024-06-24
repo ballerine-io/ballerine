@@ -1,5 +1,8 @@
 import { BusinessService } from '@/business/business.service';
-import { UpdateConfigurationDto } from '@/collection-flow/dto/update-configuration-input.dto';
+import {
+  UIElement,
+  UpdateConfigurationDto,
+} from '@/collection-flow/dto/update-configuration-input.dto';
 import { UpdateFlowDto } from '@/collection-flow/dto/update-flow-input.dto';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { UiDefDefinition, UiSchemaStep } from '@/collection-flow/models/flow-step.model';
@@ -17,11 +20,12 @@ import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-defi
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { AnyRecord } from '@ballerine/common';
-import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
+import { BUILT_IN_EVENT, deepMergeWithOptions } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
-import { EndUser, UiDefinitionContext, WorkflowRuntimeData } from '@prisma/client';
+import { EndUser, UiDefinition, UiDefinitionContext, WorkflowRuntimeData } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import get from 'lodash/get';
+import merge from 'lodash/merge';
 
 @Injectable()
 export class CollectionFlowService {
@@ -119,27 +123,108 @@ export class CollectionFlowService {
     payload: UpdateConfigurationDto,
     projectIds: TProjectIds,
   ) {
-    const { steps, theme } = payload;
+    const { elements, theme, strategy } = payload;
 
     const definition = await this.uiDefinitionService.getById(definitionId, {}, projectIds);
 
     if (!definition) throw new NotFoundException('UI Definition not found');
 
-    const updatedDefinition = await this.uiDefinitionService.updateById(definitionId, {
+    if (strategy === 'patch') {
+      this.patchUIDefinitionElements(definition, payload);
+    }
+
+    if (strategy === 'put') {
+      this.replaceUIDefinitionelements(definition, payload);
+    }
+
+    if (strategy === 'delete') {
+      this.deleteUIDefinitionElements(definition, payload);
+    }
+
+    return await this.uiDefinitionService.updateById(definitionId, {
       data: {
-        ...(steps !== undefined
-          ? {
-              uiSchema: {
-                elements: steps,
-              },
-            }
-          : undefined),
         //@ts-ignore
-        theme: theme ? theme : definition.theme,
+        uiSchema: definition.uiSchema,
       },
     });
+  }
 
-    return updatedDefinition;
+  private patchUIDefinitionElements(uiDefinition: UiDefinition, dto: UpdateConfigurationDto) {
+    const { elements = [] } = dto;
+
+    elements.forEach(element => {
+      const originElement = this.findElementByName(
+        element.name,
+        (uiDefinition.uiSchema as unknown as { elements: UIElement[] })?.elements as UIElement[],
+      );
+
+      if (originElement) {
+        const result = deepMergeWithOptions(originElement as any, element as any, 'by_index');
+        merge(originElement, result);
+      }
+    });
+
+    return uiDefinition;
+  }
+
+  private deleteUIDefinitionElements(uiDefinition: UiDefinition, dto: UpdateConfigurationDto) {
+    const { elements = [] } = dto;
+
+    elements.forEach(element => {
+      this.deleteElementByName(
+        element.name,
+        (uiDefinition.uiSchema as unknown as { elements: UIElement[] })?.elements as UIElement[],
+      );
+    });
+
+    return uiDefinition;
+  }
+
+  private replaceUIDefinitionelements(uiDefinition: UiDefinition, dto: UpdateConfigurationDto) {
+    const { elements = [] } = dto;
+
+    //@ts-ignore
+    uiDefinition.uiSchema = {
+      elements,
+    };
+
+    return uiDefinition;
+  }
+
+  private findElementByName(name: string, elements: UIElement[]): UIElement | null {
+    for (const element of elements) {
+      if (element.name === name) {
+        return element;
+      }
+
+      if (element.elements) {
+        const foundInChildren = this.findElementByName(name, element.elements as UIElement[]);
+
+        if (foundInChildren) {
+          return foundInChildren;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  private deleteElementByName(name: string, elements: UIElement[]): UIElement[] {
+    for (const element of elements) {
+      if (element.name === name) {
+        const index = elements.indexOf(element);
+
+        if (index !== -1) {
+          elements.splice(index, 1);
+        }
+      }
+
+      if (element.elements) {
+        this.deleteElementByName(name, element.elements as UIElement[]);
+      }
+    }
+
+    return elements;
   }
 
   async getActiveFlow(workflowRuntimeId: string, projectIds: TProjectIds) {
