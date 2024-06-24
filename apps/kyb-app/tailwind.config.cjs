@@ -1,5 +1,4 @@
 const { fontFamily } = require('tailwindcss/defaultTheme');
-const appSettings = require('./settings.json');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {

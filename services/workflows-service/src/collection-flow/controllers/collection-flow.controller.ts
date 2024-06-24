@@ -97,7 +97,7 @@ export class ColectionFlowController {
   }
 
   @UseCustomerAuthGuard()
-  @common.Patch('/configuration/:configurationId')
+  @common.Post('/configuration/:configurationId')
   async updateFlowConfiguration(
     @common.Param('configurationId') configurationId: string,
     @common.Body() payload: UpdateConfigurationDto,
