@@ -1,9 +1,12 @@
 import { z } from 'zod';
 import { countryCodes } from '@ballerine/common';
 
+const URL_REGEX =
+  /((https?):\/\/)?([a-zA-Z0-9-_]+\.)+[a-zA-Z0-9]+(\.[a-z]{2})?(\/[a-zA-Z0-9_#-]+)*(\/)?(\?[a-zA-Z0-9_-]+=[a-zA-Z0-9_-]+(&[a-zA-Z0-9_-]+=[a-zA-Z0-9_-]+)*)?(#[a-zA-Z0-9_-]+)?/;
+
 export const CreateBusinessReportSchema = z
   .object({
-    websiteUrl: z.string().url({
+    websiteUrl: z.string().regex(URL_REGEX, {
       message: 'Invalid website URL',
     }),
     companyName: z.union([
