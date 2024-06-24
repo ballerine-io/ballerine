@@ -1,5 +1,5 @@
 import { EngineErrors } from './errors';
-import { OPERATOR, OPERATION } from './operators/enums';
+import { OPERATION, OPERATOR } from './operators/enums';
 
 export type TOperation = (typeof OPERATION)[keyof typeof OPERATION];
 export type TOperator = (typeof OPERATOR)[keyof typeof OPERATOR];

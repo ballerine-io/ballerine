@@ -1,15 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { RuleStoreService, RuleStoreServiceFindAllOptions } from './rule-store.service';
 import { operationHelpers } from './core/operators/constants';
 import { RuleEngine } from './core/rule-engine';
+import { RuleSet } from '@/rule-engine/core/types';
 
 @Injectable()
 export class RuleEngineService {
-  constructor(private readonly ruleStoreService: RuleStoreService) {}
-
-  public async run(storeOptions: RuleStoreServiceFindAllOptions, formData: object) {
-    const rules = await this.ruleStoreService.findAll(storeOptions);
-
+  public run(rules: RuleSet, formData: object) {
     const ruleEngine = RuleEngine(rules, operationHelpers);
 
     const output = ruleEngine.run(formData);
