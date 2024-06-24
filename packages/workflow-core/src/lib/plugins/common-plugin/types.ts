@@ -9,7 +9,7 @@ export interface ISerializableCommonPluginParams
   response: SerializableValidatableTransformer;
   actionPluginName: string;
 
-  invoke?(...args: Array<any>): any;
+  invoke?(...args: any[]): any;
 }
 
 export interface ISerializableMappingPluginParams
@@ -19,16 +19,34 @@ export interface ISerializableMappingPluginParams
   > {
   transformers: Omit<SerializableValidatableTransformer, 'schema'>['transform'];
 
-  invoke?(...args: Array<any>): any;
+  invoke?(...args: any[]): any;
 }
 
 export interface IterativePluginParams {
   name: string;
-  stateNames: Array<string>;
+  stateNames: string[];
   iterateOn: Transformers;
   action: (context: TContext) => Promise<any>;
   successAction?: string;
   errorAction?: string;
+}
+
+type RuleSetOptions = { databaseId: string; source: 'notion' };
+export interface RiskRulesPluginParams {
+  name: string;
+  source: 'notion';
+  databaseId: string;
+  stateNames: string[];
+  action: (
+    context: TContext,
+    ruleStoreServiceOptions: RuleSetOptions,
+  ) => Array<
+    Record<string, unknown> & {
+      id: string;
+      baseRiskScore: number;
+      additionalRiskScore: number;
+    }
+  >;
 }
 
 export interface ChildWorkflowPluginParams {
@@ -36,7 +54,7 @@ export interface ChildWorkflowPluginParams {
   parentWorkflowRuntimeId: string;
   parentWorkflowRuntimeConfig: AnyRecord;
   definitionId: string;
-  stateNames?: Array<string>;
+  stateNames?: string[];
   transformers?: Transformers;
   initEvent?: string;
   action: (childCallbackInput: ChildPluginCallbackOutput) => Promise<void>;

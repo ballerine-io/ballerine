@@ -1933,7 +1933,7 @@ export class WorkflowService {
         ) => {
           const rules = await this.riskRuleService.findAll(ruleStoreServiceOptions);
 
-          rules.map(rule => {
+          const rulesetResults = rules.map(rule => {
             try {
               return {
                 result: this.ruleEngineService.run(rule.ruleSet, context),
@@ -1942,7 +1942,7 @@ export class WorkflowService {
             } catch (e) {}
           });
 
-          return;
+          return rulesetResults;
         },
         invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
           const runnableChildWorkflow = await this.persistChildEvent(

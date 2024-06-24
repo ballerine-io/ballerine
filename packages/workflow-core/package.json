@@ -32,10 +32,12 @@
   },
   "dependencies": {
     "@ballerine/common": "0.9.8",
+    "@types/lodash.maxby": "^4.6.9",
     "ajv": "^8.12.0",
     "i18n-iso-countries": "^7.6.0",
     "jmespath": "^0.16.0",
     "json-logic-js": "^2.0.2",
+    "lodash.maxby": "^4.6.0",
     "xstate": "^4.35.2"
   },
   "devDependencies": {
