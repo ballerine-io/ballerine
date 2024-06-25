@@ -97,13 +97,33 @@ export class ColectionFlowController {
   }
 
   @UseCustomerAuthGuard()
-  @common.Post('/configuration/:configurationId')
-  async updateFlowConfiguration(
+  @common.Patch('/configuration/:configurationId')
+  async patchUIDefinition(
+    @common.Param('configurationId') configurationId: string,
+    @common.Body() payload: UpdateConfigurationDto,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
+    return this.service.patchUIDefinition(configurationId, payload, projectIds);
+  }
+
+  @UseCustomerAuthGuard()
+  @common.Put('/configuration/:configurationId')
+  async updateUIDefinition(
     @common.Param('configurationId') configurationId: string,
     @common.Body() payload: UpdateConfigurationDto,
     @ProjectIds() projectIds: TProjectIds,
   ) {
     return this.service.updateUIDefinition(configurationId, payload, projectIds);
+  }
+
+  @UseCustomerAuthGuard()
+  @common.Delete('/configuration/:configurationId')
+  async deleteUIElements(
+    @common.Param('configurationId') configurationId: string,
+    @common.Body() payload: UpdateConfigurationDto,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
+    return this.service.deleteUIDefinitionElements(configurationId, payload, projectIds);
   }
 
   @UseTokenAuthGuard()

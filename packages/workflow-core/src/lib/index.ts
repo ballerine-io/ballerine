@@ -48,5 +48,4 @@ export type {
   Transformer,
   Validator,
 } from './utils';
-export { ARRAY_MERGE_OPTION, deepMergeWithOptions } from './utils/deep-merge-with-options';
-export type { ArrayMergeOption } from './utils/deep-merge-with-options';
+export * from './utils/deep-merge';
