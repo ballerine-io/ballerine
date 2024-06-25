@@ -18,7 +18,6 @@ export type RuleSet = {
 export type PassedRuleResult = {
   status: 'PASSED' | 'SKIPPED';
   message?: string;
-  passed: boolean;
   error?: never; // 'error' should not be present
   rules?: Rule | RuleSet; // 'rules' should be present
 };
@@ -26,7 +25,6 @@ export type PassedRuleResult = {
 export type FailedRuleResult = {
   status: 'FAILED';
   message?: string;
-  passed: boolean;
   error: EngineErrors | undefined; // 'error' should be present
 };
 
