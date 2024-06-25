@@ -20,12 +20,11 @@ import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-defi
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { AnyRecord } from '@ballerine/common';
-import { BUILT_IN_EVENT, deepMergeWithOptions } from '@ballerine/workflow-core';
+import { BUILT_IN_EVENT, deepMergeWithMutation } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
 import { EndUser, UiDefinition, UiDefinitionContext, WorkflowRuntimeData } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import get from 'lodash/get';
-import merge from 'lodash/merge';
 
 @Injectable()
 export class CollectionFlowService {
@@ -123,25 +122,62 @@ export class CollectionFlowService {
     payload: UpdateConfigurationDto,
     projectIds: TProjectIds,
   ) {
-    const { elements, theme, strategy } = payload;
-
     const definition = await this.uiDefinitionService.getById(definitionId, {}, projectIds);
 
     if (!definition) throw new NotFoundException('UI Definition not found');
 
-    if (strategy === 'patch') {
-      this.patchUIDefinitionElements(definition, payload);
-    }
-
-    if (strategy === 'put') {
-      this.replaceUIDefinitionelements(definition, payload);
-    }
-
-    if (strategy === 'delete') {
-      this.deleteUIDefinitionElements(definition, payload);
-    }
+    this.replaceUIDefinitionElements(definition, payload);
 
     return await this.uiDefinitionService.updateById(definitionId, {
+      data: {
+        //@ts-ignore
+        uiSchema: definition.uiSchema,
+        //@ts-ignore
+        theme: definition.theme,
+      },
+    });
+  }
+
+  async patchUIDefinition(
+    definitionId: string,
+    payload: UpdateConfigurationDto,
+    projectIds: TProjectIds,
+  ) {
+    const definition = await this.uiDefinitionService.getById(definitionId, {}, projectIds);
+
+    if (!definition) throw new NotFoundException('UI Definition not found');
+
+    this.patchUIDefinitionElements(definition, payload);
+
+    return this.uiDefinitionService.updateById(definitionId, {
+      data: {
+        //@ts-ignore
+        uiSchema: definition.uiSchema,
+        //@ts-ignore
+        theme: definition.theme ?? undefined,
+      },
+    });
+  }
+
+  async deleteUIDefinitionElements(
+    definitionId: string,
+    payload: UpdateConfigurationDto,
+    projectIds: TProjectIds,
+  ) {
+    const definition = await this.uiDefinitionService.getById(definitionId, {}, projectIds);
+
+    if (!definition) throw new NotFoundException('UI Definition not found');
+
+    const { elements = [] } = payload;
+
+    elements.forEach(element => {
+      this.deleteElementByName(
+        element.name,
+        (definition.uiSchema as unknown as { elements: UIElement[] })?.elements as UIElement[],
+      );
+    });
+
+    return this.uiDefinitionService.updateById(definitionId, {
       data: {
         //@ts-ignore
         uiSchema: definition.uiSchema,
@@ -150,7 +186,7 @@ export class CollectionFlowService {
   }
 
   private patchUIDefinitionElements(uiDefinition: UiDefinition, dto: UpdateConfigurationDto) {
-    const { elements = [] } = dto;
+    const { elements = [], theme } = dto;
 
     elements.forEach(element => {
       const originElement = this.findElementByName(
@@ -159,34 +195,32 @@ export class CollectionFlowService {
       );
 
       if (originElement) {
-        const result = deepMergeWithOptions(originElement as any, element as any, 'by_index');
-        merge(originElement, result);
+        //@ts-ignore
+        deepMergeWithMutation(originElement, element, {
+          mergeKey: 'name',
+          arrayMergeOption: 'by_id',
+        });
       }
     });
 
-    return uiDefinition;
-  }
-
-  private deleteUIDefinitionElements(uiDefinition: UiDefinition, dto: UpdateConfigurationDto) {
-    const { elements = [] } = dto;
-
-    elements.forEach(element => {
-      this.deleteElementByName(
-        element.name,
-        (uiDefinition.uiSchema as unknown as { elements: UIElement[] })?.elements as UIElement[],
-      );
-    });
+    if (theme) {
+      //@ts-ignore
+      uiDefinition.theme = deepMergeWithMutation(uiDefinition.theme, theme);
+    }
 
     return uiDefinition;
   }
 
-  private replaceUIDefinitionelements(uiDefinition: UiDefinition, dto: UpdateConfigurationDto) {
-    const { elements = [] } = dto;
+  private replaceUIDefinitionElements(uiDefinition: UiDefinition, dto: UpdateConfigurationDto) {
+    const { elements = [], theme } = dto;
 
     //@ts-ignore
     uiDefinition.uiSchema = {
       elements,
     };
+
+    //@ts-ignore
+    uiDefinition.theme = theme;
 
     return uiDefinition;
   }

@@ -10,6 +10,7 @@ export {
   JsonSchemaValidator,
   WorkflowEvents,
   createWorkflow,
+  deepMergeWithMutation,
   deepMergeWithOptions,
   logger,
   setLogger,

@@ -1,4 +1,3 @@
-import { oneOf } from '@/common/decorators/one-of.decorator';
 import { IsArray, IsObject, IsOptional, IsString } from 'class-validator';
 
 export const CONFIGURATION_UPDATE_STRATEGY = ['patch', 'delete', 'put'] as const;
@@ -12,10 +11,6 @@ export class UIElement {
 }
 
 export class UpdateConfigurationDto {
-  @IsOptional()
-  @oneOf([...CONFIGURATION_UPDATE_STRATEGY])
-  strategy!: string;
-
   @IsOptional()
   @IsArray()
   elements?: UIElement[];
