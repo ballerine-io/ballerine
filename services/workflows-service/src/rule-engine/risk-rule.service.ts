@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { NotionService } from '@/notion/notion.service';
 import z from 'zod';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { RuleSet, TOperation } from '@/rule-engine/core/types';
+import { RuleSet, TOperation } from '@ballerine/common';
 
 const operations = [
   'EQUALS',

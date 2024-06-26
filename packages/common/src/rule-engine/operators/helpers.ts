@@ -29,7 +29,7 @@ export abstract class BaseOperator<T = Primitive> {
     return this.evaluate(dataValue, conditionValue);
   }
 
-  protected validate(args: { dataValue: unknown; conditionValue: unknown }) {
+  validate(args: { dataValue: unknown; conditionValue: unknown }) {
     if (this.conditionValueSchema) {
       this.validateSchema(
         this.conditionValueSchema,
@@ -43,7 +43,7 @@ export abstract class BaseOperator<T = Primitive> {
     }
   }
 
-  protected validateSchema(schema: ZodSchema<any>, value: unknown, message: string) {
+  validateSchema(schema: ZodSchema<any>, value: unknown, message: string) {
     const result = schema.safeParse(value);
 
     if (!result.success) {

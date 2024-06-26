@@ -104,7 +104,6 @@ import { entitiesUpdate } from './utils/entities-update';
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { RuleEngineService } from '@/rule-engine/rule-engine.service';
 import { RiskRuleService, TFindAllRulesOptions } from '@/rule-engine/risk-rule.service';
-import { EngineErrors } from '@/rule-engine/core/errors';
 
 type TEntityId = string;
 
