@@ -1,10 +1,6 @@
 import React, { FunctionComponent } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { UserAvatar } from '@/common/components/atoms/UserAvatar/UserAvatar';
-import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
-import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
-import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
-import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
 import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
 import { useHomeLogic } from '@/common/hooks/useHomeLogic/useHomeLogic';
 import { t } from 'i18next';
@@ -42,19 +38,20 @@ export const Home: FunctionComponent = () => {
         />
       </div>
       <div>
-        <Tabs defaultValue={defaultTabValue} key={defaultTabValue}>
-          <TabsList>
-            <TabsTrigger asChild value={statisticsLink}>
-              <NavLink to={statisticsLink}>Statistics</NavLink>
-            </TabsTrigger>
-            <TabsTrigger asChild value={workflowsLink}>
-              <NavLink to={workflowsLink}>Workflows</NavLink>
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value={defaultTabValue}>
-            <Outlet />
-          </TabsContent>
-        </Tabs>
+        {/*<Tabs defaultValue={defaultTabValue} key={defaultTabValue}>*/}
+        {/*  <TabsList>*/}
+        {/*    <TabsTrigger asChild value={statisticsLink}>*/}
+        {/*      <NavLink to={statisticsLink}>Statistics</NavLink>*/}
+        {/*    </TabsTrigger>*/}
+        {/*    <TabsTrigger asChild value={workflowsLink}>*/}
+        {/*      <NavLink to={workflowsLink}>Workflows</NavLink>*/}
+        {/*    </TabsTrigger>*/}
+        {/*  </TabsList>*/}
+        {/*  <TabsContent value={defaultTabValue}>*/}
+        {/*    <Outlet />*/}
+        {/*  </TabsContent>*/}
+        {/*</Tabs>*/}
+        <Outlet />
       </div>
     </div>
   );
