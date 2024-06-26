@@ -42,13 +42,23 @@ export default defineConfig({
             {
               label: `Installation`,
               link: `/en/getting_started/installation`,
-            },
-            {
-              label: `Deployment`,
-              link: `/en/getting_started/deployment`,
-            },
+            }          
           ],
         },
+        {
+          label: `Deployment`,
+          collapsed: true,
+          items: [
+            {
+              label: `Docker Compose`,
+              link: `/en/deployment/docker_compose`,
+            },
+            {
+              label: `Ansible `,
+              link: `/en/deployment/ansible_deployment`,
+            }
+          ]
+        },        
         {
           label: 'Learn',
           collapsed: true,
