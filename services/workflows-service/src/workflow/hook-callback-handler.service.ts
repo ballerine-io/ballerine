@@ -1,24 +1,78 @@
-import { set } from 'lodash';
-import { Injectable } from '@nestjs/common';
+import { BusinessReportService } from '@/business-report/business-report.service';
+import { BusinessService } from '@/business/business.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { AnyRecord, isObject, ProcessStatus } from '@ballerine/common';
+import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
+import { TDocumentsWithoutPageType } from '@/common/types';
+import { CustomerService } from '@/customer/customer.service';
+import type { InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { WorkflowRuntimeData } from '@prisma/client';
-import * as tmp from 'tmp';
+import { AnyRecord, ProcessStatus, TDocument } from '@ballerine/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BusinessReportStatus,
+  BusinessReportType,
+  Customer,
+  WorkflowRuntimeData,
+} from '@prisma/client';
 import fs from 'fs';
-import { CustomerService } from '@/customer/customer.service';
-import type { TProjectId, TProjectIds } from '@/types';
-import { TDocumentsWithoutPageType } from '@/common/types';
-import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
-import get from 'lodash/get';
+import { get, isObject, set } from 'lodash';
+import * as tmp from 'tmp';
+import { AlertService } from '@/alert/alert.service';
+import { EndUserService } from '@/end-user/end-user.service';
+import { z } from 'zod';
+import { EndUserActiveMonitoringsSchema } from '@/end-user/end-user.schema';
+
+export const ReportWithRiskScoreSchema = z
+  .object({
+    summary: z
+      .object({
+        riskScore: z.number(),
+      })
+      .passthrough(),
+  })
+  .passthrough();
+
+const setPluginStatusToSuccess = ({
+  resultDestinationPath,
+  context,
+  data,
+}: {
+  resultDestinationPath: string;
+  context: Record<string, unknown>;
+  data: Record<string, unknown>;
+}) => {
+  const removeLastKeyFromPath = (path: string) => {
+    return path?.split('.')?.slice(0, -1)?.join('.');
+  };
+
+  const resultDestinationPathWithoutLastKey = removeLastKeyFromPath(resultDestinationPath);
+  const result = get(context, resultDestinationPathWithoutLastKey);
+
+  const resultWithData = set({}, resultDestinationPath, data);
+
+  //@ts-ignore
+  if (isObject(result) && result.status) {
+    return set(
+      resultWithData,
+      `${resultDestinationPathWithoutLastKey}.status`,
+      ProcessStatus.SUCCESS,
+    );
+  }
+
+  return resultWithData;
+};
 
 @Injectable()
 export class HookCallbackHandlerService {
   constructor(
     protected readonly workflowService: WorkflowService,
     protected readonly customerService: CustomerService,
+    protected readonly businessReportService: BusinessReportService,
+    protected readonly businessService: BusinessService,
+    protected readonly alertService: AlertService,
     private readonly logger: AppLoggerService,
+    private readonly endUserService: EndUserService,
   ) {}
 
   async handleHookResponse({
@@ -36,7 +90,58 @@ export class HookCallbackHandlerService {
     currentProjectId: TProjectId;
   }) {
     if (processName === 'kyc-unified-api') {
-      return await this.mapCallbackDataToIndividual(
+      const context = await this.mapCallbackDataToIndividual(
+        data,
+        workflowRuntime,
+        resultDestinationPath,
+        currentProjectId,
+      );
+
+      const aml = data.aml as
+        | { endUserId: string; hits: Array<Record<string, unknown>> }
+        | undefined;
+
+      if (aml) {
+        await this.updateEndUserWithAmlData({
+          sessionId: data.id as string,
+          amlHits: aml.hits,
+          withActiveMonitoring: workflowRuntime.config.hasUboOngoingMonitoring ?? false,
+          endUserId: aml.endUserId,
+          projectId: currentProjectId,
+          vendor: data.vendor as string,
+        });
+      }
+
+      return context;
+    }
+
+    if (processName === 'aml-unified-api') {
+      const aml = data.data as {
+        id: string;
+        endUserId: string;
+        hits: Array<Record<string, unknown>>;
+      };
+
+      const attributePath = resultDestinationPath.split('.');
+
+      const newContext = structuredClone(workflowRuntime.context);
+
+      this.setNestedProperty(newContext, attributePath, aml);
+
+      await this.updateEndUserWithAmlData({
+        sessionId: aml.id,
+        amlHits: aml.hits,
+        withActiveMonitoring: workflowRuntime.context.ongoingMonitoring ?? false,
+        endUserId: aml.endUserId,
+        projectId: currentProjectId,
+        vendor: data.vendor as string,
+      });
+
+      return newContext;
+    }
+
+    if (processName === 'website-monitoring') {
+      return await this.prepareWebsiteMonitoringContext(
         data,
         workflowRuntime,
         resultDestinationPath,
@@ -44,23 +149,237 @@ export class HookCallbackHandlerService {
       );
     }
 
-    const removeLastKeyFromPath = (path: string) => {
-      return path?.split('.')?.slice(0, -1)?.join('.');
-    };
-
-    const resultDestinationPathWithoutLastKey = removeLastKeyFromPath(resultDestinationPath);
-    const result = get(workflowRuntime.context, resultDestinationPathWithoutLastKey);
-
-    if (isObject(result) && result.status) {
-      set(
-        workflowRuntime.context,
-        `${resultDestinationPathWithoutLastKey}.status`,
-        ProcessStatus.SUCCESS,
+    if (processName === 'merchant-audit-report') {
+      return await this.prepareMerchantAuditReportContext(
+        data as {
+          reportData: Record<string, unknown>;
+          base64Pdf: string;
+          reportId: string;
+          reportType: string;
+          comparedToReportId?: string;
+        },
+        workflowRuntime,
+        resultDestinationPath,
+        currentProjectId,
       );
     }
 
-    return set({}, resultDestinationPath, data);
+    return setPluginStatusToSuccess({
+      resultDestinationPath,
+      context: workflowRuntime.context,
+      data,
+    });
   }
+
+  async prepareWebsiteMonitoringContext(
+    data: AnyRecord,
+    workflowRuntime: WorkflowRuntimeData,
+    resultDestinationPath: string,
+    currentProjectId: TProjectId,
+  ) {
+    const customer = await this.customerService.getByProjectId(currentProjectId);
+
+    const { context } = workflowRuntime;
+    const { reportData: unvalidatedReportData, base64Pdf, reportId, reportType } = data;
+    const reportData = ReportWithRiskScoreSchema.parse(unvalidatedReportData);
+
+    const { pdfReportBallerineFileId } = await this.persistPDFReportDocumentWithWorkflowDocuments({
+      context,
+      customer,
+      projectId: currentProjectId,
+      base64PDFString: base64Pdf as string,
+    });
+
+    const business = await this.businessService.getByCorrelationId(context.entity.id, [
+      currentProjectId,
+    ]);
+
+    if (!business) throw new BadRequestException('Business not found.');
+
+    const currentReportId = reportId as string;
+    const existentBusinessReport = await this.businessReportService.findFirstOrThrow(
+      {
+        where: {
+          businessId: business.id,
+          reportId: currentReportId,
+        },
+      },
+      [currentProjectId],
+    );
+
+    const businessReport = await this.businessReportService.upsert(
+      {
+        create: {
+          type: reportType as BusinessReportType,
+          riskScore: reportData.summary.riskScore,
+          status: BusinessReportStatus.completed,
+          report: {
+            reportFileId: pdfReportBallerineFileId,
+            data: reportData as InputJsonValue,
+          },
+          reportId: currentReportId,
+          businessId: business.id,
+          projectId: currentProjectId,
+        },
+        update: {
+          type: reportType as BusinessReportType,
+          riskScore: reportData.summary.riskScore,
+          status: BusinessReportStatus.completed,
+          report: {
+            reportFileId: pdfReportBallerineFileId,
+            data: reportData as InputJsonValue,
+          },
+        },
+        where: {
+          id: existentBusinessReport?.id,
+        },
+      },
+      [currentProjectId],
+    );
+
+    this.alertService
+      .checkOngoingMonitoringAlert(businessReport, business.companyName)
+      .then(() => {
+        this.logger.debug(`Alert Tested for ${currentReportId}}`);
+      })
+      .catch(error => {
+        this.logger.error(error);
+      });
+
+    return setPluginStatusToSuccess({
+      resultDestinationPath,
+      context: workflowRuntime.context,
+      data: reportData,
+    });
+  }
+
+  async prepareMerchantAuditReportContext(
+    data: Record<string, unknown>,
+    workflowRuntime: WorkflowRuntimeData,
+    resultDestinationPath: string,
+    currentProjectId: TProjectId,
+  ) {
+    const { reportData, base64Pdf, reportId, reportType, comparedToReportId } = z
+      .object({
+        reportData: ReportWithRiskScoreSchema,
+        base64Pdf: z.string(),
+        reportId: z.string(),
+        reportType: z.string(),
+        comparedToReportId: z.string().optional(),
+      })
+      .parse(data);
+
+    const { context } = workflowRuntime;
+
+    const businessId = context.entity.id as string;
+
+    const customer = await this.customerService.getByProjectId(currentProjectId);
+
+    if (comparedToReportId) {
+      const comparedToReport = await this.businessReportService.findFirstOrThrow(
+        {
+          where: {
+            businessId,
+            reportId: comparedToReportId,
+          },
+        },
+        [currentProjectId],
+      );
+
+      if (!comparedToReport) {
+        throw new BadRequestException('Compared to report not found.');
+      }
+
+      reportData.previousReport = {
+        summary: (comparedToReport.report as { data: { summary: { summary: unknown } } }).data
+          .summary,
+        reportType: comparedToReport.type,
+      };
+    }
+
+    const { pdfReportBallerineFileId } = await this.persistPDFReportDocumentWithWorkflowDocuments({
+      context,
+      customer,
+      projectId: currentProjectId,
+      base64PDFString: base64Pdf as string,
+    });
+
+    const reportContent = {
+      data: reportData,
+      reportFileId: pdfReportBallerineFileId,
+      reportId,
+    };
+
+    await this.businessReportService.create({
+      data: {
+        type: reportType as BusinessReportType,
+        report: reportContent as InputJsonValue,
+        businessId: businessId,
+        reportId: reportId as string,
+        projectId: currentProjectId,
+        riskScore: reportData.summary.riskScore,
+        status: BusinessReportStatus.completed,
+      },
+    });
+
+    return context;
+  }
+
+  async persistPDFReportDocumentWithWorkflowDocuments({
+    context,
+    base64PDFString,
+    projectId,
+    customer,
+  }: {
+    context: any;
+    base64PDFString: string;
+    projectId: TProjectId;
+    customer: Customer;
+  }) {
+    const contextClone = structuredClone(context);
+
+    const pdfDocument: TDocument = {
+      category: 'website-monitoring',
+      type: 'pdf-report',
+      pages: [
+        {
+          provider: 'base64',
+          uri: base64PDFString,
+          fileName: 'report.pdf',
+        },
+      ],
+      issuer: {
+        country: 'GB',
+      },
+      propertiesSchema: {},
+      properties: {},
+    };
+
+    const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
+      [pdfDocument] as unknown as TDocumentsWithoutPageType,
+      contextClone.entity.id || context.entity.ballerineEntityId,
+      projectId,
+      customer.name,
+    );
+
+    let pdfReportBallerineFileId: string | undefined;
+
+    persistedDocuments.forEach(document => {
+      const pdfReportDocument = document.pages.find(
+        //@ts-ignore
+        documentPage => documentPage.uri === base64PDFString,
+      );
+
+      if (!pdfReportDocument?.ballerineFileId) return;
+
+      pdfReportBallerineFileId = pdfReportDocument.ballerineFileId;
+    });
+
+    return {
+      pdfReportBallerineFileId,
+    };
+  }
+
   async mapCallbackDataToIndividual(
     data: AnyRecord,
     workflowRuntime: WorkflowRuntimeData,
@@ -86,7 +405,7 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
     const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
       documents as TDocumentsWithoutPageType,
-      // @ts-expect-error - we don't validate `context` is an object1
+      // @ts-expect-error - we don't validate `context` is an object
       context.entity.id || context.entity.ballerineEntityId,
       currentProjectId,
       customer.name,
@@ -195,7 +514,7 @@ export class HookCallbackHandlerService {
     const documentImages: AnyRecord[] = [];
 
     for (const image of data.images as Array<{ context?: string; content: string }>) {
-      const tmpFile = tmp.fileSync().name;
+      const tmpFile = tmp.fileSync({ keep: false }).name;
       const base64ImageContent = image.content.split(',')[1];
       const buffer = Buffer.from(base64ImageContent as string, 'base64');
       const fileType = await getFileMetadata({
@@ -247,5 +566,44 @@ export class HookCallbackHandlerService {
         current = current[path[i] as keyof typeof current];
       }
     }
+  }
+
+  private async updateEndUserWithAmlData({
+    sessionId,
+    endUserId,
+    amlHits,
+    withActiveMonitoring,
+    projectId,
+    vendor,
+  }: {
+    sessionId: string;
+    endUserId: string;
+    amlHits: Array<Record<string, unknown>>;
+    withActiveMonitoring: boolean;
+    projectId: TProjectId;
+    vendor: string;
+  }) {
+    const endUser = await this.endUserService.getById(endUserId, {}, [projectId]);
+
+    return await this.endUserService.updateById(endUserId, {
+      data: {
+        amlHits: amlHits.map(hit => ({ ...hit, vendor })) as InputJsonValue,
+        ...(withActiveMonitoring
+          ? {
+              activeMonitorings: [
+                ...(endUser.activeMonitorings as z.infer<typeof EndUserActiveMonitoringsSchema>),
+                {
+                  type: 'aml',
+                  vendor,
+                  monitoredUntil: new Date(
+                    new Date().setFullYear(new Date().getFullYear() + 3),
+                  ).toISOString(),
+                  sessionId,
+                },
+              ],
+            }
+          : {}),
+      },
+    });
   }
 }

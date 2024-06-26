@@ -14,4 +14,5 @@ export interface DocumentUploadFieldProps {
   disabled?: boolean;
   acceptFileFormats?: string;
   placeholder?: string;
+  testId?: string;
 }

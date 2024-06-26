@@ -4,10 +4,11 @@ import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
 import { HttpError } from './errors';
-import type {
+import {
   ChildPluginCallbackOutput,
   ObjectValues,
   WorkflowEvent,
+  WorkflowEvents,
   WorkflowEventWithoutState,
   WorkflowExtensions,
   WorkflowRunnerArgs,
@@ -27,19 +28,25 @@ import { ApiPlugin } from './plugins/external-plugin/api-plugin';
 import { WebhookPlugin } from './plugins/external-plugin/webhook-plugin';
 import {
   IApiPluginParams,
+  IDispatchEventPluginParams,
   ISerializableChildPluginParams,
   ISerializableHttpPluginParams,
   SerializableValidatableTransformer,
 } from './plugins/external-plugin/types';
-import { HelpersTransformer } from './utils/context-transformers/helpers-transformer';
 import { KycPlugin } from './plugins/external-plugin/kyc-plugin';
-import { THelperFormatingLogic } from './utils/context-transformers/types';
+import { DispatchEventPlugin } from './plugins/external-plugin/dispatch-event-plugin';
 import {
   ChildWorkflowPluginParams,
   ISerializableCommonPluginParams,
   IterativePluginParams,
 } from './plugins/common-plugin/types';
-import { ArrayMergeOption, TContext } from './utils';
+import {
+  ArrayMergeOption,
+  HelpersTransformer,
+  TContext,
+  THelperFormatingLogic,
+  Transformers,
+} from './utils';
 import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
 import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plugin';
 import { search } from 'jmespath';
@@ -52,30 +59,25 @@ import {
 } from './plugins/common-plugin/transformer-plugin';
 import { deepMergeWithOptions } from './utils';
 import { BUILT_IN_EVENT } from './index';
+import { logger } from './logger';
 
 export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
 }
 
 export class WorkflowRunner {
-  #__subscription: Array<(event: WorkflowEvent) => void> = [];
+  #__subscriptions: Partial<Record<string, Array<(event: WorkflowEvent) => Promise<void>>>>;
   #__workflow: StateMachine<any, any, any>;
   #__currentState: string | undefined | symbol | number | any;
-  #__context: any;
+  private context: any;
   #__config: any;
-  #__callback: ((event: WorkflowEvent) => void) | null = null;
   #__extensions: WorkflowExtensions;
   #__debugMode: boolean;
   #__runtimeId: string;
-  #__invokeChildWorkflowAction?: ChildCallabackable['invokeChildWorkflowAction'];
   events: any;
 
   public get workflow() {
     return this.#__workflow;
-  }
-
-  public get context() {
-    return this.#__context;
   }
 
   public get state() {
@@ -95,10 +97,15 @@ export class WorkflowRunner {
     debugMode = false,
   ) {
     // global and state specific extensions
+    this.#__subscriptions = {};
     this.#__extensions = extensions ?? {};
     this.#__extensions.statePlugins ??= [];
     this.#__debugMode = debugMode;
-    this.#__invokeChildWorkflowAction = invokeChildWorkflowAction;
+
+    this.#__extensions.dispatchEventPlugins = this.initiateDispatchEventPlugins(
+      this.#__extensions.dispatchEventPlugins ?? [],
+    );
+
     // @ts-expect-error TODO: fix this
     this.#__extensions.childWorkflowPlugins = this.initiateChildPlugin(
       this.#__extensions.childWorkflowPlugins ?? [],
@@ -106,13 +113,16 @@ export class WorkflowRunner {
       config,
       invokeChildWorkflowAction,
     );
+
     // @ts-expect-error TODO: fix this
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
+
     this.#__extensions.commonPlugins = this.initiateCommonPlugins(
       // @ts-expect-error TODO: fix this
       this.#__extensions.commonPlugins ?? [],
       [this.#__extensions.apiPlugins, this.#__extensions.childWorkflowPlugins].flat(1),
     );
+
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
     this.#__runtimeId = runtimeId;
 
@@ -122,7 +132,7 @@ export class WorkflowRunner {
     });
 
     // use initial context or provided context
-    this.#__context = {
+    this.context = {
       ...(workflowContext && Object.keys(workflowContext.machineContext ?? {})?.length
         ? workflowContext.machineContext
         : definition.context ?? {}),
@@ -132,6 +142,29 @@ export class WorkflowRunner {
     this.#__currentState = workflowContext?.state ? workflowContext.state : definition.initial;
 
     this.#__config = config;
+  }
+
+  async notify(eventName: string, event: WorkflowEvent) {
+    await Promise.all(
+      this.#__subscriptions?.[eventName]?.map(async callback => {
+        await callback(event);
+      }) || [],
+    );
+  }
+
+  initiateDispatchEventPlugins(
+    dispatchEventPlugins: IDispatchEventPluginParams[] | DispatchEventPlugin[] | undefined,
+  ) {
+    return dispatchEventPlugins?.map(dispatchEventPlugin => {
+      if (dispatchEventPlugin instanceof DispatchEventPlugin) {
+        return dispatchEventPlugin;
+      }
+
+      return new DispatchEventPlugin({
+        ...dispatchEventPlugin,
+        transformers: this.fetchTransformers(dispatchEventPlugin.transformers || []),
+      });
+    });
   }
 
   initiateApiPlugins(apiPluginSchemas: Array<ISerializableHttpPluginParams>) {
@@ -175,6 +208,7 @@ export class WorkflowRunner {
     callbackAction?: ChildWorkflowPluginParams['action'],
   ) {
     return childPluginSchemas?.map(childPluginSchema => {
+      console.log('Initiating child plugin', childPluginSchema);
       const transformers = this.fetchTransformers(childPluginSchema.transformers) || [];
 
       return new ChildWorkflowPlugin({
@@ -212,7 +246,9 @@ export class WorkflowRunner {
     if (pluginKind === 'iterative') return IterativePlugin;
     if (pluginKind === 'transformer') return TransformerPlugin;
 
-    console.log('Plugin kind is not supplied or not supported, falling back to Iterative plugin.');
+    logger.log('Plugin kind is not supplied or not supported, falling back to Iterative plugin.', {
+      pluginKind,
+    });
     return IterativePlugin;
   }
 
@@ -278,17 +314,15 @@ export class WorkflowRunner {
       name?: string;
     },
   ) {
-    return (
-      (Array.isArray(transformers) ? transformers : []).map(transformer => {
-        if (transformer.transformer === 'jmespath')
-          return new JmespathTransformer((transformer.mapping as string).replace(/\s+/g, ' '));
-        if (transformer.transformer === 'helper') {
-          return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
-        }
+    return (Array.isArray(transformers) ? transformers : []).map(transformer => {
+      if (transformer.transformer === 'jmespath')
+        return new JmespathTransformer((transformer.mapping as string).replace(/\s+/g, ' '));
+      if (transformer.transformer === 'helper') {
+        return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
+      }
 
-        throw new Error(`Transformer ${transformer} is not supported`);
-      }) || []
-    );
+      throw new Error(`Transformer ${transformer} is not supported`);
+    });
   }
 
   fetchValidator(
@@ -312,7 +346,7 @@ export class WorkflowRunner {
     workflowId?: string;
   }) {
     return async (context: Record<string, unknown>, event: Record<PropertyKey, unknown>) => {
-      this.#__callback?.({
+      await this.notify(WorkflowEvents.STATUS_UPDATE, {
         type,
         state: this.#__currentState,
         payload: {
@@ -329,7 +363,7 @@ export class WorkflowRunner {
           state: this.#__currentState,
         });
 
-        this.#__callback?.({
+        await this.notify(WorkflowEvents.STATUS_UPDATE, {
           type,
           state: this.#__currentState,
           payload: {
@@ -344,7 +378,7 @@ export class WorkflowRunner {
           errorType = ErrorEnum.HTTP_ERROR;
         }
 
-        this.#__callback?.({
+        await this.notify(WorkflowEvents.STATUS_UPDATE, {
           type,
           state: this.#__currentState,
           payload: {
@@ -354,7 +388,7 @@ export class WorkflowRunner {
           error: err,
         });
 
-        this.#__callback?.({
+        await this.notify(WorkflowEvents.STATUS_UPDATE, {
           type: errorType,
           state: this.#__currentState,
           error: err,
@@ -374,7 +408,7 @@ export class WorkflowRunner {
     /**
      * Blocking plugins are not injected as actions
      *
-     * @see {@link WorfklowRunner.sendEvent}
+     * @see {@link WorkflowRunner.sendEvent}
      *  */
     const nonBlockingPlugins =
       this.#__extensions.statePlugins?.filter(plugin => !plugin.isBlocking) ?? [];
@@ -418,8 +452,9 @@ export class WorkflowRunner {
           options.rule, // Rule
           data, // Data
         );
+
         if (!ruleResult && options.assignOnFailure) {
-          this.#__callback?.({
+          this.notify(WorkflowEvents.EVALUATION_ERROR, {
             type: 'RULE_EVALUATION_FAILURE',
             state: this.#__currentState,
             payload: {
@@ -427,6 +462,7 @@ export class WorkflowRunner {
             },
           });
         }
+
         return ruleResult;
       },
       jmespath: (ctx, event, metadata) => {
@@ -448,7 +484,10 @@ export class WorkflowRunner {
             context: Record<PropertyKey, unknown>;
           };
         },
-      ) => event.payload.context,
+      ) => {
+        this.context = event.payload.context;
+        return this.context;
+      },
     );
 
     const deepMergeContext = assign(
@@ -462,7 +501,17 @@ export class WorkflowRunner {
             newContext: Record<PropertyKey, unknown>;
           };
         },
-      ) => deepMergeWithOptions(context, payload.newContext, payload.arrayMergeOption),
+      ) => {
+        const mergedContext = deepMergeWithOptions(
+          context,
+          payload.newContext,
+          payload.arrayMergeOption,
+        );
+
+        this.context = mergedContext;
+
+        return mergedContext;
+      },
     );
 
     return createMachine(
@@ -483,9 +532,12 @@ export class WorkflowRunner {
   }
 
   async sendEvent(event: WorkflowEventWithoutState) {
-    const workflow = this.#__workflow.withContext(this.#__context);
+    const workflow = this.#__workflow.withContext(this.context);
 
-    console.log('Received event:', event, ', Current state:', this.#__currentState);
+    logger.log('Received event', {
+      event,
+      currentState: this.#__currentState,
+    });
 
     const previousState = this.#__currentState;
 
@@ -493,25 +545,26 @@ export class WorkflowRunner {
       .start(this.#__currentState)
       .onTransition((state, context) => {
         if (state.changed) {
-          console.log('Old state:', previousState, 'Transitioned into', state.value);
+          logger.log('State transitioned', {
+            previousState,
+            nextState: state.value,
+          });
 
           if (state.done) {
-            console.log('Reached final state');
+            logger.log('Reached final state');
           }
 
           if (state.tags.has('failure')) {
-            console.log('Reached failure state', {
+            logger.log('Reached failure state', {
               correlationId: context?.entity?.id,
               ballerineEntityId: context?.entity?.ballerineEntityId,
             });
           }
 
-          if (this.#__callback) {
-            this.#__callback({
-              ...event,
-              state: state.value as string,
-            });
-          }
+          this.notify(WorkflowEvents.STATE_UPDATE, {
+            ...event,
+            state: state.value as string,
+          });
         }
 
         this.#__currentState = state.value;
@@ -541,7 +594,7 @@ export class WorkflowRunner {
     const snapshot = service.getSnapshot();
 
     for (const prePlugin of prePlugins) {
-      console.log('Pre plugins are about to be deprecated. Please contact the team for more info');
+      logger.log('Pre plugins are about to be deprecated. Please contact the team for more info');
 
       await this.#__handleAction({
         type: 'STATE_ACTION_STATUS',
@@ -553,19 +606,30 @@ export class WorkflowRunner {
     service.send(event);
 
     const postSendSnapshot = service.getSnapshot();
-    this.#__context = postSendSnapshot.context;
+    this.context = postSendSnapshot.context;
 
     if (previousState === postSendSnapshot.value) {
-      console.log('No transition occurred, skipping plugins');
+      logger.log('No transition occurred, skipping plugins');
       return;
     }
 
     let commonPlugins = (this.#__extensions.commonPlugins as CommonPlugins)?.filter(plugin =>
       plugin.stateNames.includes(this.#__currentState),
     );
+
     const stateApiPlugins = (this.#__extensions.apiPlugins as HttpPlugins)?.filter(plugin =>
       plugin.stateNames.includes(this.#__currentState),
     );
+
+    const dispatchEventPlugins = (
+      this.#__extensions.dispatchEventPlugins as DispatchEventPlugin[]
+    )?.filter(plugin => plugin.stateNames.includes(this.#__currentState));
+
+    if (dispatchEventPlugins) {
+      for (const dispatchEventPlugin of dispatchEventPlugins) {
+        await this.__dispatchEvent(dispatchEventPlugin);
+      }
+    }
 
     if (commonPlugins) {
       for (const commonPlugin of commonPlugins) {
@@ -580,7 +644,7 @@ export class WorkflowRunner {
     }
 
     if (this.#__debugMode) {
-      console.log('context:', this.#__context);
+      logger.log('context:', this.context);
     }
 
     // Intentionally positioned after service.start() and service.send()
@@ -598,21 +662,21 @@ export class WorkflowRunner {
         plugin: postPlugin,
         // TODO: Might want to refactor to use this.#__runtimeId
         workflowId: postSendSnapshot.machine?.id,
-      })(this.#__context, event);
+      })(this.context, event);
     }
   }
 
   private async __invokeCommonPlugin(commonPlugin: CommonPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
     const { callbackAction, error } = await commonPlugin.invoke?.({
-      ...this.#__context,
+      ...this.context,
       workflowRuntimeConfig: this.#__config,
       workflowRuntimeId: this.#__runtimeId,
     });
 
     if (!!error) {
-      this.#__context.pluginsOutput = {
-        ...(this.#__context.pluginsOutput || {}),
+      this.context.pluginsOutput = {
+        ...(this.context.pluginsOutput || {}),
         ...{ [commonPlugin.name]: { error: error } },
       };
     }
@@ -625,29 +689,35 @@ export class WorkflowRunner {
   private async __invokeApiPlugin(apiPlugin: HttpPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
     const { callbackAction, responseBody, error } = await apiPlugin.invoke?.({
-      ...this.#__context,
+      ...this.context,
       workflowRuntimeConfig: this.#__config,
       workflowRuntimeId: this.#__runtimeId,
     });
 
     if (error) {
-      console.error('Error invoking plugin: ', apiPlugin.name, this.#__context, error);
+      logger.error('Error invoking plugin', {
+        error,
+        name: apiPlugin.name,
+        context: this.context,
+      });
     }
 
     if (!this.isPluginWithCallbackAction(apiPlugin)) {
-      console.log('Plugin does not have callback action: ', apiPlugin.name);
+      logger.log('Plugin does not have callback action', {
+        name: apiPlugin.name,
+      });
       return;
     }
 
     if (apiPlugin.persistResponseDestination && responseBody) {
-      this.#__context = this.mergeToContext(
-        this.#__context,
+      this.context = this.mergeToContext(
+        this.context,
         responseBody,
         apiPlugin.persistResponseDestination,
       );
     } else {
-      this.#__context.pluginsOutput = {
-        ...(this.#__context.pluginsOutput || {}),
+      this.context.pluginsOutput = {
+        ...(this.context.pluginsOutput || {}),
         ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
       };
     }
@@ -655,38 +725,77 @@ export class WorkflowRunner {
     await this.sendEvent({ type: callbackAction });
   }
 
-  subscribe(callback: (event: WorkflowEvent) => void) {
-    this.#__callback = callback;
-    // Not currently in use.
-    this.#__subscription.push(callback);
+  private async __dispatchEvent(dispatchEventPlugin: DispatchEventPlugin) {
+    const { eventName, event } = await dispatchEventPlugin.getPluginEvent(this.context);
+
+    try {
+      logger.log('Dispatching event', {
+        eventName,
+        event,
+      });
+
+      await this.notify(eventName, event);
+
+      logger.log('Dispatched event successfully', { eventName });
+
+      if (dispatchEventPlugin.successAction) {
+        await this.sendEvent({ type: dispatchEventPlugin.successAction });
+      }
+    } catch (error) {
+      logger.error('Failed dispatching event', { eventName, event, error });
+
+      if (dispatchEventPlugin.errorAction) {
+        await this.sendEvent({ type: dispatchEventPlugin.errorAction });
+      }
+    }
+  }
+
+  subscribe(eventName: string, callback: (event: WorkflowEvent) => Promise<void>) {
+    if (!this.#__subscriptions[eventName]) {
+      this.#__subscriptions[eventName] = [];
+    }
+
+    this.#__subscriptions[eventName]?.push(callback);
   }
 
   getSnapshot() {
-    const service = interpret(this.#__workflow.withContext(this.#__context));
+    const service = interpret(this.#__workflow.withContext(this.context));
     service.start(this.#__currentState);
     return service.getSnapshot();
   }
 
   overrideContext(context: any) {
-    return (this.#__context = context);
+    return (this.context = context);
   }
 
   async invokePlugin(pluginName: string) {
-    const { apiPlugins, commonPlugins, childWorkflowPlugins } = this.#__extensions;
+    const { apiPlugins, commonPlugins, childWorkflowPlugins, dispatchEventPlugins } =
+      this.#__extensions;
+
     const pluginToInvoke = [
       ...(apiPlugins ?? []),
       ...(commonPlugins ?? []),
       ...(childWorkflowPlugins ?? []),
+      ...(dispatchEventPlugins ?? []),
     ]
       .filter(plugin => !!plugin)
       .find(plugin => plugin?.name === pluginName);
 
-    if (pluginToInvoke && this.isHttpPlugin(pluginToInvoke)) {
+    if (!pluginToInvoke) {
+      return;
+    }
+
+    if (this.isHttpPlugin(pluginToInvoke)) {
       return await this.__invokeApiPlugin(pluginToInvoke);
     }
-    if (pluginToInvoke && this.isCommonPlugin(pluginToInvoke)) {
+
+    if (this.isCommonPlugin(pluginToInvoke)) {
       //@ts-ignore
       return await this.__invokeCommonPlugin(pluginToInvoke);
+    }
+
+    if (this.isDispatchEventPlugin(pluginToInvoke)) {
+      return await this.__dispatchEvent(pluginToInvoke);
     }
   }
 
@@ -698,6 +807,10 @@ export class WorkflowRunner {
     return (
       plugin instanceof ApiPlugin || plugin instanceof WebhookPlugin || plugin instanceof KycPlugin
     );
+  }
+
+  isDispatchEventPlugin(pluginToInvoke: unknown): pluginToInvoke is DispatchEventPlugin {
+    return pluginToInvoke instanceof DispatchEventPlugin;
   }
 
   mergeToContext(

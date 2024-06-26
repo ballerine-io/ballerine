@@ -1,11 +1,14 @@
 import { z } from 'zod';
 import { CaseStatus, CaseStatuses } from '../../enums';
 
-export const SearchSchema = z.object({
+export const BaseSearchSchema = z.object({
   sortDir: z.enum(['asc', 'desc']).catch('desc'),
   pageSize: z.coerce.number().int().positive().catch(50),
   page: z.coerce.number().int().positive().catch(1),
   search: z.string().catch(''),
+});
+
+export const SearchSchema = BaseSearchSchema.extend({
   filterId: z.string().catch(''),
   entity: z.string().catch(''),
 });
@@ -23,14 +26,24 @@ const createFilterSchema = (authenticatedUserId: string) =>
       caseStatus: [],
     });
 
+export const MonitoringReportsTabs = [
+  'websitesCompany',
+  'websiteLineOfBusiness',
+  'websiteCredibility',
+  'ecosystemAndTransactions',
+  'adsAndSocialMedia',
+] as const;
+
 export const IndividualsSearchSchema = (authenticatedUserId: string) =>
   SearchSchema.extend({
     sortBy: z.enum(['firstName', 'lastName', 'email', 'createdAt']).catch('createdAt'),
     filter: createFilterSchema(authenticatedUserId),
+    activeTab: z.enum(MonitoringReportsTabs).catch(MonitoringReportsTabs[0]).optional(),
   });
 
 export const BusinessesSearchSchema = (authenticatedUserId: string) =>
   SearchSchema.extend({
     sortBy: z.enum(['createdAt', 'companyName']).catch('createdAt'),
     filter: createFilterSchema(authenticatedUserId),
+    activeTab: z.enum(MonitoringReportsTabs).catch(MonitoringReportsTabs[0]).optional(),
   });

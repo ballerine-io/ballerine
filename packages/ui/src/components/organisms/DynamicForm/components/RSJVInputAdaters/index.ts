@@ -5,4 +5,5 @@ export * from './FileInputAdapter';
 export * from './PhoneInputAdapter';
 export * from './TextInputAdapter';
 export * from './MultiselectInputAdapter';
+export * from './RadioInputAdapter';
 export * from './types';

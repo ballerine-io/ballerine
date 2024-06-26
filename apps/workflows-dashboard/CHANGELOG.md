@@ -1,5 +1,29 @@
 # @ballerine/workflows-dashboard
 
+## 0.2.2
+
+### Patch Changes
+
+- bumo
+
+## 0.2.1
+
+### Patch Changes
+
+- ver bump
+
+## 0.2.0
+
+### Minor Changes
+
+- version bump
+
+## 0.1.15
+
+### Patch Changes
+
+- version bump
+
 ## 0.1.14
 
 ### Patch Changes

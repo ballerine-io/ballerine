@@ -1,6 +1,6 @@
 import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
 import { fetchServiceFromModule } from '@/test/helpers/nest-app-helper';
-import { PrismaModule } from 'nestjs-prisma';
+import { PrismaModule } from '@/prisma/prisma.module';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { FilterService } from '@/filter/filter.service';
 import { FilterRepository } from '@/filter/filter.repository';
@@ -32,6 +32,8 @@ import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository
 import { faker } from '@faker-js/faker';
 import { ARRAY_MERGE_OPTION, ArrayMergeOption, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { BusinessService } from '@/business/business.service';
+import { BusinessReportService } from '@/business-report/business-report.service';
+import { BusinessReportRepository } from '@/business-report/business-report.repository';
 
 describe('WorkflowService', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
@@ -71,6 +73,8 @@ describe('WorkflowService', () => {
       WorkflowRuntimeDataRepository,
       UiDefinitionService,
       UiDefinitionRepository,
+      BusinessReportService,
+      BusinessReportRepository,
     ];
 
     workflowRuntimeService = (await fetchServiceFromModule(WorkflowService, servicesProviders, [

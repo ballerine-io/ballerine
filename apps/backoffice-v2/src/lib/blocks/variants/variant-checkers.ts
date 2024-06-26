@@ -15,8 +15,17 @@ export const checkIsManualReviewVariant = (
   workflowDefinition?.variant === WorkflowDefinitionVariant.MANUAL_REVIEW &&
   workflowDefinition?.config?.isLegacyReject;
 
+export const checkIsWebsiteMonitoringVariant = (
+  workflowDefinition: Pick<TWorkflowById['workflowDefinition'], 'variant'>,
+) => workflowDefinition?.variant === WorkflowDefinitionVariant.WEBSITE_MONITORING;
+
 export const checkIsOngoingVariant = (
   workflowDefinition: Pick<TWorkflowById['workflowDefinition'], 'variant' | 'config' | 'version'>,
 ) =>
   workflowDefinition?.version >= 0 &&
   workflowDefinition?.variant === WorkflowDefinitionVariant.ONGOING;
+
+export const checkIsAmlVariant = (
+  workflowDefinition: Pick<TWorkflowById['workflowDefinition'], 'variant' | 'config' | 'version'>,
+) =>
+  workflowDefinition?.version >= 0 && workflowDefinition?.variant === WorkflowDefinitionVariant.AML;

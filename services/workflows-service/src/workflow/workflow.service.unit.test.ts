@@ -102,6 +102,7 @@ describe('WorkflowService', () => {
   let projectScopeService;
   let businessRepo;
   let businessService;
+  let businessReportService;
   let customerService;
   let endUserRepo;
   let entityRepo;
@@ -113,7 +114,6 @@ describe('WorkflowService', () => {
   let testingModule: TestingModule;
   const configService = {
     WEBHOOK_URL: 'https://example.com',
-    WEBHOOK_SECRET: 'webhook_secret',
     NODE_ENV: 'test',
     ENVIRONMENT_NAME: 'test',
 
@@ -133,6 +133,7 @@ describe('WorkflowService', () => {
     workflowRuntimeDataRepo = new FakeWorkflowRuntimeDataRepo();
     businessRepo = new FakeBusinessRepo();
     businessService = new FakeBusinessRepo();
+    businessReportService = new FakeBusinessRepo();
     endUserRepo = new FakeEndUserRepo();
     entityRepo = new FakeEntityRepo();
     customerService = new FakeCustomerRepo();
@@ -174,7 +175,7 @@ describe('WorkflowService', () => {
     const documentChangedWebhookCaller = new DocumentChangedWebhookCaller(
       fakeHttpService,
       configService as unknown as ConfigService,
-      eventEmitter as any,
+      eventEmitter as unknown as any,
       testingModule.get(AppLoggerService),
       customerService,
     );
@@ -183,6 +184,7 @@ describe('WorkflowService', () => {
       workflowDefinitionRepo as any,
       workflowRuntimeDataRepo,
       endUserRepo,
+      businessReportService,
       {} as any,
       businessRepo,
       businessService,

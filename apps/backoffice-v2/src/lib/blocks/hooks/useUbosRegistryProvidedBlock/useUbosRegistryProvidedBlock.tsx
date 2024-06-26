@@ -1,8 +1,8 @@
-import { useCallback, useMemo } from 'react';
-import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { WarningFilledSvg } from '@/common/components/atoms/icons';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { useCallback, useMemo } from 'react';
 
-type Ubo = {
+export type Ubo = {
   name?: string;
   type?: string;
   level?: number;
@@ -12,6 +12,7 @@ type Ubo = {
 export const useUbosRegistryProvidedBlock = (
   ubos: Ubo[] | undefined,
   message: string | undefined,
+  isRequestTimedOut: string | undefined,
 ) => {
   const getCell = useCallback(() => {
     if (Array.isArray(ubos) && ubos?.length) {
@@ -52,11 +53,35 @@ export const useUbosRegistryProvidedBlock = (
         value: (
           <span className="flex text-sm text-black/60">
             <WarningFilledSvg
-              className={'mr-[8px] mt-px text-black/20'}
+              className={'me-2 mt-px text-black/20 [&>:not(:first-child)]:stroke-background'}
               width={'20'}
               height={'20'}
             />
             <span>{message}</span>
+          </span>
+        ),
+      } satisfies Extract<
+        Parameters<ReturnType<typeof createBlocksTyped>['addCell']>[0],
+        {
+          type: 'paragraph';
+        }
+      >;
+    }
+
+    if (isRequestTimedOut) {
+      return {
+        type: 'paragraph',
+        value: (
+          <span className="flex text-sm text-black/60">
+            <WarningFilledSvg
+              className={'me-2 mt-px text-black/20 [&>:not(:first-child)]:stroke-background'}
+              width={'20'}
+              height={'20'}
+            />
+            <span>
+              The request timed out either because the company was not found in the registry, or the
+              information is currently unavailable.
+            </span>
           </span>
         ),
       } satisfies Extract<

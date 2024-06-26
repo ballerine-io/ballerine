@@ -1,7 +1,8 @@
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
-import { Public } from '@/common/decorators/public.decorator';
-import { type ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
+import { TokenScope, type ITokenScope } from '@/common/decorators/token-scope.decorator';
+import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
+import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
 import { FILE_MAX_SIZE_IN_BYTE, FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/storage/file-filter';
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { StorageService } from '@/storage/storage.service';
@@ -18,16 +19,15 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiExcludeController } from '@nestjs/swagger';
 import type { Response } from 'express';
 import * as errors from '../../errors';
-import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
-import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 
 export const COLLECTION_FLOW_FILES_API_PATH = 'collection-flow/files';
 
-@Public()
 @UseTokenAuthGuard()
-@Controller(COLLECTION_FLOW_FILES_API_PATH)
+@ApiExcludeController()
+@Controller('collection-flow/files')
 export class CollectionFlowFilesController {
   private readonly logger = new Logger(CollectionFlowFilesController.name);
 

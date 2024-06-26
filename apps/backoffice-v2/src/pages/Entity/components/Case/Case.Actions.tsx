@@ -1,13 +1,14 @@
-import React, { FunctionComponent } from 'react';
-import { Badge } from '@ballerine/ui';
 import { StateTag } from '@ballerine/common';
+import { Badge } from '@ballerine/ui';
+import { FunctionComponent } from 'react';
 
-import { IActionsProps } from './interfaces';
-import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
-import { ctw } from '../../../../common/utils/ctw/ctw';
-import { AssignDropdown } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
-import { tagToBadgeData } from './consts';
 import { ActionsVariant } from '@/pages/Entity/components/Case/actions-variants/ActionsVariant/ActionsVariant';
+import { CaseOptions } from '@/pages/Entity/components/Case/components/CaseOptions/CaseOptions';
+import { AssignDropdown } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
+import { ctw } from '../../../../common/utils/ctw/ctw';
+import { tagToBadgeData } from './consts';
+import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
+import { IActionsProps } from './interfaces';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
@@ -35,11 +36,12 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     assignees,
     onMutateAssignWorkflow,
     workflowDefinition,
+    isWorkflowCompleted,
   } = useCaseActionsLogic({ workflowId: id, fullName });
 
   return (
-    <div className={`sticky top-0 z-50 col-span-2 space-y-2 bg-base-100 px-4 pt-4`}>
-      <div className={`mb-8 flex flex-row space-x-3.5`}>
+    <div className={`col-span-2 space-y-2 bg-base-100 px-4 pt-4`}>
+      <div className={`mb-8 flex flex-row justify-between space-x-3.5`}>
         <AssignDropdown
           assignedUser={assignedUser}
           assignees={assignees}
@@ -47,13 +49,15 @@ export const Actions: FunctionComponent<IActionsProps> = ({
             onMutateAssignWorkflow(id, id === authenticatedUser?.id);
           }}
           authenticatedUserId={authenticatedUser?.id}
+          isDisabled={isWorkflowCompleted}
         />
+        <CaseOptions />
       </div>
-      <div className={`flex h-20 justify-between`}>
+      <div className={`flex h-20 justify-between gap-4`}>
         <div className={`flex flex-col space-y-3`}>
           <h2
-            className={ctw(`text-4xl font-semibold leading-9`, {
-              'h-8 w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
+            className={ctw(`w-full max-w-[35ch] break-all text-4xl font-semibold leading-9`, {
+              'h-8 w-full max-w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
                 isLoadingCase,
             })}
           >
@@ -61,10 +65,10 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           </h2>
           {tag && (
             <div className={`flex items-center`}>
-              <span className={`mr-[8px] text-sm leading-6`}>Status</span>
+              <span className={`me-2 text-sm leading-6`}>Status</span>
               <Badge
                 variant={tagToBadgeData[tag].variant}
-                className={ctw(`text-sm font-bold`, {
+                className={ctw(`whitespace-nowrap text-sm font-bold`, {
                   'bg-info/20 text-info': tag === StateTag.MANUAL_REVIEW,
                   'bg-violet-500/20 text-violet-500': [
                     StateTag.COLLECTION_FLOW,

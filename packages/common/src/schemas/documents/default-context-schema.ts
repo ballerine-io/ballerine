@@ -57,6 +57,7 @@ export const defaultContextSchema = Type.Object({
                   Type.Null(),
                 ]),
               ),
+              comment: Type.Optional(Type.String()),
               rejectionReason: Type.Optional(
                 Type.Union([
                   Type.String(),
@@ -87,9 +88,10 @@ export const defaultContextSchema = Type.Object({
                       'Password protected',
                       'Blurry image',
                       'Short statement period',
-                      'Statement out of range',
+                      'Document out of range',
                       'Outside restricted area',
                       'Other',
+                      'Partial information',
                     ],
                   }),
                 ]),
@@ -129,7 +131,9 @@ export const defaultContextSchema = Type.Object({
             Type.Object(
               {
                 ballerineFileId: Type.Optional(Type.String()),
-                provider: Type.String({ enum: ['gcs', 'http', 'stream', 'file-system', 'ftp'] }),
+                provider: Type.String({
+                  enum: ['gcs', 'http', 'stream', 'file-system', 'ftp', 'base64'],
+                }),
                 uri: Type.String({ format: 'uri' }),
                 type: Type.Optional(
                   Type.String({

@@ -4,13 +4,16 @@ import { Injectable } from '@nestjs/common';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import * as swagger from '@nestjs/swagger';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import type { TProjectIds } from '@/types';
+import type { InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionModel } from '@/ui-definition/ui-definition.model';
 import { WhereIdInput } from '@/common/where-id-input';
 import { UiDefinitionByRuntimeIdDto } from '@/ui-definition/dtos/ui-definition-by-runtime-id.dto';
 import { UiDefinitionByWorkflowDefinitionIdDto } from '@/ui-definition/dtos/ui-definition-by-workflow-definition-id.dto';
+import * as errors from '@/errors';
+import { UiDefinitionCreateDto } from '@/ui-definition/dtos/ui-definition-create.dto';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
-@swagger.ApiTags('internal/ui-definition')
+@swagger.ApiExcludeController()
 @common.Controller('internal/ui-definition')
 @Injectable()
 export class UiDefinitionController {
@@ -18,6 +21,23 @@ export class UiDefinitionController {
     protected readonly service: UiDefinitionService,
     protected readonly projectScopeService: ProjectScopeService,
   ) {}
+
+  @common.Post()
+  @swagger.ApiCreatedResponse({ type: UiDefinitionCreateDto })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async create(
+    @common.Body() data: UiDefinitionCreateDto,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    return await this.service.create({
+      data: {
+        ...data,
+        definition: data.definition as InputJsonValue,
+        uiSchema: data.uiSchema as InputJsonValue,
+        projectId: currentProjectId,
+      },
+    });
+  }
 
   @common.Get(':id')
   @swagger.ApiOkResponse({ type: [UiDefinitionModel] })

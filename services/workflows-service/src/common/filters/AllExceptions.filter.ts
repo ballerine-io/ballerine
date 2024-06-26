@@ -1,11 +1,11 @@
 import { env } from '@/env';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { inspect } from 'util';
 import { ArgumentsHost, Catch, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
 import type { Request, Response } from 'express';
 import { HttpStatusCode } from 'axios';
 import { ValidationError } from '@/errors';
+import { inspect } from 'node:util';
 
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
@@ -53,7 +53,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     }
 
     return new InternalServerErrorException({
-      cause: inspect(exception),
+      cause: exception,
     });
   }
 
@@ -74,7 +74,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     this.logger.error(message, {
       name: error.name,
       status,
-      error: errorRes,
+      error: inspect(errorRes),
       message: error.message,
       responseTime: Date.now() - request.startTime,
     });

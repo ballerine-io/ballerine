@@ -4,6 +4,7 @@ import { ErrorObject } from 'ajv';
 import startCase from 'lodash/startCase';
 import lowerCase from 'lodash/lowerCase';
 import { ZodError } from 'zod';
+import { ValidationError as ClassValidatorValidationError } from 'class-validator';
 
 export class ForbiddenException extends common.ForbiddenException {
   @ApiProperty()
@@ -34,6 +35,10 @@ class DetailedValidationError {
   path!: string;
 }
 
+export const exceptionValidationFactory = (errors: ClassValidatorValidationError[]) => {
+  return ValidationError.fromClassValidator(errors);
+};
+
 export class ValidationError extends common.BadRequestException {
   @ApiProperty()
   statusCode!: number;
@@ -52,12 +57,10 @@ export class ValidationError extends common.BadRequestException {
       },
       'Validation error',
     );
-
-    this.errors = errors;
   }
 
   getErrors() {
-    return this.errors;
+    return (this.getResponse() as ValidationError).errors;
   }
 
   static fromAjvError(error: Array<ErrorObject<string, Record<string, any>, unknown>>) {
@@ -77,4 +80,33 @@ export class ValidationError extends common.BadRequestException {
 
     return new ValidationError(errors);
   }
+
+  static fromClassValidator(error: ClassValidatorValidationError[]) {
+    const flattenedErrors = flattenValidationErrors(error);
+
+    return new ValidationError(
+      flattenedErrors.map(({ property, constraints = {} }) => ({
+        message: `${Object.values(constraints).join(', ')}.`,
+        path: property,
+      })),
+    );
+  }
 }
+
+const flattenValidationErrors = (
+  errors: ClassValidatorValidationError[],
+): ClassValidatorValidationError[] => {
+  const flattenedErrors: ClassValidatorValidationError[] = [];
+
+  for (const error of errors) {
+    flattenedErrors.push(error);
+
+    if (error.children) {
+      for (const child of error.children) {
+        flattenedErrors.push(...flattenValidationErrors([child]));
+      }
+    }
+  }
+
+  return flattenedErrors;
+};

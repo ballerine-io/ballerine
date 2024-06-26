@@ -3,7 +3,7 @@ import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helpe
 import { INestApplication } from '@nestjs/common';
 import { fetchServiceFromModule, initiateNestApp } from '@/test/helpers/nest-app-helper';
 import { faker } from '@faker-js/faker';
-import { PrismaModule } from 'nestjs-prisma';
+import { PrismaModule } from '@/prisma/prisma.module';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { FilterService } from '@/filter/filter.service';
 import { FilterRepository } from '@/filter/filter.repository';
@@ -37,6 +37,8 @@ import { CustomerControllerExternal } from './customer.controller.external';
 import { CustomerRepository } from './customer.repository';
 import { EndUserService } from '@/end-user/end-user.service';
 import { AllExceptionsFilter } from '@/common/filters/AllExceptions.filter';
+
+const API_KEY = 'secret3';
 
 describe.skip('#CustomerControllerExternal', () => {
   let app: INestApplication;
@@ -104,7 +106,7 @@ describe.skip('#CustomerControllerExternal', () => {
       customer = await createCustomer(
         prismaClient,
         faker.datatype.uuid(),
-        'secret3',
+        API_KEY,
         '',
         '',
         'webhook-shared-secret',
@@ -129,7 +131,6 @@ describe.skip('#CustomerControllerExternal', () => {
     });
 
     it('creates a subsriptions for customer', async () => {
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const payload = {
         subscriptions: [
           {
@@ -143,7 +144,7 @@ describe.skip('#CustomerControllerExternal', () => {
       const response = await request(app.getHttpServer())
         .post('/external/customers/subscriptions')
         .send(payload)
-        .set('authorization', `Bearer ${apiKey}`);
+        .set('authorization', `Bearer ${API_KEY}`);
 
       expect(response.status).toBe(201);
 
@@ -152,7 +153,6 @@ describe.skip('#CustomerControllerExternal', () => {
     });
 
     it('subsriptions has to be valid url', async () => {
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const payload = {
         subscriptions: [
           {
@@ -166,7 +166,7 @@ describe.skip('#CustomerControllerExternal', () => {
       const response = await request(app.getHttpServer())
         .post('/external/customers/subscriptions')
         .send(payload)
-        .set('authorization', `Bearer ${apiKey}`);
+        .set('authorization', `Bearer ${API_KEY}`);
 
       expect(response.status).toBe(400);
       expect(response.body).toMatchObject({

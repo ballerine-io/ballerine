@@ -1,7 +1,10 @@
 ARG BASE_IMAGE
-FROM ${BASE_IMAGE}
+
+FROM ${BASE_IMAGE} as base
 
 WORKDIR /app
-RUN git submodule update --init --recursive
+COPY ./prisma/data-migrations ./prisma/data-migrations
 
-CMD ["npm", "start"]
+EXPOSE 3000
+
+CMD [ "dumb-init", "npm", "run", "prod:next" ]

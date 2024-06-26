@@ -1,12 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { ACLModule } from '@/common/access-control/acl.module';
-// import { ACGuard } from 'nest-access-control';
-// import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
-// import { AclValidateRequestInterceptor } from '@/common/access-control/interceptors/acl-validate-request.interceptor';
 import {
-  CallHandler,
   DynamicModule,
-  ExecutionContext,
   ForwardReference,
   INestApplication,
   NestMiddleware,
@@ -17,8 +12,8 @@ import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { ClsMiddleware, ClsModule, ClsService } from 'nestjs-cls';
 import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
 import { CustomerModule } from '@/customer/customer.module';
-import { CustomerService } from '@/customer/customer.service';
 import { HttpModule } from '@nestjs/axios';
+import { ApiKeyService } from '@/customer/api-key/api-key.service';
 
 export const commonTestingModules = [
   ClsModule.forRoot({
@@ -28,24 +23,6 @@ export const commonTestingModules = [
   CustomerModule,
   HttpModule,
 ];
-
-const acGuard = {
-  canActivate: () => {
-    return true;
-  },
-};
-
-const aclValidateRequestInterceptor = {
-  intercept: (_context: ExecutionContext, next: CallHandler) => {
-    return next.handle();
-  },
-};
-
-const aclFilterResponseInterceptor = {
-  intercept: (_context: ExecutionContext, next: CallHandler) => {
-    return next.handle();
-  },
-};
 
 export const fetchServiceFromModule = async <T>(
   service: Type<T>,
@@ -73,17 +50,10 @@ export const initiateNestApp = async (
     providers: providers,
     controllers: controllers,
     imports: [ACLModule, ...modules, ...commonTestingModules],
-  })
-    // .overrideGuard(ACGuard)
-    // .useValue(acGuard)
-    // .overrideInterceptor(AclFilterResponseInterceptor)
-    // .useValue(aclFilterResponseInterceptor)
-    // .overrideInterceptor(AclValidateRequestInterceptor)
-    // .useValue(aclValidateRequestInterceptor)
-    .compile();
+  }).compile();
 
   app = moduleRef.createNestApplication();
-  const middlewareInstnace = new AuthKeyMiddleware(app.get(CustomerService), app.get(ClsService));
+  const middlewareInstnace = new AuthKeyMiddleware(app.get(ApiKeyService), app.get(ClsService));
   const clsMiddleware = new ClsMiddleware();
 
   middlewares.forEach(middleware => app.use(middleware));

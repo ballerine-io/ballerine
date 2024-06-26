@@ -5,7 +5,7 @@ export const teardown = async () => {
 
   if (!globalThisTest.__DB_CONTAINER__) return;
 
-  await globalThisTest.__DB_CONTAINER__.stop();
+  await globalThisTest.__DB_CONTAINER__.stop({ removeVolumes: true });
 };
 
 module.exports = teardown;

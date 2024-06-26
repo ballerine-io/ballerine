@@ -1,5 +1,154 @@
 # @ballerine/workflow-node-sdk
 
+## 0.6.14
+
+### Patch Changes
+
+- @ballerine/workflow-core@0.6.14
+
+## 0.6.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.13
+
+## 0.6.12
+
+### Patch Changes
+
+- @ballerine/workflow-core@0.6.12
+
+## 0.6.11
+
+### Patch Changes
+
+- Version bump
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.11
+
+## 0.6.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.10
+
+## 0.6.9
+
+### Patch Changes
+
+- @ballerine/workflow-core@0.6.9
+
+## 0.6.8
+
+### Patch Changes
+
+- @ballerine/workflow-core@0.6.8
+
+## 0.6.7
+
+### Patch Changes
+
+- @ballerine/workflow-core@0.6.7
+
+## 0.6.6
+
+### Patch Changes
+
+- @ballerine/workflow-core@0.6.6
+
+## 0.6.5
+
+### Patch Changes
+
+- @ballerine/workflow-core@0.6.5
+
+## 0.6.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.4
+
+## 0.6.3
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies [0244d3ea1]
+  - @ballerine/workflow-core@0.6.3
+
+## 0.6.2
+
+### Patch Changes
+
+- bumo
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.2
+
+## 0.6.1
+
+### Patch Changes
+
+- ver bump
+- 9fe7a5c10: bump
+- Updated dependencies
+- Updated dependencies [9fe7a5c10]
+  - @ballerine/workflow-core@0.6.1
+
+## 0.6.1-11210907c.0
+
+### Patch Changes
+
+- @ballerine/workflow-core@0.6.1-11210907c.0
+
+## 0.6.0
+
+### Minor Changes
+
+- version bump
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.0
+
+## 0.5.52
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.52
+
+## 0.5.51
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.51
+
+## 0.5.50
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.50
+
+## 0.5.49
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.49
+
+## 0.5.48
+
+### Patch Changes
+
+- @ballerine/workflow-core@0.5.48
+
 ## 0.5.47
 
 ### Patch Changes

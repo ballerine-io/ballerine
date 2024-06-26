@@ -1,12 +1,12 @@
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { muiTheme } from '@/common/mui-theme';
+import { Paper } from '@/components/atoms';
+import { TextField, TextFieldProps, ThemeProvider } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { FocusEvent, FunctionComponent, useCallback, useMemo, useState } from 'react';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs, { Dayjs } from 'dayjs';
-import { TextField, TextFieldProps, ThemeProvider } from '@mui/material';
-import { muiTheme } from '@/common/mui-theme';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Paper } from '@/components/atoms';
+import { FocusEvent, FunctionComponent, useCallback, useMemo, useState } from 'react';
 
 export interface DatePickerChangeEvent {
   target: {
@@ -27,6 +27,8 @@ export interface DatePickerProps {
   name?: string;
   disabled?: boolean;
   params?: DatePickerParams;
+  testId?: string;
+  outputFormat?: 'iso' | 'date';
   onChange: (event: DatePickerChangeEvent) => void;
   onBlur?: (event: FocusEvent<any>) => void;
 }
@@ -36,14 +38,23 @@ export const DatePickerInput = ({
   name,
   disabled = false,
   params,
+  outputFormat = 'iso',
+  testId,
   onChange,
   onBlur,
 }: DatePickerProps) => {
   const [isFocused, setFocused] = useState(false);
 
-  const serializeValue = useCallback((value: Dayjs): string => {
-    return value.toISOString();
-  }, []);
+  const serializeValue = useCallback(
+    (value: Dayjs): string => {
+      if (outputFormat === 'iso') {
+        return value.toISOString();
+      }
+
+      return value.format('YYYY-MM-DD');
+    },
+    [outputFormat],
+  );
 
   const deserializeValue = useCallback((value: DatePickerValue) => {
     return dayjs(value);
@@ -110,6 +121,7 @@ export const DatePickerInput = ({
           }}
           inputProps={{
             ...props.inputProps,
+            'data-testid': testId,
             className: 'py-0 px-0 h-9',
           }}
         />
@@ -151,6 +163,12 @@ export const DatePickerInput = ({
               //@ts-ignore
               component: Paper,
               className: 'mt-2 mb-2',
+            },
+            dialog: {
+              className: 'pointer-events-auto',
+            },
+            popper: {
+              className: 'pointer-events-auto',
             },
           }}
         />

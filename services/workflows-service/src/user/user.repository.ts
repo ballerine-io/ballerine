@@ -22,7 +22,7 @@ export class UserRepository {
       createMany: {
         data: projectId ? [{ projectId }] : [],
       },
-    };
+    } satisfies Prisma.UserToProjectCreateNestedManyWithoutUserInput;
 
     return this.prisma.user.create<T>({
       ...args,
@@ -31,7 +31,7 @@ export class UserRepository {
         // Use Prisma middleware
         password: await this.passwordService.hash(args.data.password),
       },
-    } as any);
+    });
   }
 
   async findMany<T extends Prisma.UserFindManyArgs>(

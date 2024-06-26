@@ -1,4 +1,9 @@
-import { DatePickerChangeEvent, DatePickerInput, DatePickerParams } from '@/components/molecules';
+import {
+  DatePickerChangeEvent,
+  DatePickerInput,
+  DatePickerParams,
+  DatePickerProps,
+} from '@/components/molecules';
 import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { useCallback, useMemo } from 'react';
 
@@ -14,6 +19,7 @@ export const DateInputAdapter: RJSFInputAdapter<string | null> = ({
   formData,
   disabled,
   uiSchema,
+  testId,
   onBlur,
   onChange,
 }) => {
@@ -45,13 +51,20 @@ export const DateInputAdapter: RJSFInputAdapter<string | null> = ({
     [uiSchema?.disableFutureDate, uiSchema?.disablePastDate],
   );
 
+  const datePickerOutputFormat: DatePickerProps['outputFormat'] = useMemo(
+    () => uiSchema?.outputFormat,
+    [uiSchema?.outputFormat],
+  );
+
   return (
     <DatePickerInput
       value={formData ? formData : undefined}
       params={datePickerParams}
       onChange={handleChange}
+      outputFormat={datePickerOutputFormat}
       disabled={disabled}
       onBlur={handleBlur}
+      testId={testId}
     />
   );
 };
