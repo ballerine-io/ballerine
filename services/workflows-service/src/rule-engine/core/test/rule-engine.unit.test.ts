@@ -1,7 +1,12 @@
-import { DataValueNotFoundError, MissingKeyError, OperationNotFoundError } from './errors';
-import { OPERATION, OPERATOR } from './operators/enums';
-import { runRuleSet } from './rule-engine';
-import { RuleResult, RuleResultSet, RuleSet } from './types';
+import {
+  DataValueNotFoundError,
+  MissingKeyError,
+  OperationNotFoundError,
+} from '@/rule-engine/core/errors';
+import { OPERATION, OPERATOR } from '@/rule-engine/core/operators/enums';
+import { RuleEngine, runRuleSet } from '@/rule-engine/core/rule-engine';
+import { RuleResult, RuleResultSet, RuleSet } from '@/rule-engine/core/types';
+import { context } from './data-helper';
 
 const mockData = {
   country: 'US',
@@ -53,10 +58,8 @@ describe('Rule Engine', () => {
     expect(validationResults).toHaveLength(2);
 
     expect(validationResults[0]!.status).toBe('PASSED');
-    expect((validationResults[0] as RuleResult).passed).toBe(true);
 
     expect(validationResults[1]!.status).toBe('PASSED');
-    expect((validationResults[1] as RuleResult).passed).toBe(true);
   });
 
   it('should handle missing key in rule', () => {
@@ -76,7 +79,6 @@ describe('Rule Engine', () => {
     expect((validationResults[0] as RuleResult).message).toBe(
       'Field nonexistent is missing or null',
     );
-    expect((validationResults[0] as RuleResult).passed).toBe(false);
     expect((validationResults[0] as RuleResult).error).toBeInstanceOf(DataValueNotFoundError);
   });
 
@@ -99,7 +101,6 @@ describe('Rule Engine', () => {
     expect(result[0]).toMatchObject({
       error: expect.any(OperationNotFoundError),
       message: 'Unknown operation UNKNOWN',
-      passed: false,
       rule: {
         key: 'country',
         operation: 'UNKNOWN',
@@ -123,7 +124,6 @@ describe('Rule Engine', () => {
 
     const validationResults: RuleResultSet = runRuleSet(ruleSetExample, mockData);
     expect(validationResults[0]!.status).toBe('FAILED');
-    expect((validationResults[0] as RuleResult).passed).toBe(false);
     expect((validationResults[0] as RuleResult).error).toBe(undefined);
   });
 
@@ -142,7 +142,6 @@ describe('Rule Engine', () => {
 
     const validationResults: RuleResultSet = runRuleSet(ruleSetExample, mockData);
     expect(validationResults[0]!.status).toBe('PASSED');
-    expect((validationResults[0] as RuleResult).passed).toBe(true);
   });
 
   it('should fail custom operation with missing additional params', () => {
@@ -162,7 +161,6 @@ describe('Rule Engine', () => {
     expect((validationResults[0] as RuleResult).message).toContain(
       `Validation failed for 'LAST_YEAR', message: Invalid condition value`,
     );
-    expect((validationResults[0] as RuleResult).passed).toBe(false);
   });
 
   it('should throw MissingKeyError when rule is missing key field', () => {
@@ -183,7 +181,6 @@ describe('Rule Engine', () => {
     expect(result[0]).toMatchObject({
       error: expect.any(MissingKeyError),
       message: 'Rule is missing the key field',
-      passed: false,
       rule: {
         key: '',
         operation: 'EQUALS',
@@ -191,5 +188,59 @@ describe('Rule Engine', () => {
       },
       status: 'FAILED',
     });
+  });
+
+  it('should resolve a nested property from context', () => {
+    const ruleSetExample: RuleSet = {
+      operator: OPERATOR.AND,
+      rules: [
+        {
+          key: 'pluginsOutput.businessInformation.data[0].establishDate',
+          operation: OPERATION.LAST_YEAR,
+          value: { years: 1 },
+        },
+      ],
+    };
+
+    const engine = RuleEngine(ruleSetExample);
+    let result = engine.run(context);
+
+    expect(result).toBeDefined();
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchInlineSnapshot(`
+      {
+        "error": undefined,
+        "rule": {
+          "key": "pluginsOutput.businessInformation.data[0].establishDate",
+          "operation": "LAST_YEAR",
+          "value": {
+            "years": 1,
+          },
+        },
+        "status": "PASSED",
+      }
+    `);
+
+    const context2 = JSON.parse(JSON.stringify(context));
+
+    // @ts-ignore
+    context2.pluginsOutput.businessInformation.data[0].establishDate = '2020-01-01';
+
+    result = engine.run(context2 as any);
+    expect(result).toBeDefined();
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchInlineSnapshot(`
+      {
+        "error": undefined,
+        "rule": {
+          "key": "pluginsOutput.businessInformation.data[0].establishDate",
+          "operation": "LAST_YEAR",
+          "value": {
+            "years": 1,
+          },
+        },
+        "status": "FAILED",
+      }
+    `);
   });
 });
