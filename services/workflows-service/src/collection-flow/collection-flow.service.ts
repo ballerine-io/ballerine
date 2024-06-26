@@ -198,7 +198,7 @@ export class CollectionFlowService {
         //@ts-ignore
         deepMergeWithMutation(originElement, element, {
           mergeKey: 'name',
-          arrayMergeOption: 'by_id',
+          arrayMergeOption: 'by_index',
         });
       }
     });
@@ -214,10 +214,19 @@ export class CollectionFlowService {
   private replaceUIDefinitionElements(uiDefinition: UiDefinition, dto: UpdateConfigurationDto) {
     const { elements = [], theme } = dto;
 
-    //@ts-ignore
-    uiDefinition.uiSchema = {
-      elements,
-    };
+    elements.forEach(element => {
+      const originElement = this.findElementByName(
+        element.name,
+        (uiDefinition.uiSchema as unknown as { elements: UIElement[] })?.elements as UIElement[],
+      );
+
+      if (originElement) {
+        //@ts-ignore
+        deepMergeWithMutation(originElement, element, {
+          arrayMergeOption: 'replace',
+        });
+      }
+    });
 
     //@ts-ignore
     uiDefinition.theme = theme;
