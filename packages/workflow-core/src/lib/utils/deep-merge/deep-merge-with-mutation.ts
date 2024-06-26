@@ -52,13 +52,9 @@ const mergeArraysById = (
     return acc;
   }, {} as Record<string, UnknownRecord>);
 
-  console.log({ arr1Map, arr2Map, arr1, arr2 });
-
   const uniqueIds = Array.from(
     new Set([...arr1.map(item => item[mergeKey]), ...arr2.map(item => item[mergeKey])]),
   ).filter(Boolean) as string[];
-
-  console.log({ uniqueIds });
 
   return uniqueIds.map(id =>
     mergeObjects(arr1Map[id] || {}, arr2Map[id] || {}, mergeKey),
