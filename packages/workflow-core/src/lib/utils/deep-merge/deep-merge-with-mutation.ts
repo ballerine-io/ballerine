@@ -100,7 +100,7 @@ export const deepMergeWithMutation = (
   }
   // Handle object inputs
   else if (isObject(val1) && isObject(val2)) {
-    const result = { ...val1 }; // Clone val1 to avoid mutation
+    const result = val1; // Clone val1 to avoid mutation
 
     for (const key in val2) {
       const val1Child = val1[key];
