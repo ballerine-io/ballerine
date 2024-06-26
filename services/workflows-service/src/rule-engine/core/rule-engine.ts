@@ -25,10 +25,10 @@ export const validateRule = (rule: Rule, data: any): RuleResult => {
   try {
     const result = operation.execute(value, rule.value);
 
-    return { status: result ? 'PASSED' : 'FAILED', passed: result, error: undefined };
+    return { status: result ? 'PASSED' : 'FAILED', error: undefined };
   } catch (error) {
     if (error instanceof Error) {
-      return { status: 'FAILED', message: error.message, passed: false, error };
+      return { status: 'FAILED', message: error.message, error };
     }
 
     throw error;
@@ -47,7 +47,6 @@ export const runRuleSet = (ruleSet: RuleSet, data: any): RuleResultSet => {
           return {
             status: 'FAILED',
             message: error.message,
-            passed: false,
             error,
             rule,
           };
@@ -61,13 +60,12 @@ export const runRuleSet = (ruleSet: RuleSet, data: any): RuleResultSet => {
 
       const passed =
         rule.operator === OPERATOR.AND
-          ? nestedResults.every(r => r.passed)
-          : nestedResults.some(r => r.passed);
+          ? nestedResults.every(r => r.status === 'PASSED')
+          : nestedResults.some(r => r.status === 'PASSED');
 
       const status = passed ? 'PASSED' : 'SKIPPED';
 
       return {
-        passed,
         status,
         rule,
       };
@@ -79,7 +77,7 @@ export const RuleEngine = (ruleSets: RuleSet, helpers?: typeof operationHelpers)
   // TODO: inject helpers
   const allHelpers = { ...(helpers || {}), ...operationHelpers };
 
-  const run = (data: object = {}) => {
+  const run = (data: object) => {
     return runRuleSet(ruleSets, data);
   };
 
