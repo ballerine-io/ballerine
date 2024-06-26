@@ -104,6 +104,7 @@ import { entitiesUpdate } from './utils/entities-update';
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { RuleEngineService } from '@/rule-engine/rule-engine.service';
 import { RiskRuleService, TFindAllRulesOptions } from '@/rule-engine/risk-rule.service';
+import { EngineErrors } from '@/rule-engine/core/errors';
 
 type TEntityId = string;
 
@@ -1939,7 +1940,16 @@ export class WorkflowService {
                 result: this.ruleEngineService.run(rule.ruleSet, context),
                 ...rule,
               };
-            } catch (e) {}
+            } catch (ex) {
+              return {
+                ...rule,
+                result: {
+                  status: 'FAILED',
+                  message: isErrorWithMessage(ex) ? ex.message : undefined,
+                  error: ex,
+                },
+              };
+            }
           });
 
           return rulesetResults;

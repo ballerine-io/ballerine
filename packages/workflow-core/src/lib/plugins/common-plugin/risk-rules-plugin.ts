@@ -20,8 +20,8 @@ export class RiskRulePlugin {
   async invoke(context: TContext) {
     try {
       const rulesetResult = this.action(context, {
-        databaseId: this.databaseId,
         source: this.source,
+        databaseId: this.databaseId,
       });
 
       return this.calculateRiskScore(rulesetResult);

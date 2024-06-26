@@ -31,6 +31,17 @@ export type {
   TDefaultSchemaDocumentPage,
   TDocument,
 } from './schemas';
+
+export type {
+  RuleResultSet,
+  FailedRuleResult,
+  PassedRuleResult,
+  RuleResult,
+  TOperation,
+  TOperator,
+  TFindAllRulesOptions,
+} from './rule-engine/types';
+
 export type { AnyRecord, LoggerInterface, Serializable } from './types';
 
 export {

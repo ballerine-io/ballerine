@@ -1,7 +1,8 @@
 import { TContext, Transformers } from '../../utils';
 import { SerializableValidatableTransformer } from '../external-plugin';
 import { ChildPluginCallbackOutput } from '../../types';
-import { AnyRecord } from '@ballerine/common';
+import { AnyRecord, RuleResultSet, TFindAllRulesOptions } from '@ballerine/common';
+import { RiskRuleEvaluationable } from '@/lib/workflow-runner';
 
 export interface ISerializableCommonPluginParams
   extends Omit<IterativePluginParams, 'action' | 'iterateOn'> {
@@ -18,8 +19,24 @@ export interface ISerializableMappingPluginParams
     'action' | 'iterateOn' | 'iterateOn' | 'action' | 'successAction' | 'errorAction'
   > {
   transformers: Omit<SerializableValidatableTransformer, 'schema'>['transform'];
+}
 
-  invoke?(...args: any[]): any;
+export interface ISerializableChildPluginParams
+  extends Omit<ChildWorkflowPluginParams, 'action' | 'transformers' | 'parentWorkflowRuntimeId'> {
+  pluginKind: string;
+  transformers: Omit<SerializableValidatableTransformer, 'schema'>['transform'];
+
+  invoke?(...args: any[]): Promise<any>;
+}
+
+export interface ISerializableRiskRulesPlugin {
+  pluginKind: string;
+  name: string;
+  stateNames: string[];
+  source: 'notion';
+  databaseId: string;
+
+  invoke?(...args: any[]): Promise<any>;
 }
 
 export interface IterativePluginParams {
@@ -31,22 +48,15 @@ export interface IterativePluginParams {
   errorAction?: string;
 }
 
-type RuleSetOptions = { databaseId: string; source: 'notion' };
+type RuleSetOptions = { databaseId: string };
 export interface RiskRulesPluginParams {
   name: string;
-  source: 'notion';
   databaseId: string;
+  source: 'notion';
   stateNames: string[];
-  action: (
-    context: TContext,
-    ruleStoreServiceOptions: RuleSetOptions,
-  ) => Array<
-    Record<string, unknown> & {
-      id: string;
-      baseRiskScore: number;
-      additionalRiskScore: number;
-    }
-  >;
+  action: (context: TContext, ruleOptions: TFindAllRulesOptions) => RuleResultSet;
+
+  invoke?(...args: any[]): Promise<any>;
 }
 
 export interface ChildWorkflowPluginParams {
