@@ -1,16 +1,9 @@
-import React, { FunctionComponent, ReactNode, useMemo } from 'react';
+import React, { ReactNode, useMemo } from 'react';
+import { HSL_PIE_COLORS } from '@/pages/Statistics/constants';
 import { Cell, Pie, PieChart } from 'recharts';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
-import { Card } from '@/common/components/atoms/Card/Card';
-import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
-import { CardContent } from '@/common/components/atoms/Card/Card.Content';
-import { CardFooter } from '@/common/components/atoms/Card/Card.Footer';
-import { HSL_PIE_COLORS } from '@/pages/Statistics/constants';
 
-export const UserStats: FunctionComponent<{
-  fullName: string;
-}> = ({ fullName }) => {
+export const useUserStatisticsLogic = () => {
   const filters = [
     {
       id: 'ckl1y5e0x0000wxrmsgft7bf0',
@@ -58,7 +51,7 @@ export const UserStats: FunctionComponent<{
   const activeCases = 30;
   const casesAssignedToUser = 3;
   const casesResolvedByUser = 3;
-  const stats = [
+  const statistics = [
     {
       title: 'Cases Assigned to you',
       stat: <span className={'text-2xl font-bold'}>{casesAssignedToUser}</span>,
@@ -141,26 +134,7 @@ export const UserStats: FunctionComponent<{
     description?: string;
   }>;
 
-  return (
-    <div>
-      <TextWithNAFallback as={'h5'} className={'mb-4 font-bold'}>
-        {fullName ? `${fullName}'s stats` : ''}
-      </TextWithNAFallback>
-      <div className={'grid grid-cols-3 gap-6'}>
-        {stats.map(({ title, stat, description }) => (
-          <div key={title} className={'min-h-[10.125rem] rounded-xl bg-[#F6F6F6] p-2'}>
-            <Card className={'flex h-full flex-col px-3'}>
-              <CardHeader className={'pb-1'}>{title}</CardHeader>
-              <CardContent>{stat}</CardContent>
-              {!!description && (
-                <CardFooter className={'mt-auto'}>
-                  <p className={'text-sm text-slate-500'}>{description}</p>
-                </CardFooter>
-              )}
-            </Card>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+  return {
+    statistics,
+  };
 };

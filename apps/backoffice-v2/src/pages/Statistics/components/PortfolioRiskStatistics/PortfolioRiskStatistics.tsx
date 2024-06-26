@@ -1,5 +1,4 @@
-import React, { FunctionComponent, useCallback, useMemo, useState } from 'react';
-import { useAutoAnimate } from '@formkit/auto-animate/react';
+import React, { FunctionComponent } from 'react';
 import { Card } from '@/common/components/atoms/Card/Card';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
@@ -16,87 +15,25 @@ import {
   TableRow,
 } from '@/common/components/atoms/Table';
 import { titleCase } from 'string-ts';
+import { usePortfolioRiskStatisticsLogic } from '@/pages/Statistics/components/PortfolioRiskStatistics/hooks/usePortfolioRiskStatisticsLogic/usePortfolioRiskStatisticsLogic';
 
-export const PortfolioRiskStats: FunctionComponent = () => {
-  const [parent] = useAutoAnimate<HTMLTableSectionElement>();
-  const [sorting, setSorting] = useState<'asc' | 'desc'>('desc');
-  const onSort = useCallback(
-    (sort: 'desc' | 'asc') => () => {
-      setSorting(sort);
-    },
-    [],
-  );
-  const sortedData = useMemo(
-    () =>
-      [
-        { riskType: 'Scam and fraud', amount: 15 },
-        { riskType: 'IP Rights Infringement', amount: 12 },
-        { riskType: 'Missing Terms and Conditions', amount: 10 },
-        { riskType: 'Counterfeit Goods', amount: 8 },
-        { riskType: 'Sanctions', amount: 4 },
-      ]
-        ?.slice()
-        .sort((a, b) => {
-          if (sorting === 'asc') {
-            return a.amount - b.amount;
-          }
-
-          return b.amount - a.amount;
-        }),
-    [sorting],
-  );
-  const widths = useMemo(() => {
-    const maxValue = Math.max(...sortedData.map(item => item.amount), 0);
-
-    return sortedData.map(item =>
-      item.amount === 0 ? 0 : Math.max((item.amount / maxValue) * 100, 2),
-    );
-  }, [sortedData]);
-  const filters = [
-    {
-      name: 'Merchant Monitoring',
-      riskLevels: {
-        low: 15,
-        medium: 50,
-        high: 32,
-        critical: 12,
-      },
-    },
-    {
-      name: 'Merchant Onboarding',
-      riskLevels: {
-        low: 3,
-        medium: 5,
-        high: 6,
-        critical: 4,
-      },
-    },
-  ];
-  const riskLevelToFillColor = {
-    low: 'fill-success',
-    medium: 'fill-warning',
-    high: 'fill-destructive',
-    critical: 'fill-foreground',
-  } as const;
-  const riskLevelToBackgroundColor = {
-    low: 'bg-success',
-    medium: 'bg-warning',
-    high: 'bg-destructive',
-    critical: 'bg-foreground',
-  } as const;
-  const totalIndicators = 49;
-  const portfolio = {
-    riskLevels: {
-      low: 10,
-      medium: 30,
-      high: 25,
-      critical: 15,
-    },
-  };
+export const PortfolioRiskStatistics: FunctionComponent = () => {
+  const {
+    portfolio,
+    riskLevelToFillColor,
+    parent,
+    widths,
+    riskLevelToBackgroundColor,
+    filters,
+    totalIndicators,
+    sorting,
+    onSort,
+    sortedData,
+  } = usePortfolioRiskStatisticsLogic();
 
   return (
     <div>
-      <h5 className={'mb-4 font-bold'}>Portfolio Risk Stats</h5>
+      <h5 className={'mb-4 font-bold'}>Portfolio Risk Statistics</h5>
       <div className={'grid grid-cols-3 gap-6'}>
         <div className={'min-h-[27.5rem] rounded-xl bg-[#F6F6F6] p-2'}>
           <Card className={'flex h-full flex-col px-3'}>
