@@ -10,7 +10,7 @@ export const usePortfolioRiskStatisticsLogic = () => {
   const [parent] = useAutoAnimate<HTMLTableSectionElement>();
   const [sorting, setSorting] = useState<SortDirection>('desc');
   const onSort = useCallback(
-    (sort: 'desc' | 'asc') => () => {
+    (sort: SortDirection) => () => {
       setSorting(sort);
     },
     [],
