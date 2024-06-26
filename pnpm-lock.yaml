@@ -66,6 +66,9 @@ importers:
       '@ballerine/common':
         specifier: 0.9.9
         version: link:../../packages/common
+      '@ballerine/react-pdf-toolkit':
+        specifier: ^1.2.1
+        version: link:../../packages/react-pdf-toolkit
       '@ballerine/ui':
         specifier: ^0.5.3
         version: link:../../packages/ui
@@ -135,6 +138,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.0.7
         version: 1.0.7(@types/react-dom@18.2.15)(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
+      '@react-pdf/renderer':
+        specifier: ^3.1.14
+        version: 3.1.14(react@18.2.0)
       '@rjsf/utils':
         specifier: ^5.9.0
         version: 5.14.2(react@18.2.0)

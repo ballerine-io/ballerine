@@ -55,8 +55,6 @@ export const fetchWorkflows = async (params: {
   return handleZodError(error, workflows);
 };
 
-export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
-
 export const BaseWorkflowByIdSchema = z.object({
   id: z.string(),
   status: z.string(),
@@ -120,6 +118,8 @@ export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
     )
     .optional(),
 });
+
+export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
 
 export const fetchWorkflowById = async ({
   workflowId,

@@ -85,12 +85,18 @@ export class BusinessReportControllerInternal {
         })) ?? undefined;
     }
 
+    if (!business) {
+      throw new BadRequestException(
+        `Business with an id of ${businessCorrelationId} was not found`,
+      );
+    }
+
     const businessReport = await this.businessReportService.create({
       data: {
         type: reportType,
         status: BusinessReportStatus.new,
         report: {},
-        businessId: business!.id,
+        businessId: business.id,
         projectId: currentProjectId,
       },
     });
@@ -102,7 +108,7 @@ export class BusinessReportControllerInternal {
         countryCode,
         merchantName,
         reportType,
-        callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${business?.id}&businessReportId=${businessReport.id}`,
+        callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${business.id}&businessReportId=${businessReport.id}`,
       },
       {
         headers: {
