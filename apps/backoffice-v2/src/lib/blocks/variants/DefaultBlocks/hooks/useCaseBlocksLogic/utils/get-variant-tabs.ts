@@ -4,15 +4,15 @@ import { TCaseTabDefinition } from '@/lib/blocks/variants/DefaultBlocks/types/ca
 import { WorkflowDefinitionConfigThemeEnum } from '@ballerine/common';
 
 export const Tab = {
-  SUMMARY: 'summary',
-  COMPANY_INFORMATION: 'company_information',
-  STORE_INFO: 'store_info',
-  DOCUMENTS: 'documents',
-  UBOS: 'ubos',
-  ASSOCIATED_COMPANIES: 'associated_companies',
-  DIRECTORS: 'directors',
-  WEBSITE_MONITORING: 'website_monitoring',
-  KYC: 'kyc',
+  SUMMARY: 'SUMMARY',
+  COMPANY_INFORMATION: 'COMPANY_INFORMATION',
+  STORE_INFO: 'STORE_INFO',
+  DOCUMENTS: 'DOCUMENTS',
+  UBOS: 'UBOS',
+  ASSOCIATED_COMPANIES: 'ASSOCIATED_COMPANIES',
+  DIRECTORS: 'DIRECTORS',
+  MONITORING_REPORTS: 'MONITORING_REPORTS',
+  KYC: 'KYC',
 } as const;
 
 export const getVariantTabs = (
@@ -57,9 +57,9 @@ export const getVariantTabs = (
         disabled: !tabBlocks[Tab.DIRECTORS]?.length,
       },
       {
-        name: Tab.WEBSITE_MONITORING,
+        name: Tab.MONITORING_REPORTS,
         displayName: 'Monitoring Reports',
-        disabled: !tabBlocks[Tab.WEBSITE_MONITORING]?.length,
+        disabled: !tabBlocks[Tab.MONITORING_REPORTS]?.length,
       },
     ];
 

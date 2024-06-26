@@ -17,7 +17,7 @@ export const RiskIndicatorsSummary: FunctionComponent<{
   return (
     <Card className={'col-span-full'}>
       <CardHeader className={'pt-4 font-bold'}>Risk Indicators</CardHeader>
-      <CardContent className={'grid grid-cols-3 gap-4'}>
+      <CardContent className={'grid grid-cols-2 gap-4 xl:grid-cols-3'}>
         {riskIndicators?.map(riskIndicator => (
           <RiskIndicator
             key={riskIndicator.title}

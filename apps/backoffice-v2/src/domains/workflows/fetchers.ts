@@ -143,6 +143,71 @@ export const fetchWorkflowById = async ({
             ...data.context?.pluginsOutput?.website_monitoring,
             data: deepCamelKeys(data.context?.pluginsOutput?.website_monitoring?.data ?? {}),
           },
+          risk: {
+            data: {
+              summary: {
+                riskScore: 85,
+                riskLevels: {
+                  transactionLaunderingRisk: 'low',
+                  legalRisk: 'low',
+                  chargebackRisk: 'low',
+                  reputationRisk: 'low',
+                },
+                riskIndicatorsByDomain: {
+                  companyInfo: [
+                    {
+                      name: 'IP Rights Infringement',
+                      riskLevel: 'high',
+                    },
+                  ],
+                  associatedCompanies: [
+                    {
+                      name: 'Inconsistent Line of Business',
+                      riskLevel: 'high',
+                    },
+                    {
+                      name: 'Scam & Fraud indications',
+                      riskLevel: 'high',
+                    },
+                  ],
+                  storeInfo: [
+                    {
+                      name: 'Complaints about scams',
+                      riskLevel: 'high',
+                    },
+                    {
+                      name: 'Low ratings on reputation platforms',
+                      riskLevel: 'high',
+                    },
+                  ],
+                  directors: [],
+                  documents: [],
+                  monitoringReport: [
+                    {
+                      name: 'Inconsistent Line of Business',
+                      riskLevel: 'high',
+                    },
+                    {
+                      name: 'Scam & Fraud indications',
+                      riskLevel: 'high',
+                    },
+                  ],
+                  ubos: [
+                    {
+                      name: 'Inconsistent Line of Business',
+                      riskLevel: 'high',
+                    },
+                  ],
+                  pricingAnalysisViolation: [
+                    {
+                      name: 'Inconsistent Line of Business',
+                      riskLevel: 'high',
+                    },
+                  ],
+                },
+              },
+            },
+          },
         },
       },
     })),

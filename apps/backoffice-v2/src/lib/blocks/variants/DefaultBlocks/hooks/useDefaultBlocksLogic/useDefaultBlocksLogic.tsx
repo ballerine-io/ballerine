@@ -46,6 +46,8 @@ import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-block
 import { useAddressBlock } from '@/lib/blocks/hooks/useAddressBlock/useAddressBlock';
 import { getAddressDeep } from '@/pages/Entity/hooks/useEntityLogic/utils/get-address-deep/get-address-deep';
 import { useCaseOverviewBlock } from '@/lib/blocks/hooks/useCaseOverviewBlock/useCaseOverviewBlock';
+import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
+import { useLocation } from 'react-router-dom';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -57,6 +59,8 @@ const pluginsOutputBlacklist = [
 ] as const;
 
 export const useDefaultBlocksLogic = () => {
+  const [{ activeTab }] = useSearchParamsByEntity();
+  const { search } = useLocation();
   const { data: workflow, isLoading } = useCurrentCaseQuery();
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
@@ -450,20 +454,25 @@ export const useDefaultBlocksLogic = () => {
     workflow?.context?.entity,
   ]);
 
-  const {
-    activeTab,
-    blocks = [],
-    tabs,
-    setActiveTab,
-  } = useCaseBlocks({
+  const { blocks, tabs } = useCaseBlocks({
     workflow,
     config: workflow?.workflowDefinition?.config,
     blocks: allBlocks,
     onReuploadNeeded,
     isLoadingReuploadNeeded,
+    activeTab,
   });
-
   const availableTabs = useMemo(() => tabs.filter(tab => !tab.hidden), [tabs]);
+  const getUpdatedSearchParamsWithActiveTab = useCallback(
+    ({ tab }: { tab: string }) => {
+      const searchParams = new URLSearchParams(search);
+
+      searchParams.set('activeTab', tab);
+
+      return searchParams.toString();
+    },
+    [search],
+  );
 
   return {
     blocks,
@@ -471,7 +480,7 @@ export const useDefaultBlocksLogic = () => {
     isLoadingReuploadNeeded,
     isLoading,
     activeTab,
+    getUpdatedSearchParamsWithActiveTab,
     tabs: availableTabs,
-    setActiveTab,
   };
 };
