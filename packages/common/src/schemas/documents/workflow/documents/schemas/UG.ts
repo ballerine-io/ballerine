@@ -12,7 +12,7 @@ export const getUgandaDocuments = (): TDocument[] => {
 
   const TypeNonEmptyString = Type.String({ minLength: 1 });
   const TypeUgandaMobileNumber = Type.String({ pattern: '^256[0-9]{9}$' });
-  const TypeMoreThan1Word = Type.String({ pattern: '^w+(s+w+)+$' });
+  const TypeMoreThan1Word = Type.String({ pattern: '^\\w+(\\s+\\w+)+$' });
 
   return [
     // Proof of Registration
