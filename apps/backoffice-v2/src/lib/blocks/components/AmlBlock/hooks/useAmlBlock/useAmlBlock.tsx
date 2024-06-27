@@ -182,6 +182,12 @@ export const useAmlBlock = (data: Array<TWorkflowById['context']['aml']>) => {
                   },
                   header: 'Fitness Probity',
                 }),
+                columnHelper.accessor('other', {
+                  cell: info => {
+                    return <TextWithNAFallback>{info.getValue().length}</TextWithNAFallback>;
+                  },
+                  header: 'Other',
+                }),
               ],
             },
           })
