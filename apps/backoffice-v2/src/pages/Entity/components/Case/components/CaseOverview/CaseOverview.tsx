@@ -3,7 +3,7 @@ import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/us
 import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
 import React, { useCallback } from 'react';
 import { CaseTabs } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
-import { titleCase } from 'string-ts';
+import { camelCase, titleCase } from 'string-ts';
 import { toRiskLabels } from '@/domains/business-reports/adapters/report-adapter/report-adapter';
 import { OverallRiskLevel } from '@/common/components/molecules/OverallRiskLevel/OverallRiskLevel';
 import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
@@ -26,13 +26,14 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
   const riskIndicators = Object.entries(
     workflow?.context?.pluginsOutput?.risk_evaluation?.riskIndicatorsByDomain ?? {},
   )?.map(([domain, riskIndicators]) => {
-    const isValidCaseTab = CaseTabs.includes(domain);
+    const tab = camelCase(domain);
+    const isValidCaseTab = CaseTabs.includes(tab);
 
     return {
       title: titleCase(domain ?? ''),
       search: isValidCaseTab
         ? getUpdatedSearchParamsWithActiveTab({
-            tab: domain,
+            tab: tab,
           })
         : undefined,
       violations: toRiskLabels(riskIndicators),
