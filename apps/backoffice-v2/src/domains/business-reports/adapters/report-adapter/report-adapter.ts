@@ -94,9 +94,12 @@ export const reportAdapter = {
           link: data?.adsInformation?.link,
         }))
         .filter(Boolean),
-      relatedAdsImages: Object.values(data?.report?.data?.socialMedia?.ads ?? {}).map(
-        data => data?.pickedAd?.imageUrl,
-      ),
+      relatedAdsImages: Object.values(data?.report?.data?.socialMedia?.ads ?? {})
+        .map(data => ({
+          src: data?.pickedAd?.imageUrl,
+          link: data?.pickedAd?.link,
+        }))
+        .filter(({ src }) => !!src),
       onlineReputationAnalysis: data?.report?.data?.transactionLaundering?.scamOrFraud?.indicators
         ?.filter(({ violation }) => !!violation)
         ?.map(({ violation, sourceUrl }) => ({ label: violation, url: sourceUrl })),
@@ -192,9 +195,12 @@ export const reportAdapter = {
           link: data?.adsInformation?.link,
         }))
         .filter(Boolean),
-      relatedAdsImages: Object.values(data?.report?.data?.socialMedia?.ads ?? {}).map(
-        data => data?.pickedAd?.imageUrl,
-      ),
+      relatedAdsImages: Object.values(data?.report?.data?.socialMedia?.ads ?? {})
+        .map(data => ({
+          src: data?.pickedAd?.imageUrl,
+          link: data?.pickedAd?.link,
+        }))
+        .filter(({ src }) => !!src),
       onlineReputationAnalysis: data?.report?.data?.transactionLaundering?.scamOrFraud?.indicators
         ?.filter(({ violation }) => !!violation)
         ?.map(({ violation, sourceUrl }) => ({ label: violation, url: sourceUrl })),
