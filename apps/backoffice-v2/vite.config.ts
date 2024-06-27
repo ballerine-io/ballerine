@@ -38,9 +38,6 @@ export default defineConfig(configEnv => {
     },
     build: {
       sourcemap: true,
-      rollupOptions: {
-        external: ['date-fns'],
-      },
     },
   };
 });
