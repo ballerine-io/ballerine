@@ -15,13 +15,13 @@ export const WebsiteMonitoringBusinessReportTab = ({
   businessReport: TBusinessReport;
 }) => {
   const {
-    activeTab,
+    activeMonitoringTab,
     riskIndicators,
     riskLevels,
     riskScore,
     tabs,
     summary,
-    updateActiveTab,
+    getUpdatedSearchParamsWithActiveMonitoringTab,
     search,
   } = useWebsiteMonitoringBusinessReportTab({
     businessReport,
@@ -35,16 +35,16 @@ export const WebsiteMonitoringBusinessReportTab = ({
         riskIndicators={riskIndicators}
         riskScore={riskScore}
       />
-      <Tabs defaultValue={activeTab} className="w-full" key={activeTab}>
+      <Tabs defaultValue={activeMonitoringTab} className="w-full" key={activeMonitoringTab}>
         <TabsList className={'mb-4 bg-transparent'}>
           {tabs.map(tab => (
             <TabsTrigger key={tab.value} value={tab.value} asChild>
               <Link
                 to={{
-                  search: updateActiveTab({ tab: tab.value, search }),
+                  search: getUpdatedSearchParamsWithActiveMonitoringTab({ tab: tab.value, search }),
                 }}
                 className={ctw({
-                  '!bg-foreground !text-background': activeTab === tab.value,
+                  '!bg-foreground !text-background': activeMonitoringTab === tab.value,
                 })}
               >
                 {tab.label}

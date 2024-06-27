@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/userCustomerQuery';
+import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
 import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
 import { Outlet } from 'react-router-dom';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';

@@ -42,7 +42,7 @@ export default defineConfig({
             {
               label: `Installation`,
               link: `/en/getting_started/installation`,
-            }          
+            },
           ],
         },
         {
@@ -56,9 +56,9 @@ export default defineConfig({
             {
               label: `Ansible `,
               link: `/en/deployment/ansible_deployment`,
-            }
-          ]
-        },        
+            },
+          ],
+        },
         {
           label: 'Learn',
           collapsed: true,

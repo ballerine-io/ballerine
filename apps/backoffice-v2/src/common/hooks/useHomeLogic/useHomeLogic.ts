@@ -5,7 +5,7 @@ import { HomeSearchSchema } from '@/pages/Home/home-search-schema';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/userCustomerQuery';
+import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
 
 export const useHomeLogic = () => {
   const locale = useLocale();

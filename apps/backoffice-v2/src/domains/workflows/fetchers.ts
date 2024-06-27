@@ -143,6 +143,63 @@ export const fetchWorkflowById = async ({
             ...data.context?.pluginsOutput?.website_monitoring,
             data: deepCamelKeys(data.context?.pluginsOutput?.website_monitoring?.data ?? {}),
           },
+          risk_evaluation: {
+            riskScore: 85,
+            riskIndicatorsByDomain: {
+              'company information': [
+                {
+                  name: 'IP Rights Infringement',
+                  riskLevel: 'high',
+                  domain: 'company information',
+                },
+              ],
+              'associated companies': [
+                {
+                  name: 'Inconsistent Line of Business',
+                  riskLevel: 'high',
+                  domain: 'associated companies',
+                },
+                {
+                  name: 'Scam & Fraud indications',
+                  riskLevel: 'high',
+                  domain: 'associated companies',
+                },
+              ],
+              'store info': [
+                {
+                  name: 'Complaints about scams',
+                  riskLevel: 'high',
+                  domain: 'store info',
+                },
+                {
+                  name: 'Low ratings on reputation platforms',
+                  riskLevel: 'high',
+                  domain: 'store info',
+                },
+              ],
+              directors: [],
+              documents: [],
+              'monitoring report': [
+                {
+                  name: 'Inconsistent Line of Business',
+                  riskLevel: 'high',
+                  domain: 'monitoring report',
+                },
+                {
+                  name: 'Scam & Fraud indications',
+                  riskLevel: 'high',
+                  domain: 'monitoring report',
+                },
+              ],
+              ubos: [
+                {
+                  name: 'Inconsistent Line of Business',
+                  riskLevel: 'high',
+                  domain: 'ubos',
+                },
+              ],
+            },
+          },
         },
       },
     })),

@@ -12,7 +12,7 @@ const getLabel = ({ label, provider }: { label: string; provider: string }) => {
   return label;
 };
 
-const toRiskLabels = (riskIndicators: Array<{ name: string; riskLevel: string }>) => {
+export const toRiskLabels = (riskIndicators: Array<{ name: string; riskLevel: string }>) => {
   if (!Array.isArray(riskIndicators) || !riskIndicators.length) {
     return [];
   }
