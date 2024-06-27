@@ -1,7 +1,7 @@
 import { TContext, Transformers } from '../../utils';
 import { SerializableValidatableTransformer } from '../external-plugin';
 import { ChildPluginCallbackOutput } from '../../types';
-import { AnyRecord, RuleResultSet, TFindAllRulesOptions } from '@ballerine/common';
+import { AnyRecord, RuleResultSet, RuleSet, TFindAllRulesOptions } from '@ballerine/common';
 import { RiskRuleEvaluationable } from '@/lib/workflow-runner';
 
 export interface ISerializableCommonPluginParams
@@ -54,7 +54,21 @@ export interface RiskRulesPluginParams {
   databaseId: string;
   source: 'notion';
   stateNames: string[];
-  action: (context: TContext, ruleOptions: TFindAllRulesOptions) => RuleResultSet;
+  action: (
+    context: TContext,
+    ruleOptions: TFindAllRulesOptions,
+  ) => Promise<
+    Array<{
+      id: string;
+      domain: string;
+      indicator: string;
+      riskLevel: 'critical' | 'moderate' | 'positive';
+      baseRiskScore: number;
+      additionalRiskScore: number;
+      result: RuleResultSet;
+      ruleset: RuleSet;
+    }>
+  >;
 
   invoke?(...args: any[]): Promise<any>;
 }

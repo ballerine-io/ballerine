@@ -8,7 +8,6 @@ export class RiskRulePlugin {
   source: RiskRulesPluginParams['source'];
   stateNames: RiskRulesPluginParams['stateNames'];
   action: RiskRulesPluginParams['action'];
-
   constructor(pluginParams: RiskRulesPluginParams) {
     this.name = pluginParams.name;
     this.stateNames = pluginParams.stateNames;
@@ -19,7 +18,7 @@ export class RiskRulePlugin {
 
   async invoke(context: TContext) {
     try {
-      const rulesetResult = this.action(context, {
+      const rulesetResult = await this.action(context, {
         source: this.source,
         databaseId: this.databaseId,
       });
@@ -40,7 +39,7 @@ export class RiskRulePlugin {
     }
   }
 
-  calculateRiskScore(rulesetResult: ReturnType<typeof this.action>) {
+  calculateRiskScore(rulesetResult: Awaited<ReturnType<typeof this.action>>) {
     if (!rulesetResult || rulesetResult.length === 0) {
       return 0;
     }

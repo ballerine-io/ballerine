@@ -61,13 +61,13 @@ import { search } from 'jmespath';
 import { KybPlugin } from './plugins/external-plugin/kyb-plugin';
 import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
 import { EmailPlugin } from './plugins/external-plugin/email-plugin';
+import { RiskRulePlugin } from './plugins/common-plugin/risk-rules-plugin';
 import {
   TransformerPlugin,
   TransformerPluginParams,
 } from './plugins/common-plugin/transformer-plugin';
 import { BUILT_IN_EVENT } from './index';
 import { logger } from './logger';
-import { RiskRulePlugin } from '@/lib/plugins/common-plugin/risk-rules-plugin';
 
 export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;

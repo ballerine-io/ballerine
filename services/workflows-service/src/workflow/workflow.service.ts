@@ -1938,7 +1938,7 @@ export class WorkflowService {
               return {
                 result: this.ruleEngineService.run(rule.ruleSet, context),
                 ...rule,
-              };
+              } as const;
             } catch (ex) {
               return {
                 ...rule,
@@ -1947,7 +1947,7 @@ export class WorkflowService {
                   message: isErrorWithMessage(ex) ? ex.message : undefined,
                   error: ex,
                 },
-              };
+              } as const;
             }
           });
 
