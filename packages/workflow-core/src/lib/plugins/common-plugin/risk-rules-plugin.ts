@@ -1,3 +1,4 @@
+import groupBy from 'lodash.groupby';
 import { TContext } from '../../utils';
 import { RiskRulesPluginParams } from './types';
 
@@ -38,13 +39,15 @@ export class RiskRulePlugin {
           return {
             name: rule.indicator,
             riskLevel: rule.riskLevel,
+            domain: rule.domain,
           };
         });
+      const riskIndicatorsByDomain = groupBy(indicators, 'domain');
 
       return {
         response: {
           riskScore,
-          indicators,
+          riskIndicatorsByDomain,
           rulesResults,
           success: true,
         },

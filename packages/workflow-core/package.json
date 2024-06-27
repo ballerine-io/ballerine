@@ -32,11 +32,11 @@
   },
   "dependencies": {
     "@ballerine/common": "0.9.8",
-    "@types/lodash.maxby": "^4.6.9",
     "ajv": "^8.12.0",
     "i18n-iso-countries": "^7.6.0",
     "jmespath": "^0.16.0",
     "json-logic-js": "^2.0.2",
+    "lodash.groupby": "^4.6.0",
     "lodash.maxby": "^4.6.0",
     "xstate": "^4.35.2"
   },
@@ -56,6 +56,8 @@
     "@types/babel__core": "^7.20.0",
     "@types/fs-extra": "^11.0.1",
     "@types/jmespath": "^0.15.0",
+    "@types/lodash.groupby": "^4.6.9",
+    "@types/lodash.maxby": "^4.6.9",
     "@types/json-logic-js": "^2.0.1",
     "@types/lodash.merge": "^4.6.9",
     "@types/node": "^18.14.0",
