@@ -234,9 +234,51 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.md'] };
+      'en/collection-flow/iframe.mdx': {
+        id: 'en/collection-flow/iframe.mdx';
+        slug: 'en/collection-flow/iframe';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
       'en/collection-flow/introduction.mdx': {
         id: 'en/collection-flow/introduction.mdx';
         slug: 'en/collection-flow/introduction';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/collection-flow/json-form.mdx': {
+        id: 'en/collection-flow/json-form.mdx';
+        slug: 'en/collection-flow/json-form';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/collection-flow/schema-breakdown.mdx': {
+        id: 'en/collection-flow/schema-breakdown.mdx';
+        slug: 'en/collection-flow/schema-breakdown';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/collection-flow/theming.mdx': {
+        id: 'en/collection-flow/theming.mdx';
+        slug: 'en/collection-flow/theming';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/collection-flow/ui-definition-updating.mdx': {
+        id: 'en/collection-flow/ui-definition-updating.mdx';
+        slug: 'en/collection-flow/ui-definition-updating';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/collection-flow/ui-elements.mdx': {
+        id: 'en/collection-flow/ui-elements.mdx';
+        slug: 'en/collection-flow/ui-elements';
         body: string;
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
