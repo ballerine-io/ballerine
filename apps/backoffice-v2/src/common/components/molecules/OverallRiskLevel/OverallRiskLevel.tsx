@@ -83,7 +83,7 @@ export const OverallRiskLevel: FunctionComponent<{
                     },
                   )}
                 >
-                  {titleCase(riskLevel ?? '')}
+                  <TextWithNAFallback>{titleCase(riskLevel ?? '')}</TextWithNAFallback>
                 </TableCell>
               </TableRow>
             ))}

@@ -25,8 +25,8 @@ export const WorkflowDefinitionConfigSchema = z
     enableManualCreation: z.boolean().default(false),
     isManualCreation: z.boolean().default(false),
     isAssociatedCompanyKybEnabled: z.boolean().default(false),
-    isCaseOverviewEnabled: z.boolean().default(false),
-    isCaseRiskOverviewEnabled: z.boolean().default(false),
+    isCaseOverviewEnabled: z.boolean().default(true),
+    isCaseRiskOverviewEnabled: z.boolean().default(true),
     theme: WorkflowDefinitionConfigThemeSchema.default({
       type: WorkflowDefinitionConfigThemeEnum.KYB,
     }),

@@ -49,14 +49,14 @@ export const IndividualsSearchSchema = (authenticatedUserId: string) =>
   SearchSchema.extend({
     sortBy: z.enum(['firstName', 'lastName', 'email', 'createdAt']).catch('createdAt'),
     filter: createFilterSchema(authenticatedUserId),
-    activeTab: z.enum(CaseTabs).catch(CaseTabs[0]).optional(),
-    activeMonitoringTab: z.enum(MonitoringReportsTabs).catch(MonitoringReportsTabs[0]).optional(),
+    activeTab: z.enum(CaseTabs).catch(CaseTabs[0]),
+    activeMonitoringTab: z.enum(MonitoringReportsTabs).catch(MonitoringReportsTabs[0]),
   });
 
 export const BusinessesSearchSchema = (authenticatedUserId: string) =>
   SearchSchema.extend({
     sortBy: z.enum(['createdAt', 'companyName']).catch('createdAt'),
     filter: createFilterSchema(authenticatedUserId),
-    activeTab: z.enum(CaseTabs).catch(CaseTabs[0]).optional(),
-    activeMonitoringTab: z.enum(MonitoringReportsTabs).catch(MonitoringReportsTabs[0]).optional(),
+    activeTab: z.enum(CaseTabs).catch(CaseTabs[0]),
+    activeMonitoringTab: z.enum(MonitoringReportsTabs).catch(MonitoringReportsTabs[0]),
   });

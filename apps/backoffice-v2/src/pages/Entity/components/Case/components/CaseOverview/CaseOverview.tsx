@@ -24,7 +24,7 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
     [search],
   );
   const riskIndicators = Object.entries(
-    workflow?.context?.pluginsOutput?.risk?.data?.summary?.riskIndicatorsByDomain ?? {},
+    workflow?.context?.pluginsOutput?.risk_evaluation?.riskIndicatorsByDomain ?? {},
   )?.map(([domain, riskIndicators]) => {
     const isValidCaseTab = CaseTabs.includes(domain);
 
@@ -54,8 +54,13 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
     <div className="grid grid-cols-4 gap-4">
       {workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled && (
         <OverallRiskLevel
-          riskScore={workflow?.context?.pluginsOutput?.risk?.data?.summary?.riskScore}
-          riskLevels={workflow?.context?.pluginsOutput?.risk?.data?.summary?.riskLevels}
+          riskScore={workflow?.context?.pluginsOutput?.risk_evaluation?.riskScore}
+          riskLevels={{
+            transactionLaunderingRisk: '',
+            legalRisk: '',
+            chargebackRisk: '',
+            reputationRisk: '',
+          }}
         />
       )}
       <ProcessTracker workflow={workflow} plugins={plugins} processes={processes} />

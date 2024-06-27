@@ -18,14 +18,16 @@ export const RiskIndicatorsSummary: FunctionComponent<{
     <Card className={'col-span-full'}>
       <CardHeader className={'pt-4 font-bold'}>Risk Indicators</CardHeader>
       <CardContent className={'grid grid-cols-2 gap-4 xl:grid-cols-3'}>
-        {riskIndicators?.map(riskIndicator => (
-          <RiskIndicator
-            key={riskIndicator.title}
-            title={riskIndicator.title}
-            search={riskIndicator.search}
-            violations={riskIndicator.violations}
-          />
-        ))}
+        {!!riskIndicators?.length &&
+          riskIndicators?.map(riskIndicator => (
+            <RiskIndicator
+              key={riskIndicator.title}
+              title={riskIndicator.title}
+              search={riskIndicator.search}
+              violations={riskIndicator.violations}
+            />
+          ))}
+        {!riskIndicators?.length && <p>No risk indicators detected.</p>}
       </CardContent>
     </Card>
   );
