@@ -43,9 +43,19 @@ export default defineConfig({
               label: `Installation`,
               link: `/en/getting_started/installation`,
             },
+          ],
+        },
+        {
+          label: `Deployment`,
+          collapsed: true,
+          items: [
             {
-              label: `Deployment`,
-              link: `/en/getting_started/deployment`,
+              label: `Docker Compose`,
+              link: `/en/deployment/docker_compose`,
+            },
+            {
+              label: `Ansible `,
+              link: `/en/deployment/ansible_deployment`,
             },
           ],
         },

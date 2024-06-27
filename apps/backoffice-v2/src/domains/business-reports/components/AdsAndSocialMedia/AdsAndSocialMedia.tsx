@@ -29,7 +29,10 @@ export const AdsAndSocialMedia: FunctionComponent<{
     link: string;
   }>;
   relatedAdsSummary: string;
-  relatedAdsImages: string[];
+  relatedAdsImages: Array<{
+    src: string;
+    link: string;
+  }>;
 }> = ({ violations, mediaPresence, adsImages, relatedAdsSummary, relatedAdsImages }) => {
   return (
     <div className={'space-y-8'}>
@@ -93,8 +96,8 @@ export const AdsAndSocialMedia: FunctionComponent<{
         <CardContent className={'flex flex-col space-y-4'}>
           <div className={'grid grid-cols-[400px_400px] gap-8'}>
             {!!relatedAdsImages?.length &&
-              relatedAdsImages.map((src, index) => (
-                <AdExample key={src} src={src} alt={`Ad Example ${index + 1}`} />
+              relatedAdsImages.map(({ src, link }, index) => (
+                <AdExample key={src} src={src} link={link} alt={`Ad Example ${index + 1}`} />
               ))}
             {!relatedAdsImages?.length && <>No ads detected.</>}
           </div>
