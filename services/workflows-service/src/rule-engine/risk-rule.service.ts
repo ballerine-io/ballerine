@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { NotionService } from '@/notion/notion.service';
 import z from 'zod';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { RuleSet, TOperation } from '@ballerine/common';
+import { RuleSet, TOperation, TOperator } from '@ballerine/common';
 
-const operations = [
+const OPERATIONS = [
   'EQUALS',
   'BETWEEN',
   'GT',
@@ -14,16 +14,18 @@ const operations = [
   'LAST_YEAR',
 ] as const satisfies readonly TOperation[];
 
+const OPERATORS = ['and', 'or'] as const satisfies readonly TOperator[];
+
 const RuleSchema = z.object({
   key: z.string(),
-  operation: z.enum(operations),
+  operation: z.enum(OPERATIONS),
   value: z.union([z.string(), z.number(), z.boolean()]),
 });
 
 type Rule = z.infer<typeof RuleSchema>;
 
 const RuleSetSchema: z.ZodType<RuleSet> = z.object({
-  operator: z.enum(['and', 'or']),
+  operator: z.enum(OPERATORS),
   rules: z.lazy(() => z.array(z.union([RuleSetSchema, RuleSchema]))),
 });
 

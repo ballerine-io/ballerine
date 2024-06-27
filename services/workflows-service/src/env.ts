@@ -88,7 +88,7 @@ if (!process.env['ENVIRONMENT_NAME'] || process.env['ENVIRONMENT_NAME'] === 'loc
     }
   }
 
-  // console.log('Environment variables loaded', severEnvVars);
+  console.log('Environment variables loaded', severEnvVars);
 }
 
 export const env = createEnv({
