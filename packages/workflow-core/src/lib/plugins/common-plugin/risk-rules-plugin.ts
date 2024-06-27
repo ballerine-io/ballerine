@@ -8,12 +8,17 @@ export class RiskRulePlugin {
   source: RiskRulesPluginParams['source'];
   stateNames: RiskRulesPluginParams['stateNames'];
   action: RiskRulesPluginParams['action'];
+  successAction: RiskRulesPluginParams['successAction'];
+  errorAction: RiskRulesPluginParams['errorAction'];
+
   constructor(pluginParams: RiskRulesPluginParams) {
     this.name = pluginParams.name;
     this.stateNames = pluginParams.stateNames;
     this.databaseId = pluginParams.databaseId;
     this.source = pluginParams.source;
     this.action = pluginParams.action;
+    this.successAction = pluginParams.successAction;
+    this.errorAction = pluginParams.errorAction;
   }
 
   async invoke(context: TContext) {
@@ -23,7 +28,28 @@ export class RiskRulePlugin {
         databaseId: this.databaseId,
       });
 
-      return this.calculateRiskScore(rulesetResult);
+      const { riskScore, rulesResults } = this.calculateRiskScore(rulesetResult);
+
+      const indicators = rulesResults
+        .filter(rule =>
+          rule.result.every(result => result.status === 'PASSED' || result.status === 'SKIPPED'),
+        )
+        .map(rule => {
+          return {
+            name: rule.indicator,
+            riskLevel: rule.riskLevel,
+          };
+        });
+
+      return {
+        response: {
+          riskScore,
+          indicators,
+          rulesResults,
+          success: true,
+        },
+        callbackAction: this.successAction,
+      } as const;
     } catch (error) {
       console.log(`Rules Plugin Failed`, {
         name: this.name,
@@ -32,16 +58,18 @@ export class RiskRulePlugin {
       });
 
       return {
-        riskScore: NaN,
-        rulesResults: [],
-        success: false,
-      };
+        callbackAction: this.errorAction,
+        error: error,
+      } as const;
     }
   }
 
   calculateRiskScore(rulesetResult: Awaited<ReturnType<typeof this.action>>) {
     if (!rulesetResult || rulesetResult.length === 0) {
-      return 0;
+      return {
+        riskScore: 0,
+        rulesResults: rulesetResult,
+      };
     }
 
     const [highestBaseIRuleViolation, ...restRuleViolations] = rulesetResult.sort(
@@ -58,7 +86,6 @@ export class RiskRulePlugin {
     return {
       riskScore: overallRiskScore,
       rulesResults: rulesetResult,
-      success: true,
     };
   }
 }

@@ -704,7 +704,7 @@ export class WorkflowRunner {
 
   private async __invokeCommonPlugin(commonPlugin: CommonPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
-    const { callbackAction, error } = await commonPlugin.invoke?.({
+    const { callbackAction, error, response } = await commonPlugin.invoke?.({
       ...this.context,
       workflowRuntimeConfig: this.#__config,
       workflowRuntimeId: this.#__runtimeId,
@@ -714,6 +714,13 @@ export class WorkflowRunner {
       this.context.pluginsOutput = {
         ...(this.context.pluginsOutput || {}),
         ...{ [commonPlugin.name]: { error: error } },
+      };
+    }
+
+    if (!!response) {
+      this.context.pluginsOutput = {
+        ...(this.context.pluginsOutput || {}),
+        ...{ [commonPlugin.name]: response },
       };
     }
 

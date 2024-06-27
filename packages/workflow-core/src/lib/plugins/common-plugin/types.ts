@@ -54,6 +54,8 @@ export interface RiskRulesPluginParams {
   databaseId: string;
   source: 'notion';
   stateNames: string[];
+  successAction?: string;
+  errorAction?: string;
   action: (
     context: TContext,
     ruleOptions: TFindAllRulesOptions,
