@@ -1,13 +1,15 @@
 import { useFiltersQuery } from '@/domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useCallback, useMemo } from 'react';
-import { Building, Goal, Users } from 'lucide-react';
+import { Building, Goal, Home, Users } from 'lucide-react';
 import { TRoutes, TRouteWithChildren } from '@/Router/types';
 import { useLocation } from 'react-router-dom';
 import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/userCustomerQuery';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
 export const useNavbarLogic = () => {
   const { data: filters } = useFiltersQuery();
+  const locale = useLocale();
   const filterId = useFilterId();
   const individualsFilters = useMemo(
     () => filters?.filter(({ entity }) => entity === 'individuals'),
@@ -20,6 +22,16 @@ export const useNavbarLogic = () => {
   const { data: customer } = useCustomerQuery();
 
   const navItems = [
+    ...(customer?.config?.isExample || customer?.config?.isDemo
+      ? [
+          {
+            text: 'Home',
+            icon: <Home size={20} />,
+            href: `/${locale}/home`,
+            key: 'nav-item-Home',
+          },
+        ]
+      : []),
     {
       text: 'Businesses',
       icon: <Building size={20} />,
@@ -36,7 +48,7 @@ export const useNavbarLogic = () => {
         ...(businessesFilters?.map(({ id, name }) => ({
           filterId: id,
           text: name,
-          href: `/en/case-management/entities?filterId=${id}`,
+          href: `/${locale}/case-management/entities?filterId=${id}`,
           key: `nav-item-${id}`,
         })) ?? []),
       ],
@@ -54,7 +66,7 @@ export const useNavbarLogic = () => {
         ...(individualsFilters?.map(({ id, name }) => ({
           filterId: id,
           text: name,
-          href: `/en/case-management/entities?filterId=${id}`,
+          href: `/${locale}/case-management/entities?filterId=${id}`,
           key: `nav-item-${id}`,
         })) ?? []),
       ],
@@ -66,7 +78,7 @@ export const useNavbarLogic = () => {
       children: [
         {
           text: 'Alerts',
-          href: `/en/transaction-monitoring/alerts`,
+          href: `/${locale}/transaction-monitoring/alerts`,
           key: 'nav-item-alerts',
         },
       ],

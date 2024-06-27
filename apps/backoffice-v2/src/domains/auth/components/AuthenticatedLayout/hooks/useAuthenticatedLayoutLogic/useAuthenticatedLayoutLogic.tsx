@@ -4,12 +4,14 @@ import { useIsAuthenticated } from '../../../../context/AuthProvider/hooks/useIs
 import { env } from '../../../../../../common/env/env';
 import { useLocation } from 'react-router-dom';
 import { useMemo } from 'react';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
 export const useAuthenticatedLayoutLogic = () => {
   const { redirectUnauthenticatedTo } = useAuthContext();
   const { isLoading } = useAuthenticatedUserQuery();
   const isAuthenticated = useIsAuthenticated();
   const location = useLocation();
+  const locale = useLocale();
   const shouldRedirect = useMemo(
     () =>
       [!isLoading, !isAuthenticated, !!redirectUnauthenticatedTo, env.VITE_AUTH_ENABLED].every(
@@ -23,5 +25,6 @@ export const useAuthenticatedLayoutLogic = () => {
     isLoading,
     redirectUnauthenticatedTo,
     location,
+    locale,
   };
 };

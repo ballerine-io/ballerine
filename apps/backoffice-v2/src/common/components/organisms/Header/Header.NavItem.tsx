@@ -24,13 +24,10 @@ export const NavItem: FunctionComponentWithChildren<TNavItemProps> = ({
       <NavLink
         {...props}
         to={href}
-        className={({ isActive }) =>
+        className={props =>
           ctw(
             `flex gap-x-2 rounded-md`,
-            {
-              'font-bold': isActive,
-            },
-            className,
+            className instanceof Function ? className(props) : className,
           )
         }
       >

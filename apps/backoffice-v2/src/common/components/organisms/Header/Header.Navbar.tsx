@@ -83,12 +83,14 @@ export const Navbar: FunctionComponent = () => {
                 <NavItem
                   href={navItem.href}
                   key={navItem.key}
-                  className={ctw(
-                    `flex items-center gap-x-1 px-1.5 py-1 text-sm font-semibold capitalize text-[#8990AC] hover:bg-[#EBEEF9] hover:text-[#5E688E] active:bg-[#e0e4f6]`,
-                    {
-                      'bg-white text-[#20232E]': navItem.filterId === filterId,
-                    },
-                  )}
+                  className={({ isActive }) =>
+                    ctw(
+                      `flex items-center gap-x-1 p-2 text-sm font-semibold capitalize hover:bg-[#EBEEF9] hover:text-[#5E688E] active:bg-[#e0e4f6] [&:not([aria-current=page])]:text-[#8990AC]`,
+                      {
+                        'bg-white text-[#20232E]': isActive,
+                      },
+                    )
+                  }
                 >
                   <div className={`flex items-center gap-x-3 text-left`}>
                     {navItem.icon}

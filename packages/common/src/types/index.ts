@@ -5,6 +5,8 @@ export type Serializable =
   | boolean
   | null
   | undefined
-  | Array<Serializable>
+  | Serializable[]
   | { [key: PropertyKey]: Serializable };
 export type { LoggerInterface } from './logger.interface';
+
+export type SortDirection = 'asc' | 'desc';

@@ -8,7 +8,7 @@ import { isErrorWithMessage } from '@ballerine/common';
 
 export const RootError: FunctionComponent = () => {
   const error = useRouteError();
-  const { redirectUnauthenticatedTo, location } = useAuthenticatedLayoutLogic();
+  const { redirectUnauthenticatedTo, location, locale } = useAuthenticatedLayoutLogic();
 
   if (isErrorWithMessage(error) && error.message === 'Unauthorized (401)') {
     return (
@@ -32,7 +32,7 @@ export const RootError: FunctionComponent = () => {
             Something went wrong.
             <div className={`flex justify-end`}>
               <Button asChild className={`border-destructive`} variant={`outline`} size={`sm`}>
-                <Link to={`/en`} replace>
+                <Link to={`/${locale}/home/statistics`} replace>
                   Try again
                 </Link>
               </Button>
