@@ -1,0 +1,118 @@
+---
+title: Theming(WIP)
+description: About Collection Flow
+
+---
+
+# Theming in Collection Flow
+
+Collection Flow offers robust theming capabilities that allow you to customize the color palette of your application. This feature enables you to create a consistent and visually appealing user interface that aligns with your brand's identity. By adjusting various color settings, you can ensure that your application's look and feel are tailored to your specific requirements.
+
+## Overview
+
+Theming in Collection Flow is designed to provide flexibility and ease of use. By triggering certain endpoints, you can dynamically adjust the color palette across your application. This approach ensures that all UI components adhere to the specified theme, creating a cohesive visual experience for your users.
+
+### Key Features
+
+- **Dynamic Color Adjustments**: Change the color scheme of your application on-the-fly by interacting with specific theming endpoints.
+- **Brand Consistency**: Ensure that your application's colors match your brand guidelines, enhancing user recognition and trust.
+- **Customizable Palettes**: Define custom color palettes that can be applied to various UI elements, including backgrounds, text, buttons, and more.
+
+## How It Works
+
+The theming functionality in Collection Flow is accessed via dedicated endpoints. These endpoints allow you to set and update the color palette used throughout your application. The process is straightforward:
+
+1. **Define Your Color Palette**: Create a set of colors that represent your desired theme. This can include primary, secondary, and accent colors, as well as background and text colors.
+
+2. **Trigger Theming Endpoints**: Use the provided endpoints to apply your color palette. These endpoints can be called programmatically to update the theme dynamically based on user preferences or other criteria.
+
+3. **Apply the Theme**: Once the endpoints are triggered, the new color palette is applied across the application, ensuring all components reflect the updated theme.
+
+## Example Usage
+
+Here is an examples.
+
+### Default Theme
+Will be used in case if UIDefinition doesnt have theme.
+
+```json
+  {
+    "pallete": {
+      "primary": {
+        "color": "0, 0%, 100%",
+        "foreground": "0, 0%, 0%"
+      },
+      "secondary": {
+        "color": "0, 0%, 0%",
+        "foreground": "0, 0%, 100%"
+      },
+      "accent": {
+        "color": "226, 100%, 97%",
+        "foreground": "222.2 47.4% 11.2%"
+      }
+    },
+    "elements": {
+      "ring": "215 20.2% 65.1%",
+      "border": "214.3 31.8% 91.4%",
+      "input": "214.3 31.8% 91.4%",
+      "radius": "0.5rem"
+    }
+  }
+```
+
+
+### Dark Theme
+```json
+ {
+        "pallete": {
+            "primary": {
+                "color": "0, 0%, 0%",
+                "foreground": "0, 0%, 100%"
+            },
+            "secondary": {
+                "color": "356, 100%, 100%",
+                "foreground": "356, 100%, 0%"
+            },
+            "muted": {
+                "color": "210 40% 96.1%",
+                "foreground": "215.4 16.3% 46.9%"
+            },
+            "accent": {
+                "color": "0, 0%, 13%",
+                "foreground": "222.2 47.4% 11.2%"
+            }
+        },
+        "elements": {
+            "ring": "215 20.2% 65.1%",
+            "border": "214.3 31.8% 91.4%",
+            "input": "214.3 31.8% 91.4%",
+            "radius": "0.5rem"
+        }
+    }
+```
+
+### Green Theme
+```json
+{
+    "pallete": {
+      "primary": {
+        "color": "0, 0%, 100%",
+        "foreground": "93, 100%, 36%"
+      },
+      "secondary": {
+        "color": "0, 0%, 0%",
+        "foreground": "0, 0%, 100%"
+      },
+      "accent": {
+        "color": "93, 100%, 89%",
+        "foreground": "222.2 47.4% 11.2%"
+      }
+    },
+    "elements": {
+      "ring": "215 20.2% 65.1%",
+      "border": "214.3 31.8% 91.4%",
+      "input": "214.3 31.8% 91.4%",
+      "radius": "0.5rem"
+    }
+  }
+  ```

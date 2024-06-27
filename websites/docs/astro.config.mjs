@@ -1,5 +1,5 @@
-import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import { defineConfig } from 'astro/config';
 
 import tailwind from '@astrojs/tailwind';
 
@@ -237,6 +237,51 @@ export default defineConfig({
             {
               label: `Contributing`,
               link: `/en/contributing`,
+            },
+          ],
+        },
+        {
+          label: 'KYB Collection Flow',
+          collapsed: true,
+          items: [
+            {
+              label: 'Introduction',
+              link: '/en/collection-flow/introduction',
+            },
+            {
+              label: 'Schema Breakdown',
+              link: '/en/collection-flow/schema-breakdown',
+            },
+            {
+              label: 'UI Elements',
+              items: [
+                {
+                  label: 'Overview',
+                  link: '/en/collection-flow/ui-elements',
+                },
+                {
+                  label: 'JSONForm',
+                  link: '/en/collection-flow/json-form',
+                },
+              ],
+            },
+            {
+              label: 'Customization',
+              items: [
+                {
+                  label: 'Theming',
+                  link: '/en/collection-flow/theming',
+                },
+              ],
+            },
+            {
+              label: 'API',
+              items: [
+                {
+                  label: 'UI Definition updating',
+                  link: '/en/collection-flow/ui-definition-updating',
+                },
+              ],
             },
           ],
         },

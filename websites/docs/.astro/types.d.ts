@@ -234,6 +234,13 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.md'] };
+      'en/collection-flow/introduction.mdx': {
+        id: 'en/collection-flow/introduction.mdx';
+        slug: 'en/collection-flow/introduction';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
       'en/contributing.mdx': {
         id: 'en/contributing.mdx';
         slug: 'en/contributing';
