@@ -283,6 +283,15 @@ export default defineConfig({
                 },
               ],
             },
+            {
+              label: 'Integrations',
+              items: [
+                {
+                  label: 'iFrame',
+                  link: '/en/collection-flow/iframe',
+                },
+              ],
+            },
           ],
         },
       ],
