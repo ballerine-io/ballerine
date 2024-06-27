@@ -176,7 +176,7 @@ export default defineConfig({
             //   ],
             // },
             {
-              label: `UI SDK`,
+              label: `KYC Collection Flow (SDK)`,
               items: [
                 {
                   label: `SDK Events`,
