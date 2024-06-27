@@ -1,0 +1,327 @@
+---
+title: JSONForm
+
+---
+
+The `JSONForm` component is a versatile and powerful tool for creating dynamic forms within your application. It serves as the foundation for rendering a variety of input fields, handling complex form structures, and providing dynamic validation and UI customization. This documentation page covers all the supported elements within a `JSONForm`, detailing their options and providing examples to help you effectively utilize this component.
+
+## Overview
+
+The `JSONForm` component allows developers to define forms using JSON schema and UI schema, making it easy to specify required fields, customize the layout, and manage validation logic. This approach ensures consistency and flexibility in form creation, allowing for dynamic updates and modifications without altering the underlying code.
+
+Normally, `JSONForm` elements look like this for simple cases:
+
+- **name**: Unique name of the input element.
+- **valueDestination**: This path will be used to write the value within the context.
+- **options**: Input parameters. They are input-specific but share some common patterns such as:
+  - **label**: A string representing the label of the input.
+  - **description**: A string providing a description of the input.
+  - **hint**: A string offering a hint or additional guidance for the input.
+
+  - **jsonFormDefinition**: Defines the type of the input element. For common inputs like string or number, it looks like:
+    ```json
+    {
+      "type": "string" or "number"
+    }
+  - **uiSchema**: Defines the UI schema for the input element. For non-regular inputs, it specifies the custom component to be used or specific component params:
+    ```json
+    {
+      "ui:field": "Name of a non-regular input, e.g., DocumentInput"
+    }
+
+## Supported Elements
+- **StringField**: Renders a text input field for capturing string values.
+  ```json
+  {
+    "name": "string-input",
+    "valueDestination": "stringInput.value",
+    "options": {
+      "label": "String Input",
+      "hint": "String Input description...",
+      "jsonFormDefinition": {
+        "type": "string"
+      }
+    }
+  }
+  ```
+
+- **BooleanField**: Renders a checkbox input for capturing boolean values.
+  ```json
+  {
+    "name": "boolean-input",
+    "valueDestination": "booleanInput.value",
+    "options": {
+      "label": "Boolean Input",
+      "hint": "Boolean Input description...",
+      "jsonFormDefinition": {
+        "type": "boolean"
+      }
+    }
+  }
+  ```
+
+- **FileInput**: Renders a file upload input for uploading files.
+  ```json
+  {
+    "name": "file-input",
+    "valueDestination": "fileInput.value",
+    "options": {
+      "label": "File Input",
+      "hint": "File Input description...",
+      "jsonFormDefinition": {
+        "type": "file"
+      }
+    }
+  }
+  ```
+
+- **DateInput**: Renders a date picker input for selecting dates.
+  ```json
+  {
+    "name": "date-input",
+    "valueDestination": "dateInput.value",
+    "options": {
+      "label": "Date",
+      "hint": "DD/MM/YYYY",
+      "jsonFormDefinition": {
+        "type": "string"
+      },
+      "uiSchema": {
+        "ui:field": "DateInput",
+        "ui:label": true,
+      }
+    }
+  }
+  ```
+
+- **PhoneInput**: Renders a phone number input field for capturing phone numbers.
+  ```json
+  {
+    "name": "phone-input",
+    "valueDestination": "phoneInput.value",
+    "options": {
+      "label": "File Input",
+      "jsonFormDefinition": {
+        "type": "string"
+      },
+      "uiSchema": {
+        "ui:field": "PhoneInput",
+        "ui:label": true
+      }
+    }
+  }
+
+- **AutocompleteInput**: Renders an autocomplete input field for selecting options from a predefined list.
+  ```json
+  {
+    "name": "autocomplete-input",
+    "valueDestination": "autocomplete.value",
+    "options": {
+      "label": "Autocomplete Input",
+      "jsonFormDefinition": {
+        "type": "string"
+      },
+      "uiSchema": {
+        "ui:field": "AutocompleteInput",
+        "ui:label": true,
+        "options": [
+          {
+            "title": "Option 1",
+            "const": "value_1"
+          },
+          {
+            "title": "Option 2",
+            "const": "value_2"
+          }
+        ]
+      }
+    }
+  }
+
+- **DocumentInput**: Renders a document upload input for uploading documents.
+  ```json
+  {
+    "name": "document-input",
+    "valueDestination": "documents[0].pages[0].ballerineFileId",
+    "options": {
+      "label": "Document Input",
+      "description": "Document Description",
+      "jsonFormDefinition": {
+        "type": "string"
+      },
+      "uiSchema": {
+        "ui:field": "DocumentInput",
+      },
+      "documentData": {
+                  "id": "document-name",
+                  "category": "category",
+                  "type": "type",
+                  "issuer": {
+                    "country": "ZZ",
+                  },
+                  "version": "1",
+                  "issuingVersion": 1,
+                  "properties": {},
+      }
+    }
+  }
+- **NationalityPicker**: Renders dropdown with list of nationalities to select from.
+  ```json
+  {
+    "name": "nationality-picker",
+    "valueDestination": "nationalityPicker.value",
+    "options": {
+      "label": "Nationality Input",
+      "description": "Select nationality",
+      "jsonFormDefinition": {
+        "type": "string"
+      },
+      "uiSchema": {
+        "ui:field": "NationalityPicker"
+      }
+    }
+  }
+
+- **LocalePicker**: Renders dropdown with list of language codes.
+  ```json
+  {
+    "name": "locale-picker",
+    "valueDestination": "localePicker.value",
+    "options": {
+      "label": "Locale Input",
+      "description": "Select locale",
+      "jsonFormDefinition": {
+        "type": "string"
+      },
+      "uiSchema": {
+        "ui:field": "LocalePicker",
+        "ui:label": true,
+        "ui:placeholder": "Select locale",
+      }
+    }
+  }
+
+- **CountryPicker**: Renders dropdown with list of countries to select from.
+  ```json
+  {
+    "name": "country-picker",
+    "valueDestination": "countryPicker.value",
+    "options": {
+      "label": "Country Input",
+      "description": "Select country",
+      "jsonFormDefinition": {
+        "type": "string"
+      },
+      "uiSchema": {
+        "ui:field": "CountryPicker",
+        "ui:label": true,
+        "ui:placeholder": "Select country",
+      }
+    }
+  }
+
+- **CheckboxList**: Renders list of checkboxes from provided options list for selection.
+  ```json
+  {
+    "name": "checkboxlist",
+    "valueDestination": "checkboxlist.value",
+    "options": {
+      "label": "Checkbox list Input",
+      "jsonFormDefinition": {
+        "type": "string"
+      },
+      "uiSchema": {
+        "ui:field": "CheckboxList",
+        "options": [
+          {
+            "title": "Option 1",
+            "value": "value_1"
+          },
+          {
+            "title": "Option 2",
+            "value": "value_2"
+          }
+        ]
+      }
+    }
+  }
+
+- **IndustriesPicker**: Renders list of industries.
+  ```json
+  {
+    "name": "industries-picker",
+    "valueDestination": "industriesPicker.value",
+    "options": {
+      "label": "Industries Input",
+      "hint": "Select industry",
+      "jsonFormDefinition": {
+        "type": "string"
+      },
+      "uiSchema": {
+        "ui:field": "IndustriesPicker",
+      }
+    }
+  }
+
+- **Multiselect**: Same as dropdown but allowing to pick multiple values.
+  ```json
+  {
+    "name": "multiselect-picker",
+    "valueDestination": "multiSelect.value",
+    "options": {
+      "label": "Multiselect Input",
+      "hint": "Select values",
+      "jsonFormDefinition": {
+        "type": "string"
+      },
+      "uiSchema": {
+        "ui:field": "Multiselect",
+        "options": [
+          {
+            "title": "Option 1",
+            "value": "value_1"
+          },
+          {
+            "title": "Option 2",
+            "value": "value_2"
+          }
+
+        ]
+      }
+    }
+  }
+
+- **StatePicker**: Renders dropdown with list of states to select from.
+  ```json
+  {
+    "name": "state-picker",
+    "valueDestination": "statePicker.value",
+    "options": {
+      "label": "State Input",
+      "hint": "Select state",
+      "jsonFormDefinition": {
+        "type": "string"
+      },
+      "uiSchema": {
+        "ui:field": "StatePicker",
+      }
+    }
+  }
+
+- **RelationshipDropdown**: Renders dropdown with list of relationships to select from.
+  ```json
+  {
+    "name": "relationship-picker",
+    "valueDestination": "relationshipPicker.value",
+    "options": {
+      "label": "Relationship Input",
+      "hint": "Select relationship",
+      "jsonFormDefinition": {
+        "type": "string"
+      },
+      "uiSchema": {
+        "ui:field": "RelationshipDropdown",
+      }
+    }
+  }
+
