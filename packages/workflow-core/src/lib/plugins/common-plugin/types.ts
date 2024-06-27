@@ -33,8 +33,7 @@ export interface ISerializableRiskRulesPlugin {
   pluginKind: string;
   name: string;
   stateNames: string[];
-  source: 'notion';
-  databaseId: string;
+  rulesSource: RiskRulesPluginParams['rulesSource'];
 
   invoke?(...args: any[]): Promise<any>;
 }
@@ -51,8 +50,10 @@ export interface IterativePluginParams {
 type RuleSetOptions = { databaseId: string };
 export interface RiskRulesPluginParams {
   name: string;
-  databaseId: string;
-  source: 'notion';
+  rulesSource: {
+    source: 'notion';
+    databaseId: string;
+  };
   stateNames: string[];
   successAction?: string;
   errorAction?: string;

@@ -225,8 +225,7 @@ export class WorkflowRunner {
     return new RiskRulePlugin({
       name: riskLevelPlugin.name,
       stateNames: riskLevelPlugin.stateNames,
-      source: riskLevelPlugin.source,
-      databaseId: riskLevelPlugin.databaseId,
+      rulesSource: riskLevelPlugin.rulesSource,
       action: callbackAction!,
     });
   }

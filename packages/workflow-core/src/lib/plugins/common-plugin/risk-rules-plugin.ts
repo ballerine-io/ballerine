@@ -5,8 +5,7 @@ import { RiskRulesPluginParams } from './types';
 export class RiskRulePlugin {
   public static pluginType = 'risk-rules';
   name: RiskRulesPluginParams['name'];
-  databaseId: RiskRulesPluginParams['databaseId'];
-  source: RiskRulesPluginParams['source'];
+  rulesSource: RiskRulesPluginParams['rulesSource'];
   stateNames: RiskRulesPluginParams['stateNames'];
   action: RiskRulesPluginParams['action'];
   successAction: RiskRulesPluginParams['successAction'];
@@ -15,8 +14,7 @@ export class RiskRulePlugin {
   constructor(pluginParams: RiskRulesPluginParams) {
     this.name = pluginParams.name;
     this.stateNames = pluginParams.stateNames;
-    this.databaseId = pluginParams.databaseId;
-    this.source = pluginParams.source;
+    this.rulesSource = pluginParams.rulesSource;
     this.action = pluginParams.action;
     this.successAction = pluginParams.successAction;
     this.errorAction = pluginParams.errorAction;
@@ -24,11 +22,7 @@ export class RiskRulePlugin {
 
   async invoke(context: TContext) {
     try {
-      const rulesetResult = await this.action(context, {
-        source: this.source,
-        databaseId: this.databaseId,
-      });
-
+      const rulesetResult = await this.action(context, this.rulesSource);
       const { riskScore, rulesResults } = this.calculateRiskScore(rulesetResult);
 
       const indicators = rulesResults
@@ -56,8 +50,8 @@ export class RiskRulePlugin {
     } catch (error) {
       console.log(`Rules Plugin Failed`, {
         name: this.name,
-        databaseId: this.databaseId,
-        source: this.source,
+        databaseId: this.rulesSource.databaseId,
+        source: this.rulesSource.source,
       });
 
       return {
