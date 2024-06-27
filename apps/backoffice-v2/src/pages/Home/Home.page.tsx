@@ -4,6 +4,7 @@ import { UserAvatar } from '@/common/components/atoms/UserAvatar/UserAvatar';
 import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
 import { useHomeLogic } from '@/common/hooks/useHomeLogic/useHomeLogic';
 import { t } from 'i18next';
+import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
 
 export const Home: FunctionComponent = () => {
   const {
@@ -16,7 +17,14 @@ export const Home: FunctionComponent = () => {
     statisticsLink,
     workflowsLink,
     defaultTabValue,
+    isLoadingCustomer,
+    isExample,
+    isDemo,
   } = useHomeLogic();
+
+  if (!isLoadingCustomer && !isExample && !isDemo) {
+    return <NotFoundRedirect />;
+  }
 
   return (
     <div className={`flex flex-col gap-10 p-10`}>

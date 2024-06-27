@@ -5,6 +5,7 @@ import { HomeSearchSchema } from '@/pages/Home/home-search-schema';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/userCustomerQuery';
 
 export const useHomeLogic = () => {
   const locale = useLocale();
@@ -12,6 +13,9 @@ export const useHomeLogic = () => {
   const navigate = useNavigate();
   const [{ from, to }, setSearchParams] = useZodSearchParams(HomeSearchSchema);
   const { data: session } = useAuthenticatedUserQuery();
+  const { data: customer, isLoading: isLoadingCustomer } = useCustomerQuery();
+  const isExample = customer?.config?.isExample;
+  const isDemo = customer?.config?.isDemo;
   const { firstName, fullName, avatarUrl } = session?.user || {};
   const statisticsLink = `/${locale}/home/statistics${search}`;
   const workflowsLink = `/${locale}/home/workflows${search}`;
@@ -42,5 +46,8 @@ export const useHomeLogic = () => {
     workflowsLink,
     defaultTabValue,
     onDateRangeChange,
+    isLoadingCustomer,
+    isExample,
+    isDemo,
   };
 };
