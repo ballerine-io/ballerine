@@ -4,7 +4,7 @@ import { useCallback, useMemo } from 'react';
 import { Building, Goal, Home, Users } from 'lucide-react';
 import { TRoutes, TRouteWithChildren } from '@/Router/types';
 import { useLocation } from 'react-router-dom';
-import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/userCustomerQuery';
+import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
 export const useNavbarLogic = () => {

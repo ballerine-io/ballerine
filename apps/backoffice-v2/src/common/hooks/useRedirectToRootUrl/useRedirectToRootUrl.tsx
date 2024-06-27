@@ -1,5 +1,5 @@
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
-import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/userCustomerQuery';
+import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
 
 export const useRedirectToRootUrl = () => {
   const locale = useLocale();
