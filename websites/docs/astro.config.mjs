@@ -189,6 +189,10 @@ export default defineConfig({
               label: `KYC Collection Flow (SDK)`,
               items: [
                 {
+                  label: 'Introduction',
+                  link: '/en/learn/introduction',
+                },
+                {
                   label: `SDK Events`,
                   link: `/en/learn/sdk_events`,
                 },
