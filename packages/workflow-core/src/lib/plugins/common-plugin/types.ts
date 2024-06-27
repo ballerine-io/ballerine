@@ -70,7 +70,7 @@ export interface RiskRulesPluginParams {
     }>
   >;
 
-  invoke?(...args: any[]): Promise<any>;
+  invoke?(context: TContext): Promise<any>;
 }
 
 export interface ChildWorkflowPluginParams {
