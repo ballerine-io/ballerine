@@ -85,6 +85,7 @@
     "class-variance-authority": "^0.6.0",
     "clsx": "^1.2.1",
     "dayjs": "^1.11.6",
+    "date-fns": "^3.0.6",
     "eslint-plugin-tailwindcss": "^3.8.0",
     "face-api.js": "^0.22.2",
     "framer-motion": "^8.3.4",
