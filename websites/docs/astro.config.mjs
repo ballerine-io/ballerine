@@ -1,5 +1,5 @@
-import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import { defineConfig } from 'astro/config';
 
 import tailwind from '@astrojs/tailwind';
 
@@ -61,7 +61,7 @@ export default defineConfig({
         },
         {
           label: 'Learn',
-          collapsed: true,
+          collapsed: false,
           items: [
             {
               label: `Guides`,
@@ -74,18 +74,18 @@ export default defineConfig({
                   label: `KYC Manual Review Example`,
                   link: `/en/learn/kyc_manual_review_example`,
                 },
-                // {
-                //   label: `KYB Workflow with External Integrations`,
-                //   link: `/en/learn/simple_kyb_guide`,
-                // },
-                // {
-                //   label: `KYC Manual Review Workflow Guide`,
-                //   link: `/en/learn/kyc_manual_review_workflow_guide`,
-                // },
-                // {
-                //   label: `Creating a KYC UI Flow`,
-                //   link: `/en/learn/creating_a_kyc_flow_and_deploying_it`,
-                // },
+                {
+                  label: `KYB Workflow with External Integrations`,
+                  link: `/en/learn/simple_kyb_guide`,
+                },
+                {
+                  label: `KYC Manual Review Workflow Guide`,
+                  link: `/en/learn/kyc_manual_review_workflow_guide`,
+                },
+                {
+                  label: `Creating a KYC UI Flow`,
+                  link: `/en/learn/creating_a_kyc_flow_and_deploying_it`,
+                },
               ],
             },
             {
@@ -114,6 +114,60 @@ export default defineConfig({
             //   items: [],
             // },
             {
+              label: 'KYB Collection Flow',
+              collapsed: false,
+              items: [
+                {
+                  label: 'Introduction',
+                  link: '/en/collection-flow/introduction',
+                },
+                {
+                  label: 'Schema Breakdown',
+                  link: '/en/collection-flow/schema-breakdown',
+                },
+                {
+                  label: 'UI Elements',
+                  items: [
+                    {
+                      label: 'Overview',
+                      link: '/en/collection-flow/ui-elements',
+                    },
+                    {
+                      label: 'JSONForm',
+                      link: '/en/collection-flow/json-form',
+                    },
+                  ],
+                },
+                {
+                  label: 'Customization',
+                  items: [
+                    {
+                      label: 'Theming',
+                      link: '/en/collection-flow/theming',
+                    },
+                  ],
+                },
+                {
+                  label: 'API',
+                  items: [
+                    {
+                      label: 'UI Definition updating',
+                      link: '/en/collection-flow/ui-definition-updating',
+                    },
+                  ],
+                },
+                {
+                  label: 'Integrations',
+                  items: [
+                    {
+                      label: 'iFrame',
+                      link: '/en/collection-flow/iframe',
+                    },
+                  ],
+                },
+              ],
+            },
+            {
               label: `Case Management`,
               items: [
                 {
@@ -131,35 +185,35 @@ export default defineConfig({
             //     },
             //   ],
             // },
-            // {
-            //   label: `UI SDK`,
-            //   items: [
-            //     {
-            //       label: `SDK Events`,
-            //       link: `/en/learn/sdk_events`,
-            //     },
-            //     {
-            //       label: `SDK Backend Configuration`,
-            //       link: `/en/learn/sdk_backend_configuration`,
-            //     },
-            //     {
-            //       label: `SDK UI Configuration`,
-            //       link: `/en/learn/sdk_ui_configuration`,
-            //     },
-            //     {
-            //       label: `SDK Translations`,
-            //       link: `/en/learn/sdk_translations`,
-            //     },
-            //     {
-            //       label: `SDK UI Flows`,
-            //       link: `/en/learn/sdk_ui_flows`,
-            //     },
-            // {
-            //   label: `Native Mobile Apps`,
-            //   link: `/en/learn/native_mobile_apps`,
-            // },
-            // ],
-            // },
+            {
+              label: `KYC Collection Flow (SDK)`,
+              items: [
+                {
+                  label: `SDK Events`,
+                  link: `/en/learn/sdk_events`,
+                },
+                {
+                  label: `SDK Backend Configuration`,
+                  link: `/en/learn/sdk_backend_configuration`,
+                },
+                {
+                  label: `SDK UI Configuration`,
+                  link: `/en/learn/sdk_ui_configuration`,
+                },
+                {
+                  label: `SDK Translations`,
+                  link: `/en/learn/sdk_translations`,
+                },
+                {
+                  label: `SDK UI Flows`,
+                  link: `/en/learn/sdk_ui_flows`,
+                },
+                {
+                  label: `Native Mobile Apps`,
+                  link: `/en/learn/native_mobile_apps`,
+                },
+              ],
+            },
           ],
         },
         // {
