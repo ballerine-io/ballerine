@@ -290,6 +290,20 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.mdx'] };
+      'en/deployment/ansible_deployment.mdx': {
+        id: 'en/deployment/ansible_deployment.mdx';
+        slug: 'en/deployment/ansible_deployment';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/deployment/docker_compose.mdx': {
+        id: 'en/deployment/docker_compose.mdx';
+        slug: 'en/deployment/docker_compose';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
       'en/examples/cdn_example.md': {
         id: 'en/examples/cdn_example.md';
         slug: 'en/examples/cdn_example';
@@ -325,13 +339,6 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.md'] };
-      'en/getting_started/deployment.mdx': {
-        id: 'en/getting_started/deployment.mdx';
-        slug: 'en/getting_started/deployment';
-        body: string;
-        collection: 'docs';
-        data: InferEntrySchema<'docs'>;
-      } & { render(): Render['.mdx'] };
       'en/getting_started/glossary.md': {
         id: 'en/getting_started/glossary.md';
         slug: 'en/getting_started/glossary';
