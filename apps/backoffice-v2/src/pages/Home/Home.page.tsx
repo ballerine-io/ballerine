@@ -5,6 +5,7 @@ import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/D
 import { useHomeLogic } from '@/common/hooks/useHomeLogic/useHomeLogic';
 import { t } from 'i18next';
 import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
+import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
 
 export const Home: FunctionComponent = () => {
   const {
@@ -21,6 +22,10 @@ export const Home: FunctionComponent = () => {
     isExample,
     isDemo,
   } = useHomeLogic();
+
+  if (isLoadingCustomer) {
+    return <FullScreenLoader />;
+  }
 
   if (!isLoadingCustomer && !isExample && !isDemo) {
     return <NotFoundRedirect />;

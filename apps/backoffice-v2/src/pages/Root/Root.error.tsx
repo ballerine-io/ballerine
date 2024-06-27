@@ -5,10 +5,12 @@ import { Providers } from '../../common/components/templates/Providers/Providers
 import { ErrorAlert } from '../../common/components/atoms/ErrorAlert/ErrorAlert';
 import { useAuthenticatedLayoutLogic } from '../../domains/auth/components/AuthenticatedLayout/hooks/useAuthenticatedLayoutLogic/useAuthenticatedLayoutLogic';
 import { isErrorWithMessage } from '@ballerine/common';
+import { useRedirectToRootUrl } from '@/common/hooks/useRedirectToRootUrl/useRedirectToRootUrl';
 
 export const RootError: FunctionComponent = () => {
   const error = useRouteError();
-  const { redirectUnauthenticatedTo, location, locale } = useAuthenticatedLayoutLogic();
+  const { redirectUnauthenticatedTo, location } = useAuthenticatedLayoutLogic();
+  const urlToRoot = useRedirectToRootUrl();
 
   if (isErrorWithMessage(error) && error.message === 'Unauthorized (401)') {
     return (
@@ -32,7 +34,7 @@ export const RootError: FunctionComponent = () => {
             Something went wrong.
             <div className={`flex justify-end`}>
               <Button asChild className={`border-destructive`} variant={`outline`} size={`sm`}>
-                <Link to={`/${locale}/home/statistics`} replace>
+                <Link to={urlToRoot} replace>
                   Try again
                 </Link>
               </Button>
