@@ -1,11 +1,12 @@
 import { useCallback } from 'react';
 import { useSerializedSearchParams } from '@/common/hooks/useSerializedSearchParams/useSerializedSearchParams';
+import { SortDirection } from '@ballerine/common';
 
 export const useSort = () => {
   const [{ sortBy, sortDir }, setSearchParams] = useSerializedSearchParams();
 
   const onSortDir = useCallback(
-    (next?: 'asc' | 'desc') => {
+    (next?: SortDirection) => {
       setSearchParams({
         sortDir: next ? next : sortDir === 'asc' ? 'desc' : 'asc',
       });
@@ -23,7 +24,7 @@ export const useSort = () => {
   );
 
   const onSort = useCallback(
-    ({ sortBy, sortDir }: { sortBy: string; sortDir: 'asc' | 'desc' }) => {
+    ({ sortBy, sortDir }: { sortBy: string; sortDir: SortDirection }) => {
       setSearchParams({
         sortBy,
         sortDir,

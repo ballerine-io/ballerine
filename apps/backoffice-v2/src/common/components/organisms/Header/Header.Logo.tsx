@@ -5,6 +5,7 @@ import { env } from '../../../env/env';
 import { useCustomerQuery } from '../../../../domains/customer/hook/queries/useCustomerQuery/userCustomerQuery';
 import { AspectRatio } from '../../atoms/AspectRatio/AspectRatio';
 import { Skeleton } from '@/common/components/atoms/Skeleton/Skeleton';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
 /**
  * @description {@link BallerineLogo} with navigation to "/" on click.
@@ -13,11 +14,12 @@ import { Skeleton } from '@/common/components/atoms/Skeleton/Skeleton';
 export const Logo: FunctionComponent = () => {
   const { data: customer, isLoading } = useCustomerQuery();
   const imageUrl = customer?.logoImageUri ?? env.VITE_IMAGE_LOGO_URL;
+  const locale = useLocale();
 
   return (
     <h1 className={`mb-11 flex`}>
       <Link
-        to={`/en`}
+        to={`/${locale}/home/statistics`}
         className={`btn btn-ghost flex h-20 w-full gap-x-3 text-2xl  normal-case focus:outline-primary`}
       >
         {isLoading && <Skeleton className={`h-24 w-full`} />}
