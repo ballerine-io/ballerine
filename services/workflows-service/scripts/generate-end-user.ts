@@ -243,6 +243,13 @@ export const generateEndUser = ({
               sourceUrl: faker.internet.url(),
             },
           ],
+          other: [
+            {
+              date: faker.date.recent(2).toISOString(),
+              sourceName: faker.company.name(),
+              sourceUrl: faker.internet.url(),
+            },
+          ],
           matchTypes: ['PEP'],
         } satisfies z.infer<typeof EndUserAmlHitsSchema>[number]),
     ),

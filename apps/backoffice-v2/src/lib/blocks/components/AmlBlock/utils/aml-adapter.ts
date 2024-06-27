@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 const SourceInfoSchema = z
   .object({
+    type: z.string().optional().nullable(),
     sourceName: z.string().optional().nullable(),
     sourceUrl: z.string().optional().nullable(),
     date: z.string().optional().nullable(),
@@ -20,6 +21,7 @@ export const HitSchema = z.object({
   pep: z.array(SourceInfoSchema).optional().nullable(),
   adverseMedia: z.array(SourceInfoSchema).optional().nullable(),
   fitnessProbity: z.array(SourceInfoSchema).optional().nullable(),
+  other: z.array(SourceInfoSchema).optional().nullable(),
 });
 
 export type THit = z.infer<typeof HitSchema>;
@@ -30,6 +32,14 @@ export const AmlSchema = z.object({
 });
 
 export type TAml = z.infer<typeof AmlSchema>;
+
+const calculateEntry = (sourceInfo: z.infer<typeof SourceInfoSchema>) => {
+  return {
+    date: sourceInfo?.date,
+    sourceName: [sourceInfo?.sourceName, sourceInfo?.type].filter(Boolean).join(' - '),
+    sourceUrl: sourceInfo?.sourceUrl,
+  };
+};
 
 export const amlAdapter = (aml: TAml) => {
   const { hits, createdAt } = aml;
@@ -51,42 +61,19 @@ export const amlAdapter = (aml: TAml) => {
           pep,
           adverseMedia,
           fitnessProbity,
+          other,
         }) => ({
           matchedName,
           dateOfBirth,
           countries: countries?.join(', ') ?? '',
           matchTypes: matchTypes?.join(', ') ?? '',
           aka: aka?.join(', ') ?? '',
-          sanctions:
-            sanctions?.filter(Boolean).map(sanction => ({
-              sanction: sanction?.sourceName,
-              date: sanction?.date,
-              source: sanction?.sourceUrl,
-            })) ?? [],
-          warnings:
-            warnings?.filter(Boolean).map(warning => ({
-              warning: warning?.sourceName,
-              date: warning?.date,
-              source: warning?.sourceUrl,
-            })) ?? [],
-          pep:
-            pep?.filter(Boolean).map(pepItem => ({
-              person: pepItem?.sourceName,
-              date: pepItem?.date,
-              source: pepItem?.sourceUrl,
-            })) ?? [],
-          adverseMedia:
-            adverseMedia?.filter(Boolean).map(adverseMediaItem => ({
-              entry: adverseMediaItem?.sourceName,
-              date: adverseMediaItem?.date,
-              source: adverseMediaItem?.sourceUrl,
-            })) ?? [],
-          fitnessProbity:
-            fitnessProbity?.filter(Boolean).map(fitnessProbityItem => ({
-              entry: fitnessProbityItem?.sourceName,
-              date: fitnessProbityItem?.date,
-              source: fitnessProbityItem?.sourceUrl,
-            })) ?? [],
+          sanctions: sanctions?.filter(Boolean).map(item => calculateEntry(item)) ?? [],
+          warnings: warnings?.filter(Boolean).map(item => calculateEntry(item)) ?? [],
+          pep: pep?.filter(Boolean).map(item => calculateEntry(item)) ?? [],
+          adverseMedia: adverseMedia?.filter(Boolean).map(item => calculateEntry(item)) ?? [],
+          fitnessProbity: fitnessProbity?.filter(Boolean).map(item => calculateEntry(item)) ?? [],
+          other: other?.filter(Boolean).map(item => calculateEntry(item)) ?? [],
         }),
       ) ?? [],
   };
