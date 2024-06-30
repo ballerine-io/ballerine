@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+if [[ -z "$VITE_DOMAIN" ]]
+then
+    VITE_DOMAIN="localhost:3000"
+fi
+
+if [[ -z "$VITE_KYB_DEFINITION_ID" ]]
+then
+    VITE_KYB_DEFINITION_ID=kyb_parent_kyc_session_example
+fi
+
+if [[ -z "$VITE_API_KEY" ]]
+then
+    VITE_API_KEY=secret
+fi
+
+if [[ -z "$VITE_ENVIRONMENT_NAME" ]]
+then
+    VITE_ENVIRONMENT_NAME=local
+fi
+
+if [[ -z "$VITE_DEFAULT_EXAMPLE_TOKEN" ]]
+then
+    VITE_DEFAULT_EXAMPLE_TOKEN=12345678-1234-1234-1234-123456789012
+fi
+
+
+cat << EOF > .env
+VITE_API_URL=http://$VITE_DOMAIN/api/v1/
+VITE_KYB_DEFINITION_ID=$VITE_KYB_DEFINITION_ID
+VITE_API_KEY=$VITE_API_KEY
+VITE_ENVIRONMENT_NAME=$VITE_ENVIRONMENT_NAME
+VITE_DEFAULT_EXAMPLE_TOKEN=$VITE_DEFAULT_EXAMPLE_TOKEN
+VITE_SENTRY_AUTH_TOKEN=
+VITE_SENTRY_DSN=
+EOF
+
+npm run dev -- --host

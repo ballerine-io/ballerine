@@ -1,4 +1,4 @@
-FROM node:18.17.1-bullseye-slim as dev
+FROM node:18.17.1-bullseye-slim
 
 WORKDIR /app
 
@@ -8,21 +8,16 @@ RUN npm install --legacy-peer-deps
 
 COPY . .
 
-RUN mv /app/.env.example /app/.env
+RUN apt update; apt-get install -y xdg-utils
+
 RUN npm run build
 
 ENV PATH="$PATH:./node_modules/.bin"
 
 EXPOSE 5201
 
-CMD ["npm","run","dev", "--host"]
+RUN chmod a+x /app/entrypoint.sh
 
-FROM nginx:stable-alpine as prod
+RUN rm -rf /root/.cache /root/.npm /usr/local/share/doc /usr/share/doc /usr/share/man /var/lib/apt/lists/* /tmp/*
 
-COPY --from=dev /app/dist /usr/share/nginx/html
-
-COPY example.nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT [ "/app/entrypoint.sh" ]
