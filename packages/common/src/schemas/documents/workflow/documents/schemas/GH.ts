@@ -722,6 +722,19 @@ export const getGhanaDocuments = (): TDocument[] => {
       }),
     },
     {
+      category: 'business_document',
+      type: 'gra_certificate_of_registration',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        customerName: Type.String(),
+        businessName: Type.String(),
+        registrationDate: Type.Optional(TypePastDate),
+        tinNumber: Type.String(),
+      }),
+    },
+    {
       category: 'proof_of_registration',
       type: 'certificate_of_registration',
       issuer: { country: 'GH' },
