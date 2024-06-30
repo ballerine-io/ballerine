@@ -1,0 +1,19 @@
+---
+title: Deployment using Docker Compose
+---
+
+
+import CodeBlock from '../../../../components/CodeBlock/CodeBlock.astro';
+
+### Docker Compose Deployment
+
+1. **Clone the project**: Use Git to clone the Ballerine repository to your local machine:
+<CodeBlock lang={`shell`} code={`git clone https://github.com/ballerine-io/ballerine.git && cd ballerine`}/>
+
+2. **Switch to the dev branch**: After cloning, switch to the dev branch (or the branch you wish to deploy):
+<CodeBlock lang={`shell`} code={`git checkout dev`}/>
+
+3. **Run Docker Compose**: Now, you can start all services using Docker Compose:
+<CodeBlock lang={`shell`} code={`docker-compose -f deploy/docker-compose-build.yml up -d`}/>
+
+The application should now be running at the ports defined in your Docker Compose configuration.

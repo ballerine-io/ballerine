@@ -1,0 +1,77 @@
+---
+title: iFrame Integration
+description: Integrating Collection Flow as an Iframe App
+
+---
+
+Collection Flow can be seamlessly integrated into your application as an iframe app. This integration allows you to embed the Collection Flow interface within your own application's UI, providing a smooth and cohesive user experience. The integration is configurable via the `WorkflowDefinition.config.kybOnExitAction` parameter.
+
+## Configuration
+
+To integrate the Collection Flow app as an iframe, you need to set the `kybOnExitAction` parameter in the `WorkflowDefinition.config`. The `kybOnExitAction` parameter should be set to `send-event`, which is the default value.
+
+```json
+{
+  "WorkflowDefinition": {
+    "config": {
+      "kybOnExitAction": "send-event"
+    }
+  }
+}
+```
+
+## Handling Exit Events
+To handle exit events from the Collection Flow app, you can use the following JavaScript code. This code listens for message events from the iframe and handles specific types of events such as back button presses and finish button presses.
+
+```javascript
+window.addEventListener('message', function(event) {
+    if (event.data.type === 'ballerine.collection-flow.back-button-pressed') {
+        // Handle "Back to Portal" button press from side menu
+        console.log('Back button pressed');
+        // Add your custom handling logic here
+    } else if (event.data.type === 'ballerine.collection-flow.finish-button-pressed') {
+        // Handle "Finish" button press from flow complete page
+        console.log('Finish button pressed');
+        // Add your custom handling logic here
+    }
+});
+```
+
+## Event Types
+- **ballerine.collection-flow.back-button-pressed**: Triggered when the user presses the "Back to Portal" button from the side menu.
+- **ballerine.collection-flow.finish-button-pressed**: Triggered when the user presses the "Finish" button from the flow completion page.
+
+By handling these events, you can implement custom logic to navigate users back to your main application or perform other actions based on their interactions within the Collection Flow iframe.
+
+## Example Integration
+Here is an example of how you might integrate the Collection Flow app as an iframe in your HTML and handle the exit events:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collection Flow Iframe Integration</title>
+</head>
+<body>
+    <iframe src="https://your-collection-flow-url.com" style="width: 100%; height: 500px;" id="collection-flow-iframe"></iframe>
+
+    <script>
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'ballerine.collection-flow.back-button-pressed') {
+                // Handle "Back to Portal" button press from side menu
+                console.log('Back button pressed');
+                // Add your custom handling logic here
+            } else if (event.data.type === 'ballerine.collection-flow.finish-button-pressed') {
+                // Handle "Finish" button press from flow complete page
+                console.log('Finish button pressed');
+                // Add your custom handling logic here
+            }
+        });
+    </script>
+</body>
+</html>
+```
+
+By embedding the Collection Flow app as an iframe and handling the relevant events, you can create a seamless and integrated user experience within your application. This approach allows you to leverage the powerful features of Collection Flow while maintaining control over the overall user journey.

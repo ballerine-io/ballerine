@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.9
+
+### Patch Changes
+
+- Added a sort direction type
+
 ## 0.9.8
 
 ### Patch Changes
