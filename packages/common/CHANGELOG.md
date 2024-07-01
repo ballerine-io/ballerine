@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.10
+
+### Patch Changes
+
+- document changes
+
 ## 0.9.9
 
 ### Patch Changes
