@@ -1,5 +1,4 @@
 import React, { FunctionComponent } from 'react';
-import { RiskIndicators } from '@/common/components/molecules/RiskIndicators/RiskIndicators';
 import { Card } from '@/common/components/atoms/Card/Card';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
@@ -37,7 +36,6 @@ export const AdsAndSocialMedia: FunctionComponent<{
   return (
     <div className={'space-y-8'}>
       <h3 className={'text-lg font-bold'}>Ads and Social Media Analysis</h3>
-      <RiskIndicators violations={violations} />
       <Card>
         <CardHeader className={'pt-4 font-bold'}>Social Media Presence</CardHeader>
         <CardContent className={'space-y-8'}>

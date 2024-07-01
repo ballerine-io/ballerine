@@ -22,7 +22,6 @@ module.exports = async () => {
     })
     .start();
 
-  process.env.TEST_DATABASE_SCHEMA_NAME = container.getDatabase();
   process.env.DB_URL = container.getConnectionUri();
 
   console.log('\nStarting database container on: ' + process.env.DB_URL);
