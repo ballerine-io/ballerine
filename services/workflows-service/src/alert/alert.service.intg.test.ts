@@ -978,8 +978,7 @@ describe('AlertService', () => {
       });
     });
 
-    // Flaky
-    describe.skip('Rule: PAY_HCA_CC', () => {
+    describe('Rule: PAY_HCA_CC', () => {
       let alertDefinition: AlertDefinition;
       let counteryparty: Counterparty;
 
@@ -1047,8 +1046,7 @@ describe('AlertService', () => {
       });
     });
 
-    // Flaky
-    describe.skip('Rule: PAY_HCA_APM', () => {
+    describe('Rule: PAY_HCA_APM', () => {
       let alertDefinition: AlertDefinition;
       let counteryparty: Counterparty;
 
@@ -1118,8 +1116,7 @@ describe('AlertService', () => {
       });
     });
 
-    // Flaky
-    describe.skip('Rule: PGAICT', () => {
+    describe('Rule: PGAICT', () => {
       let alertDefinition: AlertDefinition;
       let counteryparty: Counterparty;
 
@@ -1336,8 +1333,7 @@ describe('AlertService', () => {
       });
     });
 
-    // Flaky
-    describe.skip('Rule: HVHAI_CC', () => {
+    describe('Rule: HVHAI_CC', () => {
       let oldTransactionFactory: TransactionFactory;
 
       let alertDefinition: AlertDefinition;
@@ -1631,8 +1627,7 @@ describe('AlertService', () => {
       });
     });
 
-    // Flaky
-    describe.skip('Rule: MGAV_CC', () => {
+    describe('Rule: MGAV_CC', () => {
       let counterpartiesA: Array<Awaited<ReturnType<typeof createEndUserCounterparty>>> = [];
       let alertDefinition: AlertDefinition;
 
