@@ -1,17 +1,17 @@
-import { noop } from 'lodash';
 import { Test, TestingModule } from '@nestjs/testing';
+import { noop } from 'lodash';
 
-import { FileService } from '@/providers/file/file.service';
-import { EndUserService } from '@/end-user/end-user.service';
-import { WorkflowService } from '@/workflow/workflow.service';
 import { BusinessService } from '@/business/business.service';
-import { CustomerService } from '@/customer/customer.service';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { TranslationService } from '@/providers/translation/translation.service';
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
-import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { CustomerService } from '@/customer/customer.service';
+import { EndUserService } from '@/end-user/end-user.service';
+import { FileService } from '@/providers/file/file.service';
+import { TranslationService } from '@/providers/translation/translation.service';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
+import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
+import { WorkflowService } from '@/workflow/workflow.service';
 
 describe('CollectionFlowService', () => {
   let uiSchema: Record<string, unknown>;
@@ -116,7 +116,12 @@ describe('CollectionFlowService', () => {
       lang === 'fr' ? `Translated ${text}` : text,
     );
 
-    const result = collectionFlowService.traverseUiSchema(uiSchema, context, language);
+    const result = collectionFlowService.traverseUiSchema(
+      uiSchema,
+      context,
+      language,
+      new TranslationService(),
+    );
     expect(result).toEqual(expectedUiSchema);
   });
 });

@@ -1,32 +1,50 @@
-import { Injectable } from '@nestjs/common';
-import i18next from 'i18next';
+import { createInstance, i18n } from 'i18next';
 
-import en from './locales/en/translation.json';
+import { AnyRecord } from '@ballerine/common';
 import cn from './locales/cn/translation.json';
+import en from './locales/en/translation.json';
 
 const supportedLanguages = [
   { language: 'en', resource: en },
   { language: 'cn', resource: cn },
 ];
 
-@Injectable()
+export interface ITranslationServiceResource {
+  language: string;
+  resource: AnyRecord;
+}
+
 export class TranslationService {
-  private __i18next = i18next;
+  private __i18next: i18n;
 
-  constructor() {
-    void this.__i18next.init({
+  constructor(resources: ITranslationServiceResource[] = supportedLanguages) {
+    this.__i18next = createInstance({
       fallbackLng: 'en',
-      initImmediate: false,
-      nsSeparator: false,
-      resources: {},
-    });
+      initImmediate: true,
+      //@ts-ignore
+      resources: resources.reduce((acc, { language, resource }) => {
+        acc[language] = { translation: resource };
 
-    supportedLanguages.forEach(({ language, resource }) => {
-      this.__i18next.addResourceBundle(language, 'translation', resource);
+        return acc;
+      }, {} as AnyRecord),
+    });
+  }
+
+  init() {
+    return new Promise((resolve, reject) => {
+      void this.__i18next.init(err => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve(null);
+      });
     });
   }
 
   translate(key: string, lng: string, options: Record<string, unknown> = {}) {
-    return this.__i18next.t(key, { ...options, lng });
+    const result = this.__i18next.t(key, { ...options, lng });
+
+    return result;
   }
 }
