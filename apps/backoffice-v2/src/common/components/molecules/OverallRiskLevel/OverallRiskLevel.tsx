@@ -29,22 +29,6 @@ export const OverallRiskLevel: FunctionComponent<{
       <CardHeader className={'pb-2 pt-4 font-bold'}>Overall Risk Level</CardHeader>
       <CardContent>
         <div className="mb-8 flex items-center space-x-2">
-          <TextWithNAFallback
-            className={ctw(
-              {
-                [severityToTextClassName[
-                  (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
-                ]]: riskScore || riskScore === 0,
-              },
-              {
-                'text-destructive': severity === Severity.CRITICAL,
-              },
-              'text-4xl font-bold',
-            )}
-            checkFalsy={false}
-          >
-            {riskScore}
-          </TextWithNAFallback>
           {(riskScore || riskScore === 0) && (
             <Badge
               className={ctw(
@@ -65,7 +49,9 @@ export const OverallRiskLevel: FunctionComponent<{
           <TableHeader className={'[&_tr]:border-b-0'}>
             <TableRow className={'hover:bg-[unset]'}>
               <TableHead className={'h-0 ps-0 font-bold text-foreground'}>Risk Type</TableHead>
-              <TableHead className={'h-0 ps-0 font-bold text-foreground'}>Risk Level</TableHead>
+              <TableHead className={'h-0 min-w-[9ch] ps-0 font-bold text-foreground'}>
+                Risk Level
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

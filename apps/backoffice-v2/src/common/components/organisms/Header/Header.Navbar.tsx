@@ -55,17 +55,18 @@ export const Navbar: FunctionComponent = () => {
                         <NavItem
                           href={childNavItem.href}
                           key={childNavItem.key}
-                          className={ctw(
-                            `gap-x-1 px-1.5 py-2 text-xs capitalize hover:bg-[#EBEEF9] hover:text-[#5E688E] active:bg-[#e0e4f6] [&:not([aria-current=page])]:text-[#8990AC]`,
-                            childNavItem.filterId
-                              ? {
-                                  'font-semibold text-[#20232E]':
-                                    childNavItem.filterId === filterId,
-                                  'text-[#8990AC] aria-[current=page]:font-normal':
-                                    childNavItem.filterId !== filterId,
-                                }
-                              : {},
-                          )}
+                          className={({ isActive }) =>
+                            ctw(
+                              `gap-x-1 px-1.5 py-2 text-xs capitalize hover:bg-[#EBEEF9] hover:text-[#5E688E] active:bg-[#e0e4f6] [&:not([aria-current=page])]:text-[#8990AC]`,
+                              {
+                                'font-semibold text-[#20232E]':
+                                  (childNavItem.filterId && childNavItem.filterId === filterId) ||
+                                  (!childNavItem.filterId && isActive),
+                                'text-[#8990AC] aria-[current=page]:font-normal':
+                                  childNavItem.filterId && childNavItem.filterId !== filterId,
+                              },
+                            )
+                          }
                         >
                           <span>{childNavItem.icon}</span>
                           {childNavItem.text}
