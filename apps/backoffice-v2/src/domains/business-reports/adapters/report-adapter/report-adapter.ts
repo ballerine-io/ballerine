@@ -93,7 +93,7 @@ export const reportAdapter = {
           src: data?.imageUrl,
           link: data?.adsInformation?.link,
         }))
-        .filter(Boolean),
+        .filter(({ src }) => !!src),
       relatedAdsImages: Object.values(data?.report?.data?.socialMedia?.ads ?? {})
         .map(data => ({
           src: data?.pickedAd?.imageUrl,
@@ -194,7 +194,7 @@ export const reportAdapter = {
           src: data?.imageUrl,
           link: data?.adsInformation?.link,
         }))
-        .filter(Boolean),
+        .filter(({ src }) => !!src),
       relatedAdsImages: Object.values(data?.report?.data?.socialMedia?.ads ?? {})
         .map(data => ({
           src: data?.pickedAd?.imageUrl,
