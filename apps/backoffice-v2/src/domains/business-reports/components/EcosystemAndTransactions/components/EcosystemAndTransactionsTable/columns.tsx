@@ -1,12 +1,8 @@
 import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import { checkIsUrl } from '@/common/utils/check-is-url/check-is-url';
 import { BallerineLink } from '@/common/components/atoms/BallerineLink/BallerineLink';
-import { WarningFilledSvg } from '@/common/components/atoms/icons';
-import { ctw } from '@/common/utils/ctw/ctw';
 import React from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
-import { safeEvery } from '@ballerine/common';
-import { Severity } from '@/common/types';
 
 const columnHelper = createColumnHelper<{
   matchedName: string;
@@ -62,30 +58,6 @@ export const columns = [
       const relatedNode = info.getValue();
 
       return <TextWithNAFallback>{relatedNode}</TextWithNAFallback>;
-    },
-  }),
-  columnHelper.accessor('indicators', {
-    header: 'Indicators',
-    cell: info => {
-      const indicators = info.getValue();
-
-      return (
-        <div className={'flex items-center'}>
-          {safeEvery(Object.values(indicators), indicator => !!indicator) && (
-            <>
-              <WarningFilledSvg
-                className={ctw('me-3 mt-px', {
-                  'text-slate-300 [&>:not(:first-child)]:stroke-background':
-                    indicators?.severity === Severity.MEDIUM,
-                })}
-                width={'20'}
-                height={'20'}
-              />
-            </>
-          )}
-          {indicators?.label ?? 'No Violations Detected'}
-        </div>
-      );
     },
   }),
 ];
