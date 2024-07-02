@@ -25,7 +25,8 @@ services:
       NODE_ENV: ${NODE_ENV}
       ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
     depends_on:
-      - migrate
+      migrate:
+        condition: service_completed_successfully
   migrate:
     build:
       context: .

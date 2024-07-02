@@ -4,9 +4,8 @@ import { RiskIndicatorsSummary } from '@/common/components/molecules/RiskIndicat
 import { Card } from '@/common/components/atoms/Card/Card';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { severityToClassName, severityToTextClassName } from '@/common/constants';
+import { severityToClassName } from '@/common/constants';
 import { Badge } from '@ballerine/ui';
 import { titleCase } from 'string-ts';
 import { getSeverityFromRiskScore } from '@/common/utils/get-severity-from-risk-score';
@@ -37,22 +36,6 @@ export const BusinessReportSummary: FunctionComponent<{
         <CardHeader className={'pt-4 font-bold'}>
           <span className={'mb-1'}>Overall Risk Level</span>
           <div className="flex items-center space-x-2">
-            <TextWithNAFallback
-              className={ctw(
-                {
-                  [severityToTextClassName[
-                    (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
-                  ]]: riskScore || riskScore === 0,
-                },
-                {
-                  'text-destructive': severity === Severity.CRITICAL,
-                },
-                'text-4xl font-bold',
-              )}
-              checkFalsy={false}
-            >
-              {riskScore}
-            </TextWithNAFallback>
             {(riskScore || riskScore === 0) && (
               <Badge
                 className={ctw(

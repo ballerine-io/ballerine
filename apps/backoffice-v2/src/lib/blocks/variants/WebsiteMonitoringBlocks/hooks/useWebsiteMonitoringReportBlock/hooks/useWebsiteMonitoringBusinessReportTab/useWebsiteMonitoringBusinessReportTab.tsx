@@ -122,39 +122,48 @@ export const useWebsiteMonitoringBusinessReportTab = ({
       websitesCompanyAnalysis,
     ],
   );
-  const [{ activeTab }] = useSearchParamsByEntity();
+  const [{ activeMonitoringTab }] = useSearchParamsByEntity();
   const { search } = useLocation();
-  const updateActiveTab = useCallback(({ tab, search }: { tab: string; search: string }) => {
-    const searchParams = new URLSearchParams(search);
+  const getUpdatedSearchParamsWithActiveMonitoringTab = useCallback(
+    ({ tab, search }: { tab: string; search: string }) => {
+      const searchParams = new URLSearchParams(search);
 
-    searchParams.set('activeTab', tab);
+      searchParams.set('activeMonitoringTab', tab);
 
-    return searchParams.toString();
-  }, []);
+      return searchParams.toString();
+    },
+    [],
+  );
   const riskIndicators = [
     {
       title: "Website's Company Analysis",
-      search: updateActiveTab({ tab: 'websitesCompany', search }),
+      search: getUpdatedSearchParamsWithActiveMonitoringTab({ tab: 'websitesCompany', search }),
       violations: websitesCompanyAnalysis ?? [],
     },
     {
       title: 'Website Credibility Analysis',
-      search: updateActiveTab({ tab: 'websiteCredibility', search }),
+      search: getUpdatedSearchParamsWithActiveMonitoringTab({ tab: 'websiteCredibility', search }),
       violations: websiteCredibilityAnalysis,
     },
     {
       title: 'Ads and Social Media Analysis',
-      search: updateActiveTab({ tab: 'adsAndSocialMedia', search }),
+      search: getUpdatedSearchParamsWithActiveMonitoringTab({ tab: 'adsAndSocialMedia', search }),
       violations: adsAndSocialMediaAnalysis ?? [],
     },
     {
       title: 'Website Line of Business Analysis',
-      search: updateActiveTab({ tab: 'websiteLineOfBusiness', search }),
+      search: getUpdatedSearchParamsWithActiveMonitoringTab({
+        tab: 'websiteLineOfBusiness',
+        search,
+      }),
       violations: websiteLineOfBusinessAnalysis ?? [],
     },
     {
       title: 'Ecosystem and Transactions Analysis',
-      search: updateActiveTab({ tab: 'ecosystemAndTransactions', search }),
+      search: getUpdatedSearchParamsWithActiveMonitoringTab({
+        tab: 'ecosystemAndTransactions',
+        search,
+      }),
       violations: ecosystemAndTransactionsAnalysis ?? [],
     },
   ] as const satisfies ReadonlyArray<{
@@ -167,13 +176,13 @@ export const useWebsiteMonitoringBusinessReportTab = ({
   }>;
 
   return {
-    activeTab,
+    activeMonitoringTab,
     riskIndicators,
     riskLevels,
     riskScore,
     tabs,
     summary,
-    updateActiveTab,
+    getUpdatedSearchParamsWithActiveMonitoringTab,
     search,
   };
 };

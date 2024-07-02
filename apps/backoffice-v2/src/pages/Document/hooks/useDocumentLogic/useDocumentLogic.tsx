@@ -8,12 +8,14 @@ import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { CommunicationChannel, CommunicationChannelEvent } from '@/common/enums';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
 export const useDocumentLogic = () => {
   const { state } = useLocation();
   const filterId = useFilterId();
   const navigate = useNavigate();
-  const { entityId, documentId, locale = 'en' } = useParams();
+  const { entityId, documentId } = useParams();
+  const locale = useLocale();
 
   const broadcastChannel = useMemo(
     () =>

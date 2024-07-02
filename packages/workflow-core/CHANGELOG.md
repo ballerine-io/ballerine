@@ -1,10 +1,20 @@
 # @ballerine/workflow-core
 
+## 0.6.16
+
+### Patch Changes
+
+- document changes
+- Updated dependencies
+  - @ballerine/common@0.9.10
+
 ## 0.6.15
 
 ### Patch Changes
 
 - Added deep merge with mutation
+- Updated dependencies
+  - @ballerine/common@0.9.9
 
 ## 0.6.14
 

@@ -1,22 +1,23 @@
 ---
 title: Schema Breakdown
-description: About Collection Flow
+description: Detailed overview of the Collection Flow Schema
 
 ---
+import CodeBlock from '../../../../components/CodeBlock/CodeBlock.astro';
 
 ## Schema Breakdown
 
-The Collection Flow schema is a powerful feature designed to facilitate the creation of dynamic, multi-step forms that guide users through a series of pages to collect data. This documentation provides an in-depth look at each property and its purpose within the schema.
+The Collection Flow schema is a powerful tool designed to facilitate the creation of dynamic, multi-step forms that guide users through a series of pages to collect data. This documentation provides an in-depth look at each property and its purpose within the schema.
 
 ### Page Properties
 
-The page properties define the overall structure and behavior of each page in the wizard. Each page is configured with the following properties:
+Page properties define the overall structure and behavior of each page in the wizard. Each page is configured with the following properties:
 
-- **type**: `'page'` - This property is always set to `'page'` to indicate that the schema represents a page.
-- **name**: A string used to display the page name in the application. This is often linked to localization keys for multilingual support, ensuring that the page name is appropriately translated and presented to users.
+- **type**: Always set to `'page'` to indicate that the schema represents a page.
+- **name**: A string used to display the page name in the application. Often linked to localization keys for multilingual support, ensuring that the page name is appropriately translated and presented to users.
 - **number**: An integer representing the order of the page in the sequence. Pages are displayed in ascending order based on this number, which allows for an organized and logical progression through the form steps.
-- **stateName**: A unique identifier for the page, used to maintain state transitions within xstate, which manages the flow of the wizard. This ensures that the state of the form is correctly tracked and managed as the user navigates between pages.
-- **pageValidation**: An array of validation rules applied to the entire page. These rules are used to generate validation errors that are displayed to the user under the relevant fields. Validation ensures that the data collected meets the required criteria before allowing the user to proceed. This helps in maintaining the integrity and accuracy of the collected data.
+- **stateName**: A unique identifier for the page, used to maintain state transitions within XState, which manages the flow of the wizard. This ensures that the state of the form is correctly tracked and managed as the user navigates between pages.
+- **pageValidation**: An array of validation rules applied to the entire page. These rules are used to generate validation errors that are displayed to the user under the relevant fields. Validation ensures that the data collected meets the required criteria before allowing the user to proceed, maintaining the integrity and accuracy of the collected data.
 
 ### Rules
 
@@ -28,7 +29,7 @@ Rules are a crucial part of the schema, used to determine the behavior and valid
 Rules are used in three main cases:
 
 1. **Checkers**: These include `requiredOn`, `availableOn`, and `visibleOn`. These checkers evaluate the rules and expect a true/false result to determine if an element is required, enabled, or visible, respectively.
-2. **Page Validation**: This applies validation rules to the entire page. In this case, only `json-schema` is supported, and it is used to output validation errors under the relevant fields.
+2. **Page Validation**: Applies validation rules to the entire page. In this case, only `json-schema` is supported, and it is used to output validation errors under the relevant fields.
 3. **Action Dispatch**: Rules also determine whether page actions should be fired. They evaluate conditions to ensure that actions are only executed when the specified criteria are met.
 
 ### Actions
@@ -37,7 +38,7 @@ Actions are defined within each page to handle specific tasks related to that pa
 
 - **type**: The name of the action handler or plugin to be executed. This specifies what kind of action should be performed.
 - **params**: An object containing plugin-specific parameters required for the action. These parameters provide the necessary details for the action to be carried out correctly.
-- **dispatchOn**: An object defining the conditions under which the action is dispatched. It includes:
+- **dispatchOn**: An object defining the conditions under which the action is dispatched, including:
   - **uiEvents**: An array of events that trigger the action execution. These events are tied to user interactions with UI elements, such as clicks or form submissions.
   - **rules**: A set of rules that determine whether the action can be performed. For example, rules can check if specific values are present before proceeding, ensuring that the action is only executed when the required conditions are met.
 
@@ -46,72 +47,23 @@ Actions are defined within each page to handle specific tasks related to that pa
 The elements within each page define the individual components that make up the page. These elements include various input fields, containers, and controls that users interact with. Each element has several properties that determine its behavior and appearance:
 
 - **type**: The type of the element, used to map the element to its corresponding UI component. Examples include `json-form`, `h1`, `input`, etc. This property determines how the element is rendered and interacted with on the page.
-- **options**: An object containing element-specific parameters. For instance, for an `h1` element, this might include a `text` property with the value `'Hello world'`. These options customize the appearance and behavior of the element.
+- **options**: An object containing element-specific parameters. For instance, for an `h1` element, this might include a `text` property with the value 'Hello world'. These options customize the appearance and behavior of the element.
 - **valueDestination**: A string representing the path where the element's value will be saved. This is applicable to input elements, indicating where in the data model the input value should be stored (e.g., `context.data.firstName`). This property ensures that the collected data is correctly mapped to the underlying data structure.
 - **name**: A unique identifier for the element, ensuring that each element can be uniquely referenced within the page.
 - **availableOn**: An array of rules that determine if the element is enabled or disabled. These rules are evaluated to control whether the user can interact with the element.
 - **visibleOn**: Similar to `availableOn`, but these rules control the visibility of the element. If the rules are not met, the element is hidden from the user.
 - **requiredOn**: Rules that conditionally indicate if an input element is required. This helps in dynamically adjusting the form based on user inputs or other conditions.
 
-### Example
 
-Below is an example that demonstrates how these properties might be used in a real-world scenario:
+### Example Schema Breakdown
 
-#### validationSchema
-```json
-{
-  "type": "object",
-  "properties": {
-    "phone": {
-      "type": "string",
-      "pattern": "^[+]?[0-9]{10,15}$",
-      "errorMessage": {
-        "pattern": "Phone should be in valid format."
-      }
-    },
-    "dateOfBirth": {
-      "type": "string",
-      "errorMessage": {
-        "type": "Date should be valid."
-      }
-    },
-    "firstName": {
-      "type": "string",
-      "minLength": 1,
-      "errorMessage": {
-        "minLength": "Min length 1"
-      }
-    },
-    "lastName": {
-      "type": "string",
-      "minLength": 1,
-      "errorMessage": {
-        "minLength": "Min length 1"
-      }
-    },
-    "jobTitle": {
-      "type": "string",
-      "minLength": 1,
-      "errorMessage": {
-        "minLength": "Min Length 1"
-      }
-    }
-  },
-  "required": [
-    "phone",
-    "firstName",
-    "lastName",
-    "jobTitle",
-    "dateOfBirth"
-  ]
-}
-```
+#### Page Metadata
 
-#### Definition
-```json
-{
+This section defines the basic metadata for the page in the wizard.
+
+<CodeBlock lang={`json`} code={`{
   "type": "page",
-  "name": "text.personalDetails",
+  "name": "Personal Details",
   "number": 1,
   "stateName": "personal_details",
   "pageValidation": [
@@ -119,206 +71,180 @@ Below is an example that demonstrates how these properties might be used in a re
       "type": "json-schema",
       "value": "validationSchema"
     }
-  ],
-  "actions": [
-    {
-      "type": "definitionPlugin",
-      "params": {
-        "pluginName": "update_end_user"
-      },
-      "dispatchOn": {
-        "uiEvents": [
-          {
-            "event": "onClick",
-            "uiElementName": "next-page-button"
-          }
-        ],
-        "rules": [
-          {
-            "type": "json-schema",
-            "value": "validationSchema"
-          }
-        ]
-      }
-    },
-    {
-      "type": "definitionEvent",
-      "params": {
-        "eventName": "NEXT"
-      },
-      "dispatchOn": {
-        "uiEvents": [
-          {
-            "event": "onClick",
-            "uiElementName": "next-page-button"
-          }
-        ],
-        "rules": [
-          {
-            "type": "json-schema",
-            "value": "validationSchema"
-          }
-        ]
-      }
-    }
-  ],
+  ]
+}`}/>
+
+- **type**: The type of this element, in this case, it's a "page".
+- **name**: The name of the page.
+- **number**: The sequence number of the page in the flow.
+- **stateName**: The state identifier for this page.
+- **pageValidation**: An array defining the validation rules for the page using JSON schema.
+
+#### Main Container
+
+This section contains the main structure of the page, including the title and form elements.
+
+<CodeBlock lang={`json`} code={`{
+  "type": "mainContainer",
   "elements": [
     {
-      "type": "mainContainer",
+      "type": "container",
       "elements": [
         {
-          "type": "container",
-          "elements": [
-            {
-              "type": "h1",
-              "options": {
-                "text": "Personal Information"
-              }
-            }
-          ]
-        },
-        {
-          "type": "json-form",
-          "name": "json-form:personal-information",
+          "type": "h1",
           "options": {
-            "jsonFormDefinition": {
-              "required": [
-                "first-name-input",
-                "last-name-input",
-                "job-title-input",
-                "date-of-birth-input",
-                "phone-number-input"
-              ]
-            }
-          },
-          "availableOn": [
-            {
-              "type": "json-schema",
-              "value": "validationSchema"
-            }
-          ],
-          "elements": [
-            {
-              "name": "first-name-input",
-              "type": "json-form:text",
-              "valueDestination": "firstName",
-              "options": {
-                "label": "text.name",
-                "hint": "First Name",
-                "jsonFormDefinition": {
-                  "type": "string"
-                }
-              }
-            },
-            {
-              "name": "last-name-input",
-              "type": "json-form:text",
-              "valueDestination": "lastName",
-              "options": {
-                "hint": "Last Name",
-                "jsonFormDefinition": {
-                  "type": "string"
-                }
-              }
-            },
-            {
-              "name": "job-title-input",
-              "type": "json-form:text",
-              "valueDestination": "jobTitle",
-              "options": {
-                "label": "Job Title",
-                "hint": "CEO",
-                "jsonFormDefinition": {
-                  "type": "string"
-                }
-              }
-            },
-            {
-              "name": "date-of-birth-input",
-              "type": "json-form:date",
-              "valueDestination": "dateOfBirth",
-              "options": {
-                "label": "Date of Birth",
-                "jsonFormDefinition": {
-                  "type": "string"
-                },
-                "uiSchema": {
-                  "ui:field": "DateInput",
-                  "ui:label": true
-                }
-              }
-            },
-            {
-              "name": "phone-number-input",
-              "type": "international-phone-number",
-              "valueDestination": "phone",
-              "options": {
-                "label": "Phone Number",
-                "jsonFormDefinition": {
-                  "type": "string"
-                },
-                "uiSchema": {
-                  "ui:field": "PhoneInput",
-                  "ui:label": true
-                }
-              }
-            },
-            {
-              "name": "authority-checkbox",
-              "type": "authority-checkbox",
-              "valueDestination": "iHaveSigningAuthority",
-              "options": {
-                "label": "I confirm...",
-                "jsonFormDefinition": {
-                  "type": "boolean"
-                },
-                "uiSchema": {
-                  "ui:label": false
-                }
-              }
-            }
-          ]
+            "text": "Personal Information"
+          }
+        }
+      ]
+    },
+    ...
+  ]
+}`}/>
+
+- **type**: Defines the container type.
+- **elements**: An array of elements inside this container.
+- **h1**: A header element displaying "Personal Information".
+
+#### Form Elements
+
+This part defines the form elements to collect personal details.
+
+<CodeBlock lang={`json`} code={`{
+  "type": "json-form",
+  "valueDestination": "entity.data.additionalInfo.mainRepresentative",
+  "name": "json-form:personal-information",
+  "options": {
+    "jsonFormDefinition": {
+      "required": [
+        "first-name-input",
+        "last-name-input",
+        "job-title-input",
+        "date-of-birth-input",
+        "phone-number-input"
+      ]
+    }
+  },
+  "elements": [
+    {
+      "name": "first-name-input",
+      "type": "json-form:text",
+      "valueDestination": "entity.data.additionalInfo.mainRepresentative.firstName",
+      "options": {
+        "label": "text.name",
+        "hint": "text.firstName",
+        "jsonFormDefinition": {
+          "type": "string"
+        }
+      }
+    },
+    ...
+  ]
+}`}/>
+
+- **json-form**: Indicates this is a JSON form element.
+- **valueDestination**: The data path where the form data will be saved.
+- **name**: The identifier for the form.
+- **options**: Configuration options for the form.
+- **elements**: An array of form elements such as text inputs for "first-name-input", "last-name-input", etc.
+
+#### Input Element
+
+An example of a single input field within the form.
+
+<CodeBlock lang={`json`} code={`{
+  "name": "first-name-input",
+  "type": "json-form:text",
+  "valueDestination": "entity.data.additionalInfo.mainRepresentative.firstName",
+  "options": {
+    "label": "text.name",
+    "hint": "text.firstName",
+    "jsonFormDefinition": {
+      "type": "string"
+    }
+  }
+}`}/>
+
+- **name**: The name of the input field.
+- **type**: The type of input, in this case, a text input.
+- **valueDestination**: The data path for this input's value.
+- **options**: Additional settings for the input, such as label and hint.
+- **jsonFormDefinition**: Defines the expected data type.
+
+#### Control Container
+
+Defines the control elements like buttons to navigate the form.
+
+<CodeBlock lang={`json`} code={`{
+  "name": "controls-container",
+  "type": "container",
+  "options": {
+    "align": "right"
+  },
+  "elements": [
+    {
+      "name": "next-page-button",
+      "type": "submit-button",
+      "options": {
+        "uiDefinition": {
+          "classNames": ["align-right", "padding-top-10"]
         },
+        "text": "text.continue"
+      },
+      "availableOn": [
         {
-          "name": "controls-container",
-          "type": "container",
-          "options": {
-            "align": "right"
-          },
-          "elements": [
-            {
-              "name": "next-page-button",
-              "type": "submit-button",
-              "options": {
-                "text": "Submit"
-              },
-              "availableOn": [
-                {
-                  "type": "json-logic",
-                  "value": {
-                    "type": "json-logic",
-                    "value": {
-                      "if": [
-                        {
-                          "===": [
-                            {
-                              "var": "iHaveSigningAuthority"
-                            },
-                            true
-                          ]
-                        },
-                        true,
-                        false
-                      ]
-                    }
-                  }
-                }
-              ]
-            }
-          ]
+          "type": "json-schema",
+          "value": "validationSchema"
         }
       ]
     }
   ]
-}
+}`}/>
 
+- **name**: The name of the control container.
+- **type**: The container type.
+- **options**: Configuration options like alignment.
+- **elements**: An array of control elements, such as the "next-page-button".
+- **submit-button**: A button to submit the current form step.
+- **availableOn**: Conditions under which the button is available, based on validation.
+
+#### Actions
+
+Defines actions to be taken when certain events occur, like clicking the next button.
+
+<CodeBlock lang={`json`} code={`{
+  "type": "definitionPlugin",
+  "params": {
+    "pluginName": "update_end_user"
+  },
+  "dispatchOn": {
+    "uiEvents": [{ "event": "onClick", "uiElementName": "next-page-button" }],
+    "rules": [
+      {
+        "type": "json-schema",
+        "value": "validationSchema"
+      }
+    ]
+  }
+},
+{
+  "type": "definitionEvent",
+  "params": {
+    "eventName": "NEXT"
+  },
+  "dispatchOn": {
+    "uiEvents": [{ "event": "onClick", "uiElementName": "next-page-button" }],
+    "rules": [
+      {
+        "type": "json-schema",
+        "value": "validationSchema"
+      }
+    ]
+  }
+}`}/>
+
+- **type**: The action type, like "definitionPlugin" or "definitionEvent".
+- **params**: Parameters for the action.
+- **dispatchOn**: Conditions for dispatching the action, like clicking a button.
+- **uiEvents**: The UI event that triggers the action.
+- **rules**: Validation rules for the action.

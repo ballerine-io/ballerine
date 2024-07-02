@@ -10,9 +10,9 @@ import { createProject } from '@/test/helpers/create-project';
 import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import {
-  TransactionFactory,
   createBusinessCounterparty,
   createEndUserCounterparty,
+  TransactionFactory,
 } from '@/transaction/test-utils/transaction-factory';
 import { faker } from '@faker-js/faker';
 import { Test } from '@nestjs/testing';

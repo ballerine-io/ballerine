@@ -36,7 +36,9 @@ runs:
 
     - name: Test
       shell: bash
-      run: pnpm test -- --verbose false
+      run: |
+        export NODE_OPTIONS="--max-old-space-size=8192"
+        pnpm test -- --verbose false
       env:
         ENVIRONMENT_NAME: test
         JEST_HTML_REPORTER_PAGE_TITLE: ${{ github.ref_name }}
