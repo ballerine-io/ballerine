@@ -34,6 +34,7 @@ export const MerchantMonitoringCreateCheckPage: FunctionComponent = () => {
     riskLabels,
     industries,
     isLoadingCustomer,
+    onValueChange,
   } = useMerchantMonitoringCreateBusinessReportPageLogic();
 
   return (
@@ -62,7 +63,12 @@ export const MerchantMonitoringCreateCheckPage: FunctionComponent = () => {
                   <FormItem className={`max-w-[185px]`}>
                     <FormLabel>Website URL</FormLabel>
                     <FormControl>
-                      <Input placeholder="www.example.com" autoFocus {...field} />
+                      <Input
+                        placeholder="www.example.com"
+                        autoFocus
+                        {...field}
+                        onChange={onValueChange(field.onChange)}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -79,7 +85,11 @@ export const MerchantMonitoringCreateCheckPage: FunctionComponent = () => {
                     <FormItem>
                       <FormLabel>Registered Company Name (Optional)</FormLabel>
                       <FormControl>
-                        <Input placeholder="ACME Corp." {...field} />
+                        <Input
+                          placeholder="ACME Corp."
+                          {...field}
+                          onChange={onValueChange(field.onChange)}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -117,7 +127,11 @@ export const MerchantMonitoringCreateCheckPage: FunctionComponent = () => {
                     <FormItem>
                       <FormLabel>Business ID (Optional)</FormLabel>
                       <FormControl>
-                        <Input placeholder="q1w2e3r4t5y6u7i8o9p0" {...field} />
+                        <Input
+                          placeholder="q1w2e3r4t5y6u7i8o9p0"
+                          {...field}
+                          onChange={onValueChange(field.onChange)}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

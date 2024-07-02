@@ -5,11 +5,10 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { BusinessReportStatus, TBusinessReport } from '@/domains/business-reports/fetchers';
 import { titleCase } from 'string-ts';
 
-import { severityToClassName, severityToTextClassName } from '@/common/constants';
+import { severityToClassName } from '@/common/constants';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { getSeverityFromRiskScore } from '@/common/utils/get-severity-from-risk-score';
 import { Badge } from '@ballerine/ui';
-import { Severity } from '@/common/types';
 
 const columnHelper = createColumnHelper<TBusinessReport>();
 
@@ -85,21 +84,6 @@ export const columns = [
 
       return (
         <div className="flex items-center gap-2">
-          <TextWithNAFallback
-            className={ctw(
-              {
-                [severityToTextClassName[
-                  (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
-                ]]: riskScore || riskScore === 0,
-                'font-bold': riskScore || riskScore === 0,
-                'text-destructive': severity === Severity.CRITICAL || severity === Severity.HIGH,
-              },
-              'py-0.5',
-            )}
-            checkFalsy={false}
-          >
-            {riskScore}
-          </TextWithNAFallback>
           {(riskScore || riskScore === 0) && (
             <Badge
               className={ctw(
