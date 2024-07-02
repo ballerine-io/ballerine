@@ -1,4 +1,4 @@
-import { EQUALS, BETWEEN, LT, LTE, GT, GTE, LAST_YEAR } from './helpers';
+import { EQUALS, BETWEEN, LT, LTE, GT, GTE, LAST_YEAR, EXISTS } from './helpers';
 
 import { OPERATION } from './enums';
 
@@ -10,6 +10,7 @@ export const operationHelpers = {
   [OPERATION.LT]: LT,
   [OPERATION.LTE]: LTE,
   [OPERATION.LAST_YEAR]: LAST_YEAR,
+  [OPERATION.EXISTS]: EXISTS,
 } as const;
 
 export type OperationHelper = (typeof operationHelpers)[keyof typeof operationHelpers];

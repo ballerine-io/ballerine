@@ -1,3 +1,5 @@
+import { ZodSchema } from 'zod';
+
 export type primitive = number | string | boolean;
 
 export type BetweenParams = {
@@ -7,6 +9,10 @@ export type BetweenParams = {
 
 export type LastYearsParams = {
   years: number;
+};
+
+export type ExistsParams = {
+  schema?: ZodSchema;
 };
 
 export type ConditionFn<T = primitive> = (value: primitive, param: T) => boolean;

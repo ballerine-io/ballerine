@@ -1,8 +1,9 @@
-import { primitive, ConditionFn, BetweenParams, LastYearsParams } from './types';
+import { primitive, ConditionFn, BetweenParams, LastYearsParams, ExistsParams } from './types';
 import { TOperation } from '../types';
 import { ZodSchema } from 'zod';
 import { BetweenSchema, LastYearsSchema, PrimitiveSchema } from './schemas';
 import { ValidationFailedError } from '../errors';
+import { isEmpty } from 'lodash';
 
 export abstract class BaseOperator<T = primitive> {
   operator: string;
@@ -189,6 +190,26 @@ class LastYear extends BaseOperator<LastYearsParams> {
   };
 }
 
+class Exists extends BaseOperator<ExistsParams> {
+  constructor() {
+    super({
+      operator: 'EXISTS',
+    });
+  }
+
+  eval: ConditionFn<ExistsParams> = (dataValue: unknown, conditionValue: ExistsParams): boolean => {
+    if (conditionValue.schema) {
+      const result = conditionValue.schema.safeParse(dataValue);
+
+      if (!result.success) {
+        return false;
+      }
+    }
+
+    return !isEmpty(dataValue);
+  };
+}
+
 // Export instances
 export const EQUALS = new Equals();
 export const GT = new GreaterThan();
@@ -197,3 +218,4 @@ export const GTE = new GreaterThanOrEqual();
 export const LTE = new LessThanOrEqual();
 export const BETWEEN = new Between();
 export const LAST_YEAR = new LastYear();
+export const EXISTS = new Exists();
