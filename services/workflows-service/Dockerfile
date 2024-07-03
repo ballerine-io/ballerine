@@ -1,4 +1,4 @@
-FROM node:18.19.1-bullseye-slim as dev
+FROM node:18.20.3-bullseye-slim as dev
 
 RUN apt-get update
 RUN apt-get install dumb-init
@@ -16,7 +16,7 @@ RUN npm run build
 
 CMD [ "dumb-init", "npm", "run", "dev", "--host" ]
 
-FROM node:18.19.1-bullseye-slim as prod
+FROM node:18.20.3-bullseye-slim as prod
 
 WORKDIR /app
 
