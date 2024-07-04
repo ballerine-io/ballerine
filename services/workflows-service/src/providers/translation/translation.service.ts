@@ -21,6 +21,7 @@ export class TranslationService {
     this.__i18next = createInstance({
       fallbackLng: 'en',
       initImmediate: true,
+      nsSeparator: false,
       //@ts-ignore
       resources: resources.reduce((acc, { language, resource }) => {
         acc[language] = { translation: resource };
