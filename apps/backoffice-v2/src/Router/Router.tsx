@@ -17,7 +17,6 @@ import { UnauthenticatedLayout } from '@/domains/auth/components/Unauthenticated
 import { Locale } from '@/pages/Locale/Locale.page';
 import { unauthenticatedLayoutLoader } from '@/domains/auth/components/UnauthenticatedLayout/UnauthenticatedLayout.loader';
 import { Document } from '@/pages/Document/Document.page';
-import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
 import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
 import { TransactionMonitoring } from '@/pages/TransactionMonitoring/TransactionMonitoring';
 import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
@@ -30,12 +29,14 @@ import { MerchantMonitoring } from '@/pages/MerchantMonitoring/MerchantMonitorin
 import { MerchantMonitoringCreateCheckPage } from '@/pages/MerchantMonitoringCreateCheck/MerchantMonitoringCreateCheck.page';
 import { MerchantMonitoringBusinessReport } from '@/pages/MerchantMonitoringBusinessReport/MerchantMonitoringBusinessReport.page';
 import { MerchantMonitoringLayout } from '@/domains/business-reports/components/MerchantMonitoringLayout/MerchantMonitoringLayout';
+import { NotFoundRedirectWithProviders } from '@/pages/NotFound/NotFoundRedirectWithProviders';
+import { RouteErrorWithProviders } from '@/common/components/atoms/RouteError/RouteErrorWithProviders';
 
 const router = createBrowserRouter([
   {
     path: '/*',
-    element: <NotFoundRedirect />,
-    errorElement: <RouteError />,
+    element: <NotFoundRedirectWithProviders />,
+    errorElement: <RouteErrorWithProviders />,
   },
   {
     path: '/',

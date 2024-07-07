@@ -41,7 +41,13 @@ export const WorkflowDefinitionByIdSchema = ObjectWithIdSchema.extend({
   variant: z.string().default(WorkflowDefinitionVariant.DEFAULT),
   contextSchema: z.record(z.any(), z.any()).nullable(),
   documentsSchema: z.array(z.any()).optional().nullable(),
-  config: WorkflowDefinitionConfigSchema,
+  config: WorkflowDefinitionConfigSchema.transform(value => ({
+    ...value,
+    theme: {
+      ...value.theme,
+      type: WorkflowDefinitionConfigThemeEnum.DOCUMENTS_REVIEW,
+    },
+  })),
   definition: z.record(z.string(), z.unknown()),
   extensions: z
     .object({
