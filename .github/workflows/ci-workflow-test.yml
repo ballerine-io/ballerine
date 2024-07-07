@@ -42,15 +42,21 @@ jobs:
           - name: Monorepo init
             run: pnpm monorepo:init
 
-          - name: Run Docker DB
-            run: docker-compose -f services/workflows-service/docker-compose.db.yml up -d
-
           - name: Run KYB example
             run: nohup pnpm run kyb-manual-review-example > nohup.out & 
-            
+      
           - name: Sleep for 60 seconds
             run: sleep 60
 
           - name : Tail output
             run: |
-              tail -n 250 nohup.out
+              result=$(tail -n 250 nohup.out | grep exit );
+              echo $result
+              if [[ -z "$result" ]]
+              then
+                echo " Steps succeeded"
+                exit 0
+              else
+                echo " Steps failed"
+                exit 1
+              fi
