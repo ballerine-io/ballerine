@@ -58,5 +58,6 @@ jobs:
                 exit 0
               else
                 echo " Steps failed"
+                tail -n 250 nohup.out
                 exit 1
               fi
