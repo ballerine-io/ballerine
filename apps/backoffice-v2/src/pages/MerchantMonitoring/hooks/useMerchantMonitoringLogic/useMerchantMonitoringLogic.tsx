@@ -23,7 +23,7 @@ export const useMerchantMonitoringLogic = () => {
   const isLastPage = (businessReports?.length ?? 0) < pageSize || businessReports?.length === 0;
 
   return {
-    disableCreateMerchantMonitoringButton: customer?.config?.disableCreateMerchantMonitoringButton,
+    hideCreateMerchantMonitoringButton: customer?.config?.hideCreateMerchantMonitoringButton,
     businessReports,
     isLoadingBusinessReports,
     page,

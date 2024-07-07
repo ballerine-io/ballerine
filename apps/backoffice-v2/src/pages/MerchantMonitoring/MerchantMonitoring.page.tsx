@@ -18,14 +18,14 @@ export const MerchantMonitoring: FunctionComponent = () => {
     onPaginate,
     isLastPage,
     locale,
-    disableCreateMerchantMonitoringButton,
+    hideCreateMerchantMonitoringButton,
   } = useMerchantMonitoringLogic();
 
   return (
     <div className="flex h-full flex-col px-6 pb-6 pt-10">
       <div className={`flex justify-between`}>
         <h1 className="pb-5 text-2xl font-bold">Merchant Monitoring</h1>
-        {!disableCreateMerchantMonitoringButton && (
+        {!hideCreateMerchantMonitoringButton && (
           <Link
             className={buttonVariants({
               variant: 'outline',
