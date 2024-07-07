@@ -16,6 +16,7 @@ const CustomerSchema = z.object({
   config: z
     .object({
       isMerchantMonitoringEnabled: z.boolean().default(false),
+      disableCreateMerchantMonitoringButton: z.boolean().default(false),
       isExample: z.boolean().default(false),
       isDemo: z.boolean().default(false),
     })

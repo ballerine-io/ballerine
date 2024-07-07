@@ -4,9 +4,11 @@ import { getMerchantMonitoringSearchSchema } from '@/pages/MerchantMonitoring/ge
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { usePagination } from '@/common/hooks/usePagination/usePagination';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
 
 export const useMerchantMonitoringLogic = () => {
   const locale = useLocale();
+  const { data: customer } = useCustomerQuery();
   const { data: session } = useAuthenticatedUserQuery();
   const MerchantMonitoringSearchSchema = getMerchantMonitoringSearchSchema(session?.user?.id);
   const [{ page, pageSize, sortBy, sortDir }] = useZodSearchParams(MerchantMonitoringSearchSchema);
@@ -21,6 +23,7 @@ export const useMerchantMonitoringLogic = () => {
   const isLastPage = (businessReports?.length ?? 0) < pageSize || businessReports?.length === 0;
 
   return {
+    disableCreateMerchantMonitoringButton: customer?.config?.disableCreateMerchantMonitoringButton,
     businessReports,
     isLoadingBusinessReports,
     page,
