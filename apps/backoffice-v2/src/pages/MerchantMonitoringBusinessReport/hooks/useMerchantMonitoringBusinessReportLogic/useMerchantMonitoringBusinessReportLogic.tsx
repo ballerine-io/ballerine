@@ -210,9 +210,11 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     [BusinessReportStatus.IN_PROGRESS]: { variant: 'violet', text: 'In-progress' },
     [BusinessReportStatus.NEW]: { variant: 'secondary', text: 'New' },
   } as const;
-  const websiteWithNoProtocol = safeUrl(
-    businessReport?.business?.website || businessReport?.report?.data?.summary?.website?.url || '',
-  )?.hostname;
+
+  const url =
+    businessReport?.business?.website || businessReport?.report?.data?.summary?.website?.url || '';
+
+  const websiteWithNoProtocol = safeUrl(url)?.hostname || url;
 
   return {
     onNavigateBack,
