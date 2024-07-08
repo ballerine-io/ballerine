@@ -103,7 +103,7 @@ export class BusinessReportControllerInternal {
       {
         websiteUrl,
         countryCode,
-        merchantName,
+        parentCompanyName: merchantName,
         reportType,
         callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${business.id}&businessReportId=${businessReport.id}`,
       },
