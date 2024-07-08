@@ -61,11 +61,11 @@ export const BusinessReportSchema = z
       .nullable(),
   })
   .optional()
-  .transform(value => ({
-    ...value,
+  .transform(data => ({
+    ...data,
     companyName:
-      value?.report.data?.websiteCompanyAnalysis?.companyName || value?.business?.companyName,
-    website: value?.report.data?.websiteCompanyAnalysis?.website.url || value?.business?.website,
+      data?.report.data?.websiteCompanyAnalysis?.companyName || data?.business?.companyName,
+    website: data?.report.data?.websiteCompanyAnalysis?.website.url || data?.business?.website,
   }));
 
 export const BusinessReportsSchema = z.array(BusinessReportSchema);
