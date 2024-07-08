@@ -38,7 +38,7 @@ export class TranslationService {
           return reject(err);
         }
 
-        resolve(null);
+        resolve(undefined);
       });
     });
   }

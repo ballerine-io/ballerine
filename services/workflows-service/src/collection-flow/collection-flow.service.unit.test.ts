@@ -32,10 +32,6 @@ describe('CollectionFlowService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
-          provide: TranslationService,
-          useValue: translationService,
-        },
-        {
           provide: AppLoggerService,
           useValue: noop,
         },
@@ -112,6 +108,8 @@ describe('CollectionFlowService', () => {
       array: ['Translated Item 1', 'Translated Item 2'],
     };
 
+    const translationService = new TranslationService();
+
     translationService.translate = jest.fn((text, lang) =>
       lang === 'fr' ? `Translated ${text}` : text,
     );
@@ -120,7 +118,7 @@ describe('CollectionFlowService', () => {
       uiSchema,
       context,
       language,
-      new TranslationService(),
+      translationService,
     );
     expect(result).toEqual(expectedUiSchema);
   });
