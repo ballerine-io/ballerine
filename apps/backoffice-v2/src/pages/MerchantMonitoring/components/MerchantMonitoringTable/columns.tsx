@@ -61,9 +61,12 @@ export const columns = [
     },
     header: 'Website',
   }),
-  columnHelper.accessor('business.companyName', {
-    cell: info => {
-      const companyName = info.getValue();
+  columnHelper.display({
+    id: 'companyName',
+    cell: ({ row }) => {
+      const companyName =
+        row.original?.report.data?.websiteCompanyAnalysis?.companyName ||
+        row.original?.business?.companyName;
 
       return <TextWithNAFallback>{companyName}</TextWithNAFallback>;
     },

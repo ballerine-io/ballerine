@@ -55,7 +55,7 @@ export class BusinessReportControllerInternal {
     @CurrentProject() currentProjectId: TProjectId,
   ) {
     let business: Pick<Business, 'id' | 'correlationId'> | undefined;
-    const merchantNameWithDefault = merchantName || 'Not provided';
+    const merchantNameWithDefault = merchantName || 'Not detected';
 
     if (!businessCorrelationId) {
       business = await this.businessService.create({
