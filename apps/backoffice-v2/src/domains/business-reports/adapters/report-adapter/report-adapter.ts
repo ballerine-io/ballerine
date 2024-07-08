@@ -42,14 +42,16 @@ export const reportAdapter = {
       adsAndSocialMediaAnalysis: toRiskLabels(
         data?.report?.data?.summary?.riskIndicatorsByDomain?.adsAndSocialViolations,
       ),
-      adsAndSocialMediaPresence: Object.entries(data?.report?.data?.socialMedia?.ads ?? {})
+      adsAndSocialMediaPresence: [
+        ...Object.entries({ facebook: data?.report?.data?.socialMedia?.facebookData ?? {} }),
+        ...Object.entries({ instagram: data?.report?.data?.socialMedia?.instagramData ?? {} }),
+      ]
         .map(([provider, data]) => {
           if (!AdsProviders.includes(provider.toUpperCase() as TAdsProvider)) {
             return;
           }
 
           const adapter = adsProviderAdapter[provider as keyof typeof adsProviderAdapter];
-
           const adaptedData = adapter(data);
 
           return {
@@ -87,17 +89,20 @@ export const reportAdapter = {
       websiteCredibilityAnalysis: toRiskLabels(
         data?.report?.data?.summary?.riskIndicatorsByDomain?.tldViolations,
       ),
-      adsImages: Object.entries(data?.report?.data?.socialMedia?.ads ?? {} ?? {})
+      adsImages: [
+        ...Object.entries({ facebook: data?.report?.data?.socialMedia?.facebookData ?? {} }),
+        ...Object.entries({ instagram: data?.report?.data?.socialMedia?.instagramData ?? {} }),
+      ]
         .map(([provider, data]) => ({
           provider,
-          src: data?.imageUrl,
-          link: data?.adsInformation?.link,
+          src: data?.screenshotUrl,
+          link: data?.pageUrl,
         }))
         .filter(({ src }) => !!src),
-      relatedAdsImages: Object.values(data?.report?.data?.socialMedia?.ads ?? {})
-        .map(data => ({
-          src: data?.pickedAd?.imageUrl,
-          link: data?.pickedAd?.link,
+      relatedAdsImages: data?.report?.data?.socialMedia?.pickedAds
+        ?.map(data => ({
+          src: data?.screenshotUrl,
+          link: data?.link,
         }))
         .filter(({ src }) => !!src),
       onlineReputationAnalysis: data?.report?.data?.transactionLaundering?.scamOrFraud?.indicators
@@ -143,14 +148,16 @@ export const reportAdapter = {
       adsAndSocialMediaAnalysis: toRiskLabels(
         data?.report?.data?.summary?.riskIndicatorsByDomain?.adsAndSocialViolations,
       ),
-      adsAndSocialMediaPresence: Object.entries(data?.report?.data?.socialMedia?.ads ?? {})
+      adsAndSocialMediaPresence: [
+        ...Object.entries({ facebook: data?.report?.data?.socialMedia?.facebookData ?? {} }),
+        ...Object.entries({ instagram: data?.report?.data?.socialMedia?.instagramData ?? {} }),
+      ]
         .map(([provider, data]) => {
           if (!AdsProviders.includes(provider.toUpperCase() as TAdsProvider)) {
             return;
           }
 
           const adapter = adsProviderAdapter[provider as keyof typeof adsProviderAdapter];
-
           const adaptedData = adapter(data);
 
           return {
@@ -188,17 +195,20 @@ export const reportAdapter = {
       websiteCredibilityAnalysis: toRiskLabels(
         data?.report?.data?.summary?.riskIndicatorsByDomain?.tldViolations,
       ),
-      adsImages: Object.entries(data?.report?.data?.socialMedia?.ads ?? {} ?? {})
+      adsImages: [
+        ...Object.entries({ facebook: data?.report?.data?.socialMedia?.facebookData ?? {} }),
+        ...Object.entries({ instagram: data?.report?.data?.socialMedia?.instagramData ?? {} }),
+      ]
         .map(([provider, data]) => ({
           provider,
-          src: data?.imageUrl,
-          link: data?.adsInformation?.link,
+          src: data?.screenshotUrl,
+          link: data?.pageUrl,
         }))
         .filter(({ src }) => !!src),
-      relatedAdsImages: Object.values(data?.report?.data?.socialMedia?.ads ?? {})
-        .map(data => ({
-          src: data?.pickedAd?.imageUrl,
-          link: data?.pickedAd?.link,
+      relatedAdsImages: data?.report?.data?.socialMedia?.pickedAds
+        ?.map(data => ({
+          src: data?.screenshotUrl,
+          link: data?.link,
         }))
         .filter(({ src }) => !!src),
       onlineReputationAnalysis: data?.report?.data?.transactionLaundering?.scamOrFraud?.indicators
