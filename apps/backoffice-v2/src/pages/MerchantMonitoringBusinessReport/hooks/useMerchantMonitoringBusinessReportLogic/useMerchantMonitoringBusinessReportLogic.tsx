@@ -100,11 +100,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
           value: 'websitesCompany',
           content: (
             <WebsitesCompany
-              companyName={
-                businessReport?.report.data?.websiteCompanyAnalysis?.companyName ||
-                businessReport?.business?.companyName ||
-                ''
-              }
+              companyName={businessReport?.business?.companyName ?? ''}
               companyReputationAnalysis={companyReputationAnalysis ?? []}
               violations={websitesCompanyAnalysis ?? []}
             />
