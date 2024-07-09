@@ -22,16 +22,12 @@ export const useNavbarLogic = () => {
   const { data: customer } = useCustomerQuery();
 
   const navItems = [
-    ...(customer?.config?.isExample || customer?.config?.isDemo
-      ? [
-          {
-            text: 'Home',
-            icon: <Home size={20} />,
-            href: `/${locale}/home`,
-            key: 'nav-item-Home',
-          },
-        ]
-      : []),
+    {
+      text: 'Home',
+      icon: <Home size={20} />,
+      href: `/${locale}/home`,
+      key: 'nav-item-Home',
+    },
     {
       text: 'Businesses',
       icon: <Building size={20} />,
