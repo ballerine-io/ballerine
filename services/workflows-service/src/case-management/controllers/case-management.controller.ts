@@ -80,6 +80,19 @@ export class CaseManagementController {
     @CurrentProject() projectId: TProjectId,
     @Query() searchQueryParams: z.infer<typeof ListIndividualsProfilesSchema>,
   ) {
+    const tagToKyc = {
+      [StateTag.COLLECTION_FLOW]: 'PENDING',
+      [StateTag.APPROVED]: 'APPROVED',
+      [StateTag.REJECTED]: 'REJECTED',
+      [StateTag.REVISION]: 'REVISIONS',
+      [StateTag.PENDING_PROCESS]: 'PROCESSED',
+      [StateTag.DATA_ENRICHMENT]: 'PROCESSED',
+      [StateTag.MANUAL_REVIEW]: 'PROCESSED',
+    } as const satisfies Record<
+      Exclude<TStateTag, 'failure' | 'flagged' | 'resolved' | 'dismissed'>,
+      'APPROVED' | 'REJECTED' | 'REVISIONS' | 'PROCESSED' | 'PENDING'
+    >;
+
     const endUsers = await this.endUserService.list(
       {
         select: {
@@ -102,6 +115,24 @@ export class CaseManagementController {
             select: {
               companyName: true,
             },
+          },
+          Counterparty: {
+            select: {
+              alerts: true,
+            },
+          },
+          workflowRuntimeData: {
+            select: {
+              tags: true,
+            },
+            where: {
+              OR: Object.keys(tagToKyc).map(key => ({
+                tags: {
+                  array_contains: key,
+                },
+              })),
+            },
+            take: 1,
           },
           amlHits: true,
           activeMonitorings: true,
@@ -126,62 +157,54 @@ export class CaseManagementController {
           position: EndUsersOnBusinesses['position'];
           business: Pick<Business, 'companyName'>;
         }>;
+        workflowRuntimeData: Array<{
+          tags: string[];
+        }>;
         businesses: Array<Pick<Business, 'companyName'>>;
+        Counterparty: {
+          alerts: Array<{
+            id: string;
+          }>;
+        };
       }
     >;
 
-    const tagToKyc = {
-      [StateTag.COLLECTION_FLOW]: 'PENDING',
-      [StateTag.APPROVED]: 'APPROVED',
-      [StateTag.REJECTED]: 'REJECTED',
-      [StateTag.REVISION]: 'REVISIONS',
-      [StateTag.PENDING_PROCESS]: 'PROCESSED',
-      [StateTag.DATA_ENRICHMENT]: 'PROCESSED',
-      [StateTag.MANUAL_REVIEW]: 'PROCESSED',
-    } as const satisfies Record<
-      Exclude<TStateTag, 'failure' | 'flagged' | 'resolved' | 'dismissed'>,
-      'APPROVED' | 'REJECTED' | 'REVISIONS' | 'PROCESSED' | 'PENDING'
-    >;
+    return typedEndUsers.map(endUser => {
+      const tag = endUser.workflowRuntimeData?.[0]?.tags?.find(
+        tag => !!tagToKyc[tag as keyof typeof tagToKyc],
+      );
+      const alerts = endUser.Counterparty?.alerts;
+      const checkIsMonitored = () =>
+        Array.isArray(endUser.activeMonitorings) && !!endUser.activeMonitorings?.length;
+      const getMatches = () => {
+        const amlHits = (endUser.amlHits as z.infer<typeof EndUserAmlHitsSchema>)?.length ?? 0;
+        const isPlural = amlHits > 1 || amlHits === 0;
 
-    return await Promise.all(
-      typedEndUsers.map(async endUser => {
-        const workflowRuntimeData = await this.workflowService.getByEntityId(endUser.id, projectId);
-        const tag = (workflowRuntimeData?.tags as string[])?.find(
-          tag => !!tagToKyc[tag as keyof typeof tagToKyc],
-        );
-        const alerts = await this.alertsService.getAlertsByEntityId(endUser.id, projectId);
-        const checkIsMonitored = () =>
-          Array.isArray(endUser.activeMonitorings) && !!endUser.activeMonitorings?.length;
-        const getMatches = () => {
-          const amlHits = (endUser.amlHits as z.infer<typeof EndUserAmlHitsSchema>)?.length ?? 0;
-          const isPlural = amlHits > 1 || amlHits === 0;
+        return `${amlHits} ${isPlural ? 'matches' : 'match'}`;
+      };
+      const isMonitored = checkIsMonitored();
+      const matches = getMatches();
 
-          return `${amlHits} ${isPlural ? 'matches' : 'match'}`;
-        };
-        const isMonitored = checkIsMonitored();
-        const matches = getMatches();
+      const businesses = endUser.businesses?.length
+        ? endUser.businesses.map(business => business.companyName).join(', ')
+        : endUser.endUsersOnBusinesses
+            ?.map(endUserOnBusiness => endUserOnBusiness.business.companyName)
+            .join(', ');
 
-        const businesses = endUser.businesses?.length
-          ? endUser.businesses.map(business => business.companyName).join(', ')
-          : endUser.endUsersOnBusinesses
-              ?.map(endUserOnBusiness => endUserOnBusiness.business.companyName)
-              .join(', ');
-
-        return {
-          correlationId: endUser.correlationId,
-          createdAt: endUser.createdAt,
-          name: `${endUser.firstName} ${endUser.lastName}`,
-          businesses,
-          roles: endUser.endUsersOnBusinesses?.flatMap(
-            endUserOnBusiness => endUserOnBusiness.position,
-          ),
-          kyc: tagToKyc[tag as keyof typeof tagToKyc],
-          isMonitored,
-          matches,
-          alerts: alerts?.length ?? 0,
-          updatedAt: endUser.updatedAt,
-        };
-      }),
-    );
+      return {
+        correlationId: endUser.correlationId,
+        createdAt: endUser.createdAt,
+        name: `${endUser.firstName} ${endUser.lastName}`,
+        businesses,
+        roles: endUser.endUsersOnBusinesses?.flatMap(
+          endUserOnBusiness => endUserOnBusiness.position,
+        ),
+        kyc: tagToKyc[tag as keyof typeof tagToKyc],
+        isMonitored,
+        matches,
+        alerts: alerts?.length ?? 0,
+        updatedAt: endUser.updatedAt,
+      };
+    });
   }
 }
