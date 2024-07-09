@@ -138,13 +138,6 @@ export class CaseManagementController {
           activeMonitorings: true,
           updatedAt: true,
         },
-        where: {
-          Counterparty: {
-            every: {
-              endUserId: null,
-            },
-          },
-        },
         take: searchQueryParams.page.size,
         skip: (searchQueryParams.page.number - 1) * searchQueryParams.page.size,
       },
@@ -161,11 +154,11 @@ export class CaseManagementController {
           tags: string[];
         }>;
         businesses: Array<Pick<Business, 'companyName'>>;
-        Counterparty: {
+        Counterparty: Array<{
           alerts: Array<{
             id: string;
           }>;
-        };
+        }>;
       }
     >;
 
@@ -173,7 +166,7 @@ export class CaseManagementController {
       const tag = endUser.workflowRuntimeData?.[0]?.tags?.find(
         tag => !!tagToKyc[tag as keyof typeof tagToKyc],
       );
-      const alerts = endUser.Counterparty?.alerts;
+      const alerts = endUser.Counterparty?.flatMap(({ alerts }) => alerts);
       const checkIsMonitored = () =>
         Array.isArray(endUser.activeMonitorings) && !!endUser.activeMonitorings?.length;
       const getMatches = () => {
