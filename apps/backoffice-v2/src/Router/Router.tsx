@@ -23,8 +23,6 @@ import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMoni
 import { Home } from '@/pages/Home/Home.page';
 import { Statistics } from '@/pages/Statistics/Statistics.page';
 import { Workflows } from '@/pages/Workflows/Workflows.page';
-import { Profiles } from '@/pages/Profiles/Profiles.page';
-import { Individuals } from '@/pages/Profiles/Individuals/Individuals.page';
 import { MerchantMonitoring } from '@/pages/MerchantMonitoring/MerchantMonitoring.page';
 import { MerchantMonitoringCreateCheckPage } from '@/pages/MerchantMonitoringCreateCheck/MerchantMonitoringCreateCheck.page';
 import { MerchantMonitoringBusinessReport } from '@/pages/MerchantMonitoringBusinessReport/MerchantMonitoringBusinessReport.page';
@@ -119,18 +117,18 @@ const router = createBrowserRouter([
                   },
                 ],
               },
-              {
-                path: '/:locale/profiles',
-                element: <Profiles />,
-                errorElement: <RouteError />,
-                children: [
-                  {
-                    path: '/:locale/profiles/individuals',
-                    element: <Individuals />,
-                    errorElement: <RouteError />,
-                  },
-                ],
-              },
+              // {
+              //   path: '/:locale/profiles',
+              //   element: <Profiles />,
+              //   errorElement: <RouteError />,
+              //   children: [
+              //     {
+              //       path: '/:locale/profiles/individuals',
+              //       element: <Individuals />,
+              //       errorElement: <RouteError />,
+              //     },
+              //   ],
+              // },
               {
                 path: '/:locale/transaction-monitoring',
                 element: <TransactionMonitoring />,
