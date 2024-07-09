@@ -55,8 +55,6 @@ export const fetchWorkflows = async (params: {
   return handleZodError(error, workflows);
 };
 
-export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
-
 export const BaseWorkflowByIdSchema = z.object({
   id: z.string(),
   status: z.string(),
@@ -121,6 +119,8 @@ export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
     .optional(),
 });
 
+export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
+
 export const fetchWorkflowById = async ({
   workflowId,
   filterId,
@@ -142,6 +142,63 @@ export const fetchWorkflowById = async ({
           website_monitoring: {
             ...data.context?.pluginsOutput?.website_monitoring,
             data: deepCamelKeys(data.context?.pluginsOutput?.website_monitoring?.data ?? {}),
+          },
+          risk_evaluation: {
+            riskScore: 85,
+            riskIndicatorsByDomain: {
+              'company information': [
+                {
+                  name: 'IP Rights Infringement',
+                  riskLevel: 'high',
+                  domain: 'company information',
+                },
+              ],
+              'associated companies': [
+                {
+                  name: 'Inconsistent Line of Business',
+                  riskLevel: 'high',
+                  domain: 'associated companies',
+                },
+                {
+                  name: 'Scam & Fraud indications',
+                  riskLevel: 'high',
+                  domain: 'associated companies',
+                },
+              ],
+              'store info': [
+                {
+                  name: 'Complaints about scams',
+                  riskLevel: 'high',
+                  domain: 'store info',
+                },
+                {
+                  name: 'Low ratings on reputation platforms',
+                  riskLevel: 'high',
+                  domain: 'store info',
+                },
+              ],
+              directors: [],
+              documents: [],
+              'monitoring report': [
+                {
+                  name: 'Inconsistent Line of Business',
+                  riskLevel: 'high',
+                  domain: 'monitoring report',
+                },
+                {
+                  name: 'Scam & Fraud indications',
+                  riskLevel: 'high',
+                  domain: 'monitoring report',
+                },
+              ],
+              ubos: [
+                {
+                  name: 'Inconsistent Line of Business',
+                  riskLevel: 'high',
+                  domain: 'ubos',
+                },
+              ],
+            },
           },
         },
       },

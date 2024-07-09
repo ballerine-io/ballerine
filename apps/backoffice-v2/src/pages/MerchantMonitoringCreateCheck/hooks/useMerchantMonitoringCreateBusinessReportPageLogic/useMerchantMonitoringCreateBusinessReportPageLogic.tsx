@@ -5,10 +5,10 @@ import { useCreateBusinessReportMutation } from '@/domains/business-reports/hook
 import { z } from 'zod';
 import { countryCodes } from '@ballerine/common';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
-import { useCallback, useMemo } from 'react';
+import { ChangeEvent, useCallback, useMemo } from 'react';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { MerchantMonitoringCreateBusinessReportPageSearchSchema } from '@/pages/MerchantMonitoringCreateCheck/hooks/useMerchantMonitoringCreateBusinessReportPageLogic/merchant-monitoring-create-business-report-page-search-schema';
-import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/userCustomerQuery';
+import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
 import { useNavigate } from 'react-router-dom';
 
 export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
@@ -293,6 +293,19 @@ export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
     [],
   );
 
+  const onValueChange = useCallback(
+    (callback: (...event: any[]) => void) => (event: ChangeEvent<HTMLInputElement>) => {
+      if (event.target.value === '') {
+        callback(undefined);
+
+        return;
+      }
+
+      callback(event.target.value);
+    },
+    [],
+  );
+
   return {
     form,
     onSubmit,
@@ -306,5 +319,6 @@ export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
     riskLabels,
     industries,
     isLoadingCustomer,
+    onValueChange,
   };
 };

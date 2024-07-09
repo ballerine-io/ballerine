@@ -78,6 +78,9 @@
     "success": "The alerts decision have been reverted successfully.",
     "error": "Error occurred while reverting the alerts decision."
   },
+  "pdf_certificate": {
+    "error": "Failed to open PDF certificate."
+  },
   "business_report_creation": {
     "success": "Merchant check created successfully.",
     "error": "Error occurred while creating a merchant check.",

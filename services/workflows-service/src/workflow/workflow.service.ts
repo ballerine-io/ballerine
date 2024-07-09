@@ -1812,11 +1812,27 @@ export class WorkflowService {
   ) {
     const correlationId =
       typeof entity.id === 'string' && entity.id.length > 0 ? entity.id : undefined;
+    const getBusinessWebsite = (data: Record<string, any>) => {
+      if (!data?.additionalInfo) {
+        return;
+      }
 
+      if ('store' in data.additionalInfo && data.additionalInfo.store?.website?.mainWebsite) {
+        return data?.additionalInfo?.store?.website?.mainWebsite;
+      }
+
+      if ('companyWebsite' in data.additionalInfo && data.additionalInfo.companyWebsite) {
+        return data?.additionalInfo?.companyWebsite;
+      }
+
+      return;
+    };
+    const businessWebsite = getBusinessWebsite(context.entity.data ?? {});
     const { id } = await this.businessService.create({
       data: {
         correlationId,
         ...(context.entity.data as object),
+        ...(businessWebsite && { website: businessWebsite }),
         project: { connect: { id: currentProjectId } },
       } as Prisma.BusinessCreateInput,
     });
@@ -2350,17 +2366,5 @@ export class WorkflowService {
     return await this.workflowRuntimeDataRepository.updateById(workflowRuntimeDataId, {
       data: args,
     });
-  }
-
-  async getByEntityId(
-    entityId: string,
-    projectId: TProjectId,
-    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
-  ) {
-    return await this.workflowRuntimeDataRepository.findFirstByEntityId(
-      entityId,
-      [projectId],
-      args,
-    );
   }
 }

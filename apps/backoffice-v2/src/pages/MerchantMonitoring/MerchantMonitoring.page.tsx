@@ -18,22 +18,25 @@ export const MerchantMonitoring: FunctionComponent = () => {
     onPaginate,
     isLastPage,
     locale,
+    hideCreateMerchantMonitoringButton,
   } = useMerchantMonitoringLogic();
 
   return (
     <div className="flex h-full flex-col px-6 pb-6 pt-10">
       <div className={`flex justify-between`}>
         <h1 className="pb-5 text-2xl font-bold">Merchant Monitoring</h1>
-        <Link
-          className={buttonVariants({
-            variant: 'outline',
-            className: 'flex items-center justify-start gap-2 font-semibold',
-          })}
-          to={`/${locale}/merchant-monitoring/create-check`}
-        >
-          <Plus />
-          <span>Create Merchant Check</span>
-        </Link>
+        {!hideCreateMerchantMonitoringButton && (
+          <Link
+            className={buttonVariants({
+              variant: 'outline',
+              className: 'flex items-center justify-start gap-2 font-semibold',
+            })}
+            to={`/${locale}/merchant-monitoring/create-check`}
+          >
+            <Plus />
+            <span>Create Merchant Check</span>
+          </Link>
+        )}
       </div>
       <div className="flex flex-1 flex-col gap-6 overflow-auto">
         {isNonEmptyArray(businessReports) && (
