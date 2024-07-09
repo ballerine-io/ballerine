@@ -67,6 +67,20 @@ class Equals extends BaseOperator {
   };
 }
 
+class NotEquals extends BaseOperator {
+  constructor() {
+    super({
+      operator: 'NOT_EQUALS',
+      conditionValueSchema: PrimitiveSchema,
+      dataValueSchema: PrimitiveSchema,
+    });
+  }
+
+  eval: ConditionFn<primitive> = (dataValue: primitive, conditionValue: primitive): boolean => {
+    return dataValue !== conditionValue;
+  };
+}
+
 class GreaterThan extends BaseOperator {
   constructor() {
     super({
@@ -210,8 +224,8 @@ class Exists extends BaseOperator<ExistsParams> {
   };
 }
 
-// Export instances
 export const EQUALS = new Equals();
+export const NOT_EQUALS = new NotEquals();
 export const GT = new GreaterThan();
 export const LT = new LessThan();
 export const GTE = new GreaterThanOrEqual();

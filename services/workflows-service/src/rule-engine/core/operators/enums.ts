@@ -7,6 +7,7 @@ export const OPERATION = {
   LTE: 'LTE',
   LAST_YEAR: 'LAST_YEAR',
   EXISTS: 'EXISTS',
+  NOT_EQUALS: 'NOT_EQUALS',
 } as const;
 
 export const OPERATOR = {
