@@ -4,8 +4,8 @@ import { UserAvatar } from '@/common/components/atoms/UserAvatar/UserAvatar';
 import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
 import { useHomeLogic } from '@/common/hooks/useHomeLogic/useHomeLogic';
 import { t } from 'i18next';
-import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
+import { WelcomeCard } from '@/pages/Home/components/WelcomeCard/WelcomeCard';
 
 export const Home: FunctionComponent = () => {
   const {
@@ -25,10 +25,6 @@ export const Home: FunctionComponent = () => {
 
   if (isLoadingCustomer) {
     return <FullScreenLoader />;
-  }
-
-  if (!isLoadingCustomer && !isExample && !isDemo) {
-    return <NotFoundRedirect />;
   }
 
   return (
@@ -64,7 +60,8 @@ export const Home: FunctionComponent = () => {
         {/*    <Outlet />*/}
         {/*  </TabsContent>*/}
         {/*</Tabs>*/}
-        <Outlet />
+        {(isDemo || isExample) && <Outlet />}
+        {!isDemo && !isExample && <WelcomeCard />}
       </div>
     </div>
   );
