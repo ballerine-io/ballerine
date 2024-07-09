@@ -64,7 +64,7 @@ export { type OperationHelper, OperationHelpers } from './rule-engine/operators/
 
 export { OPERATION, OPERATOR } from './rule-engine/operators/enums';
 
-export type { AnyRecord, LoggerInterface, Serializable } from './types';
+export type { AnyRecord, LoggerInterface, Serializable, SortDirection } from './types';
 
 export {
   WorkflowDefinitionConfigThemeSchema,

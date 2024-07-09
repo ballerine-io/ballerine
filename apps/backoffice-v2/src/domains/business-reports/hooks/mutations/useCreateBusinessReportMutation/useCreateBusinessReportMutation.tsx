@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { t } from 'i18next';
 import { createBusinessReport } from '@/domains/business-reports/fetchers';
 import { TBusinessReportType } from '@/domains/business-reports/types';
-import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/userCustomerQuery';
+import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
 
 export const useCreateBusinessReportMutation = ({
   reportType,

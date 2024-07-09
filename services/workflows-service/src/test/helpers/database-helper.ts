@@ -5,7 +5,7 @@ const databaseHelper = new PrismaClient();
 // should never be unset - default test in order not to delete default db
 const TEST_DATABASE_SCHEMA_NAME = z
   .string()
-  .default('test')
+  .default('public')
   .parse(process.env.DATABASE_SCHEMA_NAME);
 
 const __getTables = async (prisma: PrismaClient): Promise<string[]> => {
