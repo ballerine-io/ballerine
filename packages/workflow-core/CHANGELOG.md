@@ -1,5 +1,70 @@
 # @ballerine/workflow-core
 
+## 0.6.17
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+- Updated dependencies
+  - @ballerine/common@0.9.11
+
+## 0.6.16
+
+### Patch Changes
+
+- document changes
+- Updated dependencies
+  - @ballerine/common@0.9.10
+
+## 0.6.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.9
+
+## 0.6.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.8
+
+## 0.6.13
+
+### Patch Changes
+
+- version bump
+
+  s Please enter a summary for your changes.
+
+## 0.6.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.7
+
+## 0.6.11
+
+### Patch Changes
+
+- Version bump
+
+## 0.6.10
+
+### Patch Changes
+
+- Fix validation logic
+
+## 0.6.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.6
+
 ## 0.6.8
 
 ### Patch Changes

@@ -1,7 +1,8 @@
+// eslint-disable-next-line import/no-cycle
+import { BusinessReportModule } from '@/business-report/business-report.module';
 import { AuthModule } from '@/auth/auth.module';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
-import { BusinessReportModule } from '@/business-report/business-report.module';
 import { BusinessModule } from '@/business/business.module';
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
@@ -38,6 +39,10 @@ import { WorkflowControllerInternal } from '@/workflow/workflow.controller.inter
 import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
 import { forwardRef, Module } from '@nestjs/common';
+import { AlertModule } from '@/alert/alert.module';
+import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
+import { AlertDefinitionModule } from '@/alert-definition/alert-definition.module';
+import { BusinessReportService } from '@/business-report/business-report.service';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
@@ -48,9 +53,12 @@ import { forwardRef, Module } from '@nestjs/common';
     ProjectModule,
     PrismaModule,
     CustomerModule,
-    BusinessReportModule,
+    forwardRef(() => BusinessReportModule),
     WorkflowDefinitionModule,
+    AlertModule,
     BusinessModule,
+    DataAnalyticsModule,
+    AlertDefinitionModule,
   ],
   providers: [
     WorkflowDefinitionRepository,
@@ -58,6 +66,7 @@ import { forwardRef, Module } from '@nestjs/common';
     ProjectScopeService,
     EndUserRepository,
     EndUserService,
+    BusinessReportService,
     BusinessRepository,
     BusinessService,
     EntityRepository,

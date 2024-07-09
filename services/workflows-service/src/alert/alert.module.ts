@@ -1,8 +1,9 @@
-import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
+// eslint-disable-next-line import/no-cycle
 import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
+import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { PasswordService } from '@/auth/password/password.service';
 import { UserService } from '@/user/user.service';
-import { HttpStatus, Module } from '@nestjs/common';
+import { forwardRef, HttpStatus, Module } from '@nestjs/common';
 import { ACLModule } from '@/common/access-control/acl.module';
 import { AlertControllerInternal } from '@/alert/alert.controller.internal';
 import { AlertRepository } from '@/alert/alert.repository';
@@ -26,7 +27,7 @@ import { SentryModule } from '@/sentry/sentry.module';
 
 @Module({
   imports: [
-    DataAnalyticsModule,
+    forwardRef(() => DataAnalyticsModule),
     ACLModule,
     PrismaModule,
     SentryModule,
@@ -61,7 +62,7 @@ import { SentryModule } from '@/sentry/sentry.module';
     UserRepository,
     PasswordService,
   ],
-  exports: [ACLModule, AlertService, WebhookEventEmitterService],
+  exports: [ACLModule, AlertRepository, AlertService, WebhookEventEmitterService],
 })
 export class AlertModule {
   constructor(

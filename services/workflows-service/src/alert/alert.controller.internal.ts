@@ -41,10 +41,10 @@ export class AlertControllerInternal {
     }
   }
 
-  @common.Get('labels')
+  @common.Get('correlationIds')
   @swagger.ApiOkResponse({ type: [String] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async getAlertLabels(@CurrentProject() currentProjectId: TProjectId): Promise<string[]> {
-    return this.service.getAlertLabels({ projectId: currentProjectId });
+  async getAlertCorrelationIds(@CurrentProject() currentProjectId: TProjectId): Promise<string[]> {
+    return this.service.getAlertCorrelationIds({ projectId: currentProjectId });
   }
 }

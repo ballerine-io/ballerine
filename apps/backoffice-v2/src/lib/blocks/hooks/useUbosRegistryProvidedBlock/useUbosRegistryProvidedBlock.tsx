@@ -1,8 +1,8 @@
-import { useCallback, useMemo } from 'react';
-import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { WarningFilledSvg } from '@/common/components/atoms/icons';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { useCallback, useMemo } from 'react';
 
-type Ubo = {
+export type Ubo = {
   name?: string;
   type?: string;
   level?: number;
@@ -53,7 +53,7 @@ export const useUbosRegistryProvidedBlock = (
         value: (
           <span className="flex text-sm text-black/60">
             <WarningFilledSvg
-              className={'mr-[8px] mt-px text-black/20'}
+              className={'me-2 mt-px text-black/20 [&>:not(:first-child)]:stroke-background'}
               width={'20'}
               height={'20'}
             />
@@ -74,7 +74,7 @@ export const useUbosRegistryProvidedBlock = (
         value: (
           <span className="flex text-sm text-black/60">
             <WarningFilledSvg
-              className={'mr-[8px] mt-px text-black/20'}
+              className={'me-2 mt-px text-black/20 [&>:not(:first-child)]:stroke-background'}
               width={'20'}
               height={'20'}
             />

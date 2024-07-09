@@ -77,7 +77,7 @@ We believe in enabling companies to manage user  identity  and risk according to
 **Getting started**
 To set up a local environment, follow these steps:
 1. #### Install prerequisites:
-   - Node.js ([Install NVM](https://github.com/nvm-sh/nvm))
+   - Node.js ([Install NVM](https://github.com/nvm-sh/nvm), then install node "nvm install --lts")
    - Latest PNPM version ([Install PNPM](https://pnpm.io/installation))
    - Docker and docker compose ([Docker](https://docs.docker.com/desktop), [Docker Compose](https://docs.docker.com/compose/install))
 
@@ -104,23 +104,24 @@ To set up a local environment, follow these steps:
    pnpm kyc-manual-review-example
    ```
 Once the process is complete,  _2 tabs_   will open in your browser:
-1. http://localhost:5173/ - for the _KYB document collection flow_
+1. http://localhost:5201/ - for the _KYB document collection flow_
    OR http://localhost:5202 - for the _KYC document collection flow_
 2. http://localhost:5137/ - for the  _backoffice_
-   (It's recommended to have them positioned side-by-side).
+   (See username/password below, It's recommended to have them positioned side-by-side).
 
    <sub>If the required tabs have not opened automatically, please use the links we have provided above.</sub>
 
    **Steps to go over the flow:**
 
-1.  On the collection flow, fill the required fields on each step
-2.  Go through and complete the flow
-3.  Go to the backoffice tab to review the new user that was created
-   4. Sign-in with the following credentials:
+1.  Go to the Backoffice tab to review the new user that was created
+   1.1. Sign-in with the following credentials:
       - **Email:** `admin@admin.com`
       - **Password:** `admin`
-4.  Approve / Reject / Ask to resubmit
-5.  For ask to resubmit, go back to the collection flow to re-upload, then go back to the backoffice to see the updated information
+   1.2. Under the business menu, choose "KYB with UBOs" to view the list of cases currently undergoing.
+2.  On the Collection flow, fill in the required fields on each step.
+3.  Go through and complete the flow. As you go through the collection flow, you should see the progress in the Backoffice case.
+4.  Once the collection flow is finished, you can see the new state is "manual review," Assign the case to yourself, and then you will be able to choose to Approve, Reject, or Ask to Resubmit.
+5.  Ask to resubmit a document, go back to the collection flow to re-upload, then go back to the Backoffice to see the updated information.
 
 * Note: some components are currently in beta, if you run into an issue please ping us on Slack
 

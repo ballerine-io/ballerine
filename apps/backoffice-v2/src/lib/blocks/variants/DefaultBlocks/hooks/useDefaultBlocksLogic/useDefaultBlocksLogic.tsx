@@ -25,7 +25,6 @@ import { useKybRegistryInfoBlock } from '@/lib/blocks/hooks/useKybRegistryInfoBl
 import { useMainContactBlock } from '@/lib/blocks/hooks/useMainContactBlock/useMainContactBlock';
 import { useMainRepresentativeBlock } from '@/lib/blocks/hooks/useMainRepresentativeBlock/useMainRepresentativeBlock';
 import { useMapBlock } from '@/lib/blocks/hooks/useMapBlock/useMapBlock';
-import { useProcessTrackerBlock } from '@/lib/blocks/hooks/useProcessTrackerBlock/useProcessTrackerBlock';
 import { useProcessingDetailsBlock } from '@/lib/blocks/hooks/useProcessingDetailsBlock/useProcessingDetailsBlock';
 import { useRegistryInfoBlock } from '@/lib/blocks/hooks/useRegistryInfoBlock/useRegistryInfoBlock';
 import { useStoreInfoBlock } from '@/lib/blocks/hooks/useStoreInfoBlock/useStoreInfoBlock';
@@ -34,27 +33,34 @@ import { useUbosUserProvidedBlock } from '@/lib/blocks/hooks/useUbosUserProvided
 import { useWebsiteBasicRequirementBlock } from '@/lib/blocks/hooks/useWebsiteBasicRequirementBlock/useWebsiteBasicRequirementBlock';
 import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
 import { useCaseBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/useCaseBlocks';
-import { useWebsiteMonitoringReportBlock } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/useWebsiteMonitoringReportBlock';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 import { Send } from 'lucide-react';
-import { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
-import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
-import { DEFAULT_PROCESS_TRACKER_PROCESSES } from '@/common/components/molecules/ProcessTracker/constants';
+import { useWebsiteMonitoringReportBlock } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/useWebsiteMonitoringReportBlock';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { useAddressBlock } from '@/lib/blocks/hooks/useAddressBlock/useAddressBlock';
+import { getAddressDeep } from '@/pages/Entity/hooks/useEntityLogic/utils/get-address-deep/get-address-deep';
+import { useCaseOverviewBlock } from '@/lib/blocks/hooks/useCaseOverviewBlock/useCaseOverviewBlock';
+import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
+import { useLocation } from 'react-router-dom';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
   'directors',
   'ubo',
   'businessInformation',
+  'merchantMonitoring',
   'website_monitoring',
 ] as const;
 
 export const useDefaultBlocksLogic = () => {
+  const [{ activeTab }] = useSearchParamsByEntity();
+  const { search } = useLocation();
   const { data: workflow, isLoading } = useCurrentCaseQuery();
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
@@ -238,10 +244,32 @@ export const useDefaultBlocksLogic = () => {
   });
 
   const mapBlock = useMapBlock({
-    filteredPluginsOutput,
+    address: getAddressDeep(filteredPluginsOutput, {
+      propertyName: 'registeredAddressInFull',
+    }),
     entityType: workflow?.context?.entity?.type,
     workflow,
   });
+
+  const addressBlock = useAddressBlock({
+    address: workflow?.context?.entity?.data?.additionalInfo?.headquarters,
+    entityType: workflow?.context?.entity?.type,
+    workflow,
+  });
+
+  const addressWithContainerBlock = useMemo(() => {
+    if (!addressBlock?.length) {
+      return [];
+    }
+
+    return createBlocksTyped()
+      .addBlock()
+      .addCell({
+        type: 'block',
+        value: addressBlock.flat(1),
+      })
+      .build();
+  }, [addressBlock]);
 
   const storeInfoBlock = useStoreInfoBlock({
     storeInfo,
@@ -311,13 +339,6 @@ export const useDefaultBlocksLogic = () => {
     [mutateEvent],
   );
 
-  const plugins = useCasePlugins({ workflow });
-  const processTrackerBlock = useProcessTrackerBlock({
-    workflow,
-    plugins,
-    processes: DEFAULT_PROCESS_TRACKER_PROCESSES,
-  });
-
   const associatedCompaniesBlock = useAssociatedCompaniesBlock({
     workflows: kybChildWorkflows,
     onClose,
@@ -372,6 +393,8 @@ export const useDefaultBlocksLogic = () => {
   const documentReviewBlocks = useDocumentReviewBlocks();
   const businessInformationBlocks = useKYCBusinessInformationBlock();
 
+  const caseOverviewBlock = useCaseOverviewBlock();
+
   const allBlocks = useMemo(() => {
     if (!workflow?.context?.entity) return [];
 
@@ -393,13 +416,14 @@ export const useDefaultBlocksLogic = () => {
       mainContactBlock,
       mainRepresentativeBlock,
       mapBlock,
+      addressWithContainerBlock,
       parentDocumentBlocks,
       associatedCompaniesBlock,
       associatedCompaniesInformationBlock,
-      processTrackerBlock,
       websiteMonitoringBlocks,
       documentReviewBlocks,
       businessInformationBlocks,
+      caseOverviewBlock,
     ];
   }, [
     associatedCompaniesBlock,
@@ -414,6 +438,7 @@ export const useDefaultBlocksLogic = () => {
     mainContactBlock,
     mainRepresentativeBlock,
     mapBlock,
+    addressWithContainerBlock,
     parentDocumentBlocks,
     processingDetailsBlock,
     registryInfoBlock,
@@ -422,27 +447,32 @@ export const useDefaultBlocksLogic = () => {
     ubosRegistryProvidedBlock,
     websiteBasicRequirementBlock,
     websiteMonitoringBlock,
-    processTrackerBlock,
     websiteMonitoringBlocks,
     documentReviewBlocks,
     businessInformationBlocks,
+    caseOverviewBlock,
     workflow?.context?.entity,
   ]);
 
-  const {
-    activeTab,
-    blocks = [],
-    tabs,
-    setActiveTab,
-  } = useCaseBlocks({
+  const { blocks, tabs } = useCaseBlocks({
     workflow,
     config: workflow?.workflowDefinition?.config,
     blocks: allBlocks,
     onReuploadNeeded,
     isLoadingReuploadNeeded,
+    activeTab,
   });
-
   const availableTabs = useMemo(() => tabs.filter(tab => !tab.hidden), [tabs]);
+  const getUpdatedSearchParamsWithActiveTab = useCallback(
+    ({ tab }: { tab: string }) => {
+      const searchParams = new URLSearchParams(search);
+
+      searchParams.set('activeTab', tab);
+
+      return searchParams.toString();
+    },
+    [search],
+  );
 
   return {
     blocks,
@@ -450,7 +480,7 @@ export const useDefaultBlocksLogic = () => {
     isLoadingReuploadNeeded,
     isLoading,
     activeTab,
+    getUpdatedSearchParamsWithActiveTab,
     tabs: availableTabs,
-    setActiveTab,
   };
 };

@@ -1,16 +1,16 @@
+import { apiClient } from '@/common/api-client/api-client';
+import { Method, States } from '@/common/enums';
 import { env } from '@/common/env/env';
+import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
+import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
+import { WorkflowDefinitionByIdSchema } from '@/domains/workflow-definitions/fetchers';
+import { AmlSchema } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
+import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
+import { zPropertyKey } from '@/lib/zod/utils/z-property-key/z-property-key';
 import qs from 'qs';
 import { deepCamelKeys } from 'string-ts';
 import { z } from 'zod';
-import { apiClient } from '@/common/api-client/api-client';
-import { Method, States } from '@/common/enums';
-import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
-import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
-import { zPropertyKey } from '@/lib/zod/utils/z-property-key/z-property-key';
 import { IWorkflowId } from './interfaces';
-import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
-import { WorkflowDefinitionByIdSchema } from '@/domains/workflow-definitions/fetchers';
-import { AmlSchema } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
 
 export const fetchWorkflows = async (params: {
   filterId: string;
@@ -54,8 +54,6 @@ export const fetchWorkflows = async (params: {
 
   return handleZodError(error, workflows);
 };
-
-export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
 
 export const BaseWorkflowByIdSchema = z.object({
   id: z.string(),
@@ -121,6 +119,8 @@ export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
     .optional(),
 });
 
+export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
+
 export const fetchWorkflowById = async ({
   workflowId,
   filterId,
@@ -142,6 +142,63 @@ export const fetchWorkflowById = async ({
           website_monitoring: {
             ...data.context?.pluginsOutput?.website_monitoring,
             data: deepCamelKeys(data.context?.pluginsOutput?.website_monitoring?.data ?? {}),
+          },
+          risk_evaluation: {
+            riskScore: 85,
+            riskIndicatorsByDomain: {
+              'company information': [
+                {
+                  name: 'IP Rights Infringement',
+                  riskLevel: 'high',
+                  domain: 'company information',
+                },
+              ],
+              'associated companies': [
+                {
+                  name: 'Inconsistent Line of Business',
+                  riskLevel: 'high',
+                  domain: 'associated companies',
+                },
+                {
+                  name: 'Scam & Fraud indications',
+                  riskLevel: 'high',
+                  domain: 'associated companies',
+                },
+              ],
+              'store info': [
+                {
+                  name: 'Complaints about scams',
+                  riskLevel: 'high',
+                  domain: 'store info',
+                },
+                {
+                  name: 'Low ratings on reputation platforms',
+                  riskLevel: 'high',
+                  domain: 'store info',
+                },
+              ],
+              directors: [],
+              documents: [],
+              'monitoring report': [
+                {
+                  name: 'Inconsistent Line of Business',
+                  riskLevel: 'high',
+                  domain: 'monitoring report',
+                },
+                {
+                  name: 'Scam & Fraud indications',
+                  riskLevel: 'high',
+                  domain: 'monitoring report',
+                },
+              ],
+              ubos: [
+                {
+                  name: 'Inconsistent Line of Business',
+                  riskLevel: 'high',
+                  domain: 'ubos',
+                },
+              ],
+            },
           },
         },
       },
@@ -239,6 +296,7 @@ export const updateWorkflowDecision = async ({
   body: {
     decision: string | null;
     reason?: string;
+    comment?: string;
   };
   contextUpdateMethod: 'base' | 'director';
 }) => {

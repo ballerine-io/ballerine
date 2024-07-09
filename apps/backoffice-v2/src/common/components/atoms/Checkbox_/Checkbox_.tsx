@@ -23,4 +23,5 @@ export const Checkbox_ = forwardRef<
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
 ));
+
 Checkbox_.displayName = CheckboxPrimitive.Root.displayName;

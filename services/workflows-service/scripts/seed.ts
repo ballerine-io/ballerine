@@ -1,8 +1,20 @@
-import { hashKey } from './../src/customer/api-key/utils';
+import { CommonWorkflowStates, defaultContextSchema } from '@ballerine/common';
 import { faker } from '@faker-js/faker';
 import { Business, Customer, EndUser, Prisma, PrismaClient, Project } from '@prisma/client';
+import { Type } from '@sinclair/typebox';
 import { hash } from 'bcrypt';
+import { hashKey } from '../src/customer/api-key/utils';
+import { env } from '../src/env';
+import type { InputJsonValue } from '../src/types';
+import { seedTransactionsAlerts } from './alerts/generate-alerts';
+import { generateTransactions } from './alerts/generate-transactions';
 import { customSeed } from './custom-seed';
+import {
+  baseFilterAssigneeSelect,
+  baseFilterBusinessSelect,
+  baseFilterDefinitionSelect,
+  baseFilterEndUserSelect,
+} from './filters';
 import {
   businessIds,
   businessRiskIds,
@@ -10,31 +22,19 @@ import {
   generateBusiness,
   generateEndUser,
 } from './generate-end-user';
-import { CommonWorkflowStates, defaultContextSchema } from '@ballerine/common';
 import { generateUserNationalId } from './generate-user-national-id';
-import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
-import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
 import { generateKybDefintion } from './workflows';
-import { generateKycSessionDefinition } from './workflows/kyc-email-process-example';
-import { env } from '../src/env';
-import { generateKybKycWorkflowDefinition } from './workflows/kyb-kyc-workflow-definition';
-import { generateBaseTaskLevelStates } from './workflows/generate-base-task-level-states';
+import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
 import { generateBaseCaseLevelStatesAutoTransitionOnRevision } from './workflows/generate-base-case-level-states';
-import type { InputJsonValue } from '../src/types';
-import { generateWebsiteMonitoringExample } from './workflows/website-monitoring-workflow';
+import { generateBaseTaskLevelStates } from './workflows/generate-base-task-level-states';
 import { generateCollectionKybWorkflow } from './workflows/generate-collection-kyb-workflow';
+import { generateKybKycWorkflowDefinition } from './workflows/kyb-kyc-workflow-definition';
+import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
+import { generateKycSessionDefinition } from './workflows/kyc-email-process-example';
+import { generateKycManualReviewRuntimeAndToken } from './workflows/runtime/geneate-kyc-manual-review-runtime-and-token';
 import { generateInitialCollectionFlowExample } from './workflows/runtime/generate-initial-collection-flow-example';
 import { uiKybParentWithAssociatedCompanies } from './workflows/ui-definition/kyb-with-associated-companies/ui-kyb-parent-dynamic-example';
-import {
-  baseFilterAssigneeSelect,
-  baseFilterBusinessSelect,
-  baseFilterDefinitionSelect,
-  baseFilterEndUserSelect,
-} from './filters';
-import { generateTransactions } from './alerts/generate-transactions';
-import { generateKycManualReviewRuntimeAndToken } from './workflows/runtime/geneate-kyc-manual-review-runtime-and-token';
-import { Type } from '@sinclair/typebox';
-import { generateFakeAlertsAndDefinitions as generateFakeAlertDefinitions } from './alerts/generate-alerts';
+import { generateWebsiteMonitoringExample } from './workflows/website-monitoring-workflow';
 
 const BCRYPT_SALT: string | number = 10;
 
@@ -93,6 +93,10 @@ async function createCustomer(
       faviconImageUri,
       country: 'GB',
       language: 'en',
+      config: {
+        isMerchantMonitoringEnabled: true,
+        isExample: true,
+      },
     },
   });
 }
@@ -122,7 +126,7 @@ async function seed() {
     client,
     '1',
     env.API_KEY,
-    'https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/images/ballerine_logo.svg',
+    'https://cdn.ballerine.io/images/ballerine_logo.svg',
     '',
     `webhook-shared-secret-${env.API_KEY}`,
   )) as Customer;
@@ -131,7 +135,7 @@ async function seed() {
     client,
     '2',
     `${env.API_KEY}2`,
-    'https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/images/ballerine_logo.svg',
+    'https://cdn.ballerine.io/images/ballerine_logo.svg',
     '',
     `webhook-shared-secret-${env.API_KEY}2`,
   )) as Customer;
@@ -140,21 +144,10 @@ async function seed() {
   const ids1 = await generateTransactions(client, {
     projectId: project1.id,
   });
-  const ids2 = await generateTransactions(client, {
-    projectId: project1.id,
-  });
 
   const project2 = await createProject(client, customer2, '2');
 
   const [adminUser, ...agentUsers] = await createUsers({ project1, project2 }, client);
-
-  await generateFakeAlertDefinitions(client, {
-    project: project1,
-    counterparyIds: [...ids1, ...ids2]
-      .map(({ counterpartyOriginatorId }) => counterpartyOriginatorId)
-      .filter(Boolean) as string[],
-    agentUserIds: agentUsers.map(({ id }) => id),
-  });
 
   const kycManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
   const kybManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9bbb';
@@ -986,25 +979,17 @@ async function seed() {
     });
   });
 
-  // TODO: create business with enduser attched to them
-  // await client.business.create({
-  //   data: {
-  //     ...generateBusiness({}),
-  //     endUsers: {
-  //       create: [
-  //         {
-  //           assignedBy: 'Bob',
-  //           assignedAt: new Date(),
-  //           endUser: {
-  //             create: {
-  //                 ...generateEndUser({}),
-  //             },
-  //           },
-  //         },
-  //       ],
-  //     },
-  //   },
-  // });
+  await seedTransactionsAlerts(client, {
+    project: project1,
+    businessIds: businessRiskIds,
+    counterpartyIds: ids1
+      .map(
+        ({ counterpartyOriginatorId, counterpartyBeneficiaryId }) =>
+          counterpartyOriginatorId || counterpartyBeneficiaryId,
+      )
+      .filter(Boolean) as string[],
+    agentUserIds: agentUsers.map(({ id }) => id),
+  });
 
   await client.$transaction(async () =>
     endUserIds.map(async (id, index) =>

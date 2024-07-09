@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/react-pdf-toolkit",
   "private": false,
-  "version": "1.2.2",
+  "version": "1.2.5",
   "types": "./dist/build.d.ts",
   "main": "./dist/react-pdf-toolkit.js",
   "module": "./dist/react-pdf-toolkit.mjs",
@@ -26,8 +26,8 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@ballerine/config": "^1.1.2",
-    "@ballerine/ui": "0.5.2",
+    "@ballerine/config": "^1.1.4",
+    "@ballerine/ui": "0.5.5",
     "@react-pdf/renderer": "^3.1.14",
     "@sinclair/typebox": "^0.31.7",
     "ajv": "^8.12.0",

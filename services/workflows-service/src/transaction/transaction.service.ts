@@ -36,12 +36,13 @@ export class TransactionService {
       [];
 
     for (const transactionPayload of mappedTransactions) {
+      const correlationId = transactionPayload.transactionCorrelationId;
       try {
         const transaction = await this.repository.create({ data: transactionPayload });
 
         response.push({
           id: transaction.id,
-          correlationId: transaction.transactionCorrelationId,
+          correlationId,
         });
       } catch (error) {
         if (mappedTransactions.length === 1) {
@@ -49,6 +50,7 @@ export class TransactionService {
         }
 
         let errorMessage = 'Unknown error';
+
         if (isPrismaClientKnownRequestError(error)) {
           errorMessage = getErrorMessageFromPrismaError(error);
         } else {

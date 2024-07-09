@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import React from 'react';
 import { titleCase } from 'string-ts';
 import { TObjectValues } from '@/common/types';
-import { TIndividualsProfiles } from '@/domains/profiles/fetchers';
 import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provider';
 import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
@@ -12,16 +11,19 @@ import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Conten
 import { CopyToClipboard } from '@/common/components/atoms/CopyToClipboard/CopyToClipboard';
 import { CheckCircle } from '@/common/components/atoms/CheckCircle/CheckCircle';
 import { XCircle } from '@/common/components/atoms/XCircle/XCircle';
+import { TIndividualProfile } from '@/domains/profiles/fetchers';
 
 export const Role = {
-  UBO: 'UBO',
-  DIRECTOR: 'DIRECTOR',
-  AUTHORIZED_SIGNATORY: 'AUTHORIZED_SIGNATORY',
+  UBO: 'ubo',
+  DIRECTOR: 'director',
+  REPRESENTATIVE: 'representative',
+  AUTHORIZED_SIGNATORY: 'authorized_signatory',
 } as const;
 
 export const Roles = [
   Role.UBO,
   Role.DIRECTOR,
+  Role.REPRESENTATIVE,
   Role.AUTHORIZED_SIGNATORY,
 ] as const satisfies ReadonlyArray<TObjectValues<typeof Role>>;
 
@@ -51,7 +53,14 @@ export const Sanctions = [
   Sanction.NOT_MONITORED,
 ] as const satisfies ReadonlyArray<TObjectValues<typeof Sanction>>;
 
-const columnHelper = createColumnHelper<TIndividualsProfiles>();
+const roleNameToDisplayName = {
+  [Role.UBO]: 'UBO',
+  [Role.DIRECTOR]: 'Director',
+  [Role.REPRESENTATIVE]: 'Representative',
+  [Role.AUTHORIZED_SIGNATORY]: 'Authorized Signatory',
+} as const;
+
+const columnHelper = createColumnHelper<TIndividualProfile>();
 
 export const columns = [
   columnHelper.accessor('name', {
@@ -94,7 +103,7 @@ export const columns = [
                 <TextWithNAFallback className={`w-[11.8ch] truncate`}>
                   {correlationId}
                 </TextWithNAFallback>
-                <CopyToClipboard textToCopy={correlationId} disabled={!correlationId} />
+                <CopyToClipboard textToCopy={correlationId ?? ''} disabled={!correlationId} />
               </div>
             </TooltipTrigger>
             {correlationId && <TooltipContent>{correlationId}</TooltipContent>}
@@ -114,14 +123,20 @@ export const columns = [
     },
     header: 'Businesses',
   }),
-  // columnHelper.accessor('role', {
-  //   cell: info => {
-  //     const role = info.getValue();
-  //
-  //     return <TextWithNAFallback>{titleCase(role ?? '')}</TextWithNAFallback>;
-  //   },
-  //   header: 'Role',
-  // }),
+  columnHelper.accessor('roles', {
+    cell: info => {
+      const roles = info.getValue();
+
+      return (
+        <TextWithNAFallback>
+          {roles
+            ?.map(role => roleNameToDisplayName[role as keyof typeof roleNameToDisplayName])
+            .join(', ') ?? ''}
+        </TextWithNAFallback>
+      );
+    },
+    header: 'Roles',
+  }),
   columnHelper.accessor('kyc', {
     cell: info => {
       const kyc = info.getValue();

@@ -15,7 +15,12 @@ export const useCaseInfoBlock = ({
   entityDataAdditionalInfo: TWorkflowById['context']['entity']['data']['additionalInfo'];
 }) => {
   return useMemo(() => {
-    if (Object.keys(entity?.data ?? {}).length === 0) {
+    const entityDetails = [
+      ...Object.entries(omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {}),
+      ...Object.entries(omitPropsFromObject(entityDataAdditionalInfo ?? {}, 'ubos')),
+    ];
+
+    if (Object.keys(entityDetails ?? {}).length === 0) {
       return [];
     }
 
@@ -47,12 +52,7 @@ export const useCaseInfoBlock = ({
             value: {
               id: 'entity-details-value',
               title: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Information`,
-              data: [
-                ...Object.entries(
-                  omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {},
-                ),
-                ...Object.entries(omitPropsFromObject(entityDataAdditionalInfo ?? {}, 'ubos')),
-              ]
+              data: entityDetails
                 ?.map(([title, value]) => ({
                   title,
                   value,

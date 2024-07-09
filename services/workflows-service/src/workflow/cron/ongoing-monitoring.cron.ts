@@ -70,8 +70,8 @@ export class OngoingMonitoringCron {
             const intervalInDays = processConfig.intervalInDays;
             const lastReceivedReport = await this.findLastBusinessReport(business, projectIds);
 
-            if (!lastReceivedReport) {
-              this.logger.error(`No initial report found for business: ${business.id}`);
+            if (!lastReceivedReport?.reportId) {
+              this.logger.debug(`No initial report found for business: ${business.id}`);
 
               continue;
             }
@@ -92,7 +92,7 @@ export class OngoingMonitoringCron {
                 workflowDefinitionId: workflowDefinition.id,
                 currentProjectId: business.projectId,
                 projectIds: projectIds,
-                lastReportId: (lastReceivedReport.report as { reportId: string }).reportId,
+                lastReportId: lastReceivedReport.reportId,
                 checkTypes: processConfig?.checkTypes,
                 reportType: this.processFeatureName,
               });

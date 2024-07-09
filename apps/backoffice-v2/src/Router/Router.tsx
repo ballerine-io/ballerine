@@ -17,18 +17,26 @@ import { UnauthenticatedLayout } from '@/domains/auth/components/Unauthenticated
 import { Locale } from '@/pages/Locale/Locale.page';
 import { unauthenticatedLayoutLoader } from '@/domains/auth/components/UnauthenticatedLayout/UnauthenticatedLayout.loader';
 import { Document } from '@/pages/Document/Document.page';
-import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
 import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
 import { TransactionMonitoring } from '@/pages/TransactionMonitoring/TransactionMonitoring';
 import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
+import { Home } from '@/pages/Home/Home.page';
+import { Statistics } from '@/pages/Statistics/Statistics.page';
+import { Workflows } from '@/pages/Workflows/Workflows.page';
 import { Profiles } from '@/pages/Profiles/Profiles.page';
 import { Individuals } from '@/pages/Profiles/Individuals/Individuals.page';
+import { MerchantMonitoring } from '@/pages/MerchantMonitoring/MerchantMonitoring.page';
+import { MerchantMonitoringCreateCheckPage } from '@/pages/MerchantMonitoringCreateCheck/MerchantMonitoringCreateCheck.page';
+import { MerchantMonitoringBusinessReport } from '@/pages/MerchantMonitoringBusinessReport/MerchantMonitoringBusinessReport.page';
+import { MerchantMonitoringLayout } from '@/domains/business-reports/components/MerchantMonitoringLayout/MerchantMonitoringLayout';
+import { NotFoundRedirectWithProviders } from '@/pages/NotFound/NotFoundRedirectWithProviders';
+import { RouteErrorWithProviders } from '@/common/components/atoms/RouteError/RouteErrorWithProviders';
 
 const router = createBrowserRouter([
   {
     path: '/*',
-    element: <NotFoundRedirect />,
-    errorElement: <RouteError />,
+    element: <NotFoundRedirectWithProviders />,
+    errorElement: <RouteErrorWithProviders />,
   },
   {
     path: '/',
@@ -69,6 +77,27 @@ const router = createBrowserRouter([
             element: <Locale />,
             errorElement: <RouteError />,
             children: [
+              {
+                element: <MerchantMonitoringLayout />,
+                errorElement: <RouteError />,
+                children: [
+                  {
+                    path: '/:locale/merchant-monitoring',
+                    element: <MerchantMonitoring />,
+                    errorElement: <RouteError />,
+                  },
+                  {
+                    path: '/:locale/merchant-monitoring/:businessReportId',
+                    element: <MerchantMonitoringBusinessReport />,
+                    errorElement: <RouteError />,
+                  },
+                  {
+                    path: '/:locale/merchant-monitoring/create-check',
+                    element: <MerchantMonitoringCreateCheckPage />,
+                    errorElement: <RouteError />,
+                  },
+                ],
+              },
               {
                 path: '/:locale/case-management',
                 element: <CaseManagement />,
@@ -120,6 +149,23 @@ const router = createBrowserRouter([
                     ],
                   },
                 ],
+              },
+              {
+                path: '/:locale/home',
+                element: <Home />,
+                children: [
+                  {
+                    path: '/:locale/home/statistics',
+                    element: <Statistics />,
+                    errorElement: <RouteError />,
+                  },
+                  {
+                    path: '/:locale/home/workflows',
+                    element: <Workflows />,
+                    errorElement: <RouteError />,
+                  },
+                ],
+                errorElement: <RouteError />,
               },
             ],
           },

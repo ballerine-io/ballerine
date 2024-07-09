@@ -4,7 +4,7 @@ import { cva, VariantProps } from 'class-variance-authority';
 import { ctw } from '../../../utils/ctw/ctw';
 
 const labelVariants = cva(
-  'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
+  'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50',
 );
 
 export const Label = forwardRef<
@@ -13,4 +13,5 @@ export const Label = forwardRef<
 >(({ className, ...props }, ref) => (
   <LabelPrimitive.Root ref={ref} className={ctw(labelVariants(), className)} {...props} />
 ));
+
 Label.displayName = LabelPrimitive.Root.displayName;

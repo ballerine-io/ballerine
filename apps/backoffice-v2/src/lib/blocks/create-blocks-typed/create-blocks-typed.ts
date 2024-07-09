@@ -19,6 +19,7 @@ import { Subheading } from '@/lib/blocks/components/Subheading/Subheading';
 import { TableCell } from '@/lib/blocks/components/TableCell/TableCell';
 import { TCell } from '@/lib/blocks/create-blocks-typed/types';
 import { CellsMap, createBlocks } from '@ballerine/blocks';
+import { DataTableCell } from '@/lib/blocks/components/DataTableCell/DataTableCell';
 
 export const createBlocksTyped = () => createBlocks<TCell>();
 
@@ -45,9 +46,10 @@ export const cells: CellsMap = {
   map: MapCell,
   caseCallToActionLegacy: CaseCallToActionLegacy,
   table: TableCell,
+  dataTable: DataTableCell,
   paragraph: Paragraph,
   dialog: DialogCell,
   block: BlockCell,
-  nodeCell: NodeCell,
+  node: NodeCell,
   pdfViewer: PDFViewerCell,
 };

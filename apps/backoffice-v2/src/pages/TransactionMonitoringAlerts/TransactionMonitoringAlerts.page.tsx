@@ -1,17 +1,17 @@
 import { AlertsTable } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable';
 import { AlertsHeader } from 'src/pages/TransactionMonitoringAlerts/components/AlertsHeader';
-import { AlertsPagination } from '@/pages/TransactionMonitoringAlerts/components/AlertsPagination/AlertsPagination';
 import { useTransactionMonitoringAlertsLogic } from '@/pages/TransactionMonitoringAlerts/hooks/useTransactionMonitoringAlertsLogic/useTransactionMonitoringAlertsLogic';
 import { Outlet } from 'react-router-dom';
 import { isNonEmptyArray } from '@ballerine/common';
 import { NoAlerts } from '@/pages/TransactionMonitoringAlerts/components/NoAlerts/NoAlerts';
+import { UrlPagination } from '@/common/components/molecules/UrlPagination/UrlPagination';
 
 export const TransactionMonitoringAlerts = () => {
   const {
     alerts,
     isLoadingAlerts,
     assignees,
-    labels,
+    correlationIds,
     authenticatedUser,
     page,
     onPrevPage,
@@ -28,15 +28,15 @@ export const TransactionMonitoringAlerts = () => {
       <div className="flex flex-1 flex-col gap-6 overflow-auto">
         <AlertsHeader
           assignees={assignees ?? []}
-          labels={labels ?? []}
+          correlationIds={correlationIds ?? []}
           authenticatedUser={authenticatedUser}
           search={search}
           onSearch={onSearch}
         />
         {isNonEmptyArray(alerts) && <AlertsTable data={alerts ?? []} />}
         {Array.isArray(alerts) && !alerts.length && !isLoadingAlerts && <NoAlerts />}
-        <div className={`flex items-center gap-x-2`}>
-          <AlertsPagination
+        <div className={`mt-auto flex items-center gap-x-2`}>
+          <UrlPagination
             page={page}
             onPrevPage={onPrevPage}
             onNextPage={onNextPage}

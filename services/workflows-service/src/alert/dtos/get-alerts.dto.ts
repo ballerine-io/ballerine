@@ -2,13 +2,8 @@ import { PageDto, sortDirections, validateOrderBy } from '@/common/dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { AlertState, AlertStatus, Prisma } from '@prisma/client';
 import { z } from 'zod';
-
-type SortableProperties<T> = {
-  [K in keyof T]: T[K] extends Prisma.SortOrder | undefined ? K : never;
-}[keyof T];
-
-// Test type
-type SortableByModel<T> = Array<Exclude<SortableProperties<T>, undefined>>;
+import { IsOptional } from 'class-validator';
+import { SortableByModel } from '@/common/types';
 
 export class FilterDto {
   @ApiProperty({
@@ -38,9 +33,9 @@ export class FilterDto {
   @ApiProperty({
     type: [String],
     required: false,
-    name: 'filter[label][0]',
+    name: 'filter[correlationIds][0]',
   })
-  label?: string[];
+  correlationIds?: string[];
 }
 
 export class FindAlertsDto {
@@ -56,6 +51,7 @@ export class FindAlertsDto {
   })
   filter?: FilterDto;
 
+  @IsOptional()
   @ApiProperty({
     type: String,
     required: false,
@@ -66,7 +62,7 @@ export class FindAlertsDto {
       { value: 'status:asc' },
     ],
   })
-  orderBy?: string;
+  orderBy?: `${string}:asc` | `${string}:desc`;
 }
 
 const sortableColumnsAlerts: SortableByModel<Prisma.AlertOrderByWithRelationInput> = [
@@ -102,7 +98,7 @@ export const FindAlertsSchema = z.object({
         .optional(),
       status: z.array(z.nativeEnum(AlertStatus)).optional(),
       state: z.array(z.nativeEnum(AlertState)).optional(),
-      label: z.array(z.string()).optional(),
+      correlationIds: z.array(z.string()).optional(),
     })
     .optional(),
 });
