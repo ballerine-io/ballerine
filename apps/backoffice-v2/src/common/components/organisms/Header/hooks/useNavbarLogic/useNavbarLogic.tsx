@@ -58,11 +58,11 @@ export const useNavbarLogic = () => {
       text: 'Individuals',
       icon: <Users size={20} />,
       children: [
-        {
-          text: 'Profiles',
-          href: `/en/profiles/individuals`,
-          key: 'nav-item-profile-individuals',
-        },
+        // {
+        //   text: 'Profiles',
+        //   href: `/en/profiles/individuals`,
+        //   key: 'nav-item-profile-individuals',
+        // },
         ...(individualsFilters?.map(({ id, name }) => ({
           filterId: id,
           text: name,
