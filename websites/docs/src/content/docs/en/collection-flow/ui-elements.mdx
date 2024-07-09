@@ -1,0 +1,82 @@
+---
+title: UI Elements
+
+---
+
+import CodeBlock from '../../../../components/CodeBlock/CodeBlock.astro';
+
+## Supported Elements
+
+In the Collection Flow schema, various elements can be used to build the form pages. Each element type has specific properties that determine its appearance and behavior. Below is a detailed description of the supported elements and their respective options.
+
+### `h1` - Title Component
+
+The `h1` element is used to render a main title or heading on the page.
+
+**Supported Options:**
+
+- **text**: A string that defines the text content of the title.
+
+### `h3` - Subtitle
+
+The `h3` element is used to render a subtitle or secondary heading. It shares the same options as the `h1` element.
+
+**Supported Options:**
+
+- **text**: A string that defines the text content of the subtitle.
+
+### `h4` - Tertiary Title
+
+The `h4` element is used to render a smaller subtitle or tertiary heading. It shares the same options as the `h3` element.
+
+**Supported Options:**
+
+- **text**: A string that defines the text content of the smaller subtitle.
+
+### `description` - Description Component
+
+The `description` element is a paragraph (`<p>`) element that uses `dangerouslySetInnerHTML` for text rendering.
+
+**Supported Options:**
+
+- **descriptionRaw**: A string that defines the raw HTML content to be rendered inside the description element.
+
+### `submit-button` - Submit Button
+
+The `submit-button` element is responsible for setting all elements to touched, rendering errors if they exist, and primarily handles actions such as navigating to the next page or submitting the form.
+
+**Supported Options:**
+
+- **text**: A string that defines the text content of the button.
+
+### `divider` - Divider
+
+The `divider` element is a regular divider that takes up the whole width of the container.
+
+**Supported Options:**
+
+- This element does not have any configurable options.
+
+### `json-form` - JSON Form
+
+The `json-form` element is the base for rendering all input fields. It provides the structure and functionality needed to handle complex forms, including nested inputs and dynamic validation.
+
+**Options:**
+
+<CodeBlock lang="json" code={`{
+  "options": {
+    "jsonFormDefinition": {
+      "required": ["first-name-input", "last-name-input"]
+    },
+    "label": "Your Label Here",
+    "hint": "Additional information about the form",
+    "canAdd": ["array-item-add-rule"],
+    "visibleOn": ["visibility-rule"]
+  }
+}`}/>
+
+- **jsonFormDefinition**: A piece of JSON schema, mostly used to define which fields are required so `json-form` can provide this flag to child element inputs.
+- **label**: A string that defines the label of the form.
+- **hint**: A string that provides a description or hint for the form.
+- **canAdd**: A list of rules that check if new items can be added to the list (used for array-type forms).
+- **visibleOn**: A list of rules indicating when the form should be displayed.

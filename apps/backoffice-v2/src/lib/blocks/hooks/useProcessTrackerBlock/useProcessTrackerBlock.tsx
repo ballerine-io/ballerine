@@ -12,7 +12,7 @@ export const useProcessTrackerBlock = ({
       createBlocksTyped()
         .addBlock()
         .addCell({
-          type: 'nodeCell',
+          type: 'node',
           value: <ProcessTracker workflow={workflow} plugins={plugins} processes={processes} />,
         })
         .build(),

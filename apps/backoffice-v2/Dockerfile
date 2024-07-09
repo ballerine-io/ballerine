@@ -9,6 +9,9 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 RUN mv /app/.env.example /app/.env
+
+ENV NODE_OPTIONS="--max-old-space-size=8192"
+
 RUN npm run build
 
 ENV PATH="$PATH:/app/node_modules/.bin"

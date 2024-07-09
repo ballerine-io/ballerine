@@ -9,6 +9,7 @@ import { Plus } from 'lucide-react';
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { titleCase } from 'string-ts';
+import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
 
 export const CaseCreation = withCaseCreation(() => {
   const { workflowDefinition, isLoading, error } = useCaseCreationWorkflowDefinition();
@@ -28,46 +29,52 @@ export const CaseCreation = withCaseCreation(() => {
           <span>Add case manually</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" style={{ right: 0, top: 0 }} className="max-w-[620px]">
-        {!isLoading && workflowDefinition ? (
-          <div className="flex flex-col px-[60px] py-[72px]">
-            <div className="flex flex-col">
-              <span
-                className={ctw('pb-3 text-base font-bold capitalize', {
-                  'text-slate-400': !workflowDefinitionName,
-                })}
-              >
-                {valueOrNA(workflowDefinitionName)}
-              </span>
-              <h1 className="leading-0 pb-5 text-3xl font-bold">Add a Case</h1>
-              <p className="pb-10">
-                Create a{' '}
+      <SheetContent
+        side="right"
+        style={{ right: 0, top: 0 }}
+        className="max-w-[620px] sm:max-w-[620px]"
+      >
+        <ScrollArea orientation={'vertical'} className={'h-full'}>
+          {!isLoading && workflowDefinition ? (
+            <div className="flex flex-col px-[60px] py-[72px]">
+              <div className="flex flex-col">
                 <span
-                  className={ctw({
+                  className={ctw('pb-3 text-base font-bold capitalize', {
                     'text-slate-400': !workflowDefinitionName,
                   })}
                 >
                   {valueOrNA(workflowDefinitionName)}
-                </span>{' '}
-                case by filling in the information below. Please ensure all the required fields are
-                filled out correctly.
-              </p>
-              <div className="flex flex-col gap-6">
-                <h2 className="fontbold text-2xl">Case information</h2>
+                </span>
+                <h1 className="leading-0 pb-5 text-3xl font-bold">Add a Case</h1>
+                <p className="pb-10">
+                  Create a{' '}
+                  <span
+                    className={ctw({
+                      'text-slate-400': !workflowDefinitionName,
+                    })}
+                  >
+                    {valueOrNA(workflowDefinitionName)}
+                  </span>{' '}
+                  case by filling in the information below. Please ensure all the required fields
+                  are filled out correctly.
+                </p>
+                <div className="flex flex-col gap-6">
+                  <h2 className="fontbold text-2xl">Case information</h2>
+                </div>
+              </div>
+              <div>
+                {workflowDefinition ? (
+                  <CaseCreationForm workflowDefinition={workflowDefinition} />
+                ) : (
+                  <p>Workflow definition is missing.</p>
+                )}
               </div>
             </div>
-            <div>
-              {workflowDefinition ? (
-                <CaseCreationForm workflowDefinition={workflowDefinition} />
-              ) : (
-                <p>Workflow definition is missing.</p>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div>Loading workflow definition...</div>
-        )}
-        {!!error && <div>Failed to load workflow definition</div>}
+          ) : (
+            <div>Loading workflow definition...</div>
+          )}
+          {!!error && <div>Failed to load workflow definition</div>}
+        </ScrollArea>
       </SheetContent>
     </Sheet>
   );

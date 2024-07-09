@@ -3,18 +3,26 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import * as errors from '@/errors';
 import { PrismaService } from '@/prisma/prisma.service';
 import { isFkConstraintError } from '@/prisma/prisma.util';
-import { ObjectValues, TProjectId } from '@/types';
+import { InputJsonValue, ObjectValues, TProjectId } from '@/types';
 import { Injectable } from '@nestjs/common';
-import { Alert, AlertDefinition, AlertState, AlertStatus } from '@prisma/client';
+import {
+  Alert,
+  AlertDefinition,
+  AlertSeverity,
+  AlertState,
+  AlertStatus,
+  BusinessReport,
+  MonitoringType,
+} from '@prisma/client';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
-import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
-import { InlineRule } from '@/data-analytics/types';
 import _ from 'lodash';
 import { AlertExecutionStatus } from './consts';
 import { computeHash } from '@/common/utils/sign/sign';
 import { TDedupeStrategy, TExecutionDetails } from './types';
+import { CheckRiskScoreOptions, InlineRule } from '@/data-analytics/types';
+import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 
 const DEFAULT_DEDUPE_STRATEGIES = {
   cooldownTimeframeInMinutes: 60 * 24,
@@ -71,6 +79,7 @@ export class AlertService {
 
   async getAlerts(
     findAlertsDto: FindAlertsDto,
+    monitoringType: MonitoringType,
     projectIds: TProjectId[],
     args?: Omit<
       Parameters<typeof this.alertRepository.findMany>[0],
@@ -88,8 +97,11 @@ export class AlertService {
             in: findAlertsDto.filter?.status,
           },
           alertDefinition: {
-            label: {
-              in: findAlertsDto.filter?.label,
+            monitoringType: {
+              equals: monitoringType,
+            },
+            correlationId: {
+              in: findAlertsDto.filter?.correlationIds,
             },
           },
           ...(findAlertsDto.filter?.assigneeId && {
@@ -114,15 +126,17 @@ export class AlertService {
   }
 
   // Function to retrieve all alert definitions
-  async getAllAlertDefinitions(): Promise<AlertDefinition[]> {
+  async getAlertDefinitions(options: { type: MonitoringType }): Promise<AlertDefinition[]> {
     return await this.prisma.alertDefinition.findMany({
-      where: { enabled: true },
+      where: { enabled: true, monitoringType: options.type },
     });
   }
 
   // Function to perform alert checks for each alert definition
   async checkAllAlerts() {
-    const alertDefinitions = await this.getAllAlertDefinitions();
+    const alertDefinitions = await this.getAlertDefinitions({
+      type: MonitoringType.transaction_monitoring,
+    });
 
     for (const definition of alertDefinitions) {
       try {
@@ -140,8 +154,57 @@ export class AlertService {
     }
   }
 
-  // Specific alert check logic based on the definition
-  private async checkAlert(alertDefinition: AlertDefinition) {
+  async checkOngoingMonitoringAlert(businessReport: BusinessReport, businessCompanyName: string) {
+    const alertDefinitions = await this.alertDefinitionRepository.findMany(
+      {
+        where: {
+          enabled: true,
+          monitoringType: MonitoringType.ongoing_merchant_monitoring,
+        },
+      },
+      [businessReport.projectId],
+    );
+
+    const alertDefinitionsCheck = alertDefinitions.map(async alertDefinition => {
+      const alertResultData = await this.dataAnalyticsService.checkMerchantOngoingAlert(
+        businessReport,
+        (alertDefinition.inlineRule as InlineRule).options as CheckRiskScoreOptions,
+        alertDefinition.defaultSeverity,
+      );
+
+      if (alertResultData) {
+        const { id: businessReportId, businessId, projectId } = businessReport;
+        const subjects = { businessId, projectId };
+
+        const subjectArray = Object.entries(subjects).map(([key, value]) => ({
+          [key]: value,
+        }));
+
+        const createAlertReference = this.createAlert;
+
+        return [
+          alertDefinition,
+          subjectArray,
+          { subjectArray },
+          {
+            ...alertResultData,
+            businessReportId,
+            businessCompanyName,
+          },
+        ] satisfies Parameters<typeof createAlertReference>;
+      }
+    });
+
+    const evaluatedRulesResults = (await Promise.all(alertDefinitionsCheck)).filter(Boolean);
+
+    const alertArgs = evaluatedRulesResults[0];
+
+    if (alertArgs) {
+      return await this.createAlert(...alertArgs);
+    }
+  }
+
+  private async checkAlert(alertDefinition: AlertDefinition, ...args: any[]) {
     const unknownData: unknown = alertDefinition.inlineRule;
 
     const inlineRule: InlineRule = unknownData as InlineRule;
@@ -229,7 +292,8 @@ export class AlertService {
     alertDef: AlertDefinition,
     subject: Array<{ [key: string]: unknown }>,
     executionRow: Record<string, unknown>,
-  ): Promise<Alert> {
+    additionalInfo?: Record<string, unknown>,
+  ) {
     return this.alertRepository.create({
       data: {
         alertDefinitionId: alertDef.id,
@@ -238,12 +302,14 @@ export class AlertService {
         dataTimestamp: new Date(),
         state: AlertState.triggered,
         status: AlertStatus.new,
+        additionalInfo: additionalInfo,
         executionDetails: {
           checkpoint: {
             hash: computeHash(executionRow),
           },
+          subject: Object.assign({}, ...(subject || [])),
           executionRow,
-        } satisfies TExecutionDetails,
+        } satisfies TExecutionDetails as InputJsonValue,
         ...Object.assign({}, ...(subject || [])),
       },
     });
@@ -317,17 +383,22 @@ export class AlertService {
     return status;
   }
 
-  async getAlertLabels({ projectId }: { projectId: TProjectId }) {
+  async getAlertCorrelationIds({ projectId }: { projectId: TProjectId }) {
     const alertDefinitions = await this.alertDefinitionRepository.findMany(
       {
         select: {
-          label: true,
+          correlationId: true,
         },
       },
       [projectId],
+      {
+        orderBy: {
+          defaultSeverity: 'desc',
+        },
+      },
     );
 
-    return alertDefinitions.map(({ label }) => label);
+    return alertDefinitions.map(({ correlationId }) => correlationId);
   }
 
   async getAlertsByEntityId(entityId: string, projectId: string) {
@@ -339,5 +410,26 @@ export class AlertService {
       },
       [projectId],
     );
+  }
+
+  orderedBySeverity(a: AlertSeverity, b: AlertSeverity) {
+    const alertSeverityToNumber = (severity: AlertSeverity) => {
+      switch (severity) {
+        case AlertSeverity.high:
+          return 3;
+        case AlertSeverity.medium:
+          return 2;
+        case AlertSeverity.low:
+          return 1;
+        default:
+          return 0;
+      }
+    };
+
+    if (a === b) {
+      return 0;
+    }
+
+    return alertSeverityToNumber(a) < alertSeverityToNumber(b) ? 1 : -1;
   }
 }

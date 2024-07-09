@@ -32,6 +32,7 @@ export class CustomerControllerInternal {
         country: true,
         language: true,
         customerStatus: true,
+        config: true,
       },
     });
   }

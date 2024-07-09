@@ -234,9 +234,72 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.md'] };
+      'en/collection-flow/iframe.mdx': {
+        id: 'en/collection-flow/iframe.mdx';
+        slug: 'en/collection-flow/iframe';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/collection-flow/introduction.mdx': {
+        id: 'en/collection-flow/introduction.mdx';
+        slug: 'en/collection-flow/introduction';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/collection-flow/json-form.mdx': {
+        id: 'en/collection-flow/json-form.mdx';
+        slug: 'en/collection-flow/json-form';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/collection-flow/schema-breakdown.mdx': {
+        id: 'en/collection-flow/schema-breakdown.mdx';
+        slug: 'en/collection-flow/schema-breakdown';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/collection-flow/theming.mdx': {
+        id: 'en/collection-flow/theming.mdx';
+        slug: 'en/collection-flow/theming';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/collection-flow/ui-definition-updating.mdx': {
+        id: 'en/collection-flow/ui-definition-updating.mdx';
+        slug: 'en/collection-flow/ui-definition-updating';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/collection-flow/ui-elements.mdx': {
+        id: 'en/collection-flow/ui-elements.mdx';
+        slug: 'en/collection-flow/ui-elements';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
       'en/contributing.mdx': {
         id: 'en/contributing.mdx';
         slug: 'en/contributing';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/deployment/ansible_deployment.mdx': {
+        id: 'en/deployment/ansible_deployment.mdx';
+        slug: 'en/deployment/ansible_deployment';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/deployment/docker_compose.mdx': {
+        id: 'en/deployment/docker_compose.mdx';
+        slug: 'en/deployment/docker_compose';
         body: string;
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
@@ -276,13 +339,6 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.md'] };
-      'en/getting_started/deployment.mdx': {
-        id: 'en/getting_started/deployment.mdx';
-        slug: 'en/getting_started/deployment';
-        body: string;
-        collection: 'docs';
-        data: InferEntrySchema<'docs'>;
-      } & { render(): Render['.mdx'] };
       'en/getting_started/glossary.md': {
         id: 'en/getting_started/glossary.md';
         slug: 'en/getting_started/glossary';
@@ -346,6 +402,13 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.md'] };
+      'en/learn/introduction.mdx': {
+        id: 'en/learn/introduction.mdx';
+        slug: 'en/learn/introduction';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
       'en/learn/kit.md': {
         id: 'en/learn/kit.md';
         slug: 'en/learn/kit';

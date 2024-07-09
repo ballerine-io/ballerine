@@ -4,6 +4,8 @@ import console from 'console';
 import { TestGlobal } from '@/test/test-global';
 import { execSync } from 'child_process';
 
+process.env.LOG_LEVEL = 'error';
+
 const DATABASE_NAME = 'test';
 
 module.exports = async () => {
@@ -20,7 +22,6 @@ module.exports = async () => {
     })
     .start();
 
-  process.env.TEST_DATABASE_SCHEMA_NAME = container.getDatabase();
   process.env.DB_URL = container.getConnectionUri();
 
   console.log('\nStarting database container on: ' + process.env.DB_URL);

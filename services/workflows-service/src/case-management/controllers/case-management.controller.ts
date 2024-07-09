@@ -27,6 +27,7 @@ import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { ListIndividualsProfilesSchema } from '@/case-management/dtos/list-individuals-profiles.dto';
 import { z } from 'zod';
 import { EndUserAmlHitsSchema } from '@/end-user/end-user.schema';
+import { Business, EndUsersOnBusinesses } from '@prisma/client';
 
 @Controller('case-management')
 @ApiExcludeController()
@@ -87,6 +88,16 @@ export class CaseManagementController {
           createdAt: true,
           firstName: true,
           lastName: true,
+          endUsersOnBusinesses: {
+            select: {
+              position: true,
+              business: {
+                select: {
+                  companyName: true,
+                },
+              },
+            },
+          },
           businesses: {
             select: {
               companyName: true,
@@ -101,19 +112,29 @@ export class CaseManagementController {
           activeMonitorings: true,
           updatedAt: true,
         },
+        where: {
+          Counterparty: {
+            every: {
+              endUserId: null,
+            },
+          },
+        },
         take: searchQueryParams.page.size,
         skip: (searchQueryParams.page.number - 1) * searchQueryParams.page.size,
       },
       [projectId],
     );
+
     const typedEndUsers = endUsers as Array<
       (typeof endUsers)[number] & {
-        businesses: Array<{
-          companyName: string;
+        endUsersOnBusinesses: Array<{
+          position: EndUsersOnBusinesses['position'];
+          business: Pick<Business, 'companyName'>;
         }>;
         workflowRuntimeData: {
           tags: string[];
         };
+        businesses: Array<Pick<Business, 'companyName'>>;
       }
     >;
     const tagToKyc = {
@@ -128,7 +149,8 @@ export class CaseManagementController {
       Exclude<TStateTag, 'failure' | 'flagged' | 'resolved' | 'dismissed'>,
       'APPROVED' | 'REJECTED' | 'REVISIONS' | 'PROCESSED' | 'PENDING'
     >;
-    const formattedEndUsers = await Promise.all(
+
+    return await Promise.all(
       typedEndUsers.map(async endUser => {
         const tag = endUser.workflowRuntimeData?.tags?.find(
           tag => !!tagToKyc[tag as keyof typeof tagToKyc],
@@ -145,12 +167,20 @@ export class CaseManagementController {
         const isMonitored = checkIsMonitored();
         const matches = getMatches();
 
+        const businesses = endUser.businesses?.length
+          ? endUser.businesses.map(business => business.companyName).join(', ')
+          : endUser.endUsersOnBusinesses
+              ?.map(endUserOnBusiness => endUserOnBusiness.business.companyName)
+              .join(', ');
+
         return {
           correlationId: endUser.correlationId,
           createdAt: endUser.createdAt,
           name: `${endUser.firstName} ${endUser.lastName}`,
-          businesses: endUser.businesses?.map(business => business.companyName).join(', '),
-          role: 'UBO',
+          businesses,
+          roles: endUser.endUsersOnBusinesses?.flatMap(
+            endUserOnBusiness => endUserOnBusiness.position,
+          ),
           kyc: tagToKyc[tag as keyof typeof tagToKyc],
           isMonitored,
           matches,
@@ -159,7 +189,5 @@ export class CaseManagementController {
         };
       }),
     );
-
-    return formattedEndUsers;
   }
 }
