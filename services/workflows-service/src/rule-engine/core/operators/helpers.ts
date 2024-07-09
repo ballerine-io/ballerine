@@ -1,7 +1,7 @@
 import { primitive, ConditionFn, BetweenParams, LastYearsParams, ExistsParams } from './types';
 import { TOperation } from '../types';
 import { ZodSchema } from 'zod';
-import { BetweenSchema, LastYearsSchema, PrimitiveSchema } from './schemas';
+import { BetweenSchema, LastYearsSchema, PrimitiveArraySchema, PrimitiveSchema } from './schemas';
 import { ValidationFailedError } from '../errors';
 import { isEmpty } from 'lodash';
 
@@ -78,6 +78,34 @@ class NotEquals extends BaseOperator {
 
   eval: ConditionFn<primitive> = (dataValue: primitive, conditionValue: primitive): boolean => {
     return dataValue !== conditionValue;
+  };
+}
+
+class In extends BaseOperator<primitive[]> {
+  constructor() {
+    super({
+      operator: 'IN',
+      conditionValueSchema: PrimitiveArraySchema,
+      dataValueSchema: PrimitiveSchema,
+    });
+  }
+
+  eval: ConditionFn<primitive[]> = (dataValue: primitive, conditionValue: primitive[]): boolean => {
+    return conditionValue.includes(dataValue);
+  };
+}
+
+class NotIn extends BaseOperator<primitive[]> {
+  constructor() {
+    super({
+      operator: 'NOT_IN',
+      conditionValueSchema: PrimitiveArraySchema,
+      dataValueSchema: PrimitiveSchema,
+    });
+  }
+
+  eval: ConditionFn<primitive[]> = (dataValue: primitive, conditionValue: primitive[]): boolean => {
+    return !conditionValue.includes(dataValue);
   };
 }
 
@@ -233,3 +261,5 @@ export const LTE = new LessThanOrEqual();
 export const BETWEEN = new Between();
 export const LAST_YEAR = new LastYear();
 export const EXISTS = new Exists();
+export const IN = new In();
+export const NOT_IN = new NotIn();

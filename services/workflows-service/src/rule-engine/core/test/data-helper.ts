@@ -1,12 +1,15 @@
 export const context = {
   id: '527658792383',
-  data: {
-    companyName: 'Airstar',
-    additionalInfo: {
-      mainRepresentative: {
-        email: 'test1287888920@ballerine.com',
-        lastName: 'zamir',
-        firstName: 'lior',
+  entity: {
+    data: {
+      country: 'AF',
+      companyName: 'Airstar',
+      additionalInfo: {
+        mainRepresentative: {
+          email: 'test1287888920@ballerine.com',
+          lastName: 'zamir',
+          firstName: 'lior',
+        },
       },
     },
   },

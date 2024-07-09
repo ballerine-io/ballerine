@@ -1,5 +1,6 @@
 export const OPERATION = {
   EQUALS: 'EQUALS',
+  NOT_EQUALS: 'NOT_EQUALS',
   BETWEEN: 'BETWEEN',
   GT: 'GT',
   LT: 'LT',
@@ -7,7 +8,8 @@ export const OPERATION = {
   LTE: 'LTE',
   LAST_YEAR: 'LAST_YEAR',
   EXISTS: 'EXISTS',
-  NOT_EQUALS: 'NOT_EQUALS',
+  IN: 'IN',
+  NOT_IN: 'NOT_IN',
 } as const;
 
 export const OPERATOR = {
