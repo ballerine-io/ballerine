@@ -126,9 +126,9 @@ export class CaseManagementController {
               tags: true,
             },
             where: {
-              OR: Object.keys(tagToKyc).map(value => ({
+              OR: Object.keys(tagToKyc).map(key => ({
                 tags: {
-                  array_contains: value,
+                  array_contains: key,
                 },
               })),
             },
