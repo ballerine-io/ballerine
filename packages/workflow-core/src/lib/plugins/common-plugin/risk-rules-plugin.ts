@@ -1,6 +1,7 @@
 import groupBy from 'lodash.groupby';
 import { TContext } from '../../utils';
 import { RiskRulesPluginParams } from './types';
+import { logger } from '../../logger';
 
 export class RiskRulePlugin {
   public static pluginType = 'risk-rules';
@@ -23,12 +24,11 @@ export class RiskRulePlugin {
   async invoke(context: TContext) {
     try {
       const rulesetResult = await this.action(context, this.rulesSource);
+
       const { riskScore, rulesResults } = this.calculateRiskScore(rulesetResult);
 
       const indicators = rulesResults
-        .filter(rule =>
-          rule.result.every(result => result.status === 'PASSED' || result.status === 'SKIPPED'),
-        )
+        .filter(rule => rule.result.every(result => result.status === 'PASSED'))
         .map(rule => {
           return {
             name: rule.indicator,
@@ -48,7 +48,7 @@ export class RiskRulePlugin {
         callbackAction: this.successAction,
       } as const;
     } catch (error) {
-      console.log(`Rules Plugin Failed`, {
+      logger.error(`Rules Plugin Failed`, {
         name: this.name,
         databaseId: this.rulesSource.databaseId,
         source: this.rulesSource.source,
@@ -57,6 +57,7 @@ export class RiskRulePlugin {
       return {
         callbackAction: this.errorAction,
         error: error,
+        success: false,
       } as const;
     }
   }

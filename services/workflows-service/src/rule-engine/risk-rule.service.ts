@@ -44,9 +44,17 @@ const NotionRiskRuleRecordSchema = z
     ID: z.string().min(1),
     'Rule set': z
       .string()
-      .refine(isJsonString, 'Not a valid JSON string')
-      .transform(value => JSON.parse(value))
-      .pipe(RuleSetSchema),
+      .transform((value, ctx) => {
+        try {
+          return JSON.parse(value);
+        } catch (e) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Not a valid JSON string',
+          });
+          return z.NEVER;
+        }
+      }),
     Domain: z.string().min(1),
     Indicator: z.string().min(1),
     'Risk level': z.enum(['positive', 'moderate', 'critical']),
