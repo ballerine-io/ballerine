@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { z } from 'zod';
 import { CaseTabsSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-screaming-snake-case';
+import { useEnsureActiveTabIsInTheme } from '@/lib/blocks/variants/DefaultBlocks/hooks/useEnsureActiveTabIsInTheme/useEnsureActiveTabIsInTheme';
 
 export type TCaseBlocksLogicParams = {
   workflow: TWorkflowById;
@@ -48,7 +49,6 @@ export const useCaseBlocks = ({
 
     return getVariantTabs(config.theme, tabBlocks);
   }, [tabBlocks, config?.theme]);
-
   const themeBlocks = useMemo(() => {
     if (!config?.theme) {
       return [];
@@ -56,6 +56,11 @@ export const useCaseBlocks = ({
 
     return tabBlocks[toScreamingSnakeCase(activeTab)] ?? [];
   }, [config?.theme, activeTab, tabBlocks]);
+
+  useEnsureActiveTabIsInTheme({
+    tabBlocks,
+    activeTab,
+  });
 
   return {
     activeTab,

@@ -22,16 +22,12 @@ export const useNavbarLogic = () => {
   const { data: customer } = useCustomerQuery();
 
   const navItems = [
-    ...(customer?.config?.isExample || customer?.config?.isDemo
-      ? [
-          {
-            text: 'Home',
-            icon: <Home size={20} />,
-            href: `/${locale}/home`,
-            key: 'nav-item-Home',
-          },
-        ]
-      : []),
+    {
+      text: 'Home',
+      icon: <Home size={20} />,
+      href: `/${locale}/home`,
+      key: 'nav-item-Home',
+    },
     {
       text: 'Businesses',
       icon: <Building size={20} />,
@@ -58,11 +54,11 @@ export const useNavbarLogic = () => {
       text: 'Individuals',
       icon: <Users size={20} />,
       children: [
-        {
-          text: 'Profiles',
-          href: `/en/profiles/individuals`,
-          key: 'nav-item-profile-individuals',
-        },
+        // {
+        //   text: 'Profiles',
+        //   href: `/en/profiles/individuals`,
+        //   key: 'nav-item-profile-individuals',
+        // },
         ...(individualsFilters?.map(({ id, name }) => ({
           filterId: id,
           text: name,
