@@ -33,7 +33,7 @@ export class NotionService {
 
   private async extractDatabaseContent(databaseId: string) {
     let database: QueryDatabaseResponse | null = null;
-    const records = [];
+    const records: QueryDatabaseResponse['results'] = [];
 
     do {
       database = await this.client.databases.query({
