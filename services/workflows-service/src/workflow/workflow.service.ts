@@ -2367,16 +2367,4 @@ export class WorkflowService {
       data: args,
     });
   }
-
-  async getByEntityId(
-    entityId: string,
-    projectId: TProjectId,
-    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
-  ) {
-    return await this.workflowRuntimeDataRepository.findFirstByEntityId(
-      entityId,
-      [projectId],
-      args,
-    );
-  }
 }

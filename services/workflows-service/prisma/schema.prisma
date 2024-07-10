@@ -846,6 +846,7 @@ model Counterparty {
 
   @@unique([projectId, correlationId])
   @@index([correlationId])
+  @@index([endUserId])
 }
 
 enum BusinessReportStatus {
