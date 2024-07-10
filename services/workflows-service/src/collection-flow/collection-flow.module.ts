@@ -38,6 +38,7 @@ import { TranslationService } from '@/providers/translation/translation.service'
 import { BusinessReportModule } from '@/business-report/business-report.module';
 import { AlertModule } from '@/alert/alert.module';
 import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
+import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
     BusinessReportModule,
     AlertModule,
     DataAnalyticsModule,
+    RuleEngineModule,
   ],
   controllers: [
     ColectionFlowController,

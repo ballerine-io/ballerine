@@ -12,6 +12,7 @@ export const getUgandaDocuments = (): TDocument[] => {
 
   const TypeNonEmptyString = Type.String({ minLength: 1 });
   const TypeUgandaMobileNumber = Type.String({ pattern: '^256[0-9]{9}$' });
+  const TypeMoreThan1Word = Type.String({ pattern: '^\\w+(\\s+\\w+)+$' });
 
   return [
     // Proof of Registration
@@ -307,6 +308,69 @@ export const getUgandaDocuments = (): TDocument[] => {
         issueDate: TypePastDate,
       }),
     },
+    {
+      category: 'proof_of_address',
+      type: 'tenancy_agreement',
+      issuer: { country: 'UG' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        tenantName: TypeMoreThan1Word,
+        addressInTenancyAgreement: TypeMoreThan1Word,
+        issueDate: TypePastDate,
+      }),
+    },
+    {
+      category: 'proof_of_address',
+      type: 'rent_receipt',
+      issuer: { country: 'UG' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        tenantName: Type.String(),
+        address: TypeMoreThan1Word,
+        issueDate: TypePastDate,
+        amountDue: Type.Number(),
+      }),
+    },
+    {
+      category: 'proof_of_address',
+      type: 'rent_receipt',
+      issuer: { country: 'UG' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        tenantName: Type.String(),
+        address: TypeMoreThan1Word,
+        issueDate: TypePastDate,
+        amountDue: Type.Number(),
+      }),
+    },
+    {
+      category: 'proof_of_address',
+      type: 'village_id',
+      issuer: { country: 'UG' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        name: TypeMoreThan1Word,
+        nationalIdNumber: Type.String(),
+        address: TypeMoreThan1Word,
+      }),
+    },
+    {
+      category: 'proof_of_address',
+      type: 'lc_letter',
+      issuer: { country: 'UG' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        name: TypeMoreThan1Word,
+        address: TypeMoreThan1Word,
+        issueDate: TypePastDate,
+        nationalIdNumber: Type.String(),
+      }),
+    },
 
     // Proof of Employment
     {
@@ -338,8 +402,48 @@ export const getUgandaDocuments = (): TDocument[] => {
         issueDate: TypePastDate,
       }),
     },
+    {
+      category: 'proof_of_employment',
+      type: 'trade_license',
+      issuer: { country: 'UG' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        issueDate: TypePastDate,
+        ownerNationalIdNumber: Type.String(),
+      }),
+    },
+    {
+      category: 'proof_of_employment',
+      type: 'recommendation_letter',
+      issuer: { country: 'UG' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        employerName: TypeNonEmptyString,
+        position: Type.String(),
+        salaryAmount: Type.Number({ minimum: 1 }),
+        issueDate: TypePastDate,
+        employeeNationalIdNumber: Type.String(),
+      }),
+    },
+    {
+      category: 'proof_of_employment',
+      type: 'contract_extension_letter',
+      issuer: { country: 'UG' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        employerName: Type.String(),
+        position: Type.String(),
+        salaryAmountInUGX: Type.Number({ minimum: 1 }),
+        issueDate: TypePastDate,
+        employeeNationalIdNumber: Type.String(),
+      }),
+    },
 
-    // Proof of Ownership
+    // Proof of Ownership1
     {
       category: 'business_document',
       type: 'property_rate',

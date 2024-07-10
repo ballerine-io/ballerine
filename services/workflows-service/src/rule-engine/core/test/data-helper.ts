@@ -7,8 +7,8 @@ export const context = {
       additionalInfo: {
         mainRepresentative: {
           email: 'test1287888920@ballerine.com',
-          lastName: 'zamir',
-          firstName: 'lior',
+          lastName: 'Zamir',
+          firstName: 'Lior',
         },
       },
     },

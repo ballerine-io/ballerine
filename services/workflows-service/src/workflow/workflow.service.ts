@@ -102,6 +102,8 @@ import { Static } from '@sinclair/typebox';
 import dayjs from 'dayjs';
 import { entitiesUpdate } from './utils/entities-update';
 import { BusinessReportService } from '@/business-report/business-report.service';
+import { RuleEngineService } from '@/rule-engine/rule-engine.service';
+import { RiskRuleService, TFindAllRulesOptions } from '@/rule-engine/risk-rule.service';
 
 type TEntityId = string;
 
@@ -138,6 +140,8 @@ export class WorkflowService {
     private readonly workflowTokenService: WorkflowTokenService,
     private readonly uiDefinitionService: UiDefinitionService,
     private readonly prismaService: PrismaService,
+    private readonly riskRuleService: RiskRuleService,
+    private readonly ruleEngineService: RuleEngineService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -1812,11 +1816,27 @@ export class WorkflowService {
   ) {
     const correlationId =
       typeof entity.id === 'string' && entity.id.length > 0 ? entity.id : undefined;
+    const getBusinessWebsite = (data: Record<string, any>) => {
+      if (!data?.additionalInfo) {
+        return;
+      }
 
+      if ('store' in data.additionalInfo && data.additionalInfo.store?.website?.mainWebsite) {
+        return data?.additionalInfo?.store?.website?.mainWebsite;
+      }
+
+      if ('companyWebsite' in data.additionalInfo && data.additionalInfo.companyWebsite) {
+        return data?.additionalInfo?.companyWebsite;
+      }
+
+      return;
+    };
+    const businessWebsite = getBusinessWebsite(context.entity.data ?? {});
     const { id } = await this.businessService.create({
       data: {
         correlationId,
         ...(context.entity.data as object),
+        ...(businessWebsite && { website: businessWebsite }),
         project: { connect: { id: currentProjectId } },
       } as Prisma.BusinessCreateInput,
     });
@@ -1923,6 +1943,32 @@ export class WorkflowService {
         },
         // @ts-expect-error - error from Prisma types fix
         extensions: workflowDefinition.extensions,
+        invokeRiskRulesAction: async (
+          context: object,
+          ruleStoreServiceOptions: TFindAllRulesOptions,
+        ) => {
+          const rules = await this.riskRuleService.findAll(ruleStoreServiceOptions);
+
+          const rulesetResults = rules.map(rule => {
+            try {
+              return {
+                result: this.ruleEngineService.run(rule.ruleSet, context),
+                ...rule,
+              } as const;
+            } catch (ex) {
+              return {
+                ...rule,
+                result: {
+                  status: 'FAILED',
+                  message: isErrorWithMessage(ex) ? ex.message : undefined,
+                  error: ex,
+                },
+              } as const;
+            }
+          });
+
+          return rulesetResults;
+        },
         invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
           const runnableChildWorkflow = await this.persistChildEvent(
             childPluginConfiguration,
@@ -2350,17 +2396,5 @@ export class WorkflowService {
     return await this.workflowRuntimeDataRepository.updateById(workflowRuntimeDataId, {
       data: args,
     });
-  }
-
-  async getByEntityId(
-    entityId: string,
-    projectId: TProjectId,
-    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
-  ) {
-    return await this.workflowRuntimeDataRepository.findFirstByEntityId(
-      entityId,
-      [projectId],
-      args,
-    );
   }
 }

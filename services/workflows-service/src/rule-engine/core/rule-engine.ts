@@ -1,8 +1,15 @@
+import {
+  DataValueNotFoundError,
+  MissingKeyError,
+  OperationHelpers,
+  OperationNotFoundError,
+  OPERATOR,
+  Rule,
+  RuleResult,
+  RuleResultSet,
+  RuleSet,
+} from '@ballerine/common';
 import { get, isEmpty } from 'lodash';
-import { DataValueNotFoundError, MissingKeyError, OperationNotFoundError } from './errors';
-import { operationHelpers } from './operators/constants';
-import { OPERATOR } from './operators/enums';
-import { Rule, RuleResult, RuleResultSet, RuleSet } from './types';
 
 export const validateRule = (rule: Rule, data: any): RuleResult => {
   if (isEmpty(rule.key)) {
@@ -16,7 +23,7 @@ export const validateRule = (rule: Rule, data: any): RuleResult => {
     throw new DataValueNotFoundError(rule.key);
   }
 
-  const operation = operationHelpers[rule.operation];
+  const operation = OperationHelpers[rule.operation];
 
   if (!operation) {
     throw new OperationNotFoundError(rule.operation);
@@ -73,9 +80,9 @@ export const runRuleSet = (ruleSet: RuleSet, data: any): RuleResultSet => {
   });
 };
 
-export const RuleEngine = (ruleSets: RuleSet, helpers?: typeof operationHelpers) => {
+export const RuleEngine = (ruleSets: RuleSet, helpers?: typeof OperationHelpers) => {
   // TODO: inject helpers
-  const allHelpers = { ...(helpers || {}), ...operationHelpers };
+  const allHelpers = { ...(helpers || {}), ...OperationHelpers };
 
   const run = (data: object) => {
     return runRuleSet(ruleSets, data);

@@ -12,7 +12,7 @@ const getLabel = ({ label, provider }: { label: string; provider: string }) => {
   return label;
 };
 
-const toRiskLabels = (riskIndicators: Array<{ name: string; riskLevel: string }>) => {
+export const toRiskLabels = (riskIndicators: Array<{ name: string; riskLevel: string }>) => {
   if (!Array.isArray(riskIndicators) || !riskIndicators.length) {
     return [];
   }
@@ -42,14 +42,16 @@ export const reportAdapter = {
       adsAndSocialMediaAnalysis: toRiskLabels(
         data?.report?.data?.summary?.riskIndicatorsByDomain?.adsAndSocialViolations,
       ),
-      adsAndSocialMediaPresence: Object.entries(data?.report?.data?.socialMedia?.ads ?? {})
+      adsAndSocialMediaPresence: [
+        ...Object.entries({ facebook: data?.report?.data?.socialMedia?.facebookData ?? {} }),
+        ...Object.entries({ instagram: data?.report?.data?.socialMedia?.instagramData ?? {} }),
+      ]
         .map(([provider, data]) => {
           if (!AdsProviders.includes(provider.toUpperCase() as TAdsProvider)) {
             return;
           }
 
           const adapter = adsProviderAdapter[provider as keyof typeof adsProviderAdapter];
-
           const adaptedData = adapter(data);
 
           return {
@@ -87,16 +89,22 @@ export const reportAdapter = {
       websiteCredibilityAnalysis: toRiskLabels(
         data?.report?.data?.summary?.riskIndicatorsByDomain?.tldViolations,
       ),
-      adsImages: Object.entries(data?.report?.data?.socialMedia?.ads ?? {} ?? {})
+      adsImages: [
+        ...Object.entries({ facebook: data?.report?.data?.socialMedia?.facebookData ?? {} }),
+        ...Object.entries({ instagram: data?.report?.data?.socialMedia?.instagramData ?? {} }),
+      ]
         .map(([provider, data]) => ({
           provider,
-          src: data?.imageUrl,
-          link: data?.adsInformation?.link,
+          src: data?.screenshotUrl,
+          link: data?.pageUrl,
         }))
-        .filter(Boolean),
-      relatedAdsImages: Object.values(data?.report?.data?.socialMedia?.ads ?? {}).map(
-        data => data?.pickedAd?.imageUrl,
-      ),
+        .filter(({ src }) => !!src),
+      relatedAdsImages: data?.report?.data?.socialMedia?.pickedAds
+        ?.map(data => ({
+          src: data?.screenshotUrl,
+          link: data?.link,
+        }))
+        .filter(({ src }) => !!src),
       onlineReputationAnalysis: data?.report?.data?.transactionLaundering?.scamOrFraud?.indicators
         ?.filter(({ violation }) => !!violation)
         ?.map(({ violation, sourceUrl }) => ({ label: violation, url: sourceUrl })),
@@ -140,14 +148,16 @@ export const reportAdapter = {
       adsAndSocialMediaAnalysis: toRiskLabels(
         data?.report?.data?.summary?.riskIndicatorsByDomain?.adsAndSocialViolations,
       ),
-      adsAndSocialMediaPresence: Object.entries(data?.report?.data?.socialMedia?.ads ?? {})
+      adsAndSocialMediaPresence: [
+        ...Object.entries({ facebook: data?.report?.data?.socialMedia?.facebookData ?? {} }),
+        ...Object.entries({ instagram: data?.report?.data?.socialMedia?.instagramData ?? {} }),
+      ]
         .map(([provider, data]) => {
           if (!AdsProviders.includes(provider.toUpperCase() as TAdsProvider)) {
             return;
           }
 
           const adapter = adsProviderAdapter[provider as keyof typeof adsProviderAdapter];
-
           const adaptedData = adapter(data);
 
           return {
@@ -185,16 +195,22 @@ export const reportAdapter = {
       websiteCredibilityAnalysis: toRiskLabels(
         data?.report?.data?.summary?.riskIndicatorsByDomain?.tldViolations,
       ),
-      adsImages: Object.entries(data?.report?.data?.socialMedia?.ads ?? {} ?? {})
+      adsImages: [
+        ...Object.entries({ facebook: data?.report?.data?.socialMedia?.facebookData ?? {} }),
+        ...Object.entries({ instagram: data?.report?.data?.socialMedia?.instagramData ?? {} }),
+      ]
         .map(([provider, data]) => ({
           provider,
-          src: data?.imageUrl,
-          link: data?.adsInformation?.link,
+          src: data?.screenshotUrl,
+          link: data?.pageUrl,
         }))
-        .filter(Boolean),
-      relatedAdsImages: Object.values(data?.report?.data?.socialMedia?.ads ?? {}).map(
-        data => data?.pickedAd?.imageUrl,
-      ),
+        .filter(({ src }) => !!src),
+      relatedAdsImages: data?.report?.data?.socialMedia?.pickedAds
+        ?.map(data => ({
+          src: data?.screenshotUrl,
+          link: data?.link,
+        }))
+        .filter(({ src }) => !!src),
       onlineReputationAnalysis: data?.report?.data?.transactionLaundering?.scamOrFraud?.indicators
         ?.filter(({ violation }) => !!violation)
         ?.map(({ violation, sourceUrl }) => ({ label: violation, url: sourceUrl })),
