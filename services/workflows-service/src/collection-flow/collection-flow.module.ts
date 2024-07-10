@@ -37,6 +37,7 @@ import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.
 import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { Module } from '@nestjs/common';
     BusinessReportModule,
     AlertModule,
     DataAnalyticsModule,
+    RuleEngineModule,
   ],
   controllers: [
     ColectionFlowController,
