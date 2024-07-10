@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { RuleEngineService } from './rule-engine.service';
-import { RuleStoreService } from './rule-store.service';
+import { NotionModule } from '@/notion/notion.module';
+import { RiskRuleService } from '@/rule-engine/risk-rule.service';
 
 @Module({
-  providers: [RuleEngineService, RuleStoreService],
-  exports: [RuleEngineService],
+  imports: [NotionModule],
+  providers: [RuleEngineService, RiskRuleService],
+  exports: [RuleEngineService, RiskRuleService],
 })
 export class RuleEngineModule {}

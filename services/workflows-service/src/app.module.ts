@@ -46,6 +46,7 @@ import { CronModule } from '@/workflow/cron/cron.module';
 import z from 'zod';
 import { hashKey } from './customer/api-key/utils';
 import { RuleEngineModule } from './rule-engine/rule-engine.module';
+import { NotionModule } from '@/notion/notion.module';
 
 export const validate = async (config: Record<string, unknown>) => {
   const zodEnvSchema = z
@@ -122,6 +123,7 @@ export const validate = async (config: Record<string, unknown>) => {
     ScheduleModule.forRoot(),
     initHttpMoudle(),
     RuleEngineModule,
+    NotionModule,
   ],
   providers: [
     {

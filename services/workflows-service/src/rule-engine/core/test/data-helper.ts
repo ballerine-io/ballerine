@@ -1,6 +1,7 @@
 export const context = {
   id: '527658792383',
   data: {
+    country: 'UK',
     companyName: 'Airstar',
     additionalInfo: {
       mainRepresentative: {

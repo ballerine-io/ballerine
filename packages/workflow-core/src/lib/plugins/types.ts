@@ -5,6 +5,7 @@ import { IterativePlugin } from './common-plugin/iterative-plugin';
 import { TContext } from '../utils';
 import { ChildWorkflowPlugin } from './common-plugin/child-workflow-plugin';
 import { TransformerPlugin } from '../plugins/common-plugin/transformer-plugin';
+import { RiskRulePlugin } from '@/lib/plugins/common-plugin/risk-rules-plugin';
 
 export type PluginAction = { workflowId: string; context: any; event: any; state: any };
 export type InvokePluginAction = { context: TContext };
@@ -34,7 +35,7 @@ export interface StatePlugin extends WorkflowPlugin {
 
 export type StatePlugins = StatePlugin[];
 export type HttpPlugin = ApiPlugin | WebhookPlugin | KycPlugin;
-export type CommonPlugin = IterativePlugin | TransformerPlugin;
+export type CommonPlugin = IterativePlugin | TransformerPlugin | RiskRulePlugin;
 export type HttpPlugins = Array<HttpPlugin>;
 export type CommonPlugins = Array<CommonPlugin>;
 export type ChildPlugins = Array<ChildWorkflowPlugin>;

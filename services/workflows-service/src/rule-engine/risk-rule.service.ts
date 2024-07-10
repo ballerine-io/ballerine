@@ -1,23 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { NotionService } from '@/notion.service';
+import { NotionService } from '@/notion/notion.service';
 import z from 'zod';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { RuleSet, TOperation, TOperator } from '@ballerine/common';
+
+const OPERATIONS = [
+  'EQUALS',
+  'BETWEEN',
+  'GT',
+  'LT',
+  'GTE',
+  'LTE',
+  'LAST_YEAR',
+] as const satisfies readonly TOperation[];
+
+const OPERATORS = ['and', 'or'] as const satisfies readonly TOperator[];
 
 const RuleSchema = z.object({
   key: z.string(),
-  operation: z.enum(['equals', 'not_equals', 'contains', 'not_contains']),
+  operation: z.enum(OPERATIONS),
   value: z.union([z.string(), z.number(), z.boolean()]),
 });
 
 type Rule = z.infer<typeof RuleSchema>;
 
-type RuleSet = {
-  operator?: 'and' | 'or';
-  rules: Array<RuleSet | Rule>;
-};
-
 const RuleSetSchema: z.ZodType<RuleSet> = z.object({
-  operator: z.enum(['and', 'or']).optional(),
+  operator: z.enum(OPERATORS),
   rules: z.lazy(() => z.array(z.union([RuleSetSchema, RuleSchema]))),
 });
 
@@ -36,8 +44,17 @@ const NotionRiskRuleRecordSchema = z
     ID: z.string().min(1),
     'Rule set': z
       .string()
-      .refine(isJsonString, 'Not a valid JSON string')
-      .transform(value => JSON.parse(value))
+      .transform((value, ctx) => {
+        try {
+          return JSON.parse(value);
+        } catch (e) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Not a valid JSON string',
+          });
+          return z.NEVER;
+        }
+      })
       .pipe(RuleSetSchema),
     Domain: z.string().min(1),
     Indicator: z.string().min(1),
@@ -58,6 +75,11 @@ const NotionRiskRuleRecordSchema = z
     maxRiskScore: value['Max risk score'],
   }));
 
+export interface TFindAllRulesOptions {
+  databaseId: string;
+  source: 'notion';
+}
+
 @Injectable()
 export class RiskRuleService {
   constructor(
@@ -65,7 +87,7 @@ export class RiskRuleService {
     private readonly logger: AppLoggerService,
   ) {}
 
-  public async findAll({ databaseId, source }: { databaseId: string; source: 'notion' }) {
+  public async findAll({ databaseId, source }: TFindAllRulesOptions) {
     if (source === 'notion') {
       const records = await this.notionService.getAllDatabaseRecordsValues({
         databaseId,

@@ -1,11 +1,11 @@
-import { primitive, ConditionFn, BetweenParams, LastYearsParams, ExistsParams } from './types';
+import { ConditionFn, BetweenParams, LastYearsParams, ExistsParams, Primitive } from './types';
 import { TOperation } from '../types';
 import { ZodSchema } from 'zod';
 import { BetweenSchema, LastYearsSchema, PrimitiveSchema } from './schemas';
 import { ValidationFailedError } from '../errors';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash.isempty';
 
-export abstract class BaseOperator<T = primitive> {
+export abstract class BaseOperator<T = Primitive> {
   operator: string;
   conditionValueSchema?: ZodSchema<any>;
   dataValueSchema?: ZodSchema<any>;
@@ -22,15 +22,15 @@ export abstract class BaseOperator<T = primitive> {
     this.dataValueSchema = dataValueSchema;
   }
 
-  abstract eval(dataValue: primitive, conditionValue: T): boolean;
+  abstract evaluate(dataValue: Primitive, conditionValue: T): boolean;
 
-  execute(dataValue: primitive, conditionValue: T): boolean {
+  execute(dataValue: Primitive, conditionValue: T): boolean {
     this.validate({ dataValue, conditionValue });
 
-    return this.eval(dataValue, conditionValue);
+    return this.evaluate(dataValue, conditionValue);
   }
 
-  protected validate(args: { dataValue: unknown; conditionValue: unknown }) {
+  validate(args: { dataValue: unknown; conditionValue: unknown }) {
     if (this.conditionValueSchema) {
       this.validateSchema(
         this.conditionValueSchema,
@@ -44,7 +44,7 @@ export abstract class BaseOperator<T = primitive> {
     }
   }
 
-  protected validateSchema(schema: ZodSchema<any>, value: unknown, message: string) {
+  validateSchema(schema: ZodSchema<any>, value: unknown, message: string) {
     const result = schema.safeParse(value);
 
     if (!result.success) {
@@ -62,7 +62,7 @@ class Equals extends BaseOperator {
     });
   }
 
-  eval: ConditionFn<primitive> = (dataValue: primitive, conditionValue: primitive): boolean => {
+  evaluate: ConditionFn<Primitive> = (dataValue: Primitive, conditionValue: Primitive): boolean => {
     return dataValue === conditionValue;
   };
 }
@@ -76,7 +76,7 @@ class GreaterThan extends BaseOperator {
     });
   }
 
-  eval: ConditionFn<primitive> = (dataValue: primitive, conditionValue: primitive): boolean => {
+  evaluate: ConditionFn<Primitive> = (dataValue: Primitive, conditionValue: Primitive): boolean => {
     return dataValue > conditionValue;
   };
 }
@@ -90,7 +90,7 @@ class LessThan extends BaseOperator {
     });
   }
 
-  eval: ConditionFn<primitive> = (dataValue: primitive, conditionValue: primitive): boolean => {
+  evaluate: ConditionFn<Primitive> = (dataValue: Primitive, conditionValue: Primitive): boolean => {
     return dataValue < conditionValue;
   };
 }
@@ -109,7 +109,7 @@ class GreaterThanOrEqual extends BaseOperator {
     this.greaterThan = new GreaterThan();
   }
 
-  eval: ConditionFn<primitive> = (dataValue: primitive, conditionValue: primitive): boolean => {
+  evaluate: ConditionFn<Primitive> = (dataValue: Primitive, conditionValue: Primitive): boolean => {
     return (
       this.equals.execute(dataValue, conditionValue) ||
       this.greaterThan.execute(dataValue, conditionValue)
@@ -132,7 +132,7 @@ class LessThanOrEqual extends BaseOperator {
     this.lessThan = new LessThan();
   }
 
-  eval: ConditionFn<primitive> = (dataValue: primitive, conditionValue: primitive): boolean => {
+  evaluate: ConditionFn<Primitive> = (dataValue: Primitive, conditionValue: Primitive): boolean => {
     return (
       this.equals.execute(dataValue, conditionValue) ||
       this.lessThan.execute(dataValue, conditionValue)
@@ -154,8 +154,8 @@ class Between extends BaseOperator<BetweenParams> {
     this.lte = new LessThanOrEqual();
   }
 
-  eval: ConditionFn<BetweenParams> = (
-    dataValue: primitive,
+  evaluate: ConditionFn<BetweenParams> = (
+    dataValue: Primitive,
     conditionValue: BetweenParams,
   ): boolean => {
     return (
@@ -174,7 +174,7 @@ class LastYear extends BaseOperator<LastYearsParams> {
     });
   }
 
-  eval: ConditionFn<LastYearsParams> = (
+  evaluate: ConditionFn<LastYearsParams> = (
     dataValue: unknown,
     conditionValue: LastYearsParams,
   ): boolean => {
@@ -197,7 +197,10 @@ class Exists extends BaseOperator<ExistsParams> {
     });
   }
 
-  eval: ConditionFn<ExistsParams> = (dataValue: unknown, conditionValue: ExistsParams): boolean => {
+  evaluate: ConditionFn<ExistsParams> = (
+    dataValue: Primitive,
+    conditionValue: ExistsParams,
+  ): boolean => {
     if (conditionValue.schema) {
       const result = conditionValue.schema.safeParse(dataValue);
 

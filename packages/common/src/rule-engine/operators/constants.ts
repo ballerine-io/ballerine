@@ -2,7 +2,7 @@ import { EQUALS, BETWEEN, LT, LTE, GT, GTE, LAST_YEAR, EXISTS } from './helpers'
 
 import { OPERATION } from './enums';
 
-export const operationHelpers = {
+export const OperationHelpers = {
   [OPERATION.EQUALS]: EQUALS,
   [OPERATION.BETWEEN]: BETWEEN,
   [OPERATION.GT]: GT,
@@ -13,4 +13,4 @@ export const operationHelpers = {
   [OPERATION.EXISTS]: EXISTS,
 } as const;
 
-export type OperationHelper = (typeof operationHelpers)[keyof typeof operationHelpers];
+export type OperationHelper = (typeof OperationHelpers)[keyof typeof OperationHelpers];
