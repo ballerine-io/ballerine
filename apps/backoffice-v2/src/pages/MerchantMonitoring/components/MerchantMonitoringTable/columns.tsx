@@ -53,7 +53,7 @@ export const columns = [
     },
     header: 'Updated At',
   }),
-  columnHelper.accessor('business.website', {
+  columnHelper.accessor('website', {
     cell: info => {
       const website = info.getValue();
 
@@ -61,7 +61,7 @@ export const columns = [
     },
     header: 'Website',
   }),
-  columnHelper.accessor('business.companyName', {
+  columnHelper.accessor('companyName', {
     cell: info => {
       const companyName = info.getValue();
 

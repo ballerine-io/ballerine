@@ -55,7 +55,7 @@ export class BusinessReportControllerInternal {
     @CurrentProject() currentProjectId: TProjectId,
   ) {
     let business: Pick<Business, 'id' | 'correlationId'> | undefined;
-    const merchantNameWithDefault = merchantName || 'Not provided';
+    const merchantNameWithDefault = merchantName || 'Not detected';
 
     if (!businessCorrelationId) {
       business = await this.businessService.create({
@@ -103,7 +103,7 @@ export class BusinessReportControllerInternal {
       {
         websiteUrl,
         countryCode,
-        merchantName,
+        parentCompanyName: merchantName,
         reportType,
         callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${business.id}&businessReportId=${businessReport.id}`,
       },

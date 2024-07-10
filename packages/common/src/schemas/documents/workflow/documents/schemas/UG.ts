@@ -443,7 +443,7 @@ export const getUgandaDocuments = (): TDocument[] => {
       }),
     },
 
-    // Proof of Ownership
+    // Proof of Ownership1
     {
       category: 'business_document',
       type: 'property_rate',

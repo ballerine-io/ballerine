@@ -60,7 +60,13 @@ export const BusinessReportSchema = z
       })
       .nullable(),
   })
-  .optional();
+  .optional()
+  .transform(data => ({
+    ...data,
+    companyName:
+      data?.report.data?.websiteCompanyAnalysis?.companyName || data?.business?.companyName,
+    website: data?.report.data?.websiteCompanyAnalysis?.website.url || data?.business?.website,
+  }));
 
 export const BusinessReportsSchema = z.array(BusinessReportSchema);
 
