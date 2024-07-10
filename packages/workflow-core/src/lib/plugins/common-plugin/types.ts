@@ -2,7 +2,6 @@ import { TContext, Transformers } from '../../utils';
 import { SerializableValidatableTransformer } from '../external-plugin';
 import { ChildPluginCallbackOutput } from '../../types';
 import { AnyRecord, RuleResultSet, RuleSet, TFindAllRulesOptions } from '@ballerine/common';
-import { RiskRuleEvaluationable } from '@/lib/workflow-runner';
 
 export interface ISerializableCommonPluginParams
   extends Omit<IterativePluginParams, 'action' | 'iterateOn'> {
