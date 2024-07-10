@@ -1,9 +1,9 @@
-import { primitive, ConditionFn, BetweenParams, LastYearsParams, ExistsParams } from './types';
+import { ConditionFn, BetweenParams, LastYearsParams, ExistsParams, Primitive } from './types';
 import { TOperation } from '../types';
 import { ZodSchema } from 'zod';
 import { BetweenSchema, LastYearsSchema, PrimitiveSchema } from './schemas';
 import { ValidationFailedError } from '../errors';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash.isempty';
 
 export abstract class BaseOperator<T = Primitive> {
   operator: string;
@@ -197,7 +197,10 @@ class Exists extends BaseOperator<ExistsParams> {
     });
   }
 
-  eval: ConditionFn<ExistsParams> = (dataValue: unknown, conditionValue: ExistsParams): boolean => {
+  evaluate: ConditionFn<ExistsParams> = (
+    dataValue: Primitive,
+    conditionValue: ExistsParams,
+  ): boolean => {
     if (conditionValue.schema) {
       const result = conditionValue.schema.safeParse(dataValue);
 
