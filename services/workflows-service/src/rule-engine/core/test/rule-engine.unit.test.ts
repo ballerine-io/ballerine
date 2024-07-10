@@ -10,6 +10,7 @@ import {
   RuleResult,
 } from '@ballerine/common';
 import { context } from './data-helper';
+import z from 'zod';
 
 const mockData = {
   country: 'US',
@@ -245,5 +246,138 @@ describe('Rule Engine', () => {
         "status": "FAILED",
       }
     `);
+  });
+  describe('exists operator', () => {
+    it('should resolve a nested property from context', () => {
+      const ruleSetExample: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'pluginsOutput.businessInformation.data[0].shares',
+            operation: OPERATION.EXISTS,
+            value: {},
+          },
+        ],
+      };
+
+      const engine = RuleEngine(ruleSetExample);
+      let result = engine.run(context);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "pluginsOutput.businessInformation.data[0].shares",
+            "operation": "EXISTS",
+            "value": {},
+          },
+          "status": "PASSED",
+        }
+      `);
+
+      const context2 = JSON.parse(JSON.stringify(context));
+
+      // @ts-ignore
+      context2.pluginsOutput.businessInformation.data[0].shares = [];
+
+      result = engine.run(context2 as any);
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "pluginsOutput.businessInformation.data[0].shares",
+            "operation": "EXISTS",
+            "value": {},
+          },
+          "status": "FAILED",
+        }
+      `);
+
+      // @ts-ignore
+      context2.pluginsOutput.businessInformation.data[0].shares = {};
+
+      result = engine.run(context2 as any);
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "pluginsOutput.businessInformation.data[0].shares",
+            "operation": "EXISTS",
+            "value": {},
+          },
+          "status": "FAILED",
+        }
+      `);
+
+      // @ts-ignore
+      context2.pluginsOutput.businessInformation.data[0].shares = { item: 1 };
+
+      result = engine.run(context2 as any);
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "pluginsOutput.businessInformation.data[0].shares",
+            "operation": "EXISTS",
+            "value": {},
+          },
+          "status": "PASSED",
+        }
+      `);
+    });
+
+    it('should check with schema', () => {
+      const ruleSetExample: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'pluginsOutput.businessInformation.data[0].shares',
+            operation: OPERATION.EXISTS,
+            value: {
+              schema: z.object({
+                item: z.coerce.number().int().positive(),
+              }),
+            },
+          },
+        ],
+      };
+
+      const context2 = JSON.parse(JSON.stringify(context));
+
+      const engine = RuleEngine(ruleSetExample);
+
+      let result = engine.run(context2 as any);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]?.status).toBe('FAILED');
+
+      // @ts-ignore
+      context2.pluginsOutput.businessInformation.data[0].shares = { item: 1 };
+
+      result = engine.run(context2 as any);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]?.status).toBe('PASSED');
+
+      // @ts-ignore
+      context2.pluginsOutput.businessInformation.data[0].shares = {};
+
+      result = engine.run(context2 as any);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]?.error).toMatchInlineSnapshot(`undefined`);
+      expect(result[0]?.status).toBe('FAILED');
+    });
   });
 });

@@ -54,7 +54,8 @@ const NotionRiskRuleRecordSchema = z
           });
           return z.NEVER;
         }
-      }),
+      })
+      .pipe(RuleSetSchema),
     Domain: z.string().min(1),
     Indicator: z.string().min(1),
     'Risk level': z.enum(['positive', 'moderate', 'critical']),

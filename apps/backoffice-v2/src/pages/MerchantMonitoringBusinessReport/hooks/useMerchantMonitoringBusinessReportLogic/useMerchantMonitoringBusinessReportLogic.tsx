@@ -100,7 +100,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
           value: 'websitesCompany',
           content: (
             <WebsitesCompany
-              companyName={businessReport?.business?.companyName ?? ''}
+              companyName={businessReport?.companyName ?? ''}
               companyReputationAnalysis={companyReputationAnalysis ?? []}
               violations={websitesCompanyAnalysis ?? []}
             />
@@ -211,10 +211,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     [BusinessReportStatus.NEW]: { variant: 'secondary', text: 'New' },
   } as const;
 
-  const url =
-    businessReport?.business?.website || businessReport?.report?.data?.summary?.website?.url || '';
-
-  const websiteWithNoProtocol = safeUrl(url)?.hostname || url;
+  const websiteWithNoProtocol = safeUrl(businessReport?.website)?.hostname;
 
   return {
     onNavigateBack,

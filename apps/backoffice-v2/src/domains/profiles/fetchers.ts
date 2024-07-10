@@ -42,6 +42,7 @@ export const fetchIndividualsProfiles = async (params: {
     )}/api/v1/case-management/profiles/individuals?${queryParams}`,
     method: Method.GET,
     schema: IndividualsProfilesSchema,
+    timeout: 30_000,
   });
 
   return handleZodError(error, individualsProfiles);
