@@ -76,12 +76,12 @@ class NotEquals extends BaseOperator {
     });
   }
 
-  eval: ConditionFn<primitive> = (dataValue: primitive, conditionValue: primitive): boolean => {
+  evaluate: ConditionFn<Primitive> = (dataValue: Primitive, conditionValue: Primitive): boolean => {
     return dataValue !== conditionValue;
   };
 }
 
-class In extends BaseOperator<primitive[]> {
+class In extends BaseOperator<Primitive[]> {
   constructor() {
     super({
       operator: 'IN',
@@ -90,12 +90,15 @@ class In extends BaseOperator<primitive[]> {
     });
   }
 
-  eval: ConditionFn<primitive[]> = (dataValue: primitive, conditionValue: primitive[]): boolean => {
+  evaluate: ConditionFn<Primitive[]> = (
+    dataValue: Primitive,
+    conditionValue: Primitive[],
+  ): boolean => {
     return conditionValue.includes(dataValue);
   };
 }
 
-class NotIn extends BaseOperator<primitive[]> {
+class NotIn extends BaseOperator<Primitive[]> {
   constructor() {
     super({
       operator: 'NOT_IN',
@@ -104,7 +107,10 @@ class NotIn extends BaseOperator<primitive[]> {
     });
   }
 
-  eval: ConditionFn<primitive[]> = (dataValue: primitive, conditionValue: primitive[]): boolean => {
+  evaluate: ConditionFn<Primitive[]> = (
+    dataValue: Primitive,
+    conditionValue: Primitive[],
+  ): boolean => {
     return !conditionValue.includes(dataValue);
   };
 }
