@@ -247,7 +247,8 @@ describe('Rule Engine', () => {
       }
     `);
   });
-  describe('exists operator', () => {
+
+  describe('exists operation', () => {
     it('should resolve a nested property from context', () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
@@ -378,6 +379,182 @@ describe('Rule Engine', () => {
       expect(result).toHaveLength(1);
       expect(result[0]?.error).toMatchInlineSnapshot(`undefined`);
       expect(result[0]?.status).toBe('FAILED');
+    });
+  });
+
+  describe('not_equals operation', () => {
+    it('should resolve a nested property from context', () => {
+      const ruleSetExample: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'pluginsOutput.companySanctions.data.length',
+            operation: OPERATION.NOT_EQUALS,
+            value: 0,
+          },
+        ],
+      };
+
+      const engine = RuleEngine(ruleSetExample);
+      let result = engine.run(context);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "pluginsOutput.companySanctions.data.length",
+            "operation": "NOT_EQUALS",
+            "value": 0,
+          },
+          "status": "PASSED",
+        }
+      `);
+
+      const context2 = JSON.parse(JSON.stringify(context));
+
+      // @ts-ignore
+      context2.pluginsOutput.companySanctions.data = [];
+
+      result = engine.run(context2 as any);
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "pluginsOutput.companySanctions.data.length",
+            "operation": "NOT_EQUALS",
+            "value": 0,
+          },
+          "status": "FAILED",
+        }
+      `);
+    });
+  });
+
+  describe('in operation', () => {
+    it('should resolve a nested property from context', () => {
+      const ruleSetExample: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'entity.data.country',
+            operation: OPERATION.IN,
+            value: ['IL', 'AF', 'US', 'GB'],
+          },
+        ],
+      };
+
+      const engine = RuleEngine(ruleSetExample);
+      let result = engine.run(context);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "entity.data.country",
+            "operation": "IN",
+            "value": [
+              "IL",
+              "AF",
+              "US",
+              "GB",
+            ],
+          },
+          "status": "PASSED",
+        }
+      `);
+
+      const context2 = JSON.parse(JSON.stringify(context));
+
+      // @ts-ignore
+      context2.entity.data.country = 'CA';
+
+      result = engine.run(context2 as any);
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "entity.data.country",
+            "operation": "IN",
+            "value": [
+              "IL",
+              "AF",
+              "US",
+              "GB",
+            ],
+          },
+          "status": "FAILED",
+        }
+      `);
+    });
+  });
+
+  describe('not_in operation', () => {
+    it('should resolve a nested property from context', () => {
+      const ruleSetExample: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'entity.data.country',
+            operation: OPERATION.NOT_IN,
+            value: ['IL', 'CA', 'US', 'GB'],
+          },
+        ],
+      };
+
+      const engine = RuleEngine(ruleSetExample);
+      let result = engine.run(context);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "entity.data.country",
+            "operation": "NOT_IN",
+            "value": [
+              "IL",
+              "CA",
+              "US",
+              "GB",
+            ],
+          },
+          "status": "PASSED",
+        }
+      `);
+
+      const context2 = JSON.parse(JSON.stringify(context));
+
+      // @ts-ignore
+      context2.entity.data.country = 'CA';
+
+      result = engine.run(context2 as any);
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "entity.data.country",
+            "operation": "NOT_IN",
+            "value": [
+              "IL",
+              "CA",
+              "US",
+              "GB",
+            ],
+          },
+          "status": "FAILED",
+        }
+      `);
     });
   });
 });

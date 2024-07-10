@@ -1,11 +1,5 @@
 /* eslint-disable */
-import {
-  AnyRecord,
-  isObject,
-  RuleResultSet,
-  TFindAllRulesOptions,
-  uniqueArray,
-} from '@ballerine/common';
+import { AnyRecord, isObject, uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
@@ -71,13 +65,6 @@ import { logger } from './logger';
 
 export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
-}
-
-export interface RiskRuleEvaluationable {
-  invokeRiskRulesAction?: (option: {
-    context: TContext;
-    ruleOptions: TFindAllRulesOptions;
-  }) => RuleResultSet;
 }
 
 export class WorkflowRunner {
