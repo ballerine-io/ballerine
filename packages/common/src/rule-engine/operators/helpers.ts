@@ -1,7 +1,7 @@
 import { ConditionFn, BetweenParams, LastYearsParams, ExistsParams, Primitive } from './types';
 import { TOperation } from '../types';
 import { ZodSchema } from 'zod';
-import { BetweenSchema, LastYearsSchema, PrimitiveSchema } from './schemas';
+import { BetweenSchema, LastYearsSchema, PrimitiveArraySchema, PrimitiveSchema } from './schemas';
 import { ValidationFailedError } from '../errors';
 import isEmpty from 'lodash.isempty';
 
@@ -64,6 +64,54 @@ class Equals extends BaseOperator {
 
   evaluate: ConditionFn<Primitive> = (dataValue: Primitive, conditionValue: Primitive): boolean => {
     return dataValue === conditionValue;
+  };
+}
+
+class NotEquals extends BaseOperator {
+  constructor() {
+    super({
+      operator: 'NOT_EQUALS',
+      conditionValueSchema: PrimitiveSchema,
+      dataValueSchema: PrimitiveSchema,
+    });
+  }
+
+  evaluate: ConditionFn<Primitive> = (dataValue: Primitive, conditionValue: Primitive): boolean => {
+    return dataValue !== conditionValue;
+  };
+}
+
+class In extends BaseOperator<Primitive[]> {
+  constructor() {
+    super({
+      operator: 'IN',
+      conditionValueSchema: PrimitiveArraySchema,
+      dataValueSchema: PrimitiveSchema,
+    });
+  }
+
+  evaluate: ConditionFn<Primitive[]> = (
+    dataValue: Primitive,
+    conditionValue: Primitive[],
+  ): boolean => {
+    return conditionValue.includes(dataValue);
+  };
+}
+
+class NotIn extends BaseOperator<Primitive[]> {
+  constructor() {
+    super({
+      operator: 'NOT_IN',
+      conditionValueSchema: PrimitiveArraySchema,
+      dataValueSchema: PrimitiveSchema,
+    });
+  }
+
+  evaluate: ConditionFn<Primitive[]> = (
+    dataValue: Primitive,
+    conditionValue: Primitive[],
+  ): boolean => {
+    return !conditionValue.includes(dataValue);
   };
 }
 
@@ -213,8 +261,8 @@ class Exists extends BaseOperator<ExistsParams> {
   };
 }
 
-// Export instances
 export const EQUALS = new Equals();
+export const NOT_EQUALS = new NotEquals();
 export const GT = new GreaterThan();
 export const LT = new LessThan();
 export const GTE = new GreaterThanOrEqual();
@@ -222,3 +270,5 @@ export const LTE = new LessThanOrEqual();
 export const BETWEEN = new Between();
 export const LAST_YEAR = new LastYear();
 export const EXISTS = new Exists();
+export const IN = new In();
+export const NOT_IN = new NotIn();

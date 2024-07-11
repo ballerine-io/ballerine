@@ -7,8 +7,6 @@ export class RuleEngineService {
   public run(rules: RuleSet, formData: object) {
     const ruleEngine = RuleEngine(rules, OperationHelpers);
 
-    const output = ruleEngine.run(formData);
-
-    return output;
+    return ruleEngine.run(formData);
   }
 }

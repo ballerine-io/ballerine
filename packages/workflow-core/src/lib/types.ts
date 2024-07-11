@@ -16,7 +16,6 @@ import type { ChildCallabackable } from './workflow-runner';
 import type { THelperFormatingLogic } from './utils/context-transformers/types';
 import type { AnyRecord } from '@ballerine/common';
 import type { DispatchEventPlugin } from './plugins/external-plugin/dispatch-event-plugin';
-import { RiskRuleEvaluationable } from './workflow-runner';
 import { RiskRulePlugin } from '@/lib/plugins/common-plugin/risk-rules-plugin';
 
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
