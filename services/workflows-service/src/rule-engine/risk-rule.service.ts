@@ -6,12 +6,16 @@ import { RuleSet, TOperation, TOperator } from '@ballerine/common';
 
 const OPERATIONS = [
   'EQUALS',
+  'NOT_EQUALS',
   'BETWEEN',
   'GT',
   'LT',
   'GTE',
   'LTE',
   'LAST_YEAR',
+  'EXISTS',
+  'IN',
+  'NOT_IN',
 ] as const satisfies readonly TOperation[];
 
 const OPERATORS = ['and', 'or'] as const satisfies readonly TOperator[];
