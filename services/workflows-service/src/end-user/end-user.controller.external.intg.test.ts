@@ -37,6 +37,9 @@ import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository
 import { BusinessService } from '@/business/business.service';
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { BusinessReportRepository } from '@/business-report/business-report.repository';
+import { RiskRuleService } from '@/rule-engine/risk-rule.service';
+import { RuleEngineService } from '@/rule-engine/rule-engine.service';
+import { NotionService } from '@/notion/notion.service';
 
 const API_KEY = faker.datatype.uuid();
 
@@ -80,6 +83,9 @@ describe('#EndUserControllerExternal', () => {
       WorkflowRuntimeDataRepository,
       UiDefinitionRepository,
       UiDefinitionService,
+      RiskRuleService,
+      RuleEngineService,
+      NotionService,
     ];
     endUserService = (await fetchServiceFromModule(EndUserService, servicesProviders, [
       PrismaModule,

@@ -102,6 +102,8 @@ import { Static } from '@sinclair/typebox';
 import dayjs from 'dayjs';
 import { entitiesUpdate } from './utils/entities-update';
 import { BusinessReportService } from '@/business-report/business-report.service';
+import { RuleEngineService } from '@/rule-engine/rule-engine.service';
+import { RiskRuleService, TFindAllRulesOptions } from '@/rule-engine/risk-rule.service';
 
 type TEntityId = string;
 
@@ -138,6 +140,8 @@ export class WorkflowService {
     private readonly workflowTokenService: WorkflowTokenService,
     private readonly uiDefinitionService: UiDefinitionService,
     private readonly prismaService: PrismaService,
+    private readonly riskRuleService: RiskRuleService,
+    private readonly ruleEngineService: RuleEngineService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -1939,6 +1943,30 @@ export class WorkflowService {
         },
         // @ts-expect-error - error from Prisma types fix
         extensions: workflowDefinition.extensions,
+        invokeRiskRulesAction: async (
+          context: object,
+          ruleStoreServiceOptions: TFindAllRulesOptions,
+        ) => {
+          const rules = await this.riskRuleService.findAll(ruleStoreServiceOptions);
+
+          return rules.map(rule => {
+            try {
+              return {
+                result: this.ruleEngineService.run(rule.ruleSet, context),
+                ...rule,
+              } as const;
+            } catch (ex) {
+              return {
+                ...rule,
+                result: {
+                  status: 'FAILED',
+                  message: isErrorWithMessage(ex) ? ex.message : undefined,
+                  error: ex,
+                },
+              } as const;
+            }
+          });
+        },
         invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
           const runnableChildWorkflow = await this.persistChildEvent(
             childPluginConfiguration,
