@@ -25,9 +25,7 @@ export const ResolvedCasesByMonth: FunctionComponent<{
       <Card className={'flex h-full flex-col px-3'}>
         <CardHeader className={'pb-1'}>Resolved Cases by Month</CardHeader>
         <CardContent>
-          <p className={'mb-8 text-slate-400'}>
-            All resolved cases regardless of the decision.
-          </p>
+          <p className={'mb-8 text-slate-400'}>All resolved cases regardless of the decision.</p>
           <ResponsiveContainer width="100%" height={400}>
             <BarChart
               data={resolvedCasesByMonth}
