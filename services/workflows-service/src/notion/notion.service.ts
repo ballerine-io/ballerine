@@ -33,7 +33,7 @@ export class NotionService {
 
   private async extractDatabaseContent(databaseId: string) {
     let database: QueryDatabaseResponse | null = null;
-    const records = [];
+    const records: QueryDatabaseResponse['results'] = [];
 
     do {
       database = await this.client.databases.query({
@@ -52,7 +52,9 @@ export class NotionService {
   }
 
   private transformNotionFieldToValue(
-    notionField: PageObjectResponse['properties'][keyof PageObjectResponse['properties']],
+    notionField: PageObjectResponse['properties'][keyof PageObjectResponse['properties']] & {
+      formula?: any;
+    },
   ) {
     if (notionField.type === 'rich_text') {
       return notionField.rich_text[0]?.plain_text;
@@ -79,8 +81,7 @@ export class NotionService {
     }
 
     if (notionField.type === 'formula') {
-      // @ts-expect-error - bad notion typing
-      return notionField.formula[notionField.formula.type] as string | number | boolean;
+      return notionField.formula[notionField.formula.type];
     }
 
     if (notionField.type === 'relation') {
