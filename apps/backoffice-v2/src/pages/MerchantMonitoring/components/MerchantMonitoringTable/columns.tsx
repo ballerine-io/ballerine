@@ -84,6 +84,7 @@ export const columns = [
 
       return (
         <div className="flex items-center gap-2">
+          {!riskScore && <TextWithNAFallback className={'py-0.5'} />}
           {(riskScore || riskScore === 0) && (
             <Badge
               className={ctw(

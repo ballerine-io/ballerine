@@ -56,12 +56,7 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
       {workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled && (
         <OverallRiskLevel
           riskScore={workflow?.context?.pluginsOutput?.risk_evaluation?.riskScore}
-          riskLevels={{
-            transactionLaunderingRisk: '',
-            legalRisk: '',
-            chargebackRisk: '',
-            reputationRisk: '',
-          }}
+          riskLevels={{}}
         />
       )}
       <ProcessTracker workflow={workflow} plugins={plugins} processes={processes} />
