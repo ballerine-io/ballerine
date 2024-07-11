@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflow-core",
   "author": "Ballerine <dev@ballerine.com>",
-  "version": "0.6.17",
+  "version": "0.6.18",
   "description": "workflow-core",
   "module": "./dist/esm/index.js",
   "main": "./dist/cjs/index.js",
@@ -31,19 +31,21 @@
     "node": ">=12"
   },
   "dependencies": {
-    "@ballerine/common": "0.9.11",
+    "@ballerine/common": "0.9.12",
     "ajv": "^8.12.0",
     "i18n-iso-countries": "^7.6.0",
     "jmespath": "^0.16.0",
     "json-logic-js": "^2.0.2",
+    "lodash.groupby": "^4.6.0",
+    "lodash.maxby": "^4.6.0",
     "xstate": "^4.35.2"
   },
   "devDependencies": {
     "@babel/core": "7.17.9",
     "@babel/preset-env": "7.16.11",
     "@babel/preset-typescript": "7.16.7",
-    "@ballerine/config": "^1.1.4",
-    "@ballerine/eslint-config": "^1.1.4",
+    "@ballerine/config": "^1.1.5",
+    "@ballerine/eslint-config": "^1.1.5",
     "@cspell/cspell-types": "^6.31.1",
     "@rollup/plugin-babel": "5.3.1",
     "@rollup/plugin-commonjs": "^24.0.1",
@@ -54,6 +56,8 @@
     "@types/babel__core": "^7.20.0",
     "@types/fs-extra": "^11.0.1",
     "@types/jmespath": "^0.15.0",
+    "@types/lodash.groupby": "^4.6.9",
+    "@types/lodash.maxby": "^4.6.9",
     "@types/json-logic-js": "^2.0.1",
     "@types/lodash.merge": "^4.6.9",
     "@types/node": "^18.14.0",

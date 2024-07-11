@@ -110,6 +110,8 @@ describe('WorkflowService', () => {
   let workflowTokenService;
   let uiDefinitionService;
   let salesforceService;
+  let ruleEngineService;
+  let riskRuleService;
   let fakeHttpService;
   let testingModule: TestingModule;
   const configService = {
@@ -137,6 +139,8 @@ describe('WorkflowService', () => {
     endUserRepo = new FakeEndUserRepo();
     entityRepo = new FakeEntityRepo();
     customerService = new FakeCustomerRepo();
+    ruleEngineService = new FakeCustomerRepo();
+    riskRuleService = new FakeCustomerRepo();
     userService = new FakeEntityRepo();
     salesforceService = new FakeEntityRepo();
     workflowTokenService = new FakeEntityRepo();
@@ -199,6 +203,8 @@ describe('WorkflowService', () => {
       workflowTokenService,
       uiDefinitionService,
       {} as any,
+      riskRuleService,
+      ruleEngineService,
     );
   });
 
