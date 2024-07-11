@@ -1,17 +1,26 @@
 import { useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { ExtractCellProps } from '@ballerine/blocks';
 
-export const useRegistryInfoBlock = ({ pluginsOutputKeys, filteredPluginsOutput, workflow }) => {
+export const useRegistryInfoBlock = ({
+  registryInfo,
+  workflowId,
+  documents,
+}: {
+  registryInfo: Record<string, unknown>;
+  workflowId: string;
+  documents: ExtractCellProps<'details'>['documents'];
+}) => {
   return useMemo(() => {
-    if (Object.keys(filteredPluginsOutput ?? {}).length === 0) {
+    if (Object.keys(registryInfo ?? {}).length === 0) {
       return [];
     }
 
-    return pluginsOutputKeys
+    const registryInfoKeys = Object.keys(registryInfo);
+
+    return registryInfoKeys
       ?.filter(
-        key =>
-          !!Object.keys(filteredPluginsOutput[key] ?? {})?.length &&
-          !('error' in filteredPluginsOutput[key]),
+        key => !!Object.keys(registryInfo[key] ?? {})?.length && !('error' in registryInfo[key]),
       )
       ?.flatMap((key, index, collection) =>
         createBlocksTyped()
@@ -40,18 +49,18 @@ export const useRegistryInfoBlock = ({ pluginsOutputKeys, filteredPluginsOutput,
                 type: 'details',
                 hideSeparator: index === collection.length - 1,
                 value: {
-                  data: Object.entries(filteredPluginsOutput[key] ?? {})?.map(([title, value]) => ({
+                  data: Object.entries(registryInfo[key] ?? {})?.map(([title, value]) => ({
                     title,
                     value,
                   })),
                 },
-                workflowId: workflow?.id,
-                documents: workflow?.context?.documents,
+                workflowId,
+                documents,
               })
               .build()
               .flat(1),
           })
           .build(),
       );
-  }, [filteredPluginsOutput, pluginsOutputKeys, workflow?.context?.documents, workflow?.id]);
+  }, [registryInfo, documents, workflowId]);
 };

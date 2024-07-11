@@ -35,7 +35,6 @@ import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitori
 import { useCaseBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/useCaseBlocks';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
-import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 import { Send } from 'lucide-react';
 import React, { useCallback, useMemo } from 'react';
@@ -48,15 +47,9 @@ import { getAddressDeep } from '@/pages/Entity/hooks/useEntityLogic/utils/get-ad
 import { useCaseOverviewBlock } from '@/lib/blocks/hooks/useCaseOverviewBlock/useCaseOverviewBlock';
 import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { useLocation } from 'react-router-dom';
+import { omitPropsFromObjectWhitelist } from '@/common/utils/omit-props-from-object-whitelist/omit-props-from-object-whitelist';
 
-const pluginsOutputBlacklist = [
-  'companySanctions',
-  'directors',
-  'ubo',
-  'businessInformation',
-  'merchantMonitoring',
-  'website_monitoring',
-] as const;
+const registryInfoWhitelist = ['open_corporates'] as const;
 
 export const useDefaultBlocksLogic = () => {
   const [{ activeTab }] = useSearchParamsByEntity();
@@ -138,12 +131,15 @@ export const useDefaultBlocksLogic = () => {
     childWorkflow => childWorkflow?.context?.entity?.type === 'business',
   );
 
-  const filteredPluginsOutput = useMemo(
-    () => omitPropsFromObject(workflow?.context?.pluginsOutput, ...pluginsOutputBlacklist),
-    [pluginsOutputBlacklist, workflow?.context?.pluginsOutput],
+  const registryInfo = useMemo(
+    () =>
+      omitPropsFromObjectWhitelist({
+        object: workflow?.context?.pluginsOutput,
+        whitelist: registryInfoWhitelist,
+      }),
+    [workflow?.context?.pluginsOutput],
   );
 
-  const pluginsOutputKeys = Object.keys(filteredPluginsOutput ?? {});
   const directorsDocuments = useMemo(() => selectDirectorsDocuments(workflow), [workflow]);
   const directorDocumentPages = useMemo(
     () =>
@@ -190,9 +186,9 @@ export const useDefaultBlocksLogic = () => {
   );
 
   const registryInfoBlock = useRegistryInfoBlock({
-    pluginsOutputKeys,
-    filteredPluginsOutput,
-    workflow,
+    registryInfo,
+    workflowId: workflow?.id,
+    documents: workflow?.context?.documents,
   });
 
   const kybRegistryInfoBlock = useKybRegistryInfoBlock({
@@ -244,7 +240,7 @@ export const useDefaultBlocksLogic = () => {
   });
 
   const mapBlock = useMapBlock({
-    address: getAddressDeep(filteredPluginsOutput, {
+    address: getAddressDeep(registryInfo, {
       propertyName: 'registeredAddressInFull',
     }),
     entityType: workflow?.context?.entity?.type,
