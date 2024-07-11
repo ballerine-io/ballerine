@@ -47,17 +47,13 @@ const setPluginStatusToSuccess = ({
   };
 
   const resultDestinationPathWithoutLastKey = removeLastKeyFromPath(resultDestinationPath);
-  const result = get(context, resultDestinationPathWithoutLastKey);
+  const result = get(context, resultDestinationPath);
 
-  const resultWithData = set({}, resultDestinationPath, data);
+  const resultWithData = set({}, resultDestinationPath, { data });
 
   //@ts-ignore
   if (isObject(result) && result.status) {
-    return set(
-      resultWithData,
-      `${resultDestinationPathWithoutLastKey}.status`,
-      ProcessStatus.SUCCESS,
-    );
+    return set(resultWithData, `${resultDestinationPath}.status`, ProcessStatus.SUCCESS);
   }
 
   return resultWithData;
