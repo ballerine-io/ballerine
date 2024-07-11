@@ -6,29 +6,31 @@ import { UiDefDefinition, UiSchemaStep } from '@/collection-flow/models/flow-ste
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { type ITokenScope } from '@/common/decorators/token-scope.decorator';
 import { CustomerService } from '@/customer/customer.service';
+import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
 import { EndUserService } from '@/end-user/end-user.service';
 import { NotFoundException } from '@/errors';
 import { FileService } from '@/providers/file/file.service';
-import { TranslationService } from '@/providers/translation/translation.service';
+import {
+  ITranslationServiceResource,
+  TranslationService,
+} from '@/providers/translation/translation.service';
 import type { TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { AnyRecord } from '@ballerine/common';
+import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
-import { EndUser, UiDefinitionContext, WorkflowRuntimeData } from '@prisma/client';
+import { EndUser, UiDefinition, UiDefinitionContext, WorkflowRuntimeData } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import { randomUUID } from 'crypto';
-import keyBy from 'lodash/keyBy';
 import get from 'lodash/get';
-import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
-import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
+import keyBy from 'lodash/keyBy';
 
 @Injectable()
 export class CollectionFlowService {
   constructor(
-    protected readonly translationService: TranslationService,
     protected readonly logger: AppLoggerService,
     protected readonly endUserService: EndUserService,
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
@@ -52,12 +54,13 @@ export class CollectionFlowService {
     uiSchema: Record<string, unknown>,
     context: WorkflowRuntimeData['context'],
     language: string,
+    _translationService: TranslationService,
   ) {
     for (const key in uiSchema) {
       if (typeof uiSchema[key] === 'object' && uiSchema[key] !== null) {
         // If the property is an object (including arrays), recursively traverse it
         // @ts-expect-error - error from Prisma types fix
-        this.traverseUiSchema(uiSchema[key], context, language);
+        this.traverseUiSchema(uiSchema[key], context, language, _translationService);
       } else if (typeof uiSchema[key] === 'string') {
         const options: AnyRecord = {};
 
@@ -67,11 +70,7 @@ export class CollectionFlowService {
           });
         }
 
-        uiSchema[key] = this.translationService.translate(
-          uiSchema[key] as string,
-          language,
-          options,
-        );
+        uiSchema[key] = _translationService.translate(uiSchema[key] as string, language, options);
       }
     }
 
@@ -97,6 +96,12 @@ export class CollectionFlowService {
       {},
     );
 
+    const translationService = new TranslationService(
+      this.getTranslationServiceResources(uiDefintion),
+    );
+
+    await translationService.init();
+
     return {
       id: workflowDefinition.id,
       config: workflowDefinition.config,
@@ -107,12 +112,26 @@ export class CollectionFlowService {
           uiDefintion.uiSchema.elements,
           context,
           language,
+          translationService,
         ) as UiSchemaStep[],
       },
       definition: uiDefintion.definition
         ? (uiDefintion.definition as unknown as UiDefDefinition)
         : undefined,
     };
+  }
+
+  private getTranslationServiceResources(
+    uiDefinition: UiDefinition,
+  ): ITranslationServiceResource[] | undefined {
+    if (!uiDefinition.locales) return undefined;
+
+    const resources = Object.entries(uiDefinition.locales).map(([language, resource]) => ({
+      language,
+      resource,
+    }));
+
+    return resources;
   }
 
   async updateFlowConfiguration(
