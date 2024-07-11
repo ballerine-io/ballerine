@@ -26,8 +26,7 @@ export const ResolvedCasesByMonth: FunctionComponent<{
         <CardHeader className={'pb-1'}>Resolved Cases by Month</CardHeader>
         <CardContent>
           <p className={'mb-8 text-slate-400'}>
-            The IUCN Red List has assessed only a small share of the total known species in the
-            world.
+            All resolved cases regardless of the decision.
           </p>
           <ResponsiveContainer width="100%" height={400}>
             <BarChart
