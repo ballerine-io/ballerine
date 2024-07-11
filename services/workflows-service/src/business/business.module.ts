@@ -31,6 +31,7 @@ import { BusinessRepository } from './business.repository';
 import { BusinessService } from './business.service';
 // eslint-disable-next-line import/no-cycle
 import { BusinessReportModule } from '@/business-report/business-report.module';
+import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { BusinessReportModule } from '@/business-report/business-report.module';
     ProjectModule,
     CustomerModule,
     forwardRef(() => BusinessReportModule),
+    RuleEngineModule,
   ],
   controllers: [BusinessControllerInternal, BusinessControllerExternal],
   providers: [

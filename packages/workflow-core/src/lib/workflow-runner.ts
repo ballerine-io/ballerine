@@ -6,6 +6,7 @@ import { assign, createMachine, interpret } from 'xstate';
 import { HttpError } from './errors';
 import {
   ChildPluginCallbackOutput,
+  Error as ErrorEnum,
   ObjectValues,
   WorkflowEvent,
   WorkflowEvents,
@@ -13,7 +14,6 @@ import {
   WorkflowExtensions,
   WorkflowRunnerArgs,
 } from './types';
-import { Error as ErrorEnum } from './types';
 import { JmespathTransformer } from './utils/context-transformers/jmespath-transformer';
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
 import {
@@ -29,7 +29,6 @@ import { WebhookPlugin } from './plugins/external-plugin/webhook-plugin';
 import {
   IApiPluginParams,
   IDispatchEventPluginParams,
-  ISerializableChildPluginParams,
   ISerializableHttpPluginParams,
   SerializableValidatableTransformer,
 } from './plugins/external-plugin/types';
@@ -37,15 +36,18 @@ import { KycPlugin } from './plugins/external-plugin/kyc-plugin';
 import { DispatchEventPlugin } from './plugins/external-plugin/dispatch-event-plugin';
 import {
   ChildWorkflowPluginParams,
+  ISerializableChildPluginParams,
   ISerializableCommonPluginParams,
+  ISerializableRiskRulesPlugin,
   IterativePluginParams,
+  RiskRulesPluginParams,
 } from './plugins/common-plugin/types';
 import {
   ArrayMergeOption,
+  deepMergeWithOptions,
   HelpersTransformer,
   TContext,
   THelperFormatingLogic,
-  Transformers,
 } from './utils';
 import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
 import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plugin';
@@ -53,11 +55,11 @@ import { search } from 'jmespath';
 import { KybPlugin } from './plugins/external-plugin/kyb-plugin';
 import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
 import { EmailPlugin } from './plugins/external-plugin/email-plugin';
+import { RiskRulePlugin } from './plugins/common-plugin/risk-rules-plugin';
 import {
   TransformerPlugin,
   TransformerPluginParams,
 } from './plugins/common-plugin/transformer-plugin';
-import { deepMergeWithOptions } from './utils';
 import { BUILT_IN_EVENT } from './index';
 import { logger } from './logger';
 
@@ -92,6 +94,7 @@ export class WorkflowRunner {
       workflowActions,
       workflowContext,
       extensions,
+      invokeRiskRulesAction,
       invokeChildWorkflowAction,
     }: WorkflowRunnerArgs,
     debugMode = false,
@@ -121,6 +124,7 @@ export class WorkflowRunner {
       // @ts-expect-error TODO: fix this
       this.#__extensions.commonPlugins ?? [],
       [this.#__extensions.apiPlugins, this.#__extensions.childWorkflowPlugins].flat(1),
+      invokeRiskRulesAction,
     );
 
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
@@ -201,6 +205,18 @@ export class WorkflowRunner {
     });
   }
 
+  initiateRiskRulePlugin(
+    riskLevelPlugin: ISerializableRiskRulesPlugin,
+    callbackAction?: RiskRulesPluginParams['action'],
+  ) {
+    return new RiskRulePlugin({
+      name: riskLevelPlugin.name,
+      stateNames: riskLevelPlugin.stateNames,
+      rulesSource: riskLevelPlugin.rulesSource,
+      action: callbackAction!,
+    });
+  }
+
   initiateChildPlugin(
     childPluginSchemas: Array<ISerializableChildPluginParams>,
     parentWorkflowRuntimeId: string,
@@ -226,11 +242,17 @@ export class WorkflowRunner {
 
   initiateCommonPlugins(
     pluginSchemas: Array<
-      ISerializableCommonPluginParams & { pluginKind: 'iterative' | 'transformer' }
+      | (ISerializableCommonPluginParams & { pluginKind: 'iterative' | 'transformer' })
+      | (ISerializableRiskRulesPlugin & { pluginKind: 'riskRules' })
     >,
     actionPlugins: ActionablePlugins,
+    invokeRiskRulesAction?: RiskRulePlugin['action'],
   ) {
     return pluginSchemas.map(pluginSchema => {
+      if (pluginSchema.pluginKind == 'riskRules') {
+        return this.initiateRiskRulePlugin(pluginSchema, invokeRiskRulesAction);
+      }
+
       const Plugin = this.pickCommonPluginClass(pluginSchema.pluginKind);
       const pluginParams = this.pickCommonPluginParams(
         pluginSchema.pluginKind,
@@ -668,7 +690,7 @@ export class WorkflowRunner {
 
   private async __invokeCommonPlugin(commonPlugin: CommonPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
-    const { callbackAction, error } = await commonPlugin.invoke?.({
+    const { callbackAction, error, response } = await commonPlugin.invoke?.({
       ...this.context,
       workflowRuntimeConfig: this.#__config,
       workflowRuntimeId: this.#__runtimeId,
@@ -678,6 +700,13 @@ export class WorkflowRunner {
       this.context.pluginsOutput = {
         ...(this.context.pluginsOutput || {}),
         ...{ [commonPlugin.name]: { error: error } },
+      };
+    }
+
+    if (!!response) {
+      this.context.pluginsOutput = {
+        ...(this.context.pluginsOutput || {}),
+        ...{ [commonPlugin.name]: response },
       };
     }
 
