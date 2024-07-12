@@ -33,27 +33,36 @@ export const ReportWithRiskScoreSchema = z
   })
   .passthrough();
 
+const removeLastKeyFromPath = (path: string) => {
+  return path?.split('.')?.slice(0, -1)?.join('.');
+};
+
 const setPluginStatusToSuccess = ({
   resultDestinationPath,
   context,
   data,
+  ignoreLastKey = true,
 }: {
   resultDestinationPath: string;
   context: Record<string, unknown>;
   data: Record<string, unknown>;
+  ignoreLastKey?: boolean;
 }) => {
-  const removeLastKeyFromPath = (path: string) => {
-    return path?.split('.')?.slice(0, -1)?.join('.');
-  };
-
   const resultDestinationPathWithoutLastKey = removeLastKeyFromPath(resultDestinationPath);
-  const result = get(context, resultDestinationPath);
+  const result = get(
+    context,
+    ignoreLastKey ? resultDestinationPathWithoutLastKey : resultDestinationPath,
+  );
 
-  const resultWithData = set({}, resultDestinationPath, { data });
+  const resultWithData = set({}, resultDestinationPath, ignoreLastKey ? data : { data });
 
   //@ts-ignore
   if (isObject(result) && result.status) {
-    return set(resultWithData, `${resultDestinationPath}.status`, ProcessStatus.SUCCESS);
+    return set(
+      resultWithData,
+      `${ignoreLastKey ? resultDestinationPathWithoutLastKey : resultDestinationPath}.status`,
+      ProcessStatus.SUCCESS,
+    );
   }
 
   return resultWithData;
@@ -246,6 +255,7 @@ export class HookCallbackHandlerService {
       resultDestinationPath,
       context: workflowRuntime.context,
       data: reportData,
+      ignoreLastKey: false,
     });
   }
 
