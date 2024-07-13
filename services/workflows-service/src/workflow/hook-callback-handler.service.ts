@@ -37,7 +37,7 @@ const removeLastKeyFromPath = (path: string) => {
   return path?.split('.')?.slice(0, -1)?.join('.');
 };
 
-const setPluginStatusToSuccess = ({
+export const setPluginStatusToSuccess = ({
   resultDestinationPath,
   context,
   data,

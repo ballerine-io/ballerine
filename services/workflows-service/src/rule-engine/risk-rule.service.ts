@@ -23,7 +23,7 @@ const OPERATORS = ['and', 'or'] as const satisfies readonly TOperator[];
 const RuleSchema = z.object({
   key: z.string(),
   operation: z.enum(OPERATIONS),
-  value: z.union([z.string(), z.number(), z.boolean()]),
+  value: z.union([z.string(), z.number(), z.boolean(), z.array(z.string())]),
 });
 
 type Rule = z.infer<typeof RuleSchema>;
