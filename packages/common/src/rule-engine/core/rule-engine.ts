@@ -6,7 +6,6 @@ import { OperationHelpers } from '../operators/constants';
 import { OPERATOR } from '../operators/enums';
 
 import { Rule, RuleResult, RuleResultSet, RuleSet } from '../types';
-// import { get, isEmpty } from 'lodash';
 
 export const validateRule = (rule: Rule, data: any): RuleResult => {
   if (isEmpty(rule.key)) {
