@@ -7,7 +7,6 @@ describe('setPluginStatusToSuccess', () => {
     const context = {
       apiPlugins: {
         merchantMonitoring: {
-          data: { key: 'value' },
           status: ProcessStatus.IN_PROGRESS,
         },
       },
@@ -35,7 +34,6 @@ describe('setPluginStatusToSuccess', () => {
     const context = {
       apiPlugins: {
         merchantMonitoring: {
-          data: { key: 'value' },
           status: ProcessStatus.IN_PROGRESS,
         },
       },
