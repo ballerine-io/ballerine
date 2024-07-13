@@ -173,6 +173,7 @@ export class HookCallbackHandlerService {
       resultDestinationPath,
       context: workflowRuntime.context,
       data,
+      ignoreLastKey: false,
     });
   }
 
@@ -255,7 +256,6 @@ export class HookCallbackHandlerService {
       resultDestinationPath,
       context: workflowRuntime.context,
       data: reportData,
-      ignoreLastKey: false,
     });
   }
 
