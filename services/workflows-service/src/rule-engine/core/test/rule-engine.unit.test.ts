@@ -1,16 +1,17 @@
-import { RuleEngine, runRuleSet } from '@/rule-engine/core/rule-engine';
 import {
   DataValueNotFoundError,
   MissingKeyError,
   OPERATION,
-  OperationNotFoundError,
   OPERATOR,
+  OperatorNotFoundError,
+  RuleEngine,
+  RuleResult,
   RuleResultSet,
   RuleSet,
-  RuleResult,
+  runRuleSet,
 } from '@ballerine/common';
-import { context } from './data-helper';
 import z from 'zod';
+import { amlContext, context } from './data-helper';
 
 const mockData = {
   country: 'US',
@@ -25,7 +26,7 @@ describe('Rule Engine', () => {
       rules: [
         {
           key: 'country',
-          operation: OPERATION.EQUALS,
+          operator: OPERATION.EQUALS,
           value: 'US',
         },
         {
@@ -33,7 +34,7 @@ describe('Rule Engine', () => {
           rules: [
             {
               key: 'name',
-              operation: OPERATION.EQUALS,
+              operator: OPERATION.EQUALS,
               value: 'John',
             },
             {
@@ -41,12 +42,12 @@ describe('Rule Engine', () => {
               rules: [
                 {
                   key: 'age',
-                  operation: OPERATION.GT,
+                  operator: OPERATION.GT,
                   value: 40,
                 },
                 {
                   key: 'age',
-                  operation: OPERATION.LTE,
+                  operator: OPERATION.LTE,
                   value: 35,
                 },
               ],
@@ -72,7 +73,7 @@ describe('Rule Engine', () => {
       rules: [
         {
           key: 'nonexistent',
-          operation: OPERATION.EQUALS,
+          operator: OPERATION.EQUALS,
           value: 'US',
         },
       ],
@@ -86,14 +87,15 @@ describe('Rule Engine', () => {
     expect((validationResults[0] as RuleResult).error).toBeInstanceOf(DataValueNotFoundError);
   });
 
-  it('should throw an error for unknown operation', () => {
+  it('should throw an error for unknown operator', () => {
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.OR,
       rules: [
         {
           key: 'country',
-          // @ts-ignore - intentionally using an unknown operation
-          operation: 'UNKNOWN',
+          // @ts-ignore - intentionally using an unknown operator
+          operator: 'UNKNOWN',
+          // @ts-ignore - intentionally using an unknown operator
           value: 'US',
         },
       ],
@@ -103,11 +105,11 @@ describe('Rule Engine', () => {
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
     expect(result[0]).toMatchObject({
-      error: expect.any(OperationNotFoundError),
-      message: 'Unknown operation UNKNOWN',
+      error: expect.any(OperatorNotFoundError),
+      message: 'Unknown operator UNKNOWN',
       rule: {
         key: 'country',
-        operation: 'UNKNOWN',
+        operator: 'UNKNOWN',
         value: 'US',
       },
       status: 'FAILED',
@@ -120,7 +122,7 @@ describe('Rule Engine', () => {
       rules: [
         {
           key: 'country',
-          operation: OPERATION.EQUALS,
+          operator: OPERATION.EQUALS,
           value: 'CA',
         },
       ],
@@ -131,14 +133,14 @@ describe('Rule Engine', () => {
     expect((validationResults[0] as RuleResult).error).toBe(undefined);
   });
 
-  it.skip('should validate custom operation with additional params', () => {
+  it.skip('should validate custom operator with additional params', () => {
     // TODO: should spy Date.now() to return a fixed date
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.AND,
       rules: [
         {
           key: 'createdAt',
-          operation: OPERATION.LAST_YEAR,
+          operator: OPERATION.LAST_YEAR,
           value: { years: 2 },
         },
       ],
@@ -148,14 +150,15 @@ describe('Rule Engine', () => {
     expect(validationResults[0]!.status).toBe('PASSED');
   });
 
-  it('should fail custom operation with missing additional params', () => {
+  it('should fail custom operator with missing additional params', () => {
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.OR,
       rules: [
         {
           key: 'age',
-          operation: OPERATION.LAST_YEAR,
-          value: { years: 'two' }, // Invalid type for years
+          operator: OPERATION.LAST_YEAR,
+          // @ts-ignore - wrong type
+          value: { years: 'two' },
         },
       ],
     };
@@ -173,7 +176,7 @@ describe('Rule Engine', () => {
       rules: [
         {
           key: '',
-          operation: OPERATION.EQUALS,
+          operator: OPERATION.EQUALS,
           value: 'US',
         },
       ],
@@ -187,7 +190,7 @@ describe('Rule Engine', () => {
       message: 'Rule is missing the key field',
       rule: {
         key: '',
-        operation: 'EQUALS',
+        operator: 'EQUALS',
         value: 'US',
       },
       status: 'FAILED',
@@ -200,7 +203,7 @@ describe('Rule Engine', () => {
       rules: [
         {
           key: 'pluginsOutput.businessInformation.data[0].establishDate',
-          operation: OPERATION.LAST_YEAR,
+          operator: OPERATION.LAST_YEAR,
           value: { years: 1 },
         },
       ],
@@ -216,7 +219,7 @@ describe('Rule Engine', () => {
         "error": undefined,
         "rule": {
           "key": "pluginsOutput.businessInformation.data[0].establishDate",
-          "operation": "LAST_YEAR",
+          "operator": "LAST_YEAR",
           "value": {
             "years": 1,
           },
@@ -238,7 +241,7 @@ describe('Rule Engine', () => {
         "error": undefined,
         "rule": {
           "key": "pluginsOutput.businessInformation.data[0].establishDate",
-          "operation": "LAST_YEAR",
+          "operator": "LAST_YEAR",
           "value": {
             "years": 1,
           },
@@ -248,14 +251,15 @@ describe('Rule Engine', () => {
     `);
   });
 
-  describe('exists operation', () => {
+  describe('exists operator', () => {
     it('should resolve a nested property from context', () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
           {
             key: 'pluginsOutput.businessInformation.data[0].shares',
-            operation: OPERATION.EXISTS,
+            operator: OPERATION.EXISTS,
+            // @ts-ignore - wrong type
             value: {},
           },
         ],
@@ -271,7 +275,7 @@ describe('Rule Engine', () => {
           "error": undefined,
           "rule": {
             "key": "pluginsOutput.businessInformation.data[0].shares",
-            "operation": "EXISTS",
+            "operator": "EXISTS",
             "value": {},
           },
           "status": "PASSED",
@@ -291,7 +295,7 @@ describe('Rule Engine', () => {
           "error": undefined,
           "rule": {
             "key": "pluginsOutput.businessInformation.data[0].shares",
-            "operation": "EXISTS",
+            "operator": "EXISTS",
             "value": {},
           },
           "status": "FAILED",
@@ -309,7 +313,7 @@ describe('Rule Engine', () => {
           "error": undefined,
           "rule": {
             "key": "pluginsOutput.businessInformation.data[0].shares",
-            "operation": "EXISTS",
+            "operator": "EXISTS",
             "value": {},
           },
           "status": "FAILED",
@@ -327,7 +331,7 @@ describe('Rule Engine', () => {
           "error": undefined,
           "rule": {
             "key": "pluginsOutput.businessInformation.data[0].shares",
-            "operation": "EXISTS",
+            "operator": "EXISTS",
             "value": {},
           },
           "status": "PASSED",
@@ -341,7 +345,8 @@ describe('Rule Engine', () => {
         rules: [
           {
             key: 'pluginsOutput.businessInformation.data[0].shares',
-            operation: OPERATION.EXISTS,
+            operator: OPERATION.EXISTS,
+            // @ts-expect-error - schema
             value: {
               schema: z.object({
                 item: z.coerce.number().int().positive(),
@@ -382,14 +387,14 @@ describe('Rule Engine', () => {
     });
   });
 
-  describe('not_equals operation', () => {
+  describe('not_equals operator', () => {
     it('should resolve a nested property from context', () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
           {
             key: 'pluginsOutput.companySanctions.data.length',
-            operation: OPERATION.NOT_EQUALS,
+            operator: OPERATION.NOT_EQUALS,
             value: 0,
           },
         ],
@@ -405,7 +410,7 @@ describe('Rule Engine', () => {
           "error": undefined,
           "rule": {
             "key": "pluginsOutput.companySanctions.data.length",
-            "operation": "NOT_EQUALS",
+            "operator": "NOT_EQUALS",
             "value": 0,
           },
           "status": "PASSED",
@@ -425,7 +430,7 @@ describe('Rule Engine', () => {
           "error": undefined,
           "rule": {
             "key": "pluginsOutput.companySanctions.data.length",
-            "operation": "NOT_EQUALS",
+            "operator": "NOT_EQUALS",
             "value": 0,
           },
           "status": "FAILED",
@@ -434,14 +439,14 @@ describe('Rule Engine', () => {
     });
   });
 
-  describe('in operation', () => {
+  describe('in operator', () => {
     it('should resolve a nested property from context', () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
           {
             key: 'entity.data.country',
-            operation: OPERATION.IN,
+            operator: OPERATION.IN,
             value: ['IL', 'AF', 'US', 'GB'],
           },
         ],
@@ -457,7 +462,7 @@ describe('Rule Engine', () => {
           "error": undefined,
           "rule": {
             "key": "entity.data.country",
-            "operation": "IN",
+            "operator": "IN",
             "value": [
               "IL",
               "AF",
@@ -482,7 +487,7 @@ describe('Rule Engine', () => {
           "error": undefined,
           "rule": {
             "key": "entity.data.country",
-            "operation": "IN",
+            "operator": "IN",
             "value": [
               "IL",
               "AF",
@@ -496,14 +501,14 @@ describe('Rule Engine', () => {
     });
   });
 
-  describe('not_in operation', () => {
+  describe('not_in operator', () => {
     it('should resolve a nested property from context', () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
           {
             key: 'entity.data.country',
-            operation: OPERATION.NOT_IN,
+            operator: OPERATION.NOT_IN,
             value: ['IL', 'CA', 'US', 'GB'],
           },
         ],
@@ -519,7 +524,7 @@ describe('Rule Engine', () => {
           "error": undefined,
           "rule": {
             "key": "entity.data.country",
-            "operation": "NOT_IN",
+            "operator": "NOT_IN",
             "value": [
               "IL",
               "CA",
@@ -544,7 +549,7 @@ describe('Rule Engine', () => {
           "error": undefined,
           "rule": {
             "key": "entity.data.country",
-            "operation": "NOT_IN",
+            "operator": "NOT_IN",
             "value": [
               "IL",
               "CA",
@@ -555,6 +560,127 @@ describe('Rule Engine', () => {
           "status": "FAILED",
         }
       `);
+    });
+  });
+
+  describe('aml operator', () => {
+    it('should resolve a nested property from context', () => {
+      const amlContext2 = {
+        ...(JSON.parse(JSON.stringify(context)) as any),
+        ...amlContext,
+      };
+
+      const warningRule: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'warnings.length',
+            operator: OPERATION.AML_CHECK,
+            value: {
+              operator: OPERATION.GTE,
+              value: 1,
+            },
+          },
+        ],
+      };
+
+      let engine = RuleEngine(warningRule);
+      let result = engine.run(amlContext2);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot();
+    });
+
+    it('should resolve a nested property from context', () => {
+      const amlContext2 = {
+        ...(JSON.parse(JSON.stringify(context)) as any),
+        ...amlContext,
+      };
+
+      const warningRule: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'warnings.length',
+            operator: OPERATION.AML_CHECK,
+            value: {
+              operator: OPERATION.GTE,
+              value: 1,
+            },
+          },
+        ],
+      };
+
+      let engine = RuleEngine(warningRule);
+      let result = engine.run(amlContext2);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot();
+
+      const adverseMediaRule: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'adverseMedia.length',
+            operator: OPERATION.AML_CHECK,
+            value: {
+              operator: OPERATION.GTE,
+              value: 1,
+            },
+          },
+        ],
+      };
+
+      engine = RuleEngine(adverseMediaRule);
+      result = engine.run(amlContext2);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot();
+
+      const fitnessProbityRule: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'fitnessProbity.length',
+            operator: OPERATION.AML_CHECK,
+            value: {
+              operator: OPERATION.GTE,
+              value: 1,
+            },
+          },
+        ],
+      };
+
+      engine = RuleEngine(fitnessProbityRule);
+      result = engine.run(amlContext2);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot();
+
+      const pepRule: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'pep.length',
+            operator: OPERATION.AML_CHECK,
+            value: {
+              operator: OPERATION.GTE,
+              value: 1,
+            },
+          },
+        ],
+      };
+
+      engine = RuleEngine(pepRule);
+      result = engine.run(amlContext2);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot();
     });
   });
 });

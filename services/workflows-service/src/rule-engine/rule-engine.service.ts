@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RuleEngine } from './core/rule-engine';
-import { OperationHelpers, RuleSet } from '@ballerine/common';
+import { OperationHelpers, RuleSet, RuleEngine } from '@ballerine/common';
 
 @Injectable()
 export class RuleEngineService {

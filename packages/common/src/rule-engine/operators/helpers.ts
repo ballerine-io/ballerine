@@ -1,9 +1,22 @@
-import { ConditionFn, BetweenParams, LastYearsParams, ExistsParams, Primitive } from './types';
-import { TOperation } from '../types';
+import get from 'lodash.get';
+import isEmpty from 'lodash.isempty';
+
+import {
+  ConditionFn,
+  BetweenParams,
+  LastYearsParams,
+  ExistsParams,
+  Primitive,
+  TOperation,
+  AmlCheckParams,
+} from './types';
+
 import { ZodSchema } from 'zod';
 import { BetweenSchema, LastYearsSchema, PrimitiveArraySchema, PrimitiveSchema } from './schemas';
-import { ValidationFailedError } from '../errors';
-import isEmpty from 'lodash.isempty';
+
+import { ValidationFailedError, DataValueNotFoundError } from '../errors';
+import { OperationHelpers } from './constants';
+import { Rule } from '../rules/types';
 
 export abstract class BaseOperator<T = Primitive> {
   operator: string;
@@ -23,6 +36,16 @@ export abstract class BaseOperator<T = Primitive> {
   }
 
   abstract evaluate(dataValue: Primitive, conditionValue: T): boolean;
+
+  extractValue(data: any, rule: Rule) {
+    const value = get(data, rule.key);
+
+    if (value === undefined || value === null) {
+      throw new DataValueNotFoundError(rule.key);
+    }
+
+    return value;
+  }
 
   execute(dataValue: Primitive, conditionValue: T): boolean {
     this.validate({ dataValue, conditionValue });
@@ -261,6 +284,53 @@ class Exists extends BaseOperator<ExistsParams> {
   };
 }
 
+class AmlCheck extends BaseOperator<AmlCheckParams> {
+  constructor() {
+    super({
+      operator: 'AML_CHECK',
+    });
+  }
+
+  extractValue(data: any, rule: Rule) {
+    const kycSessionKeys = Object.keys(data?.childWorkflows || {});
+    const kycSessionKey = kycSessionKeys.length > 0 ? kycSessionKeys[0] : null;
+
+    const workflowKeys = kycSessionKey
+      ? Object.keys(data?.childWorkflows[kycSessionKey] || {})
+      : [];
+    const workflowKey = workflowKeys.length > 0 ? workflowKeys[0] : null;
+
+    const value =
+      kycSessionKey && workflowKey
+        ? get(data, `childWorkflows.${kycSessionKey}.${workflowKey}.result.vendorResult.aml`)
+        : null;
+
+    if (value === undefined || value === null) {
+      throw new DataValueNotFoundError(rule.key);
+    }
+
+    return value;
+  }
+
+  evaluate: ConditionFn<AmlCheckParams> = (
+    dataValue: any,
+    conditionValue: AmlCheckParams,
+  ): boolean => {
+    const amlOperator = OperationHelpers[conditionValue.operator];
+    const context = 'AML_CHECK';
+
+    amlOperator.dataValueSchema, amlOperator.conditionValueSchema;
+
+    let result = amlOperator.dataValueSchema?.safeParse(dataValue);
+
+    if (result && !result.success) {
+      return false;
+    }
+
+    return amlOperator.execute(context, result?.data);
+  };
+}
+
 export const EQUALS = new Equals();
 export const NOT_EQUALS = new NotEquals();
 export const GT = new GreaterThan();
@@ -272,3 +342,4 @@ export const LAST_YEAR = new LastYear();
 export const EXISTS = new Exists();
 export const IN = new In();
 export const NOT_IN = new NotIn();
+export const AML_CHECK = new AmlCheck();

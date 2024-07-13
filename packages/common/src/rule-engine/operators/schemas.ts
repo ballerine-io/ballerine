@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { OPERATION } from './enums';
+import { z, ZodSchema } from 'zod';
+import { BaseOperationsValueSchema } from './constants';
 
 export const PrimitiveSchema = z.union([z.number(), z.string(), z.boolean()]);
 
@@ -14,11 +14,19 @@ export const LastYearsSchema = z.object({
   years: z.number().positive(),
 });
 
-// TODO: TBD
-const ruleSchema = z.object({
-  key: z.string(),
-  operation: z.literal(OPERATION.LAST_YEAR),
-  value: z.object({
-    years: z.number(),
-  }),
+export const ExistsSchema = z.object({
+  schema: z.any().refine(
+    (val: any): val is ZodSchema<any> => {
+      return val instanceof ZodSchema;
+    },
+    {
+      message: 'Value must be a Zod schema',
+    },
+  ),
 });
+
+export const AmlCheckSchema = z
+  .object({
+    key: z.string().optional(),
+  })
+  .and(BaseOperationsValueSchema);

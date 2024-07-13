@@ -2,36 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { NotionService } from '@/notion/notion.service';
 import z from 'zod';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { RuleSet, TOperation, TOperator } from '@ballerine/common';
-
-const OPERATIONS = [
-  'EQUALS',
-  'NOT_EQUALS',
-  'BETWEEN',
-  'GT',
-  'LT',
-  'GTE',
-  'LTE',
-  'LAST_YEAR',
-  'EXISTS',
-  'IN',
-  'NOT_IN',
-] as const satisfies readonly TOperation[];
-
-const OPERATORS = ['and', 'or'] as const satisfies readonly TOperator[];
-
-const RuleSchema = z.object({
-  key: z.string(),
-  operation: z.enum(OPERATIONS),
-  value: z.union([z.string(), z.number(), z.boolean()]),
-});
-
-type Rule = z.infer<typeof RuleSchema>;
-
-const RuleSetSchema: z.ZodType<RuleSet> = z.object({
-  operator: z.enum(OPERATORS),
-  rules: z.lazy(() => z.array(z.union([RuleSetSchema, RuleSchema]))),
-});
+import { RuleSetSchema } from '@ballerine/common';
 
 const isJsonString = (value: string) => {
   try {

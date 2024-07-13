@@ -1,36 +1,29 @@
-import {
-  DataValueNotFoundError,
-  MissingKeyError,
-  OperationHelpers,
-  OperationNotFoundError,
-  OPERATOR,
-  Rule,
-  RuleResult,
-  RuleResultSet,
-  RuleSet,
-} from '@ballerine/common';
-import { get, isEmpty } from 'lodash';
+import isEmpty from 'lodash.isempty';
+
+import { DataValueNotFoundError, MissingKeyError, OperatorNotFoundError } from '../errors';
+
+import { OperationHelpers } from '../operators/constants';
+import { OPERATOR } from '../operators/enums';
+
+import { Rule, RuleResult, RuleResultSet, RuleSet } from '../types';
+// import { get, isEmpty } from 'lodash';
 
 export const validateRule = (rule: Rule, data: any): RuleResult => {
   if (isEmpty(rule.key)) {
     throw new MissingKeyError();
   }
 
-  // TODO: we might want to extract the key value in the rule itself?
-  const value = get(data, rule.key);
+  const operator = OperationHelpers[rule.operator];
 
-  if (value === undefined || value === null) {
-    throw new DataValueNotFoundError(rule.key);
+  if (!operator) {
+    throw new OperatorNotFoundError(rule.operator);
   }
 
-  const operation = OperationHelpers[rule.operation];
-
-  if (!operation) {
-    throw new OperationNotFoundError(rule.operation);
-  }
+  const value = operator.extractValue(data, rule);
 
   try {
-    const result = operation.execute(value, rule.value);
+    // @ts-expect-error - genereic type value is not assignable to any
+    const result = operator.execute(value, rule.value);
 
     return { status: result ? 'PASSED' : 'FAILED', error: undefined };
   } catch (error) {

@@ -1,9 +1,9 @@
 import { ZodError } from 'zod';
 
-export class OperationNotFoundError extends Error {
-  constructor(operation: string) {
-    super(`Unknown operation ${operation}`);
-    this.name = OperationNotFoundError.name;
+export class OperatorNotFoundError extends Error {
+  constructor(operator: string) {
+    super(`Unknown operator ${operator}`);
+    this.name = OperatorNotFoundError.name;
   }
 }
 
@@ -41,7 +41,7 @@ export class ValidationFailedError extends Error {
 }
 
 export type EngineErrors =
-  | OperationNotFoundError
+  | OperatorNotFoundError
   | DataValueNotFoundError
   | MissingKeyError
   | ValidationFailedError
