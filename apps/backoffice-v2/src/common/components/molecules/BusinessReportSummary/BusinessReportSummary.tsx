@@ -37,7 +37,9 @@ export const BusinessReportSummary: FunctionComponent<{
         <CardHeader className={'pt-4 font-bold'}>
           <span className={'mb-1'}>Overall Risk Level</span>
           <div className="flex items-center space-x-2">
-            {!riskScore && <TextWithNAFallback className={'text-4xl font-bold'} />}
+            {!riskScore && riskScore !== 0 && (
+              <TextWithNAFallback className={'text-4xl font-bold'} />
+            )}
             {(riskScore || riskScore === 0) && (
               <Badge
                 className={ctw(
