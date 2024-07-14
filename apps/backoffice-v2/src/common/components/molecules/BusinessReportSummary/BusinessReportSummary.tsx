@@ -9,7 +9,6 @@ import { severityToClassName } from '@/common/constants';
 import { Badge } from '@ballerine/ui';
 import { titleCase } from 'string-ts';
 import { getSeverityFromRiskScore } from '@/common/utils/get-severity-from-risk-score';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 
 export const BusinessReportSummary: FunctionComponent<{
   summary: string;
@@ -37,9 +36,6 @@ export const BusinessReportSummary: FunctionComponent<{
         <CardHeader className={'pt-4 font-bold'}>
           <span className={'mb-1'}>Overall Risk Level</span>
           <div className="flex items-center space-x-2">
-            {!riskScore && riskScore !== 0 && (
-              <TextWithNAFallback className={'text-4xl font-bold'} />
-            )}
             {(riskScore || riskScore === 0) && (
               <Badge
                 className={ctw(
