@@ -2,9 +2,9 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import type { TProjectIds } from '@/types';
 import { PrismaTransaction } from '@/types';
+import { validateDefinitionLogic } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient, WorkflowDefinition } from '@prisma/client';
-import { validateDefinitionLogic } from '@ballerine/workflow-core';
 
 @Injectable()
 export class WorkflowDefinitionRepository {
@@ -154,5 +154,9 @@ export class WorkflowDefinitionRepository {
       },
       orderBy: { version: 'desc' },
     });
+  }
+
+  async getListUnscoped() {
+    return this.prisma.workflowDefinition.findMany({});
   }
 }
