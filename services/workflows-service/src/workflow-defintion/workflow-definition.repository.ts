@@ -53,6 +53,16 @@ export class WorkflowDefinitionRepository {
     return await this.prisma.workflowDefinition.findMany(queryArgs);
   }
 
+  async count(projectIds: TProjectIds) {
+    return await this.prisma.workflowDefinition.count({
+      where: {
+        projectId: {
+          in: projectIds,
+        },
+      },
+    });
+  }
+
   async findById<T extends Omit<Prisma.WorkflowDefinitionFindFirstOrThrowArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionFindFirstOrThrowArgs, 'where'>>,

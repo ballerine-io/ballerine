@@ -1,6 +1,7 @@
 import { CustomerService } from '@/customer/customer.service';
 import { FilterService } from '@/filter/filter.service';
 import { TProjectId, TProjectIds } from '@/types';
+import { GetWorkflowDefinitionListDto } from '@/workflow-defintion/dtos/get-workflow-definition-list.dto';
 import { TWorkflowDefinitionWithTransitionSchema } from '@/workflow-defintion/types';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { replaceNullsWithUndefined } from '@ballerine/common';
@@ -102,7 +103,21 @@ export class WorkflowDefinitionService {
     return workflowDefinition as TWorkflowDefinitionWithTransitionSchema;
   }
 
-  async getList() {
-    return this.repository.getListUnscoped();
+  async getList(dto: GetWorkflowDefinitionListDto, projectIds: TProjectIds) {
+    const totalItems = await this.repository.count(projectIds);
+    const totalPages = Math.ceil(totalItems / dto.limit);
+
+    return {
+      items: await this.repository.findMany(
+        {
+          skip: dto.limit * (dto.page - 1),
+        },
+        projectIds,
+      ),
+      meta: {
+        total: totalItems,
+        pages: totalPages,
+      },
+    };
   }
 }
