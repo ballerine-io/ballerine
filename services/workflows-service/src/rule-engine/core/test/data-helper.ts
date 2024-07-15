@@ -149,7 +149,14 @@ export const amlContext = {
               id: 'example_aml_id_001',
               hits: [
                 {
-                  pep: [],
+                  pep: [
+                    {
+                      date: null,
+                      sourceUrl: 'http://example.gov/disqualifieddirectorslist.html',
+                      sourceName:
+                        'Example Ministry of Corporate Affairs List of Disqualified Directors Division XYZ (Suspended)',
+                    },
+                  ],
                   warnings: [
                     {
                       date: null,
@@ -159,11 +166,32 @@ export const amlContext = {
                     },
                   ],
                   countries: [],
-                  sanctions: [],
+                  sanctions: [
+                    {
+                      date: null,
+                      sourceUrl: 'http://example.gov/disqualifieddirectorslist.html',
+                      sourceName:
+                        'Example Ministry of Corporate Affairs List of Disqualified Directors Division XYZ (Suspended)',
+                    },
+                  ],
                   matchTypes: ['name_exact'],
                   matchedName: 'Jane Smith',
-                  adverseMedia: [],
-                  fitnessProbity: [],
+                  adverseMedia: [
+                    {
+                      date: null,
+                      sourceUrl: 'http://example.gov/disqualifieddirectorslist.html',
+                      sourceName:
+                        'Example Ministry of Corporate Affairs List of Disqualified Directors Division XYZ (Suspended)',
+                    },
+                  ],
+                  fitnessProbity: [
+                    {
+                      date: null,
+                      sourceUrl: 'http://example.gov/disqualifieddirectorslist.html',
+                      sourceName:
+                        'Example Ministry of Corporate Affairs List of Disqualified Directors Division XYZ (Suspended)',
+                    },
+                  ],
                 },
                 {
                   pep: [],

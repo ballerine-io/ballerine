@@ -6,7 +6,7 @@ import {
   LastYearsSchema,
   PrimitiveSchema,
 } from '@/rule-engine/operators/schemas';
-import { OperationHelpers, OperationsValueSchema } from './constants';
+import { OperationHelpers } from './constants';
 import { OPERATION, OPERATOR } from './enums';
 
 export type TOperation = (typeof OPERATION)[keyof typeof OPERATION];
@@ -28,7 +28,6 @@ export type ExistsParams = {
 };
 export type ConditionFn<T = Primitive> = (value: Primitive, param: T) => boolean;
 
-export type TOperationsValue = z.infer<typeof OperationsValueSchema>;
 export interface IConditionHelpers<T> {
   [key: string]: ConditionFn<T>;
 }

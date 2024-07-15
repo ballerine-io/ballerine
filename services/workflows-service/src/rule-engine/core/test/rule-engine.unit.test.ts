@@ -1,22 +1,20 @@
 import {
   DataValueNotFoundError,
-  MissingKeyError,
   OPERATION,
   OPERATOR,
-  OperatorNotFoundError,
-  RuleEngine,
   RuleResult,
   RuleResultSet,
   RuleSet,
-  runRuleSet,
 } from '@ballerine/common';
 import z from 'zod';
 import { amlContext, context } from './data-helper';
+import { RuleEngine, runRuleSet } from '../rule-engine';
 
 const mockData = {
   country: 'US',
   name: 'John',
   age: 35,
+  createdAt: new Date().toISOString(),
 };
 
 describe('Rule Engine', () => {
@@ -104,16 +102,34 @@ describe('Rule Engine', () => {
     const result = runRuleSet(ruleSetExample, mockData);
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
-    expect(result[0]).toMatchObject({
-      error: expect.any(OperatorNotFoundError),
-      message: 'Unknown operator UNKNOWN',
-      rule: {
-        key: 'country',
-        operator: 'UNKNOWN',
-        value: 'US',
-      },
-      status: 'FAILED',
-    });
+    expect(result[0]?.message).toMatchInlineSnapshot(`
+      "Validation failed for 'rule', message: parsing failed, error: {
+        "issues": [
+          {
+            "code": "invalid_union_discriminator",
+            "options": [
+              "LAST_YEAR",
+              "AML_CHECK",
+              "EQUALS",
+              "NOT_EQUALS",
+              "BETWEEN",
+              "GT",
+              "LT",
+              "GTE",
+              "LTE",
+              "EXISTS",
+              "IN",
+              "NOT_IN"
+            ],
+            "path": [
+              "operator"
+            ],
+            "message": "Invalid discriminator value. Expected 'LAST_YEAR' | 'AML_CHECK' | 'EQUALS' | 'NOT_EQUALS' | 'BETWEEN' | 'GT' | 'LT' | 'GTE' | 'LTE' | 'EXISTS' | 'IN' | 'NOT_IN'"
+          }
+        ],
+        "name": "ZodError"
+      }"
+    `);
   });
 
   it('should fail for incorrect value', () => {
@@ -133,7 +149,7 @@ describe('Rule Engine', () => {
     expect((validationResults[0] as RuleResult).error).toBe(undefined);
   });
 
-  it.skip('should validate custom operator with additional params', () => {
+  it('should validate custom operator with additional params', () => {
     // TODO: should spy Date.now() to return a fixed date
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.AND,
@@ -141,13 +157,25 @@ describe('Rule Engine', () => {
         {
           key: 'createdAt',
           operator: OPERATION.LAST_YEAR,
-          value: { years: 2 },
+          value: { years: 1 },
         },
       ],
     };
 
     const validationResults: RuleResultSet = runRuleSet(ruleSetExample, mockData);
-    expect(validationResults[0]!.status).toBe('PASSED');
+    expect(validationResults[0]).toMatchInlineSnapshot(`
+      {
+        "error": undefined,
+        "rule": {
+          "key": "createdAt",
+          "operator": "LAST_YEAR",
+          "value": {
+            "years": 1,
+          },
+        },
+        "status": "PASSED",
+      }
+    `);
   });
 
   it('should fail custom operator with missing additional params', () => {
@@ -164,13 +192,26 @@ describe('Rule Engine', () => {
     };
 
     const validationResults: RuleResultSet = runRuleSet(ruleSetExample, mockData);
-    expect(validationResults[0]!.status).toBe('FAILED');
-    expect((validationResults[0] as RuleResult).message).toContain(
-      `Validation failed for 'LAST_YEAR', message: Invalid condition value`,
-    );
+    expect(validationResults[0]?.message).toMatchInlineSnapshot(`
+      "Validation failed for 'rule', message: parsing failed, error: {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "string",
+            "path": [
+              "value",
+              "years"
+            ],
+            "message": "Expected number, received string"
+          }
+        ],
+        "name": "ZodError"
+      }"
+    `);
   });
 
-  it('should throw MissingKeyError when rule is missing key field', () => {
+  it('should throw DataValueNotFoundError when rule is missing key field', () => {
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.OR,
       rules: [
@@ -185,16 +226,18 @@ describe('Rule Engine', () => {
     const result = runRuleSet(ruleSetExample, mockData);
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
-    expect(result[0]).toMatchObject({
-      error: expect.any(MissingKeyError),
-      message: 'Rule is missing the key field',
-      rule: {
-        key: '',
-        operator: 'EQUALS',
-        value: 'US',
-      },
-      status: 'FAILED',
-    });
+    expect(result[0]).toMatchInlineSnapshot(`
+      {
+        "error": [DataValueNotFoundError: Field  is missing or null],
+        "message": "Field  is missing or null",
+        "rule": {
+          "key": "",
+          "operator": "EQUALS",
+          "value": "US",
+        },
+        "status": "FAILED",
+      }
+    `);
   });
 
   it('should resolve a nested property from context', () => {
@@ -251,7 +294,7 @@ describe('Rule Engine', () => {
     `);
   });
 
-  describe('exists operator', () => {
+  describe('exists operator - not in use', () => {
     it('should resolve a nested property from context', () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
@@ -259,8 +302,9 @@ describe('Rule Engine', () => {
           {
             key: 'pluginsOutput.businessInformation.data[0].shares',
             operator: OPERATION.EXISTS,
-            // @ts-ignore - wrong type
-            value: {},
+            value: {
+              schema: z.object({}),
+            },
           },
         ],
       };
@@ -270,73 +314,39 @@ describe('Rule Engine', () => {
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
-      expect(result[0]).toMatchInlineSnapshot(`
-        {
-          "error": undefined,
-          "rule": {
-            "key": "pluginsOutput.businessInformation.data[0].shares",
-            "operator": "EXISTS",
-            "value": {},
-          },
-          "status": "PASSED",
-        }
-      `);
 
-      const context2 = JSON.parse(JSON.stringify(context));
+      expect(result[0]?.status).toMatchInlineSnapshot(`"FAILED"`);
+      expect(result[0]?.message).toMatchInlineSnapshot(`undefined`);
+      expect(result[0]?.error).toMatchInlineSnapshot(`undefined`);
 
-      // @ts-ignore
+      const context2 = JSON.parse(JSON.stringify(context)) as any;
+
       context2.pluginsOutput.businessInformation.data[0].shares = [];
 
       result = engine.run(context2 as any);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
-      expect(result[0]).toMatchInlineSnapshot(`
-        {
-          "error": undefined,
-          "rule": {
-            "key": "pluginsOutput.businessInformation.data[0].shares",
-            "operator": "EXISTS",
-            "value": {},
-          },
-          "status": "FAILED",
-        }
-      `);
+      expect(result[0]?.status).toMatchInlineSnapshot(`"FAILED"`);
+      expect(result[0]?.message).toMatchInlineSnapshot(`undefined`);
+      expect(result[0]?.error).toMatchInlineSnapshot(`undefined`);
 
-      // @ts-ignore
       context2.pluginsOutput.businessInformation.data[0].shares = {};
 
       result = engine.run(context2 as any);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
-      expect(result[0]).toMatchInlineSnapshot(`
-        {
-          "error": undefined,
-          "rule": {
-            "key": "pluginsOutput.businessInformation.data[0].shares",
-            "operator": "EXISTS",
-            "value": {},
-          },
-          "status": "FAILED",
-        }
-      `);
+      expect(result[0]?.status).toMatchInlineSnapshot(`"FAILED"`);
+      expect(result[0]?.message).toMatchInlineSnapshot(`undefined`);
+      expect(result[0]?.error).toMatchInlineSnapshot(`undefined`);
 
-      // @ts-ignore
       context2.pluginsOutput.businessInformation.data[0].shares = { item: 1 };
 
       result = engine.run(context2 as any);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
-      expect(result[0]).toMatchInlineSnapshot(`
-        {
-          "error": undefined,
-          "rule": {
-            "key": "pluginsOutput.businessInformation.data[0].shares",
-            "operator": "EXISTS",
-            "value": {},
-          },
-          "status": "PASSED",
-        }
-      `);
+      expect(result[0]?.status).toMatchInlineSnapshot(`"PASSED"`);
+      expect(result[0]?.message).toMatchInlineSnapshot(`undefined`);
+      expect(result[0]?.error).toMatchInlineSnapshot(`undefined`);
     });
 
     it('should check with schema', () => {
@@ -346,7 +356,6 @@ describe('Rule Engine', () => {
           {
             key: 'pluginsOutput.businessInformation.data[0].shares',
             operator: OPERATION.EXISTS,
-            // @ts-expect-error - schema
             value: {
               schema: z.object({
                 item: z.coerce.number().int().positive(),
@@ -564,17 +573,110 @@ describe('Rule Engine', () => {
   });
 
   describe('aml operator', () => {
-    it('should resolve a nested property from context', () => {
-      const amlContext2 = {
+    describe('warning section', () => {
+      it('should resolve a nested property from context', () => {
+        let amlContextHasData = {
+          ...(JSON.parse(JSON.stringify(context)) as any),
+          ...(JSON.parse(JSON.stringify(amlContext)) as any),
+        };
+
+        const warningRule: RuleSet = {
+          operator: OPERATOR.AND,
+          rules: [
+            {
+              key: 'warnings.length',
+              operator: OPERATION.AML_CHECK,
+              value: {
+                operator: OPERATION.GTE,
+                value: 1,
+              },
+            },
+          ],
+        };
+
+        let engine = RuleEngine(warningRule);
+
+        amlContextHasData.childWorkflows.kyc_email_session_example.example_id_001.result.vendorResult.aml =
+          {
+            hits: [
+              {
+                warnings: [],
+              },
+            ],
+          };
+
+        const result = engine.run(amlContextHasData);
+
+        expect(result).toBeDefined();
+        expect(result[0]).toMatchInlineSnapshot(`
+          {
+            "error": undefined,
+            "rule": {
+              "key": "warnings.length",
+              "operator": "AML_CHECK",
+              "value": {
+                "operator": "GTE",
+                "value": 1,
+              },
+            },
+            "status": "FAILED",
+          }
+        `);
+      });
+
+      it('should failed when no data', () => {
+        let amlContextHasData = {
+          ...(JSON.parse(JSON.stringify(context)) as any),
+          ...(JSON.parse(JSON.stringify(amlContext)) as any),
+        };
+
+        const warningRule: RuleSet = {
+          operator: OPERATOR.AND,
+          rules: [
+            {
+              key: 'warnings.length',
+              operator: OPERATION.AML_CHECK,
+              value: {
+                operator: OPERATION.GTE,
+                value: 1,
+              },
+            },
+          ],
+        };
+
+        let engine = RuleEngine(warningRule);
+        let result = engine.run(amlContextHasData);
+
+        expect(result).toBeDefined();
+        expect(result).toHaveLength(1);
+        expect(result[0]).toMatchInlineSnapshot(`
+          {
+            "error": undefined,
+            "rule": {
+              "key": "warnings.length",
+              "operator": "AML_CHECK",
+              "value": {
+                "operator": "GTE",
+                "value": 1,
+              },
+            },
+            "status": "PASSED",
+          }
+        `);
+      });
+    });
+
+    it('should resolve fitness probity', () => {
+      let amlContextHasData = {
         ...(JSON.parse(JSON.stringify(context)) as any),
-        ...amlContext,
+        ...(JSON.parse(JSON.stringify(amlContext)) as any),
       };
 
-      const warningRule: RuleSet = {
+      const fitnessProbityRule: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
           {
-            key: 'warnings.length',
+            key: 'fitnessProbity.length',
             operator: OPERATION.AML_CHECK,
             value: {
               operator: OPERATION.GTE,
@@ -584,18 +686,47 @@ describe('Rule Engine', () => {
         ],
       };
 
-      let engine = RuleEngine(warningRule);
-      let result = engine.run(amlContext2);
+      amlContextHasData.childWorkflows.kyc_email_session_example.example_id_001.result.vendorResult.aml =
+        {
+          hits: [
+            {
+              fitnessProbity: [
+                {
+                  date: null,
+                  sourceUrl: 'http://example.gov/disqualifieddirectorslist.html',
+                  sourceName:
+                    'Example Ministry of Corporate Affairs List of Disqualified Directors Division XYZ (Suspended)',
+                },
+              ],
+            },
+          ],
+        };
+
+      let engine = RuleEngine(fitnessProbityRule);
+      const result = engine.run(amlContextHasData);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
-      expect(result[0]).toMatchInlineSnapshot();
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "fitnessProbity.length",
+            "operator": "AML_CHECK",
+            "value": {
+              "operator": "GTE",
+              "value": 1,
+            },
+          },
+          "status": "PASSED",
+        }
+      `);
     });
 
     it('should resolve a nested property from context', () => {
       const amlContext2 = {
         ...(JSON.parse(JSON.stringify(context)) as any),
-        ...amlContext,
+        ...(JSON.parse(JSON.stringify(amlContext)) as any),
       };
 
       const warningRule: RuleSet = {
@@ -612,12 +743,41 @@ describe('Rule Engine', () => {
         ],
       };
 
+      amlContext2.childWorkflows.kyc_email_session_example.example_id_001.result.vendorResult.aml =
+        {
+          hits: [
+            {
+              warnings: [
+                {
+                  date: null,
+                  sourceUrl: 'http://example.gov/disqualifieddirectorslist.html',
+                  sourceName:
+                    'Example Ministry of Corporate Affairs List of Disqualified Directors Division XYZ (Suspended)',
+                },
+              ],
+            },
+          ],
+        };
+
       let engine = RuleEngine(warningRule);
       let result = engine.run(amlContext2);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
-      expect(result[0]).toMatchInlineSnapshot();
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "warnings.length",
+            "operator": "AML_CHECK",
+            "value": {
+              "operator": "GTE",
+              "value": 1,
+            },
+          },
+          "status": "PASSED",
+        }
+      `);
 
       const adverseMediaRule: RuleSet = {
         operator: OPERATOR.AND,
@@ -638,7 +798,20 @@ describe('Rule Engine', () => {
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
-      expect(result[0]).toMatchInlineSnapshot();
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "adverseMedia.length",
+            "operator": "AML_CHECK",
+            "value": {
+              "operator": "GTE",
+              "value": 1,
+            },
+          },
+          "status": "FAILED",
+        }
+      `);
 
       const fitnessProbityRule: RuleSet = {
         operator: OPERATOR.AND,
@@ -659,7 +832,20 @@ describe('Rule Engine', () => {
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
-      expect(result[0]).toMatchInlineSnapshot();
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "fitnessProbity.length",
+            "operator": "AML_CHECK",
+            "value": {
+              "operator": "GTE",
+              "value": 1,
+            },
+          },
+          "status": "FAILED",
+        }
+      `);
 
       const pepRule: RuleSet = {
         operator: OPERATOR.AND,
@@ -680,7 +866,20 @@ describe('Rule Engine', () => {
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
-      expect(result[0]).toMatchInlineSnapshot();
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "pep.length",
+            "operator": "AML_CHECK",
+            "value": {
+              "operator": "GTE",
+              "value": 1,
+            },
+          },
+          "status": "FAILED",
+        }
+      `);
     });
   });
 });

@@ -1,5 +1,5 @@
 import { z, ZodSchema } from 'zod';
-import { BaseOperationsValueSchema } from './constants';
+import { OPERATION } from './enums';
 
 export const PrimitiveSchema = z.union([z.number(), z.string(), z.boolean()]);
 
@@ -25,8 +25,44 @@ export const ExistsSchema = z.object({
   ),
 });
 
-export const AmlCheckSchema = z
-  .object({
-    key: z.string().optional(),
-  })
-  .and(BaseOperationsValueSchema);
+export const BaseOperationsValueSchema = z.union([
+  z.object({
+    operator: z.literal(OPERATION.EQUALS),
+    value: PrimitiveSchema,
+  }),
+  z.object({
+    operator: z.literal(OPERATION.NOT_EQUALS),
+    value: PrimitiveSchema,
+  }),
+  z.object({
+    operator: z.literal(OPERATION.BETWEEN),
+    value: BetweenSchema,
+  }),
+  // Add other operator-specific schemas here
+  z.object({
+    operator: z.literal(OPERATION.GT),
+    value: PrimitiveSchema,
+  }),
+  z.object({
+    operator: z.literal(OPERATION.LT),
+    value: PrimitiveSchema,
+  }),
+  z.object({
+    operator: z.literal(OPERATION.GTE),
+    value: PrimitiveSchema,
+  }),
+  z.object({
+    operator: z.literal(OPERATION.LTE),
+    value: PrimitiveSchema,
+  }),
+  z.object({
+    operator: z.literal(OPERATION.IN),
+    value: PrimitiveArraySchema,
+  }),
+  z.object({
+    operator: z.literal(OPERATION.NOT_IN),
+    value: PrimitiveArraySchema,
+  }),
+]);
+
+export const AmlCheckSchema = BaseOperationsValueSchema;

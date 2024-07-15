@@ -1,18 +1,25 @@
-import isEmpty from 'lodash.isempty';
+import { isEmpty } from 'lodash';
 
-import { DataValueNotFoundError, MissingKeyError, OperatorNotFoundError } from '../errors';
-
-import { OperationHelpers } from '../operators/constants';
-import { OPERATOR } from '../operators/enums';
-
-import { Rule, RuleResult, RuleResultSet, RuleSet } from '../types';
+import {
+  Rule,
+  RuleResult,
+  RuleResultSet,
+  RuleSet,
+  OperatorNotFoundError,
+  OperationHelpers,
+  OPERATOR,
+  RuleSchema,
+  ValidationFailedError,
+} from '@ballerine/common';
 
 export const validateRule = (rule: Rule, data: any): RuleResult => {
-  if (isEmpty(rule.key)) {
-    throw new MissingKeyError();
+  const result = RuleSchema.safeParse(rule);
+
+  if (!result.success) {
+    throw new ValidationFailedError('rule', 'parsing failed', result.error);
   }
 
-  const operator = OperationHelpers[rule.operator];
+  const operator = OperationHelpers[rule.operator as keyof typeof OperationHelpers];
 
   if (!operator) {
     throw new OperatorNotFoundError(rule.operator);
@@ -21,7 +28,7 @@ export const validateRule = (rule: Rule, data: any): RuleResult => {
   const value = operator.extractValue(data, rule);
 
   try {
-    // @ts-expect-error - genereic type value is not assignable to any
+    // @ts-expect-error - rule
     const result = operator.execute(value, rule.value);
 
     return { status: result ? 'PASSED' : 'FAILED', error: undefined };
@@ -36,7 +43,22 @@ export const validateRule = (rule: Rule, data: any): RuleResult => {
 
 export const runRuleSet = (ruleSet: RuleSet, data: any): RuleResultSet => {
   return ruleSet.rules.map(rule => {
-    if ('key' in rule) {
+    if ('rules' in rule) {
+      // RuleSet
+      const nestedResults = runRuleSet(rule, data);
+
+      const passed =
+        rule.operator === OPERATOR.AND
+          ? nestedResults.every(r => r.status === 'PASSED')
+          : nestedResults.some(r => r.status === 'PASSED');
+
+      const status = passed ? 'PASSED' : 'SKIPPED';
+
+      return {
+        status,
+        rule,
+      };
+    } else {
       // Rule
       try {
         return { ...validateRule(rule, data), rule };
@@ -53,21 +75,6 @@ export const runRuleSet = (ruleSet: RuleSet, data: any): RuleResultSet => {
           throw error;
         }
       }
-    } else {
-      // RuleSet
-      const nestedResults = runRuleSet(rule, data);
-
-      const passed =
-        rule.operator === OPERATOR.AND
-          ? nestedResults.every(r => r.status === 'PASSED')
-          : nestedResults.some(r => r.status === 'PASSED');
-
-      const status = passed ? 'PASSED' : 'SKIPPED';
-
-      return {
-        status,
-        rule,
-      };
     }
   });
 };

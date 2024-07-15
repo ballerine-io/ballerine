@@ -15,7 +15,6 @@ export type {
 export {
   type EngineErrors,
   DataValueNotFoundError,
-  MissingKeyError,
   OperatorNotFoundError,
   ValidationFailedError,
 } from './errors';
@@ -32,7 +31,5 @@ export type {
 export * from './operators/schemas';
 
 export * from './operators/constants';
-
-export * from './core/rule-engine';
 
 export { OPERATION, OPERATIONS, OPERATOR } from './operators/enums';
