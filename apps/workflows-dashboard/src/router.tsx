@@ -22,6 +22,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'overview',
+        // TODO: get rid of this hook and rework routing to use authenticated layout
         Component: withSessionProtected(Overview),
       },
       {
