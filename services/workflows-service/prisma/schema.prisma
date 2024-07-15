@@ -188,12 +188,13 @@ model WorkflowDefinition {
   persistStates Json?
   submitStates  Json?
 
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  createdBy           String                @default("SYSTEM")
-  project             Project?              @relation(fields: [projectId], references: [id])
-  workflowRuntimeData WorkflowRuntimeData[]
-  uiDefinitions       UiDefinition[]
+  createdAt                     DateTime                       @default(now())
+  updatedAt                     DateTime                       @updatedAt
+  createdBy                     String                         @default("SYSTEM")
+  project                       Project?                       @relation(fields: [projectId], references: [id])
+  workflowRuntimeData           WorkflowRuntimeData[]
+  uiDefinitions                 UiDefinition[]
+  workflowDefinitionRiskRuleSet WorkflowDefinitionRiskRuleSet?
 
   @@unique([name, version, projectId, definitionType])
   @@index([projectId, name, definitionType])
@@ -806,6 +807,12 @@ enum RiskCategory {
   high
 }
 
+enum IndicatorRiskLevel {
+  positive
+  moderate
+  critical
+}
+
 enum ComplianceStatus {
   compliant
   non_compliant
@@ -878,3 +885,64 @@ model BusinessReport {
   @@index([riskScore])
   @@index([type])
 }
+
+model WorkflowDefinitionRiskRuleSet {
+  id                   String             @id @default(cuid())
+  workflowDefinitionId String             @unique
+  riskRulesPolicyId        String
+  riskRulesPolicy          RiskRulesPolicy        @relation(fields: [riskRulesPolicyId], references: [id])
+  workflowDefinition   WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([workflowDefinitionId, riskRulesPolicyId])
+  @@index([workflowDefinitionId])
+  @@index([riskRulesPolicyId])
+}
+
+model RiskRulesPolicy {
+  id        String   @id @default(cuid())
+  uuid      String @unique // id of named
+
+  ruleSet      Json
+
+  domain String
+  indicator String
+  riskLevel  IndicatorRiskLevel
+
+  baseRiskSocre Int
+  additionalRiskScore Int
+  minRiskScore Int?
+  maxRiskScore Int?
+
+  riskRuleSet RiskRuleSet[]
+  workflowDefinitionRiskRuleSet WorkflowDefinitionRiskRuleSet[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RiskRuleSet {
+  id        String
+  riskRulePolicyId String
+  uuid      String
+
+  ruleSet      Json
+
+  domain String
+  indicator String
+  riskLevel  IndicatorRiskLevel
+
+  baseRiskSocre Int
+  additionalRiskScore Int
+  minRiskScore Int?
+  maxRiskScore Int?
+
+  riskRulePolicy   RiskRulesPolicy @relation(fields: [riskRulePolicyId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([id, riskRulePolicyId])
+}
+
+
