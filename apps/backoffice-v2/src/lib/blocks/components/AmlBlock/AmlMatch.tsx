@@ -11,17 +11,19 @@ interface IAmlMatchProps {
     sanctions: THit['sanctions'];
     adverseMedia: THit['adverseMedia'];
     fitnessProbity: THit['fitnessProbity'];
+    other: THit['other'];
   };
 }
 
 export const AmlMatch = ({ match }: IAmlMatchProps) => {
   const orderedTypes = useMemo(
     () => [
-      { key: 'pep', accessor: 'person', header: 'PEP' },
-      { key: 'warnings', accessor: 'warning', header: 'Warnings' },
-      { key: 'sanctions', accessor: 'sanction', header: 'Sanctions' },
-      { key: 'adverseMedia', accessor: 'entry', header: 'Adverse Media' },
-      { key: 'fitnessProbity', accessor: 'entry', header: 'Fitness Probity' },
+      { key: 'pep', header: 'PEP' },
+      { key: 'warnings', header: 'Warnings' },
+      { key: 'sanctions', header: 'Sanctions' },
+      { key: 'adverseMedia', header: 'Adverse Media' },
+      { key: 'fitnessProbity', header: 'Fitness Probity' },
+      { key: 'other', header: 'Other' },
     ],
     [],
   );
@@ -39,10 +41,10 @@ export const AmlMatch = ({ match }: IAmlMatchProps) => {
           <div key={`${type.key}-${index}`} className={`flex gap-x-10 px-4`}>
             <span className={`w-[150px] text-left`}>{type.header}</span>
             <TextWithNAFallback className={`w-full text-left`}>
-              {item[type.accessor]}
+              {item.sourceName}
             </TextWithNAFallback>
             <TextWithNAFallback className={`w-[150px] text-left`}>
-              {item.source && (
+              {item.sourceUrl && (
                 <a
                   className={buttonVariants({
                     variant: 'link',
@@ -50,7 +52,7 @@ export const AmlMatch = ({ match }: IAmlMatchProps) => {
                   })}
                   target={'_blank'}
                   rel={'noopener noreferrer'}
-                  href={item.source}
+                  href={item.sourceUrl}
                 >
                   Link
                 </a>
