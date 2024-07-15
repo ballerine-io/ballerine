@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
 import { CustomerService } from '@/customer/customer.service';
-import { Prisma } from '@prisma/client';
-import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
-import { TProjectId, TProjectIds } from '@/types';
-import { merge } from 'lodash';
 import { FilterService } from '@/filter/filter.service';
-import { replaceNullsWithUndefined } from '@ballerine/common';
+import { TProjectId, TProjectIds } from '@/types';
 import { TWorkflowDefinitionWithTransitionSchema } from '@/workflow-defintion/types';
+import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
+import { replaceNullsWithUndefined } from '@ballerine/common';
+import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { merge } from 'lodash';
 
 @Injectable()
 export class WorkflowDefinitionService {
@@ -100,5 +100,9 @@ export class WorkflowDefinitionService {
     const workflowDefinition = await this.getLatestVersion(id, projectIds);
 
     return workflowDefinition as TWorkflowDefinitionWithTransitionSchema;
+  }
+
+  async getList() {
+    return this.repository.getListUnscoped();
   }
 }
