@@ -33,7 +33,7 @@ export const AmlSchema = z.object({
 
 export type TAml = z.infer<typeof AmlSchema>;
 
-const calculateEntry = (sourceInfo: z.infer<typeof SourceInfoSchema>) => {
+const getEntryFromSource = (sourceInfo: z.infer<typeof SourceInfoSchema>) => {
   return {
     date: sourceInfo?.date,
     sourceName: [sourceInfo?.sourceName, sourceInfo?.type].filter(Boolean).join(' - '),
@@ -68,12 +68,13 @@ export const amlAdapter = (aml: TAml) => {
           countries: countries?.join(', ') ?? '',
           matchTypes: matchTypes?.join(', ') ?? '',
           aka: aka?.join(', ') ?? '',
-          sanctions: sanctions?.filter(Boolean).map(item => calculateEntry(item)) ?? [],
-          warnings: warnings?.filter(Boolean).map(item => calculateEntry(item)) ?? [],
-          pep: pep?.filter(Boolean).map(item => calculateEntry(item)) ?? [],
-          adverseMedia: adverseMedia?.filter(Boolean).map(item => calculateEntry(item)) ?? [],
-          fitnessProbity: fitnessProbity?.filter(Boolean).map(item => calculateEntry(item)) ?? [],
-          other: other?.filter(Boolean).map(item => calculateEntry(item)) ?? [],
+          sanctions: sanctions?.filter(Boolean).map(item => getEntryFromSource(item)) ?? [],
+          warnings: warnings?.filter(Boolean).map(item => getEntryFromSource(item)) ?? [],
+          pep: pep?.filter(Boolean).map(item => getEntryFromSource(item)) ?? [],
+          adverseMedia: adverseMedia?.filter(Boolean).map(item => getEntryFromSource(item)) ?? [],
+          fitnessProbity:
+            fitnessProbity?.filter(Boolean).map(item => getEntryFromSource(item)) ?? [],
+          other: other?.filter(Boolean).map(item => getEntryFromSource(item)) ?? [],
         }),
       ) ?? [],
   };
