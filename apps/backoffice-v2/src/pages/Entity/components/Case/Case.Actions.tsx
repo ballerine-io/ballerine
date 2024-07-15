@@ -53,7 +53,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
         />
         <CaseOptions />
       </div>
-      <div className={`flex h-20 justify-between gap-4`}>
+      <div className={`min-h-20 flex justify-between gap-4`}>
         <div className={`flex flex-col space-y-3`}>
           <h2
             className={ctw(`w-full max-w-[35ch] break-all text-4xl font-semibold leading-9`, {

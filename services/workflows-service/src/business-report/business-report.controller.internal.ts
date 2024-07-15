@@ -54,16 +54,13 @@ export class BusinessReportControllerInternal {
     }: CreateBusinessReportDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    if (!merchantName && !businessCorrelationId) {
-      throw new BadRequestException('Merchant name or business id is required');
-    }
-
     let business: Pick<Business, 'id' | 'correlationId'> | undefined;
+    const merchantNameWithDefault = merchantName || 'Not detected';
 
-    if (!businessCorrelationId && merchantName) {
+    if (!businessCorrelationId) {
       business = await this.businessService.create({
         data: {
-          companyName: merchantName,
+          companyName: merchantNameWithDefault,
           country: countryCode,
           website: websiteUrl,
           projectId: currentProjectId,
@@ -106,7 +103,7 @@ export class BusinessReportControllerInternal {
       {
         websiteUrl,
         countryCode,
-        merchantName,
+        parentCompanyName: merchantName,
         reportType,
         callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${business.id}&businessReportId=${businessReport.id}`,
       },

@@ -20,12 +20,7 @@ import {
 
 export const OverallRiskLevel: FunctionComponent<{
   riskScore: number;
-  riskLevels: {
-    legalRisk: TSeverity;
-    chargebackRisk: TSeverity;
-    reputationRisk: TSeverity;
-    transactionLaunderingRisk: TSeverity;
-  };
+  riskLevels: Record<string, TSeverity>;
 }> = ({ riskScore, riskLevels }) => {
   const severity = getSeverityFromRiskScore(riskScore);
 
@@ -66,41 +61,41 @@ export const OverallRiskLevel: FunctionComponent<{
             </Badge>
           )}
         </div>
-        <Table>
-          <TableHeader className={'[&_tr]:border-b-0'}>
-            <TableRow className={'hover:bg-[unset]'}>
-              <TableHead className={'h-0 ps-0 font-bold text-foreground'}>Risk Type</TableHead>
-              <TableHead className={'h-0 ps-0 font-bold text-foreground'}>Risk Level</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {Object.entries(riskLevels ?? {}).map(([riskType, riskLevel]) => (
-              <TableRow key={`${riskType}:${riskLevel}`} className={'border-b-0 hover:bg-[unset]'}>
-                <TableCell className={'pb-0 ps-0'}>{titleCase(riskType ?? '')}</TableCell>
-                <TableCell
-                  className={ctw(
-                    'pb-0 ps-0 font-bold',
-                    severityToTextClassName[
-                      riskLevel.toUpperCase() as keyof typeof severityToTextClassName
-                    ],
-                    {
-                      'text-destructive': riskLevel === Severity.CRITICAL,
-                    },
-                  )}
+        {!!Object.keys(riskLevels ?? {}).length && (
+          <Table>
+            <TableHeader className={'[&_tr]:border-b-0'}>
+              <TableRow className={'hover:bg-[unset]'}>
+                <TableHead className={'h-0 ps-0 font-bold text-foreground'}>Risk Type</TableHead>
+                <TableHead className={'h-0 min-w-[9ch] ps-0 font-bold text-foreground'}>
+                  Risk Level
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Object.entries(riskLevels ?? {}).map(([riskType, riskLevel]) => (
+                <TableRow
+                  key={`${riskType}:${riskLevel}`}
+                  className={'border-b-0 hover:bg-[unset]'}
                 >
-                  {titleCase(riskLevel ?? '')}
-                </TableCell>
-              </TableRow>
-            ))}
-            {!Object.keys(riskLevels ?? {}).length && (
-              <TableRow>
-                <TableCell colSpan={2} className={'ps-0'}>
-                  No results found.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                  <TableCell className={'pb-0 ps-0'}>{titleCase(riskType ?? '')}</TableCell>
+                  <TableCell
+                    className={ctw(
+                      'pb-0 ps-0 font-bold',
+                      severityToTextClassName[
+                        riskLevel.toUpperCase() as keyof typeof severityToTextClassName
+                      ],
+                      {
+                        'text-destructive': riskLevel === Severity.CRITICAL,
+                      },
+                    )}
+                  >
+                    <TextWithNAFallback>{titleCase(riskLevel ?? '')}</TextWithNAFallback>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </CardContent>
     </Card>
   );

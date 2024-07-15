@@ -37,7 +37,7 @@ runs:
     - name: Test
       shell: bash
       run: |
-        export NODE_OPTIONS="--max-old-space-size=4096"
+        export NODE_OPTIONS="--max-old-space-size=8192"
         pnpm test -- --verbose false
       env:
         ENVIRONMENT_NAME: test

@@ -1,3 +1,35 @@
+export type {
+  RuleResultSet,
+  FailedRuleResult,
+  PassedRuleResult,
+  RuleResult,
+  TOperation,
+  TOperator,
+  RuleSet,
+  TFindAllRulesOptions,
+  Rule,
+} from './rule-engine/types';
+
+export {
+  type EngineErrors,
+  DataValueNotFoundError,
+  MissingKeyError,
+  OperationNotFoundError,
+  ValidationFailedError,
+} from './rule-engine/errors';
+
+export type {
+  BetweenParams,
+  ConditionFn,
+  IConditionHelpers,
+  Primitive,
+  LastYearsParams,
+} from './rule-engine/operators/types';
+
+export { type OperationHelper, OperationHelpers } from './rule-engine/operators/constants';
+
+export { OPERATION, OPERATOR } from './rule-engine/operators/enums';
+
 export {
   dump,
   everyDocumentDecisionStatus,
@@ -31,7 +63,7 @@ export type {
   TDefaultSchemaDocumentPage,
   TDocument,
 } from './schemas';
-export type { AnyRecord, LoggerInterface, Serializable } from './types';
+export type { AnyRecord, LoggerInterface, Serializable, SortDirection } from './types';
 
 export {
   WorkflowDefinitionConfigThemeSchema,

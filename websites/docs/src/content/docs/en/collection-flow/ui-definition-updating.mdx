@@ -1,0 +1,393 @@
+---
+title: UI Definition Updating
+
+---
+
+# API Endpoints for Updating Collection Flow
+
+Collection Flow provides powerful API endpoints that allow you to dynamically update the UI definition of an already deployed collection flow. This flexibility ensures that you can maintain and enhance your form flows without requiring a complete redeployment. The key endpoints for managing these updates are PATCH, PUT, and DELETE.
+
+## Overview
+
+The Collection Flow API supports three primary operations to update the UI definition of deployed flows: PATCH, PUT, and DELETE. These operations enable you to modify, replace, and remove UI elements or configurations as needed. This documentation covers the purpose and usage of each endpoint, providing examples to help you integrate these operations into your workflow.
+
+### PATCH Endpoint
+
+The PATCH endpoint allows you to make partial updates to an existing ui element by element name. This is useful for making incremental changes without affecting the entire configuration.
+
+**Endpoint**: `/api/v1/collection-flow/configuration/:id`
+
+**Method**: `PUT`
+
+**Description**: Partially updates the UI definition of the specified collection flow.
+
+**Note**: Element with name conditional-form will be found and merged with incoming payload.
+
+**Request Body Example**:
+```json
+{
+    "elements": [
+        {
+            "type": "json-form",
+            "name": "conditional-form",
+            "elements": [
+                {
+                    "name": "country-based-input",
+                    "type": "text-input",
+                    "valueDestination": "entity.data.additionalInfo.countryBasedInfoValue",
+                    "options": {
+                        "label": "Israel Based Input",
+                        "hint": "Hello World",
+                        "jsonFormDefinition": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ],
+            "visibleOn": [
+                {
+                    "type": "json-logic",
+                    "value": {
+                        "if": [
+                            {
+                                "==": [
+                                    {
+                                        "var": "entity.data.country"
+                                    },
+                                    "IL"
+                                ]
+                            },
+                            true
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}
+```
+
+### PUT Endpoint
+
+The PUT performs same actions as patch except it overrides array elements.
+
+**Endpoint**: `/api/v1/collection-flow/configuration/:id`
+
+**Method**: `PATCH`
+
+**Description**: Partially updates the UI definition of the specified collection flow and overrides array items.
+
+**Request Body Example**:
+```json
+{
+    "elements": [
+        {
+            "name": "text.headquartersAddress",
+            "elements": [
+                {
+                    "type": "mainContainer",
+                    "elements": [
+                        {
+                            "type": "container",
+                            "elements": [
+                                {
+                                    "type": "h1",
+                                    "options": {
+                                        "text": "text.headquartersAddress"
+                                    }
+                                },
+                                {
+                                    "type": "h3",
+                                    "options": {
+                                        "text": "text.registeredAddress",
+                                        "classNames": [
+                                            "padding-top-10"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "json-form",
+                            "name": "business-address-info-page-form",
+                            "options": {
+                                "jsonFormDefinition": {
+                                    "required": [
+                                        "street-input",
+                                        "street-number-input",
+                                        "postal-code-input",
+                                        "city-input",
+                                        "country-input",
+                                        "headquarters-phone-number-input"
+                                    ]
+                                }
+                            },
+                            "elements": [
+                                {
+                                    "name": "street-input",
+                                    "type": "json-form:text",
+                                    "valueDestination": "entity.data.additionalInfo.headquarters.street",
+                                    "options": {
+                                        "jsonFormDefinition": {
+                                            "type": "string"
+                                        },
+                                        "label": "text.street.label",
+                                        "hint": "text.street.hint"
+                                    }
+                                },
+                                {
+                                    "name": "street-number-input",
+                                    "type": "json-form:text",
+                                    "valueDestination": "entity.data.additionalInfo.headquarters.streetNumber",
+                                    "options": {
+                                        "jsonFormDefinition": {
+                                            "type": "number"
+                                        },
+                                        "label": "text.number",
+                                        "hint": "10"
+                                    }
+                                },
+                                {
+                                    "name": "postal-code-input",
+                                    "type": "json-form:text",
+                                    "valueDestination": "entity.data.additionalInfo.headquarters.postalCode",
+                                    "options": {
+                                        "jsonFormDefinition": {
+                                            "type": "string"
+                                        },
+                                        "label": "text.postalCode",
+                                        "hint": "10"
+                                    }
+                                },
+                                {
+                                    "name": "city-input",
+                                    "type": "json-form:text",
+                                    "valueDestination": "entity.data.additionalInfo.headquarters.city",
+                                    "options": {
+                                        "jsonFormDefinition": {
+                                            "type": "string"
+                                        },
+                                        "label": "text.city.label",
+                                        "hint": "text.city.hint"
+                                    }
+                                },
+                                {
+                                    "name": "country-input",
+                                    "type": "json-form:country-picker",
+                                    "valueDestination": "entity.data.additionalInfo.headquarters.country",
+                                    "options": {
+                                        "label": "text.country",
+                                        "hint": "text.choose",
+                                        "jsonFormDefinition": {
+                                            "type": "string"
+                                        },
+                                        "uiSchema": {
+                                            "ui:field": "CountryPicker",
+                                            "ui:label": true,
+                                            "ui:placeholder": "text.choose"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "headquarters-phone-number-input",
+                                    "type": "international-phone-number",
+                                    "valueDestination": "entity.data.additionalInfo.headquarters.phone",
+                                    "options": {
+                                        "label": "text.headquartersPhoneNumber.label",
+                                        "jsonFormDefinition": {
+                                            "type": "string"
+                                        },
+                                        "uiSchema": {
+                                            "ui:field": "PhoneInput",
+                                            "ui:label": true
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "json-form",
+                            "name": "conditional-form",
+                            "elements": [
+                                {
+                                    "name": "country-based-input",
+                                    "type": "text-input",
+                                    "valueDestination": "entity.data.additionalInfo.countryBasedInfoValue",
+                                    "options": {
+                                        "label": "US Based Input",
+                                        "hint": "Hello World",
+                                        "jsonFormDefinition": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ],
+                            "visibleOn": [
+                                {
+                                    "type": "json-logic",
+                                    "value": {
+                                        "if": [
+                                            {
+                                                "==": [
+                                                    {
+                                                        "var": "entity.data.country"
+                                                    },
+                                                    "US"
+                                                ]
+                                            },
+                                            true
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "controls-container",
+                            "type": "container",
+                            "options": {
+                                "align": "right"
+                            },
+                            "elements": [
+                                {
+                                    "name": "next-page-button",
+                                    "type": "submit-button",
+                                    "options": {
+                                        "text": "text.continue",
+                                        "uiDefinition": {
+                                            "classNames": [
+                                                "align-right",
+                                                "padding-top-10"
+                                            ]
+                                        }
+                                    },
+                                    "availableOn": [
+                                        {
+                                            "type": "json-schema",
+                                            "value": {
+                                                "type": "object",
+                                                "required": [
+                                                    "entity"
+                                                ],
+                                                "properties": {
+                                                    "entity": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "data": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "additionalInfo": {
+                                                                        "type": "object",
+                                                                        "default": {},
+                                                                        "required": [
+                                                                            "headquarters"
+                                                                        ],
+                                                                        "properties": {
+                                                                            "headquarters": {
+                                                                                "type": "object",
+                                                                                "default": {},
+                                                                                "required": [
+                                                                                    "street",
+                                                                                    "streetNumber",
+                                                                                    "city",
+                                                                                    "country",
+                                                                                    "postalCode",
+                                                                                    "phone"
+                                                                                ],
+                                                                                "properties": {
+                                                                                    "city": {
+                                                                                        "type": "string",
+                                                                                        "maxLength": 50,
+                                                                                        "minLength": 2,
+                                                                                        "errorMessage": {
+                                                                                            "maxLength": "errorMessage.maxLength.city",
+                                                                                            "minLength": "errorMessage.minLength.city"
+                                                                                        }
+                                                                                    },
+                                                                                    "phone": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "street": {
+                                                                                        "type": "string",
+                                                                                        "maxLength": 100,
+                                                                                        "minLength": 3,
+                                                                                        "errorMessage": {
+                                                                                            "maxLength": "errorMessage.maxLength.street",
+                                                                                            "minLength": "errorMessage.minLength.street"
+                                                                                        }
+                                                                                    },
+                                                                                    "country": {
+                                                                                        "type": "string",
+                                                                                        "pattern": "^[A-Z]{2}$",
+                                                                                        "maxLength": 2,
+                                                                                        "minLength": 2,
+                                                                                        "errorMessage": {
+                                                                                            "pattern": "errorMessage.pattern.country",
+                                                                                            "maxLength": "errorMessage.maxLength.country",
+                                                                                            "minLength": "errorMessage.minLength.country"
+                                                                                        }
+                                                                                    },
+                                                                                    "postalCode": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "streetNumber": {
+                                                                                        "type": "number",
+                                                                                        "maxLength": 10,
+                                                                                        "minLength": 1,
+                                                                                        "errorMessage": {
+                                                                                            "maxLength": "errorMessage.maxLength.streetNumber",
+                                                                                            "minLength": "errorMessage.minLength.streetNumber"
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                "errorMessage": {
+                                                                                    "required": {
+                                                                                        "city": "errorMessage.required.city",
+                                                                                        "phone": "errorMessage.error.requiredField",
+                                                                                        "street": "errorMessage.required.street",
+                                                                                        "country": "errorMessage.required.country",
+                                                                                        "postalCode": "errorMessage.error.requiredField",
+                                                                                        "streetNumber": "errorMessage.required.streetNumber"
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+```
+
+### DELETE Endpoint
+
+The DELETE permorms deletion of an element by name.
+
+**Endpoint**: `/api/v1/collection-flow/configuration/:id`
+
+**Method**: `DELETE`
+
+**Description**: Partially updates the UI definition of the specified collection flow and overrides array items.
+
+**Request Body Example**:
+```json
+{
+    "elements": [
+        {
+            "name": "document-passport-back-photo"
+        }
+    ]
+}
+```

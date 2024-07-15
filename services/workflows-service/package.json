@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflows-service",
   "private": false,
-  "version": "0.7.13",
+  "version": "0.7.18",
   "description": "workflow-service",
   "scripts": {
     "spellcheck": "cspell \"*\"",
@@ -43,13 +43,12 @@
     "db:data-migration:import": "tsx ./src/data-migration/scripts/import"
   },
   "dependencies": {
-    "ballerine-nestjs-typebox": "3.0.2-next.8",
     "@aws-sdk/client-s3": "3.347.1",
     "@aws-sdk/lib-storage": "3.347.1",
     "@aws-sdk/s3-request-presigner": "3.347.1",
-    "@ballerine/common": "0.9.8",
-    "@ballerine/workflow-core": "0.6.14",
-    "@ballerine/workflow-node-sdk": "0.6.14",
+    "@ballerine/common": "0.9.12",
+    "@ballerine/workflow-core": "0.6.19",
+    "@ballerine/workflow-node-sdk": "0.6.19",
     "@faker-js/faker": "^7.6.0",
     "@nestjs/axios": "^2.0.0",
     "@nestjs/common": "^9.3.12",
@@ -62,6 +61,7 @@
     "@nestjs/schedule": "^4.0.1",
     "@nestjs/serve-static": "3.0.1",
     "@nestjs/testing": "^9.3.12",
+    "@notionhq/client": "^2.2.15",
     "@prisma/client": "4.16.2",
     "@sentry/cli": "^2.17.5",
     "@sentry/integrations": "^7.52.1",
@@ -74,6 +74,7 @@
     "aws-cloudfront-sign": "3.0.2",
     "axios": "^1.6.8",
     "axios-retry": "^4.0.0",
+    "ballerine-nestjs-typebox": "3.0.2-next.8",
     "base64-stream": "^1.0.0",
     "bcrypt": "5.1.0",
     "class-transformer": "0.5.1",
@@ -105,8 +106,8 @@
     "zod": "^3.22.3"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.1.2",
-    "@ballerine/eslint-config": "^1.1.2",
+    "@ballerine/config": "^1.1.5",
+    "@ballerine/eslint-config": "^1.1.5",
     "@cspell/cspell-types": "^6.31.1",
     "@nestjs/cli": "9.3.0",
     "@nestjs/swagger": "6.2.1",

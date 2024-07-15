@@ -103,11 +103,11 @@ enum BusinessPosition {
 }
 
 model EndUsersOnBusinesses {
-  endUser    EndUser  @relation(fields: [endUserId], references: [id])
+  endUser    EndUser            @relation(fields: [endUserId], references: [id])
   endUserId  String
-  business   Business @relation(fields: [businessId], references: [id])
+  business   Business           @relation(fields: [businessId], references: [id])
   businessId String
-  position BusinessPosition[]
+  position   BusinessPosition[]
 
   @@id([endUserId, businessId])
   @@index([businessId])
@@ -425,6 +425,7 @@ model UiDefinition {
   uiSchema      Json // JSON schmea of how to render UI
   schemaOptions Json? // Document Schemas, rejectionReasons: {}, documenTypes: {}, documenCateogries: {}
   uiOptions     Json? // how the view will look, overall
+  locales       Json? // Locales for the UI
   createdAt     DateTime  @default(now())
   updatedAt     DateTime? @updatedAt
 
@@ -845,6 +846,7 @@ model Counterparty {
 
   @@unique([projectId, correlationId])
   @@index([correlationId])
+  @@index([endUserId])
 }
 
 enum BusinessReportStatus {
@@ -860,9 +862,9 @@ model BusinessReport {
   report   Json
 
   riskScore  Int?
-  status BusinessReportStatus
+  status     BusinessReportStatus
   businessId String
-  business   Business @relation(fields: [businessId], references: [id])
+  business   Business             @relation(fields: [businessId], references: [id])
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id])

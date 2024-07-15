@@ -1,7 +1,10 @@
 import { TJsonSchema, Transformers, Validator } from '../../utils';
 import { THelperFormatingLogic } from '../../utils/context-transformers/types';
 import { ActionablePlugin } from '../types';
-import { ChildWorkflowPluginParams } from '../common-plugin/types';
+import {
+  ChildWorkflowPluginParams,
+  ISerializableMappingPluginParams,
+} from '../common-plugin/types';
 import { AnyRecord } from '@ballerine/common';
 
 export interface ValidatableTransformer {
@@ -81,14 +84,6 @@ export interface SerializableWebhookPluginParams extends Omit<WebhookPluginParam
   method: ISerializableHttpPluginParams['method'];
   headers: ISerializableHttpPluginParams['headers'];
   request: SerializableValidatableTransformer;
-}
-
-export interface ISerializableChildPluginParams
-  extends Omit<ChildWorkflowPluginParams, 'action' | 'transformers' | 'parentWorkflowRuntimeId'> {
-  pluginKind: string;
-  transformers: Omit<SerializableValidatableTransformer, 'schema'>['transform'];
-
-  invoke?(...args: any[]): Promise<any>;
 }
 
 export interface SerializableIterativePluginParams {

@@ -8,7 +8,7 @@ import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { ChangeEvent, useCallback, useMemo } from 'react';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { MerchantMonitoringCreateBusinessReportPageSearchSchema } from '@/pages/MerchantMonitoringCreateCheck/hooks/useMerchantMonitoringCreateBusinessReportPageLogic/merchant-monitoring-create-business-report-page-search-schema';
-import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/userCustomerQuery';
+import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
 import { useNavigate } from 'react-router-dom';
 
 export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
