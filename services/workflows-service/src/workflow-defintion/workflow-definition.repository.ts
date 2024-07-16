@@ -143,9 +143,15 @@ export class WorkflowDefinitionRepository {
     );
   }
 
-  async findByLatestVersion(name: string, projectIds: TProjectIds) {
+  async findByLatestVersion<T extends Prisma.WorkflowDefinitionFindManyArgs>(
+    name: string,
+    projectIds: TProjectIds,
+    args?: Prisma.SelectSubset<T, Prisma.WorkflowDefinitionFindManyArgs>,
+  ) {
     return await this.prisma.workflowDefinition.findFirstOrThrow({
+      ...args,
       where: {
+        ...(args?.where ?? {}),
         OR: [
           {
             name,
