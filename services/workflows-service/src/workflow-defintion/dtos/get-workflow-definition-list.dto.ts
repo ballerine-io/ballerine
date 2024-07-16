@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsNumber } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional } from 'class-validator';
 
 export class GetWorkflowDefinitionListDto {
   @Transform(({ value }) => Number(value))
@@ -9,4 +9,9 @@ export class GetWorkflowDefinitionListDto {
   @Transform(({ value }) => Number(value))
   @IsNumber()
   limit!: number;
+
+  @IsOptional()
+  @Transform(({ value }) => JSON.parse(value))
+  @IsBoolean()
+  public?: boolean;
 }

@@ -1,3 +1,5 @@
-import { useWorkflowsQueryParams } from '@/pages/Workflows/components/providers/WorkflowsFiltersProvider/hooks/useWorkflowsQueryParams/useWorkflowsQueryParams';
+import { useWorkflowsDefinitionQueryParams } from '@/pages/WorkflowDefinitions/components/providers/WorkflowsFiltersProvider/hooks/useWorkflowsDefinitionQueryParams/useWorkflowsDefinitionQueryParams';
 
-export type WorkflowsDefinitionQueryParams = ReturnType<typeof useWorkflowsQueryParams>['query'];
+export type WorkflowsDefinitionQueryParams = ReturnType<
+  typeof useWorkflowsDefinitionQueryParams
+>['query'];

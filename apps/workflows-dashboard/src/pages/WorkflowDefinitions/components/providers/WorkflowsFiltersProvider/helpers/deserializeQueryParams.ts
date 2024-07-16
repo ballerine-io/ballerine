@@ -5,6 +5,7 @@ export const deserializeQueryParams = (query: WorkflowsDefinitionQueryParams) =>
   const filters: WorkflowDefinitionsFilterValues = {
     page: query.page,
     limit: query.limit,
+    public: query.public,
   };
 
   return filters;

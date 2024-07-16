@@ -104,16 +104,15 @@ export class WorkflowDefinitionService {
   }
 
   async getList(dto: GetWorkflowDefinitionListDto, projectIds: TProjectIds) {
-    const totalItems = await this.repository.count(projectIds);
-    const totalPages = Math.ceil(totalItems / dto.limit);
+    const [totalItems, items] = await Promise.all([
+      this.repository.getListCount(dto, projectIds),
+      this.repository.getList(dto, projectIds),
+    ]);
+
+    const totalPages = Math.ceil((totalItems as number) / dto.limit);
 
     return {
-      items: await this.repository.findMany(
-        {
-          skip: dto.limit * (dto.page - 1),
-        },
-        projectIds,
-      ),
+      items,
       meta: {
         total: totalItems,
         pages: totalPages,

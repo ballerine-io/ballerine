@@ -4,6 +4,7 @@ export interface WorkflowDefinitionsFilterValues {
   status?: IWorkflowStatus[];
   page: number;
   limit: number;
+  public: boolean;
   orderBy?: string;
   orderDirection?: 'asc' | 'desc';
   fromDate?: number;
