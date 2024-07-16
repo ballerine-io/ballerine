@@ -4,6 +4,7 @@ import { WFDefinitionByVariantChart } from '@/pages/WorkflowDefinitions/componen
 import { WorkflowDefinitionsTable } from '@/pages/WorkflowDefinitions/components/molecules/WorkflowDefinitionsTable';
 import { withWorkflowDefinitionFilters } from '@/pages/WorkflowDefinitions/components/providers/WorkflowsFiltersProvider/hocs/withWorkflowDefinitionFilters';
 import { WorkflowDefinitionFiltersProps } from '@/pages/WorkflowDefinitions/components/providers/WorkflowsFiltersProvider/hocs/withWorkflowDefinitionFilters/types';
+import { useWorkflowDefinitionsMetrics } from '@/pages/WorkflowDefinitions/hooks/useWorkflowDefinitionsMetrics';
 import { useWorkflowDefinitionsPagination } from '@/pages/WorkflowDefinitions/hooks/useWorkflowDefinitionsPagination';
 import { useWorkflowDefinitionsQuery } from '@/pages/WorkflowDefinitions/hooks/useWorkflowDefinitionsQuery';
 import { WorkflowsLayout } from '@/pages/Workflows/components/layouts/WorkflowsLayout';
@@ -15,6 +16,9 @@ export const WorkflowDefinitions = withWorkflowDefinitionFilters(
   ({ filters }: WorkflowDefinitionsProps) => {
     const { data, isLoading } = useWorkflowDefinitionsQuery(filters);
     const { total, page, handlePageChange } = useWorkflowDefinitionsPagination();
+    const { metricsByVariant } = useWorkflowDefinitionsMetrics();
+
+    console.log({ metricsByVariant });
 
     return (
       <DashboardLayout pageName="Workflow Definitions">
@@ -22,7 +26,10 @@ export const WorkflowDefinitions = withWorkflowDefinitionFilters(
           <WorkflowsLayout.Header>
             <WorkflowsMetricLayout>
               <WorkflowsMetricLayout.Item>
-                <WFDefinitionByVariantChart data={[]} />
+                <WFDefinitionByVariantChart
+                  isLoading={metricsByVariant.isLoading}
+                  data={metricsByVariant.data}
+                />
               </WorkflowsMetricLayout.Item>
             </WorkflowsMetricLayout>
           </WorkflowsLayout.Header>
