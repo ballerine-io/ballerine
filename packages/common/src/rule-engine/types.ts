@@ -32,7 +32,14 @@ export type RuleResult = PassedRuleResult | FailedRuleResult;
 
 export type RuleResultSet = RuleResult[];
 
-export interface TFindAllRulesOptions {
+export type TNotionRulesOptions = {
   databaseId: string;
   source: 'notion';
-}
+};
+
+export type TDatabaseRulesOptions = {
+  policyId: string;
+  source: 'database';
+};
+
+export type TFindAllRulesOptions = TNotionRulesOptions | TDatabaseRulesOptions;

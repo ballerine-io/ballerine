@@ -10,7 +10,7 @@ module.exports = {
   },
   create: context => {
     const isRepository =
-      /^(?!.*\/(customer|data-migration)\.repository\.(ts|js)$).*\.repository\.(ts|js)$/.test(
+      /^(?!.*\/(customer|data-migration|risk-rule-set)\.repository\.(ts|js)$).*\.repository\.(ts|js)$/.test(
         // Using deprecated .getFilename here because relevant context.filename returns undefined
         context.getFilename(),
       );
