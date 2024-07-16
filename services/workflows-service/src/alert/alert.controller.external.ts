@@ -213,9 +213,7 @@ export class AlertControllerExternal {
     @CurrentProject() currentProjectId: TProjectId,
     @Res() res: express.Response,
   ) {
-    let updatedAlerts = [];
-
-    updatedAlerts = await this.alertService.updateAlertsAssignee(
+    const updatedAlerts = await this.alertService.updateAlertsAssignee(
       alertIds,
       currentProjectId,
       assigneeId,

@@ -12,7 +12,7 @@ import { merge } from 'lodash';
 @Injectable()
 export class WorkflowDefinitionService {
   constructor(
-    protected readonly repository: WorkflowDefinitionRepository,
+    protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly customerService: CustomerService,
     protected readonly filterService: FilterService,
   ) {}
@@ -27,22 +27,20 @@ export class WorkflowDefinitionService {
     >,
     projectId: TProjectId,
   ) {
-    const workflowDefintionToUpdate = await this.repository.findById(id, {}, [projectId]);
+    const workflowDefintionToUpdate = await this.workflowDefinitionRepository.findById(id, {}, [
+      projectId,
+    ]);
 
-    const {
-      id: _id,
-      version,
-      createdAt: _createdAt,
-      updatedAt: _updatedAt,
-      ...restArgs
-    } = workflowDefintionToUpdate;
+    const { version, ...restArgs } = workflowDefintionToUpdate;
 
     const createArgs = replaceNullsWithUndefined(
       merge(restArgs, updateArgs, {
         version: version + 1,
       }),
     ) as Prisma.WorkflowDefinitionCreateArgs['data'];
-    const newVersionDefinition = await this.repository.create({ data: createArgs });
+    const newVersionDefinition = await this.workflowDefinitionRepository.create({
+      data: createArgs,
+    });
 
     const relevantFilters = (
       await this.filterService.list({ where: { projectId: projectId } }, [projectId])
@@ -80,18 +78,25 @@ export class WorkflowDefinitionService {
     return newVersionDefinition;
   }
 
-  async getLatestVersion(id: string, projectIds: TProjectIds) {
-    const workflowDefinition = await this.repository.findById(id, {}, projectIds);
+  async getLatestVersion<T extends Prisma.WorkflowDefinitionFindManyArgs>(
+    id: string,
+    projectIds: TProjectIds,
+    args?: Prisma.SelectSubset<T, Prisma.WorkflowDefinitionFindManyArgs>,
+  ) {
+    const workflowDefinition = await this.workflowDefinitionRepository.findById(id, {}, projectIds);
 
-    return await this.repository.findByLatestVersion(workflowDefinition.name, projectIds);
-  }
-
-  async getLastVersionByName(definitionName: string, projectIds: TProjectIds) {
-    return await this.repository.findByLatestVersion(definitionName, projectIds);
+    return await this.workflowDefinitionRepository.findByLatestVersion(
+      workflowDefinition.name,
+      projectIds,
+      args,
+    );
   }
 
   async getLastVersionByVariant(definitionVariant: string, projectIds: TProjectIds) {
-    return await this.repository.findLatestVersionByVariant(definitionVariant, projectIds);
+    return await this.workflowDefinitionRepository.findLatestVersionByVariant(
+      definitionVariant,
+      projectIds,
+    );
   }
 
   async getLatestDefinitionWithTransitionSchema(
@@ -105,8 +110,8 @@ export class WorkflowDefinitionService {
 
   async getList(dto: GetWorkflowDefinitionListDto, projectIds: TProjectIds) {
     const [totalItems, items] = await Promise.all([
-      this.repository.getListCount(dto, projectIds),
-      this.repository.getList(dto, projectIds),
+      this.workflowDefinitionRepository.getListCount(dto, projectIds),
+      this.workflowDefinitionRepository.getList(dto, projectIds),
     ]);
 
     const totalPages = Math.ceil((totalItems as number) / dto.limit);
@@ -118,5 +123,33 @@ export class WorkflowDefinitionService {
         pages: totalPages,
       },
     };
+  }
+
+  async getInputContextSchema(id: string, projectIds: TProjectIds) {
+    const workflowDefinition = await this.workflowDefinitionRepository.findById(id, {}, projectIds);
+
+    const { contextSchema } = await this.workflowDefinitionRepository.findByLatestVersion(
+      workflowDefinition.name,
+      projectIds,
+      {
+        select: {
+          contextSchema: true,
+        },
+      },
+    );
+
+    return contextSchema;
+  }
+
+  async updateInputContextCustomDataSchema(
+    id: string,
+    projectIds: TProjectId[],
+    customDataSchema: Record<string, unknown>,
+  ) {
+    // const inputContextSchema = await this.getInputContextSchema(id, projectIds);
+    //
+    // return isObject(inputContextSchema) && 'customData' in inputContextSchema
+    //   ? inputContextSchema?.customData
+    //   : {};
   }
 }
