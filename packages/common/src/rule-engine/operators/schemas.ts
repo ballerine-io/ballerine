@@ -65,4 +65,8 @@ export const BaseOperationsValueSchema = z.union([
   }),
 ]);
 
-export const AmlCheckSchema = BaseOperationsValueSchema;
+export const AmlCheckSchema = z
+  .object({
+    childWorkflowName: z.string(),
+  })
+  .and(BaseOperationsValueSchema);

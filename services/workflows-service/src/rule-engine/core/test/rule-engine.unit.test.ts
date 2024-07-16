@@ -578,6 +578,9 @@ describe('Rule Engine', () => {
         let amlContextHasData = {
           ...(JSON.parse(JSON.stringify(context)) as any),
           ...(JSON.parse(JSON.stringify(amlContext)) as any),
+          example_id_002: JSON.parse(
+            JSON.stringify(amlContext.childWorkflows.kyc_email_session_example.example_id_001),
+          ) as any,
         };
 
         const warningRule: RuleSet = {
@@ -587,6 +590,7 @@ describe('Rule Engine', () => {
               key: 'warnings.length',
               operator: OPERATION.AML_CHECK,
               value: {
+                childWorkflowName: 'kyc_email_session_example',
                 operator: OPERATION.GTE,
                 value: 1,
               },
@@ -598,11 +602,7 @@ describe('Rule Engine', () => {
 
         amlContextHasData.childWorkflows.kyc_email_session_example.example_id_001.result.vendorResult.aml =
           {
-            hits: [
-              {
-                warnings: [],
-              },
-            ],
+            hits: [],
           };
 
         const result = engine.run(amlContextHasData);
@@ -610,11 +610,13 @@ describe('Rule Engine', () => {
         expect(result).toBeDefined();
         expect(result[0]).toMatchInlineSnapshot(`
           {
-            "error": undefined,
+            "error": [DataValueNotFoundError: Field warnings.length is missing or null],
+            "message": "Field warnings.length is missing or null",
             "rule": {
               "key": "warnings.length",
               "operator": "AML_CHECK",
               "value": {
+                "childWorkflowName": "kyc_email_session_example",
                 "operator": "GTE",
                 "value": 1,
               },
@@ -637,6 +639,7 @@ describe('Rule Engine', () => {
               key: 'warnings.length',
               operator: OPERATION.AML_CHECK,
               value: {
+                childWorkflowName: 'kyc_email_session_example',
                 operator: OPERATION.GTE,
                 value: 1,
               },
@@ -656,6 +659,7 @@ describe('Rule Engine', () => {
               "key": "warnings.length",
               "operator": "AML_CHECK",
               "value": {
+                "childWorkflowName": "kyc_email_session_example",
                 "operator": "GTE",
                 "value": 1,
               },
@@ -679,6 +683,7 @@ describe('Rule Engine', () => {
             key: 'fitnessProbity.length',
             operator: OPERATION.AML_CHECK,
             value: {
+              childWorkflowName: 'kyc_email_session_example',
               operator: OPERATION.GTE,
               value: 1,
             },
@@ -714,6 +719,7 @@ describe('Rule Engine', () => {
             "key": "fitnessProbity.length",
             "operator": "AML_CHECK",
             "value": {
+              "childWorkflowName": "kyc_email_session_example",
               "operator": "GTE",
               "value": 1,
             },
@@ -736,6 +742,7 @@ describe('Rule Engine', () => {
             key: 'warnings.length',
             operator: OPERATION.AML_CHECK,
             value: {
+              childWorkflowName: 'kyc_email_session_example',
               operator: OPERATION.GTE,
               value: 1,
             },
@@ -771,6 +778,7 @@ describe('Rule Engine', () => {
             "key": "warnings.length",
             "operator": "AML_CHECK",
             "value": {
+              "childWorkflowName": "kyc_email_session_example",
               "operator": "GTE",
               "value": 1,
             },
@@ -786,6 +794,7 @@ describe('Rule Engine', () => {
             key: 'adverseMedia.length',
             operator: OPERATION.AML_CHECK,
             value: {
+              childWorkflowName: 'kyc_email_session_example',
               operator: OPERATION.GTE,
               value: 1,
             },
@@ -805,6 +814,7 @@ describe('Rule Engine', () => {
             "key": "adverseMedia.length",
             "operator": "AML_CHECK",
             "value": {
+              "childWorkflowName": "kyc_email_session_example",
               "operator": "GTE",
               "value": 1,
             },
@@ -820,6 +830,7 @@ describe('Rule Engine', () => {
             key: 'fitnessProbity.length',
             operator: OPERATION.AML_CHECK,
             value: {
+              childWorkflowName: 'kyc_email_session_example',
               operator: OPERATION.GTE,
               value: 1,
             },
@@ -839,6 +850,7 @@ describe('Rule Engine', () => {
             "key": "fitnessProbity.length",
             "operator": "AML_CHECK",
             "value": {
+              "childWorkflowName": "kyc_email_session_example",
               "operator": "GTE",
               "value": 1,
             },
@@ -854,6 +866,7 @@ describe('Rule Engine', () => {
             key: 'pep.length',
             operator: OPERATION.AML_CHECK,
             value: {
+              childWorkflowName: 'kyc_email_session_example',
               operator: OPERATION.GTE,
               value: 1,
             },
@@ -873,6 +886,7 @@ describe('Rule Engine', () => {
             "key": "pep.length",
             "operator": "AML_CHECK",
             "value": {
+              "childWorkflowName": "kyc_email_session_example",
               "operator": "GTE",
               "value": 1,
             },

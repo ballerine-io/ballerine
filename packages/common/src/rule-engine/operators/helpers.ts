@@ -44,7 +44,7 @@ export abstract class BaseOperator<T = Primitive> {
 
   abstract evaluate(dataValue: Primitive, conditionValue: T): boolean;
 
-  extractValue(data: any, rule: Rule) {
+  extractValue(data: unknown, rule: Rule) {
     const value = get(data, rule.key);
 
     if (value === undefined || value === null) {
@@ -301,21 +301,25 @@ class AmlCheck extends BaseOperator<AmlCheckParams> {
     });
   }
 
-  extractValue(data: any, rule: Rule) {
-    const kycSessionKeys = Object.keys(data.childWorkflows || {});
-    const kycSessionKey = kycSessionKeys.length > 0 ? kycSessionKeys[0] : null;
+  extractValue(data: unknown, rule: Extract<Rule, { operator: 'AML_CHECK' }>) {
+    const result = z.record(z.string(), z.any()).safeParse(data);
 
-    const workflowKeys = kycSessionKey
-      ? Object.keys(data?.childWorkflows[kycSessionKey] || {})
-      : [];
-    const workflowKey = workflowKeys.length > 0 ? workflowKeys[0] : null;
+    if (!result.success) {
+      throw new ValidationFailedError('extract', 'parsing failed', result.error);
+    }
 
-    const hits: z.infer<typeof EndUserAmlHitsSchema> =
-      kycSessionKey && workflowKey
-        ? get(data, `childWorkflows.${kycSessionKey}.${workflowKey}.result.vendorResult.aml.hits`)
-        : null;
+    const objData = result.data;
 
-    if (hits === undefined || hits === null) {
+    const childWorkflows = objData.childWorkflows[rule.value.childWorkflowName];
+
+    const childWorkflowKeys = childWorkflows ? Object.keys(childWorkflows || {}) : [];
+
+    const hits: z.infer<typeof EndUserAmlHitsSchema>[] = childWorkflowKeys
+      .map(workflowId => get(childWorkflows, `${workflowId}.result.vendorResult.aml.hits`))
+      .flat(1)
+      .filter(Boolean);
+
+    if (isEmpty(hits)) {
       throw new DataValueNotFoundError(rule.key);
     }
 
