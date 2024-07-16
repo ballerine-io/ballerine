@@ -47,6 +47,9 @@ import z from 'zod';
 import { hashKey } from './customer/api-key/utils';
 import { RuleEngineModule } from './rule-engine/rule-engine.module';
 import { NotionModule } from '@/notion/notion.module';
+import { RiskRulePolicyModule } from '@/risk-rules/risk-rule-policy/risk-rule-policy.module';
+import { RiskRuleSetModule } from '@/risk-rules/risk-rule-set/risk-rule-set.module';
+import { RuleModule } from '@/risk-rules/rule/rule.module';
 
 export const validate = async (config: Record<string, unknown>) => {
   const zodEnvSchema = z
@@ -124,6 +127,10 @@ export const validate = async (config: Record<string, unknown>) => {
     initHttpMoudle(),
     RuleEngineModule,
     NotionModule,
+    // Risk rules Modules
+    RiskRulePolicyModule,
+    RiskRuleSetModule,
+    RuleModule,
   ],
   providers: [
     {
