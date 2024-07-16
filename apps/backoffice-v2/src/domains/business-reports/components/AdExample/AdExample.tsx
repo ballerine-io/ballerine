@@ -18,7 +18,7 @@ export const AdExample: FunctionComponent<{
           variant: 'link',
           className: 'h-[unset] cursor-pointer !p-0 !text-[#14203D] underline decoration-[1.5px]',
         })}
-        href={src}
+        href={link}
       >
         {link}
       </a>
