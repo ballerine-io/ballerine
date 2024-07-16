@@ -1,4 +1,5 @@
 import {
+  GetWorkflowDefinitionDto,
   GetWorkflowDefinitionsListDto,
   IWorkflowDefinition,
 } from '@/domains/workflow-definitions/workflow-definitions/workflow-definitions.types';
@@ -18,4 +19,14 @@ export const fetchWorkflowDefinitionsList = async (query: GetWorkflowDefinitions
   });
 
   return result.data;
+};
+
+export const fetchWorkflowDefinition = async (
+  query: GetWorkflowDefinitionDto,
+): Promise<IWorkflowDefinition> => {
+  const result = await request.get<IWorkflowDefinition>(
+    `/external/workflows/workflow-definition/${query.workflowDefinitionId}`,
+  );
+
+  return result.data || {};
 };
