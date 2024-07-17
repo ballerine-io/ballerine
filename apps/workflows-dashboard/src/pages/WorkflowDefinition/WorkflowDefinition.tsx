@@ -4,7 +4,9 @@ import { LoadingSpinner } from '@/components/atoms/LoadingSpinner';
 import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 import { XstateVisualizer } from '@/components/organisms/XstateVisualizer';
 import { IWorkflow } from '@/domains/workflows/api/workflow';
+import { EditorCard } from '@/pages/WorkflowDefinition/components/EditorCard';
 import { WorkflowDefinitionSummaryCard } from '@/pages/WorkflowDefinition/components/WorkflowDefinitionSummaryCard';
+import { useUIDefinitionByWorkflowDefinitionIdQuery } from '@/pages/WorkflowDefinition/hooks/useUIDefinitionByWorkflowDefinitionIdQuery';
 import { ViewWorkflow } from '@/pages/Workflows/components/organisms/WorkflowsList/components/ViewWorkflow';
 import { isAxiosError } from 'axios';
 import { Link, useParams } from 'react-router-dom';
@@ -12,8 +14,8 @@ import { Link, useParams } from 'react-router-dom';
 export const WorkflowDefinition = () => {
   const id = useParams<{ id: string }>().id;
   const { data, isLoading, error } = useWorkflowDefinitionQuery(id);
-
-  console.log(error);
+  const { data: uiDefinition, isLoading: isLoadingUIDefinition } =
+    useUIDefinitionByWorkflowDefinitionIdQuery(id!);
 
   if (isLoading) {
     return (
@@ -68,6 +70,57 @@ export const WorkflowDefinition = () => {
           </div>
           <div className="w-[25%]">
             <WorkflowDefinitionSummaryCard workflowDefinition={data} />
+          </div>
+        </div>
+        <div className="flex flex-row gap-2">
+          <div className="w-1/2">
+            <EditorCard
+              title="Workflow Definition"
+              value={data.definition}
+              onChange={value => {
+                console.log('changed value', value);
+              }}
+            />
+          </div>
+          <div className="w-1/2">
+            <EditorCard
+              title="UI Definition"
+              value={uiDefinition || {}}
+              onChange={value => {
+                console.log('changed value', value);
+              }}
+            />
+          </div>
+        </div>
+        <div className="flex flex-row gap-2">
+          <div className="w-1/2">
+            <EditorCard
+              title="Config"
+              value={data.config}
+              onChange={value => {
+                console.log('changed value', value);
+              }}
+            />
+          </div>
+          <div className="w-1/2">
+            <EditorCard
+              title="Plugins"
+              value={data.extensions}
+              onChange={value => {
+                console.log('changed value', value);
+              }}
+            />
+          </div>
+        </div>
+        <div className="flex flex-row gap-2">
+          <div className="w-1/2">
+            <EditorCard
+              title="Context Schema"
+              value={data.contextSchema}
+              onChange={value => {
+                console.log('changed value', value);
+              }}
+            />
           </div>
         </div>
       </div>

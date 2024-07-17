@@ -1,4 +1,5 @@
 import {
+  GetUIDefinitionQuery,
   GetWorkflowDefinitionDto,
   GetWorkflowDefinitionsListDto,
   IWorkflowDefinition,
@@ -26,6 +27,14 @@ export const fetchWorkflowDefinition = async (
 ): Promise<IWorkflowDefinition> => {
   const result = await request.get<IWorkflowDefinition>(
     `/external/workflows/workflow-definition/${query.workflowDefinitionId}`,
+  );
+
+  return result.data || {};
+};
+
+export const fetchUIDefinitionByWorkflowDefinitionId = async (query: GetUIDefinitionQuery) => {
+  const result = await request.get<object>(
+    `/internal/ui-definition/workflow-definition/${query.workflowDefinitionId}?uiContext=collection-flow`,
   );
 
   return result.data || {};

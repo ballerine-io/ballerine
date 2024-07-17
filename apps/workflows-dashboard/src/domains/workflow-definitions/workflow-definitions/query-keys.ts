@@ -1,8 +1,10 @@
 import {
+  fetchUIDefinitionByWorkflowDefinitionId,
   fetchWorkflowDefinition,
   fetchWorkflowDefinitionsList,
 } from '@/domains/workflow-definitions/workflow-definitions/workflow-definitions.api';
 import {
+  GetUIDefinitionQuery,
   GetWorkflowDefinitionDto,
   GetWorkflowDefinitionsListDto,
 } from '@/domains/workflow-definitions/workflow-definitions/workflow-definitions.types';
@@ -16,5 +18,9 @@ export const workflowDefinitionsQueryKeys = createQueryKeys('workflowDefinitions
   list: (query: GetWorkflowDefinitionsListDto) => ({
     queryKey: [{ query }],
     queryFn: () => fetchWorkflowDefinitionsList(query),
+  }),
+  uiDefinition: (query: GetUIDefinitionQuery) => ({
+    queryKey: [{ query }],
+    queryFn: () => fetchUIDefinitionByWorkflowDefinitionId(query),
   }),
 });

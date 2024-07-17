@@ -1,16 +1,39 @@
 import JSONEditor from 'jsoneditor';
-import { FunctionComponent, useEffect, useState } from 'react';
+import 'jsoneditor/dist/jsoneditor.css';
+import { FunctionComponent, useEffect, useRef } from 'react';
 
 interface IJSONEditorProps {
-  value: any;
+  value: object;
+  readOnly?: boolean;
+  onChange?: (value: object) => void;
 }
 
-export const JSONEditorComponent: FunctionComponent<IJSONEditorProps> = ({ value }) => {
-  const [editor, setEditor] = useState<JSONEditor | null>(null);
+export const JSONEditorComponent: FunctionComponent<IJSONEditorProps> = ({
+  value,
+  readOnly,
+  onChange,
+}) => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const editorRef = useRef<JSONEditor | null>(null);
 
   useEffect(() => {
-    editor.set(value);
-  }, [editor, value]);
+    if (!containerRef.current) return;
+    if (editorRef.current) return;
 
-  return <div>123</div>;
+    editorRef.current = new JSONEditor(containerRef.current!, { onChangeJSON: onChange });
+  }, [containerRef, editorRef]);
+
+  useEffect(() => {
+    if (!editorRef.current) return;
+
+    editorRef.current.set(value);
+  }, [value, editorRef]);
+
+  useEffect(() => {
+    if (!editorRef.current) return;
+
+    editorRef.current.setMode(readOnly ? 'view' : 'code');
+  }, [readOnly]);
+
+  return <div className="h-full" ref={containerRef} />;
 };
