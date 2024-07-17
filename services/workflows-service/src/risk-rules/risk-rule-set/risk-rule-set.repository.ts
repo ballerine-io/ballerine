@@ -1,45 +1,65 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import {Injectable} from '@nestjs/common';
+import {PrismaService} from '@/prisma/prisma.service';
+import {Prisma} from '@prisma/client';
+import {ProjectScopeService} from "@/project/project-scope.service";
+import {TProjectIds} from "@/types";
 
 @Injectable()
 export class RiskRuleSetRepository {
-  constructor(protected readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly scopeService: ProjectScopeService,
+  ) {}
 
   async create(
-    riskRulePolicyId,
-    createArgs: Omit<Prisma.RiskRuleSetCreateArgs['data'], 'riskRulePolicyId'>,
+    riskRulePolicyId: string,
+    createArgs: Omit<Prisma.RiskRuleSetUncheckedCreateInput, 'riskRulePolicyId' | 'projectId'>,
+    projectId: string,
   ) {
-    return await this.prisma.riskRuleSet.create({
-      data: { ...createArgs, riskRulePolicyId },
+    return this.prisma.riskRuleSet.create({
+      data: { ...createArgs, riskRulePolicyId, projectId, isPublic: false },
     });
   }
 
-  async findMany(riskRulePolicyId: string, args: Prisma.RiskRuleSetFindManyArgs) {
-    return await this.prisma.riskRuleSet.findMany({
-      ...args,
-      where: { ...args?.where, riskRulePolicyId },
-    });
+  async findMany(
+    riskRulePolicyId: string,
+    args: Prisma.RiskRuleSetFindManyArgs,
+    projectIds: TProjectIds,
+  ) {
+    return this.prisma.riskRuleSet.findMany(
+      this.scopeService.scopeFindManyOrPublic({
+        ...args,
+        where: {...args?.where, riskRulePolicyId},
+      }, projectIds)
+    );
   }
 
   async findById(
     id: string,
-    riskRulePolicyId: string,
+    projectIds: TProjectIds,
     args?: Prisma.RiskRuleSetFindFirstOrThrowArgs,
   ) {
-    return await this.prisma.riskRuleSet.findFirstOrThrow({
-      ...(args ? args : {}),
-      where: { ...(args?.where ? { ...args?.where } : {}), id: id, riskRulePolicyId },
-    });
+    return this.prisma.riskRuleSet.findFirstOrThrow(
+      this.scopeService.scopeFindOneOrPublic({
+        ...(args ? args : {}),
+        where: {...(args?.where ? {...args?.where} : {}), id: id},
+      }, projectIds)
+    );
   }
 
   async updateById(
     id: string,
     riskRulePolicyId: string,
-    dataArgs: Prisma.RiskRuleSetUpdateArgs['data'],
+    projectId: string,
+    dataArgs: Omit<Prisma.RiskRuleSetUncheckedUpdateInput, 'projectId' | 'riskRulePolicyId'>,
   ) {
     return this.prisma.riskRuleSet.update({
-      data: dataArgs,
+      data: {
+        ...dataArgs,
+        riskRulePolicyId,
+        projectId,
+        isPublic: false
+      },
       where: {
         id_riskRulePolicyId: {
           id: id,
@@ -49,14 +69,18 @@ export class RiskRuleSetRepository {
     });
   }
 
-  async deleteById(id: string, riskRulePolicyId: string) {
-    return this.prisma.riskRuleSet.delete({
-      where: {
-        id_riskRulePolicyId: {
-          id: id,
-          riskRulePolicyId: riskRulePolicyId,
+  async deleteById(id: string, riskRulePolicyId: string, projectIds: TProjectIds) {
+    return this.prisma.riskRuleSet.delete(
+      this.scopeService.scopeDelete({
+          where: {
+            id_riskRulePolicyId: {
+              id: id,
+              riskRulePolicyId: riskRulePolicyId,
+            },
+          },
         },
-      },
-    });
+        projectIds
+      ),
+    );
   }
 }
