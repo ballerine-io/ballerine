@@ -738,12 +738,20 @@ export class WorkflowRunner {
       return;
     }
 
-    if (apiPlugin.persistResponseDestination && responseBody) {
-      this.context = this.mergeToContext(
-        this.context,
-        responseBody,
-        apiPlugin.persistResponseDestination,
-      );
+    if (apiPlugin.persistResponseDestination) {
+      if (responseBody) {
+        this.context = this.mergeToContext(
+          this.context,
+          responseBody,
+          apiPlugin.persistResponseDestination,
+        );
+      } else if (error) {
+        this.context = this.mergeToContext(
+          this.context,
+          { error: error },
+          apiPlugin.persistResponseDestination,
+        );
+      }
     } else {
       this.context.pluginsOutput = {
         ...(this.context.pluginsOutput || {}),
