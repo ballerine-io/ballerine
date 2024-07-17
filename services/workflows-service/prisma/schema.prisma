@@ -378,6 +378,7 @@ model Project {
   Alert                    Alert[]
   Counterparty             Counterparty[]
   BusinessReport           BusinessReport[]
+  rules                    Rule[]
 
   @@unique([name, customerId])
   @@index(name)
@@ -868,6 +869,11 @@ enum RuleEngine {
   JsonLogic
 }
 
+enum RulesetOperator {
+  and
+  or
+}
+
 model BusinessReport {
   id       String             @id @default(cuid())
   type     BusinessReportType
@@ -907,9 +913,27 @@ model WorkflowDefinitionRiskRulePolicy {
   @@index([riskRulesPolicyId])
 }
 
+model RiskRuleSetRule {
+  id            String @id @default(cuid())
+  riskRuleSetId String
+  ruleId        String
+
+  riskRulesPolicy RiskRuleSet @relation(fields: [riskRuleSetId], references: [id])
+  rule            Rule        @relation(fields: [ruleId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([riskRuleSetId, ruleId])
+  @@index([riskRuleSetId])
+  @@index([ruleId])
+}
+
 model RiskRulesPolicy {
-  id        String @id @default(cuid())
+  id        String  @id @default(cuid())
+  name      String
   projectId String
+  isPublic  Boolean @default(false)
 
   riskRuleSets                       RiskRuleSet[]
   workflowDefinitionRiskRulePolicies WorkflowDefinitionRiskRulePolicy[]
@@ -922,8 +946,12 @@ model RiskRulesPolicy {
 }
 
 model RiskRuleSet {
-  id               String @id @default(cuid())
+  id               String          @id @default(cuid())
+  name             String
   riskRulePolicyId String
+  operator         RulesetOperator
+  projectId        String?
+  isPublic         Boolean         @default(false)
 
   domain    String
   indicator String
@@ -934,29 +962,33 @@ model RiskRuleSet {
   minRiskScore        Int?
   maxRiskScore        Int?
 
-  riskRulePolicy RiskRulesPolicy @relation(fields: [riskRulePolicyId], references: [id])
-  rules          Rule[]
+  riskRulePolicy  RiskRulesPolicy   @relation(fields: [riskRulePolicyId], references: [id])
+  riskRuleSetRule RiskRuleSetRule[]
+  rules           Rule[]            @relation("riskRuleSetRules")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  ruleId    String?
 
   @@unique([id, riskRulePolicyId])
   @@index([riskRulePolicyId])
 }
 
 model Rule {
-  id            String @id @default(cuid())
-  riskRuleSetId String
+  id        String  @id @default(cuid())
+  name      String
+  projectId String?
+  isPublic  Boolean @default(false)
 
   key             String
   operator        String
   comparisonValue Json
   engine          RuleEngine
 
-  riskRuleSet RiskRuleSet @relation(fields: [riskRuleSetId], references: [id])
+  project          Project?          @relation(fields: [projectId], references: [id])
+  riskRuleSetRules RiskRuleSetRule[]
+  riskRuleSets     RiskRuleSet[]     @relation("riskRuleSetRules")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  riskRuleSetRiskRulePolicyId String?
 }
