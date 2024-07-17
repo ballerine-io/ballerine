@@ -22,3 +22,7 @@ export interface GetWorkflowDefinitionsListDto {
 export interface GetWorkflowDefinitionDto {
   workflowDefinitionId: string;
 }
+
+export interface GetUIDefinitionQuery {
+  workflowDefinitionId: string;
+}
