@@ -1,5 +1,3 @@
-import { isEmpty } from 'lodash';
-
 import {
   Rule,
   RuleResult,

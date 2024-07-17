@@ -575,7 +575,7 @@ describe('Rule Engine', () => {
   describe('aml operator', () => {
     describe('warning section', () => {
       it('should resolve a nested property from context', () => {
-        let amlContextHasData = {
+        const amlContextHasData = {
           ...(JSON.parse(JSON.stringify(context)) as any),
           ...(JSON.parse(JSON.stringify(amlContext)) as any),
           example_id_002: JSON.parse(
@@ -598,7 +598,7 @@ describe('Rule Engine', () => {
           ],
         };
 
-        let engine = RuleEngine(warningRule);
+        const engine = RuleEngine(warningRule);
 
         amlContextHasData.childWorkflows.kyc_email_session_example.example_id_001.result.vendorResult.aml =
           {
@@ -627,7 +627,7 @@ describe('Rule Engine', () => {
       });
 
       it('should failed when no data', () => {
-        let amlContextHasData = {
+        const amlContextHasData = {
           ...(JSON.parse(JSON.stringify(context)) as any),
           ...(JSON.parse(JSON.stringify(amlContext)) as any),
         };
@@ -647,8 +647,8 @@ describe('Rule Engine', () => {
           ],
         };
 
-        let engine = RuleEngine(warningRule);
-        let result = engine.run(amlContextHasData);
+        const engine = RuleEngine(warningRule);
+        const result = engine.run(amlContextHasData);
 
         expect(result).toBeDefined();
         expect(result).toHaveLength(1);
@@ -671,7 +671,7 @@ describe('Rule Engine', () => {
     });
 
     it('should resolve fitness probity', () => {
-      let amlContextHasData = {
+      const amlContextHasData = {
         ...(JSON.parse(JSON.stringify(context)) as any),
         ...(JSON.parse(JSON.stringify(amlContext)) as any),
       };
@@ -707,7 +707,7 @@ describe('Rule Engine', () => {
           ],
         };
 
-      let engine = RuleEngine(fitnessProbityRule);
+      const engine = RuleEngine(fitnessProbityRule);
       const result = engine.run(amlContextHasData);
 
       expect(result).toBeDefined();

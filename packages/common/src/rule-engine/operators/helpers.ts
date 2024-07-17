@@ -301,7 +301,9 @@ class AmlCheck extends BaseOperator<AmlCheckParams> {
     });
   }
 
-  extractValue(data: unknown, rule: Extract<Rule, { operator: 'AML_CHECK' }>) {
+  extractValue(data: unknown, rule: Rule) {
+    const amlRule = rule as Extract<Rule, { operator: 'AML_CHECK' }>;
+
     const result = z.record(z.string(), z.any()).safeParse(data);
 
     if (!result.success) {
@@ -310,7 +312,7 @@ class AmlCheck extends BaseOperator<AmlCheckParams> {
 
     const objData = result.data;
 
-    const childWorkflows = objData.childWorkflows[rule.value.childWorkflowName];
+    const childWorkflows = objData.childWorkflows[amlRule.value.childWorkflowName];
 
     const childWorkflowKeys = childWorkflows ? Object.keys(childWorkflows || {}) : [];
 
