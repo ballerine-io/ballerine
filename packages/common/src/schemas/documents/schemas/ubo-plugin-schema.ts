@@ -46,21 +46,23 @@ const UboSchema = Type.Object({
   ),
 });
 
-export const UboPluginSchema = Type.Object({
-  name: Type.String(),
-  code: Type.Optional(Type.Number()),
-  reason: Type.Optional(Type.String()),
-  status: Type.Optional(Type.String()),
-  message: Type.Optional(Type.String()),
-  orderId: Type.Optional(Type.String()),
-  invokedAt: Type.Optional(Type.Number()),
-  data: Type.Optional(
-    Type.Object({
-      layers: Type.String(),
-      uboList: Type.Array(UboSchema),
-      otherUBOList: Type.Array(UboSchema),
-      uboGraph: Type.Array(UboGraphSchema),
-      fullUBOGraph: Type.Array(UboGraphSchema),
-    }),
-  ),
-});
+export const UboPluginSchema = Type.Optional(
+  Type.Object({
+    name: Type.String(),
+    code: Type.Optional(Type.Number()),
+    reason: Type.Optional(Type.String()),
+    status: Type.Optional(Type.String()),
+    message: Type.Optional(Type.String()),
+    orderId: Type.Optional(Type.String()),
+    invokedAt: Type.Optional(Type.Number()),
+    data: Type.Optional(
+      Type.Object({
+        layers: Type.String(),
+        uboList: Type.Array(UboSchema),
+        otherUBOList: Type.Array(UboSchema),
+        uboGraph: Type.Array(UboGraphSchema),
+        fullUBOGraph: Type.Array(UboGraphSchema),
+      }),
+    ),
+  }),
+);

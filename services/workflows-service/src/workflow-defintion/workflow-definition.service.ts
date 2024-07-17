@@ -4,7 +4,7 @@ import { TProjectId, TProjectIds } from '@/types';
 import { GetWorkflowDefinitionListDto } from '@/workflow-defintion/dtos/get-workflow-definition-list.dto';
 import { TWorkflowDefinitionWithTransitionSchema } from '@/workflow-defintion/types';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
-import { replaceNullsWithUndefined } from '@ballerine/common';
+import { DefaultContextSchema, replaceNullsWithUndefined } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { merge } from 'lodash';
@@ -78,17 +78,12 @@ export class WorkflowDefinitionService {
     return newVersionDefinition;
   }
 
-  async getLatestVersion<T extends Prisma.WorkflowDefinitionFindManyArgs>(
-    id: string,
-    projectIds: TProjectIds,
-    args?: Prisma.SelectSubset<T, Prisma.WorkflowDefinitionFindManyArgs>,
-  ) {
+  async getLatestVersion(id: string, projectIds: TProjectIds) {
     const workflowDefinition = await this.workflowDefinitionRepository.findById(id, {}, projectIds);
 
     return await this.workflowDefinitionRepository.findByLatestVersion(
       workflowDefinition.name,
       projectIds,
-      args,
     );
   }
 
@@ -126,19 +121,17 @@ export class WorkflowDefinitionService {
   }
 
   async getInputContextSchema(id: string, projectIds: TProjectIds) {
-    const workflowDefinition = await this.workflowDefinitionRepository.findById(id, {}, projectIds);
-
-    const { contextSchema } = await this.workflowDefinitionRepository.findByLatestVersion(
-      workflowDefinition.name,
-      projectIds,
+    const { contextSchema } = await this.workflowDefinitionRepository.findById(
+      id,
       {
         select: {
           contextSchema: true,
         },
       },
+      projectIds,
     );
 
-    return contextSchema;
+    return (contextSchema as { schema: DefaultContextSchema }).schema;
   }
 
   async updateInputContextCustomDataSchema(
@@ -146,10 +139,12 @@ export class WorkflowDefinitionService {
     projectIds: TProjectId[],
     customDataSchema: Record<string, unknown>,
   ) {
-    // const inputContextSchema = await this.getInputContextSchema(id, projectIds);
-    //
-    // return isObject(inputContextSchema) && 'customData' in inputContextSchema
-    //   ? inputContextSchema?.customData
-    //   : {};
+    const inputContextSchema = await this.getInputContextSchema(id, projectIds);
+
+    inputContextSchema.customData = customDataSchema;
+
+    return await this.workflowDefinitionRepository.updateById(id, {
+      data: { contextSchema: inputContextSchema },
+    });
   }
 }
