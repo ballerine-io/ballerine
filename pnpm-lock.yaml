@@ -1147,8 +1147,8 @@ importers:
   packages/common:
     dependencies:
       '@sinclair/typebox':
-        specifier: ^0.31.7
-        version: 0.31.26
+        specifier: 0.32.15
+        version: 0.32.15
       ajv:
         specifier: ^8.12.0
         version: 8.12.0
@@ -2505,8 +2505,8 @@ importers:
         specifier: ^7.52.1
         version: 7.80.1
       '@sinclair/typebox':
-        specifier: 0.32.4
-        version: 0.32.4
+        specifier: 0.32.15
+        version: 0.32.15
       '@t3-oss/env-core':
         specifier: ^0.6.1
         version: 0.6.1(typescript@4.9.3)(zod@3.22.4)
@@ -2529,8 +2529,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(axios@1.6.8)
       ballerine-nestjs-typebox:
-        specifier: 3.0.2-next.8
-        version: 3.0.2-next.8(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.4)(ajv@8.12.0)(rxjs@7.8.1)
+        specifier: 3.0.2-next.9
+        version: 3.0.2-next.9(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.15)(ajv-formats@2.1.1)(ajv@8.12.0)(rxjs@7.8.1)
       base64-stream:
         specifier: ^1.0.0
         version: 1.0.0
@@ -8589,7 +8589,7 @@ packages:
       magic-string: 0.27.0
       react-docgen-typescript: 2.2.2(typescript@4.9.5)
       typescript: 4.9.5
-      vite: 4.5.3(@types/node@18.17.19)
+      vite: 4.5.3(@types/node@20.9.2)
     dev: true
 
   /@joshwooding/vite-plugin-react-docgen-typescript@0.3.0(typescript@5.1.6)(vite@4.5.3):
@@ -12355,8 +12355,8 @@ packages:
     resolution: {integrity: sha512-0S5BGB/Tle1kVa1pT2k2sc+wHTCB28+ivuetmZDCRV8I0iFKaNfk6HbvVyLEFBzZy56dp0dw+YDJ9Ed+YAAL7A==}
     dev: false
 
-  /@sinclair/typebox@0.32.4:
-    resolution: {integrity: sha512-Q2Pex6H+HGuyxIGuFadkpqwtjZFXiVZlvy1rVX9XgAzUrDmUDEM69M2c4CkWUgMJ1NaFPvUf+cMBljY96GJVNQ==}
+  /@sinclair/typebox@0.32.15:
+    resolution: {integrity: sha512-5Lrwo7VOiWEBJBhHmqNmf3TPB9ll8gcEshvYJyAIJyCZ2PF48MFOtiDHJNj8+FsNcqImaQYmxVkKBCBlyAa/wg==}
     dev: false
 
   /@sinonjs/commons@3.0.0:
@@ -14246,7 +14246,7 @@ packages:
       react: 18.2.0
       react-docgen: 6.0.4
       react-dom: 18.2.0(react@18.2.0)
-      vite: 4.5.3(@types/node@18.17.19)
+      vite: 4.5.3(@types/node@20.9.2)
     transitivePeerDependencies:
       - '@preact/preset-vite'
       - encoding
@@ -16821,7 +16821,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.23.3(@babel/core@7.23.3)
       '@types/babel__core': 7.20.4
       react-refresh: 0.14.0
-      vite: 4.5.3(@types/node@20.9.2)
+      vite: 4.5.3(@types/node@18.17.19)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -18248,21 +18248,23 @@ packages:
       - ts-node
     dev: false
 
-  /ballerine-nestjs-typebox@3.0.2-next.8(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.4)(ajv@8.12.0)(rxjs@7.8.1):
-    resolution: {integrity: sha512-KZkB/KPjAdgZIjrkNirzN2dhXmnoqCI3PKygTI61AGH7+CCQy400+ykUV/3NuMls0sbdyWh6c2U/li9oLjXHyQ==}
+  /ballerine-nestjs-typebox@3.0.2-next.9(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.15)(ajv-formats@2.1.1)(ajv@8.12.0)(rxjs@7.8.1):
+    resolution: {integrity: sha512-ohFJj01doSLTewGawOBbIUjBqBnk5Pln75sgzgzRjdrO3koN0USb3T8aLEyLNtrcnuJSXj0iurPSHjRAHObF7A==}
     peerDependencies:
       '@nestjs/common': ^9.0.1 || ^10.0.3
       '@nestjs/core': ^9.0.1 || ^10.0.3
       '@nestjs/swagger': ^6.1.1 || ^7.0.11
       '@sinclair/typebox': ^0.32.4
       ajv: ^8.14.0
+      ajv-formats: ^2.1.1
       rxjs: ^7.5.6
     dependencies:
       '@nestjs/common': 9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/core': 9.4.3(@nestjs/common@9.4.3)(@nestjs/platform-express@9.4.3)(@nestjs/websockets@9.4.3)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/swagger': 6.2.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)
-      '@sinclair/typebox': 0.32.4
+      '@sinclair/typebox': 0.32.15
       ajv: 8.12.0
+      ajv-formats: 2.1.1(ajv@8.12.0)
       fast-uri: 2.3.0
       rxjs: 7.8.1
     dev: false
@@ -32674,7 +32676,7 @@ packages:
       strip-ansi: 6.0.1
       tiny-invariant: 1.3.1
       typescript: 5.1.6
-      vite: 4.5.3(@types/node@20.9.2)
+      vite: 4.5.3(@types/node@18.17.19)
       vscode-languageclient: 7.0.0
       vscode-languageserver: 7.0.0
       vscode-languageserver-textdocument: 1.0.11
@@ -32786,7 +32788,7 @@ packages:
       debug: 4.3.4(supports-color@8.1.1)
       globrex: 0.1.2
       tsconfck: 2.1.2(typescript@4.9.5)
-      vite: 4.5.3(@types/node@18.17.19)
+      vite: 4.5.3(@types/node@20.9.2)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -32802,7 +32804,7 @@ packages:
       debug: 4.3.4(supports-color@8.1.1)
       globrex: 0.1.2
       tsconfck: 2.1.2(typescript@5.1.6)
-      vite: 4.5.3(@types/node@20.9.2)
+      vite: 4.5.3(@types/node@18.17.19)
     transitivePeerDependencies:
       - supports-color
       - typescript

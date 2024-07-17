@@ -4,12 +4,11 @@ import { GetWorkflowDefinitionListDto } from '@/workflow-defintion/dtos/get-work
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import * as common from '@nestjs/common';
 import { Controller } from '@nestjs/common';
-import * as swagger from '@nestjs/swagger';
-import * as errors from '@/errors';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
-import { isObject } from '@ballerine/common';
-import { Validate } from 'ballerine-nestjs-typebox';
-import { Type } from '@sinclair/typebox';
+import { Record, Type } from '@sinclair/typebox';
+import { isRecordNotFoundError } from '@/prisma/prisma.util';
+import * as errors from '../errors';
+import { ApiResponse } from '@nestjs/swagger';
 
 @Controller('workflow-definition')
 export class WorkflowDefinitionController {
@@ -25,51 +24,75 @@ export class WorkflowDefinitionController {
 
   @common.Get('/:id/input-context-schema')
   @UseCustomerAuthGuard()
-  @Validate({
-    request: [
-      {
-        type: 'param',
-        name: 'id',
-        schema: Type.String(),
-      },
-    ],
-    response: Type.Any(),
+  @ApiResponse({
+    status: 200,
+    description: 'OK',
+    schema: Type.Record(Type.String(), Type.Unknown()),
   })
-  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found',
+    schema: Type.Record(Type.String(), Type.Unknown()),
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    schema: Type.Record(Type.String(), Type.Unknown()),
+  })
   async getInputContextSchema(
     @common.Param('id') id: string,
     @ProjectIds() projectIds: TProjectId[],
   ) {
-    return await this.workflowDefinitionService.getInputContextSchema(id, projectIds);
+    try {
+      return await this.workflowDefinitionService.getInputContextSchema(id, projectIds);
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No WorkflowDefinition with ID ${id} was found`, {
+          cause: error,
+        });
+      }
+
+      throw error;
+    }
   }
 
   @common.Get('/:id/input-context-schema/custom-data-schema')
   @UseCustomerAuthGuard()
-  @Validate({
-    request: [
-      {
-        type: 'param',
-        name: 'id',
-        schema: Type.String(),
-      },
-    ],
-    response: Type.Any(),
+  @ApiResponse({
+    status: 200,
+    description: 'OK',
+    schema: Type.Record(Type.String(), Type.Unknown()),
   })
-  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found',
+    schema: Type.Record(Type.String(), Type.Unknown()),
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    schema: Type.Record(Type.String(), Type.Unknown()),
+  })
   async getInputContextCustomDataSchema(
     @common.Param('id') id: string,
     @ProjectIds() projectIds: TProjectId[],
   ) {
-    const inputContextSchema = await this.workflowDefinitionService.getInputContextSchema(
-      id,
-      projectIds,
-    );
+    try {
+      const inputContextSchema = await this.workflowDefinitionService.getInputContextSchema(
+        id,
+        projectIds,
+      );
 
-    return isObject(inputContextSchema) && 'customData' in inputContextSchema
-      ? inputContextSchema?.customData
-      : {};
+      return inputContextSchema?.customData ?? {};
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No WorkflowDefinition with ID ${id} was found`, {
+          cause: error,
+        });
+      }
+
+      throw error;
+    }
   }
 
   @common.Put('/:id/input-context-schema/custom-data-schema')
