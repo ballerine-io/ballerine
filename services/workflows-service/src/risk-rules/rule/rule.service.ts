@@ -1,33 +1,30 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { RuleRepository } from './rule.repository';
-import {TProjectId, TProjectIds} from "@/types";
-import {Prisma} from "@prisma/client";
+import { TProjectId, TProjectIds } from '@/types';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class RuleService {
-  constructor(
-    private readonly ruleRepository: RuleRepository
-  ) {}
+  constructor(private readonly ruleRepository: RuleRepository) {}
 
   async findById(id: string, projectIds: TProjectIds) {
-    return await this.ruleRepository.findById(id, projectIds)
+    return await this.ruleRepository.findById(id, projectIds);
   }
 
-  async findManyByRuleset(
+  async findManyByRuleset(riskRuleSetId: string, projectIds: TProjectIds) {
+    return await this.ruleRepository.findManyByRuleset(riskRuleSetId, projectIds);
+  }
+
+  async findMany(projectIds: TProjectIds, args?: Prisma.RuleFindManyArgs) {
+    return await this.ruleRepository.findMany(projectIds, args);
+  }
+
+  async assignRuleToRuleset(
+    ruleId: string,
     riskRuleSetId: string,
-    projectIds: TProjectIds
-  ) {
-    return await this.ruleRepository.findManyByRuleset(riskRuleSetId, projectIds)
-  }
-
-  async findMany(
+    projectId: TProjectId,
     projectIds: TProjectIds,
-    args?: Prisma.RuleFindManyArgs,
   ) {
-    return await this.ruleRepository.findMany(projectIds, args)
-  }
-
-  async assignRuleToRuleset(ruleId: string, riskRuleSetId: string, projectId: TProjectId, projectIds: TProjectIds) {
     const {
       id,
       projectId: ruleProjectId,
@@ -36,78 +33,96 @@ export class RuleService {
     } = await this.ruleRepository.findById(ruleId, projectIds);
 
     if (projectId) {
-      return await this.ruleRepository.assignRuleToRuleset(
-        id,
-        riskRuleSetId
-      );
+      return await this.ruleRepository.assignRuleToRuleset(id, riskRuleSetId);
     }
 
-    return await this.ruleRepository.create({
-      ...resetRule,
-      comparisonValue: resetRule.comparisonValue as Prisma.RuleUncheckedCreateInput['comparisonValue'],
-      riskRuleSets: {
-        connect: {
-          id: riskRuleSetId
-        }
-      }
-    }, projectId);
-  }
-
-  async createNewRule(
-    {
-      ruleData,
-      riskRuleSetId,
-      projectId
-    }: {
-      ruleData: Omit<Prisma.RuleUncheckedCreateInput, 'riskRuleSetId' | 'projectId' | 'isPublic'>,
-      riskRuleSetId?: string,
-      projectId: TProjectId
-    }) {
-    const rule = await this.ruleRepository.create({
-      ...ruleData,
-      ...(riskRuleSetId ? {
+    return await this.ruleRepository.create(
+      {
+        ...resetRule,
+        comparisonValue:
+          resetRule.comparisonValue as Prisma.RuleUncheckedCreateInput['comparisonValue'],
         riskRuleSets: {
           connect: {
-            id: riskRuleSetId
-          }
-        }
-      } : {}),
-    }, projectId);
-
-    return rule
-  }
-
-  async updateRule(
-    {
-      ruleId,
-      ruleData,
+            id: riskRuleSetId,
+          },
+        },
+      },
       projectId,
-    }: {
-    ruleId: string,
-    ruleData: Omit<Prisma.RuleUncheckedCreateInput, 'riskRuleSetId' | 'projectId' | 'isPublic'>,
-    projectId: TProjectId,
-  }) {
-    const rule = await this.ruleRepository.updateById(ruleId, projectId, ruleData)
-
-    return rule
+    );
   }
 
-  async deleteRule(
-    {
-      ruleId,
-      projectIds,
-    }: {
-      ruleId: string,
-      projectIds: TProjectIds,
-    }) {
+  async unassignRuleFromRuleset(
+    ruleId: string,
+    riskRuleSetId: string,
+    projectId: TProjectId,
+    projectIds: TProjectIds,
+  ) {
+    const { id } = await this.ruleRepository.findById(ruleId, projectIds);
+
+    if (!projectId) {
+      throw new BadRequestException('Cannot unassign rule from ruleset without project id');
+    }
+
+    return await this.ruleRepository.unassignRuleFromRuleset(id, riskRuleSetId);
+  }
+
+  async createNewRule({
+    ruleData,
+    riskRuleSetId,
+    projectId,
+  }: {
+    ruleData: Omit<Prisma.RuleUncheckedCreateInput, 'riskRuleSetId' | 'projectId' | 'isPublic'>;
+    riskRuleSetId?: string;
+    projectId: TProjectId;
+  }) {
+    const rule = await this.ruleRepository.create(
+      {
+        ...ruleData,
+        ...(riskRuleSetId
+          ? {
+              riskRuleSets: {
+                connect: {
+                  id: riskRuleSetId,
+                },
+              },
+            }
+          : {}),
+      },
+      projectId,
+    );
+
+    return rule;
+  }
+
+  async updateRule({
+    ruleId,
+    ruleData,
+    projectId,
+    projectIds,
+  }: {
+    ruleId: string;
+    ruleData: Partial<
+      Omit<Prisma.RuleUncheckedCreateInput, 'riskRuleSetId' | 'projectId' | 'isPublic'>
+    >;
+    projectId: TProjectId;
+    projectIds: TProjectIds;
+  }) {
     const rule = await this.findById(ruleId, projectIds);
 
     if (rule.isPublic) {
       throw new BadRequestException('Cannot delete public rule');
     }
 
-    return await this.ruleRepository.deleteById(ruleId, projectIds)
+    return await this.ruleRepository.updateById(ruleId, projectId, ruleData);
   }
 
+  async deleteRule({ ruleId, projectIds }: { ruleId: string; projectIds: TProjectIds }) {
+    const rule = await this.findById(ruleId, projectIds);
 
+    if (rule.isPublic) {
+      throw new BadRequestException('Cannot delete public rule');
+    }
+
+    return await this.ruleRepository.deleteById(ruleId, projectIds);
+  }
 }
