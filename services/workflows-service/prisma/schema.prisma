@@ -188,13 +188,13 @@ model WorkflowDefinition {
   persistStates Json?
   submitStates  Json?
 
-  createdAt                        DateTime                          @default(now())
-  updatedAt                        DateTime                          @updatedAt
-  createdBy                        String                            @default("SYSTEM")
-  project                          Project?                          @relation(fields: [projectId], references: [id])
+  createdAt                        DateTime                           @default(now())
+  updatedAt                        DateTime                           @updatedAt
+  createdBy                        String                             @default("SYSTEM")
+  project                          Project?                           @relation(fields: [projectId], references: [id])
   workflowRuntimeData              WorkflowRuntimeData[]
   uiDefinitions                    UiDefinition[]
-  workflowDefinitionRiskRulePolicy WorkflowDefinitionRiskRulePolicy?
+  workflowDefinitionRiskRulePolicy WorkflowDefinitionRiskRulePolicy[]
 
   @@unique([name, version, projectId, definitionType])
   @@index([projectId, name, definitionType])
@@ -900,7 +900,7 @@ model BusinessReport {
 
 model WorkflowDefinitionRiskRulePolicy {
   id                   String             @id @default(cuid())
-  workflowDefinitionId String             @unique
+  workflowDefinitionId String
   riskRulesPolicyId    String
   riskRulesPolicy      RiskRulesPolicy    @relation(fields: [riskRulesPolicyId], references: [id])
   workflowDefinition   WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
@@ -981,7 +981,7 @@ model Rule {
   isPublic  Boolean @default(false)
 
   key             String
-  operator        String
+  operation       String
   comparisonValue Json
   engine          RuleEngine
 
