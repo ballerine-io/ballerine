@@ -1,30 +1,26 @@
 import { Button } from '@/components/atoms/Button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/atoms/Dialog';
-import { JSONEditorComponent } from '@/components/organisms/JsonEditor';
 import { CodeIcon } from 'lucide-react';
 import Scrollbars from 'react-custom-scrollbars';
+import ReactJson from 'react-json-view';
 
 interface Props {
-  json: string;
-  trigger?: JSX.Element;
+  context: string;
 }
 
-export const JSONViewButton = ({
-  json,
-  trigger = (
-    <Button className="flex items-center gap-2">
-      <CodeIcon size="16" />
-      View context
-    </Button>
-  ),
-}: Props) => {
+export const ContextViewColumn = ({ context }: Props) => {
   return (
     <Dialog>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogTrigger asChild>
+        <Button className="flex items-center gap-2">
+          <CodeIcon size="16" />
+          View context
+        </Button>
+      </DialogTrigger>
       <DialogContent className="h-[80vh] min-w-[80%]">
         <div className="pr-4">
           <Scrollbars>
-            <JSONEditorComponent readOnly value={json ? JSON.parse(json) : {}} />
+            <ReactJson src={context ? JSON.parse(context) : {}} />
           </Scrollbars>
         </div>
       </DialogContent>

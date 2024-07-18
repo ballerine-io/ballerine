@@ -1,5 +1,6 @@
 import { App } from '@/App';
 import { withSessionProtected } from '@/common/hocs/withSessionProtected';
+import { Filters } from '@/pages/Filters';
 import { Overview } from '@/pages/Overview';
 import { SignIn } from '@/pages/SignIn';
 import { WorkflowDefinition } from '@/pages/WorkflowDefinition';
@@ -36,6 +37,10 @@ export const router = createBrowserRouter([
       {
         path: 'workflow-definitions/:id',
         Component: withSessionProtected(WorkflowDefinition),
+      },
+      {
+        path: 'filters',
+        Component: withSessionProtected(Filters),
       },
     ],
   },
