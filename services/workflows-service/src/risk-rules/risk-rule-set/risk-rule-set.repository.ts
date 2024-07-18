@@ -1,8 +1,8 @@
-import {Injectable} from '@nestjs/common';
-import {PrismaService} from '@/prisma/prisma.service';
-import {Prisma} from '@prisma/client';
-import {ProjectScopeService} from "@/project/project-scope.service";
-import {TProjectIds} from "@/types";
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '@/prisma/prisma.service';
+import { Prisma } from '@prisma/client';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { TProjectIds } from '@/types';
 
 @Injectable()
 export class RiskRuleSetRepository {
@@ -27,10 +27,13 @@ export class RiskRuleSetRepository {
     projectIds: TProjectIds,
   ) {
     return this.prisma.riskRuleSet.findMany(
-      this.scopeService.scopeFindManyOrPublic({
-        ...args,
-        where: {...args?.where, riskRulePolicyId},
-      }, projectIds)
+      this.scopeService.scopeFindManyOrPublic(
+        {
+          ...args,
+          where: { ...args?.where, riskRulePolicyId },
+        },
+        projectIds,
+      ),
     );
   }
 
@@ -40,10 +43,13 @@ export class RiskRuleSetRepository {
     args?: Prisma.RiskRuleSetFindFirstOrThrowArgs,
   ) {
     return this.prisma.riskRuleSet.findFirstOrThrow(
-      this.scopeService.scopeFindOneOrPublic({
-        ...(args ? args : {}),
-        where: {...(args?.where ? {...args?.where} : {}), id: id},
-      }, projectIds)
+      this.scopeService.scopeFindOneOrPublic(
+        {
+          ...(args ? args : {}),
+          where: { ...(args?.where ? { ...args?.where } : {}), id: id },
+        },
+        projectIds,
+      ),
     );
   }
 
@@ -58,7 +64,7 @@ export class RiskRuleSetRepository {
         ...dataArgs,
         riskRulePolicyId,
         projectId,
-        isPublic: false
+        isPublic: false,
       },
       where: {
         id_riskRulePolicyId: {
@@ -71,7 +77,8 @@ export class RiskRuleSetRepository {
 
   async deleteById(id: string, riskRulePolicyId: string, projectIds: TProjectIds) {
     return this.prisma.riskRuleSet.delete(
-      this.scopeService.scopeDelete({
+      this.scopeService.scopeDelete(
+        {
           where: {
             id_riskRulePolicyId: {
               id: id,
@@ -79,7 +86,7 @@ export class RiskRuleSetRepository {
             },
           },
         },
-        projectIds
+        projectIds,
       ),
     );
   }

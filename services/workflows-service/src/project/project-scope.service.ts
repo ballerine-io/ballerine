@@ -56,19 +56,17 @@ export class ProjectScopeService {
       OR: [
         {
           project: {
-            id: {in: projectIds},
-          }
+            id: { in: projectIds },
+          },
         },
         {
-          isPublic: true
-        }
-      ]
-      ,
+          isPublic: true,
+        },
+      ],
     };
 
     return args!;
   }
-
 
   scopeFindOne<T>(
     args: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,
@@ -97,18 +95,17 @@ export class ProjectScopeService {
       OR: [
         {
           project: {
-            id: {in: projectIds},
-          }
+            id: { in: projectIds },
+          },
         },
         {
-          isPublic: true
-        }
+          isPublic: true,
+        },
       ],
     };
 
     return args as T;
   }
-
 
   scopeFindFirst<T>(args: any, projectIds?: TProjectIds): any {
     args.where = {
