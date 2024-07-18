@@ -5,11 +5,15 @@ import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definit
 import * as common from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
-import { Record, Type } from '@sinclair/typebox';
+import { Type } from '@sinclair/typebox';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as errors from '../errors';
 import { ApiResponse } from '@nestjs/swagger';
+import * as swagger from '@nestjs/swagger';
+import { CustomDataSchemaUpdateDto } from '@/workflow-defintion/dtos/custom-data-schema-update-dto';
 
+@swagger.ApiBearerAuth()
+@swagger.ApiTags('Workflow Definitions')
 @Controller('workflow-definition')
 export class WorkflowDefinitionController {
   constructor(protected readonly workflowDefinitionService: WorkflowDefinitionService) {}
@@ -30,13 +34,13 @@ export class WorkflowDefinitionController {
     schema: Type.Record(Type.String(), Type.Unknown()),
   })
   @ApiResponse({
-    status: 404,
-    description: 'Not Found',
+    status: 403,
+    description: 'Forbidden',
     schema: Type.Record(Type.String(), Type.Unknown()),
   })
   @ApiResponse({
-    status: 403,
-    description: 'Forbidden',
+    status: 404,
+    description: 'Not Found',
     schema: Type.Record(Type.String(), Type.Unknown()),
   })
   async getInputContextSchema(
@@ -64,13 +68,13 @@ export class WorkflowDefinitionController {
     schema: Type.Record(Type.String(), Type.Unknown()),
   })
   @ApiResponse({
-    status: 404,
-    description: 'Not Found',
+    status: 403,
+    description: 'Forbidden',
     schema: Type.Record(Type.String(), Type.Unknown()),
   })
   @ApiResponse({
-    status: 403,
-    description: 'Forbidden',
+    status: 404,
+    description: 'Not Found',
     schema: Type.Record(Type.String(), Type.Unknown()),
   })
   async getInputContextCustomDataSchema(
@@ -99,13 +103,23 @@ export class WorkflowDefinitionController {
   @UseCustomerAuthGuard()
   async updateInputContextCustomDataSchema(
     @common.Param('id') id: string,
+    @common.Body() customDataSchema: CustomDataSchemaUpdateDto,
     @ProjectIds() projectIds: TProjectId[],
-    @common.Body() customDataSchema: Record<string, unknown>,
   ) {
-    return this.workflowDefinitionService.updateInputContextCustomDataSchema(
-      id,
-      projectIds,
-      customDataSchema,
-    );
+    try {
+      return this.workflowDefinitionService.updateInputContextCustomDataSchema(
+        id,
+        projectIds,
+        customDataSchema.schema,
+      );
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No WorkflowDefinition with ID ${id} was found`, {
+          cause: error,
+        });
+      }
+
+      throw error;
+    }
   }
 }

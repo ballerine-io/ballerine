@@ -1,10 +1,10 @@
 import { CustomerService } from '@/customer/customer.service';
 import { FilterService } from '@/filter/filter.service';
-import { TProjectId, TProjectIds } from '@/types';
+import { InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import { GetWorkflowDefinitionListDto } from '@/workflow-defintion/dtos/get-workflow-definition-list.dto';
 import { TWorkflowDefinitionWithTransitionSchema } from '@/workflow-defintion/types';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
-import { DefaultContextSchema, replaceNullsWithUndefined } from '@ballerine/common';
+import { replaceNullsWithUndefined } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { merge } from 'lodash';
@@ -131,7 +131,7 @@ export class WorkflowDefinitionService {
       projectIds,
     );
 
-    return (contextSchema as { schema: DefaultContextSchema }).schema;
+    return (contextSchema as { schema: Record<string, unknown> }).schema;
   }
 
   async updateInputContextCustomDataSchema(
@@ -141,10 +141,17 @@ export class WorkflowDefinitionService {
   ) {
     const inputContextSchema = await this.getInputContextSchema(id, projectIds);
 
-    inputContextSchema.customData = customDataSchema;
+    inputContextSchema.properties = {
+      ...(inputContextSchema.properties ?? {}),
+      customData: customDataSchema,
+    };
 
-    return await this.workflowDefinitionRepository.updateById(id, {
-      data: { contextSchema: inputContextSchema },
+    const { contextSchema } = await this.workflowDefinitionRepository.updateById(id, {
+      data: {
+        contextSchema: { type: 'json-schema', schema: inputContextSchema as InputJsonValue },
+      },
     });
+
+    return (contextSchema as { schema: Record<string, unknown> }).schema;
   }
 }
