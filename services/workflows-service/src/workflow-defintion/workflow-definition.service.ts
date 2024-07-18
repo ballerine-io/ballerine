@@ -8,6 +8,10 @@ import { replaceNullsWithUndefined } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { merge } from 'lodash';
+import {
+  TCustomDataSchemaUpdateDto,
+  TRootLevelContextSchemaDto,
+} from '@/workflow-defintion/dtos/custom-data-schema-update-dto';
 
 @Injectable()
 export class WorkflowDefinitionService {
@@ -131,13 +135,13 @@ export class WorkflowDefinitionService {
       projectIds,
     );
 
-    return (contextSchema as { schema: Record<string, unknown> }).schema;
+    return (contextSchema as { schema: TRootLevelContextSchemaDto }).schema;
   }
 
   async updateInputContextCustomDataSchema(
     id: string,
     projectIds: TProjectId[],
-    customDataSchema: Record<string, unknown>,
+    customDataSchema: TCustomDataSchemaUpdateDto,
   ) {
     const inputContextSchema = await this.getInputContextSchema(id, projectIds);
 
@@ -152,6 +156,6 @@ export class WorkflowDefinitionService {
       },
     });
 
-    return (contextSchema as { schema: Record<string, unknown> }).schema;
+    return (contextSchema as { schema: TRootLevelContextSchemaDto }).schema.properties.customData;
   }
 }
