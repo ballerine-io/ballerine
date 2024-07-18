@@ -1,4 +1,4 @@
-export interface WorkflowsTableSorting {
+export interface FiltersTableSorting {
   key: string;
   direction: 'asc' | 'desc';
 }

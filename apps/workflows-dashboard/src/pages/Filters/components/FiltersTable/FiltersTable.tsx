@@ -6,9 +6,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/atoms/Table';
-import { WorkflowsTableSorting } from '@/components/molecules/WorkflowsTable/types';
 import { IFilter } from '@/domains/filters';
 import { filtersTableColumns } from '@/pages/Filters/components/FiltersTable/columns';
+import { FiltersTableSorting } from '@/pages/Filters/components/FiltersTable/types';
 import { flexRender, getCoreRowModel, SortingState, useReactTable } from '@tanstack/react-table';
 import classnames from 'classnames';
 import { memo } from 'react';
@@ -16,7 +16,7 @@ import Scrollbars from 'react-custom-scrollbars';
 
 interface Props {
   items: IFilter[];
-  sorting?: WorkflowsTableSorting;
+  sorting?: FiltersTableSorting;
   isFetching?: boolean;
   onSort?: (key: string, direction: 'asc' | 'desc') => void;
 }
