@@ -11,6 +11,7 @@ export const useWorkflowDefinitionsQuery = (
     ...workflowDefinitionsQueryKeys.list(query),
     //@ts-ignore
     enabled: true,
+    keepPreviousData: true,
   });
 
   return {

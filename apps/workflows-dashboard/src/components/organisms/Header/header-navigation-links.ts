@@ -13,4 +13,8 @@ export const headerNavigationLinks: NavigationLink[] = [
     path: '/workflow-definitions',
     label: 'Workflow Definitions',
   },
+  {
+    path: '/filters',
+    label: 'Filters',
+  },
 ];
