@@ -3,6 +3,7 @@ import { withSessionProtected } from '@/common/hocs/withSessionProtected';
 import { Filters } from '@/pages/Filters';
 import { Overview } from '@/pages/Overview';
 import { SignIn } from '@/pages/SignIn';
+import { UIDefinitions } from '@/pages/UIDefinitions';
 import { WorkflowDefinition } from '@/pages/WorkflowDefinition';
 import { WorkflowDefinitions } from '@/pages/WorkflowDefinitions';
 import { Workflows } from '@/pages/Workflows';
@@ -41,6 +42,10 @@ export const router = createBrowserRouter([
       {
         path: 'filters',
         Component: withSessionProtected(Filters),
+      },
+      {
+        path: 'ui-definitions',
+        Component: withSessionProtected(UIDefinitions),
       },
     ],
   },
