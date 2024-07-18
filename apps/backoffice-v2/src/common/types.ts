@@ -150,5 +150,5 @@ export type ExtendedJson =
   | boolean
   | null
   | undefined
-  | Json[]
-  | { [key: string]: Json };
+  | ExtendedJson[]
+  | { [key: string]: ExtendedJson };
