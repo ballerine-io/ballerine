@@ -43,6 +43,7 @@ export const CaseTabs = [
   'associatedCompanies',
   'directors',
   'monitoringReports',
+  'customData',
 ] as const;
 
 export const IndividualsSearchSchema = (authenticatedUserId: string) =>
