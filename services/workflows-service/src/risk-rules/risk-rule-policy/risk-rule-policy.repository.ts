@@ -1,31 +1,33 @@
-import {Injectable} from '@nestjs/common';
-import {PrismaService} from '@/prisma/prisma.service';
-import {Prisma} from '@prisma/client';
-import {ProjectScopeService} from '@/project/project-scope.service';
-import {TProjectIds} from '@/types';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '@/prisma/prisma.service';
+import { Prisma } from '@prisma/client';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { TProjectIds } from '@/types';
 
 @Injectable()
 export class RiskRulePolicyRepository {
   constructor(
     private readonly prisma: PrismaService,
     private readonly scopeService: ProjectScopeService,
-  ) {
-  }
+  ) {}
 
   async createRiskRulePolicy(
     projectId: string,
     createArgs: Prisma.RiskRulesPolicyUncheckedCreateInput,
   ) {
     return this.prisma.riskRulesPolicy.create({
-      data: {...createArgs, projectId, isPublic: false},
+      data: { ...createArgs, projectId, isPublic: false },
     });
   }
 
   async findRiskRulePolicyById(id: string, projectIds: TProjectIds) {
     return this.prisma.riskRulesPolicy.findFirstOrThrow(
-      this.scopeService.scopeFindOneOrPublic({
-        where: {id},
-      }, projectIds)
+      this.scopeService.scopeFindOneOrPublic(
+        {
+          where: { id },
+        },
+        projectIds,
+      ),
     );
   }
 
@@ -46,15 +48,15 @@ export class RiskRulePolicyRepository {
           select: {
             riskRuleSets: true,
           },
-        }, projectIds)
+        },
+        projectIds,
+      ),
     );
   }
 
   async findRiskRulePolicyByProjectId(projectIds: TProjectIds) {
     return this.prisma.riskRulesPolicy.findMany(
-      this.scopeService.scopeFindManyOrPublic(
-        {where: {}}, projectIds
-      )
+      this.scopeService.scopeFindManyOrPublic({ where: {} }, projectIds),
     );
   }
 }
