@@ -1,9 +1,9 @@
+import { useFilters } from '@/components/providers/FiltersProvider/hooks/useFilters';
 import { usersStatsQueryKeys } from '@/domains/user/api/users-stats';
-import { useWorkflowFilters } from '@/pages/Workflows/components/providers/WorkflowsFiltersProvider/hooks/useWorkflowFilters';
 import { useQuery } from '@tanstack/react-query';
 
 export const useUsersAssignedCasesStatsQuery = () => {
-  const { filters } = useWorkflowFilters();
+  const { filters } = useFilters();
   const { data, isLoading } = useQuery({
     ...usersStatsQueryKeys.casesAssignedStats({
       // fromDate: filters.fromDate!,
