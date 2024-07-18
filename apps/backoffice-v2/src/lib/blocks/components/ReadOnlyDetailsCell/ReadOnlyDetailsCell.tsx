@@ -24,7 +24,7 @@ export const ReadOnlyDetailsCell: FunctionComponent<ExtractCellProps<'readOnlyDe
         return (
           <div key={label} className="flex flex-col">
             <TextWithNAFallback as={'h4'} className={'mb-2 text-sm font-medium leading-none'}>
-              {titleCase(label)}
+              {titleCase(label ?? '')}
             </TextWithNAFallback>
             <ReadOnlyDetail
               parse={parse}

@@ -10,7 +10,7 @@ import {
 import { Dialog } from '@/common/components/molecules/Dialog/Dialog';
 import { MotionBadge } from '@/common/components/molecules/MotionBadge/MotionBadge';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
-import { GenericAsyncFunction, GenericFunction, Json } from '@/common/types';
+import { ExtendedJson, GenericAsyncFunction, GenericFunction } from '@/common/types';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { ICallToActionLegacyProps } from '@/lib/blocks/components/CallToActionLegacy/interfaces';
 import { ICallToActionDocumentSelection } from '@/lib/blocks/components/DirectorsCallToAction/interfaces';
@@ -232,7 +232,7 @@ export type TReadOnlyDetailsCell = {
   props?: ComponentProps<'div'> & Pick<ComponentProps<typeof ReadOnlyDetail>, 'parse'>;
   value: Array<{
     label: string;
-    value: Json;
+    value: ExtendedJson;
   }>;
 };
 

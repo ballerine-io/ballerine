@@ -10,11 +10,11 @@ import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback
 import { FunctionComponent } from 'react';
 import dayjs from 'dayjs';
 import { FileJson2 } from 'lucide-react';
-import { Json } from '@/common/types';
+import { ExtendedJson } from '@/common/types';
 import { ctw } from '@/common/utils/ctw/ctw';
 
 export const ReadOnlyDetail: FunctionComponent<{
-  children: Json;
+  children: ExtendedJson;
   parse?: {
     date?: boolean;
     isoDate?: boolean;
