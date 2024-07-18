@@ -2,15 +2,15 @@ import {
   FiltersProvider,
   IFilterProviderProps,
 } from '@/components/providers/FiltersProvider/FiltersProvider';
+import { FiltersProps } from '@/components/providers/FiltersProvider/hocs/withFilters/types';
 import { useFilters } from '@/components/providers/FiltersProvider/hooks/useFilters';
-import { WorkflowFiltersProps } from '@/pages/Workflows/components/providers/WorkflowsFiltersProvider/hocs/withWorkflowFilters/types';
 
-type InputComponentProps<TProps> = Omit<TProps, keyof WorkflowFiltersProps>;
+type InputComponentProps<TProps> = Omit<TProps, keyof FiltersProps>;
 
 export interface WithFiltersHocParams<TFilterValues>
   extends Pick<IFilterProviderProps<TFilterValues>, 'deserializer' | 'querySchema'> {}
 
-export function withFilters<TComponentProps extends WorkflowFiltersProps, TFilterValues = object>(
+export function withFilters<TComponentProps extends FiltersProps, TFilterValues = object>(
   Component: React.FunctionComponent<TComponentProps>,
   params: WithFiltersHocParams<TFilterValues>,
 ): React.FunctionComponent<InputComponentProps<TComponentProps>> {
