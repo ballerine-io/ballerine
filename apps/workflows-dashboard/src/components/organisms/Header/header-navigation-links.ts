@@ -17,4 +17,8 @@ export const headerNavigationLinks: NavigationLink[] = [
     path: '/filters',
     label: 'Filters',
   },
+  {
+    path: '/ui-definitions',
+    label: 'UI Definitions',
+  },
 ];
