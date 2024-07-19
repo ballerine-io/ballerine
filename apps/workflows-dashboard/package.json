@@ -14,6 +14,7 @@
     "test": "NODE_ENV=test jest"
   },
   "dependencies": {
+    "@ballerine/common": "^0.9.12",
     "@lukemorales/query-key-factory": "^1.0.3",
     "@radix-ui/react-avatar": "^1.0.3",
     "@radix-ui/react-dialog": "1.0.4",
@@ -46,6 +47,7 @@
     "react-json-view": "^1.21.3",
     "react-router-dom": "^6.11.2",
     "recharts": "^2.7.2",
+    "string-ts": "^1.2.0",
     "tailwind-merge": "^1.13.2",
     "tailwindcss-animate": "^1.0.5",
     "use-query-params": "^2.2.1",
