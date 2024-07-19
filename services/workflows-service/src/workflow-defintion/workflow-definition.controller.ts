@@ -5,12 +5,6 @@ import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definit
 import * as common from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
-import { Type } from '@sinclair/typebox';
-import { isRecordNotFoundError } from '@/prisma/prisma.util';
-import * as errors from '../errors';
-import { ApiResponse } from '@nestjs/swagger';
-import * as swagger from '@nestjs/swagger';
-import { Validate } from 'ballerine-nestjs-typebox';
 import { WorkflowDefinitionWhereUniqueInputSchema } from '@/workflow/dtos/workflow-where-unique-input';
 import {
   CustomDataSchemaUpdateDto,
@@ -18,8 +12,17 @@ import {
   type TCustomDataSchemaUpdateDto,
 } from '@/workflow-defintion/dtos/custom-data-schema-update-dto';
 
-@swagger.ApiBearerAuth()
-@swagger.ApiTags('Workflow Definitions')
+import * as typebox from '@sinclair/typebox';
+import { isRecordNotFoundError } from '@/prisma/prisma.util';
+import * as errors from '../errors';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { DocumentInsertSchema } from '@ballerine/common';
+import { Type } from '@sinclair/typebox';
+import { Validate } from 'ballerine-nestjs-typebox';
+import { ApiValidationErrorResponse } from '@/common/decorators/http/errors.decorator';
+
+@ApiTags('Workflow Definition')
+@ApiBearerAuth()
 @Controller('workflow-definition')
 export class WorkflowDefinitionController {
   constructor(protected readonly workflowDefinitionService: WorkflowDefinitionService) {}
@@ -41,7 +44,7 @@ export class WorkflowDefinitionController {
   @ApiResponse({
     status: 404,
     description: 'Not Found',
-    schema: Type.Record(Type.String(), Type.Unknown()),
+    schema: typebox.Type.Record(typebox.Type.String(), typebox.Type.Unknown()),
   })
   @ApiResponse({
     status: 200,
@@ -90,7 +93,7 @@ export class WorkflowDefinitionController {
   @ApiResponse({
     status: 404,
     description: 'Not Found',
-    schema: Type.Record(Type.String(), Type.Unknown()),
+    schema: typebox.Type.Record(typebox.Type.String(), typebox.Type.Unknown()),
   })
   @Validate({
     request: [
@@ -176,5 +179,67 @@ export class WorkflowDefinitionController {
 
       throw error;
     }
+  }
+
+  @common.Get('/:id/documents-schema')
+  @UseCustomerAuthGuard()
+  @ApiResponse({
+    status: 200,
+    description: 'OK',
+    schema: typebox.Type.Record(typebox.Type.String(), typebox.Type.Unknown()),
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found',
+    schema: typebox.Type.Record(typebox.Type.String(), typebox.Type.Unknown()),
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    schema: typebox.Type.Record(typebox.Type.String(), typebox.Type.Unknown()),
+  })
+  async getDocumentsSchema(@common.Param('id') id: string, @ProjectIds() projectIds: TProjectId[]) {
+    try {
+      const documentsSchema = await this.workflowDefinitionService.getDocumentsSchema(
+        id,
+        projectIds,
+      );
+
+      return documentsSchema ?? {};
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No WorkflowDefinition with ID ${id} was found`, {
+          cause: error,
+        });
+      }
+
+      throw error;
+    }
+  }
+
+  @common.Put('/:id/documents-schema')
+  @UseCustomerAuthGuard()
+  @Validate({
+    request: [
+      {
+        type: 'body',
+        schema: Type.Array(DocumentInsertSchema),
+        description: 'Documents Schema Update',
+        stripUnknownProps: false,
+      },
+    ],
+    response: Type.Any(),
+  })
+  @ApiValidationErrorResponse()
+  async updateDocumentsSchema(
+    @common.Body() newDocumentsSchemas: unknown,
+    @common.Param('id') id: string,
+    @ProjectIds() projectIds: TProjectId[],
+  ) {
+    return this.workflowDefinitionService.updateDocumentsSchema(
+      id,
+      projectIds,
+      newDocumentsSchemas as (typeof DocumentInsertSchema)[],
+    );
   }
 }

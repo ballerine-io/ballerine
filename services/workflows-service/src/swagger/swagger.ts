@@ -43,7 +43,16 @@ class SwaggerSingleton {
 
     if (env.ENVIRONMENT_NAME === 'local') {
       swaggerDocBuilder.addServer(`http://localhost:${env.PORT}`, 'Local Server');
+      swaggerDocBuilder.addServer(`https://api-dev.ballerine.io`, 'Development Server');
     }
+    if (env.ENVIRONMENT_NAME === 'development') {
+      swaggerDocBuilder.addServer(`https://api-dev.ballerine.io`, 'Development Server');
+    }
+    if (env.ENVIRONMENT_NAME === 'production') {
+      swaggerDocBuilder.addServer(`https://api.ballerine.app`, 'Production Server');
+    }
+
+    swaggerDocBuilder.addServer(`https://api-sb.ballerine.app`, 'Sandbox Server');
 
     swaggerDocBuilder.addServer('https://api-sb.eu.ballerine.com', 'Sandbox Server');
 

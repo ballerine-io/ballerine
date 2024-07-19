@@ -99,8 +99,9 @@ export class WorkflowDefinitionRepository {
         },
       ],
     };
+    const result = await transaction.workflowDefinition.findFirstOrThrow(queryArgs);
 
-    return await transaction.workflowDefinition.findFirstOrThrow(queryArgs);
+    return result;
   }
 
   async findTemplateByIdUnscoped<
@@ -115,16 +116,23 @@ export class WorkflowDefinitionRepository {
     });
   }
 
-  async updateById<T extends Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>(
+  async updateById(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>,
-  ): Promise<WorkflowDefinition> {
-    args.data.definition && validateDefinitionLogic(args.data);
+    args: Pick<Prisma.WorkflowDefinitionUpdateArgs, 'data'>,
+    projectIds: TProjectIds,
+  ): Promise<Prisma.BatchPayload> {
+    const scopedArgs = this.scopeService.scopeUpdateMany(
+      {
+        ...args,
+        where: { id },
+      },
+      projectIds,
+    );
+    if (args.data?.definition) {
+      validateDefinitionLogic(args.data.definition as any);
+    }
 
-    return await this.prisma.workflowDefinition.update({
-      where: { id },
-      ...args,
-    });
+    return await this.prisma.workflowDefinition.updateMany(scopedArgs);
   }
 
   async deleteById<T extends Omit<Prisma.WorkflowDefinitionDeleteArgs, 'where'>>(

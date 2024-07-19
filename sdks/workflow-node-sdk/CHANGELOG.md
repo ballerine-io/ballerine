@@ -1,5 +1,13 @@
 # @ballerine/workflow-node-sdk
 
+## 0.6.21
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.21
+
 ## 0.6.20
 
 ### Patch Changes

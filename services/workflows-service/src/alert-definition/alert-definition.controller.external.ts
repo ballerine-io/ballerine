@@ -6,6 +6,7 @@ import * as swagger from '@nestjs/swagger';
 import { AlertDefinition } from '@prisma/client';
 
 @common.Controller('/external/alert-definition')
+@swagger.ApiTags('Alerts')
 export class AlertDefinitionsController {
   constructor(private readonly alertDefinitionService: AlertDefinitionService) {}
 
