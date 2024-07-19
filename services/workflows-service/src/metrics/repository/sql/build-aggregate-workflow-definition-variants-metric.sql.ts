@@ -10,8 +10,8 @@ SELECT
 FROM
   "WorkflowDefinition"
 WHERE
-  "projectId" IN (${projectIds?.join(',')})
-  OR "isPublic" = true
+  ("projectId" IS NOT NULL AND "projectId" IN (${Prisma.join(projectIds!)}))
+  OR ("isPublic" = true AND "projectId" IS NULL)
 GROUP BY
   variant;
 `;
