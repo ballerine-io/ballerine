@@ -174,7 +174,7 @@ export class WorkflowDefinitionService {
   async updateDocumentsSchema(
     id: string,
     projectIds: TProjectId[],
-    documentsSchema: Static<typeof DocumentInsertSchema>[],
+    documentsSchema: (typeof DocumentInsertSchema)[],
   ) {
     return await this.workflowDefinitionRepository.updateById(
       id,

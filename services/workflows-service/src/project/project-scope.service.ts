@@ -59,7 +59,7 @@ export class ProjectScopeService {
     return args as T;
   }
 
-  scopeUpdate<T>(
+  scopeUpdateMany<T>(
     args: Prisma.SelectSubset<T, Prisma.FilterUpdateArgs>,
     projectIds: TProjectIds,
   ): T {

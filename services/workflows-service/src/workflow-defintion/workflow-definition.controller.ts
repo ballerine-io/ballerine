@@ -14,9 +14,9 @@ import { Type } from '@sinclair/typebox';
 import { Validate } from 'ballerine-nestjs-typebox';
 import { ApiValidationErrorResponse } from '@/common/decorators/http/errors.decorator';
 
-@Controller('workflow-definition')
+@ApiTags('Workflow Definition')
 @ApiBearerAuth()
-@ApiTags('workflow-definition')
+@Controller('workflow-definition')
 export class WorkflowDefinitionController {
   constructor(protected readonly workflowDefinitionService: WorkflowDefinitionService) {}
 
@@ -157,22 +157,23 @@ export class WorkflowDefinitionController {
     request: [
       {
         type: 'body',
-        schema: DocumentInsertSchema,
+        schema: Type.Array(DocumentInsertSchema),
         description: 'Documents Schema Update',
+        stripUnknownProps: false,
       },
     ],
     response: Type.Any(),
   })
   @ApiValidationErrorResponse()
   async updateDocumentsSchema(
-    @common.Body() newDocumentsSchemas: any,
+    @common.Body() newDocumentsSchemas: unknown,
     @common.Param('id') id: string,
     @ProjectIds() projectIds: TProjectId[],
   ) {
     return this.workflowDefinitionService.updateDocumentsSchema(
       id,
       projectIds,
-      newDocumentsSchemas,
+      newDocumentsSchemas as (typeof DocumentInsertSchema)[],
     );
   }
 }
