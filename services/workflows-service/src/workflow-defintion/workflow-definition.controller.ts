@@ -5,12 +5,18 @@ import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definit
 import * as common from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
-import { Record, Type } from '@sinclair/typebox';
+import * as typebox from '@sinclair/typebox';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as errors from '../errors';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { DocumentInsertSchema } from '@ballerine/common';
+import { Type } from '@sinclair/typebox';
+import { Validate } from 'ballerine-nestjs-typebox';
+import { ApiValidationErrorResponse } from '@/common/decorators/http/errors.decorator';
 
 @Controller('workflow-definition')
+@ApiBearerAuth()
+@ApiTags('workflow-definition')
 export class WorkflowDefinitionController {
   constructor(protected readonly workflowDefinitionService: WorkflowDefinitionService) {}
 
@@ -27,17 +33,17 @@ export class WorkflowDefinitionController {
   @ApiResponse({
     status: 200,
     description: 'OK',
-    schema: Type.Record(Type.String(), Type.Unknown()),
+    schema: typebox.Type.Record(typebox.Type.String(), typebox.Type.Unknown()),
   })
   @ApiResponse({
     status: 404,
     description: 'Not Found',
-    schema: Type.Record(Type.String(), Type.Unknown()),
+    schema: typebox.Type.Record(typebox.Type.String(), typebox.Type.Unknown()),
   })
   @ApiResponse({
     status: 403,
     description: 'Forbidden',
-    schema: Type.Record(Type.String(), Type.Unknown()),
+    schema: typebox.Type.Record(typebox.Type.String(), typebox.Type.Unknown()),
   })
   async getInputContextSchema(
     @common.Param('id') id: string,
@@ -61,17 +67,17 @@ export class WorkflowDefinitionController {
   @ApiResponse({
     status: 200,
     description: 'OK',
-    schema: Type.Record(Type.String(), Type.Unknown()),
+    schema: typebox.Type.Record(typebox.Type.String(), typebox.Type.Unknown()),
   })
   @ApiResponse({
     status: 404,
     description: 'Not Found',
-    schema: Type.Record(Type.String(), Type.Unknown()),
+    schema: typebox.Type.Record(typebox.Type.String(), typebox.Type.Unknown()),
   })
   @ApiResponse({
     status: 403,
     description: 'Forbidden',
-    schema: Type.Record(Type.String(), Type.Unknown()),
+    schema: typebox.Type.Record(typebox.Type.String(), typebox.Type.Unknown()),
   })
   async getInputContextCustomDataSchema(
     @common.Param('id') id: string,
@@ -106,6 +112,67 @@ export class WorkflowDefinitionController {
       id,
       projectIds,
       customDataSchema,
+    );
+  }
+
+  @common.Get('/:id/documents-schema')
+  @UseCustomerAuthGuard()
+  @ApiResponse({
+    status: 200,
+    description: 'OK',
+    schema: typebox.Type.Record(typebox.Type.String(), typebox.Type.Unknown()),
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found',
+    schema: typebox.Type.Record(typebox.Type.String(), typebox.Type.Unknown()),
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    schema: typebox.Type.Record(typebox.Type.String(), typebox.Type.Unknown()),
+  })
+  async getDocumentsSchema(@common.Param('id') id: string, @ProjectIds() projectIds: TProjectId[]) {
+    try {
+      const documentsSchema = await this.workflowDefinitionService.getDocumentsSchema(
+        id,
+        projectIds,
+      );
+
+      return documentsSchema ?? {};
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No WorkflowDefinition with ID ${id} was found`, {
+          cause: error,
+        });
+      }
+
+      throw error;
+    }
+  }
+
+  @common.Put('/:id/documents-schema')
+  @UseCustomerAuthGuard()
+  @Validate({
+    request: [
+      {
+        type: 'body',
+        schema: DocumentInsertSchema,
+        description: 'Documents Schema Update',
+      },
+    ],
+    response: Type.Any(),
+  })
+  @ApiValidationErrorResponse()
+  async updateDocumentsSchema(
+    @common.Body() newDocumentsSchemas: any,
+    @common.Param('id') id: string,
+    @ProjectIds() projectIds: TProjectId[],
+  ) {
+    return this.workflowDefinitionService.updateDocumentsSchema(
+      id,
+      projectIds,
+      newDocumentsSchemas,
     );
   }
 }
