@@ -7,6 +7,7 @@ import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 
 @common.Controller('external/ui-definition')
+@swagger.ApiTags('UI Definitions')
 export class UIDefinitionExternalController {
   constructor(
     protected readonly service: UiDefinitionService,

@@ -1,10 +1,10 @@
 import { CustomerService } from '@/customer/customer.service';
 import { FilterService } from '@/filter/filter.service';
-import { InputJsonValue, TProjectId, TProjectIds } from '@/types';
+import { InputJsonValue, NullableJsonNullValueInput, TProjectId, TProjectIds } from '@/types';
 import { GetWorkflowDefinitionListDto } from '@/workflow-defintion/dtos/get-workflow-definition-list.dto';
 import { TWorkflowDefinitionWithTransitionSchema } from '@/workflow-defintion/types';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
-import { replaceNullsWithUndefined } from '@ballerine/common';
+import { DocumentInsertSchema, replaceNullsWithUndefined } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { merge } from 'lodash';
@@ -150,12 +150,44 @@ export class WorkflowDefinitionService {
       customData: customDataSchema,
     };
 
-    const { contextSchema } = await this.workflowDefinitionRepository.updateById(id, {
-      data: {
-        contextSchema: { type: 'json-schema', schema: inputContextSchema as InputJsonValue },
+    await this.workflowDefinitionRepository.updateById(
+      id,
+      {
+        data: {
+          contextSchema: { type: 'json-schema', schema: inputContextSchema as InputJsonValue },
+        },
       },
-    });
+      projectIds,
+    );
 
-    return (contextSchema as { schema: TRootLevelContextSchemaDto }).schema.properties.customData;
+    return customDataSchema;
+  }
+
+  async getDocumentsSchema(id: string, projectIds: TProjectIds) {
+    const { documentsSchema } = await this.workflowDefinitionRepository.findById(
+      id,
+      {
+        select: {
+          documentsSchema: true,
+        },
+      },
+      projectIds,
+    );
+
+    return documentsSchema as Record<string, unknown>;
+  }
+
+  async updateDocumentsSchema(
+    id: string,
+    projectIds: TProjectId[],
+    documentsSchema: (typeof DocumentInsertSchema)[],
+  ) {
+    return await this.workflowDefinitionRepository.updateById(
+      id,
+      {
+        data: { documentsSchema: documentsSchema as NullableJsonNullValueInput | InputJsonValue },
+      },
+      projectIds,
+    );
   }
 }
