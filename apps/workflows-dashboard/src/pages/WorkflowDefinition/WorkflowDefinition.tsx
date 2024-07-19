@@ -7,6 +7,7 @@ import { IWorkflow } from '@/domains/workflows/api/workflow';
 import { EditorCard } from '@/pages/WorkflowDefinition/components/EditorCard';
 import { WorkflowDefinitionSummaryCard } from '@/pages/WorkflowDefinition/components/WorkflowDefinitionSummaryCard';
 import { useUIDefinitionByWorkflowDefinitionIdQuery } from '@/pages/WorkflowDefinition/hooks/useUIDefinitionByWorkflowDefinitionIdQuery';
+import { useWorkflowDefinitionEdit } from '@/pages/WorkflowDefinition/hooks/useWorkflowDefinitionEdit';
 import { ViewWorkflow } from '@/pages/Workflows/components/organisms/WorkflowsList/components/ViewWorkflow';
 import { isAxiosError } from 'axios';
 import { Link, useParams } from 'react-router-dom';
@@ -16,6 +17,7 @@ export const WorkflowDefinition = () => {
   const { data, isLoading, error } = useWorkflowDefinitionQuery(id);
   const { data: uiDefinition, isLoading: isLoadingUIDefinition } =
     useUIDefinitionByWorkflowDefinitionIdQuery(id!);
+  const { workflowDefinitionValue, handleSave } = useWorkflowDefinitionEdit(data);
 
   if (isLoading) {
     return (
@@ -51,6 +53,8 @@ export const WorkflowDefinition = () => {
 
   if (!data) return null;
 
+  console.log({ definition: data?.definition });
+
   return (
     <DashboardLayout pageName={`Workflow Definition - ${data?.displayName || data?.name}`}>
       <div className="flex flex-col gap-4">
@@ -64,7 +68,11 @@ export const WorkflowDefinition = () => {
                 />
               </CardHeader>
               <CardContent className="mr-6 flex h-[400px] flex-row overflow-hidden">
-                <XstateVisualizer stateDefinition={data?.definition} state={''} />
+                <XstateVisualizer
+                  stateDefinition={data?.definition}
+                  state={''}
+                  key={JSON.stringify(data?.definition || {})}
+                />
               </CardContent>
             </Card>
           </div>
@@ -73,15 +81,15 @@ export const WorkflowDefinition = () => {
           </div>
         </div>
         <div className="flex flex-row gap-2">
-          <div className="w-1/2">
-            <EditorCard
-              title="Workflow Definition"
-              value={data.definition}
-              onChange={value => {
-                console.log('changed value', value);
-              }}
-            />
-          </div>
+          {workflowDefinitionValue && (
+            <div className="w-1/2">
+              <EditorCard
+                title="Workflow Definition"
+                value={workflowDefinitionValue}
+                onSave={handleSave}
+              />
+            </div>
+          )}
           <div className="w-1/2">
             <EditorCard
               title="UI Definition"

@@ -20,14 +20,19 @@ export const JSONEditorComponent: FunctionComponent<IJSONEditorProps> = ({
     if (!containerRef.current) return;
     if (editorRef.current) return;
 
-    editorRef.current = new JSONEditor(containerRef.current!, { onChangeJSON: onChange });
+    editorRef.current = new JSONEditor(containerRef.current!, {
+      onChange: () => {
+        editorRef.current && onChange && onChange(editorRef.current.get());
+      },
+    });
   }, [containerRef, editorRef]);
 
   useEffect(() => {
     if (!editorRef.current) return;
 
+    //TODO: Each set of value rerenders editor and loses focus, find workarounds
     editorRef.current.set(value);
-  }, [value, editorRef]);
+  }, [editorRef]);
 
   useEffect(() => {
     if (!editorRef.current) return;
