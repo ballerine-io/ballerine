@@ -1,0 +1,91 @@
+name: Database Operations
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select environment'
+        type: choice
+        options:
+        - dev
+        - sb
+        - prod
+        required: true
+      data-sync:
+        description: 'Run data sync'
+        type: boolean
+        default: false
+      data-migration:
+        description: 'Run data migration'
+        type: boolean
+        default: false
+      prisma-migration:
+        description: 'Run Prisma migration'
+        type: boolean
+        default: false
+
+jobs:
+  database-ops:
+    runs-on: ubuntu-latest
+    
+    environment: ${{ github.event.inputs.environment }}
+    
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+        run_install: false
+    
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: ".nvmrc"
+        registry-url: https://registry.npmjs.org
+        cache: 'pnpm'
+    
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: ${{ secrets.AWS_REGION }}
+        role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
+        role-session-name: MySessionName
+        role-duration-seconds: 300
+    
+    - name: Get secrets
+      uses: aws-actions/aws-secretsmanager-get-secrets@v2
+      with:
+        secret-ids: ${{ secrets.AWS_SECRET_MANAGER_WORKFLOW_NAME }}
+    
+    - name: Setup Twingate
+      uses: twingate/github-action@v1
+      with:
+        service-key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
+    
+    - name: Install dependencies
+      run: npm install --legacy-peer-deps
+    
+    - name: Run Data Sync
+      if: ${{ github.event.inputs.data-sync == 'true' }}
+      run: dumb-init npm run db:data-sync
+      env:
+        NODE_ENV: ${{ github.event.inputs.environment }}
+
+    - name: Run Data Migration
+      if: ${{ github.event.inputs.data-migration == 'true' }}
+      run: dumb-init npm run db:data-migration:migrate
+      env:
+        NODE_ENV: ${{ github.event.inputs.environment }}
+
+    - name: Run Prisma Migration
+      if: ${{ github.event.inputs.prisma-migration == 'true' }}
+      run: dumb-init npm run db:migrate-up
+      env:
+        NODE_ENV: ${{ github.event.inputs.environment }}
