@@ -1,5 +1,13 @@
 # @ballerine/blocks
 
+## 0.2.8
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.14
+
 ## 0.2.7
 
 ### Patch Changes
