@@ -1,5 +1,6 @@
 import { App } from '@/App';
 import { withSessionProtected } from '@/common/hocs/withSessionProtected';
+import { AlertDefinitions } from '@/pages/AlertDefinitions';
 import { Filters } from '@/pages/Filters';
 import { Overview } from '@/pages/Overview';
 import { SignIn } from '@/pages/SignIn';
@@ -46,6 +47,10 @@ export const router = createBrowserRouter([
       {
         path: 'ui-definitions',
         Component: withSessionProtected(UIDefinitions),
+      },
+      {
+        path: 'alert-definitions',
+        Component: withSessionProtected(AlertDefinitions),
       },
     ],
   },

@@ -7,7 +7,7 @@ export const UIDefinitions = () => {
   const { data, isLoading } = useUIDefinitionsQuery();
 
   return (
-    <DashboardLayout pageName="Filters">
+    <DashboardLayout pageName="UI Definitions">
       <WorkflowsLayout>
         <WorkflowsLayout.Main>
           <UIDefinitionsTable items={data || []} isFetching={isLoading} />

@@ -6,24 +6,24 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/atoms/Table';
-import { WorkflowsTableSorting } from '@/components/molecules/WorkflowsTable/types';
-import { IWorkflowDefinition } from '@/domains/workflow-definitions';
-import { workflowDefinitionsTableColumns } from '@/pages/WorkflowDefinitions/components/molecules/WorkflowDefinitionsTable/columns';
+import { IAlertDefinition } from '@/domains/alert-definitions';
+import { alertDefinitionsColumns } from '@/pages/AlertDefinitions/components/AlertDefinitionsTable/columns';
+import { UIDefinitionsTableSorting } from '@/pages/UIDefinitions/components/UIDefinitionsTable/types';
 import { flexRender, getCoreRowModel, SortingState, useReactTable } from '@tanstack/react-table';
 import classnames from 'classnames';
 import { memo } from 'react';
 import Scrollbars from 'react-custom-scrollbars';
 
 interface Props {
-  items: IWorkflowDefinition[];
-  sorting?: WorkflowsTableSorting;
+  items: IAlertDefinition[];
+  sorting?: UIDefinitionsTableSorting;
   isFetching?: boolean;
   onSort?: (key: string, direction: 'asc' | 'desc') => void;
 }
 
-export const WorkflowDefinitionsTable = memo(({ items, isFetching, sorting, onSort }: Props) => {
+export const AlertDefinitionsTable = memo(({ items, isFetching, sorting, onSort }: Props) => {
   const table = useReactTable({
-    columns: workflowDefinitionsTableColumns,
+    columns: alertDefinitionsColumns,
     data: items,
     enableColumnResizing: true,
     manualSorting: false,
@@ -84,7 +84,7 @@ export const WorkflowDefinitionsTable = memo(({ items, isFetching, sorting, onSo
             {isEmpty ? (
               <TableRow>
                 <TableCell colSpan={table.getAllColumns().length} className="text-center">
-                  Workflow definitions not found.
+                  Alert Definitions not found.
                 </TableCell>
               </TableRow>
             ) : (

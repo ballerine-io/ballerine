@@ -21,4 +21,8 @@ export const headerNavigationLinks: NavigationLink[] = [
     path: '/ui-definitions',
     label: 'UI Definitions',
   },
+  {
+    path: '/alert-definitions',
+    label: 'Alerts Definitions',
+  },
 ];

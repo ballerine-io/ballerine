@@ -84,7 +84,7 @@ export const FiltersTable = memo(({ items, isFetching, sorting, onSort }: Props)
             {isEmpty ? (
               <TableRow>
                 <TableCell colSpan={table.getAllColumns().length} className="text-center">
-                  Workflows not found.
+                  Filters not found.
                 </TableCell>
               </TableRow>
             ) : (

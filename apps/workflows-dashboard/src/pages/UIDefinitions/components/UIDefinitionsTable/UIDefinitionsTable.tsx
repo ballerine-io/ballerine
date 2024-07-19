@@ -84,7 +84,7 @@ export const UIDefinitionsTable = memo(({ items, isFetching, sorting, onSort }: 
             {isEmpty ? (
               <TableRow>
                 <TableCell colSpan={table.getAllColumns().length} className="text-center">
-                  Workflows not found.
+                  UI Definitions not found.
                 </TableCell>
               </TableRow>
             ) : (
