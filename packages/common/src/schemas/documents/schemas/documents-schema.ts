@@ -423,21 +423,24 @@ export const DocumentInsertSchema = Type.Object({
   category: categorySchema,
   type: typeSchema,
   issuingVersion: issuingVersionSchema,
-
-  properties: Type.Record(
-    Type.String(),
-    Type.Object({
-      type: Type.String(),
-      description: Type.Optional(Type.String()),
-      format: Type.Optional(Type.String()),
-      enum: Type.Optional(Type.Array(Type.Any())),
-      minimum: Type.Optional(Type.Number()),
-      maximum: Type.Optional(Type.Number()),
-      minLength: Type.Optional(Type.Number()),
-      maxLength: Type.Optional(Type.Number()),
-      pattern: Type.Optional(Type.String()),
-    }),
-  ),
+  version: Type.Optional(Type.Number()),
+  propertiesSchema: Type.Object({
+    type: Type.Literal('object'),
+    properties: Type.Record(
+      Type.String(),
+      Type.Object({
+        type: Type.String(),
+        description: Type.Optional(Type.String()),
+        format: Type.Optional(Type.String()),
+        enum: Type.Optional(Type.Array(Type.Any())),
+        minimum: Type.Optional(Type.Number()),
+        maximum: Type.Optional(Type.Number()),
+        minLength: Type.Optional(Type.Number()),
+        maxLength: Type.Optional(Type.Number()),
+        pattern: Type.Optional(Type.String()),
+      }),
+    ),
+  }),
   required: Type.Optional(Type.Array(Type.String())),
   additionalProperties: Type.Optional(Type.Boolean()),
 });
