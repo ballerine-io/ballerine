@@ -162,30 +162,33 @@ export class CollectionFlowService {
       return step;
     });
 
-    const updatedDefinition = await this.workflowDefinitionRepository.updateById(configurationId, {
-      data: {
-        definition: {
-          // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
-          ...definition?.definition,
-          states: {
+    const updatedDefinition = await this.workflowDefinitionRepository.updateById(
+      configurationId,
+      {
+        data: {
+          definition: {
             // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
-            ...definition.definition?.states,
-            data_collection: {
+            ...definition?.definition,
+            states: {
               // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
-              ...definition.definition?.states?.data_collection,
-              metadata: {
-                uiSettings: {
-                  multiForm: {
-                    steps: mergedSteps,
+              ...definition.definition?.states,
+              data_collection: {
+                // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
+                ...definition.definition?.states?.data_collection,
+                metadata: {
+                  uiSettings: {
+                    multiForm: {
+                      steps: mergedSteps,
+                    },
                   },
                 },
               },
             },
           },
         },
-        projectId,
       },
-    });
+      projectIds,
+    );
 
     return plainToClass(FlowConfigurationModel, {
       id: updatedDefinition.id,

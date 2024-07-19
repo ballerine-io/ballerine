@@ -115,16 +115,23 @@ export class WorkflowDefinitionRepository {
     });
   }
 
-  async updateById<T extends Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>(
+  async updateById(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>,
+    args: Pick<Prisma.WorkflowDefinitionUpdateArgs, 'data'>,
+    projectIds: TProjectIds,
   ): Promise<WorkflowDefinition> {
-    args.data.definition && validateDefinitionLogic(args.data);
+    const scopedArgs = this.scopeService.scopeUpdate(
+      {
+        ...args,
+        where: { id },
+      },
+      projectIds,
+    );
+    if (args.data?.definition) {
+      validateDefinitionLogic(args.data.definition as any);
+    }
 
-    return await this.prisma.workflowDefinition.update({
-      where: { id },
-      ...args,
-    });
+    return await this.prisma.workflowDefinition.update(scopedArgs);
   }
 
   async deleteById<T extends Omit<Prisma.WorkflowDefinitionDeleteArgs, 'where'>>(

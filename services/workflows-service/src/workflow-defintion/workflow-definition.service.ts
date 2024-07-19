@@ -1,12 +1,17 @@
 import { CustomerService } from '@/customer/customer.service';
 import { FilterService } from '@/filter/filter.service';
-import { TProjectId, TProjectIds } from '@/types';
+import { InputJsonValue, NullableJsonNullValueInput, TProjectId, TProjectIds } from '@/types';
 import { GetWorkflowDefinitionListDto } from '@/workflow-defintion/dtos/get-workflow-definition-list.dto';
 import { TWorkflowDefinitionWithTransitionSchema } from '@/workflow-defintion/types';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
-import { DefaultContextSchema, replaceNullsWithUndefined } from '@ballerine/common';
+import {
+  DefaultContextSchema,
+  DocumentInsertSchema,
+  replaceNullsWithUndefined,
+} from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { Static } from '@sinclair/typebox';
 import { merge } from 'lodash';
 
 @Injectable()
@@ -143,8 +148,40 @@ export class WorkflowDefinitionService {
 
     inputContextSchema.customData = customDataSchema;
 
-    return await this.workflowDefinitionRepository.updateById(id, {
-      data: { contextSchema: inputContextSchema },
-    });
+    return await this.workflowDefinitionRepository.updateById(
+      id,
+      {
+        data: { contextSchema: inputContextSchema },
+      },
+      projectIds,
+    );
+  }
+
+  async getDocumentsSchema(id: string, projectIds: TProjectIds) {
+    const { documentsSchema } = await this.workflowDefinitionRepository.findById(
+      id,
+      {
+        select: {
+          documentsSchema: true,
+        },
+      },
+      projectIds,
+    );
+
+    return documentsSchema as Record<string, unknown>;
+  }
+
+  async updateDocumentsSchema(
+    id: string,
+    projectIds: TProjectId[],
+    documentsSchema: Static<typeof DocumentInsertSchema>[],
+  ) {
+    return await this.workflowDefinitionRepository.updateById(
+      id,
+      {
+        data: { documentsSchema: documentsSchema as NullableJsonNullValueInput | InputJsonValue },
+      },
+      projectIds,
+    );
   }
 }
