@@ -312,7 +312,7 @@ export const useDocumentBlocks = ({
         const entityNameOrNA = valueOrNA(toTitleCase(workflow?.entity?.name ?? ''));
         const categoryOrNA = valueOrNA(toTitleCase(category ?? ''));
         const documentTypeOrNA = valueOrNA(toTitleCase(docType ?? ''));
-        const documentNameOrNA = `${categoryOrNA} ${
+        const documentNameOrNA = `${categoryOrNA} - ${
           withEntityNameInHeader ? '' : ` ${documentTypeOrNA}`
         }`;
         const headerCell = createBlocksTyped()

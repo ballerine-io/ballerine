@@ -27,6 +27,8 @@ export const ActivePerWorkflowChart = ({ isLoading, data }: Props) => {
     [data],
   );
 
+  console.log({ chartData });
+
   return (
     <MetricCard
       isLoading={isLoading}

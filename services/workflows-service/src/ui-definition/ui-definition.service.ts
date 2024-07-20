@@ -1,8 +1,8 @@
+import type { TProjectIds } from '@/types';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
-import type { TProjectIds } from '@/types';
-import { Prisma, UiDefinitionContext } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
+import { Prisma, UiDefinitionContext } from '@prisma/client';
 
 @Injectable()
 export class UiDefinitionService {
@@ -51,5 +51,9 @@ export class UiDefinitionService {
       projectIds,
       args,
     );
+  }
+
+  async list(projectIds: TProjectIds) {
+    return await this.repository.findMany({}, projectIds);
   }
 }

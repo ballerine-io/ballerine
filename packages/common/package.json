@@ -2,7 +2,7 @@
   "private": false,
   "name": "@ballerine/common",
   "author": "Ballerine <dev@ballerine.com>",
-  "version": "0.9.12",
+  "version": "0.9.14",
   "description": "common",
   "module": "./dist/esm/index.js",
   "main": "./dist/cjs/index.js",
@@ -38,8 +38,8 @@
     "@babel/core": "7.17.9",
     "@babel/preset-env": "7.16.11",
     "@babel/preset-typescript": "7.16.7",
-    "@ballerine/config": "^1.1.5",
-    "@ballerine/eslint-config": "^1.1.5",
+    "@ballerine/config": "^1.1.7",
+    "@ballerine/eslint-config": "^1.1.7",
     "@cspell/cspell-types": "^6.31.1",
     "@rollup/plugin-babel": "5.3.1",
     "@rollup/plugin-commonjs": "^24.0.1",
@@ -78,7 +78,7 @@
     "vitest": "^0.28.4"
   },
   "dependencies": {
-    "@sinclair/typebox": "^0.31.7",
+    "@sinclair/typebox": "0.32.15",
     "ajv": "^8.12.0",
     "json-schema-to-zod": "^0.6.3",
     "lodash.isempty": "^4.4.0",

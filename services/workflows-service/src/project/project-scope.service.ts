@@ -59,6 +59,22 @@ export class ProjectScopeService {
     return args as T;
   }
 
+  scopeUpdateMany<T>(
+    args: Prisma.SelectSubset<T, Prisma.FilterUpdateArgs>,
+    projectIds: TProjectIds,
+  ): T {
+    // @ts-expect-error - dynamically typed for all queries
+    args.where = {
+      // @ts-expect-error - dynamically typed for all queries
+      ...args.where,
+      project: {
+        id: { in: projectIds },
+      },
+    };
+
+    return args as T;
+  }
+
   scopeFindFirst<T>(args: any, projectIds?: TProjectIds): any {
     args.where = {
       ...args.where,
