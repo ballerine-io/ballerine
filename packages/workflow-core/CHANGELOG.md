@@ -1,5 +1,17 @@
 # @ballerine/workflow-core
 
+## 0.6.20
+
+### Patch Changes
+
+- added errored plugins persist to destination logic
+
+## 0.6.19
+
+### Patch Changes
+
+- Fix rules
+
 ## 0.6.18
 
 ### Patch Changes

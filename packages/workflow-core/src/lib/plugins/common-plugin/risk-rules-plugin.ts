@@ -25,7 +25,9 @@ export class RiskRulePlugin {
     try {
       const rulesetResult = await this.action(context, this.rulesSource);
 
-      const { riskScore, rulesResults } = this.calculateRiskScore(rulesetResult);
+      const { riskScore, rulesResults } = this.calculateRiskScore(
+        rulesetResult.filter(ruleResult => ruleResult.result.every(r => r.status === 'PASSED')),
+      );
 
       const indicators = rulesResults
         .filter(rule => rule.result.every(result => result.status === 'PASSED'))
