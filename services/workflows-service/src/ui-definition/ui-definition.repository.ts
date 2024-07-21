@@ -77,4 +77,13 @@ export class UiDefinitionRepository {
       ),
     );
   }
+
+  async findMany<T extends Prisma.UiDefinitionFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UiDefinitionFindManyArgs>,
+    projectIds: TProjectIds,
+  ): Promise<UiDefinition[]> {
+    return await this.prisma.uiDefinition.findMany(
+      this.scopeService.scopeFindMany(args, projectIds),
+    );
+  }
 }

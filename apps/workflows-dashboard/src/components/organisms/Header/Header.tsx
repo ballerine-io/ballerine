@@ -8,7 +8,7 @@ export const Header = () => {
   const { logout } = useLogoutMutation();
 
   return (
-    <div className="border-b">
+    <div className="sticky top-0 border-b bg-white">
       <div className="flex h-16 flex-nowrap items-center justify-between px-4">
         <div className="flex flex-1 gap-4">
           <UserNavigation onLogout={logout} />

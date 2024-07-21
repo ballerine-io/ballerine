@@ -2,22 +2,22 @@ import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import * as common from '@nestjs/common';
 import { UseGuards, UsePipes } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
-import * as errors from '../errors';
 import { plainToClass } from 'class-transformer';
 import type { Request } from 'express';
+import * as errors from '../errors';
 // import * as nestAccessControl from 'nest-access-control';
-import { isRecordNotFoundError } from '@/prisma/prisma.util';
-import { FilterFindManyArgs } from '@/filter/dtos/filter-find-many-args';
-import { FilterModel } from '@/filter/filter.model';
-import { FilterWhereUniqueInput } from '@/filter/dtos/filter-where-unique-input';
-import { FilterService } from '@/filter/filter.service';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { FilterCreateDto } from '@/filter/dtos/filter-create';
+import { FilterFindManyArgs } from '@/filter/dtos/filter-find-many-args';
+import { FilterWhereUniqueInput } from '@/filter/dtos/filter-where-unique-input';
 import { FilterCreateSchema } from '@/filter/dtos/temp-zod-schemas';
-import type { InputJsonValue, TProjectIds } from '@/types';
-import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { FilterModel } from '@/filter/filter.model';
+import { FilterService } from '@/filter/filter.service';
+import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
+import type { InputJsonValue, TProjectIds } from '@/types';
 
 @swagger.ApiTags('Filters')
 @common.Controller('external/filters')
@@ -36,8 +36,36 @@ export class FilterControllerExternal {
   async list(
     @ProjectIds() projectIds: TProjectIds,
     @common.Req() request: Request,
-  ): Promise<FilterModel[]> {
-    const args = plainToClass(FilterFindManyArgs, request.query);
+  ): Promise<
+    | FilterModel[]
+    | {
+        items: FilterModel[];
+        meta: {
+          pages: number;
+          total: number;
+        };
+      }
+  > {
+    const { page, limit, ...queryParams } = request.query;
+
+    const args = plainToClass(FilterFindManyArgs, queryParams);
+
+    const isPaginationIncluded = page && limit;
+
+    if (isPaginationIncluded) {
+      const totalItems = await this.service.count(args, projectIds);
+
+      return {
+        items: await this.service.list(
+          { ...args, skip: Number(limit) * (Number(page) - 1), take: Number(limit) },
+          projectIds,
+        ),
+        meta: {
+          pages: Math.max(Math.ceil(totalItems / Number(limit)), 1),
+          total: totalItems,
+        },
+      };
+    }
 
     return this.service.list(args, projectIds);
   }
