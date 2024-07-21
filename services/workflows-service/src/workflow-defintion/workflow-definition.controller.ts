@@ -239,7 +239,7 @@ export class WorkflowDefinitionController {
     return this.workflowDefinitionService.updateDocumentsSchema(
       id,
       projectIds,
-      newDocumentsSchemas as (typeof DocumentInsertSchema)[],
+      newDocumentsSchemas as Array<typeof DocumentInsertSchema>,
     );
   }
 }
