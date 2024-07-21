@@ -13,13 +13,7 @@ import {
 } from './types';
 
 import { z, ZodSchema } from 'zod';
-import {
-  BaseOperationsValueSchema,
-  BetweenSchema,
-  LastYearsSchema,
-  PrimitiveArraySchema,
-  PrimitiveSchema,
-} from './schemas';
+import { BetweenSchema, LastYearsSchema, PrimitiveArraySchema, PrimitiveSchema } from './schemas';
 
 import { ValidationFailedError, DataValueNotFoundError } from '../errors';
 import { OperationHelpers } from './constants';

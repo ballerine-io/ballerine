@@ -299,7 +299,7 @@ describe('Rule Engine', () => {
       rules: [
         {
           key: 'pluginsOutput.businessInformation.data[0].establishDate',
-          operation: OPERATION.LAST_YEAR,
+          operator: OPERATION.LAST_YEAR,
           value: { years: 1 },
         },
       ],

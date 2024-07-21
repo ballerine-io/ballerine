@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { Injectable } from '@nestjs/common';
 import { NotionService } from '@/notion/notion.service';
 import z from 'zod';
@@ -53,7 +54,12 @@ export class RiskRuleService {
     private readonly logger: AppLoggerService,
   ) {}
 
-  public async findAll({ databaseId, source }: TFindAllRulesOptions) {
+  public async findAll(
+    { databaseId, source }: TFindAllRulesOptions,
+    options: { shouldThrowOnValidation: boolean } = {
+      shouldThrowOnValidation: false,
+    },
+  ) {
     if (source === 'notion') {
       const records = await this.notionService.getAllDatabaseRecordsValues({
         databaseId,
@@ -62,14 +68,29 @@ export class RiskRuleService {
       const validatedRecords: Array<z.infer<typeof NotionRiskRuleRecordSchema>> = [];
 
       for (const record of records) {
+        if (isEmpty(record.ID)) {
+          continue;
+        }
+
         const validatedRecord = NotionRiskRuleRecordSchema.safeParse(record);
 
         if (!validatedRecord.success) {
-          this.logger.error('Notion risk rule record schema validation failed', {
-            databaseId,
-            record,
-            error: validatedRecord.error,
-          });
+          this.logger.error(
+            `Notion risk rule record schema validation failed\n Message: ${JSON.stringify(
+              validatedRecord.error.format(),
+              null,
+              2,
+            )}`,
+            {
+              databaseId,
+              record,
+              error: validatedRecord.error,
+            },
+          );
+
+          if (options.shouldThrowOnValidation) {
+            throw validatedRecord.error;
+          }
 
           continue;
         }
