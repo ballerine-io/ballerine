@@ -1,13 +1,13 @@
-import * as childProcess from 'child_process';
-import react from '@vitejs/plugin-react';
-import * as path from 'path';
 import { sentryVitePlugin, SentryVitePluginOptions } from '@sentry/vite-plugin';
+import react from '@vitejs/plugin-react';
+import * as childProcess from 'child_process';
 import * as fs from 'fs';
+import * as path from 'path';
 import tailwindcss from 'tailwindcss';
 import { PluginOption } from 'vite';
-import { defineConfig } from 'vitest/config';
 import checker from 'vite-plugin-checker';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vitest/config';
 
 interface PackageJson {
   name: string;
@@ -64,6 +64,13 @@ export default defineConfig({
   },
   build: {
     sourcemap: true,
+    lib: {
+      entry: {
+        index: './src/lib/collection-flow-portable/index.ts',
+      },
+      formats: ['es'],
+      name: 'collection-flow-portable',
+    },
   },
   plugins,
   test: {

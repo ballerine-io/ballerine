@@ -2,10 +2,10 @@ import { collectionFlowQuerykeys } from '@/domains/collection-flow';
 import { useQuery } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 
-export const useCustomerQuery = () => {
+export const useCustomerQuery = (enabled = true) => {
   const { data, isLoading, error } = useQuery(
     // @ts-ignore
-    collectionFlowQuerykeys.getCustomer(),
+    { ...collectionFlowQuerykeys.getCustomer(), enabled },
   );
 
   return {

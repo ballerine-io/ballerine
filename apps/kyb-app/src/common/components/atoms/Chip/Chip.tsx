@@ -1,7 +1,7 @@
 import { ctw } from '@ballerine/ui';
 import { cva, VariantProps } from 'class-variance-authority';
 
-type BaseChipVariantProps = VariantProps<typeof baseChipVariants>;
+export type BaseChipVariantProps = VariantProps<typeof baseChipVariants>;
 
 const baseChipVariants = cva('flex transition-all gap-2 px-4 py-2 rounded-2xl items-center', {
   variants: {
