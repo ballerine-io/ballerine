@@ -1,4 +1,5 @@
 import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
+import { WorkflowExtensionSchema } from '@/workflow/schemas/extenstions.schemas';
 import { ApiProperty } from '@nestjs/swagger';
 import { ValidateNested } from 'class-validator';
 
@@ -18,3 +19,5 @@ export class GetWorkflowsRuntimeOutputDto {
   @ApiProperty({ type: () => Pagination })
   meta!: Pagination;
 }
+
+export const GetWorkflowPluginOutput = WorkflowExtensionSchema;
