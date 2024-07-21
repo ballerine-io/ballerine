@@ -11,6 +11,11 @@ export class ForbiddenException extends common.ForbiddenException {
   statusCode!: number;
   @ApiProperty()
   message!: string;
+
+  constructor(message: string, options?: { cause?: Error }) {
+    super(message, options);
+    this.message = message;
+  }
 }
 
 export class NotFoundException extends common.NotFoundException {
@@ -18,6 +23,11 @@ export class NotFoundException extends common.NotFoundException {
   statusCode!: number;
   @ApiProperty()
   message!: string;
+
+  constructor(message: string, options?: { cause?: Error }) {
+    super(message, options);
+    this.message = message;
+  }
 }
 
 export class SessionExpiredException extends common.UnauthorizedException {
@@ -25,6 +35,11 @@ export class SessionExpiredException extends common.UnauthorizedException {
   statusCode!: number;
   @ApiProperty()
   message!: string;
+
+  constructor(message: string, options?: { cause?: Error }) {
+    super(message, options);
+    this.message = message;
+  }
 }
 
 class DetailedValidationError {

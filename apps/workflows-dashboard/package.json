@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflows-dashboard",
   "private": false,
-  "version": "0.2.5",
+  "version": "0.2.7",
   "type": "module",
   "scripts": {
     "spellcheck": "cspell \"*\"",
@@ -14,6 +14,7 @@
     "test": "NODE_ENV=test jest"
   },
   "dependencies": {
+    "@ballerine/common": "^0.9.14",
     "@lukemorales/query-key-factory": "^1.0.3",
     "@radix-ui/react-avatar": "^1.0.3",
     "@radix-ui/react-dialog": "1.0.4",
@@ -36,6 +37,7 @@
     "cmdk": "^0.2.0",
     "dayjs": "^1.11.6",
     "install": "^0.13.0",
+    "jsoneditor": "^10.1.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.144.0",
     "react": "^18.2.0",
@@ -45,6 +47,7 @@
     "react-json-view": "^1.21.3",
     "react-router-dom": "^6.11.2",
     "recharts": "^2.7.2",
+    "string-ts": "^1.2.0",
     "tailwind-merge": "^1.13.2",
     "tailwindcss-animate": "^1.0.5",
     "use-query-params": "^2.2.1",
@@ -53,12 +56,13 @@
     "zod": "^3.22.3"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.1.5",
-    "@ballerine/eslint-config-react": "^2.0.5",
+    "@ballerine/config": "^1.1.7",
+    "@ballerine/eslint-config-react": "^2.0.7",
     "@cspell/cspell-types": "^6.31.1",
     "@types/axios": "^0.14.0",
     "@types/classnames": "^2.3.1",
     "@types/jest": "^26.0.19",
+    "@types/jsoneditor": "^9.9.5",
     "@types/lodash": "^4.14.191",
     "@types/moment": "^2.13.0",
     "@types/node": "^20.3.1",

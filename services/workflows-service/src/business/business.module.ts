@@ -32,6 +32,7 @@ import { BusinessService } from './business.service';
 // eslint-disable-next-line import/no-cycle
 import { BusinessReportModule } from '@/business-report/business-report.module';
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
+import { SentryService } from '@/sentry/sentry.service';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
     WorkflowTokenRepository,
     UiDefinitionRepository,
     UiDefinitionService,
+    SentryService,
   ],
   exports: [BusinessService],
 })

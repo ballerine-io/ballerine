@@ -1,22 +1,23 @@
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { NotFoundException } from '@/errors';
 import { GetUserCasesResolvedDailyDto } from '@/metrics/dto/get-user-cases-resolved-daily.dto';
 import { GetUserWorkflowProcessingStatisticDto } from '@/metrics/dto/get-user-workflow-processing-statistic.dto';
 import { GetUsersAssignedCasesStatisticDto } from '@/metrics/dto/get-users-assigned-cases-statistic.dto';
 import { GetUsersResolvedCasesStatisticDto } from '@/metrics/dto/get-users-resolved-cases-statistic.dto';
 import { GetWorkflowRuntimesStatusCountDto } from '@/metrics/dto/get-workflow-runtimes-status-count.dto';
+import { CasesResolvedInDay } from '@/metrics/repository/models/cases-resolved-daily.model';
 import { MetricsUserModel } from '@/metrics/repository/models/metrics-user.model';
 import { UserAssignedCasesStatisticModel } from '@/metrics/repository/models/user-assigned-cases-statistic.model';
-import { CasesResolvedInDay } from '@/metrics/repository/models/cases-resolved-daily.model';
 import { UserResolvedCasesStatisticModel } from '@/metrics/repository/models/user-resolved-cases-statistic.model';
+import { WorkflowDefinitionVariantsMetricModel } from '@/metrics/repository/models/workflow-definition-variants-metric.model';
 import { WorkflowRuntimeStatisticModel } from '@/metrics/repository/models/workflow-runtime-statistic.model';
 import { WorkflowRuntimeStatusCaseCountModel } from '@/metrics/repository/models/workflow-runtime-status-case-count.model';
 import { MetricsService } from '@/metrics/service/metrics.service';
 import { UserWorkflowProcessingStatisticModel } from '@/metrics/service/models/user-workflow-processing-statistic.model';
+import type { TProjectIds } from '@/types';
 import * as common from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import type { TProjectIds } from '@/types';
 
 @ApiTags('Metrics')
 @Controller('/metrics')
@@ -101,5 +102,12 @@ export class MetricsController {
   @common.Get('/users')
   async getActiveUsers(@ProjectIds() projectIds: TProjectIds): Promise<MetricsUserModel[]> {
     return await this.metricsService.listActiveUsers(projectIds);
+  }
+
+  @ApiOkResponse({ type: [WorkflowDefinitionVariantsMetricModel] })
+  @common.HttpCode(200)
+  @common.Get('/workflow-definition/variants-metric')
+  async getWorkflowDefinitionVariantsMetric(@ProjectIds() projectIds: TProjectIds) {
+    return await this.metricsService.getWorkflowDefinitionVariantsMetric(projectIds);
   }
 }

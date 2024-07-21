@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
 import { FilterRepository } from '@/filter/filter.repository';
 import type { TProjectIds } from '@/types';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class FilterService {
@@ -12,6 +12,10 @@ export class FilterService {
 
   async list(args: Parameters<FilterRepository['findMany']>[0], projectIds: TProjectIds) {
     return await this.repository.findMany(args, projectIds);
+  }
+
+  async count(args: Parameters<FilterRepository['count']>[0], projectIds: TProjectIds) {
+    return await this.repository.count(args, projectIds);
   }
 
   async getById(

@@ -35,6 +35,7 @@ import { AlertModule } from '@/alert/alert.module';
 import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
 import { AlertDefinitionModule } from '@/alert-definition/alert-definition.module';
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
+import { SentryService } from '@/sentry/sentry.service';
 
 @Module({
   controllers: [WebhooksController],
@@ -76,6 +77,7 @@ import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
     FilterService,
     FilterRepository,
     WebhooksService,
+    SentryService,
   ],
   exports: [],
 })
