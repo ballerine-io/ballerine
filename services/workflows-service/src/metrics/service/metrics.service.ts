@@ -1,8 +1,9 @@
 import { MetricsRepository } from '@/metrics/repository/metrics.repository';
+import { CasesResolvedInDay } from '@/metrics/repository/models/cases-resolved-daily.model';
 import { MetricsUserModel } from '@/metrics/repository/models/metrics-user.model';
 import { UserAssignedCasesStatisticModel } from '@/metrics/repository/models/user-assigned-cases-statistic.model';
-import { CasesResolvedInDay } from '@/metrics/repository/models/cases-resolved-daily.model';
 import { UserResolvedCasesStatisticModel } from '@/metrics/repository/models/user-resolved-cases-statistic.model';
+import { WorkflowDefinitionVariantsMetricModel } from '@/metrics/repository/models/workflow-definition-variants-metric.model';
 import { WorkflowRuntimeStatisticModel } from '@/metrics/repository/models/workflow-runtime-statistic.model';
 import { WorkflowRuntimeStatusCaseCountModel } from '@/metrics/repository/models/workflow-runtime-status-case-count.model';
 import { FindUsersAssignedCasesStatisticParams } from '@/metrics/repository/types/find-users-assigned-cases-statistic.params';
@@ -11,8 +12,8 @@ import { GetRuntimeStatusCaseCountParams } from '@/metrics/repository/types/get-
 import { ListUserCasesResolvedDailyParams } from '@/metrics/repository/types/list-user-cases-resolved-daily.params';
 import { UserWorkflowProcessingStatisticModel } from '@/metrics/service/models/user-workflow-processing-statistic.model';
 import { GetUserWorkflowProcessingStatisticParams } from '@/metrics/service/types/get-user-workflow-processing-statistic.params';
-import { Injectable } from '@nestjs/common';
 import type { TProjectIds } from '@/types';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class MetricsService {
@@ -85,5 +86,11 @@ export class MetricsService {
 
   async listActiveUsers(projectIds: TProjectIds): Promise<MetricsUserModel[]> {
     return await this.metricsRepository.listUsers(projectIds);
+  }
+
+  async getWorkflowDefinitionVariantsMetric(
+    projectIds: TProjectIds,
+  ): Promise<WorkflowDefinitionVariantsMetricModel[]> {
+    return await this.metricsRepository.getWorkflowDefinitionVariantsMetric(projectIds);
   }
 }

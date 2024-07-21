@@ -73,6 +73,8 @@ export {
   getDocumentSchemaByCountry,
   getDocumentsByCountry,
   getGhanaDocuments,
+  DocumentsSchema,
+  DocumentInsertSchema,
 } from './schemas';
 
 export * from './consts';

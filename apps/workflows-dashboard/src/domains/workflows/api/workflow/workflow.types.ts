@@ -34,10 +34,3 @@ export interface GetWorkflowsDto {
 }
 
 export type IWorkflowDefinition = object;
-
-export interface GetWorkflowDefinitionResponse {
-  definition: IWorkflowDefinition;
-}
-export interface GetWorkflowDefinitionDto {
-  workflowId: string;
-}
