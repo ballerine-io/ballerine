@@ -1,9 +1,9 @@
+import { PrismaService } from '@/prisma/prisma.service';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import type { TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from '@/prisma/prisma.service';
 import { FilterModel } from './filter.model';
-import type { TProjectIds } from '@/types';
-import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Injectable()
 export class FilterRepository {
@@ -23,6 +23,13 @@ export class FilterRepository {
     projectIds: TProjectIds,
   ) {
     return await this.prisma.filter.findMany(this.scopeService.scopeFindMany(args, projectIds));
+  }
+
+  async count<T extends Prisma.FilterCountArgs>(
+    args: Prisma.SelectSubset<T, Prisma.FilterCountArgs>,
+    projectIds: TProjectIds,
+  ) {
+    return await this.prisma.filter.count(this.scopeService.scopeFindMany(args, projectIds) as any);
   }
 
   async findById(id: string, args: Prisma.FilterFindFirstArgs, projectIds: TProjectIds) {

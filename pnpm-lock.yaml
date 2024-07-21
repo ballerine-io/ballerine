@@ -61,22 +61,22 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.2.6
+        specifier: 0.2.8
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: 0.9.12
+        specifier: 0.9.14
         version: link:../../packages/common
       '@ballerine/react-pdf-toolkit':
-        specifier: ^1.2.6
+        specifier: ^1.2.8
         version: link:../../packages/react-pdf-toolkit
       '@ballerine/ui':
-        specifier: ^0.5.6
+        specifier: ^0.5.8
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.20
+        specifier: 0.6.22
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.20
+        specifier: 0.6.22
         version: link:../../sdks/workflow-node-sdk
       '@fontsource/inter':
         specifier: ^4.5.15
@@ -269,10 +269,10 @@ importers:
         version: 3.22.4
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../../packages/config
       '@ballerine/eslint-config-react':
-        specifier: ^2.0.5
+        specifier: ^2.0.7
         version: link:../../packages/eslint-config-react
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -410,16 +410,16 @@ importers:
   apps/kyb-app:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.2.6
+        specifier: 0.2.8
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: ^0.9.12
+        specifier: ^0.9.14
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.5.6
+        specifier: 0.5.8
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.20
+        specifier: 0.6.22
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -537,10 +537,10 @@ importers:
         version: 3.22.4
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../../packages/config
       '@ballerine/eslint-config-react':
-        specifier: ^2.0.5
+        specifier: ^2.0.7
         version: link:../../packages/eslint-config-react
       '@jest/globals':
         specifier: ^29.7.0
@@ -641,6 +641,9 @@ importers:
 
   apps/workflows-dashboard:
     dependencies:
+      '@ballerine/common':
+        specifier: ^0.9.14
+        version: link:../../packages/common
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
         version: 1.3.2(@tanstack/query-core@5.17.19)(@tanstack/react-query@4.36.1)
@@ -707,6 +710,9 @@ importers:
       install:
         specifier: ^0.13.0
         version: 0.13.0
+      jsoneditor:
+        specifier: ^10.1.0
+        version: 10.1.0
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -734,6 +740,9 @@ importers:
       recharts:
         specifier: ^2.7.2
         version: 2.9.3(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)
+      string-ts:
+        specifier: ^1.2.0
+        version: 1.3.3
       tailwind-merge:
         specifier: ^1.13.2
         version: 1.14.0
@@ -754,10 +763,10 @@ importers:
         version: 3.22.4
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../../packages/config
       '@ballerine/eslint-config-react':
-        specifier: ^2.0.5
+        specifier: ^2.0.7
         version: link:../../packages/eslint-config-react
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -771,6 +780,9 @@ importers:
       '@types/jest':
         specifier: ^26.0.19
         version: 26.0.24
+      '@types/jsoneditor':
+        specifier: ^9.9.5
+        version: 9.9.5
       '@types/lodash':
         specifier: ^4.14.191
         version: 4.14.201
@@ -844,10 +856,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.12
+        specifier: 0.9.14
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.20
+        specifier: 0.6.22
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -941,7 +953,7 @@ importers:
   examples/report-generation-example:
     dependencies:
       '@ballerine/react-pdf-toolkit':
-        specifier: ^1.2.6
+        specifier: ^1.2.8
         version: link:../../packages/react-pdf-toolkit
       react:
         specifier: ^18.2.0
@@ -984,7 +996,7 @@ importers:
   packages/blocks:
     dependencies:
       '@ballerine/common':
-        specifier: ^0.9.12
+        specifier: ^0.9.14
         version: link:../common
     devDependencies:
       '@babel/core':
@@ -1000,10 +1012,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../eslint-config
       '@rollup/plugin-babel':
         specifier: 5.3.1
@@ -1079,7 +1091,7 @@ importers:
         version: 3.7.2(eslint@8.54.0)(typescript@5.1.6)
       eslint-plugin-import:
         specifier: ^2.22.0
-        version: 2.29.0(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.54.0)
+        version: 2.29.0(@typescript-eslint/parser@5.62.0)(eslint@8.54.0)
       eslint-plugin-storybook:
         specifier: ^0.6.13
         version: 0.6.15(eslint@8.54.0)(typescript@5.1.6)
@@ -1141,8 +1153,8 @@ importers:
   packages/common:
     dependencies:
       '@sinclair/typebox':
-        specifier: ^0.31.7
-        version: 0.31.26
+        specifier: 0.32.15
+        version: 0.32.15
       ajv:
         specifier: ^8.12.0
         version: 8.12.0
@@ -1169,10 +1181,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1242,7 +1254,7 @@ importers:
         version: 3.7.2(eslint@8.54.0)(typescript@4.9.5)
       eslint-plugin-import:
         specifier: ^2.22.0
-        version: 2.29.0(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.54.0)
+        version: 2.29.0(@typescript-eslint/parser@5.62.0)(eslint@8.54.0)
       eslint-plugin-unused-imports:
         specifier: ^2.0.0
         version: 2.0.0(@typescript-eslint/eslint-plugin@5.62.0)(eslint@8.54.0)
@@ -1315,7 +1327,7 @@ importers:
   packages/eslint-config-react:
     dependencies:
       '@ballerine/eslint-config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../eslint-config
       eslint-plugin-react:
         specifier: ^7.33.2
@@ -1327,10 +1339,10 @@ importers:
   packages/react-pdf-toolkit:
     dependencies:
       '@ballerine/config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../config
       '@ballerine/ui':
-        specifier: 0.5.6
+        specifier: 0.5.8
         version: link:../ui
       '@react-pdf/renderer':
         specifier: ^3.1.14
@@ -1449,10 +1461,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1510,7 +1522,7 @@ importers:
         version: 3.7.2(eslint@8.54.0)(typescript@4.9.5)
       eslint-plugin-import:
         specifier: ^2.22.0
-        version: 2.29.0(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.54.0)
+        version: 2.29.0(@typescript-eslint/parser@5.62.0)(eslint@8.54.0)
       eslint-plugin-unused-imports:
         specifier: ^2.0.0
         version: 2.0.0(@typescript-eslint/eslint-plugin@5.62.0)(eslint@8.54.0)
@@ -1554,7 +1566,7 @@ importers:
   packages/ui:
     dependencies:
       '@ballerine/common':
-        specifier: ^0.9.12
+        specifier: ^0.9.14
         version: link:../common
       '@emotion/react':
         specifier: ^11.11.1
@@ -1651,10 +1663,10 @@ importers:
         version: 1.14.0
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../config
       '@ballerine/eslint-config-react':
-        specifier: ^2.0.5
+        specifier: ^2.0.7
         version: link:../eslint-config-react
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1759,7 +1771,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.12
+        specifier: 0.9.14
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -1793,10 +1805,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1875,7 +1887,7 @@ importers:
         version: 3.7.2(eslint@8.54.0)(typescript@5.1.6)
       eslint-plugin-import:
         specifier: ^2.22.0
-        version: 2.29.0(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.54.0)
+        version: 2.29.0(@typescript-eslint/parser@5.62.0)(eslint@8.54.0)
       eslint-plugin-unused-imports:
         specifier: ^2.0.0
         version: 2.0.0(@typescript-eslint/eslint-plugin@5.62.0)(eslint@8.54.0)
@@ -1934,7 +1946,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.12
+        specifier: 0.9.14
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -2061,10 +2073,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.12
+        specifier: 0.9.14
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.20
+        specifier: 0.6.22
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -2080,10 +2092,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../../packages/eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -2150,7 +2162,7 @@ importers:
         version: 3.7.2(eslint@8.54.0)(typescript@4.9.5)
       eslint-plugin-import:
         specifier: ^2.22.0
-        version: 2.29.0(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.54.0)
+        version: 2.29.0(@typescript-eslint/parser@5.62.0)(eslint@8.54.0)
       eslint-plugin-unused-imports:
         specifier: ^2.0.0
         version: 2.0.0(@typescript-eslint/eslint-plugin@5.62.0)(eslint@8.54.0)
@@ -2203,7 +2215,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.6.20
+        specifier: 0.6.22
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2222,10 +2234,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../../packages/eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -2286,7 +2298,7 @@ importers:
         version: 3.7.2(eslint@8.54.0)(typescript@5.1.6)
       eslint-plugin-import:
         specifier: ^2.22.0
-        version: 2.29.0(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.54.0)
+        version: 2.29.0(@typescript-eslint/parser@5.62.0)(eslint@8.54.0)
       eslint-plugin-unused-imports:
         specifier: ^2.0.0
         version: 2.0.0(@typescript-eslint/eslint-plugin@5.62.0)(eslint@8.54.0)
@@ -2445,13 +2457,13 @@ importers:
         specifier: 3.347.1
         version: 3.347.1
       '@ballerine/common':
-        specifier: 0.9.12
+        specifier: 0.9.14
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.20
+        specifier: 0.6.22
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.20
+        specifier: 0.6.22
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -2505,8 +2517,8 @@ importers:
         specifier: ^7.52.1
         version: 7.80.1
       '@sinclair/typebox':
-        specifier: 0.32.4
-        version: 0.32.4
+        specifier: 0.32.15
+        version: 0.32.15
       '@t3-oss/env-core':
         specifier: ^0.6.1
         version: 0.6.1(typescript@4.9.3)(zod@3.22.4)
@@ -2529,8 +2541,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(axios@1.6.8)
       ballerine-nestjs-typebox:
-        specifier: 3.0.2-next.8
-        version: 3.0.2-next.8(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.4)(ajv@8.12.0)(rxjs@7.8.1)
+        specifier: 3.0.2-next.9
+        version: 3.0.2-next.9(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.15)(ajv-formats@2.1.1)(ajv@8.12.0)(rxjs@7.8.1)
       base64-stream:
         specifier: ^1.0.0
         version: 1.0.0
@@ -2620,10 +2632,10 @@ importers:
         version: 3.22.4
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../../packages/eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -2782,7 +2794,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(astro@3.3.3)(tailwindcss@3.3.5)(ts-node@10.9.1)
       '@ballerine/common':
-        specifier: ^0.9.12
+        specifier: ^0.9.14
         version: link:../../packages/common
       astro:
         specifier: 3.3.3
@@ -2795,10 +2807,10 @@ importers:
         version: 0.14.5
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.1.5
+        specifier: ^1.1.7
         version: link:../../packages/eslint-config
       eslint:
         specifier: ^8.46.0
@@ -8589,7 +8601,7 @@ packages:
       magic-string: 0.27.0
       react-docgen-typescript: 2.2.2(typescript@4.9.5)
       typescript: 4.9.5
-      vite: 4.5.3(@types/node@18.17.19)
+      vite: 4.5.3(@types/node@20.9.2)
     dev: true
 
   /@joshwooding/vite-plugin-react-docgen-typescript@0.3.0(typescript@5.1.6)(vite@4.5.3):
@@ -12355,8 +12367,8 @@ packages:
     resolution: {integrity: sha512-0S5BGB/Tle1kVa1pT2k2sc+wHTCB28+ivuetmZDCRV8I0iFKaNfk6HbvVyLEFBzZy56dp0dw+YDJ9Ed+YAAL7A==}
     dev: false
 
-  /@sinclair/typebox@0.32.4:
-    resolution: {integrity: sha512-Q2Pex6H+HGuyxIGuFadkpqwtjZFXiVZlvy1rVX9XgAzUrDmUDEM69M2c4CkWUgMJ1NaFPvUf+cMBljY96GJVNQ==}
+  /@sinclair/typebox@0.32.15:
+    resolution: {integrity: sha512-5Lrwo7VOiWEBJBhHmqNmf3TPB9ll8gcEshvYJyAIJyCZ2PF48MFOtiDHJNj8+FsNcqImaQYmxVkKBCBlyAa/wg==}
     dev: false
 
   /@sinonjs/commons@3.0.0:
@@ -12391,6 +12403,10 @@ packages:
     engines: {node: '>=14.0.0'}
     dependencies:
       tslib: 2.6.2
+
+  /@sphinxxxx/color-conversion@2.2.2:
+    resolution: {integrity: sha512-XExJS3cLqgrmNBIP3bBw6+1oQ1ksGjFh0+oClDKFYpCCqx/hlqwWO5KO/S63fzUo67SxI9dMrF0y5T/Ey7h8Zw==}
+    dev: false
 
   /@storybook/addon-a11y@6.5.16(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-/e9s34o+TmEhy+Q3/YzbRJ5AJ/Sy0gjZXlvsCrcRpiQLdt5JRbN8s+Lbn/FWxy8U1Tb1wlLYlqjJ+fYi5RrS3A==}
@@ -14242,7 +14258,7 @@ packages:
       react: 18.2.0
       react-docgen: 6.0.4
       react-dom: 18.2.0(react@18.2.0)
-      vite: 4.5.3(@types/node@18.17.19)
+      vite: 4.5.3(@types/node@20.9.2)
     transitivePeerDependencies:
       - '@preact/preset-vite'
       - encoding
@@ -15023,6 +15039,10 @@ packages:
     resolution: {integrity: sha512-pYrtLtOwku/7r1i9AMONsJMVYAtk3hzOfiGNekhtq5tYBGA7unMve8RvUclKLMT3PrihvJqUmzsRGh0RP84hKg==}
     dev: true
 
+  /@types/ace@0.0.52:
+    resolution: {integrity: sha512-YPF9S7fzpuyrxru+sG/rrTpZkC6gpHBPF14W3x70kqVOD+ks6jkYLapk4yceh36xej7K4HYxcyz9ZDQ2lTvwgQ==}
+    dev: true
+
   /@types/acorn@4.0.6:
     resolution: {integrity: sha512-veQTnWP+1D/xbxVrPC3zHnCZRjSrKfhbMUlEA43iMZLu7EsnTtkJklIuwrCPbOi8YkvDQAiW05VQQFvvz9oieQ==}
     dependencies:
@@ -15438,6 +15458,13 @@ packages:
 
   /@types/json5@0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+    dev: true
+
+  /@types/jsoneditor@9.9.5:
+    resolution: {integrity: sha512-+Wex7QCirPcG90WA8/CmvDO21KUjz63/G7Yk52Yx/NhWHw5DyeET/L+wjZHAeNeNCCnMOTEtVX5gc3F4UXwXMQ==}
+    dependencies:
+      '@types/ace': 0.0.52
+      ajv: 6.12.6
     dev: true
 
   /@types/jsonfile@6.1.4:
@@ -17367,6 +17394,10 @@ packages:
       mime-types: 2.1.35
       negotiator: 0.6.3
 
+  /ace-builds@1.35.3:
+    resolution: {integrity: sha512-4cHLy+4L3FHOTis4IrDYsHZYhyYrIqtmA4HRiRXcxLTpmjQMbJ6Vutoc3c2uC9xS11g/rDwqcw+3zXHPSHD/qw==}
+    dev: false
+
   /acorn-globals@7.0.1:
     resolution: {integrity: sha512-umOSDSDrfHbTNPuNpC2NSnnA3LUrqpevPb4T9jRx4MagXNS0rs+gwiTcAvqCRmsD6utzsrzNt+ebm00SNWiC3Q==}
     dependencies:
@@ -18235,21 +18266,23 @@ packages:
       - ts-node
     dev: false
 
-  /ballerine-nestjs-typebox@3.0.2-next.8(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.4)(ajv@8.12.0)(rxjs@7.8.1):
-    resolution: {integrity: sha512-KZkB/KPjAdgZIjrkNirzN2dhXmnoqCI3PKygTI61AGH7+CCQy400+ykUV/3NuMls0sbdyWh6c2U/li9oLjXHyQ==}
+  /ballerine-nestjs-typebox@3.0.2-next.9(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/swagger@6.2.1)(@sinclair/typebox@0.32.15)(ajv-formats@2.1.1)(ajv@8.12.0)(rxjs@7.8.1):
+    resolution: {integrity: sha512-ohFJj01doSLTewGawOBbIUjBqBnk5Pln75sgzgzRjdrO3koN0USb3T8aLEyLNtrcnuJSXj0iurPSHjRAHObF7A==}
     peerDependencies:
       '@nestjs/common': ^9.0.1 || ^10.0.3
       '@nestjs/core': ^9.0.1 || ^10.0.3
       '@nestjs/swagger': ^6.1.1 || ^7.0.11
       '@sinclair/typebox': ^0.32.4
       ajv: ^8.14.0
+      ajv-formats: ^2.1.1
       rxjs: ^7.5.6
     dependencies:
       '@nestjs/common': 9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/core': 9.4.3(@nestjs/common@9.4.3)(@nestjs/platform-express@9.4.3)(@nestjs/websockets@9.4.3)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/swagger': 6.2.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)
-      '@sinclair/typebox': 0.32.4
+      '@sinclair/typebox': 0.32.15
       ajv: 8.12.0
+      ajv-formats: 2.1.1(ajv@8.12.0)
       fast-uri: 2.3.0
       rxjs: 7.8.1
     dev: false
@@ -21200,7 +21233,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.5)
+      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.3)
       debug: 3.2.7
       eslint: 8.54.0
       eslint-import-resolver-node: 0.3.9
@@ -21233,6 +21266,35 @@ packages:
       '@typescript-eslint/parser': 5.62.0(eslint@8.22.0)(typescript@4.9.5)
       debug: 3.2.7
       eslint: 8.22.0
+      eslint-import-resolver-node: 0.3.9
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
+  /eslint-module-utils@2.8.0(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-node@0.3.9)(eslint@8.54.0):
+    resolution: {integrity: sha512-aWajIYfsqCKRDgUfjEXNN/JlrzauMuSEy5sbd7WXbtW3EH6A6MpwEh42c7qD+MqQo9QMJ6fWLAeIJynx0g6OAw==}
+    engines: {node: '>=4'}
+    peerDependencies:
+      '@typescript-eslint/parser': '*'
+      eslint: '*'
+      eslint-import-resolver-node: '*'
+      eslint-import-resolver-typescript: '*'
+      eslint-import-resolver-webpack: '*'
+    peerDependenciesMeta:
+      '@typescript-eslint/parser':
+        optional: true
+      eslint:
+        optional: true
+      eslint-import-resolver-node:
+        optional: true
+      eslint-import-resolver-typescript:
+        optional: true
+      eslint-import-resolver-webpack:
+        optional: true
+    dependencies:
+      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@5.1.6)
+      debug: 3.2.7
+      eslint: 8.54.0
       eslint-import-resolver-node: 0.3.9
     transitivePeerDependencies:
       - supports-color
@@ -21336,7 +21398,7 @@ packages:
       '@typescript-eslint/parser':
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.5)
+      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.3)
       array-includes: 3.1.7
       array.prototype.findlastindex: 1.2.3
       array.prototype.flat: 1.3.2
@@ -21396,6 +21458,41 @@ packages:
       - supports-color
     dev: true
 
+  /eslint-plugin-import@2.29.0(@typescript-eslint/parser@5.62.0)(eslint@8.54.0):
+    resolution: {integrity: sha512-QPOO5NO6Odv5lpoTkddtutccQjysJuFxoPS7fAHO+9m9udNHvTCPSAMW9zGAYj8lAIdr40I8yPCdUYrncXtrwg==}
+    engines: {node: '>=4'}
+    peerDependencies:
+      '@typescript-eslint/parser': '*'
+      eslint: ^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8
+    peerDependenciesMeta:
+      '@typescript-eslint/parser':
+        optional: true
+    dependencies:
+      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@5.1.6)
+      array-includes: 3.1.7
+      array.prototype.findlastindex: 1.2.3
+      array.prototype.flat: 1.3.2
+      array.prototype.flatmap: 1.3.2
+      debug: 3.2.7
+      doctrine: 2.1.0
+      eslint: 8.54.0
+      eslint-import-resolver-node: 0.3.9
+      eslint-module-utils: 2.8.0(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-node@0.3.9)(eslint@8.54.0)
+      hasown: 2.0.0
+      is-core-module: 2.13.1
+      is-glob: 4.0.3
+      minimatch: 3.1.2
+      object.fromentries: 2.0.7
+      object.groupby: 1.0.1
+      object.values: 1.1.7
+      semver: 6.3.1
+      tsconfig-paths: 3.14.2
+    transitivePeerDependencies:
+      - eslint-import-resolver-typescript
+      - eslint-import-resolver-webpack
+      - supports-color
+    dev: true
+
   /eslint-plugin-import@2.29.1(@typescript-eslint/parser@5.62.0)(eslint@8.54.0):
     resolution: {integrity: sha512-BbPC0cuExzhiMo4Ff1BTVwHpjjv28C5R+btTOGaCRC7UEz801up0JadwkeSk5Ued6TG34uaczuVuH6qyy5YUxw==}
     engines: {node: '>=4'}
@@ -21415,7 +21512,7 @@ packages:
       doctrine: 2.1.0
       eslint: 8.54.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.0(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.54.0)
+      eslint-module-utils: 2.8.0(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-node@0.3.9)(eslint@8.54.0)
       hasown: 2.0.0
       is-core-module: 2.13.1
       is-glob: 4.0.3
@@ -21672,7 +21769,7 @@ packages:
       '@typescript-eslint/eslint-plugin':
         optional: true
     dependencies:
-      '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.54.0)(typescript@4.9.5)
+      '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.54.0)(typescript@5.1.6)
       eslint: 8.54.0
       eslint-rule-composer: 0.3.0
     dev: true
@@ -24504,6 +24601,10 @@ packages:
       minimatch: 3.1.2
     dev: true
 
+  /javascript-natural-sort@0.7.1:
+    resolution: {integrity: sha512-nO6jcEfZWQXDhOiBtG2KvKyEptz7RVbpGP4vTD2hLBdmNQSsCiicO2Ioinv6UI4y9ukqnBpy+XZ9H6uLNgJTlw==}
+    dev: false
+
   /jest-changed-files@29.7.0:
     resolution: {integrity: sha512-fEArFiwf1BpQ+4bXSprcDc3/x4HSzL4al2tozwVpDFpsxALjLYdyiIK4e5Vz66GQJIbXJ82+35PtysofptNX2w==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -25264,6 +25365,10 @@ packages:
   /json-schema-traverse@1.0.0:
     resolution: {integrity: sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==}
 
+  /json-source-map@0.6.1:
+    resolution: {integrity: sha512-1QoztHPsMQqhDq0hlXY5ZqcEdUzxQEIxgFkKl4WUp2pgShObl+9ovi4kRh2TfvAfxAoHOJ9vIMEqk3k4iex7tg==}
+    dev: false
+
   /json-stable-stringify-without-jsonify@1.0.1:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==}
 
@@ -25296,6 +25401,20 @@ packages:
   /jsonc-parser@3.2.0:
     resolution: {integrity: sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==}
 
+  /jsoneditor@10.1.0:
+    resolution: {integrity: sha512-s+BP/x9Rx9ukNyTjeWCvIAGTEvXwCw6l4NX4mlxXfkK87F1ZgsesHbD9SsyZDLP27dvcFgr9H/j1jy/Bzzk07Q==}
+    dependencies:
+      ace-builds: 1.35.3
+      ajv: 6.12.6
+      javascript-natural-sort: 0.7.1
+      jmespath: 0.16.0
+      json-source-map: 0.6.1
+      jsonrepair: 3.8.0
+      mobius1-selectr: 2.4.13
+      picomodal: 3.0.0
+      vanilla-picker: 2.12.3
+    dev: false
+
   /jsonfile@4.0.0:
     resolution: {integrity: sha512-m6F1R3z8jjlf2imQHS2Qez5sjKWQzbuuhuJ/FKYFRZvPE3PuHcSMVZzfsLhGVOkfd20obL5SWEBew5ShlquNxg==}
     optionalDependencies:
@@ -25320,6 +25439,11 @@ packages:
   /jsonpointer@5.0.1:
     resolution: {integrity: sha512-p/nXbhSEcu3pZRdkW1OfJhpsVtW1gd4Wa1fnQc9YLiTfAjn0312eMKimbdIQzuZl9aa9xUGaRlP9T/CJE/ditQ==}
     engines: {node: '>=0.10.0'}
+    dev: false
+
+  /jsonrepair@3.8.0:
+    resolution: {integrity: sha512-89lrxpwp+IEcJ6kwglF0HH3Tl17J08JEpYfXnvvjdp4zV4rjSoGu2NdQHxBs7yTOk3ETjTn9du48pBy8iBqj1w==}
+    hasBin: true
     dev: false
 
   /jsonwebtoken@9.0.0:
@@ -26751,6 +26875,10 @@ packages:
       ufo: 1.3.2
     dev: true
 
+  /mobius1-selectr@2.4.13:
+    resolution: {integrity: sha512-Mk9qDrvU44UUL0EBhbAA1phfQZ7aMZPjwtL7wkpiBzGh8dETGqfsh50mWoX9EkjDlkONlErWXArHCKfoxVg0Bw==}
+    dev: false
+
   /moment@2.29.4:
     resolution: {integrity: sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==}
     dev: true
@@ -27791,6 +27919,10 @@ packages:
   /picomatch@2.3.1:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
+
+  /picomodal@3.0.0:
+    resolution: {integrity: sha512-FoR3TDfuLlqUvcEeK5ifpKSVVns6B4BQvc8SDF6THVMuadya6LLtji0QgUDSStw0ZR2J7I6UGi5V2V23rnPWTw==}
+    dev: false
 
   /pify@2.3.0:
     resolution: {integrity: sha512-udgsAY+fTnvv7kI7aaxbqwWNb0AHiB0qBO89PZKPkoTmGOgdbrHDKD+0B2X4uTfJ/FT1R09r9gTsjUjNJotuog==}
@@ -32344,6 +32476,12 @@ packages:
     resolution: {integrity: sha512-Ii+sehpSfZy+At5nPdnyMhx78fEoPDkR2XW/zimHEL3MyGJQOCQ7WeP20jPYRz7ZCpcKLB21NxuXHF3bxjStBQ==}
     engines: {node: '>= 0.10'}
 
+  /vanilla-picker@2.12.3:
+    resolution: {integrity: sha512-qVkT1E7yMbUsB2mmJNFmaXMWE2hF8ffqzMMwe9zdAikd8u2VfnsVY2HQcOUi2F38bgbxzlJBEdS1UUhOXdF9GQ==}
+    dependencies:
+      '@sphinxxxx/color-conversion': 2.2.2
+    dev: false
+
   /vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
@@ -32651,7 +32789,7 @@ packages:
       kolorist: 1.8.0
       sirv: 2.0.3
       ufo: 1.3.2
-      vite: 4.5.3(@types/node@18.17.19)
+      vite: 4.5.3(@types/node@20.9.2)
     transitivePeerDependencies:
       - rollup
       - supports-color
@@ -32668,7 +32806,7 @@ packages:
       debug: 4.3.4(supports-color@8.1.1)
       globrex: 0.1.2
       tsconfck: 2.1.2(typescript@4.9.5)
-      vite: 4.5.3(@types/node@18.17.19)
+      vite: 4.5.3(@types/node@20.9.2)
     transitivePeerDependencies:
       - supports-color
       - typescript

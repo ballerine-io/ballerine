@@ -44,6 +44,7 @@ import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
 import { AlertDefinitionModule } from '@/alert-definition/alert-definition.module';
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
+import { SentryService } from '@/sentry/sentry.service';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
@@ -92,6 +93,7 @@ import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
     WorkflowDefinitionService,
     UiDefinitionRepository,
     UiDefinitionService,
+    SentryService,
   ],
   exports: [
     WorkflowService,
