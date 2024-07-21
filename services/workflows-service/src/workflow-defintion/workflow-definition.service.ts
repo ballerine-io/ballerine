@@ -35,7 +35,13 @@ export class WorkflowDefinitionService {
       projectId,
     ]);
 
-    const { version, ...restArgs } = workflowDefintionToUpdate;
+    const {
+      id: _id,
+      version,
+      createdAt: _createdAt,
+      updatedAt: _updatedAt,
+      ...restArgs
+    } = workflowDefintionToUpdate;
 
     const createArgs = replaceNullsWithUndefined(
       merge(restArgs, updateArgs, {

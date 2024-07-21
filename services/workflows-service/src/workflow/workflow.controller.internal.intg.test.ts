@@ -39,6 +39,7 @@ import { BusinessReportService } from '@/business-report/business-report.service
 import { NotionService } from '@/notion/notion.service';
 import { RuleEngineService } from '@/rule-engine/rule-engine.service';
 import { RiskRuleService } from '@/rule-engine/risk-rule.service';
+import { SentryService } from '@/sentry/sentry.service';
 
 describe('/api/v1/internal/workflows #api #integration', () => {
   let app: INestApplication;
@@ -88,6 +89,7 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       RiskRuleService,
       RuleEngineService,
       NotionService,
+      SentryService,
     ];
     workflowService = (await fetchServiceFromModule(WorkflowService, servicesProviders, [
       PrismaModule,
