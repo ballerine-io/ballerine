@@ -54,6 +54,13 @@ export class UiDefinitionService {
   }
 
   async list(projectIds: TProjectIds) {
-    return await this.repository.findMany({}, projectIds);
+    return await this.repository.findMany(
+      {
+        include: {
+          workflowDefinition: true,
+        },
+      },
+      projectIds,
+    );
   }
 }

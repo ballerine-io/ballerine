@@ -1,4 +1,3 @@
-import DOMPurify from 'dompurify';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -9,12 +8,7 @@ import { DynamicUI, State } from '@/components/organisms/DynamicUI';
 import { usePageErrors } from '@/components/organisms/DynamicUI/Page/hooks/usePageErrors';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { UIRenderer } from '@/components/organisms/UIRenderer';
-import { Cell } from '@/components/organisms/UIRenderer/elements/Cell';
-import { Divider } from '@/components/organisms/UIRenderer/elements/Divider';
-import { JSONForm } from '@/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
 import { StepperUI } from '@/components/organisms/UIRenderer/elements/StepperUI';
-import { SubmitButton } from '@/components/organisms/UIRenderer/elements/SubmitButton';
-import { Title } from '@/components/organisms/UIRenderer/elements/Title';
 import { useCustomer } from '@/components/providers/CustomerProvider';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { prepareInitialUIState } from '@/helpers/prepareInitialUIState';
@@ -22,31 +16,11 @@ import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
+import { collectionFlowElements } from '@/pages/CollectionFlow/collection-flow-elements';
 import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
-import { AnyObject } from '@ballerine/ui';
 import set from 'lodash/set';
-
-const elems = {
-  h1: Title,
-  h3: (props: AnyObject) => <h3 className="pt-4 text-xl font-bold">{props?.options?.text}</h3>,
-  h4: (props: AnyObject) => <h4 className="pb-3 text-base font-bold">{props?.options?.text}</h4>,
-  description: (props: AnyObject) => (
-    <p
-      className="font-inter pb-2 text-sm text-slate-500"
-      dangerouslySetInnerHTML={{
-        __html: DOMPurify.sanitize(props.options.descriptionRaw) as string,
-      }}
-    ></p>
-  ),
-  'json-form': JSONForm,
-  container: Cell,
-  mainContainer: Cell,
-  'submit-button': SubmitButton,
-  stepper: StepperUI,
-  divider: Divider,
-};
 
 // TODO: Find a way to make this work via the workflow-browser-sdk `subscribe` method.
 export const useCompleteLastStep = () => {
@@ -81,8 +55,11 @@ export const useCompleteLastStep = () => {
 export const CollectionFlow = withSessionProtected(() => {
   const { language } = useLanguageParam();
   const { data: schema } = useUISchemasQuery(language);
+  console.log({ schema });
   const { data: context } = useFlowContextQuery();
+  console.log({ context });
   const { customer } = useCustomer();
+  console.log({ customer });
   const { t } = useTranslation();
 
   const elements = schema?.uiSchema?.elements;
@@ -232,7 +209,10 @@ export const CollectionFlow = withSessionProtected(() => {
                                   <ProgressBar />
                                 </div>
                                 <div>
-                                  <UIRenderer elements={elems} schema={currentPage.elements} />
+                                  <UIRenderer
+                                    elements={collectionFlowElements}
+                                    schema={currentPage.elements}
+                                  />
                                 </div>
                               </div>
                             </AppShell.FormContainer>
