@@ -1,3 +1,4 @@
+import { TWorkflowExtenstion } from '@/workflow/schemas/extenstions.schemas';
 import { WorkflowDefinition } from '@prisma/client';
 
 export interface IDefinitionStateSchema<TSchema = Record<PropertyKey, unknown>> {
@@ -17,4 +18,6 @@ export type TWorkflowDefinitionWithTransitionSchema = WorkflowDefinition & {
       }
     >;
   };
+} & {
+  extenstions: WorkflowDefinition['extenstions'] & TWorkflowExtenstion;
 };

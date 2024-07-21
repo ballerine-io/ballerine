@@ -4,7 +4,7 @@ import { UserInfo } from '@/user/user-info';
 import * as common from '@nestjs/common';
 import { NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
-import { ApiOkResponse } from '@nestjs/swagger';
+import { ApiOkResponse, ApiResponse } from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 // import * as nestAccessControl from 'nest-access-control';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
@@ -16,10 +16,14 @@ import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-u
 import { env } from '@/env';
 import { PrismaService } from '@/prisma/prisma.service';
 import type { TProjectId, TProjectIds } from '@/types';
+import { WORKFLOW_DEFINITION_TAG } from '@/workflow-defintion/workflow-definition.controller';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
-import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
+import {
+  GetWorkflowPluginOutput,
+  GetWorkflowsRuntimeOutputDto,
+} from '@/workflow/dtos/get-workflows-runtime-output.dto';
 import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
 import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
@@ -34,9 +38,11 @@ import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique
 import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
+import { TWorkflowExtenstion } from './schemas/extenstions.schemas';
 
+export const WORKGLOW_TAG = 'Workflows';
 @swagger.ApiBearerAuth()
-@swagger.ApiTags('Workflows')
+@swagger.ApiTags(WORKGLOW_TAG)
 @common.Controller('external/workflows')
 export class WorkflowControllerExternal {
   constructor(
@@ -80,6 +86,23 @@ export class WorkflowControllerExternal {
     @ProjectIds() projectIds: TProjectIds,
   ) {
     return await this.service.getWorkflowDefinitionById(params.id, {}, projectIds);
+  }
+
+  @swagger.ApiTags(WORKFLOW_DEFINITION_TAG, WORKGLOW_TAG)
+  @common.Get('/workflow-definition/:id/plugins')
+  @ApiResponse({
+    status: 200,
+    schema: GetWorkflowPluginOutput,
+  })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async listWorkflowPlugins(
+    @common.Param() params: WorkflowDefinitionWhereUniqueInput,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
+    const { extensions }: { extensions: TWorkflowExtenstion } =
+      await this.service.getWorkflowDefinitionById(params.id, {}, projectIds);
+
+    return extensions;
   }
 
   @common.Get('/:id')

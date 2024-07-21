@@ -5,6 +5,7 @@ declare module '@prisma/client' {
     Alert as _Alert,
   } from '@prisma/client/index';
   import type { WorkflowConfig } from '@/workflow/schemas/zod-schemas';
+  import type { TWorkflowExtenstion } from '@/workflow/schemas/extenstions.schemas';
   import type { TCustomerConfig, TCustomerSubscription } from '@/customer/schemas/zod-schemas';
   export * from '@prisma/client/index';
 
@@ -13,8 +14,9 @@ declare module '@prisma/client' {
     config: WorkflowConfig | any;
   };
 
-  export type WorkflowDefinition = Omit<_WorkflowDefinition, 'config'> & {
+  export type WorkflowDefinition = Omit<_WorkflowDefinition, 'config', 'extenstions'> & {
     config: WorkflowConfig | any;
+    extenstions: TWorkflowExtenstion;
   };
 
   export type Customer = Omit<_Customer, 'subscriptions'> & {

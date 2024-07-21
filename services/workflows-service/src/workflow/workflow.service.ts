@@ -206,7 +206,6 @@ export class WorkflowService {
     );
 
     return await this.workflowDefinitionRepository.create({
-      // @ts-expect-error - types of workflow definition does not propagate to the prisma creation type
       data: { ...workflowDefinition, name: data.name, projectId: projectId, isPublic: false },
       select,
     });
@@ -289,13 +288,11 @@ export class WorkflowService {
     if (addNextEvents) {
       const service = createWorkflow({
         runtimeId: workflow.id,
-        // @ts-expect-error - error from Prisma types fix
         definition: workflow.workflowDefinition.definition,
         // Might want to change to type string in `createWorkflow` or add a type for `workflowDefinition` of 'statechart-json' | 'bpmn-json'
         definitionType: workflow.workflowDefinition.definitionType as 'statechart-json',
         workflowContext: {
           machineContext: workflow.context,
-          // @ts-expect-error - error from Prisma types fix
           state: workflow.state ?? workflow.workflowDefinition.definition?.initial,
         },
       });
@@ -1506,7 +1503,6 @@ export class WorkflowService {
                 flowConfig: (contextToInsert as any)?.flowConfig ?? createFlowConfig(uiSchema),
               } as InputJsonValue,
               config: mergedConfig as InputJsonValue,
-              // @ts-expect-error - error from Prisma types fix
               state: workflowDefinition.definition.initial as string,
               status: 'active',
               workflowDefinitionId: workflowDefinition.id,
@@ -1884,7 +1880,6 @@ export class WorkflowService {
   ) {
     if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) return;
 
-    // @ts-expect-error - error from Prisma types fix
     const validate = ajv.compile(workflowDefinition?.contextSchema?.schema); // TODO: fix type
     const isValid = validate({
       ...context,
@@ -1939,16 +1934,13 @@ export class WorkflowService {
 
       const service = createWorkflow({
         runtimeId: workflowRuntimeData.id,
-        // @ts-expect-error - error from Prisma types fix
         definition: workflowDefinition.definition,
-        // @ts-expect-error - error from Prisma types fix
         definitionType: workflowDefinition.definitionType,
         config: workflowRuntimeData.config,
         workflowContext: {
           machineContext: workflowRuntimeData.context,
           state: workflowRuntimeData.state,
         },
-        // @ts-expect-error - error from Prisma types fix
         extensions: workflowDefinition.extensions,
         invokeRiskRulesAction: async (
           context: object,
