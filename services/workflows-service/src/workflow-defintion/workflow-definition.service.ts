@@ -31,9 +31,7 @@ export class WorkflowDefinitionService {
     >,
     projectId: TProjectId,
   ) {
-    const workflowDefintionToUpdate = await this.workflowDefinitionRepository.findById(id, {}, [
-      projectId,
-    ]);
+    const workflowDefintionToUpdate = await this.getLatestVersion(id, [projectId]);
 
     const {
       id: _id,
