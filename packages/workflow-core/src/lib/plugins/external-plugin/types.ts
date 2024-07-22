@@ -8,7 +8,7 @@ import {
 import { AnyRecord } from '@ballerine/common';
 
 export interface ValidatableTransformer {
-  transformers: Transformers;
+  transformers?: Transformers;
   schemaValidator?: Validator;
 }
 export interface IApiPluginParams {
@@ -17,7 +17,7 @@ export interface IApiPluginParams {
   stateNames: string[];
   url: string;
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
-  request: ValidatableTransformer;
+  request?: ValidatableTransformer;
   response?: ValidatableTransformer;
   headers?: HeadersInit;
   successAction?: string;
@@ -69,11 +69,7 @@ export interface SerializableValidatableTransformer {
   schema?: TJsonSchema;
 }
 
-export interface ISerializableHttpPluginParams
-  extends Omit<IApiPluginParams, 'request' | 'response'> {
-  request: SerializableValidatableTransformer;
-  response: SerializableValidatableTransformer;
-
+export interface ISerializableHttpPluginParams extends IApiPluginParams {
   invoke?(...args: any[]): any;
 }
 

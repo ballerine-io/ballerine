@@ -31,6 +31,7 @@ import {
   IDispatchEventPluginParams,
   ISerializableHttpPluginParams,
   SerializableValidatableTransformer,
+  ValidatableTransformer,
 } from './plugins/external-plugin/types';
 import { KycPlugin } from './plugins/external-plugin/kyc-plugin';
 import { DispatchEventPlugin } from './plugins/external-plugin/dispatch-event-plugin';
@@ -48,6 +49,9 @@ import {
   HelpersTransformer,
   TContext,
   THelperFormatingLogic,
+  Transformer,
+  Transformers,
+  Validator,
 } from './utils';
 import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
 import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plugin';
@@ -118,7 +122,6 @@ export class WorkflowRunner {
       invokeChildWorkflowAction,
     );
 
-    // @ts-expect-error TODO: fix this
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
 
     this.#__extensions.commonPlugins = this.initiateCommonPlugins(
@@ -167,25 +170,15 @@ export class WorkflowRunner {
 
       return new DispatchEventPlugin({
         ...dispatchEventPlugin,
-        transformers: this.fetchTransformers(dispatchEventPlugin.transformers || []),
+        transformers: WorkflowRunner.fetchTransformers(dispatchEventPlugin.transformers || []),
       });
     });
   }
 
   initiateApiPlugins(apiPluginSchemas: Array<ISerializableHttpPluginParams>) {
     return apiPluginSchemas?.map(apiPluginSchema => {
-      const requestTransformerLogic = apiPluginSchema.request.transform;
-      const requestSchema = apiPluginSchema.request.schema;
-      const responseTransformerLogic = apiPluginSchema.response?.transform;
-      const responseSchema = apiPluginSchema.response?.schema;
-      // @ts-ignore
-      const requestTransformer = this.fetchTransformers(requestTransformerLogic);
-      const responseTransformer =
-        responseTransformerLogic && this.fetchTransformers(responseTransformerLogic);
-      // @ts-expect-error TODO: fix this
-      const requestValidator = this.fetchValidator('json-schema', requestSchema);
-      // @ts-expect-error TODO: fix this
-      const responseValidator = this.fetchValidator('json-schema', responseSchema);
+      let { requestTransformer, requestValidator, responseTransformer, responseValidator } =
+        WorkflowRunner.reqResTransformersObj(apiPluginSchema);
 
       const apiPluginClass = this.pickApiPluginClass(apiPluginSchema);
 
@@ -197,13 +190,55 @@ export class WorkflowRunner {
         url: apiPluginSchema.url,
         method: apiPluginSchema.method,
         headers: apiPluginSchema.headers,
-        request: { transformers: requestTransformer, schemaValidator: requestValidator },
-        response: { transformers: responseTransformer, schemaValidator: responseValidator },
+        request: { transformers: requestTransformer, schemaValidator: requestValidator } as any,
+        response: { transformers: responseTransformer, schemaValidator: responseValidator } as any,
         successAction: apiPluginSchema.successAction,
         errorAction: apiPluginSchema.errorAction,
         persistResponseDestination: apiPluginSchema.persistResponseDestination,
       });
     });
+  }
+
+  static reqResTransformersObj(
+    apiPluginSchema: Pick<ISerializableHttpPluginParams, 'request' | 'response'>,
+  ) {
+    let requestTransformer;
+    let responseTransformer: ValidatableTransformer | undefined;
+    let requestValidator: Validator | undefined;
+    let responseValidator: Validator | undefined;
+
+    if ('request' in apiPluginSchema) {
+      if (apiPluginSchema.request && 'transform' in apiPluginSchema.request) {
+        const requestTransformerLogic = apiPluginSchema.request
+          .transform as SerializableValidatableTransformer['transform'] & {
+          name?: string;
+        };
+        requestTransformer = WorkflowRunner.fetchTransformers(requestTransformerLogic);
+
+        // @ts-expect-error TODO: fix this
+        requestValidator = WorkflowRunner.fetchValidator(
+          'json-schema',
+          apiPluginSchema.response.schema,
+        );
+      }
+
+      if (apiPluginSchema.response && 'transform' in apiPluginSchema.response) {
+        const responseTransformerLogic = apiPluginSchema.response
+          .transform as SerializableValidatableTransformer['transform'] & {
+          name?: string;
+        };
+        // @ts-ignore
+        responseTransformer =
+          responseTransformerLogic && WorkflowRunner.fetchTransformers(responseTransformerLogic);
+
+        // @ts-expect-error TODO: fix this
+        responseValidator = WorkflowRunner.fetchValidator(
+          'json-schema',
+          apiPluginSchema.response.schema,
+        );
+      }
+    }
+    return { requestTransformer, requestValidator, responseTransformer, responseValidator };
   }
 
   initiateRiskRulePlugin(
@@ -226,7 +261,7 @@ export class WorkflowRunner {
   ) {
     return childPluginSchemas?.map(childPluginSchema => {
       console.log('Initiating child plugin', childPluginSchema);
-      const transformers = this.fetchTransformers(childPluginSchema.transformers) || [];
+      const transformers = WorkflowRunner.fetchTransformers(childPluginSchema.transformers) || [];
 
       return new ChildWorkflowPlugin({
         name: childPluginSchema.name,
@@ -298,7 +333,7 @@ export class WorkflowRunner {
       name: iterarivePluginParams.name,
       stateNames: iterarivePluginParams.stateNames,
       //@ts-ignore
-      iterateOn: this.fetchTransformers(iterarivePluginParams.iterateOn),
+      iterateOn: WorkflowRunner.fetchTransformers(iterarivePluginParams.iterateOn),
       action: (context: TContext) =>
         actionPlugin!.invoke({
           ...context,
@@ -324,10 +359,8 @@ export class WorkflowRunner {
     // @ts-ignore
     if (apiPluginSchema.pluginKind === 'email') return EmailPlugin;
     // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'sanctions-screening')
-      return SanctionsScreeningPlugin;
+    if (apiPluginSchema.name === 'sanctions-screening') return SanctionsScreeningPlugin;
 
-    // @ts-expect-error TODO: fix this
     return this.isPluginWithCallbackAction(apiPluginSchema) ? ApiPlugin : WebhookPlugin;
   }
 
@@ -335,7 +368,7 @@ export class WorkflowRunner {
     return !!apiPluginSchema.successAction && !!apiPluginSchema.errorAction;
   }
 
-  fetchTransformers(
+  static fetchTransformers(
     transformers: SerializableValidatableTransformer['transform'] & {
       name?: string;
     },
@@ -351,9 +384,9 @@ export class WorkflowRunner {
     });
   }
 
-  fetchValidator(
+  static fetchValidator(
     validatorName: string,
-    schema: ConstructorParameters<typeof JsonSchemaValidator>[0],
+    schema: ConstructorParameters<typeof JsonSchemaValidator>[0] | undefined,
   ) {
     if (!schema) return;
     if (validatorName === 'json-schema') return new JsonSchemaValidator(schema);

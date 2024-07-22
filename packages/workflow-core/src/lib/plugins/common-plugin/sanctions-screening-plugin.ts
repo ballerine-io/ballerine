@@ -1,9 +1,14 @@
+import { WorkflowRunner } from './../../workflow-runner';
 import {
   ApiPlugin,
   IApiPluginParams,
   SerializableValidatableTransformer,
 } from '../external-plugin';
-import { SANCTIONS_SCREENING_VENDOR, type SancsionsScreeningVendors } from './vendor-consts';
+import {
+  SANCSIONS_SCREENING,
+  SANCTIONS_SCREENING_VENDOR,
+  type SancsionsScreeningVendors,
+} from './vendor-consts';
 
 export interface ISanctionsScreeningParams {
   kind: 'sanctions-screening';
@@ -19,12 +24,19 @@ export class SanctionsScreeningPlugin extends ApiPlugin {
   public static pluginType = 'http';
   public static pluginKind = 'sanctions-screening';
 
-  public vendor: string;
   static #url = '{secret.UNIFIED_API_URL}/aml-sessions';
   static #headers = { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' };
   static #method = 'POST' as const;
 
   constructor(params: ISanctionsScreeningParams & IApiPluginParams) {
+    const reqResObj = SANCSIONS_SCREENING[params.pluginKind as SancsionsScreeningVendors];
+
+    let { requestTransformer, requestValidator, responseTransformer, responseValidator } =
+      WorkflowRunner.reqResTransformersObj({
+        params,
+        ...(reqResObj as any),
+      });
+
     super({
       persistResponseDestination: undefined,
       ...params,
@@ -33,10 +45,10 @@ export class SanctionsScreeningPlugin extends ApiPlugin {
       url: SanctionsScreeningPlugin.#url,
       method: SanctionsScreeningPlugin.#method,
       headers: SanctionsScreeningPlugin.#headers,
-      ...(SANCTIONS_SCREENING_VENDOR[params.vendor] as any),
-    });
 
-    this.vendor = params.vendor;
+      request: { transformers: requestTransformer, schemaValidator: requestValidator } as any,
+      response: { transformers: responseTransformer, schemaValidator: responseValidator } as any,
+    });
   }
 }
 
