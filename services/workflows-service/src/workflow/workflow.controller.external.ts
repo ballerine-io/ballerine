@@ -40,9 +40,9 @@ import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
 import { TWorkflowExtension } from './schemas/extensions.schemas';
 
-export const WORKGLOW_TAG = 'Workflows';
+export const WORKFLOW_TAG = 'Workflows';
 @swagger.ApiBearerAuth()
-@swagger.ApiTags(WORKGLOW_TAG)
+@swagger.ApiTags(WORKFLOW_TAG)
 @common.Controller('external/workflows')
 export class WorkflowControllerExternal {
   constructor(
@@ -88,7 +88,7 @@ export class WorkflowControllerExternal {
     return await this.service.getWorkflowDefinitionById(params.id, {}, projectIds);
   }
 
-  @swagger.ApiTags(WORKFLOW_DEFINITION_TAG, WORKGLOW_TAG)
+  @swagger.ApiTags(WORKFLOW_DEFINITION_TAG, WORKFLOW_TAG)
   @common.Get('/workflow-definition/:id/plugins')
   @ApiResponse({
     status: 200,
