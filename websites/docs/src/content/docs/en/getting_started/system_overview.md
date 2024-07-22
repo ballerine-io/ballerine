@@ -68,7 +68,7 @@ The Case Management module provides a user interface for manual decision-making 
 
 [Using the case management dashboard](websites/docs/src/content/docs/en/learn/using_the_case_management_dashboard.md) 
 
-[Customizing case management workflows](websites/docs/src/content/docs/en/learn/customizing_case_management_workflows.md)
+[Customizing case management workflows](websites/docs/src/content/docs/en/learn/Adding_workflows_to_the_case_management.md)
 
 
 <img title="Case Management" alt="Case Management" src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/669eb373c7708310d2b4ac61_Case%20managment%20example.png">
