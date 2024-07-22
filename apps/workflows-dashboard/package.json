@@ -14,7 +14,12 @@
     "test": "NODE_ENV=test jest"
   },
   "dependencies": {
+<<<<<<< Updated upstream
     "@ballerine/common": "^0.9.14",
+=======
+    "@ballerine/common": "^0.9.12",
+    "@ballerine/kyb-app": "link:../kyb-app",
+>>>>>>> Stashed changes
     "@lukemorales/query-key-factory": "^1.0.3",
     "@radix-ui/react-avatar": "^1.0.3",
     "@radix-ui/react-dialog": "1.0.4",
