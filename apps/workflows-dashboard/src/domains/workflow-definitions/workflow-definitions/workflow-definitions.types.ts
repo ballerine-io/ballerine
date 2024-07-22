@@ -39,3 +39,7 @@ export interface UpdateWorkflowDefinitionExtensionsByIdDto {
   workflowDefinitionId: string;
   extensions: IWorkflowDefinition['extensions'];
 }
+
+export interface UpgradeWorkflowDefinitionVersionByIdDto {
+  workflowDefinitionId: string;
+}
