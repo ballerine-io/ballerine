@@ -37,11 +37,11 @@ export const SANCSIONS_SCREENING = {
           transformer: 'jmespath',
           mapping: `{
                             vendor: 'dow-jones',
+                            dateOfBirth: '1990-01-01'
+                            ongoingMonitoring: false,
                             endUserId: join('__', [entity.ballerineEntityId, '']),
                             firstName: pluginsOutput.kyc_session.kyc_session_1.result.entity.data.firstName,
                             lastName: pluginsOutput.kyc_session.kyc_session_1.result.entity.data.lastName,
-                            dateOfBirth: pluginsOutput.kyc_session.kyc_session_1.result.entity.data.dateOfBirth,
-                            ongoingMonitoring: false,
                             clientId: clientId,
                             callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/AML_RESPONSE_RECEIVED','?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result.aml&processName=aml-unified-api'])
                           }`, // jmespath
@@ -57,11 +57,11 @@ export const SANCSIONS_SCREENING = {
           transformer: 'jmespath',
           mapping: `{
                   vendor: 'veriff',
+                  dateOfBirth: '1990-01-01'
+                  ongoingMonitoring: false,
                   endUserId: join('__', [entity.ballerineEntityId, '']),
-                  firstName: entity.data.firstName,
-                  lastName: entity.data.lastName,
-                  dateOfBirth: entity.data.dateOfBirth,
-                  ongoingMonitoring: ongoingMonitoring,
+                  firstName: entity.data.additionalInfo.ubos[0].firstName,
+                  lastName: entity.data.additionalInfo.ubos[0].lastName,
                   callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/RESPONSE_RECEIVED','?resultDestination=aml&processName=aml-unified-api'])
                 }`, // jmespath
         },
