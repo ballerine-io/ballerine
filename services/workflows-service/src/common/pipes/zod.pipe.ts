@@ -2,6 +2,7 @@ import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { ZodSchema } from 'zod';
 import type { Paramtype } from '@nestjs/common/interfaces/features/paramtype.interface';
 import { ValidationError } from '@/errors';
+import { AppLoggerService } from '../app-logger/app-logger.service';
 
 @Injectable()
 export class ZodValidationPipe implements PipeTransform {
@@ -15,6 +16,7 @@ export class ZodValidationPipe implements PipeTransform {
     const result = this.schema.safeParse(value);
 
     if (!result.success) {
+      console.error(JSON.stringify(result.error.errors), { error: result.error });
       throw ValidationError.fromZodError(result.error);
     }
 
