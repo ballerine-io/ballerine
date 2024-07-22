@@ -86,4 +86,11 @@ export class UiDefinitionRepository {
       this.scopeService.scopeFindMany(args, projectIds),
     );
   }
+
+  async update(args: Prisma.UiDefinitionUpdateArgs, projectIds: TProjectIds) {
+    return await this.prisma.uiDefinition.updateMany(
+      //@ts-ignore
+      this.scopeService.scopeUpdateMany(args, projectIds),
+    );
+  }
 }

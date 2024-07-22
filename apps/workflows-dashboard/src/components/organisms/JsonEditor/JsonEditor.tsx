@@ -3,9 +3,9 @@ import 'jsoneditor/dist/jsoneditor.css';
 import { FunctionComponent, useEffect, useRef } from 'react';
 
 interface IJSONEditorProps {
-  value: object;
+  value: any;
   readOnly?: boolean;
-  onChange?: (value: object) => void;
+  onChange?: (value: any) => void;
 }
 
 export const JSONEditorComponent: FunctionComponent<IJSONEditorProps> = ({

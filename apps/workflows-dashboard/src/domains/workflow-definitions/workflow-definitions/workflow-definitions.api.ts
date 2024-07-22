@@ -5,6 +5,7 @@ import {
   IWorkflowDefinition,
   UpdateWorkflowDefinitionByIdDto,
   UpdateWorkflowDefinitionExtensionsByIdDto,
+  UpgradeWorkflowDefinitionVersionByIdDto,
 } from '@/domains/workflow-definitions/workflow-definitions/workflow-definitions.types';
 import { request } from '@/lib/request';
 
@@ -56,6 +57,14 @@ export const updateWorkflowDefinitionExtensionsById = async (
   const result = await request.put(`/workflow-definition/${dto.workflowDefinitionId}/extensions`, {
     extensions: dto.extensions,
   });
+
+  return result.data;
+};
+
+export const upgradeWorkflowDefinitionVersionById = async (
+  dto: UpgradeWorkflowDefinitionVersionByIdDto,
+) => {
+  const result = await request.post(`/workflow-definition/${dto.workflowDefinitionId}/upgrade`);
 
   return result.data;
 };
