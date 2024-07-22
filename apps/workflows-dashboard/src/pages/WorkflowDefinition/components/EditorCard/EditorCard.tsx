@@ -8,15 +8,21 @@ import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 interface IEditorCardProps {
   value: object;
   title: string;
+  dialogContent?: React.ReactNode | React.ReactNode[];
   onChange?: (value: object) => void;
   onSave?: (value: object) => void;
+  onOpenChange?: (open: boolean) => void;
+  onUpgrade?: () => void;
 }
 
 export const EditorCard: FunctionComponent<IEditorCardProps> = ({
   value,
   title,
+  dialogContent,
   onChange,
   onSave,
+  onOpenChange,
+  onUpgrade,
 }) => {
   const [valueSnapshot, setSnapshot] = useState(value);
   const [internalValue, setInternalValue] = useState(valueSnapshot);
@@ -45,6 +51,7 @@ export const EditorCard: FunctionComponent<IEditorCardProps> = ({
           setSnapshot(value);
           setInternalValue(value);
         }
+        onOpenChange && onOpenChange(open);
       }}
     >
       <Card className="flex h-[400px] h-full flex-col">
@@ -60,21 +67,25 @@ export const EditorCard: FunctionComponent<IEditorCardProps> = ({
           <JSONEditorComponent readOnly value={value} />
         </CardContent>
       </Card>
-      <DialogContent className="h-[80vh] min-w-[80vw] overflow-hidden pt-12">
-        <div className="flex flex-col gap-4">
-          <div className="flex-1">
-            <JSONEditorComponent value={internalValue} onChange={handleChange} />
-          </div>
-          {onSave && (
-            <div className="flex justify-end gap-2">
-              <Button onClick={() => alert('Not implemented')}>Upgrade</Button>
-              <Button disabled={!hasChanges} onClick={handleSave}>
-                Update
-              </Button>
+      {dialogContent ? (
+        dialogContent
+      ) : (
+        <DialogContent className="h-[80vh] min-w-[80vw] overflow-hidden pt-12">
+          <div className="flex flex-col gap-4">
+            <div className="flex-1">
+              <JSONEditorComponent value={internalValue} onChange={handleChange} />
             </div>
-          )}
-        </div>
-      </DialogContent>
+            {onSave && (
+              <div className="flex justify-end gap-2">
+                <Button onClick={() => alert('Not implemented')}>Upgrade</Button>
+                <Button disabled={!hasChanges} onClick={handleSave}>
+                  Update
+                </Button>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      )}
     </Dialog>
   );
 };
