@@ -1,6 +1,5 @@
 import { BusinessService } from '@/business/business.service';
 import { UpdateFlowDto } from '@/collection-flow/dto/update-flow-input.dto';
-import { recursiveMerge } from '@/collection-flow/helpers/recursive-merge';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { UiDefDefinition, UiSchemaStep } from '@/collection-flow/models/flow-step.model';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -23,10 +22,8 @@ import { AnyRecord } from '@ballerine/common';
 import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
 import { EndUser, UiDefinition, UiDefinitionContext, WorkflowRuntimeData } from '@prisma/client';
-import { plainToClass } from 'class-transformer';
 import { randomUUID } from 'crypto';
 import get from 'lodash/get';
-import keyBy from 'lodash/keyBy';
 
 @Injectable()
 export class CollectionFlowService {
@@ -134,67 +131,70 @@ export class CollectionFlowService {
     return resources;
   }
 
-  async updateFlowConfiguration(
-    configurationId: string,
-    steps: UiSchemaStep[],
-    projectIds: TProjectIds,
-    projectId: TProjectId,
-  ): Promise<FlowConfigurationModel> {
-    const definition = await this.workflowDefinitionRepository.findById(
-      configurationId,
-      {},
-      projectIds,
-    );
+  // async updateFlowConfiguration(
+  //   configurationId: string,
+  //   steps: UiSchemaStep[],
+  //   projectIds: TProjectIds,
+  //   projectId: TProjectId,
+  // ): Promise<FlowConfigurationModel> {
+  //   const definition = await this.workflowDefinitionRepository.findById(
+  //     configurationId,
+  //     {},
+  //     projectIds,
+  //   );
 
-    const providedStepsMap = keyBy(steps, 'key');
+  //   const providedStepsMap = keyBy(steps, 'key');
 
-    const persistedSteps =
-      // @ts-expect-error - error from Prisma types fix
-      definition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm?.steps || [];
+  //   const persistedSteps =
+  //     // @ts-expect-error - error from Prisma types fix
+  //     definition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm?.steps || [];
 
-    const mergedSteps = persistedSteps.map((step: any) => {
-      const stepToMergeIn = providedStepsMap[step.key];
+  //   const mergedSteps = persistedSteps.map((step: any) => {
+  //     const stepToMergeIn = providedStepsMap[step.key];
 
-      if (stepToMergeIn) {
-        return recursiveMerge(step, stepToMergeIn);
-      }
+  //     if (stepToMergeIn) {
+  //       return recursiveMerge(step, stepToMergeIn);
+  //     }
 
-      return step;
-    });
+  //     return step;
+  //   });
 
-    const updatedDefinition = await this.workflowDefinitionRepository.updateById(configurationId, {
-      data: {
-        definition: {
-          // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
-          ...definition?.definition,
-          states: {
-            // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
-            ...definition.definition?.states,
-            data_collection: {
-              // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
-              ...definition.definition?.states?.data_collection,
-              metadata: {
-                uiSettings: {
-                  multiForm: {
-                    steps: mergedSteps,
-                  },
-                },
-              },
-            },
-          },
-        },
-        projectId,
-      },
-    });
+  //   const updatedDefinition = await this.workflowDefinitionRepository.updateById(
+  //     configurationId,
+  //     {
+  //       data: {
+  //         definition: {
+  //           // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
+  //           ...definition?.definition,
+  //           states: {
+  //             // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
+  //             ...definition.definition?.states,
+  //             data_collection: {
+  //               // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
+  //               ...definition.definition?.states?.data_collection,
+  //               metadata: {
+  //                 uiSettings: {
+  //                   multiForm: {
+  //                     steps: mergedSteps,
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //     projectIds,
+  //   );
 
-    return plainToClass(FlowConfigurationModel, {
-      id: updatedDefinition.id,
-      steps:
-        // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
-        updatedDefinition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm
-          ?.steps || [],
-    });
-  }
+  //   return plainToClass(FlowConfigurationModel, {
+  //     id: updatedDefinition.id,
+  //     steps:
+  //       // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
+  //       updatedDefinition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm
+  //         ?.steps || [],
+  //   });
+  // }
 
   async getActiveFlow(workflowRuntimeId: string, projectIds: TProjectIds) {
     this.logger.log(`Getting active workflow ${workflowRuntimeId}`);

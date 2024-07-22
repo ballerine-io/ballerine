@@ -36,6 +36,7 @@ import { BusinessReportService } from '@/business-report/business-report.service
 import { RiskRuleService } from '@/rule-engine/risk-rule.service';
 import { RuleEngineService } from '@/rule-engine/rule-engine.service';
 import { NotionService } from '@/notion/notion.service';
+import { SentryService } from '@/sentry/sentry.service';
 
 describe('#Workflow Runtime Repository Integration Tests', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
@@ -78,6 +79,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       RiskRuleService,
       RuleEngineService,
       NotionService,
+      SentryService,
     ];
 
     workflowRuntimeRepository = (await fetchServiceFromModule(

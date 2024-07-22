@@ -38,6 +38,7 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
+import { SentryService } from '@/sentry/sentry.service';
 
 @Module({
   imports: [
@@ -86,6 +87,7 @@ import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
     FileRepository,
     SalesforceService,
     SalesforceIntegrationRepository,
+    SentryService,
   ],
 })
 export class CollectionFlowModule {}

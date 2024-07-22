@@ -1,8 +1,8 @@
-import { memo, useLayoutEffect, useMemo, useRef } from 'react';
-import { inspect } from '@xstate/inspect';
-import { createMachine } from 'xstate';
-import { useInterpret, useMachine } from '@xstate/react';
 import { deserializeStateDefinition } from '@/components/organisms/XstateVisualizer/utils/deserialize-state-definition';
+import { inspect } from '@xstate/inspect';
+import { useInterpret, useMachine } from '@xstate/react';
+import { memo, useLayoutEffect, useMemo, useRef } from 'react';
+import { createMachine } from 'xstate';
 
 interface Props {
   stateDefinition: Record<string, any>;
