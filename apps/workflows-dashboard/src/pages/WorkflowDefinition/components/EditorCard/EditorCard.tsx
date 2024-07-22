@@ -10,6 +10,7 @@ interface IEditorCardProps {
   title: string;
   onChange?: (value: object) => void;
   onSave?: (value: object) => void;
+  onUpgrade?: () => void;
 }
 
 export const EditorCard: FunctionComponent<IEditorCardProps> = ({
@@ -17,6 +18,7 @@ export const EditorCard: FunctionComponent<IEditorCardProps> = ({
   title,
   onChange,
   onSave,
+  onUpgrade,
 }) => {
   const [valueSnapshot, setSnapshot] = useState(value);
   const [internalValue, setInternalValue] = useState(valueSnapshot);
@@ -67,7 +69,7 @@ export const EditorCard: FunctionComponent<IEditorCardProps> = ({
           </div>
           {onSave && (
             <div className="flex justify-end gap-2">
-              <Button onClick={() => alert('Not implemented')}>Upgrade</Button>
+              {onUpgrade && <Button onClick={onUpgrade}>Upgrade</Button>}
               <Button disabled={!hasChanges} onClick={handleSave}>
                 Update
               </Button>
