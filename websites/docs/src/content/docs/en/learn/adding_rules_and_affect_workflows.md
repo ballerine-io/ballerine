@@ -1,4 +1,4 @@
-# Making a rule affect a workflow state
+# Adding rules and affect workflows
 
 ### Transition Rules
 
