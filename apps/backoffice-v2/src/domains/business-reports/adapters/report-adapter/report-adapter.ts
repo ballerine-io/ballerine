@@ -12,15 +12,18 @@ const getLabel = ({ label, provider }: { label: string; provider: string }) => {
   return label;
 };
 
-export const toRiskLabels = (riskIndicators: Array<{ name: string; riskLevel: string }>) => {
+export const toRiskLabels = (
+  riskIndicators: Array<{ name: string; riskLevel: string; [key: string]: unknown }>,
+) => {
   if (!Array.isArray(riskIndicators) || !riskIndicators.length) {
     return [];
   }
 
-  return riskIndicators.map(({ name, riskLevel }) => ({
+  return riskIndicators.map(({ name, riskLevel, ...rest }) => ({
     label: name,
     severity:
       severityToDisplaySeverity[riskLevel as keyof typeof severityToDisplaySeverity] ?? riskLevel,
+    ...rest,
   }));
 };
 

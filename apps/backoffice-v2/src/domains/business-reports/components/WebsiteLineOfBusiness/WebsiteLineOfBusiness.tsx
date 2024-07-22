@@ -4,6 +4,19 @@ import { Card } from '@/common/components/atoms/Card/Card';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { ctw } from '@/common/utils/ctw/ctw';
+import { z } from 'zod';
+
+const ViolationsSchema = z.array(
+  z.object({
+    label: z.string(),
+    severity: z.string(),
+    explanation: z.string(),
+    screenshot: z.object({
+      screenshotUrl: z.string(),
+    }),
+    sourceUrl: z.string(),
+  }),
+);
 
 export const WebsiteLineOfBusiness: FunctionComponent<{
   violations: Array<{
@@ -12,6 +25,8 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
   }>;
   description: string;
 }> = ({ violations, description }) => {
+  const parsedViolationsResult = ViolationsSchema.safeParse(violations);
+
   return (
     <div className={'space-y-8'}>
       <h3 className={'col-span-full text-lg font-bold'}>Website Line of Business Analysis</h3>
@@ -31,6 +46,50 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
           </div>
         </CardContent>
       </Card>
+      {parsedViolationsResult.success && (
+        <Card>
+          <CardHeader className={'pt-4 font-bold'}>Content Violations Summary</CardHeader>
+          <CardContent className={'flex flex-col space-y-4'}>
+            <h4 className={'font-bold'}>Findings</h4>
+            {parsedViolationsResult.data.map(violation => (
+              <div key={violation.label} className={'flex flex-col space-y-2'}>
+                <div className={'font-semibold'}>{violation.label}</div>
+                {violation.explanation && <p>{violation.explanation}</p>}
+                {violation.screenshot && (
+                  <a
+                    href={violation.screenshot.screenshotUrl}
+                    target={'_blank'}
+                    rel={'noreferrer'}
+                    className={'relative max-h-[400px] w-1/2 overflow-hidden'}
+                    title={'Click to view full screenshot'}
+                  >
+                    <img
+                      src={violation.screenshot.screenshotUrl}
+                      alt={`${violation.label} screenshot of the website`}
+                    />
+                    <div
+                      className={'absolute rounded bg-black p-1 text-xs text-white bottom-right-4'}
+                    >
+                      Click to view full screenshot
+                    </div>
+                  </a>
+                )}
+                <div className={'text-sm italic'}>
+                  Source:{' '}
+                  <a
+                    href={violation.sourceUrl}
+                    target={'_blank'}
+                    rel={'noreferrer'}
+                    className={'link text-blue-500'}
+                  >
+                    {violation.sourceUrl}
+                  </a>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
