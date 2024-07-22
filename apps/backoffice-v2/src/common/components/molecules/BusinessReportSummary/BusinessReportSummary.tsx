@@ -32,8 +32,8 @@ export const BusinessReportSummary: FunctionComponent<{
   const severity = getSeverityFromRiskScore(riskScore);
 
   return (
-    <div className={'grid grid-cols-[60%_40%] gap-8'}>
-      <Card className={!homepageScreenshotUrl ? 'col-span-full' : ''}>
+    <div className={'grid grid-cols-5 gap-8'}>
+      <Card className={!homepageScreenshotUrl ? 'col-span-full' : 'col-span-3'}>
         <CardHeader className={'pt-4 font-bold'}>
           <span className={'mb-1'}>Overall Risk Level</span>
           <div className="flex items-center space-x-2">
@@ -62,7 +62,7 @@ export const BusinessReportSummary: FunctionComponent<{
         </CardContent>
       </Card>
       {homepageScreenshotUrl && (
-        <Card className={'overflow-hidden'}>
+        <Card className={'col-span-2 overflow-hidden'}>
           <a
             href={homepageScreenshotUrl}
             target={'_blank'}
