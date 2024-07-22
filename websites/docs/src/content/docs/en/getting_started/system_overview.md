@@ -96,7 +96,7 @@ Ballerine's plugins enables deep integration with your existing systems, allowin
 
 **Learn more about plugins**
 
-[Adding a plugin to your workflow](websites/docs/src/content/docs/en/learn/adding_a_plugin_to_your_workflow.md) 
+[Using Plugins](websites/docs/src/content/docs/en/learn/plugins.mdx) 
 
 
 ## Webhooks
