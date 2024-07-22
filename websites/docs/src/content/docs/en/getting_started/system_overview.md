@@ -55,18 +55,14 @@ The Rules Engine applies risk rules to assign risk scores, present risk indicato
 
 **Learn more about the rule engine**
 
-[Adding rules step to the workflow](websites/docs/src/content/docs/en/learn/adding_rules_step_to_the_workflow.md)
-
-[Adding/configuring a rule](websites/docs/src/content/docs/en/learn/adding_or_configuring_a_rule.md)
-
-[Making a rule affect a workflow state](websites/docs/src/content/docs/en/learn/making_a_rule_affect_a_workflow_state.md)
+[Making a rule affect a workflow state](websites/docs/src/content/docs/en/learn/adding_rules_and_affect_workflows.md)
 
 ## Case Managment
 The Case Management module provides a user interface for manual decision-making processes, such as approving, rejecting, or requesting re-submission of cases. It offers customizable layouts and information presentation, allowing users to efficiently handle and review cases. 
 
 **Learn more about case management**
 
-[Overview of case management](websites/docs/src/content/docs/en/learn/overview_of_case_management.md) 
+[Overview of case management](websites/docs/src/content/docs/en/learn/case_management_overview.md) 
 
 [Using the case management dashboard](websites/docs/src/content/docs/en/learn/using_the_case_management_dashboard.md) 
 
@@ -88,7 +84,7 @@ Child workflows allow for the generation and activation of extra side workflows 
 
 **Learn more about child workflows**
 
-[Adding a child workflow to your workflow](websites/docs/src/content/docs/en/learn/adding_a_3rd_party_check_to_a_workflow.md) 
+[Adding a child workflow to your workflow](websites/docs/src/content/docs/en/learn/adding_a_3rd_party_check_to_a_workflow.md)
 
 ## Plugins
 
