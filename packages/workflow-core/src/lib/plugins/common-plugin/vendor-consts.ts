@@ -1,13 +1,13 @@
 import { SerializableValidatableTransformer } from './../external-plugin/types';
 
-export const SANCSIONS_SCREENING_VENDOR = {
+export const SANCTIONS_SCREENING_VENDOR = {
   'dow-jones': 'dow-jones',
   'comply-advantage': 'comply-advantage',
   'asia-verify': 'asia-verify',
 } as const;
 
 export type SancsionsScreeningVendors =
-  (typeof SANCSIONS_SCREENING_VENDOR)[keyof typeof SANCSIONS_SCREENING_VENDOR];
+  (typeof SANCTIONS_SCREENING_VENDOR)[keyof typeof SANCTIONS_SCREENING_VENDOR];
 
 export const SANCSIONS_SCREENING_BASE_RESPONSE = {
   transform: [
@@ -30,7 +30,7 @@ export const SANCSIONS_SCREENING_BASE_RESPONSE = {
 } as SerializableValidatableTransformer;
 
 export const SANCSIONS_SCREENING = {
-  [SANCSIONS_SCREENING_VENDOR['dow-jones']]: {
+  [SANCTIONS_SCREENING_VENDOR['dow-jones']]: {
     request: {
       transform: [
         {
@@ -50,7 +50,7 @@ export const SANCSIONS_SCREENING = {
     },
     response: SANCSIONS_SCREENING_BASE_RESPONSE,
   },
-  [SANCSIONS_SCREENING_VENDOR['comply-advantage']]: {
+  [SANCTIONS_SCREENING_VENDOR['comply-advantage']]: {
     request: {
       transform: [
         {
@@ -69,7 +69,7 @@ export const SANCSIONS_SCREENING = {
     },
     response: SANCSIONS_SCREENING_BASE_RESPONSE,
   },
-  [SANCSIONS_SCREENING_VENDOR['asia-verify']]: {
+  [SANCTIONS_SCREENING_VENDOR['asia-verify']]: {
     request: undefined,
     response: undefined,
   },
