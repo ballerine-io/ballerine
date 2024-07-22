@@ -77,7 +77,7 @@ export const EditorCard: FunctionComponent<IEditorCardProps> = ({
             </div>
             {onSave && (
               <div className="flex justify-end gap-2">
-                <Button onClick={() => alert('Not implemented')}>Upgrade</Button>
+                <Button onClick={onUpgrade}>Upgrade</Button>
                 <Button disabled={!hasChanges} onClick={handleSave}>
                   Update
                 </Button>
