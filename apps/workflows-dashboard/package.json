@@ -47,6 +47,7 @@
     "react-json-view": "^1.21.3",
     "react-router-dom": "^6.11.2",
     "recharts": "^2.7.2",
+    "sonner": "^1.4.3",
     "string-ts": "^1.2.0",
     "tailwind-merge": "^1.13.2",
     "tailwindcss-animate": "^1.0.5",

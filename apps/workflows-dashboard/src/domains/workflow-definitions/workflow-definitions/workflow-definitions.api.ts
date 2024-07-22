@@ -3,6 +3,8 @@ import {
   GetWorkflowDefinitionDto,
   GetWorkflowDefinitionsListDto,
   IWorkflowDefinition,
+  UpdateWorkflowDefinitionByIdDto,
+  UpdateWorkflowDefinitionExtensionsByIdDto,
 } from '@/domains/workflow-definitions/workflow-definitions/workflow-definitions.types';
 import { request } from '@/lib/request';
 
@@ -38,4 +40,22 @@ export const fetchUIDefinitionByWorkflowDefinitionId = async (query: GetUIDefini
   );
 
   return result.data || {};
+};
+
+export const updateWorkflowDefinitionById = async (dto: UpdateWorkflowDefinitionByIdDto) => {
+  const result = await request.put(`/workflow-definition/${dto.workflowDefinitionId}/definition`, {
+    definition: dto.definition,
+  });
+
+  return result.data;
+};
+
+export const updateWorkflowDefinitionExtensionsById = async (
+  dto: UpdateWorkflowDefinitionExtensionsByIdDto,
+) => {
+  const result = await request.put(`/workflow-definition/${dto.workflowDefinitionId}/extensions`, {
+    extensions: dto.extensions,
+  });
+
+  return result.data;
 };
