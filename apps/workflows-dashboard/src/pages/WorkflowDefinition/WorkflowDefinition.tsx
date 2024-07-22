@@ -7,6 +7,7 @@ import { IWorkflow } from '@/domains/workflows/api/workflow';
 import { EditorCard } from '@/pages/WorkflowDefinition/components/EditorCard';
 import { UIDefinitionEditor } from '@/pages/WorkflowDefinition/components/UIDefinitionEditor';
 import { WorkflowDefinitionSummaryCard } from '@/pages/WorkflowDefinition/components/WorkflowDefinitionSummaryCard';
+import { useUpgradeWorkflowDefinitionVersionMutation } from '@/pages/WorkflowDefinition/hooks/useUpgradeWorkflowDefinitionVersionMutation';
 import { useWorkflowDefinitionEdit } from '@/pages/WorkflowDefinition/hooks/useWorkflowDefinitionEdit';
 import { useWorkflowDefinitionExtensionsEdit } from '@/pages/WorkflowDefinition/hooks/useWorkflowDefinitionExtensionsEdit';
 import { ViewWorkflow } from '@/pages/Workflows/components/organisms/WorkflowsList/components/ViewWorkflow';
@@ -19,6 +20,8 @@ export const WorkflowDefinition = () => {
   const { workflowDefinitionValue, handleWorkflowDefinitionSave } = useWorkflowDefinitionEdit(data);
   const { workflowDefinitionExtensions, handleWorkflowExtensionsSave } =
     useWorkflowDefinitionExtensionsEdit(data);
+  const { mutate: upgradeWorkflowDefinitionVersion } =
+    useUpgradeWorkflowDefinitionVersionMutation();
 
   if (isLoading) {
     return (
@@ -86,6 +89,9 @@ export const WorkflowDefinition = () => {
                 title="Workflow Definition"
                 value={workflowDefinitionValue}
                 onSave={handleWorkflowDefinitionSave}
+                onUpgrade={() =>
+                  upgradeWorkflowDefinitionVersion({ workflowDefinitionId: data.id! })
+                }
               />
             </div>
           )}
@@ -103,6 +109,7 @@ export const WorkflowDefinition = () => {
               onChange={value => {
                 console.log('changed value', value);
               }}
+              onUpgrade={() => upgradeWorkflowDefinitionVersion({ workflowDefinitionId: data.id! })}
             />
           </div>
           {workflowDefinitionExtensions && (
@@ -111,6 +118,9 @@ export const WorkflowDefinition = () => {
                 title="Plugins"
                 value={workflowDefinitionExtensions || {}}
                 onSave={handleWorkflowExtensionsSave}
+                onUpgrade={() =>
+                  upgradeWorkflowDefinitionVersion({ workflowDefinitionId: data.id! })
+                }
               />
             </div>
           )}
@@ -123,6 +133,7 @@ export const WorkflowDefinition = () => {
               onChange={value => {
                 console.log('changed value', value);
               }}
+              onUpgrade={() => upgradeWorkflowDefinitionVersion({ workflowDefinitionId: data.id! })}
             />
           </div>
         </div>

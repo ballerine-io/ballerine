@@ -12,6 +12,7 @@ interface IEditorCardProps {
   onChange?: (value: object) => void;
   onSave?: (value: object) => void;
   onOpenChange?: (open: boolean) => void;
+  onUpgrade?: () => void;
 }
 
 export const EditorCard: FunctionComponent<IEditorCardProps> = ({
@@ -21,6 +22,7 @@ export const EditorCard: FunctionComponent<IEditorCardProps> = ({
   onChange,
   onSave,
   onOpenChange,
+  onUpgrade,
 }) => {
   const [valueSnapshot, setSnapshot] = useState(value);
   const [internalValue, setInternalValue] = useState(valueSnapshot);
