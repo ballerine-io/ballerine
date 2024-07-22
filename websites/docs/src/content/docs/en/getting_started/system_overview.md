@@ -27,7 +27,7 @@ Whenever a risk flow ("Customer Onboarding" for example) starts, the workflow th
 
  [Creating a workflow](websites/docs/src/content/docs/en/learn/creating_a_workflow.md)
 
- [Configuring workflow steps](websites/docs/src/content/docs/en/learn/configuring_workflow_steps.md)
+ [Configuring a workflow](websites/docs/src/content/docs/en/learn/configuring_a_workflow.md)
 
 
 ## Collection Flows
