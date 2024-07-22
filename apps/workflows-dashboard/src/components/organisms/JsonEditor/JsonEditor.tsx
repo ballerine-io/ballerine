@@ -32,7 +32,15 @@ export const JSONEditorComponent: FunctionComponent<IJSONEditorProps> = ({
 
     //TODO: Each set of value rerenders editor and loses focus, find workarounds
     editorRef.current.set(value);
-  }, [editorRef]);
+  }, [editorRef, readOnly]);
+
+  useEffect(() => {
+    if (!editorRef.current) return;
+
+    if (readOnly) {
+      editorRef.current.set(value);
+    }
+  }, [editorRef, readOnly, value]);
 
   useEffect(() => {
     if (!editorRef.current) return;

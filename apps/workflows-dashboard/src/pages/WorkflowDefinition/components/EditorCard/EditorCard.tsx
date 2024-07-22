@@ -65,9 +65,12 @@ export const EditorCard: FunctionComponent<IEditorCardProps> = ({
           <div className="flex-1">
             <JSONEditorComponent value={internalValue} onChange={handleChange} />
           </div>
-          {hasChanges && onSave && (
-            <div className="flex justify-end">
-              <Button onClick={handleSave}>Save</Button>
+          {onSave && (
+            <div className="flex justify-end gap-2">
+              <Button onClick={() => alert('Not implemented')}>Upgrade</Button>
+              <Button disabled={!hasChanges} onClick={handleSave}>
+                Update
+              </Button>
             </div>
           )}
         </div>
