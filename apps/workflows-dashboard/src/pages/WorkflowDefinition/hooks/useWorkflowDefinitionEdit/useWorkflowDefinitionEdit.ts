@@ -1,31 +1,26 @@
 import { IWorkflowDefinition } from '@/domains/workflow-definitions';
-import { queryClient } from '@/lib/react-query/query-client';
+import { useWorkflowDefinitionUpdateMutation } from '@/pages/WorkflowDefinition/hooks/useWorkflowDefinitionUpdateMutation';
 import { useCallback, useEffect, useState } from 'react';
 
 export const useWorkflowDefinitionEdit = (workflowDefinition: IWorkflowDefinition | undefined) => {
   const [workflowDefinitionValue, setWorkflowDefinitionValue] = useState(
     workflowDefinition?.definition,
   );
+  const { mutate, isLoading } = useWorkflowDefinitionUpdateMutation();
 
   useEffect(() => {
     setWorkflowDefinitionValue(workflowDefinition?.definition);
   }, [workflowDefinition]);
 
-  const handleSave = useCallback(
+  const handleWorkflowDefinitionSave = useCallback(
     (value: object) => {
+      if (!workflowDefinition) return;
+
       setWorkflowDefinitionValue(value);
 
-      const queryKeys = [
-        'workflowDefinitions',
-        'get',
-        { query: { workflowDefinitionId: workflowDefinition?.id } },
-      ];
-
-      queryClient.setQueryData(queryKeys, {
-        ...workflowDefinition,
-        definition: {
-          ...value,
-        },
+      mutate({
+        workflowDefinitionId: workflowDefinition.id!,
+        definition: value,
       });
     },
     [workflowDefinition],
@@ -33,6 +28,7 @@ export const useWorkflowDefinitionEdit = (workflowDefinition: IWorkflowDefinitio
 
   return {
     workflowDefinitionValue,
-    handleSave,
+    isUpdating: isLoading,
+    handleWorkflowDefinitionSave,
   };
 };
