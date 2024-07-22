@@ -23,13 +23,12 @@ Whenever a risk flow ("Customer Onboarding" for example) starts, the workflow th
 
 **Learn more about workflows**
 
- [Understanding workflows technology]()
+ [Understanding workflows technology](websites/docs/src/content/docs/en/learn/workflows_technology.md)
 
- [Creating a workflow]()
+ [Creating a workflow](websites/docs/src/content/docs/en/learn/creating_a_workflow.md)
 
- [Configuring workflow steps]()
+ [Configuring workflow steps](websites/docs/src/content/docs/en/learn/configuring_workflow_steps.md)
 
- [Debugging a workflow]()
 
 ## Collection Flows
 Ballerine's collection flow module enables you to collect information and documents from you end users, using customizable, white-label digital forms.
@@ -37,11 +36,11 @@ All of the steps and inputs are fully customizable, to enable building different
 
 **Learn more about collection flows**
 
-[Creating a collection flow]()
+[Creating a collection flow](websites/docs/src/content/docs/en/learn/creating_a_collection_flow)
 
-[Configuring a collection flow]()
+[Configuring a collection flow](websites/docs/src/content/docs/en/learn/configuring_a_collection_flow.md)
 
-[Changing the collection flow design]()
+[Changing the collection flow design](websites/docs/src/content/docs/en/learn/changing the_collection_flow_design.md)
 
 
 <img title="Collection Flow" alt="Collection Flow" src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/669eacfd54f5c71e9c9edb85_Collection%20flow%20example.png">
@@ -54,22 +53,22 @@ The Rules Engine applies risk rules to assign risk scores, present risk indicato
 
 **Learn more about the rule engine**
 
-[Adding rules to the workflow]()
+[Adding rules step to the workflow](websites/docs/src/content/docs/en/learn/adding rules_step_to_the_workflow.md)
 
-[Adding/configuring a rule]()
+[Adding/configuring a rule](websites/docs/src/content/docs/en/learn/adding_or_configuring_a_rule.md)
 
-[Making a rule affect a workflow state]()
+[Making a rule affect a workflow state](websites/docs/src/content/docs/en/learn/making_a_rule_affect_a_workflow_state.md)
 
 ## Case Managment
 The Case Management module provides a user interface for manual decision-making processes, such as approving, rejecting, or requesting re-submission of cases. It offers customizable layouts and information presentation, allowing users to efficiently handle and review cases. 
 
 **Learn more about case management**
 
-[Overview of case management]() 
+[Overview of case management](websites/docs/src/content/docs/en/learn/overview_of_case_management.md) 
 
-[Using the case management dashboard]() 
+[Using the case management dashboard](websites/docs/src/content/docs/en/learn/using_the_case_management_dashboard.md) 
 
-[Customizing case management workflows]()
+[Customizing case management workflows](websites/docs/src/content/docs/en/learn/customizing_case_management_workflows.md)
 
 
 <img title="Case Management" alt="Case Management" src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/669eb373c7708310d2b4ac61_Case%20managment%20example.png">
@@ -87,7 +86,7 @@ Child workflows allow for the generation and activation of extra side workflows 
 
 **Learn more about child workflows**
 
-[Adding a child workflow to your workflow]() 
+[Adding a child workflow to your workflow](websites/docs/src/content/docs/en/learn/adding_a_3rd_party_check_to_a_workflow.md) 
 
 ## Plugins
 
@@ -95,7 +94,7 @@ Ballerine's plugins enables deep integration with your existing systems, allowin
 
 **Learn more about plugins**
 
-[Adding a plugin to your workflow]() 
+[Adding a plugin to your workflow](websites/docs/src/content/docs/en/learn/adding_a_plugin_to_your_workflow.md) 
 
 
 ## Webhooks
@@ -103,5 +102,5 @@ Webhooks in Ballerine allow for real-time communication and integration with ext
 
 **Learn more about webhooks**
 
-[How to use webhooks]()  
+[How to use webhooks](websites/docs/src/content/docs/en/learn/how_to_use_webhooks.md)  
 
