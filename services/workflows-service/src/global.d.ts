@@ -18,7 +18,7 @@ declare module '@prisma/client' {
     config: WorkflowConfig | any;
   };
 
-  export type WorkflowDefinition = Omit<_WorkflowDefinition, 'extensions'> & {
+  export type WorkflowDefinition = Omit<__WorkflowDefinition, 'extensions'> & {
     extensions: TWorkflowExtenstion;
   };
 
