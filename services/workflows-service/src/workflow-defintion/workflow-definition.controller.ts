@@ -146,6 +146,66 @@ export class WorkflowDefinitionController {
     }
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Workflow Definition upgraded successfully',
+    schema: Type.Object({}),
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    schema: Type.Record(Type.String(), Type.Unknown()),
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found',
+    schema: typebox.Type.Record(typebox.Type.String(), typebox.Type.Unknown()),
+  })
+  @Validate({
+    request: [
+      {
+        type: 'param',
+        name: 'id',
+        schema: WorkflowDefinitionWhereUniqueInputSchema,
+      },
+      {
+        type: 'body',
+        schema: Type.Partial(
+          Type.Object({
+            name: Type.String(),
+            displayName: Type.String(),
+          }),
+        ),
+      },
+    ],
+    response: Type.Any(),
+  })
+  @common.Post('/:id/copy')
+  async copyWorkflowDefinition(
+    @common.Param('id') id: string,
+    @common.Body() body: any,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    try {
+      const upgradedDefinition = await this.workflowDefinitionService.copyDefinitionVersion(
+        id,
+        body.name,
+        body.displayName,
+        currentProjectId,
+      );
+
+      return upgradedDefinition;
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No WorkflowDefinition with ID ${id} was found`, {
+          cause: error,
+        });
+      }
+
+      throw error;
+    }
+  }
+
   @UseCustomerAuthGuard()
   @ApiResponse({
     status: 200,
