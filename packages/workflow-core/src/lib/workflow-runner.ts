@@ -56,7 +56,7 @@ import { KybPlugin } from './plugins/external-plugin/kyb-plugin';
 import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
 import { EmailPlugin } from './plugins/external-plugin/email-plugin';
 import { RiskRulePlugin } from './plugins/common-plugin/risk-rules-plugin';
-import { SanctionsScreeningPlugin } from './plugins/common-plugin/sanctions-screening.plugin';
+import { SanctionsScreeningPlugin } from './plugins/common-plugin/sanctions-screening-plugin';
 import {
   TransformerPlugin,
   TransformerPluginParams,
@@ -325,7 +325,7 @@ export class WorkflowRunner {
     if (apiPluginSchema.pluginKind === 'email') return EmailPlugin;
     // @ts-ignore
     if (apiPluginSchema.pluginKind === 'sanctions-screening')
-      return SanctionsScreeningPlugin as typeof ApiPlugin;
+      return SanctionsScreeningPlugin;
 
     // @ts-expect-error TODO: fix this
     return this.isPluginWithCallbackAction(apiPluginSchema) ? ApiPlugin : WebhookPlugin;
