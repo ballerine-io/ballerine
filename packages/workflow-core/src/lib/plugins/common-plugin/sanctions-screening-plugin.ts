@@ -3,7 +3,7 @@ import {
   IApiPluginParams,
   SerializableValidatableTransformer,
 } from '../external-plugin';
-import { SANCSIONS_SCREENING_VENDOR, type SancsionsScreeningVendors } from './vendor-consts';
+import { SANCTIONS_SCREENING_VENDOR, type SancsionsScreeningVendors } from './vendor-consts';
 
 export interface ISanctionsScreeningParams {
   kind: 'sanctions-screening';
@@ -33,7 +33,7 @@ export class SanctionsScreeningPlugin extends ApiPlugin {
       url: SanctionsScreeningPlugin.#url,
       method: SanctionsScreeningPlugin.#method,
       headers: SanctionsScreeningPlugin.#headers,
-      ...(SANCSIONS_SCREENING_VENDOR[params.vendor] as any),
+      ...(SANCTIONS_SCREENING_VENDOR[params.vendor] as any),
     });
 
     this.vendor = params.vendor;
