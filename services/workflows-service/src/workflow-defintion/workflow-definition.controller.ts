@@ -22,6 +22,7 @@ import * as typebox from '@sinclair/typebox';
 import { Type } from '@sinclair/typebox';
 import { Validate } from 'ballerine-nestjs-typebox';
 import * as errors from '../errors';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @ApiTags('Workflow Definition')
 @ApiBearerAuth()
@@ -77,6 +78,69 @@ export class WorkflowDefinitionController {
         });
       }
 
+      throw error;
+    }
+  }
+
+  @UseCustomerAuthGuard()
+  @ApiResponse({
+    status: 200,
+    description: 'Workflow Definition upgraded successfully',
+    schema: Type.Object({}),
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    schema: Type.Record(Type.String(), Type.Unknown()),
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found',
+    schema: typebox.Type.Record(typebox.Type.String(), typebox.Type.Unknown()),
+  })
+  @Validate({
+    request: [
+      {
+        type: 'param',
+        name: 'id',
+        schema: WorkflowDefinitionWhereUniqueInputSchema,
+      },
+      {
+        type: 'body',
+        schema: Type.Partial(
+          Type.Object({
+            name: Type.Optional(Type.String()),
+            displayName: Type.Optional(Type.String()),
+            definition: Type.Optional(Type.Object({}, { additionalProperties: true })),
+            config: Type.Optional(Type.Object({}, { additionalProperties: true })),
+            extensions: Type.Optional(Type.Object({}, { additionalProperties: true })),
+            submitStates: Type.Optional(Type.Object({}, { additionalProperties: true })),
+            contextSchema: Type.Optional(Type.Object({}, { additionalProperties: true })),
+          }),
+        ),
+      },
+    ],
+    response: Type.Any(),
+  })
+  @common.Post('/:id/upgrade')
+  async upgradeWorkflowDefinition(
+    @common.Param('id') id: string,
+    @common.Body() updateArgs: any,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    try {
+      const upgradedDefinition = await this.workflowDefinitionService.upgradeDefinitionVersion(
+        id,
+        updateArgs as any,
+        currentProjectId,
+      );
+      return upgradedDefinition;
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`No WorkflowDefinition with ID ${id} was found`, {
+          cause: error,
+        });
+      }
       throw error;
     }
   }

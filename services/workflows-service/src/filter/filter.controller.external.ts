@@ -17,8 +17,11 @@ import { FilterModel } from '@/filter/filter.model';
 import { FilterService } from '@/filter/filter.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import type { InputJsonValue, TProjectIds } from '@/types';
+import type { InputJsonValue, TProjectId, TProjectIds } from '@/types';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 
+@swagger.ApiBearerAuth()
 @swagger.ApiTags('Filters')
 @common.Controller('external/filters')
 export class FilterControllerExternal {
@@ -32,7 +35,6 @@ export class FilterControllerExternal {
   @common.Get()
   @swagger.ApiOkResponse({ type: [FilterModel] })
   @swagger.ApiForbiddenResponse()
-  @ApiNestedQuery(FilterFindManyArgs)
   async list(
     @ProjectIds() projectIds: TProjectIds,
     @common.Req() request: Request,
@@ -90,16 +92,22 @@ export class FilterControllerExternal {
   }
 
   @common.Post()
-  @UseGuards(AdminAuthGuard)
+  @UseCustomerAuthGuard()
   @swagger.ApiCreatedResponse({ type: FilterModel })
   @swagger.ApiForbiddenResponse()
   @UsePipes(new ZodValidationPipe(FilterCreateSchema, 'body'))
-  async createFilter(@common.Body() data: FilterCreateDto) {
-    return await this.service.create({
-      data: {
-        ...data,
-        query: data.query as InputJsonValue,
+  async createFilter(
+    @common.Body() data: FilterCreateDto,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    return await this.service.create(
+      {
+        data: {
+          ...data,
+          query: data.query as InputJsonValue,
+        },
       },
-    });
+      currentProjectId,
+    );
   }
 }
