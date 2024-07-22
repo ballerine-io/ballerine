@@ -1,9 +1,9 @@
 import { HealthIndicator } from '@/components/atoms/HealthIndicator';
-import { ContextViewColumn } from '@/components/molecules/WorkflowsTable/components/ContextViewColumn';
+import { JSONViewButton } from '@/components/molecules/JSONViewButton';
 import { DataTableColumnHeader } from '@/components/molecules/WorkflowsTable/components/DataTableColumnHeader';
 import { WorkflowTableColumnDef } from '@/components/molecules/WorkflowsTable/types';
-import { formatDate } from '@/components/molecules/WorkflowsTable/utils/format-date';
 import { IWorkflow } from '@/domains/workflows/api/workflow';
+import { formatDate } from '@/utils/format-date';
 import { getWorkflowHealthStatus } from '@/utils/get-workflow-health-status';
 
 export const defaultColumns: WorkflowTableColumnDef<IWorkflow>[] = [
@@ -43,7 +43,7 @@ export const defaultColumns: WorkflowTableColumnDef<IWorkflow>[] = [
   {
     accessorKey: 'context',
     accessorFn: row => JSON.stringify(row.context),
-    cell: info => <ContextViewColumn context={info.getValue<string>()} />,
+    cell: info => <JSONViewButton json={info.getValue<string>()} />,
     header: () => 'Context',
   },
   {

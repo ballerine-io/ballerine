@@ -104,6 +104,7 @@ import { entitiesUpdate } from './utils/entities-update';
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { RuleEngineService } from '@/rule-engine/rule-engine.service';
 import { RiskRuleService, TFindAllRulesOptions } from '@/rule-engine/risk-rule.service';
+import { SentryService } from '@/sentry/sentry.service';
 
 type TEntityId = string;
 
@@ -142,6 +143,7 @@ export class WorkflowService {
     private readonly prismaService: PrismaService,
     private readonly riskRuleService: RiskRuleService,
     private readonly ruleEngineService: RuleEngineService,
+    private readonly sentry: SentryService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -1898,7 +1900,12 @@ export class WorkflowService {
 
     if (isValid) return;
 
-    throw ValidationError.fromAjvError(validate.errors!);
+    this.sentry.captureException(new Error('Workflow definition context validation failed'));
+    this.logger.error('Workflow definition context validation failed', {
+      errors: validate.errors,
+      context,
+      workflowDefinitionId: workflowDefinition.id,
+    });
   }
 
   async event(
