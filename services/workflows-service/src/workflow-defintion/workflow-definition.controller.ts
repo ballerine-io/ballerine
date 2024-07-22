@@ -12,6 +12,7 @@ import { WorkflowDefinitionWhereUniqueInputSchema } from '@/workflow/dtos/workfl
 import * as common from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { ApiValidationErrorResponse } from '@/common/decorators/http/errors.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { UpdateWorkflowDefinitionDto } from '@/workflow-defintion/dtos/update-workflow-definition-dto';
@@ -22,7 +23,6 @@ import * as typebox from '@sinclair/typebox';
 import { Type } from '@sinclair/typebox';
 import { Validate } from 'ballerine-nestjs-typebox';
 import * as errors from '../errors';
-import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 export const WORKFLOW_DEFINITION_TAG = 'Workflow Definition';
 
@@ -84,7 +84,6 @@ export class WorkflowDefinitionController {
     }
   }
 
-  @UseCustomerAuthGuard()
   @ApiResponse({
     status: 200,
     description: 'Workflow Definition upgraded successfully',
@@ -136,6 +135,7 @@ export class WorkflowDefinitionController {
         updateArgs as any,
         currentProjectId,
       );
+
       return upgradedDefinition;
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -143,6 +143,7 @@ export class WorkflowDefinitionController {
           cause: error,
         });
       }
+
       throw error;
     }
   }
