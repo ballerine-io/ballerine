@@ -1,8 +1,5 @@
-import {
-  ISerializableCommonPluginParams,
-  ISerializableMappingPluginParams,
-} from '../../plugins/common-plugin/types';
-import { ApiPlugin, SerializableValidatableTransformer } from '../../plugins/external-plugin';
+import { ISerializableCommonPluginParams, ISerializableMappingPluginParams } from './types';
+import { ApiPlugin, SerializableValidatableTransformer } from '../external-plugin';
 import { TContext, THelperFormatingLogic } from '../../utils';
 
 export type SanctionsScreeningParams = {
