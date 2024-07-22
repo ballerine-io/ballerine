@@ -56,4 +56,27 @@ export class UiDefinitionService {
   async list(projectIds: TProjectIds) {
     return await this.repository.findMany({}, projectIds);
   }
+
+  async update(
+    id: string,
+    args: Omit<Prisma.UiDefinitionUpdateArgs, 'where'>,
+    projectIds: TProjectIds,
+  ) {
+    console.log({
+      ...args,
+      where: {
+        id,
+      },
+    });
+
+    return await this.repository.update(
+      {
+        ...args,
+        where: {
+          id,
+        },
+      },
+      projectIds,
+    );
+  }
 }
