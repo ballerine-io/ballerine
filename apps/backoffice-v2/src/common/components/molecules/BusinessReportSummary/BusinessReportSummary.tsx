@@ -27,12 +27,13 @@ export const BusinessReportSummary: FunctionComponent<{
     }>;
   }>;
   riskScore: number;
-}> = ({ riskIndicators, summary, riskLevels, riskScore }) => {
+  homepageScreenshotUrl: string | null;
+}> = ({ riskIndicators, summary, riskLevels, riskScore, homepageScreenshotUrl }) => {
   const severity = getSeverityFromRiskScore(riskScore);
 
   return (
-    <div className={'grid grid-cols-[340px_1fr] gap-8'}>
-      <Card className={'col-span-full'}>
+    <div className={'grid grid-cols-[60%_40%] gap-8'}>
+      <Card>
         <CardHeader className={'pt-4 font-bold'}>
           <span className={'mb-1'}>Overall Risk Level</span>
           <div className="flex items-center space-x-2">
@@ -60,6 +61,32 @@ export const BusinessReportSummary: FunctionComponent<{
           </div>
         </CardContent>
       </Card>
+      {homepageScreenshotUrl && (
+        <Card className={'overflow-hidden'}>
+          <a
+            href={homepageScreenshotUrl}
+            target={'_blank'}
+            rel={'noreferrer'}
+            className={'flex h-full min-h-[300px] w-full flex-col'}
+            title={'Click to view full screenshot'}
+          >
+            <span className="relative flex-grow">
+              <img
+                src={homepageScreenshotUrl}
+                alt={'Homepage Screenshot'}
+                className={'absolute inset-0 h-full w-full object-cover object-top'}
+              />
+              <div
+                className={
+                  'absolute rounded border border-white bg-black p-1 text-xs text-white bottom-right-4'
+                }
+              >
+                Click to view full screenshot
+              </div>
+            </span>
+          </a>
+        </Card>
+      )}
       <RiskIndicatorsSummary riskIndicators={riskIndicators} />
     </div>
   );

@@ -141,6 +141,7 @@ export const reportAdapter = {
         label: string;
         items: string[];
       }>,
+      homepageScreenshotUrl: data?.report?.data?.homepageScreenshot,
     };
   },
   v1: (data: Record<string, any>) => {
@@ -247,6 +248,7 @@ export const reportAdapter = {
         label: string;
         items: string[];
       }>,
+      homepageScreenshotUrl: null,
     };
   },
 } as const;

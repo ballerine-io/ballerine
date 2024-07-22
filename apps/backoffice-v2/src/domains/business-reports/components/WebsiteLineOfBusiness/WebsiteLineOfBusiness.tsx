@@ -46,7 +46,7 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
           </div>
         </CardContent>
       </Card>
-      {parsedViolationsResult.success && (
+      {parsedViolationsResult.success && parsedViolationsResult.data.length > 0 && (
         <Card>
           <CardHeader className={'pt-4 font-bold'}>Content Violations Summary</CardHeader>
           <CardContent className={'flex flex-col space-y-4'}>
@@ -60,15 +60,18 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
                     href={violation.screenshot.screenshotUrl}
                     target={'_blank'}
                     rel={'noreferrer'}
-                    className={'relative max-h-[400px] w-1/2 overflow-hidden'}
+                    className={'relative w-1/2'}
                     title={'Click to view full screenshot'}
                   >
                     <img
                       src={violation.screenshot.screenshotUrl}
                       alt={`${violation.label} screenshot of the website`}
+                      className={'h-auto max-h-[400px] w-full object-cover object-top'}
                     />
                     <div
-                      className={'absolute rounded bg-black p-1 text-xs text-white bottom-right-4'}
+                      className={
+                        'absolute rounded border border-white bg-black p-1 text-xs text-white bottom-right-4'
+                      }
                     >
                       Click to view full screenshot
                     </div>
