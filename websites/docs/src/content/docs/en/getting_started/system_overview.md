@@ -104,5 +104,5 @@ Webhooks in Ballerine allow for real-time communication and integration with ext
 
 **Learn more about webhooks**
 
-[How to use webhooks](websites/docs/src/content/docs/en/learn/how_to_use_webhooks.md)  
+[Using webhooks](websites/docs/src/content/docs/en/learn/how_to_use_webhooks.md)  
 
