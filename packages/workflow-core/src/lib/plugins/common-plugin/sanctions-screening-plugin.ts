@@ -1,5 +1,3 @@
-import { response } from './../../../../../../sdks/workflow-browser-sdk/src/lib/tests/msw';
-import { ISerializableCommonPluginParams, ISerializableMappingPluginParams } from './types';
 import {
   ApiPlugin,
   IApiPluginParams,
