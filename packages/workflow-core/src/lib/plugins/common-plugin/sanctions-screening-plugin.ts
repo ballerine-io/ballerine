@@ -15,7 +15,6 @@ export interface ISanctionsScreeningParams {
 }
 const DISPLAY_NAME = 'Sanctions Screening';
 export class SanctionsScreeningPlugin extends ApiPlugin {
-  public static pluginKind: SancsionsScreeningVendors = 'comply-advantage';
   static #url = '{secret.UNIFIED_API_URL}/aml-sessions';
   static #headers = { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' };
   static #method = 'POST' as const;

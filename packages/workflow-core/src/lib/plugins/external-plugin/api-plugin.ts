@@ -6,7 +6,7 @@ import { logger } from '../../logger';
 
 export class ApiPlugin {
   public static pluginType = 'http';
-  public static pluginKind = 'api';
+
   pluginKind: string;
   name: string;
   stateNames: string[];

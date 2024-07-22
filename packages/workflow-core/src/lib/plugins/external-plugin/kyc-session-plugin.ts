@@ -25,7 +25,6 @@ const kycSessionRequestSchema = {
 
 export class KycSessionPlugin extends ApiPlugin {
   public static pluginType = 'http';
-  public static pluginKind = 'kyc-session';
 
   async validateContent<TValidationContext extends 'Request' | 'Response'>(
     schemaValidator: Validator | undefined,

@@ -6,7 +6,6 @@ import * as countries from 'i18n-iso-countries';
 
 export class KybPlugin extends ApiPlugin {
   public static pluginType = 'http';
-  public static pluginKind = 'kyb';
 
   async makeApiRequest(
     url: string,

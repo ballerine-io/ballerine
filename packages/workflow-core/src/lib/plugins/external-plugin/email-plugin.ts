@@ -4,7 +4,6 @@ import { AnyRecord } from '@ballerine/common';
 import { logger } from '../../logger';
 export class EmailPlugin extends ApiPlugin {
   public static pluginType = 'http';
-  public static pluginKind = 'email';
 
   constructor(pluginParams: IApiPluginParams) {
     super(pluginParams);

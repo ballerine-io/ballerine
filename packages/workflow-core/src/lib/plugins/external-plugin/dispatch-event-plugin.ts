@@ -13,7 +13,6 @@ export type IDispatchEventPluginParamsWithTransfomers = Omit<
 };
 
 export class DispatchEventPlugin implements IDispatchEventPluginParams {
-  public static pluginKind = 'dispatch-event';
   name: string;
   eventName: string;
   payload?: AnyRecord;
