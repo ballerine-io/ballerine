@@ -2,7 +2,7 @@ import { applyDecorators } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { Type } from '@sinclair/typebox';
 
-export function ApiValidationErrorResponse() {
+export const ApiValidationErrorResponse = () => {
   return applyDecorators(
     ApiResponse({
       status: 400,
@@ -19,4 +19,4 @@ export function ApiValidationErrorResponse() {
       }),
     }),
   );
-}
+};

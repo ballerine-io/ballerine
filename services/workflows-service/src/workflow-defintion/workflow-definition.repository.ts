@@ -128,6 +128,7 @@ export class WorkflowDefinitionRepository {
       },
       projectIds,
     );
+
     if (args.data?.definition) {
       validateDefinitionLogic(args.data.definition as any);
     }

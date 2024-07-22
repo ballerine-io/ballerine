@@ -1,6 +1,5 @@
 import { BusinessService } from '@/business/business.service';
 import { UpdateFlowDto } from '@/collection-flow/dto/update-flow-input.dto';
-import { recursiveMerge } from '@/collection-flow/helpers/recursive-merge';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { UiDefDefinition, UiSchemaStep } from '@/collection-flow/models/flow-step.model';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -23,10 +22,8 @@ import { AnyRecord } from '@ballerine/common';
 import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
 import { EndUser, UiDefinition, UiDefinitionContext, WorkflowRuntimeData } from '@prisma/client';
-import { plainToClass } from 'class-transformer';
 import { randomUUID } from 'crypto';
 import get from 'lodash/get';
-import keyBy from 'lodash/keyBy';
 
 @Injectable()
 export class CollectionFlowService {

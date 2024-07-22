@@ -205,6 +205,7 @@ describe('WorkflowService', () => {
       {} as any,
       riskRuleService,
       ruleEngineService,
+      {} as any,
     );
   });
 
