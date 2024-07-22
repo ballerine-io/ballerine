@@ -40,7 +40,7 @@ All of the steps and inputs are fully customizable, to enable building different
 
 [Configuring a collection flow](websites/docs/src/content/docs/en/learn/configuring_a_collection_flow.md)
 
-[Changing the collection flow design](websites/docs/src/content/docs/en/learn/changing the_collection_flow_design.md)
+[Changing the collection flow design](websites/docs/src/content/docs/en/learn/changing_the_collection_flow_design.md)
 
 
 <img title="Collection Flow" alt="Collection Flow" src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/669eacfd54f5c71e9c9edb85_Collection%20flow%20example.png">
@@ -53,7 +53,7 @@ The Rules Engine applies risk rules to assign risk scores, present risk indicato
 
 **Learn more about the rule engine**
 
-[Adding rules step to the workflow](websites/docs/src/content/docs/en/learn/adding rules_step_to_the_workflow.md)
+[Adding rules step to the workflow](websites/docs/src/content/docs/en/learn/adding_rules_step_to_the_workflow.md)
 
 [Adding/configuring a rule](websites/docs/src/content/docs/en/learn/adding_or_configuring_a_rule.md)
 
