@@ -38,7 +38,7 @@ import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique
 import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
-import { TWorkflowExtenstion } from './schemas/extenstions.schemas';
+import { TWorkflowExtension } from './schemas/extensions.schemas';
 
 export const WORKGLOW_TAG = 'Workflows';
 @swagger.ApiBearerAuth()
@@ -99,7 +99,7 @@ export class WorkflowControllerExternal {
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @ProjectIds() projectIds: TProjectIds,
   ) {
-    const { extensions }: { extensions: TWorkflowExtenstion } =
+    const { extensions }: { extensions: TWorkflowExtension } =
       await this.service.getWorkflowDefinitionById(params.id, {}, projectIds);
 
     return extensions;

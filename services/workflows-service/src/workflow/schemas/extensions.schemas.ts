@@ -18,16 +18,22 @@ const ApiPluginSchema = Type.Object({
   url: Type.String(),
   name: Type.String(),
   method: Type.String(),
-  headers: Type.Object({
-    'Content-Type': Type.Optional(Type.String()),
-    Authorization: Type.String(),
-  }),
-  request: Type.Object({
-    transform: Type.Array(TransformSchema),
-  }),
-  response: Type.Object({
-    transform: Type.Array(TransformSchema),
-  }),
+  headers: Type.Optional(
+    Type.Object({
+      'Content-Type': Type.Optional(Type.String()),
+      Authorization: Type.String(),
+    }),
+  ),
+  request: Type.Optional(
+    Type.Object({
+      transform: Type.Array(TransformSchema),
+    }),
+  ),
+  response: Type.Optional(
+    Type.Object({
+      transform: Type.Array(TransformSchema),
+    }),
+  ),
   pluginKind: Type.String(),
   stateNames: Type.Array(Type.String()),
   errorAction: Type.String(),
@@ -84,4 +90,4 @@ export const WorkflowExtensionSchema = Type.Object({
   dispatchEventPlugins: Type.Optional(Type.Array(DispatchEventPluginSchema)),
 });
 
-export type TWorkflowExtenstion = Static<typeof WorkflowExtensionSchema>;
+export type TWorkflowExtension = Static<typeof WorkflowExtensionSchema>;
