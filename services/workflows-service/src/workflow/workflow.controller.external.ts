@@ -79,7 +79,15 @@ export class WorkflowControllerExternal {
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @ProjectIds() projectIds: TProjectIds,
   ) {
-    return await this.service.getWorkflowDefinitionById(params.id, {}, projectIds);
+    return await this.service.getWorkflowDefinitionById(
+      params.id,
+      {
+        include: {
+          uiDefinitions: true,
+        },
+      },
+      projectIds,
+    );
   }
 
   @common.Get('/:id')
