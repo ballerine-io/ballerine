@@ -35,7 +35,13 @@ export class WorkflowDefinitionService {
       projectId,
     ]);
 
-    const { version, ...restArgs } = workflowDefintionToUpdate;
+    const {
+      id: _id,
+      version,
+      createdAt: _createdAt,
+      updatedAt: _updatedAt,
+      ...restArgs
+    } = workflowDefintionToUpdate;
 
     const createArgs = replaceNullsWithUndefined(
       merge(restArgs, updateArgs, {
@@ -180,7 +186,7 @@ export class WorkflowDefinitionService {
   async updateDocumentsSchema(
     id: string,
     projectIds: TProjectId[],
-    documentsSchema: (typeof DocumentInsertSchema)[],
+    documentsSchema: Array<typeof DocumentInsertSchema>,
   ) {
     return await this.workflowDefinitionRepository.updateById(
       id,

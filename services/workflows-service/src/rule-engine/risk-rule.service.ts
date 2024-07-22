@@ -94,7 +94,7 @@ export class RiskRuleService {
         databaseId,
       });
 
-      const validatedRecords: z.infer<typeof NotionRiskRuleRecordSchema>[] = [];
+      const validatedRecords: Array<z.infer<typeof NotionRiskRuleRecordSchema>> = [];
 
       for (const record of records) {
         const validatedRecord = NotionRiskRuleRecordSchema.safeParse(record);
