@@ -6,6 +6,7 @@ import { IUIDefinition } from '@/domains/ui-definitions';
 import { EditorCard } from '@/pages/WorkflowDefinition/components/EditorCard';
 import { useUIDefinitionEditorTabs } from '@/pages/WorkflowDefinition/components/UIDefinitionEditor/hooks/useUIDefinitionEditorTabs';
 import { useUIDefinitionElementUpdate } from '@/pages/WorkflowDefinition/components/UIDefinitionEditor/hooks/useUIDefinitionElementUpdate';
+import { useUpgradeWorkflowDefinitionVersionMutation } from '@/pages/WorkflowDefinition/hooks/useUpgradeWorkflowDefinitionVersionMutation';
 import { FunctionComponent, useMemo } from 'react';
 
 interface UIDefinitionEditorProps {
@@ -19,6 +20,7 @@ export const UIDefinitionEditor: FunctionComponent<UIDefinitionEditorProps> = ({
   const { tabValue, handleTabChange } = useUIDefinitionEditorTabs(uiSchema.elements);
   const { uiDefinitionValue, reset, handleUIDefinitionChange, handleElementChange, handleSave } =
     useUIDefinitionElementUpdate(uiDefinition.workflowDefinitionId, uiDefinition);
+  const { mutate: upgradeVersion } = useUpgradeWorkflowDefinitionVersionMutation();
 
   const hasChanges = useMemo(
     () => JSON.stringify(uiDefinition) !== JSON.stringify(uiDefinitionValue),
@@ -62,11 +64,16 @@ export const UIDefinitionEditor: FunctionComponent<UIDefinitionEditorProps> = ({
                 </TabsContent>
               );
             })}
-            {hasChanges && (
-              <div className="flex justify-end">
-                <Button onClick={handleSave}>Save</Button>
-              </div>
-            )}
+            <div className="flex justify-end">
+              <Button
+                onClick={() =>
+                  upgradeVersion({ workflowDefinitionId: uiDefinition.workflowDefinitionId })
+                }
+              >
+                Upgrade
+              </Button>
+              <Button onClick={handleSave}>Save</Button>
+            </div>
           </Tabs>
         </DialogContent>
       }
