@@ -19,5 +19,3 @@ export class GetWorkflowsRuntimeOutputDto {
   @ApiProperty({ type: () => Pagination })
   meta!: Pagination;
 }
-
-export const GetWorkflowPluginOutput = WorkflowExtensionSchema;

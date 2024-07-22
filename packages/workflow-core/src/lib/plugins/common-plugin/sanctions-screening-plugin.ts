@@ -1,53 +1,18 @@
-import { ISerializableCommonPluginParams, ISerializableMappingPluginParams } from './types';
-import { ApiPlugin, IApiPluginParams, SerializableValidatableTransformer } from '../external-plugin';
-import { TContext, THelperFormatingLogic } from '../../utils';
+import {
+  ApiPlugin,
+  IApiPluginParams,
+  SerializableValidatableTransformer,
+} from '../external-plugin';
+import { SANCSIONS_SCREENING_VENDOR, type SancsionsScreeningVendors } from './vendor-consts';
 
 export interface ISanctionsScreeningParams {
   kind: 'sanctions-screening';
-  vendor: 'dow-jones' | 'comply-advantage' | 'asia-verify';
+  vendor: SancsionsScreeningVendors;
   displayName: string | undefined;
   successAction?: string;
   errorAction?: string;
   stateNames: string[];
-};
-
-const REQUEST = {
-  transform: [
-    {
-      transformer: 'jmespath',
-      mapping: `{
-                  vendor: 'dow-jones',
-                  endUserId: join('__', [entity.ballerineEntityId, '']),
-                  firstName: pluginsOutput.kyc_session.kyc_session_1.result.entity.data.firstName,
-                  lastName: pluginsOutput.kyc_session.kyc_session_1.result.entity.data.lastName,
-                  dateOfBirth: pluginsOutput.kyc_session.kyc_session_1.result.entity.data.dateOfBirth,
-                  ongoingMonitoring: false,
-                  clientId: clientId,
-                  callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/AML_RESPONSE_RECEIVED','?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result.aml&processName=aml-unified-api'])
-                }`, // jmespath
-    },
-  ],
-};
-
-const RESPONSE = {
-  transform: [
-    {
-      mapping:
-        "merge({ name: 'company_sanctions', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'SUCCESS' }, @)",
-      transformer: 'jmespath',
-    },
-    {
-      mapping: [
-        {
-          method: 'setTimeToRecordUTC',
-          source: 'invokedAt',
-          target: 'invokedAt',
-        },
-      ],
-      transformer: 'helper',
-    },
-  ],
-} as SerializableValidatableTransformer;
+}
 
 const DISPLAY_NAME = 'Sanctions Screening';
 export class SanctionsScreeningPlugin extends ApiPlugin {
@@ -55,9 +20,6 @@ export class SanctionsScreeningPlugin extends ApiPlugin {
   public static pluginKind = 'sanctions-screening';
 
   public vendor: string;
-
-  static #request = REQUEST;
-  static #response = RESPONSE;
   static #url = '{secret.UNIFIED_API_URL}/aml-sessions';
   static #headers = { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' };
   static #method = 'POST' as const;
@@ -71,8 +33,7 @@ export class SanctionsScreeningPlugin extends ApiPlugin {
       url: SanctionsScreeningPlugin.#url,
       method: SanctionsScreeningPlugin.#method,
       headers: SanctionsScreeningPlugin.#headers,
-      request: SanctionsScreeningPlugin.#request as any,
-      response: SanctionsScreeningPlugin.#response as any,
+      ...(SANCSIONS_SCREENING_VENDOR[params.vendor] as any),
     });
 
     this.vendor = params.vendor;

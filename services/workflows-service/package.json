@@ -110,7 +110,7 @@
     "@ballerine/eslint-config": "^1.1.7",
     "@cspell/cspell-types": "^6.31.1",
     "@nestjs/cli": "9.3.0",
-    "@nestjs/swagger": "6.2.1",
+    "@nestjs/swagger": "7.4.0",
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/base64-stream": "^1.0.5",
     "@types/bcrypt": "5.0.0",
