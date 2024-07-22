@@ -1948,7 +1948,6 @@ export class WorkflowService {
           machineContext: workflowRuntimeData.context,
           state: workflowRuntimeData.state,
         },
-        // @ts-expect-error - error from Prisma types fix
         extensions: workflowDefinition.extensions,
         invokeRiskRulesAction: async (
           context: object,
