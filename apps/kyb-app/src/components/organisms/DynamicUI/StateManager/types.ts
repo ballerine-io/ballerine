@@ -9,6 +9,7 @@ export interface StateManagerContext {
   stateApi: StateMachineAPI;
   state: string;
   payload: AnyObject;
+  isPluginLoading: boolean;
 }
 
 export type StateManagerChildCallback = (bag: StateManagerContext) => JSX.Element;
