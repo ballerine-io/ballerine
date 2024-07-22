@@ -45,11 +45,9 @@ class SwaggerSingleton {
       swaggerDocBuilder.addServer(`http://localhost:${env.PORT}`, 'Local Server');
       swaggerDocBuilder.addServer(`https://api-dev.ballerine.io`, 'Development Server');
     }
-
     if (env.ENVIRONMENT_NAME === 'development') {
       swaggerDocBuilder.addServer(`https://api-dev.ballerine.io`, 'Development Server');
     }
-
     if (env.ENVIRONMENT_NAME === 'production') {
       swaggerDocBuilder.addServer(`https://api.ballerine.app`, 'Production Server');
     }
@@ -79,7 +77,7 @@ class SwaggerSingleton {
         }
       });
     });
-    document.openapi = SWAGGER_VERSION.V3;
+    document.openapi = SWAGGER_VERSION.V3_1;
 
     // @ts-ignore
     document.webhooks = {
@@ -772,7 +770,7 @@ class SwaggerSingleton {
     SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
   }
 
-  initialize(app: INestApplication, version: string = SWAGGER_VERSION.V3) {
+  initialize(app: INestApplication, version: string = SWAGGER_VERSION.V3_1) {
     this._setup(app);
     this.document.openapi = version;
 
