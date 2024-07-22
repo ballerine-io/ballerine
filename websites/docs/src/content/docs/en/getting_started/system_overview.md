@@ -29,6 +29,8 @@ Whenever a risk flow ("Customer Onboarding" for example) starts, the workflow th
 
  [Configuring a workflow](websites/docs/src/content/docs/en/learn/configuring_a_workflow.md)
 
+ [Invoking a workflow](websites/docs/src/content/docs/en/learn/invoking_a_workflow.md)
+
 
 ## Collection Flows
 Ballerine's collection flow module enables you to collect information and documents from you end users, using customizable, white-label digital forms.
