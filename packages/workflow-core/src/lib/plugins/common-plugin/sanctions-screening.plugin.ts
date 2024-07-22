@@ -8,7 +8,7 @@ import { TContext, THelperFormatingLogic } from '../../utils';
 export type SanctionsScreeningParams = {
   kind: 'sanctions-screening';
   vendor: 'dow-jones' | 'comply-advantage' | 'asia-verify';
-  displayName: string;
+  displayName: string | undefined;
   successAction?: string;
   errorAction?: string;
   stateNames: string[];
@@ -54,10 +54,10 @@ const RESPONSE = {
 
 const DISPLAY_NAME = 'Sanctions Screening';
 export class SanctionsScreeningPlugin extends ApiPlugin {
-  public static pluginType = 'sanctions-screening';
-  public actionPluginName: string;
+  public static pluginType = 'http';
+  public static pluginKind = 'sanctions-screening';
+
   public vendor: string;
-  public successAction?: string;
 
   static #request = REQUEST;
   static #response = RESPONSE;
@@ -67,22 +67,18 @@ export class SanctionsScreeningPlugin extends ApiPlugin {
 
   constructor(params: SanctionsScreeningParams) {
     super({
-      name: params.kind,
-      stateNames: params.stateNames,
+      persistResponseDestination: undefined,
+      ...params,
+      name: SanctionsScreeningPlugin.pluginKind,
       displayName: params.displayName || DISPLAY_NAME,
       url: SanctionsScreeningPlugin.#url,
       method: SanctionsScreeningPlugin.#method,
       headers: SanctionsScreeningPlugin.#headers,
       request: SanctionsScreeningPlugin.#request as any,
       response: SanctionsScreeningPlugin.#response as any,
-      successAction: params.successAction,
-      errorAction: params.errorAction,
-      persistResponseDestination: undefined,
     });
 
-    this.actionPluginName = params.kind;
     this.vendor = params.vendor;
-    this.successAction = params.successAction;
   }
 }
 

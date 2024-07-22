@@ -324,7 +324,8 @@ export class WorkflowRunner {
     // @ts-ignore
     if (apiPluginSchema.pluginKind === 'email') return EmailPlugin;
     // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'sanctions-screening') return SanctionsScreeningPlugin;
+    if (apiPluginSchema.pluginKind === 'sanctions-screening')
+      return SanctionsScreeningPlugin as typeof ApiPlugin;
 
     // @ts-expect-error TODO: fix this
     return this.isPluginWithCallbackAction(apiPluginSchema) ? ApiPlugin : WebhookPlugin;
