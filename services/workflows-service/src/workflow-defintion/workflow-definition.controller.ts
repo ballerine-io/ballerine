@@ -1,25 +1,27 @@
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import type { TProjectIds, TProjectId } from '@/types';
-import { GetWorkflowDefinitionListDto } from '@/workflow-defintion/dtos/get-workflow-definition-list.dto';
-import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
-import * as common from '@nestjs/common';
-import { Controller } from '@nestjs/common';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
-import { WorkflowDefinitionWhereUniqueInputSchema } from '@/workflow/dtos/workflow-where-unique-input';
+import type { InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import {
   CustomDataSchemaUpdateDto,
   RootLevelContextSchemaDto,
   type TCustomDataSchemaUpdateDto,
 } from '@/workflow-defintion/dtos/custom-data-schema-update-dto';
+import { GetWorkflowDefinitionListDto } from '@/workflow-defintion/dtos/get-workflow-definition-list.dto';
+import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
+import { WorkflowDefinitionWhereUniqueInputSchema } from '@/workflow/dtos/workflow-where-unique-input';
+import * as common from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 
-import * as typebox from '@sinclair/typebox';
+import { ApiValidationErrorResponse } from '@/common/decorators/http/errors.decorator';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
-import * as errors from '../errors';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UpdateWorkflowDefinitionDto } from '@/workflow-defintion/dtos/update-workflow-definition-dto';
+import { UpdateWorkflowDefinitionExtensionsDto } from '@/workflow-defintion/dtos/update-workflow-definition-extensions-dto';
 import { DocumentInsertSchema } from '@ballerine/common';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import * as typebox from '@sinclair/typebox';
 import { Type } from '@sinclair/typebox';
 import { Validate } from 'ballerine-nestjs-typebox';
-import { ApiValidationErrorResponse } from '@/common/decorators/http/errors.decorator';
+import * as errors from '../errors';
 
 @ApiTags('Workflow Definition')
 @ApiBearerAuth()
@@ -240,6 +242,42 @@ export class WorkflowDefinitionController {
       id,
       projectIds,
       newDocumentsSchemas as Array<typeof DocumentInsertSchema>,
+    );
+  }
+
+  @common.Put('/:id/definition')
+  @common.HttpCode(200)
+  async updateWorkflowDefinition(
+    @common.Param('id') workflowDefinitionId: string,
+    @common.Body() body: UpdateWorkflowDefinitionDto,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
+    return this.workflowDefinitionService.updateById(
+      workflowDefinitionId,
+      {
+        data: {
+          definition: body.definition as InputJsonValue,
+        },
+      },
+      projectIds,
+    );
+  }
+
+  @common.Put('/:id/extensions')
+  @common.HttpCode(200)
+  async updateWorkflowDefinitionExtensions(
+    @common.Param('id') workflowDefinitionId: string,
+    @common.Body() body: UpdateWorkflowDefinitionExtensionsDto,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
+    return this.workflowDefinitionService.updateById(
+      workflowDefinitionId,
+      {
+        data: {
+          extensions: body.extensions as InputJsonValue,
+        },
+      },
+      projectIds,
     );
   }
 }
