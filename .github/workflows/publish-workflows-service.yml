@@ -176,7 +176,7 @@ jobs:
           severity: 'CRITICAL'
 
   update-helm-chart:
-    needs: [determine_branch, build-and-push-ee-image]
+    needs: [determine_branch, build-and-push-ee-image, build-and-push-image]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -220,7 +220,8 @@ jobs:
           changes: |
             {
               "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
-                "image.tag": "${{ needs.build-and-push-ee-image.outputs.docker_tag }}"
+                "image.tag": "${{ needs.build-and-push-ee-image.outputs.docker_tag }}",
+                "prismaMigrate.image.tag": "${{ needs.build-and-push-image.outputs.docker_tag }}"
               }
             }
 
