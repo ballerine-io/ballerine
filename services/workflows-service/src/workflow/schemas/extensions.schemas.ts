@@ -1,16 +1,7 @@
 import { Type, Static } from '@sinclair/typebox';
 
 const TransformSchema = Type.Object({
-  mapping: Type.Union([
-    Type.String(),
-    Type.Array(
-      Type.Object({
-        method: Type.String(),
-        source: Type.String(),
-        target: Type.String(),
-      }),
-    ),
-  ]),
+  mapping: Type.Union([Type.Array(Type.Record(Type.String(), Type.Unknown())), Type.String()]),
   transformer: Type.String(),
 });
 
@@ -25,15 +16,12 @@ const ApiPluginSchema = Type.Object({
     }),
   ),
   request: Type.Optional(
-    Type.Object({
-      transform: Type.Array(TransformSchema),
-    }),
+    Type.Record(Type.String(), Type.Unknown()),
+    // Type.Object({
+    //   transform: Type.Array(TransformSchema),
+    // }),
   ),
-  response: Type.Optional(
-    Type.Object({
-      transform: Type.Array(TransformSchema),
-    }),
-  ),
+  response: Type.Optional(Type.Record(Type.String(), Type.Unknown())),
   pluginKind: Type.String(),
   stateNames: Type.Array(Type.String()),
   errorAction: Type.String(),
@@ -70,7 +58,9 @@ const ChildWorkflowPluginSchema = Type.Object({
   initEvent: Type.String(),
   pluginKind: Type.String(),
   definitionId: Type.String(),
-  transformers: Type.Array(TransformSchema),
+  transformers: Type.Optional(
+    Type.Array(Type.Union([TransformSchema, Type.Record(Type.String(), Type.Unknown())])),
+  ),
 });
 
 const DispatchEventPluginSchema = Type.Object({
