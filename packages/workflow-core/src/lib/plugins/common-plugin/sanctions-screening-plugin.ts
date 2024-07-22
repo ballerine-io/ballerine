@@ -1,8 +1,8 @@
 import { ISerializableCommonPluginParams, ISerializableMappingPluginParams } from './types';
-import { ApiPlugin, SerializableValidatableTransformer } from '../external-plugin';
+import { ApiPlugin, IApiPluginParams, SerializableValidatableTransformer } from '../external-plugin';
 import { TContext, THelperFormatingLogic } from '../../utils';
 
-export type SanctionsScreeningParams = {
+export interface ISanctionsScreeningParams {
   kind: 'sanctions-screening';
   vendor: 'dow-jones' | 'comply-advantage' | 'asia-verify';
   displayName: string | undefined;
@@ -62,7 +62,7 @@ export class SanctionsScreeningPlugin extends ApiPlugin {
   static #headers = { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' };
   static #method = 'POST' as const;
 
-  constructor(params: SanctionsScreeningParams) {
+  constructor(params: ISanctionsScreeningParams & IApiPluginParams) {
     super({
       persistResponseDestination: undefined,
       ...params,
