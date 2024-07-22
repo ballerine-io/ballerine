@@ -15,15 +15,12 @@ import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guar
 import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
 import { env } from '@/env';
 import { PrismaService } from '@/prisma/prisma.service';
-import type { TProjectId, TProjectIds } from '@/types';
+import type { InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import { WORKFLOW_DEFINITION_TAG } from '@/workflow-defintion/workflow-definition.controller';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
-import {
-  GetWorkflowPluginOutput,
-  GetWorkflowsRuntimeOutputDto,
-} from '@/workflow/dtos/get-workflows-runtime-output.dto';
+import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
 import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
 import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
@@ -32,13 +29,18 @@ import { plainToClass } from 'class-transformer';
 import type { Response } from 'express';
 import * as errors from '../errors';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
-import { WorkflowEventInput } from './dtos/workflow-event-input';
+import { WorkflowEventInput, WorkflowEventInputSchema } from './dtos/workflow-event-input';
 import { WorkflowRunDto } from './dtos/workflow-run';
-import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
+import {
+  WorkflowDefinitionWhereUniqueInput,
+  WorkflowDefinitionWhereUniqueInputSchema,
+} from './dtos/workflow-where-unique-input';
 import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
-import { TWorkflowExtension } from './schemas/extensions.schemas';
+import { Validate } from 'ballerine-nestjs-typebox';
+import { type TWorkflowExtension, WorkflowExtensionSchema } from './schemas/extensions.schemas';
+import { type Static, Type } from '@sinclair/typebox';
 
 export const WORKFLOW_TAG = 'Workflows';
 @swagger.ApiBearerAuth()
@@ -92,17 +94,53 @@ export class WorkflowControllerExternal {
   @common.Get('/workflow-definition/:id/plugins')
   @ApiResponse({
     status: 200,
-    schema: GetWorkflowPluginOutput,
+    schema: WorkflowExtensionSchema,
   })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async listWorkflowPlugins(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @ProjectIds() projectIds: TProjectIds,
   ) {
-    const { extensions }: { extensions: TWorkflowExtension } =
-      await this.service.getWorkflowDefinitionById(params.id, {}, projectIds);
+    const result = await this.workflowDefinitionService.getLatestVersion(params.id, projectIds);
 
-    return extensions;
+    return result.extensions;
+  }
+
+  @swagger.ApiTags(WORKFLOW_DEFINITION_TAG, WORKFLOW_TAG)
+  @common.Put('/workflow-definition/:id/plugins')
+  @Validate({
+    request: [
+      {
+        type: 'param',
+        name: 'id',
+        schema: WorkflowDefinitionWhereUniqueInputSchema,
+      },
+      {
+        type: 'body',
+        schema: WorkflowExtensionSchema,
+      },
+    ],
+    response: Type.Any(),
+  })
+  @ApiResponse({
+    status: 200,
+    schema: WorkflowExtensionSchema,
+  })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async addPlugins(
+    @common.Param('id') id: Static<typeof WorkflowDefinitionWhereUniqueInputSchema>,
+    @common.Body() body: Static<typeof WorkflowExtensionSchema>,
+    @CurrentProject() projectId: TProjectId,
+  ) {
+    const result = await this.workflowDefinitionService.upgradeDefinitionVersion(
+      id,
+      {
+        extensions: body as InputJsonValue,
+      },
+      projectId,
+    );
+
+    return result;
   }
 
   @common.Get('/:id')
