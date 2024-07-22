@@ -83,7 +83,7 @@ const kycIndividualRequestSchema = {
 };
 export class KycPlugin extends ApiPlugin {
   public static pluginType = 'http';
-  public static pluginKind = 'kyc';
+
   async validateContent<TValidationContext extends 'Request' | 'Response'>(
     schemaValidator: Validator | undefined,
     transformedRequest: AnyRecord,
