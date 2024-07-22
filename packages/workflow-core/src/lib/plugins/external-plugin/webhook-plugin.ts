@@ -12,10 +12,13 @@ export class WebhookPlugin extends ApiPlugin {
 
   // TODO: Ensure if this is intentional
   async invoke(context: TContext) {
-    const requestPayload = await this.transformData(this.request.transformers, context);
+    let requestPayload;
+    if (this.request && 'transformers' in this.request && this.request.transformers) {
+      requestPayload = await this.transformData(this.request.transformers, context);
+    }
 
     try {
-      await this.makeApiRequest(this.url, this.method, requestPayload, this.headers!);
+      return await this.makeApiRequest(this.url, this.method, requestPayload, this.headers!);
     } catch (err) {
       logger.error('Error occurred while sending an API request', { err });
     }

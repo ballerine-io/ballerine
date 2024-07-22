@@ -6,20 +6,16 @@ import {
 import { SANCTIONS_SCREENING_VENDOR, type SancsionsScreeningVendors } from './vendor-consts';
 
 export interface ISanctionsScreeningParams {
-  kind: 'sanctions-screening';
+  name: 'sanctions-screening';
+  type: 'sanctions-screening';
+  pluginKind: SancsionsScreeningVendors;
   vendor: SancsionsScreeningVendors;
   displayName: string | undefined;
-  successAction?: string;
-  errorAction?: string;
   stateNames: string[];
 }
-
 const DISPLAY_NAME = 'Sanctions Screening';
 export class SanctionsScreeningPlugin extends ApiPlugin {
-  public static pluginType = 'http';
-  public static pluginKind = 'sanctions-screening';
-
-  public vendor: string;
+  public static pluginKind: SancsionsScreeningVendors = 'comply-advantage';
   static #url = '{secret.UNIFIED_API_URL}/aml-sessions';
   static #headers = { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' };
   static #method = 'POST' as const;
@@ -28,15 +24,13 @@ export class SanctionsScreeningPlugin extends ApiPlugin {
     super({
       persistResponseDestination: undefined,
       ...params,
-      name: SanctionsScreeningPlugin.pluginKind,
+      name: 'sanctions-screening',
       displayName: params.displayName || DISPLAY_NAME,
       url: SanctionsScreeningPlugin.#url,
       method: SanctionsScreeningPlugin.#method,
       headers: SanctionsScreeningPlugin.#headers,
-      ...(SANCTIONS_SCREENING_VENDOR[params.vendor] as any),
+      ...(SANCTIONS_SCREENING_VENDOR[params.pluginKind] as any),
     });
-
-    this.vendor = params.vendor;
   }
 }
 

@@ -37,8 +37,8 @@ export interface WorkflowEvent {
 
 export interface WorkflowExtensions {
   statePlugins?: StatePlugins;
-  dispatchEventPlugins?: DispatchEventPlugin[] | IDispatchEventPluginParams[];
-  apiPlugins?: HttpPlugins | ISerializableHttpPluginParams[];
+  dispatchEventPlugins?: IDispatchEventPluginParams[];
+  apiPlugins?: ISerializableHttpPluginParams[];
   commonPlugins?:
     | CommonPlugins
     | ISerializableCommonPluginParams[]

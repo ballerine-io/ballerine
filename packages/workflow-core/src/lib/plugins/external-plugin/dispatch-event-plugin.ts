@@ -3,14 +3,16 @@ import { WorkflowRunner } from '../../../lib/workflow-runner';
 import { Transformer, Transformers } from '../../../lib/utils';
 import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
 
+type WorkflowFetchTransformers = typeof WorkflowRunner.fetchTransformers;
+
 export type IDispatchEventPluginParamsWithTransfomers = Omit<
   IDispatchEventPluginParams,
   'transformers'
 > & {
-  transformers: ReturnType<WorkflowRunner['fetchTransformers']>;
+  transformers: ReturnType<WorkflowFetchTransformers>;
 };
 
-export class DispatchEventPlugin {
+export class DispatchEventPlugin implements IDispatchEventPluginParams {
   public static pluginKind = 'dispatch-event';
   name: string;
   eventName: string;
@@ -18,7 +20,7 @@ export class DispatchEventPlugin {
   stateNames: string[];
   errorAction?: string;
   successAction?: string;
-  transformers?: Transformers;
+  transformers: any;
   displayName: string | undefined;
 
   constructor(pluginParams: IDispatchEventPluginParamsWithTransfomers) {
