@@ -1,4 +1,6 @@
-# Customizing case management workflows
+# Add and Customize Workflows in the Case Management
+
+## Customizing case management workflows
 
 To customize your case management to show your various workflows, add filters.
 Filters render your different workflows as case queues you can access via the case management
