@@ -29,7 +29,7 @@ export class IterativePlugin {
     const iterationParams = await this.transformData(this.iterateOn, context);
 
     if (!Array.isArray(iterationParams)) {
-      logger.error('Iterative plugin could not find iterate on param');
+      logger.error('Iterative plugin could not find iterate on param', { iterationParams });
       // return this.composeErrorResponse('Iterative plugin could not find iterate on param');
       return {
         callbackAction: this.successAction,

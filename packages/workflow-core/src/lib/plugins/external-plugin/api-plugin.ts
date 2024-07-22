@@ -1,3 +1,4 @@
+import { WorkflowRunner } from './../../workflow-runner';
 import { TContext, Transformer, Transformers, Validator } from '../../utils';
 import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
 import { IApiPluginParams } from './types';
@@ -6,12 +7,13 @@ import { logger } from '../../logger';
 export class ApiPlugin {
   public static pluginType = 'http';
   public static pluginKind = 'api';
+  pluginKind: string;
   name: string;
   stateNames: string[];
   url: string;
   method: IApiPluginParams['method'];
   headers: IApiPluginParams['headers'];
-  request: IApiPluginParams['request'];
+  request?: IApiPluginParams['request'];
   response?: IApiPluginParams['response'];
   successAction?: string;
   errorAction?: string;
@@ -28,27 +30,63 @@ export class ApiPlugin {
       accept: 'application/json',
       ...(pluginParams.headers || {}),
     } as HeadersInit;
-    this.request = pluginParams.request;
-    this.response = pluginParams.response;
+
+    this.pluginKind = pluginParams.pluginKind;
+
+    const requestTransformerLogic =
+      pluginParams.request && 'transform' in pluginParams.request
+        ? pluginParams.request?.transform
+        : undefined;
+    const requestSchema =
+      pluginParams.request && 'schema' in pluginParams.request
+        ? pluginParams.request?.schema
+        : undefined;
+    const responseTransformerLogic =
+      pluginParams.response && 'transform' in pluginParams.response
+        ? pluginParams.response?.transform
+        : undefined;
+    const responseSchema =
+      pluginParams.response && 'schema' in pluginParams.response
+        ? pluginParams.response?.schema
+        : undefined;
+
+    // @ts-ignore
+    const requestTransformer =
+      requestTransformerLogic && WorkflowRunner.fetchTransformers(requestTransformerLogic);
+    const responseTransformer =
+      responseTransformerLogic && WorkflowRunner.fetchTransformers(responseTransformerLogic);
+    // @ts-expect-error TODO: fix this
+    const requestValidator = WorkflowRunner.fetchValidator('json-schema', requestSchema);
+    // @ts-expect-error TODO: fix this
+    const responseValidator = WorkflowRunner.fetchValidator('json-schema', responseSchema);
+
+    // TODO: keep json string request and response for debugging
+    // this.request_raw = pluginParams.request;
+    // this.response_raw = pluginParams.response;
     this.successAction = pluginParams.successAction;
     this.errorAction = pluginParams.errorAction;
     this.persistResponseDestination = pluginParams.persistResponseDestination;
-
-    this.displayName = pluginParams.displayName;
+    (this.request = { transformers: requestTransformer, schemaValidator: requestValidator }),
+      (this.response = { transformers: responseTransformer, schemaValidator: responseValidator }),
+      (this.displayName = pluginParams.displayName);
   }
 
   async invoke(context: TContext) {
     try {
-      const requestPayload = await this.transformData(this.request.transformers, context);
+      let requestPayload;
 
-      const { isValidRequest, errorMessage } = await this.validateContent(
-        this.request.schemaValidator,
-        requestPayload,
-        'Request',
-      );
+      if (this.request && 'transformers' in this.request && this.request.transformers) {
+        requestPayload = await this.transformData(this.request.transformers, context);
 
-      if (!isValidRequest) {
-        return this.returnErrorResponse(errorMessage!);
+        const { isValidRequest, errorMessage } = await this.validateContent(
+          this.request.schemaValidator,
+          requestPayload,
+          'Request',
+        );
+
+        if (!isValidRequest) {
+          return this.returnErrorResponse(errorMessage!);
+        }
       }
 
       const urlWithoutPlaceholders = this.replaceValuePlaceholders(this.url, context);
@@ -74,18 +112,18 @@ export class ApiPlugin {
         const result = await apiResponse.json();
         let responseBody = result as AnyRecord;
 
-        if (this.response?.transformers) {
+        if (this.response && 'transformers' in this.response && this.response.transformers) {
           responseBody = await this.transformData(this.response.transformers, result as AnyRecord);
-        }
 
-        const { isValidResponse, errorMessage } = await this.validateContent(
-          this.response!.schemaValidator,
-          responseBody,
-          'Response',
-        );
+          const { isValidResponse, errorMessage } = await this.validateContent(
+            this.response.schemaValidator,
+            responseBody,
+            'Response',
+          );
 
-        if (!isValidResponse) {
-          return this.returnErrorResponse(errorMessage!);
+          if (!isValidResponse) {
+            return this.returnErrorResponse(errorMessage!);
+          }
         }
 
         if (this.successAction) {
@@ -118,7 +156,7 @@ export class ApiPlugin {
   async makeApiRequest(
     url: string,
     method: ApiPlugin['method'],
-    payload: AnyRecord,
+    payload: AnyRecord | undefined,
     headers: HeadersInit,
   ): Promise<{
     ok: boolean;
@@ -128,20 +166,23 @@ export class ApiPlugin {
     const requestParams = {
       method: method,
       headers: headers,
+      body: undefined,
     };
 
-    Object.keys(payload).forEach(key => {
-      if (typeof payload[key] === 'string') {
-        payload[key] = this.replaceValuePlaceholders(payload[key] as string, payload);
+    if (payload) {
+      Object.keys(payload).forEach(key => {
+        if (typeof payload[key] === 'string') {
+          payload[key] = this.replaceValuePlaceholders(payload[key] as string, payload);
+        }
+      });
+      if (this.method.toUpperCase() !== 'GET' && payload) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        requestParams.body = JSON.stringify(payload);
       }
-    });
+    }
 
-    // @TODO: Use an enum over string literals for HTTP methods
-    if (this.method.toUpperCase() !== 'GET' && payload) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      requestParams.body = JSON.stringify(payload);
-    } else if (this.method.toUpperCase() === 'GET' && payload) {
+    if (this.method.toUpperCase() === 'GET' && payload && !requestParams.body) {
       const queryParams = new URLSearchParams(payload as Record<string, string>).toString();
       url = `${url}?${queryParams}`;
     }

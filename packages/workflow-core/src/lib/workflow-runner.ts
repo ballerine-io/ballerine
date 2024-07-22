@@ -118,7 +118,6 @@ export class WorkflowRunner {
       invokeChildWorkflowAction,
     );
 
-    // @ts-expect-error TODO: fix this
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
 
     this.#__extensions.commonPlugins = this.initiateCommonPlugins(
@@ -158,8 +157,8 @@ export class WorkflowRunner {
   }
 
   initiateDispatchEventPlugins(
-    dispatchEventPlugins: IDispatchEventPluginParams[] | DispatchEventPlugin[] | undefined,
-  ) {
+    dispatchEventPlugins: IDispatchEventPluginParams[] | undefined,
+  ): IDispatchEventPluginParams[] | undefined {
     return dispatchEventPlugins?.map(dispatchEventPlugin => {
       if (dispatchEventPlugin instanceof DispatchEventPlugin) {
         return dispatchEventPlugin;
@@ -167,26 +166,13 @@ export class WorkflowRunner {
 
       return new DispatchEventPlugin({
         ...dispatchEventPlugin,
-        transformers: this.fetchTransformers(dispatchEventPlugin.transformers || []),
+        transformers: WorkflowRunner.fetchTransformers(dispatchEventPlugin.transformers || []),
       });
     });
   }
 
   initiateApiPlugins(apiPluginSchemas: Array<ISerializableHttpPluginParams>) {
     return apiPluginSchemas?.map(apiPluginSchema => {
-      const requestTransformerLogic = apiPluginSchema.request.transform;
-      const requestSchema = apiPluginSchema.request.schema;
-      const responseTransformerLogic = apiPluginSchema.response?.transform;
-      const responseSchema = apiPluginSchema.response?.schema;
-      // @ts-ignore
-      const requestTransformer = this.fetchTransformers(requestTransformerLogic);
-      const responseTransformer =
-        responseTransformerLogic && this.fetchTransformers(responseTransformerLogic);
-      // @ts-expect-error TODO: fix this
-      const requestValidator = this.fetchValidator('json-schema', requestSchema);
-      // @ts-expect-error TODO: fix this
-      const responseValidator = this.fetchValidator('json-schema', responseSchema);
-
       const apiPluginClass = this.pickApiPluginClass(apiPluginSchema);
 
       return new apiPluginClass({
@@ -197,8 +183,6 @@ export class WorkflowRunner {
         url: apiPluginSchema.url,
         method: apiPluginSchema.method,
         headers: apiPluginSchema.headers,
-        request: { transformers: requestTransformer, schemaValidator: requestValidator },
-        response: { transformers: responseTransformer, schemaValidator: responseValidator },
         successAction: apiPluginSchema.successAction,
         errorAction: apiPluginSchema.errorAction,
         persistResponseDestination: apiPluginSchema.persistResponseDestination,
@@ -226,7 +210,7 @@ export class WorkflowRunner {
   ) {
     return childPluginSchemas?.map(childPluginSchema => {
       console.log('Initiating child plugin', childPluginSchema);
-      const transformers = this.fetchTransformers(childPluginSchema.transformers) || [];
+      const transformers = WorkflowRunner.fetchTransformers(childPluginSchema.transformers) || [];
 
       return new ChildWorkflowPlugin({
         name: childPluginSchema.name,
@@ -298,7 +282,7 @@ export class WorkflowRunner {
       name: iterarivePluginParams.name,
       stateNames: iterarivePluginParams.stateNames,
       //@ts-ignore
-      iterateOn: this.fetchTransformers(iterarivePluginParams.iterateOn),
+      iterateOn: WorkflowRunner.fetchTransformers(iterarivePluginParams.iterateOn),
       action: (context: TContext) =>
         actionPlugin!.invoke({
           ...context,
@@ -324,10 +308,9 @@ export class WorkflowRunner {
     // @ts-ignore
     if (apiPluginSchema.pluginKind === 'email') return EmailPlugin;
     // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'sanctions-screening')
-      return SanctionsScreeningPlugin;
+    if (apiPluginSchema.pluginKind === 'sanctions-screening') return SanctionsScreeningPlugin;
 
-    // @ts-expect-error TODO: fix this
+    // @ts-ignore - TODO: fix this
     return this.isPluginWithCallbackAction(apiPluginSchema) ? ApiPlugin : WebhookPlugin;
   }
 
@@ -335,7 +318,7 @@ export class WorkflowRunner {
     return !!apiPluginSchema.successAction && !!apiPluginSchema.errorAction;
   }
 
-  fetchTransformers(
+  static fetchTransformers(
     transformers: SerializableValidatableTransformer['transform'] & {
       name?: string;
     },
@@ -351,7 +334,7 @@ export class WorkflowRunner {
     });
   }
 
-  fetchValidator(
+  static fetchValidator(
     validatorName: string,
     schema: ConstructorParameters<typeof JsonSchemaValidator>[0],
   ) {
