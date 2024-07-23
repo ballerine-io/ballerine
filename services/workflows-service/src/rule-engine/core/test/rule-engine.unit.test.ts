@@ -131,7 +131,7 @@ describe('Rule Engine', () => {
     expect((validationResults[0] as RuleResult).error).toBe(undefined);
   });
 
-  it.skip('should validate custom operation with additional params', () => {
+  it.only('should validate custom operation with additional params', () => {
     // TODO: should spy Date.now() to return a fixed date
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.AND,
@@ -144,7 +144,10 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = runRuleSet(ruleSetExample, mockData);
+    const validationResults: RuleResultSet = runRuleSet(ruleSetExample, {
+      ...mockData,
+      createdAt: '2023-02-01',
+    });
     expect(validationResults[0]!.status).toBe('PASSED');
   });
 
