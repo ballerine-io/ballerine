@@ -6,9 +6,9 @@ const TransformSchema = Type.Object({
 });
 
 const ApiPluginSchema = Type.Object({
-  url: Type.String(),
   name: Type.String(),
-  method: Type.String(),
+  url: Type.Optional(Type.String()),
+  method: Type.Optional(Type.String()),
   headers: Type.Optional(
     Type.Object({
       'Content-Type': Type.Optional(Type.String()),
