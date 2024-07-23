@@ -215,10 +215,10 @@ export class WorkflowRunner {
         };
         requestTransformer = WorkflowRunner.fetchTransformers(requestTransformerLogic);
 
-        // @ts-expect-error TODO: fix this
         requestValidator = WorkflowRunner.fetchValidator(
           'json-schema',
-          apiPluginSchema.response.schema,
+          // @ts-expect-error TODO: fix this
+          apiPluginSchema?.request?.schema,
         );
       }
 
@@ -231,10 +231,10 @@ export class WorkflowRunner {
         responseTransformer =
           responseTransformerLogic && WorkflowRunner.fetchTransformers(responseTransformerLogic);
 
-        // @ts-expect-error TODO: fix this
         responseValidator = WorkflowRunner.fetchValidator(
           'json-schema',
-          apiPluginSchema.response.schema,
+          // @ts-expect-error TODO: fix this
+          apiPluginSchema?.response?.schema,
         );
       }
     }
