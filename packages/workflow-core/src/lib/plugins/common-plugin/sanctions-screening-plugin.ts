@@ -14,8 +14,6 @@ export interface ISanctionsScreeningParams {
   kind: 'sanctions-screening';
   vendor: SancsionsScreeningVendors;
   displayName: string | undefined;
-  successAction?: string;
-  errorAction?: string;
   stateNames: string[];
 }
 
@@ -34,7 +32,7 @@ export class SanctionsScreeningPlugin extends ApiPlugin {
     let { requestTransformer, requestValidator, responseTransformer, responseValidator } =
       WorkflowRunner.reqResTransformersObj({
         params,
-        ...(reqResObj as any),
+        ...(reqResObj(params.successAction || 'VENDOR_DONE') as any),
       });
 
     super({
