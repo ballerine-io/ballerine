@@ -416,7 +416,7 @@ importers:
         specifier: ^0.9.14
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.5.8
+        specifier: 0.5.9
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.6.22
@@ -1339,7 +1339,7 @@ importers:
         specifier: ^1.1.7
         version: link:../config
       '@ballerine/ui':
-        specifier: 0.5.8
+        specifier: 0.5.9
         version: link:../ui
       '@react-pdf/renderer':
         specifier: ^3.1.14
@@ -32935,7 +32935,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 4.5.3(@types/node@20.9.2)
+      vite: 4.5.3(@types/node@18.17.19)
 
   /vitest@0.24.5(jsdom@20.0.3):
     resolution: {integrity: sha512-zw6JhPUHtLILQDe5Q39b/SzoITkG+R7hcFjuthp4xsi6zpmfQPOZcHodZ+3bqoWl4EdGK/p1fuMiEwdxgbGLOA==}
