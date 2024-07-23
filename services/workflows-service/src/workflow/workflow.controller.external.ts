@@ -222,24 +222,21 @@ export class WorkflowControllerExternal {
           context: {
             entity: {
               type: 'business',
-              id: '432109',
+              id: 'my-enduser-id',
               data: {
-                companyWebsite: 'https://example.com',
-                lineOfBusiness: 'Retail',
-                companyName: 'Example Inc.',
-                companyAddress: '123 Main St, Anytown, USA',
-                companyPhone: '123-456-7890',
-                companyEmail: 'info@example.com',
+                country: 'US',
+                registrationNumber: '756OPOPOP08238',
+                companyName: 'MOCK COMPANY LIMITED',
+                additionalInfo: {
+                  mainRepresentative: {
+                    email: 'email@ballerine.com',
+                    lastName: 'Last',
+                    firstName: 'First',
+                  },
+                },
               },
             },
-            documents: [
-              {
-                type: 'business-license',
-                url: 'https://example.com/business-license.pdf',
-                category: 'business-license',
-              },
-            ],
-            customData: {},
+            documents: [],
           },
         },
       },
