@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.9
+
+### Patch Changes
+
+- Fixed dropdown input text overflow
+
 ## 0.5.8
 
 ### Patch Changes
