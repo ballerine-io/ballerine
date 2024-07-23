@@ -56,6 +56,7 @@ The Rules Engine applies risk rules to assign risk scores, present risk indicato
 **Learn more about the rule engine**
 
 [Making a rule affect a workflow state](websites/docs/src/content/docs/en/learn/adding_rules_and_affect_workflows.md)
+
 [Calculation Risk Scores](websites/docs/src/content/docs/en/learn/calculating_risk_scores.md)
 
 ## Case Managment
