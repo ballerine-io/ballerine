@@ -64,7 +64,7 @@ export const UIDefinitionEditor: FunctionComponent<UIDefinitionEditorProps> = ({
                 </TabsContent>
               );
             })}
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
               <Button
                 onClick={() =>
                   upgradeVersion({ workflowDefinitionId: uiDefinition.workflowDefinitionId })

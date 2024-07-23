@@ -86,6 +86,41 @@ export class WorkflowDefinitionService {
     return newVersionDefinition;
   }
 
+  async copyDefinitionVersion(
+    id: string,
+    name: string,
+    displayName: string,
+    projectId: TProjectId,
+  ) {
+    const workflowDefintionToCopy = await this.workflowDefinitionRepository.findById(id, {}, [
+      projectId,
+    ]);
+
+    const {
+      id: _id,
+      version,
+      name: _name,
+      displayName: _displayName,
+      createdAt: _createdAt,
+      updatedAt: _updatedAt,
+      ...restArgs
+    } = workflowDefintionToCopy;
+
+    const createArgs = replaceNullsWithUndefined(
+      merge(restArgs, {
+        name,
+        displayName,
+        version: 1,
+      }),
+    ) as Prisma.WorkflowDefinitionCreateArgs['data'];
+
+    const workflowDefinitionCopy = await this.workflowDefinitionRepository.create({
+      data: createArgs,
+    });
+
+    return workflowDefinitionCopy;
+  }
+
   async getLatestVersion(id: string, projectIds: TProjectIds) {
     const workflowDefinition = await this.workflowDefinitionRepository.findById(id, {}, projectIds);
 
