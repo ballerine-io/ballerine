@@ -24,7 +24,7 @@ export const DateRangePicker = ({ onChange, value, className }: TDateRangePicker
               'text-muted-foreground': !value,
             })}
           >
-            <CalendarIcon className="size-4 mr-2" />
+            <CalendarIcon className="mr-2 size-4" />
             {value?.from && value?.to && (
               <>
                 {formatDate(value.from, 'LLL dd, y')} - {formatDate(value.to, 'LLL dd, y')}
