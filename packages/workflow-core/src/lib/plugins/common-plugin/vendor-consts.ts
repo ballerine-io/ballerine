@@ -30,7 +30,7 @@ export const SANCSIONS_SCREENING_BASE_RESPONSE = {
 } as SerializableValidatableTransformer;
 
 export const SANCSIONS_SCREENING = {
-  [SANCTIONS_SCREENING_VENDOR['dow-jones']]: {
+  [SANCTIONS_SCREENING_VENDOR['dow-jones']]: (successAction: string) => ({
     request: {
       transform: [
         {
@@ -43,14 +43,14 @@ export const SANCSIONS_SCREENING = {
                             firstName: pluginsOutput.kyc_session.kyc_session_1.result.entity.data.firstName,
                             lastName: pluginsOutput.kyc_session.kyc_session_1.result.entity.data.lastName,
                             clientId: clientId,
-                            callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/AML_RESPONSE_RECEIVED','?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result.aml&processName=aml-unified-api'])
+                            callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/${successAction}','?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result.aml&processName=aml-unified-api'])
                           }`, // jmespath
         },
       ],
     },
     response: SANCSIONS_SCREENING_BASE_RESPONSE,
-  },
-  [SANCTIONS_SCREENING_VENDOR['comply-advantage']]: {
+  }),
+  [SANCTIONS_SCREENING_VENDOR['comply-advantage']]: (successAction: string) => ({
     request: {
       transform: [
         {
@@ -62,15 +62,15 @@ export const SANCSIONS_SCREENING = {
                   endUserId: join('__', [entity.ballerineEntityId, '']),
                   firstName: entity.data.additionalInfo.ubos[0].firstName,
                   lastName: entity.data.additionalInfo.ubos[0].lastName,
-                  callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/RESPONSE_RECEIVED','?resultDestination=aml&processName=aml-unified-api'])
+                  callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/${successAction}','?resultDestination=aml&processName=aml-unified-api'])
                 }`, // jmespath
         },
       ],
     },
     response: SANCSIONS_SCREENING_BASE_RESPONSE,
-  },
-  [SANCTIONS_SCREENING_VENDOR['asia-verify']]: {
+  }),
+  [SANCTIONS_SCREENING_VENDOR['asia-verify']]: (successAction: string) => ({
     request: undefined,
     response: undefined,
-  },
+  }),
 } as const satisfies Record<SancsionsScreeningVendors, any>;

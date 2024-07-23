@@ -485,7 +485,9 @@ export class WorkflowControllerExternal {
       }, defaultPrismaTransactionOptions);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`, {
+          cause: error,
+        });
       }
 
       throw error;

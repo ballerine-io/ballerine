@@ -589,7 +589,11 @@ export class HookCallbackHandlerService {
     projectId: TProjectId;
     vendor: string;
   }) {
-    const endUser = await this.endUserService.getById(endUserId, {}, [projectId]);
+    const endUser = await this.endUserService.find(endUserId, [projectId]);
+
+    if (!endUser) {
+      return;
+    }
 
     return await this.endUserService.updateById(endUserId, {
       data: {
