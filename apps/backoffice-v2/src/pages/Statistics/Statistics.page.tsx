@@ -17,7 +17,7 @@ export const Statistics: FunctionComponent = () => {
       <h1 className={'pb-5 text-2xl font-bold'}>Statistics</h1>
       <div className={'flex flex-col space-y-8'}>
         <UserStatistics fullName={'John Doe'} />
-        <PortfolioRiskStatistics data={data} />
+        <PortfolioRiskStatistics riskIndicators={data.riskIndicators} reports={data.reports} />
         <WorkflowStatistics />
       </div>
     </div>

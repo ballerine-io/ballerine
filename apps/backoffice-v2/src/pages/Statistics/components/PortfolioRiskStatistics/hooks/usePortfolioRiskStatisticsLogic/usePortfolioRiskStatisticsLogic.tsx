@@ -5,13 +5,15 @@ import {
   riskLevelToBackgroundColor,
   riskLevelToFillColor,
 } from '@/pages/Statistics/components/PortfolioRiskStatistics/constants';
-import { StatisticsOutputSchema } from '@/pages/Statistics/statistics.query';
 import { z } from 'zod';
+import { HomeMetricsOutputSchema } from '@/domains/metrics/hooks/queries/useHomeMetricsQuery/useHomeMetricsQuery';
 
 export const usePortfolioRiskStatisticsLogic = ({
-  data,
+  riskIndicators,
+  reports,
 }: {
-  data: z.infer<typeof StatisticsOutputSchema>;
+  riskIndicators: z.infer<typeof HomeMetricsOutputSchema>['riskIndicators'];
+  reports: z.infer<typeof HomeMetricsOutputSchema>['reports'];
 }) => {
   const [parent] = useAutoAnimate<HTMLTableSectionElement>();
   const [riskIndicatorsSorting, setRiskIndicatorsSorting] = useState<SortDirection>('desc');
@@ -21,34 +23,35 @@ export const usePortfolioRiskStatisticsLogic = ({
     },
     [],
   );
-  const totalRiskIndicators = data.riskIndicators.reduce((acc, curr) => acc + curr.count, 0);
-  const riskIndicators = useMemo(() => {
-    return structuredClone(data.riskIndicators)
+  const totalRiskIndicators = riskIndicators.reduce((acc, curr) => acc + curr.count, 0);
+  const filteredRiskIndicators = useMemo(() => {
+    return structuredClone(riskIndicators)
       .sort((a, b) => {
         if (riskIndicatorsSorting === 'asc') {
           return a.count - b.count;
         }
+
         return b.count - a.count;
       })
       .slice(0, 5);
-  }, [data, riskIndicatorsSorting]);
+  }, [riskIndicators, riskIndicatorsSorting]);
   const widths = useMemo(() => {
-    const maxValue = Math.max(...riskIndicators.map(item => item.count), 0);
+    const maxValue = Math.max(...filteredRiskIndicators.map(item => item.count), 0);
 
-    return riskIndicators.map(item =>
+    return filteredRiskIndicators.map(item =>
       item.count === 0 ? 0 : Math.max((item.count / maxValue) * 100, 2),
     );
-  }, [riskIndicators]);
+  }, [filteredRiskIndicators]);
   const filters = [
     {
       name: 'Merchant Monitoring',
       description: 'Risk Risk levels of all merchant monitoring reports.',
       entityPlural: 'Reports',
       riskLevels: {
-        low: data.reports.all.low,
-        medium: data.reports.all.medium,
-        high: data.reports.all.high,
-        critical: data.reports.all.critical,
+        low: reports.all.low,
+        medium: reports.all.medium,
+        high: reports.all.high,
+        critical: reports.all.critical,
       },
     },
     {
@@ -56,10 +59,10 @@ export const usePortfolioRiskStatisticsLogic = ({
       description: 'Risk levels of all active onboarding cases.',
       entityPlural: 'Cases',
       riskLevels: {
-        low: data.reports.inProgress.low,
-        medium: data.reports.inProgress.medium,
-        high: data.reports.inProgress.high,
-        critical: data.reports.inProgress.critical,
+        low: reports.inProgress.low,
+        medium: reports.inProgress.medium,
+        high: reports.inProgress.high,
+        critical: reports.inProgress.critical,
       },
     },
   ];
@@ -72,7 +75,7 @@ export const usePortfolioRiskStatisticsLogic = ({
     filters,
     riskIndicatorsSorting,
     onSortRiskIndicators,
-    riskIndicators,
+    filteredRiskIndicators,
     totalRiskIndicators,
   };
 };

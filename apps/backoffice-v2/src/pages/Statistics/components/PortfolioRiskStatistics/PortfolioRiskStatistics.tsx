@@ -17,12 +17,12 @@ import {
 import { titleCase } from 'string-ts';
 import { usePortfolioRiskStatisticsLogic } from '@/pages/Statistics/components/PortfolioRiskStatistics/hooks/usePortfolioRiskStatisticsLogic/usePortfolioRiskStatisticsLogic';
 import { z } from 'zod';
-import { StatisticsOutputSchema } from '@/pages/Statistics/statistics.query';
-import { SortDirection } from '@ballerine/common';
+import { HomeMetricsOutputSchema } from '@/domains/metrics/hooks/queries/useHomeMetricsQuery/useHomeMetricsQuery';
 
 export const PortfolioRiskStatistics: FunctionComponent<{
-  data: z.infer<typeof StatisticsOutputSchema>;
-}> = ({ data }) => {
+  riskIndicators: z.infer<typeof HomeMetricsOutputSchema>['riskIndicators'];
+  reports: z.infer<typeof HomeMetricsOutputSchema>['reports'];
+}> = ({ riskIndicators, reports }) => {
   const {
     riskLevelToFillColor,
     parent,
@@ -32,9 +32,10 @@ export const PortfolioRiskStatistics: FunctionComponent<{
     totalRiskIndicators,
     riskIndicatorsSorting,
     onSortRiskIndicators,
-    riskIndicators,
+    filteredRiskIndicators,
   } = usePortfolioRiskStatisticsLogic({
-    data,
+    riskIndicators,
+    reports,
   });
 
   return (
@@ -57,13 +58,13 @@ export const PortfolioRiskStatistics: FunctionComponent<{
                     dominantBaseline="middle"
                     className={'text-lg font-bold'}
                   >
-                    {Object.values(data.reports.approved).reduce((acc, curr) => acc + curr, 0)}
+                    {Object.values(reports.approved).reduce((acc, curr) => acc + curr, 0)}
                   </text>
                   <text x={92} y={102} textAnchor="middle" dominantBaseline="middle">
                     Merchants
                   </text>
                   <Pie
-                    data={Object.entries(data.reports.approved).map(([riskLevel, value]) => ({
+                    data={Object.entries(reports.approved).map(([riskLevel, value]) => ({
                       name: `${titleCase(riskLevel)} Risk`,
                       value,
                     }))}
@@ -88,7 +89,7 @@ export const PortfolioRiskStatistics: FunctionComponent<{
                   </Pie>
                 </PieChart>
                 <ul className={'flex w-full max-w-sm flex-col space-y-2'}>
-                  {Object.entries(data.reports.approved).map(([riskLevel, value]) => (
+                  {Object.entries(reports.approved).map(([riskLevel, value]) => (
                     <li
                       key={riskLevel}
                       className={'flex items-center space-x-4 border-b py-1 text-xs'}
@@ -255,7 +256,7 @@ export const PortfolioRiskStatistics: FunctionComponent<{
                   </TableRow>
                 </TableHeader>
                 <TableBody ref={parent}>
-                  {riskIndicators.map(({ name, count }, index) => (
+                  {filteredRiskIndicators.map(({ name, count }, index) => (
                     <TableRow key={name} className={'border-b-0 hover:bg-[unset]'}>
                       <TableCell
                         className={ctw('pb-0 ps-0', {
