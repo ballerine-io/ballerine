@@ -1,3 +1,8 @@
+---
+title: Creating a workflow
+description: A guide on how to create a new workflow by copying an existing workflow using the API.
+---
+
 # Creating a workflow
 
 To Create a new workflow, you can simply copy an existing workflow.
