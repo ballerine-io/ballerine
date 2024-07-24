@@ -1,4 +1,9 @@
-# Adding rules and affect workflows
+---
+title: Adding rules and affecting workflows
+description: A guide on how to implement transition rules in workflows using JSON Logic to automate state changes based on specific conditions.
+---
+
+# Adding rules and affecting workflows
 
 ### Transition Rules
 
