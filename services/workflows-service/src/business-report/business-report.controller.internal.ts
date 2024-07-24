@@ -226,7 +226,7 @@ export class BusinessReportControllerInternal {
   @swagger.ApiOkResponse({ type: [String] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
-  async findMany(
+  async listBusinessReports(
     @CurrentProject() currentProjectId: TProjectId,
     @Query() { businessId, page, search, type, orderBy }: ListBusinessReportsDto,
   ) {
