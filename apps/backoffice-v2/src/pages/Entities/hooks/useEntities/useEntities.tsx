@@ -46,7 +46,6 @@ export const useEntities = () => {
   const onFilterChange = useCallback(
     (key: string) => {
       return (values: string[]) => {
-        console.log('in useEntities()/onFilterChange()');
         setSearchParams({
           filter: {
             ...filter,

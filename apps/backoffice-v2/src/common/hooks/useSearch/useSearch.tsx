@@ -25,8 +25,6 @@ export const useSearch = (
       return;
     }
 
-    console.log('in useSearch()/useEffect()');
-
     setSearchParams({
       search: debouncedSearch,
       page: '1',

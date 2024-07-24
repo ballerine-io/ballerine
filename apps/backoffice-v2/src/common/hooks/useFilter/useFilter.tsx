@@ -7,8 +7,6 @@ export const useFilter = () => {
   const onFilter = useCallback(
     (accessor: string) => {
       return (values: Array<string | null>) => {
-        console.log('in useFilter()/onFilter()');
-
         setSearchParams({
           filter: {
             ...filter,

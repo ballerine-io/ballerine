@@ -50,16 +50,18 @@ export const MerchantMonitoring: FunctionComponent = () => {
         {Array.isArray(businessReports) && !businessReports.length && !isLoadingBusinessReports && (
           <NoBusinessReports />
         )}
-        <div className={`mt-auto flex items-center gap-x-2`}>
-          <div className={`flex w-[12ch] text-sm`}>{`Page ${page} of ${totalPages}`}</div>
-          <UrlPagination
-            page={page}
-            onPrevPage={onPrevPage}
-            onNextPage={onNextPage}
-            onPaginate={onPaginate}
-            isLastPage={isLastPage}
-          />
-        </div>
+        {!!totalPages && (
+          <div className={`mt-auto flex items-center gap-x-2`}>
+            <div className={`flex w-[12ch] text-sm`}>{`Page ${page} of ${totalPages}`}</div>
+            <UrlPagination
+              page={page}
+              onPrevPage={onPrevPage}
+              onNextPage={onNextPage}
+              onPaginate={onPaginate}
+              isLastPage={isLastPage}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
