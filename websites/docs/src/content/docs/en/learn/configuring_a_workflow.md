@@ -1,3 +1,8 @@
+---
+title: Configuring a workflow
+description: A guide on how to create new versions or update existing workflows using Ballerine's dashboard.
+---
+
 # Configuring a workflow
 
 ## Creating a New Version/Updating a Workflow
