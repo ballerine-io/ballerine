@@ -1,3 +1,8 @@
+---
+title: How to use webhooks
+description: A guide on setting up and handling webhooks to receive real-time notifications from Ballerine's system events.
+---
+
 # How to use webhooks
 
 ## Webhook Events
