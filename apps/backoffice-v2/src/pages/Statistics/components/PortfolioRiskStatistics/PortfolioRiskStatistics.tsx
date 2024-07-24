@@ -16,8 +16,15 @@ import {
 } from '@/common/components/atoms/Table';
 import { titleCase } from 'string-ts';
 import { usePortfolioRiskStatisticsLogic } from '@/pages/Statistics/components/PortfolioRiskStatistics/hooks/usePortfolioRiskStatisticsLogic/usePortfolioRiskStatisticsLogic';
+import { z } from 'zod';
+import { StatisticsOutputSchema } from '@/pages/Statistics/statistics.query';
+import { SortDirection } from '@ballerine/common';
 
-export const PortfolioRiskStatistics: FunctionComponent = () => {
+export const PortfolioRiskStatistics: FunctionComponent<{
+  data: z.infer<typeof StatisticsOutputSchema>;
+  violationsSorting: SortDirection;
+  setViolationsSorting: React.Dispatch<React.SetStateAction<SortDirection>>;
+}> = ({ data, violationsSorting, setViolationsSorting }) => {
   const {
     portfolio,
     riskLevelToFillColor,
@@ -26,10 +33,11 @@ export const PortfolioRiskStatistics: FunctionComponent = () => {
     riskLevelToBackgroundColor,
     filters,
     totalIndicators,
-    sorting,
     onSort,
-    sortedData,
-  } = usePortfolioRiskStatisticsLogic();
+  } = usePortfolioRiskStatisticsLogic({
+    setSorting: setViolationsSorting,
+    data,
+  });
 
   return (
     <div>
@@ -203,7 +211,7 @@ export const PortfolioRiskStatistics: FunctionComponent = () => {
                     'gap-x-2 rounded-none border-b border-b-slate-400 text-slate-400',
                     {
                       'border-b-[rgb(0,122,255)] text-[rgb(0,122,255)] hover:text-[rgb(0,122,255)]':
-                        sorting === 'desc',
+                        violationsSorting === 'desc',
                     },
                   )}
                   onClick={onSort('desc')}
@@ -217,7 +225,7 @@ export const PortfolioRiskStatistics: FunctionComponent = () => {
                     'gap-x-2 rounded-none border-b border-b-slate-400 text-slate-400',
                     {
                       'border-b-[rgb(0,122,255)] text-[rgb(0,122,255)] hover:text-[rgb(0,122,255)]':
-                        sorting === 'asc',
+                        violationsSorting === 'asc',
                     },
                   )}
                   onClick={onSort('asc')}
@@ -236,25 +244,27 @@ export const PortfolioRiskStatistics: FunctionComponent = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody ref={parent}>
-                  {sortedData?.map(({ riskType, amount }, index) => (
-                    <TableRow key={riskType} className={'border-b-0 hover:bg-[unset]'}>
+                  {data.violations.map(({ name, count }, index) => (
+                    <TableRow key={name} className={'border-b-0 hover:bg-[unset]'}>
                       <TableCell
                         className={ctw('pb-0 ps-0', {
                           'pt-2': index !== 0,
                         })}
                       >
-                        <div className={'relative h-full p-1'}>
+                        <div className={'h-full'}>
                           <div
-                            className={`absolute inset-y-0 rounded bg-blue-200 transition-all`}
+                            className={`rounded bg-blue-200 p-1 transition-all`}
                             style={{
                               width: `${widths[index]}%`,
                             }}
-                          />
-                          <span className={'relative z-50 ms-4'}>{titleCase(riskType ?? '')}</span>
+                          >
+                            {titleCase(name ?? '')}
+                          </div>
+                          {/*<span className={'relative z-50 ms-4'}>{titleCase(name ?? '')}</span>*/}
                         </div>
                       </TableCell>
                       <TableCell className={'pb-0 ps-0'}>
-                        {Intl.NumberFormat().format(amount)}
+                        {Intl.NumberFormat().format(count)}
                       </TableCell>
                     </TableRow>
                   ))}

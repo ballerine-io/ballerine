@@ -5,42 +5,30 @@ import {
   riskLevelToBackgroundColor,
   riskLevelToFillColor,
 } from '@/pages/Statistics/components/PortfolioRiskStatistics/constants';
+import { StatisticsOutputSchema } from '@/pages/Statistics/statistics.query';
+import { z } from 'zod';
 
-export const usePortfolioRiskStatisticsLogic = () => {
+export const usePortfolioRiskStatisticsLogic = ({
+  setSorting,
+  data,
+}: {
+  setSorting: React.Dispatch<React.SetStateAction<SortDirection>>;
+  data: z.infer<typeof StatisticsOutputSchema>;
+}) => {
   const [parent] = useAutoAnimate<HTMLTableSectionElement>();
-  const [sorting, setSorting] = useState<SortDirection>('desc');
   const onSort = useCallback(
     (sort: SortDirection) => () => {
       setSorting(sort);
     },
     [],
   );
-  const sortedData = useMemo(
-    () =>
-      [
-        { riskType: 'Scam and fraud', amount: 15 },
-        { riskType: 'IP Rights Infringement', amount: 12 },
-        { riskType: 'Missing Terms and Conditions', amount: 10 },
-        { riskType: 'Counterfeit Goods', amount: 8 },
-        { riskType: 'Sanctions', amount: 4 },
-      ]
-        ?.slice()
-        .sort((a, b) => {
-          if (sorting === 'asc') {
-            return a.amount - b.amount;
-          }
-
-          return b.amount - a.amount;
-        }),
-    [sorting],
-  );
   const widths = useMemo(() => {
-    const maxValue = Math.max(...sortedData.map(item => item.amount), 0);
+    const maxValue = Math.max(...data.violations.map(item => item.count), 0);
 
-    return sortedData.map(item =>
-      item.amount === 0 ? 0 : Math.max((item.amount / maxValue) * 100, 2),
+    return data.violations.map(item =>
+      item.count === 0 ? 0 : Math.max((item.count / maxValue) * 100, 2),
     );
-  }, [sortedData]);
+  }, [data]);
   const filters = [
     {
       name: 'Merchant Monitoring',
@@ -79,8 +67,6 @@ export const usePortfolioRiskStatisticsLogic = () => {
     riskLevelToBackgroundColor,
     filters,
     totalIndicators,
-    sorting,
     onSort,
-    sortedData,
   };
 };
