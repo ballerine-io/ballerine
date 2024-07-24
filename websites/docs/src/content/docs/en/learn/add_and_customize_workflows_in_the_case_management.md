@@ -3,8 +3,6 @@ title: Add and Customize Workflows in the Case Management
 description: A guide on adding filters and customizing workflows in the case management system.
 ---
 
-# Add and Customize Workflows in the Case Management
-
 ## Customizing case management workflows
 
 To customize your case management to show your various workflows, add filters.
@@ -14,7 +12,9 @@ Filters render your different workflows as case queues you can access via the ca
 
 To create a new filter (essentially a queue in the case management system), you can use the API endpoint.
 
-```POST /api/v1/workflow-definition/{id}/copy```
+```bash
+GET /api/v1/external/filters
+```
 
 This will return a list of existing filters, which you can use as a reference for creating new ones.
 
@@ -22,15 +22,17 @@ This will return a list of existing filters, which you can use as a reference fo
 
 To create a new filter, make a POST request to the following endpoint:
 
-```POST /api/v1/external/filters```
+```bash 
+POST /api/v1/external/filters
+```
 
 **Request Body:**
 
 You will typically need to adjust fields such as workflowDefinitionId, entity, and other relevant parameters. Below is an example request body for creating a new filter:
 
-```
+```json
 {
-  "name": "Till Businesses Onboarding Basic Demo (US)",
+  "name": "Businesses Onboarding Basic Demo (US)",
   "entity": "businesses",
   "query": {
     "where": {
@@ -97,14 +99,10 @@ You will typically need to adjust fields such as workflowDefinitionId, entity, a
       "childWorkflowsRuntimeData": true
     }
   },
-  "projectId": "till_default"
+  "projectId": "default_project"
 }
 
 ```
-
-
-
-<img title="Case Management" alt="Case Management" src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/669ed579568cee8d639bcaf1_filters_api.gif">
 
 ### Customizing a case’s initial attributes
 
@@ -198,7 +196,7 @@ Within the workflow definition, the initial state will contain the schema for th
 > 
 > **Structure Example:**
 
-```
+```json
 "dataSchema": {
   "type": "object",
   "required": [
@@ -274,5 +272,3 @@ When the "Create Case" form is rendered in the Case Management application, it w
 For a workflow that starts with some form of communication to an end user, such as sending an email, ensure that the initial state schema includes an email field. This allows the workflow to gather the necessary email address at the point of invocation.
 
 By following these steps, you can ensure that the "Create Case" form in the Case Management application is customized to capture all the necessary information for your workflows, ensuring smooth and accurate data flow into the workflow context.
-
-<img title="Case Management" alt="Case Management" src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/669edf5ca06dd3edff5a19b7_Jul-23-2024%2000-23-34.gif">

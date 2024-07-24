@@ -91,18 +91,18 @@ export default defineConfig({
             {
               label: `Collection Flows`,
               items: [
-                {
-                  label: `Creating a collection flow`,
-                  link: `/en/learn/creating_a_collection_flow`,
-                },
+                // {
+                //   label: `Creating a collection flow`,
+                //   link: `/en/learn/creating_a_collection_flow`,
+                // },
                 {
                   label: `Configuring a collection flow`,
                   link: `/en/learn/configuring_a_collection_flow`,
                 },
-                {
-                  label: `Changing the collection flow design`,
-                  link: `/en/learn/changing_the_collection_flow_design`,
-                },
+                // {
+                //   label: `Changing the collection flow design`,
+                //   link: `/en/learn/changing_the_collection_flow_design`,
+                // },
                 {
                   label: 'Theming',
                   link: '/en/collection-flow/theming',
@@ -279,36 +279,31 @@ export default defineConfig({
         //     },
         //   ],
         // },
+
         {
-          label: 'Examples',
-          collapsed: true,
+          label: `Guides`,
           items: [
             {
-              label: `Guides`,
-              items: [
-                {
-                  label: `KYB Manual Review Example`,
-                  link: `/en/learn/kyb_manual_review_example`,
-                },
-                {
-                  label: `KYC Manual Review Example`,
-                  link: `/en/learn/kyc_manual_review_example`,
-                },
-                {
-                  label: `KYB Workflow with External Integrations`,
-                  link: `/en/learn/simple_kyb_guide`,
-                },
-                {
-                  label: `KYC Manual Review Workflow Guide`,
-                  link: `/en/learn/kyc_manual_review_workflow_guide`,
-                },
-                {
-                  label: `Creating a KYC UI Flow`,
-                  link: `/en/learn/creating_a_kyc_flow_and_deploying_it`,
-                },
-              ],
+              label: `KYB Manual Review Example`,
+              link: `/en/learn/kyb_manual_review_example`,
             },
-          ]
+            {
+              label: `KYC Manual Review Example`,
+              link: `/en/learn/kyc_manual_review_example`,
+            },
+            {
+              label: `KYB Workflow with External Integrations`,
+              link: `/en/learn/simple_kyb_guide`,
+            },
+            {
+              label: `KYC Manual Review Workflow Guide`,
+              link: `/en/learn/kyc_manual_review_workflow_guide`,
+            },
+            {
+              label: `Creating a KYC UI Flow`,
+              link: `/en/learn/creating_a_kyc_flow_and_deploying_it`,
+            },
+          ],
         },
 
         {

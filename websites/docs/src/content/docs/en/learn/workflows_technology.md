@@ -3,8 +3,6 @@ title: Understanding workflows technology
 description: Overview of how our system uses state machines with the XState library to manage workflows effectively.
 ---
 
-# Understanding workflows technology
-
 Workflows in our system are built on top of state machines, specifically using the [XState library](https://xstate.js.org/docs/). These workflows orchestrate flows within the system, both on the backend and frontend. They are designed with an integrated plugin system, customizable templates, and durable executions.
 
 ### Why state machines?

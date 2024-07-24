@@ -3,14 +3,13 @@ title: Invoking a Workflow
 description: Instructions on how to invoke a workflow using the API or through the Case Management application.
 ---
 
-# Invoking a Workflow
 nvoking a runtime instance of a workflow definition can be done either via the API or from the Case Management application. Once a workflow is invoked, it starts running from its initial state.
 
 ### Invoking a Workflow via API
 
 To invoke a workflow using the API, make a POST request to the following endpoint:
 
-```
+```shell
 POST /api/v1/external/workflows/run
 ```
 
@@ -18,7 +17,7 @@ POST /api/v1/external/workflows/run
 
 The payload will depend on the specific workflow being invoked. Below is an example payload:
 
-```
+```json
 {
   "workflowId": "till_basic_kyb_demo",
   "context": {
@@ -47,7 +46,7 @@ The payload will depend on the specific workflow being invoked. Below is an exam
 
 Here’s an example of how to invoke a workflow using `curl`:
 
-```
+```bash
 curl -X POST "<//api/v1/external/workflows/run>" \\
      -H "Content-Type: application/json" \\
      -d '{
