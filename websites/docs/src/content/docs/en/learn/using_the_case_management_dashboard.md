@@ -1,3 +1,8 @@
+---
+title: Using the case management dashboard
+description: A guide to navigating and utilizing the case management dashboard, including filters, case lists, case actions, and status indicators.
+---
+
 # Using the case management dashboard
 
 ## **Case management sections**
