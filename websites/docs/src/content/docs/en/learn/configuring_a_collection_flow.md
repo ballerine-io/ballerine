@@ -1,3 +1,8 @@
+---
+title: Configuring a collection flow
+description: A guide on customizing data collection flow steps and fields in Ballerine's workflow UI.
+---
+
 # Configuring a collection flow
 
 **Customizing Data Collection Flow Steps and Fields**
