@@ -27,6 +27,7 @@ import { Public } from '@/common/decorators/public.decorator';
 import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
 import { BusinessReportHookBodyDto } from '@/business-report/dtos/business-report-hook-body.dto';
 import { BusinessReportHookSearchQueryParamsDto } from '@/business-report/dtos/business-report-hook-search-query-params.dto';
+import { QueryMode } from '@/common/query-filters/query-mode';
 
 @common.Controller('internal/business-reports')
 @swagger.ApiExcludeController()
@@ -236,9 +237,13 @@ export class BusinessReportControllerInternal {
         ...(search
           ? {
               OR: [
-                { id: { contains: search, mode: 'insensitive' } },
-                { business: { companyName: { contains: search, mode: 'insensitive' } } },
-                { business: { website: { contains: search, mode: 'insensitive' } } },
+                { id: { contains: search, mode: QueryMode.Insensitive } },
+                {
+                  business: {
+                    companyName: { contains: search, mode: QueryMode.Insensitive },
+                  },
+                },
+                { business: { website: { contains: search, mode: QueryMode.Insensitive } } },
               ],
             }
           : {}),
@@ -265,10 +270,8 @@ export class BusinessReportControllerInternal {
       skip: (page.number - 1) * page.size,
     };
 
-    // @ts-expect-error -- WHAT
     const businessReports = await this.businessReportService.findMany(args, [currentProjectId]);
 
-    // @ts-expect-error -- WHAT
     const businessReportCount = await this.businessReportService.count({ where: args.where }, [
       currentProjectId,
     ]);
