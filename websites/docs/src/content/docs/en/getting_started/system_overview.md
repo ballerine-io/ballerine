@@ -1,6 +1,6 @@
 ---
 title: System Overview
-description: dsadasds
+description: An overview of Ballerine's risk management platform and its modules for building and managing custom risk flows.
 ---
 
 
