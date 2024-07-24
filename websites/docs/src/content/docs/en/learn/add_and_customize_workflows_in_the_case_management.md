@@ -1,3 +1,8 @@
+---
+title: Add and Customize Workflows in the Case Management
+description: A guide on adding filters and customizing workflows in the case management system.
+---
+
 # Add and Customize Workflows in the Case Management
 
 ## Customizing case management workflows
