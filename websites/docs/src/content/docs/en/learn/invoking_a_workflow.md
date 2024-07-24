@@ -1,3 +1,8 @@
+---
+title: Invoking a Workflow
+description: Instructions on how to invoke a workflow using the API or through the Case Management application.
+---
+
 # Invoking a Workflow
 nvoking a runtime instance of a workflow definition can be done either via the API or from the Case Management application. Once a workflow is invoked, it starts running from its initial state.
 
