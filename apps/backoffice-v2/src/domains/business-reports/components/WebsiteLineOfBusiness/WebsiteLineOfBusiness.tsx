@@ -11,7 +11,8 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
     severity: string;
   }>;
   description: string;
-}> = ({ violations, description }) => {
+  detectedMcc: string | null;
+}> = ({ violations, description, detectedMcc }) => {
   return (
     <div className={'space-y-8'}>
       <h3 className={'col-span-full text-lg font-bold'}>Website Line of Business Analysis</h3>
@@ -30,6 +31,17 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
             </p>
           </div>
         </CardContent>
+
+        {detectedMcc && (
+          <div>
+            <CardContent className={'flex flex-col space-y-4'}>
+              <div>
+                <h4 className={'mb-4 font-semibold'}>Detected MCC</h4>
+                <p>{detectedMcc}</p>
+              </div>
+            </CardContent>
+          </div>
+        )}
       </Card>
     </div>
   );
