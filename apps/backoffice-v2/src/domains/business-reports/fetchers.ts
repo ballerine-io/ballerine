@@ -5,6 +5,8 @@ import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error
 import { TBusinessReportType } from '@/domains/business-reports/types';
 import qs from 'qs';
 import { Severities, TObjectValues } from '@/common/types';
+import { toast } from 'sonner';
+import { t } from 'i18next';
 
 export const BusinessReportStatus = {
   NEW: 'new',
@@ -148,11 +150,11 @@ export const createBusinessReport = async ({
       businessCorrelationId: string;
       isExample: boolean;
     }) => {
-  // if (isExample) {
-  //   toast.info(t('toast:business_report_creation.is_example'));
-  //
-  //   return;
-  // }
+  if (isExample) {
+    toast.info(t('toast:business_report_creation.is_example'));
+
+    return;
+  }
 
   const [businessReport, error] = await apiClient({
     endpoint: `business-reports`,
