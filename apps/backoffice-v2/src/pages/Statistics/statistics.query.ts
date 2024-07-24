@@ -6,44 +6,43 @@ import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error
 import { z } from 'zod';
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
+export const ReportsByRiskLevelSchema = z.object({
+  low: z.number(),
+  medium: z.number(),
+  high: z.number(),
+  critical: z.number(),
+});
+
 export const StatisticsOutputSchema = z.object({
-  violations: z.array(
+  riskIndicators: z.array(
     z.object({
       name: z.string(),
       count: z.number(),
     }),
   ),
+  reports: z.object({
+    all: ReportsByRiskLevelSchema,
+    inProgress: ReportsByRiskLevelSchema,
+    approved: ReportsByRiskLevelSchema,
+  }),
 });
 
-export type StatisticsInput = {
-  violationsDirection: 'asc' | 'desc';
-};
-
-export const fetchStatistics = async (body: StatisticsInput) => {
+export const fetchStatistics = async () => {
   const [statistics, error] = await apiClient({
     endpoint: `statistics`,
     method: Method.POST,
     schema: StatisticsOutputSchema,
-    body,
   });
 
   return handleZodError(error, statistics);
 };
 
-// export const statisticsQueryKey = (body: StatisticsInput) => ['statistics', body] as const;
-
-export const statisticsQueryKeys = createQueryKeys('statistics', {
-  get: (body: StatisticsInput) => ({
-    queryKey: [body],
-    queryFn: () => fetchStatistics(body),
-  }),
-});
-
-export const useStatisticsQuery = (body: StatisticsInput) => {
+export const useStatisticsQuery = () => {
   const isAuthenticated = useIsAuthenticated();
 
   return useQuery({
-    ...statisticsQueryKeys.get(body),
+    queryKey: ['statistics'],
+    queryFn: () => fetchStatistics(),
     enabled: isAuthenticated,
     keepPreviousData: true,
   });

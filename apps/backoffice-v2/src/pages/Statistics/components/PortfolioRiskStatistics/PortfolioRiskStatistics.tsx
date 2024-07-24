@@ -22,20 +22,18 @@ import { SortDirection } from '@ballerine/common';
 
 export const PortfolioRiskStatistics: FunctionComponent<{
   data: z.infer<typeof StatisticsOutputSchema>;
-  violationsSorting: SortDirection;
-  setViolationsSorting: React.Dispatch<React.SetStateAction<SortDirection>>;
-}> = ({ data, violationsSorting, setViolationsSorting }) => {
+}> = ({ data }) => {
   const {
-    portfolio,
     riskLevelToFillColor,
     parent,
     widths,
     riskLevelToBackgroundColor,
     filters,
-    totalIndicators,
-    onSort,
+    totalRiskIndicators,
+    riskIndicatorsSorting,
+    onSortRiskIndicators,
+    riskIndicators,
   } = usePortfolioRiskStatisticsLogic({
-    setSorting: setViolationsSorting,
     data,
   });
 
@@ -47,19 +45,25 @@ export const PortfolioRiskStatistics: FunctionComponent<{
           <Card className={'flex h-full flex-col px-3'}>
             <CardHeader className={'pb-1'}>Portfolio Risk</CardHeader>
             <CardContent>
+              <p className={'mb-8 text-slate-400'}>
+                Risk levels of approved merchants from completed onboarding flows.
+              </p>
               <div className={'flex flex-col items-center space-y-4 pt-3'}>
                 <PieChart width={184} height={184}>
                   <text
                     x={92}
-                    y={92}
+                    y={82}
                     textAnchor="middle"
                     dominantBaseline="middle"
                     className={'text-lg font-bold'}
                   >
-                    103
+                    {Object.values(data.reports.approved).reduce((acc, curr) => acc + curr, 0)}
+                  </text>
+                  <text x={92} y={102} textAnchor="middle" dominantBaseline="middle">
+                    Merchants
                   </text>
                   <Pie
-                    data={Object.entries(portfolio?.riskLevels ?? {}).map(([riskLevel, value]) => ({
+                    data={Object.entries(data.reports.approved).map(([riskLevel, value]) => ({
                       name: `${titleCase(riskLevel)} Risk`,
                       value,
                     }))}
@@ -84,7 +88,7 @@ export const PortfolioRiskStatistics: FunctionComponent<{
                   </Pie>
                 </PieChart>
                 <ul className={'flex w-full max-w-sm flex-col space-y-2'}>
-                  {Object.entries(portfolio?.riskLevels).map(([riskLevel, value]) => (
+                  {Object.entries(data.reports.approved).map(([riskLevel, value]) => (
                     <li
                       key={riskLevel}
                       className={'flex items-center space-x-4 border-b py-1 text-xs'}
@@ -110,10 +114,7 @@ export const PortfolioRiskStatistics: FunctionComponent<{
         </div>
         <div className={'grid grid-cols-2 gap-3'}>
           {filters?.map(filter => {
-            const totalRisk = Object.values(filter?.riskLevels ?? {}).reduce(
-              (acc, curr) => acc + curr,
-              0,
-            );
+            const totalRisk = Object.values(filter.riskLevels).reduce((acc, curr) => acc + curr, 0);
 
             return (
               <div
@@ -123,11 +124,12 @@ export const PortfolioRiskStatistics: FunctionComponent<{
                 <Card className={'flex h-full flex-col px-3'}>
                   <CardHeader className={'pb-1'}>{filter.name} Risk</CardHeader>
                   <CardContent>
+                    <p className={'mb-8 text-slate-400'}>{filter.description}</p>
                     <div className={'flex items-center space-x-5 pt-3'}>
                       <PieChart width={104} height={104}>
                         <text
                           x={52}
-                          y={52}
+                          y={44}
                           textAnchor="middle"
                           dominantBaseline="middle"
                           className={ctw('font-bold', {
@@ -135,6 +137,15 @@ export const PortfolioRiskStatistics: FunctionComponent<{
                           })}
                         >
                           {totalRisk}
+                        </text>
+                        <text
+                          x={52}
+                          y={60}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          className={'text-xs'}
+                        >
+                          {filter.entityPlural}
                         </text>
                         <Pie
                           data={Object.entries(filter?.riskLevels ?? {}).map(
@@ -200,7 +211,7 @@ export const PortfolioRiskStatistics: FunctionComponent<{
             <CardContent>
               <div className={'mb-7 flex items-end space-x-2'}>
                 <span className={'text-3xl font-semibold'}>
-                  {Intl.NumberFormat().format(totalIndicators)}
+                  {Intl.NumberFormat().format(totalRiskIndicators)}
                 </span>
                 <span className={'text-sm leading-7 text-slate-500'}>Total indicators</span>
               </div>
@@ -211,10 +222,10 @@ export const PortfolioRiskStatistics: FunctionComponent<{
                     'gap-x-2 rounded-none border-b border-b-slate-400 text-slate-400',
                     {
                       'border-b-[rgb(0,122,255)] text-[rgb(0,122,255)] hover:text-[rgb(0,122,255)]':
-                        violationsSorting === 'desc',
+                        riskIndicatorsSorting === 'desc',
                     },
                   )}
-                  onClick={onSort('desc')}
+                  onClick={onSortRiskIndicators('desc')}
                 >
                   <TrendingUp />
                   Highest First
@@ -225,10 +236,10 @@ export const PortfolioRiskStatistics: FunctionComponent<{
                     'gap-x-2 rounded-none border-b border-b-slate-400 text-slate-400',
                     {
                       'border-b-[rgb(0,122,255)] text-[rgb(0,122,255)] hover:text-[rgb(0,122,255)]':
-                        violationsSorting === 'asc',
+                        riskIndicatorsSorting === 'asc',
                     },
                   )}
-                  onClick={onSort('asc')}
+                  onClick={onSortRiskIndicators('asc')}
                 >
                   <TrendingDown />
                   Lowest First
@@ -244,7 +255,7 @@ export const PortfolioRiskStatistics: FunctionComponent<{
                   </TableRow>
                 </TableHeader>
                 <TableBody ref={parent}>
-                  {data.violations.map(({ name, count }, index) => (
+                  {riskIndicators.map(({ name, count }, index) => (
                     <TableRow key={name} className={'border-b-0 hover:bg-[unset]'}>
                       <TableCell
                         className={ctw('pb-0 ps-0', {

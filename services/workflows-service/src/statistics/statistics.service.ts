@@ -3,7 +3,12 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { StatisticsOutputDto } from '@/statistics/statistics-output.dto';
 import { StatisticsInputDto } from '@/statistics/statistics-input.dto';
 import type { TProjectId, TProjectIds } from '@/types';
-import { Prisma } from '@prisma/client';
+import { ApprovalState, BusinessReportStatus } from '@prisma/client';
+
+const LOW_LTE_RISK_SCORE = 39;
+const MEDIUM_LTE_RISK_SCORE = 69;
+const HIGH_LTE_RISK_SCORE = 84;
+const CRITICAL_GTE_RISK_SCORE = 85;
 
 @Injectable()
 export class StatisticsService {
@@ -14,42 +19,128 @@ export class StatisticsService {
     projectIds: TProjectIds,
   ): Promise<StatisticsOutputDto> {
     return {
-      violations: await this.getViolations(
-        { direction: input.violationsDirection },
-        projectIds![0]!,
-      ),
+      riskIndicators: await this.getRiskIndicators(projectIds![0]!),
+      reports: {
+        all: await this.getReportsByRiskLevel(projectIds![0]!),
+        inProgress: await this.getInProgressReportsByRiskLevel(projectIds![0]!),
+        approved: await this.getApprovedBusinessesReportsByRiskLevel(projectIds![0]!),
+      },
     };
   }
 
-  async getViolations(
-    { limit = 5, direction }: { limit?: number; direction: 'asc' | 'desc' },
-    projectId: TProjectId,
-  ) {
+  async getRiskIndicators(projectId: TProjectId) {
     return (
       await this.prismaService.$queryRaw<Array<{ name: string; count: string }>>`
-        WITH flattened_indicators AS (SELECT jsonb_array_elements(report -> 'data' -> 'summary' ->
+        WITH "flattenedRiskIndicators" AS (SELECT jsonb_array_elements("report" -> 'data' -> 'summary' ->
           'riskIndicatorsByDomain' ->
-          (jsonb_object_keys(report -> 'data' -> 'summary' -> 'riskIndicatorsByDomain'))) AS indicator,
+          (jsonb_object_keys("report" -> 'data' -> 'summary' -> 'riskIndicatorsByDomain'))) AS "riskIndicator",
           "projectId"
         FROM
           "BusinessReport"
           )
         SELECT
-          indicator ->> 'name' AS name, COUNT(*) AS count
+          "riskIndicator" ->> 'name' AS name, COUNT(*) AS count
         FROM
-          flattened_indicators
+          "flattenedRiskIndicators"
         WHERE
-          indicator ->> 'name' IS NOT NULL
+          "riskIndicator" ->> 'name' IS NOT NULL
           AND "projectId" = ${projectId}
         GROUP BY
-          indicator ->> 'name'
+          "riskIndicator" ->> 'name'
         ORDER BY
-          count ${Prisma.raw(direction)},
-          indicator ->> 'name' ASC
-        LIMIT ${limit};`
+          "count" DESC,
+          "riskIndicator" ->> 'name' ASC;`
     ).map(({ name, count }) => ({
       name,
       count: Number(count),
     }));
+  }
+
+  async getReportsByRiskLevel(projectId: TProjectId) {
+    const results = await this.prismaService.$queryRaw<
+      Array<{ riskLevel: 'low' | 'medium' | 'high' | 'critical'; count: number }>
+    >`
+        SELECT
+          CASE
+            WHEN "riskScore" <= ${LOW_LTE_RISK_SCORE} THEN 'low'
+            WHEN "riskScore" <= ${MEDIUM_LTE_RISK_SCORE} THEN 'medium'
+            WHEN "riskScore" <= ${HIGH_LTE_RISK_SCORE} THEN 'high'
+            WHEN "riskScore" >= ${CRITICAL_GTE_RISK_SCORE} THEN 'critical'
+          END AS "riskLevel",
+          COUNT(*) AS "count"
+        FROM
+          "BusinessReport"
+        WHERE
+          "status"::text = ${BusinessReportStatus.completed}
+          AND "BusinessReport"."projectId" = ${projectId}
+        GROUP BY
+          "riskLevel";`;
+
+    return {
+      low: Number(results.find(result => result.riskLevel === 'low')?.count ?? 0),
+      medium: Number(results.find(result => result.riskLevel === 'medium')?.count ?? 0),
+      high: Number(results.find(result => result.riskLevel === 'high')?.count ?? 0),
+      critical: Number(results.find(result => result.riskLevel === 'critical')?.count ?? 0),
+    };
+  }
+
+  async getInProgressReportsByRiskLevel(projectId: TProjectId) {
+    const results = await this.prismaService.$queryRaw<
+      Array<{ riskLevel: 'low' | 'medium' | 'high' | 'critical'; count: number }>
+    >`
+        SELECT
+          CASE
+            WHEN "riskScore" <= ${LOW_LTE_RISK_SCORE} THEN 'low'
+            WHEN "riskScore" <= ${MEDIUM_LTE_RISK_SCORE} THEN 'medium'
+            WHEN "riskScore" <= ${HIGH_LTE_RISK_SCORE} THEN 'high'
+            WHEN "riskScore" >= ${CRITICAL_GTE_RISK_SCORE} THEN 'critical'
+          END AS "riskLevel",
+          COUNT(*) AS "count"
+        FROM
+          "BusinessReport"
+        JOIN "Business" ON "BusinessReport"."businessId" = "Business"."id"
+        WHERE
+          "status"::text = ${BusinessReportStatus.in_progress}
+          AND "BusinessReport"."projectId" = ${projectId}
+          AND "Business"."approvalState"::text = ${ApprovalState.PROCESSING}
+        GROUP BY
+          "riskLevel";`;
+
+    return {
+      low: Number(results.find(result => result.riskLevel === 'low')?.count ?? 0),
+      medium: Number(results.find(result => result.riskLevel === 'medium')?.count ?? 0),
+      high: Number(results.find(result => result.riskLevel === 'high')?.count ?? 0),
+      critical: Number(results.find(result => result.riskLevel === 'critical')?.count ?? 0),
+    };
+  }
+
+  async getApprovedBusinessesReportsByRiskLevel(projectId: TProjectId) {
+    const results = await this.prismaService.$queryRaw<
+      Array<{ riskLevel: 'low' | 'medium' | 'high' | 'critical'; count: number }>
+    >`
+        SELECT
+          CASE
+            WHEN "riskScore" <= ${LOW_LTE_RISK_SCORE} THEN 'low'
+            WHEN "riskScore" <= ${MEDIUM_LTE_RISK_SCORE} THEN 'medium'
+            WHEN "riskScore" <= ${HIGH_LTE_RISK_SCORE} THEN 'high'
+            WHEN "riskScore" >= ${CRITICAL_GTE_RISK_SCORE} THEN 'critical'
+          END AS "riskLevel",
+          COUNT(*) AS "count"
+        FROM
+          "BusinessReport"
+        JOIN "Business" ON "BusinessReport"."businessId" = "Business"."id"
+        WHERE
+          "status"::text = ${BusinessReportStatus.completed}
+          AND "BusinessReport"."projectId" = ${projectId}
+          AND "Business"."approvalState"::text = ${ApprovalState.APPROVED}
+        GROUP BY
+          "riskLevel";`;
+
+    return {
+      low: Number(results.find(result => result.riskLevel === 'low')?.count ?? 0),
+      medium: Number(results.find(result => result.riskLevel === 'medium')?.count ?? 0),
+      high: Number(results.find(result => result.riskLevel === 'high')?.count ?? 0),
+      critical: Number(results.find(result => result.riskLevel === 'critical')?.count ?? 0),
+    };
   }
 }
