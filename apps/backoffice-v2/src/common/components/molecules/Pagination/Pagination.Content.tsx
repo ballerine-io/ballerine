@@ -9,4 +9,5 @@ export const PaginationContent = forwardRef<HTMLUListElement, ComponentProps<'ul
     </ul>
   ),
 );
+
 PaginationContent.displayName = 'PaginationContent';

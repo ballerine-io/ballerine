@@ -65,4 +65,13 @@ export class BusinessReportRepository {
       ),
     );
   }
+
+  async count<T extends Omit<Prisma.BusinessReportFindManyArgs, 'where'>>(
+    args: Prisma.SelectSubset<T, Prisma.BusinessReportCountArgs>,
+    projectIds: TProjectIds,
+  ) {
+    return await this.prisma.businessReport.count(
+      this.scopeService.scopeFindMany(args, projectIds) as any,
+    );
+  }
 }

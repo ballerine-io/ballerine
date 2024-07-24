@@ -190,13 +190,13 @@ export class BusinessReportControllerInternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async getLatestBusinessReport(
     @CurrentProject() currentProjectId: TProjectId,
-    @Query() searchQueryParams: GetLatestBusinessReportDto,
+    @Query() { businessId, type }: GetLatestBusinessReportDto,
   ) {
     return await this.businessReportService.findFirstOrThrow(
       {
         where: {
-          businessId: searchQueryParams.businessId,
-          type: searchQueryParams.type,
+          type,
+          businessId,
         },
         orderBy: {
           createdAt: 'desc',
@@ -225,37 +225,61 @@ export class BusinessReportControllerInternal {
   @swagger.ApiOkResponse({ type: [String] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
-  async listBusinessReports(
+  async findMany(
     @CurrentProject() currentProjectId: TProjectId,
-    @Query() searchQueryParams: ListBusinessReportsDto,
+    @Query() { businessId, page, search, type, orderBy }: ListBusinessReportsDto,
   ) {
-    return await this.businessReportService.findMany(
-      {
-        where: {
-          businessId: searchQueryParams.businessId,
-          ...(searchQueryParams.type ? { type: searchQueryParams.type } : {}),
-        },
-        select: {
-          id: true,
-          createdAt: true,
-          updatedAt: true,
-          report: true,
-          riskScore: true,
-          status: true,
-          business: {
-            select: {
-              companyName: true,
-              country: true,
-              website: true,
-            },
+    const args = {
+      where: {
+        businessId,
+        ...(type ? { type } : {}),
+        ...(search
+          ? {
+              OR: [
+                { id: { contains: search, mode: 'insensitive' } },
+                { business: { companyName: { contains: search, mode: 'insensitive' } } },
+                { business: { website: { contains: search, mode: 'insensitive' } } },
+              ],
+            }
+          : {}),
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        report: true,
+        riskScore: true,
+        status: true,
+        business: {
+          select: {
+            companyName: true,
+            country: true,
+            website: true,
           },
         },
-        orderBy: searchQueryParams.orderBy as
-          | Prisma.Enumerable<Prisma.BusinessReportOrderByWithRelationInput>
-          | undefined,
       },
-      [currentProjectId],
-    );
+      orderBy: orderBy as
+        | Prisma.Enumerable<Prisma.BusinessReportOrderByWithRelationInput>
+        | undefined,
+      take: page.size,
+      skip: (page.number - 1) * page.size,
+    };
+
+    // @ts-expect-error -- WHAT
+    const businessReports = await this.businessReportService.findMany(args, [currentProjectId]);
+
+    // @ts-expect-error -- WHAT
+    const businessReportCount = await this.businessReportService.count({ where: args.where }, [
+      currentProjectId,
+    ]);
+
+    return {
+      businessReports,
+      meta: {
+        totalItems: businessReportCount,
+        totalPages: Math.max(Math.ceil(businessReportCount / page.size), 1),
+      },
+    };
   }
 
   @common.Get(':id')

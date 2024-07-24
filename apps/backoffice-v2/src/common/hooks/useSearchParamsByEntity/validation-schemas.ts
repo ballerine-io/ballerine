@@ -4,7 +4,7 @@ import { CaseStatus, CaseStatuses } from '../../enums';
 export const BaseSearchSchema = z.object({
   sortDir: z.enum(['asc', 'desc']).catch('desc'),
   pageSize: z.coerce.number().int().positive().catch(50),
-  page: z.coerce.number().int().positive().catch(1),
+  page: z.coerce.number().int().positive().catch(10),
   search: z.string().catch(''),
 });
 

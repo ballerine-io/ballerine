@@ -8,7 +8,7 @@ interface ICopyToClipboardProps extends ComponentProps<typeof Button> {
   textToCopy: string;
 }
 
-export const CopyToClipboard: FunctionComponent<ICopyToClipboardProps> = ({
+export const CopyToClipboardButton: FunctionComponent<ICopyToClipboardProps> = ({
   textToCopy,
   className,
   disabled,
@@ -18,7 +18,10 @@ export const CopyToClipboard: FunctionComponent<ICopyToClipboardProps> = ({
     <Button
       variant={'ghost'}
       size={'icon'}
-      onClick={copyToClipboard(textToCopy)}
+      onClick={async e => {
+        e.preventDefault();
+        await copyToClipboard(textToCopy)();
+      }}
       className={ctw(
         `h-[unset] w-[unset] p-1 opacity-80 hover:bg-transparent hover:opacity-100`,
         {
