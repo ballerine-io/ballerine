@@ -5,7 +5,7 @@ import { columns } from '@/pages/MerchantMonitoring/components/MerchantMonitorin
 import { useMerchantMonitoringTableLogic } from '@/pages/MerchantMonitoring/components/MerchantMonitoringTable/hooks/useMerchantMonitoringTableLogic/useMerchantMonitoringTableLogic';
 
 export const MerchantMonitoringTable: FunctionComponent<{
-  data: TBusinessReports;
+  data: TBusinessReports['businessReports'];
 }> = ({ data }) => {
   const { Cell } = useMerchantMonitoringTableLogic();
 
