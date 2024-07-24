@@ -1,3 +1,8 @@
+---
+title: Calculating Risk Scores
+description: A guide on configuring risk score calculations in workflows using plugins in Ballerine.
+---
+
 # Calculating Risk Scores
 In Ballerine, you can attach a plugin to a workflow state to perform risk evaluations. This is done by specifying the states where risk calculations should occur and the source of the rules for these calculations.
 
