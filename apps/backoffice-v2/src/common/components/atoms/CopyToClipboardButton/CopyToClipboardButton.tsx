@@ -18,8 +18,8 @@ export const CopyToClipboardButton: FunctionComponent<ICopyToClipboardProps> = (
     <Button
       variant={'ghost'}
       size={'icon'}
-      onClick={async e => {
-        e.preventDefault();
+      onClick={async event => {
+        event.preventDefault();
         await copyToClipboard(textToCopy)();
       }}
       className={ctw(
