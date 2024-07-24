@@ -14,6 +14,7 @@ export const usePagination = () => {
     },
     [searchParams],
   );
+
   const onNextPage = useCallback(() => {
     const pageNumber = Number(searchParams.page);
     const nextPage = pageNumber + 1;
@@ -23,6 +24,7 @@ export const usePagination = () => {
       page: nextPage.toString(),
     });
   }, [searchParams]);
+
   const onPrevPage = useCallback(() => {
     const pageNumber = Number(searchParams.page);
     const nextPage = pageNumber - 1;

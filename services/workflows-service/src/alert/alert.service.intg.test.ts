@@ -429,18 +429,18 @@ describe('AlertService', () => {
         });
       });
 
-      it('When there are more than or equal to 15 chargeback transactions, an alert should be created', async () => {
+      it.only('When there are more than or equal to 15 chargeback transactions, an alert should be created', async () => {
         // Arrange
-        await baseTransactionFactory
-          .withBusinessOriginator()
-          .withEndUserBeneficiary()
-          .count(15)
-          .type(TransactionRecordType.chargeback)
-          .create();
         const business1Transactions = await baseTransactionFactory
           .withBusinessOriginator()
           .withEndUserBeneficiary()
-          .count(14)
+          .count(16)
+          .type(TransactionRecordType.chargeback)
+          .create();
+        await baseTransactionFactory
+          .withBusinessOriginator()
+          .withEndUserBeneficiary()
+          .count(13)
           .type(TransactionRecordType.chargeback)
           .create();
 

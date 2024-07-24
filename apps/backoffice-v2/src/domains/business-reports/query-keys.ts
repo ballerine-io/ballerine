@@ -9,22 +9,23 @@ import { TBusinessReportType } from '@/domains/business-reports/types';
 
 export const businessReportsQueryKey = createQueryKeys('business-reports', {
   list: ({
-    reportType,
     page,
     pageSize,
     sortBy,
     sortDir,
+    ...params
   }: {
     reportType: TBusinessReportType;
+    search: string;
     page: number;
     pageSize: number;
     sortBy: string;
     sortDir: string;
   }) => ({
-    queryKey: [{ reportType, page, pageSize, sortBy, sortDir }],
+    queryKey: [{ page, pageSize, sortBy, sortDir, ...params }],
     queryFn: () => {
       const data = {
-        reportType,
+        ...params,
         page: {
           number: Number(page),
           size: Number(pageSize),
