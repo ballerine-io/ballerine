@@ -3,8 +3,6 @@ title: How to use webhooks
 description: A guide on setting up and handling webhooks to receive real-time notifications from Ballerine's system events.
 ---
 
-# How to use webhooks
-
 ## Webhook Events
 
 Ballerine can send chosen system events through webhooks, enabling your application to be notified in real-time when specific events occur within the system. For example, when a final decision is made on a case, a webhook can be sent that includes all of the case's data (data from the collection flow, third-party providers, risk results, and manual reviewer decisions).
@@ -120,7 +118,7 @@ A webhook will have the following data structure:
 To handle incoming webhooks, your endpoint should be able to:
 
 -   Parse the JSON payload.
--   Verify the webhook source (optional but recommended for security).
+-   Validate the source of the webhook.
 -   Process the event data according to your application logic.
 
 ### Security Recommendations

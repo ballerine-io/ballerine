@@ -3,11 +3,9 @@ title: Configuring a workflow
 description: A guide on how to create new versions or update existing workflows using Ballerine's dashboard.
 ---
 
-# Configuring a workflow
-
 ## Creating a New Version/Updating a Workflow
 
-To manage workflow definitions, you can find an interface  under the [Workflow Definitions tab](https://dashboard-sb.eu.ballerine.io/) in Ballerine's dashboard. Within this section, you can view and edit existing workflows using the JSON editors.
+To manage workflow definitions, you can find an interface  under the Workflow Definitions tab in [**Ballerine's Dashboard**](https://dashboard-sb.ballerine.app). Within this section, you can view and edit existing workflows using the JSON editors.
 
 To modify a workflow, follow these steps:
 

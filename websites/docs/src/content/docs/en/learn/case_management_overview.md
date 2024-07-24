@@ -4,9 +4,6 @@ description: Case management documentation
 
 ---
 
-## Case Management Overview
-
-
 The case management dashboard is an interface designed for agents and compliance officers. This interface allows them to manually review, make decisions, and take actions on users’ cases.
 
 The case managment can gather data from the various modules of Ballerine, such as the collection flows, 3rd party providers, rules, child workflows, plugins, and manual review agents decisions.

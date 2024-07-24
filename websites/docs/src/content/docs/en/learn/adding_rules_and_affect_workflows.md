@@ -3,8 +3,6 @@ title: Adding rules and affecting workflows
 description: A guide on how to implement transition rules in workflows using JSON Logic to automate state changes based on specific conditions.
 ---
 
-# Adding rules and affecting workflows
-
 ### Transition Rules
 
 When building a workflow, you can add rules on events to determine the next state. For example, you can set a rule on an MCC code to auto-approve, auto-reject, or move to manual review. Ballerine supports multiple rule engines to define these rules. Below is an example using the JSON Logic rule engine.
@@ -71,7 +69,7 @@ You can customize the transition rules to fit your specific workflow requirement
 
 To add more rules or modify existing ones, you can follow the structure provided and adjust the conditions and targets as needed:
 
-```
+```json
 "collection_flow": {
   "on": {
     "COLLECTION_FLOW_FINISHED": [
@@ -115,5 +113,3 @@ To add more rules or modify existing ones, you can follow the structure provided
   ]
 }
 ```
-
-[![Case Management](https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/669eeceed5f0d99c51777ae4_image%20136.png)](https://www.loom.com/share/6a1c6331309644d7ac49492e7047f2ae?sid=c1e6ec02-e734-4960-8358-5976942a7256)

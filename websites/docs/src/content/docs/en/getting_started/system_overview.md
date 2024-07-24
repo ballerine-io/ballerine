@@ -4,9 +4,6 @@ description: An overview of Ballerine's risk management platform and its modules
 ---
 
 
-# System Overview
-
-
 Ballerine is a risk management platform for performing all types of risk flows and processes. To do so, Ballerine provides the risk modules needed to build custom risk flows. You can use all modules, combinations of some modules, or just one module to perform a desired risk process.
 
 For example: 
@@ -43,8 +40,6 @@ Ballerine's collection flow module enables you to collect information and docume
 All of the steps and inputs are fully customizable, to enable building different types of flows.
 
 **Learn more about collection flows**
-
-[Creating a collection flow](websites/docs/src/content/docs/en/learn/creating_a_collection_flow)
 
 [Configuring a collection flow](websites/docs/src/content/docs/en/learn/configuring_a_collection_flow.md)
 
