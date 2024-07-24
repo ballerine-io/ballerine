@@ -279,7 +279,7 @@ export default defineConfig({
         //     },
         //   ],
         // },
-         {
+        {
           label: 'Examples',
           collapsed: true,
           items: [
@@ -308,6 +308,9 @@ export default defineConfig({
                 },
               ],
             },
+          ]
+        },
+
         {
           label: `Contributing`,
           collapsed: true,
