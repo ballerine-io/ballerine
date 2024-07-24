@@ -1,14 +1,14 @@
-import React, { FunctionComponent, useCallback, useState } from 'react';
+import React, { FunctionComponent } from 'react';
 import { UserStatistics } from '@/pages/Statistics/components/UserStatistics/UserStatistics';
 import { PortfolioRiskStatistics } from '@/pages/Statistics/components/PortfolioRiskStatistics/PortfolioRiskStatistics';
 import { WorkflowStatistics } from '@/pages/Statistics/components/WorkflowStatistics/WorkflowStatistics';
-import { useStatisticsQuery } from '@/pages/Statistics/statistics.query';
 import { Loader2 } from 'lucide-react';
+import { useHomeMetricsQuery } from '@/domains/metrics/hooks/queries/useHomeMetricsQuery/useHomeMetricsQuery';
 
 export const Statistics: FunctionComponent = () => {
-  const { data } = useStatisticsQuery();
+  const { data, isLoading } = useHomeMetricsQuery();
 
-  if (!data) {
+  if (isLoading || !data) {
     return <Loader2 className={'w-4 animate-spin'} />;
   }
 

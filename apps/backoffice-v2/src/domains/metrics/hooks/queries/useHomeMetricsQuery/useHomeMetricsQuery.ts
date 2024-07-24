@@ -4,7 +4,6 @@ import { apiClient } from '@/common/api-client/api-client';
 import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { z } from 'zod';
-import { createQueryKeys } from '@lukemorales/query-key-factory';
 
 export const ReportsByRiskLevelSchema = z.object({
   low: z.number(),
@@ -13,7 +12,7 @@ export const ReportsByRiskLevelSchema = z.object({
   critical: z.number(),
 });
 
-export const StatisticsOutputSchema = z.object({
+export const HomeMetricsOutputSchema = z.object({
   riskIndicators: z.array(
     z.object({
       name: z.string(),
@@ -27,22 +26,22 @@ export const StatisticsOutputSchema = z.object({
   }),
 });
 
-export const fetchStatistics = async () => {
-  const [statistics, error] = await apiClient({
-    endpoint: `statistics`,
-    method: Method.POST,
-    schema: StatisticsOutputSchema,
+export const fetchHomeMetrics = async () => {
+  const [homeMetrics, error] = await apiClient({
+    endpoint: `../metrics/home`,
+    method: Method.GET,
+    schema: HomeMetricsOutputSchema,
   });
 
-  return handleZodError(error, statistics);
+  return handleZodError(error, homeMetrics);
 };
 
-export const useStatisticsQuery = () => {
+export const useHomeMetricsQuery = () => {
   const isAuthenticated = useIsAuthenticated();
 
   return useQuery({
-    queryKey: ['statistics'],
-    queryFn: () => fetchStatistics(),
+    queryKey: ['metrics', 'home'],
+    queryFn: () => fetchHomeMetrics(),
     enabled: isAuthenticated,
     keepPreviousData: true,
   });

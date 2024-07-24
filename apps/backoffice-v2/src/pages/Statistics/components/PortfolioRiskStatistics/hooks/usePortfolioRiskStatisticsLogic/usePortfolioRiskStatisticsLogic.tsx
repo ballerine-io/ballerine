@@ -23,7 +23,7 @@ export const usePortfolioRiskStatisticsLogic = ({
   );
   const totalRiskIndicators = data.riskIndicators.reduce((acc, curr) => acc + curr.count, 0);
   const riskIndicators = useMemo(() => {
-    return data.riskIndicators
+    return structuredClone(data.riskIndicators)
       .sort((a, b) => {
         if (riskIndicatorsSorting === 'asc') {
           return a.count - b.count;

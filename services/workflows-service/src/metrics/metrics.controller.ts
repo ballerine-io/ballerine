@@ -17,7 +17,16 @@ import { UserWorkflowProcessingStatisticModel } from '@/metrics/service/models/u
 import type { TProjectIds } from '@/types';
 import * as common from '@nestjs/common';
 import { Controller } from '@nestjs/common';
-import { ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiNoContentResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { Static, Type } from '@sinclair/typebox';
+import { Validate } from 'ballerine-nestjs-typebox';
+import { HomeMetricsSchema } from '@/metrics/schemas/home-metrics.schema';
 
 @ApiTags('Metrics')
 @Controller('/metrics')
@@ -109,5 +118,18 @@ export class MetricsController {
   @common.Get('/workflow-definition/variants-metric')
   async getWorkflowDefinitionVariantsMetric(@ProjectIds() projectIds: TProjectIds) {
     return await this.metricsService.getWorkflowDefinitionVariantsMetric(projectIds);
+  }
+
+  @common.Get('home')
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    schema: Type.Record(Type.String(), Type.Unknown()),
+  })
+  @Validate({
+    response: HomeMetricsSchema,
+  })
+  async getById(@ProjectIds() projectIds: TProjectIds): Promise<Static<typeof HomeMetricsSchema>> {
+    return await this.metricsService.getHomeMetrics(projectIds![0]!);
   }
 }
