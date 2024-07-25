@@ -1944,7 +1944,6 @@ export class WorkflowService {
 
       const secretsManager = this.secretsManagerFactory.create({
         provider: env.SECRETS_MANAGER_PROVIDER,
-        environmentName: env.ENVIRONMENT_NAME,
         customerId: customer.id,
       });
 

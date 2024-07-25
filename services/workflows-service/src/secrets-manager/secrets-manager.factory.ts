@@ -6,15 +6,7 @@ type SecretsManagerProvider = typeof env.SECRETS_MANAGER_PROVIDER;
 
 @Injectable()
 export class SecretsManagerFactory {
-  create({
-    provider,
-    environmentName,
-    customerId,
-  }: {
-    provider: SecretsManagerProvider;
-    environmentName: string;
-    customerId: string;
-  }) {
+  create({ provider, customerId }: { provider: SecretsManagerProvider; customerId: string }) {
     switch (provider) {
       case 'aws-secret-manager':
         if (!env.AWS_SECRETS_MANAGER_REGION) {
@@ -30,8 +22,8 @@ export class SecretsManagerFactory {
         }
 
         return new AwsSecretsManager({
-          environmentName,
           customerId,
+          prefix: env.AWS_SECRETS_MANAGER_PREFIX,
           awsRegion: env.AWS_SECRETS_MANAGER_REGION,
           awsAccessKeyId: env.AWS_SECRETS_MANAGER_ACCESS_KEY_ID,
           awsSecretAccessKey: env.AWS_SECRETS_MANAGER_SECRET_ACCESS_KEY,
