@@ -51,6 +51,7 @@ export const getTabsToBlocksMap = ({
     documentReviewBlocks,
     businessInformationBlocks,
     caseOverviewBlock,
+    customDataBlock,
   ] = blocks;
 
   const defaultTabsMap = {
@@ -92,6 +93,7 @@ export const getTabsToBlocksMap = ({
       ...directorsDocumentsBlocks,
     ],
     [Tab.MONITORING_REPORTS]: [...websiteMonitoringBlocks],
+    [Tab.CUSTOM_DATA]: [...customDataBlock],
   } as const;
 
   if (theme?.type === WorkflowDefinitionConfigThemeEnum.KYB) {
