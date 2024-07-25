@@ -20,6 +20,7 @@ import { TableCell } from '@/lib/blocks/components/TableCell/TableCell';
 import { TCell } from '@/lib/blocks/create-blocks-typed/types';
 import { CellsMap, createBlocks } from '@ballerine/blocks';
 import { DataTableCell } from '@/lib/blocks/components/DataTableCell/DataTableCell';
+import { ReadOnlyDetailsCell } from '@/lib/blocks/components/ReadOnlyDetailsCell/ReadOnlyDetailsCell';
 
 export const createBlocksTyped = () => createBlocks<TCell>();
 
@@ -52,4 +53,5 @@ export const cells: CellsMap = {
   block: BlockCell,
   node: NodeCell,
   pdfViewer: PDFViewerCell,
+  readOnlyDetails: ReadOnlyDetailsCell,
 };

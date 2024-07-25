@@ -10,7 +10,7 @@ import {
 import { Dialog } from '@/common/components/molecules/Dialog/Dialog';
 import { MotionBadge } from '@/common/components/molecules/MotionBadge/MotionBadge';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
-import { GenericAsyncFunction, GenericFunction } from '@/common/types';
+import { ExtendedJson, GenericAsyncFunction, GenericFunction } from '@/common/types';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { ICallToActionLegacyProps } from '@/lib/blocks/components/CallToActionLegacy/interfaces';
 import { ICallToActionDocumentSelection } from '@/lib/blocks/components/DirectorsCallToAction/interfaces';
@@ -22,6 +22,8 @@ import { AnyChildren, AnyObject } from '@ballerine/ui';
 import { ColumnDef, TableOptions } from '@tanstack/react-table';
 import { ComponentProps, ReactNode } from 'react';
 import { DataTable } from '@/common/components/organisms/DataTable/DataTable';
+
+import { ReadOnlyDetail } from '@/common/components/atoms/ReadOnlyDetail/ReadOnlyDetail';
 
 export type TBlockCell = {
   type: 'block';
@@ -225,6 +227,15 @@ export type TNodeCell = {
   value: AnyChildren;
 };
 
+export type TReadOnlyDetailsCell = {
+  type: 'readOnlyDetails';
+  props?: ComponentProps<'div'> & Pick<ComponentProps<typeof ReadOnlyDetail>, 'parse'>;
+  value: Array<{
+    label: string;
+    value: ExtendedJson;
+  }>;
+};
+
 export type TCell =
   | TBlockCell
   | TContainerCell
@@ -246,4 +257,5 @@ export type TCell =
   | TParagraphCell
   | TDialogCell
   | TNodeCell
-  | TPDFViewerCell;
+  | TPDFViewerCell
+  | TReadOnlyDetailsCell;
