@@ -51,8 +51,8 @@ export const getTabsToBlocksMap = ({
     documentReviewBlocks,
     businessInformationBlocks,
     caseOverviewBlock,
-    amlWithContainerBlock,
     customDataBlock,
+    amlWithContainerBlock,
   ] = blocks;
 
   const defaultTabsMap = {
