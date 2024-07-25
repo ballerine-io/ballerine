@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { WorkflowRunner } from '../../workflow-runner';
 import { WorkflowRunnerArgs } from '../../types';
 import { ISerializableHttpPluginParams } from './types';
+import { ProcessStatus } from '@ballerine/common';
 
 const createWorkflowRunner = (
   definition: WorkflowRunnerArgs['definition'],
@@ -117,6 +118,8 @@ describe('workflow-runner', () => {
           ballerineEnrichment: {
             error:
               'Error transforming data: Unexpected token type: Colon, value: : for transformer mapping: "dsa: .unknwonvalue.id}"',
+            name: 'ballerineEnrichment',
+            status: ProcessStatus.ERROR,
           },
         });
       });
@@ -155,6 +158,8 @@ describe('workflow-runner', () => {
             ballerineEnrichment: {
               error:
                 " - must have required property 'business_name' |  - must have required property 'registration_number'",
+              name: 'ballerineEnrichment',
+              status: ProcessStatus.ERROR,
             },
           });
         });
