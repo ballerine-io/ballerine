@@ -51,6 +51,7 @@ export const getTabsToBlocksMap = ({
     documentReviewBlocks,
     businessInformationBlocks,
     caseOverviewBlock,
+    amlWithContainerBlock,
   ] = blocks;
 
   const defaultTabsMap = {
@@ -79,6 +80,7 @@ export const getTabsToBlocksMap = ({
     [Tab.UBOS]: [
       ...ubosUserProvidedBlock,
       ...ubosRegistryProvidedBlock,
+      ...amlWithContainerBlock,
       ...(createKycBlocks(blocksCreationParams?.workflow as TWorkflowById) || []),
     ],
     [Tab.ASSOCIATED_COMPANIES]: [
@@ -106,7 +108,11 @@ export const getTabsToBlocksMap = ({
 
   if (theme?.type === WorkflowDefinitionConfigThemeEnum.KYC) {
     return {
-      [Tab.KYC]: [...businessInformationBlocks, ...createKycBlocks(blocksCreationParams?.workflow)],
+      [Tab.KYC]: [
+        ...businessInformationBlocks,
+        ...amlWithContainerBlock,
+        ...createKycBlocks(blocksCreationParams?.workflow),
+      ],
     } as const;
   }
 
