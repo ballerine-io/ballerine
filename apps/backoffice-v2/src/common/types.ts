@@ -141,3 +141,14 @@ export const Severities = [
 export type TSeverity = (typeof Severities)[number];
 
 export type TSeverities = typeof Severities;
+
+export type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
+
+export type ExtendedJson =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | ExtendedJson[]
+  | { [key: string]: ExtendedJson };

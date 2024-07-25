@@ -48,6 +48,7 @@ import { useCaseOverviewBlock } from '@/lib/blocks/hooks/useCaseOverviewBlock/us
 import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { useLocation } from 'react-router-dom';
 import { omitPropsFromObjectWhitelist } from '@/common/utils/omit-props-from-object-whitelist/omit-props-from-object-whitelist';
+import { useObjectEntriesBlock } from '@/lib/blocks/hooks/useObjectEntriesBlock/useObjectEntriesBlock';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 
@@ -391,6 +392,11 @@ export const useDefaultBlocksLogic = () => {
 
   const caseOverviewBlock = useCaseOverviewBlock();
 
+  const customDataBlock = useObjectEntriesBlock({
+    object: workflow?.context?.customData ?? {},
+    heading: 'Custom Data',
+  });
+
   const allBlocks = useMemo(() => {
     if (!workflow?.context?.entity) return [];
 
@@ -420,6 +426,7 @@ export const useDefaultBlocksLogic = () => {
       documentReviewBlocks,
       businessInformationBlocks,
       caseOverviewBlock,
+      customDataBlock,
     ];
   }, [
     associatedCompaniesBlock,
@@ -447,6 +454,7 @@ export const useDefaultBlocksLogic = () => {
     documentReviewBlocks,
     businessInformationBlocks,
     caseOverviewBlock,
+    customDataBlock,
     workflow?.context?.entity,
   ]);
 
