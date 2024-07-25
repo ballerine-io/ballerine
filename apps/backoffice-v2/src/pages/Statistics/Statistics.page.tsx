@@ -6,7 +6,11 @@ import { Loader2 } from 'lucide-react';
 import { useHomeMetricsQuery } from '@/domains/metrics/hooks/queries/useHomeMetricsQuery/useHomeMetricsQuery';
 
 export const Statistics: FunctionComponent = () => {
-  const { data, isLoading } = useHomeMetricsQuery();
+  const { data, isLoading, error } = useHomeMetricsQuery();
+
+  if (error) {
+    throw error;
+  }
 
   if (isLoading || !data) {
     return <Loader2 className={'w-4 animate-spin'} />;
