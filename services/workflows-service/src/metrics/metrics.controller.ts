@@ -14,7 +14,7 @@ import { WorkflowRuntimeStatisticModel } from '@/metrics/repository/models/workf
 import { WorkflowRuntimeStatusCaseCountModel } from '@/metrics/repository/models/workflow-runtime-status-case-count.model';
 import { MetricsService } from '@/metrics/service/metrics.service';
 import { UserWorkflowProcessingStatisticModel } from '@/metrics/service/models/user-workflow-processing-statistic.model';
-import type { TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import * as common from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import {
@@ -27,6 +27,7 @@ import {
 import { Static, Type } from '@sinclair/typebox';
 import { Validate } from 'ballerine-nestjs-typebox';
 import { HomeMetricsSchema } from '@/metrics/schemas/home-metrics.schema';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @ApiTags('Metrics')
 @Controller('/metrics')
@@ -130,8 +131,8 @@ export class MetricsController {
     response: HomeMetricsSchema,
   })
   async getHomeMetrics(
-    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<Static<typeof HomeMetricsSchema>> {
-    return await this.metricsService.getHomeMetrics(projectIds![0]!);
+    return await this.metricsService.getHomeMetrics(currentProjectId);
   }
 }
