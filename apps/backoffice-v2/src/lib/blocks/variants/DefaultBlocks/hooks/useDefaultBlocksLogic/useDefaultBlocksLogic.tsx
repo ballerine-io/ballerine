@@ -304,7 +304,8 @@ export const useDefaultBlocksLogic = () => {
 
   const ubosRegistryProvidedBlock = useUbosRegistryProvidedBlock(
     ubosRegistryProvided,
-    workflow?.context?.pluginsOutput?.ubo?.message,
+    workflow?.context?.pluginsOutput?.ubo?.message ??
+      workflow?.context?.pluginsOutput?.ubo?.data.message,
     workflow?.context?.pluginsOutput?.ubo?.isRequestTimedOut,
   );
 
