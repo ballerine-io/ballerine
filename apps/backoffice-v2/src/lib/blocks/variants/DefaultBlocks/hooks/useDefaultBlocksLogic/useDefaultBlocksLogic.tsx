@@ -49,6 +49,7 @@ import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/
 import { useLocation } from 'react-router-dom';
 import { omitPropsFromObjectWhitelist } from '@/common/utils/omit-props-from-object-whitelist/omit-props-from-object-whitelist';
 import { useObjectEntriesBlock } from '@/lib/blocks/hooks/useObjectEntriesBlock/useObjectEntriesBlock';
+import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 
@@ -397,6 +398,24 @@ export const useDefaultBlocksLogic = () => {
     heading: 'Custom Data',
   });
 
+  const amlData = useMemo(() => [workflow?.context?.aml], [workflow?.context?.aml]);
+
+  const amlBlock = useAmlBlock(amlData);
+
+  const amlWithContainerBlock = useMemo(() => {
+    if (!amlBlock?.length) {
+      return [];
+    }
+
+    return createBlocksTyped()
+      .addBlock()
+      .addCell({
+        type: 'block',
+        value: amlBlock,
+      })
+      .build();
+  }, [amlBlock]);
+
   const allBlocks = useMemo(() => {
     if (!workflow?.context?.entity) return [];
 
@@ -427,6 +446,7 @@ export const useDefaultBlocksLogic = () => {
       businessInformationBlocks,
       caseOverviewBlock,
       customDataBlock,
+      amlWithContainerBlock,
     ];
   }, [
     associatedCompaniesBlock,
@@ -455,6 +475,7 @@ export const useDefaultBlocksLogic = () => {
     businessInformationBlocks,
     caseOverviewBlock,
     customDataBlock,
+    amlWithContainerBlock,
     workflow?.context?.entity,
   ]);
 
