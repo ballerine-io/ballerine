@@ -8,6 +8,7 @@ import {
   ChildPluginCallbackOutput,
   Error as ErrorEnum,
   ObjectValues,
+  SecretsManager,
   WorkflowEvent,
   WorkflowEvents,
   WorkflowEventWithoutState,
@@ -77,6 +78,7 @@ export class WorkflowRunner {
   #__debugMode: boolean;
   #__runtimeId: string;
   events: any;
+  #__secretsManager: SecretsManager | undefined;
 
   public get workflow() {
     return this.#__workflow;
@@ -96,6 +98,7 @@ export class WorkflowRunner {
       extensions,
       invokeRiskRulesAction,
       invokeChildWorkflowAction,
+      secretsManager,
     }: WorkflowRunnerArgs,
     debugMode = false,
   ) {
@@ -104,6 +107,7 @@ export class WorkflowRunner {
     this.#__extensions = extensions ?? {};
     this.#__extensions.statePlugins ??= [];
     this.#__debugMode = debugMode;
+    this.#__secretsManager = secretsManager;
 
     this.#__extensions.dispatchEventPlugins = this.initiateDispatchEventPlugins(
       this.#__extensions.dispatchEventPlugins ?? [],
@@ -201,6 +205,7 @@ export class WorkflowRunner {
         successAction: apiPluginSchema.successAction,
         errorAction: apiPluginSchema.errorAction,
         persistResponseDestination: apiPluginSchema.persistResponseDestination,
+        secretsManager: this.#__secretsManager,
       });
     });
   }

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AwsSecretsManager } from '@/secrets-manager/aws-secrets-manager';
 import { env } from '@/env';
 
-type Provider = 'aws-secret-manager';
+type SecretsManagerProvider = typeof env.SECRETS_MANAGER_PROVIDER;
 
 @Injectable()
 export class SecretsManagerFactory {
@@ -11,7 +11,7 @@ export class SecretsManagerFactory {
     environmentName,
     customerId,
   }: {
-    provider: Provider;
+    provider: SecretsManagerProvider;
     environmentName: string;
     customerId: string;
   }) {

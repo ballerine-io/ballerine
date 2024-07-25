@@ -1,4 +1,4 @@
-import { SecretsManager } from '@/secrets-manager/secret-manager';
+import { SecretsManager } from '@/secrets-manager/secrets-manager';
 import {
   CreateSecretCommand,
   GetSecretValueCommand,
@@ -53,39 +53,7 @@ export class AwsSecretsManager implements SecretsManager {
     this.customerId = customerId;
   }
 
-  async get(key) {
-    const data = await this.getSecret();
-
-    return data[key] ?? null;
-  }
-
-  async set(key, value) {
-    const data = await this.getSecret();
-
-    data[key] = value;
-
-    await this.client.send(
-      new PutSecretValueCommand({
-        SecretId: this.getSecretName(),
-        SecretString: JSON.stringify(data),
-      }),
-    );
-  }
-
-  async delete(key) {
-    const data = await this.getSecret();
-
-    delete data[key];
-
-    await this.client.send(
-      new PutSecretValueCommand({
-        SecretId: this.getSecretName(),
-        SecretString: JSON.stringify(data),
-      }),
-    );
-  }
-
-  private async getSecret() {
+  async getAll() {
     let secretString;
 
     try {
@@ -108,6 +76,20 @@ export class AwsSecretsManager implements SecretsManager {
     }
 
     return SecretStringSchema.parse(secretString);
+  }
+
+  async set(data) {
+    const dataToSet = {
+      ...(await this.getAll()),
+      ...data,
+    };
+
+    await this.client.send(
+      new PutSecretValueCommand({
+        SecretId: this.getSecretName(),
+        SecretString: JSON.stringify(dataToSet),
+      }),
+    );
   }
 
   private async createSecret() {

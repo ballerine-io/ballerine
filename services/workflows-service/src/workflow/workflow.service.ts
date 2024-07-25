@@ -105,6 +105,7 @@ import { BusinessReportService } from '@/business-report/business-report.service
 import { RuleEngineService } from '@/rule-engine/rule-engine.service';
 import { RiskRuleService, TFindAllRulesOptions } from '@/rule-engine/risk-rule.service';
 import { SentryService } from '@/sentry/sentry.service';
+import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
 
 type TEntityId = string;
 
@@ -144,6 +145,7 @@ export class WorkflowService {
     private readonly riskRuleService: RiskRuleService,
     private readonly ruleEngineService: RuleEngineService,
     private readonly sentry: SentryService,
+    private readonly secretsManagerFactory: SecretsManagerFactory,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -1938,6 +1940,14 @@ export class WorkflowService {
         transaction,
       );
 
+      const customer = await this.customerService.getByProjectId(projectIds![0]!);
+
+      const secretsManager = this.secretsManagerFactory.create({
+        provider: env.SECRETS_MANAGER_PROVIDER,
+        environmentName: env.ENVIRONMENT_NAME,
+        customerId: customer.id,
+      });
+
       const service = createWorkflow({
         runtimeId: workflowRuntimeData.id,
         // @ts-expect-error - error from Prisma types fix
@@ -2001,6 +2011,7 @@ export class WorkflowService {
             transaction,
           );
         },
+        secretsManager: { getAll: secretsManager.getAll.bind(secretsManager) },
       });
 
       service.subscribe('ENTITIES_UPDATE', async ({ payload }) => {
