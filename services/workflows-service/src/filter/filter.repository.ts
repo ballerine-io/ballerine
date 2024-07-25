@@ -1,6 +1,6 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import type { TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { FilterModel } from './filter.model';
@@ -14,8 +14,14 @@ export class FilterRepository {
 
   async create<T extends Prisma.FilterCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.FilterCreateArgs>,
+    projectId: TProjectId,
   ) {
-    return await this.prisma.filter.create(args);
+    return await this.prisma.filter.create({
+      data: {
+        ...args.data,
+        projectId: projectId,
+      } as any,
+    });
   }
 
   async findMany<T extends Prisma.FilterFindManyArgs>(

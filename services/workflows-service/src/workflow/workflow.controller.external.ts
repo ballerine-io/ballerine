@@ -79,7 +79,15 @@ export class WorkflowControllerExternal {
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @ProjectIds() projectIds: TProjectIds,
   ) {
-    return await this.service.getWorkflowDefinitionById(params.id, {}, projectIds);
+    return await this.service.getWorkflowDefinitionById(
+      params.id,
+      {
+        include: {
+          uiDefinitions: true,
+        },
+      },
+      projectIds,
+    );
   }
 
   @common.Get('/:id')
@@ -147,6 +155,30 @@ export class WorkflowControllerExternal {
     type: WorkflowRunDto,
     description: 'Workflow run data.',
     examples: {
+      KYB: {
+        value: {
+          workflowId: 'kyb-us-1',
+          context: {
+            entity: {
+              type: 'business',
+              id: 'my-enduser-id',
+              data: {
+                country: 'US',
+                registrationNumber: '756OPOPOP08238',
+                companyName: 'MOCK COMPANY LIMITED',
+                additionalInfo: {
+                  mainRepresentative: {
+                    email: 'email@ballerine.com',
+                    lastName: 'Last',
+                    firstName: 'First',
+                  },
+                },
+              },
+            },
+            documents: [],
+          },
+        },
+      },
       'Merchant Monitoring': {
         value: {
           workflowId: '0k3j3k3g3h3i3j3k3g3h3i3',

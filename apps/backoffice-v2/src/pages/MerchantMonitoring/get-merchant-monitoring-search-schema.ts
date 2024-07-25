@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { BooleanishSchema } from '@/lib/zod/utils/checkers';
 import { TBusinessReport } from '@/domains/business-reports/fetchers';
 
-export const getMerchantMonitoringSearchSchema = (authenticatedUserId: string | undefined) =>
+export const getMerchantMonitoringSearchSchema = () =>
   BaseSearchSchema.extend({
     sortBy: z
       .enum([

@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { AnyRecord, isObject, uniqueArray } from '@ballerine/common';
+import { AnyRecord, isObject, ProcessStatus, uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
@@ -738,25 +738,28 @@ export class WorkflowRunner {
       return;
     }
 
-    if (apiPlugin.persistResponseDestination) {
-      if (responseBody) {
-        this.context = this.mergeToContext(
-          this.context,
-          responseBody,
-          apiPlugin.persistResponseDestination,
-        );
-      } else if (error) {
-        this.context = this.mergeToContext(
-          this.context,
-          { error: error },
-          apiPlugin.persistResponseDestination,
-        );
-      }
-    } else {
-      this.context.pluginsOutput = {
-        ...(this.context.pluginsOutput || {}),
-        ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
-      };
+    if (apiPlugin.persistResponseDestination && responseBody) {
+      this.context = this.mergeToContext(
+        this.context,
+        responseBody,
+        apiPlugin.persistResponseDestination,
+      );
+    }
+
+    if (!apiPlugin.persistResponseDestination && responseBody) {
+      this.context = this.mergeToContext(
+        this.context,
+        responseBody,
+        `pluginsOutput.${apiPlugin.name}`,
+      );
+    }
+
+    if (error) {
+      this.context = this.mergeToContext(
+        this.context,
+        { name: apiPlugin.name, error, status: ProcessStatus.ERROR },
+        `pluginsOutput.${apiPlugin.name}`,
+      );
     }
 
     await this.sendEvent({ type: callbackAction });

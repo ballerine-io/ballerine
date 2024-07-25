@@ -3,9 +3,9 @@ import 'jsoneditor/dist/jsoneditor.css';
 import { FunctionComponent, useEffect, useRef } from 'react';
 
 interface IJSONEditorProps {
-  value: object;
+  value: any;
   readOnly?: boolean;
-  onChange?: (value: object) => void;
+  onChange?: (value: any) => void;
 }
 
 export const JSONEditorComponent: FunctionComponent<IJSONEditorProps> = ({
@@ -32,7 +32,15 @@ export const JSONEditorComponent: FunctionComponent<IJSONEditorProps> = ({
 
     //TODO: Each set of value rerenders editor and loses focus, find workarounds
     editorRef.current.set(value);
-  }, [editorRef]);
+  }, [editorRef, readOnly]);
+
+  useEffect(() => {
+    if (!editorRef.current) return;
+
+    if (readOnly) {
+      editorRef.current.set(value);
+    }
+  }, [editorRef, readOnly, value]);
 
   useEffect(() => {
     if (!editorRef.current) return;

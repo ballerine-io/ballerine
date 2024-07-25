@@ -120,6 +120,7 @@ export class WorkflowDefinitionRepository {
     id: string,
     args: Pick<Prisma.WorkflowDefinitionUpdateArgs, 'data'>,
     projectIds: TProjectIds,
+    noValidate = false,
   ): Promise<Prisma.BatchPayload> {
     const scopedArgs = this.scopeService.scopeUpdateMany(
       {
@@ -128,7 +129,8 @@ export class WorkflowDefinitionRepository {
       },
       projectIds,
     );
-    if (args.data?.definition) {
+
+    if (args.data?.definition && !noValidate) {
       validateDefinitionLogic(args.data.definition as any);
     }
 
