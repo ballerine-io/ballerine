@@ -76,6 +76,17 @@ export const serverEnvSchema = {
     .optional()
     .describe('Bucket name of Data migration folders'),
   NOTION_API_KEY: z.string().describe('Notion API key'),
+
+  // AWS Secrets Manager
+  AWS_SECRETS_MANAGER_REGION: z.string().optional().describe('AWS Secrets Manager region'),
+  AWS_SECRETS_MANAGER_ACCESS_KEY_ID: z
+    .string()
+    .optional()
+    .describe('AWS Secrets Manager access key ID'),
+  AWS_SECRETS_MANAGER_SECRET_ACCESS_KEY: z
+    .string()
+    .optional()
+    .describe('AWS Secrets Manager secret access key'),
 };
 
 if (!process.env['ENVIRONMENT_NAME'] || process.env['ENVIRONMENT_NAME'] === 'local') {
