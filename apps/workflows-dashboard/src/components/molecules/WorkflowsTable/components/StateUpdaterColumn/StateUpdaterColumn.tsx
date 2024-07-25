@@ -21,7 +21,6 @@ import { useSendWorkflowEventMutation } from '@/pages/Workflows/hooks/useSendWor
 import { useUpdateWorkflowsStateMutation } from '@/pages/Workflows/hooks/useUpdateWorkflowsStateMutation';
 import { WorkflowsFiltersValues } from '@/pages/Workflows/types/workflows-filter-values';
 import { SelectGroup } from '@radix-ui/react-select';
-import { Settings } from 'lucide-react';
 import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 
 interface IStateUpdaterColumnProps {
@@ -94,7 +93,7 @@ export const StateUpdaterColumn: FunctionComponent<IStateUpdaterColumnProps> = (
       <div>
         <Dialog onOpenChange={open => !open && setPickedEvent(null)}>
           <DialogTrigger asChild>
-            <Settings />
+            <Button className="whitespace-nowrap">Send Event</Button>
           </DialogTrigger>
           <DialogContent>
             <div className="flex flex-col gap-4">
