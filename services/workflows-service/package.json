@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.347.1",
+    "@aws-sdk/client-secrets-manager": "^3.616.0",
     "@aws-sdk/lib-storage": "3.347.1",
     "@aws-sdk/s3-request-presigner": "3.347.1",
     "@ballerine/common": "0.9.15",
