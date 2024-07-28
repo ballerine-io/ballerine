@@ -40,11 +40,13 @@ export const CompanySanctionsPluginSchema = Type.Optional(
             businessDescription: Type.String(),
           }),
           subcategory: Type.String(),
-          descriptions: Type.Object({
-            description1: Type.String(),
-            description2: Type.String(),
-            description3: Type.String(),
-          }),
+          descriptions: Type.Array(
+            Type.Object({
+              description1: Type.String(),
+              description2: Type.String(),
+              description3: Type.String(),
+            }),
+          ),
           lastReviewed: Type.String(),
           officialLists: Type.Array(
             Type.Object({
