@@ -249,7 +249,7 @@ export class ApiPlugin {
   }
 
   getSystemSecret(key: string) {
-    return process.env[key];
+    return process.env[key] || '';
   }
 
   async fetchSecret(key: string) {
@@ -261,7 +261,7 @@ export class ApiPlugin {
       this.memoizedSecrets = await this.secretsManager.getAll();
     }
 
-    return this.memoizedSecrets[key];
+    return this.memoizedSecrets[key] || '';
   }
 
   fetchObjectPlaceholderValue(record: AnyRecord, path: string) {

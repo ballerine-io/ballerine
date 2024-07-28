@@ -78,7 +78,7 @@ export class AwsSecretsManager implements SecretsManager {
     return SecretStringSchema.parse(secretString);
   }
 
-  async set(data) {
+  async set(data: Record<string, string>) {
     const dataToSet = {
       ...(await this.getAll()),
       ...data,

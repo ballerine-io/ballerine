@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AwsSecretsManager } from '@/secrets-manager/aws-secrets-manager';
 import { env } from '@/env';
+import { InMemorySecretsManager } from '@/secrets-manager/in-memory-secrets-manager';
 
 type SecretsManagerProvider = typeof env.SECRETS_MANAGER_PROVIDER;
 
@@ -28,6 +29,8 @@ export class SecretsManagerFactory {
           awsAccessKeyId: env.AWS_SECRETS_MANAGER_ACCESS_KEY_ID,
           awsSecretAccessKey: env.AWS_SECRETS_MANAGER_SECRET_ACCESS_KEY,
         });
+      case 'in-memory':
+        return new InMemorySecretsManager({ customerId });
       default:
         provider satisfies never;
         throw new Error(`Unsupported Secret Manager provider: ${provider}`);

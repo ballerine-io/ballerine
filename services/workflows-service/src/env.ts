@@ -77,7 +77,7 @@ export const serverEnvSchema = {
     .describe('Bucket name of Data migration folders'),
   NOTION_API_KEY: z.string().describe('Notion API key'),
   SECRETS_MANAGER_PROVIDER: z
-    .enum(['aws-secret-manager'])
+    .enum(['aws-secret-manager', 'in-memory'])
     .default('aws-secret-manager')
     .describe('Secrets Manager provider'),
 
