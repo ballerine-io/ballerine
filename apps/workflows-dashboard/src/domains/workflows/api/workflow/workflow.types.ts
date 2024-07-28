@@ -1,3 +1,5 @@
+import { IWorkflowDefinition } from '@/domains/workflow-definitions';
+
 export type IWorkflowStatus = 'active' | 'completed' | 'failed';
 
 export interface IWorkflowAssignee {
@@ -8,8 +10,10 @@ export interface IWorkflow {
   id: string;
   workflowDefinitionName: string;
   workflowDefinitionId: string;
+  workflowDefinition: IWorkflowDefinition;
   status: IWorkflowStatus;
   state: string | null;
+  tags: string[];
   assignee: IWorkflowAssignee | null;
   context: object;
   createdAt: Date;
@@ -33,4 +37,12 @@ export interface GetWorkflowsDto {
   orderDirection?: 'asc' | 'desc';
 }
 
-export type IWorkflowDefinition = object;
+export interface UpdateWorkflowStateDto {
+  workflowId: string;
+  state: string;
+}
+
+export interface SendWorkflowEventDto {
+  workflowId: string;
+  name: string;
+}
