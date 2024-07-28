@@ -1688,7 +1688,7 @@ export class WorkflowService {
     entityId: string;
     position?: BusinessPosition;
   }) {
-    if (entityData && entityType === 'business')
+    if (entityData && entityType === 'business') {
       return (
         await this.endUserService.createWithBusiness(
           {
@@ -1707,6 +1707,7 @@ export class WorkflowService {
           entityId,
         )
       ).id;
+    }
 
     throw new Error(
       `Invalid entity type or payload for child workflow creation for entity: ${entityType} with context:`,

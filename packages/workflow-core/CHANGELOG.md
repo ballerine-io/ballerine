@@ -1,5 +1,19 @@
 # @ballerine/workflow-core
 
+## 0.6.24
+
+### Patch Changes
+
+- Fixed error handling for api plugins
+
+## 0.6.23
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.15
+
 ## 0.6.22
 
 ### Patch Changes

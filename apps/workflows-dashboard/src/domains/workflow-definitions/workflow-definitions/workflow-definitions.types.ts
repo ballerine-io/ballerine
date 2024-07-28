@@ -1,3 +1,5 @@
+import { IUIDefinition } from '@/domains/ui-definitions';
+
 export interface IWorkflowDefinition {
   id: string;
   name: string;
@@ -12,6 +14,7 @@ export interface IWorkflowDefinition {
   extensions: object;
   isPublic: boolean;
   createdAt: string;
+  uiDefinitions: IUIDefinition[];
 }
 
 export interface GetWorkflowDefinitionsListDto {
@@ -24,5 +27,19 @@ export interface GetWorkflowDefinitionDto {
 }
 
 export interface GetUIDefinitionQuery {
+  workflowDefinitionId: string;
+}
+
+export interface UpdateWorkflowDefinitionByIdDto {
+  workflowDefinitionId: string;
+  definition: IWorkflowDefinition['definition'];
+}
+
+export interface UpdateWorkflowDefinitionExtensionsByIdDto {
+  workflowDefinitionId: string;
+  extensions: IWorkflowDefinition['extensions'];
+}
+
+export interface UpgradeWorkflowDefinitionVersionByIdDto {
   workflowDefinitionId: string;
 }

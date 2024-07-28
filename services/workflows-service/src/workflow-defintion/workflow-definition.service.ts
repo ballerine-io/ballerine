@@ -1,17 +1,17 @@
 import { CustomerService } from '@/customer/customer.service';
 import { FilterService } from '@/filter/filter.service';
 import { InputJsonValue, NullableJsonNullValueInput, TProjectId, TProjectIds } from '@/types';
+import {
+  TCustomDataSchemaUpdateDto,
+  TRootLevelContextSchemaDto,
+} from '@/workflow-defintion/dtos/custom-data-schema-update-dto';
 import { GetWorkflowDefinitionListDto } from '@/workflow-defintion/dtos/get-workflow-definition-list.dto';
 import { TWorkflowDefinitionWithTransitionSchema } from '@/workflow-defintion/types';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { DocumentInsertSchema, replaceNullsWithUndefined } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, WorkflowDefinition } from '@prisma/client';
 import { merge } from 'lodash';
-import {
-  TCustomDataSchemaUpdateDto,
-  TRootLevelContextSchemaDto,
-} from '@/workflow-defintion/dtos/custom-data-schema-update-dto';
 
 @Injectable()
 export class WorkflowDefinitionService {
@@ -86,6 +86,41 @@ export class WorkflowDefinitionService {
     }
 
     return newVersionDefinition;
+  }
+
+  async copyDefinitionVersion(
+    id: string,
+    name: string,
+    displayName: string,
+    projectId: TProjectId,
+  ) {
+    const workflowDefintionToCopy = await this.workflowDefinitionRepository.findById(id, {}, [
+      projectId,
+    ]);
+
+    const {
+      id: _id,
+      version,
+      name: _name,
+      displayName: _displayName,
+      createdAt: _createdAt,
+      updatedAt: _updatedAt,
+      ...restArgs
+    } = workflowDefintionToCopy;
+
+    const createArgs = replaceNullsWithUndefined(
+      merge(restArgs, {
+        name,
+        displayName,
+        version: 1,
+      }),
+    ) as Prisma.WorkflowDefinitionCreateArgs['data'];
+
+    const workflowDefinitionCopy = await this.workflowDefinitionRepository.create({
+      data: createArgs,
+    });
+
+    return workflowDefinitionCopy;
   }
 
   async getLatestVersion(id: string, projectIds: TProjectIds) {
@@ -169,6 +204,15 @@ export class WorkflowDefinitionService {
     return customDataSchema;
   }
 
+  async updateWorkflowDefinitionById(
+    id: string,
+    data: WorkflowDefinition,
+    projectIds: TProjectIds,
+  ) {
+    //@ts-ignore
+    return await this.workflowDefinitionRepository.updateById(id, { data }, projectIds);
+  }
+
   async getDocumentsSchema(id: string, projectIds: TProjectIds) {
     const { documentsSchema } = await this.workflowDefinitionRepository.findById(
       id,
@@ -195,5 +239,13 @@ export class WorkflowDefinitionService {
       },
       projectIds,
     );
+  }
+
+  async updateById(
+    id: string,
+    args: Pick<Prisma.WorkflowDefinitionUpdateArgs, 'data'>,
+    projectIds: TProjectIds,
+  ) {
+    return await this.workflowDefinitionRepository.updateById(id, args, projectIds, true);
   }
 }

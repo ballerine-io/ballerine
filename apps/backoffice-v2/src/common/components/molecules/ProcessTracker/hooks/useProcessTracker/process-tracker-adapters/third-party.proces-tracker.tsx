@@ -20,7 +20,8 @@ export class ThirdPartyProcessTracker implements IProcessTracker {
       this.plugins
         ?.filter(({ name }) => pluginsWhiteList.includes(name as (typeof pluginsWhiteList)[number]))
         ?.map(({ displayName, name }) => {
-          const pluginStatus = this.getPluginByName(name)?.status ?? ProcessStatus.DEFAULT;
+          const plugin = this.getPluginByName(name);
+          const pluginStatus = plugin?.status ?? ProcessStatus.DEFAULT;
 
           return {
             text:
