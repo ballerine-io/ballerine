@@ -51,7 +51,7 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
           <div>
             <CardContent className={'flex flex-col space-y-4'}>
               <div>
-                <h4 className={'mb-4 font-semibold'}>Detected MCC</h4>
+                <h4 className={'mb-4 font-semibold'}>MCC Classification</h4>
                 <p>{detectedMcc}</p>
               </div>
             </CardContent>
