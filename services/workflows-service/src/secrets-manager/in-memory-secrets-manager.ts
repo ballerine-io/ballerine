@@ -10,9 +10,6 @@ export class InMemorySecretsManager implements SecretsManager {
   }
 
   async getAll() {
-    console.log('secretsStore', secretsStore);
-    console.log('this.customerId', this.customerId);
-
     return secretsStore[this.customerId] || {};
   }
 
@@ -21,7 +18,5 @@ export class InMemorySecretsManager implements SecretsManager {
       ...(await this.getAll()),
       ...data,
     };
-
-    console.log('secretsStore', secretsStore);
   }
 }
