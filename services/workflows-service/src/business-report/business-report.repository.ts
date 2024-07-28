@@ -66,7 +66,7 @@ export class BusinessReportRepository {
     );
   }
 
-  async count<T extends Prisma.BusinessReportFindManyArgs>(
+  async count<T extends Prisma.BusinessReportCountArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessReportCountArgs>,
     projectIds: TProjectIds,
   ) {
