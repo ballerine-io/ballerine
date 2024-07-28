@@ -23,7 +23,7 @@ export const columns = [
       const id = info.getValue();
 
       return (
-        <div className={`ml-[10px] flex w-full max-w-[36ch] items-center space-x-2`}>
+        <div className={`ml-[10px] flex w-full max-w-[12ch] items-center space-x-2`}>
           <TextWithNAFallback style={{ ...styles, width: '70%' }} ref={ref}>
             {id}
           </TextWithNAFallback>

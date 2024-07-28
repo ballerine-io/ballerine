@@ -1,9 +1,23 @@
-import { ConditionFn, BetweenParams, LastYearsParams, ExistsParams, Primitive } from './types';
-import { TOperation } from '../types';
-import { ZodSchema } from 'zod';
-import { BetweenSchema, LastYearsSchema, PrimitiveArraySchema, PrimitiveSchema } from './schemas';
-import { ValidationFailedError } from '../errors';
+import { EndUserAmlHitsSchema } from './../../../../../services/workflows-service/src/end-user/end-user.schema';
+import get from 'lodash.get';
 import isEmpty from 'lodash.isempty';
+
+import {
+  ConditionFn,
+  BetweenParams,
+  LastYearsParams,
+  ExistsParams,
+  Primitive,
+  TOperation,
+  AmlCheckParams,
+} from './types';
+
+import { z, ZodSchema } from 'zod';
+import { BetweenSchema, LastYearsSchema, PrimitiveArraySchema, PrimitiveSchema } from './schemas';
+
+import { ValidationFailedError, DataValueNotFoundError } from '../errors';
+import { OperationHelpers } from './constants';
+import { Rule } from '../rules/types';
 
 export abstract class BaseOperator<T = Primitive> {
   operator: string;
@@ -23,6 +37,16 @@ export abstract class BaseOperator<T = Primitive> {
   }
 
   abstract evaluate(dataValue: Primitive, conditionValue: T): boolean;
+
+  extractValue(data: unknown, rule: Rule) {
+    const value = get(data, rule.key);
+
+    if (value === undefined || value === null) {
+      throw new DataValueNotFoundError(rule.key);
+    }
+
+    return value;
+  }
 
   execute(dataValue: Primitive, conditionValue: T): boolean {
     this.validate({ dataValue, conditionValue });
@@ -228,16 +252,19 @@ class LastYear extends BaseOperator<LastYearsParams> {
   ): boolean => {
     if (typeof dataValue === 'string' || dataValue instanceof Date) {
       const date = new Date(dataValue);
-      const oneYearAgo = new Date();
-      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - conditionValue.years);
+      const yearsAgo = new Date();
+      yearsAgo.setFullYear(yearsAgo.getFullYear() - conditionValue.years);
 
-      return date >= oneYearAgo;
+      return date >= yearsAgo;
     }
 
     throw new ValidationFailedError(this.operator, `Unsupported data type ${typeof dataValue}`);
   };
 }
 
+/*
+  @deprecated - not in use
+*/
 class Exists extends BaseOperator<ExistsParams> {
   constructor() {
     super({
@@ -261,14 +288,83 @@ class Exists extends BaseOperator<ExistsParams> {
   };
 }
 
+class AmlCheck extends BaseOperator<AmlCheckParams> {
+  constructor() {
+    super({
+      operator: 'AML_CHECK',
+    });
+  }
+
+  extractValue(data: unknown, rule: Rule) {
+    const amlRule = rule as Extract<Rule, { operator: 'AML_CHECK' }>;
+
+    const result = z.record(z.string(), z.any()).safeParse(data);
+
+    if (!result.success) {
+      throw new ValidationFailedError('extract', 'parsing failed', result.error);
+    }
+
+    const objData = result.data;
+
+    const childWorkflows = objData.childWorkflows[amlRule.value.childWorkflowName];
+
+    const childWorkflowKeys = childWorkflows ? Object.keys(childWorkflows || {}) : [];
+
+    const hits: z.infer<typeof EndUserAmlHitsSchema>[] = childWorkflowKeys
+      .map(workflowId => get(childWorkflows, `${workflowId}.result.vendorResult.aml.hits`))
+      .flat(1)
+      .filter(Boolean);
+
+    if (isEmpty(hits)) {
+      throw new DataValueNotFoundError(rule.key);
+    }
+
+    if (!Array.isArray(hits) || hits.length === 0) {
+      return false;
+    }
+
+    return hits.map(hit => get(hit, rule.key)).filter(Boolean);
+  }
+
+  evaluate: ConditionFn<AmlCheckParams> = (
+    dataValue: any,
+    conditionValue: AmlCheckParams,
+  ): boolean => {
+    const amlOperator = OperationHelpers[conditionValue.operator];
+
+    const evaluateOperatorCheck = (data: any) => {
+      let result = amlOperator.dataValueSchema?.safeParse(data);
+
+      if (result && !result.success) {
+        return false;
+      }
+
+      const conditionResult = amlOperator.conditionValueSchema?.safeParse(conditionValue.value);
+
+      if ((conditionResult && !conditionResult.success) || !conditionResult?.data) {
+        return false; // TODO: throw explicit error
+      }
+
+      return amlOperator.execute(data, conditionResult.data);
+    };
+
+    if (dataValue && Array.isArray(dataValue)) {
+      return dataValue.some(evaluateOperatorCheck);
+    } else {
+      return evaluateOperatorCheck(dataValue);
+    }
+  };
+}
+
 export const EQUALS = new Equals();
 export const NOT_EQUALS = new NotEquals();
+export const EXISTS = new Exists();
 export const GT = new GreaterThan();
 export const LT = new LessThan();
 export const GTE = new GreaterThanOrEqual();
 export const LTE = new LessThanOrEqual();
 export const BETWEEN = new Between();
 export const LAST_YEAR = new LastYear();
-export const EXISTS = new Exists();
 export const IN = new In();
 export const NOT_IN = new NotIn();
+export const AML_CHECK = new AmlCheck();
