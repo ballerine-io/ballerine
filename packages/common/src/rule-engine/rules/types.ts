@@ -1,5 +1,14 @@
-import { Rule, RuleSet } from './rules/types';
-import { EngineErrors } from './errors';
+import { z } from 'zod';
+import { RuleSchema } from './schemas';
+import { EngineErrors } from '../errors';
+import { TOperator } from '../operators/types';
+
+export type Rule = z.infer<typeof RuleSchema>;
+
+export type RuleSet = {
+  operator: TOperator;
+  rules: Array<Rule | RuleSet>;
+};
 
 export type PassedRuleResult = {
   status: 'PASSED' | 'SKIPPED';
@@ -17,12 +26,3 @@ export type FailedRuleResult = {
 export type RuleResult = PassedRuleResult | FailedRuleResult;
 
 export type RuleResultSet = RuleResult[];
-
-export interface TFindAllRulesOptions {
-  databaseId: string;
-  source: 'notion';
-}
-
-export * from './operators/types';
-
-export * from './rules/types';
