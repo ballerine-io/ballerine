@@ -1,5 +1,21 @@
 # @ballerine/ui
 
+## 0.5.11
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.16
+
+## 0.5.10
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.15
+
 ## 0.5.9
 
 ### Patch Changes

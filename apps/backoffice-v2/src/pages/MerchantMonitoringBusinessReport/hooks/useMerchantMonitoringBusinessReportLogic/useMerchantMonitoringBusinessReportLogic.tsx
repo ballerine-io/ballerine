@@ -42,6 +42,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     ecosystemAndTransactionsMatches,
     adsImages,
     relatedAdsImages,
+    homepageScreenshotUrl,
   } = adapter(businessReport ?? {});
   const riskIndicators = [
     {
@@ -92,6 +93,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
                 riskScore={riskScore}
                 riskIndicators={riskIndicators}
                 riskLevels={riskLevels}
+                homepageScreenshotUrl={homepageScreenshotUrl}
               />
             </>
           ),

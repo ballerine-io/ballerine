@@ -10,4 +10,5 @@ export const Pagination = ({ className, ...props }: ComponentProps<'nav'>) => (
     {...props}
   />
 );
+
 Pagination.displayName = 'Pagination';
