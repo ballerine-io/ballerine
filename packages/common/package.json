@@ -49,6 +49,7 @@
     "@types/fs-extra": "^11.0.1",
     "@types/json-logic-js": "^2.0.1",
     "@types/json-schema": "^7.0.12",
+    "@types/lodash.get": "^4.4.9",
     "@types/lodash.isempty": "^4.4.9",
     "@types/node": "^18.14.0",
     "@typescript-eslint/eslint-plugin": "^5.48.1",
@@ -81,6 +82,7 @@
     "@sinclair/typebox": "0.32.15",
     "ajv": "^8.12.0",
     "json-schema-to-zod": "^0.6.3",
+    "lodash.get": "^4.4.2",
     "lodash.isempty": "^4.4.0",
     "zod": "^3.22.4"
   }
