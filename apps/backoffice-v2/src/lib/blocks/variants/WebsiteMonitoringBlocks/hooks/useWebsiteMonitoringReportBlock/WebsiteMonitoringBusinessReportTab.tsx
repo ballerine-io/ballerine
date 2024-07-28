@@ -23,6 +23,7 @@ export const WebsiteMonitoringBusinessReportTab = ({
     summary,
     getUpdatedSearchParamsWithActiveMonitoringTab,
     search,
+    homepageScreenshotUrl,
   } = useWebsiteMonitoringBusinessReportTab({
     businessReport,
   });
@@ -34,6 +35,7 @@ export const WebsiteMonitoringBusinessReportTab = ({
         riskLevels={riskLevels}
         riskIndicators={riskIndicators}
         riskScore={riskScore}
+        homepageScreenshotUrl={homepageScreenshotUrl}
       />
       <Tabs defaultValue={activeMonitoringTab} className="w-full" key={activeMonitoringTab}>
         <TabsList className={'mb-4 bg-transparent'}>
