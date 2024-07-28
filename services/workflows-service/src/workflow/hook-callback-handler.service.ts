@@ -56,8 +56,7 @@ export const setPluginStatusToSuccess = ({
 
   const resultWithData = set({}, resultDestinationPath, ignoreLastKey ? data : { data });
 
-  //@ts-ignore
-  if (isObject(result) && result.status) {
+  if (isObject(result) && 'status' in result && result.status) {
     return set(
       resultWithData,
       `${ignoreLastKey ? resultDestinationPathWithoutLastKey : resultDestinationPath}.status`,

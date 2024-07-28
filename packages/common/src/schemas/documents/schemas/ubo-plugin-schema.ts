@@ -57,7 +57,6 @@ export const UboPluginSchema = Type.Optional(
     invokedAt: Type.Optional(Type.Number()),
     data: Type.Optional(
       Type.Object({
-        layers: Type.String(),
         uboList: Type.Array(UboSchema),
         otherUBOList: Type.Array(UboSchema),
         uboGraph: Type.Array(UboGraphSchema),
