@@ -70,6 +70,10 @@ export const workflowDefinitionsTableColumns = [
     ),
     header: () => 'Config',
   }),
+  columnHelper.accessor('version', {
+    cell: info => info.getValue<number>(),
+    header: () => 'Version',
+  }),
   columnHelper.accessor('id', {
     cell: info => (
       <Link to={`/workflow-definitions/${info.row.original.id}`}>

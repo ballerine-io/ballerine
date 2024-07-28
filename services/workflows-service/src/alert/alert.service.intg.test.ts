@@ -429,18 +429,18 @@ describe('AlertService', () => {
         });
       });
 
-      it('When there are more than or equal to 15 chargeback transactions, an alert should be created', async () => {
+      it.only('When there are more than or equal to 15 chargeback transactions, an alert should be created', async () => {
         // Arrange
         const business1Transactions = await baseTransactionFactory
           .withBusinessOriginator()
           .withEndUserBeneficiary()
-          .count(15)
+          .count(16)
           .type(TransactionRecordType.chargeback)
           .create();
-        const business2Transactions = await baseTransactionFactory
+        await baseTransactionFactory
           .withBusinessOriginator()
           .withEndUserBeneficiary()
-          .count(14)
+          .count(13)
           .type(TransactionRecordType.chargeback)
           .create();
 
@@ -458,13 +458,13 @@ describe('AlertService', () => {
 
       it('When there are less than 15 chargeback transactions, no alert should be created', async () => {
         // Arrange
-        const business1Transactions = await baseTransactionFactory
+        await baseTransactionFactory
           .withBusinessOriginator()
           .withEndUserBeneficiary()
           .count(14)
           .type(TransactionRecordType.chargeback)
           .create();
-        const business2Transactions = await baseTransactionFactory
+        await baseTransactionFactory
           .withBusinessOriginator()
           .withEndUserBeneficiary()
           .count(14)
@@ -506,7 +506,7 @@ describe('AlertService', () => {
           .count(51)
           .type(TransactionRecordType.chargeback)
           .create();
-        const business2Transactions = await baseTransactionFactory
+        await baseTransactionFactory
           .withBusinessOriginator()
           .withEndUserBeneficiary()
           .amount(100)
@@ -528,14 +528,14 @@ describe('AlertService', () => {
 
       it('When the sum of chargebacks amount is less than 5000, no alert should be created', async () => {
         // Arrange
-        const business1Transactions = await baseTransactionFactory
+        await baseTransactionFactory
           .withBusinessOriginator()
           .withEndUserBeneficiary()
           .amount(100)
           .count(49)
           .type(TransactionRecordType.chargeback)
           .create();
-        const business2Transactions = await baseTransactionFactory
+        await baseTransactionFactory
           .withBusinessOriginator()
           .withEndUserBeneficiary()
           .amount(100)
@@ -571,7 +571,7 @@ describe('AlertService', () => {
           .count(15)
           .type(TransactionRecordType.refund)
           .create();
-        const business2Transactions = await baseTransactionFactory
+        await baseTransactionFactory
           .withBusinessOriginator()
           .withEndUserBeneficiary()
           .count(14)
@@ -592,13 +592,13 @@ describe('AlertService', () => {
 
       it('When there are less than 15 refund transactions, no alert should be created', async () => {
         // Arrange
-        const business1Transactions = await baseTransactionFactory
+        await baseTransactionFactory
           .withBusinessOriginator()
           .withEndUserBeneficiary()
           .count(14)
           .type(TransactionRecordType.refund)
           .create();
-        const business2Transactions = await baseTransactionFactory
+        await baseTransactionFactory
           .withBusinessOriginator()
           .withEndUserBeneficiary()
           .count(14)

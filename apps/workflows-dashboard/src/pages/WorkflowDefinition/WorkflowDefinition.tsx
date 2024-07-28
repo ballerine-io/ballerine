@@ -5,9 +5,11 @@ import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 import { XstateVisualizer } from '@/components/organisms/XstateVisualizer';
 import { IWorkflow } from '@/domains/workflows/api/workflow';
 import { EditorCard } from '@/pages/WorkflowDefinition/components/EditorCard';
+import { UIDefinitionEditor } from '@/pages/WorkflowDefinition/components/UIDefinitionEditor';
 import { WorkflowDefinitionSummaryCard } from '@/pages/WorkflowDefinition/components/WorkflowDefinitionSummaryCard';
-import { useUIDefinitionByWorkflowDefinitionIdQuery } from '@/pages/WorkflowDefinition/hooks/useUIDefinitionByWorkflowDefinitionIdQuery';
+import { useUpgradeWorkflowDefinitionVersionMutation } from '@/pages/WorkflowDefinition/hooks/useUpgradeWorkflowDefinitionVersionMutation';
 import { useWorkflowDefinitionEdit } from '@/pages/WorkflowDefinition/hooks/useWorkflowDefinitionEdit';
+import { useWorkflowDefinitionExtensionsEdit } from '@/pages/WorkflowDefinition/hooks/useWorkflowDefinitionExtensionsEdit';
 import { ViewWorkflow } from '@/pages/Workflows/components/organisms/WorkflowsList/components/ViewWorkflow';
 import { isAxiosError } from 'axios';
 import { Link, useParams } from 'react-router-dom';
@@ -15,9 +17,11 @@ import { Link, useParams } from 'react-router-dom';
 export const WorkflowDefinition = () => {
   const id = useParams<{ id: string }>().id;
   const { data, isLoading, error } = useWorkflowDefinitionQuery(id);
-  const { data: uiDefinition, isLoading: isLoadingUIDefinition } =
-    useUIDefinitionByWorkflowDefinitionIdQuery(id!);
-  const { workflowDefinitionValue, handleSave } = useWorkflowDefinitionEdit(data);
+  const { workflowDefinitionValue, handleWorkflowDefinitionSave } = useWorkflowDefinitionEdit(data);
+  const { workflowDefinitionExtensions, handleWorkflowExtensionsSave } =
+    useWorkflowDefinitionExtensionsEdit(data);
+  const { mutate: upgradeWorkflowDefinitionVersion } =
+    useUpgradeWorkflowDefinitionVersionMutation();
 
   if (isLoading) {
     return (
@@ -53,8 +57,6 @@ export const WorkflowDefinition = () => {
 
   if (!data) return null;
 
-  console.log({ definition: data?.definition });
-
   return (
     <DashboardLayout pageName={`Workflow Definition - ${data?.displayName || data?.name}`}>
       <div className="flex flex-col gap-4">
@@ -86,19 +88,18 @@ export const WorkflowDefinition = () => {
               <EditorCard
                 title="Workflow Definition"
                 value={workflowDefinitionValue}
-                onSave={handleSave}
+                onSave={handleWorkflowDefinitionSave}
+                onUpgrade={() =>
+                  upgradeWorkflowDefinitionVersion({ workflowDefinitionId: data.id! })
+                }
               />
             </div>
           )}
-          <div className="w-1/2">
-            <EditorCard
-              title="UI Definition"
-              value={uiDefinition || {}}
-              onChange={value => {
-                console.log('changed value', value);
-              }}
-            />
-          </div>
+          {data.uiDefinitions.length ? (
+            <div className="w-1/2">
+              <UIDefinitionEditor uiDefinition={data.uiDefinitions[0]!} />
+            </div>
+          ) : null}
         </div>
         <div className="flex flex-row gap-2">
           <div className="w-1/2">
@@ -108,17 +109,21 @@ export const WorkflowDefinition = () => {
               onChange={value => {
                 console.log('changed value', value);
               }}
+              onUpgrade={() => upgradeWorkflowDefinitionVersion({ workflowDefinitionId: data.id! })}
             />
           </div>
-          <div className="w-1/2">
-            <EditorCard
-              title="Plugins"
-              value={data.extensions}
-              onChange={value => {
-                console.log('changed value', value);
-              }}
-            />
-          </div>
+          {workflowDefinitionExtensions && (
+            <div className="w-1/2">
+              <EditorCard
+                title="Plugins"
+                value={workflowDefinitionExtensions || {}}
+                onSave={handleWorkflowExtensionsSave}
+                onUpgrade={() =>
+                  upgradeWorkflowDefinitionVersion({ workflowDefinitionId: data.id! })
+                }
+              />
+            </div>
+          )}
         </div>
         <div className="flex flex-row gap-2">
           <div className="w-1/2">
@@ -128,6 +133,7 @@ export const WorkflowDefinition = () => {
               onChange={value => {
                 console.log('changed value', value);
               }}
+              onUpgrade={() => upgradeWorkflowDefinitionVersion({ workflowDefinitionId: data.id! })}
             />
           </div>
         </div>
