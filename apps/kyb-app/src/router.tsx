@@ -3,6 +3,9 @@ import { CollectionFlow } from '@/pages/CollectionFlow';
 import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { SignIn } from '@/pages/SignIn';
+import { ValidatorPOC } from '@/ValidatorPOC';
+import * as Sentry from '@sentry/react';
+import React from 'react';
 import {
   createBrowserRouter,
   createRoutesFromChildren,
@@ -10,8 +13,6 @@ import {
   useLocation,
   useNavigationType,
 } from 'react-router-dom';
-import * as Sentry from '@sentry/react';
-import React from 'react';
 
 export const sentyRouterInstrumentation = Sentry.reactRouterV6Instrumentation(
   React.useEffect,
@@ -39,5 +40,9 @@ export const router = sentryCreateBrowserRouter([
   {
     path: 'approved',
     Component: withTokenProtected(Approved),
+  },
+  {
+    path: 'poc',
+    Component: ValidatorPOC,
   },
 ]);
