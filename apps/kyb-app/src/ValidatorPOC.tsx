@@ -9,7 +9,7 @@ import { TextInput } from '@/poc/TextInput';
 const context = {
   items: [
     {
-      subItems: [{}, { subsubItems: [] }],
+      subItems: [{}, { subsubItems: [{}] }],
     },
     {},
   ],
