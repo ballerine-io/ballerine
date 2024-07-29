@@ -2,14 +2,24 @@ export type TValidatorErrorMessage = string;
 
 export type TRequiredValidationParams = boolean | [boolean, TValidatorErrorMessage];
 
-export type TValidationParams = TRequiredValidationParams;
+export type TMinLengthValidationParams = number | [number, TValidatorErrorMessage];
 
-export type TValidators = 'required';
+export type TValidationParams = TRequiredValidationParams | TMinLengthValidationParams;
 
-export interface UIElementV2<TFieldParams = any> {
+export type TValidators = 'required' | 'minLength';
+
+export interface IBaseFieldParams {}
+
+export interface UIElementV2<TFieldParams = IBaseFieldParams> {
   id: string;
   field: string;
-  type: 'ui' | 'input';
-  validation: Record<TValidators, TValidationParams>;
-  params: TFieldParams;
+  type: 'ui' | 'field' | 'field-list';
+  validation: Partial<Record<TValidators, TValidationParams>>;
+  params?: TFieldParams;
+  valueDestination: string;
+  children?: UIElementV2[];
+}
+
+export interface IBaseValueValidatorParams {
+  message: string;
 }
