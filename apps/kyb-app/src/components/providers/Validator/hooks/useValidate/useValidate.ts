@@ -62,6 +62,8 @@ export const useValidate = ({ elements, context }: IUseValidateParams) => {
 
           errors = [...errors, ...fieldValidationStrategy(uiElement, stack)];
 
+          if (!Array.isArray(value)) continue;
+
           value?.forEach((item, index) => {
             validateFn(element.children!, context, [...stack, index]);
           });
