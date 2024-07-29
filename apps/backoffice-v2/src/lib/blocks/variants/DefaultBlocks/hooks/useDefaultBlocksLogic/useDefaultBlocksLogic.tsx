@@ -50,6 +50,7 @@ import { useLocation } from 'react-router-dom';
 import { omitPropsFromObjectWhitelist } from '@/common/utils/omit-props-from-object-whitelist/omit-props-from-object-whitelist';
 import { useObjectEntriesBlock } from '@/lib/blocks/hooks/useObjectEntriesBlock/useObjectEntriesBlock';
 import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';
+import { associatedCompanyToWorkflowAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-to-workflow-adapter';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 
@@ -338,8 +339,16 @@ export const useDefaultBlocksLogic = () => {
     [mutateEvent],
   );
 
+  const associatedCompanies =
+    !kybChildWorkflows?.length &&
+    !workflow?.workflowDefinition?.config?.isAssociatedCompanyKybEnabled
+      ? workflow?.context?.entity?.data?.additionalInfo?.associatedCompanies?.map(
+          associatedCompanyToWorkflowAdapter,
+        )
+      : kybChildWorkflows;
+
   const associatedCompaniesBlock = useAssociatedCompaniesBlock({
-    workflows: kybChildWorkflows,
+    workflows: associatedCompanies,
     onClose,
     isLoadingOnClose: isLoadingEvent,
     dialog: {
@@ -385,7 +394,7 @@ export const useDefaultBlocksLogic = () => {
   });
 
   const associatedCompaniesInformationBlock = useAssociatedCompaniesInformationBlock(
-    kybChildWorkflows ?? [],
+    associatedCompanies ?? [],
   );
 
   const websiteMonitoringBlocks = useWebsiteMonitoringReportBlock();
