@@ -130,6 +130,7 @@ export class WorkflowRunner {
       this.#__extensions.commonPlugins ?? [],
       [this.#__extensions.apiPlugins, this.#__extensions.childWorkflowPlugins].flat(1),
       invokeRiskRulesAction,
+      invokeWorkflowTokenAction,
     );
 
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
@@ -230,6 +231,7 @@ export class WorkflowRunner {
       name: workflowTokenPlugin.name,
       stateNames: workflowTokenPlugin.stateNames,
       uiDefinitionId: workflowTokenPlugin.uiDefinitionId,
+      expireInMinutes: workflowTokenPlugin.expireInMinutes,
       errorAction: workflowTokenPlugin.errorAction,
       successAction: workflowTokenPlugin.successAction,
       action: callbackAction!,
@@ -263,7 +265,7 @@ export class WorkflowRunner {
     pluginSchemas: Array<
       | (ISerializableCommonPluginParams & { pluginKind: 'iterative' | 'transformer' })
       | (ISerializableRiskRulesPlugin & { pluginKind: 'riskRules' })
-      | (ISerializableWorkflowTokenPlugin & { pluginKind: 'workflowToken' })
+      | (ISerializableWorkflowTokenPlugin & { pluginKind: 'workflow-token' })
     >,
     actionPlugins: ActionablePlugins,
     invokeRiskRulesAction?: RiskRulePlugin['action'],
@@ -274,7 +276,7 @@ export class WorkflowRunner {
         return this.initiateRiskRulePlugin(pluginSchema, invokeRiskRulesAction);
       }
 
-      if (pluginSchema.pluginKind == 'workflowToken') {
+      if (pluginSchema.pluginKind == 'workflow-token') {
         return this.initiateWorkflowTokenPlugin(pluginSchema, invokeWorkflowTokenAction);
       }
 

@@ -3,7 +3,7 @@ import { WorkflowTokenPluginParams } from './types';
 import { logger } from '../../logger';
 
 export class WorkflowTokenPlugin {
-  public static pluginType = 'risk-rules';
+  public static pluginType = 'workflow-token';
   name: WorkflowTokenPluginParams['name'];
   uiDefinitionId: WorkflowTokenPluginParams['uiDefinitionId'];
   stateNames: WorkflowTokenPluginParams['stateNames'];
