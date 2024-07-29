@@ -14,7 +14,6 @@ export const Filters = withFilters<FiltersProps<FiltersPageFilterValues>, Filter
   ({ filters }) => {
     const { data, isLoading } = useFiltersQuery(filters);
     const { handlePageChange, page, total } = useFiltersPagePagination();
-    console.log({ page, total });
 
     return (
       <DashboardLayout pageName="Filters">

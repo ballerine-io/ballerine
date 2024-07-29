@@ -1,9 +1,9 @@
 import { ZodError } from 'zod';
 
-export class OperationNotFoundError extends Error {
-  constructor(operation: string) {
-    super(`Unknown operation ${operation}`);
-    this.name = OperationNotFoundError.name;
+export class OperatorNotFoundError extends Error {
+  constructor(operator: string) {
+    super(`Unknown operator ${operator}`);
+    this.name = OperatorNotFoundError.name;
   }
 }
 
@@ -14,35 +14,26 @@ export class DataValueNotFoundError extends Error {
   }
 }
 
-export class MissingKeyError extends Error {
-  constructor() {
-    super(`Rule is missing the key field`);
-    this.name = MissingKeyError.name;
-  }
-}
-
 export class ValidationFailedError extends Error {
-  errors:
-    | Array<{
-        message: string;
-        path: string;
-      }>
-    | undefined;
-
-  constructor(key: string, operation: string, error?: ZodError) {
-    super(`Validation failed for '${key}', message: ${operation}`);
-    this.name = 'ValidationFailedError';
-
-    this.errors = error?.errors.map(zodIssue => ({
+  errors: { message: string; path: string }[] | undefined;
+  constructor(key: string, message: string, error?: ZodError) {
+    const errors = error?.errors.map(zodIssue => ({
       message: zodIssue.message,
       path: zodIssue.path.join('.'),
     }));
+
+    super(
+      `Validation failed for '${key}', message: ${message}, ${
+        errors ? `error: ${JSON.stringify(error, null, 2)}` : '  '
+      }`,
+    );
+    this.name = 'ValidationFailedError';
+    this.errors = errors;
   }
 }
 
 export type EngineErrors =
-  | OperationNotFoundError
+  | OperatorNotFoundError
   | DataValueNotFoundError
-  | MissingKeyError
   | ValidationFailedError
   | Error;

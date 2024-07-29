@@ -13,6 +13,7 @@ export const Tab = {
   DIRECTORS: 'DIRECTORS',
   MONITORING_REPORTS: 'MONITORING_REPORTS',
   KYC: 'KYC',
+  CUSTOM_DATA: 'CUSTOM_DATA',
 } as const;
 
 export const getVariantTabs = (
@@ -60,6 +61,11 @@ export const getVariantTabs = (
         name: Tab.MONITORING_REPORTS,
         displayName: 'Monitoring Reports',
         disabled: !tabBlocks[Tab.MONITORING_REPORTS]?.length,
+      },
+      {
+        name: Tab.CUSTOM_DATA,
+        displayName: 'Custom Data',
+        disabled: !tabBlocks[Tab.CUSTOM_DATA]?.length,
       },
     ];
 

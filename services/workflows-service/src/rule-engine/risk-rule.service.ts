@@ -1,43 +1,9 @@
+import { isEmpty } from 'lodash';
 import { Injectable } from '@nestjs/common';
 import { NotionService } from '@/notion/notion.service';
 import z from 'zod';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { RuleSet, TOperation, TOperator } from '@ballerine/common';
-
-const OPERATIONS = [
-  'EQUALS',
-  'NOT_EQUALS',
-  'BETWEEN',
-  'GT',
-  'LT',
-  'GTE',
-  'LTE',
-  'LAST_YEAR',
-  'EXISTS',
-  'IN',
-  'NOT_IN',
-] as const satisfies readonly TOperation[];
-
-const OPERATORS = ['and', 'or'] as const satisfies readonly TOperator[];
-
-const RuleSchema = z.object({
-  key: z.string(),
-  operation: z.enum(OPERATIONS),
-  value: z.union([
-    z.string(),
-    z.number(),
-    z.boolean(),
-    z.array(z.string()),
-    z.object({}).passthrough(),
-  ]),
-});
-
-type Rule = z.infer<typeof RuleSchema>;
-
-const RuleSetSchema: z.ZodType<RuleSet> = z.object({
-  operator: z.enum(OPERATORS),
-  rules: z.lazy(() => z.array(z.union([RuleSetSchema, RuleSchema]))),
-});
+import { RuleSetSchema } from '@ballerine/common';
 
 const isJsonString = (value: string) => {
   try {
@@ -88,7 +54,12 @@ export class RiskRuleService {
     private readonly logger: AppLoggerService,
   ) {}
 
-  public async findAll({ databaseId, source }: TFindAllRulesOptions) {
+  public async findAll(
+    { databaseId, source }: TFindAllRulesOptions,
+    options: { shouldThrowOnValidation: boolean } = {
+      shouldThrowOnValidation: false,
+    },
+  ) {
     if (source === 'notion') {
       const records = await this.notionService.getAllDatabaseRecordsValues({
         databaseId,
@@ -97,14 +68,29 @@ export class RiskRuleService {
       const validatedRecords: Array<z.infer<typeof NotionRiskRuleRecordSchema>> = [];
 
       for (const record of records) {
+        if (isEmpty(record.ID)) {
+          continue;
+        }
+
         const validatedRecord = NotionRiskRuleRecordSchema.safeParse(record);
 
         if (!validatedRecord.success) {
-          this.logger.error('Notion risk rule record schema validation failed', {
-            databaseId,
-            record,
-            error: validatedRecord.error,
-          });
+          this.logger.error(
+            `Notion risk rule record schema validation failed\n Message: ${JSON.stringify(
+              validatedRecord.error.format(),
+              null,
+              2,
+            )}`,
+            {
+              databaseId,
+              record,
+              error: validatedRecord.error,
+            },
+          );
+
+          if (options.shouldThrowOnValidation) {
+            throw validatedRecord.error;
+          }
 
           continue;
         }

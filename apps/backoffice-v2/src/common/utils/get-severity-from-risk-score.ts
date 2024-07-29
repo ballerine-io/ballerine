@@ -1,6 +1,12 @@
 import { Severity, TSeverity } from '@/common/types';
 
-export const getSeverityFromRiskScore = (riskScore: number): TSeverity | undefined => {
+export const getSeverityFromRiskScore = (
+  riskScore: number | null | undefined,
+): TSeverity | undefined => {
+  if (!riskScore && riskScore !== 0) {
+    return;
+  }
+
   if (riskScore <= 39) {
     return Severity.LOW;
   }

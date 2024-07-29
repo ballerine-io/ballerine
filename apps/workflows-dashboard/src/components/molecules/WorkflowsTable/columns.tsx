@@ -1,6 +1,7 @@
 import { HealthIndicator } from '@/components/atoms/HealthIndicator';
 import { JSONViewButton } from '@/components/molecules/JSONViewButton';
 import { DataTableColumnHeader } from '@/components/molecules/WorkflowsTable/components/DataTableColumnHeader';
+import { StateUpdaterColumn } from '@/components/molecules/WorkflowsTable/components/StateUpdaterColumn';
 import { WorkflowTableColumnDef } from '@/components/molecules/WorkflowsTable/types';
 import { IWorkflow } from '@/domains/workflows/api/workflow';
 import { formatDate } from '@/utils/format-date';
@@ -31,7 +32,13 @@ export const defaultColumns: WorkflowTableColumnDef<IWorkflow>[] = [
   },
   {
     accessorKey: 'state',
-    cell: info => info.getValue<string>(),
+    cell: info => (
+      <StateUpdaterColumn
+        state={info.getValue<string>()}
+        workflow={info.row.original}
+        workflowDefinition={info.row.original.workflowDefinition}
+      />
+    ),
     header: ({ column }) => <DataTableColumnHeader column={column} title="State" />,
   },
   {

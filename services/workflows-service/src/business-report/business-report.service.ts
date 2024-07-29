@@ -98,4 +98,8 @@ export class BusinessReportService {
   async updateById(...args: Parameters<BusinessReportRepository['updateById']>) {
     return await this.businessReportRepository.updateById(...args);
   }
+
+  async count(args: Parameters<BusinessReportRepository['count']>[0], projectIds: TProjectIds) {
+    return await this.businessReportRepository.count(args, projectIds);
+  }
 }

@@ -28,4 +28,5 @@ export const PaginationLink = ({
     {children}
   </Link>
 );
+
 PaginationLink.displayName = 'PaginationLink';

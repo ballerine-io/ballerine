@@ -1,5 +1,5 @@
-import { Search } from '@/pages/TransactionMonitoringAlerts/components/Search';
-import { AlertsFilters } from 'src/pages/TransactionMonitoringAlerts/components/AlertsFilters';
+import { Search } from '@/common/components/molecules/Search';
+import { AlertsFilters } from '@/pages/TransactionMonitoringAlerts/components/AlertsFilters';
 import React, { ComponentProps, FunctionComponent, useCallback } from 'react';
 import { TUsers } from '@/domains/users/types';
 import { useSelect } from '@/common/hooks/useSelect/useSelect';

@@ -187,7 +187,6 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @UseCustomerAuthGuard()
   async updateById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowDefinitionUpdateInput,
@@ -372,8 +371,8 @@ export class WorkflowControllerExternal {
     @common.Body() data: WorkflowEventInput,
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
-  ): Promise<void> {
-    await this.service.event(
+  ): Promise<WorkflowRuntimeData> {
+    return await this.service.event(
       {
         ...data,
         id,
