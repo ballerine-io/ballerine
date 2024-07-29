@@ -8,7 +8,7 @@ export const BusinessInformationPluginSchema = Type.Optional(
     status: Type.Optional(Type.String()),
     message: Type.Optional(Type.String()),
     invokedAt: Type.Optional(Type.Number()),
-    jurisdictionCode: Type.Optional(Type.Number()),
+    jurisdictionCode: Type.Optional(Type.String()),
     data: Type.Optional(
       Type.Union([
         Type.Array(
