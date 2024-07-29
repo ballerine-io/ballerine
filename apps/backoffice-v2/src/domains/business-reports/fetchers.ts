@@ -68,7 +68,13 @@ export const BusinessReportSchema = z
     website: data?.report.data?.websiteCompanyAnalysis?.website.url || data?.business?.website,
   }));
 
-export const BusinessReportsSchema = z.array(BusinessReportSchema);
+export const BusinessReportsSchema = z.object({
+  businessReports: z.array(BusinessReportSchema),
+  meta: z.object({
+    totalItems: z.number().nonnegative(),
+    totalPages: z.number().nonnegative(),
+  }),
+});
 
 export type TBusinessReport = z.infer<typeof BusinessReportSchema>;
 
@@ -109,13 +115,13 @@ export const fetchBusinessReports = async ({
     { encode: false },
   );
 
-  const [filter, error] = await apiClient({
+  const [data, error] = await apiClient({
     endpoint: `business-reports/?${queryParams}`,
     method: Method.GET,
     schema: BusinessReportsSchema,
   });
 
-  return handleZodError(error, filter);
+  return handleZodError(error, data);
 };
 
 export const fetchBusinessReportById = async ({ id }: { id: string }) => {

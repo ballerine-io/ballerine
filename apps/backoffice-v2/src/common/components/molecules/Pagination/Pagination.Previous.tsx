@@ -28,4 +28,5 @@ export const PaginationPrevious: FunctionComponent<
     </span>
   </PaginationLink>
 );
+
 PaginationPrevious.displayName = 'PaginationPrevious';

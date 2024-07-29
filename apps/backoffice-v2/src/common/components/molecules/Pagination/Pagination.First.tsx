@@ -28,4 +28,5 @@ export const PaginationFirst: FunctionComponent<
     </span>
   </PaginationLink>
 );
+
 PaginationFirst.displayName = 'PaginationFirst';
