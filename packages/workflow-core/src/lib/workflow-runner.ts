@@ -39,8 +39,10 @@ import {
   ISerializableChildPluginParams,
   ISerializableCommonPluginParams,
   ISerializableRiskRulesPlugin,
+  ISerializableWorkflowTokenPlugin,
   IterativePluginParams,
   RiskRulesPluginParams,
+  WorkflowTokenPluginParams,
 } from './plugins/common-plugin/types';
 import {
   ArrayMergeOption,
@@ -62,6 +64,8 @@ import {
 } from './plugins/common-plugin/transformer-plugin';
 import { BUILT_IN_EVENT } from './index';
 import { logger } from './logger';
+import { hasPersistResponseDestination } from '@/lib/utils/has-persistence-response-destination';
+import { WorkflowTokenPlugin } from '@/lib/plugins/common-plugin/workflow-token-plugin';
 
 export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
@@ -96,6 +100,7 @@ export class WorkflowRunner {
       extensions,
       invokeRiskRulesAction,
       invokeChildWorkflowAction,
+      invokeWorkflowTokenAction,
     }: WorkflowRunnerArgs,
     debugMode = false,
   ) {
@@ -217,6 +222,20 @@ export class WorkflowRunner {
     });
   }
 
+  initiateWorkflowTokenPlugin(
+    workflowTokenPlugin: ISerializableWorkflowTokenPlugin,
+    callbackAction?: WorkflowTokenPluginParams['action'],
+  ) {
+    return new WorkflowTokenPlugin({
+      name: workflowTokenPlugin.name,
+      stateNames: workflowTokenPlugin.stateNames,
+      uiDefinitionId: workflowTokenPlugin.uiDefinitionId,
+      errorAction: workflowTokenPlugin.errorAction,
+      successAction: workflowTokenPlugin.successAction,
+      action: callbackAction!,
+    });
+  }
+
   initiateChildPlugin(
     childPluginSchemas: Array<ISerializableChildPluginParams>,
     parentWorkflowRuntimeId: string,
@@ -244,13 +263,19 @@ export class WorkflowRunner {
     pluginSchemas: Array<
       | (ISerializableCommonPluginParams & { pluginKind: 'iterative' | 'transformer' })
       | (ISerializableRiskRulesPlugin & { pluginKind: 'riskRules' })
+      | (ISerializableWorkflowTokenPlugin & { pluginKind: 'workflowToken' })
     >,
     actionPlugins: ActionablePlugins,
     invokeRiskRulesAction?: RiskRulePlugin['action'],
+    invokeWorkflowTokenAction?: WorkflowTokenPluginParams['action'],
   ) {
     return pluginSchemas.map(pluginSchema => {
       if (pluginSchema.pluginKind == 'riskRules') {
         return this.initiateRiskRulePlugin(pluginSchema, invokeRiskRulesAction);
+      }
+
+      if (pluginSchema.pluginKind == 'workflowToken') {
+        return this.initiateWorkflowTokenPlugin(pluginSchema, invokeWorkflowTokenAction);
       }
 
       const Plugin = this.pickCommonPluginClass(pluginSchema.pluginKind);
@@ -704,10 +729,20 @@ export class WorkflowRunner {
     }
 
     if (!!response) {
-      this.context.pluginsOutput = {
-        ...(this.context.pluginsOutput || {}),
-        ...{ [commonPlugin.name]: response },
-      };
+      if (hasPersistResponseDestination(commonPlugin)) {
+        if (response) {
+          this.context = this.mergeToContext(
+            this.context,
+            response,
+            commonPlugin.persistResponseDestination,
+          );
+        }
+      } else {
+        this.context.pluginsOutput = {
+          ...(this.context.pluginsOutput || {}),
+          ...{ [commonPlugin.name]: response },
+        };
+      }
     }
 
     if (callbackAction) {

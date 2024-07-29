@@ -28,12 +28,14 @@ export class UiDefinitionService {
     uiContext: keyof typeof UiDefinitionContext,
     projectIds: TProjectIds,
     args: Omit<Prisma.UiDefinitionFindFirstOrThrowArgs, 'where'>,
+    uiDefinitionId?: string | null,
   ) {
     return await this.repository.findByWorkflowDefinitionId(
       workflowDefinitionId,
       uiContext,
       args,
       projectIds,
+      uiDefinitionId,
     );
   }
 
@@ -50,6 +52,7 @@ export class UiDefinitionService {
       uiContext,
       projectIds,
       args,
+      runtime.uiDefinitionId,
     );
   }
 

@@ -290,6 +290,40 @@ export class WorkflowRuntimeDataRepository {
     );
   }
 
+  async findMainBusinessWorkflowRepresentative({
+    workflowRuntimeId,
+    projectIds,
+  }: {
+    workflowRuntimeId: string;
+    projectIds: TProjectIds;
+  }) {
+    const workflowSelectEndUserRepresentative = (await this.findById(
+      workflowRuntimeId,
+      {
+        select: {
+          business: {
+            select: {
+              endUsersOnBusinesses: {
+                select: {
+                  endUserId: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      projectIds,
+    )) as unknown as {
+      business: {
+        endUsersOnBusinesses: Array<{
+          endUserId: string;
+        }>;
+      };
+    };
+
+    return workflowSelectEndUserRepresentative.business?.endUsersOnBusinesses?.[0]?.endUserId;
+  }
+
   async search(
     {
       query: { search, take, skip, entityType, workflowDefinitionIds, statuses, orderBy },
