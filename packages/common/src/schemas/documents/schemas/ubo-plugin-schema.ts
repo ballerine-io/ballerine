@@ -48,7 +48,7 @@ const UboSchema = Type.Object({
 
 export const UboPluginSchema = Type.Optional(
   Type.Object({
-    name: Type.String(),
+    name: Type.Optional(Type.String()),
     code: Type.Optional(Type.Number()),
     reason: Type.Optional(Type.String()),
     status: Type.Optional(Type.String()),
