@@ -24,6 +24,7 @@ export class SecretsManagerFactory {
 
         return new AwsSecretsManager({
           customerId,
+          environmentName: env.ENVIRONMENT_NAME,
           prefix: env.AWS_SECRETS_MANAGER_PREFIX,
           awsRegion: env.AWS_SECRETS_MANAGER_REGION,
           awsAccessKeyId: env.AWS_SECRETS_MANAGER_ACCESS_KEY_ID,

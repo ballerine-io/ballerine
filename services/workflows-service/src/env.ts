@@ -85,7 +85,7 @@ export const serverEnvSchema = {
   AWS_SECRETS_MANAGER_PREFIX: z
     .string()
     .optional()
-    .default('/dev/customers')
+    .default('customers')
     .describe('AWS Secrets Manager prefix'),
   AWS_SECRETS_MANAGER_REGION: z.string().optional().describe('AWS Secrets Manager region'),
   AWS_SECRETS_MANAGER_ACCESS_KEY_ID: z
