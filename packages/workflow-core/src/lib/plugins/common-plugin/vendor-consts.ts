@@ -11,6 +11,7 @@ export const BALLERINE_API_PLUGINS = {
   'company-sanctions': 'company-sanctions',
   ubo: 'ubo',
   kyb: 'kyb',
+  resubmission_email: 'resubmission_email',
 } as const satisfies Record<string, string>;
 
 export type ApiBallerinePlugins =
@@ -23,7 +24,7 @@ export type SancsionsScreeningVendors =
 
 export type ApiBallerinePlugin = {
   url: string;
-  displayName: string;
+  displayName?: string;
   method: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE';
   headers: HeadersInit;
   persistResponseDestination?: string;
@@ -65,7 +66,8 @@ type KybOptions = {
   pluginKind: 'kyb';
 };
 
-type ApiPluginOptions = DowJonesOptions &
+type ApiPluginOptions = ApiPluginOptionsBase &
+  DowJonesOptions &
   ComplyAdvantageOptions &
   AsiaVerifyOptions &
   CompanySanctionsOptions &
@@ -274,6 +276,44 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
           transformer: 'helper',
         },
       ],
+    },
+  }),
+  [BALLERINE_API_PLUGINS['resubmission_email']]: _ => ({
+    name: 'resubmission_email',
+    pluginKind: 'resubmission_email',
+    url: `{secret.EMAIL_API_URL}`,
+    method: 'POST',
+    successAction: 'EMAIL_SENT',
+    errorAction: 'EMAIL_FAILURE',
+    stateNames: ['pending_resubmission'],
+    headers: {
+      Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
+      'Content-Type': 'application/json',
+    },
+    request: {
+      transform: [
+        {
+          transformer: 'jmespath',
+          // #TODO: create new token (new using old one)
+          mapping: `{
+            kybCompanyName: entity.data.companyName,
+            customerCompanyName: metadata.customerName,
+            firstName: entity.data.additionalInfo.mainRepresentative.firstName,
+            resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
+            supportEmail: join('',['support@',metadata.customerName,'.com']),
+            from: 'no-reply@ballerine.com',
+            name: join(' ',[metadata.customerName,'Team']),
+            receivers: [entity.data.additionalInfo.mainRepresentative.email],
+            templateId: 'd-7305991b3e5840f9a14feec767ea7301',
+            revisionReason: documents[].decision[].revisionReason | [0],
+            language: workflowRuntimeConfig.language,
+            adapter: '{secret.MAIL_ADAPTER}'
+          }`, // TODO: figure out about adapter from env or secrets
+        },
+      ],
+    },
+    response: {
+      transform: [],
     },
   }),
 } as const satisfies Record<
