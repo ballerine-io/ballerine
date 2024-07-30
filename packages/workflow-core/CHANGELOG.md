@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.6.27
+
+### Patch Changes
+
+- Support secrets manager
+
 ## 0.6.26
 
 ### Patch Changes
