@@ -170,15 +170,6 @@ export class HookCallbackHandlerService {
       );
     }
 
-    if (processName === 'ubo-unified-api') {
-      return setPluginStatus({
-        data,
-        resultDestinationPath,
-        status: data.reason ? ProcessStatus.CANCELED : ProcessStatus.SUCCESS,
-        context: workflowRuntime.context,
-      });
-    }
-
     return setPluginStatus({
       data,
       resultDestinationPath,
