@@ -29,6 +29,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
 
+  
 jobs:
   call_release:
     uses: ./.github/workflows/release.yml
