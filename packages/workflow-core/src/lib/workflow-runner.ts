@@ -57,6 +57,7 @@ import { search } from 'jmespath';
 import { KybPlugin } from './plugins/external-plugin/kyb-plugin';
 import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
 import { EmailPlugin } from './plugins/external-plugin/email-plugin';
+import { WorkflowTokenPlugin } from './plugins/common-plugin/workflow-token-plugin';
 import { RiskRulePlugin } from './plugins/common-plugin/risk-rules-plugin';
 import {
   TransformerPlugin,
@@ -64,8 +65,7 @@ import {
 } from './plugins/common-plugin/transformer-plugin';
 import { BUILT_IN_EVENT } from './index';
 import { logger } from './logger';
-import { hasPersistResponseDestination } from '@/lib/utils/has-persistence-response-destination';
-import { WorkflowTokenPlugin } from '@/lib/plugins/common-plugin/workflow-token-plugin';
+import { hasPersistResponseDestination } from './utils/has-persistence-response-destination';
 
 export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
