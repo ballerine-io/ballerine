@@ -60,6 +60,7 @@ export const ConfigSchema = z
     reportConfig: z.record(z.string(), z.unknown()).optional(),
     theme: WorkflowDefinitionConfigThemeSchema.optional(),
     hasUboOngoingMonitoring: z.boolean().optional(),
+    maxBusinessReports: z.number().nonnegative().optional(),
   })
   .strict()
   .optional();
