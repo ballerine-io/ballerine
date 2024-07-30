@@ -32,6 +32,7 @@ import { BusinessService } from './business.service';
 import { BusinessReportModule } from '@/business-report/business-report.module';
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
 import { SentryService } from '@/sentry/sentry.service';
+// eslint-disable-next-line import/no-cycle
 import { WorkflowModule } from '@/workflow/workflow.module';
 
 @Module({
