@@ -11,7 +11,9 @@ export const BALLERINE_API_PLUGINS = {
   'company-sanctions': 'company-sanctions',
   ubo: 'ubo',
   kyb: 'kyb',
-  resubmission_email: 'resubmission_email',
+  'resubmission-email': 'resubmission-email',
+  'session-email': 'session-email',
+  'invitation-email': 'invitation-email',
 } as const satisfies Record<string, string>;
 
 export type ApiBallerinePlugins =
@@ -278,9 +280,9 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
       ],
     },
   }),
-  [BALLERINE_API_PLUGINS['resubmission_email']]: _ => ({
-    name: 'resubmission_email',
-    pluginKind: 'resubmission_email',
+  [BALLERINE_API_PLUGINS['resubmission-email']]: _ => ({
+    name: 'resubmission-email',
+    pluginKind: 'resubmission-email',
     url: `{secret.EMAIL_API_URL}`,
     method: 'POST',
     successAction: 'EMAIL_SENT',
@@ -309,6 +311,70 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             language: workflowRuntimeConfig.language,
             adapter: '{secret.MAIL_ADAPTER}'
           }`, // TODO: figure out about adapter from env or secrets
+        },
+      ],
+    },
+    response: {
+      transform: [],
+    },
+  }),
+  [BALLERINE_API_PLUGINS['session-email']]: _ => ({
+    name: 'session-email',
+    pluginKind: 'session-email',
+    url: `{secret.EMAIL_API_URL}`,
+    method: 'POST',
+    headers: {
+      Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
+      'Content-Type': 'application/json',
+    },
+    request: {
+      transform: [
+        {
+          transformer: 'jmespath',
+          mapping: `{
+        kybCompanyName: entity.data.additionalInfo.companyName,
+        customerCompanyName: entity.data.additionalInfo.customerCompany,
+        firstName: entity.data.firstName,
+        kycLink: pluginsOutput.kyc_session.kyc_session_1.result.metadata.url,
+        from: 'no-reply@ballerine.com',
+        name: join(' ',[entity.data.additionalInfo.customerCompany,'Team']),
+        receivers: [entity.data.email],
+        subject: '{customerCompanyName} activation, Action needed.',
+        templateId: (documents[].decision[].revisionReason | [0])!=null && 'd-2c6ae291d9df4f4a8770d6a4e272d803' || 'd-61c568cfa5b145b5916ff89790fe2065',
+        revisionReason: documents[].decision[].revisionReason | [0],
+        supportEmail: join('',['support@',entity.data.additionalInfo.customerCompany,'.com']),
+        adapter: '{secret.MAIL_ADAPTER}'
+        }`, // jmespath
+        },
+      ],
+    },
+    response: {
+      transform: [],
+    },
+  }),
+
+  [BALLERINE_API_PLUGINS['invitation-email']]: _ => ({
+    name: 'invitation-email',
+    pluginKind: 'invitation-email',
+    url: `{secret.EMAIL_API_URL}`,
+    method: 'POST',
+    headers: {
+      Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
+      'Content-Type': 'application/json',
+    },
+    request: {
+      transform: [
+        {
+          transformer: 'jmespath',
+          mapping: `{
+          templateId: 'd-00a0d5d14cb14fbb9034b53c6ef7e5fa',
+          adapter: '{secret.MAIL_ADAPTER}'
+          from: 'no-reply@ballerine.com',
+          receivers: [mainRepresentative.email],
+          name: mainRepresentative.fullName,
+          provider: customerName,
+          url: join('',['{secret.KYB_EXAMPLE_CORS_ORIGIN[0]}?token=',token])
+          }`, // jmespath
         },
       ],
     },
