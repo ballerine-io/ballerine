@@ -1,5 +1,9 @@
 import { UIElementV2 } from '@/components/providers/Validator/types';
 import {
+  IMaxLengthValueValidatorParams,
+  MaxLengthValueValidator,
+} from '@/components/providers/Validator/value-validators/max-length.value.validator';
+import {
   IMinLengthValueValidatorParams,
   MinLengthValueValidator,
 } from '@/components/providers/Validator/value-validators/min-length.value.validator';
@@ -61,6 +65,8 @@ export class UIElement {
         return this.getMinLengthParams();
       case 'required':
         return this.getRequiredParams();
+      case 'maxLength':
+        return this.getMaxLengthParams();
       default:
         throw new Error('Invalid key');
     }
@@ -82,6 +88,30 @@ export class UIElement {
       const params: IMinLengthValueValidatorParams = {
         minLength,
         message: `Minimum length is ${minLength}.`,
+      };
+
+      return params;
+    }
+
+    throw new Error('Invalid params');
+  }
+
+  private getMaxLengthParams(): IMaxLengthValueValidatorParams {
+    const _params = this.element.validation.maxLength;
+
+    if (MaxLengthValueValidator.isMaxLengthParams(_params)) {
+      if (Array.isArray(_params)) {
+        return {
+          maxLength: _params[0],
+          message: _params[1],
+        };
+      }
+
+      const maxLength = _params;
+
+      const params: IMaxLengthValueValidatorParams = {
+        maxLength,
+        message: `Maximum length is ${maxLength}.`,
       };
 
       return params;

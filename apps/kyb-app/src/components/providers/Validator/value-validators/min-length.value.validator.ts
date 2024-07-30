@@ -8,12 +8,22 @@ export interface IMinLengthValueValidatorParams extends IBaseValueValidatorParam
 export class MinLengthValueValidator extends ValueValidator<IMinLengthValueValidatorParams> {
   validate<TValue extends { length?: number }>(value: TValue): void {
     if (value?.length === undefined || value.length < this.params.minLength) {
-      throw new Error(this.params.message);
+      throw new Error(this.getErrorMessage());
     }
   }
 
+  private getErrorMessage() {
+    if (!this.params.message)
+      return `Minimum length is {minLength}.`.replace(
+        '{minLength}',
+        this.params.minLength.toString(),
+      );
+
+    return this.params.message.replace('{minLength}', this.params.minLength.toString());
+  }
+
   static isMinLengthParams = (params: unknown): params is TMinLengthValidationParams => {
-    if (typeof params === 'boolean') return true;
+    if (typeof params === 'number') return true;
 
     //@ts-ignore
     if (
