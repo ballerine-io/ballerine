@@ -60,14 +60,7 @@ export class BusinessReportControllerInternal {
     const maxBusinessReports = customer.config?.maxBusinessReports;
 
     if (isNumber(maxBusinessReports) && maxBusinessReports > 0) {
-      const businessReportsCount = await this.businessReportService.count(
-        {
-          where: {
-            businessId: businessCorrelationId,
-          },
-        },
-        [currentProjectId],
-      );
+      const businessReportsCount = await this.businessReportService.count({}, [currentProjectId]);
 
       if (businessReportsCount >= maxBusinessReports) {
         throw new BadRequestException(
