@@ -105,11 +105,10 @@ const BASE_SANCSIONS_SCREENING_OPTIONS = {
 
 const getKycEntityMapping = (takeEntityDetailFromKyc: boolean) => {
   return takeEntityDetailFromKyc
-    ? `
-    firstName: entity.data.additionalInfo.ubos[0].firstName,
-    lastName: entity.data.additionalInfo.ubos[0].lastName,`
-    : `firstName: pluginsOutput.kyc_session.kyc_session_1.result.entity.data.firstName,
-    lastName: pluginsOutput.kyc_session.kyc_session_1.result.entity.data.lastName,`;
+    ? `firstName: pluginsOutput.kyc_session.kyc_session_1.result.entity.data.firstName,
+     lastName: pluginsOutput.kyc_session.kyc_session_1.result.entity.data.lastName,`
+    : `firstName: entity.data.additionalInfo.ubos[0].firstName,
+    lastName: entity.data.additionalInfo.ubos[0].lastName,`;
 };
 
 export const BALLERINE_API_PLUGIN_FACTORY = {
@@ -367,13 +366,13 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
         {
           transformer: 'jmespath',
           mapping: `{
-          templateId: 'd-00a0d5d14cb14fbb9034b53c6ef7e5fa',
-          adapter: '{secret.MAIL_ADAPTER}'
-          from: 'no-reply@ballerine.com',
-          receivers: [mainRepresentative.email],
-          name: mainRepresentative.fullName,
-          provider: customerName,
-          url: join('',['{secret.KYB_EXAMPLE_CORS_ORIGIN[0]}?token=',token])
+              templateId: 'd-00a0d5d14cb14fbb9034b53c6ef7e5fa',
+              adapter: '{secret.MAIL_ADAPTER}'
+              from: 'no-reply@ballerine.com',
+              receivers: [mainRepresentative.email],
+              name: mainRepresentative.fullName,
+              provider: customerName,
+              url: join('',['{secret.KYB_EXAMPLE_CORS_ORIGIN[0]}?token=',token])
           }`, // jmespath
         },
       ],
