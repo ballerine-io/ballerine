@@ -34,16 +34,12 @@ export class AwsSecretsManager implements SecretsManager {
     environmentName,
     prefix,
     customerId,
-    awsRegion,
   }: {
     environmentName: string;
     prefix: string;
     customerId: string;
-    awsRegion: string;
   }) {
-    this.client = new SecretsManagerClient({
-      region: awsRegion,
-    });
+    this.client = new SecretsManagerClient();
     this.environmentName = environmentName;
     this.prefix = prefix;
     this.customerId = customerId;

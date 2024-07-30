@@ -10,15 +10,10 @@ export class SecretsManagerFactory {
   create({ provider, customerId }: { provider: SecretsManagerProvider; customerId: string }) {
     switch (provider) {
       case 'aws-secrets-manager':
-        if (!env.AWS_SECRETS_MANAGER_REGION) {
-          throw new Error('AWS_SECRETS_MANAGER_REGION is not set');
-        }
-
         return new AwsSecretsManager({
           customerId,
           environmentName: env.ENVIRONMENT_NAME,
           prefix: env.AWS_SECRETS_MANAGER_PREFIX,
-          awsRegion: env.AWS_SECRETS_MANAGER_REGION,
         });
       case 'in-memory':
         return new InMemorySecretsManager({ customerId });

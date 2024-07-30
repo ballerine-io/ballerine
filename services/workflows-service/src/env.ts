@@ -80,14 +80,11 @@ export const serverEnvSchema = {
     .enum(['aws-secrets-manager', 'in-memory'])
     .default('aws-secrets-manager')
     .describe('Secrets Manager provider'),
-
-  // AWS Secrets Manager
   AWS_SECRETS_MANAGER_PREFIX: z
     .string()
     .optional()
     .default('customers')
     .describe('AWS Secrets Manager prefix'),
-  AWS_SECRETS_MANAGER_REGION: z.string().optional().describe('AWS Secrets Manager region'),
 };
 
 if (!process.env['ENVIRONMENT_NAME'] || process.env['ENVIRONMENT_NAME'] === 'local') {
