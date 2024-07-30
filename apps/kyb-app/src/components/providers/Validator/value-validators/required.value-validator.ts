@@ -1,16 +1,24 @@
-import { TRequiredValidationParams } from '@/components/providers/Validator/types';
+import {
+  IBaseValueValidatorParams,
+  TRequiredValidationParams,
+} from '@/components/providers/Validator/types';
 import { ValueValidator } from '@/components/providers/Validator/value-validators/value-validator.abstract';
 
-export interface IRequiredValueValidatorParams {
-  message: string;
+export interface IRequiredValueValidatorParams extends IBaseValueValidatorParams {
   required: boolean;
 }
 
 export class RequiredValueValidator extends ValueValidator<IRequiredValueValidatorParams> {
   validate(value: unknown) {
     if (value === undefined || value === null || value === '') {
-      throw new Error(this.params.message);
+      throw new Error(this.getErrorMessage());
     }
+  }
+
+  private getErrorMessage() {
+    if (!this.params.message) return `Value is required.`;
+
+    return this.params.message;
   }
 
   static isRequiredParams = (params: unknown): params is TRequiredValidationParams => {

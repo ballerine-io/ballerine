@@ -4,9 +4,14 @@ export type TRequiredValidationParams = boolean | [boolean, TValidatorErrorMessa
 
 export type TMinLengthValidationParams = number | [number, TValidatorErrorMessage];
 
-export type TValidationParams = TRequiredValidationParams | TMinLengthValidationParams;
+export type TMaxLengthValidationParams = number | [number, TValidatorErrorMessage];
 
-export type TValidators = 'required' | 'minLength';
+export type TValidationParams =
+  | TRequiredValidationParams
+  | TMinLengthValidationParams
+  | TMaxLengthValidationParams;
+
+export type TValidators = 'required' | 'minLength' | 'maxLength';
 
 export interface IBaseFieldParams {}
 
@@ -21,5 +26,5 @@ export interface UIElementV2<TFieldParams = IBaseFieldParams> {
 }
 
 export interface IBaseValueValidatorParams {
-  message: string;
+  message?: string;
 }
