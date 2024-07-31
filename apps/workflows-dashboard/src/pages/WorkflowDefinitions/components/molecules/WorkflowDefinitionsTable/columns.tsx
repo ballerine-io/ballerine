@@ -1,5 +1,6 @@
 import { JSONViewButton } from '@/components/molecules/JSONViewButton';
 import { IWorkflowDefinition } from '@/domains/workflow-definitions';
+import { CloneWorkflowDefinitionButton } from '@/pages/WorkflowDefinitions/components/molecules/WorkflowDefinitionsTable/components/CloneWorkflowDefinitionButton';
 import { valueOrNA } from '@/utils/value-or-na';
 import { createColumnHelper } from '@tanstack/react-table';
 import { ArrowRightCircleIcon, Eye, Pencil } from 'lucide-react';
@@ -73,6 +74,10 @@ export const workflowDefinitionsTableColumns = [
   columnHelper.accessor('version', {
     cell: info => info.getValue<number>(),
     header: () => 'Version',
+  }),
+  columnHelper.accessor('id', {
+    cell: info => <CloneWorkflowDefinitionButton workflowDefinitionId={info.getValue()} />,
+    header: () => '',
   }),
   columnHelper.accessor('id', {
     cell: info => (
