@@ -2,7 +2,8 @@ import { JSONViewButton } from '@/components/molecules/JSONViewButton';
 import { IUIDefinition } from '@/domains/ui-definitions';
 import { formatDate } from '@/utils/format-date';
 import { createColumnHelper } from '@tanstack/react-table';
-import { Eye } from 'lucide-react';
+import { ArrowRightCircleIcon, Eye } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const columnHelper = createColumnHelper<IUIDefinition>();
 
@@ -60,5 +61,13 @@ export const uiDefinitionTableColumnns = [
   columnHelper.accessor('createdAt', {
     cell: info => formatDate(info.getValue<Date>()),
     header: () => 'Created At',
+  }),
+  columnHelper.accessor('id', {
+    cell: info => (
+      <Link to={`/ui-definitions/${info.row.original.id}`}>
+        <ArrowRightCircleIcon />
+      </Link>
+    ),
+    header: () => '',
   }),
 ];
