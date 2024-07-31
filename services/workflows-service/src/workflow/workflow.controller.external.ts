@@ -29,7 +29,7 @@ import { plainToClass } from 'class-transformer';
 import type { Response } from 'express';
 import * as errors from '../errors';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
-import { WorkflowEventInput, WorkflowEventInputSchema } from './dtos/workflow-event-input';
+import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { WorkflowRunDto } from './dtos/workflow-run';
 import {
   WorkflowDefinitionWhereUniqueInput,
@@ -39,7 +39,7 @@ import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
 import { Validate } from 'ballerine-nestjs-typebox';
-import { type TWorkflowExtension, WorkflowExtensionSchema } from './schemas/extensions.schemas';
+import { WorkflowExtensionSchema } from './schemas/extensions.schemas';
 import { type Static, Type } from '@sinclair/typebox';
 
 export const WORKFLOW_TAG = 'Workflows';

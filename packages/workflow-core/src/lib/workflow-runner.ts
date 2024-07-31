@@ -40,8 +40,10 @@ import {
   ISerializableChildPluginParams,
   ISerializableCommonPluginParams,
   ISerializableRiskRulesPlugin,
+  ISerializableWorkflowTokenPlugin,
   IterativePluginParams,
   RiskRulesPluginParams,
+  WorkflowTokenPluginParams,
 } from './plugins/common-plugin/types';
 import {
   ArrayMergeOption,
@@ -59,6 +61,7 @@ import { search } from 'jmespath';
 import { KybPlugin } from './plugins/external-plugin/kyb-plugin';
 import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
 import { EmailPlugin } from './plugins/external-plugin/email-plugin';
+import { WorkflowTokenPlugin } from './plugins/common-plugin/workflow-token-plugin';
 import { RiskRulePlugin } from './plugins/common-plugin/risk-rules-plugin';
 import { BallerineApiPlugin } from './plugins/common-plugin/ballerine-plugin';
 import { BALLERINE_API_PLUGINS_KINDS } from './plugins/common-plugin/vendor-consts';
@@ -68,6 +71,7 @@ import {
 } from './plugins/common-plugin/transformer-plugin';
 import { BUILT_IN_EVENT } from './index';
 import { logger } from './logger';
+import { hasPersistResponseDestination } from './utils/has-persistence-response-destination';
 
 export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
@@ -102,6 +106,7 @@ export class WorkflowRunner {
       extensions,
       invokeRiskRulesAction,
       invokeChildWorkflowAction,
+      invokeWorkflowTokenAction,
     }: WorkflowRunnerArgs,
     debugMode = false,
   ) {
@@ -130,6 +135,7 @@ export class WorkflowRunner {
       this.#__extensions.commonPlugins ?? [],
       [this.#__extensions.apiPlugins, this.#__extensions.childWorkflowPlugins].flat(1),
       invokeRiskRulesAction,
+      invokeWorkflowTokenAction,
     );
 
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
@@ -254,6 +260,21 @@ export class WorkflowRunner {
     });
   }
 
+  initiateWorkflowTokenPlugin(
+    workflowTokenPlugin: ISerializableWorkflowTokenPlugin,
+    callbackAction?: WorkflowTokenPluginParams['action'],
+  ) {
+    return new WorkflowTokenPlugin({
+      name: workflowTokenPlugin.name,
+      stateNames: workflowTokenPlugin.stateNames,
+      uiDefinitionId: workflowTokenPlugin.uiDefinitionId,
+      expireInMinutes: workflowTokenPlugin.expireInMinutes,
+      errorAction: workflowTokenPlugin.errorAction,
+      successAction: workflowTokenPlugin.successAction,
+      action: callbackAction!,
+    });
+  }
+
   initiateChildPlugin(
     childPluginSchemas: Array<ISerializableChildPluginParams>,
     parentWorkflowRuntimeId: string,
@@ -281,13 +302,19 @@ export class WorkflowRunner {
     pluginSchemas: Array<
       | (ISerializableCommonPluginParams & { pluginKind: 'iterative' | 'transformer' })
       | (ISerializableRiskRulesPlugin & { pluginKind: 'riskRules' })
+      | (ISerializableWorkflowTokenPlugin & { pluginKind: 'attach-ui-definition' })
     >,
     actionPlugins: ActionablePlugins,
     invokeRiskRulesAction?: RiskRulePlugin['action'],
+    invokeWorkflowTokenAction?: WorkflowTokenPluginParams['action'],
   ) {
     return pluginSchemas.map(pluginSchema => {
       if (pluginSchema.pluginKind == 'riskRules') {
         return this.initiateRiskRulePlugin(pluginSchema, invokeRiskRulesAction);
+      }
+
+      if (pluginSchema.pluginKind == 'attach-ui-definition') {
+        return this.initiateWorkflowTokenPlugin(pluginSchema, invokeWorkflowTokenAction);
       }
 
       const Plugin = this.pickCommonPluginClass(pluginSchema.pluginKind);
@@ -742,10 +769,20 @@ export class WorkflowRunner {
     }
 
     if (!!response) {
-      this.context.pluginsOutput = {
-        ...(this.context.pluginsOutput || {}),
-        ...{ [commonPlugin.name]: response },
-      };
+      if (hasPersistResponseDestination(commonPlugin)) {
+        if (response) {
+          this.context = this.mergeToContext(
+            this.context,
+            response,
+            commonPlugin.persistResponseDestination,
+          );
+        }
+      } else {
+        this.context.pluginsOutput = {
+          ...(this.context.pluginsOutput || {}),
+          ...{ [commonPlugin.name]: response },
+        };
+      }
     }
 
     if (callbackAction) {

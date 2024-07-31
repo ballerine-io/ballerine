@@ -64,6 +64,7 @@ import {
   SerializableTransformer,
   THelperFormatingLogic,
   Transformer,
+  TWorkflowTokenPluginCallback,
 } from '@ballerine/workflow-core';
 import {
   BadRequestException,
@@ -1999,6 +2000,83 @@ export class WorkflowService {
             currentProjectId,
             transaction,
           );
+        },
+        invokeWorkflowTokenAction: async (workflowTokenAction: TWorkflowTokenPluginCallback) => {
+          const workflowRuntimeId = workflowTokenAction.workflowRuntimeId;
+          const defaultDaysExpiry = 30;
+
+          const expiresAt = workflowTokenAction.expiresInMinutes
+            ? new Date(Date.now() + workflowTokenAction.expiresInMinutes * 60 * 1000)
+            : new Date(Date.now() + defaultDaysExpiry * 24 * 60 * 60 * 1000);
+
+          const customer = await this.customerService.getByProjectId(currentProjectId);
+
+          const representativeEndUserId =
+            await this.workflowRuntimeDataRepository.findMainBusinessWorkflowRepresentative(
+              {
+                workflowRuntimeId: workflowRuntimeId,
+                transaction: transaction,
+              },
+              [currentProjectId],
+            );
+
+          const uiDefinition = await this.uiDefinitionService.findByArgs(
+            {
+              where: {
+                OR: [
+                  {
+                    id: workflowTokenAction.uiDefinitionId,
+                  },
+                  {
+                    projectId: currentProjectId,
+                    name: workflowTokenAction.uiDefinitionId,
+                  },
+                ],
+              },
+            },
+            [currentProjectId],
+          );
+
+          if (!representativeEndUserId) {
+            throw new InternalServerErrorException({
+              descriptionOrOptions:
+                "Couldn't find main representative for business, Make sure you set the plugin on the correct definition!",
+            });
+          }
+
+          if (!uiDefinition.id) {
+            throw new InternalServerErrorException({
+              descriptionOrOptions:
+                "Couldn't find uiDefinitionId for token action, Make sure you set the plugin Properly",
+            });
+          }
+
+          const { id, token } = await this.workflowTokenService.create(
+            currentProjectId,
+            {
+              workflowRuntimeDataId: workflowRuntimeId,
+              expiresAt,
+              endUserId: representativeEndUserId,
+            },
+            transaction,
+          );
+
+          await this.workflowRuntimeDataRepository.updateById(
+            workflowRuntimeId,
+            {
+              data: {
+                uiDefinitionId: uiDefinition.id,
+              },
+            },
+            transaction,
+          );
+
+          return {
+            token: token,
+            customerName: customer.displayName,
+            collectionFlowUrl: env.COLLECTION_FLOW_URL!,
+            customerNormalizedName: customer.name,
+          };
         },
       });
 
