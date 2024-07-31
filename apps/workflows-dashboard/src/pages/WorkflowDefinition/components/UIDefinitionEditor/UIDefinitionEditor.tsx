@@ -7,7 +7,7 @@ import { EditorCard } from '@/pages/WorkflowDefinition/components/EditorCard';
 import { useUIDefinitionEditorTabs } from '@/pages/WorkflowDefinition/components/UIDefinitionEditor/hooks/useUIDefinitionEditorTabs';
 import { useUIDefinitionElementUpdate } from '@/pages/WorkflowDefinition/components/UIDefinitionEditor/hooks/useUIDefinitionElementUpdate';
 import { useUpgradeWorkflowDefinitionVersionMutation } from '@/pages/WorkflowDefinition/hooks/useUpgradeWorkflowDefinitionVersionMutation';
-import { FunctionComponent, useMemo } from 'react';
+import { FunctionComponent } from 'react';
 
 interface UIDefinitionEditorProps {
   uiDefinition: IUIDefinition;
@@ -21,11 +21,6 @@ export const UIDefinitionEditor: FunctionComponent<UIDefinitionEditorProps> = ({
   const { uiDefinitionValue, reset, handleUIDefinitionChange, handleElementChange, handleSave } =
     useUIDefinitionElementUpdate(uiDefinition.workflowDefinitionId, uiDefinition);
   const { mutate: upgradeVersion } = useUpgradeWorkflowDefinitionVersionMutation();
-
-  const hasChanges = useMemo(
-    () => JSON.stringify(uiDefinition) !== JSON.stringify(uiDefinitionValue),
-    [uiDefinitionValue, uiDefinition],
-  );
 
   return (
     <EditorCard
