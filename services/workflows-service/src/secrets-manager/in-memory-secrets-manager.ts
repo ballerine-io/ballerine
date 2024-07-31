@@ -19,4 +19,10 @@ export class InMemorySecretsManager implements SecretsManager {
       ...data,
     };
   }
+
+  async delete(key: string) {
+    if (secretsStore[this.customerId]) {
+      delete secretsStore[this.customerId]![key];
+    }
+  }
 }

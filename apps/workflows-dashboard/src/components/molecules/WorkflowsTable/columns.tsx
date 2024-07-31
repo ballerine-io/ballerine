@@ -1,4 +1,5 @@
 import { HealthIndicator } from '@/components/atoms/HealthIndicator';
+import { CloneWorkflowDefinitionButton } from '@/components/molecules/CloneWorkflowDefinitionButton';
 import { JSONViewButton } from '@/components/molecules/JSONViewButton';
 import { DataTableColumnHeader } from '@/components/molecules/WorkflowsTable/components/DataTableColumnHeader';
 import { StateUpdaterColumn } from '@/components/molecules/WorkflowsTable/components/StateUpdaterColumn';
@@ -19,6 +20,11 @@ export const defaultColumns: WorkflowTableColumnDef<IWorkflow>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Workflow Definition Name" />
     ),
+  },
+  {
+    accessorKey: 'workflowDefinitionId',
+    cell: info => <CloneWorkflowDefinitionButton workflowDefinitionId={info.getValue<string>()} />,
+    header: '',
   },
   {
     accessorKey: 'status',
