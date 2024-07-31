@@ -7,7 +7,7 @@ import { Customer, Prisma } from '@prisma/client';
 import { CustomerCreateDto } from '@/customer/dtos/customer-create';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { CustomerModel } from '@/customer/customer.model';
-import { AuthenticatedEntity } from '@/types';
+import { AuthenticatedEntity, InputJsonValue } from '@/types';
 import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
 import { createDemoMockData } from '../../scripts/workflows/workflow-runtime';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -15,6 +15,7 @@ import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { CustomerSubscriptionDto } from './dtos/customer-config-create.dto';
 import { ValidationError } from '@/errors';
 import { randomUUID } from 'node:crypto';
+import { ConfigSchema } from '@/workflow/schemas/zod-schemas';
 
 @swagger.ApiTags('Customers')
 @swagger.ApiExcludeController()
@@ -25,12 +26,20 @@ export class CustomerControllerExternal {
     protected readonly prisma: PrismaService,
   ) {}
 
+  @common.Get()
+  @UseGuards(AdminAuthGuard)
+  async list() {
+    return await this.service.list();
+  }
+
   @common.Post()
   @UseGuards(AdminAuthGuard)
   @swagger.ApiCreatedResponse({ type: [CustomerCreateDto] })
   @swagger.ApiForbiddenResponse()
   async create(@common.Body() customerCreateModel: CustomerCreateDto) {
-    const { projectName, ...customer } = customerCreateModel;
+    const { projectName, config, ...customer } = customerCreateModel;
+
+    const parsedConfig = ConfigSchema.parse(config);
 
     if (projectName) {
       (customer as Prisma.CustomerCreateInput).projects = {
@@ -43,6 +52,7 @@ export class CustomerControllerExternal {
     const createdCustomer = (await this.service.create({
       data: {
         ...customer,
+        config: parsedConfig as InputJsonValue,
         authenticationConfiguration: {
           ...customer.authenticationConfiguration,
           authValue: apiKey,
@@ -58,6 +68,7 @@ export class CustomerControllerExternal {
         language: true,
         customerStatus: true,
         projects: true,
+        config: true,
       },
     })) as Customer & { projects: Array<{ id: string }> };
 
