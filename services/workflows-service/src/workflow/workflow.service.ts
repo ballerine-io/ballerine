@@ -2012,11 +2012,13 @@ export class WorkflowService {
           const customer = await this.customerService.getByProjectId(currentProjectId);
 
           const representativeEndUserId =
-            await this.workflowRuntimeDataRepository.findMainBusinessWorkflowRepresentative({
-              workflowRuntimeId: workflowRuntimeId,
-              projectIds: [currentProjectId],
-              transaction: transaction,
-            });
+            await this.workflowRuntimeDataRepository.findMainBusinessWorkflowRepresentative(
+              {
+                workflowRuntimeId: workflowRuntimeId,
+                transaction: transaction,
+              },
+              [currentProjectId],
+            );
 
           const uiDefinition = await this.uiDefinitionService.findByArgs(
             {

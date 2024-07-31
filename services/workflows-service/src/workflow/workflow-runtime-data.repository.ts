@@ -291,15 +291,16 @@ export class WorkflowRuntimeDataRepository {
     );
   }
 
-  async findMainBusinessWorkflowRepresentative({
-    workflowRuntimeId,
-    projectIds,
-    transaction,
-  }: {
-    workflowRuntimeId: string;
-    projectIds: TProjectIds;
-    transaction?: PrismaTransaction;
-  }) {
+  async findMainBusinessWorkflowRepresentative(
+    {
+      workflowRuntimeId,
+      transaction,
+    }: {
+      workflowRuntimeId: string;
+      transaction?: PrismaTransaction;
+    },
+    projectIds: TProjectIds,
+  ) {
     const workflowSelectEndUserRepresentative = (await this.findById(
       workflowRuntimeId,
       {
