@@ -1,4 +1,5 @@
 import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
+import { WorkflowExtensionSchema } from '@/workflow/schemas/extensions.schemas';
 import { ApiProperty } from '@nestjs/swagger';
 import { ValidateNested } from 'class-validator';
 

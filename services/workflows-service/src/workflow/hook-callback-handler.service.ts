@@ -56,8 +56,7 @@ export const setPluginStatusToSuccess = ({
 
   const resultWithData = set({}, resultDestinationPath, ignoreLastKey ? data : { data });
 
-  //@ts-ignore
-  if (isObject(result) && result.status) {
+  if (isObject(result) && 'status' in result && result.status) {
     return set(
       resultWithData,
       `${ignoreLastKey ? resultDestinationPathWithoutLastKey : resultDestinationPath}.status`,
@@ -589,7 +588,11 @@ export class HookCallbackHandlerService {
     projectId: TProjectId;
     vendor: string;
   }) {
-    const endUser = await this.endUserService.getById(endUserId, {}, [projectId]);
+    const endUser = await this.endUserService.find(endUserId, [projectId]);
+
+    if (!endUser) {
+      return;
+    }
 
     return await this.endUserService.updateById(endUserId, {
       data: {

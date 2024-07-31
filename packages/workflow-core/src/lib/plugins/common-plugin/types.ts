@@ -58,7 +58,6 @@ export interface IterativePluginParams {
   errorAction?: string;
 }
 
-type RuleSetOptions = { databaseId: string };
 export interface RiskRulesPluginParams {
   name: string;
   rulesSource: {

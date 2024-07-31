@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { AnyRecord, isObject, uniqueArray } from '@ballerine/common';
+import { AnyRecord, isObject, ProcessStatus, uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
@@ -31,6 +31,7 @@ import {
   IDispatchEventPluginParams,
   ISerializableHttpPluginParams,
   SerializableValidatableTransformer,
+  ValidatableTransformer,
 } from './plugins/external-plugin/types';
 import { KycPlugin } from './plugins/external-plugin/kyc-plugin';
 import { DispatchEventPlugin } from './plugins/external-plugin/dispatch-event-plugin';
@@ -50,6 +51,9 @@ import {
   HelpersTransformer,
   TContext,
   THelperFormatingLogic,
+  Transformer,
+  Transformers,
+  Validator,
 } from './utils';
 import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
 import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plugin';
@@ -59,6 +63,7 @@ import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
 import { EmailPlugin } from './plugins/external-plugin/email-plugin';
 import { WorkflowTokenPlugin } from './plugins/common-plugin/workflow-token-plugin';
 import { RiskRulePlugin } from './plugins/common-plugin/risk-rules-plugin';
+import { SanctionsScreeningPlugin } from './plugins/common-plugin/sanctions-screening-plugin';
 import {
   TransformerPlugin,
   TransformerPluginParams,
@@ -122,7 +127,6 @@ export class WorkflowRunner {
       invokeChildWorkflowAction,
     );
 
-    // @ts-expect-error TODO: fix this
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
 
     this.#__extensions.commonPlugins = this.initiateCommonPlugins(
@@ -172,25 +176,15 @@ export class WorkflowRunner {
 
       return new DispatchEventPlugin({
         ...dispatchEventPlugin,
-        transformers: this.fetchTransformers(dispatchEventPlugin.transformers || []),
+        transformers: WorkflowRunner.fetchTransformers(dispatchEventPlugin.transformers || []),
       });
     });
   }
 
   initiateApiPlugins(apiPluginSchemas: Array<ISerializableHttpPluginParams>) {
     return apiPluginSchemas?.map(apiPluginSchema => {
-      const requestTransformerLogic = apiPluginSchema.request.transform;
-      const requestSchema = apiPluginSchema.request.schema;
-      const responseTransformerLogic = apiPluginSchema.response?.transform;
-      const responseSchema = apiPluginSchema.response?.schema;
-      // @ts-ignore
-      const requestTransformer = this.fetchTransformers(requestTransformerLogic);
-      const responseTransformer =
-        responseTransformerLogic && this.fetchTransformers(responseTransformerLogic);
-      // @ts-expect-error TODO: fix this
-      const requestValidator = this.fetchValidator('json-schema', requestSchema);
-      // @ts-expect-error TODO: fix this
-      const responseValidator = this.fetchValidator('json-schema', responseSchema);
+      let { requestTransformer, requestValidator, responseTransformer, responseValidator } =
+        WorkflowRunner.reqResTransformersObj(apiPluginSchema);
 
       const apiPluginClass = this.pickApiPluginClass(apiPluginSchema);
 
@@ -202,13 +196,55 @@ export class WorkflowRunner {
         url: apiPluginSchema.url,
         method: apiPluginSchema.method,
         headers: apiPluginSchema.headers,
-        request: { transformers: requestTransformer, schemaValidator: requestValidator },
-        response: { transformers: responseTransformer, schemaValidator: responseValidator },
+        request: { transformers: requestTransformer, schemaValidator: requestValidator } as any,
+        response: { transformers: responseTransformer, schemaValidator: responseValidator } as any,
         successAction: apiPluginSchema.successAction,
         errorAction: apiPluginSchema.errorAction,
         persistResponseDestination: apiPluginSchema.persistResponseDestination,
       });
     });
+  }
+
+  static reqResTransformersObj(
+    apiPluginSchema: Pick<ISerializableHttpPluginParams, 'request' | 'response'>,
+  ) {
+    let requestTransformer;
+    let responseTransformer: ValidatableTransformer | undefined;
+    let requestValidator: Validator | undefined;
+    let responseValidator: Validator | undefined;
+
+    if ('request' in apiPluginSchema) {
+      if (apiPluginSchema.request && 'transform' in apiPluginSchema.request) {
+        const requestTransformerLogic = apiPluginSchema.request
+          .transform as SerializableValidatableTransformer['transform'] & {
+          name?: string;
+        };
+        requestTransformer = WorkflowRunner.fetchTransformers(requestTransformerLogic);
+
+        requestValidator = WorkflowRunner.fetchValidator(
+          'json-schema',
+          // @ts-expect-error TODO: fix this
+          apiPluginSchema?.request?.schema,
+        );
+      }
+
+      if (apiPluginSchema.response && 'transform' in apiPluginSchema.response) {
+        const responseTransformerLogic = apiPluginSchema.response
+          .transform as SerializableValidatableTransformer['transform'] & {
+          name?: string;
+        };
+        // @ts-ignore
+        responseTransformer =
+          responseTransformerLogic && WorkflowRunner.fetchTransformers(responseTransformerLogic);
+
+        responseValidator = WorkflowRunner.fetchValidator(
+          'json-schema',
+          // @ts-expect-error TODO: fix this
+          apiPluginSchema?.response?.schema,
+        );
+      }
+    }
+    return { requestTransformer, requestValidator, responseTransformer, responseValidator };
   }
 
   initiateRiskRulePlugin(
@@ -246,7 +282,7 @@ export class WorkflowRunner {
   ) {
     return childPluginSchemas?.map(childPluginSchema => {
       console.log('Initiating child plugin', childPluginSchema);
-      const transformers = this.fetchTransformers(childPluginSchema.transformers) || [];
+      const transformers = WorkflowRunner.fetchTransformers(childPluginSchema.transformers) || [];
 
       return new ChildWorkflowPlugin({
         name: childPluginSchema.name,
@@ -324,7 +360,7 @@ export class WorkflowRunner {
       name: iterarivePluginParams.name,
       stateNames: iterarivePluginParams.stateNames,
       //@ts-ignore
-      iterateOn: this.fetchTransformers(iterarivePluginParams.iterateOn),
+      iterateOn: WorkflowRunner.fetchTransformers(iterarivePluginParams.iterateOn),
       action: (context: TContext) =>
         actionPlugin!.invoke({
           ...context,
@@ -349,8 +385,9 @@ export class WorkflowRunner {
     if (apiPluginSchema.pluginKind === 'api') return ApiPlugin;
     // @ts-ignore
     if (apiPluginSchema.pluginKind === 'email') return EmailPlugin;
+    // @ts-ignore
+    if (apiPluginSchema.name === 'sanctions-screening') return SanctionsScreeningPlugin;
 
-    // @ts-expect-error TODO: fix this
     return this.isPluginWithCallbackAction(apiPluginSchema) ? ApiPlugin : WebhookPlugin;
   }
 
@@ -358,7 +395,7 @@ export class WorkflowRunner {
     return !!apiPluginSchema.successAction && !!apiPluginSchema.errorAction;
   }
 
-  fetchTransformers(
+  static fetchTransformers(
     transformers: SerializableValidatableTransformer['transform'] & {
       name?: string;
     },
@@ -374,9 +411,9 @@ export class WorkflowRunner {
     });
   }
 
-  fetchValidator(
+  static fetchValidator(
     validatorName: string,
-    schema: ConstructorParameters<typeof JsonSchemaValidator>[0],
+    schema: ConstructorParameters<typeof JsonSchemaValidator>[0] | undefined,
   ) {
     if (!schema) return;
     if (validatorName === 'json-schema') return new JsonSchemaValidator(schema);
@@ -775,25 +812,28 @@ export class WorkflowRunner {
       return;
     }
 
-    if (apiPlugin.persistResponseDestination) {
-      if (responseBody) {
-        this.context = this.mergeToContext(
-          this.context,
-          responseBody,
-          apiPlugin.persistResponseDestination,
-        );
-      } else if (error) {
-        this.context = this.mergeToContext(
-          this.context,
-          { error: error },
-          apiPlugin.persistResponseDestination,
-        );
-      }
-    } else {
-      this.context.pluginsOutput = {
-        ...(this.context.pluginsOutput || {}),
-        ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
-      };
+    if (apiPlugin.persistResponseDestination && responseBody) {
+      this.context = this.mergeToContext(
+        this.context,
+        responseBody,
+        apiPlugin.persistResponseDestination,
+      );
+    }
+
+    if (!apiPlugin.persistResponseDestination && responseBody) {
+      this.context = this.mergeToContext(
+        this.context,
+        responseBody,
+        `pluginsOutput.${apiPlugin.name}`,
+      );
+    }
+
+    if (error) {
+      this.context = this.mergeToContext(
+        this.context,
+        { name: apiPlugin.name, error, status: ProcessStatus.ERROR },
+        `pluginsOutput.${apiPlugin.name}`,
+      );
     }
 
     await this.sendEvent({ type: callbackAction });
