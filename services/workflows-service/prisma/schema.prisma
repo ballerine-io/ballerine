@@ -421,6 +421,9 @@ model UiDefinition {
   workflowDefinitionId String
   uiContext            UiDefinitionContext
 
+  name        String?
+  displayName String?
+
   page  Int?
   state String?
 
@@ -436,6 +439,8 @@ model UiDefinition {
   project               Project               @relation(fields: [projectId], references: [id])
   workflowDefinition    WorkflowDefinition    @relation(fields: [workflowDefinitionId], references: [id])
   workflowRuntimeDatass WorkflowRuntimeData[]
+
+  @@index([name, projectId])
 }
 
 model WorkflowRuntimeDataToken {

@@ -2019,6 +2019,23 @@ export class WorkflowService {
               transaction: transaction,
             });
 
+          const uiDefinition = await this.uiDefinitionService.findByArgs(
+            {
+              where: {
+                OR: [
+                  {
+                    id: workflowTokenAction.uiDefinitionId,
+                  },
+                  {
+                    projectId: currentProjectId,
+                    name: workflowTokenAction.uiDefinitionId,
+                  },
+                ],
+              },
+            },
+            [currentProjectId],
+          );
+
           if (!representativeEndUserId) {
             throw new InternalServerErrorException({
               descriptionOrOptions:
@@ -2026,7 +2043,7 @@ export class WorkflowService {
             });
           }
 
-          if (!workflowTokenAction.uiDefinitionId) {
+          if (!uiDefinition.id) {
             throw new InternalServerErrorException({
               descriptionOrOptions:
                 "Couldn't find uiDefinitionId for token action, Make sure you set the plugin Properly",
@@ -2047,7 +2064,7 @@ export class WorkflowService {
             workflowRuntimeId,
             {
               data: {
-                uiDefinitionId: workflowTokenAction.uiDefinitionId,
+                uiDefinitionId: uiDefinition.id,
               },
             },
             transaction,

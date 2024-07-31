@@ -23,6 +23,10 @@ export class UiDefinitionService {
     return await this.repository.findById(id, args, projectIds);
   }
 
+  async findByArgs(args: Prisma.UiDefinitionFindFirstOrThrowArgs, projectIds: TProjectIds) {
+    return await this.repository.findByArgs(args, projectIds);
+  }
+
   async getByWorkflowDefinitionId(
     workflowDefinitionId: string,
     uiContext: keyof typeof UiDefinitionContext,

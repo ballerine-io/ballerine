@@ -33,6 +33,12 @@ export class UiDefinitionRepository {
     );
   }
 
+  async findByArgs(args: Prisma.UiDefinitionFindFirstOrThrowArgs, projectIds: TProjectIds) {
+    return await this.prisma.uiDefinition.findFirstOrThrow(
+      this.scopeService.scopeFindFirst(args, projectIds),
+    );
+  }
+
   async findByWorkflowDefinitionId(
     workflowDefinitionId: string,
     uiContext: keyof typeof UiDefinitionContext,
