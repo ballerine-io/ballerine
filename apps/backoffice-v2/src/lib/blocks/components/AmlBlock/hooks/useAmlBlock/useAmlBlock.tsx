@@ -1,4 +1,4 @@
-import { toTitleCase } from 'string-ts';
+import { titleCase, toTitleCase } from 'string-ts';
 import { ChevronDown } from 'lucide-react';
 import React, { ComponentProps, useMemo } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -12,7 +12,13 @@ import { Button } from '@/common/components/atoms/Button/Button';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 
-export const useAmlBlock = (data: Array<TWorkflowById['context']['aml']>) => {
+export const useAmlBlock = ({
+  data,
+  vendor,
+}: {
+  data: Array<TWorkflowById['context']['aml']>;
+  vendor: string;
+}) => {
   const amlBlock = useMemo(() => {
     if (!data?.length) {
       return [];
@@ -37,6 +43,11 @@ export const useAmlBlock = (data: Array<TWorkflowById['context']['aml']>) => {
                 },
               },
               columns: [
+                {
+                  id: 'screenedBy',
+                  header: 'Screened by',
+                  cell: () => <TextWithNAFallback>{titleCase(vendor ?? '')}</TextWithNAFallback>,
+                },
                 {
                   accessorKey: 'totalMatches',
                   header: 'Total Matches',

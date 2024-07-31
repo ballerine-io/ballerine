@@ -120,10 +120,13 @@ export class HookCallbackHandlerService {
     }
 
     if (processName === 'aml-unified-api') {
-      const aml = data.data as {
-        id: string;
-        endUserId: string;
-        hits: Array<Record<string, unknown>>;
+      const aml = {
+        ...(data.data as {
+          id: string;
+          endUserId: string;
+          hits: Array<Record<string, unknown>>;
+        }),
+        vendor: data.vendor,
       };
 
       const attributePath = resultDestinationPath.split('.');
