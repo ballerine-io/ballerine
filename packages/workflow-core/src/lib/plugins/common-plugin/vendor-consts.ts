@@ -25,6 +25,7 @@ export const BALLERINE_API_PLUGINS = {
   'individual-sanctions': 'individual-sanctions',
   'company-sanctions': 'company-sanctions',
   ubo: 'ubo',
+  'registry-information': 'registry-information',
   'resubmission-email': 'resubmission-email',
   'session-email': 'session-email',
   'invitation-email': 'invitation-email',
@@ -406,6 +407,48 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
     },
     response: {
       transform: [],
+    },
+  }),
+  [BALLERINE_API_PLUGINS['registry-information']]: _ => ({
+    name: 'registry-information',
+    displayName: 'Registry Verification',
+    pluginKind: 'registry-information',
+    vendor: 'asia-verify',
+    url: `{secret.UNIFIED_API_URL}/companies-v2/{entity.data.country}/{entity.data.registrationNumber}`,
+    method: 'GET',
+    persistResponseDestination: 'pluginsOutput.businessInformation',
+    headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+    request: {
+      transform: [
+        {
+          transformer: 'jmespath',
+          mapping: `merge(
+            { vendor: 'asia-verify' },
+            entity.data.country == 'HK' && {
+              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.businessInformation.data&processName=kyb-unified-api'])
+            }
+          )`, // jmespath
+        },
+      ],
+    },
+    response: {
+      transform: [
+        {
+          mapping:
+            "merge({ name: 'kyb', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || jurisdictionCode == 'HK' && 'IN_PROGRESS' || 'SUCCESS' }, @)",
+          transformer: 'jmespath',
+        },
+        {
+          mapping: [
+            {
+              method: 'setTimeToRecordUTC',
+              source: 'invokedAt',
+              target: 'invokedAt',
+            },
+          ],
+          transformer: 'helper',
+        },
+      ],
     },
   }),
 } satisfies TPluginFactory;

@@ -61,6 +61,7 @@ import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
 import { EmailPlugin } from './plugins/external-plugin/email-plugin';
 import { RiskRulePlugin } from './plugins/common-plugin/risk-rules-plugin';
 import { BallerineApiPlugin } from './plugins/common-plugin/ballerine-plugin';
+import { BALLERINE_API_PLUGINS_KINDS } from './plugins/common-plugin/vendor-consts';
 import {
   TransformerPlugin,
   TransformerPluginParams,
