@@ -9,11 +9,17 @@ export const COMPANY_SCREENING_VENDORS = {
   'asia-verify': 'asia-verify',
 } as const;
 
+export const UBO_VENDORS = {
+  'asia-verify': 'asia-verify',
+} as const;
+
 export type ApiIndividualScreeningVendors =
   (typeof INDIVIDUAL_SCREENING_VENDORS)[keyof typeof INDIVIDUAL_SCREENING_VENDORS];
 
 export type ApiCompanyScreeningVendors =
   (typeof COMPANY_SCREENING_VENDORS)[keyof typeof COMPANY_SCREENING_VENDORS];
+
+export type ApiUboVendors = (typeof UBO_VENDORS)[keyof typeof UBO_VENDORS];
 
 export const BALLERINE_API_PLUGINS = {
   'individual-sanctions': 'individual-sanctions',
@@ -78,7 +84,7 @@ type CompanySanctionsAsiaVerifyOptions = {
   vendor: 'asia-verify';
 };
 
-type UboOptions = {
+type UboAsiaVerifyOptions = {
   pluginKind: 'ubo';
   vendor: 'asia-verify';
 };
@@ -93,13 +99,13 @@ type ApiPluginOptions =
   | ComplyAdvantageOptions
   | AsiaVerifyOptions
   | CompanySanctionsAsiaVerifyOptions
-  | UboOptions
+  | UboAsiaVerifyOptions
   | RegistryInformationAsiaVerifyOptions;
 
 type TPluginFactory = {
   [TKey in Exclude<
     ApiBallerinePlugins,
-    'individual-sanctions' | 'company-sanctions'
+    'individual-sanctions' | 'company-sanctions' | 'ubo'
   >]: PluginFactoryFnHelper<TKey>;
 } & Record<
   'individual-sanctions',
@@ -111,6 +117,12 @@ type TPluginFactory = {
     'company-sanctions',
     {
       [TKey in ApiCompanyScreeningVendors]: PluginVendorFnHelper<'company-sanctions', TKey>;
+    }
+  > &
+  Record<
+    'ubo',
+    {
+      [TKey in ApiUboVendors]: PluginVendorFnHelper<'ubo', TKey>;
     }
   >;
 
@@ -252,45 +264,48 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
       },
     }),
   },
-  [BALLERINE_API_PLUGINS['ubo']]: (options: UboOptions) => ({
-    name: 'ubo',
-    pluginKind: 'ubo',
-    displayName: 'UBO Check',
-    url: `{secret.UNIFIED_API_URL}/companies/{entity.data.country}/{entity.data.registrationNumber}/ubo`,
-    method: 'GET',
-    persistResponseDestination: 'pluginsOutput.ubo',
-    headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
-    request: {
-      transform: [
-        {
-          transformer: 'jmespath',
-          mapping: `{
-            vendor: 'asia-verify',
-            callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.ubo.data&processName=ubo-unified-api'])
-          }`, // jmespath
-        },
-      ],
-    },
-    response: {
-      transform: [
-        {
-          mapping:
-            "merge({ name: 'ubo', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
-          transformer: 'jmespath',
-        },
-        {
-          mapping: [
-            {
-              method: 'setTimeToRecordUTC',
-              source: 'invokedAt',
-              target: 'invokedAt',
-            },
-          ],
-          transformer: 'helper',
-        },
-      ],
-    },
-  }),
+  [BALLERINE_API_PLUGINS['ubo']]: {
+    [UBO_VENDORS['asia-verify']]: _ => ({
+      name: 'ubo',
+      pluginKind: 'ubo',
+      vendor: 'asia-verify',
+      displayName: 'UBO Check',
+      url: `{secret.UNIFIED_API_URL}/companies/{entity.data.country}/{entity.data.registrationNumber}/ubo`,
+      method: 'GET',
+      persistResponseDestination: 'pluginsOutput.ubo',
+      headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+      request: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: `{
+              vendor: 'asia-verify',
+              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.ubo.data&processName=ubo-unified-api'])
+            }`, // jmespath
+          },
+        ],
+      },
+      response: {
+        transform: [
+          {
+            mapping:
+              "merge({ name: 'ubo', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
+            transformer: 'jmespath',
+          },
+          {
+            mapping: [
+              {
+                method: 'setTimeToRecordUTC',
+                source: 'invokedAt',
+                target: 'invokedAt',
+              },
+            ],
+            transformer: 'helper',
+          },
+        ],
+      },
+    }),
+  },
   [BALLERINE_API_PLUGINS['resubmission-email']]: _ => ({
     name: 'resubmission-email',
     pluginKind: 'resubmission-email',
