@@ -6,18 +6,25 @@ export type TMinLengthValidationParams = number | [number, TValidatorErrorMessag
 
 export type TMaxLengthValidationParams = number | [number, TValidatorErrorMessage];
 
+export type TPatternValidationParams = string | [string, TValidatorErrorMessage];
+
 export type TValidationParams =
   | TRequiredValidationParams
   | TMinLengthValidationParams
-  | TMaxLengthValidationParams;
+  | TMaxLengthValidationParams
+  | TPatternValidationParams;
 
-export type TValidators = 'required' | 'minLength' | 'maxLength';
+export type TValidators = 'required' | 'minLength' | 'maxLength' | 'pattern';
 
-export interface IBaseFieldParams {}
+export interface IBaseFieldParams {
+  label?: string;
+  placeholder?: string;
+  stack?: number[];
+}
 
 export interface UIElementV2<TFieldParams = IBaseFieldParams> {
   id: string;
-  field: string;
+  element: string;
   type: 'ui' | 'field' | 'field-list';
   validation: Partial<Record<TValidators, TValidationParams>>;
   params?: TFieldParams;

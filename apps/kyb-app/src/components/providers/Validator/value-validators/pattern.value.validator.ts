@@ -1,27 +1,28 @@
 import {
   IBaseValueValidatorParams,
-  TRequiredValidationParams,
+  TPatternValidationParams,
 } from '@/components/providers/Validator/types';
 import { ValueValidator } from '@/components/providers/Validator/value-validators/value-validator.abstract';
 
-export interface IRequiredValueValidatorParams extends IBaseValueValidatorParams {
-  required: boolean;
+export interface IPatternValidatorParams extends IBaseValueValidatorParams {
+  pattern: string;
 }
 
-export class RequiredValueValidator extends ValueValidator<IRequiredValueValidatorParams> {
+export class PatternValueValidator extends ValueValidator<IPatternValidatorParams> {
   validate(value: unknown) {
-    if (value === undefined || value === null || value === '') {
+    if (!new RegExp(this.params.pattern).test(value as string)) {
       throw new Error(this.getErrorMessage());
     }
   }
 
   private getErrorMessage() {
-    if (!this.params.message) return `Value is required.`;
+    if (!this.params.message)
+      return `Value must match {pattern}.`.replace('{pattern}', this.params.pattern);
 
-    return this.params.message;
+    return this.params.message.replace('{pattern}', this.params.pattern);
   }
 
-  static isRequiredParams = (params: unknown): params is TRequiredValidationParams => {
+  static isPatternParams = (params: unknown): params is TPatternValidationParams => {
     if (typeof params === 'boolean') return true;
 
     //@ts-ignore

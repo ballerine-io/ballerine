@@ -8,6 +8,10 @@ import {
   MinLengthValueValidator,
 } from '@/components/providers/Validator/value-validators/min-length.value.validator';
 import {
+  IPatternValidatorParams,
+  PatternValueValidator,
+} from '@/components/providers/Validator/value-validators/pattern.value.validator';
+import {
   IRequiredValueValidatorParams,
   RequiredValueValidator,
 } from '@/components/providers/Validator/value-validators/required.value-validator';
@@ -67,6 +71,8 @@ export class UIElement {
         return this.getRequiredParams();
       case 'maxLength':
         return this.getMaxLengthParams();
+      case 'pattern':
+        return this.getPatternParams();
       default:
         throw new Error('Invalid key');
     }
@@ -136,6 +142,30 @@ export class UIElement {
       const params: IRequiredValueValidatorParams = {
         required: isRequired,
         message: `Value is required.`,
+      };
+
+      return params;
+    }
+
+    throw new Error('Invalid params');
+  }
+
+  private getPatternParams() {
+    const _params = this.element.validation.pattern;
+
+    if (PatternValueValidator.isPatternParams(_params)) {
+      if (Array.isArray(_params)) {
+        return {
+          required: _params[0],
+          message: _params[1],
+        };
+      }
+
+      const pattern = _params;
+
+      const params: IPatternValidatorParams = {
+        pattern,
+        message: `Value must match {pattern}.`,
       };
 
       return params;
