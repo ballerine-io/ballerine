@@ -63,7 +63,8 @@ import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
 import { EmailPlugin } from './plugins/external-plugin/email-plugin';
 import { WorkflowTokenPlugin } from './plugins/common-plugin/workflow-token-plugin';
 import { RiskRulePlugin } from './plugins/common-plugin/risk-rules-plugin';
-import { SanctionsScreeningPlugin } from './plugins/common-plugin/sanctions-screening-plugin';
+import { BallerineApiPlugin } from './plugins/common-plugin/ballerine-plugin';
+import { BALLERINE_API_PLUGINS_KINDS } from './plugins/common-plugin/vendor-consts';
 import {
   TransformerPlugin,
   TransformerPluginParams,
@@ -386,7 +387,7 @@ export class WorkflowRunner {
     // @ts-ignore
     if (apiPluginSchema.pluginKind === 'email') return EmailPlugin;
     // @ts-ignore
-    if (apiPluginSchema.name === 'sanctions-screening') return SanctionsScreeningPlugin;
+    if (BALLERINE_API_PLUGINS_KINDS.includes(apiPluginSchema.pluginKind)) return BallerineApiPlugin;
 
     return this.isPluginWithCallbackAction(apiPluginSchema) ? ApiPlugin : WebhookPlugin;
   }
