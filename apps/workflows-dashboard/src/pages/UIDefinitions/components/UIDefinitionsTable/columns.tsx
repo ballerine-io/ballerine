@@ -3,7 +3,8 @@ import { IUIDefinition } from '@/domains/ui-definitions';
 import { CloneUIDefinitionButton } from '@/pages/UIDefinitions/components/UIDefinitionsTable/components/CloneUIDefinitionButton';
 import { formatDate } from '@/utils/format-date';
 import { createColumnHelper } from '@tanstack/react-table';
-import { Eye } from 'lucide-react';
+import { ArrowRightCircleIcon, Eye } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const columnHelper = createColumnHelper<IUIDefinition>();
 
@@ -64,6 +65,14 @@ export const uiDefinitionTableColumnns = [
   }),
   columnHelper.accessor('id', {
     cell: info => <CloneUIDefinitionButton uiDefinitionId={info.getValue()} />,
+    header: () => '',
+  }),
+  columnHelper.accessor('id', {
+    cell: info => (
+      <Link to={`/ui-definitions/${info.row.original.id}`}>
+        <ArrowRightCircleIcon />
+      </Link>
+    ),
     header: () => '',
   }),
 ];
