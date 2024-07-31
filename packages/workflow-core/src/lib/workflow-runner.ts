@@ -265,7 +265,7 @@ export class WorkflowRunner {
     pluginSchemas: Array<
       | (ISerializableCommonPluginParams & { pluginKind: 'iterative' | 'transformer' })
       | (ISerializableRiskRulesPlugin & { pluginKind: 'riskRules' })
-      | (ISerializableWorkflowTokenPlugin & { pluginKind: 'workflow-token' })
+      | (ISerializableWorkflowTokenPlugin & { pluginKind: 'attach-ui-definition' })
     >,
     actionPlugins: ActionablePlugins,
     invokeRiskRulesAction?: RiskRulePlugin['action'],
@@ -276,7 +276,7 @@ export class WorkflowRunner {
         return this.initiateRiskRulePlugin(pluginSchema, invokeRiskRulesAction);
       }
 
-      if (pluginSchema.pluginKind == 'workflow-token') {
+      if (pluginSchema.pluginKind == 'attach-ui-definition') {
         return this.initiateWorkflowTokenPlugin(pluginSchema, invokeWorkflowTokenAction);
       }
 

@@ -149,8 +149,9 @@ export class WorkflowRuntimeDataRepository {
     args: {
       data: Omit<Prisma.WorkflowRuntimeDataUncheckedUpdateInput, StateRelatedColumns>;
     },
+    transaction: PrismaTransaction | PrismaService = this.prisma,
   ): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.update({
+    return await transaction.workflowRuntimeData.update({
       where: { id },
       ...args,
     });
@@ -293,9 +294,11 @@ export class WorkflowRuntimeDataRepository {
   async findMainBusinessWorkflowRepresentative({
     workflowRuntimeId,
     projectIds,
+    transaction,
   }: {
     workflowRuntimeId: string;
     projectIds: TProjectIds;
+    transaction?: PrismaTransaction;
   }) {
     const workflowSelectEndUserRepresentative = (await this.findById(
       workflowRuntimeId,
@@ -303,6 +306,7 @@ export class WorkflowRuntimeDataRepository {
         select: {
           business: {
             select: {
+              id: true,
               endUsersOnBusinesses: {
                 select: {
                   endUserId: true,
@@ -313,6 +317,7 @@ export class WorkflowRuntimeDataRepository {
         },
       },
       projectIds,
+      transaction,
     )) as unknown as {
       business: {
         endUsersOnBusinesses: Array<{

@@ -2016,6 +2016,7 @@ export class WorkflowService {
             await this.workflowRuntimeDataRepository.findMainBusinessWorkflowRepresentative({
               workflowRuntimeId: workflowRuntimeId,
               projectIds: [currentProjectId],
+              transaction: transaction,
             });
 
           if (!representativeEndUserId) {
@@ -2032,18 +2033,25 @@ export class WorkflowService {
             });
           }
 
-          //TODO add validation over all information exists before actions
-          const { id, token } = await this.workflowTokenService.create(currentProjectId, {
-            workflowRuntimeDataId: workflowRuntimeId,
-            expiresAt,
-            endUserId: representativeEndUserId,
-          });
-
-          await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
-            data: {
-              uiDefinitionId: workflowTokenAction.uiDefinitionId,
+          const { id, token } = await this.workflowTokenService.create(
+            currentProjectId,
+            {
+              workflowRuntimeDataId: workflowRuntimeId,
+              expiresAt,
+              endUserId: representativeEndUserId,
             },
-          });
+            transaction,
+          );
+
+          await this.workflowRuntimeDataRepository.updateById(
+            workflowRuntimeId,
+            {
+              data: {
+                uiDefinitionId: workflowTokenAction.uiDefinitionId,
+              },
+            },
+            transaction,
+          );
 
           return {
             token: token,
