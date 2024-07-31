@@ -1,28 +1,46 @@
 import { SerializableValidatableTransformer } from './../external-plugin/types';
 
-export const SANCTIONS_SCREENING_VENDOR = {
+export const INDIVIDUAL_SCREENING_VENDORS = {
   'dow-jones': 'dow-jones',
   'comply-advantage': 'comply-advantage',
+} as const;
+
+export const COMPANY_SCREENING_VENDORS = {
   'asia-verify': 'asia-verify',
 } as const;
 
+export type ApiIndividualScreeningVendors =
+  (typeof INDIVIDUAL_SCREENING_VENDORS)[keyof typeof INDIVIDUAL_SCREENING_VENDORS];
+
+export type ApiCompanyScreeningVendors =
+  (typeof COMPANY_SCREENING_VENDORS)[keyof typeof COMPANY_SCREENING_VENDORS];
+
 export const BALLERINE_API_PLUGINS = {
-  ...SANCTIONS_SCREENING_VENDOR,
+  'individual-sanctions': 'individual-sanctions',
   'company-sanctions': 'company-sanctions',
   ubo: 'ubo',
-  kyb: 'kyb',
   'resubmission-email': 'resubmission-email',
   'session-email': 'session-email',
   'invitation-email': 'invitation-email',
 } as const satisfies Record<string, string>;
 
+type PluginFactoryFnHelper<TPluginKind extends ApiPluginOptions['pluginKind'] | string> = (
+  options: TPluginKind extends ApiPluginOptions['pluginKind']
+    ? Extract<ApiPluginOptions, TPluginKind>
+    : { pluginKind: TPluginKind },
+) => ApiBallerinePlugin;
+
+type PluginVendorFnHelper<
+  TPluginKind extends ApiPluginOptions['pluginKind'] | string,
+  TVendor extends Extract<ApiPluginOptions, { vendor: string }>['vendor'],
+> = (
+  options: Extract<ApiPluginOptions, { vendor: TVendor; pluginKind: TPluginKind }>,
+) => ApiBallerinePlugin;
+
 export type ApiBallerinePlugins =
   (typeof BALLERINE_API_PLUGINS)[keyof typeof BALLERINE_API_PLUGINS];
 
 export const BALLERINE_API_PLUGINS_KINDS = Object.values(BALLERINE_API_PLUGINS);
-
-export type SancsionsScreeningVendors =
-  (typeof SANCTIONS_SCREENING_VENDOR)[keyof typeof SANCTIONS_SCREENING_VENDOR];
 
 export type ApiBallerinePlugin = {
   url: string;
@@ -34,67 +52,67 @@ export type ApiBallerinePlugin = {
   response: SerializableValidatableTransformer;
 };
 
-type ApiPluginOptionsBase = {
-  pluginKind: ApiBallerinePlugins;
-};
-
 type DowJonesOptions = {
-  pluginKind: 'dow-jones';
+  pluginKind: 'individual-sanctions';
+  vendor: 'dow-jones';
   takeEntityDetailFromKyc: boolean;
   successAction: string;
 };
 
 type ComplyAdvantageOptions = {
-  pluginKind: 'comply-advantage';
+  pluginKind: 'individual-sanctions';
+  vendor: 'comply-advantage';
   takeEntityDetailFromKyc: boolean;
   successAction: string;
 };
 
 type AsiaVerifyOptions = {
-  pluginKind: 'asia-verify';
+  pluginKind: 'individual-sanctions';
+  vendor: 'asia-verify';
   successAction: string;
   takeEntityDetailFromKyc: boolean;
 };
 
-type CompanySanctionsOptions = {
+type CompanySanctionsAsiaVerifyOptions = {
   pluginKind: 'company-sanctions';
+  vendor: 'asia-verify';
 };
 
 type UboOptions = {
   pluginKind: 'ubo';
+  vendor: 'asia-verify';
 };
 
-type KybOptions = {
-  pluginKind: 'kyb';
+type RegistryInformationAsiaVerifyOptions = {
+  pluginKind: 'registry-information';
+  vendor: 'asia-verify';
 };
 
-type ApiPluginOptions = ApiPluginOptionsBase &
-  DowJonesOptions &
-  ComplyAdvantageOptions &
-  AsiaVerifyOptions &
-  CompanySanctionsOptions &
-  UboOptions &
-  KybOptions;
+type ApiPluginOptions =
+  | DowJonesOptions
+  | ComplyAdvantageOptions
+  | AsiaVerifyOptions
+  | CompanySanctionsAsiaVerifyOptions
+  | UboOptions
+  | RegistryInformationAsiaVerifyOptions;
 
-export const SANCSIONS_SCREENING_BASE_RESPONSE = {
-  transform: [
+type TPluginFactory = {
+  [TKey in Exclude<
+    ApiBallerinePlugins,
+    'individual-sanctions' | 'company-sanctions'
+  >]: PluginFactoryFnHelper<TKey>;
+} & Record<
+  'individual-sanctions',
+  {
+    [TKey in ApiIndividualScreeningVendors]: PluginVendorFnHelper<'individual-sanctions', TKey>;
+  }
+> &
+  Record<
+    'company-sanctions',
     {
-      mapping:
-        "merge({ name: 'sanctions_screening', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
-      transformer: 'jmespath',
-    },
-    {
-      mapping: [
-        {
-          method: 'setTimeToRecordUTC',
-          source: 'invokedAt',
-          target: 'invokedAt',
-        },
-      ],
-      transformer: 'helper',
-    },
-  ],
-} as SerializableValidatableTransformer;
+      [TKey in ApiCompanyScreeningVendors]: PluginVendorFnHelper<'company-sanctions', TKey>;
+    }
+  >;
 
 const BASE_SANCSIONS_SCREENING_OPTIONS = {
   url: '{secret.UNIFIED_API_URL}/aml-sessions',
@@ -112,93 +130,128 @@ const getKycEntityMapping = (takeEntityDetailFromKyc: boolean) => {
 };
 
 export const BALLERINE_API_PLUGIN_FACTORY = {
-  [BALLERINE_API_PLUGINS['dow-jones']]: (options: DowJonesOptions) => ({
-    ...BASE_SANCSIONS_SCREENING_OPTIONS,
-    pluginKind: 'dow-jones',
-    request: {
-      transform: [
-        {
-          transformer: 'jmespath',
-          mapping: `{
-              vendor: 'dow-jones',
-              dateOfBirth: '1990-01-01'
-              ongoingMonitoring: false,
-              endUserId: join('__', [entity.ballerineEntityId, '']),
-              ${getKycEntityMapping(options.takeEntityDetailFromKyc)}
-              clientId: clientId,
-              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/${
-                options.successAction
-              }','?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result.aml&processName=aml-unified-api'])
-            }`, // jmespath
-        },
-      ],
-    },
-    response: SANCSIONS_SCREENING_BASE_RESPONSE,
-  }),
-  [BALLERINE_API_PLUGINS['comply-advantage']]: (options: ComplyAdvantageOptions) => ({
-    ...BASE_SANCSIONS_SCREENING_OPTIONS,
-    pluginKind: 'comply-advantage',
-    request: {
-      transform: [
-        {
-          transformer: 'jmespath',
-          mapping: `{
-                  vendor: 'veriff',
-                  dateOfBirth: '1990-01-01'
-                  ongoingMonitoring: false,
-                  endUserId: join('__', [entity.ballerineEntityId, '']),
-                  ${getKycEntityMapping(options.takeEntityDetailFromKyc)}
-                  callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/${
-                    options.successAction
-                  }','?resultDestination=aml&processName=aml-unified-api'])
-                }`, // jmespath
-        },
-      ],
-    },
-    response: SANCSIONS_SCREENING_BASE_RESPONSE,
-  }),
-  [BALLERINE_API_PLUGINS['asia-verify']]: (options: ApiPluginOptions) =>
-    ({
+  [BALLERINE_API_PLUGINS['individual-sanctions']]: {
+    [INDIVIDUAL_SCREENING_VENDORS['dow-jones']]: (options: DowJonesOptions) => ({
       ...BASE_SANCSIONS_SCREENING_OPTIONS,
-      pluginKind: 'asia-verify',
-      request: undefined,
-      response: undefined,
-    } as any), // TODO: Implement
-  [BALLERINE_API_PLUGINS['company-sanctions']]: (options: ApiPluginOptions) => ({
-    pluginKind: 'company-sanctions',
-    url: `{secret.UNIFIED_API_URL}/companies/{entity.data.country}/{entity.data.companyName}/sanctions`,
-    headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
-    method: 'GET' as const,
-    displayName: 'Company Sanctions',
-    persistResponseDestination: 'pluginsOutput.companySanctions',
-    request: {
-      transform: [
-        {
-          mapping: "{ vendor: 'asia-verify' }",
-          transformer: 'jmespath',
-        },
-      ],
-    },
-    response: {
-      transform: [
-        {
-          mapping:
-            "merge({ name: 'company_sanctions', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'SUCCESS' }, @)",
-          transformer: 'jmespath',
-        },
-        {
-          mapping: [
-            {
-              method: 'setTimeToRecordUTC',
-              source: 'invokedAt',
-              target: 'invokedAt',
-            },
-          ],
-          transformer: 'helper',
-        },
-      ],
-    },
-  }),
+      pluginKind: 'individual-sanctions',
+      request: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: `{
+                vendor: 'dow-jones',
+                dateOfBirth: '1990-01-01'
+                ongoingMonitoring: false,
+                endUserId: join('__', [entity.ballerineEntityId, '']),
+                ${getKycEntityMapping(options.takeEntityDetailFromKyc)}
+                clientId: clientId,
+                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/${
+                  options.successAction
+                }','?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result.aml&processName=aml-unified-api'])
+              }`, // jmespath
+          },
+        ],
+      },
+      response: {
+        transform: [
+          {
+            mapping:
+              "merge({ name: 'sanctions_screening', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
+            transformer: 'jmespath',
+          },
+          {
+            mapping: [
+              {
+                method: 'setTimeToRecordUTC',
+                source: 'invokedAt',
+                target: 'invokedAt',
+              },
+            ],
+            transformer: 'helper',
+          },
+        ],
+      } as SerializableValidatableTransformer,
+    }),
+    [INDIVIDUAL_SCREENING_VENDORS['comply-advantage']]: (options: ComplyAdvantageOptions) => ({
+      ...BASE_SANCSIONS_SCREENING_OPTIONS,
+      pluginKind: 'individual-sanctions',
+      vendor: 'comply-advantage',
+      request: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: `{
+                    vendor: 'veriff',
+                    dateOfBirth: '1990-01-01'
+                    ongoingMonitoring: false,
+                    endUserId: join('__', [entity.ballerineEntityId, '']),
+                    ${getKycEntityMapping(options.takeEntityDetailFromKyc)}
+                    callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/${
+                      options.successAction
+                    }','?resultDestination=aml&processName=aml-unified-api'])
+                  }`, // jmespath
+          },
+        ],
+      },
+      response: {
+        transform: [
+          {
+            mapping:
+              "merge({ name: 'sanctions_screening', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
+            transformer: 'jmespath',
+          },
+          {
+            mapping: [
+              {
+                method: 'setTimeToRecordUTC',
+                source: 'invokedAt',
+                target: 'invokedAt',
+              },
+            ],
+            transformer: 'helper',
+          },
+        ],
+      } as SerializableValidatableTransformer,
+    }),
+  },
+  [BALLERINE_API_PLUGINS['company-sanctions']]: {
+    [COMPANY_SCREENING_VENDORS['asia-verify']]: (options: ApiPluginOptions) => ({
+      pluginKind: 'company-sanctions',
+      vendor: 'asia-verify',
+      url: `{secret.UNIFIED_API_URL}/companies/{entity.data.country}/{entity.data.companyName}/sanctions`,
+      headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+      method: 'GET' as const,
+      displayName: 'Company Sanctions',
+      persistResponseDestination: 'pluginsOutput.companySanctions',
+      request: {
+        transform: [
+          {
+            mapping: "{ vendor: 'asia-verify' }",
+            transformer: 'jmespath',
+          },
+        ],
+      },
+      response: {
+        transform: [
+          {
+            mapping:
+              "merge({ name: 'company_sanctions', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'SUCCESS' }, @)",
+            transformer: 'jmespath',
+          },
+          {
+            mapping: [
+              {
+                method: 'setTimeToRecordUTC',
+                source: 'invokedAt',
+                target: 'invokedAt',
+              },
+            ],
+            transformer: 'helper',
+          },
+        ],
+      },
+    }),
+  },
   [BALLERINE_API_PLUGINS['ubo']]: (options: UboOptions) => ({
     name: 'ubo',
     pluginKind: 'ubo',
@@ -223,47 +276,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
         {
           mapping:
             "merge({ name: 'ubo', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
-          transformer: 'jmespath',
-        },
-        {
-          mapping: [
-            {
-              method: 'setTimeToRecordUTC',
-              source: 'invokedAt',
-              target: 'invokedAt',
-            },
-          ],
-          transformer: 'helper',
-        },
-      ],
-    },
-  }),
-  [BALLERINE_API_PLUGINS['kyb']]: (options: KybOptions) => ({
-    name: 'kyb',
-    displayName: 'Registry Verification',
-    pluginKind: 'kyb',
-    url: `{secret.UNIFIED_API_URL}/companies-v2/{entity.data.country}/{entity.data.registrationNumber}`,
-    method: 'GET',
-    persistResponseDestination: 'pluginsOutput.businessInformation',
-    headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
-    request: {
-      transform: [
-        {
-          transformer: 'jmespath',
-          mapping: `merge(
-            { vendor: 'asia-verify' },
-            entity.data.country == 'HK' && {
-              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.businessInformation.data&processName=kyb-unified-api'])
-            }
-          )`, // jmespath
-        },
-      ],
-    },
-    response: {
-      transform: [
-        {
-          mapping:
-            "merge({ name: 'kyb', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || jurisdictionCode == 'HK' && 'IN_PROGRESS' || 'SUCCESS' }, @)",
           transformer: 'jmespath',
         },
         {
@@ -381,9 +393,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
       transform: [],
     },
   }),
-} as const satisfies Record<
-  ApiBallerinePlugins,
-  {
-    (options: ApiPluginOptions): ApiBallerinePlugin;
-  }
->;
+} satisfies TPluginFactory;
+//  Record<ApiBallerinePlugins, PluginFactoryFn> |
+// Record<'individual-sanctions', Record<ApiIndividualScreeningVendors, PluginFactoryFn>> |
+// Record<'company-sanctions', Record<ApiCompanyScreeningVendors, PluginFactoryFn>>;
