@@ -1,4 +1,5 @@
 import {
+  CloneWorkflowDefinitionByIdDto,
   GetUIDefinitionQuery,
   GetWorkflowDefinitionDto,
   GetWorkflowDefinitionsListDto,
@@ -65,6 +66,15 @@ export const upgradeWorkflowDefinitionVersionById = async (
   dto: UpgradeWorkflowDefinitionVersionByIdDto,
 ) => {
   const result = await request.post(`/workflow-definition/${dto.workflowDefinitionId}/upgrade`);
+
+  return result.data;
+};
+
+export const cloneWorkflowDefinitionById = async (dto: CloneWorkflowDefinitionByIdDto) => {
+  const result = await request.post(`/workflow-definition/${dto.workflowDefinitionId}/copy`, {
+    name: dto.name,
+    displayName: dto.displayName,
+  });
 
   return result.data;
 };
