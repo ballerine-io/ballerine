@@ -644,6 +644,9 @@ importers:
       '@ballerine/common':
         specifier: ^0.9.16
         version: link:../../packages/common
+      '@ballerine/ui':
+        specifier: ^0.5.11
+        version: link:../../packages/ui
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
         version: 1.3.2(@tanstack/query-core@5.17.19)(@tanstack/react-query@4.36.1)
@@ -677,6 +680,9 @@ importers:
       '@radix-ui/react-tabs':
         specifier: ^1.0.4
         version: 1.0.4(@types/react-dom@18.2.15)(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
+      '@rjsf/utils':
+        specifier: ^5.9.0
+        version: 5.14.2(react@18.2.0)
       '@tanstack/react-query':
         specifier: ^4.28.0
         version: 4.36.1(react-dom@18.2.0)(react@18.2.0)
