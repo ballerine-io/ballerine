@@ -4,7 +4,7 @@ import { get } from 'lodash';
 export const pocDefinition: UIElementV2[] = [
   {
     id: 'first-name',
-    field: 'text',
+    element: 'text',
     type: 'field',
     validation: {
       required: true,
@@ -15,7 +15,7 @@ export const pocDefinition: UIElementV2[] = [
   },
   {
     id: 'last-name',
-    field: 'text',
+    element: 'text',
     type: 'field',
     validation: {
       required: true,
@@ -26,7 +26,7 @@ export const pocDefinition: UIElementV2[] = [
   },
   {
     id: 'names-list',
-    field: 'array',
+    element: 'array',
     type: 'field-list',
     validation: {
       minLength: [1, 'Minimum "names-list" length is 1.'],
@@ -36,7 +36,7 @@ export const pocDefinition: UIElementV2[] = [
     children: [
       {
         id: 'children-name',
-        field: 'text',
+        element: 'text',
         type: 'field',
         validation: {
           required: true,
@@ -47,7 +47,7 @@ export const pocDefinition: UIElementV2[] = [
       },
       {
         id: 'children-last-name',
-        field: 'text',
+        element: 'text',
         type: 'field',
         validation: {
           required: true,
@@ -58,7 +58,7 @@ export const pocDefinition: UIElementV2[] = [
       },
       {
         id: 'sub-list',
-        field: 'array',
+        element: 'array',
         type: 'field-list',
         validation: {
           minLength: [1, 'Minimum "sub-list" length is 1.'],
@@ -68,7 +68,7 @@ export const pocDefinition: UIElementV2[] = [
         children: [
           {
             id: 'first-name-sub',
-            field: 'text',
+            element: 'text',
             type: 'field',
             validation: {
               required: true,
@@ -79,7 +79,7 @@ export const pocDefinition: UIElementV2[] = [
           },
           {
             id: 'last-name-sub',
-            field: 'text',
+            element: 'text',
             type: 'field',
             validation: {
               required: true,
@@ -90,7 +90,7 @@ export const pocDefinition: UIElementV2[] = [
           },
           {
             id: 'subsub-list',
-            field: 'array',
+            element: 'array',
             type: 'field-list',
             validation: {
               minLength: [1, 'Minimum "subsub-list" length is 1.'],
@@ -100,7 +100,7 @@ export const pocDefinition: UIElementV2[] = [
             children: [
               {
                 id: 'first-name-sub',
-                field: 'text',
+                element: 'text',
                 type: 'field',
                 validation: {
                   required: true,
@@ -111,7 +111,7 @@ export const pocDefinition: UIElementV2[] = [
               },
               {
                 id: 'last-name-sub',
-                field: 'text',
+                element: 'text',
                 type: 'field',
                 validation: {
                   required: true,
