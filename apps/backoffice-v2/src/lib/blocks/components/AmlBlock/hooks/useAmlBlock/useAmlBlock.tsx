@@ -1,4 +1,4 @@
-import { titleCase, toTitleCase } from 'string-ts';
+import { titleCase } from 'string-ts';
 import { ChevronDown } from 'lucide-react';
 import React, { ComponentProps, useMemo } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -150,7 +150,7 @@ export const useAmlBlock = ({
                   cell: info => {
                     const matchTypes = info.getValue();
 
-                    return <TextWithNAFallback>{toTitleCase(matchTypes)}</TextWithNAFallback>;
+                    return <TextWithNAFallback>{titleCase(matchTypes)}</TextWithNAFallback>;
                   },
                 }),
                 columnHelper.accessor('pep', {
