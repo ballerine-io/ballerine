@@ -1,5 +1,24 @@
 # @ballerine/workflow-core
 
+## 0.6.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.18
+
+## 0.6.28
+
+### Patch Changes
+
+- bump version
+
+## 0.6.27
+
+### Patch Changes
+
+- Support secrets manager
+
 ## 0.6.26
 
 ### Patch Changes

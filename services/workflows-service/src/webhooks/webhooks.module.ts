@@ -6,7 +6,6 @@ import { ProjectModule } from '@/project/project.module';
 import { WorkflowDefinitionModule } from '@/workflow-defintion/workflow-definition.module';
 import { HttpModule } from '@nestjs/axios';
 import { forwardRef, Module } from '@nestjs/common';
-import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { EndUserService } from '@/end-user/end-user.service';
@@ -36,6 +35,7 @@ import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
 import { AlertDefinitionModule } from '@/alert-definition/alert-definition.module';
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
 import { SentryService } from '@/sentry/sentry.service';
+import { WorkflowModule } from '@/workflow/workflow.module';
 
 @Module({
   controllers: [WebhooksController],
@@ -52,9 +52,9 @@ import { SentryService } from '@/sentry/sentry.service';
     DataAnalyticsModule,
     AlertDefinitionModule,
     RuleEngineModule,
+    WorkflowModule,
   ],
   providers: [
-    WorkflowService,
     WorkflowRuntimeDataRepository,
     EndUserService,
     EndUserRepository,
