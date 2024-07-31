@@ -1,6 +1,6 @@
+import { CloneWorkflowDefinitionButton } from '@/components/molecules/CloneWorkflowDefinitionButton';
 import { JSONViewButton } from '@/components/molecules/JSONViewButton';
 import { IWorkflowDefinition } from '@/domains/workflow-definitions';
-import { CloneWorkflowDefinitionButton } from '@/pages/WorkflowDefinitions/components/molecules/WorkflowDefinitionsTable/components/CloneWorkflowDefinitionButton';
 import { valueOrNA } from '@/utils/value-or-na';
 import { createColumnHelper } from '@tanstack/react-table';
 import { ArrowRightCircleIcon, Eye, Pencil } from 'lucide-react';

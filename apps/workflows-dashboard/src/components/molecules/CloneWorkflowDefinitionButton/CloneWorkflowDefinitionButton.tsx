@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/atoms/Dialog'
 import {
   formSchema,
   uiSchema,
-} from '@/pages/WorkflowDefinitions/components/molecules/WorkflowDefinitionsTable/components/CloneWorkflowDefinitionButton/form-schema';
+} from '@/components/molecules/CloneWorkflowDefinitionButton/form-schema';
 import { useCloneWorkflowDefinitionMutation } from '@/pages/WorkflowDefinitions/hooks/useCloneWorkflowDefinitionMutation';
 import { DynamicForm } from '@ballerine/ui';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
