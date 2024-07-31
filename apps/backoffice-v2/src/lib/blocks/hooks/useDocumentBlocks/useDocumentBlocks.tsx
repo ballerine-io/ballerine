@@ -388,9 +388,32 @@ export const useDocumentBlocks = ({
                         value,
                         formatMinimum,
                         formatMaximum,
+                        default: defaultValue,
                       },
                     ]) => {
-                      const fieldValue = value || (properties?.[title] ?? '');
+                      const getFieldValue = () => {
+                        if (typeof value !== 'undefined') {
+                          return value;
+                        }
+
+                        if (
+                          typeof properties?.[title] === 'undefined' &&
+                          typeof defaultValue !== 'undefined'
+                        ) {
+                          return defaultValue;
+                        }
+
+                        if (typeof properties?.[title] === 'undefined' && type === 'boolean') {
+                          return false;
+                        }
+
+                        if (typeof properties?.[title] === 'undefined') {
+                          return '';
+                        }
+
+                        return properties?.[title];
+                      };
+                      const fieldValue = getFieldValue();
                       const isEditableDecision = isDoneWithRevision || !decision?.status;
                       const isEditableType =
                         (title === 'type' && !checkIsBusiness(workflow)) || title !== 'type';
