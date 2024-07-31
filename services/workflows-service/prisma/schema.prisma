@@ -435,10 +435,10 @@ model UiDefinition {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime? @updatedAt
 
-  projectId             String
-  project               Project               @relation(fields: [projectId], references: [id])
-  workflowDefinition    WorkflowDefinition    @relation(fields: [workflowDefinitionId], references: [id])
-  workflowRuntimeDatass WorkflowRuntimeData[]
+  projectId            String
+  project              Project               @relation(fields: [projectId], references: [id])
+  workflowDefinition   WorkflowDefinition    @relation(fields: [workflowDefinitionId], references: [id])
+  workflowRuntimeDatas WorkflowRuntimeData[]
 
   @@index([name, projectId])
 }
