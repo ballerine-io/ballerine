@@ -1,5 +1,6 @@
 import { JSONViewButton } from '@/components/molecules/JSONViewButton';
 import { IUIDefinition } from '@/domains/ui-definitions';
+import { CloneUIDefinitionButton } from '@/pages/UIDefinitions/components/UIDefinitionsTable/components/CloneUIDefinitionButton';
 import { formatDate } from '@/utils/format-date';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
@@ -60,5 +61,9 @@ export const uiDefinitionTableColumnns = [
   columnHelper.accessor('createdAt', {
     cell: info => formatDate(info.getValue<Date>()),
     header: () => 'Created At',
+  }),
+  columnHelper.accessor('id', {
+    cell: info => <CloneUIDefinitionButton uiDefinitionId={info.getValue()} />,
+    header: () => '',
   }),
 ];

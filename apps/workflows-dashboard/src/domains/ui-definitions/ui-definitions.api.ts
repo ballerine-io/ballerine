@@ -1,4 +1,5 @@
 import {
+  CopyUIDefinitionDto,
   IUIDefinition,
   UpdateUIDefinitionDto,
 } from '@/domains/ui-definitions/ui-definitions.types';
@@ -14,6 +15,12 @@ export const updateUIDefinition = async (dto: UpdateUIDefinitionDto) => {
   const result = await request.put(`/external/ui-definition/${dto.uiDefinitionId}`, {
     uiDefinition: dto.uiDefinition,
   });
+
+  return result.data;
+};
+
+export const copyUIDefinition = async (dto: CopyUIDefinitionDto) => {
+  const result = await request.post(`/ui-definition/${dto.uiDefinitionId}/copy`);
 
   return result.data;
 };
