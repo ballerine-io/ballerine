@@ -21,6 +21,9 @@ export interface UpdateUIDefinitionDto {
   uiDefinition: IUIDefinition;
 }
 
+export interface CopyUIDefinitionDto {
+  uiDefinitionId: string;
+}
 export interface GetUIDefinitionByIdDto {
   uiDefinitionId: string;
 }
