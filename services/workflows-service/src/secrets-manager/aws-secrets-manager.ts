@@ -84,6 +84,18 @@ export class AwsSecretsManager implements SecretsManager {
     );
   }
 
+  async delete(key: string) {
+    const dataToSet = await this.getAll();
+    delete dataToSet[key];
+
+    await this.client.send(
+      new PutSecretValueCommand({
+        SecretId: this.getSecretName(),
+        SecretString: JSON.stringify(dataToSet),
+      }),
+    );
+  }
+
   private async createSecret() {
     await this.client.send(
       new CreateSecretCommand({
