@@ -46,10 +46,10 @@ export class CustomerControllerExternal {
     return { subscriptions: data.subscriptions };
   }
 
-  @common.Get()
+  @common.Get('/by-current-project-id')
   @swagger.ApiOkResponse({ type: [CustomerModel] })
   @swagger.ApiForbiddenResponse()
-  async list(
+  async getByCurrentProjectId(
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<TCustomerWithDefinitionsFeatures | null> {
     if (!currentProjectId) throw new NotFoundException('Customer not found');
