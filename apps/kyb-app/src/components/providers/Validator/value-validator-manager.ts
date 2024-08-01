@@ -1,12 +1,16 @@
 import { IBaseValueValidatorParams } from '@/components/providers/Validator/types';
 import { MaxLengthValueValidator } from '@/components/providers/Validator/value-validators/max-length.value.validator';
 import { MinLengthValueValidator } from '@/components/providers/Validator/value-validators/min-length.value.validator';
+import { MinimumValueValidator } from '@/components/providers/Validator/value-validators/minimum.value.validator';
+import { PatternValueValidator } from '@/components/providers/Validator/value-validators/pattern.value.validator';
 import { RequiredValueValidator } from '@/components/providers/Validator/value-validators/required.value-validator';
 
 const validatorsMap = {
   required: RequiredValueValidator,
   minLength: MinLengthValueValidator,
   maxLength: MaxLengthValueValidator,
+  pattern: PatternValueValidator,
+  minimum: MinimumValueValidator,
 };
 
 export type TValidator = keyof typeof validatorsMap;

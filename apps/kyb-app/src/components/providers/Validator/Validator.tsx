@@ -27,8 +27,6 @@ export const Validator: FunctionComponent<IValidatorProps> = ({ children, elemen
 
     setValiationErrors(validationErrors);
 
-    console.log({ errors, validationErrors });
-
     return Boolean(errors.length);
   }, [validate]);
 

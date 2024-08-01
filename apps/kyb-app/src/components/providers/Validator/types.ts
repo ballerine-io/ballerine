@@ -8,13 +8,16 @@ export type TMaxLengthValidationParams = number | [number, TValidatorErrorMessag
 
 export type TPatternValidationParams = string | [string, TValidatorErrorMessage];
 
+export type TMinimumValidationParams = number | [number, TValidatorErrorMessage];
+
 export type TValidationParams =
   | TRequiredValidationParams
   | TMinLengthValidationParams
   | TMaxLengthValidationParams
-  | TPatternValidationParams;
+  | TPatternValidationParams
+  | TMinimumValidationParams;
 
-export type TValidators = 'required' | 'minLength' | 'maxLength' | 'pattern';
+export type TValidators = 'required' | 'minLength' | 'maxLength' | 'pattern' | 'minimum';
 
 export interface IBaseFieldParams {
   label?: string;

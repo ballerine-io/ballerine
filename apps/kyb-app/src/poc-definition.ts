@@ -1,5 +1,4 @@
 import { UIElementV2 } from '@/components/providers/Validator/types';
-import { get } from 'lodash';
 
 export const pocDefinition: UIElementV2[] = [
   {
@@ -128,43 +127,43 @@ export const pocDefinition: UIElementV2[] = [
   },
 ];
 
-const context = {
-  items: [
-    {
-      subItems: [{}, { subsubItems: [{}, {}] }],
-    },
-    {},
-  ],
-};
+// const context = {
+//   items: [
+//     {
+//       subItems: [{}, { subsubItems: [{}, {}] }],
+//     },
+//     {},
+//   ],
+// };
 
-const formatDestination = (destination: string, stack: number[]) => {
-  stack.forEach((value, index) => {
-    destination = destination.replace(`$${index}`, String(value));
-  });
+// const formatDestination = (destination: string, stack: number[]) => {
+//   stack.forEach((value, index) => {
+//     destination = destination.replace(`$${index}`, String(value));
+//   });
 
-  return destination;
-};
+//   return destination;
+// };
 
-const iterate = (elements: UIElementV2[], context: object, stack: number[] = []) => {
-  for (let i = 0; i < elements.length; i++) {
-    const element = elements[i] as UIElementV2;
+// const iterate = (elements: UIElementV2[], context: object, stack: number[] = []) => {
+//   for (let i = 0; i < elements.length; i++) {
+//     const element = elements[i] as UIElementV2;
 
-    if (!element) continue;
+//     if (!element) continue;
 
-    if (element.type === 'field') {
-      console.log('valueDestination', formatDestination(element.valueDestination, stack));
-      continue;
-    }
+//     if (element.type === 'field') {
+//       console.log('valueDestination', formatDestination(element.valueDestination, stack));
+//       continue;
+//     }
 
-    if (element.type === 'field-list') {
-      // console.log('valueDestination', element.valueDestination);
-      const value = get(context, formatDestination(element.valueDestination, stack)) as any[];
+//     if (element.type === 'field-list') {
+//       // console.log('valueDestination', element.valueDestination);
+//       const value = get(context, formatDestination(element.valueDestination, stack)) as any[];
 
-      value?.forEach((item, index) => {
-        iterate(element.children!, context, [...stack, index]);
-      });
-    }
-  }
-};
+//       value?.forEach((item, index) => {
+//         iterate(element.children!, context, [...stack, index]);
+//       });
+//     }
+//   }
+// };
 
-iterate(pocDefinition, context);
+// iterate(pocDefinition, context);
