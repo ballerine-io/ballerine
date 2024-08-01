@@ -26,21 +26,11 @@ const SecretStringSchema = z
 
 export class AwsSecretsManager implements SecretsManager {
   private client: SecretsManagerClient;
-  private environmentName: string;
   private prefix: string;
   private customerId: string;
 
-  constructor({
-    environmentName,
-    prefix,
-    customerId,
-  }: {
-    environmentName: string;
-    prefix: string;
-    customerId: string;
-  }) {
+  constructor({ prefix, customerId }: { prefix: string; customerId: string }) {
     this.client = new SecretsManagerClient();
-    this.environmentName = environmentName;
     this.prefix = prefix;
     this.customerId = customerId;
   }
@@ -106,6 +96,6 @@ export class AwsSecretsManager implements SecretsManager {
   }
 
   private getSecretName() {
-    return `/${this.environmentName}/${this.prefix}/${this.customerId}`;
+    return `${this.prefix}${this.customerId}`;
   }
 }

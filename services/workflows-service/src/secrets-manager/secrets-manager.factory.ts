@@ -12,7 +12,6 @@ export class SecretsManagerFactory {
       case 'aws-secrets-manager':
         return new AwsSecretsManager({
           customerId,
-          environmentName: env.ENVIRONMENT_NAME,
           prefix: env.AWS_SECRETS_MANAGER_PREFIX,
         });
       case 'in-memory':
