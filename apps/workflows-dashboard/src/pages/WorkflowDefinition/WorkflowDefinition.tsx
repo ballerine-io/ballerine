@@ -5,7 +5,6 @@ import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 import { XstateVisualizer } from '@/components/organisms/XstateVisualizer';
 import { IWorkflow } from '@/domains/workflows/api/workflow';
 import { EditorCard } from '@/pages/WorkflowDefinition/components/EditorCard';
-import { UIDefinitionEditor } from '@/pages/WorkflowDefinition/components/UIDefinitionEditor';
 import { WorkflowDefinitionSummaryCard } from '@/pages/WorkflowDefinition/components/WorkflowDefinitionSummaryCard';
 import { useUpgradeWorkflowDefinitionVersionMutation } from '@/pages/WorkflowDefinition/hooks/useUpgradeWorkflowDefinitionVersionMutation';
 import { useWorkflowDefinitionEdit } from '@/pages/WorkflowDefinition/hooks/useWorkflowDefinitionEdit';
@@ -83,25 +82,14 @@ export const WorkflowDefinition = () => {
           </div>
         </div>
         <div className="flex flex-row gap-2">
-          {workflowDefinitionValue && (
-            <div className="w-1/2">
-              <EditorCard
-                title="Workflow Definition"
-                value={workflowDefinitionValue}
-                onSave={handleWorkflowDefinitionSave}
-                onUpgrade={() =>
-                  upgradeWorkflowDefinitionVersion({ workflowDefinitionId: data.id! })
-                }
-              />
-            </div>
-          )}
-          {data.uiDefinitions.length ? (
-            <div className="w-1/2">
-              <UIDefinitionEditor uiDefinition={data.uiDefinitions[0]!} />
-            </div>
-          ) : null}
-        </div>
-        <div className="flex flex-row gap-2">
+          <div className="w-1/2">
+            <EditorCard
+              title="Workflow Definition"
+              value={workflowDefinitionValue || {}}
+              onSave={workflowDefinitionValue ? handleWorkflowDefinitionSave : undefined}
+              onUpgrade={() => upgradeWorkflowDefinitionVersion({ workflowDefinitionId: data.id! })}
+            />
+          </div>
           <div className="w-1/2">
             <EditorCard
               title="Config"
@@ -112,20 +100,16 @@ export const WorkflowDefinition = () => {
               onUpgrade={() => upgradeWorkflowDefinitionVersion({ workflowDefinitionId: data.id! })}
             />
           </div>
-          {workflowDefinitionExtensions && (
-            <div className="w-1/2">
-              <EditorCard
-                title="Plugins"
-                value={workflowDefinitionExtensions || {}}
-                onSave={handleWorkflowExtensionsSave}
-                onUpgrade={() =>
-                  upgradeWorkflowDefinitionVersion({ workflowDefinitionId: data.id! })
-                }
-              />
-            </div>
-          )}
         </div>
         <div className="flex flex-row gap-2">
+          <div className="w-1/2">
+            <EditorCard
+              title="Plugins"
+              value={workflowDefinitionExtensions || {}}
+              onSave={handleWorkflowExtensionsSave}
+              onUpgrade={() => upgradeWorkflowDefinitionVersion({ workflowDefinitionId: data.id! })}
+            />
+          </div>
           <div className="w-1/2">
             <EditorCard
               title="Context Schema"

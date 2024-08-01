@@ -10,6 +10,7 @@ export const createWorkflow: TCreateWorkflow = ({
   runtimeId,
   invokeRiskRulesAction,
   invokeChildWorkflowAction,
+  secretsManager,
   invokeWorkflowTokenAction,
 }) =>
   new WorkflowRunner({
@@ -21,5 +22,6 @@ export const createWorkflow: TCreateWorkflow = ({
     extensions,
     invokeRiskRulesAction,
     invokeChildWorkflowAction,
+    secretsManager,
     invokeWorkflowTokenAction,
   });

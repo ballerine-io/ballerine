@@ -16,7 +16,8 @@ export type WorkflowTableColumnKeys =
   | 'view-workflow'
   | 'resolvedAt'
   | 'createdBy'
-  | 'createdAt';
+  | 'createdAt'
+  | 'workflowDefinitionId';
 
 export type WorkflowTableColumnDef<TData> = Omit<ColumnDef<TData>, 'accessorKey'> & {
   accessorFn?: AccessorFnColumnDef<TData>['accessorFn'];
