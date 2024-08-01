@@ -1,3 +1,5 @@
+export type TFormats = 'email';
+
 export type TValidatorErrorMessage = string;
 
 export type TRequiredValidationParams = boolean | [boolean, TValidatorErrorMessage];
@@ -12,13 +14,16 @@ export type TMinimumValidationParams = number | [number, TValidatorErrorMessage]
 
 export type TMaximumValidationParams = number | [number, TValidatorErrorMessage];
 
+export type TFormatValidationParams = TFormats | [TFormats, TValidatorErrorMessage];
+
 export type TValidationParams =
   | TRequiredValidationParams
   | TMinLengthValidationParams
   | TMaxLengthValidationParams
   | TPatternValidationParams
   | TMinimumValidationParams
-  | TMaximumValidationParams;
+  | TMaximumValidationParams
+  | TFormatValidationParams;
 
 export type TValidators =
   | 'required'
@@ -26,7 +31,8 @@ export type TValidators =
   | 'maxLength'
   | 'pattern'
   | 'minimum'
-  | 'maximum';
+  | 'maximum'
+  | 'format';
 
 export interface IBaseFieldParams {
   label?: string;

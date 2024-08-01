@@ -1,5 +1,9 @@
 import { UIElementV2 } from '@/components/providers/Validator/types';
 import {
+  FormatValueValidator,
+  IFormatValueValidatorParams,
+} from '@/components/providers/Validator/value-validators/format.value.validator';
+import {
   IMaxLengthValueValidatorParams,
   MaxLengthValueValidator,
 } from '@/components/providers/Validator/value-validators/max-length.value.validator';
@@ -85,6 +89,8 @@ export class UIElement {
         return this.getMinimumParams();
       case 'maximum':
         return this.getMaximumParams();
+      case 'format':
+        return this.getFormatParams();
       default:
         throw new Error('Invalid key');
     }
@@ -187,7 +193,7 @@ export class UIElement {
   }
 
   private getMinimumParams() {
-    const _params = this.element.validation.pattern;
+    const _params = this.element.validation.minimum;
 
     if (MinimumValueValidator.isMinimumParams(_params)) {
       if (Array.isArray(_params)) {
@@ -210,7 +216,7 @@ export class UIElement {
   }
 
   private getMaximumParams() {
-    const _params = this.element.validation.pattern;
+    const _params = this.element.validation.maximum;
 
     if (MaximumValueValidator.isMaximumParams(_params)) {
       if (Array.isArray(_params)) {
@@ -224,6 +230,29 @@ export class UIElement {
 
       const params: IMaximumValueValidatorParams = {
         maximum,
+      };
+
+      return params;
+    }
+
+    throw new Error('Invalid params');
+  }
+
+  private getFormatParams() {
+    const _params = this.element.validation.format;
+
+    if (FormatValueValidator.isFormatParams(_params)) {
+      if (Array.isArray(_params)) {
+        return {
+          required: _params[0],
+          message: _params[1],
+        };
+      }
+
+      const format = _params;
+
+      const params: IFormatValueValidatorParams = {
+        format,
       };
 
       return params;
