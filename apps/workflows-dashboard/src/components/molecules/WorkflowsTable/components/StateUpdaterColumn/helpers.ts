@@ -13,29 +13,32 @@ export interface IEventDropdownOption {
 
 export const getEventOptions = (
   workflowDefinition: IWorkflowDefinition,
+  currentState: string,
 ): IEventDropdownOption[] => {
   const stateKeys = getStateOptions(workflowDefinition);
 
   const eventOptions: IEventDropdownOption[] = [];
 
-  stateKeys.forEach(stateKey => {
-    //@ts-ignore
-    const state = workflowDefinition.definition?.states?.[stateKey]?.on || {};
+  stateKeys
+    .filter(key => key === currentState)
+    .forEach(stateKey => {
+      //@ts-ignore
+      const state = workflowDefinition.definition?.states?.[stateKey]?.on || {};
 
-    const option = {} as IEventDropdownOption;
-    option.name = stateKey;
-    option.value = stateKey;
-    option.options = [];
+      const option = {} as IEventDropdownOption;
+      option.name = stateKey;
+      option.value = stateKey;
+      option.options = [];
 
-    Object.keys(state).forEach(eventKey => {
-      option.options!.push({
-        name: eventKey,
-        value: eventKey,
+      Object.keys(state).forEach(eventKey => {
+        option.options!.push({
+          name: eventKey,
+          value: eventKey,
+        });
       });
-    });
 
-    eventOptions.push(option);
-  });
+      eventOptions.push(option);
+    });
 
   return eventOptions;
 };
