@@ -55,7 +55,7 @@ export class UIElement {
   }
 
   getValidatorsParams() {
-    const validatorKeys = Object.keys(this.element.validation);
+    const validatorKeys = Object.keys(this.element.validation || {});
 
     return validatorKeys.map(key => ({
       validator: key,

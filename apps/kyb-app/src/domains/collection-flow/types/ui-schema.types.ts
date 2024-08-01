@@ -1,3 +1,4 @@
+import { UIElementV2 } from '@/components/providers/Validator/types';
 import { AnyObject } from '@ballerine/ui';
 
 export type UIElementType = string;
@@ -63,4 +64,5 @@ export interface UIElement<TElementParams = AnyObject> {
   options: TElementParams;
   valueDestination?: UIElementDestination;
   elements?: UIElement<AnyObject>[];
+  validation?: UIElementV2['validation'];
 }

@@ -17,6 +17,7 @@ export interface IValidationError {
 }
 
 export const useValidate = ({ elements, context }: IUseValidateParams) => {
+  console.log({ CONTEXT: context });
   const validate = useCallback(() => {
     const validatorManager = new ValueValidatorManager();
     let errors: IValidationError[] = [];
@@ -49,7 +50,6 @@ export const useValidate = ({ elements, context }: IUseValidateParams) => {
       for (let i = 0; i < elements.length; i++) {
         const element = elements[i] as UIElementV2;
         const uiElement = new UIElement(element, context, stack);
-
         if (!element) continue;
 
         if (element.type === 'field') {
@@ -64,9 +64,14 @@ export const useValidate = ({ elements, context }: IUseValidateParams) => {
 
           if (!Array.isArray(value)) continue;
 
-          value?.forEach((item, index) => {
+          value?.forEach((_, index) => {
             validateFn(element.children!, context, [...stack, index]);
           });
+          continue;
+        }
+
+        if (element.children) {
+          validateFn(element.children, context, stack);
         }
       }
     };
