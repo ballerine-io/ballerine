@@ -4,9 +4,17 @@ import {
   MaxLengthValueValidator,
 } from '@/components/providers/Validator/value-validators/max-length.value.validator';
 import {
+  IMaximumValueValidatorParams,
+  MaximumValueValidator,
+} from '@/components/providers/Validator/value-validators/maximum.value.validator';
+import {
   IMinLengthValueValidatorParams,
   MinLengthValueValidator,
 } from '@/components/providers/Validator/value-validators/min-length.value.validator';
+import {
+  IMinimumValueValidatorParams,
+  MinimumValueValidator,
+} from '@/components/providers/Validator/value-validators/minimum.value.validator';
 import {
   IPatternValidatorParams,
   PatternValueValidator,
@@ -73,6 +81,10 @@ export class UIElement {
         return this.getMaxLengthParams();
       case 'pattern':
         return this.getPatternParams();
+      case 'minimum':
+        return this.getMinimumParams();
+      case 'maximum':
+        return this.getMaximumParams();
       default:
         throw new Error('Invalid key');
     }
@@ -166,6 +178,52 @@ export class UIElement {
       const params: IPatternValidatorParams = {
         pattern,
         message: `Value must match {pattern}.`,
+      };
+
+      return params;
+    }
+
+    throw new Error('Invalid params');
+  }
+
+  private getMinimumParams() {
+    const _params = this.element.validation.pattern;
+
+    if (MinimumValueValidator.isMinimumParams(_params)) {
+      if (Array.isArray(_params)) {
+        return {
+          required: _params[0],
+          message: _params[1],
+        };
+      }
+
+      const minimum = _params;
+
+      const params: IMinimumValueValidatorParams = {
+        minimum,
+      };
+
+      return params;
+    }
+
+    throw new Error('Invalid params');
+  }
+
+  private getMaximumParams() {
+    const _params = this.element.validation.pattern;
+
+    if (MaximumValueValidator.isMaximumParams(_params)) {
+      if (Array.isArray(_params)) {
+        return {
+          required: _params[0],
+          message: _params[1],
+        };
+      }
+
+      const maximum = _params;
+
+      const params: IMaximumValueValidatorParams = {
+        maximum,
       };
 
       return params;
