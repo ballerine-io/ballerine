@@ -75,7 +75,7 @@
     "aws-cloudfront-sign": "3.0.2",
     "axios": "^1.6.8",
     "axios-retry": "^4.0.0",
-    "ballerine-nestjs-typebox": "3.0.2-next.9",
+    "ballerine-nestjs-typebox": "3.0.2-next.11",
     "base64-stream": "^1.0.0",
     "bcrypt": "5.1.0",
     "class-transformer": "0.5.1",

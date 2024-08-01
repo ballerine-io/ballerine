@@ -1,3 +1,4 @@
+import { CloneWorkflowDefinitionButton } from '@/components/molecules/CloneWorkflowDefinitionButton';
 import { JSONViewButton } from '@/components/molecules/JSONViewButton';
 import { IWorkflowDefinition } from '@/domains/workflow-definitions';
 import { valueOrNA } from '@/utils/value-or-na';
@@ -73,6 +74,10 @@ export const workflowDefinitionsTableColumns = [
   columnHelper.accessor('version', {
     cell: info => info.getValue<number>(),
     header: () => 'Version',
+  }),
+  columnHelper.accessor('id', {
+    cell: info => <CloneWorkflowDefinitionButton workflowDefinitionId={info.getValue()} />,
+    header: () => '',
   }),
   columnHelper.accessor('id', {
     cell: info => (

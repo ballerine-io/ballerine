@@ -61,6 +61,7 @@ export const ConfigSchema = z
     theme: WorkflowDefinitionConfigThemeSchema.optional(),
     hasUboOngoingMonitoring: z.boolean().optional(),
     maxBusinessReports: z.number().nonnegative().optional(),
+    isMerchantMonitoringEnabled: z.boolean().optional(),
   })
   .strict()
   .optional();
