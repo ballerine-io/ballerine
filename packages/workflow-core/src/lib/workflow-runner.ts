@@ -109,7 +109,7 @@ export class WorkflowRunner {
       invokeRiskRulesAction,
       invokeChildWorkflowAction,
       invokeWorkflowTokenAction,
-      secretsManage,
+      secretsManager,
     }: WorkflowRunnerArgs,
     debugMode = false,
   ) {
