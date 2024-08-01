@@ -83,7 +83,7 @@ export const serverEnvSchema = {
   AWS_SECRETS_MANAGER_PREFIX: z
     .string()
     .optional()
-    .default('customers')
+    .default('/dev/customers/')
     .describe('AWS Secrets Manager prefix'),
 };
 
