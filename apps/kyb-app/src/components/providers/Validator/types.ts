@@ -10,14 +10,23 @@ export type TPatternValidationParams = string | [string, TValidatorErrorMessage]
 
 export type TMinimumValidationParams = number | [number, TValidatorErrorMessage];
 
+export type TMaximumValidationParams = number | [number, TValidatorErrorMessage];
+
 export type TValidationParams =
   | TRequiredValidationParams
   | TMinLengthValidationParams
   | TMaxLengthValidationParams
   | TPatternValidationParams
-  | TMinimumValidationParams;
+  | TMinimumValidationParams
+  | TMaximumValidationParams;
 
-export type TValidators = 'required' | 'minLength' | 'maxLength' | 'pattern' | 'minimum';
+export type TValidators =
+  | 'required'
+  | 'minLength'
+  | 'maxLength'
+  | 'pattern'
+  | 'minimum'
+  | 'maximum';
 
 export interface IBaseFieldParams {
   label?: string;
