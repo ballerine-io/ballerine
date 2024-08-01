@@ -37,12 +37,14 @@ const removeLastKeyFromPath = (path: string) => {
   return path?.split('.')?.slice(0, -1)?.join('.');
 };
 
-export const setPluginStatusToSuccess = ({
-  resultDestinationPath,
-  context,
+export const setPluginStatus = ({
   data,
+  status,
+  context,
+  resultDestinationPath,
   ignoreLastKey = true,
 }: {
+  status: keyof typeof ProcessStatus;
   resultDestinationPath: string;
   context: Record<string, unknown>;
   data: Record<string, unknown>;
@@ -60,7 +62,7 @@ export const setPluginStatusToSuccess = ({
     return set(
       resultWithData,
       `${ignoreLastKey ? resultDestinationPathWithoutLastKey : resultDestinationPath}.status`,
-      ProcessStatus.SUCCESS,
+      status,
     );
   }
 
@@ -120,10 +122,13 @@ export class HookCallbackHandlerService {
     }
 
     if (processName === 'aml-unified-api') {
-      const aml = data.data as {
-        id: string;
-        endUserId: string;
-        hits: Array<Record<string, unknown>>;
+      const aml = {
+        ...(data.data as {
+          id: string;
+          endUserId: string;
+          hits: Array<Record<string, unknown>>;
+        }),
+        vendor: data.vendor,
       };
 
       const attributePath = resultDestinationPath.split('.');
@@ -168,10 +173,11 @@ export class HookCallbackHandlerService {
       );
     }
 
-    return setPluginStatusToSuccess({
-      resultDestinationPath,
-      context: workflowRuntime.context,
+    return setPluginStatus({
       data,
+      resultDestinationPath,
+      status: ProcessStatus.SUCCESS,
+      context: workflowRuntime.context,
     });
   }
 
@@ -250,11 +256,12 @@ export class HookCallbackHandlerService {
         this.logger.error(error);
       });
 
-    return setPluginStatusToSuccess({
+    return setPluginStatus({
       resultDestinationPath,
       context: workflowRuntime.context,
       data: reportData,
       ignoreLastKey: false,
+      status: ProcessStatus.SUCCESS,
     });
   }
 

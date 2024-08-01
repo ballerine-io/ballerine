@@ -8,6 +8,7 @@ import {
   ChildPluginCallbackOutput,
   Error as ErrorEnum,
   ObjectValues,
+  SecretsManager,
   WorkflowEvent,
   WorkflowEvents,
   WorkflowEventWithoutState,
@@ -87,6 +88,7 @@ export class WorkflowRunner {
   #__debugMode: boolean;
   #__runtimeId: string;
   events: any;
+  #__secretsManager: SecretsManager | undefined;
 
   public get workflow() {
     return this.#__workflow;
@@ -107,6 +109,7 @@ export class WorkflowRunner {
       invokeRiskRulesAction,
       invokeChildWorkflowAction,
       invokeWorkflowTokenAction,
+      secretsManager,
     }: WorkflowRunnerArgs,
     debugMode = false,
   ) {
@@ -115,6 +118,7 @@ export class WorkflowRunner {
     this.#__extensions = extensions ?? {};
     this.#__extensions.statePlugins ??= [];
     this.#__debugMode = debugMode;
+    this.#__secretsManager = secretsManager;
 
     this.#__extensions.dispatchEventPlugins = this.initiateDispatchEventPlugins(
       this.#__extensions.dispatchEventPlugins ?? [],
@@ -202,6 +206,7 @@ export class WorkflowRunner {
         successAction: apiPluginSchema.successAction,
         errorAction: apiPluginSchema.errorAction,
         persistResponseDestination: apiPluginSchema.persistResponseDestination,
+        secretsManager: this.#__secretsManager,
       });
     });
   }
@@ -282,7 +287,7 @@ export class WorkflowRunner {
     callbackAction?: ChildWorkflowPluginParams['action'],
   ) {
     return childPluginSchemas?.map(childPluginSchema => {
-      console.log('Initiating child plugin', childPluginSchema);
+      logger.log('Initiating child plugin', childPluginSchema);
       const transformers = WorkflowRunner.fetchTransformers(childPluginSchema.transformers) || [];
 
       return new ChildWorkflowPlugin({

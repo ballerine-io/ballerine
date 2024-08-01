@@ -11,6 +11,7 @@ export const createWorkflow: TCreateWorkflow = ({
   invokeRiskRulesAction,
   invokeChildWorkflowAction,
   invokeWorkflowTokenAction,
+  secretsManager,
 }) =>
   new WorkflowRunner({
     config,
@@ -22,4 +23,5 @@ export const createWorkflow: TCreateWorkflow = ({
     invokeRiskRulesAction,
     invokeChildWorkflowAction,
     invokeWorkflowTokenAction,
+    secretsManager,
   });

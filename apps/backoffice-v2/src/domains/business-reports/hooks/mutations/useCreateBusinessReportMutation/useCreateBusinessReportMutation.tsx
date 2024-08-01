@@ -4,6 +4,7 @@ import { t } from 'i18next';
 import { createBusinessReport } from '@/domains/business-reports/fetchers';
 import { TBusinessReportType } from '@/domains/business-reports/types';
 import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
+import { HttpError } from '@/common/errors/http-error';
 
 export const useCreateBusinessReportMutation = ({
   reportType,
@@ -51,6 +52,12 @@ export const useCreateBusinessReportMutation = ({
       onSuccess?.(data);
     },
     onError: error => {
+      if (error instanceof HttpError && error.code === 400) {
+        toast.error(error.message);
+
+        return;
+      }
+
       toast.error(t(`toast:business_report_creation.error`, { errorMessage: error.message }));
     },
   });
