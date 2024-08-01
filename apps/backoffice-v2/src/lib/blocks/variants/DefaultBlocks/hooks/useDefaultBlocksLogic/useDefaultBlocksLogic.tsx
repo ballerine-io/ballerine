@@ -124,6 +124,7 @@ export const useDefaultBlocksLogic = () => {
     mainRepresentative,
     mainContact,
     openCorporate: _openCorporate,
+    associatedCompanies: _associatedCompanies,
     ...entityDataAdditionalInfo
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
   const { website: websiteBasicRequirement, processingDetails, ...storeInfo } = store ?? {};
