@@ -77,7 +77,7 @@ export const getTabsToBlocksMap = ({
       ...processingDetailsBlock,
       ...websiteBasicRequirementBlock,
     ],
-    [Tab.DOCUMENTS]: [...parentDocumentBlocks, ...directorsDocumentsBlocks],
+    [Tab.DOCUMENTS]: [...parentDocumentBlocks],
     [Tab.UBOS]: [
       ...ubosUserProvidedBlock,
       ...ubosRegistryProvidedBlock,

@@ -17,6 +17,8 @@ export class ApiPlugin {
   errorAction?: string;
   persistResponseDestination?: string;
   displayName: string | undefined;
+  secretsManager: IApiPluginParams['secretsManager'];
+  memoizedSecrets: Record<string, string> | undefined;
 
   constructor(pluginParams: IApiPluginParams) {
     this.name = pluginParams.name;
@@ -33,6 +35,7 @@ export class ApiPlugin {
     this.successAction = pluginParams.successAction;
     this.errorAction = pluginParams.errorAction;
     this.persistResponseDestination = pluginParams.persistResponseDestination;
+    this.secretsManager = pluginParams.secretsManager;
 
     this.displayName = pluginParams.displayName;
   }
@@ -55,7 +58,7 @@ export class ApiPlugin {
         }
       }
 
-      const urlWithoutPlaceholders = this.replaceValuePlaceholders(this.url, context);
+      const urlWithoutPlaceholders = await this.replaceValuePlaceholders(this.url, context);
 
       logger.log('API Plugin - Sending API request', {
         url: urlWithoutPlaceholders,
@@ -66,7 +69,7 @@ export class ApiPlugin {
         urlWithoutPlaceholders,
         this.method,
         requestPayload,
-        this.composeRequestHeaders(this.headers!, context),
+        await this.composeRequestHeaders(this.headers!, context),
       );
 
       logger.log('API Plugin - Received response', {
@@ -209,33 +212,65 @@ export class ApiPlugin {
     return { [returnArgKey]: isValid, errorMessage };
   }
 
-  composeRequestHeaders(headers: HeadersInit, context: TContext) {
-    return Object.fromEntries(
-      Object.entries(headers).map(header => [
+  async composeRequestHeaders(headers: HeadersInit, context: TContext) {
+    const headersEntries = await Promise.all(
+      Object.entries(headers).map(async header => [
         header[0],
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        this.replaceValuePlaceholders(header[1], context),
+        await this.replaceValuePlaceholders(header[1], context),
       ]),
     );
+
+    return Object.fromEntries(headersEntries);
   }
 
-  replaceValuePlaceholders(content: string, context: TContext) {
+  async replaceValuePlaceholders(content: string, context: TContext) {
     const placeholders = content.match(/{(.*?)}/g);
 
     if (!placeholders) return content;
 
     let replacedContent = content;
-    placeholders.forEach(placeholder => {
+
+    for (const placeholder of placeholders) {
       const variableKey = placeholder.replace(/{|}/g, '');
-      const isPlaceholderSecret = variableKey.includes('secret.');
-      const placeholderValue = isPlaceholderSecret
-        ? `${process.env[variableKey.replace('secret.', '')]}`
-        : // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-          `${this.fetchObjectPlaceholderValue(context, variableKey)}`;
-      replacedContent = replacedContent.replace(placeholder, placeholderValue);
-    });
+
+      const isSystemSecret = variableKey.includes('secret.');
+      const isSecret = variableKey.includes('secrets.');
+
+      if (isSystemSecret) {
+        const secretKey = variableKey.replace('secret.', '');
+        const secretValue = `${this.getSystemSecret(secretKey)}`;
+
+        replacedContent = replacedContent.replace(placeholder, secretValue);
+      } else if (isSecret) {
+        const secretKey = variableKey.replace('secrets.', '');
+        const secretValue = `${await this.fetchSecret(secretKey)}`;
+
+        replacedContent = replacedContent.replace(placeholder, secretValue);
+      } else {
+        const placeholderValue = `${this.fetchObjectPlaceholderValue(context, variableKey)}`;
+
+        replacedContent = replacedContent.replace(placeholder, placeholderValue);
+      }
+    }
 
     return replacedContent;
+  }
+
+  getSystemSecret(key: string) {
+    return process.env[key] || '';
+  }
+
+  async fetchSecret(key: string) {
+    if (!this.secretsManager) {
+      throw new Error('No secret manager found.');
+    }
+
+    if (!this.memoizedSecrets) {
+      this.memoizedSecrets = await this.secretsManager.getAll();
+    }
+
+    return this.memoizedSecrets[key] || '';
   }
 
   fetchObjectPlaceholderValue(record: AnyRecord, path: string) {

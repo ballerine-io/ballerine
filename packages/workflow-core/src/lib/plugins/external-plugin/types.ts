@@ -1,11 +1,9 @@
 import { TJsonSchema, Transformers, Validator } from '../../utils';
 import { THelperFormatingLogic } from '../../utils/context-transformers/types';
 import { ActionablePlugin } from '../types';
-import {
-  ChildWorkflowPluginParams,
-  ISerializableMappingPluginParams,
-} from '../common-plugin/types';
+
 import { AnyRecord } from '@ballerine/common';
+import { SecretsManager } from '@/lib/types';
 
 export interface ValidatableTransformer {
   transformers?: Transformers;
@@ -24,6 +22,7 @@ export interface IApiPluginParams {
   errorAction?: string;
   persistResponseDestination?: string;
   displayName: string | undefined;
+  secretsManager?: SecretsManager;
 
   invoke?(...args: any[]): any;
 }

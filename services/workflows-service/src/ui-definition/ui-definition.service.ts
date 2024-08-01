@@ -1,6 +1,7 @@
-import type { TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
+import { replaceNullsWithUndefined } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
 import { Prisma, UiDefinitionContext } from '@prisma/client';
 
@@ -82,5 +83,19 @@ export class UiDefinitionService {
       },
       projectIds,
     );
+  }
+
+  async cloneUIDefinitionById(id: string, projectId: TProjectId) {
+    const {
+      createdAt,
+      updatedAt,
+      id: _,
+      ...uiDefinition
+    } = await this.repository.findById(id, {}, [projectId]);
+
+    //@ts-ignore
+    const uiDefinitionCopy = await this.create({ data: replaceNullsWithUndefined(uiDefinition) });
+
+    return uiDefinitionCopy;
   }
 }

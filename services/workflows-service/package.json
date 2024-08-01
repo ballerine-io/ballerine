@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflows-service",
   "private": false,
-  "version": "0.7.24",
+  "version": "0.7.28",
   "description": "workflow-service",
   "scripts": {
     "spellcheck": "cspell \"*\"",
@@ -44,11 +44,12 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.347.1",
+    "@aws-sdk/client-secrets-manager": "^3.620.1",
     "@aws-sdk/lib-storage": "3.347.1",
     "@aws-sdk/s3-request-presigner": "3.347.1",
-    "@ballerine/common": "0.9.16",
-    "@ballerine/workflow-core": "0.6.25",
-    "@ballerine/workflow-node-sdk": "0.6.25",
+    "@ballerine/common": "0.9.18",
+    "@ballerine/workflow-core": "0.6.29",
+    "@ballerine/workflow-node-sdk": "0.6.29",
     "@faker-js/faker": "^7.6.0",
     "@nestjs/axios": "^2.0.0",
     "@nestjs/common": "^9.3.12",
@@ -74,7 +75,7 @@
     "aws-cloudfront-sign": "3.0.2",
     "axios": "^1.6.8",
     "axios-retry": "^4.0.0",
-    "ballerine-nestjs-typebox": "3.0.2-next.9",
+    "ballerine-nestjs-typebox": "3.0.2-next.11",
     "base64-stream": "^1.0.0",
     "bcrypt": "5.1.0",
     "class-transformer": "0.5.1",

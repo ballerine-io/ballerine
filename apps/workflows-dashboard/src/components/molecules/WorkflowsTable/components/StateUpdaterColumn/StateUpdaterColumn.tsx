@@ -42,7 +42,10 @@ export const StateUpdaterColumn: FunctionComponent<IStateUpdaterColumnProps> = (
   const { mutate: sendWorkflowEvent, isLoading: isSendingWorkflowEvent } =
     useSendWorkflowEventMutation();
   const options = useMemo(() => getStateOptions(workflowDefinition), [workflowDefinition]);
-  const eventOptions = useMemo(() => getEventOptions(workflowDefinition), [workflowDefinition]);
+  const eventOptions = useMemo(
+    () => getEventOptions(workflowDefinition, state),
+    [workflowDefinition, state],
+  );
   const [pickedEvent, setPickedEvent] = useState<string | null>(null);
 
   const handleStateChange = useCallback(

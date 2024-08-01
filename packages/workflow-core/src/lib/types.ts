@@ -80,6 +80,7 @@ export interface WorkflowOptions {
   invokeRiskRulesAction?: RiskRulePlugin['action'];
   invokeChildWorkflowAction?: ChildCallabackable['invokeChildWorkflowAction'];
   invokeWorkflowTokenAction?: WorkflowTokenPluginParams['action'];
+  secretsManager?: SecretsManager;
 }
 
 export interface WorkflowRunnerArgs {
@@ -92,6 +93,7 @@ export interface WorkflowRunnerArgs {
   invokeRiskRulesAction?: RiskRulePlugin['action'];
   invokeChildWorkflowAction?: ChildWorkflowPluginParams['action'];
   invokeWorkflowTokenAction?: WorkflowTokenPluginParams['action'];
+  secretsManager?: SecretsManager;
 }
 
 export type WorkflowEventWithoutState = Omit<WorkflowEvent, 'state'>;
@@ -132,3 +134,7 @@ export const WorkflowEvents = {
   STATUS_UPDATE: 'STATUS_UPDATE',
   EVALUATION_ERROR: 'EVALUATION_ERROR',
 } as const;
+
+export type SecretsManager = {
+  getAll: () => Promise<Record<string, string>>;
+};

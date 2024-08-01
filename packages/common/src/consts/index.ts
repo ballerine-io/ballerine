@@ -88,10 +88,12 @@ export type TProcessStatuses = typeof ProcessStatuses;
 
 export const UnifiedApiReason = {
   NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
+  NOT_AVAILABLE: 'NOT_AVAILABLE',
 } as const;
 
 export const UnifiedApiReasons = [
   UnifiedApiReason.NOT_IMPLEMENTED,
+  UnifiedApiReason.NOT_AVAILABLE,
 ] as const satisfies ReadonlyArray<(typeof UnifiedApiReason)[keyof typeof UnifiedApiReason]>;
 
 export type TUnifiedApiReason = (typeof UnifiedApiReasons)[number];

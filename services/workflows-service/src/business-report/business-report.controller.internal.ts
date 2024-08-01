@@ -28,6 +28,7 @@ import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-u
 import { BusinessReportHookBodyDto } from '@/business-report/dtos/business-report-hook-body.dto';
 import { BusinessReportHookSearchQueryParamsDto } from '@/business-report/dtos/business-report-hook-search-query-params.dto';
 import { QueryMode } from '@/common/query-filters/query-mode';
+import { isNumber } from 'lodash';
 
 @common.Controller('internal/business-reports')
 @swagger.ApiExcludeController()
@@ -55,6 +56,19 @@ export class BusinessReportControllerInternal {
     }: CreateBusinessReportDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
+    const customer = await this.customerService.getByProjectId(currentProjectId);
+    const maxBusinessReports = customer.config?.maxBusinessReports;
+
+    if (isNumber(maxBusinessReports) && maxBusinessReports > 0) {
+      const businessReportsCount = await this.businessReportService.count({}, [currentProjectId]);
+
+      if (businessReportsCount >= maxBusinessReports) {
+        throw new BadRequestException(
+          `You have reached the maximum number of business reports allowed (${maxBusinessReports}).`,
+        );
+      }
+    }
+
     let business: Pick<Business, 'id' | 'correlationId'> | undefined;
     const merchantNameWithDefault = merchantName || 'Not detected';
 
