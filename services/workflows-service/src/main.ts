@@ -80,6 +80,13 @@ const main = async () => {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
+          connectSrc: [
+            "'self'",
+            'https://api-dev.ballerine.io',
+            'https://api-sb.ballerine.app',
+            'https://api-sb.eu.ballerine.app',
+            'https://api-dev.eu.ballerine.io',
+          ],
         },
       },
     }),
