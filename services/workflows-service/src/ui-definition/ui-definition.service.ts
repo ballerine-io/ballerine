@@ -24,11 +24,15 @@ export class UiDefinitionService {
     return await this.repository.findById(id, args, projectIds);
   }
 
+  async findByArgs(args: Prisma.UiDefinitionFindFirstOrThrowArgs, projectIds: TProjectIds) {
+    return await this.repository.findByArgs(args, projectIds);
+  }
+
   async getByWorkflowDefinitionId(
     workflowDefinitionId: string,
     uiContext: keyof typeof UiDefinitionContext,
     projectIds: TProjectIds,
-    args: Omit<Prisma.UiDefinitionFindFirstOrThrowArgs, 'where'>,
+    args: Prisma.UiDefinitionFindFirstOrThrowArgs,
   ) {
     return await this.repository.findByWorkflowDefinitionId(
       workflowDefinitionId,
@@ -46,12 +50,12 @@ export class UiDefinitionService {
   ) {
     const runtime = await this.workflowRuntimeRepository.findById(runtimeId, {}, projectIds);
 
-    return this.getByWorkflowDefinitionId(
-      runtime.workflowDefinitionId,
-      uiContext,
-      projectIds,
-      args,
-    );
+    return this.getByWorkflowDefinitionId(runtime.workflowDefinitionId, uiContext, projectIds, {
+      ...args,
+      where: {
+        ...(runtime.uiDefinitionId ? { id: runtime.uiDefinitionId } : {}),
+      },
+    });
   }
 
   async list(projectIds: TProjectIds) {

@@ -10,6 +10,7 @@ export class ApiPlugin {
   stateNames: string[];
   url: string;
   method: IApiPluginParams['method'];
+  vendor?: IApiPluginParams['vendor'];
   headers: IApiPluginParams['headers'];
   request: IApiPluginParams['request'];
   response?: IApiPluginParams['response'];
@@ -41,17 +42,21 @@ export class ApiPlugin {
   }
 
   async invoke(context: TContext) {
+    let requestPayload;
+
     try {
-      const requestPayload = await this.transformData(this.request.transformers, context);
+      if (this.request && 'transformers' in this.request) {
+        requestPayload = await this.transformData(this.request.transformers, context);
 
-      const { isValidRequest, errorMessage } = await this.validateContent(
-        this.request.schemaValidator,
-        requestPayload,
-        'Request',
-      );
+        const { isValidRequest, errorMessage } = await this.validateContent(
+          this.request.schemaValidator,
+          requestPayload,
+          'Request',
+        );
 
-      if (!isValidRequest) {
-        return this.returnErrorResponse(errorMessage!);
+        if (!isValidRequest) {
+          return this.returnErrorResponse(errorMessage!);
+        }
       }
 
       const urlWithoutPlaceholders = await this.replaceValuePlaceholders(this.url, context);
@@ -121,35 +126,40 @@ export class ApiPlugin {
   async makeApiRequest(
     url: string,
     method: ApiPlugin['method'],
-    payload: AnyRecord,
+    payload: AnyRecord | undefined,
     headers: HeadersInit,
   ): Promise<{
     ok: boolean;
     json: () => Promise<unknown>;
     statusText: string;
   }> {
-    const requestParams = {
+    let _url: string = url;
+
+    const _requestParams = {
       method: method,
       headers: headers,
+      body: undefined,
     };
 
-    for (const key of Object.keys(payload)) {
-      if (typeof payload[key] === 'string') {
-        payload[key] = await this.replaceValuePlaceholders(payload[key] as string, payload);
+    if (payload) {
+      for (const key of Object.keys(payload)) {
+        if (typeof payload[key] === 'string') {
+          payload[key] = await this.replaceValuePlaceholders(payload[key] as string, payload);
+        }
+      }
+
+      // @TODO: Use an enum over string literals for HTTP methods
+      if (this.method.toUpperCase() !== 'GET') {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        _requestParams.body = JSON.stringify(payload);
+      } else if (this.method.toUpperCase() === 'GET') {
+        const queryParams = new URLSearchParams(payload as Record<string, string>).toString();
+        _url = `${_url}?${queryParams}`;
       }
     }
 
-    // @TODO: Use an enum over string literals for HTTP methods
-    if (this.method.toUpperCase() !== 'GET' && payload) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      requestParams.body = JSON.stringify(payload);
-    } else if (this.method.toUpperCase() === 'GET' && payload) {
-      const queryParams = new URLSearchParams(payload as Record<string, string>).toString();
-      url = `${url}?${queryParams}`;
-    }
-
-    const res = await fetch(url, requestParams);
+    const res = await fetch(_url, _requestParams);
 
     if ([204, 202].includes(res.status)) {
       return {
@@ -162,7 +172,7 @@ export class ApiPlugin {
     return res;
   }
 
-  async transformData(transformers: Transformers, record: AnyRecord) {
+  async transformData(transformers: Transformers | undefined, record: AnyRecord) {
     let mutatedRecord = record;
 
     if (!transformers) {

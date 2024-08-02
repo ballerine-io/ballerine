@@ -1,5 +1,5 @@
 import type { MachineConfig, MachineOptions } from 'xstate';
-import type { HttpPlugins, CommonPlugins, StatePlugins } from './plugins/types';
+import type { CommonPlugins, HttpPlugins, StatePlugins } from './plugins/types';
 import type {
   IDispatchEventPluginParams,
   ISerializableHttpPluginParams,
@@ -10,6 +10,7 @@ import type {
   ISerializableCommonPluginParams,
   ISerializableMappingPluginParams,
   ISerializableRiskRulesPlugin,
+  WorkflowTokenPluginParams,
 } from './plugins/common-plugin/types';
 import type { TContext } from './utils';
 import type { ChildCallabackable } from './workflow-runner';
@@ -58,6 +59,8 @@ export interface ChildToParentCallback {
   childCallbackResults?: Array<ChildWorkflowCallback & { definitionId: string }>;
 }
 
+export type TWorkflowTokenPluginCallback = WorkflowTokenCallbackInput;
+
 export interface WorkflowContext {
   id?: string;
   state?: any;
@@ -76,6 +79,7 @@ export interface WorkflowOptions {
   extensions?: WorkflowExtensions;
   invokeRiskRulesAction?: RiskRulePlugin['action'];
   invokeChildWorkflowAction?: ChildCallabackable['invokeChildWorkflowAction'];
+  invokeWorkflowTokenAction?: WorkflowTokenPluginParams['action'];
   secretsManager?: SecretsManager;
 }
 
@@ -88,6 +92,7 @@ export interface WorkflowRunnerArgs {
   extensions?: WorkflowExtensions;
   invokeRiskRulesAction?: RiskRulePlugin['action'];
   invokeChildWorkflowAction?: ChildWorkflowPluginParams['action'];
+  invokeWorkflowTokenAction?: WorkflowTokenPluginParams['action'];
   secretsManager?: SecretsManager;
 }
 
@@ -110,6 +115,12 @@ export type ChildPluginCallbackOutput = {
     event?: string;
     config: AnyRecord;
   };
+};
+
+export type WorkflowTokenCallbackInput = {
+  uiDefinitionId: string;
+  workflowRuntimeId: string;
+  expiresInMinutes?: number;
 };
 
 export type SerializableTransformer = {
