@@ -394,13 +394,13 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
         {
           transformer: 'jmespath',
           mapping: `{
-              templateId: 'd-00a0d5d14cb14fbb9034b53c6ef7e5fa',
-              adapter: '{secret.MAIL_ADAPTER}'
-              from: 'no-reply@ballerine.com',
-              receivers: [mainRepresentative.email],
-              name: mainRepresentative.fullName,
-              provider: customerName,
-              url: join('',['{secret.KYB_EXAMPLE_CORS_ORIGIN[0]}?token=',token])
+                  customerName: metadata.customerName,
+                  collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
+                  from: 'no-reply@ballerine.com',
+                  receivers: [entity.data.additionalInfo.mainRepresentative.email],
+                  language: workflowRuntimeConfig.language,
+                  templateId: 'd-8949519316074e03909042cfc5eb4f02',
+                  adapter: '{secret.MAIL_ADAPTER}'
           }`, // jmespath
         },
       ],

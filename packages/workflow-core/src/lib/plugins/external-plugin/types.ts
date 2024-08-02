@@ -14,6 +14,7 @@ export interface IApiPluginParams {
   pluginKind?: string;
   stateNames: string[];
   url: string;
+  vendor?: string;
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
   request?: ValidatableTransformer;
   response?: ValidatableTransformer;

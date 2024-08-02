@@ -10,6 +10,7 @@ export class ApiPlugin {
   stateNames: string[];
   url: string;
   method: IApiPluginParams['method'];
+  vendor?: IApiPluginParams['vendor'];
   headers: IApiPluginParams['headers'];
   request: IApiPluginParams['request'];
   response?: IApiPluginParams['response'];

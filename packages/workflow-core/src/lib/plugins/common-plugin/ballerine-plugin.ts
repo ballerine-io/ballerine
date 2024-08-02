@@ -19,7 +19,11 @@ export class BallerineApiPlugin extends ApiPlugin {
       throw new Error(`Unknown plugin kind: ${params.pluginKind}`);
     }
 
-    if (params.pluginKind === 'individual-sanctions' || params.pluginKind === 'company-sanctions') {
+    if (
+      params.pluginKind === 'individual-sanctions' ||
+      params.pluginKind === 'company-sanctions' ||
+      params.pluginKind === 'ubo'
+    ) {
       if (!params.vendor) {
         throw new Error(`Missed vendor for: ${params.pluginKind}`);
       }

@@ -195,9 +195,17 @@ export class WorkflowRunner {
 
       return new apiPluginClass({
         name: apiPluginSchema.name,
+        vendor: apiPluginSchema.vendor,
         displayName: apiPluginSchema.displayName,
         stateNames: apiPluginSchema.stateNames,
-        pluginKind: apiPluginSchema.pluginKind,
+        pluginKind: apiPluginSchema.pluginKind as
+          | 'ubo'
+          | 'registry-information'
+          | 'individual-sanctions'
+          | 'company-sanctions'
+          | 'resubmission-email'
+          | 'session-email'
+          | 'invitation-email',
         url: apiPluginSchema.url,
         method: apiPluginSchema.method,
         headers: apiPluginSchema.headers,
