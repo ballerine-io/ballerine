@@ -5,6 +5,7 @@ import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 import { XstateVisualizer } from '@/components/organisms/XstateVisualizer';
 import { IWorkflow } from '@/domains/workflows/api/workflow';
 import { EditorCard } from '@/pages/WorkflowDefinition/components/EditorCard';
+import { WorkflowDefinitionEditor } from '@/pages/WorkflowDefinition/components/WorkflowDefinitionEditor/WorkflowDefinitionEditor';
 import { WorkflowDefinitionSummaryCard } from '@/pages/WorkflowDefinition/components/WorkflowDefinitionSummaryCard';
 import { useUpgradeWorkflowDefinitionVersionMutation } from '@/pages/WorkflowDefinition/hooks/useUpgradeWorkflowDefinitionVersionMutation';
 import { useWorkflowDefinitionEdit } from '@/pages/WorkflowDefinition/hooks/useWorkflowDefinitionEdit';
@@ -83,12 +84,7 @@ export const WorkflowDefinition = () => {
         </div>
         <div className="flex flex-row gap-2">
           <div className="w-1/2">
-            <EditorCard
-              title="Workflow Definition"
-              value={workflowDefinitionValue || {}}
-              onSave={workflowDefinitionValue ? handleWorkflowDefinitionSave : undefined}
-              onUpgrade={() => upgradeWorkflowDefinitionVersion({ workflowDefinitionId: data.id! })}
-            />
+            <WorkflowDefinitionEditor workflowDefinition={data} />
           </div>
           <div className="w-1/2">
             <EditorCard
