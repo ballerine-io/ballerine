@@ -21,10 +21,12 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
   const { state } = useDynamicUIContext();
   const { state: uiElementState } = useUIElementState(definition);
   const { currentPage, pages } = usePageResolverContext();
-  const { isPluginLoading } = useStateManagerContext();
+  const { isPluginLoading, payload } = useStateManagerContext();
   const { errors, validate } = useValidator();
   console.log({ vALIDATION_ERRORS: errors });
   const isValid = useMemo(() => !Object.values(errors).length, [errors]);
+
+  console.log({ CONTEXT: payload });
 
   const setPageElementsTouched = useCallback(
     (page: UIPage, state: UIState) => {

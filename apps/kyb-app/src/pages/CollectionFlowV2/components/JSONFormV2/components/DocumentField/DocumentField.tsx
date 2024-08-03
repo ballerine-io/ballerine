@@ -10,9 +10,11 @@ import { useFileRepository } from '@/components/organisms/UIRenderer/elements/JS
 import { UploadFileFn } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading/types';
 import { useUIElementErrors } from '@/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
-import { Document, UIElement } from '@/domains/collection-flow';
+import { UIElement } from '@/components/providers/Validator/hooks/useValidate/ui-element';
+import { Document, UIElement as IUIElement } from '@/domains/collection-flow';
 import { fetchFile, uploadFile } from '@/domains/storage/storage.api';
 import { collectionFlowFileStorage } from '@/pages/CollectionFlow/collection-flow.file-storage';
+import { transformV1UIElementToV2UIElement } from '@/pages/CollectionFlowV2/helpers';
 import { findDocumentSchemaByTypeAndCategory } from '@ballerine/common';
 import { AnyObject, ErrorsList, RJSFInputProps } from '@ballerine/ui';
 import { HTTPError } from 'ky';
@@ -25,7 +27,7 @@ export interface DocumentFieldParams {
 }
 
 export const DocumentField = (
-  props: RJSFInputProps<string> & { definition: UIElement<DocumentFieldParams> } & {
+  props: RJSFInputProps<string> & { definition: IUIElement<DocumentFieldParams> } & {
     inputIndex: number | null;
   },
 ) => {
@@ -40,28 +42,16 @@ export const DocumentField = (
   const { toggleElementLoading } = useUIElementToolsLogic(definition.name);
   const { state: elementState } = useUIElementState(definition);
 
-  const documentDefinition = useMemo(
-    () => ({
-      ...definition,
-      valueDestination: `document-error-${serializeDocumentId(
-        //@ts-ignore
-        definition.options.documentData.id,
-        inputIndex,
-      )}`,
-    }),
-    [definition, inputIndex],
-  );
-
   const sendEvent = useEventEmitterLogic(definition);
 
   const getErrorKey = useCallback(
     () =>
       inputIndex === null
-        ? (documentDefinition?.options?.documentData.id as string)
-        : (documentDefinition.valueDestination as string),
-    [documentDefinition],
+        ? (definition?.options?.documentData.id as string)
+        : (definition.valueDestination as string),
+    [definition],
   );
-  const { validationErrors, warnings } = useUIElementErrors(documentDefinition, getErrorKey);
+  const { validationErrors, warnings } = useUIElementErrors(definition, getErrorKey);
   const { isTouched } = elementState;
 
   const fileId = useMemo(() => {
@@ -160,8 +150,12 @@ export const DocumentField = (
 
   const handleChange = useCallback(
     (fileId: string) => {
-      //@ts-ignore
-      const destinationParser = new DocumentValueDestinationParser(definition.valueDestination);
+      const uiElement = new UIElement(
+        transformV1UIElementToV2UIElement(definition),
+        stateApi.getContext(),
+        inputIndex !== null ? [inputIndex] : [],
+      );
+      const destinationParser = new DocumentValueDestinationParser(uiElement.getValueDestination());
       const pathToDocumentsList = destinationParser.extractRootPath();
       const pathToPage = destinationParser.extractPagePath();
       const pathToFileId = destinationParser.extractFileIdPath();
