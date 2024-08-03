@@ -17,7 +17,6 @@ export interface IValidationError {
 }
 
 export const useValidate = ({ elements, context }: IUseValidateParams) => {
-  console.log({ CONTEXT: context });
   const validate = useCallback(() => {
     const validatorManager = new ValueValidatorManager();
     let errors: IValidationError[] = [];
@@ -30,6 +29,8 @@ export const useValidate = ({ elements, context }: IUseValidateParams) => {
 
       const validationErrors = element.getValidatorsParams().map(({ validator, params }) => {
         try {
+          if (!element.isRequired() && value === undefined) return;
+
           validatorManager.validate(value, validator as any, params);
         } catch (error) {
           return {
