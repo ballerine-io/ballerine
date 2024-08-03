@@ -21,7 +21,7 @@ export const FieldTemplate = (props: FieldTemplateProps) => {
 
   const fieldDefinition = useMemo(
     () =>
-      findDefinitionByName(props.id.replace('root_', ''), definition.elements || []) ||
+      findDefinitionByName(props.id.replace(/root_\d+_/g, ''), definition.elements || []) ||
       ({} as UIElement<AnyObject>),
     [props.id, definition.elements],
   );
@@ -31,13 +31,11 @@ export const FieldTemplate = (props: FieldTemplateProps) => {
   const rulesResults = useRuleExecutor(payload, rules, fieldDefinition, state);
 
   const isRequired = useMemo(
-    () =>
-      (Array.isArray(rulesResults) &&
-        rulesResults.length &&
-        rulesResults.every(item => item.isValid)) ||
-      props.required,
-    [rulesResults, props.required],
+    () => Boolean(fieldDefinition?.validation?.required || false),
+    [fieldDefinition],
   );
+
+  console.log({ fieldDefinition });
 
   return (
     <div className="max-w-[385px]">

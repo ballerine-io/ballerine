@@ -8,7 +8,6 @@ export const createFormSchemaFromUIElements = (
 ) => {
   const formSchema: RJSFSchema = {
     type: formElement.options?.jsonFormDefinition?.type === 'array' ? 'array' : 'object',
-    required: formElement.options?.jsonFormDefinition?.required ?? [],
   };
 
   const uiSchema: UiSchema = {
