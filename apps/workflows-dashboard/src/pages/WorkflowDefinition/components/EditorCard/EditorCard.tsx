@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from '@/components/atoms/Card';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/atoms/Dialog';
 import { JSONEditorComponent } from '@/components/organisms/JsonEditor';
 import { Pencil } from 'lucide-react';
-import { FunctionComponent, useCallback, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 
 interface IEditorCardProps {
   value: object;
@@ -26,6 +26,10 @@ export const EditorCard: FunctionComponent<IEditorCardProps> = ({
 }) => {
   const [valueSnapshot, setSnapshot] = useState(value);
   const [internalValue, setInternalValue] = useState(valueSnapshot);
+
+  useEffect(() => {
+    setInternalValue(value);
+  }, [value]);
 
   const hasChanges = useMemo(() => {
     return JSON.stringify(internalValue) !== JSON.stringify(valueSnapshot);
