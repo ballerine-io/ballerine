@@ -2,7 +2,7 @@ import { IWorkflowDefinition } from '@/domains/workflow-definitions';
 
 export const getStateOptions = (workflowDefinition: IWorkflowDefinition) => {
   //@ts-ignore
-  return Object.keys(workflowDefinition.definition?.states || {});
+  return Object.keys(workflowDefinition?.definition?.states || {});
 };
 
 export interface IEventDropdownOption {
