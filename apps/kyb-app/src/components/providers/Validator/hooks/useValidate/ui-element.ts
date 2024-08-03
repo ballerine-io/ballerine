@@ -40,6 +40,14 @@ export class UIElement {
     return this.element.id;
   }
 
+  isRequired() {
+    if (Array.isArray(this.element.validation?.required)) {
+      return Boolean(this.element.validation?.required[0]);
+    }
+
+    return Boolean(this.element.validation?.required);
+  }
+
   private formatId(id: string) {
     return `${id}${this.stack.join('.')}`;
   }
