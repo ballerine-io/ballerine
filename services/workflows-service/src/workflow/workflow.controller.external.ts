@@ -2,12 +2,13 @@ import { defaultPrismaTransactionOptions, isRecordNotFoundError } from '@/prisma
 import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
 import * as common from '@nestjs/common';
-import { NotFoundException, Query, Res } from '@nestjs/common';
+import { HttpStatus, NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { ApiOkResponse, ApiResponse } from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 // import * as nestAccessControl from 'nest-access-control';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { putPluginsExampleResponse } from '@/workflow/workflow-controller-examples';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { Public } from '@/common/decorators/public.decorator';
@@ -39,7 +40,8 @@ import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
 import { Validate } from 'ballerine-nestjs-typebox';
-import { WorkflowExtensionSchema } from './schemas/extensions.schemas';
+import { PutWorkflowExtensionSchema, WorkflowExtensionSchema } from './schemas/extensions.schemas';
+import type { TWorkflowExtension } from './schemas/extensions.schemas';
 import { type Static, Type } from '@sinclair/typebox';
 
 export const WORKFLOW_TAG = 'Workflows';
@@ -103,6 +105,7 @@ export class WorkflowControllerExternal {
   @ApiResponse({
     status: 200,
     schema: WorkflowExtensionSchema,
+    example: putPluginsExampleResponse,
   })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async listWorkflowPlugins(
@@ -115,40 +118,63 @@ export class WorkflowControllerExternal {
   }
 
   @swagger.ApiTags(WORKFLOW_DEFINITION_TAG, WORKFLOW_TAG)
-  @common.Put('/workflow-definition/:id/plugins')
+  @common.Put('/workflow-definition/:workflow_definition_id/plugins')
+  @swagger.ApiBody({
+    schema: PutWorkflowExtensionSchema,
+    examples: {
+      1: {
+        value: putPluginsExampleResponse,
+        summary: 'The plugins for the workflow',
+        description: 'The plugins for the workflow',
+      },
+    },
+  })
   @Validate({
     request: [
       {
         type: 'param',
-        name: 'id',
+        name: 'workflow_definition_id',
+        description: `The workflow's definition id`,
         schema: WorkflowDefinitionWhereUniqueInputSchema,
+        example: {
+          value: putPluginsExampleResponse,
+          summary: 'The plugins for the workflow',
+          description: 'The plugins for the workflow',
+        },
       },
       {
         type: 'body',
+
         schema: WorkflowExtensionSchema,
       },
     ],
     response: Type.Any(),
   })
   @ApiResponse({
-    status: 200,
+    description: 'The user records',
     schema: WorkflowExtensionSchema,
+    example: putPluginsExampleResponse,
   })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async addPlugins(
-    @common.Param('id') id: Static<typeof WorkflowDefinitionWhereUniqueInputSchema>,
+    @common.Param('workflow_definition_id')
+    workflowDefinitionId: Static<typeof WorkflowDefinitionWhereUniqueInputSchema>,
     @common.Body() body: Static<typeof WorkflowExtensionSchema>,
     @CurrentProject() projectId: TProjectId,
+    @common.Response() res: Response,
   ) {
-    const result = await this.workflowDefinitionService.upgradeDefinitionVersion(
-      id,
+    const upgradedWorkflowDef = await this.workflowDefinitionService.upgradeDefinitionVersion(
+      workflowDefinitionId,
       {
         extensions: body as InputJsonValue,
       },
       projectId,
     );
 
-    return result;
+    if (upgradedWorkflowDef && upgradedWorkflowDef?.extensions) {
+      return res.json(upgradedWorkflowDef.extensions);
+    }
+    return res.status(HttpStatus.NOT_FOUND).send();
   }
 
   @common.Get('/:id')
