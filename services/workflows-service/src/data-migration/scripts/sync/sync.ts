@@ -54,43 +54,25 @@ export const mergeSyncObjects = (relevantObjects: SyncedObject[]): Record<string
     const key = obj.crossEnvKey;
     if (!acc[key]) {
       acc[key] = { ...obj };
-    } else {
-      if (acc[key].tableName !== obj.tableName) {
-        acc[`${key}_${Object.keys(acc).length}`] = { ...obj };
-        return acc;
-      }
-      const sharedEnvironments = obj.syncedEnvironments.filter((env: any) =>
-        acc[key]?.syncedEnvironments.includes(env),
-      );
-      const sharedDryRunEnvironments = obj.dryRunEnvironments.filter((env: any) =>
-        acc[key]?.dryRunEnvironments.includes(env),
-      );
-
-      if (sharedEnvironments.length > 0 || sharedDryRunEnvironments.length > 0) {
-        acc[key].columns = {
-          ...acc[key].columns,
-          ...obj.columns,
-        } as Partial<
-          | WorkflowDefinitionPayload['scalars']
-          | UiDefinitionPayload['scalars']
-          | AlertDefinitionPayload['scalars']
-        >;
-        acc[key].syncedEnvironments = [
-          ...new Set([...acc[key].syncedEnvironments, ...obj.syncedEnvironments]),
-        ];
-        acc[key].dryRunEnvironments = [
-          ...new Set([...acc[key].dryRunEnvironments, ...obj.dryRunEnvironments]),
-        ];
-        if (acc[key].environmentSpecificConfig || obj.environmentSpecificConfig) {
-          acc[key].environmentSpecificConfig = {
-            ...acc[key].environmentSpecificConfig,
-            ...obj.environmentSpecificConfig,
-          };
-        }
-      } else {
-        acc[`${key}_${Object.keys(acc).length}`] = { ...obj };
-      }
+      return acc;
     }
+    if (acc[key].tableName !== obj.tableName) {
+      acc[`${key}_${Object.keys(acc).length}`] = { ...obj };
+      return acc;
+    }
+    const sharedEnvironments = obj.syncedEnvironments.filter((env: any) =>
+      acc[key]?.syncedEnvironments.includes(env),
+    );
+    const sharedDryRunEnvironments = obj.dryRunEnvironments.filter((env: any) =>
+      acc[key]?.dryRunEnvironments.includes(env),
+    );
+
+    if (sharedEnvironments.length === 0 && sharedDryRunEnvironments.length === 0) {
+      acc[`${key}_${Object.keys(acc).length}`] = { ...obj };
+      return acc;
+    }
+
+    mergeEnvironmentConfigs(acc, key, obj);
     return acc;
   }, {});
 };
@@ -348,6 +330,30 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
     throw err;
   }
 };
+function mergeEnvironmentConfigs(acc: any, key: any, obj: any) {
+  acc[key].columns = {
+    ...acc[key].columns,
+    ...obj.columns,
+  } as Partial<
+    | WorkflowDefinitionPayload['scalars']
+    | UiDefinitionPayload['scalars']
+    | AlertDefinitionPayload['scalars']
+  >;
+  acc[key].syncedEnvironments = [
+    ...new Set([...acc[key].syncedEnvironments, ...obj.syncedEnvironments]),
+  ];
+  acc[key].dryRunEnvironments = [
+    ...new Set([...acc[key].dryRunEnvironments, ...obj.dryRunEnvironments]),
+  ];
+
+  if (acc[key].environmentSpecificConfig || obj.environmentSpecificConfig) {
+    acc[key].environmentSpecificConfig = {
+      ...acc[key].environmentSpecificConfig,
+      ...obj.environmentSpecificConfig,
+    };
+  }
+}
+
 async function createSyncRecord(
   transaction: PrismaTransactionalClient,
   tableName: string,

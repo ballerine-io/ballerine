@@ -34,7 +34,7 @@ describe('Data Sync System:', () => {
   });
   describe('mergeSyncObjects', () => {
     it('should merge objects with shared dry run environments', () => {
-      const objects: SyncedObject[] = [
+      const objects = [
         {
           crossEnvKey: 'key2',
           tableName: 'WorkflowDefinition',
@@ -51,7 +51,7 @@ describe('Data Sync System:', () => {
           syncedEnvironments: ['production'],
           dryRunEnvironments: ['sandbox', 'local'],
         },
-      ];
+      ] satisfies SyncedObject[];
 
       const result = mergeSyncObjects(objects);
 
@@ -67,7 +67,7 @@ describe('Data Sync System:', () => {
     });
 
     it('should handle merging objects with different table names', () => {
-      const objects: SyncedObject[] = [
+      const objects = [
         {
           crossEnvKey: 'key3',
           tableName: 'WorkflowDefinition',
@@ -84,7 +84,7 @@ describe('Data Sync System:', () => {
           syncedEnvironments: ['development', 'production'],
           dryRunEnvironments: [],
         },
-      ];
+      ] satisfies SyncedObject[];
 
       const result = mergeSyncObjects(objects);
 
@@ -94,7 +94,7 @@ describe('Data Sync System:', () => {
     });
 
     it('should merge objects with environment specific configurations', () => {
-      const objects: SyncedObject[] = [
+      const objects = [
         {
           crossEnvKey: 'key4',
           tableName: 'WorkflowDefinition',
@@ -117,7 +117,7 @@ describe('Data Sync System:', () => {
             production: { additionalColumns: { projectId: 'prod-project' } },
           },
         },
-      ];
+      ] satisfies SyncedObject[];
 
       const result = mergeSyncObjects(objects);
 
@@ -136,7 +136,7 @@ describe('Data Sync System:', () => {
       });
     });
     it('should merge objects with shared environments', () => {
-      const objects: SyncedObject[] = [
+      const objects = [
         {
           crossEnvKey: 'key1',
           tableName: 'WorkflowDefinition',
@@ -153,7 +153,7 @@ describe('Data Sync System:', () => {
           syncedEnvironments: ['production', 'sandbox'],
           dryRunEnvironments: [],
         },
-      ];
+      ] satisfies SyncedObject[];
 
       const result = mergeSyncObjects(objects);
 
@@ -169,7 +169,7 @@ describe('Data Sync System:', () => {
     });
 
     it('should not merge objects without shared environments', () => {
-      const objects: SyncedObject[] = [
+      const objects = [
         {
           crossEnvKey: 'key1',
           tableName: 'WorkflowDefinition',
@@ -186,7 +186,7 @@ describe('Data Sync System:', () => {
           syncedEnvironments: ['production'],
           dryRunEnvironments: [],
         },
-      ];
+      ] satisfies SyncedObject[];
 
       const result = mergeSyncObjects(objects);
 
@@ -196,7 +196,7 @@ describe('Data Sync System:', () => {
     });
 
     it('should merge objects with shared dry run environments', () => {
-      const objects: SyncedObject[] = [
+      const objects = [
         {
           crossEnvKey: 'key1',
           tableName: 'WorkflowDefinition',
@@ -213,7 +213,7 @@ describe('Data Sync System:', () => {
           syncedEnvironments: [],
           dryRunEnvironments: ['sandbox', 'production'],
         },
-      ];
+      ] satisfies SyncedObject[];
 
       const result = mergeSyncObjects(objects);
 
