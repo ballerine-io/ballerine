@@ -62,7 +62,6 @@ export class UiDefinitionControllerInternal {
       params.workflowDefinitionId,
       params.uiContext,
       projectIds,
-      {},
     );
 
     return uiDefinition;
