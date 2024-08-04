@@ -43,6 +43,31 @@ export class ProjectScopeService {
     return args!;
   }
 
+  scopeFindManyOrPublic<T>(
+    args?: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,
+    projectIds?: TProjectIds,
+  ): T {
+    // @ts-expect-error - dynamically typed for all queries
+    args ||= {};
+    // @ts-expect-error - dynamically typed for all queries
+    args!.where = {
+      // @ts-expect-error - dynamically typed for all queries
+      ...args?.where,
+      OR: [
+        {
+          project: {
+            id: { in: projectIds },
+          },
+        },
+        {
+          isPublic: true,
+        },
+      ],
+    };
+
+    return args!;
+  }
+
   scopeFindOne<T>(
     args: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,
     projectIds: TProjectIds,
@@ -54,6 +79,29 @@ export class ProjectScopeService {
       projectId: {
         in: projectIds,
       },
+    };
+
+    return args as T;
+  }
+
+  scopeFindOneOrPublic<T>(
+    args: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,
+    projectIds: TProjectIds,
+  ): T {
+    // @ts-expect-error
+    args.where = {
+      // @ts-expect-error
+      ...args.where,
+      OR: [
+        {
+          project: {
+            id: { in: projectIds },
+          },
+        },
+        {
+          isPublic: true,
+        },
+      ],
     };
 
     return args as T;

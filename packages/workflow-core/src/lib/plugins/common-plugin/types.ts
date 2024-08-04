@@ -60,10 +60,7 @@ export interface IterativePluginParams {
 
 export interface RiskRulesPluginParams {
   name: string;
-  rulesSource: {
-    source: 'notion';
-    databaseId: string;
-  };
+  rulesSource: TFindAllRulesOptions;
   stateNames: string[];
   successAction?: string;
   errorAction?: string;

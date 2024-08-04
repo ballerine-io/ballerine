@@ -63,7 +63,10 @@ export class RiskRulePlugin {
       logger.error(`Risk Rules Plugin - Failed`, {
         context,
         name: this.name,
-        databaseId: this.rulesSource.databaseId,
+        databaseId:
+          this.rulesSource.source === 'notion'
+            ? this.rulesSource.databaseId
+            : this.rulesSource.policyId,
         source: this.rulesSource.source,
       });
 
