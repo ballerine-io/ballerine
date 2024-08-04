@@ -3,6 +3,7 @@ import { BusinessReportModule } from '@/business-report/business-report.module';
 import { AuthModule } from '@/auth/auth.module';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+// eslint-disable-next-line import/no-cycle
 import { BusinessModule } from '@/business/business.module';
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
@@ -44,6 +45,8 @@ import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
 import { AlertDefinitionModule } from '@/alert-definition/alert-definition.module';
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
+import { SentryService } from '@/sentry/sentry.service';
+import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
@@ -61,6 +64,7 @@ import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
     DataAnalyticsModule,
     AlertDefinitionModule,
     RuleEngineModule,
+    SecretsManagerModule,
   ],
   providers: [
     WorkflowDefinitionRepository,
@@ -92,6 +96,7 @@ import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
     WorkflowDefinitionService,
     UiDefinitionRepository,
     UiDefinitionService,
+    SentryService,
   ],
   exports: [
     WorkflowService,

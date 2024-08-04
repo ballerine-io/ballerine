@@ -39,6 +39,7 @@ export class KycSessionPlugin extends ApiPlugin {
         validationContext,
       );
     }
+
     return super.validateContent(schemaValidator, transformedRequest, validationContext);
   }
 
@@ -48,7 +49,7 @@ export class KycSessionPlugin extends ApiPlugin {
     payload: AnyRecord,
     headers: HeadersInit,
   ) {
-    const callbackUrlWithPlaceholder = this.replaceValuePlaceholders(
+    const callbackUrlWithPlaceholder = await this.replaceValuePlaceholders(
       payload['callbackUrl'] as string,
       payload,
     );

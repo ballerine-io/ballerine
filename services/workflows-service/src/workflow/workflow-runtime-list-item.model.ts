@@ -2,7 +2,7 @@ import { IsNullable } from '@/common/decorators/is-nullable.decorator';
 import { ApiProperty } from '@nestjs/swagger';
 import { WorkflowRuntimeDataStatus } from '@prisma/client';
 import { Expose } from 'class-transformer';
-import { IsDate, IsJSON, IsString, ValidateNested } from 'class-validator';
+import { IsDate, IsJSON, IsNotEmptyObject, IsString, ValidateNested } from 'class-validator';
 
 export class WorkflowAssignee {
   @Expose()
@@ -31,6 +31,11 @@ export class WorkflowRuntimeListItemModel {
   @ApiProperty()
   @IsString()
   workflowDefinitionId!: string;
+
+  @Expose()
+  @ApiProperty()
+  @IsNotEmptyObject()
+  workflowDefinition!: object;
 
   @Expose()
   @ApiProperty()

@@ -1,5 +1,5 @@
 import { AlertsTable } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable';
-import { AlertsHeader } from 'src/pages/TransactionMonitoringAlerts/components/AlertsHeader';
+import { AlertsHeader } from '@/pages/TransactionMonitoringAlerts/components/AlertsHeader';
 import { useTransactionMonitoringAlertsLogic } from '@/pages/TransactionMonitoringAlerts/hooks/useTransactionMonitoringAlertsLogic/useTransactionMonitoringAlertsLogic';
 import { Outlet } from 'react-router-dom';
 import { isNonEmptyArray } from '@ballerine/common';

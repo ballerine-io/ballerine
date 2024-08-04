@@ -29,11 +29,7 @@ export class UBOFlowsProcessTracker implements IProcessTracker {
   private getUboFlowStatus(tags: TWorkflowById['tags']) {
     const tag = tags?.find(tag => tagToIcon[tag as keyof typeof tagToIcon]);
 
-    if (!tag) {
-      return tagToIcon.DEFAULT;
-    }
-
-    return tagToIcon[tag as keyof typeof tagToIcon];
+    return tagToIcon[tag as keyof typeof tagToIcon] ?? tagToIcon.DEFAULT;
   }
 
   private getChildWorkflows() {

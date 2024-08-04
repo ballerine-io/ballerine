@@ -64,7 +64,9 @@ export const BaseWorkflowByIdSchema = z.object({
   workflowDefinition: WorkflowDefinitionByIdSchema,
   createdAt: z.string().datetime(),
   context: z.object({
-    aml: AmlSchema.optional(),
+    aml: AmlSchema.extend({
+      vendor: z.string().optional(),
+    }).optional(),
     documents: z.array(z.any()).default([]),
     entity: z.record(z.any(), z.any()),
     parentMachine: ObjectWithIdSchema.extend({
@@ -92,6 +94,7 @@ export const BaseWorkflowByIdSchema = z.object({
           .or(z.undefined()),
       })
       .optional(),
+    customData: z.record(z.string(), z.unknown()).optional(),
   }),
   entity: ObjectWithIdSchema.extend({
     name: z.string(),

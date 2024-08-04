@@ -91,7 +91,7 @@ export const useUbosRegistryProvidedBlock = (
         }
       >;
     }
-  }, [message, ubos]);
+  }, [message, ubos, isRequestTimedOut]);
 
   return useMemo(() => {
     const cell = getCell();

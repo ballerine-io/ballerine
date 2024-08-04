@@ -1,5 +1,6 @@
 import { usePageContext } from '@/components/organisms/DynamicUI/Page';
 import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
+import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { UIState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
 import {
@@ -22,6 +23,7 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
   const { currentPage, pages } = usePageResolverContext();
   const { errors } = usePageContext();
   const isValid = useMemo(() => !Object.values(errors).length, [errors]);
+  const { isPluginLoading } = useStateManagerContext();
 
   const setPageElementsTouched = useCallback(
     (page: UIPage, state: UIState) => {
@@ -77,7 +79,7 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
     <Button
       variant="secondary"
       onClick={handleClick}
-      disabled={state.isLoading || uiElementState.isLoading}
+      disabled={state.isLoading || uiElementState.isLoading || isPluginLoading}
       data-testid={definition.name}
     >
       {definition.options.text || 'Submit'}

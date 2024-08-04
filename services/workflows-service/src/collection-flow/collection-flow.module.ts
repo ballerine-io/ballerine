@@ -34,10 +34,11 @@ import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-defi
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
-import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
+import { SentryService } from '@/sentry/sentry.service';
+import { WorkflowModule } from '@/workflow/workflow.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
     AlertModule,
     DataAnalyticsModule,
     RuleEngineModule,
+    WorkflowModule,
   ],
   controllers: [
     ColectionFlowController,
@@ -71,7 +73,6 @@ import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
     EntityRepository,
     StorageService,
     FileRepository,
-    WorkflowService,
     HookCallbackHandlerService,
     FileService,
     WorkflowEventEmitterService,
@@ -86,6 +87,7 @@ import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
     FileRepository,
     SalesforceService,
     SalesforceIntegrationRepository,
+    SentryService,
   ],
 })
 export class CollectionFlowModule {}

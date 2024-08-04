@@ -2,9 +2,10 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import type { TProjectIds } from '@/types';
 import { PrismaTransaction } from '@/types';
+import { GetWorkflowDefinitionListDto } from '@/workflow-defintion/dtos/get-workflow-definition-list.dto';
+import { validateDefinitionLogic } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient, WorkflowDefinition } from '@prisma/client';
-import { validateDefinitionLogic } from '@ballerine/workflow-core';
 
 @Injectable()
 export class WorkflowDefinitionRepository {
@@ -53,6 +54,30 @@ export class WorkflowDefinitionRepository {
     return await this.prisma.workflowDefinition.findMany(queryArgs);
   }
 
+  async count<T extends Prisma.WorkflowDefinitionFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.WorkflowDefinitionCountArgs>,
+    projectIds: TProjectIds,
+  ) {
+    return await this.prisma.workflowDefinition.count({
+      //@ts-ignore
+      where: {
+        ...args.where,
+        projectId: {
+          in: projectIds,
+        },
+      },
+    });
+  }
+
+  async countUnscoped<T extends Prisma.WorkflowDefinitionFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.WorkflowDefinitionCountArgs>,
+  ) {
+    return await this.prisma.workflowDefinition.count({
+      //@ts-ignore
+      ...args,
+    });
+  }
+
   async findById<T extends Omit<Prisma.WorkflowDefinitionFindFirstOrThrowArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionFindFirstOrThrowArgs, 'where'>>,
@@ -74,8 +99,9 @@ export class WorkflowDefinitionRepository {
         },
       ],
     };
+    const result = await transaction.workflowDefinition.findFirstOrThrow(queryArgs);
 
-    return await transaction.workflowDefinition.findFirstOrThrow(queryArgs);
+    return result;
   }
 
   async findTemplateByIdUnscoped<
@@ -90,16 +116,25 @@ export class WorkflowDefinitionRepository {
     });
   }
 
-  async updateById<T extends Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>(
+  async updateById(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>,
-  ): Promise<WorkflowDefinition> {
-    args.data.definition && validateDefinitionLogic(args.data);
+    args: Pick<Prisma.WorkflowDefinitionUpdateArgs, 'data'>,
+    projectIds: TProjectIds,
+    noValidate = false,
+  ): Promise<Prisma.BatchPayload> {
+    const scopedArgs = this.scopeService.scopeUpdateMany(
+      {
+        ...args,
+        where: { id },
+      },
+      projectIds,
+    );
 
-    return await this.prisma.workflowDefinition.update({
-      where: { id },
-      ...args,
-    });
+    if (args.data?.definition && !noValidate) {
+      validateDefinitionLogic(args.data.definition as any);
+    }
+
+    return await this.prisma.workflowDefinition.updateMany(scopedArgs);
   }
 
   async deleteById<T extends Omit<Prisma.WorkflowDefinitionDeleteArgs, 'where'>>(
@@ -118,9 +153,15 @@ export class WorkflowDefinitionRepository {
     );
   }
 
-  async findByLatestVersion(name: string, projectIds: TProjectIds) {
+  async findByLatestVersion<T extends Prisma.WorkflowDefinitionFindManyArgs>(
+    name: string,
+    projectIds: TProjectIds,
+    args?: Prisma.SelectSubset<T, Prisma.WorkflowDefinitionFindManyArgs>,
+  ) {
     return await this.prisma.workflowDefinition.findFirstOrThrow({
+      ...args,
       where: {
+        ...(args?.where ?? {}),
         OR: [
           {
             name,
@@ -154,5 +195,39 @@ export class WorkflowDefinitionRepository {
       },
       orderBy: { version: 'desc' },
     });
+  }
+
+  async getListCount(dto: GetWorkflowDefinitionListDto, projectIds: TProjectIds) {
+    const result = await this.prisma.$queryRaw(
+      Prisma.sql`
+        SELECT COUNT(*) AS total_count FROM (
+          SELECT * FROM "WorkflowDefinition"
+          WHERE "isPublic" = true
+          UNION ALL
+          SELECT * FROM "WorkflowDefinition"
+          WHERE "projectId" IN (${Prisma.join(projectIds || [])}) AND "isPublic" = false
+        ) AS combined_results
+    `,
+    );
+
+    //@ts-ignore
+    return Number(result[0]?.total_count) || 0;
+  }
+
+  async getList(dto: GetWorkflowDefinitionListDto, projectIds: TProjectIds) {
+    return await this.prisma.$queryRaw(
+      Prisma.sql`
+        SELECT * FROM (
+        SELECT * FROM "WorkflowDefinition"
+        WHERE "isPublic" = true
+        UNION ALL
+        SELECT * FROM "WorkflowDefinition"
+        WHERE "projectId" IN (${Prisma.join(projectIds || [])}) AND "isPublic" = false
+        ) AS combined_results
+        ORDER BY "createdAt" desc
+        LIMIT ${dto.limit}
+        OFFSET ${dto.limit * (dto.page - 1)}
+    `,
+    );
   }
 }

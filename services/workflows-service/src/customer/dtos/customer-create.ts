@@ -72,4 +72,12 @@ export class CustomerCreateDto {
   @IsString()
   @IsOptional()
   websiteUrl?: string;
+
+  @ApiProperty({
+    required: false,
+    type: 'object',
+  })
+  @IsObject()
+  @IsOptional()
+  config?: Record<string, unknown>;
 }

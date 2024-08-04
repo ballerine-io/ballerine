@@ -44,9 +44,11 @@ export const fetcher: IFetcher = async ({
     if (res.status === 400) {
       const json = await res.json();
 
-      message = Array.isArray(json?.errors)
-        ? json?.errors?.map(({ message }) => `${message}\n`)?.join('')
-        : message;
+      if (Array.isArray(json?.errors)) {
+        message = json?.errors?.map(({ message }) => `${message}\n`)?.join('');
+      } else if (json.message) {
+        message = json.message;
+      }
     }
 
     console.error(message);

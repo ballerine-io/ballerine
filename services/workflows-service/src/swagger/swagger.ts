@@ -35,7 +35,6 @@ class SwaggerSingleton {
       .setVersion('1.3.10')
       .setTermsOfService('https://www.ballerine.com/terms-of-service')
       .setContact('Ballerine', 'https://ballerine.com', 'support@ballerine.com')
-      .addServer('https://api-sb.eu.ballerine.com', 'Sandbox Server')
       .setBasePath('api/v1')
       .setExternalDoc('Ballerine Website', 'https://ballerine.com')
       .setExternalDoc('Ballerine API Documentation', 'https://docs.ballerine.com')
@@ -44,7 +43,20 @@ class SwaggerSingleton {
 
     if (env.ENVIRONMENT_NAME === 'local') {
       swaggerDocBuilder.addServer(`http://localhost:${env.PORT}`, 'Local Server');
+      swaggerDocBuilder.addServer(`https://api-dev.ballerine.io`, 'Development Server');
     }
+
+    if (env.ENVIRONMENT_NAME === 'development') {
+      swaggerDocBuilder.addServer(`https://api-dev.ballerine.io`, 'Development Server');
+    }
+
+    if (env.ENVIRONMENT_NAME === 'production') {
+      swaggerDocBuilder.addServer(`https://api.ballerine.app`, 'Production Server');
+    }
+
+    swaggerDocBuilder.addServer(`https://api-sb.ballerine.app`, 'Sandbox Server');
+
+    swaggerDocBuilder.addServer('https://api-sb.eu.ballerine.com', 'Sandbox Server');
 
     const swaggerDocumentOptions = swaggerDocBuilder.build();
 
@@ -67,7 +79,7 @@ class SwaggerSingleton {
         }
       });
     });
-    document.openapi = SWAGGER_VERSION.V3;
+    document.openapi = SWAGGER_VERSION.V3_1;
 
     // @ts-ignore
     document.webhooks = {
@@ -760,7 +772,7 @@ class SwaggerSingleton {
     SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
   }
 
-  initialize(app: INestApplication, version: string = SWAGGER_VERSION.V3) {
+  initialize(app: INestApplication, version: string = SWAGGER_VERSION.V3_1) {
     this._setup(app);
     this.document.openapi = version;
 

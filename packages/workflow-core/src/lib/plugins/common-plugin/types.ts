@@ -1,6 +1,6 @@
 import { TContext, Transformers } from '../../utils';
 import { SerializableValidatableTransformer } from '../external-plugin';
-import { ChildPluginCallbackOutput } from '../../types';
+import { ChildPluginCallbackOutput, WorkflowTokenCallbackInput } from '../../types';
 import { AnyRecord, RuleResultSet, RuleSet, TFindAllRulesOptions } from '@ballerine/common';
 
 export interface ISerializableCommonPluginParams
@@ -37,6 +37,18 @@ export interface ISerializableRiskRulesPlugin {
   invoke?(...args: any[]): Promise<any>;
 }
 
+export interface ISerializableWorkflowTokenPlugin {
+  pluginKind: string;
+  name: string;
+  stateNames: string[];
+  uiDefinitionId: WorkflowTokenPluginParams['uiDefinitionId'];
+  expireInMinutes?: WorkflowTokenPluginParams['expireInMinutes'];
+  successAction?: string;
+  errorAction?: string;
+
+  invoke?(...args: any[]): ReturnType<WorkflowTokenPluginParams['action']>;
+}
+
 export interface IterativePluginParams {
   name: string;
   stateNames: string[];
@@ -46,7 +58,6 @@ export interface IterativePluginParams {
   errorAction?: string;
 }
 
-type RuleSetOptions = { databaseId: string };
 export interface RiskRulesPluginParams {
   name: string;
   rulesSource: TFindAllRulesOptions;
@@ -81,4 +92,19 @@ export interface ChildWorkflowPluginParams {
   transformers?: Transformers;
   initEvent?: string;
   action: (childCallbackInput: ChildPluginCallbackOutput) => Promise<void>;
+}
+
+export interface WorkflowTokenPluginParams {
+  name: string;
+  uiDefinitionId: string;
+  expireInMinutes?: number;
+  stateNames: string[];
+  action: (workflowTokenCallbackInput: WorkflowTokenCallbackInput) => Promise<{
+    token: string;
+    customerName: string;
+    collectionFlowUrl: string;
+    customerNormalizedName: string;
+  }>;
+  successAction?: string;
+  errorAction?: string;
 }

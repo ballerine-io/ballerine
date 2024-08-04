@@ -27,6 +27,8 @@ import { Public } from '@/common/decorators/public.decorator';
 import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
 import { BusinessReportHookBodyDto } from '@/business-report/dtos/business-report-hook-body.dto';
 import { BusinessReportHookSearchQueryParamsDto } from '@/business-report/dtos/business-report-hook-search-query-params.dto';
+import { QueryMode } from '@/common/query-filters/query-mode';
+import { isNumber } from 'lodash';
 
 @common.Controller('internal/business-reports')
 @swagger.ApiExcludeController()
@@ -54,6 +56,19 @@ export class BusinessReportControllerInternal {
     }: CreateBusinessReportDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
+    const customer = await this.customerService.getByProjectId(currentProjectId);
+    const maxBusinessReports = customer.config?.maxBusinessReports;
+
+    if (isNumber(maxBusinessReports) && maxBusinessReports > 0) {
+      const businessReportsCount = await this.businessReportService.count({}, [currentProjectId]);
+
+      if (businessReportsCount >= maxBusinessReports) {
+        throw new BadRequestException(
+          `You have reached the maximum number of business reports allowed (${maxBusinessReports}).`,
+        );
+      }
+    }
+
     let business: Pick<Business, 'id' | 'correlationId'> | undefined;
     const merchantNameWithDefault = merchantName || 'Not detected';
 
@@ -190,13 +205,13 @@ export class BusinessReportControllerInternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async getLatestBusinessReport(
     @CurrentProject() currentProjectId: TProjectId,
-    @Query() searchQueryParams: GetLatestBusinessReportDto,
+    @Query() { businessId, type }: GetLatestBusinessReportDto,
   ) {
     return await this.businessReportService.findFirstOrThrow(
       {
         where: {
-          businessId: searchQueryParams.businessId,
-          type: searchQueryParams.type,
+          type,
+          businessId,
         },
         orderBy: {
           createdAt: 'desc',
@@ -227,35 +242,61 @@ export class BusinessReportControllerInternal {
   @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
   async listBusinessReports(
     @CurrentProject() currentProjectId: TProjectId,
-    @Query() searchQueryParams: ListBusinessReportsDto,
+    @Query() { businessId, page, search, type, orderBy }: ListBusinessReportsDto,
   ) {
-    return await this.businessReportService.findMany(
-      {
-        where: {
-          businessId: searchQueryParams.businessId,
-          ...(searchQueryParams.type ? { type: searchQueryParams.type } : {}),
-        },
-        select: {
-          id: true,
-          createdAt: true,
-          updatedAt: true,
-          report: true,
-          riskScore: true,
-          status: true,
-          business: {
-            select: {
-              companyName: true,
-              country: true,
-              website: true,
-            },
+    const args = {
+      where: {
+        businessId,
+        ...(type ? { type } : {}),
+        ...(search
+          ? {
+              OR: [
+                { id: { contains: search, mode: QueryMode.Insensitive } },
+                {
+                  business: {
+                    companyName: { contains: search, mode: QueryMode.Insensitive },
+                  },
+                },
+                { business: { website: { contains: search, mode: QueryMode.Insensitive } } },
+              ],
+            }
+          : {}),
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        report: true,
+        riskScore: true,
+        status: true,
+        business: {
+          select: {
+            companyName: true,
+            country: true,
+            website: true,
           },
         },
-        orderBy: searchQueryParams.orderBy as
-          | Prisma.Enumerable<Prisma.BusinessReportOrderByWithRelationInput>
-          | undefined,
       },
-      [currentProjectId],
-    );
+      orderBy: orderBy as
+        | Prisma.Enumerable<Prisma.BusinessReportOrderByWithRelationInput>
+        | undefined,
+      take: page.size,
+      skip: (page.number - 1) * page.size,
+    };
+
+    const businessReports = await this.businessReportService.findMany(args, [currentProjectId]);
+
+    const businessReportCount = await this.businessReportService.count({ where: args.where }, [
+      currentProjectId,
+    ]);
+
+    return {
+      businessReports,
+      meta: {
+        totalItems: businessReportCount,
+        totalPages: Math.max(Math.ceil(businessReportCount / page.size), 1),
+      },
+    };
   }
 
   @common.Get(':id')

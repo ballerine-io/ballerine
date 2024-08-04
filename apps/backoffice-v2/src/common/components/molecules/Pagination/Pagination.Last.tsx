@@ -25,4 +25,5 @@ export const PaginationLast: FunctionComponent<
     <ChevronLast className="h-4 w-4" />
   </PaginationLink>
 );
+
 PaginationLast.displayName = 'PaginationLast';

@@ -1,5 +1,47 @@
 # @ballerine/common
 
+## 0.9.19
+
+### Patch Changes
+
+- Bump
+
+## 0.9.18
+
+### Patch Changes
+
+- Common version bump
+
+## 0.9.17
+
+### Patch Changes
+
+- Added "ZZ" to document issuer country
+
+## 0.9.16
+
+### Patch Changes
+
+- Bump
+
+## 0.9.15
+
+### Patch Changes
+
+- Bump
+
+## 0.9.14
+
+### Patch Changes
+
+- bump
+
+## 0.9.13
+
+### Patch Changes
+
+- Bump
+
 ## 0.9.12
 
 ### Patch Changes

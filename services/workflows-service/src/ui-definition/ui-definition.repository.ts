@@ -33,18 +33,26 @@ export class UiDefinitionRepository {
     );
   }
 
-  async findByWorkflowDefinitionId<
-    T extends Omit<Prisma.UiDefinitionFindFirstOrThrowArgs, 'where'>,
-  >(
+  async findByArgs(args: Prisma.UiDefinitionFindFirstOrThrowArgs, projectIds: TProjectIds) {
+    return await this.prisma.uiDefinition.findFirstOrThrow(
+      this.scopeService.scopeFindFirst(args, projectIds),
+    );
+  }
+
+  async findByWorkflowDefinitionId(
     workflowDefinitionId: string,
     uiContext: keyof typeof UiDefinitionContext,
-    args: Prisma.SelectSubset<T, Omit<Prisma.UiDefinitionFindFirstOrThrowArgs, 'where'>>,
+    args: Prisma.UiDefinitionFindFirstOrThrowArgs,
     projectIds: TProjectIds,
   ): Promise<UiDefinition> {
     return await this.prisma.uiDefinition.findFirstOrThrow(
       this.scopeService.scopeFindFirst(
         {
-          where: { workflowDefinitionId, uiContext: uiContext },
+          where: {
+            workflowDefinitionId,
+            uiContext: uiContext,
+            ...args?.where,
+          },
           ...args,
         },
         projectIds,
@@ -75,6 +83,22 @@ export class UiDefinitionRepository {
         },
         projectIds,
       ),
+    );
+  }
+
+  async findMany<T extends Prisma.UiDefinitionFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UiDefinitionFindManyArgs>,
+    projectIds: TProjectIds,
+  ): Promise<UiDefinition[]> {
+    return await this.prisma.uiDefinition.findMany(
+      this.scopeService.scopeFindMany(args, projectIds),
+    );
+  }
+
+  async update(args: Prisma.UiDefinitionUpdateArgs, projectIds: TProjectIds) {
+    return await this.prisma.uiDefinition.updateMany(
+      //@ts-ignore
+      this.scopeService.scopeUpdateMany(args, projectIds),
     );
   }
 }

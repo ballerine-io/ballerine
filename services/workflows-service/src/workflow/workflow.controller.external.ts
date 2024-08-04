@@ -4,7 +4,7 @@ import { UserInfo } from '@/user/user-info';
 import * as common from '@nestjs/common';
 import { NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
-import { ApiOkResponse } from '@nestjs/swagger';
+import { ApiOkResponse, ApiResponse } from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 // import * as nestAccessControl from 'nest-access-control';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
@@ -15,7 +15,8 @@ import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guar
 import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
 import { env } from '@/env';
 import { PrismaService } from '@/prisma/prisma.service';
-import type { TProjectId, TProjectIds } from '@/types';
+import type { InputJsonValue, TProjectId, TProjectIds } from '@/types';
+import { WORKFLOW_DEFINITION_TAG } from '@/workflow-defintion/workflow-definition.controller';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
@@ -30,13 +31,20 @@ import * as errors from '../errors';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { WorkflowRunDto } from './dtos/workflow-run';
-import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
+import {
+  WorkflowDefinitionWhereUniqueInput,
+  WorkflowDefinitionWhereUniqueInputSchema,
+} from './dtos/workflow-where-unique-input';
 import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
+import { Validate } from 'ballerine-nestjs-typebox';
+import { WorkflowExtensionSchema } from './schemas/extensions.schemas';
+import { type Static, Type } from '@sinclair/typebox';
 
+export const WORKFLOW_TAG = 'Workflows';
 @swagger.ApiBearerAuth()
-@swagger.ApiTags('Workflows')
+@swagger.ApiTags(WORKFLOW_TAG)
 @common.Controller('external/workflows')
 export class WorkflowControllerExternal {
   constructor(
@@ -79,7 +87,68 @@ export class WorkflowControllerExternal {
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @ProjectIds() projectIds: TProjectIds,
   ) {
-    return await this.service.getWorkflowDefinitionById(params.id, {}, projectIds);
+    return await this.service.getWorkflowDefinitionById(
+      params.id,
+      {
+        include: {
+          uiDefinitions: true,
+        },
+      },
+      projectIds,
+    );
+  }
+
+  @swagger.ApiTags(WORKFLOW_DEFINITION_TAG, WORKFLOW_TAG)
+  @common.Get('/workflow-definition/:id/plugins')
+  @ApiResponse({
+    status: 200,
+    schema: WorkflowExtensionSchema,
+  })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async listWorkflowPlugins(
+    @common.Param() params: WorkflowDefinitionWhereUniqueInput,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
+    const result = await this.workflowDefinitionService.getLatestVersion(params.id, projectIds);
+
+    return result.extensions;
+  }
+
+  @swagger.ApiTags(WORKFLOW_DEFINITION_TAG, WORKFLOW_TAG)
+  @common.Put('/workflow-definition/:id/plugins')
+  @Validate({
+    request: [
+      {
+        type: 'param',
+        name: 'id',
+        schema: WorkflowDefinitionWhereUniqueInputSchema,
+      },
+      {
+        type: 'body',
+        schema: WorkflowExtensionSchema,
+      },
+    ],
+    response: Type.Any(),
+  })
+  @ApiResponse({
+    status: 200,
+    schema: WorkflowExtensionSchema,
+  })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async addPlugins(
+    @common.Param('id') id: Static<typeof WorkflowDefinitionWhereUniqueInputSchema>,
+    @common.Body() body: Static<typeof WorkflowExtensionSchema>,
+    @CurrentProject() projectId: TProjectId,
+  ) {
+    const result = await this.workflowDefinitionService.upgradeDefinitionVersion(
+      id,
+      {
+        extensions: body as InputJsonValue,
+      },
+      projectId,
+    );
+
+    return result;
   }
 
   @common.Get('/:id')
@@ -118,7 +187,6 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @UseCustomerAuthGuard()
   async updateById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowDefinitionUpdateInput,
@@ -147,6 +215,30 @@ export class WorkflowControllerExternal {
     type: WorkflowRunDto,
     description: 'Workflow run data.',
     examples: {
+      KYB: {
+        value: {
+          workflowId: 'kyb-us-1',
+          context: {
+            entity: {
+              type: 'business',
+              id: 'my-enduser-id',
+              data: {
+                country: 'US',
+                registrationNumber: '756OPOPOP08238',
+                companyName: 'MOCK COMPANY LIMITED',
+                additionalInfo: {
+                  mainRepresentative: {
+                    email: 'email@ballerine.com',
+                    lastName: 'Last',
+                    firstName: 'First',
+                  },
+                },
+              },
+            },
+            documents: [],
+          },
+        },
+      },
       'Merchant Monitoring': {
         value: {
           workflowId: '0k3j3k3g3h3i3j3k3g3h3i3',
@@ -279,8 +371,8 @@ export class WorkflowControllerExternal {
     @common.Body() data: WorkflowEventInput,
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
-  ): Promise<void> {
-    await this.service.event(
+  ): Promise<WorkflowRuntimeData> {
+    return await this.service.event(
       {
         ...data,
         id,
@@ -389,7 +481,9 @@ export class WorkflowControllerExternal {
       }, defaultPrismaTransactionOptions);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`, {
+          cause: error,
+        });
       }
 
       throw error;
