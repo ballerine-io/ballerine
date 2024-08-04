@@ -33,6 +33,13 @@ export const useAddressBlock = ({
             value: `${valueOrNA(toTitleCase(entityType ?? ''))} Address`,
           })
           .addCell({
+            type: 'subheading',
+            value: 'User-Provided Data',
+            props: {
+              className: 'mb-4 col-span-full',
+            },
+          })
+          .addCell({
             type: 'details',
             hideSeparator: true,
             value: {
