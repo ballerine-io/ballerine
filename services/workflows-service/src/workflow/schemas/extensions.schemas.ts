@@ -87,4 +87,4 @@ export const WorkflowExtensionSchema = getWorkflowExtensionSchema({ forUpdate: f
 
 export const PutWorkflowExtensionSchema = getWorkflowExtensionSchema({ forUpdate: true });
 
-export type TWorkflowExtension = typeof WorkflowExtensionSchema.static;
+export type TWorkflowExtension = Static<typeof WorkflowExtensionSchema>;

@@ -171,7 +171,7 @@ export class WorkflowControllerExternal {
       projectId,
     );
 
-    if (upgradedWorkflowDef && upgradedWorkflowDef?.extensions) {
+    if (upgradedWorkflowDef?.extensions) {
       return res.json(upgradedWorkflowDef.extensions);
     }
     return res.status(HttpStatus.NOT_FOUND).send();

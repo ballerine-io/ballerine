@@ -255,6 +255,7 @@ class LastYear extends BaseOperator<LastYearsParams> {
       const yearsAgo = new Date();
       yearsAgo.setFullYear(yearsAgo.getFullYear() - conditionValue.years);
 
+      yearsAgo.setHours(0, 0, 0, 0);
       return date >= yearsAgo;
     }
 
