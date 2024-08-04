@@ -22,6 +22,7 @@ export class ApiPlugin {
   memoizedSecrets: Record<string, string> | undefined;
 
   constructor(pluginParams: IApiPluginParams) {
+    // TODO: redandant assignment
     this.name = pluginParams.name;
     this.stateNames = pluginParams.stateNames;
     this.url = pluginParams.url;
@@ -59,15 +60,15 @@ export class ApiPlugin {
         }
       }
 
-      const urlWithoutPlaceholders = await this.replaceValuePlaceholders(this.url, context);
+      const _url = await this._getPluginUrl(context);
 
       logger.log('API Plugin - Sending API request', {
-        url: urlWithoutPlaceholders,
+        url: _url,
         method: this.method,
       });
 
       const apiResponse = await this.makeApiRequest(
-        urlWithoutPlaceholders,
+        _url,
         this.method,
         requestPayload,
         await this.composeRequestHeaders(this.headers!, context),
@@ -75,7 +76,7 @@ export class ApiPlugin {
 
       logger.log('API Plugin - Received response', {
         status: apiResponse.statusText,
-        url: urlWithoutPlaceholders,
+        url: _url,
       });
 
       if (apiResponse.ok) {
@@ -115,6 +116,10 @@ export class ApiPlugin {
     }
   }
 
+  protected async _getPluginUrl(_: AnyRecord) {
+    return this.url;
+  }
+
   returnSuccessResponse(callbackAction: string, responseBody: AnyRecord) {
     return { callbackAction, responseBody };
   }
@@ -142,11 +147,7 @@ export class ApiPlugin {
     };
 
     if (payload) {
-      for (const key of Object.keys(payload)) {
-        if (typeof payload[key] === 'string') {
-          payload[key] = await this.replaceValuePlaceholders(payload[key] as string, payload);
-        }
-      }
+      payload = await this._onPreparePayload(payload);
 
       // @TODO: Use an enum over string literals for HTTP methods
       if (this.method.toUpperCase() !== 'GET') {
@@ -170,6 +171,18 @@ export class ApiPlugin {
     }
 
     return res;
+  }
+
+  private async _onPreparePayload(_payload: AnyRecord) {
+    const returnObj = JSON.parse(JSON.stringify(_payload));
+
+    for (const key of Object.keys(returnObj)) {
+      if (typeof returnObj[key] === 'string') {
+        returnObj[key] = await this.replaceAllVariables(returnObj[key] as string, returnObj);
+      }
+    }
+
+    return returnObj;
   }
 
   async transformData(transformers: Transformers | undefined, record: AnyRecord) {
@@ -218,14 +231,25 @@ export class ApiPlugin {
       Object.entries(headers).map(async header => [
         header[0],
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        await this.replaceValuePlaceholders(header[1], context),
+        await this.replaceAllVariables(header[1], context),
       ]),
     );
 
     return Object.fromEntries(headersEntries);
   }
 
-  async replaceValuePlaceholders(content: string, context: TContext) {
+  _onReplaceVariable(variableKey: string, replacedContent: string, placeholder: string) {
+    const replacedCustomerSecrets = this.replaceSecrets(
+      'customer',
+      variableKey,
+      replacedContent,
+      placeholder,
+    );
+
+    return replacedCustomerSecrets;
+  }
+
+  async replaceAllVariables(content: string, context: TContext) {
     const placeholders = content.match(/{(.*?)}/g);
 
     if (!placeholders) return content;
@@ -235,27 +259,36 @@ export class ApiPlugin {
     for (const placeholder of placeholders) {
       const variableKey = placeholder.replace(/{|}/g, '');
 
-      const isSystemSecret = variableKey.includes('secret.');
-      const isSecret = variableKey.includes('secrets.');
+      const replacedVariable = this._onReplaceVariable(variableKey, replacedContent, placeholder);
 
-      if (isSystemSecret) {
-        const secretKey = variableKey.replace('secret.', '');
-        const secretValue = `${this.getSystemSecret(secretKey)}`;
-
-        replacedContent = replacedContent.replace(placeholder, secretValue);
-      } else if (isSecret) {
-        const secretKey = variableKey.replace('secrets.', '');
-        const secretValue = `${await this.fetchSecret(secretKey)}`;
-
-        replacedContent = replacedContent.replace(placeholder, secretValue);
-      } else {
-        const placeholderValue = `${this.fetchObjectPlaceholderValue(context, variableKey)}`;
-
-        replacedContent = replacedContent.replace(placeholder, placeholderValue);
+      if (replacedVariable) {
+        return replacedVariable;
       }
+
+      const placeholderValue = `${this.fetchObjectPlaceholderValue(context, variableKey)}`;
+      replacedContent = replacedContent.replace(placeholder, placeholderValue);
     }
 
     return replacedContent;
+  }
+
+  replaceSecrets(
+    provider: 'ballerine' | 'customer',
+    variableKey: string,
+    replacedContent: string,
+    placeholder: string,
+  ): string | undefined {
+    const variableName = `secret${provider === 'ballerine' ? '' : 's'}.`;
+
+    if (variableKey.includes(variableName)) {
+      const secretKey = variableKey.replace(variableName, '');
+      const secretValue = `${this.getSystemSecret(secretKey)}`;
+
+      replacedContent = replacedContent.replace(placeholder, secretValue);
+
+      return replacedContent;
+    }
+    return undefined;
   }
 
   getSystemSecret(key: string) {

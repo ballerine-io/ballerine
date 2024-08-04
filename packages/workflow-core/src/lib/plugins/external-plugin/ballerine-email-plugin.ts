@@ -1,15 +1,24 @@
-import { ApiPlugin } from './api-plugin';
-import { IApiPluginParams } from './types';
 import { AnyRecord } from '@ballerine/common';
 import { logger } from '../../logger';
+import { IApiPluginParams } from './types';
+import { ApiPlugin } from './api-plugin';
+import { ApiEmailTemplates } from './vendor-consts';
+import { BallerineApiPlugin, IBallerineApiPluginParams } from './ballerine-plugin';
 
-export class EmailPlugin extends ApiPlugin {
+export interface IBallerineEmailPluginParams {
+  pluginKind: 'template-email';
+  template: ApiEmailTemplates;
+  displayName: string | undefined;
+  stateNames: string[];
+}
+
+export class BallerineEmailPlugin extends BallerineApiPlugin {
   public static pluginType = 'http';
-  public static pluginKind = 'email';
 
-  constructor(pluginParams: IApiPluginParams) {
-    super(pluginParams);
+  constructor(params: IBallerineEmailPluginParams & IBallerineApiPluginParams & IApiPluginParams) {
+    super(params);
   }
+
   async makeApiRequest(
     url: string,
     method: ApiPlugin['method'],
@@ -18,10 +27,20 @@ export class EmailPlugin extends ApiPlugin {
   ) {
     const from = { from: { email: payload.from, ...(payload.name ? { name: payload.name } : {}) } };
     const subject = payload.subject
-      ? { subject: await this.replaceAllVariables(payload.subject as string, payload) }
+      ? {
+          subject: await (this as unknown as ApiPlugin).replaceAllVariables(
+            payload.subject as string,
+            payload,
+          ),
+        }
       : {};
     const preheader = payload.preheader
-      ? { preheader: await this.replaceAllVariables(payload.preheader as string, payload) }
+      ? {
+          preheader: await (this as unknown as ApiPlugin).replaceAllVariables(
+            payload.preheader as string,
+            payload,
+          ),
+        }
       : {};
     const receivers = (payload.receivers as string[]).map(receiver => {
       return { email: receiver };
@@ -31,7 +50,10 @@ export class EmailPlugin extends ApiPlugin {
 
     for (const key of Object.keys(payload)) {
       if (typeof payload[key] === 'string') {
-        payload[key] = await this.replaceAllVariables(payload[key] as string, payload);
+        payload[key] = await (this as unknown as ApiPlugin).replaceAllVariables(
+          payload[key] as string,
+          payload,
+        );
       }
     }
 
@@ -51,7 +73,7 @@ export class EmailPlugin extends ApiPlugin {
     payload.adapter ??= 'sendgrid';
 
     if (payload.adapter === 'log') {
-      logger.log('Skipping email send', { emailPayload });
+      logger.warn('No email provider', { emailPayload });
 
       return {
         ok: true,

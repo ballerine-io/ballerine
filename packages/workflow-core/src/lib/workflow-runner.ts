@@ -64,8 +64,13 @@ import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
 import { EmailPlugin } from './plugins/external-plugin/email-plugin';
 import { WorkflowTokenPlugin } from './plugins/common-plugin/workflow-token-plugin';
 import { RiskRulePlugin } from './plugins/common-plugin/risk-rules-plugin';
-import { BallerineApiPlugin } from './plugins/common-plugin/ballerine-plugin';
-import { BALLERINE_API_PLUGINS_KINDS } from './plugins/common-plugin/vendor-consts';
+import { BallerineApiPlugin } from './plugins/external-plugin/ballerine-plugin';
+import { BallerineEmailPlugin } from './plugins/external-plugin/ballerine-email-plugin';
+import {
+  ApiBallerinePlugins,
+  BALLERINE_API_PLUGINS,
+  BALLERINE_API_PLUGINS_KINDS,
+} from './plugins/external-plugin/vendor-consts';
 import {
   TransformerPlugin,
   TransformerPluginParams,
@@ -196,16 +201,10 @@ export class WorkflowRunner {
       return new apiPluginClass({
         name: apiPluginSchema.name,
         vendor: apiPluginSchema.vendor,
+        template: apiPluginSchema.template,
         displayName: apiPluginSchema.displayName,
         stateNames: apiPluginSchema.stateNames,
-        pluginKind: apiPluginSchema.pluginKind as
-          | 'ubo'
-          | 'registry-information'
-          | 'individual-sanctions'
-          | 'company-sanctions'
-          | 'resubmission-email'
-          | 'session-email'
-          | 'invitation-email',
+        pluginKind: apiPluginSchema.pluginKind as ApiBallerinePlugins,
         url: apiPluginSchema.url,
         method: apiPluginSchema.method,
         headers: apiPluginSchema.headers,
@@ -399,6 +398,9 @@ export class WorkflowRunner {
     if (apiPluginSchema.pluginKind === 'api') return ApiPlugin;
     // @ts-ignore
     if (apiPluginSchema.pluginKind === 'email') return EmailPlugin;
+
+    if (apiPluginSchema.pluginKind === BALLERINE_API_PLUGINS['template-email'])
+      return BallerineEmailPlugin;
     // @ts-ignore
     if (BALLERINE_API_PLUGINS_KINDS.includes(apiPluginSchema.pluginKind)) return BallerineApiPlugin;
 
@@ -814,6 +816,7 @@ export class WorkflowRunner {
     if (error) {
       logger.error('Error invoking plugin', {
         error,
+        stack: error.stacktrace,
         name: apiPlugin.name,
         context: this.context,
       });

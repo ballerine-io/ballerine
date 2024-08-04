@@ -1,13 +1,12 @@
 export const putPluginsExampleResponse = {
   apiPlugins: [
     {
-      name: 'company-sanctions',
-      vendor: 'asia-verify',
-      pluginKind: 'company-sanctions',
-      stateNames: ['run_vendor_data'],
-      displayName: 'Company Sanctions',
-      errorAction: 'VENDOR_FAILED',
-      successAction: 'VENDOR_DONE',
+      name: 'invitation-email',
+      pluginKind: 'template-email',
+      template: 'invitation',
+      successAction: 'INVIATION_SENT',
+      errorAction: 'INVIATION_FAILURE',
+      stateNames: ['collection_invite'],
     },
     {
       name: 'kyb',
@@ -38,7 +37,8 @@ export const putPluginsExampleResponse = {
     },
     {
       name: 'resubmission-email',
-      pluginKind: 'resubmission-email',
+      pluginKind: 'template-email',
+      template: 'resubmission',
       stateNames: ['pending_resubmission'],
       errorAction: 'EMAIL_FAILURE',
       successAction: 'EMAIL_SENT',

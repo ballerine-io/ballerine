@@ -42,7 +42,7 @@ export const dynamicUiWorkflowDefinition = {
       collection_invite: {
         on: {
           INVITATION_SENT: 'collection_flow',
-          INVIATION_FAILURE: 'failed',
+          INVITATION_FAILURE: 'failed',
         },
       },
       collection_flow: {
@@ -145,36 +145,12 @@ export const dynamicUiWorkflowDefinition = {
   extensions: {
     apiPlugins: [
       {
-        name: 'collection_invite_email',
-        pluginKind: 'email',
-        url: `{secret.EMAIL_API_URL}`,
+        name: 'invitation-email',
+        pluginKind: 'template-email',
+        template: 'invitation',
         successAction: 'INVITATION_SENT',
-        errorAction: 'INVIATION_FAILURE',
-        method: 'POST',
-        stateNames: ['collection_invite'],
-        headers: {
-          Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
-          'Content-Type': 'application/json',
-        },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-                customerName: metadata.customerName,
-                collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
-                from: 'no-reply@ballerine.com',
-                receivers: [entity.data.additionalInfo.mainRepresentative.email],
-                language: workflowRuntimeConfig.language,
-                templateId: 'd-8949519316074e03909042cfc5eb4f02',
-                adapter: '{secret.MAIL_ADAPTER}'
-              }`, // jmespath
-            },
-          ],
-        },
-        response: {
-          transform: [],
-        },
+        errorAction: 'INVITATION_FAILURE',
+        stateNames: ['idle', 'collection_invite'],
       },
       {
         name: 'kyb',
@@ -268,42 +244,12 @@ export const dynamicUiWorkflowDefinition = {
         },
       },
       {
-        name: 'resubmission_email',
-        pluginKind: 'email',
-        url: `{secret.EMAIL_API_URL}`,
-        method: 'POST',
+        name: 'resubmission-email',
+        pluginKind: 'template-email',
+        template: 'resubmission',
         successAction: 'EMAIL_SENT',
         errorAction: 'EMAIL_FAILURE',
         stateNames: ['pending_resubmission'],
-        headers: {
-          Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
-          'Content-Type': 'application/json',
-        },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              // #TODO: create new token (new using old one)
-              mapping: `{
-                kybCompanyName: entity.data.companyName,
-                customerCompanyName: metadata.customerName,
-                firstName: entity.data.additionalInfo.mainRepresentative.firstName,
-                resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
-                supportEmail: join('',['support@',metadata.customerName,'.com']),
-                from: 'no-reply@ballerine.com',
-                name: join(' ',[metadata.customerName,'Team']),
-                receivers: [entity.data.additionalInfo.mainRepresentative.email],
-                templateId: 'd-7305991b3e5840f9a14feec767ea7301',
-                revisionReason: documents[].decision[].revisionReason | [0],
-                language: workflowRuntimeConfig.language,
-                adapter: '${env.MAIL_ADAPTER}'
-              }`, // jmespath
-            },
-          ],
-        },
-        response: {
-          transform: [],
-        },
       },
     ],
     childWorkflowPlugins: [
