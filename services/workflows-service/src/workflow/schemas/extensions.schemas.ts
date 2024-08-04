@@ -73,7 +73,7 @@ const DispatchEventPluginSchema = Type.Object({
   successAction: Type.String(),
 });
 
-const getWorkflowExtenstionSchema = ({ forUpdate }: { forUpdate: boolean }) => {
+const getWorkflowExtensionSchema = ({ forUpdate }: { forUpdate: boolean }) => {
   const options = forUpdate ? { minItems: 1 } : undefined;
 
   return Type.Object({
@@ -83,8 +83,8 @@ const getWorkflowExtenstionSchema = ({ forUpdate }: { forUpdate: boolean }) => {
     dispatchEventPlugins: Type.Optional(Type.Array(DispatchEventPluginSchema, options)),
   });
 };
-export const WorkflowExtensionSchema = getWorkflowExtenstionSchema({ forUpdate: false });
+export const WorkflowExtensionSchema = getWorkflowExtensionSchema({ forUpdate: false });
 
-export const PutWorkflowExtensionSchema = getWorkflowExtenstionSchema({ forUpdate: true });
+export const PutWorkflowExtensionSchema = getWorkflowExtensionSchema({ forUpdate: true });
 
 export type TWorkflowExtension = typeof WorkflowExtensionSchema.static;
