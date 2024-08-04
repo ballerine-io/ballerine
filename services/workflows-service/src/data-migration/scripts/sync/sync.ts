@@ -55,7 +55,10 @@ export const mergeSyncObjects = (relevantObjects: SyncedObject[]): Record<string
     if (!acc[key]) {
       acc[key] = { ...obj };
     } else {
-      // Check if environments are shared
+      if (acc[key].tableName !== obj.tableName) {
+        acc[`${key}_${Object.keys(acc).length}`] = { ...obj };
+        return acc;
+      }
       const sharedEnvironments = obj.syncedEnvironments.filter((env: any) =>
         acc[key]?.syncedEnvironments.includes(env),
       );
@@ -64,7 +67,6 @@ export const mergeSyncObjects = (relevantObjects: SyncedObject[]): Record<string
       );
 
       if (sharedEnvironments.length > 0 || sharedDryRunEnvironments.length > 0) {
-        // Merge columns
         acc[key].columns = {
           ...acc[key].columns,
           ...obj.columns,
@@ -73,20 +75,19 @@ export const mergeSyncObjects = (relevantObjects: SyncedObject[]): Record<string
           | UiDefinitionPayload['scalars']
           | AlertDefinitionPayload['scalars']
         >;
-        // Merge syncedEnvironments and dryRunEnvironments
         acc[key].syncedEnvironments = [
           ...new Set([...acc[key].syncedEnvironments, ...obj.syncedEnvironments]),
         ];
         acc[key].dryRunEnvironments = [
           ...new Set([...acc[key].dryRunEnvironments, ...obj.dryRunEnvironments]),
         ];
-        // Merge environmentSpecificConfig
-        acc[key].environmentSpeceficConfig = {
-          ...acc[key].environmentSpeceficConfig,
-          ...obj.environmentSpeceficConfig,
-        };
+        if (acc[key].environmentSpeceficConfig || obj.environmentSpeceficConfig) {
+          acc[key].environmentSpeceficConfig = {
+            ...acc[key].environmentSpeceficConfig,
+            ...obj.environmentSpeceficConfig,
+          };
+        }
       } else {
-        // If no shared environments, add as a new object
         acc[`${key}_${Object.keys(acc).length}`] = { ...obj };
       }
     }

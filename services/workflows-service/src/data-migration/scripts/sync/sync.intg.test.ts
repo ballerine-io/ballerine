@@ -1,4 +1,4 @@
-import { PrismaClient, WorkflowDefinition } from '@prisma/client';
+import { PrismaClient, UiDefinition, WorkflowDefinition } from '@prisma/client';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { SyncedObject, mergeSyncObjects } from './sync';
 import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
@@ -33,6 +33,108 @@ describe('Data Sync System:', () => {
     await tearDownDatabase();
   });
   describe('mergeSyncObjects', () => {
+    it('should merge objects with shared dry run environments', () => {
+      const objects: SyncedObject[] = [
+        {
+          crossEnvKey: 'key2',
+          tableName: 'WorkflowDefinition',
+          columns: { name: 'Workflow 2', version: 1 },
+          syncConfig: { strategy: 'update' },
+          syncedEnvironments: ['production'],
+          dryRunEnvironments: ['development', 'sandbox'],
+        },
+        {
+          crossEnvKey: 'key2',
+          tableName: 'WorkflowDefinition',
+          columns: { description: 'Dry run workflow' } as Partial<WorkflowDefinition>,
+          syncConfig: { strategy: 'update' },
+          syncedEnvironments: ['production'],
+          dryRunEnvironments: ['sandbox', 'local'],
+        },
+      ];
+
+      const result = mergeSyncObjects(objects);
+
+      expect(Object.keys(result)).toHaveLength(1);
+      expect(result['key2']).toEqual({
+        crossEnvKey: 'key2',
+        tableName: 'WorkflowDefinition',
+        columns: { name: 'Workflow 2', version: 1, description: 'Dry run workflow' },
+        syncConfig: { strategy: 'update' },
+        syncedEnvironments: ['production'],
+        dryRunEnvironments: ['development', 'sandbox', 'local'],
+      });
+    });
+
+    it('should handle merging objects with different table names', () => {
+      const objects: SyncedObject[] = [
+        {
+          crossEnvKey: 'key3',
+          tableName: 'WorkflowDefinition',
+          columns: { name: 'Workflow 3', version: 1 },
+          syncConfig: { strategy: 'update' },
+          syncedEnvironments: ['development', 'production'],
+          dryRunEnvironments: [],
+        },
+        {
+          crossEnvKey: 'key3',
+          tableName: 'UiDefinition',
+          columns: { name: 'UI 3' } as Partial<UiDefinition>,
+          syncConfig: { strategy: 'update' },
+          syncedEnvironments: ['development', 'production'],
+          dryRunEnvironments: [],
+        },
+      ];
+
+      const result = mergeSyncObjects(objects);
+
+      expect(Object.keys(result)).toHaveLength(2);
+      expect(result['key3']).toBeDefined();
+      expect(result['key3_1']).toBeDefined();
+    });
+
+    it('should merge objects with environment specific configurations', () => {
+      const objects: SyncedObject[] = [
+        {
+          crossEnvKey: 'key4',
+          tableName: 'WorkflowDefinition',
+          columns: { name: 'Workflow 4', version: 1 },
+          syncConfig: { strategy: 'update' },
+          syncedEnvironments: ['development', 'production'],
+          dryRunEnvironments: [],
+          environmentSpeceficConfig: {
+            development: { additionalColumns: { projectId: 'dev-project' } },
+          },
+        },
+        {
+          crossEnvKey: 'key4',
+          tableName: 'WorkflowDefinition',
+          columns: { description: 'Merged workflow' } as Partial<WorkflowDefinition>,
+          syncConfig: { strategy: 'update' },
+          syncedEnvironments: ['production', 'sandbox'],
+          dryRunEnvironments: [],
+          environmentSpeceficConfig: {
+            production: { additionalColumns: { projectId: 'prod-project' } },
+          },
+        },
+      ];
+
+      const result = mergeSyncObjects(objects);
+
+      expect(Object.keys(result)).toHaveLength(1);
+      expect(result['key4']).toEqual({
+        crossEnvKey: 'key4',
+        tableName: 'WorkflowDefinition',
+        columns: { name: 'Workflow 4', version: 1, description: 'Merged workflow' },
+        syncConfig: { strategy: 'update' },
+        syncedEnvironments: ['development', 'production', 'sandbox'],
+        dryRunEnvironments: [],
+        environmentSpeceficConfig: {
+          development: { additionalColumns: { projectId: 'dev-project' } },
+          production: { additionalColumns: { projectId: 'prod-project' } },
+        },
+      });
+    });
     it('should merge objects with shared environments', () => {
       const objects: SyncedObject[] = [
         {
