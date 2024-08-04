@@ -508,6 +508,9 @@ importers:
       p-queue:
         specifier: ^7.4.1
         version: 7.4.1
+      posthog-js:
+        specifier: ^1.154.2
+        version: 1.154.2
       qs:
         specifier: ^6.11.2
         version: 6.12.3
