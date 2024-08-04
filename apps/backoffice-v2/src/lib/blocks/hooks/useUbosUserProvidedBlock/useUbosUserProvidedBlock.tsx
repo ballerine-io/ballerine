@@ -64,7 +64,7 @@ export const useUbosUserProvidedBlock = ubosUserProvided => {
                   ...rest
                 }) => ({
                   ...rest,
-                  name: `${firstName} ${lastName}`,
+                  name: `${firstName ?? ''}${lastName ? ` ${lastName}` : ''}`,
                   address: additionalInfo?.fullAddress,
                   nationality: additionalInfo?.nationality,
                   percentageOfOwnership: additionalInfo?.percentageOfOwnership,
