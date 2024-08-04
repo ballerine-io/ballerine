@@ -22,7 +22,6 @@ export class ApiPlugin {
   memoizedSecrets: Record<string, string> | undefined;
 
   constructor(pluginParams: IApiPluginParams) {
-    // TODO: redandant assignment
     this.name = pluginParams.name;
     this.stateNames = pluginParams.stateNames;
     this.url = pluginParams.url;
