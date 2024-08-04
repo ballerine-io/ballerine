@@ -33,7 +33,7 @@ export type SyncedObject = {
   };
   syncedEnvironments: Envionment[];
   dryRunEnvironments: Envionment[];
-  environmentSpeceficConfig?: Partial<Record<Envionment, EnvironmentConfig>>;
+  environmentSpecificConfig?: Partial<Record<Envionment, EnvironmentConfig>>;
 } & (
   | {
       tableName: 'WorkflowDefinition';
@@ -81,10 +81,10 @@ export const mergeSyncObjects = (relevantObjects: SyncedObject[]): Record<string
         acc[key].dryRunEnvironments = [
           ...new Set([...acc[key].dryRunEnvironments, ...obj.dryRunEnvironments]),
         ];
-        if (acc[key].environmentSpeceficConfig || obj.environmentSpeceficConfig) {
-          acc[key].environmentSpeceficConfig = {
-            ...acc[key].environmentSpeceficConfig,
-            ...obj.environmentSpeceficConfig,
+        if (acc[key].environmentSpecificConfig || obj.environmentSpecificConfig) {
+          acc[key].environmentSpecificConfig = {
+            ...acc[key].environmentSpecificConfig,
+            ...obj.environmentSpecificConfig,
           };
         }
       } else {
@@ -161,7 +161,7 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
             syncConfig,
             dryRunEnvironments = [],
             syncedEnvironments,
-            environmentSpeceficConfig,
+            environmentSpecificConfig,
           } = object;
 
           if (columns.id || columns.createdAt || columns.updatedAt) {
@@ -263,7 +263,7 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
               columns,
               appLoggerService,
               dbRecord,
-              environmentSpeceficConfig && environmentSpeceficConfig[environmentName as Envionment],
+              environmentSpecificConfig && environmentSpecificConfig[environmentName as Envionment],
             );
 
             const updatedRecord = await updateSynced(

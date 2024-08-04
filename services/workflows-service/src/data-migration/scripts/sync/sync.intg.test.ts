@@ -102,7 +102,7 @@ describe('Data Sync System:', () => {
           syncConfig: { strategy: 'update' },
           syncedEnvironments: ['development', 'production'],
           dryRunEnvironments: [],
-          environmentSpeceficConfig: {
+          environmentSpecificConfig: {
             development: { additionalColumns: { projectId: 'dev-project' } },
           },
         },
@@ -113,7 +113,7 @@ describe('Data Sync System:', () => {
           syncConfig: { strategy: 'update' },
           syncedEnvironments: ['production', 'sandbox'],
           dryRunEnvironments: [],
-          environmentSpeceficConfig: {
+          environmentSpecificConfig: {
             production: { additionalColumns: { projectId: 'prod-project' } },
           },
         },
@@ -129,7 +129,7 @@ describe('Data Sync System:', () => {
         syncConfig: { strategy: 'update' },
         syncedEnvironments: ['development', 'production', 'sandbox'],
         dryRunEnvironments: [],
-        environmentSpeceficConfig: {
+        environmentSpecificConfig: {
           development: { additionalColumns: { projectId: 'dev-project' } },
           production: { additionalColumns: { projectId: 'prod-project' } },
         },
