@@ -100,6 +100,7 @@ export class WorkflowDefinitionService {
       id: _id,
       version,
       name: _name,
+      crossEnvKey: _crossEnvKey,
       displayName: _displayName,
       createdAt: _createdAt,
       updatedAt: _updatedAt,
