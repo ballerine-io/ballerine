@@ -1,8 +1,6 @@
-import { DataSyncTables, PrismaClient } from '@prisma/client';
+import { PrismaClient, WorkflowDefinition } from '@prisma/client';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { SyncedObject, sync } from './sync';
-import { MD5 as objectMd5 } from 'object-hash';
+import { SyncedObject, mergeSyncObjects } from './sync';
 import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
 import { fetchServiceFromModule } from '@/test/helpers/nest-app-helper';
 import { PrismaModule } from '@/prisma/prisma.module';
@@ -33,6 +31,100 @@ describe('Data Sync System:', () => {
   afterAll(async () => {
     await cleanupDatabase();
     await tearDownDatabase();
+  });
+  describe('mergeSyncObjects', () => {
+    it('should merge objects with shared environments', () => {
+      const objects: SyncedObject[] = [
+        {
+          crossEnvKey: 'key1',
+          tableName: 'WorkflowDefinition',
+          columns: { name: 'Workflow 1', version: 1 },
+          syncConfig: { strategy: 'update' },
+          syncedEnvironments: ['development', 'production'],
+          dryRunEnvironments: [],
+        },
+        {
+          crossEnvKey: 'key1',
+          tableName: 'WorkflowDefinition',
+          columns: { description: 'Updated description' } as Partial<WorkflowDefinition>,
+          syncConfig: { strategy: 'update' },
+          syncedEnvironments: ['production', 'sandbox'],
+          dryRunEnvironments: [],
+        },
+      ];
+
+      const result = mergeSyncObjects(objects);
+
+      expect(Object.keys(result)).toHaveLength(1);
+      expect(result['key1']).toEqual({
+        crossEnvKey: 'key1',
+        tableName: 'WorkflowDefinition',
+        columns: { name: 'Workflow 1', version: 1, description: 'Updated description' },
+        syncConfig: { strategy: 'update' },
+        syncedEnvironments: ['development', 'production', 'sandbox'],
+        dryRunEnvironments: [],
+      });
+    });
+
+    it('should not merge objects without shared environments', () => {
+      const objects: SyncedObject[] = [
+        {
+          crossEnvKey: 'key1',
+          tableName: 'WorkflowDefinition',
+          columns: { name: 'Workflow 1', version: 1 },
+          syncConfig: { strategy: 'update' },
+          syncedEnvironments: ['development'],
+          dryRunEnvironments: [],
+        },
+        {
+          crossEnvKey: 'key1',
+          tableName: 'WorkflowDefinition',
+          columns: { description: 'Different workflow' } as Partial<WorkflowDefinition>,
+          syncConfig: { strategy: 'update' },
+          syncedEnvironments: ['production'],
+          dryRunEnvironments: [],
+        },
+      ];
+
+      const result = mergeSyncObjects(objects);
+
+      expect(Object.keys(result)).toHaveLength(2);
+      expect(result['key1']).toEqual(objects[0]);
+      expect(result['key1_1']).toEqual(objects[1]);
+    });
+
+    it('should merge objects with shared dry run environments', () => {
+      const objects: SyncedObject[] = [
+        {
+          crossEnvKey: 'key1',
+          tableName: 'WorkflowDefinition',
+          columns: { name: 'Workflow 1', version: 1 },
+          syncConfig: { strategy: 'update' },
+          syncedEnvironments: [],
+          dryRunEnvironments: ['development', 'sandbox'],
+        },
+        {
+          crossEnvKey: 'key1',
+          tableName: 'WorkflowDefinition',
+          columns: { description: 'Updated description' } as Partial<WorkflowDefinition>,
+          syncConfig: { strategy: 'update' },
+          syncedEnvironments: [],
+          dryRunEnvironments: ['sandbox', 'production'],
+        },
+      ];
+
+      const result = mergeSyncObjects(objects);
+
+      expect(Object.keys(result)).toHaveLength(1);
+      expect(result['key1']).toEqual({
+        crossEnvKey: 'key1',
+        tableName: 'WorkflowDefinition',
+        columns: { name: 'Workflow 1', version: 1, description: 'Updated description' },
+        syncConfig: { strategy: 'update' },
+        syncedEnvironments: [],
+        dryRunEnvironments: ['development', 'sandbox', 'production'],
+      });
+    });
   });
 
   // const createSyncObject = (overrides: Partial<SyncedObject> = {}): SyncedObject => ({

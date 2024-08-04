@@ -49,6 +49,51 @@ export type SyncedObject = {
     }
 );
 
+export const mergeSyncObjects = (relevantObjects: SyncedObject[]): Record<string, SyncedObject> => {
+  return relevantObjects.reduce<Record<string, SyncedObject>>((acc: any, obj: any) => {
+    const key = obj.crossEnvKey;
+    if (!acc[key]) {
+      acc[key] = { ...obj };
+    } else {
+      // Check if environments are shared
+      const sharedEnvironments = obj.syncedEnvironments.filter((env: any) =>
+        acc[key]?.syncedEnvironments.includes(env),
+      );
+      const sharedDryRunEnvironments = obj.dryRunEnvironments.filter((env: any) =>
+        acc[key]?.dryRunEnvironments.includes(env),
+      );
+
+      if (sharedEnvironments.length > 0 || sharedDryRunEnvironments.length > 0) {
+        // Merge columns
+        acc[key].columns = {
+          ...acc[key].columns,
+          ...obj.columns,
+        } as Partial<
+          | WorkflowDefinitionPayload['scalars']
+          | UiDefinitionPayload['scalars']
+          | AlertDefinitionPayload['scalars']
+        >;
+        // Merge syncedEnvironments and dryRunEnvironments
+        acc[key].syncedEnvironments = [
+          ...new Set([...acc[key].syncedEnvironments, ...obj.syncedEnvironments]),
+        ];
+        acc[key].dryRunEnvironments = [
+          ...new Set([...acc[key].dryRunEnvironments, ...obj.dryRunEnvironments]),
+        ];
+        // Merge environmentSpecificConfig
+        acc[key].environmentSpeceficConfig = {
+          ...acc[key].environmentSpeceficConfig,
+          ...obj.environmentSpeceficConfig,
+        };
+      } else {
+        // If no shared environments, add as a new object
+        acc[`${key}_${Object.keys(acc).length}`] = { ...obj };
+      }
+    }
+    return acc;
+  }, {});
+};
+
 const tableNamesMap: Record<TableName, string> = {
   WorkflowDefinition: 'workflowDefinition',
   AlertDefinition: 'alertDefinition',
@@ -64,6 +109,27 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
   const appLoggerService = appContext.get(AppLoggerService);
   const sentryService = appContext.get(SentryService);
   try {
+    const environmentName = (env.ENVIRONMENT_NAME as Envionment) || 'development';
+
+    // Filter objects that are relevant for the current environment
+    const relevantObjects = objectsToSync.filter(
+      obj =>
+        obj.syncedEnvironments.includes(environmentName) ||
+        obj.dryRunEnvironments.includes(environmentName),
+    );
+
+    const mergedObjects = mergeSyncObjects(relevantObjects);
+
+    const finalObjectsToSync = Object.values(mergedObjects);
+
+    appLoggerService.log('Filtered and merged objects for sync', {
+      totalOriginalObjects: objectsToSync.length,
+      totalRelevantObjects: relevantObjects.length,
+      totalMergedObjects: finalObjectsToSync.length,
+    });
+
+    // Replace the original objectsToSync with the filtered and merged list
+    objectsToSync = finalObjectsToSync;
     appLoggerService.log('Starting sync process', {
       objectsToSync: objectsToSync.map(obj => ({
         crossEnvKey: obj.crossEnvKey,
