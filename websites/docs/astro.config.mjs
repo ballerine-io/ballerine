@@ -36,6 +36,10 @@ export default defineConfig({
               link: `/en/getting_started/introduction`,
             },
             {
+              label: `System Overview`,
+              link: `/en/getting_started/system_overview`,
+            },
+            {
               label: `Glossary`,
               link: `/en/getting_started/glossary`,
             },
@@ -64,129 +68,118 @@ export default defineConfig({
           collapsed: false,
           items: [
             {
-              label: `Guides`,
-              items: [
-                {
-                  label: `KYB Manual Review Example`,
-                  link: `/en/learn/kyb_manual_review_example`,
-                },
-                {
-                  label: `KYC Manual Review Example`,
-                  link: `/en/learn/kyc_manual_review_example`,
-                },
-                {
-                  label: `KYB Workflow with External Integrations`,
-                  link: `/en/learn/simple_kyb_guide`,
-                },
-                {
-                  label: `KYC Manual Review Workflow Guide`,
-                  link: `/en/learn/kyc_manual_review_workflow_guide`,
-                },
-                {
-                  label: `Creating a KYC UI Flow`,
-                  link: `/en/learn/creating_a_kyc_flow_and_deploying_it`,
-                },
-              ],
-            },
-            {
               label: `Workflows`,
+              collapsed: true,
               items: [
                 {
-                  label: `Understanding Workflows`,
-                  link: `/en/learn/understanding_workflows`,
+                  label: `Understanding workflows technology`,
+                  link: `/en/learn/workflows_technology`,
                 },
                 {
-                  label: `Workflow Definitions`,
-                  link: `/en/learn/workflow_definitions`,
+                  label: `Creating a workflow`,
+                  link: `/en/learn/creating_a_workflow`,
                 },
                 {
-                  label: `Interacting with Workflows`,
-                  link: `/en/learn/interacting_with_workflows`,
+                  label: `Configuring a workflow`,
+                  link: `/en/learn/configuring_a_workflow`,
                 },
                 {
-                  label: `Workflows Plugins`,
-                  link: `/en/learn/plugins`,
+                  label: `Invoking a workflow / case`,
+                  link: `/en/learn/invoking_a_workflow`,
                 },
               ],
             },
-            // {
-            //   label: `Case Management`,
-            //   items: [],
-            // },
             {
-              label: 'KYB Collection Flow',
-              collapsed: false,
+              label: `Collection Flows`,
+              collapsed: true,
+              items: [
+                // {
+                //   label: `Creating a collection flow`,
+                //   link: `/en/learn/creating_a_collection_flow`,
+                // },
+                {
+                  label: `Configuring a collection flow`,
+                  link: `/en/learn/configuring_a_collection_flow`,
+                },
+                // {
+                //   label: `Changing the collection flow design`,
+                //   link: `/en/learn/changing_the_collection_flow_design`,
+                // },
+                {
+                  label: 'Theming',
+                  link: '/en/collection-flow/theming',
+                },
+                {
+                  label: 'Implementing in an iFrame',
+                  link: '/en/collection-flow/iframe',
+                },
+              ],
+            },
+            {
+              label: `Rule Engine`,
+              collapsed: true,
               items: [
                 {
-                  label: 'Introduction',
-                  link: '/en/collection-flow/introduction',
+                  label: `Making a rule affect a workflow state`,
+                  link: `/en/learn/adding_rules_and_affect_workflows`,
                 },
                 {
-                  label: 'Schema Breakdown',
-                  link: '/en/collection-flow/schema-breakdown',
-                },
-                {
-                  label: 'UI Elements',
-                  items: [
-                    {
-                      label: 'Overview',
-                      link: '/en/collection-flow/ui-elements',
-                    },
-                    {
-                      label: 'JSONForm',
-                      link: '/en/collection-flow/json-form',
-                    },
-                  ],
-                },
-                {
-                  label: 'Customization',
-                  items: [
-                    {
-                      label: 'Theming',
-                      link: '/en/collection-flow/theming',
-                    },
-                  ],
-                },
-                {
-                  label: 'API',
-                  items: [
-                    {
-                      label: 'UI Definition updating',
-                      link: '/en/collection-flow/ui-definition-updating',
-                    },
-                  ],
-                },
-                {
-                  label: 'Integrations',
-                  items: [
-                    {
-                      label: 'iFrame',
-                      link: '/en/collection-flow/iframe',
-                    },
-                  ],
+                  label: `Calculation Risk Scores`,
+                  link: `/en/learn/calculating_risk_scores`,
                 },
               ],
             },
             {
               label: `Case Management`,
+              collapsed: true,
               items: [
                 {
-                  label: `Overview`,
+                  label: `Overview of case management`,
                   link: `/en/learn/case_management_overview`,
+                },
+                {
+                  label: `Using the case management dashboard`,
+                  link: `/en/learn/using_the_case_management_dashboard`,
+                },
+                {
+                  label: `Add and Customize Workflows in the Case Management`,
+                  link: `/en/learn/add_and_customize_workflows_in_the_case_management`,
                 },
               ],
             },
-            // {
-            //   label: `Workflow Builder & Rule Engine`,
-            //   items: [
-            //     {
-            //       label: `Overview`,
-            //       link: `/en/learn/workflow_builder_and_rule_engine_overview`,
-            //     },
-            //   ],
-            // },
+            {
+              label: `Unified API`,
+              collapsed: true,
+              items: [
+                {
+                  label: `Adding a 3rd Party check to a workflow`,
+                  link: `/en/learn/adding_a_3rd_party_check_to_a_workflow`,
+                },
+              ],
+            },
+            {
+              label: `Plugins`,
+              collapsed: true,
+              items: [
+                {
+                  label: `Using Plugins`,
+                  link: `/en/learn/plugins`,
+                },
+              ],
+            },
+            {
+              label: `Webhooks`,
+              collapsed: true,
+              items: [
+                {
+                  label: `Using webhooks`,
+                  link: `/en/learn/how_to_use_webhooks`,
+                },
+              ],
+            },
             {
               label: `KYC Collection Flow (SDK)`,
+              collapsed: true,
               items: [
                 {
                   label: 'Introduction',
@@ -294,6 +287,33 @@ export default defineConfig({
         //     },
         //   ],
         // },
+
+        {
+          label: `Guides`,
+          items: [
+            {
+              label: `KYB Manual Review Example`,
+              link: `/en/learn/kyb_manual_review_example`,
+            },
+            {
+              label: `KYC Manual Review Example`,
+              link: `/en/learn/kyc_manual_review_example`,
+            },
+            {
+              label: `KYB Workflow with External Integrations`,
+              link: `/en/learn/simple_kyb_guide`,
+            },
+            {
+              label: `KYC Manual Review Workflow Guide`,
+              link: `/en/learn/kyc_manual_review_workflow_guide`,
+            },
+            {
+              label: `Creating a KYC UI Flow`,
+              link: `/en/learn/creating_a_kyc_flow_and_deploying_it`,
+            },
+          ],
+        },
+
         {
           label: `Contributing`,
           collapsed: true,

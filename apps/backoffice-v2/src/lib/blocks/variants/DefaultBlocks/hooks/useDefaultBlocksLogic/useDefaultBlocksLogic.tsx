@@ -48,6 +48,9 @@ import { useCaseOverviewBlock } from '@/lib/blocks/hooks/useCaseOverviewBlock/us
 import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { useLocation } from 'react-router-dom';
 import { omitPropsFromObjectWhitelist } from '@/common/utils/omit-props-from-object-whitelist/omit-props-from-object-whitelist';
+import { useObjectEntriesBlock } from '@/lib/blocks/hooks/useObjectEntriesBlock/useObjectEntriesBlock';
+import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';
+import { associatedCompanyToWorkflowAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-to-workflow-adapter';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 
@@ -121,6 +124,7 @@ export const useDefaultBlocksLogic = () => {
     mainRepresentative,
     mainContact,
     openCorporate: _openCorporate,
+    associatedCompanies: _associatedCompanies,
     ...entityDataAdditionalInfo
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
   const { website: websiteBasicRequirement, processingDetails, ...storeInfo } = store ?? {};
@@ -303,7 +307,8 @@ export const useDefaultBlocksLogic = () => {
 
   const ubosRegistryProvidedBlock = useUbosRegistryProvidedBlock(
     ubosRegistryProvided,
-    workflow?.context?.pluginsOutput?.ubo?.message,
+    workflow?.context?.pluginsOutput?.ubo?.message ??
+      workflow?.context?.pluginsOutput?.ubo?.data?.message,
     workflow?.context?.pluginsOutput?.ubo?.isRequestTimedOut,
   );
 
@@ -335,8 +340,16 @@ export const useDefaultBlocksLogic = () => {
     [mutateEvent],
   );
 
+  const associatedCompanies =
+    !kybChildWorkflows?.length &&
+    !workflow?.workflowDefinition?.config?.isAssociatedCompanyKybEnabled
+      ? workflow?.context?.entity?.data?.additionalInfo?.associatedCompanies?.map(
+          associatedCompanyToWorkflowAdapter,
+        )
+      : kybChildWorkflows;
+
   const associatedCompaniesBlock = useAssociatedCompaniesBlock({
-    workflows: kybChildWorkflows,
+    workflows: associatedCompanies,
     onClose,
     isLoadingOnClose: isLoadingEvent,
     dialog: {
@@ -382,7 +395,7 @@ export const useDefaultBlocksLogic = () => {
   });
 
   const associatedCompaniesInformationBlock = useAssociatedCompaniesInformationBlock(
-    kybChildWorkflows ?? [],
+    associatedCompanies ?? [],
   );
 
   const websiteMonitoringBlocks = useWebsiteMonitoringReportBlock();
@@ -390,6 +403,32 @@ export const useDefaultBlocksLogic = () => {
   const businessInformationBlocks = useKYCBusinessInformationBlock();
 
   const caseOverviewBlock = useCaseOverviewBlock();
+
+  const customDataBlock = useObjectEntriesBlock({
+    object: workflow?.context?.customData ?? {},
+    heading: 'Custom Data',
+  });
+
+  const amlData = useMemo(() => [workflow?.context?.aml], [workflow?.context?.aml]);
+
+  const amlBlock = useAmlBlock({
+    data: amlData,
+    vendor: workflow?.context?.aml?.vendor ?? '',
+  });
+
+  const amlWithContainerBlock = useMemo(() => {
+    if (!amlBlock?.length) {
+      return [];
+    }
+
+    return createBlocksTyped()
+      .addBlock()
+      .addCell({
+        type: 'block',
+        value: amlBlock,
+      })
+      .build();
+  }, [amlBlock]);
 
   const allBlocks = useMemo(() => {
     if (!workflow?.context?.entity) return [];
@@ -420,6 +459,8 @@ export const useDefaultBlocksLogic = () => {
       documentReviewBlocks,
       businessInformationBlocks,
       caseOverviewBlock,
+      customDataBlock,
+      amlWithContainerBlock,
     ];
   }, [
     associatedCompaniesBlock,
@@ -447,6 +488,8 @@ export const useDefaultBlocksLogic = () => {
     documentReviewBlocks,
     businessInformationBlocks,
     caseOverviewBlock,
+    customDataBlock,
+    amlWithContainerBlock,
     workflow?.context?.entity,
   ]);
 

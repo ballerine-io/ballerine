@@ -40,6 +40,8 @@ import { BusinessReportRepository } from '@/business-report/business-report.repo
 import { RiskRuleService } from '@/rule-engine/risk-rule.service';
 import { RuleEngineService } from '@/rule-engine/rule-engine.service';
 import { NotionService } from '@/notion/notion.service';
+import { SentryService } from '@/sentry/sentry.service';
+import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
 
 const API_KEY = faker.datatype.uuid();
 
@@ -86,6 +88,8 @@ describe('#EndUserControllerExternal', () => {
       RiskRuleService,
       RuleEngineService,
       NotionService,
+      SentryService,
+      SecretsManagerFactory,
     ];
     endUserService = (await fetchServiceFromModule(EndUserService, servicesProviders, [
       PrismaModule,

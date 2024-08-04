@@ -11,6 +11,7 @@ export const useKYCBusinessInformationBlock = () => {
     mainRepresentative,
     mainContact,
     openCorporate,
+    associatedCompanies: _associatedCompanies,
     ...entityDataAdditionalInfo
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
 

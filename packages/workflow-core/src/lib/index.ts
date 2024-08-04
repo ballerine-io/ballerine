@@ -12,6 +12,7 @@ export type {
   SerializableTransformer,
   WorkflowExtensions,
   Workflow,
+  TWorkflowTokenPluginCallback,
   ObjectValues,
 } from './types';
 export type {

@@ -50,6 +50,7 @@ import { NotionModule } from '@/notion/notion.module';
 import { RiskRulePolicyModule } from '@/risk-rules/risk-rule-policy/risk-rule-policy.module';
 import { RiskRuleSetModule } from '@/risk-rules/risk-rule-set/risk-rule-set.module';
 import { RuleModule } from '@/risk-rules/rule/rule.module';
+import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
 
 export const validate = async (config: Record<string, unknown>) => {
   const zodEnvSchema = z
@@ -127,6 +128,7 @@ export const validate = async (config: Record<string, unknown>) => {
     initHttpMoudle(),
     RuleEngineModule,
     NotionModule,
+    SecretsManagerModule,
     // Risk rules Modules
     RiskRulePolicyModule,
     RiskRuleSetModule,

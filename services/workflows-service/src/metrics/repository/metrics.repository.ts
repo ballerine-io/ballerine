@@ -1,45 +1,53 @@
-import { WorkflowRuntimeStatisticModel } from '@/metrics/repository/models/workflow-runtime-statistic.model';
-import { IAggregateWorkflowRuntimeStatistic } from '@/metrics/repository/types/aggregate-workflow-runtime-statistic';
-import { PrismaService } from '@/prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
-import { IAggregateUsersWithCasesCount } from '@/metrics/repository/types/aggregate-users-with-cases-count';
-import { WorkflowRuntimeStatusCaseCountModel } from '@/metrics/repository/models/workflow-runtime-status-case-count.model';
-import { buildAggregateWorkflowRuntimeStatusCaseCountQuery } from './sql/build-aggregate-workflow-runtime-status-case-count.sql';
-import { IAggregateWorkflowRuntimeStatusCaseCount } from '@/metrics/repository/types/aggregate-workflow-runtime-status-case-count';
-import { GetRuntimeStatusCaseCountParams } from '@/metrics/repository/types/get-runtime-status-case-count.params';
-import { GetUserApprovalRateParams } from '@/metrics/repository/types/get-user-approval-rate.params';
 import { ApprovalRateModel } from '@/metrics/repository/models/approval-rate.model';
-import { IAggregateApprovalRate } from '@/metrics/repository/types/aggregate-approval-rate';
-import { GetUserAverageResolutionTimeParams } from '@/metrics/repository/types/get-user-average-resolution-time.params';
+import { AverageAssignmentTimeModel } from '@/metrics/repository/models/average-assignment-time.model';
 import { AverageResolutionTimeModel } from '@/metrics/repository/models/average-resolution-time.model';
-import { buildAggregateAverageResolutionTimeQuery } from './sql/build-aggregate-average-resolution-time.sql';
-import { IAggregateAverageResolutionTime } from '@/metrics/repository/types/aggregate-average-resolution-time';
-import { GetUserAverageAssignmentTimeParams } from '@/metrics/repository/types/get-user-average-assignment-time.params';
-import { IAggregateAverageAssignmentTime } from '@/metrics/repository/types/aggregate-average-assignment-time';
-import { GetUserAverageReviewTimeParams } from '@/metrics/repository/types/get-user-average-review-time.params';
 import { AverageReviewTimeModel } from '@/metrics/repository/models/average-review-time.model';
-import { IAggregateAverageReviewTime } from '@/metrics/repository/types/aggregate-average-review-time';
-import { ListUserCasesResolvedDailyParams } from '@/metrics/repository/types/list-user-cases-resolved-daily.params';
 import { CasesResolvedInDay } from '@/metrics/repository/models/cases-resolved-daily.model';
-import { IAggregateCasesResolvedDaily } from '@/metrics/repository/types/aggregate-cases-resolved-daily';
-import { buildAggregateDailyCasesResolvedQuery } from '@/metrics/repository/sql/build-aggregate-daily-cases-resolved.sql';
 import { MetricsUserModel } from '@/metrics/repository/models/metrics-user.model';
-import { ISelectActiveUser } from '@/metrics/repository/types/select-active-user';
-import { buildSelectActiveUsersQuery } from '@/metrics/repository/sql/build-select-active-users.sql';
-import { FindUsersAssignedCasesStatisticParams } from '@/metrics/repository/types/find-users-assigned-cases-statistic.params';
 import { UserAssignedCasesStatisticModel } from '@/metrics/repository/models/user-assigned-cases-statistic.model';
-import { buildAggregateUsersAssignedCasesStatisticQuery } from '@/metrics/repository/sql/build-aggregate-users-assigned-cases-statistic.sql';
-import { FindUsersResolvedCasesStatisticParams } from '@/metrics/repository/types/find-users-resolved-cases-statistic.params';
 import { UserResolvedCasesStatisticModel } from '@/metrics/repository/models/user-resolved-cases-statistic.model';
-import { IAggregateUserResolvedCasesStatistic } from '@/metrics/repository/types/aggregate-user-resolved-cases-statistic';
-import { buildAggregateUsersResolvedCasesStatisticQuery } from '@/metrics/repository/sql/build-aggregate-users-resolved-cases-statistic.sql';
+import { WorkflowDefinitionVariantsMetricModel } from '@/metrics/repository/models/workflow-definition-variants-metric.model';
+import { WorkflowRuntimeStatisticModel } from '@/metrics/repository/models/workflow-runtime-statistic.model';
+import { WorkflowRuntimeStatusCaseCountModel } from '@/metrics/repository/models/workflow-runtime-status-case-count.model';
 import { buildAggregateApprovalRateQuery } from '@/metrics/repository/sql/build-aggregate-approval-rate.sql';
 import { buildAggregateAverageAssignmentTimeQuery } from '@/metrics/repository/sql/build-aggregate-average-assignment-time.sql';
-import { AverageAssignmentTimeModel } from '@/metrics/repository/models/average-assignment-time.model';
 import { buildAggregateAverageReviewTimeQuery } from '@/metrics/repository/sql/build-aggregate-average-review-time.sql';
-import type { TProjectIds } from '@/types';
+import { buildAggregateDailyCasesResolvedQuery } from '@/metrics/repository/sql/build-aggregate-daily-cases-resolved.sql';
+import { buildAggregateUsersAssignedCasesStatisticQuery } from '@/metrics/repository/sql/build-aggregate-users-assigned-cases-statistic.sql';
+import { buildAggregateUsersResolvedCasesStatisticQuery } from '@/metrics/repository/sql/build-aggregate-users-resolved-cases-statistic.sql';
+import { buildAggregateWorkflowDefinitionVariantsMetric } from '@/metrics/repository/sql/build-aggregate-workflow-definition-variants-metric.sql';
 import { buildAggregateWorkflowRuntimeStatisticQuery } from '@/metrics/repository/sql/build-aggregate-workflow-runtime-statistic.sql';
+import { buildSelectActiveUsersQuery } from '@/metrics/repository/sql/build-select-active-users.sql';
+import { IAggregateApprovalRate } from '@/metrics/repository/types/aggregate-approval-rate';
+import { IAggregateAverageAssignmentTime } from '@/metrics/repository/types/aggregate-average-assignment-time';
+import { IAggregateAverageResolutionTime } from '@/metrics/repository/types/aggregate-average-resolution-time';
+import { IAggregateAverageReviewTime } from '@/metrics/repository/types/aggregate-average-review-time';
+import { IAggregateCasesResolvedDaily } from '@/metrics/repository/types/aggregate-cases-resolved-daily';
+import { IAggregateUserResolvedCasesStatistic } from '@/metrics/repository/types/aggregate-user-resolved-cases-statistic';
+import { IAggregateUsersWithCasesCount } from '@/metrics/repository/types/aggregate-users-with-cases-count';
+import { IAggregateWorkflowRuntimeStatistic } from '@/metrics/repository/types/aggregate-workflow-runtime-statistic';
+import { IAggregateWorkflowRuntimeStatusCaseCount } from '@/metrics/repository/types/aggregate-workflow-runtime-status-case-count';
+import { FindUsersAssignedCasesStatisticParams } from '@/metrics/repository/types/find-users-assigned-cases-statistic.params';
+import { FindUsersResolvedCasesStatisticParams } from '@/metrics/repository/types/find-users-resolved-cases-statistic.params';
+import { GetRuntimeStatusCaseCountParams } from '@/metrics/repository/types/get-runtime-status-case-count.params';
+import { GetUserApprovalRateParams } from '@/metrics/repository/types/get-user-approval-rate.params';
+import { GetUserAverageAssignmentTimeParams } from '@/metrics/repository/types/get-user-average-assignment-time.params';
+import { GetUserAverageResolutionTimeParams } from '@/metrics/repository/types/get-user-average-resolution-time.params';
+import { GetUserAverageReviewTimeParams } from '@/metrics/repository/types/get-user-average-review-time.params';
+import { ListUserCasesResolvedDailyParams } from '@/metrics/repository/types/list-user-cases-resolved-daily.params';
+import { ISelectActiveUser } from '@/metrics/repository/types/select-active-user';
+import { PrismaService } from '@/prisma/prisma.service';
+import type { TProjectId, TProjectIds } from '@/types';
+import { Injectable } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
+import { buildAggregateAverageResolutionTimeQuery } from './sql/build-aggregate-average-resolution-time.sql';
+import { buildAggregateWorkflowRuntimeStatusCaseCountQuery } from './sql/build-aggregate-workflow-runtime-status-case-count.sql';
+import { ApprovalState, BusinessReportStatus } from '@prisma/client';
+
+const LOW_LTE_RISK_SCORE = 39;
+const MEDIUM_LTE_RISK_SCORE = 69;
+const HIGH_LTE_RISK_SCORE = 84;
+const CRITICAL_GTE_RISK_SCORE = 85;
 
 @Injectable()
 export class MetricsRepository {
@@ -181,5 +189,134 @@ export class MetricsRepository {
     );
 
     return results.map(result => plainToClass(MetricsUserModel, result));
+  }
+
+  async getWorkflowDefinitionVariantsMetric(projectIds: TProjectIds) {
+    const results = (await this.prismaService.$queryRaw(
+      buildAggregateWorkflowDefinitionVariantsMetric(projectIds),
+    )) as Array<{ variant: string; count: number }>;
+
+    return results.map(({ variant, count }) =>
+      plainToClass(WorkflowDefinitionVariantsMetricModel, {
+        workflowDefinitionVariant: variant,
+        count,
+      }),
+    );
+  }
+
+  async getRiskIndicators(projectId: TProjectId) {
+    return (
+      await this.prismaService.$queryRaw<Array<{ name: string; count: string }>>`
+        WITH "flattenedRiskIndicators" AS (SELECT jsonb_array_elements("report" -> 'data' -> 'summary' ->
+          'riskIndicatorsByDomain' ->
+          (jsonb_object_keys("report" -> 'data' -> 'summary' -> 'riskIndicatorsByDomain'))) AS "riskIndicator",
+          "projectId"
+        FROM
+          "BusinessReport"
+          )
+        SELECT
+          "riskIndicator" ->> 'name' AS name, COUNT(*) AS count
+        FROM
+          "flattenedRiskIndicators"
+        WHERE
+          "riskIndicator" ->> 'name' IS NOT NULL
+          AND "projectId" = ${projectId}
+        GROUP BY
+          "riskIndicator" ->> 'name'
+        ORDER BY
+          "count" DESC,
+          "riskIndicator" ->> 'name' ASC;`
+    ).map(({ name, count }) => ({
+      name,
+      count: Number(count),
+    }));
+  }
+
+  async getReportsByRiskLevel(projectId: TProjectId) {
+    const results = await this.prismaService.$queryRaw<
+      Array<{ riskLevel: 'low' | 'medium' | 'high' | 'critical'; count: number }>
+    >`
+        SELECT
+          CASE
+            WHEN "riskScore" <= ${LOW_LTE_RISK_SCORE} THEN 'low'
+            WHEN "riskScore" <= ${MEDIUM_LTE_RISK_SCORE} THEN 'medium'
+            WHEN "riskScore" <= ${HIGH_LTE_RISK_SCORE} THEN 'high'
+            WHEN "riskScore" >= ${CRITICAL_GTE_RISK_SCORE} THEN 'critical'
+          END AS "riskLevel",
+          COUNT(*) AS "count"
+        FROM
+          "BusinessReport"
+        WHERE
+          "status"::text = ${BusinessReportStatus.completed}
+          AND "BusinessReport"."projectId" = ${projectId}
+        GROUP BY
+          "riskLevel";`;
+
+    return {
+      low: Number(results.find(result => result.riskLevel === 'low')?.count ?? 0),
+      medium: Number(results.find(result => result.riskLevel === 'medium')?.count ?? 0),
+      high: Number(results.find(result => result.riskLevel === 'high')?.count ?? 0),
+      critical: Number(results.find(result => result.riskLevel === 'critical')?.count ?? 0),
+    };
+  }
+
+  async getInProgressReportsByRiskLevel(projectId: TProjectId) {
+    const results = await this.prismaService.$queryRaw<
+      Array<{ riskLevel: 'low' | 'medium' | 'high' | 'critical'; count: number }>
+    >`
+        SELECT
+          CASE
+            WHEN "riskScore" <= ${LOW_LTE_RISK_SCORE} THEN 'low'
+            WHEN "riskScore" <= ${MEDIUM_LTE_RISK_SCORE} THEN 'medium'
+            WHEN "riskScore" <= ${HIGH_LTE_RISK_SCORE} THEN 'high'
+            WHEN "riskScore" >= ${CRITICAL_GTE_RISK_SCORE} THEN 'critical'
+          END AS "riskLevel",
+          COUNT(*) AS "count"
+        FROM
+          "BusinessReport"
+        JOIN "Business" ON "BusinessReport"."businessId" = "Business"."id"
+        WHERE
+          "status"::text = ${BusinessReportStatus.in_progress}
+          AND "BusinessReport"."projectId" = ${projectId}
+          AND "Business"."approvalState"::text = ${ApprovalState.PROCESSING}
+        GROUP BY
+          "riskLevel";`;
+
+    return {
+      low: Number(results.find(result => result.riskLevel === 'low')?.count ?? 0),
+      medium: Number(results.find(result => result.riskLevel === 'medium')?.count ?? 0),
+      high: Number(results.find(result => result.riskLevel === 'high')?.count ?? 0),
+      critical: Number(results.find(result => result.riskLevel === 'critical')?.count ?? 0),
+    };
+  }
+
+  async getApprovedBusinessesReportsByRiskLevel(projectId: TProjectId) {
+    const results = await this.prismaService.$queryRaw<
+      Array<{ riskLevel: 'low' | 'medium' | 'high' | 'critical'; count: number }>
+    >`
+        SELECT
+          CASE
+            WHEN "riskScore" <= ${LOW_LTE_RISK_SCORE} THEN 'low'
+            WHEN "riskScore" <= ${MEDIUM_LTE_RISK_SCORE} THEN 'medium'
+            WHEN "riskScore" <= ${HIGH_LTE_RISK_SCORE} THEN 'high'
+            WHEN "riskScore" >= ${CRITICAL_GTE_RISK_SCORE} THEN 'critical'
+          END AS "riskLevel",
+          COUNT(*) AS "count"
+        FROM
+          "BusinessReport"
+        JOIN "Business" ON "BusinessReport"."businessId" = "Business"."id"
+        WHERE
+          "status"::text = ${BusinessReportStatus.completed}
+          AND "BusinessReport"."projectId" = ${projectId}
+          AND "Business"."approvalState"::text = ${ApprovalState.APPROVED}
+        GROUP BY
+          "riskLevel";`;
+
+    return {
+      low: Number(results.find(result => result.riskLevel === 'low')?.count ?? 0),
+      medium: Number(results.find(result => result.riskLevel === 'medium')?.count ?? 0),
+      high: Number(results.find(result => result.riskLevel === 'high')?.count ?? 0),
+      critical: Number(results.find(result => result.riskLevel === 'critical')?.count ?? 0),
+    };
   }
 }

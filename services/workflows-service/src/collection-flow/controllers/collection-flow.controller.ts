@@ -1,17 +1,13 @@
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
 import { FinishFlowDto } from '@/collection-flow/dto/finish-flow.dto';
 import { GetFlowConfigurationInputDto } from '@/collection-flow/dto/get-flow-configuration-input.dto';
-import { UpdateConfigurationDto } from '@/collection-flow/dto/update-configuration-input.dto';
 import { UpdateContextInputDto } from '@/collection-flow/dto/update-context-input.dto';
 import { UpdateFlowDto, UpdateFlowLanguageDto } from '@/collection-flow/dto/update-flow-input.dto';
 import { UnsupportedFlowTypeException } from '@/collection-flow/exceptions/unsupported-flow-type.exception';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
-import { CurrentProject } from '@/common/decorators/current-project.decorator';
-import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TokenScope, type ITokenScope } from '@/common/decorators/token-scope.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
-import type { TProjectId, TProjectIds } from '@/types';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import * as common from '@nestjs/common';
@@ -92,20 +88,20 @@ export class ColectionFlowController {
     );
   }
 
-  @common.Put('/configuration/:configurationId')
-  async updateFlowConfiguration(
-    @common.Param('configurationId') configurationId: string,
-    @common.Body() dto: UpdateConfigurationDto,
-    @ProjectIds() projectIds: TProjectIds,
-    @CurrentProject() currentProjectId: TProjectId,
-  ) {
-    return this.service.updateFlowConfiguration(
-      configurationId,
-      dto.steps,
-      projectIds,
-      currentProjectId,
-    );
-  }
+  // @common.Put('/configuration/:configurationId')
+  // async updateFlowConfiguration(
+  //   @common.Param('configurationId') configurationId: string,
+  //   @common.Body() dto: UpdateConfigurationDto,
+  //   @ProjectIds() projectIds: TProjectIds,
+  //   @CurrentProject() currentProjectId: TProjectId,
+  // ) {
+  //   return this.service.updateFlowConfiguration(
+  //     configurationId,
+  //     dto.steps,
+  //     projectIds,
+  //     currentProjectId,
+  //   );
+  // }
 
   @common.Put('/language')
   async updateFlowLanguage(

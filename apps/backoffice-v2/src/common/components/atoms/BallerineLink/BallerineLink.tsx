@@ -20,6 +20,7 @@ export const BallerineLink: FunctionComponent<ComponentProps<'a'>> = ({
       target={'_blank'}
       rel={'noopener noreferrer'}
       href={href}
+      {...props}
     >
       {children}
     </a>

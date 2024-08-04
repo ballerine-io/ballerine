@@ -1,5 +1,51 @@
 # @ballerine/ui
 
+## 0.5.12
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.19
+
+## 0.5.11
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.16
+
+## 0.5.10
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.15
+
+## 0.5.9
+
+### Patch Changes
+
+- Fixed dropdown input text overflow
+
+## 0.5.8
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.14
+
+## 0.5.7
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.13
+
 ## 0.5.6
 
 ### Patch Changes

@@ -1,5 +1,83 @@
 # @ballerine/workflow-core
 
+## 0.6.30
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.19
+
+## 0.6.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.18
+
+## 0.6.28
+
+### Patch Changes
+
+- bump version
+
+## 0.6.27
+
+### Patch Changes
+
+- Support secrets manager
+
+## 0.6.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.17
+
+## 0.6.25
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.16
+
+## 0.6.24
+
+### Patch Changes
+
+- Fixed error handling for api plugins
+
+## 0.6.23
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.15
+
+## 0.6.22
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.14
+
+## 0.6.21
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.13
+
+## 0.6.20
+
+### Patch Changes
+
+- added errored plugins persist to destination logic
+
 ## 0.6.19
 
 ### Patch Changes

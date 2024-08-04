@@ -1,34 +1,4 @@
-export type {
-  RuleResultSet,
-  FailedRuleResult,
-  PassedRuleResult,
-  RuleResult,
-  TOperation,
-  TOperator,
-  RuleSet,
-  TFindAllRulesOptions,
-  Rule,
-} from './rule-engine/types';
-
-export {
-  type EngineErrors,
-  DataValueNotFoundError,
-  MissingKeyError,
-  OperationNotFoundError,
-  ValidationFailedError,
-} from './rule-engine/errors';
-
-export type {
-  BetweenParams,
-  ConditionFn,
-  IConditionHelpers,
-  Primitive,
-  LastYearsParams,
-} from './rule-engine/operators/types';
-
-export { type OperationHelper, OperationHelpers } from './rule-engine/operators/constants';
-
-export { OPERATION, OPERATOR } from './rule-engine/operators/enums';
+export * from './rule-engine';
 
 export {
   dump,
@@ -73,6 +43,8 @@ export {
   getDocumentSchemaByCountry,
   getDocumentsByCountry,
   getGhanaDocuments,
+  DocumentsSchema,
+  DocumentInsertSchema,
 } from './schemas';
 
 export * from './consts';

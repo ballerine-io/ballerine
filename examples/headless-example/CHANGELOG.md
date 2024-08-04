@@ -1,5 +1,90 @@
 # @ballerine/headless-example
 
+## 0.3.29
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.19
+  - @ballerine/workflow-browser-sdk@0.6.30
+
+## 0.3.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.18
+  - @ballerine/workflow-browser-sdk@0.6.29
+
+## 0.3.27
+
+### Patch Changes
+
+- @ballerine/workflow-browser-sdk@0.6.28
+
+## 0.3.26
+
+### Patch Changes
+
+- @ballerine/workflow-browser-sdk@0.6.27
+
+## 0.3.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.17
+  - @ballerine/workflow-browser-sdk@0.6.26
+
+## 0.3.24
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.16
+  - @ballerine/workflow-browser-sdk@0.6.25
+
+## 0.3.23
+
+### Patch Changes
+
+- @ballerine/workflow-browser-sdk@0.6.24
+
+## 0.3.22
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.15
+  - @ballerine/workflow-browser-sdk@0.6.23
+
+## 0.3.21
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/workflow-browser-sdk@0.6.22
+  - @ballerine/common@0.9.14
+
+## 0.3.20
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.13
+  - @ballerine/workflow-browser-sdk@0.6.21
+
+## 0.3.19
+
+### Patch Changes
+
+- @ballerine/workflow-browser-sdk@0.6.20
+
 ## 0.3.18
 
 ### Patch Changes

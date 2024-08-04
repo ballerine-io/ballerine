@@ -37,6 +37,7 @@ export const useWebsiteMonitoringBusinessReportTab = ({
     ecosystemAndTransactionsMatches,
     adsImages,
     relatedAdsImages,
+    homepageScreenshotUrl,
   } = adapter(businessReport ?? {});
   const tabs = useMemo(
     () =>
@@ -184,5 +185,6 @@ export const useWebsiteMonitoringBusinessReportTab = ({
     summary,
     getUpdatedSearchParamsWithActiveMonitoringTab,
     search,
+    homepageScreenshotUrl,
   };
 };

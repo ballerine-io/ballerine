@@ -1,19 +1,5 @@
+import { Rule, RuleSet } from './rules/types';
 import { EngineErrors } from './errors';
-import { OPERATION, OPERATOR } from './operators/enums';
-
-export type TOperation = (typeof OPERATION)[keyof typeof OPERATION];
-export type TOperator = (typeof OPERATOR)[keyof typeof OPERATOR];
-
-export type Rule = {
-  key: string;
-  operation: TOperation;
-  value: any; // This should be a union of all possible values for the operation
-};
-
-export type RuleSet = {
-  operator: TOperator;
-  rules: Array<Rule | RuleSet>;
-};
 
 export type PassedRuleResult = {
   status: 'PASSED' | 'SKIPPED';
@@ -43,3 +29,7 @@ export type TDatabaseRulesOptions = {
 };
 
 export type TFindAllRulesOptions = TNotionRulesOptions | TDatabaseRulesOptions;
+
+export * from './operators/types';
+
+export * from './rules/types';
