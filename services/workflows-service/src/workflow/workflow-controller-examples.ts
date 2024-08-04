@@ -51,7 +51,7 @@ export const putPluginsExampleResponse = {
       stateNames: ['manual_review'],
       rulesSource: {
         source: 'notion',
-        databaseId: 'ef017053c5fc418383ff3489d8f3e02b',
+        databaseId: 'aaaaaaaaaaaaaa',
       },
     },
   ],
