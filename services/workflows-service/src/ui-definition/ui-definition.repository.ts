@@ -50,7 +50,7 @@ export class UiDefinitionRepository {
         {
           ...args,
           where: {
-            or: [
+            OR: [
               {
                 workflowDefinitionId,
                 uiContext: uiContext,
