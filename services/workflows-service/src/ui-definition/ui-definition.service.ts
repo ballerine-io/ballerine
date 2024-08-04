@@ -32,13 +32,13 @@ export class UiDefinitionService {
     workflowDefinitionId: string,
     uiContext: keyof typeof UiDefinitionContext,
     projectIds: TProjectIds,
-    args: Prisma.UiDefinitionFindFirstOrThrowArgs,
+    args?: Prisma.UiDefinitionFindFirstOrThrowArgs,
   ) {
     return await this.repository.findByWorkflowDefinitionId(
       workflowDefinitionId,
       uiContext,
-      args,
       projectIds,
+      args,
     );
   }
 
@@ -52,9 +52,7 @@ export class UiDefinitionService {
 
     return this.getByWorkflowDefinitionId(runtime.workflowDefinitionId, uiContext, projectIds, {
       ...args,
-      where: {
-        ...(runtime.uiDefinitionId ? { id: runtime.uiDefinitionId } : {}),
-      },
+      ...(runtime.uiDefinitionId ? { where: { id: runtime.uiDefinitionId } } : {}),
     });
   }
 

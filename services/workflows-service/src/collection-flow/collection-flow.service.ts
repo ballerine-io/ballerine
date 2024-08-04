@@ -21,7 +21,7 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { AnyRecord } from '@ballerine/common';
 import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
-import { EndUser, UiDefinition, UiDefinitionContext, WorkflowRuntimeData } from '@prisma/client';
+import { EndUser, Prisma, UiDefinition, WorkflowRuntimeData } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import get from 'lodash/get';
 
@@ -75,22 +75,23 @@ export class CollectionFlowService {
   }
 
   async getFlowConfiguration(
-    configurationId: string,
+    workflowDefinitionId: string,
     context: WorkflowRuntimeData['context'],
     language: string,
     projectIds: TProjectIds,
+    args?: Prisma.UiDefinitionFindFirstOrThrowArgs,
   ): Promise<FlowConfigurationModel> {
     const workflowDefinition = await this.workflowService.getWorkflowDefinitionById(
-      configurationId,
+      workflowDefinitionId,
       {},
       projectIds,
     );
 
     const uiDefintion = await this.uiDefinitionService.getByWorkflowDefinitionId(
       workflowDefinition.id,
-      'collection_flow' as keyof typeof UiDefinitionContext,
+      'collection_flow' as const,
       projectIds,
-      {},
+      args,
     );
 
     const translationService = new TranslationService(

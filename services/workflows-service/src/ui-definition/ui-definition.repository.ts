@@ -42,18 +42,22 @@ export class UiDefinitionRepository {
   async findByWorkflowDefinitionId(
     workflowDefinitionId: string,
     uiContext: keyof typeof UiDefinitionContext,
-    args: Prisma.UiDefinitionFindFirstOrThrowArgs,
     projectIds: TProjectIds,
+    args?: Prisma.UiDefinitionFindFirstOrThrowArgs,
   ): Promise<UiDefinition> {
     return await this.prisma.uiDefinition.findFirstOrThrow(
       this.scopeService.scopeFindFirst(
         {
-          where: {
-            workflowDefinitionId,
-            uiContext: uiContext,
-            ...args?.where,
-          },
           ...args,
+          where: {
+            or: [
+              {
+                workflowDefinitionId,
+                uiContext: uiContext,
+              },
+              ...(args?.where ? [args.where] : []),
+            ],
+          },
         },
         projectIds,
       ),
