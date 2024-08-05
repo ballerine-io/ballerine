@@ -38,7 +38,9 @@ import { exceptionValidationFactory } from '@/errors';
 import { TIME_UNITS } from '@/data-analytics/consts';
 import { TransactionEntityMapper } from './transaction.mapper';
 import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
-import { InlineRule } from '@/data-analytics/types';
+import { InlineRule, TimeUnit } from '@/data-analytics/types';
+import { AlertRepository } from '@/alert/alert.repository';
+import { ProjectScopeService } from '@/project/project-scope.service';
 
 //add swagger auth
 @swagger.ApiBearerAuth()
@@ -47,6 +49,8 @@ import { InlineRule } from '@/data-analytics/types';
 export class TransactionControllerExternal {
   constructor(
     protected readonly service: TransactionService,
+    protected readonly alertRepository: AlertRepository,
+    protected readonly scopeService: ProjectScopeService,
     protected readonly prisma: PrismaService,
     protected readonly logger: AppLoggerService,
   ) {}
@@ -333,11 +337,19 @@ export class TransactionControllerExternal {
     @Query() getTransactionsByAlertParameters: GetTransactionsByAlertDto,
     @CurrentProject() projectId: types.TProjectId,
   ) {
-    const alert = await this.prisma.alert.findUnique({
-      where: {
-        id: getTransactionsByAlertParameters.alertId,
+    const queryArgs = this.scopeService.scopeFindOne(
+      {
+        include: {
+          alertDefinition: true,
+        },
+        where: {
+          id: getTransactionsByAlertParameters.alertId,
+        },
       },
-    });
+      [projectId],
+    );
+
+    const alert = await this.prisma.alert.findUnique(queryArgs);
 
     if (!alert) {
       throw new errors.NotFoundException(
@@ -345,30 +357,62 @@ export class TransactionControllerExternal {
       );
     }
 
-    const alertCreatedAt = alert.createdAt;
-
-    const alertDefinition = await this.prisma.alertDefinition.findUnique({
-      where: {
-        id: alert.alertDefinitionId,
-      },
-    });
-
-    if (!alertDefinition) {
-      throw new errors.NotFoundException(`Alert definition not found for alert ${alert.id}`);
-    }
-
-    const inlineRule = alertDefinition.inlineRule as InlineRule;
-    // @ts-expect-error
-    const { timeValue, timeUnit } = inlineRule.options;
-
-    const transactionParameters = {
+    let filters: GetTransactionsByAlertDto = {
       ...getTransactionsByAlertParameters,
-      untilDate: alertCreatedAt,
-      timeValue,
-      timeUnit,
     };
 
-    return this.service.getTransactions(transactionParameters, projectId, {
+    if (!alert.alertDefinition) {
+      throw new errors.NotFoundException(`Alert definition not found for alert ${alert.id}`);
+    }
+    const inlineRule = alert.alertDefinition.inlineRule as InlineRule;
+
+    if (!inlineRule || !inlineRule.options) {
+      return filters;
+    }
+    if (!filters.endDate) {
+      filters.endDate = alert.updatedAt;
+    } else if (
+      !filters.startDate &&
+      (inlineRule.fnName === 'evaluateMerchantGroupAverage' ||
+        inlineRule.fnName === 'evaluateHighTransactionTypePercentage' ||
+        inlineRule.fnName === 'evaluateTransactionsAgainstDynamicRules' ||
+        inlineRule.fnName === 'evaluateMultipleMerchantsOneCounterparty' ||
+        inlineRule.fnName === 'evaluateDormantAccount')
+    ) {
+      const { timeAmount, timeUnit } = inlineRule.options;
+
+      filters.endDate = alert.updatedAt ?? new Date();
+
+      const _untilDate = new Date(filters.endDate);
+
+      let subtractValue = 0;
+
+      const baseSubstractByMin = timeAmount * 60 * 1000;
+
+      switch (timeUnit) {
+        case TIME_UNITS.minutes:
+          subtractValue = baseSubstractByMin;
+          break;
+        case TIME_UNITS.hours:
+          subtractValue = 60 * baseSubstractByMin;
+          break;
+        case TIME_UNITS.days:
+          subtractValue = 24 * 60 * baseSubstractByMin;
+          break;
+        case TIME_UNITS.months:
+          _untilDate.setMonth(_untilDate.getMonth() - timeAmount);
+          break;
+        case TIME_UNITS.years:
+          _untilDate.setFullYear(_untilDate.getFullYear() - timeAmount);
+          break;
+      }
+
+      _untilDate.setHours(0, 0, 0, 0);
+
+      filters.startDate = new Date(_untilDate.getTime() - subtractValue);
+    }
+
+    return this.service.getTransactions(filters, projectId, {
       include: {
         counterpartyBeneficiary: {
           select: {

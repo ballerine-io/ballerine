@@ -9,6 +9,7 @@ import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dt
 import { SentryService } from '@/sentry/sentry.service';
 import { isPrismaClientKnownRequestError } from '@/prisma/prisma.util';
 import { getErrorMessageFromPrismaError } from '@/common/filters/HttpExceptions.filter';
+import { TimeUnit } from '@/data-analytics/types';
 
 @Injectable()
 export class TransactionService {
@@ -73,10 +74,10 @@ export class TransactionService {
   }
 
   async getTransactions(
-    getTransactionsParameters: GetTransactionsDto,
+    filters: GetTransactionsDto,
     projectId: string,
     args?: Parameters<typeof this.repository.findManyWithFilters>[2],
   ) {
-    return this.repository.findManyWithFilters(getTransactionsParameters, projectId, args);
+    return this.repository.findManyWithFilters(filters, projectId, args);
   }
 }
