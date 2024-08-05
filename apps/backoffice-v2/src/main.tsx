@@ -61,7 +61,7 @@ if (
     tracesSampleRate: 1.0,
 
     ...(env.VITE_SENTRY_PROPAGATION_TARGET && {
-      tracePropagationTargets: ['localhost', env.VITE_SENTRY_PROPAGATION_TARGET],
+      tracePropagationTargets: [env.VITE_SENTRY_PROPAGATION_TARGET],
     }),
 
     replaysSessionSampleRate: 0,
