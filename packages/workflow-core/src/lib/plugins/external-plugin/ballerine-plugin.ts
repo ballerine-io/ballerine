@@ -25,11 +25,7 @@ const _getPluginOptions = (params: IBallerineApiPluginParams & IApiPluginParams)
 
   const pluginOptionFactoryFn = BALLERINE_API_PLUGIN_FACTORY[params.pluginKind] as any;
 
-  if (
-    params.pluginKind === 'individual-sanctions' ||
-    params.pluginKind === 'company-sanctions' ||
-    params.pluginKind === 'ubo'
-  ) {
+  if (['individual-sanctions', 'company-sanctions', 'ubo'].includes(params.pluginKind)) {
     if (!params.vendor) {
       throw new Error(`Missed vendor for: ${params.pluginKind}`);
     }
