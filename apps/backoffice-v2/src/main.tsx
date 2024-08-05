@@ -20,11 +20,11 @@ import posthog from 'posthog-js';
 if (
   !window.location.host.includes('127.0.0.1') &&
   !window.location.host.includes('localhost') &&
-  env.VITE_REACT_APP_PUBLIC_POSTHOG_KEY &&
-  env.VITE_REACT_APP_PUBLIC_POSTHOG_HOST
+  env.VITE_POSTHOG_KEY &&
+  env.VITE_POSTHOG_HOST
 ) {
-  posthog.init(env.VITE_REACT_APP_PUBLIC_POSTHOG_KEY!, {
-    api_host: env.VITE_REACT_APP_PUBLIC_POSTHOG_HOST!,
+  posthog.init(env.VITE_POSTHOG_KEY, {
+    api_host: env.VITE_POSTHOG_HOST,
     person_profiles: 'identified_only',
     loaded: ph => {
       ph.register_for_session({ environment: env.VITE_ENVIRONMENT_NAME });

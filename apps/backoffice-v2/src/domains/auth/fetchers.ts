@@ -15,8 +15,11 @@ export const fetchSignOut = async ({ callbackUrl }: ISignInProps) => {
       callbackUrl,
     },
   });
-
-  posthog.reset();
+  try {
+    posthog.reset();
+  } catch (error) {
+    console.error('Error resetting PostHog:', error);
+  }
 
   return handleZodError(error, session);
 };
@@ -55,10 +58,14 @@ export const fetchAuthenticatedUser = async () => {
     }),
   });
 
-  posthog.identify(session?.user?.id, {
-    email: session?.user?.email,
-    name: session?.user?.fullName,
-  });
+  try {
+    posthog.identify(session?.user?.id, {
+      email: session?.user?.email,
+      name: session?.user?.fullName,
+    });
+  } catch (error) {
+    console.error('Error identifying user in PostHog:', error);
+  }
 
   return handleZodError(error, session);
 };
