@@ -61,10 +61,10 @@ export const mergeSyncObjects = (relevantObjects: SyncedObject[]): Record<string
       return acc;
     }
     const sharedEnvironments = obj.syncedEnvironments.filter((env: any) =>
-      acc[key]?.syncedEnvironments.includes(env),
+      acc[key]?.syncedEnvironments?.includes(env),
     );
     const sharedDryRunEnvironments = obj.dryRunEnvironments.filter((env: any) =>
-      acc[key]?.dryRunEnvironments.includes(env),
+      acc[key]?.dryRunEnvironments?.includes(env),
     );
 
     if (sharedEnvironments.length === 0 && sharedDryRunEnvironments.length === 0) {
@@ -97,8 +97,8 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
     // Filter objects that are relevant for the current environment
     const relevantObjects = objectsToSync.filter(
       obj =>
-        obj.syncedEnvironments.includes(environmentName) ||
-        obj.dryRunEnvironments.includes(environmentName),
+        obj.syncedEnvironments?.includes(environmentName) ||
+        obj.dryRunEnvironments?.includes(environmentName),
     );
 
     const mergedObjects = mergeSyncObjects(relevantObjects);
