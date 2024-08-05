@@ -114,13 +114,18 @@ export class BusinessReportControllerInternal {
     });
 
     const response = await axios.post(
-      `${env.UNIFIED_API_URL}/tld/reports`,
+      `${env.UNIFIED_API_URL}/merchants/analysis`,
       {
         websiteUrl,
         countryCode,
         parentCompanyName: merchantName,
         reportType,
         callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${business.id}&businessReportId=${businessReport.id}`,
+        metadata: {
+          customerId: customer.id,
+          customerName: customer.displayName,
+          workflowRuntimeDataId: null,
+        },
       },
       {
         headers: {
