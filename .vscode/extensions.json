@@ -7,6 +7,7 @@
     "prisma.prisma",
     "bradlc.vscode-tailwindcss",
     "github.vscode-github-actions",
-    "streetsidesoftware.code-spell-checker"
+    "streetsidesoftware.code-spell-checker",
+    "orta.vscode-jest"
   ]
 }
