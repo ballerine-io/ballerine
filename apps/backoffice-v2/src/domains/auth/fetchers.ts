@@ -21,6 +21,8 @@ export const fetchSignOut = async ({ callbackUrl }: ISignInProps) => {
     console.error('Error resetting PostHog:', error);
   }
 
+  posthog.reset();
+
   return handleZodError(error, session);
 };
 

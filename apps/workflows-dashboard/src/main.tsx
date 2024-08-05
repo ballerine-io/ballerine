@@ -14,7 +14,7 @@ if (
   posthog.init(import.meta.env.VITE_POSTHOG_KEY, {
     api_host: import.meta.env.VITE_POSTHOG_HOST,
     person_profiles: 'identified_only',
-    loaded: (ph: { register_for_session: (arg0: { environment: any }) => void }) => {
+    loaded: ph => {
       ph.register_for_session({ environment: import.meta.env.VITE_ENVIRONMENT_NAME });
     },
   });
