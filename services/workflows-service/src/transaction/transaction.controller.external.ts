@@ -380,7 +380,7 @@ export class TransactionControllerExternal {
     ) {
       const { timeAmount, timeUnit } = inlineRule.options;
 
-      filters.endDate = alert.updatedAt ?? new Date();
+      filters.endDate = alert.updatedAt;
 
       const _untilDate = new Date(filters.endDate);
 
