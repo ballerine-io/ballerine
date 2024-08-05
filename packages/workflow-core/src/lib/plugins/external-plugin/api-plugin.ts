@@ -238,7 +238,7 @@ export class ApiPlugin {
   }
 
   _onReplaceVariable(variableKey: string, replacedContent: string, placeholder: string) {
-    const replacedCustomerSecrets = this.replaceSecrets(
+    const replacedCustomerSecrets = this.replaceSecretsByProvider(
       'customer',
       variableKey,
       replacedContent,
@@ -271,22 +271,30 @@ export class ApiPlugin {
     return replacedContent;
   }
 
-  replaceSecrets(
+  async replaceSecretsByProvider(
     provider: 'ballerine' | 'customer',
     variableKey: string,
     replacedContent: string,
     placeholder: string,
-  ): string | undefined {
-    const variableName = `secret${provider === 'ballerine' ? '' : 's'}.`;
+  ): Promise<string | undefined> {
+    const variableName = provider === 'ballerine' ? 'secret' : 'secrets';
 
-    if (variableKey.includes(variableName)) {
+    if (provider === 'ballerine' && variableKey.includes(variableName)) {
       const secretKey = variableKey.replace(variableName, '');
       const secretValue = `${this.getSystemSecret(secretKey)}`;
 
       replacedContent = replacedContent.replace(placeholder, secretValue);
 
       return replacedContent;
+    } else if (provider === 'customer' && variableKey.includes(variableName)) {
+      const secretKey = variableKey.replace('secrets.', '');
+      const secretValue = `${await this.fetchSecret(secretKey)}`;
+
+      replacedContent = replacedContent.replace(placeholder, secretValue);
+
+      return replacedContent;
     }
+
     return undefined;
   }
 

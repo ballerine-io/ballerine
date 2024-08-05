@@ -76,7 +76,7 @@ export class BallerineApiPlugin extends ApiPlugin {
   }
 
   _onReplaceVariable(variableKey: string, replacedContent: string, placeholder: string) {
-    let replacedSecrets = this.replaceSecrets(
+    let replacedSecrets = this.replaceSecretsByProvider(
       'ballerine',
       variableKey,
       replacedContent,
