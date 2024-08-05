@@ -49,7 +49,6 @@ import { ProjectScopeService } from '@/project/project-scope.service';
 export class TransactionControllerExternal {
   constructor(
     protected readonly service: TransactionService,
-    protected readonly alertRepository: AlertRepository,
     protected readonly scopeService: ProjectScopeService,
     protected readonly prisma: PrismaService,
     protected readonly logger: AppLoggerService,
