@@ -2,6 +2,7 @@ import { router } from '@/router';
 import * as React from 'react';
 import { useEffect } from 'react';
 import * as ReactDOM from 'react-dom/client';
+import * as Sentry from '@sentry/react';
 import {
   createRoutesFromChildren,
   matchRoutes,
