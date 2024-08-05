@@ -33,7 +33,7 @@ export type SyncedObject = {
   };
   syncedEnvironments: Envionment[];
   dryRunEnvironments: Envionment[];
-  environmentSpeceficConfig?: Partial<Record<Envionment, EnvironmentConfig>>;
+  environmentSpecificConfig?: Partial<Record<Envionment, EnvironmentConfig>>;
 } & (
   | {
       tableName: 'WorkflowDefinition';
@@ -48,6 +48,34 @@ export type SyncedObject = {
       columns: Partial<AlertDefinitionPayload['scalars']>;
     }
 );
+
+export const mergeSyncObjects = (relevantObjects: SyncedObject[]): Record<string, SyncedObject> => {
+  return relevantObjects.reduce<Record<string, SyncedObject>>((acc: any, obj: any) => {
+    const key = obj.crossEnvKey;
+    if (!acc[key]) {
+      acc[key] = { ...obj };
+      return acc;
+    }
+    if (acc[key].tableName !== obj.tableName) {
+      acc[`${key}_${Object.keys(acc).length}`] = { ...obj };
+      return acc;
+    }
+    const sharedEnvironments = obj.syncedEnvironments.filter((env: any) =>
+      acc[key]?.syncedEnvironments.includes(env),
+    );
+    const sharedDryRunEnvironments = obj.dryRunEnvironments.filter((env: any) =>
+      acc[key]?.dryRunEnvironments.includes(env),
+    );
+
+    if (sharedEnvironments.length === 0 && sharedDryRunEnvironments.length === 0) {
+      acc[`${key}_${Object.keys(acc).length}`] = { ...obj };
+      return acc;
+    }
+
+    mergeEnvironmentConfigs(acc, key, obj);
+    return acc;
+  }, {});
+};
 
 const tableNamesMap: Record<TableName, string> = {
   WorkflowDefinition: 'workflowDefinition',
@@ -64,6 +92,27 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
   const appLoggerService = appContext.get(AppLoggerService);
   const sentryService = appContext.get(SentryService);
   try {
+    const environmentName = (env.ENVIRONMENT_NAME as Envionment) || 'development';
+
+    // Filter objects that are relevant for the current environment
+    const relevantObjects = objectsToSync.filter(
+      obj =>
+        obj.syncedEnvironments.includes(environmentName) ||
+        obj.dryRunEnvironments.includes(environmentName),
+    );
+
+    const mergedObjects = mergeSyncObjects(relevantObjects);
+
+    const finalObjectsToSync = Object.values(mergedObjects);
+
+    appLoggerService.log('Filtered and merged objects for sync', {
+      totalOriginalObjects: objectsToSync.length,
+      totalRelevantObjects: relevantObjects.length,
+      totalMergedObjects: finalObjectsToSync.length,
+    });
+
+    // Replace the original objectsToSync with the filtered and merged list
+    objectsToSync = finalObjectsToSync;
     appLoggerService.log('Starting sync process', {
       objectsToSync: objectsToSync.map(obj => ({
         crossEnvKey: obj.crossEnvKey,
@@ -94,7 +143,7 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
             syncConfig,
             dryRunEnvironments = [],
             syncedEnvironments,
-            environmentSpeceficConfig,
+            environmentSpecificConfig,
           } = object;
 
           if (columns.id || columns.createdAt || columns.updatedAt) {
@@ -196,7 +245,7 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
               columns,
               appLoggerService,
               dbRecord,
-              environmentSpeceficConfig && environmentSpeceficConfig[environmentName as Envionment],
+              environmentSpecificConfig && environmentSpecificConfig[environmentName as Envionment],
             );
 
             const updatedRecord = await updateSynced(
@@ -281,6 +330,30 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
     throw err;
   }
 };
+function mergeEnvironmentConfigs(acc: any, key: any, obj: any) {
+  acc[key].columns = {
+    ...acc[key].columns,
+    ...obj.columns,
+  } as Partial<
+    | WorkflowDefinitionPayload['scalars']
+    | UiDefinitionPayload['scalars']
+    | AlertDefinitionPayload['scalars']
+  >;
+  acc[key].syncedEnvironments = [
+    ...new Set([...acc[key].syncedEnvironments, ...obj.syncedEnvironments]),
+  ];
+  acc[key].dryRunEnvironments = [
+    ...new Set([...acc[key].dryRunEnvironments, ...obj.dryRunEnvironments]),
+  ];
+
+  if (acc[key].environmentSpecificConfig || obj.environmentSpecificConfig) {
+    acc[key].environmentSpecificConfig = {
+      ...acc[key].environmentSpecificConfig,
+      ...obj.environmentSpecificConfig,
+    };
+  }
+}
+
 async function createSyncRecord(
   transaction: PrismaTransactionalClient,
   tableName: string,
