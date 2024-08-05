@@ -97,7 +97,9 @@ export class TransactionRepository {
 
     // Time filtering with client-provided UTC timestamps
     if (getTransactionsParameters.timeValue && getTransactionsParameters.timeUnit) {
-      const now = new Date(); // UTC time by default
+      const until = getTransactionsParameters.untilDate
+        ? getTransactionsParameters.untilDate
+        : new Date(); // UTC time by default
       let subtractValue = 0;
 
       switch (getTransactionsParameters.timeUnit) {
@@ -111,14 +113,14 @@ export class TransactionRepository {
           subtractValue = getTransactionsParameters.timeValue * 24 * 60 * 60 * 1000;
           break;
         case TIME_UNITS.months:
-          now.setMonth(now.getMonth() - getTransactionsParameters.timeValue);
+          until.setMonth(until.getMonth() - getTransactionsParameters.timeValue);
           break;
         case TIME_UNITS.years:
-          now.setFullYear(now.getFullYear() - getTransactionsParameters.timeValue);
+          until.setFullYear(until.getFullYear() - getTransactionsParameters.timeValue);
           break;
       }
 
-      const pastDate = new Date(now.getTime() - subtractValue);
+      const pastDate = new Date(until.getTime() - subtractValue);
 
       whereClause.transactionDate = { gte: pastDate };
     }
