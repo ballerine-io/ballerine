@@ -42,6 +42,7 @@
     "jsoneditor": "^10.1.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.144.0",
+    "posthog-js": "^1.154.2",
     "react": "^18.2.0",
     "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^18.2.0",
