@@ -1465,7 +1465,6 @@ export class WorkflowService {
             workflowDefinitionId,
             UiDefinitionContext.collection_flow,
             projectIds,
-            {},
           );
         } catch (err) {
           if (isErrorWithMessage(err)) {

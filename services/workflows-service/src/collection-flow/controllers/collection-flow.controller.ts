@@ -6,7 +6,7 @@ import { UpdateFlowDto, UpdateFlowLanguageDto } from '@/collection-flow/dto/upda
 import { UnsupportedFlowTypeException } from '@/collection-flow/exceptions/unsupported-flow-type.exception';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
-import { TokenScope, type ITokenScope } from '@/common/decorators/token-scope.decorator';
+import { type ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
@@ -85,6 +85,7 @@ export class ColectionFlowController {
       workflow.context,
       params.language,
       [tokenScope.projectId],
+      workflow.uiDefinitionId ? { where: { id: workflow.uiDefinitionId } } : {},
     );
   }
 
