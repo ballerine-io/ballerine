@@ -14,20 +14,21 @@ import { App } from './App';
 import { Head } from './Head';
 import './i18next';
 import './index.css';
-import { sentyRouterInstrumentation } from './router';
+import { sentryRouterInstrumentation } from './router';
 import posthog from 'posthog-js';
+import { env } from '@/env/env';
 
 if (
   !window.location.host.includes('127.0.0.1') &&
   !window.location.host.includes('localhost') &&
-  import.meta.env.VITE_REACT_APP_PUBLIC_POSTHOG_KEY &&
-  import.meta.env.VITE_REACT_APP_PUBLIC_POSTHOG_HOST
+  env.VITE_REACT_APP_PUBLIC_POSTHOG_KEY &&
+  env.VITE_REACT_APP_PUBLIC_POSTHOG_HOST
 ) {
-  posthog.init(import.meta.env.VITE_REACT_APP_PUBLIC_POSTHOG_KEY!, {
-    api_host: import.meta.env.VITE_REACT_APP_PUBLIC_POSTHOG_HOST!,
+  posthog.init(env.VITE_REACT_APP_PUBLIC_POSTHOG_KEY, {
+    api_host: env.VITE_REACT_APP_PUBLIC_POSTHOG_HOST,
     person_profiles: 'identified_only',
     loaded: ph => {
-      ph.register_for_session({ environment: import.meta.env.VITE_ENVIRONMENT_NAME });
+      ph.register_for_session({ environment: env.VITE_ENVIRONMENT_NAME });
     },
   });
 }
@@ -38,38 +39,39 @@ const getApiOrigin = () => {
   return url.origin;
 };
 
-Sentry.init({
-  // @ts-ignore
-  dsn: import.meta.env.VITE_SENTRY_DSN,
-  environment: import.meta.env.VITE_ENVIRONMENT_NAME || 'development',
-  enabled: !!import.meta.env.VITE_SENTRY_DSN,
-  debug: !!import.meta.env.DEBUG,
-  normalizeDepth: 15,
-  integrations: [
-    new Sentry.BrowserTracing({
-      routingInstrumentation: sentyRouterInstrumentation,
+if (
+  !window.location.host.includes('127.0.0.1') &&
+  !window.location.host.includes('localhost') &&
+  env.VITE_SENTRY_DSN
+) {
+  Sentry.init({
+    dsn: env.VITE_SENTRY_DSN,
+    environment: env.VITE_ENVIRONMENT_NAME,
+    debug: env.VITE_DEBUG,
+    normalizeDepth: 15,
+    integrations: [
+      new Sentry.BrowserTracing({
+        routingInstrumentation: sentryRouterInstrumentation,
 
-      // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
-      tracePropagationTargets: [
-        'localhost',
-        /^https:\/\/ballerine\.dev\/api/,
-        /^https:\/\/ballerine\.app\/api/,
-        /^https:\/\/ballerine\.io\/api/,
-      ],
-    }),
-    new Sentry.Replay({
-      maskAllText: false,
-      blockAllMedia: true,
-      networkDetailAllowUrls: [getApiOrigin()],
-    }),
-  ],
-  // Performance Monitoring
-  tracesSampleRate: 1.0, // Capture 100% of the transactions
+        // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
+        ...(env.VITE_SENTRY_PROPAGATION_TARGET && {
+          tracePropagationTargets: [env.VITE_SENTRY_PROPAGATION_TARGET],
+        }),
+      }),
+      new Sentry.Replay({
+        maskAllText: false,
+        blockAllMedia: true,
+        networkDetailAllowUrls: [getApiOrigin()],
+      }),
+    ],
+    // Performance Monitoring
+    tracesSampleRate: 1.0, // Capture 100% of the transactions
 
-  // Session Replay
-  replaysSessionSampleRate: 1.0, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-  replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
-});
+    // Session Replay
+    replaysSessionSampleRate: 0,
+    replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+  });
+}
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

@@ -28,6 +28,14 @@ export const EnvSchema = z.object({
     value => (typeof value === 'string' ? JSON.parse(value) : value),
     z.boolean().default(true),
   ),
-  VITE_REACT_APP_PUBLIC_POSTHOG_KEY: z.string().optional(),
-  VITE_REACT_APP_PUBLIC_POSTHOG_HOST: z.string().optional(),
+  VITE_POSTHOG_KEY: z.string().optional(),
+  VITE_POSTHOG_HOST: z.string().optional(),
+  VITE_SENTRY_DSN: z.string().optional(),
+  VITE_SENTRY_PROPAGATION_TARGET: z.preprocess(value => {
+    if (typeof value !== 'string') {
+      return value;
+    }
+
+    return new RegExp(value);
+  }, z.custom<RegExp>(value => value instanceof RegExp).optional()),
 });
