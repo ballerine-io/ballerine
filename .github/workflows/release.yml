@@ -52,10 +52,8 @@ jobs:
         run: pnpm install
       
       - name: Update Packages
-        uses: changesets/action@v1
-        with:
-          commit: 'chore: update package(s)'
-          publish: pnpm update-packages
+        shell: bash
+        run: pnpm update-packages
       
       - name: Create Release Pull Request
         uses: changesets/action@v1
