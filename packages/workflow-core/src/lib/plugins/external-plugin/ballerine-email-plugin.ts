@@ -48,14 +48,7 @@ export class BallerineEmailPlugin extends BallerineApiPlugin {
     const to = { to: receivers };
     const templateId = { template_id: payload.templateId };
 
-    for (const key of Object.keys(payload)) {
-      if (typeof payload[key] === 'string') {
-        payload[key] = await (this as unknown as ApiPlugin).replaceAllVariables(
-          payload[key] as string,
-          payload,
-        );
-      }
-    }
+    await this.replaceVariablesInPayload(payload);
 
     const emailPayload = {
       ...from,
@@ -83,6 +76,17 @@ export class BallerineEmailPlugin extends BallerineApiPlugin {
     }
 
     return await super.makeApiRequest(url, method, emailPayload, headers);
+  }
+
+  private async replaceVariablesInPayload(payload: AnyRecord) {
+    for (const key of Object.keys(payload)) {
+      if (typeof payload[key] === 'string') {
+        payload[key] = await (this as unknown as ApiPlugin).replaceAllVariables(
+          payload[key] as string,
+          payload,
+        );
+      }
+    }
   }
 
   returnSuccessResponse(callbackAction: string, responseBody: AnyRecord) {
