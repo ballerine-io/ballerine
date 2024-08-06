@@ -842,7 +842,7 @@ const generateFakeAlert = (
 };
 
 export const seedTransactionsAlerts = async (
-  prisma: PrismaClient,
+  prisma: PrismaClient | PrismaTransaction,
   {
     project,
     businessIds,
