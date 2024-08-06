@@ -55,6 +55,7 @@
     "react-router-dom": "^6.11.2",
     "use-debounce": "^9.0.4",
     "uuid": "^9.0.0",
+    "vite-plugin-terminal": "^1.1.0",
     "xstate": "^4.38.2",
     "zod": "^3.21.4"
   },
