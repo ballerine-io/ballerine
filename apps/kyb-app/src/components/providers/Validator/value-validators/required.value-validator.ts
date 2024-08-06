@@ -9,6 +9,8 @@ export interface IRequiredValueValidatorParams extends IBaseValueValidatorParams
 }
 
 export class RequiredValueValidator extends ValueValidator<IRequiredValueValidatorParams> {
+  type = 'required';
+
   validate(value: unknown) {
     if (value === undefined || value === null || value === '') {
       throw new Error(this.getErrorMessage());
@@ -27,7 +29,7 @@ export class RequiredValueValidator extends ValueValidator<IRequiredValueValidat
     //@ts-ignore
     if (
       Array.isArray(params) &&
-      typeof params?.[0] === 'number' &&
+      typeof params?.[0] === 'boolean' &&
       typeof params?.[1] === 'string'
     ) {
       return true;

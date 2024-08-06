@@ -9,6 +9,8 @@ export interface IMaxLengthValueValidatorParams extends IBaseValueValidatorParam
 }
 
 export class MaxLengthValueValidator extends ValueValidator<IMaxLengthValueValidatorParams> {
+  type = 'maxLength';
+
   validate<TValue extends { length?: number }>(value: TValue): void {
     if (value?.length === undefined || value.length > this.params.maxLength) {
       throw new Error(this.getErrorMessage());

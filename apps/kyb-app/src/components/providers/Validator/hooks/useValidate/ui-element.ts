@@ -1,4 +1,4 @@
-import { UIElementV2 } from '@/components/providers/Validator/types';
+import { TValidatorApplyRule, UIElementV2 } from '@/components/providers/Validator/types';
 import {
   FormatValueValidator,
   IFormatValueValidatorParams,
@@ -27,6 +27,7 @@ import {
   IRequiredValueValidatorParams,
   RequiredValueValidator,
 } from '@/components/providers/Validator/value-validators/required.value-validator';
+import jsonLogic from 'json-logic-js';
 import get from 'lodash/get';
 
 export class UIElement {
@@ -41,11 +42,29 @@ export class UIElement {
   }
 
   isRequired() {
-    if (Array.isArray(this.element.validation?.required)) {
-      return Boolean(this.element.validation?.required[0]);
-    }
+    const requiredParams = this.element.validation?.required;
 
-    return Boolean(this.element.validation?.required);
+    const applyRule =
+      Array.isArray(requiredParams) && requiredParams[2]
+        ? (requiredParams[2] as TValidatorApplyRule)
+        : null;
+
+    if (applyRule) {
+      const isShouldApplyRequired = jsonLogic.apply(applyRule, this.context);
+
+      console.log({
+        applyRule,
+        isShouldApplyRequired,
+      });
+
+      return Boolean(isShouldApplyRequired);
+    } else {
+      if (Array.isArray(this.element.validation?.required)) {
+        return Boolean(this.element.validation?.required[0]);
+      }
+
+      return Boolean(this.element.validation?.required);
+    }
   }
 
   private formatId(id: string) {
@@ -112,6 +131,7 @@ export class UIElement {
         return {
           minLength: _params[0],
           message: _params[1],
+          applyRule: _params[2],
         };
       }
 
@@ -136,6 +156,7 @@ export class UIElement {
         return {
           maxLength: _params[0],
           message: _params[1],
+          applyRule: _params[2],
         };
       }
 
@@ -160,6 +181,7 @@ export class UIElement {
         return {
           required: _params[0],
           message: _params[1],
+          applyRule: _params[2],
         };
       }
 
@@ -184,6 +206,7 @@ export class UIElement {
         return {
           required: _params[0],
           message: _params[1],
+          applyRule: _params[2],
         };
       }
 
@@ -208,6 +231,7 @@ export class UIElement {
         return {
           required: _params[0],
           message: _params[1],
+          applyRule: _params[2],
         };
       }
 
@@ -231,6 +255,7 @@ export class UIElement {
         return {
           required: _params[0],
           message: _params[1],
+          applyRule: _params[2],
         };
       }
 
@@ -254,6 +279,7 @@ export class UIElement {
         return {
           required: _params[0],
           message: _params[1],
+          applyRule: _params[2],
         };
       }
 

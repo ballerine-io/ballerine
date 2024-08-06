@@ -2,19 +2,42 @@ export type TFormats = 'email';
 
 export type TValidatorErrorMessage = string;
 
-export type TRequiredValidationParams = boolean | [boolean, TValidatorErrorMessage];
+export type TValidatorApplyRule = object;
 
-export type TMinLengthValidationParams = number | [number, TValidatorErrorMessage];
+export type TRequiredValidationParams =
+  | boolean
+  | [boolean, TValidatorErrorMessage]
+  | [boolean, TValidatorErrorMessage, TValidatorApplyRule];
 
-export type TMaxLengthValidationParams = number | [number, TValidatorErrorMessage];
+export type TMinLengthValidationParams =
+  | number
+  | [number, TValidatorErrorMessage]
+  | [number, TValidatorErrorMessage, TValidatorApplyRule];
 
-export type TPatternValidationParams = string | [string, TValidatorErrorMessage];
+export type TMaxLengthValidationParams =
+  | number
+  | [number, TValidatorErrorMessage]
+  | [number, TValidatorErrorMessage, TValidatorApplyRule];
 
-export type TMinimumValidationParams = number | [number, TValidatorErrorMessage];
+export type TPatternValidationParams =
+  | string
+  | [string, TValidatorErrorMessage]
+  | [string, TValidatorErrorMessage, TValidatorApplyRule];
 
-export type TMaximumValidationParams = number | [number, TValidatorErrorMessage];
+export type TMinimumValidationParams =
+  | number
+  | [number, TValidatorErrorMessage]
+  | [number, TValidatorErrorMessage, TValidatorApplyRule];
 
-export type TFormatValidationParams = TFormats | [TFormats, TValidatorErrorMessage];
+export type TMaximumValidationParams =
+  | number
+  | [number, TValidatorErrorMessage]
+  | [number, TValidatorErrorMessage, TValidatorApplyRule];
+
+export type TFormatValidationParams =
+  | TFormats
+  | [TFormats, TValidatorErrorMessage]
+  | [TFormats, TValidatorErrorMessage, TValidatorApplyRule];
 
 export type TValidationParams =
   | TRequiredValidationParams
@@ -52,4 +75,5 @@ export interface UIElementV2<TFieldParams = IBaseFieldParams> {
 
 export interface IBaseValueValidatorParams {
   message?: string;
+  applyRule?: TValidatorApplyRule;
 }

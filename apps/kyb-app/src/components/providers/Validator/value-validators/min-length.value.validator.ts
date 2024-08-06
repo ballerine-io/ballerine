@@ -6,6 +6,8 @@ export interface IMinLengthValueValidatorParams extends IBaseValueValidatorParam
 }
 
 export class MinLengthValueValidator extends ValueValidator<IMinLengthValueValidatorParams> {
+  type = 'minLength';
+
   validate<TValue extends { length?: number }>(value: TValue): void {
     if (value?.length === undefined || value.length < this.params.minLength) {
       throw new Error(this.getErrorMessage());

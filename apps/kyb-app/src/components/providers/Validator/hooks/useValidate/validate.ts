@@ -1,7 +1,8 @@
 import { UIElement } from '@/components/providers/Validator/hooks/useValidate/ui-element';
 import { IValidationError } from '@/components/providers/Validator/hooks/useValidate/useValidate';
-import { UIElementV2 } from '@/components/providers/Validator/types';
+import { IBaseValueValidatorParams, UIElementV2 } from '@/components/providers/Validator/types';
 import { ValueValidatorManager } from '@/components/providers/Validator/value-validator-manager';
+import jsonLogic from 'json-logic-js';
 
 export const validate = (elements: UIElementV2[], context: object) => {
   const validatorManager = new ValueValidatorManager();
@@ -13,11 +14,28 @@ export const validate = (elements: UIElementV2[], context: object) => {
   ): IValidationError[] => {
     const value = element.getValue();
 
+    const isShouldApplyValidation = <TParams extends IBaseValueValidatorParams>(
+      params: TParams,
+    ) => {
+      const applyRule = params.applyRule;
+
+      if (!applyRule) return true;
+
+      return Boolean(jsonLogic.apply(applyRule, context));
+    };
+
     const validationErrors = element.getValidatorsParams().map(({ validator, params }) => {
       try {
-        if (!element.isRequired() && value === undefined) return;
+        if (validator === 'required') {
+          const isRequired = element.isRequired();
+          if (!isRequired && value === undefined) return;
 
-        validatorManager.validate(value, validator as any, params);
+          validatorManager.validate(value, validator as any, params);
+        } else {
+          if (!isShouldApplyValidation(params as unknown as IBaseValueValidatorParams)) return;
+
+          validatorManager.validate(value, validator as any, params);
+        }
       } catch (error) {
         return {
           //@ts-ignore
