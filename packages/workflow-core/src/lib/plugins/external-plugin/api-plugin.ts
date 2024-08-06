@@ -237,8 +237,8 @@ export class ApiPlugin {
     return Object.fromEntries(headersEntries);
   }
 
-  _onReplaceVariable(variableKey: string, replacedContent: string, placeholder: string) {
-    const replacedCustomerSecrets = this.replaceSecretsByProvider(
+  async _onReplaceVariable(variableKey: string, replacedContent: string, placeholder: string) {
+    const replacedCustomerSecrets = await this.replaceSecretsByProvider(
       'customer',
       variableKey,
       replacedContent,
@@ -276,7 +276,7 @@ export class ApiPlugin {
     variableKey: string,
     content: string,
     placeholder: string,
-  ): Promise<string | undefined> {
+  ) {
     const variableName = provider === 'ballerine' ? 'secret' : 'secrets';
 
     let replacedContent = content;
