@@ -24,8 +24,8 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
     severity: string;
   }>;
   description: string;
-  detectedMcc: string | null;
-}> = ({ violations, description, detectedMcc }) => {
+  formattedMcc: string | null;
+}> = ({ violations, description, formattedMcc }) => {
   const parsedViolationsResult = ViolationsSchema.safeParse(violations);
 
   return (
@@ -47,12 +47,12 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
           </div>
         </CardContent>
 
-        {detectedMcc && (
+        {formattedMcc && (
           <div>
             <CardContent className={'flex flex-col space-y-4'}>
               <div>
                 <h4 className={'mb-4 font-semibold'}>MCC Classification</h4>
-                <p>{detectedMcc}</p>
+                <p>{formattedMcc}</p>
               </div>
             </CardContent>
           </div>
