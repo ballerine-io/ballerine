@@ -1,5 +1,5 @@
 import { UIState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
-import { Rule, UIElement } from '@/domains/collection-flow';
+import { Rule, UIElement, UIPage } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 
 export type ErrorField = {
@@ -23,6 +23,7 @@ export abstract class RuleEngine {
     rule: Rule,
     definition: UIElement<AnyObject>,
     uiState: UIState,
+    uiPage: UIPage,
   ): RuleTestResult;
 
   abstract test(context: unknown, rule: Rule): boolean;

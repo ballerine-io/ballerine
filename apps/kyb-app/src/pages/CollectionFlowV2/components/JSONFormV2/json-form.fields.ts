@@ -1,3 +1,12 @@
+import { CheckboxList } from '@/components/organisms/UIRenderer/elements/JSONForm/components/CheckboxList';
+import { CountryPicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/CountryPicker';
+import { IndustriesPicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/IndustriesPicker';
+import { LocalePicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/LocalePicker';
+import { MCCPicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/MCCPicker';
+import { Multiselect } from '@/components/organisms/UIRenderer/elements/JSONForm/components/Multiselect/Multiselect';
+import { NationalityPicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/NationalityPicker';
+import { RelationshipDropdown } from '@/components/organisms/UIRenderer/elements/JSONForm/components/RelationshipDropdown';
+import { StatePicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/StatePicker';
 import {
   AutocompleteTextInputAdapter,
   baseLayouts,
@@ -7,18 +16,9 @@ import {
   PhoneInputAdapter,
   TextInputAdapter,
 } from '@ballerine/ui';
-import { CheckboxList } from './components/CheckboxList';
-import { CountryPicker } from './components/CountryPicker';
 import { DocumentField } from './components/DocumentField';
 import { FieldTemplate } from './components/FieldTemplate';
-import { IndustriesPicker } from './components/IndustriesPicker';
 import { JSONFormArrayFieldLayout } from './components/JSONFormArrayFieldLayout';
-import { LocalePicker } from './components/LocalePicker';
-import { MCCPicker } from './components/MCCPicker';
-import { Multiselect } from './components/Multiselect/Multiselect';
-import { NationalityPicker } from './components/NationalityPicker';
-import { RelationshipDropdown } from './components/RelationshipDropdown';
-import { StatePicker } from './components/StatePicker';
 import { withDynamicUIInputV2 } from './hocs/withDynamicUIInput';
 
 export const jsonFormFields = {
