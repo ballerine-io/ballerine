@@ -120,6 +120,7 @@ export const reportAdapter = {
       lineOfBusinessDescription: data?.report?.data?.lineOfBusiness?.lobDescription,
       relatedAdsSummary: data?.report?.data?.socialMedia?.relatedAds?.summary,
       pricingAnalysis: data?.report?.data?.transactionLaundering?.pricingAnalysis?.indicators,
+      formattedMcc: data?.report?.data?.lineOfBusiness?.formattedMcc,
       websiteStructureAndContentEvaluation:
         data?.report?.data?.transactionLaundering?.websiteStructureEvaluation?.indicators,
       trafficAnalysis: [
@@ -225,6 +226,7 @@ export const reportAdapter = {
         ?.filter(({ violation }) => !!violation)
         ?.map(({ violation, sourceUrl }) => ({ label: violation, url: sourceUrl })),
       lineOfBusinessDescription: data?.report?.data?.lineOfBusiness?.lobDescription,
+      formattedMcc: data?.report?.data?.lineOfBusiness?.formattedMcc,
       relatedAdsSummary: data?.report?.data?.socialMedia?.relatedAds?.summary,
       pricingAnalysis: data?.report?.data?.transactionLaundering?.pricingAnalysis?.indicators,
       websiteStructureAndContentEvaluation:

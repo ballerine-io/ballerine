@@ -272,7 +272,7 @@ class SwaggerSingleton {
                                 mccProvided: {
                                   type: 'string',
                                 },
-                                mccMatching: {
+                                formattedMcc: {
                                   type: 'string',
                                 },
                               },

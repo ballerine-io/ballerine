@@ -34,6 +34,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     companyReputationAnalysis,
     relatedAdsSummary,
     lineOfBusinessDescription,
+    formattedMcc,
     onlineReputationAnalysis,
     pricingAnalysis,
     websiteStructureAndContentEvaluation,
@@ -115,6 +116,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
             <WebsiteLineOfBusiness
               violations={websiteLineOfBusinessAnalysis ?? []}
               description={lineOfBusinessDescription}
+              formattedMcc={formattedMcc}
             />
           ),
         },
