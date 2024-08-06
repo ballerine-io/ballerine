@@ -42,7 +42,6 @@ import { InlineRule } from '@/data-analytics/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { AlertService } from '@/alert/alert.service';
 
-//add swagger auth
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('Transactions')
 @Controller('external/transactions')
