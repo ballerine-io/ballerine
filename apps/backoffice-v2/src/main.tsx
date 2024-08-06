@@ -1,4 +1,4 @@
-import { StrictMode, useEffect } from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import '@total-typescript/ts-reset';
@@ -15,59 +15,9 @@ import './i18n';
 import './index.css';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
-import posthog from 'posthog-js';
-import * as Sentry from '@sentry/react';
-import {
-  createRoutesFromChildren,
-  matchRoutes,
-  useLocation,
-  useNavigationType,
-} from 'react-router-dom';
+import { initializeMonitoring } from '@/initialize-monitoring/initialize-monitoring';
 
-if (
-  !window.location.host.includes('127.0.0.1') &&
-  !window.location.host.includes('localhost') &&
-  env.VITE_POSTHOG_KEY &&
-  env.VITE_POSTHOG_HOST
-) {
-  posthog.init(env.VITE_POSTHOG_KEY, {
-    api_host: env.VITE_POSTHOG_HOST,
-    person_profiles: 'identified_only',
-    loaded: ph => {
-      ph.register_for_session({ environment: env.VITE_ENVIRONMENT_NAME });
-    },
-  });
-}
-
-if (
-  !window.location.host.includes('127.0.0.1') &&
-  !window.location.host.includes('localhost') &&
-  env.VITE_SENTRY_DSN
-) {
-  Sentry.init({
-    dsn: env.VITE_SENTRY_DSN,
-    integrations: [
-      Sentry.reactRouterV6BrowserTracingIntegration({
-        useEffect,
-        useLocation,
-        useNavigationType,
-        createRoutesFromChildren,
-        matchRoutes,
-      }),
-      Sentry.browserProfilingIntegration(),
-      Sentry.replayIntegration(),
-    ],
-
-    tracesSampleRate: 1.0,
-
-    ...(env.VITE_SENTRY_PROPAGATION_TARGET && {
-      tracePropagationTargets: [env.VITE_SENTRY_PROPAGATION_TARGET],
-    }),
-
-    replaysSessionSampleRate: 0,
-    replaysOnErrorSampleRate: 1.0,
-  });
-}
+initializeMonitoring();
 
 dayjs.extend(advancedFormat);
 
