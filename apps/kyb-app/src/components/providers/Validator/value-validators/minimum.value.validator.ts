@@ -9,6 +9,8 @@ export interface IMinimumValueValidatorParams extends IBaseValueValidatorParams 
 }
 
 export class MinimumValueValidator extends ValueValidator<IMinimumValueValidatorParams> {
+  type = 'minimum';
+
   validate<TValue extends number>(value: TValue): void {
     if (typeof value !== 'number' || value < this.params.minimum) {
       throw new Error(this.getErrorMessage());

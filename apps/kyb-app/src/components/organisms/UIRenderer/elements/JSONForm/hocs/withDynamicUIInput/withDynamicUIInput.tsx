@@ -25,7 +25,7 @@ const findLastDigit = (str: string) => {
   return null;
 };
 
-const getInputIndex = (inputId: string) => findLastDigit(inputId);
+export const getInputIndex = (inputId: string) => findLastDigit(inputId);
 
 const injectIndexToDestinationIfNeeded = (destination: string, index: number | null): string => {
   if (index === null) return destination;

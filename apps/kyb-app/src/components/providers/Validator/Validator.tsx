@@ -35,5 +35,7 @@ export const Validator: FunctionComponent<IValidatorProps> = ({ children, elemen
     [validationErrors, onValidate],
   );
 
+  console.log({ context });
+
   return <Provider value={ctx}>{children}</Provider>;
 };

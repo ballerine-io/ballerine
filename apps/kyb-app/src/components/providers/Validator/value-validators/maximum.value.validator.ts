@@ -9,6 +9,8 @@ export interface IMaximumValueValidatorParams extends IBaseValueValidatorParams 
 }
 
 export class MaximumValueValidator extends ValueValidator<IMaximumValueValidatorParams> {
+  type = 'maximum';
+
   validate<TValue extends number>(value: TValue): void {
     if (typeof value !== 'number' || value > this.params.maximum) {
       throw new Error(this.getErrorMessage());

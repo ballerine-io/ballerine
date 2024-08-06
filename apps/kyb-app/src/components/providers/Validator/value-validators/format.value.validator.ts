@@ -11,6 +11,8 @@ export interface IFormatValueValidatorParams extends IBaseValueValidatorParams {
 }
 
 export class FormatValueValidator extends ValueValidator<IFormatValueValidatorParams> {
+  type = 'format';
+
   validate(value: unknown): void {
     if (this.params.format === 'email') {
       if (!EmailValidator.validate(value as string)) {

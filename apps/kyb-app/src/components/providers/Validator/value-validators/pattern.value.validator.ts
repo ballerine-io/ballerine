@@ -9,6 +9,8 @@ export interface IPatternValidatorParams extends IBaseValueValidatorParams {
 }
 
 export class PatternValueValidator extends ValueValidator<IPatternValidatorParams> {
+  type = 'pattern';
+
   validate(value: unknown) {
     if (!new RegExp(this.params.pattern).test(value as string)) {
       throw new Error(this.getErrorMessage());
