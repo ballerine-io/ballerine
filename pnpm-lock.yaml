@@ -144,6 +144,9 @@ importers:
       '@rjsf/utils':
         specifier: ^5.9.0
         version: 5.19.3(react@18.3.1)
+      '@sentry/react':
+        specifier: ^7.77.0
+        version: 7.118.0(react@18.3.1)
       '@tanstack/react-query':
         specifier: ^4.19.1
         version: 4.36.1(react-dom@18.3.1)(react@18.3.1)
@@ -535,6 +538,9 @@ importers:
       uuid:
         specifier: ^9.0.0
         version: 9.0.1
+      vite-plugin-terminal:
+        specifier: ^1.1.0
+        version: 1.2.0(vite@4.5.3)
       xstate:
         specifier: ^4.38.2
         version: 4.38.3
@@ -689,6 +695,9 @@ importers:
       '@rjsf/utils':
         specifier: ^5.9.0
         version: 5.19.3(react@18.3.1)
+      '@sentry/react':
+        specifier: ^7.77.0
+        version: 7.118.0(react@18.3.1)
       '@tanstack/react-query':
         specifier: ^4.28.0
         version: 4.36.1(react-dom@18.3.1)(react@18.3.1)
