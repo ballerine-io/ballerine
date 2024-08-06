@@ -58,7 +58,7 @@ export class BusinessReportControllerInternal {
   ) {
     const customer = await this.customerService.getByProjectId(currentProjectId);
 
-    const { maxBusinessReports, withQualityControl } = customer.config;
+    const { maxBusinessReports, withQualityControl } = customer.config || {};
 
     if (isNumber(maxBusinessReports) && maxBusinessReports > 0) {
       const businessReportsCount = await this.businessReportService.count({}, [currentProjectId]);
