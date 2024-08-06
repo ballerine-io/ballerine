@@ -274,28 +274,26 @@ export class ApiPlugin {
   async replaceSecretsByProvider(
     provider: 'ballerine' | 'customer',
     variableKey: string,
-    replacedContent: string,
+    content: string,
     placeholder: string,
   ): Promise<string | undefined> {
     const variableName = provider === 'ballerine' ? 'secret' : 'secrets';
+
+    let replacedContent = content;
 
     if (provider === 'ballerine' && variableKey.includes(variableName)) {
       const secretKey = variableKey.replace(variableName, '');
       const secretValue = `${this.getSystemSecret(secretKey)}`;
 
-      replacedContent = replacedContent.replace(placeholder, secretValue);
-
-      return replacedContent;
+      replacedContent = content.replace(placeholder, secretValue);
     } else if (provider === 'customer' && variableKey.includes(variableName)) {
       const secretKey = variableKey.replace('secrets.', '');
       const secretValue = `${await this.fetchSecret(secretKey)}`;
 
-      replacedContent = replacedContent.replace(placeholder, secretValue);
-
-      return replacedContent;
+      replacedContent = content.replace(placeholder, secretValue);
     }
 
-    return undefined;
+    return replacedContent;
   }
 
   getSystemSecret(key: string) {
