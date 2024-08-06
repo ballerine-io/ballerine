@@ -57,7 +57,8 @@ export class BusinessReportControllerInternal {
     @CurrentProject() currentProjectId: TProjectId,
   ) {
     const customer = await this.customerService.getByProjectId(currentProjectId);
-    const maxBusinessReports = customer.config?.maxBusinessReports;
+
+    const { maxBusinessReports, withQualityControl } = customer.config || {};
 
     if (isNumber(maxBusinessReports) && maxBusinessReports > 0) {
       const businessReportsCount = await this.businessReportService.count({}, [currentProjectId]);
@@ -120,6 +121,7 @@ export class BusinessReportControllerInternal {
         countryCode,
         parentCompanyName: merchantName,
         reportType,
+        withQualityControl,
         callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${business.id}&businessReportId=${businessReport.id}`,
         metadata: {
           customerId: customer.id,

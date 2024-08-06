@@ -14,8 +14,8 @@
     "test:dev": "vitest"
   },
   "dependencies": {
-    "@ballerine/common": "^0.9.19",
     "@ballerine/blocks": "0.2.11",
+    "@ballerine/common": "^0.9.19",
     "@ballerine/ui": "0.5.12",
     "@ballerine/workflow-browser-sdk": "0.6.30",
     "@lukemorales/query-key-factory": "^1.0.3",
@@ -46,6 +46,7 @@
     "lodash": "^4.17.21",
     "lucide-react": "^0.144.0",
     "p-queue": "^7.4.1",
+    "posthog-js": "^1.154.2",
     "qs": "^6.11.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -54,6 +55,7 @@
     "react-router-dom": "^6.11.2",
     "use-debounce": "^9.0.4",
     "uuid": "^9.0.0",
+    "vite-plugin-terminal": "^1.1.0",
     "xstate": "^4.38.2",
     "zod": "^3.21.4"
   },
