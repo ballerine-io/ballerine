@@ -38,9 +38,21 @@ export class AlertService {
     private readonly alertDefinitionRepository: AlertDefinitionRepository,
   ) {}
 
-  async create(dto: CreateAlertDefinitionDto, projectId: TProjectId): Promise<AlertDefinition> {
+  async create(
+    dto: Omit<AlertDefinition, 'projectId' | 'createdAt' | 'updatedAt' | 'id'>,
+    projectId: TProjectId,
+  ) {
     // #TODO: Add validation logic
-    return await this.alertDefinitionRepository.create({ data: { ...dto, projectId } as any });
+    return await this.alertDefinitionRepository.create({
+      data: {
+        ...dto,
+        project: {
+          connect: {
+            id: projectId,
+          },
+        },
+      } as any,
+    });
   }
 
   async updateAlertsDecision(
@@ -288,8 +300,8 @@ export class AlertService {
     return !!alertResponse.fulfilled.length;
   }
 
-  private createAlert(
-    alertDef: AlertDefinition,
+  createAlert(
+    alertDef: Partial<AlertDefinition>,
     subject: Array<{ [key: string]: unknown }>,
     executionRow: Record<string, unknown>,
     additionalInfo?: Record<string, unknown>,
