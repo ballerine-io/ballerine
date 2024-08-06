@@ -1,3 +1,4 @@
+import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
 import { useActionsHandlerContext } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/hooks/useActionsHandlerContext';
 import { getDispatchableActions } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/hooks/useEventEmitterLogic/helpers/getDispatchableActions';
 import { getTriggeredActions } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/hooks/useEventEmitterLogic/helpers/getTriggeredActions';
@@ -14,6 +15,7 @@ export const useEventEmitterLogic = (elementDefinition: UIElement<AnyObject>) =>
   const { stateApi } = useStateManagerContext();
   const { state } = useDynamicUIContext();
   const { getDispatch } = useActionDispatcher(actions, dispatchAction);
+  const { currentPage } = usePageResolverContext();
 
   const emitEvent = useCallback(
     (type: UIEventType) => {
@@ -27,6 +29,7 @@ export const useEventEmitterLogic = (elementDefinition: UIElement<AnyObject>) =>
         triggeredActions,
         elementDefinition,
         state,
+        currentPage!,
       );
 
       dispatchableActions.forEach(action => {
@@ -39,7 +42,7 @@ export const useEventEmitterLogic = (elementDefinition: UIElement<AnyObject>) =>
         dispatch(action);
       });
     },
-    [elementDefinition, actions, stateApi, state, getDispatch],
+    [elementDefinition, actions, stateApi, state, currentPage, getDispatch],
   );
 
   return emitEvent;

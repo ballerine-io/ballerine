@@ -28,6 +28,10 @@ export interface JMESPathRule extends BaseRule {
   value: string;
 }
 
+export interface ValidContextRule extends BaseRule {
+  value: AnyObject;
+}
+
 export interface IRule extends BaseRule {
   value: string;
   persistStateRule?: boolean;

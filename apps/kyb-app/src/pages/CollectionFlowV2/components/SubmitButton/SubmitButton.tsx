@@ -23,10 +23,7 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
   const { currentPage, pages } = usePageResolverContext();
   const { isPluginLoading, payload } = useStateManagerContext();
   const { errors, validate } = useValidator();
-  console.log({ vALIDATION_ERRORS: errors });
   const isValid = useMemo(() => !Object.values(errors).length, [errors]);
-
-  console.log({ CONTEXT: payload });
 
   const setPageElementsTouched = useCallback(
     (page: UIPage, state: UIState) => {
@@ -70,7 +67,7 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
       state,
     );
     validate();
-    // onClickHandler();
+    onClickHandler();
 
     const isFinishPage = currentPage?.name === pages.at(-1)?.name;
 

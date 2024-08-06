@@ -79,8 +79,6 @@ export const withDynamicUIInputV2 = (
 
     const { state: elementState, setState: setElementState } = useUIElementState(baseDefinition);
 
-    const isTouched = elementState.isTouched;
-
     const setTouched = useCallback(
       (touched: boolean) => {
         setElementState(uiElement.getId(), { ...elementState, isTouched: touched });
@@ -112,8 +110,8 @@ export const withDynamicUIInputV2 = (
 
     const value = useMemo(() => uiElement.getValue() as unknown, [uiElement]);
 
-    const error = useValidatedInput(uiElement);
-    // const { validationErrors, warnings } = useUIElementErrors(definition); TODO: handle this
+    const errors = useValidatedInput(uiElement);
+    // const { validationErrors, warnings } = useUIElementErrors(definition)
     return (
       <div className="flex flex-col gap-2">
         <Component
@@ -127,7 +125,7 @@ export const withDynamicUIInputV2 = (
           onBlur={handleBlur}
         />
         {/* {!!warnings.length && <ErrorsList errors={warnings.map(err => err.message)} />} */}
-        {error && <ErrorsList testId={baseDefinition.name} errors={[error]} />}
+        {errors?.length && <ErrorsList testId={baseDefinition.name} errors={errors} />}
       </div>
     );
   }

@@ -20,7 +20,7 @@ export const Validator: FunctionComponent<IValidatorProps> = ({ children, elemen
     const errors = validate();
     const validationErrors = errors.reduce((acc, error) => {
       const element = new UIElement(error.element, context, error.stack);
-      acc[element.getId()] = error.message;
+      acc[element.getId()] = [...(acc[element.getId()] || []), error.message];
 
       return acc;
     }, {} as TValidationErrors);

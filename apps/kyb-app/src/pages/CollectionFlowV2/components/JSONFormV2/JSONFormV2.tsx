@@ -1,15 +1,16 @@
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { createFormSchemaFromUIElements } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/createFormSchemaFromUIElements';
+import { createInitialFormData } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/createInitialFormData';
 import { useDataInsertionLogic } from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic';
 import { DefinitionInsertionParams } from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic/types';
-import { useUIElementErrors } from '@/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
 import { useUIElementProps } from '@/components/organisms/UIRenderer/hooks/useUIElementProps';
-import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
 import { UIElementComponent } from '@/components/organisms/UIRenderer/types';
+import { UIElement } from '@/components/providers/Validator/hooks/useValidate/ui-element';
+import { useValidatedInput } from '@/components/providers/Validator/hooks/useValidatedInput';
 import { Rule } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { transformRJSFErrors } from '@/helpers/transform-errors';
-import { createFormSchemaFromUIElements } from '@/pages/CollectionFlowV2/components/JSONFormV2/helpers/createFormSchemaFromUIElements';
-import { createInitialFormData } from '@/pages/CollectionFlowV2/components/JSONFormV2/helpers/createInitialFormData';
+import { transformV1UIElementToV2UIElement } from '@/pages/CollectionFlowV2/helpers';
 import { AnyObject, DynamicForm, ErrorsList } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import get from 'lodash/get';
@@ -35,7 +36,6 @@ export const JSONFormV2: UIElementComponent<JSONFormElementBaseParams> = ({ defi
       !definition?.options?.insertionParams,
   );
 
-  const { state: elementState } = useUIElementState(definition);
   const { hidden } = useUIElementProps(definition);
   const { formSchema, uiSchema } = useMemo(
     () => createFormSchemaFromUIElements(definition),
@@ -44,6 +44,10 @@ export const JSONFormV2: UIElementComponent<JSONFormElementBaseParams> = ({ defi
   const { stateApi } = useStateManagerContext();
 
   const { payload } = useStateManagerContext();
+  const uiElement = useMemo(
+    () => new UIElement(transformV1UIElementToV2UIElement(definition), payload, []),
+    [definition, payload],
+  );
   const formData = useMemo(() => createInitialFormData(definition, payload), [definition, payload]);
 
   const formRef = useRef<any>(null);
@@ -78,7 +82,7 @@ export const JSONFormV2: UIElementComponent<JSONFormElementBaseParams> = ({ defi
 
   const handleSubmit = useCallback(() => {}, []);
 
-  const { validationErrors } = useUIElementErrors(definition);
+  const errors = useValidatedInput(uiElement);
 
   return (
     <JSONFormDefinitionProvider definition={definition}>
@@ -95,9 +99,7 @@ export const JSONFormV2: UIElementComponent<JSONFormElementBaseParams> = ({ defi
             transformErrors={transformRJSFErrors}
             onSubmit={handleSubmit}
           />
-          {validationErrors && elementState.isTouched ? (
-            <ErrorsList errors={validationErrors.map(err => err.message)} />
-          ) : null}
+          {errors?.length ? <ErrorsList errors={errors} /> : null}
         </div>
       )}
     </JSONFormDefinitionProvider>
