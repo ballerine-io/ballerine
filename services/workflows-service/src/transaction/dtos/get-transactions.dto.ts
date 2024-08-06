@@ -7,7 +7,7 @@ import type { TimeUnit } from '@/data-analytics/types';
 
 export class GetTransactionsByAlertDto {
   @IsString()
-  alertId?: string;
+  alertId!: string;
 
   @IsOptional()
   @IsString()
@@ -52,10 +52,6 @@ export class GetTransactionsByAlertDto {
 
 export class GetTransactionsDto {
   @IsOptional()
-  @IsDateString()
-  untilDate?: Date;
-
-  @IsOptional()
   @IsString()
   counterpartyId?: string;
 
@@ -64,20 +60,12 @@ export class GetTransactionsDto {
   paymentMethod?: PaymentMethod;
 
   @IsOptional()
-  @IsNumber()
-  timeValue?: number;
-
-  @IsOptional()
   @IsDateString()
   startDate?: Date;
 
   @IsOptional()
   @IsDateString()
   endDate?: Date;
-
-  @IsOptional()
-  @IsEnum(Object.values(TIME_UNITS))
-  timeUnit?: TimeUnit;
 
   @IsOptional()
   @ApiProperty({
