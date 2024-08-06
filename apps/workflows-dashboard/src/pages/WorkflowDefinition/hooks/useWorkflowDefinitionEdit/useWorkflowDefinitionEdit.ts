@@ -6,6 +6,7 @@ export const useWorkflowDefinitionEdit = (workflowDefinition: IWorkflowDefinitio
   const [workflowDefinitionValue, setWorkflowDefinitionValue] = useState(
     workflowDefinition?.definition,
   );
+  const [validationError, setValidationError] = useState<string | null>(null);
   const { mutate, isLoading } = useWorkflowDefinitionUpdateMutation();
 
   useEffect(() => {
@@ -13,14 +14,14 @@ export const useWorkflowDefinitionEdit = (workflowDefinition: IWorkflowDefinitio
   }, [workflowDefinition]);
 
   const handleWorkflowDefinitionSave = useCallback(
-    (value: object) => {
+    (definition: object) => {
       if (!workflowDefinition) return;
 
-      setWorkflowDefinitionValue(value);
+      setWorkflowDefinitionValue(definition);
 
       mutate({
         workflowDefinitionId: workflowDefinition.id!,
-        definition: value,
+        definition: definition,
       });
     },
     [workflowDefinition],

@@ -21,6 +21,10 @@ export class EndUserService {
     return await this.repository.findMany(args, projectIds);
   }
 
+  async find(id: string, projectIds: TProjectIds) {
+    return await this.repository.find({ where: { id } }, projectIds);
+  }
+
   async getById(
     id: string,
     args: Parameters<EndUserRepository['findById']>[1],

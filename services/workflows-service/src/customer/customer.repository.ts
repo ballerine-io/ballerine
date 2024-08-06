@@ -57,6 +57,7 @@ export class CustomerRepository {
           websiteUrl: true,
           projects: true,
           subscriptions: true,
+          config: true,
         },
       }),
     });

@@ -16,7 +16,7 @@ import * as swagger from '@nestjs/swagger';
 @swagger.ApiExcludeController()
 @common.Controller('internal/ui-definition')
 @Injectable()
-export class UiDefinitionController {
+export class UiDefinitionControllerInternal {
   constructor(
     protected readonly service: UiDefinitionService,
     protected readonly projectScopeService: ProjectScopeService,
@@ -62,7 +62,6 @@ export class UiDefinitionController {
       params.workflowDefinitionId,
       params.uiContext,
       projectIds,
-      {},
     );
 
     return uiDefinition;

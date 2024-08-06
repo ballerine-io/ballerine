@@ -20,3 +20,16 @@ export const ApiValidationErrorResponse = () => {
     }),
   );
 };
+
+export const ApiUnauthorizedErrorResponse = () => {
+  return applyDecorators(
+    ApiResponse({
+      status: 401,
+      schema: Type.Object({
+        errorCode: Type.Literal('Unauthorized'),
+        message: Type.Literal('Unauthorized'),
+        statusCode: Type.Literal(401),
+      }),
+    }),
+  );
+};

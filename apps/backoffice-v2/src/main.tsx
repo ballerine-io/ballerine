@@ -15,6 +15,9 @@ import './i18n';
 import './index.css';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import { initializeMonitoring } from '@/initialize-monitoring/initialize-monitoring';
+
+initializeMonitoring();
 
 dayjs.extend(advancedFormat);
 
