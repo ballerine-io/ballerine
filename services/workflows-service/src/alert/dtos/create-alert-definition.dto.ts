@@ -53,9 +53,4 @@ export class CreateAlertDefinitionDto {
   @ApiProperty({ example: '{}', type: 'object', required: false })
   @IsOptional()
   additionalInfo?: Record<string, any>;
-
-  @ApiProperty({ required: true, example: 'YOUR_PROJECT_ID' }) // Replace with actual project ID
-  @IsString()
-  @IsNotEmpty()
-  projectId!: string;
 }

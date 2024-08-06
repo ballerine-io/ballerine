@@ -38,9 +38,9 @@ import { exceptionValidationFactory } from '@/errors';
 import { TIME_UNITS } from '@/data-analytics/consts';
 import { TransactionEntityMapper } from './transaction.mapper';
 import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
-import { InlineRule, TimeUnit } from '@/data-analytics/types';
-import { AlertRepository } from '@/alert/alert.repository';
+import { InlineRule } from '@/data-analytics/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
+import { AlertService } from '@/alert/alert.service';
 
 //add swagger auth
 @swagger.ApiBearerAuth()
@@ -52,6 +52,7 @@ export class TransactionControllerExternal {
     protected readonly scopeService: ProjectScopeService,
     protected readonly prisma: PrismaService,
     protected readonly logger: AppLoggerService,
+    protected readonly alertService: AlertService,
   ) {}
 
   @Post()
@@ -198,7 +199,7 @@ export class TransactionControllerExternal {
     res.status(hasErrors ? 207 : 201).json(response);
   }
 
-  @Get('/by-alert')
+  @Get('')
   // @UseGuards(CustomerAuthGuard)
   @swagger.ApiOkResponse({ description: 'Returns an array of transactions.' })
   @swagger.ApiQuery({ name: 'businessId', description: 'Filter by business ID.', required: false })
@@ -287,7 +288,7 @@ export class TransactionControllerExternal {
     });
   }
 
-  @Get()
+  @Get('/by-alert')
   @UseGuards(CustomerAuthGuard)
   @swagger.ApiOkResponse({ description: 'Returns an array of transactions.' })
   @swagger.ApiQuery({ name: 'businessId', description: 'Filter by business ID.', required: false })
@@ -336,19 +337,10 @@ export class TransactionControllerExternal {
     @Query() getTransactionsByAlertParameters: GetTransactionsByAlertDto,
     @CurrentProject() projectId: types.TProjectId,
   ) {
-    const queryArgs = this.scopeService.scopeFindOne(
-      {
-        include: {
-          alertDefinition: true,
-        },
-        where: {
-          id: getTransactionsByAlertParameters.alertId,
-        },
-      },
-      [projectId],
+    const alert = await this.alertService.getAlertWithDefinition(
+      getTransactionsByAlertParameters.alertId,
+      projectId,
     );
-
-    const alert = await this.prisma.alert.findUnique(queryArgs);
 
     if (!alert) {
       throw new errors.NotFoundException(
@@ -368,19 +360,17 @@ export class TransactionControllerExternal {
     if (!inlineRule || !inlineRule.options) {
       return filters;
     }
-    if (!filters.endDate) {
-      filters.endDate = alert.updatedAt;
-    } else if (
-      !filters.startDate &&
-      (inlineRule.fnName === 'evaluateMerchantGroupAverage' ||
-        inlineRule.fnName === 'evaluateHighTransactionTypePercentage' ||
-        inlineRule.fnName === 'evaluateTransactionsAgainstDynamicRules' ||
-        inlineRule.fnName === 'evaluateMultipleMerchantsOneCounterparty' ||
-        inlineRule.fnName === 'evaluateDormantAccount')
+
+    filters.endDate = alert.updatedAt;
+
+    if (
+      inlineRule.fnName === 'evaluateMerchantGroupAverage' ||
+      inlineRule.fnName === 'evaluateHighTransactionTypePercentage' ||
+      inlineRule.fnName === 'evaluateTransactionsAgainstDynamicRules' ||
+      inlineRule.fnName === 'evaluateMultipleMerchantsOneCounterparty' ||
+      inlineRule.fnName === 'evaluateDormantAccount'
     ) {
       const { timeAmount, timeUnit } = inlineRule.options;
-
-      filters.endDate = alert.updatedAt;
 
       const _untilDate = new Date(filters.endDate);
 

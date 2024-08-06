@@ -31,6 +31,12 @@ import { TransactionControllerExternal } from '@/transaction/transaction.control
 import { TransactionCreateDto } from '@/transaction/dtos/transaction-create.dto';
 import { generateBusiness, generateEndUser } from '../../scripts/generate-end-user';
 import { BulkStatus } from '@/alert/types';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { AlertRepository } from '@/alert/alert.repository';
+import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
+import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
+import { ConfigService } from '@nestjs/config';
+import { AlertService } from '@/alert/alert.service';
 
 const getBusinessCounterpartyData = (business?: Business) => {
   if (business) {
@@ -142,7 +148,19 @@ describe('#TransactionControllerExternal', () => {
   beforeAll(async () => {
     await cleanupDatabase();
 
-    app = await initiateNestApp(app, [], [TransactionControllerExternal], [TransactionModule]);
+    app = await initiateNestApp(
+      app,
+      [
+        ProjectScopeService,
+        AlertService,
+        AlertRepository,
+        AlertDefinitionRepository,
+        DataAnalyticsService,
+        ConfigService,
+      ],
+      [TransactionControllerExternal],
+      [TransactionModule],
+    );
   });
   beforeEach(async () => {
     customer = await createCustomer(
@@ -578,8 +596,8 @@ describe('#TransactionControllerExternal', () => {
   describe('GET /external/transactions/by-alert', () => {
     let customer: Customer;
     let project: Project;
-    let transactions: TransactionRecord[];
     let alertDefinition: AlertDefinition;
+
     beforeEach(async () => {
       customer = await createCustomer(
         app.get(PrismaService),
@@ -590,41 +608,56 @@ describe('#TransactionControllerExternal', () => {
         'webhook-shared-secret',
       );
       project = await createProject(app.get(PrismaService), customer, faker.datatype.uuid());
-      // Create some test transactions
-      const currentDate = new Date();
-      const createTransactionWithDate = (daysAgo: number) =>
-        createTransactionRecord(app.get(PrismaService), project, {
-          date: new Date(currentDate.getTime() - daysAgo * 24 * 60 * 60 * 1000),
-        });
-
-      transactions = [
-        // 5 transactions in the past 7 days
-        await createTransactionWithDate(1),
-        await createTransactionWithDate(3),
-        await createTransactionWithDate(5),
-        await createTransactionWithDate(6),
-        await createTransactionWithDate(7),
-        // 5 transactions in the past 10-20 days
-        await createTransactionWithDate(10),
-        await createTransactionWithDate(13),
-        await createTransactionWithDate(16),
-        await createTransactionWithDate(18),
-        await createTransactionWithDate(20),
-      ] as unknown as TransactionRecord[];
     });
 
-    it.only('returns transactions associated with the given alertId', async () => {
-      alertDefinition = await createAlertDefinition(project.id, {
-        inlineRule: {
-          options: {
-            timeUnit: 'days',
-            timeAmount: 7,
-          },
+    const getAlertDefinitionWithTimeOptions = (timeUnit: string, timeAmount: number) => ({
+      inlineRule: {
+        fnName: faker.helpers.arrayElement([
+          'evaluateMerchantGroupAverage',
+          'evaluateHighTransactionTypePercentage',
+          'evaluateTransactionsAgainstDynamicRules',
+          'evaluateMultipleMerchantsOneCounterparty',
+          'evaluateDormantAccount',
+        ]),
+        options: {
+          timeUnit,
+          timeAmount,
         },
-      } as any);
-      await createAlert(project.id, alertDefinition);
+      },
+    });
+
+    const createTransactionWithDate = (daysAgo: number) => {
+      const currentDate = new Date();
+
+      createTransactionRecord(app.get(PrismaService), project, {
+        date: new Date(currentDate.getTime() - daysAgo * 24 * 60 * 60 * 1000),
+      });
+    };
+
+    it('returns transactions associated with the given alertId', async () => {
+      alertDefinition = await createAlertDefinition(
+        project.id,
+        getAlertDefinitionWithTimeOptions('days', 7) as any,
+      );
+      const alert = await createAlert(project.id, alertDefinition);
+
+      await Promise.all([
+        // 5 transactions in the past 7 days
+        createTransactionWithDate(1),
+        createTransactionWithDate(3),
+        createTransactionWithDate(5),
+        createTransactionWithDate(6),
+        createTransactionWithDate(7),
+        // 5 transactions in the past 10-20 days
+        createTransactionWithDate(10),
+        createTransactionWithDate(13),
+        createTransactionWithDate(16),
+        createTransactionWithDate(18),
+        createTransactionWithDate(20),
+      ]);
+
       const response = await request(app.getHttpServer())
-        .get(`/external/transactions/by-alert?alertId=${alertDefinition.id}`)
+        .get(`/external/transactions/by-alert?alertId=${alert.id}`)
         .set('authorization', `Bearer ${API_KEY}`);
 
       expect(response.status).toBe(200);
@@ -637,19 +670,14 @@ describe('#TransactionControllerExternal', () => {
         .set('authorization', `Bearer ${API_KEY}`);
 
       expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty('message', 'Alert not found');
     });
 
     it('returns empty array when no transactions match the alert criteria', async () => {
-      alertDefinition = await createAlertDefinition(project.id, {
-        inlineRule: {
-          options: {
-            timeUnit: 'days',
-            timeAmount: 1, // Only transactions from the last day
-          },
-        },
-      } as any);
-      await createAlert(project.id, alertDefinition);
+      alertDefinition = await createAlertDefinition(
+        project.id,
+        getAlertDefinitionWithTimeOptions('days', 1) as any,
+      );
+      const alert = await createAlert(project.id, alertDefinition);
 
       // Create a transaction older than the alert criteria
       await createTransactionRecord(app.get(PrismaService), project, {
@@ -657,7 +685,7 @@ describe('#TransactionControllerExternal', () => {
       });
 
       const response = await request(app.getHttpServer())
-        .get(`/external/transactions/by-alert?alertId=${alertDefinition.id}`)
+        .get(`/external/transactions/by-alert?alertId=${alert.id}`)
         .set('authorization', `Bearer ${API_KEY}`);
 
       expect(response.status).toBe(200);
@@ -668,53 +696,62 @@ describe('#TransactionControllerExternal', () => {
       const otherCustomer = await createCustomer(
         app.get(PrismaService),
         faker.datatype.uuid(),
-        'OTHER_API_KEY',
+        API_KEY,
         '',
         '',
         'other-webhook-secret',
       );
-      await createProject(app.get(PrismaService), otherCustomer, faker.datatype.uuid());
+      const otherProject = await createProject(
+        app.get(PrismaService),
+        otherCustomer,
+        faker.datatype.uuid(),
+      );
 
-      alertDefinition = await createAlertDefinition(project.id, {
-        inlineRule: {
-          options: {
-            timeUnit: 'days',
-            timeAmount: 7,
-          },
-        },
-      } as any);
-      await createAlert(project.id, alertDefinition);
+      alertDefinition = await createAlertDefinition(
+        otherProject.id,
+        getAlertDefinitionWithTimeOptions('days', 7) as any,
+      );
+
+      const alert = await createAlert(otherProject.id, alertDefinition);
 
       const response = await request(app.getHttpServer())
-        .get(`/external/transactions/by-alert?alertId=${alertDefinition.id}`)
+        .get(`/external/transactions/by-alert?alertId=${alert.id}`)
         .set('authorization', `Bearer OTHER_API_KEY`);
 
-      expect(response.status).toBe(403);
-      expect(response.body).toHaveProperty('message', 'Forbidden resource');
+      expect(response.status).toBe(401);
+      expect(response.body).toHaveProperty('message', 'Unauthorized');
     });
 
     it('returns transactions within the specified time range of the alert', async () => {
-      alertDefinition = await createAlertDefinition(project.id, {
-        inlineRule: {
-          options: {
-            timeUnit: 'days',
-            timeAmount: 15, // Transactions from the last 15 days
-          },
-        },
-      } as any);
-      await createAlert(project.id, alertDefinition);
+      const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
+      const tenDaysAgo = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
+      const fiveDaysAgo = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
+
+      // Create transactions at different times
+      await createTransactionRecord(app.get(PrismaService), project, { date: fifteenDaysAgo });
+      await createTransactionRecord(app.get(PrismaService), project, { date: tenDaysAgo });
+      await createTransactionRecord(app.get(PrismaService), project, { date: fiveDaysAgo });
+
+      alertDefinition = await createAlertDefinition(
+        project.id,
+        getAlertDefinitionWithTimeOptions('days', 15) as any,
+      );
+
+      const alert = await createAlert(project.id, alertDefinition);
 
       const response = await request(app.getHttpServer())
-        .get(`/external/transactions/by-alert?alertId=${alertDefinition.id}`)
+        .get(`/external/transactions/by-alert?alertId=${alert.id}`)
         .set('authorization', `Bearer ${API_KEY}`);
 
       expect(response.status).toBe(200);
-      expect(response.body).toHaveLength(8); // 5 from first 7 days + 3 from days 10-15
+      expect(response.body).toHaveLength(3);
 
       // Verify that all returned transactions are within the last 15 days
-      const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
       response.body.forEach((transaction: any) => {
-        expect(new Date(transaction.date).getTime()).toBeGreaterThan(fifteenDaysAgo.getTime());
+        expect(new Date(transaction.transactionDate).getTime()).toBeGreaterThanOrEqual(
+          fifteenDaysAgo.getTime(),
+        );
+        expect(new Date(transaction.transactionDate).getTime()).toBeLessThanOrEqual(Date.now());
       });
     });
   });

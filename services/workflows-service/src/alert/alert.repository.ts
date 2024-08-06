@@ -58,7 +58,7 @@ export class AlertRepository {
       projectIds,
     );
 
-    return await this.prisma.alert.findUnique(queryArgs);
+    return (await this.prisma.alert.findMany(queryArgs))[0];
   }
 
   // Method to update an alerts

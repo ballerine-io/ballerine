@@ -54,6 +54,25 @@ export class AlertService {
       } as any,
     });
   }
+  async getAlertWithDefinition(
+    alertId: string,
+    projectId: string,
+  ): Promise<(Alert & { alertDefinition: AlertDefinition }) | null> {
+    const alert = await this.alertRepository.findById(
+      alertId,
+      {
+        where: {
+          id: alertId,
+        },
+        include: {
+          alertDefinition: true,
+        },
+      },
+      [projectId],
+    );
+
+    return alert as Alert & { alertDefinition: AlertDefinition };
+  }
 
   async updateAlertsDecision(
     alertIds: string[],
