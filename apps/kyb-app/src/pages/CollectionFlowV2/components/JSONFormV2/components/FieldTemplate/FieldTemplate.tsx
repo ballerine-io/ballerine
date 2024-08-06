@@ -16,7 +16,7 @@ export const FieldTemplate = (props: FieldTemplateProps) => {
 
   const fieldDefinition = useMemo(
     () =>
-      findDefinitionByName(props.id.replace(/root_\d+_/g, ''), definition.elements || []) ||
+      findDefinitionByName(props.id.replace(/root_[\d]?_?/g, ''), definition.elements || []) ||
       ({} as UIElement<AnyObject>),
     [props.id, definition.elements],
   );
