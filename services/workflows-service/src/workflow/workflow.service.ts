@@ -1506,6 +1506,11 @@ export class WorkflowService {
                 ...contextToInsert,
                 documents: documentsWithPersistedImages,
                 flowConfig: (contextToInsert as any)?.flowConfig ?? createFlowConfig(uiSchema),
+                metadata: {
+                  customerId: customer.id,
+                  customerNormalizedName: customer.name,
+                  customerName: customer.displayName,
+                },
               } as InputJsonValue,
               config: mergedConfig as InputJsonValue,
               // @ts-expect-error - error from Prisma types fix
@@ -1575,8 +1580,7 @@ export class WorkflowService {
                 context: {
                   ...workflowRuntimeData.context,
                   metadata: {
-                    customerNormalizedName: customer.name,
-                    customerName: customer.displayName,
+                    ...(workflowRuntimeData.context.metadata ?? {}),
                     token: workflowToken.token,
                     collectionFlowUrl: env.COLLECTION_FLOW_URL,
                     webUiSDKUrl: env.WEB_UI_SDK_URL,
