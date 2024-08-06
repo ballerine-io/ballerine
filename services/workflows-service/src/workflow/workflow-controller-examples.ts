@@ -4,8 +4,8 @@ export const putPluginsExampleResponse = {
       name: 'invitation-email',
       pluginKind: 'template-email',
       template: 'invitation',
-      successAction: 'INVIATION_SENT',
-      errorAction: 'INVIATION_FAILURE',
+      successAction: 'INVITATION_SENT',
+      errorAction: 'INVITATION_FAILURE',
       stateNames: ['collection_invite'],
     },
     {
