@@ -2,10 +2,10 @@ import React, { FunctionComponent } from 'react';
 import { Card } from '@/common/components/atoms/Card/Card';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
-import { EcosystemAndTransactionsTable } from '@/domains/business-reports/components/EcosystemAndTransactions/components/EcosystemAndTransactionsTable/EcosystemAndTransactionsTable';
-import { columns } from '@/domains/business-reports/components/EcosystemAndTransactions/components/EcosystemAndTransactionsTable/columns';
+import { EcosystemTable } from '@/domains/business-reports/components/Ecosystem/components/EcosystemTable/EcosystemTable';
+import { columns } from '@/domains/business-reports/components/Ecosystem/components/EcosystemTable/columns';
 
-export const EcosystemAndTransactions: FunctionComponent<{
+export const Ecosystem: FunctionComponent<{
   violations: Array<{
     label: string;
     severity: string;
@@ -22,11 +22,11 @@ export const EcosystemAndTransactions: FunctionComponent<{
 }> = ({ violations, matches }) => {
   return (
     <div className={'space-y-8'}>
-      <h3 className={'col-span-full text-lg font-bold'}>Ecosystem and Transactions Analysis</h3>
+      <h3 className={'col-span-full text-lg font-bold'}>Ecosystem Analysis</h3>
       <Card>
         <CardHeader className={'pt-4 font-bold'}>Ecosystem</CardHeader>
         <CardContent>
-          <EcosystemAndTransactionsTable columns={columns} data={matches} />
+          <EcosystemTable columns={columns} data={matches} />
         </CardContent>
       </Card>
     </div>

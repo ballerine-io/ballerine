@@ -622,6 +622,25 @@ export const CopySvg = (props: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+export const PremiumSvg = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="transparent"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M3.33203 13.3327H12.6654M1.33203 2.66602L3.33203 10.666H12.6654L14.6654 2.66602L10.6654 7.33268L7.9987 2.66602L5.33203 7.33268L1.33203 2.66602Z"
+      stroke="currentColor"
+      strokeWidth="1.33333"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export const WarningFilledSvg: FunctionComponent<ComponentProps<'svg'>> = props => {
   return (
     <svg
