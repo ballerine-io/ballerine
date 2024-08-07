@@ -490,7 +490,7 @@ export class AlertService {
       }
     }
 
-    const _untilDate = new Date(filters.endDate);
+    const startDate = new Date(filters.endDate);
 
     let subtractValue = 0;
 
@@ -507,16 +507,16 @@ export class AlertService {
         subtractValue = 24 * 60 * baseSubstractByMin;
         break;
       case TIME_UNITS.months:
-        _untilDate.setMonth(_untilDate.getMonth() - timeAmount);
+        startDate.setMonth(startDate.getMonth() - timeAmount);
         break;
       case TIME_UNITS.years:
-        _untilDate.setFullYear(_untilDate.getFullYear() - timeAmount);
+        startDate.setFullYear(startDate.getFullYear() - timeAmount);
         break;
     }
 
-    _untilDate.setHours(0, 0, 0, 0);
+    startDate.setHours(0, 0, 0, 0);
 
-    filters.startDate = new Date(_untilDate.getTime() - subtractValue);
+    filters.startDate = new Date(startDate.getTime() - subtractValue);
 
     return filters;
   }
