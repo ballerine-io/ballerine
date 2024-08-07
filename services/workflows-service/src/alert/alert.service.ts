@@ -1,5 +1,10 @@
+import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { AlertRepository } from '@/alert/alert.repository';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { computeHash } from '@/common/utils/sign/sign';
+import { TIME_UNITS } from '@/data-analytics/consts';
+import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
+import { CheckRiskScoreOptions, InlineRule } from '@/data-analytics/types';
 import * as errors from '@/errors';
 import { PrismaService } from '@/prisma/prisma.service';
 import { isFkConstraintError } from '@/prisma/prisma.util';
@@ -14,14 +19,10 @@ import {
   BusinessReport,
   MonitoringType,
 } from '@prisma/client';
-import { FindAlertsDto } from './dtos/get-alerts.dto';
-import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import _ from 'lodash';
 import { AlertExecutionStatus } from './consts';
-import { computeHash } from '@/common/utils/sign/sign';
+import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { TDedupeStrategy, TExecutionDetails } from './types';
-import { CheckRiskScoreOptions, InlineRule } from '@/data-analytics/types';
-import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 
 const DEFAULT_DEDUPE_STRATEGIES = {
   cooldownTimeframeInMinutes: 60 * 24,
@@ -461,5 +462,62 @@ export class AlertService {
     }
 
     return alertSeverityToNumber(a) < alertSeverityToNumber(b) ? 1 : -1;
+  }
+
+  buildTransactionsFiltersByAlert(alert: Alert & { alertDefinition: AlertDefinition }) {
+    const filters: {
+      endDate: Date;
+      startDate: Date | undefined;
+    } = {
+      endDate: alert.updatedAt || alert.createdAt,
+      startDate: undefined,
+    };
+
+    const inlineRule = alert?.alertDefinition?.inlineRule as InlineRule;
+
+    // @ts-ignore - TODO: Replace logic with proper implementation for each rule
+    let { timeAmount, timeUnit } = inlineRule.options;
+
+    if (!timeAmount || !timeUnit) {
+      if (
+        inlineRule.fnName === 'evaluateHighVelocityHistoricAverage' &&
+        inlineRule.options.lastDaysPeriod &&
+        timeUnit
+      ) {
+        timeAmount = inlineRule.options.lastDaysPeriod;
+      } else {
+        return filters;
+      }
+    }
+
+    const _untilDate = new Date(filters.endDate);
+
+    let subtractValue = 0;
+
+    const baseSubstractByMin = timeAmount * 60 * 1000;
+
+    switch (timeUnit) {
+      case TIME_UNITS.minutes:
+        subtractValue = baseSubstractByMin;
+        break;
+      case TIME_UNITS.hours:
+        subtractValue = 60 * baseSubstractByMin;
+        break;
+      case TIME_UNITS.days:
+        subtractValue = 24 * 60 * baseSubstractByMin;
+        break;
+      case TIME_UNITS.months:
+        _untilDate.setMonth(_untilDate.getMonth() - timeAmount);
+        break;
+      case TIME_UNITS.years:
+        _untilDate.setFullYear(_untilDate.getFullYear() - timeAmount);
+        break;
+    }
+
+    _untilDate.setHours(0, 0, 0, 0);
+
+    filters.startDate = new Date(_untilDate.getTime() - subtractValue);
+
+    return filters;
   }
 }
