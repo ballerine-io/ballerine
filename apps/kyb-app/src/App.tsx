@@ -2,6 +2,7 @@ import { LoadingScreen } from '@/common/components/molecules/LoadingScreen';
 import { APP_LANGUAGE_QUERY_KEY } from '@/common/consts/consts';
 import { CustomerProviderFallback } from '@/components/molecules/CustomerProviderFallback';
 import { AppLoadingContainer } from '@/components/organisms/AppLoadingContainer';
+import { VersionResolver } from '@/components/organisms/VersionResolver';
 import { CustomerProvider } from '@/components/providers/CustomerProvider';
 import { useCustomerQuery } from '@/hooks/useCustomerQuery';
 import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
@@ -29,7 +30,9 @@ export const App = () => {
           loadingPlaceholder={<LoadingScreen />}
           fallback={CustomerProviderFallback}
         >
-          <RouterProvider router={router} />
+          <VersionResolver version={dependancyQueries[1]?.data?.version!}>
+            <RouterProvider router={router} />
+          </VersionResolver>
         </CustomerProvider>
       </AppLoadingContainer>
     </Sentry.ErrorBoundary>

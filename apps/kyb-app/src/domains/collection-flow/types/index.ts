@@ -147,6 +147,7 @@ export interface UISchema {
     definition: AnyObject;
     extensions: AnyObject;
   };
+  version: number;
 }
 
 export * from './ui-schema.types';
