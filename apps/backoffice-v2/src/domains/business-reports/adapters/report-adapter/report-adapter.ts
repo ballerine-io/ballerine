@@ -72,10 +72,10 @@ export const reportAdapter = {
       websiteLineOfBusinessAnalysis: toRiskLabels(
         data?.report?.data?.summary?.riskIndicatorsByDomain?.lineOfBusinessViolations,
       ),
-      ecosystemAndTransactionsAnalysis: toRiskLabels(
+      ecosystemAnalysis: toRiskLabels(
         data?.report?.data?.summary?.riskIndicatorsByDomain?.ecosystemViolations,
       ),
-      ecosystemAndTransactionsMatches: data?.report?.data?.ecosystem?.domains?.map(
+      ecosystemMatches: data?.report?.data?.ecosystem?.domains?.map(
         ({ domain, relatedNode, relatedNodeType, indicator }) => ({
           matchedName: domain,
           relatedNode,
@@ -180,10 +180,10 @@ export const reportAdapter = {
       websiteLineOfBusinessAnalysis: toRiskLabels(
         data?.report?.data?.summary?.riskIndicatorsByDomain?.lineOfBusinessViolations,
       ),
-      ecosystemAndTransactionsAnalysis: toRiskLabels(
+      ecosystemAnalysis: toRiskLabels(
         data?.report?.data?.summary?.riskIndicatorsByDomain?.ecosystemViolations,
       ),
-      ecosystemAndTransactionsMatches: data?.report?.data?.ecosystem?.domains?.map(
+      ecosystemMatches: data?.report?.data?.ecosystem?.domains?.map(
         ({ domain, relatedNode, relatedNodeType, indicator }) => ({
           matchedName: domain,
           relatedNode,

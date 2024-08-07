@@ -4,10 +4,11 @@ import React, { ReactNode, useCallback, useMemo } from 'react';
 import { WebsitesCompany } from '@/domains/business-reports/components/WebsitesCompany/WebsitesCompany';
 import { WebsiteLineOfBusiness } from '@/domains/business-reports/components/WebsiteLineOfBusiness/WebsiteLineOfBusiness';
 import { WebsiteCredibility } from '@/domains/business-reports/components/WebsiteCredibility/WebsiteCredibility';
-import { EcosystemAndTransactions } from '@/domains/business-reports/components/EcosystemAndTransactions/EcosystemAndTransactions';
+import { Ecosystem } from '@/domains/business-reports/components/Ecosystem/Ecosystem';
 import { AdsAndSocialMedia } from '@/domains/business-reports/components/AdsAndSocialMedia/AdsAndSocialMedia';
 import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { useLocation } from 'react-router-dom';
+import { Transactions } from '@/domains/business-reports/components/Transactions/Transactions';
 
 export const useWebsiteMonitoringBusinessReportTab = ({
   businessReport,
@@ -23,7 +24,7 @@ export const useWebsiteMonitoringBusinessReportTab = ({
     adsAndSocialMediaAnalysis,
     adsAndSocialMediaPresence,
     websiteLineOfBusinessAnalysis,
-    ecosystemAndTransactionsAnalysis,
+    ecosystemAnalysis,
     summary,
     riskScore,
     riskLevels,
@@ -34,7 +35,7 @@ export const useWebsiteMonitoringBusinessReportTab = ({
     pricingAnalysis,
     websiteStructureAndContentEvaluation,
     trafficAnalysis,
-    ecosystemAndTransactionsMatches,
+    ecosystemMatches,
     adsImages,
     relatedAdsImages,
     homepageScreenshotUrl,
@@ -77,13 +78,10 @@ export const useWebsiteMonitoringBusinessReportTab = ({
           ),
         },
         {
-          label: 'Ecosystem and Transactions',
-          value: 'ecosystemAndTransactions',
+          label: 'Ecosystem',
+          value: 'ecosystem',
           content: (
-            <EcosystemAndTransactions
-              violations={ecosystemAndTransactionsAnalysis ?? []}
-              matches={ecosystemAndTransactionsMatches ?? []}
-            />
+            <Ecosystem violations={ecosystemAnalysis ?? []} matches={ecosystemMatches ?? []} />
           ),
         },
         {
@@ -99,9 +97,14 @@ export const useWebsiteMonitoringBusinessReportTab = ({
             />
           ),
         },
+        {
+          label: <>Transaction Analysis</>,
+          value: 'transactionAnalysis',
+          content: <Transactions />,
+        },
       ] as const satisfies ReadonlyArray<{
-        label: string;
         value: string;
+        label: ReactNode | ReactNode[];
         content: ReactNode | ReactNode[];
       }>,
     [
@@ -109,8 +112,8 @@ export const useWebsiteMonitoringBusinessReportTab = ({
       adsAndSocialMediaPresence,
       adsImages,
       companyReputationAnalysis,
-      ecosystemAndTransactionsAnalysis,
-      ecosystemAndTransactionsMatches,
+      ecosystemAnalysis,
+      ecosystemMatches,
       lineOfBusinessDescription,
       onlineReputationAnalysis,
       pricingAnalysis,
@@ -121,6 +124,7 @@ export const useWebsiteMonitoringBusinessReportTab = ({
       websiteLineOfBusinessAnalysis,
       websiteStructureAndContentEvaluation,
       websitesCompanyAnalysis,
+      businessReport?.business?.companyName,
     ],
   );
   const [{ activeMonitoringTab }] = useSearchParamsByEntity();
@@ -160,12 +164,12 @@ export const useWebsiteMonitoringBusinessReportTab = ({
       violations: websiteLineOfBusinessAnalysis ?? [],
     },
     {
-      title: 'Ecosystem and Transactions Analysis',
+      title: 'Ecosystem Analysis',
       search: getUpdatedSearchParamsWithActiveMonitoringTab({
-        tab: 'ecosystemAndTransactions',
+        tab: 'ecosystem',
         search,
       }),
-      violations: ecosystemAndTransactionsAnalysis ?? [],
+      violations: ecosystemAnalysis ?? [],
     },
   ] as const satisfies ReadonlyArray<{
     title: string;

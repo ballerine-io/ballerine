@@ -1,8 +1,8 @@
 import React, { FunctionComponent } from 'react';
 import { DataTable } from '@/common/components/organisms/DataTable/DataTable';
-import { columns } from '@/domains/business-reports/components/EcosystemAndTransactions/components/EcosystemAndTransactionsTable/columns';
+import { columns } from '@/domains/business-reports/components/Ecosystem/components/EcosystemTable/columns';
 
-export const EcosystemAndTransactionsTable: FunctionComponent<{
+export const EcosystemTable: FunctionComponent<{
   data: Array<{
     matchedName: string;
     relatedNodeType: string;

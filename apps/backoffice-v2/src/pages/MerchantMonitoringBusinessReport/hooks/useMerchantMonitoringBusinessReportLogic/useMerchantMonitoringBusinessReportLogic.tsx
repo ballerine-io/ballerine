@@ -6,12 +6,14 @@ import { BusinessReportSummary } from '@/common/components/molecules/BusinessRep
 import { WebsitesCompany } from '@/domains/business-reports/components/WebsitesCompany/WebsitesCompany';
 import { WebsiteLineOfBusiness } from '@/domains/business-reports/components/WebsiteLineOfBusiness/WebsiteLineOfBusiness';
 import { WebsiteCredibility } from '@/domains/business-reports/components/WebsiteCredibility/WebsiteCredibility';
-import { EcosystemAndTransactions } from '@/domains/business-reports/components/EcosystemAndTransactions/EcosystemAndTransactions';
+import { Ecosystem } from '@/domains/business-reports/components/Ecosystem/Ecosystem';
 import { AdsAndSocialMedia } from '@/domains/business-reports/components/AdsAndSocialMedia/AdsAndSocialMedia';
 import { z } from 'zod';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { BusinessReportStatus } from '@/domains/business-reports/fetchers';
 import { safeUrl } from '@/common/utils/safe-url/safe-url';
+import { PremiumSvg } from '@/common/components/atoms/icons';
+import { Transactions } from '@/domains/business-reports/components/Transactions/Transactions';
 
 export const useMerchantMonitoringBusinessReportLogic = () => {
   const { businessReportId } = useParams();
@@ -27,7 +29,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     adsAndSocialMediaAnalysis,
     adsAndSocialMediaPresence,
     websiteLineOfBusinessAnalysis,
-    ecosystemAndTransactionsAnalysis,
+    ecosystemAnalysis,
     summary,
     riskScore,
     riskLevels,
@@ -39,7 +41,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     pricingAnalysis,
     websiteStructureAndContentEvaluation,
     trafficAnalysis,
-    ecosystemAndTransactionsMatches,
+    ecosystemMatches,
     adsImages,
     relatedAdsImages,
     homepageScreenshotUrl,
@@ -66,9 +68,9 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
       violations: websiteLineOfBusinessAnalysis ?? [],
     },
     {
-      title: 'Ecosystem and Transactions Analysis',
-      search: '?activeTab=ecosystemAndTransactions',
-      violations: ecosystemAndTransactionsAnalysis ?? [],
+      title: 'Ecosystem Analysis',
+      search: '?activeTab=ecosystem',
+      violations: ecosystemAnalysis ?? [],
     },
   ] as const satisfies ReadonlyArray<{
     title: string;
@@ -134,13 +136,10 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
           ),
         },
         {
-          label: 'Ecosystem and Transactions',
-          value: 'ecosystemAndTransactions',
+          label: 'Ecosystem',
+          value: 'ecosystem',
           content: (
-            <EcosystemAndTransactions
-              violations={ecosystemAndTransactionsAnalysis ?? []}
-              matches={ecosystemAndTransactionsMatches ?? []}
-            />
+            <Ecosystem violations={ecosystemAnalysis ?? []} matches={ecosystemMatches ?? []} />
           ),
         },
         {
@@ -156,9 +155,19 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
             />
           ),
         },
+        {
+          label: (
+            <div className={'flex flex-row items-center space-x-2'}>
+              <span>Transaction Analysis</span>
+              <PremiumSvg />
+            </div>
+          ),
+          value: 'transactionAnalysis',
+          content: <Transactions />,
+        },
       ] as const satisfies ReadonlyArray<{
-        label: string;
         value: string;
+        label: ReactNode | ReactNode[];
         content: ReactNode | ReactNode[];
       }>,
     [
@@ -166,8 +175,8 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
       adsAndSocialMediaPresence,
       adsImages,
       companyReputationAnalysis,
-      ecosystemAndTransactionsAnalysis,
-      ecosystemAndTransactionsMatches,
+      ecosystemAnalysis,
+      ecosystemMatches,
       lineOfBusinessDescription,
       onlineReputationAnalysis,
       pricingAnalysis,
@@ -182,6 +191,8 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
       websiteLineOfBusinessAnalysis,
       websiteStructureAndContentEvaluation,
       websitesCompanyAnalysis,
+      homepageScreenshotUrl,
+      businessReport?.companyName,
     ],
   );
   const tabsValues = useMemo(() => tabs.map(tab => tab.value), [tabs]);

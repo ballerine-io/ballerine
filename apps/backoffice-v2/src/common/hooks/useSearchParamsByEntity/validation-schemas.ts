@@ -30,8 +30,9 @@ export const MonitoringReportsTabs = [
   'websitesCompany',
   'websiteLineOfBusiness',
   'websiteCredibility',
-  'ecosystemAndTransactions',
+  'ecosystem',
   'adsAndSocialMedia',
+  'transactionAnalysis',
 ] as const;
 
 export const CaseTabs = [
