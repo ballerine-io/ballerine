@@ -476,6 +476,7 @@ export class AlertService {
     const inlineRule = alert?.alertDefinition?.inlineRule as InlineRule;
 
     // @ts-ignore - TODO: Replace logic with proper implementation for each rule
+    // eslint-disable-next-line - 'timeUnit' is never reassigned
     let { timeAmount, timeUnit } = inlineRule.options;
 
     if (!timeAmount || !timeUnit) {
