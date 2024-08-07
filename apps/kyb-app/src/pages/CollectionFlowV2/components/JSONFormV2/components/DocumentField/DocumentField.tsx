@@ -8,12 +8,13 @@ import { serializeDocumentId } from '@/components/organisms/UIRenderer/elements/
 import { FileUploaderField } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField';
 import { useFileRepository } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileRepository';
 import { UploadFileFn } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading/types';
-import { useUIElementErrors } from '@/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
 import { UIElement } from '@/components/providers/Validator/hooks/useValidate/ui-element';
+import { useValidatedInput } from '@/components/providers/Validator/hooks/useValidatedInput';
 import { Document, UIElement as IUIElement } from '@/domains/collection-flow';
 import { fetchFile, uploadFile } from '@/domains/storage/storage.api';
 import { collectionFlowFileStorage } from '@/pages/CollectionFlow/collection-flow.file-storage';
+import { useDocumentFieldWarnings } from '@/pages/CollectionFlowV2/components/JSONFormV2/components/DocumentField/hooks/useDocumentFieldWarnings/useDocumentFieldWarnings';
 import { transformV1UIElementToV2UIElement } from '@/pages/CollectionFlowV2/helpers';
 import { findDocumentSchemaByTypeAndCategory } from '@ballerine/common';
 import { AnyObject, ErrorsList, RJSFInputProps } from '@ballerine/ui';
@@ -34,8 +35,14 @@ export const DocumentField = (
   const { state } = useDynamicUIContext();
   //@ts-ignore
   const { definition, formData, inputIndex, onBlur, ...restProps } = props;
+
   const { stateApi } = useStateManagerContext();
   const { payload } = useStateManagerContext();
+  const uiElement = useMemo(
+    () => new UIElement(transformV1UIElementToV2UIElement(definition), payload, []),
+    [definition, payload],
+  );
+
   const [fieldError, setFieldError] = useState<ErrorField | null>(null);
   const { options } = definition;
 
@@ -43,16 +50,9 @@ export const DocumentField = (
   const { state: elementState } = useUIElementState(definition);
 
   const sendEvent = useEventEmitterLogic(definition);
+  const warnings = useDocumentFieldWarnings(definition);
 
-  const getErrorKey = useCallback(
-    () =>
-      inputIndex === null
-        ? (definition?.options?.documentData.id as string)
-        : (definition.valueDestination as string),
-    [definition],
-  );
-  const { validationErrors, warnings } = useUIElementErrors(definition, getErrorKey);
-  const { isTouched } = elementState;
+  const errors = useValidatedInput(uiElement);
 
   const fileId = useMemo(() => {
     if (!Array.isArray(payload.documents)) return null;
@@ -227,9 +227,7 @@ export const DocumentField = (
         onChange={handleChange}
       />
       {!!warnings.length && <ErrorsList errors={warnings.map(err => err.message)} />}
-      {isTouched && !!validationErrors.length && (
-        <ErrorsList errors={validationErrors.map(error => error.message)} />
-      )}
+      <ErrorsList errors={errors || []} />
       {fieldError && <ErrorsList errors={[fieldError.message]} />}
     </div>
   );

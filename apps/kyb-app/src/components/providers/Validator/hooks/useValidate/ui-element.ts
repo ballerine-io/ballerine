@@ -52,11 +52,6 @@ export class UIElement {
     if (applyRule) {
       const isShouldApplyRequired = jsonLogic.apply(applyRule, this.context);
 
-      console.log({
-        applyRule,
-        isShouldApplyRequired,
-      });
-
       return Boolean(isShouldApplyRequired);
     } else {
       if (Array.isArray(this.element.validation?.required)) {
