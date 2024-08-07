@@ -13,7 +13,7 @@ import {
   TExcludedCounterparty,
   TMerchantGroupAverage,
 } from './types';
-import { AggregateType, TIME_UNITS } from './consts';
+import { AggregateType } from './consts';
 import { AlertSeverity, BusinessReport, BusinessReportType, Prisma } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isEmpty } from 'lodash';
@@ -260,8 +260,8 @@ export class DataAnalyticsService {
     },
     paymentMethods = [],
     excludePaymentMethods = false,
-    timeAmount = 7,
-    timeUnit = TIME_UNITS.days,
+    timeAmount,
+    timeUnit,
     groupBy = [],
     havingAggregate = AggregateType.SUM,
   }: TransactionsAgainstDynamicRulesType) {
@@ -474,8 +474,8 @@ export class DataAnalyticsService {
     transactionType = [],
     threshold = 5_000,
     paymentMethods = [],
-    timeAmount = 7,
-    timeUnit = TIME_UNITS.days,
+    timeAmount,
+    timeUnit,
     isPerBrand = false,
     havingAggregate = AggregateType.SUM,
   }: TCustomersTransactionTypeOptions) {

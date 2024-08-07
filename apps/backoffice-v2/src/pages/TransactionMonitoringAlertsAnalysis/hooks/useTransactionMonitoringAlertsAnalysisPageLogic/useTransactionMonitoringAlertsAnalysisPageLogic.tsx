@@ -12,6 +12,7 @@ export const useTransactionMonitoringAlertsAnalysisPageLogic = () => {
       alertId: alertId ?? '',
     });
   const { data: transactions } = useTransactionsQuery({
+    alertId: alertId ?? '',
     businessId: businessId ?? '',
     // @TODO: Remove
     counterpartyId: counterpartyId ?? '',

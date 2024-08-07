@@ -41,7 +41,6 @@ import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
 import { Validate } from 'ballerine-nestjs-typebox';
 import { PutWorkflowExtensionSchema, WorkflowExtensionSchema } from './schemas/extensions.schemas';
-import type { TWorkflowExtension } from './schemas/extensions.schemas';
 import { type Static, Type } from '@sinclair/typebox';
 
 export const WORKFLOW_TAG = 'Workflows';
@@ -174,6 +173,7 @@ export class WorkflowControllerExternal {
     if (upgradedWorkflowDef?.extensions) {
       return res.json(upgradedWorkflowDef.extensions);
     }
+
     return res.status(HttpStatus.NOT_FOUND).send();
   }
 

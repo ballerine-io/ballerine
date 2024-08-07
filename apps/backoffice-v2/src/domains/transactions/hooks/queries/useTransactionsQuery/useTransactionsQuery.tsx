@@ -3,10 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { transactionsQueryKeys } from '@/domains/transactions/query-keys';
 
 export const useTransactionsQuery = ({
+  alertId,
   counterpartyId,
   page,
   pageSize,
 }: {
+  alertId: string;
   counterpartyId: string;
   page: number;
   pageSize: number;
@@ -15,6 +17,7 @@ export const useTransactionsQuery = ({
 
   return useQuery({
     ...transactionsQueryKeys.list({
+      alertId,
       counterpartyId,
       page,
       pageSize,

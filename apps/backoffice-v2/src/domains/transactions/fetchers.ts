@@ -186,7 +186,7 @@ export const fetchTransactions = async (params: {
 }) => {
   const queryParams = qs.stringify(params, { encode: false });
   const [alerts, error] = await apiClient({
-    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/transactions?${queryParams}`,
+    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/transactions/by-alert?${queryParams}`,
     method: Method.GET,
     schema: TransactionsListSchema,
   });
