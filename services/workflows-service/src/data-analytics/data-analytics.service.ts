@@ -13,7 +13,7 @@ import {
   TExcludedCounterparty,
   TMerchantGroupAverage,
 } from './types';
-import { AggregateType, TIME_UNITS } from './consts';
+import { AggregateType } from './consts';
 import { AlertSeverity, BusinessReport, BusinessReportType, Prisma } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isEmpty } from 'lodash';

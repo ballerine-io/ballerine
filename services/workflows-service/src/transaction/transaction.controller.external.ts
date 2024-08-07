@@ -21,7 +21,6 @@ import {
   Post,
   Query,
   Res,
-  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 
@@ -29,7 +28,7 @@ import {
   GetTransactionsByAlertDto,
   GetTransactionsDto,
 } from '@/transaction/dtos/get-transactions.dto';
-import { Alert, AlertDefinition, PaymentMethod } from '@prisma/client';
+import { PaymentMethod } from '@prisma/client';
 import { BulkTransactionsCreatedDto } from '@/transaction/dtos/bulk-transactions-created.dto';
 import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
 import { BulkStatus } from '@/alert/types';
@@ -37,8 +36,6 @@ import * as errors from '@/errors';
 import { exceptionValidationFactory } from '@/errors';
 import { TIME_UNITS } from '@/data-analytics/consts';
 import { TransactionEntityMapper } from './transaction.mapper';
-import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
-import { InlineRule } from '@/data-analytics/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { AlertService } from '@/alert/alert.service';
 
