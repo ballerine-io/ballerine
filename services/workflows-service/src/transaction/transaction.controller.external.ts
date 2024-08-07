@@ -21,7 +21,6 @@ import {
   Post,
   Query,
   Res,
-  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 
@@ -37,8 +36,6 @@ import * as errors from '@/errors';
 import { exceptionValidationFactory } from '@/errors';
 import { TIME_UNITS } from '@/data-analytics/consts';
 import { TransactionEntityMapper } from './transaction.mapper';
-import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
-import { InlineRule } from '@/data-analytics/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { AlertService } from '@/alert/alert.service';
 
@@ -288,7 +285,7 @@ export class TransactionControllerExternal {
   }
 
   @Get('/by-alert')
-  @UseGuards(CustomerAuthGuard)
+  // @UseCustomerAuthGuard()
   @swagger.ApiOkResponse({ description: 'Returns an array of transactions.' })
   @swagger.ApiQuery({ name: 'businessId', description: 'Filter by business ID.', required: false })
   @swagger.ApiQuery({
@@ -347,59 +344,16 @@ export class TransactionControllerExternal {
       );
     }
 
-    const filters: GetTransactionsByAlertDto = {
-      ...getTransactionsByAlertParameters,
-    };
-
     if (!alert.alertDefinition) {
       throw new errors.NotFoundException(`Alert definition not found for alert ${alert.id}`);
     }
 
-    const inlineRule = alert.alertDefinition.inlineRule as InlineRule;
-
-    if (!inlineRule || !inlineRule.options) {
-      return filters;
-    }
-
-    filters.endDate = alert.updatedAt;
-
-    if (
-      inlineRule.fnName === 'evaluateMerchantGroupAverage' ||
-      inlineRule.fnName === 'evaluateHighTransactionTypePercentage' ||
-      inlineRule.fnName === 'evaluateTransactionsAgainstDynamicRules' ||
-      inlineRule.fnName === 'evaluateMultipleMerchantsOneCounterparty' ||
-      inlineRule.fnName === 'evaluateDormantAccount'
-    ) {
-      const { timeAmount, timeUnit } = inlineRule.options;
-
-      const _untilDate = new Date(filters.endDate);
-
-      let subtractValue = 0;
-
-      const baseSubstractByMin = timeAmount * 60 * 1000;
-
-      switch (timeUnit) {
-        case TIME_UNITS.minutes:
-          subtractValue = baseSubstractByMin;
-          break;
-        case TIME_UNITS.hours:
-          subtractValue = 60 * baseSubstractByMin;
-          break;
-        case TIME_UNITS.days:
-          subtractValue = 24 * 60 * baseSubstractByMin;
-          break;
-        case TIME_UNITS.months:
-          _untilDate.setMonth(_untilDate.getMonth() - timeAmount);
-          break;
-        case TIME_UNITS.years:
-          _untilDate.setFullYear(_untilDate.getFullYear() - timeAmount);
-          break;
-      }
-
-      _untilDate.setHours(0, 0, 0, 0);
-
-      filters.startDate = new Date(_untilDate.getTime() - subtractValue);
-    }
+    const filters: GetTransactionsByAlertDto = {
+      ...getTransactionsByAlertParameters,
+      ...(!getTransactionsByAlertParameters.startDate && !getTransactionsByAlertParameters.endDate
+        ? this.alertService.buildTransactionsFiltersByAlert(alert)
+        : {}),
+    };
 
     return this.service.getTransactions(filters, projectId, {
       include: {
