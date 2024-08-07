@@ -6,12 +6,11 @@ import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
 import { Link } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { Button } from '@/common/components/atoms/Button/Button';
-import { Badge } from '@ballerine/ui';
+import { Badge, TextWithNAFallback } from '@ballerine/ui';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { BusinessReportStatus } from '@/domains/business-reports/fetchers';
 import dayjs from 'dayjs';
 import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import { useMerchantMonitoringBusinessReportLogic } from '@/pages/MerchantMonitoringBusinessReport/hooks/useMerchantMonitoringBusinessReportLogic/useMerchantMonitoringBusinessReportLogic';
 
 export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
@@ -30,7 +29,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
         <Button
           variant={'ghost'}
           onClick={onNavigateBack}
-          className={'mb-6 flex items-center space-x-[1px] pe-3 ps-1 font-semibold'}
+          className={'mb-6 flex items-center space-x-px pe-3 ps-1 font-semibold'}
         >
           <ChevronLeft size={18} /> <span>Back</span>
         </Button>

@@ -1,10 +1,6 @@
 import { LucideProps, Undo2 } from 'lucide-react';
 import { FunctionComponent } from 'react';
-import { ctw } from '@ballerine/ui';
-import {
-  IconContainer,
-  IIconContainerProps,
-} from '@/common/components/atoms/IconContainer/IconContainer';
+import { ctw, IconContainer, IIconContainerProps } from '@ballerine/ui';
 
 export interface IRefreshCircle extends Omit<LucideProps, 'size'> {
   containerProps?: Omit<IIconContainerProps, 'children'>;

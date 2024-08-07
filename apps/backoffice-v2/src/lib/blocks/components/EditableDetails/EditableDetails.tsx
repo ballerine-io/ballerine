@@ -1,4 +1,4 @@
-import { isNullish, isObject } from '@ballerine/common';
+import { checkIsUrl, isNullish, isObject } from '@ballerine/common';
 import { JsonDialog } from '@ballerine/ui';
 import { FileJson2 } from 'lucide-react';
 import {
@@ -26,16 +26,15 @@ import { FormLabel } from '../../../../common/components/organisms/Form/Form.Lab
 import { FormMessage } from '../../../../common/components/organisms/Form/Form.Message';
 import { AnyRecord } from '../../../../common/types';
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import { isValidDate } from '../../../../common/utils/is-valid-date';
-import { isValidIsoDate } from '../../../../common/utils/is-valid-iso-date/is-valid-iso-date';
-import { isValidUrl } from '../../../../common/utils/is-valid-url';
+import { checkIsDate } from '../../../../../../../packages/ui/src/common/utils/check-is-date';
+import { checkIsIsoDate } from '../../../../../../../packages/common/src/utils/check-is-iso-date/check-is-iso-date';
 import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
 import { useUpdateDocumentByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateDocumentByIdMutation/useUpdateDocumentByIdMutation';
 import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
 import { IEditableDetails } from './interfaces';
 import { isValidDatetime } from '../../../../common/utils/is-valid-datetime';
 import dayjs from 'dayjs';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { valueOrNA } from '../../../../../../../packages/common/src/utils/value-or-na/value-or-na';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
@@ -67,7 +66,7 @@ export const Detail: FunctionComponent<IDetailProps> = ({
       return dayjs(value).utc().format('DD/MM/YYYY HH:mm');
     }
 
-    if (isValidDate(value, { isStrict: false }) || isValidIsoDate(value)) {
+    if (checkIsDate(value, { isStrict: false }) || checkIsIsoDate(value)) {
       return dayjs(value).format('DD/MM/YYYY');
     }
 
@@ -231,7 +230,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
         return 'checkbox';
       }
 
-      if (isValidDate(value, { isStrict: false }) || isValidIsoDate(value) || type === 'date') {
+      if (checkIsDate(value, { isStrict: false }) || checkIsIsoDate(value) || type === 'date') {
         return 'date';
       }
 
@@ -303,7 +302,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                     if (isDecisionComponent && !value) return null;
 
                     const isInput = [
-                      !isValidUrl(value) || isEditable,
+                      !checkIsUrl(value) || isEditable,
                       !isObject(value),
                       !Array.isArray(value),
                     ].every(Boolean);
@@ -333,7 +332,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                             />
                           </div>
                         )}
-                        {isValidUrl(value) && !isEditable && (
+                        {checkIsUrl(value) && !isEditable && (
                           <a
                             key={keyFactory(valueId, title, `form-field`)}
                             className={buttonVariants({

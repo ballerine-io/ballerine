@@ -1,5 +1,5 @@
 import React from 'react';
-import { ctw } from '@/utils/ctw';
+import { ctw } from '@/common/utils/ctw';
 
 export const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
@@ -7,4 +7,5 @@ export const TableHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <thead ref={ref} className={ctw('[&_tr]:border-b', className)} {...props} />
 ));
+
 TableHeader.displayName = 'TableHeader';

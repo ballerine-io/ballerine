@@ -3,7 +3,7 @@ import {
   IProcessTracker,
   ProcessTrackerItem,
 } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTracker/process-tracker-adapters/process-tracker.abstract';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { valueOrNA } from '../../../../../../../../../../packages/common/src/utils/value-or-na/value-or-na';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 
 export class UBOFlowsProcessTracker implements IProcessTracker {

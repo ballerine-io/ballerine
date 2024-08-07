@@ -1,6 +1,5 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import dayjs from 'dayjs';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import { TTransactionsList } from '@/domains/transactions/fetchers';
 import { Button, buttonVariants } from '@/common/components/atoms/Button/Button';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
@@ -8,6 +7,7 @@ import { titleCase } from 'string-ts';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { ChevronDown } from 'lucide-react';
 import React from 'react';
+import { TextWithNAFallback } from '@ballerine/ui';
 
 const columnHelper = createColumnHelper<TTransactionsList[number]>();
 

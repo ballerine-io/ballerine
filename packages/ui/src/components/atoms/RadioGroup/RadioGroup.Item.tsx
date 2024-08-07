@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { CheckIcon } from '@radix-ui/react-icons';
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
-import { ctw } from '@/utils';
+import { ctw } from '@/common';
 
 export const RadioGroupItem = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Item>,
@@ -22,4 +22,5 @@ export const RadioGroupItem = React.forwardRef<
     </RadioGroupPrimitive.Item>
   );
 });
+
 RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName;

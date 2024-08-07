@@ -19,7 +19,7 @@ import { Button } from '@ballerine/ui';
 import { toTitleCase } from 'string-ts';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
-import { valueOrNA } from '../../../../../../common/utils/value-or-na/value-or-na';
+import { valueOrNA } from '../../../../../../../../../packages/common/src/utils/value-or-na/value-or-na';
 import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 

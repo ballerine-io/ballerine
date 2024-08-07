@@ -1,10 +1,10 @@
 import React, { FunctionComponent } from 'react';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import { Card } from '@/common/components/atoms/Card/Card';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { CardFooter } from '@/common/components/atoms/Card/Card.Footer';
 import { useUserStatisticsLogic } from '@/pages/Statistics/components/UserStatistics/hooks/useUserStatisticsLogic/useUserStatisticsLogic';
+import { TextWithNAFallback } from '@ballerine/ui';
 
 export const UserStatistics: FunctionComponent<{
   fullName: string;

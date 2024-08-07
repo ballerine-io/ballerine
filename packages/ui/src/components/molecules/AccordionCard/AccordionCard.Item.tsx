@@ -2,7 +2,7 @@ import { FunctionComponent } from 'react';
 import { AccordionTrigger } from '@/components/molecules/Accordion/Accordion.Trigger';
 import { AccordionContent } from '@/components/molecules/Accordion/Accordion.Content';
 import { AccordionItem as ShadCNAccordionItem } from '@/components/molecules/Accordion/Accordion.Item';
-import { ctw } from '@/utils';
+import { ctw } from '@/common';
 import { AccordionCardItemProps } from '@/components/molecules/AccordionCard/types';
 import { ScrollArea } from '@/components';
 import { isNonEmptyArray } from '@ballerine/common';
@@ -67,4 +67,5 @@ export const AccordionCardItem: FunctionComponent<AccordionCardItemProps> = ({
     </ShadCNAccordionItem>
   );
 };
+
 AccordionCardItem.displayName = 'Accordion.Item';

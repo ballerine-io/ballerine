@@ -4,7 +4,7 @@ import React, { FunctionComponent, ReactNode } from 'react';
 import { TTransactionsList } from '@/domains/transactions/fetchers';
 import { ExpandedTransactionDetails } from '@/pages/TransactionMonitoringAlertsAnalysis/components/AlertAnalysisSheet/ExpandedTransactionDetails';
 import { columns } from '@/pages/TransactionMonitoringAlertsAnalysis/components/AlertAnalysisSheet/columns';
-import { DataTable } from '@/common/components/organisms/DataTable/DataTable';
+import { UrlDataTable } from '@/common/components/organisms/UrlDataTable/UrlDataTable';
 
 export interface IAlertAnalysisProps {
   onOpenStateChange: () => void;
@@ -31,7 +31,7 @@ export const AlertAnalysisSheet: FunctionComponent<IAlertAnalysisProps> = ({
             </div>
           </div>
           <div>
-            <DataTable
+            <UrlDataTable
               columns={columns}
               data={transactions}
               props={{ scroll: { className: 'h-[47vh]' } }}

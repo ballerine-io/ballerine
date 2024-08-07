@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
-import { ctw } from '@/utils/ctw';
+import { ctw } from '@/common/utils/ctw';
 import { ScrollBar } from '@/components/atoms';
 
 interface Props extends ScrollAreaPrimitive.ScrollAreaProps {
@@ -24,4 +24,5 @@ export const ScrollArea = React.forwardRef<
     <ScrollAreaPrimitive.Corner />
   </ScrollAreaPrimitive.Root>
 ));
+
 ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName;

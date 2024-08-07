@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/atoms/Dialog'
 import { ScrollArea } from '@/components/atoms/ScrollArea';
 import ReactJson from 'react-json-view';
 import { JsonDialogProps } from './interfaces';
-import { ctw } from '@/utils/ctw';
+import { ctw } from '@/common/utils/ctw';
 
 export const JsonDialog = ({
   json,

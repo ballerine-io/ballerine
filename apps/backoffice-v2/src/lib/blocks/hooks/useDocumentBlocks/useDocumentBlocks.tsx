@@ -1,7 +1,7 @@
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { checkIsBusiness } from '@/common/utils/check-is-business/check-is-business';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { valueOrNA } from '../../../../../../../packages/common/src/utils/value-or-na/value-or-na';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
 import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';

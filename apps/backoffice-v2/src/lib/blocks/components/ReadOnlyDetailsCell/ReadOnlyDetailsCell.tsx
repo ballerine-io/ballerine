@@ -3,7 +3,7 @@ import { ctw } from '../../../../common/utils/ctw/ctw';
 import { ExtractCellProps } from '@ballerine/blocks';
 import { ReadOnlyDetail } from '@/common/components/atoms/ReadOnlyDetail/ReadOnlyDetail';
 import { titleCase } from 'string-ts';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
+import { TextWithNAFallback } from '@ballerine/ui';
 
 export const ReadOnlyDetailsCell: FunctionComponent<ExtractCellProps<'readOnlyDetails'>> = ({
   value,

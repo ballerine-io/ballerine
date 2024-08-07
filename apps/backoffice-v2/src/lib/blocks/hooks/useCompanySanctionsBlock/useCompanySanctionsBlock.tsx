@@ -1,10 +1,9 @@
-import { Badge } from '@ballerine/ui';
+import { Badge, WarningFilledSvg } from '@ballerine/ui';
 import * as React from 'react';
 import { ComponentProps, useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { WarningFilledSvg } from '@/common/components/atoms/icons';
 import { toTitleCase } from 'string-ts';
-import { isValidUrl } from '@/common/utils/is-valid-url';
+import { checkIsUrl } from '@ballerine/common';
 
 export const useCompanySanctionsBlock = companySanctions => {
   return useMemo(() => {
@@ -200,7 +199,7 @@ export const useCompanySanctionsBlock = companySanctions => {
                       data: sanction?.sources
                         ?.map(({ url: source }) => ({ source }))
                         // TODO: Research why zod's url validation fails on some valid urls.
-                        ?.filter(({ source }) => isValidUrl(source)),
+                        ?.filter(({ source }) => checkIsUrl(source)),
                     },
                   })
                   .addCell({

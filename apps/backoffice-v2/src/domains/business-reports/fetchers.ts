@@ -4,9 +4,10 @@ import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { TBusinessReportType } from '@/domains/business-reports/types';
 import qs from 'qs';
-import { Severities, TObjectValues } from '@/common/types';
+import { Severities } from '@ballerine/common';
 import { toast } from 'sonner';
 import { t } from 'i18next';
+import { ObjectValues } from '@ballerine/common';
 
 export const BusinessReportStatus = {
   NEW: 'new',
@@ -14,7 +15,7 @@ export const BusinessReportStatus = {
   COMPLETED: 'completed',
 } as const;
 
-export type TBusinessReportStatus = TObjectValues<typeof BusinessReportStatus>;
+export type TBusinessReportStatus = ObjectValues<typeof BusinessReportStatus>;
 
 export type TBusinessReportStatuses = TBusinessReportStatus[];
 
@@ -23,11 +24,6 @@ export const BusinessReportStatuses = [
   BusinessReportStatus.IN_PROGRESS,
   BusinessReportStatus.COMPLETED,
 ] as const satisfies readonly TBusinessReportStatus[];
-
-export const severityToDisplaySeverity = {
-  positive: 'low',
-  moderate: 'medium',
-} as const;
 
 export const SeveritySchema = z.preprocess(value => {
   if (value === 'moderate') {
