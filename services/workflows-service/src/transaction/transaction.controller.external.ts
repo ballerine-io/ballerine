@@ -347,13 +347,14 @@ export class TransactionControllerExternal {
       );
     }
 
-    let filters: GetTransactionsByAlertDto = {
+    const filters: GetTransactionsByAlertDto = {
       ...getTransactionsByAlertParameters,
     };
 
     if (!alert.alertDefinition) {
       throw new errors.NotFoundException(`Alert definition not found for alert ${alert.id}`);
     }
+
     const inlineRule = alert.alertDefinition.inlineRule as InlineRule;
 
     if (!inlineRule || !inlineRule.options) {

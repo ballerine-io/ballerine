@@ -22,7 +22,6 @@ import {
   PaymentType,
   Project,
   TransactionDirection,
-  TransactionRecord,
   TransactionRecordType,
 } from '@prisma/client';
 import { createProject } from '@/test/helpers/create-project';
@@ -626,10 +625,10 @@ describe('#TransactionControllerExternal', () => {
       },
     });
 
-    const createTransactionWithDate = (daysAgo: number) => {
+    const createTransactionWithDate = async (daysAgo: number) => {
       const currentDate = new Date();
 
-      createTransactionRecord(app.get(PrismaService), project, {
+      await createTransactionRecord(app.get(PrismaService), project, {
         date: new Date(currentDate.getTime() - daysAgo * 24 * 60 * 60 * 1000),
       });
     };

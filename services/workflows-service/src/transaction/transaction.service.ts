@@ -9,7 +9,6 @@ import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dt
 import { SentryService } from '@/sentry/sentry.service';
 import { isPrismaClientKnownRequestError } from '@/prisma/prisma.util';
 import { getErrorMessageFromPrismaError } from '@/common/filters/HttpExceptions.filter';
-import { TimeUnit } from '@/data-analytics/types';
 
 @Injectable()
 export class TransactionService {

@@ -1,6 +1,6 @@
-import { PrismaClient, Project } from '@prisma/client';
-import { faker } from '@faker-js/faker';
 import {
+  PrismaClient,
+  Project,
   TransactionRecordType,
   TransactionDirection,
   PaymentBrandName,
@@ -11,6 +11,7 @@ import {
   PaymentAcquirer,
   PaymentProcessor,
 } from '@prisma/client';
+import { faker } from '@faker-js/faker';
 import { TransactionRepository } from '../../transaction/transaction.repository';
 import { TransactionCreateDto } from '../../transaction/dtos/transaction-create.dto';
 import { TransactionService } from '../../transaction/transaction.service';

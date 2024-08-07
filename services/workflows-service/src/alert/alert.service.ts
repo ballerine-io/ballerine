@@ -14,7 +14,6 @@ import {
   BusinessReport,
   MonitoringType,
 } from '@prisma/client';
-import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import _ from 'lodash';
