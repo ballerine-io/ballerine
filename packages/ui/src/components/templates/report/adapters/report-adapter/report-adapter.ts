@@ -1,7 +1,7 @@
 import { AdsProviders, severityToDisplaySeverity } from '@/components/templates/report/constants';
 import { adsProviderAdapter } from '@/components';
 import { TAdsProvider } from '@/components/templates/report/types';
-import { isNullish, SeverityType } from '@ballerine/common';
+import { SeverityType } from '@ballerine/common';
 
 const getLabel = ({ label, provider }: { label: string; provider: string }) => {
   if (label === 'page') {
@@ -67,7 +67,7 @@ export const reportAdapter = {
             })),
           };
         })
-        ?.filter((value): value is NonNullable<typeof value> => !isNullish(value)),
+        ?.filter((value): value is NonNullable<typeof value> => Boolean(value)),
       websiteLineOfBusinessAnalysis: toRiskLabels(
         report?.summary?.riskIndicatorsByDomain?.lineOfBusinessViolations,
       ),
@@ -195,7 +195,7 @@ export const reportAdapter = {
             })),
           };
         })
-        ?.filter((value): value is NonNullable<typeof value> => !isNullish(value)),
+        ?.filter((value): value is NonNullable<typeof value> => Boolean(value)),
       websiteLineOfBusinessAnalysis: toRiskLabels(
         report?.summary?.riskIndicatorsByDomain?.lineOfBusinessViolations,
       ),
