@@ -1,4 +1,4 @@
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { valueOrNA } from '@ballerine/common';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';

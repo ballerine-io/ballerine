@@ -10,8 +10,7 @@ import { State } from '../../../../common/enums';
 import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 import { createArrayOfNumbers } from '../../../../common/utils/create-array-of-numbers/create-array-of-numbers';
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import { formatDate } from '../../../../common/utils/format-date';
-import { isValidDate } from '../../../../common/utils/is-valid-date';
+import { checkIsDate, formatDate } from '@ballerine/ui';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 
 export const useInfo = ({
@@ -19,7 +18,7 @@ export const useInfo = ({
   info,
   isLoading,
 }: {
-  whitelist: Array<string>;
+  whitelist: string[];
   info: Record<PropertyKey, unknown>;
   isLoading?: boolean;
 }) => {
@@ -141,7 +140,7 @@ export const Info: FunctionComponent<IInfoProps> = ({ info, whitelist, isLoading
               }
             >
               {({ title, text, index }) => {
-                const value = isValidDate(text) ? formatDate(new Date(text)) : text;
+                const value = checkIsDate(text) ? formatDate(new Date(text)) : text;
                 const isCheckResults = /check\sresults/i.test(section?.title);
                 const isEmail = /email/i.test(title);
 

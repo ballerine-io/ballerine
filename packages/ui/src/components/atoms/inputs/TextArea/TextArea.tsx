@@ -1,4 +1,4 @@
-import { ctw } from '@/utils/ctw';
+import { ctw } from '@/common/utils/ctw';
 import * as React from 'react';
 
 export type TextAreaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>;
@@ -17,4 +17,5 @@ export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
     );
   },
 );
+
 TextArea.displayName = 'Textarea';

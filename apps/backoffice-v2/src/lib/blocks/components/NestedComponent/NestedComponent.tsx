@@ -1,12 +1,11 @@
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import { isObject } from '@ballerine/common';
+import { checkIsUrl, isObject } from '@ballerine/common';
 import { FunctionComponent } from 'react';
 import { INestedComponentProps } from './interfaces';
 import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
 import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 import { NestedContainer } from './NestedContainer';
 import { handleNestedValue } from './handle-nested-value';
-import { isValidUrl } from '../../../../common/utils/is-valid-url';
 import { buttonVariants } from '../../../../common/components/atoms/Button/Button';
 
 export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
@@ -19,7 +18,7 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
   return (
     <NestedContainer isNested={isNested}>
       {value?.data?.map(({ title, value, showNull, showUndefined, anchorUrls }) => {
-        const Component = anchorUrls && isValidUrl(value) ? 'a' : 'p';
+        const Component = anchorUrls && checkIsUrl(value) ? 'a' : 'p';
 
         return (
           <div key={title}>

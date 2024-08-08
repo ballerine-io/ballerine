@@ -11,7 +11,7 @@ import {
 } from '../../../../common/components/atoms/Table';
 import { ITableCellProps } from './interfaces';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { DefaultCell } from './DefaultCell';
+import { DefaultTableCell } from '@ballerine/ui';
 
 export const TableCell = <TData extends RowData, TValue = any>({
   value,
@@ -22,7 +22,7 @@ export const TableCell = <TData extends RowData, TValue = any>({
     columns: value.columns ?? [],
     getCoreRowModel: getCoreRowModel(),
     defaultColumn: {
-      cell: DefaultCell,
+      cell: DefaultTableCell,
     },
   });
 

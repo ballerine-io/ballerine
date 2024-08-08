@@ -1,5 +1,5 @@
 import React from 'react';
-import { ctw } from '@/utils/ctw';
+import { ctw } from '@/common/utils/ctw';
 
 export const TableCaption = React.forwardRef<
   HTMLTableCaptionElement,
@@ -7,4 +7,5 @@ export const TableCaption = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <caption ref={ref} className={ctw('text-muted-foreground mt-4 text-sm', className)} {...props} />
 ));
+
 TableCaption.displayName = 'TableCaption';

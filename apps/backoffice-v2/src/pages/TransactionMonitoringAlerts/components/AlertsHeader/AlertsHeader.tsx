@@ -11,13 +11,13 @@ import { useAlertsDecisionByIdsMutation } from '@/domains/alerts/hooks/mutations
 import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-screaming-snake-case';
 import { AlertsDecisionDropdown } from '@/pages/TransactionMonitoringAlerts/components/AlertsDecisionDropdown/AlertsDecisionDropdown';
 import { COMING_SOON_ALERT_DECISIONS } from '@/pages/TransactionMonitoringAlerts/constants';
-import { TObjectValues } from '@/common/types';
+import { ObjectValues } from '@ballerine/common';
 
 export const decisionToClassName = {
   [lowerCase(alertStateToDecision.REJECTED)]: 'text-destructive',
   [lowerCase(alertStateToDecision.CLEARED)]: 'text-success',
 } as const satisfies Record<
-  Extract<Lowercase<TObjectValues<typeof alertStateToDecision>>, 'reject' | 'clear'>,
+  Extract<Lowercase<ObjectValues<typeof alertStateToDecision>>, 'reject' | 'clear'>,
   ComponentProps<'span'>['className']
 >;
 

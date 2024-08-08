@@ -5,8 +5,8 @@ import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-i
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
 import { env } from '@/common/env/env';
-import { TObjectValues } from '@/common/types';
 import qs from 'qs';
+import { ObjectValues } from '@ballerine/common';
 
 export const TransactionDirection = {
   INBOUND: 'inbound',
@@ -16,7 +16,7 @@ export const TransactionDirection = {
 export const TransactionDirections = [
   TransactionDirection.INBOUND,
   TransactionDirection.OUTBOUND,
-] as const satisfies ReadonlyArray<TObjectValues<typeof TransactionDirection>>;
+] as const satisfies ReadonlyArray<ObjectValues<typeof TransactionDirection>>;
 
 export const PaymentMethod = {
   CREDIT_CARD: 'credit_card',
@@ -36,7 +36,7 @@ export const PaymentMethods = [
   PaymentMethod.APPLE_PAY,
   PaymentMethod.GOOGLE_PAY,
   PaymentMethod.APM,
-] as const satisfies ReadonlyArray<TObjectValues<typeof PaymentMethod>>;
+] as const satisfies ReadonlyArray<ObjectValues<typeof PaymentMethod>>;
 
 const TransactionStatus = {
   NEW: 'new',
@@ -56,7 +56,7 @@ const TransactionStatuses = [
   TransactionStatus.REJECTED,
   TransactionStatus.CANCELLED,
   TransactionStatus.FAILED,
-] as const satisfies ReadonlyArray<TObjectValues<typeof TransactionStatus>>;
+] as const satisfies ReadonlyArray<ObjectValues<typeof TransactionStatus>>;
 
 const TransactionType = {
   DEPOSIT: 'deposit',
@@ -74,7 +74,7 @@ const TransactionTypes = [
   TransactionType.PAYMENT,
   TransactionType.REFUND,
   TransactionType.CHARGEBACK,
-] as const satisfies ReadonlyArray<TObjectValues<typeof TransactionType>>;
+] as const satisfies ReadonlyArray<ObjectValues<typeof TransactionType>>;
 
 const PaymentType = {
   INSTANT: 'instant',
@@ -88,7 +88,7 @@ const PaymentTypes = [
   PaymentType.SCHEDULED,
   PaymentType.RECURRING,
   PaymentType.REFUND,
-] as const satisfies ReadonlyArray<TObjectValues<typeof PaymentType>>;
+] as const satisfies ReadonlyArray<ObjectValues<typeof PaymentType>>;
 
 const PaymentChannel = {
   online: 'online',
@@ -104,7 +104,7 @@ const PaymentChannels = [
   PaymentChannel.in_store,
   PaymentChannel.telephone,
   PaymentChannel.mail_order,
-] as const satisfies ReadonlyArray<TObjectValues<typeof PaymentChannel>>;
+] as const satisfies ReadonlyArray<ObjectValues<typeof PaymentChannel>>;
 
 const CounterpartySchema = z.object({
   correlationId: z.string(),

@@ -1,4 +1,4 @@
-import { ctw } from '@/utils/ctw';
+import { ctw } from '@/common/utils/ctw';
 
 interface Props {
   isFetching?: boolean;

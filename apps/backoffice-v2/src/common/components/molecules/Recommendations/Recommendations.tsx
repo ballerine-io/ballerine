@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react';
 import { Card } from '@/common/components/atoms/Card/Card';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
-import { CheckCircle } from '@/common/components/atoms/CheckCircle/CheckCircle';
+import { CheckCircle } from '@ballerine/ui';
 
 export const Recommendations: FunctionComponent<{
   recommendations: string[];

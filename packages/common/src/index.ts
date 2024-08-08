@@ -23,6 +23,13 @@ export {
   uniqueArray,
   zodBuilder,
   zodErrorToReadable,
+  valueOrFallback,
+  valueOrNA,
+  checkIsUrl,
+  isInstanceOfFunction,
+  getSeverityFromRiskScore,
+  booleanToYesOrNo,
+  checkIsIsoDate,
 } from './utils';
 
 export type { IErrorWithMessage } from './utils';
@@ -33,7 +40,14 @@ export type {
   TDefaultSchemaDocumentPage,
   TDocument,
 } from './schemas';
-export type { AnyRecord, LoggerInterface, Serializable, SortDirection } from './types';
+export type {
+  AnyRecord,
+  LoggerInterface,
+  Serializable,
+  SortDirection,
+  GenericFunction,
+  ObjectValues,
+} from './types';
 
 export {
   WorkflowDefinitionConfigThemeSchema,
