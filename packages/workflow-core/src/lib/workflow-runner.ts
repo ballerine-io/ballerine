@@ -816,6 +816,7 @@ export class WorkflowRunner {
     if (error) {
       logger.error('Error invoking plugin', {
         error,
+        stack: error instanceof Error ? error.stack : undefined,
         name: apiPlugin.name,
         context: this.context,
       });

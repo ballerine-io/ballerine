@@ -25,6 +25,11 @@ const _getPluginOptions = (params: IBallerineApiPluginParams & IApiPluginParams)
 
   const pluginOptionFactoryFn = BALLERINE_API_PLUGIN_FACTORY[params.pluginKind] as any;
 
+  if (params.pluginKind === 'registry-information') {
+    // Currently: only asia verify
+    optionsFactoryFn = pluginOptionFactoryFn;
+  }
+
   if (['individual-sanctions', 'company-sanctions', 'ubo'].includes(params.pluginKind)) {
     if (!params.vendor) {
       throw new Error(`Missed vendor for: ${params.pluginKind}`);

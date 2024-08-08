@@ -258,13 +258,10 @@ export class ApiPlugin {
     for (const placeholder of placeholders) {
       const variableKey = placeholder.replace(/{|}/g, '');
 
-      const replacedVariable = this._onReplaceVariable(variableKey, replacedContent, placeholder);
-
-      if (replacedVariable) {
-        return replacedVariable;
-      }
+      replacedContent = await this._onReplaceVariable(variableKey, replacedContent, placeholder);
 
       const placeholderValue = `${this.fetchObjectPlaceholderValue(context, variableKey)}`;
+
       replacedContent = replacedContent.replace(placeholder, placeholderValue);
     }
 
@@ -277,7 +274,7 @@ export class ApiPlugin {
     content: string,
     placeholder: string,
   ) {
-    const variableName = provider === 'ballerine' ? 'secret' : 'secrets';
+    const variableName = provider === 'ballerine' ? 'secret.' : 'secrets.';
 
     let replacedContent = content;
 
