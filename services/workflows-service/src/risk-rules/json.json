@@ -1,0 +1,66 @@
+{
+  "dataSchema": {
+    "type": "object",
+    "required": [
+      "id",
+      "type",
+      "data"
+    ],
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "data": {
+        "type": "object",
+        "required": [
+          "companyName",
+          "additionalInfo"
+        ],
+        "properties": {
+          "companyName": {
+            "type": "string"
+          },
+          "additionalInfo": {
+            "type": "object",
+            "required": [
+              "mainRepresentative"
+            ],
+            "properties": {
+              "mainRepresentative": {
+                "type": "object",
+                "required": [
+                  "firstName",
+                  "lastName",
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "firstName": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "type": {
+        "type": "string",
+        "default": "business"
+      }
+    }
+  },
+  "uiSchema": {
+    "data": {
+      "continent": {
+        "ui:title": "Continent"
+      }
+    }
+  }
+}

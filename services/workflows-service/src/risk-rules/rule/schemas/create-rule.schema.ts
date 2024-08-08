@@ -17,7 +17,7 @@ export const CreateRuleSchema = Type.Object({
     examples: [100],
   }),
   engine: TypeStringEnum(['Ballerine', 'JsonLogic'], 'The rule engine to use', ['1000']),
-  riskRuleSetId: Type.Optional(
+  ruleSetId: Type.Optional(
     Type.String({
       description: 'The risk rule set id to assign the rule to',
     }),
