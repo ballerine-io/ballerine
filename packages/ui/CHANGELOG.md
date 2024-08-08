@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.16
+
+### Patch Changes
+
+- fixed filtering of boolean fields
+
 ## 0.5.15
 
 ### Patch Changes
