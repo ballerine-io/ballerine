@@ -1,52 +1,25 @@
+import { IFormatValueValidatorParams } from '@/components/providers/Validator/value-validators/format.value.validator';
+import { IMaxLengthValueValidatorParams } from '@/components/providers/Validator/value-validators/max-length.value.validator';
+import { IMaximumValueValidatorParams } from '@/components/providers/Validator/value-validators/maximum.value.validator';
+import { IMinLengthValueValidatorParams } from '@/components/providers/Validator/value-validators/min-length.value.validator';
+import { IPatternValidatorParams } from '@/components/providers/Validator/value-validators/pattern.value.validator';
+import { IRequiredValueValidatorParams } from '@/components/providers/Validator/value-validators/required.value-validator';
+import { Rule } from '@/domains/collection-flow';
+
 export type TFormats = 'email';
 
 export type TValidatorErrorMessage = string;
 
 export type TValidatorApplyRule = object;
 
-export type TRequiredValidationParams =
-  | boolean
-  | [boolean, TValidatorErrorMessage]
-  | [boolean, TValidatorErrorMessage, TValidatorApplyRule];
-
-export type TMinLengthValidationParams =
-  | number
-  | [number, TValidatorErrorMessage]
-  | [number, TValidatorErrorMessage, TValidatorApplyRule];
-
-export type TMaxLengthValidationParams =
-  | number
-  | [number, TValidatorErrorMessage]
-  | [number, TValidatorErrorMessage, TValidatorApplyRule];
-
-export type TPatternValidationParams =
-  | string
-  | [string, TValidatorErrorMessage]
-  | [string, TValidatorErrorMessage, TValidatorApplyRule];
-
-export type TMinimumValidationParams =
-  | number
-  | [number, TValidatorErrorMessage]
-  | [number, TValidatorErrorMessage, TValidatorApplyRule];
-
-export type TMaximumValidationParams =
-  | number
-  | [number, TValidatorErrorMessage]
-  | [number, TValidatorErrorMessage, TValidatorApplyRule];
-
-export type TFormatValidationParams =
-  | TFormats
-  | [TFormats, TValidatorErrorMessage]
-  | [TFormats, TValidatorErrorMessage, TValidatorApplyRule];
-
 export type TValidationParams =
-  | TRequiredValidationParams
-  | TMinLengthValidationParams
-  | TMaxLengthValidationParams
-  | TPatternValidationParams
-  | TMinimumValidationParams
-  | TMaximumValidationParams
-  | TFormatValidationParams;
+  | IFormatValueValidatorParams
+  | IMaxLengthValueValidatorParams
+  | IMinLengthValueValidatorParams
+  | IMaximumValueValidatorParams
+  | IMinLengthValueValidatorParams
+  | IRequiredValueValidatorParams
+  | IPatternValidatorParams;
 
 export type TValidators =
   | 'required'
@@ -75,5 +48,5 @@ export interface UIElementV2<TFieldParams = IBaseFieldParams> {
 
 export interface IBaseValueValidatorParams {
   message?: string;
-  applyRule?: TValidatorApplyRule;
+  applyWhen?: Rule[];
 }

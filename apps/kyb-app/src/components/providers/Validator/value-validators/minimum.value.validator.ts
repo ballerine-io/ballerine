@@ -1,7 +1,4 @@
-import {
-  IBaseValueValidatorParams,
-  TMinimumValidationParams,
-} from '@/components/providers/Validator/types';
+import { IBaseValueValidatorParams } from '@/components/providers/Validator/types';
 import { ValueValidator } from '@/components/providers/Validator/value-validators/value-validator.abstract';
 
 export interface IMinimumValueValidatorParams extends IBaseValueValidatorParams {
@@ -23,19 +20,4 @@ export class MinimumValueValidator extends ValueValidator<IMinimumValueValidator
 
     return this.params.message.replace('{minimum}', this.params.minimum.toString());
   }
-
-  static isMinimumParams = (params: unknown): params is TMinimumValidationParams => {
-    if (typeof params === 'number') return true;
-
-    //@ts-ignore
-    if (
-      Array.isArray(params) &&
-      typeof params?.[0] === 'number' &&
-      typeof params?.[1] === 'string'
-    ) {
-      return true;
-    }
-
-    return false;
-  };
 }

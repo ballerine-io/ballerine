@@ -1,8 +1,4 @@
-import {
-  IBaseValueValidatorParams,
-  TFormats,
-  TFormatValidationParams,
-} from '@/components/providers/Validator/types';
+import { IBaseValueValidatorParams, TFormats } from '@/components/providers/Validator/types';
 import { ValueValidator } from '@/components/providers/Validator/value-validators/value-validator.abstract';
 import EmailValidator from 'email-validator';
 
@@ -30,19 +26,4 @@ export class FormatValueValidator extends ValueValidator<IFormatValueValidatorPa
 
     return this.params.message.replace('{format}', this.params.format.toString());
   }
-
-  static isFormatParams = (params: unknown): params is TFormatValidationParams => {
-    if (typeof params === 'string') return true;
-
-    //@ts-ignore
-    if (
-      Array.isArray(params) &&
-      typeof params?.[0] === 'string' &&
-      typeof params?.[1] === 'string'
-    ) {
-      return true;
-    }
-
-    return false;
-  };
 }

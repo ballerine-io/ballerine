@@ -4,7 +4,6 @@ import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { CollectionFlowV2 } from '@/pages/CollectionFlowV2';
 import { SignIn } from '@/pages/SignIn';
-import { ValidatorPOC } from '@/ValidatorPOC';
 import * as Sentry from '@sentry/react';
 import React from 'react';
 import {
@@ -41,10 +40,6 @@ export const router = sentryCreateBrowserRouter([
   {
     path: 'approved',
     Component: withTokenProtected(Approved),
-  },
-  {
-    path: 'poc',
-    Component: ValidatorPOC,
   },
   {
     path: '/v2',

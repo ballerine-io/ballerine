@@ -1,7 +1,4 @@
-import {
-  IBaseValueValidatorParams,
-  TMaximumValidationParams,
-} from '@/components/providers/Validator/types';
+import { IBaseValueValidatorParams } from '@/components/providers/Validator/types';
 import { ValueValidator } from '@/components/providers/Validator/value-validators/value-validator.abstract';
 
 export interface IMaximumValueValidatorParams extends IBaseValueValidatorParams {
@@ -23,19 +20,4 @@ export class MaximumValueValidator extends ValueValidator<IMaximumValueValidator
 
     return this.params.message.replace('{maximum}', this.params.maximum.toString());
   }
-
-  static isMaximumParams = (params: unknown): params is TMaximumValidationParams => {
-    if (typeof params === 'number') return true;
-
-    //@ts-ignore
-    if (
-      Array.isArray(params) &&
-      typeof params?.[0] === 'number' &&
-      typeof params?.[1] === 'string'
-    ) {
-      return true;
-    }
-
-    return false;
-  };
 }
