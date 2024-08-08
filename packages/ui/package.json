@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/ui",
   "private": false,
-  "version": "0.5.14",
+  "version": "0.5.15",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,7 +26,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@ballerine/common": "^0.9.21",
+    "@ballerine/common": "^0.9.22",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.14.2",
@@ -65,8 +65,8 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.1.10",
-    "@ballerine/eslint-config-react": "^2.0.10",
+    "@ballerine/config": "^1.1.11",
+    "@ballerine/eslint-config-react": "^2.0.11",
     "@cspell/cspell-types": "^6.31.1",
     "@storybook/addon-essentials": "^7.0.26",
     "@storybook/addon-interactions": "^7.0.26",

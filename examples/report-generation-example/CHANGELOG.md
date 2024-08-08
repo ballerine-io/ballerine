@@ -1,5 +1,13 @@
 # @ballerine/report-generation-example
 
+## 0.2.10
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/react-pdf-toolkit@1.2.15
+
 ## 0.2.9
 
 ### Patch Changes
