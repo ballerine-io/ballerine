@@ -1,8 +1,9 @@
+import { testRule } from '@/components/organisms/DynamicUI/rule-engines/utils/execute-rules';
 import { UIElement } from '@/components/providers/Validator/hooks/useValidate/ui-element';
 import { IValidationError } from '@/components/providers/Validator/hooks/useValidate/useValidate';
 import { IBaseValueValidatorParams, UIElementV2 } from '@/components/providers/Validator/types';
 import { ValueValidatorManager } from '@/components/providers/Validator/value-validator-manager';
-import jsonLogic from 'json-logic-js';
+import { AnyObject } from '@ballerine/ui';
 
 export const validate = (elements: UIElementV2[], context: object) => {
   const validatorManager = new ValueValidatorManager();
@@ -16,12 +17,13 @@ export const validate = (elements: UIElementV2[], context: object) => {
 
     const isShouldApplyValidation = <TParams extends IBaseValueValidatorParams>(
       params: TParams,
+      context: AnyObject,
     ) => {
-      const applyRule = params.applyRule;
+      const applyRules = params.applyWhen && params.applyWhen ? params.applyWhen : null;
 
-      if (!applyRule) return true;
+      if (!applyRules) return true;
 
-      return Boolean(jsonLogic.apply(applyRule, context));
+      return applyRules.length && applyRules.every(rule => testRule(context, rule));
     };
 
     const validationErrors = element.getValidatorsParams().map(({ validator, params }) => {
@@ -32,7 +34,8 @@ export const validate = (elements: UIElementV2[], context: object) => {
 
           validatorManager.validate(value, validator as any, params);
         } else {
-          if (!isShouldApplyValidation(params as unknown as IBaseValueValidatorParams)) return;
+          if (!isShouldApplyValidation(params as unknown as IBaseValueValidatorParams, context))
+            return;
 
           validatorManager.validate(value, validator as any, params);
         }
