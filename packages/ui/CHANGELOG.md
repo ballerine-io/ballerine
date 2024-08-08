@@ -1,5 +1,13 @@
 # @ballerine/ui
 
+## 0.5.13
+
+### Patch Changes
+
+- Moved components from the backoffice to common and ui
+- Updated dependencies
+  - @ballerine/common@0.9.20
+
 ## 0.5.12
 
 ### Patch Changes

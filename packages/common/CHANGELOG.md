@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.20
+
+### Patch Changes
+
+- Moved components from the backoffice to common and ui
+
 ## 0.9.19
 
 ### Patch Changes

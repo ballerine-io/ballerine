@@ -174,6 +174,7 @@ export const useReportTabs = ({
       companyReputationAnalysis,
       ecosystemAndTransactionsAnalysis,
       ecosystemAndTransactionsMatches,
+      formattedMcc,
       homepageScreenshotUrl,
       lineOfBusinessDescription,
       onlineReputationAnalysis,
