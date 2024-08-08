@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- fixed social is verified
+- fix boolean fields
 
 ## 0.5.17
 
