@@ -190,6 +190,7 @@ const main = async () => {
     }, 2000);
   } catch (error: unknown) {
     logger.error('Error during running migration', { error });
+    console.error(error);
 
     if (error instanceof Error || typeof error === 'string') {
       sentryService.captureException(error);
