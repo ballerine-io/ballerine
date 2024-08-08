@@ -55,16 +55,36 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: pnpm install
-      
-      - name: Update Packages
-        shell: bash
-        run: pnpm update-packages
-      
-      - name: Create Release Pull Request
-        uses: changesets/action@v1
-        with:
-          commit: 'chore: release package(s)'
-          publish: pnpm release
+
+      - name: Create and publish changeset
+        id: changeset
+        run: npx changeset version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit and push changes
+        if: steps.changeset.outputs.has_changeset == 'true'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "chore(release): update versions"
+          git push
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Publish package
+        run: npx changeset publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      # - name: Create Release Pull Request
+      #   uses: changesets/action@v1
+      #   with:
+      #     commit: 'chore: release package(s)'
+      #     publish: pnpm release
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          # NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
