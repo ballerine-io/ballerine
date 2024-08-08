@@ -84,6 +84,7 @@
     "prettier": "^2.8.7"
   },
   "dependencies": {
+    "@nx/js": "^19.5.7",
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
     "wait-on": "^7.0.1"

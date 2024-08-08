@@ -33,5 +33,16 @@
       "dependsOn": [{ "projects": "self", "target": "build" }]
     }
   },
-  "defaultBase": "main"
+  "defaultBase": "main",
+  "release": {
+    "projects": ["packages/*", "apps/*", "examples/*"],
+    "version": {
+      "conventionalCommits": true
+    },
+    "changelog": {
+      "workspaceChangelog": {
+        "createRelease": "github"
+      }
+    }
+  }
 }
