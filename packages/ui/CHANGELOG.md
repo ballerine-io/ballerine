@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.18
+
+### Patch Changes
+
+- fixed social is verified
+
 ## 0.5.17
 
 ### Patch Changes

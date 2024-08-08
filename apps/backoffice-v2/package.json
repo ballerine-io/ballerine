@@ -53,7 +53,7 @@
     "@ballerine/blocks": "0.2.12",
     "@ballerine/common": "0.9.22",
     "@ballerine/react-pdf-toolkit": "^1.2.15",
-    "@ballerine/ui": "^0.5.15",
+    "@ballerine/ui": "^0.5.17",
     "@ballerine/workflow-browser-sdk": "0.6.33",
     "@ballerine/workflow-node-sdk": "0.6.33",
     "@fontsource/inter": "^4.5.15",
