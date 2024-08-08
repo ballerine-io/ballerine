@@ -1,5 +1,14 @@
 # @ballerine/workflows-service
 
+## 0.7.31
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.21
+  - @ballerine/workflow-core@0.6.32
+  - @ballerine/workflow-node-sdk@0.6.32
+
 ## 0.7.30
 
 ### Patch Changes
