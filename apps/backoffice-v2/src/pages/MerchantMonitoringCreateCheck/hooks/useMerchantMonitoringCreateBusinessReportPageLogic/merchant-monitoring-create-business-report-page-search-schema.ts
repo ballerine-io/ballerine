@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ParsedBooleanSchema } from '@/lib/zod/utils/checkers';
+import { ParsedBooleanSchema } from '@ballerine/ui';
 
 export const MerchantMonitoringCreateBusinessReportPageSearchSchema = z.object({
   changeChecksConfiguration: ParsedBooleanSchema.optional(),

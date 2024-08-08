@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
 import { CardHeader, CardTitle } from '@/components';
-import { ctw } from '@/utils';
+import { ctw } from '@/common';
 import { AccordionTitle } from '@/components/molecules/AccordionCard/types';
 
 export const AccordionCardTitle: FunctionComponent<AccordionTitle> = ({
@@ -20,4 +20,5 @@ export const AccordionCardTitle: FunctionComponent<AccordionTitle> = ({
     </CardHeader>
   );
 };
+
 AccordionCardTitle.displayName = 'Accordion.Title';

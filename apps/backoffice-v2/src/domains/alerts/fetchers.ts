@@ -4,9 +4,9 @@ import { Method } from '@/common/enums';
 import { z } from 'zod';
 import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
-import { TObjectValues } from '@/common/types';
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
 import { env } from '@/common/env/env';
+import { ObjectValues } from '@ballerine/common';
 
 export const AlertSeverity = {
   CRITICAL: 'critical',
@@ -20,7 +20,7 @@ export const AlertSeverities = [
   AlertSeverity.HIGH,
   AlertSeverity.MEDIUM,
   AlertSeverity.LOW,
-] as const satisfies ReadonlyArray<TObjectValues<typeof AlertSeverity>>;
+] as const satisfies ReadonlyArray<ObjectValues<typeof AlertSeverity>>;
 
 export const AlertStatus = {
   NEW: 'new',
@@ -32,7 +32,7 @@ export const AlertStatuses = [
   AlertStatus.NEW,
   AlertStatus.PENDING,
   AlertStatus.COMPLETED,
-] as const satisfies ReadonlyArray<TObjectValues<typeof AlertStatus>>;
+] as const satisfies ReadonlyArray<ObjectValues<typeof AlertStatus>>;
 
 export const AlertState = {
   TRIGGERED: 'triggered',
@@ -50,7 +50,7 @@ export const AlertStates = [
   AlertState.REJECTED,
   AlertState.DISMISSED,
   AlertState.CLEARED,
-] as const satisfies ReadonlyArray<TObjectValues<typeof AlertState>>;
+] as const satisfies ReadonlyArray<ObjectValues<typeof AlertState>>;
 
 export const alertStateToDecision = {
   REJECTED: 'reject',

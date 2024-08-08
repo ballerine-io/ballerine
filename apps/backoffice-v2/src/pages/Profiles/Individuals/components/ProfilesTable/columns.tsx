@@ -1,17 +1,16 @@
 import { createColumnHelper } from '@tanstack/react-table';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import dayjs from 'dayjs';
 import React from 'react';
 import { titleCase } from 'string-ts';
-import { TObjectValues } from '@/common/types';
 import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provider';
 import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
 import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
-import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
-import { CheckCircle } from '@/common/components/atoms/CheckCircle/CheckCircle';
 import { XCircle } from '@/common/components/atoms/XCircle/XCircle';
 import { TIndividualProfile } from '@/domains/profiles/fetchers';
+import { ObjectValues } from '@ballerine/common';
+import { CheckCircle, TextWithNAFallback } from '@ballerine/ui';
+import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
 
 export const Role = {
   UBO: 'ubo',
@@ -25,7 +24,7 @@ export const Roles = [
   Role.DIRECTOR,
   Role.REPRESENTATIVE,
   Role.AUTHORIZED_SIGNATORY,
-] as const satisfies ReadonlyArray<TObjectValues<typeof Role>>;
+] as const satisfies ReadonlyArray<ObjectValues<typeof Role>>;
 
 export const KYC = {
   PENDING: 'PENDING',
@@ -41,7 +40,7 @@ export const KYCs = [
   KYC.APPROVED,
   KYC.REJECTED,
   KYC.REVISIONS,
-] as const satisfies ReadonlyArray<TObjectValues<typeof KYC>>;
+] as const satisfies ReadonlyArray<ObjectValues<typeof KYC>>;
 
 export const Sanction = {
   MONITORED: 'MONITORED',
@@ -51,7 +50,7 @@ export const Sanction = {
 export const Sanctions = [
   Sanction.MONITORED,
   Sanction.NOT_MONITORED,
-] as const satisfies ReadonlyArray<TObjectValues<typeof Sanction>>;
+] as const satisfies ReadonlyArray<ObjectValues<typeof Sanction>>;
 
 const roleNameToDisplayName = {
   [Role.UBO]: 'UBO',

@@ -3,10 +3,9 @@ import dayjs from 'dayjs';
 import { titleCase } from 'string-ts';
 import { FileJson2 } from 'lucide-react';
 
-import { JsonDialog } from '@ballerine/ui';
+import { JsonDialog, TextWithNAFallback } from '@ballerine/ui';
 import { TTransactionsList } from '@/domains/transactions/fetchers';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
 
 interface IExpandedTransactionDetailsProps {

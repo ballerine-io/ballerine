@@ -1,5 +1,5 @@
 import React from 'react';
-import { ctw } from '@/utils/ctw';
+import { ctw } from '@/common/utils/ctw';
 
 export const TableRow = React.forwardRef<
   HTMLTableRowElement,
@@ -14,4 +14,5 @@ export const TableRow = React.forwardRef<
     {...props}
   />
 ));
+
 TableRow.displayName = 'TableRow';

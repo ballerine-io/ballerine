@@ -10,20 +10,20 @@ import {
 import { Dialog } from '@/common/components/molecules/Dialog/Dialog';
 import { MotionBadge } from '@/common/components/molecules/MotionBadge/MotionBadge';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
-import { ExtendedJson, GenericAsyncFunction, GenericFunction } from '@/common/types';
+import { ExtendedJson, GenericAsyncFunction } from '@/common/types';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { ICallToActionLegacyProps } from '@/lib/blocks/components/CallToActionLegacy/interfaces';
 import { ICallToActionDocumentSelection } from '@/lib/blocks/components/DirectorsCallToAction/interfaces';
 import { IEditableDetailsDocument } from '@/lib/blocks/components/EditableDetails/interfaces';
 import { TPDFViewerCell } from '@/lib/blocks/components/PDFViewerCell/interfaces';
 import { Block } from '@ballerine/blocks';
-import { CommonWorkflowStates } from '@ballerine/common';
+import { CommonWorkflowStates, GenericFunction } from '@ballerine/common';
 import { AnyChildren, AnyObject } from '@ballerine/ui';
 import { ColumnDef, TableOptions } from '@tanstack/react-table';
 import { ComponentProps, ReactNode } from 'react';
-import { DataTable } from '@/common/components/organisms/DataTable/DataTable';
 
 import { ReadOnlyDetail } from '@/common/components/atoms/ReadOnlyDetail/ReadOnlyDetail';
+import { DataTable } from '@ballerine/ui/dist/components/organisms/DataTable/DataTable';
 
 export type TBlockCell = {
   type: 'block';

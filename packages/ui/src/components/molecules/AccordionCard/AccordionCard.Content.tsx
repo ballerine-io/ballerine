@@ -3,7 +3,7 @@ import { FunctionComponent } from 'react';
 import { CardContent } from '@/components';
 
 import { AccordionCardContentProps } from '@/components/molecules/AccordionCard/types';
-import { ctw } from '@/utils';
+import { ctw } from '@/common';
 import { useAccordionCardContext } from '@/components/molecules/AccordionCard/context/AccordionCardProvider/hooks/useAccordionCardContext/useAccordionCardContext';
 
 export const AccordionCardContent: FunctionComponent<AccordionCardContentProps> = ({
@@ -22,4 +22,5 @@ export const AccordionCardContent: FunctionComponent<AccordionCardContentProps> 
     </CardContent>
   );
 };
+
 AccordionCardContent.displayName = 'AccordionCard.Content';

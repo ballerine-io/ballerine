@@ -1,3 +1,5 @@
+import { ObjectValues } from '@/types';
+
 export const StateTag = {
   APPROVED: 'approved',
   REJECTED: 'rejected',
@@ -115,3 +117,21 @@ export const WorkflowDefinitionConfigThemes = [
 >;
 
 export type TWorkflowDefinitionConfigTheme = (typeof WorkflowDefinitionConfigThemes)[number];
+
+export const Severity = {
+  CRITICAL: 'critical',
+  HIGH: 'high',
+  MEDIUM: 'medium',
+  LOW: 'low',
+} as const;
+
+export const Severities = [
+  Severity.CRITICAL,
+  Severity.HIGH,
+  Severity.MEDIUM,
+  Severity.LOW,
+] as const satisfies ReadonlyArray<ObjectValues<typeof Severity>>;
+
+export type SeverityType = (typeof Severities)[number];
+
+export type SeveritiesType = typeof Severities;

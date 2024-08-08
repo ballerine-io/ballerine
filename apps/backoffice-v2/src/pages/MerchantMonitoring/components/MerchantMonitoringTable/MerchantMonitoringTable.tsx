@@ -1,8 +1,8 @@
 import React, { FunctionComponent } from 'react';
 import { TBusinessReports } from '@/domains/business-reports/fetchers';
-import { DataTable } from '@/common/components/organisms/DataTable/DataTable';
 import { columns } from '@/pages/MerchantMonitoring/components/MerchantMonitoringTable/columns';
 import { useMerchantMonitoringTableLogic } from '@/pages/MerchantMonitoring/components/MerchantMonitoringTable/hooks/useMerchantMonitoringTableLogic/useMerchantMonitoringTableLogic';
+import { UrlDataTable } from '@/common/components/organisms/UrlDataTable/UrlDataTable';
 
 export const MerchantMonitoringTable: FunctionComponent<{
   data: TBusinessReports['businessReports'];
@@ -10,13 +10,15 @@ export const MerchantMonitoringTable: FunctionComponent<{
   const { Cell } = useMerchantMonitoringTableLogic();
 
   return (
-    <DataTable
+    <UrlDataTable
       data={data}
       columns={columns}
       CellContentWrapper={Cell}
-      sortByField={`createdAt`}
       options={{
         enableSorting: true,
+        initialState: {
+          sorting: [{ id: 'createdAt', desc: true }],
+        },
       }}
       props={{ scroll: { className: 'h-full' }, cell: { className: '!p-0' } }}
     />

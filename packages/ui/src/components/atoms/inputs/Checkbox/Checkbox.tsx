@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Root, Indicator } from '@radix-ui/react-checkbox';
 import { Check } from 'lucide-react';
-import { ctw } from '@/utils/ctw';
+import { ctw } from '@/common/utils/ctw';
 
 export const Checkbox = React.forwardRef<
   React.ElementRef<typeof Root>,

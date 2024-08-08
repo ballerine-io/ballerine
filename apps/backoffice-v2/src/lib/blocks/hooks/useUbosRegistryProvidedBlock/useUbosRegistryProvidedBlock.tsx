@@ -1,6 +1,6 @@
-import { WarningFilledSvg } from '@/common/components/atoms/icons';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { useCallback, useMemo } from 'react';
+import { WarningFilledSvg } from '@ballerine/ui';
 
 export type Ubo = {
   name?: string;

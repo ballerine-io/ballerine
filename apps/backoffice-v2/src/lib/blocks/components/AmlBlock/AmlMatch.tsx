@@ -1,8 +1,8 @@
 import { THit } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import React, { useMemo } from 'react';
 import { buttonVariants } from '@/common/components/atoms/Button/Button';
 import dayjs from 'dayjs';
+import { TextWithNAFallback } from '@ballerine/ui';
 
 interface IAmlMatchProps {
   match: {

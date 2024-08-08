@@ -1,12 +1,7 @@
-import { isNullish, isObject } from '@ballerine/common';
-import { JsonDialog } from '@ballerine/ui';
+import { checkIsIsoDate, checkIsUrl, isNullish, isObject } from '@ballerine/common';
+import { BallerineLink, checkIsDate, JsonDialog, TextWithNAFallback } from '@ballerine/ui';
 import { isValidDatetime } from '@/common/utils/is-valid-datetime';
-import { isValidDate } from '@/common/utils/is-valid-date';
-import { isValidIsoDate } from '@/common/utils/is-valid-iso-date/is-valid-iso-date';
 import { Checkbox_ } from '@/common/components/atoms/Checkbox_/Checkbox_';
-import { checkIsUrl } from '@/common/utils/check-is-url/check-is-url';
-import { BallerineLink } from '@/common/components/atoms/BallerineLink/BallerineLink';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import { FunctionComponent } from 'react';
 import dayjs from 'dayjs';
 import { FileJson2 } from 'lucide-react';
@@ -48,8 +43,8 @@ export const ReadOnlyDetail: FunctionComponent<{
   }
 
   if (
-    (parse?.date && isValidDate(children, { isStrict: false })) ||
-    (parse?.isoDate && isValidIsoDate(children))
+    (parse?.date && checkIsDate(children, { isStrict: false })) ||
+    (parse?.isoDate && checkIsIsoDate(children))
   ) {
     return <p className={className}>{dayjs(children).format('DD/MM/YYYY')}</p>;
   }

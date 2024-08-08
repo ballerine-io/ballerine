@@ -1,10 +1,6 @@
 import { FunctionComponent } from 'react';
-import {
-  IconContainer,
-  IIconContainerProps,
-} from '@/common/components/atoms/IconContainer/IconContainer';
 import { Circle, LucideProps } from 'lucide-react';
-import { ctw } from '@ballerine/ui';
+import { ctw, IconContainer, IIconContainerProps } from '@ballerine/ui';
 
 export interface IIndicatorCircle extends Omit<LucideProps, 'size'> {
   containerProps?: Omit<IIconContainerProps, 'children'>;

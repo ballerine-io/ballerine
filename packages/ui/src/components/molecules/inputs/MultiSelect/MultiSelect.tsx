@@ -2,7 +2,7 @@ import { Popover, PopoverContent, PopoverTrigger, ScrollArea } from '@/component
 import { Command, CommandGroup, CommandInput, CommandItem } from '@/components/atoms/Command';
 import { UnselectButtonProps } from '@/components/molecules/inputs/MultiSelect/components/Chip/UnselectButton';
 import { SelectedElementParams } from '@/components/molecules/inputs/MultiSelect/types';
-import { ctw } from '@/utils/ctw';
+import { ctw } from '@/common/utils/ctw';
 import { ClickAwayListener } from '@mui/material';
 import keyBy from 'lodash/keyBy';
 import { FocusEvent, useCallback, useMemo, useRef, useState } from 'react';
@@ -84,6 +84,7 @@ export const MultiSelect = ({
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
       const input = inputRef.current;
+
       if (input) {
         if (e.key === 'Delete' || e.key === 'Backspace') {
           if (input.value === '') {
@@ -96,6 +97,7 @@ export const MultiSelect = ({
             );
           }
         }
+
         // This is not a default behaviour of the <input /> field
         if (e.key === 'Escape') {
           input.blur();

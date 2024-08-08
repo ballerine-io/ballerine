@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/react-pdf-toolkit",
   "private": false,
-  "version": "1.2.12",
+  "version": "1.2.13",
   "types": "./dist/build.d.ts",
   "main": "./dist/react-pdf-toolkit.js",
   "module": "./dist/react-pdf-toolkit.mjs",
@@ -27,16 +27,14 @@
   },
   "dependencies": {
     "@ballerine/config": "^1.1.10",
-    "@ballerine/ui": "0.5.12",
+    "@ballerine/ui": "0.5.13",
     "@react-pdf/renderer": "^3.1.14",
     "@sinclair/typebox": "^0.31.7",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
     "class-variance-authority": "^0.7.0",
     "dayjs": "^1.11.6",
-    "string-ts": "^1.2.0",
-    "tailwindcss": "^3.4.0",
-    "vite-plugin-dts": "^1.6.6"
+    "string-ts": "^1.2.0"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^7.0.26",
@@ -59,8 +57,10 @@
     "react-dom": "^18.2.0",
     "react-pdf-tailwind": "^2.2.1",
     "storybook": "^7.0.26",
+    "tailwindcss": "^3.4.0",
     "typescript": "^5.2.2",
-    "vite": "^4.5.3"
+    "vite": "^4.5.3",
+    "vite-plugin-dts": "^4.0.1"
   },
   "peerDependencies": {
     "react": "^18.2.0",
