@@ -43,6 +43,7 @@ export const useReportTabs = ({
     adsImages,
     relatedAdsImages,
     homepageScreenshotUrl,
+    formattedMcc,
   } = adapter(report ?? {});
   const riskIndicators = [
     {
@@ -119,6 +120,7 @@ export const useReportTabs = ({
             <WebsiteLineOfBusiness
               violations={websiteLineOfBusinessAnalysis ?? []}
               description={lineOfBusinessDescription}
+              formattedMcc={formattedMcc}
             />
           ),
         },

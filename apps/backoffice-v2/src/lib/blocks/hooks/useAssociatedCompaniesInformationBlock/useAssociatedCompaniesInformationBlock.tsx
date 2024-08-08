@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { valueOrNA } from '../../../../../../../packages/common/src/utils/value-or-na/value-or-na';
+import { valueOrNA } from '@ballerine/common';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 
 export const useAssociatedCompaniesInformationBlock = (workflows: TWorkflowById[]) => {

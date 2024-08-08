@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { getSeverityFromRiskScore } from '../../../../../../../packages/common/src/utils/get-severity-from-risk-score/get-severity-from-risk-score';
+import { getSeverityFromRiskScore, Severity, SeverityType } from '@ballerine/common';
 import { Card } from '@/common/components/atoms/Card/Card';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
@@ -19,7 +19,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/common/components/atoms/Table';
-import { Severity, SeverityType } from '@ballerine/common';
 
 export const OverallRiskLevel: FunctionComponent<{
   riskScore: number;

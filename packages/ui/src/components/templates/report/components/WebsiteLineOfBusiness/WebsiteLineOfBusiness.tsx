@@ -9,7 +9,8 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
     severity: string;
   }>;
   description: string;
-}> = ({ violations, description }) => {
+  formattedMcc: string | null;
+}> = ({ violations, description, formattedMcc }) => {
   return (
     <div className={'space-y-8'}>
       <h3 className={'col-span-full text-lg font-bold'}>Website Line of Business Analysis</h3>
@@ -27,6 +28,12 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
               {description || 'Not provided'}
             </p>
           </div>
+          {formattedMcc && (
+            <div className={'flex flex-col'}>
+              <h4 className={'mb-4 font-semibold'}>MCC Classification</h4>
+              <p>{formattedMcc}</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

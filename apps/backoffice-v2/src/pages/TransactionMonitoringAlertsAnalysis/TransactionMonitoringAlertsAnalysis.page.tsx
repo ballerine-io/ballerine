@@ -1,8 +1,8 @@
 import { AlertAnalysisSheet } from '@/pages/TransactionMonitoringAlertsAnalysis/components/AlertAnalysisSheet';
 import { useTransactionMonitoringAlertsAnalysisPageLogic } from '@/pages/TransactionMonitoringAlertsAnalysis/hooks/useTransactionMonitoringAlertsAnalysisPageLogic/useTransactionMonitoringAlertsAnalysisPageLogic';
 import { capitalize, titleCase } from 'string-ts';
-import { Skeleton } from '../../../../../packages/ui/src/components/atoms/Skeleton/Skeleton';
-import { valueOrNA } from '../../../../../packages/common/src/utils/value-or-na/value-or-na';
+import { Skeleton } from '@ballerine/ui';
+import { valueOrNA } from '@ballerine/common';
 import { ctw } from '@/common/utils/ctw/ctw';
 
 export const TransactionMonitoringAlertsAnalysisPage = () => {

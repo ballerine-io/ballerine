@@ -161,7 +161,7 @@ export const reportAdapter = {
         items: string[];
       }>,
       homepageScreenshotUrl: report?.homepageScreenshot,
-      formattedMcc: report?.data?.lineOfBusiness?.formattedMcc,
+      formattedMcc: report?.lineOfBusiness?.formattedMcc,
     };
   },
   v1: (report: Record<string, any>) => {
@@ -289,7 +289,7 @@ export const reportAdapter = {
         items: string[];
       }>,
       homepageScreenshotUrl: null,
-      formattedMcc: report?.data?.lineOfBusiness?.formattedMcc,
+      formattedMcc: report?.lineOfBusiness?.formattedMcc,
     };
   },
 } as const;

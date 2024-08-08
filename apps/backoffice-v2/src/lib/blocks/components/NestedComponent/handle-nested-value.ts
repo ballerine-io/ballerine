@@ -1,7 +1,5 @@
-import { checkIsDate } from '../../../../../../../packages/ui/src/common/utils/check-is-date';
-import { formatDate } from '../../../../../../../packages/ui/src/common/utils/format-date';
-import { isNullish } from '@ballerine/common';
-import { checkIsIsoDate } from '../../../../../../../packages/common/src/utils/check-is-iso-date/check-is-iso-date';
+import { checkIsDate, formatDate } from '@ballerine/ui';
+import { checkIsIsoDate, isNullish } from '@ballerine/common';
 import dayjs from 'dayjs';
 
 export const handleNestedValue = ({

@@ -1,7 +1,7 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { valueOrNA } from '../../../../../../../packages/common/src/utils/value-or-na/value-or-na';
+import { valueOrNA } from '@ballerine/common';
 import { toTitleCase } from 'string-ts';
 
 export const useAddressBlock = ({

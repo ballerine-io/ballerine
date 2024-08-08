@@ -7,10 +7,31 @@ import { titleCase } from 'string-ts';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { getSeverityFromRiskScore } from '@ballerine/common';
 import { Badge, severityToClassName, TextWithNAFallback } from '@ballerine/ui';
+import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
+import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
 
 const columnHelper = createColumnHelper<TBusinessReport>();
 
 export const columns = [
+  columnHelper.accessor('id', {
+    cell: info => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- ESLint doesn't like `cell` not being `Cell`.
+      const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
+
+      const id = info.getValue();
+
+      return (
+        <div className={`ml-[10px] flex w-full max-w-[12ch] items-center space-x-2`}>
+          <TextWithNAFallback style={{ ...styles, width: '70%' }} ref={ref}>
+            {id}
+          </TextWithNAFallback>
+
+          <CopyToClipboardButton textToCopy={id ?? ''} />
+        </div>
+      );
+    },
+    header: 'Report ID',
+  }),
   columnHelper.accessor('createdAt', {
     cell: info => {
       const createdAt = info.getValue();
@@ -82,7 +103,7 @@ export const columns = [
 
       return (
         <div className="flex items-center gap-2">
-          {!riskScore && <TextWithNAFallback />}
+          {!riskScore && riskScore !== 0 && <TextWithNAFallback className={'py-0.5'} />}
           {(riskScore || riskScore === 0) && (
             <Badge
               className={ctw(

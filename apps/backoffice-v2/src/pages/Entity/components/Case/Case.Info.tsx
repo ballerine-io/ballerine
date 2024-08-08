@@ -10,8 +10,7 @@ import { State } from '../../../../common/enums';
 import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 import { createArrayOfNumbers } from '../../../../common/utils/create-array-of-numbers/create-array-of-numbers';
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import { formatDate } from '../../../../../../../packages/ui/src/common/utils/format-date';
-import { checkIsDate } from '../../../../../../../packages/ui/src/common/utils/check-is-date';
+import { checkIsDate, formatDate } from '@ballerine/ui';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 
 export const useInfo = ({

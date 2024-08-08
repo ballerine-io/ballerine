@@ -1,10 +1,9 @@
 import React, { ComponentProps } from 'react';
 import { CalendarIcon } from '@radix-ui/react-icons';
-import { formatDate } from '../../../../../../../packages/ui/src/common/utils/format-date';
+import { formatDate, Popover, PopoverContent, PopoverTrigger } from '@ballerine/ui';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { Button } from '../../atoms/Button/Button';
 import { Calendar } from '../../organisms/Calendar/Calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@ballerine/ui';
 
 type TDateRangePickerProps = {
   onChange: NonNullable<ComponentProps<typeof Calendar>['onSelect']>;
