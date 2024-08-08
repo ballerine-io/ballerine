@@ -188,13 +188,12 @@ model WorkflowDefinition {
   persistStates Json?
   submitStates  Json?
 
-  createdAt                        DateTime                           @default(now())
-  updatedAt                        DateTime                           @updatedAt
-  createdBy                        String                             @default("SYSTEM")
-  project                          Project?                           @relation(fields: [projectId], references: [id])
-  workflowRuntimeData              WorkflowRuntimeData[]
-  uiDefinitions                    UiDefinition[]
-  workflowDefinitionRiskRulePolicy WorkflowDefinitionRiskRulePolicy[]
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  createdBy           String                @default("SYSTEM")
+  project             Project?              @relation(fields: [projectId], references: [id])
+  workflowRuntimeData WorkflowRuntimeData[]
+  uiDefinitions       UiDefinition[]
 
   @@unique([name, version, projectId, definitionType])
   @@index([projectId, name, definitionType])
@@ -907,36 +906,20 @@ model BusinessReport {
   @@index([type])
 }
 
-model WorkflowDefinitionRiskRulePolicy {
-  id                   String             @id @default(cuid())
-  workflowDefinitionId String
-  riskRulesPolicyId    String
-  riskRulesPolicy      RiskRulesPolicy    @relation(fields: [riskRulesPolicyId], references: [id])
-  workflowDefinition   WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([workflowDefinitionId, riskRulesPolicyId])
-  @@index([workflowDefinitionId])
-  @@index([riskRulesPolicyId])
-}
-
-model RiskRuleSetRule {
-  id            String @id @default(cuid())
-  riskRuleSetId String
-  ruleId        String
-
-  riskRulesPolicy RiskRuleSet @relation(fields: [riskRuleSetId], references: [id])
-  rule            Rule        @relation(fields: [ruleId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([riskRuleSetId, ruleId])
-  @@index([riskRuleSetId])
-  @@index([ruleId])
-}
+// model WorkflowDefinitionRiskRulePolicy {
+//   id                   String             @id @default(cuid())
+//   workflowDefinitionId String
+//   riskRulesPolicyId    String
+//   riskRulesPolicy      RiskRulesPolicy    @relation(fields: [riskRulesPolicyId], references: [id])
+//   workflowDefinition   WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
+//
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//
+//   @@unique([workflowDefinitionId, riskRulesPolicyId])
+//   @@index([workflowDefinitionId])
+//   @@index([riskRulesPolicyId])
+// }
 
 model RiskRulesPolicy {
   id        String  @id @default(cuid())
@@ -944,9 +927,8 @@ model RiskRulesPolicy {
   projectId String
   isPublic  Boolean @default(false)
 
-  riskRuleSets                       RiskRuleSet[]
-  workflowDefinitionRiskRulePolicies WorkflowDefinitionRiskRulePolicy[]
-  project                            Project                            @relation(fields: [projectId], references: [id])
+  riskRule RiskRule[]
+  project  Project    @relation(fields: [projectId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -954,7 +936,7 @@ model RiskRulesPolicy {
   @@index([projectId])
 }
 
-model RiskRuleSet {
+model RiskRule {
   id               String          @id @default(cuid())
   name             String
   riskRulePolicyId String
@@ -971,16 +953,80 @@ model RiskRuleSet {
   minRiskScore        Int?
   maxRiskScore        Int?
 
-  riskRulePolicy  RiskRulesPolicy   @relation(fields: [riskRulePolicyId], references: [id])
-  riskRuleSetRule RiskRuleSetRule[]
-  rules           Rule[]            @relation("riskRuleSetRules")
+  riskRulePolicy   RiskRulesPolicy   @relation(fields: [riskRulePolicyId], references: [id])
+  riskRuleRuleSets RiskRuleRuleSet[]
+  ruleSets         RuleSet[]         @relation("RiskRuleSetToRuleSet")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  ruleId    String?
 
   @@unique([id, riskRulePolicyId])
   @@index([riskRulePolicyId])
+}
+
+model RiskRuleRuleSet {
+  id         String @id @default(cuid())
+  riskRuleId String
+  ruleSetId  String
+
+  riskRule RiskRule @relation(fields: riskRuleId, references: [id])
+  ruleSet  RuleSet  @relation(fields: [ruleSetId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([riskRuleId, ruleSetId])
+  @@index([riskRuleId])
+  @@index([ruleSetId])
+}
+
+model RuleSet {
+  id        String          @id @default(cuid())
+  name      String
+  projectId String?
+  isPublic  Boolean         @default(false)
+  operator  RulesetOperator
+
+  rulesetRules     RuleSetRule[]
+  riskRuleRuleSets RiskRuleRuleSet[]
+  riskRuleSets     RiskRule[]        @relation("RiskRuleSetToRuleSet")
+
+  parentRuleSets RuleSetToRuleSet[] @relation("ParentRuleSets")
+  childRuleSets  RuleSetToRuleSet[] @relation("ChildRuleSets")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RuleSetToRuleSet {
+  id        String   @id @default(cuid())
+  parentId  String
+  childId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parent RuleSet @relation("ParentRuleSets", fields: [parentId], references: [id])
+  child  RuleSet @relation("ChildRuleSets", fields: [childId], references: [id])
+
+  @@unique([parentId, childId])
+  @@index([parentId])
+  @@index([childId])
+}
+
+model RuleSetRule {
+  id        String @id @default(cuid())
+  ruleId    String
+  ruleSetId String
+
+  rule    Rule    @relation("RuleToRuleSetRule", fields: [ruleId], references: [id], onDelete: Cascade)
+  ruleSet RuleSet @relation(fields: [ruleSetId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([ruleId, ruleSetId])
+  @@index([ruleId])
+  @@index([ruleSetId])
 }
 
 model Rule {
@@ -994,9 +1040,8 @@ model Rule {
   comparisonValue Json
   engine          RuleEngine
 
-  project          Project?          @relation(fields: [projectId], references: [id])
-  riskRuleSetRules RiskRuleSetRule[]
-  riskRuleSets     RiskRuleSet[]     @relation("riskRuleSetRules")
+  project      Project?      @relation(fields: [projectId], references: [id])
+  rulesetRules RuleSetRule[] @relation("RuleToRuleSetRule")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

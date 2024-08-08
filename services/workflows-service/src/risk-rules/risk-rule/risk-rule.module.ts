@@ -10,4 +10,4 @@ import { ProjectModule } from '@/project/project.module';
   providers: [RiskRuleSetService, RiskRuleSetRepository],
   exports: [RiskRuleSetService],
 })
-export class RiskRuleSetModule {}
+export class RiskRuleModule {}

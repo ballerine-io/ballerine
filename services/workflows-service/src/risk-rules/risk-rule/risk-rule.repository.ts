@@ -17,18 +17,18 @@ export class RuleRepository {
       projectId,
       ruleSetId,
     }: {
-      createArgs: Omit<Prisma.RuleUncheckedCreateInput, 'projectId'>,
+      createArgs: Omit<Prisma.RiskRuleUncheckedCreateInput, 'projectId'>,
       projectId: string,
       ruleSetId?: string,
     }
   ) {
-    return this.prisma.rule.create({
+    return this.prisma.riskRule.create({
       data: {
         ...createArgs,
         projectId,
         isPublic: false,
         ...(ruleSetId ? {
-          rulesetRules: {
+          riskRuleRuleSets: {
             create: {
               ruleSetId: ruleSetId,
             }
@@ -39,14 +39,25 @@ export class RuleRepository {
   }
 
   async findMany(
-    args: Prisma.RuleFindManyArgs,
+    {
+      args,
+      policyId,
+    }: {
+      args: Prisma.RiskRuleFindManyArgs,
+      policyId?: string
+    },
     projectIds: TProjectIds,
   ) {
-    return this.prisma.rule.findMany(
+    return this.prisma.riskRule.findMany(
       this.scopeService.scopeFindManyOrPublic(
         {
           ...args,
-          where: { ...args.where },
+          where: {
+            ...args?.where,
+          ...(policyId ? {
+            policyId: policyId
+          } : {})
+          },
         },
         projectIds,
       ),
@@ -123,6 +134,7 @@ export class RuleRepository {
     });
   }
 
+
   async deleteById(id: string, projectIds: TProjectIds) {
     return this.prisma.rule.delete(
       this.scopeService.scopeDelete(
@@ -134,36 +146,5 @@ export class RuleRepository {
         projectIds,
       ),
     );
-  }
-
-  async findAssociatedRulesetsAndDefinitions(id: string, projectIds: TProjectIds) {
-    // TODO query result for each definition uses this policies
-    return this.prisma.rule.findFirst({
-      where: {
-        id,
-      },
-      include: {
-        rulesetRules: {
-          include: {
-            ruleSet: {
-              include: {
-                riskRuleRuleSets: {
-                  include: {
-                    riskRule: true
-                  },
-                }
-              }
-            },
-          },
-          where: {
-            ruleSet: {
-              projectId: {
-                in: projectIds,
-              },
-            },
-          },
-        }
-      },
-    });
   }
 }

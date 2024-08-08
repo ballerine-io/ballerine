@@ -10,7 +10,7 @@ import { CreateRuleSchema, type TCreateRule } from '@/risk-rules/rule/schemas/cr
 import { AssignRuleSchema, type TAssignRule } from '@/risk-rules/rule/schemas/assign-rule.schema';
 import {
   type TUnassignRule,
-  UnassignRuleSchema,
+  UnassignFromParentSchema,
 } from '@/risk-rules/rule/schemas/unassign-rule.schema';
 import { type TUpdateRule, UpdateRuleSchema } from '@/risk-rules/rule/schemas/update-rule.schema';
 import { Delete } from '@nestjs/common';
@@ -30,6 +30,7 @@ export class RuleController {
     ],
     response: Type.Composite([CreateRuleSchema, Type.Object({ id: Type.String() })]),
   })
+
   async createRule(
     @common.Body() data: TCreateRule,
     @ProjectIds() projectIds: TProjectIds,
@@ -38,7 +39,7 @@ export class RuleController {
     return (await this.ruleService.createNewRule({
       ruleData: data,
       projectId: currentProjectId,
-      riskRuleSetId: data.riskRuleSetId,
+      rulesetId: data.ruleSetId,
     })) as TCreateRule & { id: string };
   }
 
@@ -65,7 +66,7 @@ export class RuleController {
   ) {
     const rule = await this.ruleService.assignRuleToRuleset(
       ruleId,
-      assignRuleDate.riskRuleSetId,
+      assignRuleDate.ruleSetId,
       currentProjectId,
       projectIds,
     );
@@ -86,10 +87,10 @@ export class RuleController {
       },
       {
         type: 'body',
-        schema: UnassignRuleSchema,
+        schema: UnassignFromParentSchema,
       },
     ],
-    response: Type.Composite([UnassignRuleSchema, Type.Object({ ruleId: Type.String() })]),
+    response: Type.Composite([UnassignFromParentSchema, Type.Object({ ruleId: Type.String() })]),
   })
   async unassignRule(
     @common.Query() ruleId: string,
@@ -99,7 +100,7 @@ export class RuleController {
   ) {
     const rule = await this.ruleService.unassignRuleFromRuleset(
       ruleId,
-      unassignRule.riskRuleSetId,
+      unassignRule.ruleSetId,
       currentProjectId,
       projectIds,
     );
@@ -123,7 +124,7 @@ export class RuleController {
         schema: UpdateRuleSchema,
       },
     ],
-    response: UpdateRuleSchema,
+    response: Type.Any(),
   })
   async updateRule(
     @common.Query() ruleId: string,

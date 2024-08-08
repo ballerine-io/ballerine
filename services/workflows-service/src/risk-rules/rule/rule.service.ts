@@ -1,7 +1,7 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { RuleRepository } from './rule.repository';
-import { TProjectId, TProjectIds } from '@/types';
-import { Prisma } from '@prisma/client';
+import {BadRequestException, Injectable} from '@nestjs/common';
+import {RuleRepository} from './rule.repository';
+import {TProjectId, TProjectIds} from '@/types';
+import {Prisma} from '@prisma/client';
 
 @Injectable()
 export class RuleService {
@@ -11,17 +11,25 @@ export class RuleService {
     return await this.ruleRepository.findById(id, projectIds);
   }
 
-  async findManyByRuleset(riskRuleSetId: string, projectIds: TProjectIds) {
-    return await this.ruleRepository.findManyByRuleset(riskRuleSetId, projectIds);
+  async findManyByRuleset(rulesetId: string, projectIds: TProjectIds) {
+    return this.ruleRepository.findMany({
+      where: {
+        rulesetRules: {
+          some: {
+            ruleSetId: rulesetId,
+          },
+        }
+      }
+    }, projectIds);
   }
 
   async findMany(projectIds: TProjectIds, args?: Prisma.RuleFindManyArgs) {
-    return await this.ruleRepository.findMany(projectIds, args);
+    return await this.ruleRepository.findMany(args || {}, projectIds );
   }
 
   async assignRuleToRuleset(
     ruleId: string,
-    riskRuleSetId: string,
+    rulesetId: string,
     projectId: TProjectId,
     projectIds: TProjectIds,
   ) {
@@ -32,28 +40,26 @@ export class RuleService {
       ...resetRule
     } = await this.ruleRepository.findById(ruleId, projectIds);
 
-    if (projectId) {
-      return await this.ruleRepository.assignRuleToRuleset(id, riskRuleSetId);
+    if (ruleProjectId) {
+      return await this.ruleRepository.connectToRuleset(id, rulesetId);
     }
 
     return await this.ruleRepository.create(
       {
-        ...resetRule,
-        comparisonValue:
-          resetRule.comparisonValue as Prisma.RuleUncheckedCreateInput['comparisonValue'],
-        riskRuleSets: {
-          connect: {
-            id: riskRuleSetId,
-          },
+        createArgs: {
+          ...resetRule,
+          comparisonValue:
+            resetRule.comparisonValue as Prisma.RuleUncheckedCreateInput['comparisonValue'],
         },
+        projectId,
+        ruleSetId: rulesetId,
       },
-      projectId,
     );
   }
 
   async unassignRuleFromRuleset(
     ruleId: string,
-    riskRuleSetId: string,
+    rulesetId: string,
     projectId: TProjectId,
     projectIds: TProjectIds,
   ) {
@@ -63,32 +69,24 @@ export class RuleService {
       throw new BadRequestException('Cannot unassign rule from ruleset without project id');
     }
 
-    return await this.ruleRepository.unassignRuleFromRuleset(id, riskRuleSetId);
+    return await this.ruleRepository.disconnectFromRuleset(id, rulesetId);
   }
 
   async createNewRule({
     ruleData,
-    riskRuleSetId,
+    rulesetId,
     projectId,
   }: {
-    ruleData: Omit<Prisma.RuleUncheckedCreateInput, 'riskRuleSetId' | 'projectId' | 'isPublic'>;
-    riskRuleSetId?: string;
+    ruleData: Omit<Prisma.RuleUncheckedCreateInput, 'projectId' | 'isPublic'>;
+    rulesetId?: string;
     projectId: TProjectId;
   }) {
     const rule = await this.ruleRepository.create(
       {
-        ...ruleData,
-        ...(riskRuleSetId
-          ? {
-              riskRuleSets: {
-                connect: {
-                  id: riskRuleSetId,
-                },
-              },
-            }
-          : {}),
-      },
-      projectId,
+        createArgs: ruleData,
+        ruleSetId: rulesetId,
+        projectId,
+      }
     );
 
     return rule;

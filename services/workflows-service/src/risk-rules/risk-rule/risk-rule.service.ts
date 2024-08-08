@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { RiskRuleSetRepository } from './risk-rule-set.repository';
+import { RiskRuleRepository } from './risk-rule.repository';
 
 @Injectable()
-export class RiskRuleSetService {
-  constructor(private readonly riskRuleSetRepository: RiskRuleSetRepository) {}
+export class RiskRuleService {
+  constructor(private readonly riskRuleSetRepository: RiskRuleRepository) {}
 
   // async create(policyId: string, createRiskRuleSetData: Static<typeof CreateRiskRuleSchema>) {
   //   return this.riskRuleSetRepository.create(policyId, {
