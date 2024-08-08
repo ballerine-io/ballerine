@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.17
+
+### Patch Changes
+
+- fixed social data
+
 ## 0.5.16
 
 ### Patch Changes
