@@ -485,7 +485,7 @@ export class AlertService {
         inlineRule.options.lastDaysPeriod &&
         timeUnit
       ) {
-        timeAmount = inlineRule.options.lastDaysPeriod;
+        timeAmount = inlineRule.options.lastDaysPeriod.timeAmount;
       } else {
         return filters;
       }
