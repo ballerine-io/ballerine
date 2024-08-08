@@ -19,6 +19,7 @@ export const adsProviderAdapter = {
     biography: data?.biography,
     followers: data?.numberOfFollowers,
     isBusinessAccount: booleanToYesOrNo(data?.isBusinessAccount),
+    isVerified: data?.isVerified,
   }),
 } as const satisfies Record<
   Lowercase<TAdsProvider>,
