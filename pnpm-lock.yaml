@@ -20,6 +20,9 @@ importers:
       wait-on:
         specifier: ^7.0.1
         version: 7.2.0
+      yargs:
+        specifier: ^17.7.2
+        version: 17.7.2
     devDependencies:
       '@branchlint/cli':
         specifier: ^1.0.5
@@ -60,9 +63,6 @@ importers:
       prettier:
         specifier: ^2.8.7
         version: 2.8.8
-      yargs:
-        specifier: ^17.7.2
-        version: 17.7.2
 
   apps/backoffice-v2:
     dependencies:

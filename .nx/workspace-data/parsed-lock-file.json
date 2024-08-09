@@ -16497,18 +16497,9 @@
         "hash": "sha512-mg3OPMV4hXywwpoDxu3Qda5xCKQi+vCTZq8S9J/EpkhB2HzKXq4SNFZE3+NK93JYxc8VMSep+lOUSC/RVKaBqw=="
       }
     },
-    "npm:escalade@3.1.1": {
+    "npm:escalade": {
       "type": "npm",
-      "name": "npm:escalade@3.1.1",
-      "data": {
-        "version": "3.1.1",
-        "packageName": "escalade",
-        "hash": "sha512-k0er2gUkLf8O0zKJiAhmkTnJlTvINGv7ygDNPbeIsX/TJjGJZHuh9B2UxbsaEkmlEo9MfhrSzmhIlhRlI2GXnw=="
-      }
-    },
-    "npm:escalade@3.1.2": {
-      "type": "npm",
-      "name": "npm:escalade@3.1.2",
+      "name": "npm:escalade",
       "data": {
         "version": "3.1.2",
         "packageName": "escalade",
@@ -30384,9 +30375,9 @@
         "hash": "sha512-aePbxDmcYW++PaqBsJ+HYUFwCdv4LVvdnhBy78E57PIor8/OVvhMrADFFEDh8DHDFRv/O9i3lPhsENjO7QX0+A=="
       }
     },
-    "npm:yargs@17.7.2": {
+    "npm:yargs": {
       "type": "npm",
-      "name": "npm:yargs@17.7.2",
+      "name": "npm:yargs",
       "data": {
         "version": "17.7.2",
         "packageName": "yargs",
@@ -40261,7 +40252,7 @@
     },
     {
       "source": "npm:@branchlint/default-config",
-      "target": "npm:yargs@17.7.2",
+      "target": "npm:yargs",
       "type": "static"
     },
     {
@@ -40821,7 +40812,7 @@
     },
     {
       "source": "npm:@commitlint/cli",
-      "target": "npm:yargs@17.7.2",
+      "target": "npm:yargs",
       "type": "static"
     },
     {
@@ -67196,7 +67187,7 @@
     },
     {
       "source": "npm:concurrently",
-      "target": "npm:yargs@17.7.2",
+      "target": "npm:yargs",
       "type": "static"
     },
     {
@@ -75866,7 +75857,7 @@
     },
     {
       "source": "npm:jest-cli",
-      "target": "npm:yargs@17.7.2",
+      "target": "npm:yargs",
       "type": "static"
     },
     {
@@ -75921,7 +75912,7 @@
     },
     {
       "source": "npm:jest-cli",
-      "target": "npm:yargs@17.7.2",
+      "target": "npm:yargs",
       "type": "static"
     },
     {
@@ -75976,7 +75967,7 @@
     },
     {
       "source": "npm:jest-cli",
-      "target": "npm:yargs@17.7.2",
+      "target": "npm:yargs",
       "type": "static"
     },
     {
@@ -76031,7 +76022,7 @@
     },
     {
       "source": "npm:jest-cli",
-      "target": "npm:yargs@17.7.2",
+      "target": "npm:yargs",
       "type": "static"
     },
     {
@@ -80176,7 +80167,7 @@
     },
     {
       "source": "npm:msw",
-      "target": "npm:yargs@17.7.2",
+      "target": "npm:yargs",
       "type": "static"
     },
     {
@@ -80276,7 +80267,7 @@
     },
     {
       "source": "npm:msw",
-      "target": "npm:yargs@17.7.2",
+      "target": "npm:yargs",
       "type": "static"
     },
     {
@@ -80376,7 +80367,7 @@
     },
     {
       "source": "npm:msw",
-      "target": "npm:yargs@17.7.2",
+      "target": "npm:yargs",
       "type": "static"
     },
     {
@@ -80906,7 +80897,7 @@
     },
     {
       "source": "npm:nx",
-      "target": "npm:yargs@17.7.2",
+      "target": "npm:yargs",
       "type": "static"
     },
     {
@@ -84221,7 +84212,7 @@
     },
     {
       "source": "npm:rollup-plugin-visualizer@5.6.0",
-      "target": "npm:yargs@17.7.2",
+      "target": "npm:yargs",
       "type": "static"
     },
     {
@@ -84241,7 +84232,7 @@
     },
     {
       "source": "npm:rollup-plugin-visualizer@5.9.2",
-      "target": "npm:yargs@17.7.2",
+      "target": "npm:yargs",
       "type": "static"
     },
     {
@@ -88441,7 +88432,7 @@
     },
     {
       "source": "npm:tty-table",
-      "target": "npm:yargs@17.7.2",
+      "target": "npm:yargs",
       "type": "static"
     },
     {
@@ -88871,7 +88862,7 @@
     },
     {
       "source": "npm:update-browserslist-db@1.0.13",
-      "target": "npm:escalade@3.1.1",
+      "target": "npm:escalade",
       "type": "static"
     },
     {
@@ -88886,7 +88877,7 @@
     },
     {
       "source": "npm:update-browserslist-db@1.0.13",
-      "target": "npm:escalade@3.1.1",
+      "target": "npm:escalade",
       "type": "static"
     },
     {
@@ -88901,7 +88892,7 @@
     },
     {
       "source": "npm:update-browserslist-db@1.1.0",
-      "target": "npm:escalade@3.1.2",
+      "target": "npm:escalade",
       "type": "static"
     },
     {
@@ -91685,37 +91676,37 @@
       "type": "static"
     },
     {
-      "source": "npm:yargs@17.7.2",
+      "source": "npm:yargs",
       "target": "npm:cliui@8.0.1",
       "type": "static"
     },
     {
-      "source": "npm:yargs@17.7.2",
-      "target": "npm:escalade@3.1.1",
+      "source": "npm:yargs",
+      "target": "npm:escalade",
       "type": "static"
     },
     {
-      "source": "npm:yargs@17.7.2",
+      "source": "npm:yargs",
       "target": "npm:get-caller-file",
       "type": "static"
     },
     {
-      "source": "npm:yargs@17.7.2",
+      "source": "npm:yargs",
       "target": "npm:require-directory",
       "type": "static"
     },
     {
-      "source": "npm:yargs@17.7.2",
+      "source": "npm:yargs",
       "target": "npm:string-width@4.2.3",
       "type": "static"
     },
     {
-      "source": "npm:yargs@17.7.2",
+      "source": "npm:yargs",
       "target": "npm:y18n@5.0.8",
       "type": "static"
     },
     {
-      "source": "npm:yargs@17.7.2",
+      "source": "npm:yargs",
       "target": "npm:yargs-parser@21.1.1",
       "type": "static"
     },

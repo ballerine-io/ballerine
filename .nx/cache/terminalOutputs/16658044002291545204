@@ -1,0 +1,40 @@
+
+> @ballerine/workflow-browser-sdk@0.6.33 format /home/chirag/ballerine/ballerine/sdks/workflow-browser-sdk
+> prettier --write . "/home/chirag/ballerine/ballerine/.nx/cache/run.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/file-map.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/project-graph.json" "/home/chirag/ballerine/ballerine/package.json" "/home/chirag/ballerine/ballerine/release.ts"
+
+[90m.eslintrc.cjs[39m 182ms
+[90m.prettierrc.cjs[39m 15ms
+[90mbabel.config.js[39m 28ms
+[90mCHANGELOG.md[39m 723ms
+[90mcspell.config.cjs[39m 9ms
+[90mpackage.json[39m 27ms
+[90mREADME.md[39m 8ms
+[90mrollup.config.js[39m 13ms
+[90mrollup.config.ts[39m 764ms
+[90msrc/index.ts[39m 14ms
+[90msrc/lib/backend-options.ts[39m 14ms
+[90msrc/lib/create-workflow.ts[39m 13ms
+[90msrc/lib/enums.ts[39m 13ms
+[90msrc/lib/index.ts[39m 11ms
+[90msrc/lib/inject-actions-to-state-on-prop.ts[39m 45ms
+[90msrc/lib/merge-step-actions.ts[39m 82ms
+[90msrc/lib/plugins/backend-persist-plugin.ts[39m 94ms
+[90msrc/lib/plugins/local-storage-persist-plugin.ts[39m 22ms
+[90msrc/lib/plugins/state-plugin.ts[39m 34ms
+[90msrc/lib/plugins/types.ts[39m 44ms
+[90msrc/lib/tests/injections.test.ts[39m 58ms
+[90msrc/lib/tests/msw.ts[39m 71ms
+[90msrc/lib/tests/setup.ts[39m 13ms
+[90msrc/lib/tests/smoke.test.ts[39m 116ms
+[90msrc/lib/tests/subscribe.test.ts[39m 135ms
+[90msrc/lib/tests/workflow-options.ts[39m 30ms
+[90msrc/lib/types.ts[39m 94ms
+[90msrc/lib/workflow-browser-sdk.ts[39m 201ms
+[90mtsconfig.eslint.json[39m 21ms
+[90mtsconfig.json[39m 21ms
+[90mvitest.config.ts[39m 19ms
+[90m../../.nx/cache/run.json[39m 29ms
+../../.nx/workspace-data/file-map.json 1331ms
+../../.nx/workspace-data/project-graph.json 4521ms
+[90m../../package.json[39m 22ms
+[90m../../release.ts[39m 61ms

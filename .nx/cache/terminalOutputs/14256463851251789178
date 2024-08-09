@@ -1,0 +1,16 @@
+
+> @ballerine/docs-site@0.0.1 format /home/chirag/ballerine/ballerine/websites/docs
+> prettier --write --plugin-search-dir=. "./**/*.{cjs,js,ts,tsx,ts,mts}" "/home/chirag/ballerine/ballerine/.nx/cache/run.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/file-map.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/project-graph.json" "/home/chirag/ballerine/ballerine/package.json" "/home/chirag/ballerine/ballerine/release.ts"
+
+[[33mwarn[39m] Ignored unknown option [33m--plugin-search-dir=.[39m.
+[90m.eslintrc.cjs[39m 133ms (unchanged)
+[90m.prettierrc.cjs[39m 10ms (unchanged)
+[90mcspell.config.cjs[39m 3ms (unchanged)
+[90msrc/content/config.ts[39m 397ms (unchanged)
+[90msrc/env.d.ts[39m 10ms (unchanged)
+[90mtailwind.config.cjs[39m 12ms (unchanged)
+[90m../../.nx/cache/run.json[39m 25ms (unchanged)
+[90m../../.nx/workspace-data/file-map.json[39m 752ms (unchanged)
+[90m../../.nx/workspace-data/project-graph.json[39m 2838ms (unchanged)
+[90m../../package.json[39m 3ms (unchanged)
+[90m../../release.ts[39m 56ms (unchanged)

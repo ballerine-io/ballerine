@@ -81,13 +81,13 @@
     "husky": "^8.0.3",
     "lint-staged": "^11.2.6",
     "nx": "^19.5.7",
-    "yargs": "^17.7.2",
     "prettier": "^2.8.7"
   },
   "dependencies": {
     "@nx/js": "^19.5.7",
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
-    "wait-on": "^7.0.1"
+    "wait-on": "^7.0.1",
+    "yargs": "^17.7.2"
   }
 }

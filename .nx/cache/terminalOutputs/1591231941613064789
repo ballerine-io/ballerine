@@ -1,0 +1,19 @@
+
+> @ballerine/headless-example@0.3.32 spellcheck /home/chirag/ballerine/ballerine/examples/headless-example
+> cspell "*" "/home/chirag/ballerine/ballerine/.nx/cache/run.json" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/12596364573922055790" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/12954770329648118861" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/14331947702265257706" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/14559441808219411852" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/16341471437506342928" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/16902405086702697877" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/17620452819244090898" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/2223851764515544354" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/2366695886561613481" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/2628565382082111456" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/356639387363151756" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/3728656119133989620" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/3873642509149358741" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/3917767021122693332" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/5410093340625521894" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/5711415233374425777" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/5961756576170641498" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/6564866325726752788" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/7278994193883586469" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/7633901459968515962" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/8101478807456946193" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/8850483811213541173" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/9038702324012439986" "/home/chirag/ballerine/ballerine/.nx/cache/terminalOutputs/9152416483125138766" "/home/chirag/ballerine/ballerine/.nx/workspace-data/d/daemon.log" "/home/chirag/ballerine/ballerine/.nx/workspace-data/file-map.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/project-graph.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/task-history.csv" "/home/chirag/ballerine/ballerine/package.json" "/home/chirag/ballerine/ballerine/pnpm-lock.yaml" "/home/chirag/ballerine/ballerine/release.ts"
+
+(node:3536827) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ 1/12 [90m./cspell.config.cjs[39m [33m1432.21ms[39m
+ 2/12 [90m./Dockerfile[39m [37m29.36ms[39m
+ 3/12 [90m./example.nginx.conf[39m [37m16.46ms[39m
+ 4/12 [90m./index.html[39m [37m238.66ms[39m
+ 5/12 [90m./playwright.config.ts[39m [37m34.88ms[39m
+ 6/12 [90m./postcss.config.cjs[39m [37m12.04ms[39m
+ 7/12 [90m./README.md[39m [37m9.10ms[39m
+ 8/12 [90m./svelte.config.js[39m [37m9.18ms[39m
+ 9/12 [90m./tailwind.config.cjs[39m [37m13.07ms[39m
+10/12 [90m./tsconfig.json[39m [37m17.13ms[39m
+11/12 [90m./tsconfig.node.json[39m [37m8.94ms[39m
+12/12 [90m./vite.config.ts[39m [37m9.87ms[39m
+CSpell: Files checked: 12, Issues found: 0 in 0 files
