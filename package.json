@@ -80,7 +80,7 @@
     "editorconfig": "^1.0.2",
     "husky": "^8.0.3",
     "lint-staged": "^11.2.6",
-    "nx": "15.0.2",
+    "nx": "^19.5.7",
     "prettier": "^2.8.7"
   },
   "dependencies": {

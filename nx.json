@@ -35,7 +35,16 @@
   },
   "defaultBase": "main",
   "release": {
-    "projects": ["packages/*", "apps/*", "examples/*"],
+    "projects": [
+      "apps/*",
+      "packages/*",
+      "scripts/*",
+      "examples/headless-example",
+      "examples/report-generation-example",
+      "services/websocket-service",
+      "services/workflows-service",
+      "!private"
+    ],
     "version": {
       "conventionalCommits": true
     },
