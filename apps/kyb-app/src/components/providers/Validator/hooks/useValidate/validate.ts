@@ -37,6 +37,8 @@ export const validate = (elements: UIElementV2[], context: object) => {
           if (!isShouldApplyValidation(params as unknown as IBaseValueValidatorParams, context))
             return;
 
+          if (value === undefined) return;
+
           validatorManager.validate(value, validator as any, params);
         }
       } catch (error) {
