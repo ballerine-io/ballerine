@@ -1,0 +1,18 @@
+
+> @ballerine/websocket-service@0.1.11 format /home/chirag/ballerine/ballerine/services/websocket-service
+> prettier --write "src/**/*.ts" "test/**/*.ts" "/home/chirag/ballerine/ballerine/.nx/workspace-data/d/server-process.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/file-map.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/parsed-lock-file.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/project-graph.json" "/home/chirag/ballerine/ballerine/package.json"
+
+[90msrc/app.controller.test.ts[39m 569ms
+[90msrc/app.controller.ts[39m 17ms
+[90msrc/app.gateway.ts[39m 25ms
+[90msrc/app.module.ts[39m 9ms
+[90msrc/app.service.ts[39m 12ms
+[90msrc/env.ts[39m 41ms
+[90msrc/main.ts[39m 28ms
+[90msrc/notifications/notify.controller.ts[39m 8ms
+[90mtest/app.e2e-spec.ts[39m 21ms
+[90m../../.nx/workspace-data/d/server-process.json[39m 71ms
+[90m../../.nx/workspace-data/file-map.json[39m 786ms
+[90m../../.nx/workspace-data/parsed-lock-file.json[39m 2459ms
+[90m../../.nx/workspace-data/project-graph.json[39m 3329ms
+[90m../../package.json[39m 10ms

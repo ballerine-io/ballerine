@@ -1,0 +1,16 @@
+
+> @ballerine/docs-site@0.0.1 format /home/chirag/ballerine/ballerine/websites/docs
+> prettier --write --plugin-search-dir=. "./**/*.{cjs,js,ts,tsx,ts,mts}" "/home/chirag/ballerine/ballerine/.nx/workspace-data/d/server-process.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/file-map.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/parsed-lock-file.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/project-graph.json" "/home/chirag/ballerine/ballerine/package.json"
+
+[[33mwarn[39m] Ignored unknown option [33m--plugin-search-dir=.[39m.
+[90m.eslintrc.cjs[39m 111ms (unchanged)
+[90m.prettierrc.cjs[39m 6ms (unchanged)
+[90mcspell.config.cjs[39m 3ms (unchanged)
+[90msrc/content/config.ts[39m 456ms (unchanged)
+[90msrc/env.d.ts[39m 17ms (unchanged)
+[90mtailwind.config.cjs[39m 6ms (unchanged)
+[90m../../.nx/workspace-data/d/server-process.json[39m 7ms (unchanged)
+[90m../../.nx/workspace-data/file-map.json[39m 811ms (unchanged)
+[90m../../.nx/workspace-data/parsed-lock-file.json[39m 3815ms (unchanged)
+[90m../../.nx/workspace-data/project-graph.json[39m 3356ms (unchanged)
+[90m../../package.json[39m 5ms (unchanged)

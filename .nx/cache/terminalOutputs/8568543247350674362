@@ -1,0 +1,29 @@
+
+> @ballerine/blocks@0.2.12 format /home/chirag/ballerine/ballerine/packages/blocks
+> prettier --write . "/home/chirag/ballerine/ballerine/.nx/workspace-data/d/server-process.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/file-map.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/parsed-lock-file.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/project-graph.json" "/home/chirag/ballerine/ballerine/package.json"
+
+[90m.eslintrc.cjs[39m 130ms
+[90m.prettierrc.cjs[39m 7ms
+[90m.storybook/main.ts[39m 327ms
+[90m.storybook/preview-head.html[39m 82ms
+[90m.storybook/preview.ts[39m 22ms
+[90mbabel.config.js[39m 28ms
+[90mCHANGELOG.md[39m 273ms
+[90mpackage.json[39m 21ms
+[90mREADME.md[39m 9ms
+[90mrollup.config.js[39m 11ms
+[90mrollup.config.ts[39m 175ms
+[90msrc/blocks.spec-d.ts[39m 125ms
+[90msrc/blocks.spec.ts[39m 183ms
+[90msrc/blocks.ts[39m 163ms
+[90msrc/BlocksComponent.stories.tsx[39m 96ms
+[90msrc/BlocksComponent.tsx[39m 91ms
+[90msrc/index.ts[39m 9ms
+[90mtsconfig.eslint.json[39m 6ms
+[90mtsconfig.json[39m 7ms
+[90mvitest.config.ts[39m 12ms
+[90m../../.nx/workspace-data/d/server-process.json[39m 8ms
+[90m../../.nx/workspace-data/file-map.json[39m 1234ms
+[90m../../.nx/workspace-data/parsed-lock-file.json[39m 2945ms
+[90m../../.nx/workspace-data/project-graph.json[39m 2799ms
+[90m../../package.json[39m 4ms
