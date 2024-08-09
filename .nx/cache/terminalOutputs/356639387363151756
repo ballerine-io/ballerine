@@ -1,0 +1,16 @@
+
+> @ballerine/workflow-core@0.6.33 spellcheck /home/chirag/ballerine/ballerine/packages/workflow-core
+> cspell "*" "/home/chirag/ballerine/ballerine/.nx/workspace-data/d/daemon.log" "/home/chirag/ballerine/ballerine/.nx/workspace-data/d/server-process.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/file-map.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/lockfile.hash" "/home/chirag/ballerine/ballerine/.nx/workspace-data/parsed-lock-file.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/project-graph.json" "/home/chirag/ballerine/ballerine/nx.json" "/home/chirag/ballerine/ballerine/package.json" "/home/chirag/ballerine/ballerine/pnpm-lock.yaml"
+
+(node:3484600) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+1/9 [90m./babel.config.js[39m [33m1322.92ms[39m
+2/9 [90m./cspell.config.cjs[39m [37m20.66ms[39m
+3/9 [90m./eslintrc.base.cjs[39m [37m12.61ms[39m
+4/9 [90m./README.md[39m [37m170.64ms[39m
+5/9 [90m./rollup.config.js[39m [37m14.76ms[39m
+6/9 [90m./rollup.config.ts[39m [37m70.06ms[39m
+7/9 [90m./tsconfig.eslint.json[39m [37m16.70ms[39m
+8/9 [90m./tsconfig.json[39m [37m7.42ms[39m
+9/9 [90m./vitest.config.ts[39m [37m12.92ms[39m
+CSpell: Files checked: 9, Issues found: 0 in 0 files

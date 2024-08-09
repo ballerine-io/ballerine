@@ -1,0 +1,18 @@
+
+> @ballerine/workflows-dashboard@0.2.11 spellcheck /home/chirag/ballerine/ballerine/apps/workflows-dashboard
+> cspell "*" "/home/chirag/ballerine/ballerine/.nx/workspace-data/d/daemon.log" "/home/chirag/ballerine/ballerine/.nx/workspace-data/d/server-process.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/file-map.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/lockfile.hash" "/home/chirag/ballerine/ballerine/.nx/workspace-data/parsed-lock-file.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/project-graph.json" "/home/chirag/ballerine/ballerine/nx.json" "/home/chirag/ballerine/ballerine/package.json" "/home/chirag/ballerine/ballerine/pnpm-lock.yaml"
+
+(node:3485372) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ 1/11 [90m./cspell.config.cjs[39m [33m1265.18ms[39m
+ 2/11 [90m./Dockerfile[39m [37m36.82ms[39m
+ 3/11 [90m./example.nginx.conf[39m [37m37.18ms[39m
+ 4/11 [90m./index.html[39m [37m277.86ms[39m
+ 5/11 [90m./jest.config.ts[39m [37m62.43ms[39m
+ 6/11 [90m./postcss.config.cjs[39m [37m8.68ms[39m
+ 7/11 [90m./tailwind.config.cjs[39m [37m45.90ms[39m
+ 8/11 [90m./tsconfig.eslint.json[39m [37m15.59ms[39m
+ 9/11 [90m./tsconfig.json[39m [37m21.90ms[39m
+10/11 [90m./tsconfig.node.json[39m [37m9.11ms[39m
+11/11 [90m./vite.config.ts[39m [37m13.48ms[39m
+CSpell: Files checked: 11, Issues found: 0 in 0 files

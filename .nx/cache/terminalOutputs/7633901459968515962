@@ -1,0 +1,41 @@
+
+> @ballerine/workflow-browser-sdk@0.6.33 format /home/chirag/ballerine/ballerine/sdks/workflow-browser-sdk
+> prettier --write . "/home/chirag/ballerine/ballerine/.nx/workspace-data/d/server-process.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/file-map.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/parsed-lock-file.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/project-graph.json" "/home/chirag/ballerine/ballerine/nx.json" "/home/chirag/ballerine/ballerine/package.json"
+
+[90m.eslintrc.cjs[39m 121ms
+[90m.prettierrc.cjs[39m 17ms
+[90mbabel.config.js[39m 32ms
+[90mCHANGELOG.md[39m 731ms
+[90mcspell.config.cjs[39m 14ms
+[90mpackage.json[39m 38ms
+[90mREADME.md[39m 24ms
+[90mrollup.config.js[39m 14ms
+[90mrollup.config.ts[39m 746ms
+[90msrc/index.ts[39m 20ms
+[90msrc/lib/backend-options.ts[39m 17ms
+[90msrc/lib/create-workflow.ts[39m 13ms
+[90msrc/lib/enums.ts[39m 16ms
+[90msrc/lib/index.ts[39m 9ms
+[90msrc/lib/inject-actions-to-state-on-prop.ts[39m 31ms
+[90msrc/lib/merge-step-actions.ts[39m 48ms
+[90msrc/lib/plugins/backend-persist-plugin.ts[39m 70ms
+[90msrc/lib/plugins/local-storage-persist-plugin.ts[39m 23ms
+[90msrc/lib/plugins/state-plugin.ts[39m 12ms
+[90msrc/lib/plugins/types.ts[39m 33ms
+[90msrc/lib/tests/injections.test.ts[39m 78ms
+[90msrc/lib/tests/msw.ts[39m 71ms
+[90msrc/lib/tests/setup.ts[39m 14ms
+[90msrc/lib/tests/smoke.test.ts[39m 63ms
+[90msrc/lib/tests/subscribe.test.ts[39m 84ms
+[90msrc/lib/tests/workflow-options.ts[39m 44ms
+[90msrc/lib/types.ts[39m 51ms
+[90msrc/lib/workflow-browser-sdk.ts[39m 119ms
+[90mtsconfig.eslint.json[39m 11ms
+[90mtsconfig.json[39m 13ms
+[90mvitest.config.ts[39m 14ms
+[90m../../.nx/workspace-data/d/server-process.json[39m 8ms
+../../.nx/workspace-data/file-map.json 892ms
+[90m../../.nx/workspace-data/parsed-lock-file.json[39m 3342ms
+[90m../../.nx/workspace-data/project-graph.json[39m 3477ms
+[90m../../nx.json[39m 8ms
+[90m../../package.json[39m 6ms

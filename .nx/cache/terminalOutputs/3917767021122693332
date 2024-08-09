@@ -1,0 +1,19 @@
+
+> @ballerine/web-ui-sdk@1.5.23 spellcheck /home/chirag/ballerine/ballerine/sdks/web-ui-sdk
+> cspell "*" "/home/chirag/ballerine/ballerine/.nx/workspace-data/d/daemon.log" "/home/chirag/ballerine/ballerine/.nx/workspace-data/d/server-process.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/file-map.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/lockfile.hash" "/home/chirag/ballerine/ballerine/.nx/workspace-data/parsed-lock-file.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/project-graph.json" "/home/chirag/ballerine/ballerine/nx.json" "/home/chirag/ballerine/ballerine/package.json" "/home/chirag/ballerine/ballerine/pnpm-lock.yaml"
+
+(node:3485912) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ 1/12 [90m./cspell.config.cjs[39m [33m1401.66ms[39m
+ 2/12 [90m./index.html[39m [37m227.11ms[39m
+ 3/12 [90m./LICENSE[39m [37m21.91ms[39m
+ 4/12 [90m./playwright.config.ts[39m [37m31.95ms[39m
+ 5/12 [90m./README.md[39m [37m65.52ms[39m
+ 6/12 [90m./svelte.config.js[39m [37m11.54ms[39m
+ 7/12 [90m./tsconfig.eslint.json[39m [37m13.14ms[39m
+ 8/12 [90m./tsconfig.json[39m [37m17.77ms[39m
+ 9/12 [90m./tsconfig.node.json[39m [37m9.01ms[39m
+10/12 [90m./vite.config.ts[39m [37m11.45ms[39m
+11/12 [90m./vite.dev.config.ts[39m [37m6.82ms[39m
+12/12 [90m./vitest.config.ts[39m [37m12.72ms[39m
+CSpell: Files checked: 12, Issues found: 0 in 0 files

@@ -1,0 +1,15 @@
+
+> @ballerine/ui@0.5.15 spellcheck /home/chirag/ballerine/ballerine/packages/ui
+> cspell "*" "/home/chirag/ballerine/ballerine/.nx/workspace-data/d/daemon.log" "/home/chirag/ballerine/ballerine/.nx/workspace-data/d/server-process.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/file-map.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/lockfile.hash" "/home/chirag/ballerine/ballerine/.nx/workspace-data/parsed-lock-file.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/project-graph.json" "/home/chirag/ballerine/ballerine/nx.json" "/home/chirag/ballerine/ballerine/package.json" "/home/chirag/ballerine/ballerine/pnpm-lock.yaml"
+
+(node:3485007) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+1/8 [90m./cspell.config.cjs[39m [33m1183.87ms[39m
+2/8 [90m./index.html[39m [37m218.03ms[39m
+3/8 [90m./postcss.config.cjs[39m [37m5.46ms[39m
+4/8 [90m./tailwind.config.cjs[39m [37m18.49ms[39m
+5/8 [90m./tsconfig.eslint.json[39m [37m7.41ms[39m
+6/8 [90m./tsconfig.json[39m [37m11.98ms[39m
+7/8 [90m./tsconfig.node.json[39m [37m8.31ms[39m
+8/8 [90m./vite.config.ts[39m [37m29.91ms[39m
+CSpell: Files checked: 8, Issues found: 0 in 0 files

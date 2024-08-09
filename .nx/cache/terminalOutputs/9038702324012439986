@@ -1,0 +1,19 @@
+
+> @ballerine/backoffice-v2@0.7.32 spellcheck /home/chirag/ballerine/ballerine/apps/backoffice-v2
+> cspell "*" "/home/chirag/ballerine/ballerine/.nx/workspace-data/d/daemon.log" "/home/chirag/ballerine/ballerine/.nx/workspace-data/d/server-process.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/file-map.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/lockfile.hash" "/home/chirag/ballerine/ballerine/.nx/workspace-data/parsed-lock-file.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/project-graph.json" "/home/chirag/ballerine/ballerine/nx.json" "/home/chirag/ballerine/ballerine/package.json" "/home/chirag/ballerine/ballerine/pnpm-lock.yaml"
+
+(node:3485887) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ 1/12 [90m./commitlint.config.js[39m [33m1326.11ms[39m
+ 2/12 [90m./cspell.config.cjs[39m [37m26.82ms[39m
+ 3/12 [90m./Dockerfile[39m [37m25.66ms[39m
+ 4/12 [90m./example.nginx.conf[39m [37m11.14ms[39m
+ 5/12 [90m./index.html[39m [37m276.55ms[39m
+ 6/12 [90m./playwright.config.ts[39m [37m34.04ms[39m
+ 7/12 [90m./postcss.config.js[39m [37m8.24ms[39m
+ 8/12 [90m./README.md[39m [37m7.33ms[39m
+ 9/12 [90m./tailwind.config.cjs[39m [37m64.31ms[39m
+10/12 [90m./tsconfig.eslint.json[39m [37m5.96ms[39m
+11/12 [90m./tsconfig.json[39m [37m5.98ms[39m
+12/12 [90m./vite.config.ts[39m [37m9.48ms[39m
+CSpell: Files checked: 12, Issues found: 0 in 0 files

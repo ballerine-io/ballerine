@@ -1,0 +1,14 @@
+
+> @ballerine/websocket-service@0.1.11 spellcheck /home/chirag/ballerine/ballerine/services/websocket-service
+> cspell "*" "/home/chirag/ballerine/ballerine/.nx/workspace-data/d/daemon.log" "/home/chirag/ballerine/ballerine/.nx/workspace-data/d/server-process.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/file-map.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/lockfile.hash" "/home/chirag/ballerine/ballerine/.nx/workspace-data/parsed-lock-file.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/project-graph.json" "/home/chirag/ballerine/ballerine/nx.json" "/home/chirag/ballerine/ballerine/package.json" "/home/chirag/ballerine/ballerine/pnpm-lock.yaml"
+
+(node:3485298) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+1/7 [90m./cspell.config.cjs[39m [33m1336.93ms[39m
+2/7 [90m./Dockerfile[39m [37m29.16ms[39m
+3/7 [90m./jest.config.cjs[39m [37m10.18ms[39m
+4/7 [90m./README.md[39m [37m177.24ms[39m
+5/7 [90m./tsconfig.build.json[39m [37m11.92ms[39m
+6/7 [90m./tsconfig.json[39m [37m8.62ms[39m
+7/7 [90m./tsconfig.test.json[39m [37m5.76ms[39m
+CSpell: Files checked: 7, Issues found: 0 in 0 files

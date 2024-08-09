@@ -1,0 +1,34 @@
+
+> @ballerine/workflow-node-sdk@0.6.33 format /home/chirag/ballerine/ballerine/sdks/workflow-node-sdk
+> prettier --write . "/home/chirag/ballerine/ballerine/.nx/workspace-data/d/server-process.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/file-map.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/parsed-lock-file.json" "/home/chirag/ballerine/ballerine/.nx/workspace-data/project-graph.json" "/home/chirag/ballerine/ballerine/nx.json" "/home/chirag/ballerine/ballerine/package.json"
+
+[90m.eslintrc.cjs[39m 109ms
+[90m.prettierrc.cjs[39m 8ms
+[90mbabel.config.js[39m 25ms
+[90mCHANGELOG.md[39m 420ms
+[90mcspell.config.cjs[39m 8ms
+[90mpackage.json[39m 14ms
+[90mREADME.md[39m 6ms
+[90mrollup.config.js[39m 14ms
+[90mrollup.config.ts[39m 702ms
+[90msrc/index.ts[39m 38ms
+[90msrc/lib/adapters/index.ts[39m 9ms
+[90msrc/lib/adapters/memory-store.ts[39m 60ms
+[90msrc/lib/adapters/types.ts[39m 23ms
+[90msrc/lib/create-workflow.ts[39m 9ms
+[90msrc/lib/index.ts[39m 9ms
+[90msrc/lib/plugins/index.ts[39m 10ms
+[90msrc/lib/plugins/memory-persistence-plugin.ts[39m 47ms
+[90msrc/lib/plugins/node-plugin.ts[39m 33ms
+[90msrc/lib/plugins/types.ts[39m 25ms
+[90msrc/lib/types.ts[39m 47ms
+[90msrc/lib/workflow-node-sdk-instance.ts[39m 18ms
+[90msrc/lib/workflow-node-sdk.ts[39m 26ms
+[90mtsconfig.json[39m 6ms
+[90mvitest.config.ts[39m 7ms
+../../.nx/workspace-data/d/server-process.json 6ms
+../../.nx/workspace-data/file-map.json 1656ms
+../../.nx/workspace-data/parsed-lock-file.json 4708ms
+../../.nx/workspace-data/project-graph.json 4179ms
+../../nx.json 6ms
+[90m../../package.json[39m 5ms
