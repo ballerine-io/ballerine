@@ -26,13 +26,13 @@ Whenever a risk flow ("Customer Onboarding" for example) starts, the workflow th
 
 **Learn more about workflows**
 
- [Understanding workflows technology](websites/docs/src/content/docs/en/learn/workflows_technology.md)
+[Understanding workflows technology](/en/learn/workflows_technology)
 
- [Creating a workflow](websites/docs/src/content/docs/en/learn/creating_a_workflow.md)
+[Creating a workflow](/en/learn/creating_a_workflow)
 
- [Configuring a workflow](websites/docs/src/content/docs/en/learn/configuring_a_workflow.md)
+[Configuring a workflow](/en/learn/configuring_a_workflow)
 
- [Invoking a workflow / creating a case](websites/docs/src/content/docs/en/learn/invoking_a_workflow.md)
+[Invoking a workflow / creating a case](/en/learn/invoking_a_workflow)
 
 
 ## Collection Flows
@@ -41,9 +41,9 @@ All of the steps and inputs are fully customizable, to enable building different
 
 **Learn more about collection flows**
 
-[Configuring a collection flow](websites/docs/src/content/docs/en/learn/configuring_a_collection_flow.md)
+[Configuring a collection flow](/en/learn/configuring_a_collection_flow)
 
-[Changing the collection flow design](websites/docs/src/content/docs/en/learn/changing_the_collection_flow_design.md)
+[Changing the collection flow design](/en/learn/changing_the_collection_flow_design)
 
 
 <img title="Collection Flow" alt="Collection Flow" src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/669eacfd54f5c71e9c9edb85_Collection%20flow%20example.png">
@@ -56,20 +56,20 @@ The Rules Engine applies risk rules to assign risk scores, present risk indicato
 
 **Learn more about the rule engine**
 
-[Making a rule affect a workflow state](websites/docs/src/content/docs/en/learn/adding_rules_and_affect_workflows.md)
+[Making a rule affect a workflow state](/en/learn/adding_rules_and_affect_workflows)
 
-[Calculation Risk Scores](websites/docs/src/content/docs/en/learn/calculating_risk_scores.md)
+[Calculation Risk Scores](/en/learn/calculating_risk_scores)
 
 ## Case Managment
 The Case Management module provides a user interface for manual decision-making processes, such as approving, rejecting, or requesting re-submission of cases. It offers customizable layouts and information presentation, allowing users to efficiently handle and review cases. 
 
 **Learn more about case management**
 
-[Overview of case management](websites/docs/src/content/docs/en/learn/case_management_overview.md) 
+[Overview of case management](/en/learn/case_management_overview) 
 
-[Using the case management dashboard](websites/docs/src/content/docs/en/learn/using_the_case_management_dashboard.md) 
+[Using the case management dashboard](/en/learn/using_the_case_management_dashboard) 
 
-[Add and Customize Workflows in the Case Management](websites/docs/src/content/docs/en/learn/add_and_customize_workflows_in_the_case_management.md)
+[Add and Customize Workflows in the Case Management](/en/learn/add_and_customize_workflows_in_the_case_management.md)
 
 
 <img title="Case Management" alt="Case Management" src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/669eb373c7708310d2b4ac61_Case%20managment%20example.png">
@@ -80,14 +80,14 @@ Ballerine's unified API is integrated with third-party vendors, APIs, and data s
 
 **Learn more about the unified API**
 
-[Adding a 3rd Party check to a workflow]() 
+[Adding a 3rd Party check to a workflow](/en/learn/adding_a_3rd_party_check_to_a_workflow)
 
 ## Child Workflows
 Child workflows allow for the generation and activation of extra side workflows (for example: generating multiple KYC flows for the UBOs provided mid-flow, or an extra KYB process for a parent company) and enable complex, nested processes within the main workflows.
 
 **Learn more about child workflows**
 
-[Adding a child workflow to your workflow](websites/docs/src/content/docs/en/learn/adding_a_3rd_party_check_to_a_workflow.md)
+[Adding a child workflow to your workflow](/en/learn/adding_a_child_workflow_to_your_workflow)
 
 ## Plugins
 
@@ -95,7 +95,7 @@ Ballerine's plugins enables deep integration with your existing systems, allowin
 
 **Learn more about plugins**
 
-[Using Plugins](websites/docs/src/content/docs/en/learn/plugins.mdx) 
+[Using Plugins](/en/learn/plugins) 
 
 
 ## Webhooks
@@ -103,5 +103,4 @@ Webhooks in Ballerine allow for real-time communication and integration with ext
 
 **Learn more about webhooks**
 
-[Using webhooks](websites/docs/src/content/docs/en/learn/how_to_use_webhooks.md)  
-
+[Using webhooks](/en/learn/how_to_use_webhooks)  
