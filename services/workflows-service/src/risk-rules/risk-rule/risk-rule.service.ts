@@ -1,56 +1,87 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { RiskRuleRepository } from './risk-rule.repository';
+import { TProjectId, TProjectIds } from '@/types';
+import { Prisma, RiskRule } from '@prisma/client';
 
 @Injectable()
 export class RiskRuleService {
-  constructor(private readonly riskRuleSetRepository: RiskRuleRepository) {}
+  constructor(private readonly riskRuleRepository: RiskRuleRepository) {}
 
-  // async create(policyId: string, createRiskRuleSetData: Static<typeof CreateRiskRuleSchema>) {
-  //   return this.riskRuleSetRepository.create(policyId, {
-  //     ...createRiskRuleSetData,
-  //     rules: {
-  //       createMany: {
-  //         data: createRiskRuleSetData.ruleSet.rules.map(rule => ({
-  //           operator: rule.operation,
-  //           engine: rule.engine,
-  //           comparisonValue: rule.value,
-  //           key: rule.key,
-  //         })),
-  //       },
-  //     },
-  //   });
-  // }
-  //
-  // async findOne(id: string, policyId: string) {
-  //   const riskRuleSet = await this.riskRuleSetRepository.findById(id, policyId);
-  //
-  //   return riskRuleSet;
-  // }
-  //
-  // async update(
-  //   id: string,
-  //   policyId: string,
-  //   updateRiskRuleSetDto: Static<typeof CreateRiskRuleSchema>,
-  // ) {
-  //   // TODO update to risk to update module
-  //   const updatedRiskRuleSet = await this.riskRuleSetRepository.updateById(
-  //     id,
-  //     policyId,
-  //     updateRiskRuleSetDto,
-  //   );
-  //
-  //   if (!updatedRiskRuleSet) {
-  //     throw new NotFoundException(`RiskRuleSet with ID "${id}" not found`);
-  //   }
-  //
-  //   return updatedRiskRuleSet;
-  // }
-  //
-  // async delete(id: string, policyId: string) {
-  //   const result = await this.riskRuleSetRepository.deleteById(id, policyId);
-  //
-  //   if (!result?.id) {
-  //     throw new NotFoundException(`RiskRuleSet with ID "${id}" not found`);
-  //   }
-  // }
+  async createNewRiskRule({
+    riskRuleData,
+    projectId,
+    ruleSetId,
+  }: {
+    riskRuleData: Omit<Prisma.RiskRuleUncheckedCreateInput, 'projectId' | 'isPublic'>;
+    projectId: TProjectId;
+    ruleSetId?: string;
+  }): Promise<RiskRule> {
+    const riskRule = await this.riskRuleRepository.create({
+      createArgs: riskRuleData,
+      projectId,
+    });
+
+    if (ruleSetId) {
+      await this.connectRiskRuleToRuleset(riskRule.id, ruleSetId);
+    }
+
+    return riskRule;
+  }
+
+  async findById(id: string, projectIds: TProjectIds) {
+    const riskRule = await this.riskRuleRepository.findById(id, projectIds);
+    if (!riskRule) {
+      throw new NotFoundException(`RiskRule with ID "${id}" not found`);
+    }
+    return riskRule;
+  }
+
+  async findMany(args: Prisma.RiskRuleFindManyArgs, projectIds: TProjectIds) {
+    return this.riskRuleRepository.findMany(args, projectIds);
+  }
+
+  async updateRiskRule({
+    id,
+    updateData,
+    projectId,
+  }: {
+    id: string;
+    updateData: Prisma.RiskRuleUpdateInput;
+    projectId: TProjectId;
+  }) {
+    return this.riskRuleRepository.update(
+      id,
+      {
+        ...updateData,
+        isPublic: false,
+      },
+      projectId,
+    );
+  }
+
+  async deleteRiskRule(id: string, projectIds: TProjectIds): Promise<RiskRule> {
+    return this.riskRuleRepository.delete(id, projectIds);
+  }
+
+  async createCopyOfRiskRule({
+    originalId,
+    newName,
+    projectId,
+    projectIds,
+  }: {
+    originalId: string;
+    newName: string;
+    projectId: TProjectId;
+    projectIds: TProjectIds;
+  }) {
+    return this.riskRuleRepository.createCopy(originalId, newName, projectId, projectIds);
+  }
+
+  async connectRiskRuleToRuleset(riskRuleId: string, ruleSetId: string) {
+    await this.riskRuleRepository.connectToRuleset(riskRuleId, ruleSetId);
+  }
+
+  async disconnectRiskRuleFromRuleset(riskRuleId: string, ruleSetId: string) {
+    await this.riskRuleRepository.disconnectFromRuleset(riskRuleId, ruleSetId);
+  }
 }

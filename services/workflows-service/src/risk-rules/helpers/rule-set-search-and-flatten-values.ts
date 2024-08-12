@@ -1,17 +1,17 @@
-import {RiskRuleRuleSet, RuleSet, RiskRulesPolicy, RiskRule} from "@prisma/client";
-import {uniq} from "lodash";
+import { RiskRuleRuleSet, RuleSet, RiskRulesPolicy, RiskRule } from '@prisma/client';
+import { uniq } from 'lodash';
 
 type RiskRuleWithPolicy = RiskRule & {
-  riskRulePolicy: RiskRulesPolicy | null
-}
+  riskRulePolicy: RiskRulesPolicy | null;
+};
 
 type RiskRuleRuleSetWithRule = RiskRuleRuleSet & {
-  riskRule: RiskRuleWithPolicy
-}
+  riskRule: RiskRuleWithPolicy;
+};
 
 type RuleSetWithRiskRules = RuleSet & {
-  riskRuleRuleSets: RiskRuleRuleSetWithRule[]
-}
+  riskRuleRuleSets: RiskRuleRuleSetWithRule[];
+};
 
 export type RuleSetWithParent = RuleSetWithRiskRules & {
   parentRuleSets: Array<{
@@ -19,23 +19,25 @@ export type RuleSetWithParent = RuleSetWithRiskRules & {
       parentRuleSets: Array<{
         parent: RuleSetWithRiskRules & {
           parentRuleSets: Array<{
-            parent: RuleSetWithRiskRules
-          }>
-        }
-      }>
-    }
-  }>
-}
+            parent: RuleSetWithRiskRules;
+          }>;
+        };
+      }>;
+    };
+  }>;
+};
 
 export const extractRiskRulePolicy = (ruleSet: RuleSetWithParent) => {
   const traverse = (currentRuleSet: RuleSetWithParent, riskRulesPoliciesId: string[]) => {
-
     if (currentRuleSet?.riskRuleRuleSets.length > 0) {
-      riskRulesPoliciesId = uniq([...riskRulesPoliciesId, ...(currentRuleSet.riskRuleRuleSets.flatMap(({ riskRule }) => riskRule.riskRulePolicyId))]);
+      riskRulesPoliciesId = uniq([
+        ...riskRulesPoliciesId,
+        ...currentRuleSet.riskRuleRuleSets.flatMap(({ riskRule }) => riskRule.riskRulePolicyId),
+      ]);
     }
 
     if (currentRuleSet.parentRuleSets?.length === 0) {
-      currentRuleSet.parentRuleSets.flatMap((parentRuleSet) => {
+      currentRuleSet.parentRuleSets.flatMap(parentRuleSet => {
         if (parentRuleSet.parent) {
           return traverse(parentRuleSet.parent as RuleSetWithParent, riskRulesPoliciesId);
         }
@@ -45,5 +47,5 @@ export const extractRiskRulePolicy = (ruleSet: RuleSetWithParent) => {
     return riskRulesPoliciesId;
   };
 
-  return traverse(ruleSet, [])
-}
+  return traverse(ruleSet, []);
+};

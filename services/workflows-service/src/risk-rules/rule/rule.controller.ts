@@ -8,12 +8,12 @@ import type { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { CreateRuleSchema, type TCreateRule } from '@/risk-rules/rule/schemas/create-rule.schema';
 import { AssignRuleSchema, type TAssignRule } from '@/risk-rules/rule/schemas/assign-rule.schema';
-import {
-  type TUnassignRule,
-  UnassignFromParentSchema,
-} from '@/risk-rules/rule/schemas/unassign-rule.schema';
 import { type TUpdateRule, UpdateRuleSchema } from '@/risk-rules/rule/schemas/update-rule.schema';
 import { Delete } from '@nestjs/common';
+import {
+  type TUnassignRule,
+  UnassignRuleFromRuleSetSchema,
+} from '@/risk-rules/rule/schemas/unassign-rule-from-rule-set.schema';
 
 @swagger.ApiTags('Rules')
 @common.Controller('external/rules')
@@ -30,7 +30,6 @@ export class RuleController {
     ],
     response: Type.Composite([CreateRuleSchema, Type.Object({ id: Type.String() })]),
   })
-
   async createRule(
     @common.Body() data: TCreateRule,
     @ProjectIds() projectIds: TProjectIds,
@@ -87,10 +86,13 @@ export class RuleController {
       },
       {
         type: 'body',
-        schema: UnassignFromParentSchema,
+        schema: UnassignRuleFromRuleSetSchema,
       },
     ],
-    response: Type.Composite([UnassignFromParentSchema, Type.Object({ ruleId: Type.String() })]),
+    response: Type.Composite([
+      UnassignRuleFromRuleSetSchema,
+      Type.Object({ ruleId: Type.String() }),
+    ]),
   })
   async unassignRule(
     @common.Query() ruleId: string,

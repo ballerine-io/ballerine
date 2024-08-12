@@ -1,7 +1,7 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
-import {RuleRepository} from './rule.repository';
-import {TProjectId, TProjectIds} from '@/types';
-import {Prisma} from '@prisma/client';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { RuleRepository } from './rule.repository';
+import { TProjectId, TProjectIds } from '@/types';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class RuleService {
@@ -12,19 +12,22 @@ export class RuleService {
   }
 
   async findManyByRuleset(rulesetId: string, projectIds: TProjectIds) {
-    return this.ruleRepository.findMany({
-      where: {
-        rulesetRules: {
-          some: {
-            ruleSetId: rulesetId,
+    return this.ruleRepository.findMany(
+      {
+        where: {
+          rulesetRules: {
+            some: {
+              ruleSetId: rulesetId,
+            },
           },
-        }
-      }
-    }, projectIds);
+        },
+      },
+      projectIds,
+    );
   }
 
   async findMany(projectIds: TProjectIds, args?: Prisma.RuleFindManyArgs) {
-    return await this.ruleRepository.findMany(args || {}, projectIds );
+    return await this.ruleRepository.findMany(args || {}, projectIds);
   }
 
   async assignRuleToRuleset(
@@ -44,17 +47,15 @@ export class RuleService {
       return await this.ruleRepository.connectToRuleset(id, rulesetId);
     }
 
-    return await this.ruleRepository.create(
-      {
-        createArgs: {
-          ...resetRule,
-          comparisonValue:
-            resetRule.comparisonValue as Prisma.RuleUncheckedCreateInput['comparisonValue'],
-        },
-        projectId,
-        ruleSetId: rulesetId,
+    return await this.ruleRepository.create({
+      createArgs: {
+        ...resetRule,
+        comparisonValue:
+          resetRule.comparisonValue as Prisma.RuleUncheckedCreateInput['comparisonValue'],
       },
-    );
+      projectId,
+      ruleSetId: rulesetId,
+    });
   }
 
   async unassignRuleFromRuleset(
@@ -81,13 +82,11 @@ export class RuleService {
     rulesetId?: string;
     projectId: TProjectId;
   }) {
-    const rule = await this.ruleRepository.create(
-      {
-        createArgs: ruleData,
-        ruleSetId: rulesetId,
-        projectId,
-      }
-    );
+    const rule = await this.ruleRepository.create({
+      createArgs: ruleData,
+      ruleSetId: rulesetId,
+      projectId,
+    });
 
     return rule;
   }
