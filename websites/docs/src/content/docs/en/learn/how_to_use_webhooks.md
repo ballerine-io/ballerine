@@ -234,7 +234,7 @@ A webhook will have the following data structure:
 
 ### Fetching Workflow Decision Data
 
-For workflows that require decision extraction based on the final state of a process, the `workflow.completed` event provides critical data. An example use case is when a workflow decision needs to be fetched directly from the webhook payload. Here's how you can extract the final decision of the workflow:
+For workflows that require decision extraction based on the final state of a process, the `workflow.completed` event provides critical data. An example use case is when a workflow decision needs to be fetched directly from the webhook payload. Here's how you can extract the final decision of the workflow: 
 
 ```json
 {
