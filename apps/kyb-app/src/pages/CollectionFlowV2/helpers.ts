@@ -1,7 +1,7 @@
 import { UIElementV2 } from '@/components/providers/Validator/types';
-import { UIElement } from '@/domains/collection-flow';
+import { UIElementDefinition } from '@/domains/collection-flow';
 
-const resolveElementType = (element: UIElement): UIElementV2['type'] => {
+const resolveElementType = (element: UIElementDefinition): UIElementV2['type'] => {
   if (element.options?.jsonFormDefinition?.type === 'array') {
     return 'field-list';
   }
@@ -11,7 +11,7 @@ const resolveElementType = (element: UIElement): UIElementV2['type'] => {
   return 'ui';
 };
 
-export const transformV1UIElementToV2UIElement = (element: UIElement): UIElementV2 => {
+export const transformV1UIElementToV2UIElement = (element: UIElementDefinition): UIElementV2 => {
   return {
     id: element.name,
     valueDestination: element.valueDestination,
@@ -21,6 +21,8 @@ export const transformV1UIElementToV2UIElement = (element: UIElement): UIElement
   } as UIElementV2;
 };
 
-export const transformV1UIElementsToV2UIElements = (elements: UIElement[]): UIElementV2[] => {
+export const transformV1UIElementsToV2UIElements = (
+  elements: UIElementDefinition[],
+): UIElementV2[] => {
   return elements.map(transformV1UIElementToV2UIElement);
 };

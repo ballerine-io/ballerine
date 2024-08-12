@@ -1,14 +1,14 @@
-import { UIElement } from '@/domains/collection-flow';
+import { JSONFormElementBaseParams } from '@/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
+import { UIElementDefinition } from '@/domains/collection-flow';
 import { AnyChildren } from '@ballerine/ui';
 import { useMemo } from 'react';
 import { jsonFormDefinitionContext } from './json-form-definition.context';
-import { JSONFormElementBaseParams } from '@/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
 
 const { Provider } = jsonFormDefinitionContext;
 
 interface Props {
   children: AnyChildren;
-  definition: UIElement<JSONFormElementBaseParams>;
+  definition: UIElementDefinition<JSONFormElementBaseParams>;
 }
 
 export const JSONFormDefinitionProvider = ({ children, definition }: Props) => {

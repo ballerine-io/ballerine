@@ -10,7 +10,7 @@ import {
   Document,
   DocumentsValidatorRule,
   Rule,
-  UIElement,
+  UIElementDefinition,
   UIPage,
 } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
@@ -23,7 +23,7 @@ export class DocumentsRuleEngine implements RuleEngine {
   validate(
     context: AnyObject,
     rule: unknown,
-    definition: UIElement<AnyObject>,
+    definition: UIElementDefinition<AnyObject>,
     state: UIState,
     page: UIPage,
   ) {

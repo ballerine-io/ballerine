@@ -2,14 +2,14 @@ import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageRes
 import { UIState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
 import { RuleTestResult } from '@/components/organisms/DynamicUI/rule-engines';
 import { executeRule } from '@/components/organisms/DynamicUI/rule-engines/utils/execute-rules';
-import { Rule, UIElement } from '@/domains/collection-flow';
+import { Rule, UIElementDefinition } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 export const useRuleExecutor = (
   context: AnyObject,
   rules: Rule[],
-  definition: UIElement<AnyObject>,
+  definition: UIElementDefinition<AnyObject>,
   uiState: UIState,
 ) => {
   const uiStateRef = useRef(uiState);
@@ -23,7 +23,12 @@ export const useRuleExecutor = (
 
   const executeRules = useMemo(
     () =>
-      (context: AnyObject, rules: Rule[], definition: UIElement<AnyObject>, uiState: UIState) => {
+      (
+        context: AnyObject,
+        rules: Rule[],
+        definition: UIElementDefinition<AnyObject>,
+        uiState: UIState,
+      ) => {
         const executionResult =
           rules?.map(rule => {
             const ctx = { ...context };

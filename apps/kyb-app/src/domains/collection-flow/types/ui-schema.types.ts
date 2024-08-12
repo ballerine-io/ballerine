@@ -58,7 +58,7 @@ export type Rule = JSONLogicRule | JMESPathRule | DocumentsValidatorRule;
 
 export type UIElementDestination = string;
 
-export interface UIElement<TElementParams = AnyObject> {
+export interface UIElementDefinition<TElementParams = AnyObject> {
   name: string;
   type: UIElementType;
   availableOn?: Rule[];
@@ -67,6 +67,6 @@ export interface UIElement<TElementParams = AnyObject> {
   required?: boolean;
   options: TElementParams;
   valueDestination?: UIElementDestination;
-  elements?: UIElement<AnyObject>[];
+  elements?: UIElementDefinition<AnyObject>[];
   validation?: UIElementV2['validation'];
 }

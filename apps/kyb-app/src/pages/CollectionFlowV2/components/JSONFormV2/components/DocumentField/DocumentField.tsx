@@ -11,7 +11,7 @@ import { UploadFileFn } from '@/components/organisms/UIRenderer/elements/JSONFor
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
 import { UIElement } from '@/components/providers/Validator/hooks/useValidate/ui-element';
 import { useValidatedInput } from '@/components/providers/Validator/hooks/useValidatedInput';
-import { Document, UIElement as IUIElement } from '@/domains/collection-flow';
+import { Document, UIElementDefinition as IUIElement } from '@/domains/collection-flow';
 import { fetchFile, uploadFile } from '@/domains/storage/storage.api';
 import { collectionFlowFileStorage } from '@/pages/CollectionFlow/collection-flow.file-storage';
 import { useDocumentFieldWarnings } from '@/pages/CollectionFlowV2/components/JSONFormV2/components/DocumentField/hooks/useDocumentFieldWarnings/useDocumentFieldWarnings';

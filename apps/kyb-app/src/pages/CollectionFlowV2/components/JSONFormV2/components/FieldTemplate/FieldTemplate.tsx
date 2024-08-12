@@ -6,7 +6,7 @@ import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateMa
 import { findDefinitionByName } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
 import { getInputIndex } from '@/components/organisms/UIRenderer/elements/JSONForm/hocs/withDynamicUIInput';
 import { UIElement } from '@/components/providers/Validator/hooks/useValidate/ui-element';
-import { UIElement as IUIElement } from '@/domains/collection-flow';
+import { UIElementDefinition as IUIElement } from '@/domains/collection-flow';
 import { useJSONFormDefinition } from '@/pages/CollectionFlowV2/components/JSONFormV2/providers/JSONFormDefinitionProvider/useJSONFormDefinition';
 import { transformV1UIElementToV2UIElement } from '@/pages/CollectionFlowV2/helpers';
 import { AnyObject, FieldLayout } from '@ballerine/ui';

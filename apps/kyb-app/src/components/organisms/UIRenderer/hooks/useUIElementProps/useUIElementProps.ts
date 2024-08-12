@@ -2,11 +2,11 @@ import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateMa
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { useRuleExecutor } from '@/components/organisms/DynamicUI/hooks/useRuleExecutor';
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
-import { UIElement } from '@/domains/collection-flow';
+import { UIElementDefinition } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 
-export const useUIElementProps = (definition: UIElement<AnyObject>) => {
+export const useUIElementProps = (definition: UIElementDefinition<AnyObject>) => {
   const { payload } = useStateManagerContext();
   const { state } = useDynamicUIContext();
   const [availabilityTestResulsts, visibilityTestResults] = [

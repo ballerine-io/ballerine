@@ -1,10 +1,10 @@
 import { usePageContext } from '@/components/organisms/DynamicUI/Page';
 import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
-import { UIElement } from '@/domains/collection-flow';
+import { UIElementDefinition } from '@/domains/collection-flow';
 import { DocumentFieldParams } from '@/pages/CollectionFlowV2/components/JSONFormV2/components/DocumentField/DocumentField';
 import { useMemo } from 'react';
 
-export const useDocumentFieldWarnings = (definition: UIElement<DocumentFieldParams>) => {
+export const useDocumentFieldWarnings = (definition: UIElementDefinition<DocumentFieldParams>) => {
   const { pageErrors } = usePageContext();
   const { currentPage } = usePageResolverContext();
 

@@ -1,12 +1,12 @@
 import { usePageContext } from '@/components/organisms/DynamicUI/Page';
 import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
 import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
-import { UIElement } from '@/domains/collection-flow';
+import { UIElementDefinition } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 
 export const useUIElementErrors = (
-  definition: UIElement<AnyObject>,
+  definition: UIElementDefinition<AnyObject>,
   errorKeyFallback?: () => string,
 ): { warnings: ErrorField[]; validationErrors: ErrorField[] } => {
   const { errors: _errors, pageErrors: _pageErrors } = usePageContext();

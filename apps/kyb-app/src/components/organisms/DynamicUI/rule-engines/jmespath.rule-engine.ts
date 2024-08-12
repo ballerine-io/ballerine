@@ -3,7 +3,7 @@ import {
   RuleEngine,
   RuleTestResult,
 } from '@/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
-import { JMESPathRule, Rule, UIElement } from '@/domains/collection-flow';
+import { JMESPathRule, Rule, UIElementDefinition } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import jmespath from 'jmespath';
 
@@ -13,7 +13,7 @@ export class JmespathRuleEngine implements RuleEngine {
   validate(
     context: unknown,
     rule: Rule,
-    _: UIElement<AnyObject>,
+    _: UIElementDefinition<AnyObject>,
     uiState: UIState,
   ): RuleTestResult {
     const result = this.test({ ...(context as AnyObject), uiState }, rule);

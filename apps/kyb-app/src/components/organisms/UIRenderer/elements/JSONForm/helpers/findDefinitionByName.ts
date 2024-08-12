@@ -1,11 +1,11 @@
 import { deserializeDocumentId } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/serialize-document-id';
-import { UIElement } from '@/domains/collection-flow';
+import { UIElementDefinition } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 
 export const findDefinitionByName = (
   name: string,
-  elements: UIElement<AnyObject>[],
-): UIElement<AnyObject> | undefined => {
+  elements: UIElementDefinition<AnyObject>[],
+): UIElementDefinition<AnyObject> | undefined => {
   for (const element of elements) {
     if (element.name === name) {
       return element;
@@ -24,8 +24,8 @@ export const findDefinitionByName = (
 
 export const findDefinitionByDestinationPath = (
   destination: string,
-  elements: UIElement<AnyObject>[],
-): UIElement<AnyObject> | undefined => {
+  elements: UIElementDefinition<AnyObject>[],
+): UIElementDefinition<AnyObject> | undefined => {
   for (const element of elements) {
     if (element.valueDestination === destination) {
       return element;
@@ -44,8 +44,8 @@ export const findDefinitionByDestinationPath = (
 
 export const findDocumentDefinitionById = (
   id: string,
-  elements: UIElement<AnyObject>[],
-): UIElement<AnyObject> | undefined => {
+  elements: UIElementDefinition<AnyObject>[],
+): UIElementDefinition<AnyObject> | undefined => {
   for (const element of elements) {
     if ((element?.options?.documentData?.id as string) === deserializeDocumentId(id)) {
       return element;
@@ -62,10 +62,10 @@ export const findDocumentDefinitionById = (
   return undefined;
 };
 
-export const getAllDefinitions = (elements: UIElement<AnyObject>[]) => {
-  const items: UIElement<AnyObject>[] = [];
+export const getAllDefinitions = (elements: UIElementDefinition<AnyObject>[]) => {
+  const items: UIElementDefinition<AnyObject>[] = [];
 
-  const run = (elements: UIElement<AnyObject>[]) => {
+  const run = (elements: UIElementDefinition<AnyObject>[]) => {
     for (const element of elements) {
       if (element.valueDestination) {
         items.push(element);

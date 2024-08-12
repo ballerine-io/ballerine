@@ -1,4 +1,4 @@
-import { UIElement } from '@/domains/collection-flow';
+import { UIElementDefinition } from '@/domains/collection-flow';
 import {
   Chip,
   MultiselectInputAdapter,
@@ -20,7 +20,7 @@ export interface MultiselectParams {
 export const Multiselect = ({
   definition,
   ...adapterProps
-}: RJSFInputProps & { definition?: UIElement<MultiselectParams> }) => {
+}: RJSFInputProps & { definition?: UIElementDefinition<MultiselectParams> }) => {
   const renderSelected: MultiSelectSelectedItemRenderer = useCallback(
     (params, option) => {
       return (

@@ -1,8 +1,8 @@
-import { Action, UIElement } from '@/domains/collection-flow';
+import { Action, UIElementDefinition } from '@/domains/collection-flow';
 
 export interface UIElementComponentProps<T> {
   params: T;
-  definition: UIElement<T>;
+  definition: UIElementDefinition<T>;
   actions: Action[];
 }
 

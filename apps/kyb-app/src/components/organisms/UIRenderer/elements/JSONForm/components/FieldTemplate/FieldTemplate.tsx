@@ -7,7 +7,7 @@ import { useRuleExecutor } from '@/components/organisms/DynamicUI/hooks/useRuleE
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { findDefinitionByName } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
 import { useJSONFormDefinition } from '@/components/organisms/UIRenderer/elements/JSONForm/providers/JSONFormDefinitionProvider/useJSONFormDefinition';
-import { UIElement } from '@/domains/collection-flow';
+import { UIElementDefinition } from '@/domains/collection-flow';
 import { AnyObject, FieldLayout } from '@ballerine/ui';
 
 export const FieldTemplate = (props: FieldTemplateProps) => {
@@ -22,7 +22,7 @@ export const FieldTemplate = (props: FieldTemplateProps) => {
   const fieldDefinition = useMemo(
     () =>
       findDefinitionByName(props.id.replace('root_', ''), definition.elements || []) ||
-      ({} as UIElement<AnyObject>),
+      ({} as UIElementDefinition<AnyObject>),
     [props.id, definition.elements],
   );
 
