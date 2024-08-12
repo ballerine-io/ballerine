@@ -2,11 +2,12 @@ import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageRes
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { useUIElementProps } from '@/components/organisms/UIRenderer/hooks/useUIElementProps';
-import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
 import { useValidatedInput } from '@/components/providers/Validator/hooks/useValidatedInput';
+import { useValidator } from '@/components/providers/Validator/hooks/useValidator';
 import { UIElementDefinition as TUIElement } from '@/domains/collection-flow';
 import { useElementDefinition } from '@/pages/CollectionFlowV2/hooks/useElementDefinition';
 import { useFieldIndex } from '@/pages/CollectionFlowV2/hooks/useFieldIndex';
+import { useTouched } from '@/pages/CollectionFlowV2/hooks/useTouched';
 import { useUIElement } from '@/pages/CollectionFlowV2/hooks/useUIElement';
 import { useUIElementHandlers } from '@/pages/CollectionFlowV2/hooks/useUIElementsHandlers';
 import { AnyObject, ErrorsList, RJSFInputAdapter, RJSFInputProps } from '@ballerine/ui';
@@ -35,18 +36,10 @@ export const withDynamicUIInputV2 = (
       inputIndex !== null ? [inputIndex] : undefined,
     );
 
-    const { state: elementState, setState: setElementState } = useUIElementState(definition);
-
-    const setTouched = useCallback(
-      (touched: boolean) => {
-        setElementState(uiElement.getId(), { ...elementState, isTouched: touched });
-      },
-      [uiElement, elementState, setElementState],
-    );
-
+    const { isTouched, touchElement } = useTouched(uiElement, currentPage!);
     const { disabled } = useUIElementProps(definition);
-
     const { onChangeHandler } = useUIElementHandlers(uiElement, definition);
+    const { validate } = useValidator();
 
     const handleChange = useCallback(
       (value: unknown) => {
@@ -58,13 +51,16 @@ export const withDynamicUIInputV2 = (
         };
         onChangeHandler(evt as React.ChangeEvent<any>);
         onChange(value);
+        touchElement();
+        validate();
       },
-      [definition.name, onChange, onChangeHandler],
+      [definition.name, onChange, onChangeHandler, validate, touchElement],
     );
 
-    const handleBlurSetTouched = useCallback(() => {
-      setTouched(true);
-    }, [setTouched]);
+    const handleBlurAndSetTouched = useCallback(() => {
+      touchElement();
+      validate();
+    }, [touchElement]);
 
     const value = useMemo(() => uiElement.getValue() as unknown, [uiElement]);
     const errors = useValidatedInput(uiElement);
@@ -79,11 +75,9 @@ export const withDynamicUIInputV2 = (
           inputIndex={inputIndex}
           testId={definition.name}
           onChange={handleChange}
-          onBlur={handleBlurSetTouched}
+          onBlur={handleBlurAndSetTouched}
         />
-        {elementState.isTouched && errors?.length && (
-          <ErrorsList testId={definition.name} errors={errors} />
-        )}
+        {isTouched && errors?.length && <ErrorsList testId={definition.name} errors={errors} />}
       </div>
     );
   }
