@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@2.2.0/schema.json",
-  "changelog": "@changesets/changelog-git",
+  "changelog": ["@changesets/changelog-github", { "repo": "ballerine/ballerine" }],
   "commit": false,
   "fixed": [],
   "linked": [],
