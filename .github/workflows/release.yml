@@ -2,9 +2,9 @@ name: Release
 
 on:
   push:
+    branches:
+      - dev-250/lior-fix-release
   workflow_dispatch:
-    # branches:
-    #   - dev
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
