@@ -3,7 +3,7 @@ name: Publish-packages
 on:
   push:
     branches:
-      - dev
+      - dev-250/fix-release
   workflow_call:
     inputs:
       branch:
