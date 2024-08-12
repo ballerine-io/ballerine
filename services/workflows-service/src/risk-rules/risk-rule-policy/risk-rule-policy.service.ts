@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { RiskRulePolicyRepository } from './risk-rule-policy.repository';
 import { TProjectId, TProjectIds } from '@/types';
 import { Prisma } from '@prisma/client';
+import { RuleSet } from "@ballerine/common";
 
 @Injectable()
 export class RiskRulePolicyService {
@@ -15,6 +16,31 @@ export class RiskRulePolicyService {
     const policy = await this.riskRulePolicyRepository.findById(id, projectIds);
 
     return policy;
+  }
+
+  private mapRiskRule(riskRule: any) {
+    const mappedRuleSets = riskRule.riskRuleRuleSets.map((riskRuleSet: ) =>
+      this.mapRuleSet(rrs.ruleSet)
+    );
+
+    return {
+      id: riskRule.id,
+      ruleSet: mappedRuleSets,
+      domain: riskRule.domain,
+      indicator: riskRule.indicator,
+      riskLevel: riskRule.riskLevel,
+      baseRiskScore: riskRule.baseRiskScore,
+      additionalRiskScore: riskRule.additionalRiskScore,
+      minRiskScore: riskRule.minRiskScore,
+      maxRiskScore: riskRule.maxRiskScore,
+    };
+  }
+
+  async findAndConvertToActionable(id: string, projectIds: TProjectIds) {
+    const policyWithRiskRules = await this.findById(id, projectIds);
+    policyWithRiskRules.riskRules.map((riskRule) => {
+      riskRule.riskRuleRuleSets
+    })
   }
 
   async findMany(args: Prisma.RiskRulesPolicyFindManyArgs, projectIds: TProjectIds) {

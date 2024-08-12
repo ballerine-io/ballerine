@@ -17,9 +17,8 @@ import {
   type TassignToParentRuleSet,
 } from '@/risk-rules/rule-set/schemas/assign-rule-set.schema';
 import {
-  type TUnassignRulesetFromSchema,
-  UnassignRulesetFromParentSchema,
-} from '@/risk-rules/rule/schemas/unassign-ruleset-from-parent.schema';
+  type TUnassignRulesetFromSchema, UnassignRulesetFromParentSchema
+} from "@/risk-rules/rule-set/schemas/unassign-ruleset-from-parent.schema";
 
 @swagger.ApiTags('Rules')
 @common.Controller('external/rule-set')
