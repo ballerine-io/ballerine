@@ -1,5 +1,16 @@
 import { SerializableValidatableTransformer } from './types';
 
+const _generateMappingString = (dataMapping?: Record<string, string>) => {
+  if (!dataMapping || (Array.isArray(dataMapping) && dataMapping.length === 0)) {
+    return '';
+  }
+
+  const entries = Object.entries(dataMapping).map(([key, value]) => `${key}: ${value}`);
+
+  // Join with a comma and newline, and add a trailing comma if entries exist
+  return entries.join(',\n') + ',';
+};
+
 export const INDIVIDUAL_SCREENING_VENDORS = {
   'dow-jones': 'dow-jones',
   'comply-advantage': 'comply-advantage',
@@ -9,6 +20,10 @@ export const COMPANY_SCREENING_VENDORS = {
   'asia-verify': 'asia-verify',
 } as const;
 
+export const MERCHANT_MONITORING_VENDORS = {
+  ballerine: 'ballerine',
+} as const;
+
 export const UBO_VENDORS = {
   'asia-verify': 'asia-verify',
 } as const;
@@ -16,6 +31,7 @@ export const UBO_VENDORS = {
 export const EMAIL_TEMPLATES = {
   resubmission: 'resubmission',
   session: 'session',
+  'session-kyc': 'session-kyc',
   invitation: 'invitation',
 } as const;
 
@@ -24,6 +40,9 @@ export type ApiIndividualScreeningVendors =
 
 export type ApiCompanyScreeningVendors =
   (typeof COMPANY_SCREENING_VENDORS)[keyof typeof COMPANY_SCREENING_VENDORS];
+
+export type MerchantMonitoringVendors =
+  (typeof MERCHANT_MONITORING_VENDORS)[keyof typeof MERCHANT_MONITORING_VENDORS];
 
 export type ApiUboVendors = (typeof UBO_VENDORS)[keyof typeof UBO_VENDORS];
 
@@ -35,6 +54,7 @@ export const BALLERINE_API_PLUGINS = {
   ubo: 'ubo',
   'registry-information': 'registry-information',
   'template-email': 'template-email',
+  'merchant-monitoring': 'merchant-monitoring',
 } as const satisfies Record<string, string>;
 
 type PluginFactoryFnHelper<TPluginKind extends ApiPluginOptions['pluginKind'] | string> = (
@@ -75,6 +95,19 @@ export type ApiBallerinePlugin = {
 type EmailOptions = {
   pluginKind: 'template-email';
   template: ApiEmailTemplates;
+  dataMapping?: Record<string, string>;
+};
+
+type MerchantMonirotingOptions = {
+  pluginKind: 'merchant-monitoring';
+  vendor: MerchantMonitoringVendors;
+  dataMapping?: Record<string, string>;
+  merchantMonitoringQualityControl: boolean;
+  reportType?:
+    | 'MERCHANT_REPORT_T1'
+    | 'MERCHANT_REPORT_T2'
+    | 'ONGOING_MERCHANT_REPORT_T1'
+    | 'ONGOING_MERCHANT_REPORT_T2';
 };
 
 type DowJonesOptions = {
@@ -120,12 +153,13 @@ type ApiPluginOptions =
   | CompanySanctionsAsiaVerifyOptions
   | UboAsiaVerifyOptions
   | RegistryInformationAsiaVerifyOptions
+  | MerchantMonirotingOptions
   | EmailOptions;
 
 type TPluginFactory = {
   [TKey in Exclude<
     ApiBallerinePlugins,
-    'individual-sanctions' | 'company-sanctions' | 'ubo' | 'template-email'
+    'individual-sanctions' | 'company-sanctions' | 'ubo' | 'template-email' | 'merchant-monitoring'
   >]: PluginFactoryFnHelper<TKey>;
 } & Record<
   'individual-sanctions',
@@ -149,6 +183,12 @@ type TPluginFactory = {
     'template-email',
     {
       [TKey in ApiEmailTemplates]: PluginEmailFnHelper<'template-email', TKey>;
+    }
+  > &
+  Record<
+    'merchant-monitoring',
+    {
+      [TKey in MerchantMonitoringVendors]: PluginVendorFnHelper<'merchant-monitoring', TKey>;
     }
   >;
 
@@ -332,6 +372,40 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
       },
     }),
   },
+  [BALLERINE_API_PLUGINS['merchant-monitoring']]: {
+    [MERCHANT_MONITORING_VENDORS['ballerine']]: (options: MerchantMonirotingOptions) => ({
+      name: 'merchant_monitoring',
+      pluginKind: 'api',
+      url: `{secret.UNIFIED_API_URL}/tld/reports`,
+      method: 'POST',
+      headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+      persistResponseDestination: 'pluginsOutput.merchantMonitoring',
+      request: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: `{
+              ${_generateMappingString(options.dataMapping)}
+              reportType: '${options.reportType || 'MERCHANT_REPORT_T1'}',
+              vendor: 'legitscript',
+              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.merchantMonitoring&processName=website-monitoring'])
+              withQualityControl: ${
+                options.merchantMonitoringQualityControl || true ? 'true' : 'false'
+              }
+            }`, // jmespath
+          },
+        ],
+      },
+      response: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: '@', // jmespath
+          },
+        ],
+      },
+    }),
+  },
   [BALLERINE_API_PLUGINS['ubo']]: {
     [UBO_VENDORS['asia-verify']]: _ => ({
       name: 'ubo',
@@ -377,7 +451,8 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
   [BALLERINE_API_PLUGINS['template-email']]: {
     [EMAIL_TEMPLATES['resubmission']]: (options: EmailOptions) => ({
       name: 'resubmission',
-      pluginKind: 'resubmission',
+      template: 'resubmission',
+      pluginKind: 'template-email',
       url: `{secret.EMAIL_API_URL}`,
       method: 'POST',
       successAction: 'EMAIL_SENT',
@@ -393,6 +468,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             transformer: 'jmespath',
             // #TODO: create new token (new using old one)
             mapping: `{
+              ${_generateMappingString(options.dataMapping)}
               kybCompanyName: entity.data.companyName,
               customerCompanyName: metadata.customerName,
               firstName: entity.data.additionalInfo.mainRepresentative.firstName,
@@ -415,7 +491,8 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
     }),
     [EMAIL_TEMPLATES['session']]: (options: EmailOptions) => ({
       name: 'session',
-      pluginKind: 'session',
+      template: 'session',
+      pluginKind: 'template-email',
       url: `{secret.EMAIL_API_URL}`,
       method: 'POST',
       headers: {
@@ -427,6 +504,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
           {
             transformer: 'jmespath',
             mapping: `{
+          ${_generateMappingString(options.dataMapping)}
           kybCompanyName: entity.data.additionalInfo.companyName,
           customerCompanyName: entity.data.additionalInfo.customerCompany,
           firstName: entity.data.firstName,
@@ -447,7 +525,42 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
         transform: [],
       },
     }),
-
+    [EMAIL_TEMPLATES['session-kyc']]: (options: EmailOptions) => ({
+      name: 'session_email',
+      template: 'session-kyc',
+      pluginKind: 'template-email',
+      url: `{secret.EMAIL_API_URL}`,
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
+        'Content-Type': 'application/json',
+      },
+      request: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: `{
+            kybCompanyName: entity.data.additionalInfo.companyName,
+            customerCompanyName: entity.data.additionalInfo.customerCompany,
+            firstName: entity.data.firstName,
+            kycLink: pluginsOutput.kyc_session.kyc_session_1.result.metadata.url,
+            from: 'no-reply@ballerine.com',
+            name: join(' ',[entity.data.additionalInfo.customerCompany,'Team']),
+            receivers: [entity.data.email],
+            subject: '{customerCompanyName} activation, Action needed.',
+            templateId: (documents[].decision[].revisionReason | [0])!=null && 'd-2c6ae291d9df4f4a8770d6a4e272d803' || 'd-61c568cfa5b145b5916ff89790fe2065',
+            revisionReason: documents[].decision[].revisionReason | [0],
+            language: workflowRuntimeConfig.language,
+            supportEmail: join('',['support@',entity.data.additionalInfo.customerCompany,'.com']),
+            adapter: '{secrets.MAIL_ADAPTER}'
+            }`, // jmespath
+          },
+        ],
+      },
+      response: {
+        transform: [],
+      },
+    }),
     [EMAIL_TEMPLATES['invitation']]: (options: EmailOptions) => ({
       name: 'invitation',
       pluginKind: 'invitation',
@@ -462,6 +575,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
           {
             transformer: 'jmespath',
             mapping: `{
+                    ${_generateMappingString(options.dataMapping)}
                     customerName: metadata.customerName,
                     collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
                     from: 'no-reply@ballerine.com',

@@ -238,14 +238,25 @@ export class ApiPlugin {
   }
 
   async _onReplaceVariable(variableKey: string, replacedContent: string, placeholder: string) {
-    const replacedCustomerSecrets = await this.replaceSecretsByProvider(
+    let replacedSecrets = await this.replaceSecretsByProvider(
       'customer',
       variableKey,
       replacedContent,
       placeholder,
     );
 
-    return replacedCustomerSecrets;
+    // TODO: Remove this line when migrate to new ballerine plugins
+    replacedSecrets = await this.replaceBallerineVariable(
+      variableKey,
+      replacedContent,
+      placeholder,
+    );
+
+    return replacedSecrets;
+  }
+
+  async replaceBallerineVariable(variableKey: string, content: string, placeholder: string) {
+    return await this.replaceSecretsByProvider('ballerine', variableKey, content, placeholder);
   }
 
   async replaceAllVariables(content: string, context: TContext) {

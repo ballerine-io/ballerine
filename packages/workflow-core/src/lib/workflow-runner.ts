@@ -199,6 +199,7 @@ export class WorkflowRunner {
       const apiPluginClass = this.pickApiPluginClass(apiPluginSchema);
 
       return new apiPluginClass({
+        ...apiPluginSchema,
         name: apiPluginSchema.name,
         vendor: apiPluginSchema.vendor,
         template: apiPluginSchema.template,
@@ -399,8 +400,10 @@ export class WorkflowRunner {
     // @ts-ignore
     if (apiPluginSchema.pluginKind === 'email') return EmailPlugin;
 
-    if (apiPluginSchema.pluginKind === BALLERINE_API_PLUGINS['template-email'])
+    if (apiPluginSchema.pluginKind === BALLERINE_API_PLUGINS['template-email']) {
       return BallerineEmailPlugin;
+    }
+
     // @ts-ignore
     if (BALLERINE_API_PLUGINS_KINDS.includes(apiPluginSchema.pluginKind)) return BallerineApiPlugin;
 

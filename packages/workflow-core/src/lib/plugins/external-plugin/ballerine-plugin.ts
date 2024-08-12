@@ -11,17 +11,12 @@ export interface IBallerineApiPluginParams {
   stateNames: string[];
 }
 
-const _validatePlugin = (params: IBallerineApiPluginParams & IApiPluginParams) => {
+const _getPluginOptions = (params: IBallerineApiPluginParams & IApiPluginParams) => {
   let optionsFactoryFn: any = BALLERINE_API_PLUGIN_FACTORY[params.pluginKind];
 
   if (!optionsFactoryFn) {
     throw new Error(`Unknown plugin kind: ${params.pluginKind}`);
   }
-};
-
-const _getPluginOptions = (params: IBallerineApiPluginParams & IApiPluginParams) => {
-  _validatePlugin(params);
-  let optionsFactoryFn;
 
   const pluginOptionFactoryFn = BALLERINE_API_PLUGIN_FACTORY[params.pluginKind] as any;
 
@@ -30,7 +25,11 @@ const _getPluginOptions = (params: IBallerineApiPluginParams & IApiPluginParams)
     optionsFactoryFn = pluginOptionFactoryFn;
   }
 
-  if (['individual-sanctions', 'company-sanctions', 'ubo'].includes(params.pluginKind)) {
+  if (
+    ['individual-sanctions', 'company-sanctions', 'ubo', 'merchant-monitoring'].includes(
+      params.pluginKind,
+    )
+  ) {
     if (!params.vendor) {
       throw new Error(`Missed vendor for: ${params.pluginKind}`);
     }
@@ -76,7 +75,8 @@ export class BallerineApiPlugin extends ApiPlugin {
     return await this.replaceAllVariables(this.url, context);
   }
 
-  async _onReplaceVariable(variableKey: string, content: string, placeholder: string) {
+  // TODO: remove #  after refactoring plugins
+  async #_onReplaceVariable(variableKey: string, content: string, placeholder: string) {
     let replacedSecrets = await this.replaceSecretsByProvider(
       'ballerine',
       variableKey,
