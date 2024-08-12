@@ -8,12 +8,12 @@ import { ObjectInsertionStrategy } from '@/components/organisms/UIRenderer/hooks
 import { InsertStrategyRunner } from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic/insert-strategy-runner';
 import { DefinitionInsertionParams } from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic/types';
 import { useListElementsDisablerLogic } from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic/useElementsDisablerLogic';
-import { UIElement } from '@/domains/collection-flow';
+import { UIElementDefinition } from '@/domains/collection-flow';
 import { useRefValue } from '@/hooks/useRefValue';
 import { useEffect, useMemo } from 'react';
 
 export const useDataInsertionLogic = <TElementParams extends DefinitionInsertionParams>(
-  definition: UIElement<TElementParams>,
+  definition: UIElementDefinition<TElementParams>,
   skip?: boolean,
 ) => {
   const { stateApi, payload } = useStateManagerContext();

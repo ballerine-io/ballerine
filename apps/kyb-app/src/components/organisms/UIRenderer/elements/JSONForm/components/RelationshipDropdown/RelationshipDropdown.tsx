@@ -1,10 +1,10 @@
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { relationshipOptions } from '@/components/organisms/UIRenderer/elements/JSONForm/components/RelationshipDropdown/relationship-options';
-import { UIElement } from '@/domains/collection-flow';
-import { AutocompleteTextInputAdapter, RJSFInputProps } from '@ballerine/ui';
-import { useMemo } from 'react';
-import get from 'lodash/get';
 import { UISchema } from '@/components/organisms/UIRenderer/types/ui-schema.types';
+import { UIElementDefinition } from '@/domains/collection-flow';
+import { AutocompleteTextInputAdapter, RJSFInputProps } from '@ballerine/ui';
+import get from 'lodash/get';
+import { useMemo } from 'react';
 
 export interface RelationshipDropdownParams {
   companyNameDestination: string;
@@ -13,7 +13,9 @@ export interface RelationshipDropdownParams {
 const COMPANY_NAME_PLACEHOLDER = '{company_name}';
 
 export const RelationshipDropdown = (
-  props: RJSFInputProps<string> & { definition: UIElement<RelationshipDropdownParams> } & {
+  props: RJSFInputProps<string> & {
+    definition: UIElementDefinition<RelationshipDropdownParams>;
+  } & {
     inputIndex: number | null;
   },
 ) => {

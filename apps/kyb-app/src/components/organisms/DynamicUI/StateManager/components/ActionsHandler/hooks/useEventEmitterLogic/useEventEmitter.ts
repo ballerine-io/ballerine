@@ -6,11 +6,11 @@ import { useActionDispatcher } from '@/components/organisms/DynamicUI/StateManag
 import { UIEventType } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/hooks/useEventEmitterLogic/types';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { UIElement } from '@/domains/collection-flow';
+import { UIElementDefinition } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useCallback } from 'react';
 
-export const useEventEmitterLogic = (elementDefinition: UIElement<AnyObject>) => {
+export const useEventEmitterLogic = (elementDefinition: UIElementDefinition<AnyObject>) => {
   const { actions, dispatchAction } = useActionsHandlerContext();
   const { stateApi } = useStateManagerContext();
   const { state } = useDynamicUIContext();

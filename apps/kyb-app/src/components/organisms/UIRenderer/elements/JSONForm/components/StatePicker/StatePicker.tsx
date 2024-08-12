@@ -1,16 +1,16 @@
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { UIElement } from '@/domains/collection-flow';
+import { UIElementDefinition } from '@/domains/collection-flow';
 import { getCountryStates } from '@/helpers/countries-data';
 import { RJSFInputProps, TextInputAdapter } from '@ballerine/ui';
-import { useMemo } from 'react';
 import get from 'lodash/get';
+import { useMemo } from 'react';
 
 export interface StatePickerParams {
   countryCodePath: string;
 }
 
 export const StatePicker = (
-  props: RJSFInputProps & { definition: UIElement<StatePickerParams> },
+  props: RJSFInputProps & { definition: UIElementDefinition<StatePickerParams> },
 ) => {
   const { schema: baseSchema, definition } = props;
 

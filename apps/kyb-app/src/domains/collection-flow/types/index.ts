@@ -1,4 +1,4 @@
-import { Action, Rule, UIElement } from '@/domains/collection-flow/types/ui-schema.types';
+import { Action, Rule, UIElementDefinition } from '@/domains/collection-flow/types/ui-schema.types';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 
@@ -126,7 +126,7 @@ export interface UIPage {
   name: string;
   number: number;
   stateName: string;
-  elements: UIElement<AnyObject>[];
+  elements: UIElementDefinition<AnyObject>[];
   actions: Action[];
   pageValidation?: Rule[];
 }

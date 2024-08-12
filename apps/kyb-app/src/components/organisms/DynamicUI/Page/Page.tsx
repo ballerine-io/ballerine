@@ -5,7 +5,7 @@ import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateMa
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { useRuleExecutor } from '@/components/organisms/DynamicUI/hooks/useRuleExecutor';
 import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
-import { UIElement, UIPage } from '@/domains/collection-flow';
+import { UIElementDefinition, UIPage } from '@/domains/collection-flow';
 import { AnyChildren, AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 import { pageContext } from './page.context';
@@ -20,7 +20,7 @@ export interface PageProps {
 export const Page = ({ page, children }: PageProps) => {
   const { pages } = usePageResolverContext();
   const definition = useMemo(() => {
-    const definition: UIElement<AnyObject> = {
+    const definition: UIElementDefinition<AnyObject> = {
       type: 'page',
       name: page.name,
       options: {},

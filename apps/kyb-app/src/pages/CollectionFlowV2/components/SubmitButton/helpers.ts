@@ -1,19 +1,19 @@
 import { ARRAY_VALUE_INDEX_PLACEHOLDER } from '@/common/consts/consts';
 import { DocumentFieldParams } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField';
-import { UIElement, UIPage } from '@/domains/collection-flow';
+import { UIElementDefinition, UIPage } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 
 export const getElementByValueDestination = (
   destination: string,
   page: UIPage,
-): UIElement<AnyObject> | null => {
+): UIElementDefinition<AnyObject> | null => {
   const arrayIndexRegex = /[(\d)]/g;
   const isIndexValue = destination.match(arrayIndexRegex);
 
   const findByElementDefinitionByDestination = (
     targetDestination: string,
-    elements: UIElement<AnyObject>[],
-  ): UIElement<AnyObject> | null => {
+    elements: UIElementDefinition<AnyObject>[],
+  ): UIElementDefinition<AnyObject> | null => {
     for (const element of elements) {
       if (element.valueDestination === targetDestination) return element;
 
@@ -45,11 +45,11 @@ export const getElementByValueDestination = (
 export const getDocumentElementByDocumentError = (
   id: string,
   page: UIPage,
-): UIElement<AnyObject> | null => {
+): UIElementDefinition<AnyObject> | null => {
   const findElement = (
     id: string,
-    elements: UIElement<AnyObject>[],
-  ): UIElement<DocumentFieldParams> | null => {
+    elements: UIElementDefinition<AnyObject>[],
+  ): UIElementDefinition<DocumentFieldParams> | null => {
     for (const element of elements) {
       //@ts-ignore
       if (element.options?.documentData?.id === id.replace('document-error-', '')) return element;

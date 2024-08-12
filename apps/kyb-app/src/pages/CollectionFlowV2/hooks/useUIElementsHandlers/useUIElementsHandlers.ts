@@ -1,7 +1,7 @@
 import { useEventEmitterLogic } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { UIElement } from '@/components/providers/Validator/hooks/useValidate/ui-element';
-import { UIElement as IUIElement } from '@/domains/collection-flow';
+import { UIElementDefinition as IUIElement } from '@/domains/collection-flow';
 import set from 'lodash/set';
 import { useCallback } from 'react';
 

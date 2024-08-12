@@ -1,6 +1,6 @@
 import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
 import { findDocumentDefinitionById } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
-import { Document, UIElement, UIPage } from '@/domains/collection-flow';
+import { Document, UIElementDefinition, UIPage } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 
@@ -9,7 +9,7 @@ export interface PageError {
   pageName: string;
   stateName: string;
   errors: ErrorField[];
-  _elements: UIElement<AnyObject>[];
+  _elements: UIElementDefinition<AnyObject>[];
 }
 
 export const selectDirectors = (context: AnyObject) =>

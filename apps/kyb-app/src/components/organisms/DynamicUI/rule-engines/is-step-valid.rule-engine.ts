@@ -4,7 +4,7 @@ import {
   RuleTestResult,
 } from '@/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
 import { validate } from '@/components/providers/Validator/hooks/useValidate';
-import { UIElement, UIPage, ValidContextRule } from '@/domains/collection-flow';
+import { UIElementDefinition, UIPage, ValidContextRule } from '@/domains/collection-flow';
 import { transformV1UIElementsToV2UIElements } from '@/pages/CollectionFlowV2/helpers';
 import { AnyObject } from '@ballerine/ui';
 import jsonLogic from 'json-logic-js';
@@ -15,7 +15,7 @@ export class IsStepValidRuleEngine implements RuleEngine {
   validate(
     context: unknown,
     _: unknown,
-    element: UIElement<AnyObject>,
+    element: UIElementDefinition<AnyObject>,
     __: UIState,
     uiPage: UIPage,
   ): RuleTestResult {

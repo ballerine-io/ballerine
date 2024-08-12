@@ -5,13 +5,13 @@ import { IsStepValidRuleEngine } from '@/components/organisms/DynamicUI/rule-eng
 import { JmespathRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/jmespath.rule-engine';
 import { JsonLogicRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/json-logic.rule-engine';
 import { JsonSchemaRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
-import { Action, UIElement, UIPage } from '@/domains/collection-flow';
+import { Action, UIElementDefinition, UIPage } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 
 export const getDispatchableActions = (
   context: AnyObject,
   actions: Action[],
-  definition: UIElement<AnyObject>,
+  definition: UIElementDefinition<AnyObject>,
   state: UIState,
   currentPage: UIPage,
 ) => {

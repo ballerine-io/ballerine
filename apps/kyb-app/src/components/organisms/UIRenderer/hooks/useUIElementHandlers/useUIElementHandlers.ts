@@ -1,11 +1,11 @@
 import { useEventEmitterLogic } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { UIElement } from '@/domains/collection-flow';
+import { UIElementDefinition } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import set from 'lodash/set';
 import { useCallback } from 'react';
 
-export const useUIElementHandlers = (definition: UIElement<AnyObject>) => {
+export const useUIElementHandlers = (definition: UIElementDefinition<AnyObject>) => {
   const emitEvent = useEventEmitterLogic(definition);
   const { stateApi } = useStateManagerContext();
   const { setContext, getContext } = stateApi;

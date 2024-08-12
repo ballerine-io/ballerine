@@ -1,6 +1,6 @@
 import { JsonSchemaRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
 import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
-import { Rule, UIElement } from '@/domains/collection-flow';
+import { Rule, UIElementDefinition } from '@/domains/collection-flow';
 
 describe('JsonSchemaRuleEngine', () => {
   let ruleEngine: JsonSchemaRuleEngine;
@@ -66,7 +66,7 @@ describe('JsonSchemaRuleEngine', () => {
 
         const testResult = ruleEngine.validate(testData, rule, {
           valueDestination: 'foo',
-        } as UIElement);
+        } as UIElementDefinition);
 
         const expectedError: ErrorField = {
           type: 'error',
@@ -118,7 +118,7 @@ describe('JsonSchemaRuleEngine', () => {
           bar: null,
         };
 
-        const testResult = ruleEngine.validate(testData, rule, {} as UIElement);
+        const testResult = ruleEngine.validate(testData, rule, {} as UIElementDefinition);
 
         expect(testResult.isValid).toBe(false);
         expect(testResult.errors?.length).toBe(2);
@@ -168,7 +168,7 @@ describe('JsonSchemaRuleEngine', () => {
             message: expect.any(String) as string,
           };
 
-          const testResult = ruleEngine.validate(testData, rule, {} as UIElement);
+          const testResult = ruleEngine.validate(testData, rule, {} as UIElementDefinition);
 
           expect(testResult.errors?.length).toBe(1);
           expect(testResult.errors).toContainEqual(testError);
@@ -202,7 +202,7 @@ describe('JsonSchemaRuleEngine', () => {
                 },
               };
 
-              const testResult = ruleEngine.validate(testData, rule, {} as UIElement);
+              const testResult = ruleEngine.validate(testData, rule, {} as UIElementDefinition);
 
               expect(testResult.isValid).toBe(false);
               expect(testResult.errors?.length).toBe(1);
@@ -246,7 +246,7 @@ describe('JsonSchemaRuleEngine', () => {
             };
             const expectedFileId = 'fooList[0].foo';
 
-            const testResult = ruleEngine.validate(testData, rule, {} as UIElement);
+            const testResult = ruleEngine.validate(testData, rule, {} as UIElementDefinition);
 
             expect(testResult.isValid).toBe(false);
             expect(testResult.errors?.length).toBe(1);
@@ -281,7 +281,7 @@ describe('JsonSchemaRuleEngine', () => {
 
             const testData = {};
 
-            const testResult = ruleEngine.validate(testData, rule, {} as UIElement);
+            const testResult = ruleEngine.validate(testData, rule, {} as UIElementDefinition);
 
             expect(testResult.isValid).toBe(false);
             expect(testResult.errors?.length).toBe(1);

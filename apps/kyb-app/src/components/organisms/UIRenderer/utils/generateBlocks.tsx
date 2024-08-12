@@ -1,10 +1,13 @@
 //@ts-nocheck
-import { UIElement } from '@/domains/collection-flow';
-import { ElementsMap } from '../types/elements.types';
+import { UIElementDefinition } from '@/domains/collection-flow';
 import { createBlocks } from '@ballerine/blocks';
 import { v4 } from 'uuid';
+import { ElementsMap } from '../types/elements.types';
 
-export const generateBlocks = (schema: UIElement | UIElement[], elements: ElementsMap) => {
+export const generateBlocks = (
+  schema: UIElementDefinition | UIElementDefinition[],
+  elements: ElementsMap,
+) => {
   let base = createBlocks<keyof typeof elements>().addBlock();
 
   if (Array.isArray(schema)) {
