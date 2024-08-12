@@ -1,25 +1,25 @@
 import * as swagger from '@nestjs/swagger';
 import * as common from '@nestjs/common';
-import {Delete} from '@nestjs/common';
-import {Type} from '@sinclair/typebox';
-import {Validate} from 'ballerine-nestjs-typebox';
-import {ProjectIds} from '@/common/decorators/project-ids.decorator';
-import type {TProjectId, TProjectIds} from '@/types';
-import {CurrentProject} from '@/common/decorators/current-project.decorator';
-import {type TUpdateRule, UpdateRuleSchema} from '@/risk-rules/rule/schemas/update-rule.schema';
-import {RuleSetService} from "@/risk-rules/rule-set/rule-set.service";
+import { Delete } from '@nestjs/common';
+import { Type } from '@sinclair/typebox';
+import { Validate } from 'ballerine-nestjs-typebox';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import type { TProjectId, TProjectIds } from '@/types';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { type TUpdateRule, UpdateRuleSchema } from '@/risk-rules/rule/schemas/update-rule.schema';
+import { RuleSetService } from '@/risk-rules/rule-set/rule-set.service';
 import {
   CreateRulesetSchema,
-  type TCreatedRuleset
-} from "@/risk-rules/rule-set/schemas/create-rule-set.schema";
+  type TCreatedRuleset,
+} from '@/risk-rules/rule-set/schemas/create-rule-set.schema';
 import {
   AssignRuleSetToParentRuleSet,
-  type TassignToParentRuleSet
-} from "@/risk-rules/rule-set/schemas/assign-rule-set.schema";
+  type TassignToParentRuleSet,
+} from '@/risk-rules/rule-set/schemas/assign-rule-set.schema';
 import {
   type TUnassignRulesetFromSchema,
   UnassignRulesetFromParentSchema,
-} from "@/risk-rules/rule/schemas/unassign-ruleset-from-parent.schema";
+} from '@/risk-rules/rule/schemas/unassign-ruleset-from-parent.schema';
 
 @swagger.ApiTags('Rules')
 @common.Controller('external/rule-set')
@@ -40,7 +40,7 @@ export class RuleSetController {
     @common.Body() data: TCreatedRuleset,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const {parentRuleSetId, ...rulesetCreationData} = data
+    const { parentRuleSetId, ...rulesetCreationData } = data;
 
     return await this.ruleSetService.createRuleSet({
       ruleSetData: rulesetCreationData,
@@ -73,7 +73,7 @@ export class RuleSetController {
       assignRuleDate.parentRuleSetId,
     );
 
-    return ruleSetAssociation
+    return ruleSetAssociation;
   }
 
   @common.Put('/:ruleSetId/unassign')

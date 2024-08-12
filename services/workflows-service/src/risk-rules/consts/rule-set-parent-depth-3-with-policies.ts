@@ -1,14 +1,14 @@
-import {Prisma} from "@prisma/client";
+import { Prisma } from '@prisma/client';
 
 export const RULESET_PARENT_DEPTH_3_WITH_POLICIES = {
   riskRuleRuleSets: {
     include: {
       riskRule: {
         include: {
-          riskRulePolicy: true
-        }
-      }
-    }
+          riskRulePolicy: true,
+        },
+      },
+    },
   },
   parentRuleSets: {
     include: {
@@ -18,10 +18,10 @@ export const RULESET_PARENT_DEPTH_3_WITH_POLICIES = {
             include: {
               riskRule: {
                 include: {
-                  riskRulePolicy: true
-                }
-              }
-            }
+                  riskRulePolicy: true,
+                },
+              },
+            },
           },
           parentRuleSets: {
             include: {
@@ -31,10 +31,10 @@ export const RULESET_PARENT_DEPTH_3_WITH_POLICIES = {
                     include: {
                       riskRule: {
                         include: {
-                          riskRulePolicy: true
-                        }
-                      }
-                    }
+                          riskRulePolicy: true,
+                        },
+                      },
+                    },
                   },
                   parentRuleSets: {
                     include: {
@@ -44,21 +44,21 @@ export const RULESET_PARENT_DEPTH_3_WITH_POLICIES = {
                             include: {
                               riskRule: {
                                 include: {
-                                  riskRulePolicy: true
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-} satisfies Prisma.RuleSetInclude
+                                  riskRulePolicy: true,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+} satisfies Prisma.RuleSetInclude;

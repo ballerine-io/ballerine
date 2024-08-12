@@ -1,38 +1,25 @@
 {
   "dataSchema": {
     "type": "object",
-    "required": [
-      "id",
-      "type",
-      "data"
-    ],
+    "required": ["id", "type", "data"],
     "properties": {
       "id": {
         "type": "string"
       },
       "data": {
         "type": "object",
-        "required": [
-          "companyName",
-          "additionalInfo"
-        ],
+        "required": ["companyName", "additionalInfo"],
         "properties": {
           "companyName": {
             "type": "string"
           },
           "additionalInfo": {
             "type": "object",
-            "required": [
-              "mainRepresentative"
-            ],
+            "required": ["mainRepresentative"],
             "properties": {
               "mainRepresentative": {
                 "type": "object",
-                "required": [
-                  "firstName",
-                  "lastName",
-                  "email"
-                ],
+                "required": ["firstName", "lastName", "email"],
                 "properties": {
                   "email": {
                     "type": "string",

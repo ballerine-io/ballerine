@@ -1,10 +1,10 @@
-import {Prisma} from "@prisma/client";
+import { Prisma } from '@prisma/client';
 
 export const RULESET_DEPTH_OF_3_WITH_RULES = {
   rulesetRules: {
     include: {
-      rule: true
-    }
+      rule: true,
+    },
   },
   childRuleSets: {
     include: {
@@ -12,8 +12,8 @@ export const RULESET_DEPTH_OF_3_WITH_RULES = {
         include: {
           rulesetRules: {
             include: {
-              rule: true
-            }
+              rule: true,
+            },
           },
           childRuleSets: {
             include: {
@@ -21,8 +21,8 @@ export const RULESET_DEPTH_OF_3_WITH_RULES = {
                 include: {
                   rulesetRules: {
                     include: {
-                      rule: true
-                    }
+                      rule: true,
+                    },
                   },
                   childRuleSets: {
                     include: {
@@ -30,19 +30,19 @@ export const RULESET_DEPTH_OF_3_WITH_RULES = {
                         include: {
                           rulesetRules: {
                             include: {
-                              rule: true
-                            }
+                              rule: true,
+                            },
                           },
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-} satisfies Prisma.RuleSetInclude
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+} satisfies Prisma.RuleSetInclude;

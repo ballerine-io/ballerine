@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Prisma, RiskRulesPolicy } from '@prisma/client';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { TProjectIds } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 
 @Injectable()
 export class RiskRulePolicyRepository {
@@ -11,52 +11,60 @@ export class RiskRulePolicyRepository {
     private readonly scopeService: ProjectScopeService,
   ) {}
 
-  async createRiskRulePolicy(
-    projectId: string,
-    createArgs: Prisma.RiskRulesPolicyUncheckedCreateInput,
+  async create(data: Prisma.RiskRulesPolicyUncheckedCreateInput) {
+    return this.prisma.riskRulesPolicy.create({ data });
+  }
+
+  async findById(id: string, projectIds: TProjectIds) {
+    return this.prisma.riskRulesPolicy.findFirstOrThrow(
+      this.scopeService.scopeFindOneOrPublic({ where: { id } }, projectIds),
+    );
+  }
+
+  async findMany(args: Prisma.RiskRulesPolicyFindManyArgs, projectIds: TProjectIds) {
+    return this.prisma.riskRulesPolicy.findMany(
+      this.scopeService.scopeFindManyOrPublic({ ...args }, projectIds),
+    );
+  }
+
+  async update(
+    id: string,
+    data: Prisma.RiskRulesPolicyUncheckedUpdateInput,
+    projectId: TProjectId,
   ) {
-    return this.prisma.riskRulesPolicy.create({
-      data: { ...createArgs, projectId, isPublic: false },
+    const policy = await this.findById(id, [projectId]);
+    if (policy.isPublic) {
+      throw new BadRequestException('Cannot add risk rule to public policy');
+    }
+
+    return this.prisma.riskRulesPolicy.update({
+      where: { id },
+      data: data,
     });
   }
 
-  async findRiskRulePolicyById(id: string, projectIds: TProjectIds) {
-    return this.prisma.riskRulesPolicy.findFirstOrThrow(
-      this.scopeService.scopeFindOneOrPublic(
-        {
-          where: { id },
-        },
-        projectIds,
-      ),
+  async delete(id: string, projectIds: TProjectIds) {
+    return this.prisma.riskRulesPolicy.delete(
+      this.scopeService.scopeDelete({ where: { id } }, projectIds),
     );
   }
 
-  async findRiskRulePolicyByWorkflowDefinitionId(
-    workflowDefinitionId: string,
+  async addRiskRule(
+    policyId: string,
+    riskRuleId: string,
     projectIds: TProjectIds,
-  ) {
-    return this.prisma.riskRulesPolicy.findFirstOrThrow(
-      this.scopeService.scopeFindOneOrPublic(
-        {
-          where: {
-            workflowDefinitionRiskRulePolicies: {
-              some: {
-                workflowDefinitionId,
-              },
-            },
-          },
-          select: {
-            riskRuleSets: true,
-          },
+  ): Promise<RiskRulesPolicy> {
+    const policy = await this.findById(policyId, projectIds);
+    if (policy.isPublic) {
+      throw new BadRequestException('Cannot add risk rule to public policy');
+    }
+    return this.prisma.riskRulesPolicy.update({
+      where: { id: policyId },
+      data: {
+        riskRule: {
+          connect: { id: riskRuleId },
         },
-        projectIds,
-      ),
-    );
-  }
-
-  async findRiskRulePolicyByProjectId(projectIds: TProjectIds) {
-    return this.prisma.riskRulesPolicy.findMany(
-      this.scopeService.scopeFindManyOrPublic({ where: {} }, projectIds),
-    );
+      },
+    });
   }
 }

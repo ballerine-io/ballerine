@@ -1,8 +1,8 @@
-import {Injectable} from '@nestjs/common';
-import {PrismaService} from '@/prisma/prisma.service';
-import {Prisma} from '@prisma/client';
-import {ProjectScopeService} from '@/project/project-scope.service';
-import {TProjectIds} from '@/types';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '@/prisma/prisma.service';
+import { Prisma } from '@prisma/client';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { TProjectIds } from '@/types';
 
 @Injectable()
 export class RuleRepository {
@@ -11,37 +11,34 @@ export class RuleRepository {
     private readonly scopeService: ProjectScopeService,
   ) {}
 
-  async create(
-    {
-      createArgs,
-      projectId,
-      ruleSetId,
-    }: {
-      createArgs: Omit<Prisma.RuleUncheckedCreateInput, 'projectId'>,
-      projectId: string,
-      ruleSetId?: string,
-    }
-  ) {
+  async create({
+    createArgs,
+    projectId,
+    ruleSetId,
+  }: {
+    createArgs: Omit<Prisma.RuleUncheckedCreateInput, 'projectId'>;
+    projectId: string;
+    ruleSetId?: string;
+  }) {
     return this.prisma.rule.create({
       data: {
         ...createArgs,
         projectId,
         isPublic: false,
-        ...(ruleSetId ? {
-          rulesetRules: {
-            create: {
-              ruleSetId: ruleSetId,
+        ...(ruleSetId
+          ? {
+              rulesetRules: {
+                create: {
+                  ruleSetId: ruleSetId,
+                },
+              },
             }
-          },
-        } : {}),
-      }
+          : {}),
+      },
     });
   }
 
-  async findMany(
-    args: Prisma.RuleFindManyArgs,
-    projectIds: TProjectIds,
-  ) {
+  async findMany(args: Prisma.RuleFindManyArgs, projectIds: TProjectIds) {
     return this.prisma.rule.findMany(
       this.scopeService.scopeFindManyOrPublic(
         {
@@ -53,11 +50,7 @@ export class RuleRepository {
     );
   }
 
-  async findById(
-    id: string,
-    projectIds: TProjectIds,
-    args?: Prisma.RuleFindFirstOrThrowArgs,
-  ) {
+  async findById(id: string, projectIds: TProjectIds, args?: Prisma.RuleFindFirstOrThrowArgs) {
     return this.prisma.rule.findFirstOrThrow(
       this.scopeService.scopeFindOneOrPublic(
         {
@@ -87,14 +80,11 @@ export class RuleRepository {
   }
 
   // eslint-disable-next-line ballerine/verify-repository-project-scoped
-  async connectToRuleset(
-    id: string,
-    ruleSetId: string
-  ) {
+  async connectToRuleset(id: string, ruleSetId: string) {
     return this.prisma.ruleSetRule.upsert({
       create: {
         ruleSetId,
-        ruleId: id
+        ruleId: id,
       },
       update: {
         ruleSetId,
@@ -103,23 +93,20 @@ export class RuleRepository {
         ruleId_ruleSetId: {
           ruleId: id,
           ruleSetId: ruleSetId,
-        }
-      }
+        },
+      },
     });
   }
 
   // eslint-disable-next-line ballerine/verify-repository-project-scoped
-  async disconnectFromRuleset(
-    id: string,
-    ruleSetId: string
-  ) {
+  async disconnectFromRuleset(id: string, ruleSetId: string) {
     return this.prisma.ruleSetRule.delete({
       where: {
         ruleId_ruleSetId: {
           ruleId: id,
           ruleSetId: ruleSetId,
-        }
-      }
+        },
+      },
     });
   }
 
@@ -149,10 +136,10 @@ export class RuleRepository {
               include: {
                 riskRuleRuleSets: {
                   include: {
-                    riskRule: true
+                    riskRule: true,
                   },
-                }
-              }
+                },
+              },
             },
           },
           where: {
@@ -162,7 +149,7 @@ export class RuleRepository {
               },
             },
           },
-        }
+        },
       },
     });
   }
