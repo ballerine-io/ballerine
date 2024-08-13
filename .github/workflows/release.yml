@@ -62,6 +62,10 @@ jobs:
           commitMessage: 'chore: publish changeset'
           username: 'devops'
           email: 'devops@dballerine.com'
+          # script to be used to publish the pr (changeset version by default)
+          versionScript: changeset version
+          # script to be used to publish the pr 
+          publishScript: changeset publish
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
