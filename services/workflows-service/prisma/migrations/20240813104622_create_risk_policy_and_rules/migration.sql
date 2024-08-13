@@ -94,6 +94,7 @@ CREATE TABLE "Rule" (
     "isPublic" BOOLEAN NOT NULL DEFAULT false,
     "key" TEXT NOT NULL,
     "operation" TEXT NOT NULL,
+    "value" JSONB NOT NULL,
     "comparisonValue" JSONB NOT NULL,
     "engine" "RuleEngine" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

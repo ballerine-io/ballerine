@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { RiskRulePolicyRepository } from './risk-rule-policy.repository';
 import { TProjectId, TProjectIds } from '@/types';
 import { Prisma } from '@prisma/client';
-import { RuleSet } from "@ballerine/common";
+import { RuleSetWithChildrenAndRules } from '@/risk-rules/types/types';
+import { AnyRecord, Rule, RuleSchema, Serializable } from '@ballerine/common';
 
 @Injectable()
 export class RiskRulePolicyService {
@@ -18,29 +19,56 @@ export class RiskRulePolicyService {
     return policy;
   }
 
-  private mapRiskRule(riskRule: any) {
-    const mappedRuleSets = riskRule.riskRuleRuleSets.map((riskRuleSet: ) =>
-      this.mapRuleSet(rrs.ruleSet)
-    );
+  private extractRulesFromRuleSet(rulesSet: RuleSetWithChildrenAndRules) {
+    const rules = rulesSet.rulesetRules.map(rulesetRule => {
+      const { key, value, operation, comparisonValue, engine } = rulesetRule.rule;
+
+      const parseResult = RuleSchema.parse({
+        key,
+        value,
+        operator: operation,
+      });
+
+      return {
+        ...parseResult,
+        comparisonValue: comparisonValue as NonNullable<Serializable>,
+        engine,
+      } satisfies Rule & {
+        comparisonValue: NonNullable<Serializable>;
+        engine: string;
+      };
+    });
 
     return {
-      id: riskRule.id,
-      ruleSet: mappedRuleSets,
-      domain: riskRule.domain,
-      indicator: riskRule.indicator,
-      riskLevel: riskRule.riskLevel,
-      baseRiskScore: riskRule.baseRiskScore,
-      additionalRiskScore: riskRule.additionalRiskScore,
-      minRiskScore: riskRule.minRiskScore,
-      maxRiskScore: riskRule.maxRiskScore,
-    };
+      rules,
+      operator: rulesSet.operator,
+      childRuleSet: rulesSet.childRuleSets.map(childRuleSet =>
+        this.extractRulesFromRuleSet(childRuleSet.child),
+      ),
+    } as const;
   }
 
-  async findAndConvertToActionable(id: string, projectIds: TProjectIds) {
+  async formatRiskRuleWithRules(id: string, projectIds: TProjectIds) {
     const policyWithRiskRules = await this.findById(id, projectIds);
-    policyWithRiskRules.riskRules.map((riskRule) => {
-      riskRule.riskRuleRuleSets
-    })
+
+    policyWithRiskRules.riskRules.map(riskRule => {
+      const ruleSet = riskRule.riskRuleRuleSets.map(riskRuleRuleSet => {
+        const ruleSet = this.extractRulesFromRuleSet(riskRuleRuleSet.ruleSet);
+
+        return ruleSet;
+      });
+
+      return {
+        operator: riskRule.operator,
+        domain: riskRule.domain,
+        indicator: riskRule.indicator,
+        baseRiskScore: riskRule.baseRiskScore,
+        additionalRiskScore: riskRule.additionalRiskScore,
+        minRiskScore: riskRule.minRiskScore,
+        maxRiskScore: riskRule.maxRiskScore,
+        ruleSet,
+      };
+    });
   }
 
   async findMany(args: Prisma.RiskRulesPolicyFindManyArgs, projectIds: TProjectIds) {

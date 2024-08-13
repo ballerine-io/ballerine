@@ -4,6 +4,7 @@ import { NotionService } from '@/notion/notion.service';
 import z from 'zod';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { RuleSetSchema } from '@ballerine/common';
+import { RiskRulePolicyService } from '@/risk-rules/risk-rule-policy/risk-rule-policy.service';
 
 const isJsonString = (value: string) => {
   try {
@@ -51,13 +52,18 @@ export interface TFindAllRulesOptions {
 export class RiskRuleService {
   constructor(
     private readonly notionService: NotionService,
+    private readonly riskRulePolicyService: RiskRulePolicyService,
     private readonly logger: AppLoggerService,
   ) {}
 
   public async findAll(
     { databaseId, source }: TFindAllRulesOptions,
-    options: { shouldThrowOnValidation: boolean } = {
+    options: {
+      shouldThrowOnValidation: boolean;
+      projectIds: string[];
+    } = {
       shouldThrowOnValidation: false,
+      projectIds: [],
     },
   ) {
     if (source === 'notion') {
@@ -99,6 +105,11 @@ export class RiskRuleService {
       }
 
       return validatedRecords;
+    } else if (source === 'database') {
+      const riskRules = await this.riskRulePolicyService.formatRiskRuleWithRules(
+        databaseId,
+        options.projectIds,
+      );
     }
 
     throw new Error('Unsupported source');

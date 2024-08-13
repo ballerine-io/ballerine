@@ -1037,6 +1037,7 @@ model Rule {
 
   key             String
   operation       String
+  value           Json
   comparisonValue Json
   engine          RuleEngine
 

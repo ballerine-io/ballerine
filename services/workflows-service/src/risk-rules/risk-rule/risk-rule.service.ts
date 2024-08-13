@@ -30,9 +30,7 @@ export class RiskRuleService {
 
   async findById(id: string, projectIds: TProjectIds) {
     const riskRule = await this.riskRuleRepository.findById(id, projectIds);
-    if (!riskRule) {
-      throw new NotFoundException(`RiskRule with ID "${id}" not found`);
-    }
+
     return riskRule;
   }
 

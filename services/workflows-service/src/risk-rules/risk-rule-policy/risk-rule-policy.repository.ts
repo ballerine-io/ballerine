@@ -3,8 +3,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { Prisma, RiskRulesPolicy } from '@prisma/client';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { TProjectId, TProjectIds } from '@/types';
-import { RULESET_DEPTH_OF_3_WITH_RULES } from "@/risk-rules/consts/rule-set-depth-of-3-with-rules";
-import { RuleSet } from "@ballerine/common";
+import { RULESET_DEPTH_OF_3_WITH_RULES } from '@/risk-rules/consts/rule-set-depth-of-3-with-rules';
 
 @Injectable()
 export class RiskRulePolicyRepository {
@@ -19,24 +18,27 @@ export class RiskRulePolicyRepository {
 
   async findById(id: string, projectIds: TProjectIds) {
     return this.prisma.riskRulesPolicy.findFirstOrThrow(
-      this.scopeService.scopeFindOneOrPublic({
-        where: { id },
-        include: {
-          riskRules: {
-            include: {
-              riskRuleRuleSets: {
-                include: {
-                  ruleSet: {
-                    include: {
-                      ...RULESET_DEPTH_OF_3_WITH_RULES
-                    }
-                  }
-                }
-              }
+      this.scopeService.scopeFindOneOrPublic(
+        {
+          where: { id },
+          include: {
+            riskRules: {
+              include: {
+                riskRuleRuleSets: {
+                  include: {
+                    ruleSet: {
+                      include: {
+                        ...RULESET_DEPTH_OF_3_WITH_RULES,
+                      },
+                    },
+                  },
+                },
+              },
             },
-          }
+          },
         },
-      }, projectIds),
+        projectIds,
+      ),
     );
   }
 
@@ -52,6 +54,7 @@ export class RiskRulePolicyRepository {
     projectId: TProjectId,
   ) {
     const policy = await this.findById(id, [projectId]);
+
     if (policy.isPublic) {
       throw new BadRequestException('Cannot add risk rule to public policy');
     }
@@ -74,9 +77,11 @@ export class RiskRulePolicyRepository {
     projectIds: TProjectIds,
   ): Promise<RiskRulesPolicy> {
     const policy = await this.findById(policyId, projectIds);
+
     if (policy.isPublic) {
       throw new BadRequestException('Cannot add risk rule to public policy');
     }
+
     return this.prisma.riskRulesPolicy.update({
       where: { id: policyId },
       data: {
