@@ -115,6 +115,7 @@ export class CollectionFlowService {
       definition: uiDefintion.definition
         ? (uiDefintion.definition as unknown as UiDefDefinition)
         : undefined,
+      version: uiDefintion.version,
     };
   }
 

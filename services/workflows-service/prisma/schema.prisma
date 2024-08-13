@@ -432,6 +432,7 @@ model UiDefinition {
   projectId          String
   project            Project            @relation(fields: [projectId], references: [id])
   workflowDefinition WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
+  version            Int                @default(1)
 }
 
 model WorkflowRuntimeDataToken {
