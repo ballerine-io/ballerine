@@ -33,5 +33,25 @@
       "dependsOn": [{ "projects": "self", "target": "build" }]
     }
   },
-  "defaultBase": "main"
+  "defaultBase": "main",
+  "release": {
+    "projects": [
+      "apps/*",
+      "packages/*",
+      "scripts/*",
+      "examples/headless-example",
+      "examples/report-generation-example",
+      "services/websocket-service",
+      "services/workflows-service",
+      "!private"
+    ],
+    "version": {
+      "conventionalCommits": true
+    },
+    "changelog": {
+      "workspaceChangelog": {
+        "createRelease": "github"
+      }
+    }
+  }
 }
