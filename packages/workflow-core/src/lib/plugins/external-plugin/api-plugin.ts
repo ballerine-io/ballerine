@@ -142,11 +142,18 @@ export class ApiPlugin {
     };
 
     if (payload) {
-      for (const key of Object.keys(payload)) {
-        if (typeof payload[key] === 'string') {
-          payload[key] = await this.replaceValuePlaceholders(payload[key] as string, payload);
-        }
-      }
+      const returnObj = { ...payload };
+      const apiPluginInstance = this;
+      await Promise.all(
+        Object.keys(returnObj).map(async key => {
+          if (typeof returnObj[key] === 'string') {
+            returnObj[key] = await apiPluginInstance.replaceValuePlaceholders(
+              returnObj[key] as string,
+              returnObj,
+            );
+          }
+        }),
+      );
 
       // @TODO: Use an enum over string literals for HTTP methods
       if (this.method.toUpperCase() !== 'GET') {
