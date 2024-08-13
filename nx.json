@@ -38,7 +38,7 @@
     "projects": [
       "apps/*",
       "packages/*",
-      "scripts/*",
+      "sdks/*",
       "examples/headless-example",
       "examples/report-generation-example",
       "services/websocket-service",
@@ -46,9 +46,20 @@
       "!private"
     ],
     "version": {
-      "conventionalCommits": true
+      "generatorOptions": {
+        "currentVersionResolver": "disk",
+        "specifierSource": "prompt"
+      }
     },
     "changelog": {
+      "projectChangelogs": {
+        "renderOptions": {
+          "authors": true,
+          "mapAuthorsToGitHubUsernames": true,
+          "commitReferences": true,
+          "versionTitleDate": true
+        }
+      },
       "workspaceChangelog": {
         "createRelease": "github"
       }
