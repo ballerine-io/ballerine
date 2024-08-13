@@ -5,7 +5,7 @@
   "description": "workflow-service",
   "scripts": {
     "spellcheck": "cspell \"*\"",
-    "setup": "npm run docker:db:down && npm run docker:db && npm run db:reset && npm run seed",
+    "setup": "npm run docker:db:down && npm run docker:db && wait-on tcp:5432 && npm run db:reset && npm run seed",
     "format": "prettier --write . '!**/*.{md,hbs}'",
     "format:check": "prettier --check . '!**/*.{md,hbs}'",
     "lint": "eslint . --fix",
