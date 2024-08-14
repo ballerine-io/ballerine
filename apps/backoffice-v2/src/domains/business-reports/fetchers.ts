@@ -4,10 +4,9 @@ import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { TBusinessReportType } from '@/domains/business-reports/types';
 import qs from 'qs';
-import { Severities, sleep } from '@ballerine/common';
+import { ObjectValues, Severities } from '@ballerine/common';
 import { toast } from 'sonner';
 import { t } from 'i18next';
-import { ObjectValues } from '@ballerine/common';
 
 export const BusinessReportStatus = {
   NEW: 'new',
@@ -116,7 +115,6 @@ export const fetchBusinessReports = async ({
     method: Method.GET,
     schema: BusinessReportsSchema,
   });
-  await sleep(2000);
 
   return handleZodError(error, data);
 };
