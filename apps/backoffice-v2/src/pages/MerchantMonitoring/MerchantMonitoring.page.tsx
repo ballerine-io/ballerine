@@ -8,6 +8,7 @@ import { buttonVariants } from '@/common/components/atoms/Button/Button';
 import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Search } from '@/common/components/molecules/Search';
+import { Skeleton } from '@ballerine/ui';
 
 export const MerchantMonitoring: FunctionComponent = () => {
   const {
@@ -19,6 +20,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
     page,
     onPrevPage,
     onNextPage,
+    onLastPage,
     onPaginate,
     isLastPage,
     locale,
@@ -50,18 +52,20 @@ export const MerchantMonitoring: FunctionComponent = () => {
         {Array.isArray(businessReports) && !businessReports.length && !isLoadingBusinessReports && (
           <NoBusinessReports />
         )}
-        {!!totalPages && (
-          <div className={`mt-auto flex items-center gap-x-2`}>
-            <div className={`flex w-[12ch] text-sm`}>{`Page ${page} of ${totalPages}`}</div>
-            <UrlPagination
-              page={page}
-              onPrevPage={onPrevPage}
-              onNextPage={onNextPage}
-              onPaginate={onPaginate}
-              isLastPage={isLastPage}
-            />
+        <div className={`mt-auto flex items-center gap-x-2`}>
+          <div className={`flex h-full w-[12ch] items-center text-sm`}>
+            {!isLoadingBusinessReports && `Page ${page} of ${totalPages || 1}`}
+            {isLoadingBusinessReports && <Skeleton className={`h-5 w-full`} />}
           </div>
-        )}
+          <UrlPagination
+            page={page}
+            onPrevPage={onPrevPage}
+            onNextPage={onNextPage}
+            onLastPage={onLastPage}
+            onPaginate={onPaginate}
+            isLastPage={isLastPage}
+          />
+        </div>
       </div>
     </div>
   );
