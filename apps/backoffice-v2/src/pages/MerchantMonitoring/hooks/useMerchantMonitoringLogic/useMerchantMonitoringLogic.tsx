@@ -34,10 +34,9 @@ export const useMerchantMonitoringLogic = () => {
     sortDir,
   });
 
-  const { onPaginate, onPrevPage, onNextPage } = usePagination();
-
-  const isLastPage =
-    (data?.businessReports?.length ?? 0) < pageSize || data?.businessReports?.length === 0;
+  const { onPaginate, onPrevPage, onNextPage, onLastPage, isLastPage } = usePagination({
+    totalPages: data?.meta.totalPages ?? 0,
+  });
 
   return {
     totalPages: data?.meta.totalPages || 0,
@@ -50,6 +49,7 @@ export const useMerchantMonitoringLogic = () => {
     page,
     onPrevPage,
     onNextPage,
+    onLastPage,
     onPaginate,
     isLastPage,
     locale,
