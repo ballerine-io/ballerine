@@ -35,6 +35,20 @@
   },
   "defaultBase": "main",
   "release": {
+    "releaseTagPattern": "{projectName}@{version}",
+    "conventionalCommits": {
+      "types": {
+        "chore": {
+          "semverBump": "patch"
+        },
+        "feat": {
+          "semverBump": "patch"
+        },
+        "fix": {
+          "semverBump": "patch"
+        }
+      }
+    },
     "projects": [
       "apps/*",
       "packages/*",
@@ -46,10 +60,7 @@
       "!private"
     ],
     "version": {
-      "generatorOptions": {
-        "currentVersionResolver": "disk",
-        "specifierSource": "prompt"
-      }
+      "conventionalCommits": true
     },
     "changelog": {
       "projectChangelogs": {
