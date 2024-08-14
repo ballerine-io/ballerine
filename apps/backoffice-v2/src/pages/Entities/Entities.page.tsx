@@ -1,18 +1,21 @@
 import { CaseCreation } from '@/pages/Entities/components/CaseCreation';
-import { ctw } from '@ballerine/ui';
-import { FunctionComponent } from 'react';
+import { ctw, Skeleton } from '@ballerine/ui';
+import React, { FunctionComponent } from 'react';
 import { Outlet } from 'react-router-dom';
 import { TAssignee } from '../../common/components/atoms/AssignDropdown/AssignDropdown';
 import { MotionScrollArea } from '../../common/components/molecules/MotionScrollArea/MotionScrollArea';
-import { Pagination } from '../../common/components/organisms/Pagination/Pagination';
-import { Case } from '../Entity/components/Case/Case';
 import { Cases } from './components/Cases/Cases';
 import { useEntities } from './hooks/useEntities/useEntities';
 import { NoCases } from '@/pages/Entities/components/NoCases/NoCases';
+import { UrlPagination } from '@/common/components/molecules/UrlPagination/UrlPagination';
 
 export const Entities: FunctionComponent = () => {
   const {
     onPaginate,
+    onPrevPage,
+    onNextPage,
+    onLastPage,
+    isLastPage,
     onSearch,
     onFilter,
     onSortBy,
@@ -25,6 +28,7 @@ export const Entities: FunctionComponent = () => {
     caseCount,
     skeletonEntities,
     isManualCaseCreationEnabled,
+    isNoCases,
   } = useEntities();
 
   return (
@@ -71,26 +75,25 @@ export const Entities: FunctionComponent = () => {
         </MotionScrollArea>
         <div className={`divider my-0 px-4`}></div>
         <div className="flex flex-col gap-5 px-4">
-          <Pagination onPaginate={onPaginate} page={page} totalPages={totalPages} />
+          <div className={`flex items-center gap-x-2`}>
+            <div className={`d-full flex items-center text-sm`}>
+              {!isLoading && `Page ${page} of ${totalPages || 1}`}
+              {isLoading && <Skeleton className={`h-5 w-full`} />}
+            </div>
+            <UrlPagination
+              page={page}
+              onPrevPage={onPrevPage}
+              onNextPage={onNextPage}
+              onLastPage={onLastPage}
+              onPaginate={onPaginate}
+              isLastPage={isLastPage}
+            />
+          </div>
           {isManualCaseCreationEnabled && <CaseCreation />}
         </div>
       </Cases>
-      {/* Display skeleton individual when loading the entities list */}
-      {isLoading && (
-        <Case>
-          {/* Reject and approve header */}
-          <Case.Actions id={''} fullName={''} avatarUrl={''} />
-
-          <Case.Content>
-            <div>
-              <Case.FaceMatch faceAUrl={''} faceBUrl={''} isLoading />
-              <Case.Info info={{}} isLoading whitelist={[]} />
-            </div>
-            <Case.Documents documents={[]} isLoading />
-          </Case.Content>
-        </Case>
-      )}
-      {Array.isArray(cases) && !cases.length && !isLoading ? <NoCases /> : <Outlet />}
+      {isNoCases && <NoCases />}
+      {!isNoCases && <Outlet />}
     </>
   );
 };
