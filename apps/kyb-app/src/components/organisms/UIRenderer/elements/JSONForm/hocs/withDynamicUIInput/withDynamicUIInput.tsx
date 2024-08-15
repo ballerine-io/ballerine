@@ -19,6 +19,7 @@ const findLastDigit = (str: string) => {
   if (matches && matches.length > 0) {
     // @ts-ignore
     const result = parseInt(matches[matches.length - 1]);
+
     return result;
   }
 

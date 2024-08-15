@@ -18,6 +18,7 @@ import {
   DateInputAdapter,
   FileInputAdapter,
   PhoneInputAdapter,
+  RadioInputAdapter,
   TextInputAdapter,
 } from '@ballerine/ui';
 
@@ -41,6 +42,7 @@ export const jsonFormFields = {
   StatePicker: withDynamicUIInput(StatePicker),
   RelationshipDropdown: withDynamicUIInput(RelationshipDropdown),
   MCCPicker: withDynamicUIInput(MCCPicker),
+  RadioInput: withDynamicUIInput(RadioInputAdapter),
 };
 
 export const jsonFormLayouts = {
