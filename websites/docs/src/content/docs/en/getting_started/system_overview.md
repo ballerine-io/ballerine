@@ -6,10 +6,10 @@ description: An overview of Ballerine's risk management platform and its modules
 
 Ballerine is a risk management platform for performing all types of risk flows and processes. To do so, Ballerine provides the risk modules needed to build custom risk flows. You can use all modules, combinations of some modules, or just one module to perform a desired risk process.
 
-For example: 
-- **Build a full KYB flow** using data collection flow, 3rd party vendors, risk rules, and the case management. 
-- **Build a simple KYC** using 3rd party vendors, risk rules, and the case management. 
-- **Build a simple digital form** using data collection flow. 
+For example:
+- **Build a full KYB flow** using data collection flow, 3rd party vendors, risk rules, and the case management.
+- **Build a simple KYC** using 3rd party vendors, risk rules, and the case management.
+- **Build a simple digital form** using data collection flow.
 - **Manually review documents** using the case management.
 -  Etc.
 
@@ -61,15 +61,15 @@ The Rules Engine applies risk rules to assign risk scores, present risk indicato
 [Calculation Risk Scores](/en/learn/calculating_risk_scores)
 
 ## Case Managment
-The Case Management module provides a user interface for manual decision-making processes, such as approving, rejecting, or requesting re-submission of cases. It offers customizable layouts and information presentation, allowing users to efficiently handle and review cases. 
+The Case Management module provides a user interface for manual decision-making processes, such as approving, rejecting, or requesting re-submission of cases. It offers customizable layouts and information presentation, allowing users to efficiently handle and review cases.
 
 **Learn more about case management**
 
-[Overview of case management](/en/learn/case_management_overview) 
+[Overview of case management](/en/learn/case_management_overview)
 
-[Using the case management dashboard](/en/learn/using_the_case_management_dashboard) 
+[Using the case management dashboard](/en/learn/using_the_case_management_dashboard)
 
-[Add and Customize Workflows in the Case Management](/en/learn/add_and_customize_workflows_in_the_case_management.md)
+[Add and Customize Workflows in the Case Management](/en/learn/add_and_customize_workflows_in_the_case_management)
 
 
 <img title="Case Management" alt="Case Management" src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/669eb373c7708310d2b4ac61_Case%20managment%20example.png">
@@ -95,7 +95,7 @@ Ballerine's plugins enables deep integration with your existing systems, allowin
 
 **Learn more about plugins**
 
-[Using Plugins](/en/learn/plugins) 
+[Using Plugins](/en/learn/plugins)
 
 
 ## Webhooks
@@ -103,4 +103,4 @@ Webhooks in Ballerine allow for real-time communication and integration with ext
 
 **Learn more about webhooks**
 
-[Using webhooks](/en/learn/how_to_use_webhooks)  
+[Using webhooks](/en/learn/how_to_use_webhooks)
