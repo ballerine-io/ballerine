@@ -10,6 +10,7 @@ import { Multiselect } from '@/components/organisms/UIRenderer/elements/JSONForm
 import { NationalityPicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/NationalityPicker';
 import { RelationshipDropdown } from '@/components/organisms/UIRenderer/elements/JSONForm/components/RelationshipDropdown';
 import { StatePicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/StatePicker';
+import { TagsInput } from '@/components/organisms/UIRenderer/elements/JSONForm/components/TagsInput';
 import { withDynamicUIInput } from '@/components/organisms/UIRenderer/elements/JSONForm/hocs/withDynamicUIInput';
 import {
   AutocompleteTextInputAdapter,
@@ -43,6 +44,7 @@ export const jsonFormFields = {
   RelationshipDropdown: withDynamicUIInput(RelationshipDropdown),
   MCCPicker: withDynamicUIInput(MCCPicker),
   RadioInput: withDynamicUIInput(RadioInputAdapter),
+  TagsInput: withDynamicUIInput(TagsInput),
 };
 
 export const jsonFormLayouts = {
