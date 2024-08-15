@@ -8,7 +8,12 @@ import {
   OPERATOR,
   RuleSchema,
   ValidationFailedError,
+  RuleSetWithChildren,
 } from '@ballerine/common';
+
+const isRulesetWithChildren = (ruleset: unknown): ruleset is RuleSetWithChildren => {
+  return Object.prototype.hasOwnProperty.call(ruleset, 'childRuleSet');
+};
 
 export const validateRule = (rule: Rule, data: any): RuleResult => {
   const result = RuleSchema.safeParse(rule);
@@ -39,8 +44,18 @@ export const validateRule = (rule: Rule, data: any): RuleResult => {
   }
 };
 
-export const runRuleSet = (ruleSet: RuleSet, data: any): RuleResultSet => {
+export const runRuleSet = (ruleSet: RuleSet | RuleSetWithChildren, data: any) => {
   return ruleSet.rules.map(rule => {
+    const nestedResults: RuleResultSet = [];
+
+    if (isRulesetWithChildren(rule)) {
+      const constChildRulesetResults = rule.childRuleSet.flatMap(
+        childRuleSet => runRuleSet(childRuleSet, data) as RuleResultSet,
+      );
+
+      nestedResults.push(...constChildRulesetResults);
+    }
+
     if ('rules' in rule) {
       // RuleSet
       const nestedResults = runRuleSet(rule, data);
@@ -77,7 +92,10 @@ export const runRuleSet = (ruleSet: RuleSet, data: any): RuleResultSet => {
   });
 };
 
-export const RuleEngine = (ruleSets: RuleSet, helpers?: typeof OperationHelpers) => {
+export const RuleEngine = (
+  ruleSets: RuleSet | RuleSetWithChildren,
+  helpers?: typeof OperationHelpers,
+) => {
   // TODO: inject helpers
   const allHelpers = { ...(helpers || {}), ...OperationHelpers };
 

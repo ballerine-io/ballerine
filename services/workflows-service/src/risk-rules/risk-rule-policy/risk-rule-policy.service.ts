@@ -3,7 +3,7 @@ import { RiskRulePolicyRepository } from './risk-rule-policy.repository';
 import { TProjectId, TProjectIds } from '@/types';
 import { Prisma } from '@prisma/client';
 import { RuleSetWithChildrenAndRules } from '@/risk-rules/types/types';
-import { AnyRecord, Rule, RuleSchema, Serializable } from '@ballerine/common';
+import { Rule, RuleSchema, RuleSetWithChildren, Serializable } from '@ballerine/common';
 
 @Injectable()
 export class RiskRulePolicyService {
@@ -37,7 +37,7 @@ export class RiskRulePolicyService {
         comparisonValue: NonNullable<Serializable>;
         engine: string;
       };
-    });
+    }) satisfies Rule[];
 
     return {
       rules,
@@ -45,18 +45,18 @@ export class RiskRulePolicyService {
       childRuleSet: rulesSet.childRuleSets.map(childRuleSet =>
         this.extractRulesFromRuleSet(childRuleSet.child),
       ),
-    } as const;
+    };
   }
 
   async formatRiskRuleWithRules(id: string, projectIds: TProjectIds) {
     const policyWithRiskRules = await this.findById(id, projectIds);
 
-    policyWithRiskRules.riskRules.map(riskRule => {
+    return policyWithRiskRules.riskRules.map(riskRule => {
       const ruleSet = riskRule.riskRuleRuleSets.map(riskRuleRuleSet => {
         const ruleSet = this.extractRulesFromRuleSet(riskRuleRuleSet.ruleSet);
 
         return ruleSet;
-      });
+      }) as RuleSetWithChildren[];
 
       return {
         operator: riskRule.operator,

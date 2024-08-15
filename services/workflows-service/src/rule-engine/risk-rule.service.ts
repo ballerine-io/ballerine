@@ -110,6 +110,8 @@ export class RiskRuleService {
         databaseId,
         options.projectIds,
       );
+
+      return riskRules;
     }
 
     throw new Error('Unsupported source');
