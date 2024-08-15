@@ -17,6 +17,7 @@ describe.skip('#RiskRuleService', () => {
       { databaseId: '<DATABASE_ID>', source: 'notion' },
       {
         shouldThrowOnValidation: true,
+        projectIds: [],
       },
     );
 

@@ -19,7 +19,7 @@ export class RiskRulePolicyService {
     return policy;
   }
 
-  private extractRulesFromRuleSet(rulesSet: RuleSetWithChildrenAndRules) {
+  private extractRulesFromRuleSet(rulesSet: RuleSetWithChildrenAndRules): RuleSetWithChildren {
     const rules = rulesSet.rulesetRules.map(rulesetRule => {
       const { key, value, operation, comparisonValue, engine } = rulesetRule.rule;
 
@@ -52,22 +52,24 @@ export class RiskRulePolicyService {
     const policyWithRiskRules = await this.findById(id, projectIds);
 
     return policyWithRiskRules.riskRules.map(riskRule => {
-      const ruleSet = riskRule.riskRuleRuleSets.map(riskRuleRuleSet => {
-        const ruleSet = this.extractRulesFromRuleSet(riskRuleRuleSet.ruleSet);
+      const correlatedRuleSet = riskRule.riskRuleRuleSets[0]?.ruleSet;
 
-        return ruleSet;
-      }) as RuleSetWithChildren[];
+      if (correlatedRuleSet) {
+        const ruleSet = this.extractRulesFromRuleSet(correlatedRuleSet);
 
-      return {
-        operator: riskRule.operator,
-        domain: riskRule.domain,
-        indicator: riskRule.indicator,
-        baseRiskScore: riskRule.baseRiskScore,
-        additionalRiskScore: riskRule.additionalRiskScore,
-        minRiskScore: riskRule.minRiskScore,
-        maxRiskScore: riskRule.maxRiskScore,
-        ruleSet,
-      };
+        return {
+          operator: riskRule.operator,
+          domain: riskRule.domain,
+          indicator: riskRule.indicator,
+          baseRiskScore: riskRule.baseRiskScore,
+          additionalRiskScore: riskRule.additionalRiskScore,
+          minRiskScore: riskRule.minRiskScore,
+          maxRiskScore: riskRule.maxRiskScore,
+          ruleSet: ruleSet as RuleSetWithChildren,
+        };
+      }
+
+      return null;
     });
   }
 

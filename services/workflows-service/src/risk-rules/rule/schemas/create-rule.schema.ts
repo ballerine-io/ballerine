@@ -11,6 +11,10 @@ export const CreateRuleSchema = Type.Object({
     description: 'The unique key of the parameter  for the rule',
     examples: ['entity.transaction.amount'],
   }),
+  value: Type.Record(Type.String(), Type.String(), {
+    description: 'The unique key of the parameter  for the rule',
+    examples: ['entity.transaction.amount'],
+  }),
   operation: TypeStringEnum(Object.values(OPERATION), 'The operation to perform', [OPERATION.GT]),
   comparisonValue: Type.Any({
     description: 'The value to compare against using the operation',

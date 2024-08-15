@@ -43,10 +43,15 @@ const NotionRiskRuleRecordSchema = z
     maxRiskScore: value['Max risk score'],
   }));
 
-export interface TFindAllRulesOptions {
-  databaseId: string;
-  source: 'notion';
-}
+export type TFindAllRulesOptions =
+  | {
+      databaseId: string;
+      source: 'notion';
+    }
+  | {
+      databaseId: string;
+      source: 'database';
+    };
 
 @Injectable()
 export class RiskRuleService {
@@ -106,10 +111,9 @@ export class RiskRuleService {
 
       return validatedRecords;
     } else if (source === 'database') {
-      const riskRules = await this.riskRulePolicyService.formatRiskRuleWithRules(
-        databaseId,
-        options.projectIds,
-      );
+      const riskRules = (
+        await this.riskRulePolicyService.formatRiskRuleWithRules(databaseId, options.projectIds)
+      ).filter(Boolean);
 
       return riskRules;
     }

@@ -58,12 +58,12 @@ export const runRuleSet = (ruleSet: RuleSet | RuleSetWithChildren, data: any) =>
 
     if ('rules' in rule) {
       // RuleSet
-      const nestedResults = runRuleSet(rule, data);
+      nestedResults.push(...(runRuleSet(rule, data) as RuleResultSet));
 
       const passed =
         rule.operator === OPERATOR.AND
-          ? nestedResults.every(r => r.status === 'PASSED')
-          : nestedResults.some(r => r.status === 'PASSED');
+          ? nestedResults.every((r: RuleResult) => r.status === 'PASSED')
+          : nestedResults.some((r: RuleResult) => r.status === 'PASSED');
 
       const status = passed ? 'PASSED' : 'SKIPPED';
 
