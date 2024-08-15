@@ -12,6 +12,7 @@ export const Individuals = () => {
     page,
     onPrevPage,
     onNextPage,
+    onLastPage,
     onPaginate,
     isLastPage,
     search,
@@ -32,8 +33,10 @@ export const Individuals = () => {
             page={page}
             onPrevPage={onPrevPage}
             onNextPage={onNextPage}
+            onLastPage={onLastPage}
             onPaginate={onPaginate}
             isLastPage={isLastPage}
+            isLastPageEnabled={false}
           />
         </div>
       </div>
