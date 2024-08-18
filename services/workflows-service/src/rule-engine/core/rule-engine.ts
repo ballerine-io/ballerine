@@ -44,17 +44,9 @@ export const validateRule = (rule: Rule, data: any): RuleResult => {
   }
 };
 
-export const runRuleSet = (ruleSet: RuleSet | RuleSetWithChildren, data: any) => {
+export const runRuleSet = (ruleSet: RuleSet, data: any) => {
   return ruleSet.rules.map(rule => {
     const nestedResults: RuleResultSet = [];
-
-    if (isRulesetWithChildren(rule)) {
-      const constChildRulesetResults = rule.childRuleSet.flatMap(
-        childRuleSet => runRuleSet(childRuleSet, data) as RuleResultSet,
-      );
-
-      nestedResults.push(...constChildRulesetResults);
-    }
 
     if ('rules' in rule) {
       // RuleSet

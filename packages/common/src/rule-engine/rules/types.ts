@@ -10,12 +10,6 @@ export type RuleSet = {
   rules: Array<Rule | RuleSet>;
 };
 
-export type RuleSetWithChildren = {
-  rules: Rule[];
-  operator: TOperator;
-  childRuleSet: RuleSetWithChildren[];
-};
-
 export type PassedRuleResult = {
   status: 'PASSED' | 'SKIPPED';
   message?: string;

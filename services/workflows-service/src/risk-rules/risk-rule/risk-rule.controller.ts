@@ -154,6 +154,7 @@ export class RiskRuleController {
     @common.Body() body: TConnectRiskRuleToRuleset,
   ) {
     await this.riskRuleService.connectRiskRuleToRuleset(id, body.ruleSetId);
+
     return { message: 'RiskRule successfully connected to RuleSet' };
   }
 
