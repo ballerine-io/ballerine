@@ -3,7 +3,7 @@ import { RiskRulePolicyRepository } from './risk-rule-policy.repository';
 import { TProjectId, TProjectIds } from '@/types';
 import { Prisma } from '@prisma/client';
 import { RuleSetWithChildrenAndRules } from '@/risk-rules/types/types';
-import { Rule, RuleSchema, RuleSetWithChildren, Serializable } from '@ballerine/common';
+import { Rule, RuleSchema, RuleSet, RuleSetWithChildren, Serializable } from '@ballerine/common';
 
 @Injectable()
 export class RiskRulePolicyService {
@@ -19,7 +19,7 @@ export class RiskRulePolicyService {
     return policy;
   }
 
-  private extractRulesFromRuleSet(rulesSet: RuleSetWithChildrenAndRules): RuleSetWithChildren {
+  private extractRulesFromRuleSet(rulesSet: RuleSetWithChildrenAndRules): RuleSet {
     const rules = rulesSet.rulesetRules.map(rulesetRule => {
       const { key, value, operation, comparisonValue, engine } = rulesetRule.rule;
 
@@ -39,12 +39,13 @@ export class RiskRulePolicyService {
       };
     }) satisfies Rule[];
 
+    const childRuleSets = rulesSet.childRuleSets.map(childRuleSet =>
+      this.extractRulesFromRuleSet(childRuleSet.child),
+    );
+
     return {
-      rules,
+      rules: [...rules, ...childRuleSets],
       operator: rulesSet.operator,
-      childRuleSet: rulesSet.childRuleSets.map(childRuleSet =>
-        this.extractRulesFromRuleSet(childRuleSet.child),
-      ),
     };
   }
 
@@ -65,7 +66,7 @@ export class RiskRulePolicyService {
           additionalRiskScore: riskRule.additionalRiskScore,
           minRiskScore: riskRule.minRiskScore,
           maxRiskScore: riskRule.maxRiskScore,
-          ruleSet: ruleSet as RuleSetWithChildren,
+          ruleSet: ruleSet,
         };
       }
 
