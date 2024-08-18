@@ -1964,7 +1964,10 @@ export class WorkflowService {
           context: object,
           ruleStoreServiceOptions: TFindAllRulesOptions,
         ) => {
-          const rules = await this.riskRuleService.findAll(ruleStoreServiceOptions);
+          const rules = await this.riskRuleService.findAll(ruleStoreServiceOptions, {
+            projectIds: projectIds!,
+            shouldThrowOnValidation: false,
+          });
 
           return rules.map(rule => {
             try {

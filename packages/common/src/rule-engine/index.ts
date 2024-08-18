@@ -9,6 +9,7 @@ export type {
   FailedRuleResult,
   PassedRuleResult,
   RuleResult,
+  RuleSetWithChildren,
   TFindAllRulesOptions,
 } from './types';
 

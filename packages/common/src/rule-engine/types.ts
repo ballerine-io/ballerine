@@ -1,11 +1,18 @@
 import { Rule, RuleSet } from './rules/types';
 import { EngineErrors } from './errors';
+import { TOperator } from '@/rule-engine/operators/types';
 
 export type PassedRuleResult = {
   status: 'PASSED' | 'SKIPPED';
   message?: string;
   error?: never; // 'error' should not be present
   rules?: Rule | RuleSet; // 'rules' should be present
+};
+
+export type RuleSetWithChildren = {
+  rules: Rule[];
+  operator: TOperator;
+  childRuleSet: RuleSetWithChildren[];
 };
 
 export type FailedRuleResult = {
