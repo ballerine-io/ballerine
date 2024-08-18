@@ -1,31 +1,5 @@
-import { RiskRuleRuleSet, RuleSet, RiskRulesPolicy, RiskRule } from '@prisma/client';
 import { uniq } from 'lodash';
-
-type RiskRuleWithPolicy = RiskRule & {
-  riskRulePolicy: RiskRulesPolicy | null;
-};
-
-type RiskRuleRuleSetWithRule = RiskRuleRuleSet & {
-  riskRule: RiskRuleWithPolicy;
-};
-
-type RuleSetWithRiskRules = RuleSet & {
-  riskRuleRuleSets: RiskRuleRuleSetWithRule[];
-};
-
-export type RuleSetWithParent = RuleSetWithRiskRules & {
-  parentRuleSets: Array<{
-    parent: RuleSetWithRiskRules & {
-      parentRuleSets: Array<{
-        parent: RuleSetWithRiskRules & {
-          parentRuleSets: Array<{
-            parent: RuleSetWithRiskRules;
-          }>;
-        };
-      }>;
-    };
-  }>;
-};
+import { RuleSetWithParent } from '@/risk-rules/types/types';
 
 export const extractRiskRulePolicy = (ruleSet: RuleSetWithParent) => {
   const traverse = (currentRuleSet: RuleSetWithParent, riskRulesPoliciesId: string[]) => {

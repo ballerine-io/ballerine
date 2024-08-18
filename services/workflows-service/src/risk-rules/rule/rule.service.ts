@@ -50,6 +50,7 @@ export class RuleService {
     return await this.ruleRepository.create({
       createArgs: {
         ...resetRule,
+        value: resetRule.value as Prisma.RuleUncheckedCreateInput['value'],
         comparisonValue:
           resetRule.comparisonValue as Prisma.RuleUncheckedCreateInput['comparisonValue'],
       },

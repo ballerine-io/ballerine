@@ -927,8 +927,8 @@ model RiskRulesPolicy {
   projectId String
   isPublic  Boolean @default(false)
 
-  riskRule RiskRule[]
-  project  Project    @relation(fields: [projectId], references: [id])
+  riskRules RiskRule[]
+  project   Project    @relation(fields: [projectId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1037,6 +1037,7 @@ model Rule {
 
   key             String
   operation       String
+  value           Json
   comparisonValue Json
   engine          RuleEngine
 

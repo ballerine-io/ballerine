@@ -2,10 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { TProjectId, TProjectIds } from '@/types';
 import { Prisma } from '@prisma/client';
 import { RuleSetRepository } from '@/risk-rules/rule-set/rule-set.repository';
-import {
-  extractRiskRulePolicy,
-  RuleSetWithParent,
-} from '@/risk-rules/helpers/rule-set-search-and-flatten-values';
+import { extractRiskRulePolicy } from '@/risk-rules/helpers/rule-set-search-and-flatten-values';
+import { RuleSetWithParent } from '../types/types';
 
 @Injectable()
 export class RuleSetService {
