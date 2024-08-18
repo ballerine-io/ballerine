@@ -12,6 +12,10 @@ export const useUIElementErrors = (
   const { errors: _errors, pageErrors: _pageErrors } = usePageContext();
   const { currentPage } = usePageResolverContext();
 
+  if (definition.valueDestination?.includes('url')) {
+    console.log({ _errors });
+  }
+
   const errors = useMemo(() => {
     const pageErrors = _pageErrors[currentPage?.stateName as string] || {};
     const fieldPageError =

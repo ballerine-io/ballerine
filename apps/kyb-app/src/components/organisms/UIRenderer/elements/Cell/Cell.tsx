@@ -1,8 +1,8 @@
-import { CSSProperties, useMemo } from 'react';
-import chunk from 'lodash/chunk';
-import { BlocksComponent } from '@ballerine/blocks';
 import { useUIRendererContext } from '@/components/organisms/UIRenderer/hooks/useUIRendererContext/useUIRendererContext';
+import { BlocksComponent } from '@ballerine/blocks';
 import { ctw } from '@ballerine/ui';
+import chunk from 'lodash/chunk';
+import { CSSProperties, useMemo } from 'react';
 
 export interface CellOptions {
   columns?: number;
@@ -40,7 +40,7 @@ export const Cell = ({ options = {}, childrens: _childrens = [] }: CellProps) =>
 
   return (
     <div
-      className={ctw('grid' + className, {
+      className={ctw('grid', className, {
         'justify-start': align === 'left',
         'justify-end': align === 'right',
       })}

@@ -25,6 +25,7 @@ export class JsonSchemaRuleEngine implements RuleEngine {
     ajvErrors(validator, { singleError: true });
 
     const validationResult = validator.validate(rule.value, context);
+
     if (!validationResult) {
       const validationErrorMessage = this.extractErrorsWithFields(validator, definition);
 
@@ -59,10 +60,15 @@ export class JsonSchemaRuleEngine implements RuleEngine {
         const messages = error.message?.split(';');
 
         messages?.forEach(messageText => {
-          const sanitizedFieldId = fieldDestination.replaceAll(/\.(\d+)\./g, '[$1].');
+          let formattedFieldId = fieldDestination.replaceAll(/\.(\d+)\.?/g, '[$1].');
+
+          if (formattedFieldId.at(-1) === '.') {
+            formattedFieldId = formattedFieldId.slice(0, -1);
+          }
+
           fieldErrors.push(
             this.createFieldError(
-              sanitizedFieldId,
+              formattedFieldId,
               messageText,
               definition.name,
               // @ts-ignore
@@ -90,18 +96,18 @@ export class JsonSchemaRuleEngine implements RuleEngine {
     if (error.params?.missingProperty) {
       fieldDestination.push(
         (error.params.missingProperty as string) ||
-          (((error.params.errors as Array<AnyObject>)[0]?.params as AnyObject)
+          (((error.params.errors as AnyObject[])[0]?.params as AnyObject)
             .missingProperty as string),
       );
     }
 
     if (
       Array.isArray(error.params.errors) &&
-      ((error.params.errors as Array<AnyObject>)[0]?.params as AnyObject)?.missingProperty
+      ((error.params.errors as AnyObject[])[0]?.params as AnyObject)?.missingProperty
     ) {
       fieldDestination.push(
         (error.params.missingProperty as string) ||
-          (((error.params.errors as Array<AnyObject>)[0]?.params as AnyObject)
+          (((error.params.errors as AnyObject[])[0]?.params as AnyObject)
             .missingProperty as string),
       );
     }

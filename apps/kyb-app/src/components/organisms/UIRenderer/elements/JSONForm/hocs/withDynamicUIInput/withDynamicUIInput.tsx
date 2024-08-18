@@ -122,6 +122,14 @@ export const withDynamicUIInput = (
 
     const { validationErrors, warnings } = useUIElementErrors(definition);
 
+    if (definition.valueDestination.includes('url')) {
+      console.log({ validationErrors });
+      console.log({ isTouched });
+      console.log({ definition });
+    }
+
+    console.log('context', payload);
+
     return (
       <div className="flex flex-col gap-2">
         <Component
