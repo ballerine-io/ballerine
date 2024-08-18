@@ -1,6 +1,6 @@
 globalThis.env = {
-  VITE_API_URL: 'http://google.com',
-  VITE_API_KEY: 'secret',
+  VITE_API_URL: "http://google.com",
+  VITE_API_KEY: "secret",
   VITE_AUTH_ENABLED: true,
   VITE_MOCK_SERVER: false,
   VITE_POLLING_INTERVAL: 10,
