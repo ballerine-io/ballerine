@@ -605,7 +605,7 @@ async function seed() {
   });
 
   const getDocumentsSchema = () =>
-    ['id_card', 'passport', 'drivers_license', 'voter_id'].map(name => ({
+    ['id_card', 'passport', 'drivers_license', 'voter_id','eida','trade_license'].map(name => ({
       category: name,
       type: name,
       issuer: { country: 'ZZ' },
@@ -618,6 +618,7 @@ async function seed() {
         dateOfBirth: Type.Optional(Type.String({ format: 'date' })),
         expirationDate: Type.Optional(Type.String({ format: 'date' })),
         isFaceMatching: Type.Optional(Type.Boolean()),
+        isNameAsTradeLicense: Type.Optional(Type.Boolean()),
       }),
     }));
 
@@ -644,6 +645,14 @@ async function seed() {
           {
             category: 'voter_id',
             type: 'voter_id',
+          },
+          {
+            category: 'eida',
+            type: 'eida',
+          },
+          {
+            category: 'trade_license',
+            type: 'trade_license',
           },
         ],
       },

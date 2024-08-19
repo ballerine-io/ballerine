@@ -17,7 +17,6 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-
     return this._handleHttpErrorResponse(exception, request, response);
   }
 

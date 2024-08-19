@@ -40,6 +40,7 @@ export class MetricsController {
   async getRuntimesStatistic(
     @ProjectIds() projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeStatisticModel[]> {
+    console.log('Here buddy');
     return await this.metricsService.listRuntimesStatistic(projectIds);
   }
 

@@ -27,35 +27,35 @@ export const router = createBrowserRouter([
       {
         path: 'overview',
         // TODO: get rid of this hook and rework routing to use authenticated layout
-        Component: withSessionProtected(Overview),
+        Component: Overview,
       },
       {
         path: 'workflows',
-        Component: withSessionProtected(Workflows),
+        Component: Workflows,
       },
       {
         path: 'workflow-definitions',
-        Component: withSessionProtected(WorkflowDefinitions),
+        Component: WorkflowDefinitions,
       },
       {
         path: 'workflow-definitions/:id',
-        Component: withSessionProtected(WorkflowDefinition),
+        Component: WorkflowDefinition,
       },
       {
         path: 'filters',
-        Component: withSessionProtected(Filters),
+        Component: Filters,
       },
       {
         path: 'ui-definitions',
-        Component: withSessionProtected(UIDefinitions),
+        Component: UIDefinitions,
       },
       {
         path: 'ui-definitions/:id',
-        Component: withSessionProtected(UIDefinition),
+        Component: UIDefinition,
       },
       {
         path: 'alert-definitions',
-        Component: withSessionProtected(AlertDefinitions),
+        Component: AlertDefinitions,
       },
     ],
   },

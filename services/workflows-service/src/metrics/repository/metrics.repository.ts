@@ -57,6 +57,14 @@ export class MetricsRepository {
     params: GetRuntimeStatusCaseCountParams,
     projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeStatusCaseCountModel> {
+    if (!params.fromDate) {
+      const currentDate = new Date();
+      const previousMonth = currentDate.getMonth() === 0 ? 11 : currentDate.getMonth() - 1;
+      const year = previousMonth === 11 ? currentDate.getFullYear() - 1 : currentDate.getFullYear();
+      params.fromDate = new Date(year, previousMonth, 1);
+    }
+    console.log('params.fromDate: ', params.fromDate);
+    console.log('projectIds: ', projectIds);
     const results = await this.prismaService.$queryRaw<IAggregateWorkflowRuntimeStatusCaseCount[]>(
       buildAggregateWorkflowRuntimeStatusCaseCountQuery(params.fromDate, projectIds),
     );

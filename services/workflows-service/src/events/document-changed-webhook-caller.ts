@@ -110,8 +110,10 @@ export class DocumentChangedWebhookCaller {
 
     data.updatedRuntimeData.context.documents.forEach((doc: any) => {
       delete doc.propertiesSchema;
-
+      console.log('####doc: ', doc);
+      console.log('####doc pages ', JSON.stringify(doc.pages));
       doc.pages.forEach((page: DefaultContextSchema['documents'][number]['pages'][number]) => {
+        page.type = 'image/jpeg';
         if (!page?.type) {
           this.logger.warn('No document page type found', {
             workflowRuntimeDataId: data.updatedRuntimeData.id,
@@ -122,7 +124,6 @@ export class DocumentChangedWebhookCaller {
         }
 
         const formattedType = getExtensionFromMimeType(page.type)?.replace('jpeg', 'jpg');
-
         if (!formattedType) {
           this.logger.warn('No formatted document page type found', {
             workflowRuntimeDataId: data.updatedRuntimeData.id,

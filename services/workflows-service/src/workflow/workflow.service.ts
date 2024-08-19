@@ -827,12 +827,14 @@ export class WorkflowService {
         projectIds,
         transaction,
       );
+      console.log('#####step 1')
       const workflowDefinition = await this.workflowDefinitionRepository.findById(
         workflow?.workflowDefinitionId,
         {},
         projectIds,
         transaction,
       );
+      console.log('#####step 2')
       // `name` is always `approve` and not `approved` etc.
       const Status = {
         approve: 'approved',
@@ -841,6 +843,7 @@ export class WorkflowService {
         revised: 'revised',
       } as const;
       const status = decision.status ? Status[decision.status] : null;
+      console.log('#####step 3')
       const newDecision = (() => {
         if (!status || status === 'approved') {
           return {
@@ -868,12 +871,14 @@ export class WorkflowService {
 
         throw new BadRequestException(`Invalid decision status: ${status}`);
       })();
-
+      console.log('#####step 4')
       const documents = this.getDocuments(workflow.context, documentsUpdateContextMethod);
+      console.log('#####step 5')
       let document = documents.find((document: any) => document.id === documentId);
+      console.log('#####step 6')
       const updatedStatus =
         (documentId === document.id ? status : document?.decision?.status) ?? undefined;
-
+      console.log('#####step 7')
       const updatedContext = this.updateDocumentInContext(
         workflow.context,
         {
@@ -889,13 +894,13 @@ export class WorkflowService {
         },
         documentsUpdateContextMethod,
       );
-
+      console.log('#####step 8')
       document = this.getDocuments(updatedContext, documentsUpdateContextMethod)?.find(
         (document: any) => document.id === documentId,
       );
-
+      console.log('#####step 9')
       this.__validateWorkflowDefinitionContext(workflowDefinition, updatedContext);
-
+      console.log('#####step 10')
       const documentWithDecision = {
         ...document,
         id: document.id,
@@ -905,7 +910,7 @@ export class WorkflowService {
         },
       };
       const validateDocumentSchema = status === 'approved';
-
+      console.log('#####step 11')
       const updatedWorkflow = await this.updateDocumentById(
         {
           workflowId,
@@ -917,13 +922,13 @@ export class WorkflowService {
         projectIds![0]!,
         transaction,
       );
-
+      console.log('#####step 12')
       logDocumentWithoutId({
         line: 'updateDocumentDecisionById 770',
         logger: this.logger,
         workflowRuntimeData: updatedWorkflow,
       });
-
+      console.log('#####step 13')
       return updatedWorkflow;
     }, defaultPrismaTransactionOptions);
   }
@@ -1968,7 +1973,7 @@ export class WorkflowService {
           ruleStoreServiceOptions: TFindAllRulesOptions,
         ) => {
           const rules = await this.riskRuleService.findAll(ruleStoreServiceOptions);
-
+          console.log('#####rules: ', rules);
           return rules.map(rule => {
             try {
               return {
@@ -2151,6 +2156,7 @@ export class WorkflowService {
       });
 
       const snapshot = service.getSnapshot();
+      console.log('snapshot: ', snapshot);
       const currentState = snapshot.value;
       const context = snapshot.machine?.context;
       // TODO: Refactor to use snapshot.done instead

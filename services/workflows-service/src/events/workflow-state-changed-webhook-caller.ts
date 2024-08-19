@@ -1,3 +1,4 @@
+import { setTimeout } from 'timers/promises';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
@@ -35,31 +36,34 @@ export class WorkflowStateChangedWebhookCaller {
   }
 
   async handleWorkflowEvent(data: ExtractWorkflowEventData<'workflow.state.changed'>) {
-    this.logger.log('handleWorkflowEvent:: ', {
+    this.logger.log('handleWorkflowEvent:: 11 ', {
       state: data.state,
       entityId: data.entityId,
       correlationId: data.correlationId,
       id: data.runtimeData.id,
     });
-
+    console.log('here s 1')
     const webhooks = getWebhooks(
       data.runtimeData.config,
       this.configService.get('ENVIRONMENT_NAME'),
       'workflow.state.changed',
     );
-
+    console.log('here s 2')
+    // Add a 5-second delay
+    await setTimeout(5000);
     const customer = await this.customerService.getByProjectId(data.runtimeData.projectId, {
       select: {
         authenticationConfiguration: true,
       },
     });
-
+    console.log('here s 3')
     const { webhookSharedSecret } =
       customer.authenticationConfiguration as TAuthenticationConfiguration;
-
+      console.log('here s 4')
     for (const webhook of webhooks) {
       await this.sendWebhook({ data, webhook, webhookSharedSecret });
     }
+    console.log('here s 5')
   }
 
   private async sendWebhook({

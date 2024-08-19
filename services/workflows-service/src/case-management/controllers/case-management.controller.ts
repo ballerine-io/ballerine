@@ -30,7 +30,7 @@ import { EndUserAmlHitsSchema } from '@/end-user/end-user.schema';
 import { Business, EndUsersOnBusinesses } from '@prisma/client';
 
 @Controller('case-management')
-@ApiExcludeController()
+// @ApiExcludeController()
 export class CaseManagementController {
   constructor(
     protected readonly workflowDefinitionService: WorkflowDefinitionService,
@@ -83,7 +83,7 @@ export class CaseManagementController {
     const tagToKyc = {
       [StateTag.COLLECTION_FLOW]: 'PENDING',
       [StateTag.APPROVED]: 'APPROVED',
-      [StateTag.REJECTED]: 'REJECTED',
+      [StateTag.REJECTED]: 'REJECTED', 
       [StateTag.REVISION]: 'REVISIONS',
       [StateTag.PENDING_PROCESS]: 'PROCESSED',
       [StateTag.DATA_ENRICHMENT]: 'PROCESSED',

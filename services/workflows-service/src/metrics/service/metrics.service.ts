@@ -25,10 +25,12 @@ export class MetricsService {
     params: GetRuntimeStatusCaseCountParams,
     projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeStatusCaseCountModel> {
+    console.log('###projectIds### ', projectIds);
     return await this.metricsRepository.getRuntimeStatusCaseCount(params, projectIds);
   }
 
   async listRuntimesStatistic(projectIds: TProjectIds): Promise<WorkflowRuntimeStatisticModel[]> {
+    console.log('###projectIds### ', projectIds);
     return await this.metricsRepository.findRuntimeStatistic(projectIds);
   }
 
