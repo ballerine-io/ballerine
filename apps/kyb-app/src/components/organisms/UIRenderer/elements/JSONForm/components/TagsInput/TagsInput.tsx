@@ -1,23 +1,33 @@
 import { RJSFInputProps } from '@ballerine/ui';
-import { TagInput } from 'emblor';
-import { FunctionComponent, useState } from 'react';
+import { Tag, TagInput } from 'emblor';
+import { FunctionComponent, useMemo, useState } from 'react';
 
 export type ITagsInputProps = RJSFInputProps;
 
-export const TagsInput: FunctionComponent<ITagsInputProps> = (props: RJSFInputProps) => {
+export const TagsInput: FunctionComponent<ITagsInputProps> = ({
+  onBlur,
+  onChange,
+  formData,
+  id,
+}) => {
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
-  console.log({ value: props.formData });
+  const tags = useMemo(() => {
+    if (!Array.isArray(formData)) return [];
+
+    return formData.map((tag, index) => {
+      return {
+        id: String(index),
+        text: tag,
+      };
+    }) as Tag[];
+  }, [formData]);
 
   return (
     <TagInput
-      onBlur={() => props.onBlur(props.id!, props.formData)}
-      setTags={tags => {
-        console.log({ tags });
-        props.onChange(tags);
-        console.log({ props });
-      }}
-      tags={props.formData || []}
+      onBlur={() => onBlur(id!, formData)}
+      setTags={tags => onChange((tags as Tag[]).map(tag => tag.text))}
+      tags={tags}
       activeTagIndex={activeTagIndex}
       setActiveTagIndex={setActiveTagIndex}
     />
