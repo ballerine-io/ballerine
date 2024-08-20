@@ -36,7 +36,7 @@ export class JsonSchemaRuleEngine implements RuleEngine {
   }
 
   test(context: unknown, rule: Rule) {
-    const validator = new Ajv({ allErrors: true, useDefaults: true });
+    const validator = new Ajv({ allErrors: true, useDefaults: true, $data: true });
     addFormats(validator, {
       formats: ['email', 'uri', 'date', 'date-time'],
       keywords: true,

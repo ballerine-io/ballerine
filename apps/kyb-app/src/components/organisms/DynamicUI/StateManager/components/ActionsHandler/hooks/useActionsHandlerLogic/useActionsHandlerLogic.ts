@@ -2,6 +2,7 @@ import { ActionHandler } from '@/components/organisms/DynamicUI/StateManager/com
 import { ApiActionHandler } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/api.handler';
 import { EventDispatcherHandler } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/event-dispatcher.handler';
 import { PluginRunnerHandler } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/plugin-runner.handler';
+import { ValueApplyHandler } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/value-apply/value-apply.handler';
 import { useActionsProcessingLogic } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/hooks/useActionsHandlerLogic/hooks/useActionsProcessingLogic';
 import { StateMachineAPI } from '@/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
 import { Action } from '@/domains/collection-flow';
@@ -11,6 +12,7 @@ const defaultActionHandlers: ActionHandler[] = [
   new ApiActionHandler(),
   new EventDispatcherHandler(),
   new PluginRunnerHandler(),
+  new ValueApplyHandler(),
 ];
 
 export const useActionsHandlerLogic = (
