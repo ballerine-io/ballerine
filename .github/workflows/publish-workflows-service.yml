@@ -413,3 +413,21 @@ jobs:
             "BASE_IMAGE=${{needs.build-and-push-image.outputs.docker_full_image}}"
             "RELEASE=${{ needs.build-and-push-image.outputs.bumped_tag }}"
             "SHORT_SHA=${{ needs.build-and-push-image.outputs.sha_short }}"
+
+  send-to-slack:
+    runs-on: ubuntu-latest
+    needs: [update-helm-chart]
+    if: ${{ needs.update-helm-chart.result == 'success' }}
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Send alert to Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: '${{ secrets.SLACK_CHANNEL_ID }}'
+          slack-message: "Wf-service in ${{ github.ref_name }} build result: ${{ job.status }}. successfully updated the Wf-service helm values for ${{ github.ref_name }}."
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
