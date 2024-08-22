@@ -62,4 +62,6 @@ services/workflows-service/ci/*
 
 
 # Ignore Nx
-.nx/
+.nx/cache
+.nx/installation
+.nx/workspace-data
