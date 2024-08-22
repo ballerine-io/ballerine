@@ -5,7 +5,6 @@ import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
 import { HttpError } from './errors';
 import {
-  ChildPluginCallbackOutput,
   Error as ErrorEnum,
   ObjectValues,
   SecretsManager,
@@ -52,16 +51,11 @@ import {
   HelpersTransformer,
   TContext,
   THelperFormatingLogic,
-  Transformer,
-  Transformers,
   Validator,
 } from './utils';
 import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
 import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plugin';
 import { search } from 'jmespath';
-import { KybPlugin } from './plugins/external-plugin/kyb-plugin';
-import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
-import { EmailPlugin } from './plugins/external-plugin/email-plugin';
 import { WorkflowTokenPlugin } from './plugins/common-plugin/workflow-token-plugin';
 import { RiskRulePlugin } from './plugins/common-plugin/risk-rules-plugin';
 import { BallerineApiPlugin } from './plugins/common-plugin/ballerine-plugin';
@@ -73,10 +67,7 @@ import {
 import { BUILT_IN_EVENT } from './index';
 import { logger } from './logger';
 import { hasPersistResponseDestination } from './utils/has-persistence-response-destination';
-
-export interface ChildCallabackable {
-  invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
-}
+import { pluginsRegistry } from './constants';
 
 export class WorkflowRunner {
   #__subscriptions: Partial<Record<string, Array<(event: WorkflowEvent) => Promise<void>>>>;
@@ -322,11 +313,11 @@ export class WorkflowRunner {
     invokeWorkflowTokenAction?: WorkflowTokenPluginParams['action'],
   ) {
     return pluginSchemas.map(pluginSchema => {
-      if (pluginSchema.pluginKind == 'riskRules') {
+      if (pluginSchema.pluginKind === 'riskRules') {
         return this.initiateRiskRulePlugin(pluginSchema, invokeRiskRulesAction);
       }
 
-      if (pluginSchema.pluginKind == 'attach-ui-definition') {
+      if (pluginSchema.pluginKind === 'attach-ui-definition') {
         return this.initiateWorkflowTokenPlugin(pluginSchema, invokeWorkflowTokenAction);
       }
 
@@ -387,22 +378,21 @@ export class WorkflowRunner {
   }
 
   private pickApiPluginClass(apiPluginSchema: ISerializableHttpPluginParams) {
-    // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'kyc') return KycPlugin;
-    // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'kyc-session') return KycSessionPlugin;
-    // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'kyb') return KybPlugin;
-    // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'webhook') return WebhookPlugin;
-    // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'api') return ApiPlugin;
-    // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'email') return EmailPlugin;
-    // @ts-ignore
-    if (BALLERINE_API_PLUGINS_KINDS.includes(apiPluginSchema.pluginKind)) return BallerineApiPlugin;
+    if (
+      BALLERINE_API_PLUGINS_KINDS.includes(
+        apiPluginSchema.pluginKind as (typeof BALLERINE_API_PLUGINS_KINDS)[number],
+      )
+    ) {
+      return BallerineApiPlugin;
+    }
 
-    return this.isPluginWithCallbackAction(apiPluginSchema) ? ApiPlugin : WebhookPlugin;
+    const Plugin = pluginsRegistry[apiPluginSchema.pluginKind as keyof typeof pluginsRegistry];
+
+    if (!Plugin) {
+      return this.isPluginWithCallbackAction(apiPluginSchema) ? ApiPlugin : WebhookPlugin;
+    }
+
+    return Plugin;
   }
 
   private isPluginWithCallbackAction(apiPluginSchema: IApiPluginParams) {

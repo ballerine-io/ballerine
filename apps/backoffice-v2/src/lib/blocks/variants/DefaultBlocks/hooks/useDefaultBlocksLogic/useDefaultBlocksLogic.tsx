@@ -51,8 +51,44 @@ import { omitPropsFromObjectWhitelist } from '@/common/utils/omit-props-from-obj
 import { useObjectEntriesBlock } from '@/lib/blocks/hooks/useObjectEntriesBlock/useObjectEntriesBlock';
 import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';
 import { associatedCompanyToWorkflowAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-to-workflow-adapter';
+import { toCamelCase } from 'string-ts';
+import { useMerchantScreeningBlock } from '@/lib/blocks/hooks/useMerchantScreeningBlock/useMerchantScreeningBlock';
+import { MatchResponseCode } from '@/domains/merchant-screening/constants';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
+
+export const aggregateMerchantScreeningMatches = ({
+  matches,
+  data,
+}: {
+  matches: Record<string, (typeof MatchResponseCode)[keyof typeof MatchResponseCode]>;
+  data: Record<string, unknown>;
+}) => {
+  const exactMatches: Record<string, unknown> = {};
+  const partialMatches: Record<string, unknown> = {};
+
+  Object.entries(data).forEach(([key, value]) => {
+    const matchValue = matches[key];
+
+    if (matchValue === MatchResponseCode.M00) {
+      return;
+    }
+
+    if (matchValue === MatchResponseCode.M01) {
+      exactMatches[toCamelCase(key)] = value;
+
+      return;
+    }
+
+    if (matchValue === MatchResponseCode.M02) {
+      partialMatches[toCamelCase(key)] = value;
+
+      return;
+    }
+  });
+
+  return { exactMatches, partialMatches };
+};
 
 export const useDefaultBlocksLogic = () => {
   const [{ activeTab }] = useSearchParamsByEntity();
@@ -430,6 +466,16 @@ export const useDefaultBlocksLogic = () => {
       .build();
   }, [amlBlock]);
 
+  const merchantScreeningBlock = useMerchantScreeningBlock({
+    terminatedMatchedMerchants:
+      workflow?.context?.pluginsOutput?.merchantScreening?.processed?.terminatedMatchedMerchants ??
+      [],
+    inquiredMatchedMerchants:
+      workflow?.context?.pluginsOutput?.merchantScreening?.processed?.inquiredMatchedMerchants ??
+      [],
+    logoUrl: workflow?.context?.pluginsOutput?.merchantScreening?.logoUrl,
+  });
+
   const allBlocks = useMemo(() => {
     if (!workflow?.context?.entity) return [];
 
@@ -461,6 +507,7 @@ export const useDefaultBlocksLogic = () => {
       caseOverviewBlock,
       customDataBlock,
       amlWithContainerBlock,
+      merchantScreeningBlock,
     ];
   }, [
     associatedCompaniesBlock,
@@ -490,6 +537,7 @@ export const useDefaultBlocksLogic = () => {
     caseOverviewBlock,
     customDataBlock,
     amlWithContainerBlock,
+    merchantScreeningBlock,
     workflow?.context?.entity,
   ]);
 

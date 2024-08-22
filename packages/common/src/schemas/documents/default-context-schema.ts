@@ -30,6 +30,8 @@ export const defaultContextSchema = Type.Composite([
           companySanctions: CompanySanctionsPluginSchema,
           merchantMonitoring: MerchantMonitoringPluginSchema,
           businessInformation: BusinessInformationPluginSchema,
+          // risk_evaluation
+          // merchantScreening
         },
         { additionalProperties: true },
       ),
