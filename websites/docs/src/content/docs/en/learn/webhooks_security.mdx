@@ -1,0 +1,83 @@
+---
+title: Webhook Security
+description: Ensuring the security of webhooks from Ballerine's system.
+---
+
+## Webhook Security
+
+Security is a critical aspect of handling webhooks to ensure that your application processes legitimate requests and that sensitive data remains protected. Ballerine takes webhook security seriously and provides mechanisms to verify the authenticity of webhook requests. This section explains how to verify webhooks from Ballerine, best practices for securing your webhook endpoints, and additional security measures you can implement.
+
+### Verifying Webhook Signatures
+
+To ensure that webhook requests are genuinely from Ballerine, you should verify the signatures included in the request headers. Ballerine signs each webhook payload using a secret key that you can configure. Here’s how you can verify the signature:
+
+
+
+#### Verifying the Payload
+
+To verify the payload, you can compare the signature from the request header with the signature you generate using the same secret key:
+
+
+### Example: Authenticating Ballerine Webhooks
+
+Here is a complete example demonstrating how to authenticate webhooks from Ballerine:
+
+```javascript
+const express = require('express');
+const crypto = require('crypto');
+const app = express();
+const port = 3000;
+
+const ballerineSecret = 'your_secret_key';
+
+app.use(express.json());
+
+app.post('/webhook', (req, res) => {
+    const payload = req.body;
+    const signature = req.headers['x-hmac-signature'];
+
+    if (verifyPayload(payload, ballerineSecret, signature)) {
+        console.log('Webhook verified successfully');
+        // Process the webhook payload
+        res.status(200).send('Webhook received');
+    } else {
+        console.log('Invalid webhook signature');
+        res.status(401).send('Invalid signature');
+    }
+});
+
+function verifyPayload(payload, secret, signature) {
+    const generatedSignature = crypto
+        .createHmac('sha256', secret)
+        .update(JSON.stringify(payload))
+        .digest('hex');
+    return generatedSignature === signature;
+}
+
+app.listen(port, () => {
+    console.log(`Webhook listener running on port ${port}`);
+});
+```
+
+### Best Practices for Webhook Security
+
+#### Use HTTPS
+
+Always use HTTPS for your webhook endpoints to encrypt data in transit. This prevents potential attackers from intercepting and reading sensitive data.
+
+#### Protect Against Replay Attacks
+
+To protect against replay attacks, you can include a timestamp in the webhook payload and reject any requests that are too old. This ensures that an attacker cannot reuse a valid webhook request.
+
+#### IP Whitelisting
+
+Restrict incoming requests to your webhook endpoint by whitelisting IP addresses provided by Ballerine. Depending on the type of deployment, Ballerine will supply the IP addresses you should whitelist.
+
+#### Regular Key Rotation
+
+Regularly rotate your secret keys to minimize the risk of key compromise. Ballerine’s API will soon support automatic key rotation to facilitate this process.
+
+
+### Conclusion
+
+By implementing these security measures, you can ensure that your webhook endpoints are secure and that your application processes only legitimate requests from Ballerine. Always stay updated with best practices and regularly review your security configurations to protect your systems.
