@@ -427,7 +427,7 @@ jobs:
         id: slack
         uses: slackapi/slack-github-action@v1.26.0
         with:
-          channel-id: '${{ secrets.SLACK_CHANNEL_ID }}'
+          channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
           slack-message: "Wf-service in ${{ github.ref_name }} build result: ${{ job.status }}. successfully updated the Wf-service helm values for ${{ github.ref_name }}."
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}
