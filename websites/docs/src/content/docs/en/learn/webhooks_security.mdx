@@ -9,14 +9,16 @@ Security is a critical aspect of handling webhooks to ensure that your applicati
 
 ### Verifying Webhook Signatures
 
-To ensure that webhook requests are genuinely from Ballerine, you should verify the signatures included in the request headers. Ballerine signs each webhook payload using a secret key that you can configure. Here’s how you can verify the signature:
-
+Ballerine uses HMAC (Hash-Based Message Authentication Code) with SHA-256 hashing algorithm to sign webhook payloads. Each webhook request from Ballerine includes a signature that is generated using a secret key shared between Ballerine and your application. This signature is included in the `x-hmac-signature` header of the webhook request. The purpose of this signature is to verify that the payload has not been tampered with and that it originated from Ballerine.
 
 
 #### Verifying the Payload
 
-To verify the payload, you can compare the signature from the request header with the signature you generate using the same secret key:
+To verify the authenticity of the webhook, Ballerine signs the entire payload of the webhook request. The process of signing and verification includes the following steps:
 
+1. **Create a HMAC SHA-256 Signature**: Ballerine takes the entire JSON payload of the webhook, converts it to a string, and then signs it using the HMAC SHA-256 algorithm with a secret key known only to Ballerine and your application.
+
+2. **Verify the Signature**: On your end, you can use the same HMAC SHA-256 algorithm to generate a signature from the received payload using the shared secret key. Then, compare your computed signature with the signature provided in the `x-hmac-signatur` header. If the signatures match, the request is verified as authentic and untampered.
 
 ### Example: Authenticating Ballerine Webhooks
 
