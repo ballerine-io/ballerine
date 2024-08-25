@@ -1,12 +1,7 @@
-import { MatchResponseCode } from '@/domains/merchant-screening/constants';
-
 export interface IMerchantScreening {
   name: string;
   terminationReasonCode: string;
   dateAdded: string;
-
-  matches: Record<string, (typeof MatchResponseCode)[keyof typeof MatchResponseCode]>;
-  data: Record<string, unknown>;
 
   exactMatchesAmount: number;
   partialMatchesAmount: number;
@@ -22,4 +17,6 @@ export interface IMerchantScreening {
     exactMatches: Record<string, unknown>;
     partialMatches: Record<string, unknown>;
   }>;
+
+  raw: Record<string, unknown>;
 }

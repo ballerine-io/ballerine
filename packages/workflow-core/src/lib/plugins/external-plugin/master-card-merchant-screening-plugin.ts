@@ -5,7 +5,7 @@ import { logger } from '../../logger';
 import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
 import { alpha2ToAlpha3 } from 'i18n-iso-countries';
 
-export class MasterCardMatchPlugin extends ApiPlugin {
+export class MasterCardMerchantScreeningPlugin extends ApiPlugin {
   public static pluginType = 'http';
 
   constructor(pluginParams: IApiPluginParams) {
@@ -33,6 +33,7 @@ export class MasterCardMatchPlugin extends ApiPlugin {
       const secrets = await this.secretsManager?.getAll?.();
       const urlWithoutPlaceholders = await this.replaceValuePlaceholders(this.url, context);
       const entity = isObject(context.entity) ? context.entity : {};
+      const countrySubdivisionSupportedCountries = ['US', 'CA'] as const;
       const address = {
         line1: [
           entity?.data?.additionalInfo?.headquarters?.street,
@@ -42,13 +43,16 @@ export class MasterCardMatchPlugin extends ApiPlugin {
           .join(' '),
         city: entity?.data?.additionalInfo?.headquarters?.city,
         country: alpha2ToAlpha3(entity?.data?.additionalInfo?.headquarters?.country),
-        postalCode: '66579',
-        countrySubdivision: 'IL',
+        postalCode: requestPayload?.postalCode,
+        countrySubdivision: countrySubdivisionSupportedCountries.includes(
+          entity?.data?.additionalInfo?.headquarters?.country,
+        )
+          ? requestPayload?.countrySubdivision
+          : undefined,
       };
 
       requestPayload = {
         ...requestPayload,
-        vendor: 'mastercard',
         consumerKey: secrets?.consumerKey,
         privateKey: secrets?.privateKey,
         acquirerId: secrets?.acquirerId,

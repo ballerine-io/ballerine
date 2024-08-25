@@ -3,7 +3,7 @@ import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
 import { KybPlugin } from './plugins/external-plugin/kyb-plugin';
 import { ApiPlugin, WebhookPlugin } from './plugins';
 import { EmailPlugin } from './plugins/external-plugin/email-plugin';
-import { MasterCardMatchPlugin } from './plugins/external-plugin/mastercard-match-plugin';
+import { MasterCardMerchantScreeningPlugin } from './plugins/external-plugin/master-card-merchant-screening-plugin';
 import { ObjectValues } from './types';
 
 export const PluginKind = {
@@ -13,7 +13,7 @@ export const PluginKind = {
   WEBHOOK: 'webhook',
   API: 'api',
   EMAIL: 'email',
-  MASTER_CARD_MATCH: 'mastercard-match',
+  MASTER_CARD_MERCHANT_SCREENING: 'mastercard-merchant-screening',
 } as const;
 
 export const pluginsRegistry = {
@@ -23,5 +23,5 @@ export const pluginsRegistry = {
   [PluginKind.WEBHOOK]: WebhookPlugin,
   [PluginKind.API]: ApiPlugin,
   [PluginKind.EMAIL]: EmailPlugin,
-  [PluginKind.MASTER_CARD_MATCH]: MasterCardMatchPlugin,
+  [PluginKind.MASTER_CARD_MERCHANT_SCREENING]: MasterCardMerchantScreeningPlugin,
 } as const satisfies Readonly<Record<ObjectValues<typeof PluginKind>, new (...args: any[]) => any>>;

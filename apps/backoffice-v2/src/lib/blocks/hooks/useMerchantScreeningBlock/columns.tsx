@@ -1,19 +1,21 @@
-import { MatchReasonCode } from '@/domains/merchant-screening/constants';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Button } from '@/common/components/atoms/Button/Button';
 import { ChevronDown } from 'lucide-react';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { TextWithNAFallback, WarningFilledSvg } from '@ballerine/ui';
+import { JsonDialog, TextWithNAFallback, WarningFilledSvg } from '@ballerine/ui';
 import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
 import React from 'react';
 import { IMerchantScreening } from '@/lib/blocks/hooks/useMerchantScreeningBlock/interfaces';
+import { isObject, MatchReasonCode } from '@ballerine/common';
 
-const columnHelper = createColumnHelper<
-  IMerchantScreening & {
-    exactMatches: number;
-    partialMatches: number;
-  }
->();
+const columnHelper = createColumnHelper<IMerchantScreening>();
+
+const summaryColumnHelper = createColumnHelper<{
+  terminatedMatches: number;
+  numberOfInquiries: number;
+  checkDate: string;
+  fullJsonData: string;
+}>();
 
 export const terminatedMatchedMerchantsColumns = [
   columnHelper.display({
@@ -35,6 +37,7 @@ export const terminatedMatchedMerchantsColumns = [
     ),
   }),
   columnHelper.accessor('name', {
+    header: 'Name',
     cell: info => {
       const name = info.getValue();
 
@@ -45,9 +48,9 @@ export const terminatedMatchedMerchantsColumns = [
         </TextWithNAFallback>
       );
     },
-    header: 'Name',
   }),
   columnHelper.accessor('exactMatchesAmount', {
+    header: 'Exact Matches',
     cell: info => {
       const exactMatches = info.getValue();
 
@@ -58,9 +61,9 @@ export const terminatedMatchedMerchantsColumns = [
         </TextWithNAFallback>
       );
     },
-    header: 'Exact Matches',
   }),
   columnHelper.accessor('partialMatchesAmount', {
+    header: 'Partial Matches',
     cell: info => {
       const partialMatches = info.getValue();
 
@@ -71,9 +74,9 @@ export const terminatedMatchedMerchantsColumns = [
         </TextWithNAFallback>
       );
     },
-    header: 'Partial Matches',
   }),
   columnHelper.accessor('terminationReasonCode', {
+    header: 'Termination Reason',
     cell: info => {
       const terminationReasonCode = info.getValue();
 
@@ -84,15 +87,61 @@ export const terminatedMatchedMerchantsColumns = [
         </TextWithNAFallback>
       );
     },
-    header: 'Termination Reason',
   }),
   columnHelper.accessor('dateAdded', {
+    header: 'Date Added',
     cell: info => {
       const dateAdded = info.getValue();
 
       return <TextWithNAFallback className={`font-semibold`}>{dateAdded}</TextWithNAFallback>;
     },
-    header: 'Date Added',
+  }),
+];
+
+export const terminatedMatchedMerchantsSummaryColumns = [
+  summaryColumnHelper.accessor('terminatedMatches', {
+    header: 'Terminated Matches',
+    cell: info => {
+      const terminatedMatches = info.getValue();
+
+      return <TextWithNAFallback checkFalsy={false}>{terminatedMatches}</TextWithNAFallback>;
+    },
+  }),
+  summaryColumnHelper.accessor('numberOfInquiries', {
+    header: 'Number of Inquiries',
+    cell: info => {
+      const numberOfInquiries = info.getValue();
+
+      return <TextWithNAFallback checkFalsy={false}>{numberOfInquiries}</TextWithNAFallback>;
+    },
+  }),
+  summaryColumnHelper.accessor('checkDate', {
+    header: 'Check Date',
+    cell: info => {
+      const checkDate = info.getValue();
+
+      return <TextWithNAFallback>{checkDate}</TextWithNAFallback>;
+    },
+  }),
+  summaryColumnHelper.accessor('fullJsonData', {
+    header: 'Full JSON Data',
+    cell: info => {
+      const fullJsonData = info.getValue();
+
+      return (
+        <div className={`flex items-end justify-start`}>
+          <JsonDialog
+            buttonProps={{
+              variant: 'link',
+              className: 'p-0 text-blue-500',
+              disabled: !isObject(fullJsonData) && !Array.isArray(fullJsonData),
+            }}
+            dialogButtonText={`View`}
+            json={JSON.stringify(fullJsonData)}
+          />
+        </div>
+      );
+    },
   }),
 ];
 
@@ -116,6 +165,7 @@ export const inquiredMatchedMerchantsColumns = [
     ),
   }),
   columnHelper.accessor('name', {
+    header: 'Name',
     cell: info => {
       const name = info.getValue();
 
@@ -125,9 +175,9 @@ export const inquiredMatchedMerchantsColumns = [
         </TextWithNAFallback>
       );
     },
-    header: 'Name',
   }),
   columnHelper.accessor('exactMatchesAmount', {
+    header: 'Exact Matches',
     cell: info => {
       const exactMatches = info.getValue();
 
@@ -138,9 +188,9 @@ export const inquiredMatchedMerchantsColumns = [
         </TextWithNAFallback>
       );
     },
-    header: 'Exact Matches',
   }),
   columnHelper.accessor('partialMatchesAmount', {
+    header: 'Partial Matches',
     cell: info => {
       const partialMatches = info.getValue();
 
@@ -151,14 +201,13 @@ export const inquiredMatchedMerchantsColumns = [
         </TextWithNAFallback>
       );
     },
-    header: 'Partial Matches',
   }),
   columnHelper.accessor('dateAdded', {
+    header: 'Date Added',
     cell: info => {
       const dateAdded = info.getValue();
 
       return <TextWithNAFallback className={`font-semibold`}>{dateAdded}</TextWithNAFallback>;
     },
-    header: 'Date Added',
   }),
 ];
