@@ -1,5 +1,13 @@
 # @ballerine/workflow-core
 
+## 0.6.35
+
+### Patch Changes
+
+- merchant screening changes
+- Updated dependencies
+  - @ballerine/common@0.9.24
+
 ## 0.6.34
 
 ### Patch Changes

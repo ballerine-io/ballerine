@@ -1,5 +1,13 @@
 # @ballerine/ui
 
+## 0.5.19
+
+### Patch Changes
+
+- merchant screening changes
+- Updated dependencies
+  - @ballerine/common@0.9.24
+
 ## 0.5.18
 
 ### Patch Changes
