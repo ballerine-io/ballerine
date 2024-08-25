@@ -1,0 +1,33 @@
+---
+import {Tabs, TabItem} from '@astrojs/starlight/components';
+import CodeBlock from "../CodeBlock/CodeBlock.astro";
+
+export interface Props {
+    code: string | {
+        javascript?: string;
+        typescript?: string;
+        python?: string;
+        php?: string;
+        java?: string;
+    };
+}
+
+const {code} = Astro.props;
+const languages = typeof code === 'string'
+    ? [{ label: 'Code', code }]
+    : [
+        { label: 'JavaScript', code: code.javascript },
+        { label: 'TypeScript', code: code.typescript },
+        { label: 'Python', code: code.python },
+        { label: 'PHP', code: code.php },
+        { label: 'Java', code: code.java }
+      ].filter(lang => lang.code !== undefined);
+---
+
+<Tabs>
+    {languages.map(lang => (
+        <TabItem label={lang.label}>
+            <CodeBlock lang={lang.label.toLowerCase()} code={lang.code}/>
+        </TabItem>
+    ))}
+</Tabs>

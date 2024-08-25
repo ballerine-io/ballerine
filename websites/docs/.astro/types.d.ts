@@ -626,6 +626,13 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.md'] };
+      'en/learn/webhooks_security.mdx': {
+        id: 'en/learn/webhooks_security.mdx';
+        slug: 'en/learn/webhooks_security';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
       'en/learn/workflow_builder_and_rule_engine_overview.md': {
         id: 'en/learn/workflow_builder_and_rule_engine_overview.md';
         slug: 'en/learn/workflow_builder_and_rule_engine_overview';

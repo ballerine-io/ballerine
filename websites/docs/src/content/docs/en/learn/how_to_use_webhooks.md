@@ -3,6 +3,8 @@ title: How to use webhooks
 description: A guide on setting up and handling webhooks to receive real-time notifications from Ballerine's system events.
 ---
 
+import CodeBlock from '../../../../components/CodeBlock/CodeBlock.astro';
+
 **Ballerine supports two types of webhooks: system webhooks and custom webhooks.
 These webhooks allow you to integrate external systems and automate actions based on specific events in your workflows.**
 
