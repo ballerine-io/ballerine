@@ -4,10 +4,9 @@ import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { TBusinessReportType } from '@/domains/business-reports/types';
 import qs from 'qs';
-import { Severities } from '@ballerine/common';
+import { ObjectValues, Severities } from '@ballerine/common';
 import { toast } from 'sonner';
 import { t } from 'i18next';
-import { ObjectValues } from '@ballerine/common';
 
 export const BusinessReportStatus = {
   NEW: 'new',
@@ -83,13 +82,13 @@ export const fetchLatestBusinessReport = async ({
   businessId: string;
   reportType: TBusinessReportType;
 }) => {
-  const [filter, error] = await apiClient({
+  const [data, error] = await apiClient({
     endpoint: `business-reports/latest?businessId=${businessId}&type=${reportType}`,
     method: Method.GET,
     schema: BusinessReportSchema,
   });
 
-  return handleZodError(error, filter);
+  return handleZodError(error, data);
 };
 
 export const fetchBusinessReports = async ({

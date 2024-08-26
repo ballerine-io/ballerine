@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.23
+
+### Patch Changes
+
+- added merchant screening to swagger
+
 ## 0.9.22
 
 ### Patch Changes
