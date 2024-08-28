@@ -34,6 +34,7 @@ import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { fileFilter } from '@/storage/file-filter';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
 import { CreateBatchBusinessReportDto } from '@/business-report/dto/create-batch-business-report.dto';
+import { ApiConsumes } from '@nestjs/swagger';
 
 @common.Controller('internal/business-reports')
 @swagger.ApiExcludeController()
@@ -341,6 +342,7 @@ export class BusinessReportControllerInternal {
 
   @common.Post('/upload-batch')
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileInterceptor('reportBatchCsv', {
       storage: getDiskStorage(),
