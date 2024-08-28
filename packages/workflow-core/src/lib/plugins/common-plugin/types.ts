@@ -95,6 +95,8 @@ export interface ChildWorkflowPluginParams {
   transformers?: Transformers;
   initEvent?: string;
   action: (childCallbackInput: ChildPluginCallbackOutput) => Promise<void>;
+  successAction?: string;
+  errorAction?: string;
 }
 
 export interface WorkflowTokenPluginParams {
