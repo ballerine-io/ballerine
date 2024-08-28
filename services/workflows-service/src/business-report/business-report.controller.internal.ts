@@ -254,11 +254,12 @@ export class BusinessReportControllerInternal {
   @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
   async listBusinessReports(
     @CurrentProject() currentProjectId: TProjectId,
-    @Query() { businessId, page, search, type, orderBy }: ListBusinessReportsDto,
+    @Query() { businessId, batchId, page, search, type, orderBy }: ListBusinessReportsDto,
   ) {
     const args = {
       where: {
         businessId,
+        batchId,
         ...(type ? { type } : {}),
         ...(search
           ? {

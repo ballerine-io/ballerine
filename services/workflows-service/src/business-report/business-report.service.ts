@@ -13,6 +13,7 @@ import {
   UnifiedApiClient,
 } from '@/common/utils/unified-api-client/unified-api-client';
 import { env } from '@/env';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class BusinessReportService {
@@ -108,6 +109,17 @@ export class BusinessReportService {
     return await this.businessReportRepository.findById(id, projectIds, args);
   }
 
+  async findManyByBatchId(projectIds: TProjectIds, batchId: string) {
+    return await this.businessReportRepository.findMany(
+      {
+        where: {
+          batchId,
+        },
+      },
+      projectIds,
+    );
+  }
+
   async updateById(...args: Parameters<BusinessReportRepository['updateById']>) {
     return await this.businessReportRepository.updateById(...args);
   }
@@ -133,6 +145,7 @@ export class BusinessReportService {
       throw new UnprocessableEntityException('Batch size is too large');
     }
 
+    const batchId = randomUUID();
     await this.prisma.$transaction(async transaction => {
       const businessCreatePromise = businessReportsRequests.map(async businessReportRequest => {
         let business =
@@ -160,6 +173,7 @@ export class BusinessReportService {
             status: BusinessReportStatus.new,
             report: {},
             businessId: business.id,
+            batchId,
             projectId,
           },
         });
@@ -178,7 +192,7 @@ export class BusinessReportService {
           return {
             callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${businessReport.businessId}&businessReportId=${businessReport.id}`,
             websiteUrl: businessReportRequest.websiteUrl,
-            countryCode: countryCode,
+            countryCode,
             parentCompanyName: businessReportRequest.parentCompanyName,
             lineOfBusiness: businessReportRequest.lineOfBusiness,
             businessReportId: businessReport.id,
