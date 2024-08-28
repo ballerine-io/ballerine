@@ -41,16 +41,17 @@ export class ValueApplyHandler implements ActionHandler {
     return api.getContext();
   }
 
-  private getSelector(selector: ValueApplySelectors): ValueApplySelector {
-    switch (selector?.type) {
-      case 'raw':
-        return new ValueApplyRawSelector();
-      case 'pick':
-        return new ValueApplyPickSelector();
-      case 'json-logic':
-        return new ValueApplyJsonLogicSelector();
-      default:
-        throw new Error('Incorrect selector type');
-    }
+  private getSelector(selectorType: ValueApplySelectors): ValueApplySelector {
+    const selectorsMap = {
+      raw: new ValueApplyRawSelector(),
+      pick: new ValueApplyPickSelector(),
+      'json-logic': new ValueApplyJsonLogicSelector(),
+    };
+
+    const selector = selectorsMap[selectorType.type];
+
+    if (!selector) throw new Error('Incorrect selector type');
+
+    return selector;
   }
 }
