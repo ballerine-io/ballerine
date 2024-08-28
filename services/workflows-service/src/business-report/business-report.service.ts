@@ -1,13 +1,26 @@
-import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
-import { TProjectIds } from '@/types';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { BusinessReportStatus, BusinessReportType, Prisma } from '@prisma/client';
+import { TProjectId, TProjectIds } from '@/types';
 import { BusinessReportRepository } from '@/business-report/business-report.repository';
 import { GetBusinessReportDto } from './dto/get-business-report.dto';
 import { toPrismaOrderByGeneric } from '@/workflow/utils/toPrismaOrderBy';
+import { parseCsv } from '@/common/utils/parse-csv/parse-csv';
+import { BusinessReportRequestSchema } from '@/common/schemas';
+import { PrismaService } from '@/prisma/prisma.service';
+import { BusinessService } from '@/business/business.service';
+import {
+  TReportRequest,
+  UnifiedApiClient,
+} from '@/common/utils/unified-api-client/unified-api-client';
+import { env } from '@/env';
 
 @Injectable()
 export class BusinessReportService {
-  constructor(protected readonly businessReportRepository: BusinessReportRepository) {}
+  constructor(
+    protected readonly businessReportRepository: BusinessReportRepository,
+    protected readonly prisma: PrismaService,
+    protected readonly businessService: BusinessService,
+  ) {}
 
   async create<T extends Prisma.BusinessReportCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessReportCreateArgs>,
@@ -101,5 +114,84 @@ export class BusinessReportService {
 
   async count(args: Parameters<BusinessReportRepository['count']>[0], projectIds: TProjectIds) {
     return await this.businessReportRepository.count(args, projectIds);
+  }
+
+  async processBatchFile({
+    file,
+    type,
+    countryCode,
+    projectId,
+  }: {
+    file: Express.Multer.File;
+    type: BusinessReportType;
+    countryCode?: string | undefined;
+    projectId: TProjectId;
+  }) {
+    const businessReportsRequests = await parseCsv(file, BusinessReportRequestSchema);
+
+    if (businessReportsRequests.length > 100) {
+      throw new UnprocessableEntityException('Batch size is too large');
+    }
+
+    await this.prisma.$transaction(async transaction => {
+      const businessCreatePromise = businessReportsRequests.map(async businessReportRequest => {
+        let business =
+          businessReportRequest.correlationId &&
+          (await this.businessService.getByCorrelationId(businessReportRequest.correlationId, [
+            projectId,
+          ]));
+
+        business ||= await this.businessService.create(
+          {
+            data: {
+              ...(businessReportRequest.correlationId
+                ? { correlationId: businessReportRequest.correlationId }
+                : {}),
+              companyName: businessReportRequest.parentCompanyName || '',
+              projectId,
+            },
+          },
+          transaction,
+        );
+
+        const businessReport = await this.businessReportRepository.create({
+          data: {
+            type,
+            status: BusinessReportStatus.new,
+            report: {},
+            businessId: business.id,
+            projectId,
+          },
+        });
+
+        return {
+          businessReport: businessReport,
+          businessReportRequest: businessReportRequest,
+          businessId: business.id,
+        } as const;
+      });
+
+      const businessWithRequests = await Promise.all(businessCreatePromise);
+
+      const businessReportRequests = businessWithRequests.map(
+        ({ businessReport, businessReportRequest }) => {
+          return {
+            callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${businessReport.businessId}&businessReportId=${businessReport.id}`,
+            websiteUrl: businessReportRequest.websiteUrl,
+            countryCode: countryCode,
+            parentCompanyName: businessReportRequest.parentCompanyName,
+            lineOfBusiness: businessReportRequest.lineOfBusiness,
+            businessReportId: businessReport.id,
+          };
+        },
+      ) satisfies TReportRequest;
+
+      await new UnifiedApiClient().postBatchBusinessReport({
+        reportRequests: businessReportRequests,
+        clientName: 'merchant',
+        reportType: type,
+        workflowVersion: '3',
+      });
+    });
   }
 }

@@ -1,8 +1,8 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { TProjectIds } from '@/types';
+import { PrismaTransaction, TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class BusinessReportRepository {
@@ -73,5 +73,12 @@ export class BusinessReportRepository {
     return await this.prisma.businessReport.count(
       this.scopeService.scopeFindMany(args, projectIds) as any,
     );
+  }
+
+  async createMany<T extends Prisma.BusinessReportCreateManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.BusinessReportCreateManyArgs>,
+    transaction: PrismaClient | PrismaTransaction = this.prisma,
+  ) {
+    return transaction.businessReport.createMany(args);
   }
 }

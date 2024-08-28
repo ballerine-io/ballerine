@@ -1,5 +1,5 @@
 import * as common from '@nestjs/common';
-import { BadRequestException, Body, Param, Query } from '@nestjs/common';
+import { BadRequestException, Body, Param, Query, UseInterceptors } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import type { InputJsonValue, TProjectId } from '@/types';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -29,6 +29,11 @@ import { BusinessReportHookBodyDto } from '@/business-report/dtos/business-repor
 import { BusinessReportHookSearchQueryParamsDto } from '@/business-report/dtos/business-report-hook-search-query-params.dto';
 import { QueryMode } from '@/common/query-filters/query-mode';
 import { isNumber } from 'lodash';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { getDiskStorage } from '@/storage/get-file-storage-manager';
+import { fileFilter } from '@/storage/file-filter';
+import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
+import { CreateBatchBusinessReportDto } from '@/business-report/dto/create-batch-business-report.dto';
 
 @common.Controller('internal/business-reports')
 @swagger.ApiExcludeController()
@@ -330,6 +335,30 @@ export class BusinessReportControllerInternal {
           },
         },
       },
+    });
+  }
+
+  @common.Post('/upload-batch')
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseInterceptors(
+    FileInterceptor('reportBatchCsv', {
+      storage: getDiskStorage(),
+      limits: {
+        files: 1,
+      },
+      fileFilter,
+    }),
+    RemoveTempFileInterceptor,
+  )
+  async createBatchReport(
+    @CurrentProject() currentProjectId: TProjectId,
+    @Body() body: CreateBatchBusinessReportDto,
+  ) {
+    await this.businessReportService.processBatchFile({
+      type: body.type,
+      file: body.reportBatchCsv,
+      countryCode: body.countryCode,
+      projectId: currentProjectId,
     });
   }
 }
