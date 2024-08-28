@@ -18,9 +18,9 @@ export const TagsInput: FunctionComponent<ITagsInputProps> = ({
     return formData.map((tag, index) => {
       return {
         id: String(index),
-        text: tag,
-      };
-    }) as Tag[];
+        text: String(tag),
+      } satisfies Tag;
+    });
   }, [formData]);
 
   return (
