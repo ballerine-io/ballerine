@@ -879,7 +879,7 @@ export class WorkflowRunner {
   private async __dispatchEvent(dispatchEventPlugin: DispatchEventPlugin) {
     const { eventName, event } = await dispatchEventPlugin.getPluginEvent(this.context);
 
-    logger.log('Dispatching event', {
+    logger.log('Dispatching notification to host', {
       eventName,
       event,
     });
