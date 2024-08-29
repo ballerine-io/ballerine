@@ -468,8 +468,6 @@ export class AlertService {
     const filters: {
       endDate: Date | undefined;
       startDate: Date | undefined;
-      counterpartyBeneficiaryId?: string;
-      counterpartyOriginatorId: string;
     } = {
       endDate: undefined,
       startDate: undefined,
