@@ -10,11 +10,14 @@ export class ValueApplyPickSelector implements ValueApplySelector {
   select<TResult>(value: ValueApplyValue, context: AnyObject): TResult {
     if (!this.isPickSelector(value.selector)) throw new Error('Incorrect selector params.');
 
-    return get(context, value.selector.value, value.selector.defaultValue) as TResult;
+    return get(context, value.selector.pickDestination, value.selector.defaultValue) as TResult;
   }
 
   private isPickSelector(value: unknown): value is PickSelector {
-    //@ts-ignore
-    return typeof value === 'object' && typeof value === 'string' && value.type === 'pick';
+    return (
+      typeof value === 'object' &&
+      typeof (value as AnyObject).pickDestination === 'string' &&
+      (value as AnyObject).type === 'pick'
+    );
   }
 }

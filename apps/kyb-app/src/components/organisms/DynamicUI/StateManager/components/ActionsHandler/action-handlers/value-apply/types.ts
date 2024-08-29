@@ -9,7 +9,7 @@ export interface RawSelector<TValue = unknown> {
 
 export interface PickSelector {
   type: 'pick';
-  value: string;
+  pickDestination: string;
   defaultValue?: unknown;
 }
 
