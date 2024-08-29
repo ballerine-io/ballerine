@@ -466,12 +466,18 @@ export class AlertService {
 
   buildTransactionsFiltersByAlert(alert: Alert & { alertDefinition: AlertDefinition }) {
     const filters: {
-      endDate: Date;
+      endDate: Date | undefined;
       startDate: Date | undefined;
+      counterpartyBeneficiaryId?: string;
+      counterpartyOriginatorId: string;
     } = {
-      endDate: alert.updatedAt || alert.createdAt,
+      endDate: undefined,
       startDate: undefined,
     };
+
+    const endDate = alert.updatedAt || alert.createdAt;
+    endDate.setHours(23, 59, 59, 999);
+    filters.endDate = endDate;
 
     const inlineRule = alert?.alertDefinition?.inlineRule as InlineRule;
 
@@ -491,7 +497,7 @@ export class AlertService {
       }
     }
 
-    const startDate = new Date(filters.endDate);
+    let startDate = new Date(endDate);
 
     let subtractValue = 0;
 
@@ -516,8 +522,12 @@ export class AlertService {
     }
 
     startDate.setHours(0, 0, 0, 0);
+    startDate = new Date(startDate.getTime() - subtractValue);
 
-    filters.startDate = new Date(startDate.getTime() - subtractValue);
+    const oldestDate = new Date(Math.min(startDate.getTime(), new Date(alert.createdAt).getTime()));
+
+    oldestDate.setHours(0, 0, 0, 0);
+    filters.startDate = oldestDate;
 
     return filters;
   }
