@@ -49,11 +49,11 @@ export const TableCell = <TData extends RowData, TValue = any>({
                   key={header.id}
                   {...value?.props?.head}
                   className={ctw(
-                    value?.props?.head?.className,
                     '!h-[unset] !pl-3 pb-2 pt-0 text-sm font-medium leading-none text-foreground',
                     {
                       '!pl-3.5': index === 0,
                     },
+                    value?.props?.head?.className,
                   )}
                 >
                   {!header.isPlaceholder &&
