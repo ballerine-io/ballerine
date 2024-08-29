@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.21
+
+### Patch Changes
+
+- changed tsconfig settings for ui package
+
 ## 0.5.20
 
 ### Patch Changes

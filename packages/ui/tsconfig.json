@@ -5,9 +5,10 @@
     "baseUrl": ".",
     "jsx": "react-jsx",
     "paths": {
-      "@/*": ["./src/*"],
-      "class-variance-authority": ["./node_modules/class-variance-authority"]
-    }
+      "@/*": ["./src/*"]
+    },
+    "module": "preserve",
+    "moduleResolution": "bundler"
   },
   "include": ["src"]
 }
