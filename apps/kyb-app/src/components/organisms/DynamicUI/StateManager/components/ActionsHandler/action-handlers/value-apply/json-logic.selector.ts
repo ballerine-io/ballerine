@@ -3,6 +3,7 @@ import {
   ValueApplyValue,
 } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/value-apply/types';
 import { ValueApplySelector } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/value-apply/value-apply.selector.abstract';
+import { isObject } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 import jsonLogic from 'json-logic-js';
 
@@ -14,8 +15,6 @@ export class ValueApplyJsonLogicSelector implements ValueApplySelector {
   }
 
   private isJsonLogic(value: unknown): value is JsonLogicSelector {
-    return (
-      typeof value === 'object' && value !== null && 'type' in value && value.type === 'jsonLogic'
-    );
+    return isObject(value) && value.type === 'jsonLogic';
   }
 }

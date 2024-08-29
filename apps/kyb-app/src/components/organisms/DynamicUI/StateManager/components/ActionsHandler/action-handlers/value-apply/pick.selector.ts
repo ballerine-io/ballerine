@@ -3,6 +3,7 @@ import {
   ValueApplyValue,
 } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/value-apply/types';
 import { ValueApplySelector } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/value-apply/value-apply.selector.abstract';
+import { isObject } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 import get from 'lodash/get';
 
@@ -14,10 +15,6 @@ export class ValueApplyPickSelector implements ValueApplySelector {
   }
 
   private isPickSelector(value: unknown): value is PickSelector {
-    return (
-      typeof value === 'object' &&
-      typeof (value as AnyObject).pickDestination === 'string' &&
-      (value as AnyObject).type === 'pick'
-    );
+    return isObject(value) && typeof value.pickDestination === 'string' && value.type === 'pick';
   }
 }

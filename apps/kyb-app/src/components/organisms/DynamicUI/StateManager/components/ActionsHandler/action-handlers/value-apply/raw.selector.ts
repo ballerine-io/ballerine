@@ -3,6 +3,7 @@ import {
   ValueApplyValue,
 } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/value-apply/types';
 import { ValueApplySelector } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/value-apply/value-apply.selector.abstract';
+import { isObject } from '@ballerine/common';
 
 export class ValueApplyRawSelector implements ValueApplySelector {
   select<TResult>(value: ValueApplyValue): TResult {
@@ -12,6 +13,6 @@ export class ValueApplyRawSelector implements ValueApplySelector {
   }
 
   private isRawSelector(value: unknown): value is RawSelector {
-    return typeof value === 'object' && value !== null && 'type' in value && value.type === 'raw';
+    return isObject(value) && value.type === 'raw';
   }
 }
