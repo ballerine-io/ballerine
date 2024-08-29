@@ -5,7 +5,7 @@ import { logger } from '../../logger';
 import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
 import { alpha2ToAlpha3 } from 'i18n-iso-countries';
 
-export class MasterCardMerchantScreeningPlugin extends ApiPlugin {
+export class MastercardMerchantScreeningPlugin extends ApiPlugin {
   public static pluginType = 'http';
 
   constructor(pluginParams: IApiPluginParams) {
@@ -70,7 +70,7 @@ export class MasterCardMerchantScreeningPlugin extends ApiPlugin {
         ],
       };
 
-      logger.log('API Plugin - Sending API request', {
+      logger.log('Mastercard Merchant Screening Plugin - Sending API request', {
         url,
         method,
       });
@@ -79,7 +79,7 @@ export class MasterCardMerchantScreeningPlugin extends ApiPlugin {
         Authorization: `Bearer ${process.env.UNIFIED_API_TOKEN}`,
       });
 
-      logger.log('API Plugin - Received response', {
+      logger.log('Mastercard Merchant Screening Plugin - Received response', {
         status: apiResponse.statusText,
         url,
       });

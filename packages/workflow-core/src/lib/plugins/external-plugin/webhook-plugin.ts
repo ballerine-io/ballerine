@@ -21,7 +21,7 @@ export class WebhookPlugin extends ApiPlugin {
     try {
       const urlWithoutPlaceholders = await this.replaceValuePlaceholders(this.url, context);
 
-      logger.log('API Plugin - Sending API request', {
+      logger.log('Webhook Plugin - Sending API request', {
         url: urlWithoutPlaceholders,
         method: this.method,
       });
@@ -33,7 +33,7 @@ export class WebhookPlugin extends ApiPlugin {
         await this.composeRequestHeaders(this.headers!, context),
       );
 
-      logger.log('API Plugin - Received response', {
+      logger.log('Webhook Plugin - Received response', {
         status: apiResponse.statusText,
         url: urlWithoutPlaceholders,
       });
