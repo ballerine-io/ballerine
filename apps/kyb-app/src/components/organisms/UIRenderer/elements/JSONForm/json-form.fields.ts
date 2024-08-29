@@ -8,6 +8,7 @@ import { LocalePicker } from '@/components/organisms/UIRenderer/elements/JSONFor
 import { MCCPicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/MCCPicker';
 import { Multiselect } from '@/components/organisms/UIRenderer/elements/JSONForm/components/Multiselect/Multiselect';
 import { NationalityPicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/NationalityPicker';
+import { RadioInputAdapter } from '@/components/organisms/UIRenderer/elements/JSONForm/components/RadioInput';
 import { RelationshipDropdown } from '@/components/organisms/UIRenderer/elements/JSONForm/components/RelationshipDropdown';
 import { StatePicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/StatePicker';
 import { TagsInput } from '@/components/organisms/UIRenderer/elements/JSONForm/components/TagsInput';
@@ -19,7 +20,6 @@ import {
   DateInputAdapter,
   FileInputAdapter,
   PhoneInputAdapter,
-  RadioInputAdapter,
   TextInputAdapter,
 } from '@ballerine/ui';
 
