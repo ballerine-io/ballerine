@@ -53,6 +53,7 @@ export const getTabsToBlocksMap = ({
     caseOverviewBlock,
     customDataBlock,
     amlWithContainerBlock,
+    merchantScreeningBlock,
   ] = blocks;
 
   const defaultTabsMap = {
@@ -62,6 +63,7 @@ export const getTabsToBlocksMap = ({
         : []),
       ...websiteMonitoringBlock,
       ...entityInfoBlock,
+      ...merchantScreeningBlock,
     ],
     [Tab.COMPANY_INFORMATION]: [
       ...entityInfoBlock,
