@@ -278,6 +278,7 @@ export class DataAnalyticsService {
       Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
         `${timeAmount} ${timeUnit}`,
       )}'`,
+      Prisma.sql`"transactionDate" <= NOW()`,
     ];
 
     if (!isEmpty(transactionType)) {
@@ -396,6 +397,7 @@ export class DataAnalyticsService {
           AND "transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
             `${timeAmount} ${timeUnit}`,
           )}'
+          AND "transactionDate" <= NOW()
         GROUP BY
           "${Prisma.raw(subjectColumn)}"
       )
@@ -454,6 +456,7 @@ export class DataAnalyticsService {
     WHERE
       "tr"."projectId" = ${projectId}
       AND  "tr"."counterpartyBeneficiaryId" IS NOT NULL
+      AND  "tr"."transactionDate" <= NOW()
     GROUP BY
       "tr"."counterpartyBeneficiaryId"
   )
@@ -492,9 +495,10 @@ export class DataAnalyticsService {
       Prisma.sql`"tr"."businessId" IS NOT NULL`,
       // TODO: should we use equation instead of IN clause?
       Prisma.sql`"tr"."transactionType"::text IN (${Prisma.join(transactionType, ',')})`,
-      Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+      Prisma.sql`"tr"."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
         `${timeAmount} ${timeUnit}`,
       )}'`,
+      Prisma.sql`"tr"."transactionDate" <= NOW()`,
     ];
 
     if (Array.isArray(paymentMethods.length)) {
@@ -516,7 +520,7 @@ export class DataAnalyticsService {
 
     switch (havingAggregate) {
       case AggregateType.COUNT:
-        havingClause = `${AggregateType.COUNT}(id)`;
+        havingClause = `${AggregateType.COUNT}("id")`;
         break;
       case AggregateType.SUM:
         havingClause = `${AggregateType.SUM}("tr"."transactionBaseAmount")`;
@@ -555,6 +559,7 @@ export class DataAnalyticsService {
       Prisma.sql`"tr"."paymentMethod"::text ${Prisma.raw(paymentMethod.operator)} ${
         paymentMethod.value
       }`,
+      Prisma.sql`"transactionDate" <= NOW()`,
       !!timeAmount &&
         !!timeUnit &&
         Prisma.sql`"tr"."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
@@ -633,6 +638,7 @@ export class DataAnalyticsService {
         paymentMethod.value
       }`,
       historicalTransactionClause,
+      Prisma.sql`"transactionDate" <= NOW()`,
     ];
 
     return await this._executeQuery<Array<{ counterpartyId: string }>>(
@@ -672,6 +678,7 @@ export class DataAnalyticsService {
       Prisma.sql`"tr"."projectId" = ${projectId}`,
       Prisma.sql`"tr"."counterpartyOriginatorId" IS NOT NULL`,
       Prisma.sql`"cpOriginator"."correlationId" LIKE '%****%'`,
+      Prisma.sql`"tr"."transactionDate" <= NOW()`,
       !!timeAmount &&
         !!timeUnit &&
         Prisma.sql`"tr"."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
@@ -733,6 +740,7 @@ export class DataAnalyticsService {
         paymentMethod.value
       }`,
       !!customerType && Prisma.sql`b."businessType" = ${customerType}`,
+      Prisma.sql`"tr"."transactionDate" <= NOW()`,
     ].filter(Boolean);
 
     const sqlQuery = Prisma.sql`WITH tx_by_business AS
