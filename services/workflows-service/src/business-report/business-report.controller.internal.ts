@@ -1,5 +1,12 @@
 import * as common from '@nestjs/common';
-import { BadRequestException, Body, Param, Query, UseInterceptors } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Param,
+  Query,
+  UploadedFile,
+  UseInterceptors
+} from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import type { InputJsonValue, TProjectId } from '@/types';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -37,7 +44,7 @@ import { CreateBatchBusinessReportDto } from '@/business-report/dto/create-batch
 import { ApiConsumes } from '@nestjs/swagger';
 
 @common.Controller('internal/business-reports')
-@swagger.ApiExcludeController()
+// @swagger.ApiExcludeController()
 export class BusinessReportControllerInternal {
   constructor(
     protected readonly businessReportService: BusinessReportService,
@@ -341,26 +348,24 @@ export class BusinessReportControllerInternal {
   }
 
   @common.Post('/upload-batch')
+  @Public()
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
-    FileInterceptor('reportBatchCsv', {
+    FileInterceptor('file', {
       storage: getDiskStorage(),
-      limits: {
-        files: 1,
-      },
       fileFilter,
     }),
-    RemoveTempFileInterceptor,
+    // RemoveTempFileInterceptor,
   )
   async createBatchReport(
-    @CurrentProject() currentProjectId: TProjectId,
+    @UploadedFile() file: Express.Multer.File,
     @Body() body: CreateBatchBusinessReportDto,
   ) {
+    const currentProjectId = 'project-1'
     await this.businessReportService.processBatchFile({
       type: body.type,
-      file: body.reportBatchCsv,
-      countryCode: body.countryCode,
+      file: file,
       projectId: currentProjectId,
     });
   }

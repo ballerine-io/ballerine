@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
-import { countryCodes } from '@ballerine/common';
+import { IsEnum } from 'class-validator';
 import { BusinessReportType } from '@prisma/client';
 
 export class CreateBatchBusinessReportDto {
@@ -9,8 +8,7 @@ export class CreateBatchBusinessReportDto {
     format: 'binary',
     description: 'CSV file for batch business report',
   })
-  @IsString()
-  reportBatchCsv!: Express.Multer.File;
+  file!: Express.Multer.File;
 
   @ApiProperty({
     enum: BusinessReportType,
@@ -19,9 +17,4 @@ export class CreateBatchBusinessReportDto {
   })
   @IsEnum(BusinessReportType)
   type!: BusinessReportType;
-
-  @ApiProperty({ description: 'Country code for the report' })
-  @IsIn(countryCodes)
-  @IsOptional()
-  countryCode?: string;
 }

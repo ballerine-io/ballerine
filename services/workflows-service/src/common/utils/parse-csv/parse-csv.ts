@@ -1,9 +1,11 @@
 import { parse } from 'csv-parse';
 import { z, ZodSchema } from 'zod';
+import { AppLoggerService } from "@/common/app-logger/app-logger.service";
 
 export const parseCsv = async <TSchema extends ZodSchema>(
   file: Express.Multer.File,
   schema: TSchema,
+  logger: AppLoggerService
 ): Promise<Array<z.output<TSchema>>> =>
   new Promise((resolve, reject) => {
     const results: z.output<TSchema> = [];
@@ -22,7 +24,7 @@ export const parseCsv = async <TSchema extends ZodSchema>(
 
           results.push(validatedRecord);
         } catch (error) {
-          console.error('Validation error:', error);
+          logger.error('Validation error:', {error});
         }
       }
     });

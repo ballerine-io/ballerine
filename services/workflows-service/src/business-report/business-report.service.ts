@@ -14,6 +14,7 @@ import {
 } from '@/common/utils/unified-api-client/unified-api-client';
 import { env } from '@/env';
 import { randomUUID } from 'crypto';
+import { AppLoggerService } from "@/common/app-logger/app-logger.service";
 
 @Injectable()
 export class BusinessReportService {
@@ -21,6 +22,7 @@ export class BusinessReportService {
     protected readonly businessReportRepository: BusinessReportRepository,
     protected readonly prisma: PrismaService,
     protected readonly businessService: BusinessService,
+    protected readonly logger: AppLoggerService,
   ) {}
 
   async create<T extends Prisma.BusinessReportCreateArgs>(
@@ -131,15 +133,13 @@ export class BusinessReportService {
   async processBatchFile({
     file,
     type,
-    countryCode,
     projectId,
   }: {
     file: Express.Multer.File;
     type: BusinessReportType;
-    countryCode?: string | undefined;
     projectId: TProjectId;
   }) {
-    const businessReportsRequests = await parseCsv(file, BusinessReportRequestSchema);
+    const businessReportsRequests = await parseCsv(file, BusinessReportRequestSchema,  this.logger);
 
     if (businessReportsRequests.length > 100) {
       throw new UnprocessableEntityException('Batch size is too large');
@@ -147,7 +147,7 @@ export class BusinessReportService {
 
     const batchId = randomUUID();
     await this.prisma.$transaction(async transaction => {
-      const businessCreatePromise = businessReportsRequests.map(async businessReportRequest => {
+      const businessCreatePromises = businessReportsRequests.map(async businessReportRequest => {
         let business =
           businessReportRequest.correlationId &&
           (await this.businessService.getByCorrelationId(businessReportRequest.correlationId, [
@@ -185,14 +185,13 @@ export class BusinessReportService {
         } as const;
       });
 
-      const businessWithRequests = await Promise.all(businessCreatePromise);
+      const businessWithRequests = await Promise.all(businessCreatePromises);
 
       const businessReportRequests = businessWithRequests.map(
         ({ businessReport, businessReportRequest }) => {
           return {
             callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${businessReport.businessId}&businessReportId=${businessReport.id}`,
             websiteUrl: businessReportRequest.websiteUrl,
-            countryCode,
             parentCompanyName: businessReportRequest.parentCompanyName,
             lineOfBusiness: businessReportRequest.lineOfBusiness,
             businessReportId: businessReport.id,

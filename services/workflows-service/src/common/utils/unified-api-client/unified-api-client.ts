@@ -22,7 +22,7 @@ export class UnifiedApiClient {
     this.axiosInstance = axios.create({
       baseURL: env.UNIFIED_API_URL,
       headers: {
-        Authorization: `Bearer ${process.env.UNIFIED_API_TOKEN as string}`,
+        Authorization: `Bearer ${env.UNIFIED_API_TOKEN as string}`,
       },
     });
   }
