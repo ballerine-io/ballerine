@@ -18,7 +18,7 @@ import { IEditableDetailsDocument } from '@/lib/blocks/components/EditableDetail
 import { TPDFViewerCell } from '@/lib/blocks/components/PDFViewerCell/interfaces';
 import { Block } from '@ballerine/blocks';
 import { CommonWorkflowStates, GenericFunction } from '@ballerine/common';
-import { AnyChildren, AnyObject } from '@ballerine/ui';
+import { AnyChildren, AnyObject, Image } from '@ballerine/ui';
 import { ColumnDef, TableOptions } from '@tanstack/react-table';
 import { ComponentProps, ReactNode } from 'react';
 
@@ -236,6 +236,12 @@ export type TReadOnlyDetailsCell = {
   }>;
 };
 
+export type TImageCell = {
+  type: 'image';
+  value: ComponentProps<typeof Image>['src'];
+  props: Omit<ComponentProps<typeof Image>, 'src'>;
+};
+
 export type TCell =
   | TBlockCell
   | TContainerCell
@@ -258,4 +264,5 @@ export type TCell =
   | TDialogCell
   | TNodeCell
   | TPDFViewerCell
-  | TReadOnlyDetailsCell;
+  | TReadOnlyDetailsCell
+  | TImageCell;

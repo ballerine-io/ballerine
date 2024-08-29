@@ -3,6 +3,7 @@ import { BaseImage } from '@/components/atoms/Image/BaseImage';
 import { ComponentProps, ElementRef, forwardRef, Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Skeleton } from '@/components';
+import { ctw } from '@/common';
 
 export const Image = forwardRef<ElementRef<'img'>, ComponentProps<typeof BaseImage>>(
   ({ width, height, ...props }, ref) => {
@@ -10,9 +11,13 @@ export const Image = forwardRef<ElementRef<'img'>, ComponentProps<typeof BaseIma
       <ErrorBoundary
         fallback={
           <figure
-            className={`border-destructive flex flex-col items-center justify-center space-y-2 rounded-md border p-1`}
-            style={{ width, height }}
             aria-live={`polite`}
+            {...props}
+            className={ctw(
+              `border-destructive flex flex-col items-center justify-center space-y-2 rounded-md border p-1`,
+              props?.className,
+            )}
+            style={{ width, height, ...props?.style }}
           >
             <ImageIcon className={`stroke-destructive h-[calc(1rem+15%)] w-[calc(1rem+15%)]`} />
             <figcaption className={`text-destructive`}>
@@ -23,7 +28,7 @@ export const Image = forwardRef<ElementRef<'img'>, ComponentProps<typeof BaseIma
       >
         <Suspense
           fallback={
-            <figure aria-live={`polite`} style={{ width, height }}>
+            <figure aria-live={`polite`} {...props} style={{ width, height, ...props?.style }}>
               <Skeleton className={`h-full w-full bg-slate-200`} />
               <figcaption className={`sr-only`}>Loading image...</figcaption>
             </figure>

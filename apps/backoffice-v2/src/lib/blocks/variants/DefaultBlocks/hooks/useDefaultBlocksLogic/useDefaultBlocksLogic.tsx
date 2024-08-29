@@ -51,6 +51,7 @@ import { omitPropsFromObjectWhitelist } from '@/common/utils/omit-props-from-obj
 import { useObjectEntriesBlock } from '@/lib/blocks/hooks/useObjectEntriesBlock/useObjectEntriesBlock';
 import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';
 import { associatedCompanyToWorkflowAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-to-workflow-adapter';
+import { useMerchantScreeningBlock } from '@/lib/blocks/hooks/useMerchantScreeningBlock/useMerchantScreeningBlock';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 
@@ -430,6 +431,18 @@ export const useDefaultBlocksLogic = () => {
       .build();
   }, [amlBlock]);
 
+  const merchantScreeningBlock = useMerchantScreeningBlock({
+    terminatedMatchedMerchants:
+      workflow?.context?.pluginsOutput?.merchantScreening?.processed?.terminatedMatchedMerchants ??
+      [],
+    inquiredMatchedMerchants:
+      workflow?.context?.pluginsOutput?.merchantScreening?.processed?.inquiredMatchedMerchants ??
+      [],
+    logoUrl: workflow?.context?.pluginsOutput?.merchantScreening?.logoUrl,
+    rawData: workflow?.context?.pluginsOutput?.merchantScreening?.raw,
+    checkDate: workflow?.context?.pluginsOutput?.merchantScreening?.processed?.checkDate,
+  });
+
   const allBlocks = useMemo(() => {
     if (!workflow?.context?.entity) return [];
 
@@ -461,6 +474,7 @@ export const useDefaultBlocksLogic = () => {
       caseOverviewBlock,
       customDataBlock,
       amlWithContainerBlock,
+      merchantScreeningBlock,
     ];
   }, [
     associatedCompaniesBlock,
@@ -490,6 +504,7 @@ export const useDefaultBlocksLogic = () => {
     caseOverviewBlock,
     customDataBlock,
     amlWithContainerBlock,
+    merchantScreeningBlock,
     workflow?.context?.entity,
   ]);
 

@@ -13,7 +13,6 @@ import type {
   WorkflowTokenPluginParams,
 } from './plugins/common-plugin/types';
 import type { TContext } from './utils';
-import type { ChildCallabackable } from './workflow-runner';
 import type { THelperFormatingLogic } from './utils/context-transformers/types';
 import type { AnyRecord } from '@ballerine/common';
 import type { DispatchEventPlugin } from './plugins/external-plugin/dispatch-event-plugin';
@@ -69,6 +68,10 @@ export interface WorkflowContext {
   lockKey?: string;
 }
 
+export interface ChildCallbackable {
+  invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
+}
+
 export interface WorkflowOptions {
   runtimeId: string;
   definitionType: 'statechart-json' | 'bpmn-json';
@@ -78,7 +81,7 @@ export interface WorkflowOptions {
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
   invokeRiskRulesAction?: RiskRulePlugin['action'];
-  invokeChildWorkflowAction?: ChildCallabackable['invokeChildWorkflowAction'];
+  invokeChildWorkflowAction?: ChildCallbackable['invokeChildWorkflowAction'];
   invokeWorkflowTokenAction?: WorkflowTokenPluginParams['action'];
   secretsManager?: SecretsManager;
 }
