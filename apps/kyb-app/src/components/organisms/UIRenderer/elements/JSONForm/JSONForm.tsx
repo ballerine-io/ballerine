@@ -30,6 +30,9 @@ export interface JSONFormElementBaseParams extends DefinitionInsertionParams {
   description?: string;
   documentData?: AnyObject;
   canAdd?: Rule[];
+  // By default company info is added to the payload, if you want to skip it, set this flag to true
+  skipCompanyInfoInsertion?: boolean;
+  defaultValue?: unknown;
 }
 
 export const JSONForm: UIElementComponent<JSONFormElementBaseParams> = ({ definition }) => {
@@ -45,6 +48,7 @@ export const JSONForm: UIElementComponent<JSONFormElementBaseParams> = ({ defini
     () => createFormSchemaFromUIElements(definition),
     [definition],
   );
+
   const { stateApi } = useStateManagerContext();
 
   const { payload } = useStateManagerContext();
@@ -53,6 +57,8 @@ export const JSONForm: UIElementComponent<JSONFormElementBaseParams> = ({ defini
   const formRef = useRef<any>(null);
 
   useEffect(() => {
+    if (definition?.options?.skipCompanyInfoInsertion) return;
+
     const elementValue = get(
       payload,
       // @ts-ignore

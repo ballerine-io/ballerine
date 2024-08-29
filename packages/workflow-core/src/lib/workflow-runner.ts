@@ -19,6 +19,7 @@ import { JmespathTransformer } from './utils/context-transformers/jmespath-trans
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
 import {
   ActionablePlugins,
+  ChildPlugins,
   CommonPlugin,
   CommonPlugins,
   HttpPlugin,
@@ -52,8 +53,6 @@ import {
   HelpersTransformer,
   TContext,
   THelperFormatingLogic,
-  Transformer,
-  Transformers,
   Validator,
 } from './utils';
 import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
@@ -125,7 +124,7 @@ export class WorkflowRunner {
     );
 
     // @ts-expect-error TODO: fix this
-    this.#__extensions.childWorkflowPlugins = this.initiateChildPlugin(
+    this.#__extensions.childWorkflowPlugins = this.initiateChildPlugins(
       this.#__extensions.childWorkflowPlugins ?? [],
       runtimeId,
       config,
@@ -288,7 +287,7 @@ export class WorkflowRunner {
     });
   }
 
-  initiateChildPlugin(
+  initiateChildPlugins(
     childPluginSchemas: Array<ISerializableChildPluginParams>,
     parentWorkflowRuntimeId: string,
     parentWorkflowRuntimeConfig: unknown,
@@ -307,6 +306,8 @@ export class WorkflowRunner {
         transformers: transformers,
         initEvent: childPluginSchema.initEvent,
         action: callbackAction!,
+        successAction: childPluginSchema.successAction,
+        errorAction: childPluginSchema.errorAction,
       });
     });
   }
@@ -717,6 +718,10 @@ export class WorkflowRunner {
       plugin.stateNames.includes(this.#__currentState),
     );
 
+    let childPlugins = (this.#__extensions.childWorkflowPlugins as unknown as ChildPlugins)?.filter(
+      plugin => plugin.stateNames?.includes(this.#__currentState),
+    );
+
     const stateApiPlugins = (this.#__extensions.apiPlugins as HttpPlugins)?.filter(plugin =>
       plugin.stateNames.includes(this.#__currentState),
     );
@@ -728,6 +733,12 @@ export class WorkflowRunner {
     if (dispatchEventPlugins) {
       for (const dispatchEventPlugin of dispatchEventPlugins) {
         await this.__dispatchEvent(dispatchEventPlugin);
+      }
+    }
+
+    if (childPlugins) {
+      for (const childPlugin of childPlugins) {
+        await this.__invokeChildPlugin(childPlugin);
       }
     }
 
@@ -803,6 +814,18 @@ export class WorkflowRunner {
     }
   }
 
+  private async __invokeChildPlugin(childPlugin: ChildWorkflowPlugin) {
+    const { callbackAction } = await childPlugin.invoke?.({
+      ...this.context,
+      workflowRuntimeConfig: this.#__config,
+      workflowRuntimeId: this.#__runtimeId,
+    });
+
+    if (callbackAction) {
+      await this.sendEvent({ type: callbackAction });
+    }
+  }
+
   private async __invokeApiPlugin(apiPlugin: HttpPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
     const { callbackAction, responseBody, error } = await apiPlugin.invoke?.({
@@ -856,25 +879,27 @@ export class WorkflowRunner {
   private async __dispatchEvent(dispatchEventPlugin: DispatchEventPlugin) {
     const { eventName, event } = await dispatchEventPlugin.getPluginEvent(this.context);
 
-    try {
-      logger.log('Dispatching event', {
-        eventName,
-        event,
-      });
+    logger.log('Dispatching notification to host', {
+      eventName,
+      event,
+    });
 
+    try {
       await this.notify(eventName, event);
 
-      logger.log('Dispatched event successfully', { eventName });
-
-      if (dispatchEventPlugin.successAction) {
-        await this.sendEvent({ type: dispatchEventPlugin.successAction });
-      }
+      logger.log('Dispatched notification to host successfully', { eventName });
     } catch (error) {
-      logger.error('Failed dispatching event', { eventName, event, error });
+      logger.error('Failed dispatching notification to host', { eventName, event, error });
 
       if (dispatchEventPlugin.errorAction) {
         await this.sendEvent({ type: dispatchEventPlugin.errorAction });
       }
+
+      return;
+    }
+
+    if (dispatchEventPlugin.successAction) {
+      await this.sendEvent({ type: dispatchEventPlugin.successAction });
     }
   }
 
