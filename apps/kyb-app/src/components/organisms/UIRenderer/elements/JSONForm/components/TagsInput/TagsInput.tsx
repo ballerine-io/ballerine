@@ -30,6 +30,7 @@ export const TagsInput: FunctionComponent<ITagsInputProps> = ({
       tags={tags}
       activeTagIndex={activeTagIndex}
       setActiveTagIndex={setActiveTagIndex}
+      addTagsOnBlur
     />
   );
 };

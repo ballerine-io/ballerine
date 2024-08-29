@@ -479,8 +479,8 @@ importers:
         specifier: ^3.0.6
         version: 3.0.6
       emblor:
-        specifier: ^1.4.4
-        version: 1.4.4(@types/react-dom@18.2.15)(@types/react@18.2.37)(postcss@8.4.41)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.1)(typescript@5.1.6)
+        specifier: ^1.4.6
+        version: 1.4.6(@types/react-dom@18.2.15)(@types/react@18.2.37)(postcss@8.4.41)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.1)(typescript@5.1.6)
       form-data-encoder:
         specifier: ^3.0.0
         version: 3.0.1
@@ -21046,6 +21046,11 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
+  /clsx@2.1.1:
+    resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
+    engines: {node: '>=6'}
+    dev: false
+
   /cmdk@0.2.0(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-JQpKvEOb86SnvMZbYaFKYhvzFntWBeSZdyii0rZPhKJj9uwJBxu4DaVYDrRN7r3mPop56oPhRw+JYWTKs66TYw==}
     peerDependencies:
@@ -22706,8 +22711,8 @@ packages:
       batch-processor: 1.0.0
     dev: true
 
-  /emblor@1.4.4(@types/react-dom@18.2.15)(@types/react@18.2.37)(postcss@8.4.41)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.1)(typescript@5.1.6):
-    resolution: {integrity: sha512-WOC3lbmeQTcuKVFrv22r1tUbFoH/v3yfDdWgOmtRuWdxQuhlZamiiDkQ4FGpbjZDibSEWmfBGXNPpsyXSgTtVg==}
+  /emblor@1.4.6(@types/react-dom@18.2.15)(@types/react@18.2.37)(postcss@8.4.41)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.1)(typescript@5.1.6):
+    resolution: {integrity: sha512-ay0Y74xdsnuxI662153ps65wPTBC7l457NPQm+eTUrrtwMzs+Pg4taULQrGvjHoBeMOZ4W2q6/KvNg8mur3PTA==}
     peerDependencies:
       react: ^18.0.0
       react-dom: ^18.0.0
@@ -22716,12 +22721,12 @@ packages:
       '@radix-ui/react-popover': 1.0.7(@types/react-dom@18.2.15)(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-slot': 1.0.2(@types/react@18.2.37)(react@18.2.0)
       class-variance-authority: 0.7.0
-      clsx: 2.1.0
+      clsx: 2.1.1
       cmdk: 0.2.0(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-easy-sort: 1.6.0(react-dom@18.2.0)(react@18.2.0)
-      tailwind-merge: 1.14.0
+      tailwind-merge: 2.5.2
       tsup: 6.7.0(postcss@8.4.41)(ts-node@10.9.1)(typescript@5.1.6)
     transitivePeerDependencies:
       - '@swc/core'
@@ -33313,6 +33318,10 @@ packages:
 
   /tailwind-merge@1.14.0:
     resolution: {integrity: sha512-3mFKyCo/MBcgyOTlrY8T7odzZFx+w+qKSMAmdFzRvqBfLlSigU6TZnlFHK0lkMwj9Bj8OYU+9yW9lmGuS0QEnQ==}
+    dev: false
+
+  /tailwind-merge@2.5.2:
+    resolution: {integrity: sha512-kjEBm+pvD+6eAwzJL2Bi+02/9LFLal1Gs61+QB7HvTfQQ0aXwC5LGT8PEt1gS0CWKktKe6ysPTAy3cBC5MeiIg==}
     dev: false
 
   /tailwindcss-animate@1.0.5(tailwindcss@3.3.5):
