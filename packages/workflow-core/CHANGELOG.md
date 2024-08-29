@@ -1,12 +1,18 @@
 # @ballerine/workflow-core
 
+## 0.6.36
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.25
+
 ## 0.6.35
 
 ### Patch Changes
 
-- merchant screening changes
-- Updated dependencies
-  - @ballerine/common@0.9.24
+- fixed handling of child workflows
 
 ## 0.6.34
 

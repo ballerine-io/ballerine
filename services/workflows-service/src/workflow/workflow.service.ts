@@ -1560,6 +1560,11 @@ export class WorkflowService {
             });
 
             entities.push({ type: 'business', id: entityId });
+
+            if (workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative) {
+              workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.ballerineEntityId =
+                endUserId;
+            }
           }
 
           const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);

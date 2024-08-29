@@ -8,6 +8,7 @@ export const createInitialFormData = (
   context: AnyObject,
 ) => {
   let formData: AnyObject | AnyObject[] = {};
+
   if (
     !definition.options?.jsonFormDefinition?.type ||
     definition.options?.jsonFormDefinition?.type === 'object'
@@ -21,6 +22,8 @@ export const createInitialFormData = (
   if (definition.options?.jsonFormDefinition?.type === 'array') {
     // @ts-ignore
     formData = (get(context, definition.valueDestination) as AnyObject[]) || [];
+
+    return [...(formData as AnyObject[])];
   }
 
   return formData;

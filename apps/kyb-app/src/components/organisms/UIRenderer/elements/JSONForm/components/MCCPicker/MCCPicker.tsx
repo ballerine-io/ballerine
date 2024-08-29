@@ -24,7 +24,5 @@ export const MCCPicker = (props: RJSFInputProps) => {
     [props, options],
   );
 
-  console.log({ propsWithOptions });
-
   return <TextInputAdapter {...(propsWithOptions as any)} />;
 };
