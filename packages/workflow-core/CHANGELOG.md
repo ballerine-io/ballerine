@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.6.35
+
+### Patch Changes
+
+- fixed handling of child workflows
+
 ## 0.6.34
 
 ### Patch Changes

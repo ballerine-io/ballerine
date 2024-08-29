@@ -227,7 +227,8 @@ export class CollectionFlowService {
 
   async syncWorkflow(payload: UpdateFlowDto, tokenScope: ITokenScope) {
     if (payload.data.endUser) {
-      await this.endUserService.updateById(tokenScope.endUserId, { data: payload.data.endUser });
+      const { ballerineEntityId: _, ...endUserData } = payload.data.endUser;
+      await this.endUserService.updateById(tokenScope.endUserId, { data: endUserData });
     }
 
     if (payload.data.ballerineEntityId && payload.data.business) {
