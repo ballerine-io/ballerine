@@ -9,6 +9,7 @@ export const TagsInput: FunctionComponent<ITagsInputProps> = ({
   onChange,
   formData,
   id,
+  uiSchema,
 }) => {
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
@@ -30,6 +31,7 @@ export const TagsInput: FunctionComponent<ITagsInputProps> = ({
       tags={tags}
       activeTagIndex={activeTagIndex}
       setActiveTagIndex={setActiveTagIndex}
+      placeholder={uiSchema?.['ui:placeholder']}
       addTagsOnBlur
     />
   );
