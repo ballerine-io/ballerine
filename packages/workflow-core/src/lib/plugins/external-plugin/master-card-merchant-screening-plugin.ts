@@ -31,7 +31,8 @@ export class MasterCardMerchantScreeningPlugin extends ApiPlugin {
 
     try {
       const secrets = await this.secretsManager?.getAll?.();
-      const urlWithoutPlaceholders = await this.replaceValuePlaceholders(this.url, context);
+      const url = `${process.env.UNIFIED_API_URL}/merchant-screening/mastercard`;
+      const method = 'POST';
       const entity = isObject(context.entity) ? context.entity : {};
       const countrySubdivisionSupportedCountries = ['US', 'CA'] as const;
       const address = {
@@ -70,20 +71,17 @@ export class MasterCardMerchantScreeningPlugin extends ApiPlugin {
       };
 
       logger.log('API Plugin - Sending API request', {
-        url: urlWithoutPlaceholders,
-        method: this.method,
+        url,
+        method,
       });
 
-      const apiResponse = await this.makeApiRequest(
-        urlWithoutPlaceholders,
-        this.method,
-        requestPayload,
-        await this.composeRequestHeaders(this.headers!, context),
-      );
+      const apiResponse = await this.makeApiRequest(url, method, requestPayload, {
+        Authorization: `Bearer ${process.env.UNIFIED_API_TOKEN}`,
+      });
 
       logger.log('API Plugin - Received response', {
         status: apiResponse.statusText,
-        url: urlWithoutPlaceholders,
+        url,
       });
 
       if (apiResponse.ok) {
