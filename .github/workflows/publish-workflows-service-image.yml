@@ -14,17 +14,6 @@ on:
           - 'Deploy to Dev'
           - 'Run Migrations'
           - 'Do Nothing'
-  push:
-    paths:
-      # Run this pipeline only if there are changes in specified path
-      - 'services/workflows-service/**'
-    branches:
-      - dev
-      - test
-      - prod
-      - staging
-      - sb
-      - demo
 
 env:
   REGISTRY: ghcr.io

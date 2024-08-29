@@ -30,17 +30,6 @@ on:
         description: 'Image Tag'
         required: true
         default: ''
-  push:
-    paths:
-      # Run this pipeline only if there are changes in specified path
-      - 'services/workflows-service/**'
-    branches:
-      - dev
-      - test
-      - prod
-      - staging
-      - sb
-      - demo
 
 env:
   REGISTRY: ghcr.io
