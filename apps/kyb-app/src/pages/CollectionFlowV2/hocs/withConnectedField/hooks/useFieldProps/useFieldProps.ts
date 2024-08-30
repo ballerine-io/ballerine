@@ -1,9 +1,9 @@
 import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
 import { UIElementV2 } from '@/components/providers/Validator/types';
-import { useDisabledState } from '@/pages/CollectionFlowV2/hocs/withConnectedField/hooks/useFieldProps/hooks/useDisabledState';
 import { useOnBlurHandler } from '@/pages/CollectionFlowV2/hocs/withConnectedField/hooks/useFieldProps/hooks/useOnBlurHandler';
 import { useOnChangeHandler } from '@/pages/CollectionFlowV2/hocs/withConnectedField/hooks/useFieldProps/hooks/useOnChangeHandler';
 import { useTouched } from '@/pages/CollectionFlowV2/hocs/withConnectedField/hooks/useTouched';
+import { useIsDisabledState } from '@/pages/CollectionFlowV2/hooks/useDisabledState';
 import { useUIElement } from '@/pages/CollectionFlowV2/hooks/useUIElement';
 import { IFieldComponentProps } from '@/pages/CollectionFlowV2/types';
 import { AnyObject } from '@ballerine/ui';
@@ -20,7 +20,7 @@ export const useFieldProps = <TValueType = unknown>(
   const { isTouched } = useTouched(uiElement, currentPage!);
   const onChange = useOnChangeHandler(uiElement);
   const onBlur = useOnBlurHandler(uiElement);
-  const disabled = useDisabledState(uiElement, context);
+  const disabled = useIsDisabledState(uiElement, context);
   const value = useMemo(() => uiElement.getValue(), [uiElement, context]);
 
   return {

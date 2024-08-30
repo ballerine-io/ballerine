@@ -1,6 +1,8 @@
-import { createTestId, IRendererComponent } from '@ballerine/ui';
+import { IUIComponentProps } from '@/pages/CollectionFlowV2/types';
+import { createTestId } from '@ballerine/ui';
+import { FunctionComponent } from 'react';
 
-export const SubHeading: IRendererComponent<{}, { text: string }> = ({
+export const SubHeading: FunctionComponent<IUIComponentProps<{ text: string }>> = ({
   definition,
   stack,
   options,

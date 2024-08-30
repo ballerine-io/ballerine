@@ -1,11 +1,11 @@
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { UIElement } from '@/components/providers/Validator/hooks/useValidate/ui-element';
-import { useIsLoadingState } from '@/pages/CollectionFlowV2/hocs/withConnectedField/hooks/useFieldProps/hooks/useIsLoadingState';
+import { useIsLoadingState } from '@/pages/CollectionFlowV2/hooks/useIsLoadingState';
 import { useRulesTest } from '@/pages/CollectionFlowV2/hooks/useRuleTests';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 
-export const useDisabledState = (uiElement: UIElement, context: AnyObject) => {
+export const useIsDisabledState = (uiElement: UIElement, context: AnyObject) => {
   const { state } = useDynamicUIContext();
   const isDisabled = useMemo(
     () => Boolean(state?.elements?.[uiElement.getId()]?.isDisabled),
