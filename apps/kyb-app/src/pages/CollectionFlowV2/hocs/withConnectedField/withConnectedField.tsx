@@ -12,12 +12,12 @@ export function withConnectedField<TValueType, TOptions>(
     definition,
     options,
   }) => {
-    const props = {
+    const props: IFieldComponentProps<TValueType, TOptions> = {
       options: options as TOptions,
       definition,
       children,
       stack,
-      fieldProps: useFieldProps<TValueType>(definition, {}, stack || []),
+      fieldProps: useFieldProps<TValueType>(definition, stack || []),
     };
 
     return <Component {...props} />;

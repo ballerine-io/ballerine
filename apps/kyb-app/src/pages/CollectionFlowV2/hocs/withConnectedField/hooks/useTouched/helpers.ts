@@ -12,12 +12,12 @@ export const getTouchedStateForElements = (elements: UIElementV2[], context: Any
     for (let i = 0; i < elements.length; i++) {
       const element = elements[i];
       const uiElement = new UIElement(element!, context, stack);
-      if (element?.type === 'field') {
+      if (uiElement.getFieldType() === 'field') {
         state[uiElement.getId()] = true;
         continue;
       }
 
-      if (element?.type === 'field-list') {
+      if (uiElement.getFieldType() === 'field-list') {
         state[uiElement.getId()] = true;
 
         const value = uiElement.getValue();
@@ -25,7 +25,7 @@ export const getTouchedStateForElements = (elements: UIElementV2[], context: Any
         if (!Array.isArray(value)) continue;
 
         value.forEach((_, index) => {
-          traverseElements(element.children!, [...stack, index]);
+          traverseElements(element!.children!, [...stack, index]);
         });
         continue;
       }

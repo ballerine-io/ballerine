@@ -39,9 +39,8 @@ export interface IBaseFieldParams {
 export interface UIElementV2<TFieldParams = IBaseFieldParams> {
   id: string;
   element: string;
-  type: 'ui' | 'field' | 'field-list';
   validation: Partial<Record<TValidators, TValidationParams>>;
-  params?: TFieldParams;
+  options?: TFieldParams;
   valueDestination: string;
   children?: UIElementV2[];
 

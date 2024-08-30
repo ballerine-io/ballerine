@@ -10,6 +10,7 @@ import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateMa
 import { StepperUI } from '@/components/organisms/UIRenderer/elements/StepperUI';
 import { useCustomer } from '@/components/providers/CustomerProvider';
 import { Validator } from '@/components/providers/Validator';
+import { UIElementV2 } from '@/components/providers/Validator/types';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { prepareInitialUIState } from '@/helpers/prepareInitialUIState';
 import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
@@ -19,7 +20,6 @@ import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
-import { transformV1UIElementsToV2UIElements } from '@/pages/CollectionFlowV2/helpers';
 import { rendererSchema } from '@/pages/CollectionFlowV2/renderer-schema';
 import { Renderer } from '@ballerine/ui';
 import set from 'lodash/set';
@@ -126,7 +126,8 @@ export const CollectionFlowV2 = withSessionProtected(() => {
               {({ currentPage }) => {
                 return currentPage ? (
                   <Validator
-                    elements={transformV1UIElementsToV2UIElements(currentPage.elements)}
+                    // TODO: fix type
+                    elements={currentPage.elements as unknown as UIElementV2[]}
                     context={payload}
                   >
                     <DynamicUI.Page page={currentPage}>

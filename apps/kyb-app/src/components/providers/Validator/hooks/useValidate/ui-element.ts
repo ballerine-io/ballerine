@@ -1,5 +1,6 @@
 import { testRule } from '@/components/organisms/DynamicUI/rule-engines/utils/execute-rules';
 import { TValidationParams, UIElementV2 } from '@/components/providers/Validator/types';
+import { fieldElelements, fieldGroups } from '@/pages/CollectionFlowV2/renderer-schema';
 import { AnyObject } from '@ballerine/ui';
 import get from 'lodash/get';
 
@@ -71,5 +72,12 @@ export class UIElement {
 
   getDefinition() {
     return this.element;
+  }
+
+  getFieldType() {
+    if (this.element.element in fieldElelements) return 'field';
+    if (this.element.element in fieldGroups) return 'field-list';
+
+    return 'ui';
   }
 }

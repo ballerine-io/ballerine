@@ -53,5 +53,13 @@ module.exports = {
       },
     },
   },
+  safelist: [
+    {
+      pattern: /gap-/,
+    },
+    {
+      pattern: /justify-/,
+    },
+  ],
   plugins: [require('tailwindcss-animate')],
 };

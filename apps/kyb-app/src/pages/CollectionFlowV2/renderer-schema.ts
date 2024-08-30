@@ -1,5 +1,7 @@
 import { UIElementV2 } from '@/components/providers/Validator/types';
 import { SubmitButton } from '@/pages/CollectionFlowV2/components/ui/controls/SubmitButton';
+import { DateField } from '@/pages/CollectionFlowV2/components/ui/fields/DateField';
+import { PhoneField } from '@/pages/CollectionFlowV2/components/ui/fields/PhoneField';
 import { TextField } from '@/pages/CollectionFlowV2/components/ui/fields/TextField';
 import { Container } from '@/pages/CollectionFlowV2/components/ui/layout/Container';
 import { Heading } from '@/pages/CollectionFlowV2/components/ui/text/Heading';
@@ -11,7 +13,7 @@ import { withConnectedUIElement } from '@/pages/CollectionFlowV2/hocs/withConnec
 import { IFieldComponentProps, IUIComponentProps } from '@/pages/CollectionFlowV2/types';
 import { IRendererComponent } from '@ballerine/ui';
 import merge from 'lodash/merge';
-import { FunctionComponent } from 'react';
+import { createElement, FunctionComponent } from 'react';
 
 type TUIElement =
   | FunctionComponent<IUIComponentProps<any>>
@@ -54,9 +56,16 @@ const controlsUIElements = applyHocToElements(
   withConnectedUIElement,
 );
 
-const fieldElelements = applyHocToElements(
+export const fieldGroups = {
+  // filler
+  'field-list': () => createElement('div', {}),
+};
+
+export const fieldElelements = applyHocToElements(
   {
     textfield: TextField,
+    datefield: DateField,
+    phonefield: PhoneField,
   },
   withConnectedField,
 );
