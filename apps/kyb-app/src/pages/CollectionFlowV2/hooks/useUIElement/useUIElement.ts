@@ -1,11 +1,10 @@
 import { UIElement } from '@/components/providers/Validator/hooks/useValidate/ui-element';
-import { UIElementDefinition } from '@/domains/collection-flow';
-import { transformV1UIElementToV2UIElement } from '@/pages/CollectionFlowV2/helpers';
+import { UIElementV2 } from '@/components/providers/Validator/types';
 import { useMemo } from 'react';
 
-export const useUIElement = (definition: UIElementDefinition, context: any, stack?: number[]) => {
+export const useUIElement = (definition: UIElementV2, context: any, stack?: number[]) => {
   const uiElement = useMemo(
-    () => new UIElement(transformV1UIElementToV2UIElement(definition), context, stack || []),
+    () => new UIElement(definition, context, stack || []),
     [definition, context, stack],
   );
 
