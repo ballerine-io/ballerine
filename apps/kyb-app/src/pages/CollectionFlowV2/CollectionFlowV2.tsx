@@ -1,4 +1,3 @@
-import DOMPurify from 'dompurify';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,11 +7,7 @@ import { AppShell } from '@/components/layouts/AppShell';
 import { DynamicUI, State } from '@/components/organisms/DynamicUI';
 import { usePageErrors } from '@/components/organisms/DynamicUI/Page/hooks/usePageErrors';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { UIRenderer } from '@/components/organisms/UIRenderer';
-import { Cell } from '@/components/organisms/UIRenderer/elements/Cell';
-import { Divider } from '@/components/organisms/UIRenderer/elements/Divider';
 import { StepperUI } from '@/components/organisms/UIRenderer/elements/StepperUI';
-import { Title } from '@/components/organisms/UIRenderer/elements/Title';
 import { useCustomer } from '@/components/providers/CustomerProvider';
 import { Validator } from '@/components/providers/Validator';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
@@ -24,31 +19,10 @@ import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
-import { JSONFormV2 } from '@/pages/CollectionFlowV2/components/JSONFormV2/JSONFormV2';
-import { SubmitButton } from '@/pages/CollectionFlowV2/components/SubmitButton';
 import { transformV1UIElementsToV2UIElements } from '@/pages/CollectionFlowV2/helpers';
-import { AnyObject } from '@ballerine/ui';
+import { rendererSchema } from '@/pages/CollectionFlowV2/renderer-schema';
+import { Renderer } from '@ballerine/ui';
 import set from 'lodash/set';
-
-const elems = {
-  h1: Title,
-  h3: (props: AnyObject) => <h3 className="pt-4 text-xl font-bold">{props?.options?.text}</h3>,
-  h4: (props: AnyObject) => <h4 className="pb-3 text-base font-bold">{props?.options?.text}</h4>,
-  description: (props: AnyObject) => (
-    <p
-      className="font-inter pb-2 text-sm text-slate-500"
-      dangerouslySetInnerHTML={{
-        __html: DOMPurify.sanitize(props.options.descriptionRaw) as string,
-      }}
-    ></p>
-  ),
-  'json-form': JSONFormV2,
-  container: Cell,
-  mainContainer: Cell,
-  'submit-button': SubmitButton,
-  stepper: StepperUI,
-  divider: Divider,
-};
 
 // TODO: Find a way to make this work via the workflow-browser-sdk `subscribe` method.
 export const useCompleteLastStep = () => {
@@ -240,7 +214,10 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                     <ProgressBar />
                                   </div>
                                   <div>
-                                    <UIRenderer elements={elems} schema={currentPage.elements} />
+                                    <Renderer
+                                      elements={currentPage.elements}
+                                      schema={rendererSchema}
+                                    />
                                   </div>
                                 </div>
                               </AppShell.FormContainer>

@@ -1,7 +1,9 @@
-import { createTestId, IRendererComponent } from '@ballerine/ui';
+import { IUIComponentProps } from '@/pages/CollectionFlowV2/types';
+import { createTestId } from '@ballerine/ui';
 import DOMPurify from 'dompurify';
+import { FunctionComponent } from 'react';
 
-export const RawDescription: IRendererComponent<{}, { descriptionRaw: string }> = ({
+export const RawDescription: FunctionComponent<IUIComponentProps<{ descriptionRaw: string }>> = ({
   stack,
   definition,
   options,

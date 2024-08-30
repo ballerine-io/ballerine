@@ -4,6 +4,7 @@ export interface IFieldComponentProps<TValueType, TOptions = {}> {
   options: TOptions;
   definition: UIElementV2;
   stack?: number[];
+  children?: React.ReactNode | React.ReactNode[];
   fieldProps: {
     onChange: (value: TValueType) => void;
     onBlur: () => void;
