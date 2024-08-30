@@ -1,4 +1,4 @@
-name: Publish workflows-service image
+name: Build & Push workflows-service image
 
 on:
   repository_dispatch:

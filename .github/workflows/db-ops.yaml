@@ -151,7 +151,7 @@ jobs:
             echo "skip_helm=true" >> "$GITHUB_OUTPUT"
           fi
             
-      - name: Update workdlow-service image version in the HelmChart
+      - name: Update workflow-service image version in the HelmChart
         if: ${{ steps.update_helm_check.outputs.skip_helm != 'true' }}
         uses: fjogeleit/yaml-update-action@main
         with:
