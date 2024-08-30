@@ -68,4 +68,8 @@ export class UIElement {
       params: this.element.validation[key as keyof UIElementV2['validation']] as TValidationParams,
     }));
   }
+
+  getDefinition() {
+    return this.element;
+  }
 }

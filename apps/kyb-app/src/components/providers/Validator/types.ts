@@ -44,6 +44,9 @@ export interface UIElementV2<TFieldParams = IBaseFieldParams> {
   params?: TFieldParams;
   valueDestination: string;
   children?: UIElementV2[];
+
+  availableOn?: Rule[];
+  visibleOn?: Rule[];
 }
 
 export interface IBaseValueValidatorParams {

@@ -6,7 +6,7 @@ import { transformV1UIElementsToV2UIElements } from '@/pages/CollectionFlowV2/he
 import {
   buildUIStateWithTouchedElements,
   getTouchedStateForElements,
-} from '@/pages/CollectionFlowV2/hooks/useTouched/helpers';
+} from '@/pages/CollectionFlowV2/hocs/withConnectedField/hooks/useTouched/helpers';
 import { useCallback, useMemo } from 'react';
 
 export const useTouched = (uiElement: UIElement, currentPage?: UIPage) => {

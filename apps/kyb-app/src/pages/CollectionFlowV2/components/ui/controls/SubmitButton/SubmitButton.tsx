@@ -12,7 +12,6 @@ import { Button } from '@ballerine/ui';
 import { useCallback, useMemo } from 'react';
 
 export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition }) => {
-  const { helpers } = useDynamicUIContext();
   const { onClickHandler } = useUIElementHandlers(definition);
   const { state } = useDynamicUIContext();
   const { state: uiElementState } = useUIElementState(definition);
