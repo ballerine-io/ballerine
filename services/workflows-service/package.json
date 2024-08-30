@@ -1,11 +1,11 @@
 {
   "name": "@ballerine/workflows-service",
   "private": false,
-  "version": "0.7.32",
+  "version": "0.7.35",
   "description": "workflow-service",
   "scripts": {
     "spellcheck": "cspell \"*\"",
-    "setup": "npm run docker:db:down && npm run docker:db && npm run db:reset && npm run seed",
+    "setup": "npm run docker:db:down && npm run docker:db && wait-on tcp:5432 && npm run db:reset && npm run seed",
     "format": "prettier --write . '!**/*.{md,hbs}'",
     "format:check": "prettier --check . '!**/*.{md,hbs}'",
     "lint": "eslint . --fix",
@@ -47,9 +47,9 @@
     "@aws-sdk/client-secrets-manager": "^3.620.1",
     "@aws-sdk/lib-storage": "3.347.1",
     "@aws-sdk/s3-request-presigner": "3.347.1",
-    "@ballerine/common": "0.9.22",
-    "@ballerine/workflow-core": "0.6.33",
-    "@ballerine/workflow-node-sdk": "0.6.33",
+    "@ballerine/common": "0.9.25",
+    "@ballerine/workflow-core": "0.6.36",
+    "@ballerine/workflow-node-sdk": "0.6.36",
     "@faker-js/faker": "^7.6.0",
     "@nestjs/axios": "^2.0.0",
     "@nestjs/common": "^9.3.12",
@@ -157,6 +157,7 @@
     "tsconfig-paths": "4.2.0",
     "tsx": "^4.7.1",
     "type-fest": "0.11.0",
-    "typescript": "4.9.3"
+    "typescript": "4.9.3",
+    "wait-on": "^7.0.1"
   }
 }
