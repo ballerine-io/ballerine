@@ -1,0 +1,88 @@
+name: Publish workflows-service image
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: 'Choose Environment'
+        required: true
+        default: 'dev'
+        options:
+          - 'dev'
+          - 'sb'
+          - 'prod'
+      tag:
+        type: string
+        description: 'Image Tag'
+        required: true
+        default: ''
+        
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        description: 'Environment'
+        required: true
+        default: 'dev'
+      tag:
+        type: string
+        description: 'Image Tag'
+        required: true
+        default: ''
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
+
+jobs:
+  update-helm-chart:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Checkout cloud-infra-config repository
+        uses: actions/checkout@v4
+        with:
+          repository: ballerine-io/cloud-infra-config
+          token: ${{ secrets.GIT_TOKEN }}
+          ref: main
+          fetch-depth: 1
+          sparse-checkout: |
+            kubernetes/helm/wf-service
+          sparse-checkout-cone-mode: true
+      - name: Check if values yaml file exists 
+        id: update_helm_check
+        shell: bash
+        run: |
+          if [ -f "kubernetes/helm/wf-service/${{ github.event.inputs.environment }}-custom-values.yaml" ]; then
+            echo "file_name=${{ github.event.inputs.environment }}-custom-values.yaml" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.inputs.environment }}" == "dev" ]; then
+            echo "file_name=dev-custom-values.yaml" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip_helm=true" >> "$GITHUB_OUTPUT"
+          fi
+            
+      - name: Update workflow-service image version in the HelmChart
+        if: ${{ steps.update_helm_check.outputs.skip_helm != 'true' }}
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          repository: ballerine-io/cloud-infra-config
+          branch: main
+          commitChange: true
+          message: 'Update wf-service image Version to ${{ github.event.inputs.tag }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
+          token: ${{ secrets.GIT_TOKEN }}
+          changes: |
+            {
+              "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
+                "image.tag": "${{ github.event.inputs.tag }}",
+                "prismaMigrate.image.tag": "${{ github.event.inputs.tag }}",
+                "dbMigrate.image.tag": "${{ github.event.inputs.tag }}",
+                "dbSync.image.tag": "${{ github.event.inputs.tag }}",
+              }
+            }
