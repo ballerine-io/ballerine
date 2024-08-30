@@ -19,8 +19,6 @@ export const useTouched = (uiElement: UIElement, currentPage?: UIPage) => {
     return transformV1UIElementsToV2UIElements(currentPage.elements);
   }, [currentPage]);
 
-  console.log({ uiElements });
-
   const touchElement = useCallback(() => {
     helpers.setUIElementState(uiElement.getId(), { isTouched: true });
   }, [uiElement]);

@@ -11,6 +11,9 @@ export const Renderer: React.FunctionComponent<IRendererProps & { stack?: number
       {elements.map((element, index) => {
         const Component = schema[element.element];
 
+        if (!element.element)
+          throw new Error(`Element name is missing in definition ${JSON.stringify(element)}`);
+
         if (!Component) throw new Error(`Component ${element.element} not found in schema.`);
 
         if (element.children) {

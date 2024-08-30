@@ -40,9 +40,9 @@ export const SubmitButton: FunctionComponent<IUIComponentProps<ISubmitButtonOpti
   const { trackFinish } = useFlowTracking();
 
   const handleClick = useCallback(() => {
-    touchPageElements();
+    // touchPageElements();
     validate();
-    onClick();
+    // onClick();
 
     const isFinishPage = currentPage?.name === pages.at(-1)?.name;
 

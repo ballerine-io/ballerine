@@ -1,7 +1,6 @@
 import { EngineManager } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
 import { UIState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
 import { DocumentsRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/documents.rule-engine';
-import { IsStepValidRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/is-step-valid.rule-engine';
 import { JmespathRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/jmespath.rule-engine';
 import { JsonLogicRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/json-logic.rule-engine';
 import { JsonSchemaRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
@@ -22,7 +21,7 @@ export const getDispatchableActions = (
       new JsonSchemaRuleEngine(),
       new DocumentsRuleEngine(),
       new JmespathRuleEngine(),
-      new IsStepValidRuleEngine(),
+      // new IsStepValidRuleEngine(),
     ]);
 
     if (!action.dispatchOn.rules) return true;

@@ -62,12 +62,13 @@ export const validate = (elements: UIElementV2[], context: object) => {
       const uiElement = new UIElement(element, context, stack);
       if (!element) continue;
 
-      if (element.type === 'field') {
+      if (uiElement.getFieldType() === 'field') {
         errors = [...errors, ...fieldValidationStrategy(uiElement, stack)];
+
         continue;
       }
 
-      if (element.type === 'field-list') {
+      if (uiElement.getFieldType() === 'field-list') {
         const value = uiElement.getValue() as any[];
 
         errors = [...errors, ...fieldValidationStrategy(uiElement, stack)];
@@ -77,6 +78,7 @@ export const validate = (elements: UIElementV2[], context: object) => {
         value?.forEach((_, index) => {
           validateFn(element.children!, context, [...stack, index]);
         });
+
         continue;
       }
 

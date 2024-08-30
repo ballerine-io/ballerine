@@ -52,7 +52,7 @@ export const useRuleExecutor = (
 
   if (import.meta.env.MODE === 'development') {
     if (executionResult.length && executionResult.every(r => !r.isValid && r.errors?.length)) {
-      console.log('Rules execution result', executionResult);
+      console.info('Rules execution result', executionResult);
     }
   }
 

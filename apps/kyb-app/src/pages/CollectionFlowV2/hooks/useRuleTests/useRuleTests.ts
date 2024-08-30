@@ -5,14 +5,16 @@ import { useMemo } from 'react';
 
 export const useRulesTest = (context: AnyObject, rules: Rule[], scope?: string) => {
   const testResult = useMemo(() => {
-    console.log(`${scope ? `${scope}: ` : ''}Testing rules: ${JSON.stringify(rules)}`);
+    if (!rules?.length) return false;
+
+    console.info(`${scope ? `${scope}: ` : ''}Testing rules: ${JSON.stringify(rules)}`);
 
     const results = rules.map(rule => {
-      console.log(`Executing rule ${JSON.stringify(rule)}`);
+      console.info(`Executing rule ${JSON.stringify(rule)}`);
 
       const executionResult = testRule(context, rule);
 
-      console.log(
+      console.info(
         `Result of executing rule ${JSON.stringify(rule)}: ${JSON.stringify(executionResult)}`,
       );
 
@@ -21,7 +23,7 @@ export const useRulesTest = (context: AnyObject, rules: Rule[], scope?: string) 
 
     const isPassed = results.every(result => result);
 
-    console.log(`Rules test result passed: ${isPassed}`);
+    console.info(`Rules test result passed: ${isPassed}`);
 
     return isPassed;
   }, [context, rules]);

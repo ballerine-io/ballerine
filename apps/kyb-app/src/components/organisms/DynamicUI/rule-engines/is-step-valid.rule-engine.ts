@@ -19,14 +19,14 @@ export class IsStepValidRuleEngine implements RuleEngine {
     __: UIState,
     uiPage: UIPage,
   ): RuleTestResult {
-    console.log(`Executing rule engine ${this.ENGINE_NAME}`);
+    console.info(`Executing rule engine ${this.ENGINE_NAME}`);
 
     const uiEelemntsV2 = transformV1UIElementsToV2UIElements(uiPage?.elements || []);
     const validationErrors = validate(uiEelemntsV2, context as AnyObject);
 
     const result = { isValid: !validationErrors.length, errors: [] };
 
-    console.log(`Result of rule engine ${this.ENGINE_NAME}:`, {
+    console.info(`Result of rule engine ${this.ENGINE_NAME}:`, {
       isValid: !validationErrors.length,
       errors: validationErrors,
     });
