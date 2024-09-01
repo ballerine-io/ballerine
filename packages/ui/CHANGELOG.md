@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.22
+
+### Patch Changes
+
+- readded content explanations and screenshots
+
 ## 0.5.21
 
 ### Patch Changes
