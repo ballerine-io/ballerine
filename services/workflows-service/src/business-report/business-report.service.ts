@@ -134,10 +134,12 @@ export class BusinessReportService {
     file,
     type,
     projectId,
+    withQualityControl,
   }: {
     file: Express.Multer.File;
     type: BusinessReportType;
     projectId: TProjectId;
+    withQualityControl: boolean;
   }) {
     const businessReportsRequests = await parseCsv({
       filePath: file.path,
@@ -196,14 +198,13 @@ export class BusinessReportService {
         const businessWithRequests = await Promise.all(businessCreatePromises);
 
         const businessReportRequests = businessWithRequests.map(
-          ({ businessReport, businessReportRequest }) => {
-            return {
-              callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${businessReport.businessId}&businessReportId=${businessReport.id}`,
-              websiteUrl: businessReportRequest.websiteUrl,
-              parentCompanyName: businessReportRequest.parentCompanyName,
-              lineOfBusiness: businessReportRequest.lineOfBusiness,
-            };
-          },
+          ({ businessReport, businessReportRequest }) => ({
+            withQualityControl,
+            callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${businessReport.businessId}&businessReportId=${businessReport.id}`,
+            websiteUrl: businessReportRequest.websiteUrl,
+            parentCompanyName: businessReportRequest.parentCompanyName,
+            lineOfBusiness: businessReportRequest.lineOfBusiness,
+          }),
         ) satisfies TReportRequest;
 
         await new UnifiedApiClient().postBatchBusinessReport({

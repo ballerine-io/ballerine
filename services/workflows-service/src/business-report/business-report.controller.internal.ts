@@ -44,6 +44,7 @@ import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-fil
 import { CreateBatchBusinessReportDto } from '@/business-report/dto/create-batch-business-report.dto';
 import { ApiConsumes } from '@nestjs/swagger';
 import type { Response } from 'express';
+import { IsBoolean } from 'class-validator';
 
 @common.Controller('internal/business-reports')
 // @swagger.ApiExcludeController()
@@ -364,12 +365,17 @@ export class BusinessReportControllerInternal {
     @UploadedFile() file: Express.Multer.File,
     @Body() body: CreateBatchBusinessReportDto,
     @Res() res: Response,
+    @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const currentProjectId = 'project-1';
+    const customer = await this.customerService.getByProjectId(currentProjectId);
+
+    const { withQualityControl } = customer.config || {};
+
     const result = await this.businessReportService.processBatchFile({
       type: body.type,
       file: file,
       projectId: currentProjectId,
+      withQualityControl: IsBoolean(withQualityControl) ? withQualityControl : false,
     });
 
     res.status(201);
