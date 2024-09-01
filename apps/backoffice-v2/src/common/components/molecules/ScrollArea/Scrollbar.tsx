@@ -20,4 +20,5 @@ export const ScrollBar = React.forwardRef<
     <ScrollAreaPrimitive.ScrollAreaThumb className="rounded-full bg-border" />
   </ScrollAreaPrimitive.ScrollAreaScrollbar>
 ));
+
 ScrollBar.displayName = ScrollAreaPrimitive.ScrollAreaScrollbar.displayName;

@@ -227,7 +227,7 @@ export const DataTable = <TData extends RowData, TValue = any>({
                       key={header.id}
                       {...props?.head}
                       className={ctw(
-                        'sticky top-0 z-10 h-[34px] bg-white p-1 text-[14px] font-bold text-[#787981]',
+                        'sticky top-0 z-0 h-[34px] bg-white p-1 text-[14px] font-bold text-[#787981]',
                         {
                           '!pl-3.5': index === 0,
                         },

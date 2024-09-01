@@ -1,6 +1,6 @@
 import { Type } from '@sinclair/typebox';
 import { TypeStringEnum } from '@/schemas/documents/workflow/documents/schemas/utils';
-import { ProcessStatuses } from '@/consts';
+import { MatchResponseCodes, ProcessStatuses } from '@/consts';
 
 const TerminationReasonCodes = [
   '00',
@@ -21,8 +21,6 @@ const TerminationReasonCodes = [
   '21',
   '24',
 ] as const;
-
-export const MatchResponseCodes = ['M00', 'M01', 'M02'] as const;
 
 const AddressSchema = Type.Object({
   Line1: Type.String({
@@ -330,6 +328,15 @@ const MerchantSchema = Type.Object({
   MerchantMatch: Type.Optional(MerchantMatchSchema),
 });
 
+const TerminatedMerchantSchema = Type.Object({
+  Merchant: MerchantSchema,
+  MerchantMatch: Type.Optional(MerchantMatchSchema),
+});
+
+const InquiredMerchantSchema = Type.Object({
+  Merchant: MerchantSchema,
+});
+
 const MerchantScreeningRawSchema = Type.Object({
   TerminationInquiry: Type.Object({
     PageOffset: Type.Integer({
@@ -352,12 +359,7 @@ const MerchantScreeningRawSchema = Type.Object({
               'The total length of the result set from possible merchant matches of inquiry.',
             example: 2,
           }),
-          TerminatedMerchant: Type.Array(
-            Type.Object({
-              Merchant: MerchantSchema,
-              MerchantMatch: Type.Optional(MerchantMatchSchema),
-            }),
-          ),
+          TerminatedMerchant: Type.Array(TerminatedMerchantSchema),
         }),
       ),
     ),
@@ -369,11 +371,7 @@ const MerchantScreeningRawSchema = Type.Object({
               'The total length of the result set from possible merchant matches of inquiry.',
             example: 2,
           }),
-          InquiredMerchant: Type.Array(
-            Type.Object({
-              Merchant: MerchantSchema,
-            }),
-          ),
+          InquiredMerchant: Type.Array(InquiredMerchantSchema),
         }),
       ),
     ),
@@ -416,15 +414,30 @@ export const MerchantScreeningAggregatedSchema = Type.Object({
 });
 
 export const MerchantScreeningProcessedSchema = Type.Object({
-  terminatedMatchedMerchant: Type.Array(MerchantScreeningAggregatedSchema),
-  inquiredMatchedMerchant: Type.Array(MerchantScreeningAggregatedSchema),
+  terminatedMatchedMerchant: Type.Array(
+    Type.Composite([
+      MerchantScreeningAggregatedSchema,
+      Type.Object({
+        raw: TerminatedMerchantSchema,
+      }),
+    ]),
+  ),
+  inquiredMatchedMerchant: Type.Array(
+    Type.Composite([
+      MerchantScreeningAggregatedSchema,
+      Type.Object({
+        raw: InquiredMerchantSchema,
+      }),
+    ]),
+  ),
+  checkDate: Type.String(),
 });
 
 export const MerchantScreeningPluginSchema = Type.Optional(
   Type.Object({
     name: Type.Literal('merchantScreening'),
     status: TypeStringEnum(ProcessStatuses),
-    invokedAt: Type.Number(),
+    invokedAt: Type.Optional(Type.Number()),
     vendor: Type.Literal('mastercard'),
     logoUrl: Type.String(),
     raw: MerchantScreeningRawSchema,

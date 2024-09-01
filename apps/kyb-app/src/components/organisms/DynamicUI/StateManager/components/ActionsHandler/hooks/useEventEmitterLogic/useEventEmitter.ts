@@ -42,8 +42,10 @@ export const useEventEmitterLogic = (elementDefinition: UIElement<AnyObject>) =>
 
       dispatchableActions.forEach(action => {
         const dispatch = getDispatch(action);
+
         if (!dispatch) {
           console.warn(`Action dispatcher not found for ${JSON.stringify(action)}`);
+
           return;
         }
 
