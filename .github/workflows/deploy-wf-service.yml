@@ -83,6 +83,6 @@ jobs:
                 "image.tag": "${{ github.event.inputs.tag }}",
                 "prismaMigrate.image.tag": "${{ github.event.inputs.tag }}",
                 "dbMigrate.image.tag": "${{ github.event.inputs.tag }}",
-                "dbSync.image.tag": "${{ github.event.inputs.tag }}",
+                "dataSync.image.tag": "${{ github.event.inputs.tag }}"
               }
             }
