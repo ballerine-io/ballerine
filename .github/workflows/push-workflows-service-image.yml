@@ -1,35 +1,24 @@
-name: Publish workflows-service image
+name: Build & Push workflows-service image
 
 on:
   repository_dispatch:
     types: [invoke-cd-from-external-repo]
   workflow_dispatch:
     inputs:
-      deploy_to_dev:
+      operation: 
         type: choice
-        description: 'Deploy to Development Environment'
+        description: 'What operation you want to do after image build?'
         required: true
-        default: 'false'
+        default: 'Deploy to Dev'
         options:
-          - 'false'
-          - 'true'
-  push:
-    paths:
-      # Run this pipeline only if there are changes in specified path
-      - 'services/workflows-service/**'
-    branches:
-      - dev
-      - test
-      - prod
-      - staging
-      - sb
-      - demo
+          - 'Deploy to Dev'
+          - 'Run Migrations'
+          - 'Do Nothing'
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
 
-  
 jobs:
 
   determine_branch:
@@ -91,16 +80,16 @@ jobs:
           tag: ${{ steps.version.outputs.tag }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v2
         with:
           platforms: 'arm64,arm'
 
       - name: Cache Docker layers
         id: cache
-        uses: actions/cache@v4
+        uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
@@ -157,7 +146,7 @@ jobs:
           platforms: linux/amd64
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+          cache-to: type=local,dest=/tmp/.buildx-cache
           tags: ${{ steps.docker_meta.outputs.tags }}
           build-args: |
             "RELEASE=${{ steps.bump-version.outputs.tag }}"
@@ -176,108 +165,7 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL'
 
-  update-helm-chart:
-    needs: [determine_branch, build-and-push-ee-image]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-      - name: Checkout cloud-infra-config repository
-        uses: actions/checkout@v4
-        with:
-          repository: ballerine-io/cloud-infra-config
-          token: ${{ secrets.GIT_TOKEN }}
-          ref: main
-          fetch-depth: 1
-          sparse-checkout: |
-            kubernetes/helm/wf-service
-          sparse-checkout-cone-mode: true
-      - name: Check if values yaml file exists 
-        id: update_helm_check
-        shell: bash
-        run: |
-          if [ -f "kubernetes/helm/wf-service/${{ needs.determine_branch.outputs.branch }}-custom-values.yaml" ]; then
-            echo "file_name=${{ needs.determine_branch.outputs.branch }}-custom-values.yaml" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event.inputs.deploy_to_dev }}" == "true" ]; then
-            echo "file_name=dev-custom-values.yaml" >> "$GITHUB_OUTPUT"
-          else
-            echo "skip_helm=true" >> "$GITHUB_OUTPUT"
-          fi
-            
-      - name: Update workdlow-service image version in the HelmChart
-        if: ${{ steps.update_helm_check.outputs.skip_helm != 'true' }}
-        uses: fjogeleit/yaml-update-action@main
-        with:
-          repository: ballerine-io/cloud-infra-config
-          branch: main
-          commitChange: true
-          message: 'Update wf-service image Version to sha-${{ needs.build-and-push-ee-image.outputs.wf_m_sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
-          token: ${{ secrets.GIT_TOKEN }}
-          changes: |
-            {
-              "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
-                "image.tag": "${{ needs.build-and-push-ee-image.outputs.docker_tag }}",
-              }
-            }
-
-  release:
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/heads/prod') || startsWith(github.ref, 'refs/heads/dev') || startsWith(github.ref, 'refs/heads/sb') || github.event.inputs.deploy_to_dev == 'true'
-    needs: build-and-push-image
-    env:
-      GH_TOKEN: ${{ github.token }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Release
-        run: |
-          if [ "${{ github.event.inputs.deploy_to_dev }}" == "true" ]; then
-            suffix="-dev-${{ needs.build-and-push-image.outputs.sha_short }}"
-          else
-            suffix=""
-          fi
-          gh release create ${{ needs.build-and-push-image.outputs.version }}${suffix} --notes-start-tag ${{ needs.build-and-push-image.outputs.bumped_tag }}
-            
-  sentry:
-    runs-on: ubuntu-latest
-    needs: [build-and-push-image, release]
-    env:
-      GH_TOKEN: ${{ github.token }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      # TODO: add caching for docker_full_image which build previously
-
-      - name: Run Container and Copy File
-        run: |
-          id=$(docker run --rm --name tmp -d ${{ needs.build-and-push-image.outputs.docker_full_image }} tail -f /dev/null)
-
-          mkdir -p ./dist
-
-          docker cp $id:/app/dist/ ./dist
-
-          curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.31.0" bash
-
-          sentry-cli releases new "${{needs.build-and-push-image.outputs.version}}"
-          echo "sentry-cli releases new ${{needs.build-and-push-image.outputs.version}}"
-
-          sentry-cli releases set-commits "${{needs.build-and-push-image.outputs.version}}" --auto --ignore-missing
-          echo "sentry-cli releases set-commits ${{needs.build-and-push-image.outputs.version}} --auto --ignore-missing"
-
-          sentry-cli sourcemaps upload --dist="${{needs.build-and-push-image.outputs.sha_short}}" --release="${{needs.build-and-push-image.outputs.version}}" ./dist
-          echo "sentry-cli sourcemaps upload --dist=${{needs.build-and-push-image.outputs.sha_short}} --release=${{needs.build-and-push-image.outputs.version}} ./dist"
-
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ secrets.WF_SENTRY_PROJECT }}
+  
 
   check_if_data_migration_needed:
     runs-on: ubuntu-latest
@@ -360,10 +248,10 @@ jobs:
           cd ../../../..
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v2
         with:
           platforms: 'arm64,arm'
 
@@ -413,3 +301,116 @@ jobs:
             "BASE_IMAGE=${{needs.build-and-push-image.outputs.docker_full_image}}"
             "RELEASE=${{ needs.build-and-push-image.outputs.bumped_tag }}"
             "SHORT_SHA=${{ needs.build-and-push-image.outputs.sha_short }}"
+
+  # perform_operations:
+  #   runs-on: ubuntu-latest
+  #   needs: build-and-push-ee-image
+  #   outputs:
+  #     operation: ${{ steps.perform-operation.outputs.operation }} # short sha of the commit
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 1
+  #         submodules: 'recursive'
+  #         token: ${{ secrets.SUBMODULES_TOKEN }}
+          
+  #     - name: Perform operation
+  #       id: perform-operation
+  #       run: |
+  #         case "${{ github.event.inputs.operation }}" in
+  #           "Deploy to Dev")
+  #             echo "Deploying to Dev environment"
+  #             gh workflow run deploy-wf-service.yml -f environment=dev -f tag=${{ needs.build-and-push-ee-image.outputs.docker_tag }}
+  #             ;;
+  #           "Run Migrations")
+  #             echo "Running database migrations"
+  #             gh workflow run db-ops.yml -f environment=dev -f tag=${{ needs.build-and-push-ee-image.outputs.docker_tag }}
+  #             ;;
+  #           "Do Nothing")
+  #             echo "No additional operation requested"
+  #             ;;
+  #           *)
+  #             echo "Unknown operation"
+  #             exit 1
+  #             ;;
+  #         esac
+
+  deploy-to-dev:
+    needs: build-and-push-ee-image
+    if: ${{ github.event.inputs.operation == 'Deploy to Dev' }}
+    uses: ./.github/workflows/deploy-wf-service.yml
+    with:
+      environment: 'dev'
+      tag: ${{ needs.build-and-push-ee-image.outputs.docker_tag }}
+    secrets: inherit
+
+  run-migrations:
+    needs: build-and-push-ee-image
+    if: ${{ github.event.inputs.operation == 'Run Migrations' }}
+    uses: ./.github/workflows/db-ops.yaml
+    with:
+      environment: 'dev'
+      tag: ${{ needs.build-and-push-ee-image.outputs.docker_tag }}
+    secrets: inherit
+
+  do-nothing:
+    needs: build-and-push-ee-image
+    if: ${{ github.event.inputs.operation == 'Do Nothing' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "No additional operation requested"
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [build-and-push-image,deploy-to-dev]
+    if: ${{ needs.deploy-to-dev.result=='success' }} && (startsWith(github.ref, 'refs/heads/prod') || startsWith(github.ref, 'refs/heads/dev') || startsWith(github.ref, 'refs/heads/sb') || github.event.inputs.environment == 'dev')
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Release
+        run: |
+          if [ "${{ github.event.inputs.operation }}" == "Deploy to Dev" ]; then
+            suffix="-dev-${{ needs.build-and-push-image.outputs.sha_short }}"
+          else
+            suffix=""
+          fi
+          gh release create ${{ needs.build-and-push-image.outputs.version }}${suffix} --notes-start-tag ${{ needs.build-and-push-image.outputs.bumped_tag }}
+            
+  sentry:
+    runs-on: ubuntu-latest
+    needs: [release,build-and-push-image]
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # TODO: add caching for docker_full_image which build previously
+
+      - name: Run Container and Copy File
+        run: |
+          id=$(docker run --rm --name tmp -d ${{ needs.build-and-push-image.outputs.docker_full_image }} tail -f /dev/null)
+
+          mkdir -p ./dist
+
+          docker cp $id:/app/dist/ ./dist
+
+          curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.31.0" bash
+
+          sentry-cli releases new "${{needs.build-and-push-image.outputs.version}}"
+          echo "sentry-cli releases new ${{needs.build-and-push-image.outputs.version}}"
+
+          sentry-cli releases set-commits "${{needs.build-and-push-image.outputs.version}}" --auto --ignore-missing
+          echo "sentry-cli releases set-commits ${{needs.build-and-push-image.outputs.version}} --auto --ignore-missing"
+
+          sentry-cli sourcemaps upload --dist="${{needs.build-and-push-image.outputs.sha_short}}" --release="${{needs.build-and-push-image.outputs.version}}" ./dist
+          echo "sentry-cli sourcemaps upload --dist=${{needs.build-and-push-image.outputs.sha_short}} --release=${{needs.build-and-push-image.outputs.version}} ./dist"
+
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.WF_SENTRY_PROJECT }}
