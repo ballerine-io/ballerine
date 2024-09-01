@@ -204,8 +204,7 @@ jobs:
 
   build-and-push-ee-image:
     runs-on: ubuntu-latest
-    needs: [build-and-push-image, check_if_data_migration_needed, determine_branch]
-    if: ${{ needs.check_if_data_migration_needed.outputs.should_build == 'true' }}
+    needs: [build-and-push-image, determine_branch]
     outputs:
       wf_m_sha_short: ${{ steps.fetch-submodule.outputs.wf_m_sha_short }} # short sha of the commit
       docker_tag: ${{ steps.docker-version.outputs.wf_m_tag }} 
