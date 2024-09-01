@@ -861,6 +861,7 @@ model Counterparty {
 enum BusinessReportStatus {
   new
   in_progress
+  failed
   completed
 }
 

@@ -97,11 +97,13 @@ export class MetricsService {
   }
 
   async getHomeMetrics(currentProjectId: TProjectId): Promise<Static<typeof HomeMetricsSchema>> {
+    // TODO - Add to read replica
     return {
       riskIndicators: await this.metricsRepository.getRiskIndicators(currentProjectId),
+      reportStatuses: await this.metricsRepository.getReportStatusesCount(currentProjectId),
+      
       reports: {
         all: await this.metricsRepository.getReportsByRiskLevel(currentProjectId),
-        inProgress: await this.metricsRepository.getInProgressReportsByRiskLevel(currentProjectId),
         approved: await this.metricsRepository.getApprovedBusinessesReportsByRiskLevel(
           currentProjectId,
         ),
