@@ -11,9 +11,7 @@ const getLabel = ({ label, provider }: { label: string; provider: string }) => {
   return label;
 };
 
-export const toRiskLabels = (
-  riskIndicators: Array<{ name: string; riskLevel: string; [key: string]: unknown }>,
-) => {
+export const toRiskLabels = (riskIndicators: Array<{ name: string; riskLevel: string }>) => {
   if (!Array.isArray(riskIndicators) || !riskIndicators.length) {
     return [];
   }
@@ -22,7 +20,6 @@ export const toRiskLabels = (
     label: name,
     severity:
       severityToDisplaySeverity[riskLevel as keyof typeof severityToDisplaySeverity] ?? riskLevel,
-    ...rest,
   }));
 };
 
@@ -68,9 +65,29 @@ export const reportAdapter = {
           };
         })
         ?.filter((value): value is NonNullable<typeof value> => Boolean(value)),
-      websiteLineOfBusinessAnalysis: toRiskLabels(
-        report?.summary?.riskIndicatorsByDomain?.lineOfBusinessViolations,
-      ),
+      websiteLineOfBusinessAnalysis:
+        report?.summary?.riskIndicatorsByDomain?.lineOfBusinessViolations?.map(
+          ({
+            name,
+            riskLevel,
+            sourceUrl,
+            screenshot,
+          }: {
+            name: string;
+            riskLevel: string;
+            sourceUrl: string;
+            screenshot: {
+              screenshotUrl: string;
+            };
+          }) => ({
+            label: name,
+            severity:
+              severityToDisplaySeverity[riskLevel as keyof typeof severityToDisplaySeverity] ??
+              riskLevel,
+            screenshotUrl: screenshot?.screenshotUrl,
+            sourceUrl,
+          }),
+        ),
       ecosystemAndTransactionsAnalysis: toRiskLabels(
         report?.summary?.riskIndicatorsByDomain?.ecosystemViolations,
       ),
@@ -196,9 +213,29 @@ export const reportAdapter = {
           };
         })
         ?.filter((value): value is NonNullable<typeof value> => Boolean(value)),
-      websiteLineOfBusinessAnalysis: toRiskLabels(
-        report?.summary?.riskIndicatorsByDomain?.lineOfBusinessViolations,
-      ),
+      websiteLineOfBusinessAnalysis:
+        report?.summary?.riskIndicatorsByDomain?.lineOfBusinessViolations?.map(
+          ({
+            name,
+            riskLevel,
+            sourceUrl,
+            screenshot,
+          }: {
+            name: string;
+            riskLevel: string;
+            sourceUrl: string;
+            screenshot: {
+              screenshotUrl: string;
+            };
+          }) => ({
+            label: name,
+            severity:
+              severityToDisplaySeverity[riskLevel as keyof typeof severityToDisplaySeverity] ??
+              riskLevel,
+            screenshotUrl: screenshot?.screenshotUrl,
+            sourceUrl,
+          }),
+        ),
       ecosystemAndTransactionsAnalysis: toRiskLabels(
         report?.summary?.riskIndicatorsByDomain?.ecosystemViolations,
       ),
