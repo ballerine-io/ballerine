@@ -31,7 +31,9 @@ import {
   getAlertDefinitionCreateData,
 } from '../../scripts/alerts/generate-alerts';
 
-import { PrismaService } from './../prisma/prisma.service';
+import { PrismaService } from '@/prisma/prisma.service';
+import { BusinessService } from '@/business/business.service';
+import { BusinessRepository } from '@/business/business.repository';
 
 type AsyncTransactionFactoryCallback = (
   transactionFactory: TransactionFactory,
@@ -45,9 +47,7 @@ const maskedVisaCardNumber = () => {
   const lastFour = cardNumber.substring(cardNumber.length - 4);
 
   // Construct the masked number with the desired pattern
-  const maskedNumber = `${firstSix}******${lastFour}`.replace('-', '');
-
-  return maskedNumber;
+  return `${firstSix}******${lastFour}`.replace('-', '');
 };
 
 const createTransactionsWithCounterpartyAsync = async (
@@ -90,6 +90,8 @@ describe('AlertService', () => {
         BusinessReportService,
         BusinessReportRepository,
         AlertService,
+        BusinessService,
+        BusinessRepository,
       ],
     }).compile();
 
