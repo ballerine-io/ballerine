@@ -11,9 +11,11 @@ export class CreateBatchBusinessReportDto {
   file!: Express.Multer.File;
 
   @ApiProperty({
+    required: true,
+    type: String,
     enum: BusinessReportType,
+    default: BusinessReportType.MERCHANT_REPORT_T1_LITE,
     description: 'Type of business report',
-    example: BusinessReportType.MERCHANT_REPORT_T1_LITE,
   })
   @IsEnum(BusinessReportType)
   type!: BusinessReportType;

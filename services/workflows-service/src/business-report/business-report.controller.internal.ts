@@ -4,8 +4,9 @@ import {
   Body,
   Param,
   Query,
+  Res,
   UploadedFile,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import type { InputJsonValue, TProjectId } from '@/types';
@@ -42,6 +43,7 @@ import { fileFilter } from '@/storage/file-filter';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
 import { CreateBatchBusinessReportDto } from '@/business-report/dto/create-batch-business-report.dto';
 import { ApiConsumes } from '@nestjs/swagger';
+import type { Response } from 'express';
 
 @common.Controller('internal/business-reports')
 // @swagger.ApiExcludeController()
@@ -356,17 +358,22 @@ export class BusinessReportControllerInternal {
       storage: getDiskStorage(),
       fileFilter,
     }),
-    // RemoveTempFileInterceptor,
+    RemoveTempFileInterceptor,
   )
   async createBatchReport(
     @UploadedFile() file: Express.Multer.File,
     @Body() body: CreateBatchBusinessReportDto,
+    @Res() res: Response,
   ) {
-    const currentProjectId = 'project-1'
-    await this.businessReportService.processBatchFile({
+    const currentProjectId = 'project-1';
+    const result = await this.businessReportService.processBatchFile({
       type: body.type,
       file: file,
       projectId: currentProjectId,
     });
+
+    res.status(201);
+    res.setHeader('content-type', 'application/json');
+    res.send(result);
   }
 }

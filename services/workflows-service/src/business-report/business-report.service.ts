@@ -14,7 +14,7 @@ import {
 } from '@/common/utils/unified-api-client/unified-api-client';
 import { env } from '@/env';
 import { randomUUID } from 'crypto';
-import { AppLoggerService } from "@/common/app-logger/app-logger.service";
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
 @Injectable()
 export class BusinessReportService {
@@ -139,72 +139,86 @@ export class BusinessReportService {
     type: BusinessReportType;
     projectId: TProjectId;
   }) {
-    const businessReportsRequests = await parseCsv(file, BusinessReportRequestSchema,  this.logger);
+    const businessReportsRequests = await parseCsv({
+      filePath: file.path,
+      schema: BusinessReportRequestSchema,
+      logger: this.logger,
+    });
 
     if (businessReportsRequests.length > 100) {
       throw new UnprocessableEntityException('Batch size is too large');
     }
 
     const batchId = randomUUID();
-    await this.prisma.$transaction(async transaction => {
-      const businessCreatePromises = businessReportsRequests.map(async businessReportRequest => {
-        let business =
-          businessReportRequest.correlationId &&
-          (await this.businessService.getByCorrelationId(businessReportRequest.correlationId, [
-            projectId,
-          ]));
-
-        business ||= await this.businessService.create(
-          {
-            data: {
-              ...(businessReportRequest.correlationId
-                ? { correlationId: businessReportRequest.correlationId }
-                : {}),
-              companyName: businessReportRequest.parentCompanyName || '',
+    await this.prisma.$transaction(
+      async transaction => {
+        const businessCreatePromises = businessReportsRequests.map(async businessReportRequest => {
+          let business =
+            businessReportRequest.correlationId &&
+            (await this.businessService.getByCorrelationId(businessReportRequest.correlationId, [
               projectId,
-            },
-          },
-          transaction,
-        );
+            ]));
 
-        const businessReport = await this.businessReportRepository.create({
-          data: {
-            type,
-            status: BusinessReportStatus.new,
-            report: {},
+          business ||= await this.businessService.create(
+            {
+              data: {
+                ...(businessReportRequest.correlationId
+                  ? { correlationId: businessReportRequest.correlationId }
+                  : {}),
+                companyName: businessReportRequest.parentCompanyName || '',
+                projectId,
+              },
+            },
+            transaction,
+          );
+
+          const businessReport = await this.businessReportRepository.create(
+            {
+              data: {
+                type,
+                status: BusinessReportStatus.new,
+                report: {},
+                businessId: business.id,
+                batchId,
+                projectId,
+              },
+            },
+            transaction,
+          );
+
+          return {
+            businessReport: businessReport,
+            businessReportRequest: businessReportRequest,
             businessId: business.id,
-            batchId,
-            projectId,
-          },
+          } as const;
         });
 
-        return {
-          businessReport: businessReport,
-          businessReportRequest: businessReportRequest,
-          businessId: business.id,
-        } as const;
-      });
+        const businessWithRequests = await Promise.all(businessCreatePromises);
 
-      const businessWithRequests = await Promise.all(businessCreatePromises);
+        const businessReportRequests = businessWithRequests.map(
+          ({ businessReport, businessReportRequest }) => {
+            return {
+              callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${businessReport.businessId}&businessReportId=${businessReport.id}`,
+              websiteUrl: businessReportRequest.websiteUrl,
+              parentCompanyName: businessReportRequest.parentCompanyName,
+              lineOfBusiness: businessReportRequest.lineOfBusiness,
+            };
+          },
+        ) satisfies TReportRequest;
 
-      const businessReportRequests = businessWithRequests.map(
-        ({ businessReport, businessReportRequest }) => {
-          return {
-            callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${businessReport.businessId}&businessReportId=${businessReport.id}`,
-            websiteUrl: businessReportRequest.websiteUrl,
-            parentCompanyName: businessReportRequest.parentCompanyName,
-            lineOfBusiness: businessReportRequest.lineOfBusiness,
-            businessReportId: businessReport.id,
-          };
-        },
-      ) satisfies TReportRequest;
+        await new UnifiedApiClient().postBatchBusinessReport({
+          reportRequests: businessReportRequests,
+          clientName: 'merchant',
+          reportType: type,
+          workflowVersion: '3',
+        });
+      },
+      {
+        timeout: 1000 * 60 * 3,
+        maxWait: 1000 * 60 * 3,
+      },
+    );
 
-      await new UnifiedApiClient().postBatchBusinessReport({
-        reportRequests: businessReportRequests,
-        clientName: 'merchant',
-        reportType: type,
-        workflowVersion: '3',
-      });
-    });
+    return { batchId };
   }
 }

@@ -13,8 +13,9 @@ export class BusinessReportRepository {
 
   async create<T extends Prisma.BusinessReportCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessReportCreateArgs>,
+    transaction: PrismaClient | PrismaTransaction = this.prisma,
   ) {
-    return await this.prisma.businessReport.create(args);
+    return await transaction.businessReport.create(args);
   }
 
   async updateById<T extends Omit<Prisma.BusinessReportUpdateArgs, 'where'>>(
