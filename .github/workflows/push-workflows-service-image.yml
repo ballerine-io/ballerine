@@ -30,7 +30,7 @@ jobs:
         id: set-branch
         run: |
           if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
-            echo "branch=${{ github.event.client_payload.ref }}" >> $GITHUB_OUTPUT
+            echo "branch=dev" >> $GITHUB_OUTPUT
           else
             echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           fi
