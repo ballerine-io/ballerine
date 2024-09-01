@@ -60,9 +60,9 @@ jobs:
         id: update_helm_check
         shell: bash
         run: |
-          if [ -f "kubernetes/helm/wf-service-migration/${{ github.event.inputs.environment }}-custom-values.yaml" ]; then
-            echo "file_name=${{ github.event.inputs.environment }}-custom-values.yaml" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event.inputs.environment }}" == "dev" ]; then
+          if [ -f "kubernetes/helm/wf-service-migration/${{ inputs.environment }}-custom-values.yaml" ]; then
+            echo "file_name=${{ inputs.environment }}-custom-values.yaml" >> "$GITHUB_OUTPUT"
+          elif [ "${{ inputs.environment }}" == "dev" ]; then
             echo "file_name=dev-custom-values.yaml" >> "$GITHUB_OUTPUT"
           else
             echo "skip_helm=true" >> "$GITHUB_OUTPUT"
@@ -75,14 +75,14 @@ jobs:
           repository: ballerine-io/cloud-infra-config
           branch: main
           commitChange: true
-          message: 'Update wf-service image Version to ${{ github.event.inputs.tag }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
+          message: 'Update wf-service image Version to ${{ inputs.tag }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
               "kubernetes/helm/wf-service-migration/${{steps.update_helm_check.outputs.file_name}}": {
-                "image.tag": "${{ github.event.inputs.tag }}",
-                "prismaMigrate.image.tag": "${{ github.event.inputs.tag }}",
-                "dbMigrate.image.tag": "${{ github.event.inputs.tag }}",
-                "dataSync.image.tag": "${{ github.event.inputs.tag }}"
+                "image.tag": "${{ inputs.tag }}",
+                "prismaMigrate.image.tag": "${{ inputs.tag }}",
+                "dbMigrate.image.tag": "${{ inputs.tag }}",
+                "dataSync.image.tag": "${{ inputs.tag }}"
               }
             }
