@@ -1,5 +1,13 @@
 import * as common from '@nestjs/common';
-import { BadRequestException, Body, Param, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Param,
+  Query,
+  Res,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import type { InputJsonValue, TProjectId } from '@/types';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -29,9 +37,17 @@ import { BusinessReportHookBodyDto } from '@/business-report/dtos/business-repor
 import { BusinessReportHookSearchQueryParamsDto } from '@/business-report/dtos/business-report-hook-search-query-params.dto';
 import { QueryMode } from '@/common/query-filters/query-mode';
 import { isNumber } from 'lodash';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { getDiskStorage } from '@/storage/get-file-storage-manager';
+import { fileFilter } from '@/storage/file-filter';
+import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
+import { CreateBatchBusinessReportDto } from '@/business-report/dto/create-batch-business-report.dto';
+import { ApiConsumes } from '@nestjs/swagger';
+import type { Response } from 'express';
+import { IsBoolean } from 'class-validator';
 
 @common.Controller('internal/business-reports')
-@swagger.ApiExcludeController()
+// @swagger.ApiExcludeController()
 export class BusinessReportControllerInternal {
   constructor(
     protected readonly businessReportService: BusinessReportService,
@@ -249,11 +265,12 @@ export class BusinessReportControllerInternal {
   @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
   async listBusinessReports(
     @CurrentProject() currentProjectId: TProjectId,
-    @Query() { businessId, page, search, type, orderBy }: ListBusinessReportsDto,
+    @Query() { businessId, batchId, page, search, type, orderBy }: ListBusinessReportsDto,
   ) {
     const args = {
       where: {
         businessId,
+        batchId,
         ...(type ? { type } : {}),
         ...(search
           ? {
@@ -331,5 +348,38 @@ export class BusinessReportControllerInternal {
         },
       },
     });
+  }
+
+  @common.Post('/upload-batch')
+  @Public()
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: getDiskStorage(),
+      fileFilter,
+    }),
+    RemoveTempFileInterceptor,
+  )
+  async createBatchReport(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: CreateBatchBusinessReportDto,
+    @Res() res: Response,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    const customer = await this.customerService.getByProjectId(currentProjectId);
+
+    const { withQualityControl } = customer.config || {};
+
+    const result = await this.businessReportService.processBatchFile({
+      type: body.type,
+      file: file,
+      projectId: currentProjectId,
+      withQualityControl: IsBoolean(withQualityControl) ? withQualityControl : false,
+    });
+
+    res.status(201);
+    res.setHeader('content-type', 'application/json');
+    res.send(result);
   }
 }
