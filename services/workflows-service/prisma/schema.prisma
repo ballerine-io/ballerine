@@ -796,8 +796,15 @@ model Alert {
   workflowRuntimeDataId String?
   workflowRuntimeData   WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
+
   counterpartyId String?
-  counterparty   Counterparty? @relation(fields: [counterpartyId], references: [id])
+  counterpartyOriginatorId String?
+  counterpartyBeneficiaryId String?
+
+  counterpartyOriginator   Counterparty? @relation(name: "counterpartyAlertOriginator", fields: [counterpartyOriginatorId], references: [id])
+  counterpartyBeneficiary   Counterparty? @relation(name: "counterpartyAlertBeneficiary", fields: [counterpartyBeneficiaryId], references: [id])
+  
+
 
   businessId String?
   business   Business? @relation(fields: [businessId], references: [id])
@@ -805,7 +812,8 @@ model Alert {
   @@index([assigneeId])
   @@index([projectId])
   @@index([alertDefinitionId])
-  @@index([counterpartyId])
+  @@index([counterpartyOriginatorId])
+  @@index([counterpartyBeneficiaryId])
   @@index([createdAt(sort: Desc)])
 }
 
@@ -848,7 +856,8 @@ model Counterparty {
   // Relations
   originatingTransactions TransactionRecord[] @relation("OriginatingCounterparty")
   benefitingTransactions  TransactionRecord[] @relation("BenefitingCounterparty")
-  alerts                  Alert[]
+  alertsBenefiting                  Alert[] @relation("counterpartyAlertBeneficiary")
+  alertsOriginating                 Alert[] @relation("counterpartyAlertOriginator")
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id])

@@ -355,6 +355,37 @@ export class TransactionControllerExternal {
         : {}),
     };
 
+    // this.prisma.transactionRecord.findMany
+    // this.prisma.alert.findMany({
+    //   where: {
+    //     id: 'aaaa'
+    //   },
+    //   include: {
+    //     counterparty: {
+    //       include:  {
+    //         benefitingTransactions: {
+    //           where: {
+    //             paymentMethod: 'credit_card',
+    //             transactionDate: {
+    //               gte: new Date('2021-01-01'),
+    //               lte: new Date('2021-01-01'),
+    //             }
+    //           }
+    //         },
+    //         originatingTransactions: {
+    //           where: {
+    //             paymentMethod: 'credit_card',
+    //             transactionDate: {
+    //               gte: new Date('2021-01-01'),
+    //               lte: new Date('2021-01-01'),
+    //             }
+    //           }
+    //         },
+    //       }
+    //     }
+    //   }
+    // });
+
     return this.service.getTransactions(filters, projectId, {
       include: {
         counterpartyBeneficiary: {
