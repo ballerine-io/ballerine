@@ -147,43 +147,57 @@ const MerchantMatchSchema = Type.Object({
     description: 'The name of the Business which has been terminated.',
     example: 'M01',
   }),
-  DoingBusinessAsName: Type.String({
-    description:
-      'The name used by a merchant that could be different from the legal name of the business.',
-    example: 'M01',
-  }),
-  PhoneNumber: Type.String({
-    description: 'The Business or Merchant’s phone number.',
-    example: 'M01',
-  }),
+  DoingBusinessAsName: Type.Optional(
+    Type.String({
+      description:
+        'The name used by a merchant that could be different from the legal name of the business.',
+      example: 'M01',
+    }),
+  ),
+  PhoneNumber: Type.Optional(
+    Type.String({
+      description: 'The Business or Merchant’s phone number.',
+      example: 'M01',
+    }),
+  ),
   Address: Type.String({
     description: 'Address of the merchant location.',
     example: 'M01',
   }),
-  AltPhoneNumber: Type.String({
-    description: 'The Business or Merchant’s alternate phone number.',
-    example: 'M01',
-  }),
-  CountrySubdivisionTaxId: Type.String({
-    description:
-      'The Merchant’s state tax ID; for the U.S region only. Return value will be hidden.',
-    example: 'M01',
-  }),
-  NationalTaxId: Type.String({
-    description:
-      'The National tax ID or business registration number. Return value will be hidden.',
-    example: 'M02',
-  }),
-  ServiceProvLegal: Type.String({
-    description:
-      'The name of the service provider associated with the merchant listed in the MATCH.',
-    example: 'M00',
-  }),
-  ServiceProvDBA: Type.String({
-    description:
-      'The name of the service provider associated with the merchant listed in the MATCH.',
-    example: 'M01',
-  }),
+  AltPhoneNumber: Type.Optional(
+    Type.String({
+      description: 'The Business or Merchant’s alternate phone number.',
+      example: 'M01',
+    }),
+  ),
+  CountrySubdivisionTaxId: Type.Optional(
+    Type.String({
+      description:
+        'The Merchant’s state tax ID; for the U.S region only. Return value will be hidden.',
+      example: 'M01',
+    }),
+  ),
+  NationalTaxId: Type.Optional(
+    Type.String({
+      description:
+        'The National tax ID or business registration number. Return value will be hidden.',
+      example: 'M02',
+    }),
+  ),
+  ServiceProvLegal: Type.Optional(
+    Type.String({
+      description:
+        'The name of the service provider associated with the merchant listed in the MATCH.',
+      example: 'M00',
+    }),
+  ),
+  ServiceProvDBA: Type.Optional(
+    Type.String({
+      description:
+        'The name of the service provider associated with the merchant listed in the MATCH.',
+      example: 'M01',
+    }),
+  ),
   PrincipalMatch: Type.Optional(Type.Array(PrincipalSchema)),
   UrlMatch: Type.Optional(
     Type.Array(
@@ -212,7 +226,7 @@ const MerchantSchema = Type.Object({
       maxLength: 110,
     }),
   ),
-  Address: Type.Optional(AddressSchema),
+  Address: AddressSchema,
   PhoneNumber: Type.String({
     description: "The Business or Merchant's phone number, including the area code.",
     example: '3165557625',
