@@ -169,29 +169,29 @@ jobs:
               }
             }
 
-  sync-argo-app:
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    env:
-      stage: ${{ inputs.environment }}
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  # sync-argo-app:
+  #   runs-on: ubuntu-latest
+  #   environment: ${{ inputs.environment }}
+  #   env:
+  #     stage: ${{ inputs.environment }}
+  #   permissions:
+  #     contents: read
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Run ArgoCD Action
-        id: argocd_api
-        uses: ./.github/actions/argocd-action
-        with:
-          argocd_username: ${{ secrets.ARGOCD_USERNAME }}
-          argocd_password: ${{ secrets.ARGOCD_PASSWORD }}
-          argocd_server: ${{ secrets.ARGOCD_SERVER }}
+  #     - name: Run ArgoCD Action
+  #       id: argocd_api
+  #       uses: ./.github/actions/argocd-action
+  #       with:
+  #         argocd_username: ${{ secrets.ARGOCD_USERNAME }}
+  #         argocd_password: ${{ secrets.ARGOCD_PASSWORD }}
+  #         argocd_server: ${{ secrets.ARGOCD_SERVER }}
         
   send-to-slack:
     runs-on: ubuntu-latest
-    needs: [sync-argo-app]
-    if: ${{ needs.sync-argo-app.result == 'success' }}
+    needs: [update-helm-chart]
+    if: ${{ needs.update-helm-chart.result == 'success' }}
     permissions:
       contents: read
       packages: write
@@ -202,6 +202,6 @@ jobs:
         uses: slackapi/slack-github-action@v1.26.0
         with:
           channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
-          slack-message: "Wf-service in ${{ github.ref_name }} build result: ${{ job.status }}. successfully updated the Wf-service helm values for ${{ github.ref_name }}."
+          slack-message: "Wf-service Migrations in ${{ github.ref_name }} build result: ${{ job.status }}. successfully updated the Wf-service helm values for ${{ github.ref_name }}."
         env:
           SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}
