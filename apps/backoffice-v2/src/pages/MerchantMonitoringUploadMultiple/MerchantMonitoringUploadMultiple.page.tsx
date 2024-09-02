@@ -1,10 +1,9 @@
 import { Input } from '@ballerine/ui';
 import { Link } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Download } from 'lucide-react';
 import React, { FunctionComponent } from 'react';
 
 import { Card } from '@/common/components/atoms/Card/Card';
-import { DownloadSvg } from '@/common/components/atoms/icons';
 import { Form } from '@/common/components/organisms/Form/Form';
 import { FormItem } from '@/common/components/organisms/Form/Form.Item';
 import { FormField } from '@/common/components/organisms/Form/Form.Field';
@@ -66,7 +65,7 @@ export const MerchantMonitoringUploadMultiplePage: FunctionComponent = () => {
                   download="batch-report-template.csv"
                   className={'flex items-center space-x-2 text-[#007AFF] hover:underline'}
                 >
-                  <DownloadSvg className={`d-6`} />
+                  <Download className={`d-6`} />
                   <span className={`text-sm font-medium leading-5`}>Download CSV template</span>
                 </a>
               </div>

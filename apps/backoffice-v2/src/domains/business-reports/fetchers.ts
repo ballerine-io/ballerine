@@ -173,7 +173,7 @@ export const createBusinessReport = async ({
   return handleZodError(error, businessReport);
 };
 
-export const createBatchBusinessReport = async ({
+export const createBusinessReportBatch = async ({
   merchantSheet,
   isExample,
   reportType,

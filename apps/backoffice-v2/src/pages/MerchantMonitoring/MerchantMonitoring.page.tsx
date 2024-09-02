@@ -5,11 +5,10 @@ import { useMerchantMonitoringLogic } from '@/pages/MerchantMonitoring/hooks/use
 import { NoBusinessReports } from '@/pages/MerchantMonitoring/components/NoBusinessReports/NoBusinessReports';
 import { MerchantMonitoringTable } from '@/pages/MerchantMonitoring/components/MerchantMonitoringTable/MerchantMonitoringTable';
 import { buttonVariants } from '@/common/components/atoms/Button/Button';
-import { Plus } from 'lucide-react';
+import { Plus, Table2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Search } from '@/common/components/molecules/Search';
 import { Skeleton } from '@ballerine/ui';
-import { TableSvg } from '@/common/components/atoms/icons';
 
 export const MerchantMonitoring: FunctionComponent = () => {
   const {
@@ -41,7 +40,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
               })}
               to={`/${locale}/merchant-monitoring/upload-multiple-merchants`}
             >
-              <TableSvg />
+              <Table2 />
               <span>Upload Multiple Merchants</span>
             </Link>
             <Link

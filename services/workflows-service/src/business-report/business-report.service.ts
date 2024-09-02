@@ -131,21 +131,37 @@ export class BusinessReportService {
   }
 
   async processBatchFile({
-    merchantSheet,
     type,
     projectId,
+    merchantSheet,
+    currentProjectId,
+    maxBusinessReports,
     withQualityControl,
   }: {
-    merchantSheet: Express.Multer.File;
-    type: BusinessReportType;
     projectId: TProjectId;
+    type: BusinessReportType;
+    currentProjectId: string;
+    maxBusinessReports: number;
     withQualityControl: boolean;
+    merchantSheet: Express.Multer.File;
   }) {
     const businessReportsRequests = await parseCsv({
       filePath: merchantSheet.path,
       schema: BusinessReportRequestSchema,
       logger: this.logger,
     });
+
+    const businessReportsCount = await this.count({}, [currentProjectId]);
+
+    if (businessReportsCount + businessReportsRequests.length > maxBusinessReports) {
+      const reportsLeft = maxBusinessReports - businessReportsCount;
+
+      throw new UnprocessableEntityException(
+        `Batch size is too large, there are too many reports (${reportsLeft} report${
+          reportsLeft > 1 ? 's' : ''
+        } left from a qouta of ${maxBusinessReports})`,
+      );
+    }
 
     if (businessReportsRequests.length > 100) {
       throw new UnprocessableEntityException('Batch size is too large');

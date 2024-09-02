@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateBatchBusinessReportBodyDto {
+export class CreateBusinessReportBatchBodyDto {
   @ApiProperty({
     type: 'string',
     format: 'binary',

@@ -4,8 +4,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { HttpError } from '@/common/errors/http-error';
 import { TBusinessReportType } from '@/domains/business-reports/types';
-import { createBatchBusinessReport } from '@/domains/business-reports/fetchers';
+import { createBusinessReportBatch } from '@/domains/business-reports/fetchers';
 import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
+import { isObject } from '@ballerine/common';
 
 export const useCreateBusinessReportBatchMutation = ({
   reportType,
@@ -19,8 +20,8 @@ export const useCreateBusinessReportBatchMutation = ({
   const { data: customer } = useCustomerQuery();
 
   return useMutation({
-    mutationFn: (merchantSheet: string) =>
-      createBatchBusinessReport({
+    mutationFn: (merchantSheet: File) =>
+      createBusinessReportBatch({
         reportType,
         merchantSheet,
         isExample: customer?.config?.isExample ?? false,
@@ -32,14 +33,18 @@ export const useCreateBusinessReportBatchMutation = ({
 
       onSuccess?.(data);
     },
-    onError: (error: Error) => {
+    onError: (error: unknown) => {
       if (error instanceof HttpError && error.code === 400) {
         toast.error(error.message);
 
         return;
       }
 
-      toast.error(t(`toast:batch_business_report_creation.error`, { errorMessage: error.message }));
+      toast.error(
+        t(`toast:batch_business_report_creation.error`, {
+          errorMessage: isObject(error) && 'message' in error ? error.message : error,
+        }),
+      );
     },
   });
 };

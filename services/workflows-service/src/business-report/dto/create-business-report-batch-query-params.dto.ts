@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
 import { BusinessReportType } from '@prisma/client';
 
-export class CreateBatchBusinessReportQueryParamsDto {
+export class CreateBusinessReportBatchQueryParamsDto {
   @ApiProperty({
     required: true,
     type: String,

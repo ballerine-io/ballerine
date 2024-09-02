@@ -4,16 +4,16 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 
 import csvContent from './batch-report-template.csv?raw';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
-import { CreateBatchBusinessReportSchema } from '@/pages/MerchantMonitoringUploadMultiple/create-batch-business-report-schema';
+import { CreateBusinessReportBatchSchema } from '@/pages/MerchantMonitoringUploadMultiple/create-business-report-batch-schema';
 import { useCreateBusinessReportBatchMutation } from '@/domains/business-reports/hooks/mutations/useCreateBusinessReportBatchMutation/useCreateBusinessReportBatchMutation';
 import { useCallback, useMemo } from 'react';
 
 export const useMerchantMonitoringUploadMultiplePageLogic = () => {
-  const form = useForm({
+  const form = useForm<{ merchantSheet: File | undefined }>({
     defaultValues: {
       merchantSheet: undefined,
     },
-  } as { defaultValues: { merchantSheet: File | undefined } });
+  });
 
   const locale = useLocale();
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ export const useMerchantMonitoringUploadMultiplePageLogic = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<z.output<typeof CreateBatchBusinessReportSchema>> = ({
+  const onSubmit: SubmitHandler<z.output<typeof CreateBusinessReportBatchSchema>> = ({
     merchantSheet,
   }) => {
     if (!merchantSheet) {

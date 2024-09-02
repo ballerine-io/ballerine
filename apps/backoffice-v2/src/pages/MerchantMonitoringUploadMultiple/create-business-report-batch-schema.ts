@@ -1,5 +1,5 @@
 import { z } from 'zod';
 
-export const CreateBatchBusinessReportSchema = z.object({
+export const CreateBusinessReportBatchSchema = z.object({
   merchantSheet: z.union([z.any(), z.undefined()]),
 });
