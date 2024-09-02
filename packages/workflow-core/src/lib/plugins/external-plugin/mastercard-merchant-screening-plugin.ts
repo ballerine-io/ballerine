@@ -78,6 +78,7 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
       });
 
       const apiResponse = await this.makeApiRequest(url, this.method, requestPayload, {
+        ...this.headers,
         Authorization: `Bearer ${process.env.UNIFIED_API_TOKEN}`,
       });
 
