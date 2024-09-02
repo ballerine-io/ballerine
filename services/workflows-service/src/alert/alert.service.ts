@@ -325,20 +325,24 @@ export class AlertService {
     executionRow: Record<string, unknown>,
     additionalInfo?: Record<string, unknown>,
   ) {
+    const mergedSubject = Object.assign({}, ...(subject || []));
+
+    const projectId = alertDef.projectId;
     return this.alertRepository.create({
       data: {
+        projectId,
         alertDefinitionId: alertDef.id,
-        projectId: alertDef.projectId,
         severity: alertDef.defaultSeverity,
         dataTimestamp: new Date(),
         state: AlertState.triggered,
         status: AlertStatus.new,
         additionalInfo: additionalInfo,
         executionDetails: {
-          checkpoint: {
-            hash: computeHash(executionRow),
-          },
-          subject: Object.assign({}, ...(subject || [])),
+          subject: mergedSubject,
+          filters: this.dataAnalyticsService.getInvestigationFilter(
+            projectId!,
+            alertDef.inlineRule as InlineRule,
+          ),
           executionRow,
         } satisfies TExecutionDetails as InputJsonValue,
         ...Object.assign({}, ...(subject || [])),
