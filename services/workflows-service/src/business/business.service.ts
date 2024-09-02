@@ -6,7 +6,7 @@ import {
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
 import { env } from '@/env';
-import type { TProjectIds } from '@/types';
+import type { PrismaTransaction, TProjectIds } from '@/types';
 import { HttpService } from '@nestjs/axios';
 import * as common from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
@@ -23,8 +23,8 @@ export class BusinessService {
     protected readonly logger: AppLoggerService,
     protected readonly httpService: HttpService,
   ) {}
-  async create(args: Parameters<BusinessRepository['create']>[0]) {
-    return await this.repository.create(args);
+  async create(args: Parameters<BusinessRepository['create']>[0], transaction?: PrismaTransaction) {
+    return await this.repository.create(args, transaction);
   }
 
   async list(args: Parameters<BusinessRepository['findMany']>[0], projectIds: TProjectIds) {
