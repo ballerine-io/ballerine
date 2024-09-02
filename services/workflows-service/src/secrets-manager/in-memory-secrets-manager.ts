@@ -3,11 +3,11 @@ import { env } from '@/env';
 import { camelCase } from 'lodash';
 
 const inMemoryEnvProvidedSecrets = Object.entries(env).reduce((acc, [key, value]) => {
-  if (!key.startsWith('IN_MEMORY_SECRET_')) {
+  if (!key.startsWith('IN_MEMORIES_SECRET_')) {
     return acc;
   }
 
-  const secretKey = key.replace('IN_MEMORY_SECRET_', '');
+  const secretKey = key.replace('IN_MEMORIES_SECRET_', '');
 
   acc[camelCase(secretKey)] = value;
 
