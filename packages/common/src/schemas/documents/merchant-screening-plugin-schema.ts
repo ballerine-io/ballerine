@@ -1,6 +1,6 @@
-import { Type } from '@sinclair/typebox';
-import { TypeStringEnum } from '@/schemas/documents/workflow/documents/schemas/utils';
 import { MatchResponseCodes, ProcessStatuses } from '@/consts';
+import { TypeStringEnum } from '@/schemas/documents/workflow/documents/schemas/utils';
+import { Type } from '@sinclair/typebox';
 
 const TerminationReasonCodes = [
   '00',
@@ -438,7 +438,7 @@ export const MerchantScreeningPluginSchema = Type.Optional(
     name: Type.Literal('merchantScreening'),
     status: TypeStringEnum(ProcessStatuses),
     invokedAt: Type.Optional(Type.Number()),
-    vendor: Type.Literal('mastercard'),
+    vendor: Type.Optional(Type.Literal('mastercard')),
     logoUrl: Type.String(),
     raw: MerchantScreeningRawSchema,
     processed: MerchantScreeningProcessedSchema,
