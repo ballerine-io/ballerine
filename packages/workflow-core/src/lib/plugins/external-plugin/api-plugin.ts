@@ -1,7 +1,7 @@
-import { TContext, Transformer, Transformers, Validator } from '../../utils';
 import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
-import { IApiPluginParams } from './types';
 import { logger } from '../../logger';
+import { TContext, Transformer, Transformers, Validator } from '../../utils';
+import { IApiPluginParams } from './types';
 
 export class ApiPlugin {
   public static pluginType = 'http';
@@ -149,11 +149,11 @@ export class ApiPlugin {
       }
 
       // @TODO: Use an enum over string literals for HTTP methods
-      if (this.method.toUpperCase() !== 'GET') {
+      if (method.toUpperCase() !== 'GET') {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         _requestParams.body = JSON.stringify(payload);
-      } else if (this.method.toUpperCase() === 'GET') {
+      } else if (method.toUpperCase() === 'GET') {
         const queryParams = new URLSearchParams(payload as Record<string, string>).toString();
         _url = `${_url}?${queryParams}`;
       }

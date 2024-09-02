@@ -1,9 +1,9 @@
-import { ApiPlugin } from './api-plugin';
-import { TContext } from '../../utils/types';
-import { IApiPluginParams } from './types';
-import { logger } from '../../logger';
 import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
 import { alpha2ToAlpha3 } from 'i18n-iso-countries';
+import { logger } from '../../logger';
+import { TContext } from '../../utils/types';
+import { ApiPlugin } from './api-plugin';
+import { IApiPluginParams } from './types';
 
 export class MastercardMerchantScreeningPlugin extends ApiPlugin {
   public static pluginType = 'http';
@@ -38,17 +38,14 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
       const entity = isObject(context.entity) ? context.entity : {};
       const countrySubdivisionSupportedCountries = ['US', 'CA'] as const;
       const address = {
-        line1: [
-          entity?.data?.additionalInfo?.headquarters?.street,
-          entity?.data?.additionalInfo?.headquarters?.streetNumber,
-        ]
+        line1: [entity?.data?.address?.street, entity?.data?.address?.streetNumber]
           .filter(Boolean)
           .join(' '),
-        city: entity?.data?.additionalInfo?.headquarters?.city,
-        country: alpha2ToAlpha3(entity?.data?.additionalInfo?.headquarters?.country),
-        postalCode: requestPayload?.postalCode,
+        city: entity?.data?.address?.city,
+        country: alpha2ToAlpha3(entity?.data?.address?.country),
+        postalCode: entity?.data?.address?.postalCode,
         countrySubdivision: countrySubdivisionSupportedCountries.includes(
-          entity?.data?.additionalInfo?.headquarters?.country,
+          entity?.data?.address?.country,
         )
           ? requestPayload?.countrySubdivision
           : undefined,
