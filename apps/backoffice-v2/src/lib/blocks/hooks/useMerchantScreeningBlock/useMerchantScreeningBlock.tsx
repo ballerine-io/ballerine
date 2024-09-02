@@ -11,7 +11,7 @@ import {
 } from '@/lib/blocks/hooks/useMerchantScreeningBlock/columns';
 import { toTitleCase } from 'string-ts';
 import { formatValue } from '@/lib/blocks/hooks/useMerchantScreeningBlock/format-value';
-import { isObject } from '@ballerine/common';
+import { isObject, safeEvery } from '@ballerine/common';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { JsonDialog } from '@ballerine/ui';
 
@@ -29,10 +29,6 @@ export const useMerchantScreeningBlock = ({
   checkDate: string;
 }) => {
   return useMemo(() => {
-    if (!terminatedMatchedMerchants?.length && !inquiredMatchedMerchants?.length) {
-      return [];
-    }
-
     return createBlocksTyped()
       .addBlock()
       .addCell({
@@ -74,8 +70,8 @@ export const useMerchantScreeningBlock = ({
                   columns: terminatedMatchedMerchantsSummaryColumns,
                   data: [
                     {
-                      terminatedMatches: terminatedMatchedMerchants.length,
-                      numberOfInquiries: inquiredMatchedMerchants.length,
+                      terminatedMatches: terminatedMatchedMerchants?.length ?? 0,
+                      numberOfInquiries: inquiredMatchedMerchants?.length ?? 0,
                       checkDate,
                       fullJsonData: rawData ?? {},
                     },
@@ -119,7 +115,7 @@ export const useMerchantScreeningBlock = ({
                         },
                         scroll: {
                           className: ctw('h-[26rem]', {
-                            'h-34': !terminatedMatchedMerchants.length,
+                            'h-34': !terminatedMatchedMerchants?.length,
                           }),
                         },
                       },
@@ -133,12 +129,14 @@ export const useMerchantScreeningBlock = ({
                       }: {
                         row: IMerchantScreening;
                       }) => {
-                        const isEmptyPrincipalMatches = terminatedMatchedMerchant?.principals.every(
+                        const isEmptyPrincipalMatches = safeEvery(
+                          terminatedMatchedMerchant?.principals,
                           principal =>
                             Object.keys(principal?.exactMatches ?? {}).length === 0 &&
                             Object.keys(principal?.partialMatches ?? {}).length === 0,
                         );
-                        const isEmptyUrlMatches = terminatedMatchedMerchant?.urls.every(
+                        const isEmptyUrlMatches = safeEvery(
+                          terminatedMatchedMerchant?.urls,
                           url =>
                             Object.keys(url?.exactMatches ?? {}).length === 0 &&
                             Object.keys(url?.partialMatches ?? {}).length === 0,
@@ -155,11 +153,11 @@ export const useMerchantScreeningBlock = ({
                                   variant: 'link',
                                   className: 'p-0 text-blue-500',
                                   disabled:
-                                    !isObject(terminatedMatchedMerchant?.raw) &&
-                                    !Array.isArray(terminatedMatchedMerchant?.raw),
+                                    !isObject(terminatedMatchedMerchant?.raw ?? {}) &&
+                                    !Array.isArray(terminatedMatchedMerchant?.raw ?? {}),
                                 }}
                                 dialogButtonText={`Full JSON data`}
-                                json={JSON.stringify(terminatedMatchedMerchant?.raw)}
+                                json={JSON.stringify(terminatedMatchedMerchant?.raw ?? {})}
                               />
                             </div>
                             <div className={`flex flex-col space-y-8`}>
@@ -430,12 +428,14 @@ export const useMerchantScreeningBlock = ({
                       }: {
                         row: IMerchantScreening;
                       }) => {
-                        const isEmptyPrincipalMatches = inquiredMatchedMerchant?.principals?.every(
+                        const isEmptyPrincipalMatches = safeEvery(
+                          inquiredMatchedMerchant?.principals,
                           principal =>
                             Object.keys(principal?.exactMatches ?? {}).length === 0 &&
                             Object.keys(principal?.partialMatches ?? {}).length === 0,
                         );
-                        const isEmptyUrlMatches = inquiredMatchedMerchant?.urls?.every(
+                        const isEmptyUrlMatches = safeEvery(
+                          inquiredMatchedMerchant?.urls,
                           url =>
                             Object.keys(url?.exactMatches ?? {}).length === 0 &&
                             Object.keys(url?.partialMatches ?? {}).length === 0,
@@ -456,7 +456,7 @@ export const useMerchantScreeningBlock = ({
                                     !Array.isArray(inquiredMatchedMerchant?.raw),
                                 }}
                                 dialogButtonText={`Full JSON data`}
-                                json={JSON.stringify(inquiredMatchedMerchant?.raw)}
+                                json={JSON.stringify(inquiredMatchedMerchant?.raw ?? {})}
                               />
                             </div>
                             <div className={`flex flex-col space-y-8`}>
@@ -604,7 +604,7 @@ export const useMerchantScreeningBlock = ({
                                   );
                                 })}
                               {!isEmptyUrlMatches &&
-                                inquiredMatchedMerchant?.urls.map((urlMatch, index) => {
+                                inquiredMatchedMerchant?.urls?.map((urlMatch, index) => {
                                   if (
                                     !Object.keys(urlMatch?.exactMatches ?? {}).length &&
                                     !Object.keys(urlMatch?.partialMatches ?? {}).length
