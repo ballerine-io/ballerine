@@ -2,7 +2,7 @@ import { SecretsManager } from '@/secrets-manager/secrets-manager';
 import { env } from '@/env';
 import { camelCase } from 'lodash';
 
-const inMemorySecrets = Object.entries(env).reduce((acc, [key, value]) => {
+const inMemoryEnvProvidedSecrets = Object.entries(env).reduce((acc, [key, value]) => {
   if (!key.startsWith('IN_MEMORY_SECRET_')) {
     return acc;
   }
@@ -31,7 +31,7 @@ export class InMemorySecretsManager implements SecretsManager {
     }
 
     secrets = {
-      ...inMemorySecrets,
+      ...inMemoryEnvProvidedSecrets,
       ...secrets,
     };
 
