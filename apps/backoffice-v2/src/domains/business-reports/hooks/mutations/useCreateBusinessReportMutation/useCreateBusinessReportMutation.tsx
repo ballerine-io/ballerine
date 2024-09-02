@@ -51,7 +51,7 @@ export const useCreateBusinessReportMutation = ({
       toast.success(t(`toast:business_report_creation.success`));
       onSuccess?.(data);
     },
-    onError: error => {
+    onError: (error: Error) => {
       if (error instanceof HttpError && error.code === 400) {
         toast.error(error.message);
 

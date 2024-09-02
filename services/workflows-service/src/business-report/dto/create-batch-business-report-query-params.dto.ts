@@ -2,14 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
 import { BusinessReportType } from '@prisma/client';
 
-export class CreateBatchBusinessReportDto {
-  @ApiProperty({
-    type: 'string',
-    format: 'binary',
-    description: 'CSV file for batch business report',
-  })
-  file!: Express.Multer.File;
-
+export class CreateBatchBusinessReportQueryParamsDto {
   @ApiProperty({
     required: true,
     type: String,

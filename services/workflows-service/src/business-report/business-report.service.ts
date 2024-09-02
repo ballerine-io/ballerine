@@ -131,18 +131,18 @@ export class BusinessReportService {
   }
 
   async processBatchFile({
-    file,
+    merchantSheet,
     type,
     projectId,
     withQualityControl,
   }: {
-    file: Express.Multer.File;
+    merchantSheet: Express.Multer.File;
     type: BusinessReportType;
     projectId: TProjectId;
     withQualityControl: boolean;
   }) {
     const businessReportsRequests = await parseCsv({
-      filePath: file.path,
+      filePath: merchantSheet.path,
       schema: BusinessReportRequestSchema,
       logger: this.logger,
     });

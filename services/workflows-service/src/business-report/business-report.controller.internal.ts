@@ -41,11 +41,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { fileFilter } from '@/storage/file-filter';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
-import { CreateBatchBusinessReportDto } from '@/business-report/dto/create-batch-business-report.dto';
-import { ApiConsumes } from '@nestjs/swagger';
+import { CreateBatchBusinessReportBodyDto } from '@/business-report/dto/create-batch-business-report-body.dto';
+import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { IsBoolean } from 'class-validator';
+import { CreateBatchBusinessReportQueryParamsDto } from '@/business-report/dto/create-batch-business-report-query-params.dto';
 
+@ApiBearerAuth()
+@swagger.ApiTags('Business Reports')
 @common.Controller('internal/business-reports')
 // @swagger.ApiExcludeController()
 export class BusinessReportControllerInternal {
@@ -350,7 +353,7 @@ export class BusinessReportControllerInternal {
     });
   }
 
-  @common.Post('/upload-batch')
+  @common.Post('/upload-batch/:type')
   @Public()
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @ApiConsumes('multipart/form-data')
@@ -363,7 +366,8 @@ export class BusinessReportControllerInternal {
   )
   async createBatchReport(
     @UploadedFile() file: Express.Multer.File,
-    @Body() body: CreateBatchBusinessReportDto,
+    @Param() { type }: CreateBatchBusinessReportQueryParamsDto,
+    @Body() body: CreateBatchBusinessReportBodyDto,
     @Res() res: Response,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
@@ -372,8 +376,8 @@ export class BusinessReportControllerInternal {
     const { withQualityControl } = customer.config || {};
 
     const result = await this.businessReportService.processBatchFile({
-      type: body.type,
-      file: file,
+      type,
+      merchantSheet: file,
       projectId: currentProjectId,
       withQualityControl: IsBoolean(withQualityControl) ? withQualityControl : false,
     });

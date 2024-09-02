@@ -172,3 +172,32 @@ export const createBusinessReport = async ({
 
   return handleZodError(error, businessReport);
 };
+
+export const createBatchBusinessReport = async ({
+  merchantSheet,
+  isExample,
+  reportType,
+}: {
+  merchantSheet: File;
+  isExample: boolean;
+  reportType: TBusinessReportType;
+}) => {
+  if (isExample) {
+    toast.info(t('toast:batch_business_report_creation.is_example'));
+
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('file', merchantSheet);
+
+  const [batchId, error] = await apiClient({
+    endpoint: `business-reports/upload-batch/${reportType}`,
+    method: Method.POST,
+    schema: z.object({ batchId: z.string() }),
+    body: formData,
+    isFormData: true,
+  });
+
+  return handleZodError(error, batchId);
+};

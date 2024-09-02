@@ -9,6 +9,7 @@ import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Search } from '@/common/components/molecules/Search';
 import { Skeleton } from '@ballerine/ui';
+import { TableSvg } from '@/common/components/atoms/icons';
 
 export const MerchantMonitoring: FunctionComponent = () => {
   const {
@@ -32,16 +33,28 @@ export const MerchantMonitoring: FunctionComponent = () => {
       <div className={`flex justify-between`}>
         <h1 className="pb-5 text-2xl font-bold">Merchant Monitoring</h1>
         {!hideCreateMerchantMonitoringButton && (
-          <Link
-            className={buttonVariants({
-              variant: 'outline',
-              className: 'flex items-center justify-start gap-2 font-semibold',
-            })}
-            to={`/${locale}/merchant-monitoring/create-check`}
-          >
-            <Plus />
-            <span>Create Merchant Check</span>
-          </Link>
+          <div className={`flex space-x-3`}>
+            <Link
+              className={buttonVariants({
+                variant: 'outline',
+                className: 'flex items-center justify-start gap-2 font-semibold',
+              })}
+              to={`/${locale}/merchant-monitoring/upload-multiple-merchants`}
+            >
+              <TableSvg />
+              <span>Upload Multiple Merchants</span>
+            </Link>
+            <Link
+              className={buttonVariants({
+                variant: 'outline',
+                className: 'flex items-center justify-start gap-2 font-semibold',
+              })}
+              to={`/${locale}/merchant-monitoring/create-check`}
+            >
+              <Plus />
+              <span>Create Merchant Check</span>
+            </Link>
+          </div>
         )}
       </div>
       <div className={`flex`}>

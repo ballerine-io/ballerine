@@ -85,5 +85,10 @@
     "success": "Merchant check created successfully.",
     "error": "Error occurred while creating a merchant check.",
     "is_example": "Please contact Ballerine at oss@ballerine.com for access to this feature."
+  },
+  "batch_business_report_creation": {
+    "success": "Merchant checks created successfully.",
+    "error": "Error occurred while creating merchant checks.",
+    "is_example": "Please contact Ballerine at oss@ballerine.com for access to this feature."
   }
 }
