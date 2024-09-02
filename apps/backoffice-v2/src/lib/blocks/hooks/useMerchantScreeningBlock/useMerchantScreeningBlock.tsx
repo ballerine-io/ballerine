@@ -153,7 +153,7 @@ export const useMerchantScreeningBlock = ({
                                   variant: 'link',
                                   className: 'p-0 text-blue-500',
                                   disabled:
-                                    !isObject(terminatedMatchedMerchant?.raw ?? {}) &&
+                                    !isObject(terminatedMatchedMerchant?.raw) &&
                                     !Array.isArray(terminatedMatchedMerchant?.raw ?? {}),
                                 }}
                                 dialogButtonText={`Full JSON data`}
