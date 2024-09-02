@@ -168,6 +168,7 @@ export class BusinessReportService {
     }
 
     const batchId = randomUUID();
+
     await this.prisma.$transaction(
       async transaction => {
         const businessCreatePromises = businessReportsRequests.map(async businessReportRequest => {
