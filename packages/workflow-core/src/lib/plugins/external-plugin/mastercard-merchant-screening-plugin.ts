@@ -9,7 +9,10 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
   public static pluginType = 'http';
 
   constructor(pluginParams: IApiPluginParams) {
-    super(pluginParams);
+    super({
+      ...pluginParams,
+      method: 'POST' as const,
+    });
   }
 
   async invoke(context: TContext) {
