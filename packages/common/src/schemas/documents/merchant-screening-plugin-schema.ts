@@ -1,6 +1,6 @@
-import { Type } from '@sinclair/typebox';
-import { TypeStringEnum } from '@/schemas/documents/workflow/documents/schemas/utils';
 import { MatchResponseCodes, ProcessStatuses } from '@/consts';
+import { TypeStringEnum } from '@/schemas/documents/workflow/documents/schemas/utils';
+import { Type } from '@sinclair/typebox';
 
 const TerminationReasonCodes = [
   '00',
