@@ -1,4 +1,18 @@
 import { SecretsManager } from '@/secrets-manager/secrets-manager';
+import { env } from '@/env';
+import { camelCase } from 'lodash';
+
+const inMemorySecrets = Object.entries(env).reduce((acc, [key, value]) => {
+  if (!key.startsWith('IN_MEMORY_SECRET_')) {
+    return acc;
+  }
+
+  const secretKey = key.replace('IN_MEMORY_SECRET_', '');
+
+  acc[camelCase(secretKey)] = value;
+
+  return acc;
+}, {} as Record<string, any>);
 
 const secretsStore: Record<string, Record<string, string>> = {};
 
@@ -10,7 +24,18 @@ export class InMemorySecretsManager implements SecretsManager {
   }
 
   async getAll() {
-    return secretsStore[this.customerId] || {};
+    let secrets = secretsStore[this.customerId] || {};
+
+    if (env.ENVIRONMENT_NAME !== 'local') {
+      return secrets;
+    }
+
+    secrets = {
+      ...inMemorySecrets,
+      ...secrets,
+    };
+
+    return secrets;
   }
 
   async set(data: Record<string, string>) {
