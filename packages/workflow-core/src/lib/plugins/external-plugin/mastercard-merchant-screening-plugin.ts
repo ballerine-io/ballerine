@@ -35,7 +35,6 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
     try {
       const secrets = await this.secretsManager?.getAll?.();
       const url = `${process.env.UNIFIED_API_URL}/merchant-screening/mastercard`;
-      const method = 'POST';
       const entity = isObject(context.entity) ? context.entity : {};
       const countrySubdivisionSupportedCountries = ['US', 'CA'] as const;
       const address = {
@@ -72,10 +71,11 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
 
       logger.log('Mastercard Merchant Screening Plugin - Sending API request', {
         url,
-        method,
+        method: this.method,
       });
 
-      const apiResponse = await this.makeApiRequest(url, method, requestPayload, {
+      const apiResponse = await this.makeApiRequest(url, this.method, requestPayload, {
+        ...this.headers,
         Authorization: `Bearer ${process.env.UNIFIED_API_TOKEN}`,
       });
 
