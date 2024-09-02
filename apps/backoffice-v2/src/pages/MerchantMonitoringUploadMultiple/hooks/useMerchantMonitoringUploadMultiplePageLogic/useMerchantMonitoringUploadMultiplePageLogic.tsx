@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import { t } from 'i18next';
+import { toast } from 'sonner';
+import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
@@ -6,7 +9,6 @@ import csvContent from './batch-report-template.csv?raw';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { CreateBusinessReportBatchSchema } from '@/pages/MerchantMonitoringUploadMultiple/create-business-report-batch-schema';
 import { useCreateBusinessReportBatchMutation } from '@/domains/business-reports/hooks/mutations/useCreateBusinessReportBatchMutation/useCreateBusinessReportBatchMutation';
-import { useCallback, useMemo } from 'react';
 
 export const useMerchantMonitoringUploadMultiplePageLogic = () => {
   const form = useForm<{ merchantSheet: File | undefined }>({
@@ -29,6 +31,8 @@ export const useMerchantMonitoringUploadMultiplePageLogic = () => {
     merchantSheet,
   }) => {
     if (!merchantSheet) {
+      toast.error(t(`toast:batch_business_report_creation.no_file`));
+
       return;
     }
 
