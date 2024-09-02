@@ -1,4 +1,4 @@
-name: Publish workflows-service image
+name: Deploy workflows-service image
 
 on:
   workflow_dispatch:
@@ -54,13 +54,13 @@ jobs:
           ref: main
           fetch-depth: 1
           sparse-checkout: |
-            kubernetes/helm/wf-service-migration
+            kubernetes/helm/wf-service
           sparse-checkout-cone-mode: true
       - name: Check if values yaml file exists 
         id: update_helm_check
         shell: bash
         run: |
-          if [ -f "kubernetes/helm/wf-service-migration/${{ inputs.environment }}-custom-values.yaml" ]; then
+          if [ -f "kubernetes/helm/wf-service/${{ inputs.environment }}-custom-values.yaml" ]; then
             echo "file_name=${{ inputs.environment }}-custom-values.yaml" >> "$GITHUB_OUTPUT"
           elif [ "${{ inputs.environment }}" == "dev" ]; then
             echo "file_name=dev-custom-values.yaml" >> "$GITHUB_OUTPUT"
@@ -79,7 +79,7 @@ jobs:
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
-              "kubernetes/helm/wf-service-migration/${{steps.update_helm_check.outputs.file_name}}": {
+              "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
                 "image.tag": "${{ inputs.tag }}",
                 "prismaMigrate.image.tag": "${{ inputs.tag }}",
                 "dbMigrate.image.tag": "${{ inputs.tag }}",
