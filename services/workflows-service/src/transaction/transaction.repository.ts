@@ -30,7 +30,7 @@ export class TransactionRepository {
   }
 
   async findManyWithFilters(
-    getTransactionsParameters: GetTransactionsDto,
+    getTransactionsParameters: Parameters<typeof this.buildFilters>[0],
     projectId: string,
     options?: Prisma.TransactionRecordFindManyArgs,
   ): Promise<TransactionRecord[]> {
@@ -54,6 +54,7 @@ export class TransactionRepository {
         {
           ...options,
           where: {
+            ...args.where,
             ...this.buildFilters(getTransactionsParameters),
           },
           ...args,
@@ -65,15 +66,24 @@ export class TransactionRepository {
 
   // eslint-disable-next-line ballerine/verify-repository-project-scoped
   private buildFilters(
-    getTransactionsParameters: GetTransactionsDto,
+    getTransactionsParameters: GetTransactionsDto & {
+      counterpartyOriginatorId?: string;
+      counterpartyBeneficiaryId?: string;
+    },
   ): Prisma.TransactionRecordWhereInput {
     const whereClause: Prisma.TransactionRecordWhereInput = {};
 
-    if (getTransactionsParameters.counterpartyId) {
-      whereClause.OR = [
-        { counterpartyOriginatorId: getTransactionsParameters.counterpartyId },
-        { counterpartyBeneficiaryId: getTransactionsParameters.counterpartyId },
-      ];
+    whereClause.AND = [];
+
+    if (getTransactionsParameters.counterpartyOriginatorId) {
+      whereClause.AND.push({
+        counterpartyOriginatorId: getTransactionsParameters.counterpartyOriginatorId,
+      });
+    }
+    if (getTransactionsParameters.counterpartyBeneficiaryId) {
+      whereClause.AND.push({
+        counterpartyBeneficiaryId: getTransactionsParameters.counterpartyBeneficiaryId,
+      });
     }
 
     if (getTransactionsParameters.startDate) {

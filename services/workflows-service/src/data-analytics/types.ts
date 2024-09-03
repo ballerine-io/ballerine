@@ -38,7 +38,7 @@ export type InlineRule = {
     }
   | {
       fnName: 'checkMerchantOngoingAlert';
-      fnInvestigationName: 'checkMerchantOngoingAlert';
+      fnInvestigationName: 'investigateMerchantOngoingAlert';
       options: CheckRiskScoreOptions;
     }
   | {
