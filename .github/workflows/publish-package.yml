@@ -1,0 +1,65 @@
+name: Publish-packages
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_call:
+    inputs:
+      branch:
+        type: string
+        description: "Branch Name on which this action checks out"
+        required: false
+        default: "dev"
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  # ci-workflow:
+    # uses: ./.github/workflows/ci.yml
+  packages:
+    name: packages
+    runs-on: ubuntu-latest
+    # needs: [ ci-workflow ]
+    # if: ${{ needs.ci-workflow.result=='success' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with: 
+          ref: ${{ inputs.branch }}
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.12.1
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        id: pnpm-install
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        shell: bash
+        run: pnpm install
+
+      - name: Update Packages and Publish Release
+        run: |
+          pnpm nx release version --dry-run --preid beta
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
