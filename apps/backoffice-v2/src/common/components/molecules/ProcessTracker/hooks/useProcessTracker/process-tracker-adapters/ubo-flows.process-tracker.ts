@@ -3,8 +3,8 @@ import {
   IProcessTracker,
   ProcessTrackerItem,
 } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTracker/process-tracker-adapters/process-tracker.abstract';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { valueOrNA } from '@ballerine/common';
 
 export class UBOFlowsProcessTracker implements IProcessTracker {
   PROCESS_NAME = 'ubos';
@@ -29,11 +29,7 @@ export class UBOFlowsProcessTracker implements IProcessTracker {
   private getUboFlowStatus(tags: TWorkflowById['tags']) {
     const tag = tags?.find(tag => tagToIcon[tag as keyof typeof tagToIcon]);
 
-    if (!tag) {
-      return tagToIcon.DEFAULT;
-    }
-
-    return tagToIcon[tag as keyof typeof tagToIcon];
+    return tagToIcon[tag as keyof typeof tagToIcon] ?? tagToIcon.DEFAULT;
   }
 
   private getChildWorkflows() {

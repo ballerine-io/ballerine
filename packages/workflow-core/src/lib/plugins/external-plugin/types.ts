@@ -1,11 +1,12 @@
 import { TJsonSchema, Transformers, Validator } from '../../utils';
 import { THelperFormatingLogic } from '../../utils/context-transformers/types';
 import { ActionablePlugin } from '../types';
-import { ChildWorkflowPluginParams } from '../common-plugin/types';
+
 import { AnyRecord } from '@ballerine/common';
+import { SecretsManager } from '@/lib/types';
 
 export interface ValidatableTransformer {
-  transformers: Transformers;
+  transformers?: Transformers;
   schemaValidator?: Validator;
 }
 export interface IApiPluginParams {
@@ -13,14 +14,16 @@ export interface IApiPluginParams {
   pluginKind?: string;
   stateNames: string[];
   url: string;
+  vendor?: string;
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
-  request: ValidatableTransformer;
+  request?: ValidatableTransformer;
   response?: ValidatableTransformer;
   headers?: HeadersInit;
   successAction?: string;
   errorAction?: string;
   persistResponseDestination?: string;
   displayName: string | undefined;
+  secretsManager?: SecretsManager;
 
   invoke?(...args: any[]): any;
 }
@@ -66,11 +69,7 @@ export interface SerializableValidatableTransformer {
   schema?: TJsonSchema;
 }
 
-export interface ISerializableHttpPluginParams
-  extends Omit<IApiPluginParams, 'request' | 'response'> {
-  request: SerializableValidatableTransformer;
-  response: SerializableValidatableTransformer;
-
+export interface ISerializableHttpPluginParams extends IApiPluginParams {
   invoke?(...args: any[]): any;
 }
 
@@ -81,14 +80,6 @@ export interface SerializableWebhookPluginParams extends Omit<WebhookPluginParam
   method: ISerializableHttpPluginParams['method'];
   headers: ISerializableHttpPluginParams['headers'];
   request: SerializableValidatableTransformer;
-}
-
-export interface ISerializableChildPluginParams
-  extends Omit<ChildWorkflowPluginParams, 'action' | 'transformers' | 'parentWorkflowRuntimeId'> {
-  pluginKind: string;
-  transformers: Omit<SerializableValidatableTransformer, 'schema'>['transform'];
-
-  invoke?(...args: any[]): Promise<any>;
 }
 
 export interface SerializableIterativePluginParams {

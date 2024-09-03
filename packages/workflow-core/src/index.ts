@@ -16,6 +16,7 @@ export {
   setLogger,
   validateDefinitionLogic,
 } from './lib';
+
 export type {
   ArrayMergeOption,
   BuiltInEvent,
@@ -28,6 +29,7 @@ export type {
   SerializableValidatableTransformer,
   StatePlugin,
   THelperFormatingLogic,
+  TWorkflowTokenPluginCallback,
   Transformer,
   ValidatableTransformer,
   WorkflowContext,

@@ -12,7 +12,10 @@ export const PaginationLast: FunctionComponent<
   <PaginationLink
     aria-label="Go to last page"
     size="default"
-    className={ctw('gap-1 pr-2.5', className)}
+    className={ctw(
+      'gap-1 pr-2.5 aria-disabled:pointer-events-none aria-disabled:opacity-50',
+      className,
+    )}
     {...props}
   >
     <span
@@ -25,4 +28,5 @@ export const PaginationLast: FunctionComponent<
     <ChevronLast className="h-4 w-4" />
   </PaginationLink>
 );
+
 PaginationLast.displayName = 'PaginationLast';

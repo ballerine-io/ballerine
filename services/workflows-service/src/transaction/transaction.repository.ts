@@ -6,7 +6,6 @@ import { TProjectId } from '@/types';
 import { GetTransactionsDto } from './dtos/get-transactions.dto';
 import { DateTimeFilter } from '@/common/query-filters/date-time-filter';
 import { toPrismaOrderByGeneric } from '@/workflow/utils/toPrismaOrderBy';
-import { TIME_UNITS } from '@/data-analytics/consts';
 
 @Injectable()
 export class TransactionRepository {
@@ -93,34 +92,6 @@ export class TransactionRepository {
 
     if (getTransactionsParameters.paymentMethod) {
       whereClause.paymentMethod = getTransactionsParameters.paymentMethod;
-    }
-
-    // Time filtering with client-provided UTC timestamps
-    if (getTransactionsParameters.timeValue && getTransactionsParameters.timeUnit) {
-      const now = new Date(); // UTC time by default
-      let subtractValue = 0;
-
-      switch (getTransactionsParameters.timeUnit) {
-        case TIME_UNITS.minutes:
-          subtractValue = getTransactionsParameters.timeValue * 60 * 1000;
-          break;
-        case TIME_UNITS.hours:
-          subtractValue = getTransactionsParameters.timeValue * 60 * 60 * 1000;
-          break;
-        case TIME_UNITS.days:
-          subtractValue = getTransactionsParameters.timeValue * 24 * 60 * 60 * 1000;
-          break;
-        case TIME_UNITS.months:
-          now.setMonth(now.getMonth() - getTransactionsParameters.timeValue);
-          break;
-        case TIME_UNITS.years:
-          now.setFullYear(now.getFullYear() - getTransactionsParameters.timeValue);
-          break;
-      }
-
-      const pastDate = new Date(now.getTime() - subtractValue);
-
-      whereClause.transactionDate = { gte: pastDate };
     }
 
     return whereClause;

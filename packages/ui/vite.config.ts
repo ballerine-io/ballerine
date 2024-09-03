@@ -1,9 +1,9 @@
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
 import fg from 'fast-glob';
 import tailwindcss from 'tailwindcss';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vitest/config';
 
 // Defines an array of entry points to be used to search for files.
 const entryPoints = ['src/components/**/*.ts'];

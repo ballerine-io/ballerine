@@ -41,7 +41,7 @@ export const dynamicUiWorkflowDefinition = {
       },
       collection_invite: {
         on: {
-          INVIATION_SENT: 'collection_flow',
+          INVITATION_SENT: 'collection_flow',
           INVIATION_FAILURE: 'failed',
         },
       },
@@ -148,7 +148,7 @@ export const dynamicUiWorkflowDefinition = {
         name: 'collection_invite_email',
         pluginKind: 'email',
         url: `{secret.EMAIL_API_URL}`,
-        successAction: 'INVIATION_SENT',
+        successAction: 'INVITATION_SENT',
         errorAction: 'INVIATION_FAILURE',
         method: 'POST',
         stateNames: ['collection_invite'],

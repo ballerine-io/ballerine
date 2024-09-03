@@ -10,11 +10,19 @@ export class ListBusinessReportsDto {
   @IsString()
   businessId?: string;
 
+  @IsOptional()
+  @IsString()
+  batchId?: string;
+
   @ApiProperty({
     required: true,
   })
   @IsIn(Object.values(BusinessReportType))
   type!: BusinessReportType;
+
+  @IsOptional()
+  @ApiProperty({ type: String, required: false })
+  search?: string;
 
   @ApiProperty({ type: PageDto })
   page!: PageDto;
@@ -83,6 +91,7 @@ const toRelationalOrderBy = (orderBy: string) => {
 };
 
 export const ListBusinessReportsSchema = z.object({
+  search: z.string().optional(),
   page: z.object({
     number: z.coerce.number().int().positive(),
     size: z.coerce.number().int().positive().max(100),

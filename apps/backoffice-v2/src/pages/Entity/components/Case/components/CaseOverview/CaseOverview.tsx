@@ -4,10 +4,10 @@ import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugi
 import React, { useCallback } from 'react';
 import { CaseTabs } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 import { camelCase, titleCase } from 'string-ts';
-import { toRiskLabels } from '@/domains/business-reports/adapters/report-adapter/report-adapter';
 import { OverallRiskLevel } from '@/common/components/molecules/OverallRiskLevel/OverallRiskLevel';
 import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
-import { RiskIndicatorsSummary } from '@/common/components/molecules/RiskIndicatorsSummary/RiskIndicatorsSummary';
+import { RiskIndicatorsSummary, toRiskLabels } from '@ballerine/ui';
+import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
 
 export const CaseOverview = ({ processes }: { processes: string[] }) => {
   const { search } = useLocation();
@@ -56,17 +56,12 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
       {workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled && (
         <OverallRiskLevel
           riskScore={workflow?.context?.pluginsOutput?.risk_evaluation?.riskScore}
-          riskLevels={{
-            transactionLaunderingRisk: '',
-            legalRisk: '',
-            chargebackRisk: '',
-            reputationRisk: '',
-          }}
+          riskLevels={{}}
         />
       )}
       <ProcessTracker workflow={workflow} plugins={plugins} processes={processes} />
       {workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled && (
-        <RiskIndicatorsSummary riskIndicators={riskIndicators} />
+        <RiskIndicatorsSummary riskIndicators={riskIndicators} Link={RiskIndicatorLink} />
       )}
     </div>
   );

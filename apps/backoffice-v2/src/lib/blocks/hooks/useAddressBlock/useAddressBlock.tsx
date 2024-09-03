@@ -1,7 +1,7 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { valueOrNA } from '@ballerine/common';
 import { toTitleCase } from 'string-ts';
 
 export const useAddressBlock = ({
@@ -31,6 +31,13 @@ export const useAddressBlock = ({
             id: 'header',
             type: 'heading',
             value: `${valueOrNA(toTitleCase(entityType ?? ''))} Address`,
+          })
+          .addCell({
+            type: 'subheading',
+            value: 'User-Provided Data',
+            props: {
+              className: 'mb-4 col-span-full',
+            },
           })
           .addCell({
             type: 'details',

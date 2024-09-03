@@ -28,4 +28,5 @@ export const PaginationNext: FunctionComponent<
     <ChevronRightIcon className="h-4 w-4" />
   </PaginationLink>
 );
+
 PaginationNext.displayName = 'PaginationNext';

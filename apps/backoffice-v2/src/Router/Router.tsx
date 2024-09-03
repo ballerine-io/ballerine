@@ -29,6 +29,7 @@ import { MerchantMonitoringBusinessReport } from '@/pages/MerchantMonitoringBusi
 import { MerchantMonitoringLayout } from '@/domains/business-reports/components/MerchantMonitoringLayout/MerchantMonitoringLayout';
 import { NotFoundRedirectWithProviders } from '@/pages/NotFound/NotFoundRedirectWithProviders';
 import { RouteErrorWithProviders } from '@/common/components/atoms/RouteError/RouteErrorWithProviders';
+import { MerchantMonitoringUploadMultiplePage } from '@/pages/MerchantMonitoringUploadMultiple/MerchantMonitoringUploadMultiple.page';
 
 const router = createBrowserRouter([
   {
@@ -92,6 +93,11 @@ const router = createBrowserRouter([
                   {
                     path: '/:locale/merchant-monitoring/create-check',
                     element: <MerchantMonitoringCreateCheckPage />,
+                    errorElement: <RouteError />,
+                  },
+                  {
+                    path: '/:locale/merchant-monitoring/upload-multiple-merchants',
+                    element: <MerchantMonitoringUploadMultiplePage />,
                     errorElement: <RouteError />,
                   },
                 ],

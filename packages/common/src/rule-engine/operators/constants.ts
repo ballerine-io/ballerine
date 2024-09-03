@@ -1,0 +1,31 @@
+import {
+  AML_CHECK,
+  BETWEEN,
+  EQUALS,
+  GT,
+  GTE,
+  IN,
+  LAST_YEAR,
+  LT,
+  LTE,
+  NOT_EQUALS,
+  EXISTS,
+  NOT_IN,
+} from './helpers';
+
+import { OPERATION } from './enums';
+
+export const OperationHelpers = {
+  [OPERATION.EQUALS]: EQUALS,
+  [OPERATION.NOT_EQUALS]: NOT_EQUALS,
+  [OPERATION.EXISTS]: EXISTS,
+  [OPERATION.BETWEEN]: BETWEEN,
+  [OPERATION.GT]: GT,
+  [OPERATION.GTE]: GTE,
+  [OPERATION.LT]: LT,
+  [OPERATION.LTE]: LTE,
+  [OPERATION.LAST_YEAR]: LAST_YEAR,
+  [OPERATION.IN]: IN,
+  [OPERATION.NOT_IN]: NOT_IN,
+  [OPERATION.AML_CHECK]: AML_CHECK,
+} as const;

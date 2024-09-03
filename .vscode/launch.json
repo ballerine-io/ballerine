@@ -39,6 +39,24 @@
       "localRoot": "${workspaceFolder}/services/workflows-service",
       "remoteRoot": "/app",
       "sourceMaps": true
+    },
+    {
+      "type": "node",
+      "name": "vscode-jest-tests.v2.ballerine",
+      "request": "launch",
+      "args": [
+        "--runInBand",
+        "--watchAll=false",
+        "--testNamePattern",
+        "${jest.testNamePattern}",
+        "--runTestsByPath",
+        "${jest.testFile}"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "disableOptimisticBPs": true,
+      "program": "${workspaceFolder}/node_modules/.bin/npx"
     }
   ]
 }

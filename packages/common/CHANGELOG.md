@@ -1,5 +1,101 @@
 # @ballerine/common
 
+## 0.9.27
+
+### Patch Changes
+
+- bump
+
+## 0.9.26
+
+### Patch Changes
+
+- pushing fixes
+
+## 0.9.25
+
+### Patch Changes
+
+- version bump
+
+## 0.9.24
+
+### Patch Changes
+
+- merchant screening changes
+
+## 0.9.23
+
+### Patch Changes
+
+- added merchant screening to swagger
+
+## 0.9.22
+
+### Patch Changes
+
+- version bump
+
+## 0.9.21
+
+### Patch Changes
+
+- update version
+
+## 0.9.20
+
+### Patch Changes
+
+- Moved components from the backoffice to common and ui
+
+## 0.9.19
+
+### Patch Changes
+
+- Bump
+
+## 0.9.18
+
+### Patch Changes
+
+- Common version bump
+
+## 0.9.17
+
+### Patch Changes
+
+- Added "ZZ" to document issuer country
+
+## 0.9.16
+
+### Patch Changes
+
+- Bump
+
+## 0.9.15
+
+### Patch Changes
+
+- Bump
+
+## 0.9.14
+
+### Patch Changes
+
+- bump
+
+## 0.9.13
+
+### Patch Changes
+
+- Bump
+
+## 0.9.12
+
+### Patch Changes
+
+- Bump
+
 ## 0.9.11
 
 ### Patch Changes

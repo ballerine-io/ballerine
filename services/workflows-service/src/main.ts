@@ -30,13 +30,21 @@ applyFormats();
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
 global.__rootdir__ = __dirname || process.cwd();
 
-const devOrigins = [/\.ballerine\.dev$/, /\.ballerine\.io$/, /^http:\/\/localhost:\d+$/];
+const devOrigins = [
+  /\.ballerine\.dev$/,
+  /\.ballerine\.io$/,
+  /^http:\/\/localhost:\d+$/,
+  'api-dev.eu.ballerine.io',
+  'api-dev.ballerine.io',
+];
 
 const corsOrigins = [
   ...env.BACKOFFICE_CORS_ORIGIN,
   ...env.WORKFLOW_DASHBOARD_CORS_ORIGIN,
   ...env.KYB_EXAMPLE_CORS_ORIGIN,
   ...(env.KYC_EXAMPLE_CORS_ORIGIN ?? []),
+  'api-sb.eu.ballerine.app',
+  'api-sb.ballerine.app',
   /\.ballerine\.app$/,
   ...(env.ENVIRONMENT_NAME !== 'production' ? devOrigins : []),
 ];
@@ -72,6 +80,13 @@ const main = async () => {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
+          connectSrc: [
+            "'self'",
+            'https://api-dev.ballerine.io',
+            'https://api-sb.ballerine.app',
+            'https://api-sb.eu.ballerine.app',
+            'https://api-dev.eu.ballerine.io',
+          ],
         },
       },
     }),

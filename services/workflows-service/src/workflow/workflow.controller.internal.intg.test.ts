@@ -36,6 +36,11 @@ import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository
 import { BusinessService } from '@/business/business.service';
 import { BusinessReportRepository } from '@/business-report/business-report.repository';
 import { BusinessReportService } from '@/business-report/business-report.service';
+import { NotionService } from '@/notion/notion.service';
+import { RuleEngineService } from '@/rule-engine/rule-engine.service';
+import { RiskRuleService } from '@/rule-engine/risk-rule.service';
+import { SentryService } from '@/sentry/sentry.service';
+import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
 
 describe('/api/v1/internal/workflows #api #integration', () => {
   let app: INestApplication;
@@ -82,6 +87,11 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       EndUserService,
       UiDefinitionRepository,
       UiDefinitionService,
+      RiskRuleService,
+      RuleEngineService,
+      NotionService,
+      SentryService,
+      SecretsManagerFactory,
     ];
     workflowService = (await fetchServiceFromModule(WorkflowService, servicesProviders, [
       PrismaModule,

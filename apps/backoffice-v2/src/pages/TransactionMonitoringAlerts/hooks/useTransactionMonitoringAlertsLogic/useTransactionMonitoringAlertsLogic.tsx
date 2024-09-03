@@ -32,7 +32,9 @@ export const useTransactionMonitoringAlertsLogic = () => {
   );
   const { data: correlationIds } = useAlertCorrelationIdsQuery();
   const sortedCorrelationIds = useMemo(() => correlationIds?.slice()?.sort(), [correlationIds]);
-  const { onPaginate, onPrevPage, onNextPage } = usePagination();
+  const { onPaginate, onPrevPage, onNextPage, onLastPage } = usePagination({
+    totalPages: 0,
+  });
   const isLastPage = (alerts?.length ?? 0) < pageSize || alerts?.length === 0;
   const { search, onSearch } = useSearch({
     initialSearch: searchValue,
@@ -48,6 +50,7 @@ export const useTransactionMonitoringAlertsLogic = () => {
     pageSize,
     onPrevPage,
     onNextPage,
+    onLastPage,
     onPaginate,
     isLastPage,
     search,

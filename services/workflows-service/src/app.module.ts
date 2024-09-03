@@ -45,6 +45,9 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { CronModule } from '@/workflow/cron/cron.module';
 import z from 'zod';
 import { hashKey } from './customer/api-key/utils';
+import { RuleEngineModule } from './rule-engine/rule-engine.module';
+import { NotionModule } from '@/notion/notion.module';
+import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
 
 export const validate = async (config: Record<string, unknown>) => {
   const zodEnvSchema = z
@@ -120,6 +123,9 @@ export const validate = async (config: Record<string, unknown>) => {
     CronModule,
     ScheduleModule.forRoot(),
     initHttpMoudle(),
+    RuleEngineModule,
+    NotionModule,
+    SecretsManagerModule,
   ],
   providers: [
     {

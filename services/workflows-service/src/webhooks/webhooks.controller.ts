@@ -16,7 +16,8 @@ const EntityType = {
 } as const;
 
 @swagger.ApiBearerAuth()
-@swagger.ApiTags('Webhooks')
+@swagger.ApiTags('Internal Webhooks')
+@swagger.ApiExcludeController()
 @common.Controller('webhooks')
 export class WebhooksController {
   constructor(

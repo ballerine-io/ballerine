@@ -1,14 +1,17 @@
 import { CheckboxList } from '@/components/organisms/UIRenderer/elements/JSONForm/components/CheckboxList';
 import { CountryPicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/CountryPicker';
 import { DocumentField } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField';
+import { FieldTemplate } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FieldTemplate';
 import { IndustriesPicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/IndustriesPicker';
 import { JSONFormArrayFieldLayout } from '@/components/organisms/UIRenderer/elements/JSONForm/components/JSONFormArrayFieldLayout';
-import { FieldTemplate } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FieldTemplate';
 import { LocalePicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/LocalePicker';
+import { MCCPicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/MCCPicker';
 import { Multiselect } from '@/components/organisms/UIRenderer/elements/JSONForm/components/Multiselect/Multiselect';
 import { NationalityPicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/NationalityPicker';
+import { RadioInputAdapter } from '@/components/organisms/UIRenderer/elements/JSONForm/components/RadioInput';
 import { RelationshipDropdown } from '@/components/organisms/UIRenderer/elements/JSONForm/components/RelationshipDropdown';
 import { StatePicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/StatePicker';
+import { TagsInput } from '@/components/organisms/UIRenderer/elements/JSONForm/components/TagsInput';
 import { withDynamicUIInput } from '@/components/organisms/UIRenderer/elements/JSONForm/hocs/withDynamicUIInput';
 import {
   AutocompleteTextInputAdapter,
@@ -39,6 +42,9 @@ export const jsonFormFields = {
   Multiselect: withDynamicUIInput(Multiselect),
   StatePicker: withDynamicUIInput(StatePicker),
   RelationshipDropdown: withDynamicUIInput(RelationshipDropdown),
+  MCCPicker: withDynamicUIInput(MCCPicker),
+  RadioInput: withDynamicUIInput(RadioInputAdapter),
+  TagsInput: withDynamicUIInput(TagsInput),
 };
 
 export const jsonFormLayouts = {

@@ -1,8 +1,8 @@
-import { valueOrFallback } from '@/common/utils/value-or-fallback/value-or-fallback';
 import { valueOrNone } from '@/common/utils/value-or-none/value-or-none';
 import { tw, Typography } from '@ballerine/react-pdf-toolkit';
 import { AnyChildren } from '@ballerine/ui';
 import { FunctionComponent } from 'react';
+import { valueOrFallback } from '@ballerine/common';
 
 interface IValueOrNoneProps {
   value?: unknown;

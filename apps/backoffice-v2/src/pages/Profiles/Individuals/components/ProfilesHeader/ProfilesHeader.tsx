@@ -1,4 +1,4 @@
-import { Search } from '@/pages/TransactionMonitoringAlerts/components/Search';
+import { Search } from '@/common/components/molecules/Search';
 import React, { ComponentProps, FunctionComponent } from 'react';
 
 export const ProfilesHeader: FunctionComponent<{

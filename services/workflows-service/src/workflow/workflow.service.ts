@@ -1,4 +1,5 @@
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { BusinessReportService } from '@/business-report/business-report.service';
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
 import { ajv } from '@/common/ajv/ajv.validator';
@@ -20,7 +21,11 @@ import {
 } from '@/prisma/prisma.util';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { FileService } from '@/providers/file/file.service';
+import { RiskRuleService, TFindAllRulesOptions } from '@/rule-engine/risk-rule.service';
+import { RuleEngineService } from '@/rule-engine/rule-engine.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
+import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
+import { SentryService } from '@/sentry/sentry.service';
 import type {
   InputJsonValue,
   IObjectWithId,
@@ -60,6 +65,7 @@ import {
   SerializableTransformer,
   THelperFormatingLogic,
   Transformer,
+  TWorkflowTokenPluginCallback,
 } from '@ballerine/workflow-core';
 import {
   BadRequestException,
@@ -81,7 +87,9 @@ import {
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
+import { Static } from '@sinclair/typebox';
 import { plainToClass } from 'class-transformer';
+import dayjs from 'dayjs';
 import { isEqual, merge } from 'lodash';
 import mime from 'mime';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
@@ -96,12 +104,9 @@ import {
   WorkflowRuntimeListQueryResult,
 } from './types';
 import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-document';
+import { entitiesUpdate } from './utils/entities-update';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
-import { Static } from '@sinclair/typebox';
-import dayjs from 'dayjs';
-import { entitiesUpdate } from './utils/entities-update';
-import { BusinessReportService } from '@/business-report/business-report.service';
 
 type TEntityId = string;
 
@@ -138,6 +143,10 @@ export class WorkflowService {
     private readonly workflowTokenService: WorkflowTokenService,
     private readonly uiDefinitionService: UiDefinitionService,
     private readonly prismaService: PrismaService,
+    private readonly riskRuleService: RiskRuleService,
+    private readonly ruleEngineService: RuleEngineService,
+    private readonly sentry: SentryService,
+    private readonly secretsManagerFactory: SecretsManagerFactory,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -1456,7 +1465,6 @@ export class WorkflowService {
             workflowDefinitionId,
             UiDefinitionContext.collection_flow,
             projectIds,
-            {},
           );
         } catch (err) {
           if (isErrorWithMessage(err)) {
@@ -1498,6 +1506,11 @@ export class WorkflowService {
                 ...contextToInsert,
                 documents: documentsWithPersistedImages,
                 flowConfig: (contextToInsert as any)?.flowConfig ?? createFlowConfig(uiSchema),
+                metadata: {
+                  customerId: customer.id,
+                  customerNormalizedName: customer.name,
+                  customerName: customer.displayName,
+                },
               } as InputJsonValue,
               config: mergedConfig as InputJsonValue,
               // @ts-expect-error - error from Prisma types fix
@@ -1547,6 +1560,11 @@ export class WorkflowService {
             });
 
             entities.push({ type: 'business', id: entityId });
+
+            if (workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative) {
+              workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.ballerineEntityId =
+                endUserId;
+            }
           }
 
           const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
@@ -1567,8 +1585,7 @@ export class WorkflowService {
                 context: {
                   ...workflowRuntimeData.context,
                   metadata: {
-                    customerNormalizedName: customer.name,
-                    customerName: customer.displayName,
+                    ...(workflowRuntimeData.context.metadata ?? {}),
                     token: workflowToken.token,
                     collectionFlowUrl: env.COLLECTION_FLOW_URL,
                     webUiSDKUrl: env.WEB_UI_SDK_URL,
@@ -1682,7 +1699,7 @@ export class WorkflowService {
     entityId: string;
     position?: BusinessPosition;
   }) {
-    if (entityData && entityType === 'business')
+    if (entityData && entityType === 'business') {
       return (
         await this.endUserService.createWithBusiness(
           {
@@ -1701,6 +1718,7 @@ export class WorkflowService {
           entityId,
         )
       ).id;
+    }
 
     throw new Error(
       `Invalid entity type or payload for child workflow creation for entity: ${entityType} with context:`,
@@ -1894,7 +1912,12 @@ export class WorkflowService {
 
     if (isValid) return;
 
-    throw ValidationError.fromAjvError(validate.errors!);
+    this.sentry.captureException(new Error('Workflow definition context validation failed'));
+    this.logger.error('Workflow definition context validation failed', {
+      errors: validate.errors,
+      context,
+      workflowDefinitionId: workflowDefinition.id,
+    });
   }
 
   async event(
@@ -1926,6 +1949,13 @@ export class WorkflowService {
         transaction,
       );
 
+      const customer = await this.customerService.getByProjectId(projectIds![0]!);
+
+      const secretsManager = this.secretsManagerFactory.create({
+        provider: env.SECRETS_MANAGER_PROVIDER,
+        customerId: customer.id,
+      });
+
       const service = createWorkflow({
         runtimeId: workflowRuntimeData.id,
         // @ts-expect-error - error from Prisma types fix
@@ -1937,8 +1967,31 @@ export class WorkflowService {
           machineContext: workflowRuntimeData.context,
           state: workflowRuntimeData.state,
         },
-        // @ts-expect-error - error from Prisma types fix
         extensions: workflowDefinition.extensions,
+        invokeRiskRulesAction: async (
+          context: object,
+          ruleStoreServiceOptions: TFindAllRulesOptions,
+        ) => {
+          const rules = await this.riskRuleService.findAll(ruleStoreServiceOptions);
+
+          return rules.map(rule => {
+            try {
+              return {
+                result: this.ruleEngineService.run(rule.ruleSet, context),
+                ...rule,
+              } as const;
+            } catch (ex) {
+              return {
+                ...rule,
+                result: {
+                  status: 'FAILED',
+                  message: isErrorWithMessage(ex) ? ex.message : undefined,
+                  error: ex,
+                },
+              } as const;
+            }
+          });
+        },
         invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
           const runnableChildWorkflow = await this.persistChildEvent(
             childPluginConfiguration,
@@ -1964,6 +2017,84 @@ export class WorkflowService {
             currentProjectId,
             transaction,
           );
+        },
+        secretsManager: { getAll: secretsManager.getAll.bind(secretsManager) },
+        invokeWorkflowTokenAction: async (workflowTokenAction: TWorkflowTokenPluginCallback) => {
+          const workflowRuntimeId = workflowTokenAction.workflowRuntimeId;
+          const defaultDaysExpiry = 30;
+
+          const expiresAt = workflowTokenAction.expiresInMinutes
+            ? new Date(Date.now() + workflowTokenAction.expiresInMinutes * 60 * 1000)
+            : new Date(Date.now() + defaultDaysExpiry * 24 * 60 * 60 * 1000);
+
+          const customer = await this.customerService.getByProjectId(currentProjectId);
+
+          const representativeEndUserId =
+            await this.workflowRuntimeDataRepository.findMainBusinessWorkflowRepresentative(
+              {
+                workflowRuntimeId: workflowRuntimeId,
+                transaction: transaction,
+              },
+              [currentProjectId],
+            );
+
+          const uiDefinition = await this.uiDefinitionService.findByArgs(
+            {
+              where: {
+                OR: [
+                  {
+                    id: workflowTokenAction.uiDefinitionId,
+                  },
+                  {
+                    projectId: currentProjectId,
+                    name: workflowTokenAction.uiDefinitionId,
+                  },
+                ],
+              },
+            },
+            [currentProjectId],
+          );
+
+          if (!representativeEndUserId) {
+            throw new InternalServerErrorException({
+              descriptionOrOptions:
+                "Couldn't find main representative for business, Make sure you set the plugin on the correct definition!",
+            });
+          }
+
+          if (!uiDefinition.id) {
+            throw new InternalServerErrorException({
+              descriptionOrOptions:
+                "Couldn't find uiDefinitionId for token action, Make sure you set the plugin Properly",
+            });
+          }
+
+          const { id, token } = await this.workflowTokenService.create(
+            currentProjectId,
+            {
+              workflowRuntimeDataId: workflowRuntimeId,
+              expiresAt,
+              endUserId: representativeEndUserId,
+            },
+            transaction,
+          );
+
+          await this.workflowRuntimeDataRepository.updateById(
+            workflowRuntimeId,
+            {
+              data: {
+                uiDefinitionId: uiDefinition.id,
+              },
+            },
+            transaction,
+          );
+
+          return {
+            token: token,
+            customerName: customer.displayName,
+            collectionFlowUrl: env.COLLECTION_FLOW_URL!,
+            customerNormalizedName: customer.name,
+          };
         },
       });
 

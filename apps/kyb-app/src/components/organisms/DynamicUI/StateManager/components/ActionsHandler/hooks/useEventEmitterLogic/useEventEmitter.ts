@@ -17,10 +17,16 @@ export const useEventEmitterLogic = (elementDefinition: UIElement<AnyObject>) =>
 
   const emitEvent = useCallback(
     (type: UIEventType) => {
+      console.info(`Event fired - ${type}`);
       const triggeredActions = getTriggeredActions(
         { type, elementName: elementDefinition.name },
         actions,
       );
+
+      console.info(`Affected actions`, {
+        triggeredActions,
+        context: stateApi.getContext(),
+      });
 
       const dispatchableActions = getDispatchableActions(
         stateApi.getContext(),
@@ -29,10 +35,17 @@ export const useEventEmitterLogic = (elementDefinition: UIElement<AnyObject>) =>
         state,
       );
 
+      console.info(`Dispatchable actions`, {
+        dispatchableActions,
+        context: stateApi.getContext(),
+      });
+
       dispatchableActions.forEach(action => {
         const dispatch = getDispatch(action);
+
         if (!dispatch) {
           console.warn(`Action dispatcher not found for ${JSON.stringify(action)}`);
+
           return;
         }
 
