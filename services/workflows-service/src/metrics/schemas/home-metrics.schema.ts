@@ -1,4 +1,3 @@
-import { BusinessReportStatus } from '@prisma/client';
 import { Type } from '@sinclair/typebox';
 
 export const ReportsByRiskLevelSchema = Type.Object({
@@ -8,23 +7,36 @@ export const ReportsByRiskLevelSchema = Type.Object({
   critical: Type.Number(),
 });
 
-
-export const ReportStatusesCountSchema = Type.Object({
-  [BusinessReportStatus.new]: Type.Optional(Type.Number()),
-  [BusinessReportStatus.in_progress]: Type.Optional(Type.Number()),
-  [BusinessReportStatus.completed]: Type.Optional(Type.Number()),
-});
+// export const ReportStatusesCountSchema = Type.Object({
+//   [BusinessReportStatus.new]: Type.Optional(Type.Number()),
+//   [BusinessReportStatus.failed]: Type.Optional(Type.Number()),
+//   [BusinessReportStatus.in_progress]: Type.Optional(Type.Number()),
+//   [BusinessReportStatus.completed]: Type.Optional(Type.Number()),
+// });
 
 export const HomeMetricsSchema = Type.Object({
+  mccCounts: Type.Array(
+    Type.Object({
+      mcc: Type.Number(),
+      count: Type.Number(),
+      percentage: Type.Number(),
+      mccDescription: Type.String(),
+    }),
+  ),
   riskIndicators: Type.Array(
     Type.Object({
       name: Type.String(),
       count: Type.Number(),
     }),
   ),
-  reports: Type.Object({
+  reportStatuses: Type.Array(
+    Type.Object({
+      status: Type.String(),
+      count: Type.Number(),
+    }),
+  ),
+  reportsRisks: Type.Object({
     all: ReportsByRiskLevelSchema,
-    inProgress: ReportStatusesCountSchema,
     approved: ReportsByRiskLevelSchema,
   }),
 });

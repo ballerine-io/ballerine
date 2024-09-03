@@ -18,11 +18,11 @@ import { titleCase } from 'string-ts';
 import { usePortfolioRiskStatisticsLogic } from '@/pages/Statistics/components/PortfolioRiskStatistics/hooks/usePortfolioRiskStatisticsLogic/usePortfolioRiskStatisticsLogic';
 import { z } from 'zod';
 import { HomeMetricsOutputSchema } from '@/domains/metrics/hooks/queries/useHomeMetricsQuery/useHomeMetricsQuery';
+import { HSL_PIE_COLORS } from '@/pages/Statistics/constants';
 
-export const PortfolioRiskStatistics: FunctionComponent<{
-  riskIndicators: z.infer<typeof HomeMetricsOutputSchema>['riskIndicators'];
-  reports: z.infer<typeof HomeMetricsOutputSchema>['reports'];
-}> = ({ riskIndicators, reports }) => {
+export const PortfolioRiskStatistics: FunctionComponent<
+  z.infer<typeof HomeMetricsOutputSchema>
+> = ({ riskIndicators, reportsRisks, reportStatuses, mccCounts }) => {
   const {
     riskLevelToFillColor,
     parent,
@@ -35,7 +35,9 @@ export const PortfolioRiskStatistics: FunctionComponent<{
     filteredRiskIndicators,
   } = usePortfolioRiskStatisticsLogic({
     riskIndicators,
-    reports,
+    reportsRisks,
+    reportStatuses,
+    mccCounts,
   });
 
   return (
@@ -44,67 +46,67 @@ export const PortfolioRiskStatistics: FunctionComponent<{
       <div className={'grid grid-cols-3 gap-6'}>
         <div className={'min-h-[27.5rem] rounded-xl bg-[#F6F6F6] p-2'}>
           <Card className={'flex h-full flex-col px-3'}>
-            <CardHeader className={'pb-1'}>Portfolio Risk</CardHeader>
+            <CardHeader className={'pb-1'}>MCCs Detected</CardHeader>
             <CardContent>
               <p className={'mb-8 text-slate-400'}>
-                Risk levels of approved merchants from completed onboarding flows.
+                MCCs detected in the reports and their respective percentages.
               </p>
               <div className={'flex flex-col items-center space-y-4 pt-3'}>
-                <PieChart width={184} height={184}>
+                <PieChart width={104} height={104}>
                   <text
-                    x={92}
-                    y={82}
+                    x={52}
+                    y={44}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    className={'text-lg font-bold'}
+                    className={ctw('font-bold', {
+                      'text-sm': mccCounts.slice(0, 4)?.toString().length >= 5,
+                    })}
                   >
-                    {Object.values(reports.approved).reduce((acc, curr) => acc + curr, 0)}
+                    {mccCounts?.reduce((acc, curr) => acc + curr.count, 0)}
                   </text>
-                  <text x={92} y={102} textAnchor="middle" dominantBaseline="middle">
-                    Merchants
+                  <text
+                    x={52}
+                    y={60}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className={'text-xs'}
+                  >
+                    MCCs
                   </text>
                   <Pie
-                    data={Object.entries(reports.approved).map(([riskLevel, value]) => ({
-                      name: `${titleCase(riskLevel)} Risk`,
-                      value,
+                    data={(mccCounts ?? []).map(({ mccDescription, percentage }) => ({
+                      name: mccDescription,
+                      percentage,
                     }))}
-                    cx={87}
-                    cy={87}
-                    innerRadius={78}
-                    outerRadius={92}
+                    cx={47}
+                    cy={47}
+                    innerRadius={43}
+                    outerRadius={52}
                     fill="#8884d8"
                     paddingAngle={5}
-                    dataKey="value"
+                    dataKey="percentage"
                     cornerRadius={9999}
                   >
-                    {Object.keys(riskLevelToFillColor).map(riskLevel => (
-                      <Cell
-                        key={riskLevel}
-                        className={ctw(
-                          riskLevelToFillColor[riskLevel as keyof typeof riskLevelToFillColor],
-                          'outline-none',
-                        )}
-                      />
-                    ))}
+                    {mccCounts.slice(0, 10).map((mccCount, index) => {
+                      return (
+                        <Cell
+                          key={mccCount.mccDescription}
+                          style={{ fill: HSL_PIE_COLORS[index] }}
+                        />
+                      );
+                    })}
                   </Pie>
                 </PieChart>
                 <ul className={'flex w-full max-w-sm flex-col space-y-2'}>
-                  {Object.entries(reports.approved).map(([riskLevel, value]) => (
+                  {mccCounts.map(({ mccDescription, percentage }) => (
                     <li
-                      key={riskLevel}
+                      key={mccDescription}
                       className={'flex items-center space-x-4 border-b py-1 text-xs'}
                     >
-                      <span
-                        className={ctw(
-                          'flex h-2 w-2 rounded-full',
-                          riskLevelToBackgroundColor[
-                            riskLevel as keyof typeof riskLevelToBackgroundColor
-                          ],
-                        )}
-                      />
+                      <span className={ctw('flex h-2 w-2 rounded-full')} />
                       <div className={'flex w-full justify-between'}>
-                        <span className={'text-slate-500'}>{titleCase(riskLevel)} Risk</span>
-                        <span>{value}</span>
+                        <span className={'text-slate-500'}>{titleCase(mccDescription)} Risk</span>
+                        <span>%{percentage}</span>
                       </div>
                     </li>
                   ))}
@@ -231,20 +233,20 @@ export const PortfolioRiskStatistics: FunctionComponent<{
                   <TrendingUp />
                   Highest First
                 </Button>
-                <Button
-                  variant={'ghost'}
-                  className={ctw(
-                    'gap-x-2 rounded-none border-b border-b-slate-400 text-slate-400',
-                    {
-                      'border-b-[rgb(0,122,255)] text-[rgb(0,122,255)] hover:text-[rgb(0,122,255)]':
-                        riskIndicatorsSorting === 'asc',
-                    },
-                  )}
-                  onClick={onSortRiskIndicators('asc')}
-                >
-                  <TrendingDown />
-                  Lowest First
-                </Button>
+                {/*<Button*/}
+                {/*  variant={'ghost'}*/}
+                {/*  className={ctw(*/}
+                {/*    'gap-x-2 rounded-none border-b border-b-slate-400 text-slate-400',*/}
+                {/*    {*/}
+                {/*      'border-b-[rgb(0,122,255)] text-[rgb(0,122,255)] hover:text-[rgb(0,122,255)]':*/}
+                {/*        riskIndicatorsSorting === 'asc',*/}
+                {/*    },*/}
+                {/*  )}*/}
+                {/*  onClick={onSortRiskIndicators('asc')}*/}
+                {/*>*/}
+                {/*  <TrendingDown />*/}
+                {/*  Lowest First*/}
+                {/*</Button>*/}
               </div>
               <Table>
                 <TableHeader className={'[&_tr]:border-b-0'}>
