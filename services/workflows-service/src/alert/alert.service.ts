@@ -277,7 +277,7 @@ export class AlertService {
               status: AlertExecutionStatus.FAILED,
               alertDefinition,
               executionRow,
-              error: new Error('Aggregated row is missing properties'),
+              error: new Error('Aggregated row is missing properties '),
             });
           }
 

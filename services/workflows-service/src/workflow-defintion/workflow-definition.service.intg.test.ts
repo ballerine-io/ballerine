@@ -16,7 +16,7 @@ import { ClsService } from 'nestjs-cls';
 import { ApiKeyService } from '@/customer/api-key/api-key.service';
 import { ApiKeyRepository } from '@/customer/api-key/api-key.repository';
 
-const buildWorkflowDefinition = (sequenceNum: number, projectId?: string) => {
+const buildWorkflowDefinition = (sequenceNum: number, projectId?: string, isPublic = false) => {
   return {
     id: sequenceNum.toString(),
     name: `name ${sequenceNum}`,
@@ -42,7 +42,7 @@ const buildWorkflowDefinition = (sequenceNum: number, projectId?: string) => {
       schema: {},
     },
     projectId: projectId,
-    isPublic: false,
+    isPublic: isPublic,
   };
 };
 
@@ -83,7 +83,7 @@ describe('WorkflowDefinitionService', () => {
 
   beforeEach(async () => {
     await prismaService.workflowDefinition.create({
-      data: buildWorkflowDefinition(1),
+      data: buildWorkflowDefinition(Math.floor(Math.random() * 1000) + 1),
     });
 
     const customer = await createCustomer(
@@ -240,6 +240,43 @@ describe('WorkflowDefinitionService', () => {
       ]);
 
       expect(latestWorkflowVersion.id).toEqual(updatedWorkflowDefintiion.id);
+    });
+  });
+
+  describe('Public records (templates)', () => {
+    it('should not allow editing of public records', async () => {
+      // Arrange
+      const publicWorkflowDefinition = await prismaService.workflowDefinition.create({
+        data: buildWorkflowDefinition(11, undefined, true),
+      });
+
+      const updateArgs = {
+        definition: { some: 'new definition' },
+      };
+
+      // Act & Assert
+      await expect(
+        workflowDefinitionService.updateById(publicWorkflowDefinition.id, updateArgs as any, [
+          project.id,
+        ]),
+      ).rejects.toThrow('Cannot update public workflow definition templates');
+    });
+
+    it('should allow reading of public records', async () => {
+      // Arrange
+      const publicWorkflowDefinition = await prismaService.workflowDefinition.create({
+        data: buildWorkflowDefinition(23, undefined, true),
+      });
+
+      // Act
+      const result = await workflowDefinitionService.getLatestVersion(publicWorkflowDefinition.id, [
+        project.id,
+      ]);
+
+      // Assert
+      expect(result).toBeDefined();
+      expect(result.id).toEqual(publicWorkflowDefinition.id);
+      expect(result.isPublic).toBe(true);
     });
   });
 });

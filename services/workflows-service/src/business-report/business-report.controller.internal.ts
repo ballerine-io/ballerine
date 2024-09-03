@@ -1,5 +1,13 @@
 import * as common from '@nestjs/common';
-import { BadRequestException, Body, Param, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Param,
+  Query,
+  Res,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import type { InputJsonValue, TProjectId } from '@/types';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -29,7 +37,19 @@ import { BusinessReportHookBodyDto } from '@/business-report/dtos/business-repor
 import { BusinessReportHookSearchQueryParamsDto } from '@/business-report/dtos/business-report-hook-search-query-params.dto';
 import { QueryMode } from '@/common/query-filters/query-mode';
 import { isNumber } from 'lodash';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { getDiskStorage } from '@/storage/get-file-storage-manager';
+import { fileFilter } from '@/storage/file-filter';
+import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
+import { CreateBusinessReportBatchBodyDto } from '@/business-report/dto/create-business-report-batch-body.dto';
+import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import type { Response } from 'express';
+import { IsBoolean } from 'class-validator';
+import { CreateBusinessReportBatchQueryParamsDto } from '@/business-report/dto/create-business-report-batch-query-params.dto';
+import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
 
+@ApiBearerAuth()
+@swagger.ApiTags('Business Reports')
 @common.Controller('internal/business-reports')
 @swagger.ApiExcludeController()
 export class BusinessReportControllerInternal {
@@ -58,17 +78,10 @@ export class BusinessReportControllerInternal {
   ) {
     const customer = await this.customerService.getByProjectId(currentProjectId);
 
-    const { maxBusinessReports, withQualityControl } = customer.config || {};
-
-    if (isNumber(maxBusinessReports) && maxBusinessReports > 0) {
-      const businessReportsCount = await this.businessReportService.count({}, [currentProjectId]);
-
-      if (businessReportsCount >= maxBusinessReports) {
-        throw new BadRequestException(
-          `You have reached the maximum number of business reports allowed (${maxBusinessReports}).`,
-        );
-      }
-    }
+    const { withQualityControl } = await this.getCustomerMerchantMonitoringConfig(
+      customer,
+      currentProjectId,
+    );
 
     let business: Pick<Business, 'id' | 'correlationId'> | undefined;
     const merchantNameWithDefault = merchantName || 'Not detected';
@@ -249,11 +262,12 @@ export class BusinessReportControllerInternal {
   @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
   async listBusinessReports(
     @CurrentProject() currentProjectId: TProjectId,
-    @Query() { businessId, page, search, type, orderBy }: ListBusinessReportsDto,
+    @Query() { businessId, batchId, page, search, type, orderBy }: ListBusinessReportsDto,
   ) {
     const args = {
       where: {
         businessId,
+        batchId,
         ...(type ? { type } : {}),
         ...(search
           ? {
@@ -331,5 +345,60 @@ export class BusinessReportControllerInternal {
         },
       },
     });
+  }
+
+  @common.Post('/upload-batch/:type')
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: getDiskStorage(),
+      fileFilter,
+    }),
+    RemoveTempFileInterceptor,
+  )
+  async createBusinessReportBatch(
+    @UploadedFile() file: Express.Multer.File,
+    @Param() { type }: CreateBusinessReportBatchQueryParamsDto,
+    @Body() body: CreateBusinessReportBatchBodyDto,
+    @Res() res: Response,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    const customer = await this.customerService.getByProjectId(currentProjectId);
+
+    const { maxBusinessReports, withQualityControl } =
+      await this.getCustomerMerchantMonitoringConfig(customer.config, currentProjectId);
+
+    const result = await this.businessReportService.processBatchFile({
+      type,
+      currentProjectId,
+      maxBusinessReports,
+      merchantSheet: file,
+      projectId: currentProjectId,
+      withQualityControl: IsBoolean(withQualityControl) ? withQualityControl : false,
+    });
+
+    res.status(201);
+    res.setHeader('content-type', 'application/json');
+    res.send(result);
+  }
+
+  private async getCustomerMerchantMonitoringConfig(
+    config: TCustomerWithDefinitionsFeatures,
+    currentProjectId: string,
+  ) {
+    const { maxBusinessReports, withQualityControl } = config || {};
+
+    if (isNumber(maxBusinessReports) && maxBusinessReports > 0) {
+      const businessReportsCount = await this.businessReportService.count({}, [currentProjectId]);
+
+      if (businessReportsCount >= maxBusinessReports) {
+        throw new BadRequestException(
+          `You have reached the maximum number of business reports allowed (${maxBusinessReports}).`,
+        );
+      }
+    }
+
+    return { maxBusinessReports, withQualityControl };
   }
 }
