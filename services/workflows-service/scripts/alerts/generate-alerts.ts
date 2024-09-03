@@ -633,6 +633,7 @@ export const MERCHANT_MONITORING_ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'MERCHANT_ONGOING_RISK_ALERT_RISK_INCREASE',
       fnName: 'checkMerchantOngoingAlert',
+      fnInvestigationName: 'investigateMerchantOngoingAlert',
       subjects: ['businessId', 'projectId'],
       options: {
         increaseRiskScore: 20,
@@ -648,6 +649,7 @@ export const MERCHANT_MONITORING_ALERT_DEFINITIONS = {
       id: 'MERCHANT_ONGOING_RISK_ALERT_THRESHOLD',
       fnName: 'checkMerchantOngoingAlert',
       subjects: ['businessId', 'projectId'],
+      fnInvestigationName: 'investigateMerchantOngoingAlert',
       options: {
         maxRiskScoreThreshold: 60,
       },
@@ -661,6 +663,7 @@ export const MERCHANT_MONITORING_ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'MERCHANT_ONGOING_RISK_ALERT_PERCENTAGE',
       fnName: 'checkMerchantOngoingAlert',
+      fnInvestigationName: 'investigateMerchantOngoingAlert',
       subjects: ['businessId', 'projectId'],
       options: {
         increaseRiskScorePercentage: 30,

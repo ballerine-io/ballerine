@@ -32,7 +32,7 @@ module.exports = async () => {
 };
 
 const runPrismaMigrations = () => {
-  if (process.env.SKIP_DB_SETUP_TEARDOWN) return;
+  if (process.env.SKIP_DB_SETUP_TEARDOWN === 'true') return;
 
   try {
     execSync('npx prisma migrate dev --preview-feature', { stdio: 'inherit' });

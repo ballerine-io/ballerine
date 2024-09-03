@@ -1,4 +1,3 @@
-import { _debounce } from 'lodash/debounce';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
@@ -14,8 +13,10 @@ import {
   TExcludedCounterparty,
   TMerchantGroupAverage,
 } from './types';
-import { AggregateType } from './consts';
+import { AggregateType, TIME_UNITS } from './consts';
 import {
+  Alert,
+  AlertDefinition,
   AlertSeverity,
   BusinessReport,
   BusinessReportType,
@@ -25,6 +26,8 @@ import {
 } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isEmpty } from 'lodash';
+import { start } from 'repl';
+import { TProjectId } from '@/types';
 
 const COUNTERPARTY_ORIGINATOR_JOIN_CLAUSE = Prisma.sql`JOIN "Counterparty" AS "cpOriginator" ON "tr"."counterpartyOriginatorId" = "cpOriginator"."id"`;
 const COUNTERPARTY_BENEFICIARY_JOIN_CLAUSE = Prisma.sql`JOIN "Counterparty" AS "cpBeneficiary" ON "tr"."counterpartyBeneficiaryId" = "cpBeneficiary"."id"`;
@@ -36,20 +39,118 @@ export class DataAnalyticsService {
     protected readonly logger: AppLoggerService,
   ) {}
 
-  getInvestigationFilter(projectId: string, inlineRule: InlineRule) {
+  private buildTransactionsFiltersByAlert(inlineRule: InlineRule, alert?: Alert) {
+    const whereClause: Pick<Prisma.TransactionRecordWhereInput, 'transactionDate'> = {};
+
+    const filters: {
+      endDate: Date | undefined;
+      startDate: Date | undefined;
+    } = {
+      endDate: undefined,
+      startDate: undefined,
+    };
+
+    if (alert) {
+      const endDate = alert.updatedAt || alert.createdAt;
+      endDate.setHours(23, 59, 59, 999);
+      filters.endDate = endDate;
+    }
+
+    // @ts-ignore - TODO: Replace logic with proper implementation for each rule
+    // eslint-disable-next-line
+    let { timeAmount, timeUnit } = inlineRule.options;
+
+    if (!timeAmount || !timeUnit) {
+      if (
+        inlineRule.fnName === 'evaluateHighVelocityHistoricAverage' &&
+        inlineRule.options.lastDaysPeriod &&
+        timeUnit
+      ) {
+        timeAmount = inlineRule.options.lastDaysPeriod.timeAmount;
+      } else {
+        return filters;
+      }
+    }
+
+    let startDate = new Date();
+
+    let subtractValue = 0;
+
+    const baseSubstractByMin = timeAmount * 60 * 1000;
+
+    switch (timeUnit) {
+      case TIME_UNITS.minutes:
+        subtractValue = baseSubstractByMin;
+        break;
+      case TIME_UNITS.hours:
+        subtractValue = 60 * baseSubstractByMin;
+        break;
+      case TIME_UNITS.days:
+        subtractValue = 24 * 60 * baseSubstractByMin;
+        break;
+      case TIME_UNITS.months:
+        startDate.setMonth(startDate.getMonth() - timeAmount);
+        break;
+      case TIME_UNITS.years:
+        startDate.setFullYear(startDate.getFullYear() - timeAmount);
+        break;
+    }
+
+    startDate.setHours(0, 0, 0, 0);
+    startDate = new Date(startDate.getTime() - subtractValue);
+
+    if (filters.endDate) {
+      startDate = new Date(Math.min(startDate.getTime(), filters.endDate.getTime()));
+    }
+
+    filters.startDate = startDate;
+
+    if (filters.startDate) {
+      whereClause.transactionDate = {
+        gte: filters.startDate,
+      };
+    }
+
+    if (filters.endDate) {
+      whereClause.transactionDate = {
+        lte: filters.endDate,
+      };
+    }
+
+    return whereClause;
+  }
+
+  getInvestigationFilter(
+    projectId: string,
+    inlineRule: InlineRule,
+    subject: Record<string, string>,
+  ) {
+    let investigationFilter;
     switch (inlineRule.fnInvestigationName) {
       case 'investigateTransactionsAgainstDynamicRules':
-        return this[inlineRule.fnInvestigationName]({
+        investigationFilter = this[inlineRule.fnInvestigationName]({
           ...inlineRule.options,
           projectId,
         });
     }
 
-    this.logger.error(`No evaluation function found`, {
-      inlineRule,
-    });
+    if (!investigationFilter) {
+      this.logger.error(`No evaluation function found`, {
+        inlineRule,
+      });
 
-    throw new Error(`No evaluation function found for rule name: ${(inlineRule as InlineRule).id}`);
+      throw new Error(
+        `No evaluation function found for rule name: ${(inlineRule as InlineRule).id}`,
+      );
+    }
+
+    return {
+      projectId,
+      counterpartyBeneficiaryId: subject.counterpartyBeneficiaryId,
+      counterpartyOriginatorId: subject.counterpartyOriginatorId,
+      ...investigationFilter,
+      ...this.buildTransactionsFiltersByAlert(inlineRule),
+    };
   }
 
   async runInlineRule(projectId: string, inlineRule: InlineRule) {
