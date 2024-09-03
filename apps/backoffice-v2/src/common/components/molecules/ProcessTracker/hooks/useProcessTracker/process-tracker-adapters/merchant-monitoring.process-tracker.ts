@@ -1,4 +1,4 @@
-import { Icon, tagToIcon } from '@/common/components/molecules/ProcessTracker/constants';
+import { tagToIcon } from '@/common/components/molecules/ProcessTracker/constants';
 import {
   IProcessTracker,
   ProcessTrackerItem,
@@ -37,8 +37,8 @@ export class MerchantMonitoringProcessTracker implements IProcessTracker {
   }
 
   private getIconKeyByState(tags: string[]): JSX.Element {
-    return tagToIcon[tags[0] as keyof typeof tagToIcon]
-      ? tagToIcon[tags[0] as keyof typeof tagToIcon]
-      : Icon.INDICATOR;
+    const tag = tags?.find(tag => tagToIcon[tag as keyof typeof tagToIcon]);
+
+    return tagToIcon[tag as keyof typeof tagToIcon] ?? tagToIcon.DEFAULT;
   }
 }

@@ -93,6 +93,7 @@ export class ColectionFlowController {
       workflow.context,
       params.language,
       [tokenScope.projectId],
+      workflow.uiDefinitionId ? { where: { id: workflow.uiDefinitionId } } : {},
     );
   }
 

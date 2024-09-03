@@ -1,7 +1,7 @@
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { checkIsBusiness } from '@/common/utils/check-is-business/check-is-business';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { CommonWorkflowStates, StateTag, valueOrNA } from '@ballerine/common';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
 import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
@@ -24,7 +24,6 @@ import {
 } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { selectWorkflowDocuments } from '@/pages/Entity/selectors/selectWorkflowDocuments';
 import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
-import { CommonWorkflowStates, StateTag } from '@ballerine/common';
 import { Button, TextArea } from '@ballerine/ui';
 import { X } from 'lucide-react';
 import * as React from 'react';
@@ -312,8 +311,8 @@ export const useDocumentBlocks = ({
         const entityNameOrNA = valueOrNA(toTitleCase(workflow?.entity?.name ?? ''));
         const categoryOrNA = valueOrNA(toTitleCase(category ?? ''));
         const documentTypeOrNA = valueOrNA(toTitleCase(docType ?? ''));
-        const documentNameOrNA = `${categoryOrNA} ${
-          withEntityNameInHeader ? '' : ` ${documentTypeOrNA}`
+        const documentNameOrNA = `${categoryOrNA}${
+          withEntityNameInHeader ? '' : ` - ${documentTypeOrNA}`
         }`;
         const headerCell = createBlocksTyped()
           .addBlock()
@@ -388,9 +387,32 @@ export const useDocumentBlocks = ({
                         value,
                         formatMinimum,
                         formatMaximum,
+                        default: defaultValue,
                       },
                     ]) => {
-                      const fieldValue = value || (properties?.[title] ?? '');
+                      const getFieldValue = () => {
+                        if (typeof value !== 'undefined') {
+                          return value;
+                        }
+
+                        if (
+                          typeof properties?.[title] === 'undefined' &&
+                          typeof defaultValue !== 'undefined'
+                        ) {
+                          return defaultValue;
+                        }
+
+                        if (typeof properties?.[title] === 'undefined' && type === 'boolean') {
+                          return false;
+                        }
+
+                        if (typeof properties?.[title] === 'undefined') {
+                          return '';
+                        }
+
+                        return properties?.[title];
+                      };
+                      const fieldValue = getFieldValue();
                       const isEditableDecision = isDoneWithRevision || !decision?.status;
                       const isEditableType =
                         (title === 'type' && !checkIsBusiness(workflow)) || title !== 'type';

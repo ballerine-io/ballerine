@@ -35,12 +35,20 @@ export const StateManager = ({
   }, []);
 
   const { machineApi } = useMachineLogic(machine);
-  const { contextPayload, state, sendEvent, invokePlugin, setContext, getContext, getState } =
-    useStateLogic(
-      machineApi,
-      // @ts-ignore
-      initialContext,
-    );
+  const {
+    contextPayload,
+    isPluginLoading,
+    state,
+    sendEvent,
+    invokePlugin,
+    setContext,
+    getContext,
+    getState,
+  } = useStateLogic(
+    machineApi,
+    // @ts-ignore
+    initialContext,
+  );
   const context: StateManagerContext = useMemo(() => {
     const ctx: StateManagerContext = {
       stateApi: {
@@ -52,9 +60,19 @@ export const StateManager = ({
       },
       state,
       payload: contextPayload,
+      isPluginLoading: isPluginLoading,
     };
     return ctx;
-  }, [state, contextPayload, getState, sendEvent, invokePlugin, setContext, getContext]);
+  }, [
+    state,
+    contextPayload,
+    isPluginLoading,
+    getState,
+    sendEvent,
+    invokePlugin,
+    setContext,
+    getContext,
+  ]);
 
   const child = useMemo(
     () => (typeof children === 'function' ? children(context) : children),

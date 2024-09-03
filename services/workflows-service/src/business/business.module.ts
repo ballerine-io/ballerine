@@ -22,7 +22,6 @@ import { UserService } from '@/user/user.service';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
-import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
 import { forwardRef, Module } from '@nestjs/common';
 import { BusinessControllerExternal } from './business.controller.external';
@@ -31,6 +30,10 @@ import { BusinessRepository } from './business.repository';
 import { BusinessService } from './business.service';
 // eslint-disable-next-line import/no-cycle
 import { BusinessReportModule } from '@/business-report/business-report.module';
+import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
+import { SentryService } from '@/sentry/sentry.service';
+// eslint-disable-next-line import/no-cycle
+import { WorkflowModule } from '@/workflow/workflow.module';
 
 @Module({
   imports: [
@@ -39,6 +42,8 @@ import { BusinessReportModule } from '@/business-report/business-report.module';
     ProjectModule,
     CustomerModule,
     forwardRef(() => BusinessReportModule),
+    RuleEngineModule,
+    forwardRef(() => WorkflowModule),
   ],
   controllers: [BusinessControllerInternal, BusinessControllerExternal],
   providers: [
@@ -56,7 +61,6 @@ import { BusinessReportModule } from '@/business-report/business-report.module';
     WorkflowEventEmitterService,
     WorkflowDefinitionRepository,
     WorkflowRuntimeDataRepository,
-    WorkflowService,
     UserService,
     UserRepository,
     PasswordService,
@@ -66,6 +70,7 @@ import { BusinessReportModule } from '@/business-report/business-report.module';
     WorkflowTokenRepository,
     UiDefinitionRepository,
     UiDefinitionService,
+    SentryService,
   ],
   exports: [BusinessService],
 })

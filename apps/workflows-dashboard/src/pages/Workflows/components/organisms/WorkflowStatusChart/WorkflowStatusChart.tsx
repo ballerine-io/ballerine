@@ -1,7 +1,6 @@
 import { PieChart, PieChartData } from '@/components/atoms/PieChart';
 import { IWorkflowStatus } from '@/domains/workflows/api/workflow';
 import { WorkflowChartDetails } from '@/pages/Workflows/components/organisms/WorkflowStatusChart/components/WorkflowChartDetails';
-import { memo } from 'react';
 
 export interface WorkflowChartData extends PieChartData {
   label: string;
@@ -16,7 +15,7 @@ interface Props {
   outerRadius: number;
 }
 
-export const WorkflowChart = memo(({ data, size, innerRadius, outerRadius }: Props) => {
+export const WorkflowChart = ({ data, size, innerRadius, outerRadius }: Props) => {
   return (
     <div className="align-center flex flex-row flex-nowrap gap-8">
       <div>
@@ -27,4 +26,4 @@ export const WorkflowChart = memo(({ data, size, innerRadius, outerRadius }: Pro
       </div>
     </div>
   );
-});
+};

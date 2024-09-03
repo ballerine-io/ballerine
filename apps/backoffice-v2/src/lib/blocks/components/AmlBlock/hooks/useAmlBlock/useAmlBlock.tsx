@@ -1,18 +1,23 @@
-import { toTitleCase } from 'string-ts';
+import { titleCase } from 'string-ts';
 import { ChevronDown } from 'lucide-react';
 import React, { ComponentProps, useMemo } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
 
-import { Badge } from '@ballerine/ui';
+import { Badge, TextWithNAFallback } from '@ballerine/ui';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { AmlMatch } from '@/lib/blocks/components/AmlBlock/AmlMatch';
 import { amlAdapter } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
 import { Button } from '@/common/components/atoms/Button/Button';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 
-export const useAmlBlock = (data: Array<TWorkflowById['context']['aml']>) => {
+export const useAmlBlock = ({
+  data,
+  vendor,
+}: {
+  data: Array<TWorkflowById['context']['aml']>;
+  vendor: string;
+}) => {
   const amlBlock = useMemo(() => {
     if (!data?.length) {
       return [];
@@ -37,6 +42,11 @@ export const useAmlBlock = (data: Array<TWorkflowById['context']['aml']>) => {
                 },
               },
               columns: [
+                {
+                  id: 'screenedBy',
+                  header: 'Screened by',
+                  cell: () => <TextWithNAFallback>{titleCase(vendor ?? '')}</TextWithNAFallback>,
+                },
                 {
                   accessorKey: 'totalMatches',
                   header: 'Total Matches',
@@ -139,7 +149,7 @@ export const useAmlBlock = (data: Array<TWorkflowById['context']['aml']>) => {
                   cell: info => {
                     const matchTypes = info.getValue();
 
-                    return <TextWithNAFallback>{toTitleCase(matchTypes)}</TextWithNAFallback>;
+                    return <TextWithNAFallback>{titleCase(matchTypes)}</TextWithNAFallback>;
                   },
                 }),
                 columnHelper.accessor('pep', {
@@ -181,6 +191,12 @@ export const useAmlBlock = (data: Array<TWorkflowById['context']['aml']>) => {
                     return <TextWithNAFallback>{fitnessProbityLength}</TextWithNAFallback>;
                   },
                   header: 'Fitness Probity',
+                }),
+                columnHelper.accessor('other', {
+                  cell: info => {
+                    return <TextWithNAFallback>{info.getValue().length}</TextWithNAFallback>;
+                  },
+                  header: 'Other',
                 }),
               ],
             },

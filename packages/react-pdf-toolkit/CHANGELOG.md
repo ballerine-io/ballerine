@@ -1,5 +1,147 @@
 # @ballerine/react-pdf-toolkit
 
+## 1.2.23
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/config@1.1.12
+  - @ballerine/ui@0.5.23
+
+## 1.2.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.22
+
+## 1.2.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.21
+
+## 1.2.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.20
+
+## 1.2.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.19
+
+## 1.2.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.18
+
+## 1.2.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.17
+
+## 1.2.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.16
+
+## 1.2.15
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/config@1.1.11
+  - @ballerine/ui@0.5.15
+
+## 1.2.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.14
+
+## 1.2.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.13
+
+## 1.2.12
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/config@1.1.10
+  - @ballerine/ui@0.5.12
+
+## 1.2.11
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/config@1.1.9
+  - @ballerine/ui@0.5.11
+
+## 1.2.10
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/config@1.1.8
+  - @ballerine/ui@0.5.10
+
+## 1.2.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.9
+
+## 1.2.8
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/config@1.1.7
+  - @ballerine/ui@0.5.8
+
+## 1.2.7
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/config@1.1.6
+  - @ballerine/ui@0.5.7
+
+## 1.2.6
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/config@1.1.5
+  - @ballerine/ui@0.5.6
+
 ## 1.2.5
 
 ### Patch Changes

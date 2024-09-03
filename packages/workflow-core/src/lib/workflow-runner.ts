@@ -1,23 +1,24 @@
 /* eslint-disable */
-import { AnyRecord, isObject, uniqueArray } from '@ballerine/common';
+import { AnyRecord, isObject, ProcessStatus, uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
 import { HttpError } from './errors';
 import {
-  ChildPluginCallbackOutput,
+  Error as ErrorEnum,
   ObjectValues,
+  SecretsManager,
   WorkflowEvent,
   WorkflowEvents,
   WorkflowEventWithoutState,
   WorkflowExtensions,
   WorkflowRunnerArgs,
 } from './types';
-import { Error as ErrorEnum } from './types';
 import { JmespathTransformer } from './utils/context-transformers/jmespath-transformer';
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
 import {
   ActionablePlugins,
+  ChildPlugins,
   CommonPlugin,
   CommonPlugins,
   HttpPlugin,
@@ -29,41 +30,45 @@ import { WebhookPlugin } from './plugins/external-plugin/webhook-plugin';
 import {
   IApiPluginParams,
   IDispatchEventPluginParams,
-  ISerializableChildPluginParams,
   ISerializableHttpPluginParams,
   SerializableValidatableTransformer,
+  ValidatableTransformer,
 } from './plugins/external-plugin/types';
 import { KycPlugin } from './plugins/external-plugin/kyc-plugin';
 import { DispatchEventPlugin } from './plugins/external-plugin/dispatch-event-plugin';
 import {
   ChildWorkflowPluginParams,
+  ISerializableChildPluginParams,
   ISerializableCommonPluginParams,
+  ISerializableRiskRulesPlugin,
+  ISerializableWorkflowTokenPlugin,
   IterativePluginParams,
+  RiskRulesPluginParams,
+  WorkflowTokenPluginParams,
 } from './plugins/common-plugin/types';
 import {
   ArrayMergeOption,
+  deepMergeWithOptions,
   HelpersTransformer,
   TContext,
   THelperFormatingLogic,
-  Transformers,
+  Validator,
 } from './utils';
 import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
 import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plugin';
 import { search } from 'jmespath';
-import { KybPlugin } from './plugins/external-plugin/kyb-plugin';
-import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
-import { EmailPlugin } from './plugins/external-plugin/email-plugin';
+import { WorkflowTokenPlugin } from './plugins/common-plugin/workflow-token-plugin';
+import { RiskRulePlugin } from './plugins/common-plugin/risk-rules-plugin';
+import { BallerineApiPlugin } from './plugins/common-plugin/ballerine-plugin';
+import { BALLERINE_API_PLUGINS_KINDS } from './plugins/common-plugin/vendor-consts';
 import {
   TransformerPlugin,
   TransformerPluginParams,
 } from './plugins/common-plugin/transformer-plugin';
-import { deepMergeWithOptions } from './utils';
 import { BUILT_IN_EVENT } from './index';
 import { logger } from './logger';
-
-export interface ChildCallabackable {
-  invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
-}
+import { hasPersistResponseDestination } from './utils/has-persistence-response-destination';
+import { pluginsRegistry } from './constants';
 
 export class WorkflowRunner {
   #__subscriptions: Partial<Record<string, Array<(event: WorkflowEvent) => Promise<void>>>>;
@@ -75,6 +80,7 @@ export class WorkflowRunner {
   #__debugMode: boolean;
   #__runtimeId: string;
   events: any;
+  #__secretsManager: SecretsManager | undefined;
 
   public get workflow() {
     return this.#__workflow;
@@ -92,7 +98,10 @@ export class WorkflowRunner {
       workflowActions,
       workflowContext,
       extensions,
+      invokeRiskRulesAction,
       invokeChildWorkflowAction,
+      invokeWorkflowTokenAction,
+      secretsManager,
     }: WorkflowRunnerArgs,
     debugMode = false,
   ) {
@@ -101,26 +110,28 @@ export class WorkflowRunner {
     this.#__extensions = extensions ?? {};
     this.#__extensions.statePlugins ??= [];
     this.#__debugMode = debugMode;
+    this.#__secretsManager = secretsManager;
 
     this.#__extensions.dispatchEventPlugins = this.initiateDispatchEventPlugins(
       this.#__extensions.dispatchEventPlugins ?? [],
     );
 
     // @ts-expect-error TODO: fix this
-    this.#__extensions.childWorkflowPlugins = this.initiateChildPlugin(
+    this.#__extensions.childWorkflowPlugins = this.initiateChildPlugins(
       this.#__extensions.childWorkflowPlugins ?? [],
       runtimeId,
       config,
       invokeChildWorkflowAction,
     );
 
-    // @ts-expect-error TODO: fix this
     this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
 
     this.#__extensions.commonPlugins = this.initiateCommonPlugins(
       // @ts-expect-error TODO: fix this
       this.#__extensions.commonPlugins ?? [],
       [this.#__extensions.apiPlugins, this.#__extensions.childWorkflowPlugins].flat(1),
+      invokeRiskRulesAction,
+      invokeWorkflowTokenAction,
     );
 
     // this.#__defineApiPluginsStatesAsEntryActions(definition, apiPlugins);
@@ -162,54 +173,122 @@ export class WorkflowRunner {
 
       return new DispatchEventPlugin({
         ...dispatchEventPlugin,
-        transformers: this.fetchTransformers(dispatchEventPlugin.transformers || []),
+        transformers: WorkflowRunner.fetchTransformers(dispatchEventPlugin.transformers || []),
       });
     });
   }
 
   initiateApiPlugins(apiPluginSchemas: Array<ISerializableHttpPluginParams>) {
     return apiPluginSchemas?.map(apiPluginSchema => {
-      const requestTransformerLogic = apiPluginSchema.request.transform;
-      const requestSchema = apiPluginSchema.request.schema;
-      const responseTransformerLogic = apiPluginSchema.response?.transform;
-      const responseSchema = apiPluginSchema.response?.schema;
-      // @ts-ignore
-      const requestTransformer = this.fetchTransformers(requestTransformerLogic);
-      const responseTransformer =
-        responseTransformerLogic && this.fetchTransformers(responseTransformerLogic);
-      // @ts-expect-error TODO: fix this
-      const requestValidator = this.fetchValidator('json-schema', requestSchema);
-      // @ts-expect-error TODO: fix this
-      const responseValidator = this.fetchValidator('json-schema', responseSchema);
+      let { requestTransformer, requestValidator, responseTransformer, responseValidator } =
+        WorkflowRunner.reqResTransformersObj(apiPluginSchema);
 
       const apiPluginClass = this.pickApiPluginClass(apiPluginSchema);
 
       return new apiPluginClass({
         name: apiPluginSchema.name,
+        vendor: apiPluginSchema.vendor,
         displayName: apiPluginSchema.displayName,
         stateNames: apiPluginSchema.stateNames,
-        pluginKind: apiPluginSchema.pluginKind,
+        pluginKind: apiPluginSchema.pluginKind as
+          | 'ubo'
+          | 'registry-information'
+          | 'individual-sanctions'
+          | 'company-sanctions'
+          | 'resubmission-email'
+          | 'session-email'
+          | 'invitation-email',
         url: apiPluginSchema.url,
         method: apiPluginSchema.method,
         headers: apiPluginSchema.headers,
-        request: { transformers: requestTransformer, schemaValidator: requestValidator },
-        response: { transformers: responseTransformer, schemaValidator: responseValidator },
+        request: { transformers: requestTransformer, schemaValidator: requestValidator } as any,
+        response: { transformers: responseTransformer, schemaValidator: responseValidator } as any,
         successAction: apiPluginSchema.successAction,
         errorAction: apiPluginSchema.errorAction,
         persistResponseDestination: apiPluginSchema.persistResponseDestination,
+        secretsManager: this.#__secretsManager,
       });
     });
   }
 
-  initiateChildPlugin(
+  static reqResTransformersObj(
+    apiPluginSchema: Pick<ISerializableHttpPluginParams, 'request' | 'response'>,
+  ) {
+    let requestTransformer;
+    let responseTransformer: ValidatableTransformer | undefined;
+    let requestValidator: Validator | undefined;
+    let responseValidator: Validator | undefined;
+
+    if ('request' in apiPluginSchema) {
+      if (apiPluginSchema.request && 'transform' in apiPluginSchema.request) {
+        const requestTransformerLogic = apiPluginSchema.request
+          .transform as SerializableValidatableTransformer['transform'] & {
+          name?: string;
+        };
+        requestTransformer = WorkflowRunner.fetchTransformers(requestTransformerLogic);
+
+        requestValidator = WorkflowRunner.fetchValidator(
+          'json-schema',
+          // @ts-expect-error TODO: fix this
+          apiPluginSchema?.request?.schema,
+        );
+      }
+
+      if (apiPluginSchema.response && 'transform' in apiPluginSchema.response) {
+        const responseTransformerLogic = apiPluginSchema.response
+          .transform as SerializableValidatableTransformer['transform'] & {
+          name?: string;
+        };
+        // @ts-ignore
+        responseTransformer =
+          responseTransformerLogic && WorkflowRunner.fetchTransformers(responseTransformerLogic);
+
+        responseValidator = WorkflowRunner.fetchValidator(
+          'json-schema',
+          // @ts-expect-error TODO: fix this
+          apiPluginSchema?.response?.schema,
+        );
+      }
+    }
+    return { requestTransformer, requestValidator, responseTransformer, responseValidator };
+  }
+
+  initiateRiskRulePlugin(
+    riskLevelPlugin: ISerializableRiskRulesPlugin,
+    callbackAction?: RiskRulesPluginParams['action'],
+  ) {
+    return new RiskRulePlugin({
+      name: riskLevelPlugin.name,
+      stateNames: riskLevelPlugin.stateNames,
+      rulesSource: riskLevelPlugin.rulesSource,
+      action: callbackAction!,
+    });
+  }
+
+  initiateWorkflowTokenPlugin(
+    workflowTokenPlugin: ISerializableWorkflowTokenPlugin,
+    callbackAction?: WorkflowTokenPluginParams['action'],
+  ) {
+    return new WorkflowTokenPlugin({
+      name: workflowTokenPlugin.name,
+      stateNames: workflowTokenPlugin.stateNames,
+      uiDefinitionId: workflowTokenPlugin.uiDefinitionId,
+      expireInMinutes: workflowTokenPlugin.expireInMinutes,
+      errorAction: workflowTokenPlugin.errorAction,
+      successAction: workflowTokenPlugin.successAction,
+      action: callbackAction!,
+    });
+  }
+
+  initiateChildPlugins(
     childPluginSchemas: Array<ISerializableChildPluginParams>,
     parentWorkflowRuntimeId: string,
     parentWorkflowRuntimeConfig: unknown,
     callbackAction?: ChildWorkflowPluginParams['action'],
   ) {
     return childPluginSchemas?.map(childPluginSchema => {
-      console.log('Initiating child plugin', childPluginSchema);
-      const transformers = this.fetchTransformers(childPluginSchema.transformers) || [];
+      logger.log('Initiating child plugin', childPluginSchema);
+      const transformers = WorkflowRunner.fetchTransformers(childPluginSchema.transformers) || [];
 
       return new ChildWorkflowPlugin({
         name: childPluginSchema.name,
@@ -220,17 +299,31 @@ export class WorkflowRunner {
         transformers: transformers,
         initEvent: childPluginSchema.initEvent,
         action: callbackAction!,
+        successAction: childPluginSchema.successAction,
+        errorAction: childPluginSchema.errorAction,
       });
     });
   }
 
   initiateCommonPlugins(
     pluginSchemas: Array<
-      ISerializableCommonPluginParams & { pluginKind: 'iterative' | 'transformer' }
+      | (ISerializableCommonPluginParams & { pluginKind: 'iterative' | 'transformer' })
+      | (ISerializableRiskRulesPlugin & { pluginKind: 'riskRules' })
+      | (ISerializableWorkflowTokenPlugin & { pluginKind: 'attach-ui-definition' })
     >,
     actionPlugins: ActionablePlugins,
+    invokeRiskRulesAction?: RiskRulePlugin['action'],
+    invokeWorkflowTokenAction?: WorkflowTokenPluginParams['action'],
   ) {
     return pluginSchemas.map(pluginSchema => {
+      if (pluginSchema.pluginKind === 'riskRules') {
+        return this.initiateRiskRulePlugin(pluginSchema, invokeRiskRulesAction);
+      }
+
+      if (pluginSchema.pluginKind === 'attach-ui-definition') {
+        return this.initiateWorkflowTokenPlugin(pluginSchema, invokeWorkflowTokenAction);
+      }
+
       const Plugin = this.pickCommonPluginClass(pluginSchema.pluginKind);
       const pluginParams = this.pickCommonPluginParams(
         pluginSchema.pluginKind,
@@ -275,7 +368,7 @@ export class WorkflowRunner {
       name: iterarivePluginParams.name,
       stateNames: iterarivePluginParams.stateNames,
       //@ts-ignore
-      iterateOn: this.fetchTransformers(iterarivePluginParams.iterateOn),
+      iterateOn: WorkflowRunner.fetchTransformers(iterarivePluginParams.iterateOn),
       action: (context: TContext) =>
         actionPlugin!.invoke({
           ...context,
@@ -288,28 +381,28 @@ export class WorkflowRunner {
   }
 
   private pickApiPluginClass(apiPluginSchema: ISerializableHttpPluginParams) {
-    // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'kyc') return KycPlugin;
-    // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'kyc-session') return KycSessionPlugin;
-    // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'kyb') return KybPlugin;
-    // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'webhook') return WebhookPlugin;
-    // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'api') return ApiPlugin;
-    // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'email') return EmailPlugin;
+    if (
+      BALLERINE_API_PLUGINS_KINDS.includes(
+        apiPluginSchema.pluginKind as (typeof BALLERINE_API_PLUGINS_KINDS)[number],
+      )
+    ) {
+      return BallerineApiPlugin;
+    }
 
-    // @ts-expect-error TODO: fix this
-    return this.isPluginWithCallbackAction(apiPluginSchema) ? ApiPlugin : WebhookPlugin;
+    const Plugin = pluginsRegistry[apiPluginSchema.pluginKind as keyof typeof pluginsRegistry];
+
+    if (!Plugin) {
+      return this.isPluginWithCallbackAction(apiPluginSchema) ? ApiPlugin : WebhookPlugin;
+    }
+
+    return Plugin;
   }
 
   private isPluginWithCallbackAction(apiPluginSchema: IApiPluginParams) {
     return !!apiPluginSchema.successAction && !!apiPluginSchema.errorAction;
   }
 
-  fetchTransformers(
+  static fetchTransformers(
     transformers: SerializableValidatableTransformer['transform'] & {
       name?: string;
     },
@@ -325,9 +418,9 @@ export class WorkflowRunner {
     });
   }
 
-  fetchValidator(
+  static fetchValidator(
     validatorName: string,
-    schema: ConstructorParameters<typeof JsonSchemaValidator>[0],
+    schema: ConstructorParameters<typeof JsonSchemaValidator>[0] | undefined,
   ) {
     if (!schema) return;
     if (validatorName === 'json-schema') return new JsonSchemaValidator(schema);
@@ -617,6 +710,10 @@ export class WorkflowRunner {
       plugin.stateNames.includes(this.#__currentState),
     );
 
+    let childPlugins = (this.#__extensions.childWorkflowPlugins as unknown as ChildPlugins)?.filter(
+      plugin => plugin.stateNames?.includes(this.#__currentState),
+    );
+
     const stateApiPlugins = (this.#__extensions.apiPlugins as HttpPlugins)?.filter(plugin =>
       plugin.stateNames.includes(this.#__currentState),
     );
@@ -628,6 +725,12 @@ export class WorkflowRunner {
     if (dispatchEventPlugins) {
       for (const dispatchEventPlugin of dispatchEventPlugins) {
         await this.__dispatchEvent(dispatchEventPlugin);
+      }
+    }
+
+    if (childPlugins) {
+      for (const childPlugin of childPlugins) {
+        await this.__invokeChildPlugin(childPlugin);
       }
     }
 
@@ -668,7 +771,7 @@ export class WorkflowRunner {
 
   private async __invokeCommonPlugin(commonPlugin: CommonPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
-    const { callbackAction, error } = await commonPlugin.invoke?.({
+    const { callbackAction, error, response } = await commonPlugin.invoke?.({
       ...this.context,
       workflowRuntimeConfig: this.#__config,
       workflowRuntimeId: this.#__runtimeId,
@@ -680,6 +783,35 @@ export class WorkflowRunner {
         ...{ [commonPlugin.name]: { error: error } },
       };
     }
+
+    if (!!response) {
+      if (hasPersistResponseDestination(commonPlugin)) {
+        if (response) {
+          this.context = this.mergeToContext(
+            this.context,
+            response,
+            commonPlugin.persistResponseDestination,
+          );
+        }
+      } else {
+        this.context.pluginsOutput = {
+          ...(this.context.pluginsOutput || {}),
+          ...{ [commonPlugin.name]: response },
+        };
+      }
+    }
+
+    if (callbackAction) {
+      await this.sendEvent({ type: callbackAction });
+    }
+  }
+
+  private async __invokeChildPlugin(childPlugin: ChildWorkflowPlugin) {
+    const { callbackAction } = await childPlugin.invoke?.({
+      ...this.context,
+      workflowRuntimeConfig: this.#__config,
+      workflowRuntimeId: this.#__runtimeId,
+    });
 
     if (callbackAction) {
       await this.sendEvent({ type: callbackAction });
@@ -715,11 +847,22 @@ export class WorkflowRunner {
         responseBody,
         apiPlugin.persistResponseDestination,
       );
-    } else {
-      this.context.pluginsOutput = {
-        ...(this.context.pluginsOutput || {}),
-        ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
-      };
+    }
+
+    if (!apiPlugin.persistResponseDestination && responseBody) {
+      this.context = this.mergeToContext(
+        this.context,
+        responseBody,
+        `pluginsOutput.${apiPlugin.name}`,
+      );
+    }
+
+    if (error) {
+      this.context = this.mergeToContext(
+        this.context,
+        { name: apiPlugin.name, error, status: ProcessStatus.ERROR },
+        `pluginsOutput.${apiPlugin.name}`,
+      );
     }
 
     await this.sendEvent({ type: callbackAction });
@@ -728,25 +871,27 @@ export class WorkflowRunner {
   private async __dispatchEvent(dispatchEventPlugin: DispatchEventPlugin) {
     const { eventName, event } = await dispatchEventPlugin.getPluginEvent(this.context);
 
-    try {
-      logger.log('Dispatching event', {
-        eventName,
-        event,
-      });
+    logger.log('Dispatching notification to host', {
+      eventName,
+      event,
+    });
 
+    try {
       await this.notify(eventName, event);
 
-      logger.log('Dispatched event successfully', { eventName });
-
-      if (dispatchEventPlugin.successAction) {
-        await this.sendEvent({ type: dispatchEventPlugin.successAction });
-      }
+      logger.log('Dispatched notification to host successfully', { eventName });
     } catch (error) {
-      logger.error('Failed dispatching event', { eventName, event, error });
+      logger.error('Failed dispatching notification to host', { eventName, event, error });
 
       if (dispatchEventPlugin.errorAction) {
         await this.sendEvent({ type: dispatchEventPlugin.errorAction });
       }
+
+      return;
+    }
+
+    if (dispatchEventPlugin.successAction) {
+      await this.sendEvent({ type: dispatchEventPlugin.successAction });
     }
   }
 

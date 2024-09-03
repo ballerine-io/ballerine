@@ -1,0 +1,3 @@
+{
+  "jest.jestCommandLine": "node_modules/.bin/jest"
+}

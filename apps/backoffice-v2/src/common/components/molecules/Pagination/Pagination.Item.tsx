@@ -9,4 +9,5 @@ export const PaginationItem = forwardRef<HTMLLIElement, ComponentProps<'li'>>(
     </li>
   ),
 );
+
 PaginationItem.displayName = 'PaginationItem';

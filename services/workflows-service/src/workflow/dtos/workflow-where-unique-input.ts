@@ -12,5 +12,5 @@ export class WorkflowDefinitionWhereUniqueInput {
 }
 
 export const WorkflowDefinitionWhereUniqueInputSchema = Type.String({
-  description: "The workflow's id",
+  description: "The workflow's definition id",
 });

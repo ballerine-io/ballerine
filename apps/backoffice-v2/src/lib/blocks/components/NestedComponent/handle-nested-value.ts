@@ -1,7 +1,5 @@
-import { isValidDate } from '../../../../common/utils/is-valid-date';
-import { formatDate } from '../../../../common/utils/format-date';
-import { isNullish } from '@ballerine/common';
-import { isValidIsoDate } from '../../../../common/utils/is-valid-iso-date/is-valid-iso-date';
+import { checkIsDate, formatDate } from '@ballerine/ui';
+import { checkIsIsoDate, isNullish } from '@ballerine/common';
 import dayjs from 'dayjs';
 
 export const handleNestedValue = ({
@@ -13,10 +11,13 @@ export const handleNestedValue = ({
   showUndefined: boolean;
   showNull: boolean;
 }) => {
-  if (isValidDate(value, { isStrict: false }) || isValidIsoDate(value)) {
+  if (checkIsDate(value, { isStrict: false }) || checkIsIsoDate(value)) {
     return formatDate(dayjs(value).toDate());
   }
+
   if (value === undefined && showUndefined) return 'undefined';
+
   if (value === null && showNull) return 'null';
+
   if (!isNullish(value)) return value?.toString();
 };

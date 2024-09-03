@@ -61,9 +61,9 @@ export type TransactionsAgainstDynamicRulesType = {
   projectId: TProjectId;
   havingAggregate?: TAggregations;
   amountBetween?: { min: number; max: number };
-  timeAmount?: number;
+  timeUnit: TimeUnit;
+  timeAmount: number;
   transactionType?: TransactionRecordType[] | readonly TransactionRecordType[];
-  timeUnit?: TimeUnit;
   direction?: TransactionDirection;
   excludedCounterparty?: TExcludedCounterparty;
   paymentMethods?: PaymentMethod[] | readonly PaymentMethod[];
@@ -88,8 +88,8 @@ export type TCustomersTransactionTypeOptions = {
   transactionType?: TransactionRecordType[] | readonly TransactionRecordType[];
   threshold?: number;
   paymentMethods?: PaymentMethod[] | readonly PaymentMethod[];
-  timeAmount?: number;
-  timeUnit?: TimeUnit;
+  timeAmount: number;
+  timeUnit: TimeUnit;
   isPerBrand?: boolean;
   havingAggregate?: TAggregations;
 };

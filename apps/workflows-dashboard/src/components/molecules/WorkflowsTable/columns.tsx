@@ -1,9 +1,11 @@
 import { HealthIndicator } from '@/components/atoms/HealthIndicator';
-import { ContextViewColumn } from '@/components/molecules/WorkflowsTable/components/ContextViewColumn';
+import { CloneWorkflowDefinitionButton } from '@/components/molecules/CloneWorkflowDefinitionButton';
+import { JSONViewButton } from '@/components/molecules/JSONViewButton';
 import { DataTableColumnHeader } from '@/components/molecules/WorkflowsTable/components/DataTableColumnHeader';
+import { StateUpdaterColumn } from '@/components/molecules/WorkflowsTable/components/StateUpdaterColumn';
 import { WorkflowTableColumnDef } from '@/components/molecules/WorkflowsTable/types';
-import { formatDate } from '@/components/molecules/WorkflowsTable/utils/format-date';
 import { IWorkflow } from '@/domains/workflows/api/workflow';
+import { formatDate } from '@/utils/format-date';
 import { getWorkflowHealthStatus } from '@/utils/get-workflow-health-status';
 
 export const defaultColumns: WorkflowTableColumnDef<IWorkflow>[] = [
@@ -20,6 +22,11 @@ export const defaultColumns: WorkflowTableColumnDef<IWorkflow>[] = [
     ),
   },
   {
+    accessorKey: 'workflowDefinitionId',
+    cell: info => <CloneWorkflowDefinitionButton workflowDefinitionId={info.getValue<string>()} />,
+    header: '',
+  },
+  {
     accessorKey: 'status',
     cell: info => (
       <div className="font-inter flex flex-row flex-nowrap gap-4 font-medium capitalize">
@@ -31,7 +38,13 @@ export const defaultColumns: WorkflowTableColumnDef<IWorkflow>[] = [
   },
   {
     accessorKey: 'state',
-    cell: info => info.getValue<string>(),
+    cell: info => (
+      <StateUpdaterColumn
+        state={info.getValue<string>()}
+        workflow={info.row.original}
+        workflowDefinition={info.row.original.workflowDefinition}
+      />
+    ),
     header: ({ column }) => <DataTableColumnHeader column={column} title="State" />,
   },
   {
@@ -43,7 +56,7 @@ export const defaultColumns: WorkflowTableColumnDef<IWorkflow>[] = [
   {
     accessorKey: 'context',
     accessorFn: row => JSON.stringify(row.context),
-    cell: info => <ContextViewColumn context={info.getValue<string>()} />,
+    cell: info => <JSONViewButton json={info.getValue<string>()} />,
     header: () => 'Context',
   },
   {

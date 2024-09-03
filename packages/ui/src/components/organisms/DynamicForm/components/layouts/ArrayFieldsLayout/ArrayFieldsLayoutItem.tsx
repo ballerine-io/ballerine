@@ -1,6 +1,6 @@
 import { AnyObject } from '@/common/types';
 import { ArrayFieldLayoutItem } from '@/components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout/ArrayFieldsLayout';
-import { ctw } from '@/utils/ctw';
+import { ctw } from '@/common/utils/ctw';
 import React, { useCallback } from 'react';
 
 interface ArrayFieldsLayoutItemProps {

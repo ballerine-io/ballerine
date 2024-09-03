@@ -1,13 +1,14 @@
 import { TBusinessReport } from '@/domains/business-reports/fetchers';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BusinessReportSummary } from '@/common/components/molecules/BusinessReportSummary/BusinessReportSummary';
 import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
 import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
 import { useWebsiteMonitoringBusinessReportTab } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/hooks/useWebsiteMonitoringBusinessReportTab/useWebsiteMonitoringBusinessReportTab';
+import { BusinessReportSummary } from '@ballerine/ui';
+import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
 
 export const WebsiteMonitoringBusinessReportTab = ({
   businessReport,
@@ -23,6 +24,7 @@ export const WebsiteMonitoringBusinessReportTab = ({
     summary,
     getUpdatedSearchParamsWithActiveMonitoringTab,
     search,
+    homepageScreenshotUrl,
   } = useWebsiteMonitoringBusinessReportTab({
     businessReport,
   });
@@ -34,6 +36,8 @@ export const WebsiteMonitoringBusinessReportTab = ({
         riskLevels={riskLevels}
         riskIndicators={riskIndicators}
         riskScore={riskScore}
+        homepageScreenshotUrl={homepageScreenshotUrl}
+        Link={RiskIndicatorLink}
       />
       <Tabs defaultValue={activeMonitoringTab} className="w-full" key={activeMonitoringTab}>
         <TabsList className={'mb-4 bg-transparent'}>

@@ -100,7 +100,7 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
           disabled={disabled}
           data-testid={testId ? `${testId}-trigger` : undefined}
         >
-          <span className="flex-1 text-left">
+          <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-left">
             {selectedOption ? selectedOption.label : placeholder}
           </span>
           {props?.trigger?.icon ?? <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />}

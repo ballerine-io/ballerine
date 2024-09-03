@@ -1,11 +1,9 @@
-import {
-  WorkflowFilterValues,
-  WorkflowFiltersUpdater,
-} from '@/pages/Workflows/components/providers/WorkflowsFiltersProvider/workflows-filters.types';
+import { FiltersUpdater } from '@/components/providers/FiltersProvider/filters-provider.types';
+import { WorkflowsFiltersValues } from '@/pages/Workflows/types/workflows-filter-values';
 
 export interface FilterComponentProps {
-  filterValues: WorkflowFilterValues;
-  onChange: WorkflowFiltersUpdater;
+  filterValues: WorkflowsFiltersValues;
+  onChange: FiltersUpdater<WorkflowsFiltersValues>;
 }
 
 export type FilterComponent = React.ComponentType<FilterComponentProps>;

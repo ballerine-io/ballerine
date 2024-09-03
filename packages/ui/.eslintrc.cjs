@@ -10,4 +10,7 @@ module.exports = {
     'tailwindcss/no-custom-classname': 'off',
     'tailwindcss/classnames-order': 'off',
   },
+  parserOptions: {
+    project: './tsconfig.eslint.json',
+  },
 };

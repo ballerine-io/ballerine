@@ -149,8 +149,9 @@ export class WorkflowRuntimeDataRepository {
     args: {
       data: Omit<Prisma.WorkflowRuntimeDataUncheckedUpdateInput, StateRelatedColumns>;
     },
+    transaction: PrismaTransaction | PrismaService = this.prisma,
   ): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.update({
+    return await transaction.workflowRuntimeData.update({
       where: { id },
       ...args,
     });
@@ -288,6 +289,45 @@ export class WorkflowRuntimeDataRepository {
     return await this.prisma.workflowRuntimeData.groupBy(
       this.scopeService.scopeGroupBy(args, projectIds),
     );
+  }
+
+  async findMainBusinessWorkflowRepresentative(
+    {
+      workflowRuntimeId,
+      transaction,
+    }: {
+      workflowRuntimeId: string;
+      transaction?: PrismaTransaction;
+    },
+    projectIds: TProjectIds,
+  ) {
+    const workflowSelectEndUserRepresentative = (await this.findById(
+      workflowRuntimeId,
+      {
+        select: {
+          business: {
+            select: {
+              id: true,
+              endUsersOnBusinesses: {
+                select: {
+                  endUserId: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      projectIds,
+      transaction,
+    )) as unknown as {
+      business: {
+        endUsersOnBusinesses: Array<{
+          endUserId: string;
+        }>;
+      };
+    };
+
+    return workflowSelectEndUserRepresentative.business?.endUsersOnBusinesses?.[0]?.endUserId;
   }
 
   async search(

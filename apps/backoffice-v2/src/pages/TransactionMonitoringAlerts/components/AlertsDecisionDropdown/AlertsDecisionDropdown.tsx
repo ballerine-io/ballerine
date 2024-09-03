@@ -1,9 +1,9 @@
 import React, { FunctionComponent, ReactNode } from 'react';
-import { TObjectValues } from '@/common/types';
 import { alertStateToDecision } from '@/domains/alerts/fetchers';
 import { Dropdown } from '@/common/components/molecules/Dropdown/Dropdown';
 import { DoubleCaretSvg } from '@/common/components/atoms/icons';
 import { COMING_SOON_ALERT_DECISIONS } from '@/pages/TransactionMonitoringAlerts/constants';
+import { ObjectValues } from '@ballerine/common';
 
 export const AlertsDecisionDropdown: FunctionComponent<{
   decisions: Array<{
@@ -12,7 +12,7 @@ export const AlertsDecisionDropdown: FunctionComponent<{
     isDisabled?: boolean;
   }>;
   isDisabled: boolean;
-  onDecisionSelect: (decision: TObjectValues<typeof alertStateToDecision>) => () => void;
+  onDecisionSelect: (decision: ObjectValues<typeof alertStateToDecision>) => () => void;
 }> = ({ decisions, isDisabled, onDecisionSelect }) => {
   return (
     <Dropdown

@@ -8,6 +8,7 @@ import { PluginOption } from 'vite';
 import { defineConfig } from 'vitest/config';
 import checker from 'vite-plugin-checker';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import terminal from 'vite-plugin-terminal';
 
 interface PackageJson {
   name: string;
@@ -24,6 +25,10 @@ const plugins: PluginOption[] = [
   tailwindcss(),
   checker({ typescript: true, overlay: false }),
   tsconfigPaths(),
+  terminal({
+    output: ['console', 'terminal'],
+    strip: false,
+  }),
 ];
 
 if (process.env.VITE_SENTRY_AUTH_TOKEN) {

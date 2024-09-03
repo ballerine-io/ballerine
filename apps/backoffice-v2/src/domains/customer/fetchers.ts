@@ -31,7 +31,7 @@ export type TCustomer = z.infer<typeof CustomerSchema>;
 
 export const fetchCustomer = async () => {
   const [filter, error] = await apiClient({
-    endpoint: `customers`,
+    endpoint: `../external/customers/by-current-project-id`,
     method: Method.GET,
     schema: CustomerSchema,
   });

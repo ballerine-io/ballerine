@@ -3,11 +3,13 @@ import { WorkflowRunner } from '../../../lib/workflow-runner';
 import { Transformer, Transformers } from '../../../lib/utils';
 import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
 
+type WorkerflowFetchTransformers = typeof WorkflowRunner.fetchTransformers;
+
 export type IDispatchEventPluginParamsWithTransfomers = Omit<
   IDispatchEventPluginParams,
   'transformers'
 > & {
-  transformers: ReturnType<WorkflowRunner['fetchTransformers']>;
+  transformers: ReturnType<WorkerflowFetchTransformers>;
 };
 
 export class DispatchEventPlugin {

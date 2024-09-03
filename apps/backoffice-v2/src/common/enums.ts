@@ -1,4 +1,4 @@
-import { TObjectValues } from './types';
+import { ObjectValues } from '@ballerine/common';
 
 export const CommunicationChannel = {
   OPEN_DOCUMENT_IN_NEW_TAB: 'OPEN_DOCUMENT_IN_NEW_TAB',
@@ -94,4 +94,4 @@ export const CaseState = {
   },
 } as const satisfies ICaseStateEnum;
 
-export type TCaseState = TObjectValues<typeof CaseState>;
+export type TCaseState = ObjectValues<typeof CaseState>;

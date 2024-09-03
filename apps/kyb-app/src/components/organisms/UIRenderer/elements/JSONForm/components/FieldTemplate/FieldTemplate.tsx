@@ -2,9 +2,9 @@ import { FieldTemplateProps } from '@rjsf/utils';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { useRuleExecutor } from '@/components/organisms/DynamicUI/hooks/useRuleExecutor';
+import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { findDefinitionByName } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
 import { useJSONFormDefinition } from '@/components/organisms/UIRenderer/elements/JSONForm/providers/JSONFormDefinitionProvider/useJSONFormDefinition';
 import { UIElement } from '@/domains/collection-flow';
@@ -39,5 +39,9 @@ export const FieldTemplate = (props: FieldTemplateProps) => {
     [rulesResults, props.required],
   );
 
-  return <FieldLayout {...props} required={isRequired} optionalLabel={optionalLabel} />;
+  return (
+    <div className="max-w-[385px]">
+      <FieldLayout {...props} required={isRequired} optionalLabel={optionalLabel} />
+    </div>
+  );
 };

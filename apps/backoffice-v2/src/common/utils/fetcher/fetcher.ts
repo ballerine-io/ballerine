@@ -4,6 +4,9 @@ import { handlePromise } from '../handle-promise/handle-promise';
 import { isZodError } from '../is-zod-error/is-zod-error';
 import { IFetcher } from './interfaces';
 
+const handleBody = ({ body, isFormData }: { body: unknown; isFormData: boolean }) =>
+  isFormData ? body : JSON.stringify(body);
+
 export const fetcher: IFetcher = async ({
   url,
   method,
@@ -15,6 +18,7 @@ export const fetcher: IFetcher = async ({
   timeout = 10000,
   schema,
   isBlob = false,
+  isFormData = false,
 }) => {
   const controller = new AbortController();
   const { signal } = controller;
@@ -26,8 +30,8 @@ export const fetcher: IFetcher = async ({
       ...options,
       method,
       signal,
-      body: method !== 'GET' && body ? JSON.stringify(body) : undefined,
-      headers,
+      body: method !== 'GET' && body ? handleBody({ body, isFormData }) : undefined,
+      headers: isFormData ? undefined : headers,
     }),
   );
   clearTimeout(timeoutRef);
@@ -44,9 +48,11 @@ export const fetcher: IFetcher = async ({
     if (res.status === 400) {
       const json = await res.json();
 
-      message = Array.isArray(json?.errors)
-        ? json?.errors?.map(({ message }) => `${message}\n`)?.join('')
-        : message;
+      if (Array.isArray(json?.errors)) {
+        message = json?.errors?.map(({ message }) => `${message}\n`)?.join('');
+      } else if (json.message) {
+        message = json.message;
+      }
     }
 
     console.error(message);

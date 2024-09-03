@@ -1,5 +1,135 @@
 # @ballerine/ui
 
+## 0.5.23
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.27
+
+## 0.5.22
+
+### Patch Changes
+
+- readded content explanations and screenshots
+
+## 0.5.21
+
+### Patch Changes
+
+- changed tsconfig settings for ui package
+
+## 0.5.20
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.25
+
+## 0.5.19
+
+### Patch Changes
+
+- Updated exports
+
+## 0.5.18
+
+### Patch Changes
+
+- fix boolean fields
+
+## 0.5.17
+
+### Patch Changes
+
+- fixed social data
+
+## 0.5.16
+
+### Patch Changes
+
+- fixed filtering of boolean fields
+
+## 0.5.15
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.22
+
+## 0.5.14
+
+### Patch Changes
+
+- update version
+- Updated dependencies
+  - @ballerine/common@0.9.21
+
+## 0.5.13
+
+### Patch Changes
+
+- Moved components from the backoffice to common and ui
+- Updated dependencies
+  - @ballerine/common@0.9.20
+
+## 0.5.12
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.19
+
+## 0.5.11
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.16
+
+## 0.5.10
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.15
+
+## 0.5.9
+
+### Patch Changes
+
+- Fixed dropdown input text overflow
+
+## 0.5.8
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.14
+
+## 0.5.7
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.13
+
+## 0.5.6
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.12
+
 ## 0.5.5
 
 ### Patch Changes

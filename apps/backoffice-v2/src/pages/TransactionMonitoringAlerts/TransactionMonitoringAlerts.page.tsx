@@ -1,5 +1,5 @@
 import { AlertsTable } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable';
-import { AlertsHeader } from 'src/pages/TransactionMonitoringAlerts/components/AlertsHeader';
+import { AlertsHeader } from '@/pages/TransactionMonitoringAlerts/components/AlertsHeader';
 import { useTransactionMonitoringAlertsLogic } from '@/pages/TransactionMonitoringAlerts/hooks/useTransactionMonitoringAlertsLogic/useTransactionMonitoringAlertsLogic';
 import { Outlet } from 'react-router-dom';
 import { isNonEmptyArray } from '@ballerine/common';
@@ -16,6 +16,7 @@ export const TransactionMonitoringAlerts = () => {
     page,
     onPrevPage,
     onNextPage,
+    onLastPage,
     onPaginate,
     isLastPage,
     search,
@@ -40,8 +41,10 @@ export const TransactionMonitoringAlerts = () => {
             page={page}
             onPrevPage={onPrevPage}
             onNextPage={onNextPage}
+            onLastPage={onLastPage}
             onPaginate={onPaginate}
             isLastPage={isLastPage}
+            isLastPageEnabled={false}
           />
         </div>
       </div>

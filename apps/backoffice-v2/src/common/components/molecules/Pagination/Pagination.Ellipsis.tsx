@@ -13,4 +13,5 @@ export const PaginationEllipsis = ({ className, ...props }: ComponentProps<'span
     <span className="sr-only">More pages</span>
   </span>
 );
+
 PaginationEllipsis.displayName = 'PaginationEllipsis';

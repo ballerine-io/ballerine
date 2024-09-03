@@ -3,8 +3,8 @@ import {
   PageResolverContext,
   PageResolverProps,
 } from '@/components/organisms/DynamicUI/PageResolver/types';
-import { pageResolverContext } from './page-resolver.context';
 import { useMemo } from 'react';
+import { pageResolverContext } from './page-resolver.context';
 
 const { Provider } = pageResolverContext;
 

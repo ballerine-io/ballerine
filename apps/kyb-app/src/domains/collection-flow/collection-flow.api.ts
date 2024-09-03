@@ -8,9 +8,20 @@ import {
   UISchema,
 } from '@/domains/collection-flow/types';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
+import posthog from 'posthog-js';
 
 export const fetchUser = async (): Promise<TUser> => {
-  return await request.get('collection-flow/user').json<TUser>();
+  const user = await request.get('collection-flow/user').json<TUser>();
+  if (user) {
+    try {
+      posthog.identify(user.id, {
+        email: user.email,
+      });
+    } catch (error) {
+      console.error('Error identifying user in PostHog:', error);
+    }
+  }
+  return user;
 };
 
 export const getFlowSession = fetchUser;

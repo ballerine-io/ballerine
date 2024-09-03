@@ -1,10 +1,9 @@
 import { SortingParams } from '@/common/types/sorting-params.types';
 import {
-  GetWorkflowDefinitionDto,
-  GetWorkflowDefinitionResponse,
   GetWorkflowResponse,
   GetWorkflowsDto,
-  IWorkflowDefinition,
+  SendWorkflowEventDto,
+  UpdateWorkflowStateDto,
 } from '@/domains/workflows/api/workflow/workflow.types';
 import { request } from '@/lib/request';
 
@@ -22,12 +21,19 @@ export const fetchWorkflows = async (
   return result.data;
 };
 
-export const fetchWorkflowDefinition = async (
-  query: GetWorkflowDefinitionDto,
-): Promise<IWorkflowDefinition> => {
-  const result = await request.get<GetWorkflowDefinitionResponse>(
-    `/external/workflows/workflow-definition/${query.workflowId}`,
-  );
+export const updateWorkflowState = async (dto: UpdateWorkflowStateDto) => {
+  const result = await request.patch(`/external/workflows/${dto.workflowId}`, {
+    state: dto.state,
+    tags: [dto.state],
+  });
 
-  return result.data?.definition || {};
+  return result.data;
+};
+
+export const sendWorkflowEvent = async (dto: SendWorkflowEventDto) => {
+  const result = await request.post(`/external/workflows/${dto.workflowId}/event`, {
+    name: dto.name,
+  });
+
+  return result.data;
 };

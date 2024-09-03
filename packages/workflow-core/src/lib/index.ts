@@ -24,6 +24,7 @@ export type {
   ObjectValues,
   SerializableTransformer,
   TCreateWorkflow,
+  TWorkflowTokenPluginCallback,
   Workflow,
   WorkflowContext,
   WorkflowEvent,

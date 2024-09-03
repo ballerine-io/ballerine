@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { DefaultContextSchema } from '@ballerine/common';
 
 export class IndividualAmlWebhookInput {
   @ApiProperty({
@@ -34,5 +35,5 @@ export class IndividualAmlWebhookInput {
   @ApiProperty({
     required: true,
   })
-  data!: unknown;
+  data!: DefaultContextSchema['aml'];
 }

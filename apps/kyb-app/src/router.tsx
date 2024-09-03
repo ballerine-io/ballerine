@@ -13,7 +13,7 @@ import {
 import * as Sentry from '@sentry/react';
 import React from 'react';
 
-export const sentyRouterInstrumentation = Sentry.reactRouterV6Instrumentation(
+export const sentryRouterInstrumentation = Sentry.reactRouterV6Instrumentation(
   React.useEffect,
   useLocation,
   useNavigationType,

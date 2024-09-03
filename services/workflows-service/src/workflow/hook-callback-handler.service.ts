@@ -33,30 +33,36 @@ export const ReportWithRiskScoreSchema = z
   })
   .passthrough();
 
-const setPluginStatusToSuccess = ({
-  resultDestinationPath,
-  context,
+const removeLastKeyFromPath = (path: string) => {
+  return path?.split('.')?.slice(0, -1)?.join('.');
+};
+
+export const setPluginStatus = ({
   data,
+  status,
+  context,
+  resultDestinationPath,
+  ignoreLastKey = true,
 }: {
+  status: keyof typeof ProcessStatus;
   resultDestinationPath: string;
   context: Record<string, unknown>;
   data: Record<string, unknown>;
+  ignoreLastKey?: boolean;
 }) => {
-  const removeLastKeyFromPath = (path: string) => {
-    return path?.split('.')?.slice(0, -1)?.join('.');
-  };
-
   const resultDestinationPathWithoutLastKey = removeLastKeyFromPath(resultDestinationPath);
-  const result = get(context, resultDestinationPathWithoutLastKey);
+  const result = get(
+    context,
+    ignoreLastKey ? resultDestinationPathWithoutLastKey : resultDestinationPath,
+  );
 
-  const resultWithData = set({}, resultDestinationPath, data);
+  const resultWithData = set({}, resultDestinationPath, ignoreLastKey ? data : { data });
 
-  //@ts-ignore
-  if (isObject(result) && result.status) {
+  if (isObject(result) && 'status' in result && result.status) {
     return set(
       resultWithData,
-      `${resultDestinationPathWithoutLastKey}.status`,
-      ProcessStatus.SUCCESS,
+      `${ignoreLastKey ? resultDestinationPathWithoutLastKey : resultDestinationPath}.status`,
+      status,
     );
   }
 
@@ -116,10 +122,13 @@ export class HookCallbackHandlerService {
     }
 
     if (processName === 'aml-unified-api') {
-      const aml = data.data as {
-        id: string;
-        endUserId: string;
-        hits: Array<Record<string, unknown>>;
+      const aml = {
+        ...(data.data as {
+          id: string;
+          endUserId: string;
+          hits: Array<Record<string, unknown>>;
+        }),
+        vendor: data.vendor,
       };
 
       const attributePath = resultDestinationPath.split('.');
@@ -164,10 +173,11 @@ export class HookCallbackHandlerService {
       );
     }
 
-    return setPluginStatusToSuccess({
-      resultDestinationPath,
-      context: workflowRuntime.context,
+    return setPluginStatus({
       data,
+      resultDestinationPath,
+      status: ProcessStatus.SUCCESS,
+      context: workflowRuntime.context,
     });
   }
 
@@ -246,10 +256,12 @@ export class HookCallbackHandlerService {
         this.logger.error(error);
       });
 
-    return setPluginStatusToSuccess({
+    return setPluginStatus({
       resultDestinationPath,
       context: workflowRuntime.context,
       data: reportData,
+      ignoreLastKey: false,
+      status: ProcessStatus.SUCCESS,
     });
   }
 
@@ -583,7 +595,11 @@ export class HookCallbackHandlerService {
     projectId: TProjectId;
     vendor: string;
   }) {
-    const endUser = await this.endUserService.getById(endUserId, {}, [projectId]);
+    const endUser = await this.endUserService.find(endUserId, [projectId]);
+
+    if (!endUser) {
+      return;
+    }
 
     return await this.endUserService.updateById(endUserId, {
       data: {

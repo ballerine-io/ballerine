@@ -13,7 +13,10 @@ import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
 import { EndUserService } from '@/end-user/end-user.service';
 import { NotFoundException } from '@/errors';
 import { FileService } from '@/providers/file/file.service';
-import { TranslationService } from '@/providers/translation/translation.service';
+import {
+  ITranslationServiceResource,
+  TranslationService,
+} from '@/providers/translation/translation.service';
 import type { TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
@@ -22,14 +25,13 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { AnyRecord } from '@ballerine/common';
 import { BUILT_IN_EVENT, deepMergeWithMutation } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
-import { EndUser, UiDefinition, UiDefinitionContext, WorkflowRuntimeData } from '@prisma/client';
+import { EndUser, Prisma, UiDefinition, WorkflowRuntimeData } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import get from 'lodash/get';
 
 @Injectable()
 export class CollectionFlowService {
   constructor(
-    protected readonly translationService: TranslationService,
     protected readonly logger: AppLoggerService,
     protected readonly endUserService: EndUserService,
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
@@ -53,12 +55,13 @@ export class CollectionFlowService {
     uiSchema: Record<string, unknown>,
     context: WorkflowRuntimeData['context'],
     language: string,
+    _translationService: TranslationService,
   ) {
     for (const key in uiSchema) {
       if (typeof uiSchema[key] === 'object' && uiSchema[key] !== null) {
         // If the property is an object (including arrays), recursively traverse it
         // @ts-expect-error - error from Prisma types fix
-        this.traverseUiSchema(uiSchema[key], context, language);
+        this.traverseUiSchema(uiSchema[key], context, language, _translationService);
       } else if (typeof uiSchema[key] === 'string') {
         const options: AnyRecord = {};
 
@@ -68,11 +71,7 @@ export class CollectionFlowService {
           });
         }
 
-        uiSchema[key] = this.translationService.translate(
-          uiSchema[key] as string,
-          language,
-          options,
-        );
+        uiSchema[key] = _translationService.translate(uiSchema[key] as string, language, options);
       }
     }
 
@@ -80,23 +79,30 @@ export class CollectionFlowService {
   }
 
   async getFlowConfiguration(
-    configurationId: string,
+    workflowDefinitionId: string,
     context: WorkflowRuntimeData['context'],
     language: string,
     projectIds: TProjectIds,
+    args?: Prisma.UiDefinitionFindFirstOrThrowArgs,
   ): Promise<FlowConfigurationModel> {
     const workflowDefinition = await this.workflowService.getWorkflowDefinitionById(
-      configurationId,
+      workflowDefinitionId,
       {},
       projectIds,
     );
 
     const uiDefintion = await this.uiDefinitionService.getByWorkflowDefinitionId(
       workflowDefinition.id,
-      'collection_flow' as keyof typeof UiDefinitionContext,
+      'collection_flow' as const,
       projectIds,
-      {},
+      args,
     );
+
+    const translationService = new TranslationService(
+      this.getTranslationServiceResources(uiDefintion),
+    );
+
+    await translationService.init();
 
     return {
       id: workflowDefinition.id,
@@ -108,6 +114,7 @@ export class CollectionFlowService {
           uiDefintion.uiSchema.elements,
           context,
           language,
+          translationService,
         ) as UiSchemaStep[],
         theme: uiDefintion.theme,
       },
@@ -269,6 +276,83 @@ export class CollectionFlowService {
 
     return elements;
   }
+  private getTranslationServiceResources(
+    uiDefinition: UiDefinition & { locales?: unknown },
+  ): ITranslationServiceResource[] | undefined {
+    if (!uiDefinition.locales) return undefined;
+
+    const resources = Object.entries(uiDefinition.locales).map(([language, resource]) => ({
+      language,
+      resource,
+    }));
+
+    return resources;
+  }
+
+  // async updateFlowConfiguration(
+  //   configurationId: string,
+  //   steps: UiSchemaStep[],
+  //   projectIds: TProjectIds,
+  //   projectId: TProjectId,
+  // ): Promise<FlowConfigurationModel> {
+  //   const definition = await this.workflowDefinitionRepository.findById(
+  //     configurationId,
+  //     {},
+  //     projectIds,
+  //   );
+
+  //   const providedStepsMap = keyBy(steps, 'key');
+
+  //   const persistedSteps =
+  //     // @ts-expect-error - error from Prisma types fix
+  //     definition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm?.steps || [];
+
+  //   const mergedSteps = persistedSteps.map((step: any) => {
+  //     const stepToMergeIn = providedStepsMap[step.key];
+
+  //     if (stepToMergeIn) {
+  //       return recursiveMerge(step, stepToMergeIn);
+  //     }
+
+  //     return step;
+  //   });
+
+  //   const updatedDefinition = await this.workflowDefinitionRepository.updateById(
+  //     configurationId,
+  //     {
+  //       data: {
+  //         definition: {
+  //           // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
+  //           ...definition?.definition,
+  //           states: {
+  //             // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
+  //             ...definition.definition?.states,
+  //             data_collection: {
+  //               // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
+  //               ...definition.definition?.states?.data_collection,
+  //               metadata: {
+  //                 uiSettings: {
+  //                   multiForm: {
+  //                     steps: mergedSteps,
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //     projectIds,
+  //   );
+
+  //   return plainToClass(FlowConfigurationModel, {
+  //     id: updatedDefinition.id,
+  //     steps:
+  //       // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
+  //       updatedDefinition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm
+  //         ?.steps || [],
+  //   });
+  // }
 
   async getActiveFlow(workflowRuntimeId: string, projectIds: TProjectIds) {
     this.logger.log(`Getting active workflow ${workflowRuntimeId}`);
@@ -300,7 +384,8 @@ export class CollectionFlowService {
 
   async syncWorkflow(payload: UpdateFlowDto, tokenScope: ITokenScope) {
     if (payload.data.endUser) {
-      await this.endUserService.updateById(tokenScope.endUserId, { data: payload.data.endUser });
+      const { ballerineEntityId: _, ...endUserData } = payload.data.endUser;
+      await this.endUserService.updateById(tokenScope.endUserId, { data: endUserData });
     }
 
     if (payload.data.ballerineEntityId && payload.data.business) {

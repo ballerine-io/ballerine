@@ -4,7 +4,7 @@ import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { TBusinessReportType } from '@/domains/business-reports/types';
 import qs from 'qs';
-import { Severities, TObjectValues } from '@/common/types';
+import { ObjectValues, Severities } from '@ballerine/common';
 import { toast } from 'sonner';
 import { t } from 'i18next';
 
@@ -14,7 +14,7 @@ export const BusinessReportStatus = {
   COMPLETED: 'completed',
 } as const;
 
-export type TBusinessReportStatus = TObjectValues<typeof BusinessReportStatus>;
+export type TBusinessReportStatus = ObjectValues<typeof BusinessReportStatus>;
 
 export type TBusinessReportStatuses = TBusinessReportStatus[];
 
@@ -23,11 +23,6 @@ export const BusinessReportStatuses = [
   BusinessReportStatus.IN_PROGRESS,
   BusinessReportStatus.COMPLETED,
 ] as const satisfies readonly TBusinessReportStatus[];
-
-export const severityToDisplaySeverity = {
-  positive: 'low',
-  moderate: 'medium',
-} as const;
 
 export const SeveritySchema = z.preprocess(value => {
   if (value === 'moderate') {
@@ -68,7 +63,13 @@ export const BusinessReportSchema = z
     website: data?.report.data?.websiteCompanyAnalysis?.website.url || data?.business?.website,
   }));
 
-export const BusinessReportsSchema = z.array(BusinessReportSchema);
+export const BusinessReportsSchema = z.object({
+  businessReports: z.array(BusinessReportSchema),
+  meta: z.object({
+    totalItems: z.number().nonnegative(),
+    totalPages: z.number().nonnegative(),
+  }),
+});
 
 export type TBusinessReport = z.infer<typeof BusinessReportSchema>;
 
@@ -81,13 +82,13 @@ export const fetchLatestBusinessReport = async ({
   businessId: string;
   reportType: TBusinessReportType;
 }) => {
-  const [filter, error] = await apiClient({
+  const [data, error] = await apiClient({
     endpoint: `business-reports/latest?businessId=${businessId}&type=${reportType}`,
     method: Method.GET,
     schema: BusinessReportSchema,
   });
 
-  return handleZodError(error, filter);
+  return handleZodError(error, data);
 };
 
 export const fetchBusinessReports = async ({
@@ -109,13 +110,13 @@ export const fetchBusinessReports = async ({
     { encode: false },
   );
 
-  const [filter, error] = await apiClient({
+  const [data, error] = await apiClient({
     endpoint: `business-reports/?${queryParams}`,
     method: Method.GET,
     schema: BusinessReportsSchema,
   });
 
-  return handleZodError(error, filter);
+  return handleZodError(error, data);
 };
 
 export const fetchBusinessReportById = async ({ id }: { id: string }) => {
@@ -170,4 +171,33 @@ export const createBusinessReport = async ({
   });
 
   return handleZodError(error, businessReport);
+};
+
+export const createBusinessReportBatch = async ({
+  merchantSheet,
+  isExample,
+  reportType,
+}: {
+  merchantSheet: File;
+  isExample: boolean;
+  reportType: TBusinessReportType;
+}) => {
+  if (isExample) {
+    toast.info(t('toast:batch_business_report_creation.is_example'));
+
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('file', merchantSheet);
+
+  const [batchId, error] = await apiClient({
+    endpoint: `business-reports/upload-batch/${reportType}`,
+    method: Method.POST,
+    schema: z.object({ batchId: z.string() }),
+    body: formData,
+    isFormData: true,
+  });
+
+  return handleZodError(error, batchId);
 };

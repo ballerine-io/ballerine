@@ -4,7 +4,7 @@ import { useNominatimQuery } from './hooks/useNominatimQuery/useNominatimQuery';
 import { IMapCellProps } from './interfaces';
 import { Map } from '../../../../common/components/molecules/Map/Map';
 import { ErrorAlert } from '../../../../common/components/atoms/ErrorAlert/ErrorAlert';
-import { Skeleton } from '../../../../common/components/atoms/Skeleton/Skeleton';
+import { Skeleton } from '@ballerine/ui';
 
 export const MapCell: FunctionComponent<IMapCellProps> = ({ value }) => {
   const { data, isLoading, isError } = useNominatimQuery(value);

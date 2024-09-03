@@ -1,5 +1,5 @@
 import React from 'react';
-import { ctw } from '@/utils/ctw';
+import { ctw } from '@/common/utils/ctw';
 
 export const TableFooter = React.forwardRef<
   HTMLTableSectionElement,
@@ -11,4 +11,5 @@ export const TableFooter = React.forwardRef<
     {...props}
   />
 ));
+
 TableFooter.displayName = 'TableFooter';

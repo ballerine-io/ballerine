@@ -7,7 +7,6 @@ import { FilterService } from '@/filter/filter.service';
 import { FilterRepository } from '@/filter/filter.repository';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
-import { WorkflowService } from '@/workflow/workflow.service';
 import { BusinessRepository } from '@/business/business.repository';
 import { StorageService } from '@/storage/storage.service';
 import { FileService } from '@/providers/file/file.service';
@@ -30,9 +29,19 @@ import { BusinessService } from '@/business/business.service';
 import { BusinessReportService } from '@/business-report/business-report.service';
 // eslint-disable-next-line import/no-cycle
 import { BusinessReportModule } from '@/business-report/business-report.module';
+import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
+import { SentryService } from '@/sentry/sentry.service';
+import { WorkflowModule } from '@/workflow/workflow.module';
 
 @Module({
-  imports: [ProjectModule, CustomerModule, HttpModule, BusinessReportModule],
+  imports: [
+    ProjectModule,
+    CustomerModule,
+    HttpModule,
+    BusinessReportModule,
+    RuleEngineModule,
+    WorkflowModule,
+  ],
   controllers: [EndUserControllerInternal, EndUserControllerExternal],
   providers: [
     EndUserRepository,
@@ -49,7 +58,6 @@ import { BusinessReportModule } from '@/business-report/business-report.module';
     BusinessService,
     WorkflowDefinitionRepository,
     WorkflowRuntimeDataRepository,
-    WorkflowService,
     UserService,
     UserRepository,
     PasswordService,
@@ -59,6 +67,7 @@ import { BusinessReportModule } from '@/business-report/business-report.module';
     WorkflowTokenRepository,
     UiDefinitionRepository,
     UiDefinitionService,
+    SentryService,
   ],
 })
 export class EndUserModule {}

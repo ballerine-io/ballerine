@@ -75,6 +75,21 @@ export const serverEnvSchema = {
     .string()
     .optional()
     .describe('Bucket name of Data migration folders'),
+  NOTION_API_KEY: z.string().describe('Notion API key'),
+  SECRETS_MANAGER_PROVIDER: z
+    .enum(['aws-secrets-manager', 'in-memory'])
+    .default('aws-secrets-manager')
+    .describe('Secrets Manager provider'),
+  AWS_SECRETS_MANAGER_PREFIX: z
+    .string()
+    .optional()
+    .default('/dev/customers/')
+    .describe('AWS Secrets Manager prefix'),
+
+  // IN_MEMORY is reserved for environment variables
+  IN_MEMORIES_SECRET_ACQUIRER_ID: z.string().optional(),
+  IN_MEMORIES_SECRET_PRIVATE_KEY: z.string().optional(),
+  IN_MEMORIES_SECRET_CONSUMER_KEY: z.string().optional(),
 };
 
 if (!process.env['ENVIRONMENT_NAME'] || process.env['ENVIRONMENT_NAME'] === 'local') {

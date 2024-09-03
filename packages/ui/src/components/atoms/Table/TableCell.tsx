@@ -1,5 +1,5 @@
 import React from 'react';
-import { ctw } from '@/utils/ctw';
+import { ctw } from '@/common/utils/ctw';
 
 export const TableCell = React.forwardRef<
   HTMLTableCellElement,
@@ -11,4 +11,5 @@ export const TableCell = React.forwardRef<
     {...props}
   />
 ));
+
 TableCell.displayName = 'TableCell';

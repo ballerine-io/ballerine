@@ -6,12 +6,14 @@ import { isString } from '@/common/utils/is-string/is-string';
 
 export const useBusinessReportsQuery = ({
   reportType,
+  search,
   page,
   pageSize,
   sortBy,
   sortDir,
 }: {
   reportType: TBusinessReportType;
+  search: string;
   page: number;
   pageSize: number;
   sortBy: string;
@@ -20,7 +22,7 @@ export const useBusinessReportsQuery = ({
   const isAuthenticated = useIsAuthenticated();
 
   return useQuery({
-    ...businessReportsQueryKey.list({ reportType, page, pageSize, sortBy, sortDir }),
+    ...businessReportsQueryKey.list({ reportType, search, page, pageSize, sortBy, sortDir }),
     enabled:
       isAuthenticated &&
       isString(reportType) &&
