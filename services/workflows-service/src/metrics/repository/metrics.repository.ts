@@ -343,6 +343,32 @@ export class MetricsRepository {
     return Object.fromEntries(mappedStatuses);
   }
 
+
+  async getReportMCCsCount(projectId: TProjectId) {
+    const mccCounts = await this.prismaService.$queryRaw<Array<{ mcc: string; count: bigint }>>`
+    WITH "flattenedFormattedMCC" AS (
+      SELECT
+        "projectId",
+        jsonb_array_elements_text("report"->'data'->'lineOfBusiness'->'formattedMcc') AS mcc
+      FROM
+        "BusinessReport"
+      WHERE
+        "projectId" = ${projectId}
+    )
+    SELECT
+      mcc,
+      COUNT(*) AS count
+    FROM
+      "flattenedFormattedMCC"
+    WHERE
+      mcc IS NOT NULL AND mcc != ''
+    GROUP BY
+      mcc
+  `;
+
+    return Object.fromEntries(mccCounts.map(({ mcc, count }) => [mcc, Number(count)]));
+  }
+
   async getApprovedBusinessesReportsByRiskLevel(projectId: TProjectId) {
     const results = await this.prismaService.$queryRaw<
       Array<{ riskLevel: 'low' | 'medium' | 'high' | 'critical'; count: number }>

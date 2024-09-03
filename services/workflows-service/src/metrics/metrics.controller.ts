@@ -128,11 +128,12 @@ export class MetricsController {
     schema: Type.Record(Type.String(), Type.Unknown()),
   })
   @Validate({
-    response: HomeMetricsSchema,
+    // response: HomeMetricsSchema,
+    response: Type.Any(),
   })
   async getHomeMetrics(
     @CurrentProject() currentProjectId: TProjectId,
-  ): Promise<Static<typeof HomeMetricsSchema>> {
+  ) {
     return await this.metricsService.getHomeMetrics(currentProjectId);
   }
 }
