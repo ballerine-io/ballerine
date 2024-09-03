@@ -63,7 +63,9 @@ export const getTabsToBlocksMap = ({
         : []),
       ...websiteMonitoringBlock,
       ...entityInfoBlock,
-      ...merchantScreeningBlock,
+      ...(blocksCreationParams?.workflow?.context?.pluginsOutput?.merchantScreening
+        ? merchantScreeningBlock
+        : []),
     ],
     [Tab.COMPANY_INFORMATION]: [
       ...entityInfoBlock,
