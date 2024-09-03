@@ -1,15 +1,18 @@
-import { ApiPlugin } from './api-plugin';
-import { TContext } from '../../utils/types';
-import { IApiPluginParams } from './types';
-import { logger } from '../../logger';
 import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
 import { alpha2ToAlpha3 } from 'i18n-iso-countries';
+import { logger } from '../../logger';
+import { TContext } from '../../utils/types';
+import { ApiPlugin } from './api-plugin';
+import { IApiPluginParams } from './types';
 
 export class MastercardMerchantScreeningPlugin extends ApiPlugin {
   public static pluginType = 'http';
 
   constructor(pluginParams: IApiPluginParams) {
-    super(pluginParams);
+    super({
+      ...pluginParams,
+      method: 'POST' as const,
+    });
   }
 
   async invoke(context: TContext) {
@@ -32,21 +35,17 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
     try {
       const secrets = await this.secretsManager?.getAll?.();
       const url = `${process.env.UNIFIED_API_URL}/merchant-screening/mastercard`;
-      const method = 'POST';
       const entity = isObject(context.entity) ? context.entity : {};
       const countrySubdivisionSupportedCountries = ['US', 'CA'] as const;
       const address = {
-        line1: [
-          entity?.data?.additionalInfo?.headquarters?.street,
-          entity?.data?.additionalInfo?.headquarters?.streetNumber,
-        ]
+        line1: [entity?.data?.address?.street, entity?.data?.address?.streetNumber]
           .filter(Boolean)
           .join(' '),
-        city: entity?.data?.additionalInfo?.headquarters?.city,
-        country: alpha2ToAlpha3(entity?.data?.additionalInfo?.headquarters?.country),
-        postalCode: requestPayload?.postalCode,
+        city: entity?.data?.address?.city,
+        country: alpha2ToAlpha3(entity?.data?.address?.country),
+        postalCode: entity?.data?.address?.postalCode,
         countrySubdivision: countrySubdivisionSupportedCountries.includes(
-          entity?.data?.additionalInfo?.headquarters?.country,
+          entity?.data?.address?.country,
         )
           ? requestPayload?.countrySubdivision
           : undefined,
@@ -72,10 +71,11 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
 
       logger.log('Mastercard Merchant Screening Plugin - Sending API request', {
         url,
-        method,
+        method: this.method,
       });
 
-      const apiResponse = await this.makeApiRequest(url, method, requestPayload, {
+      const apiResponse = await this.makeApiRequest(url, this.method, requestPayload, {
+        ...this.headers,
         Authorization: `Bearer ${process.env.UNIFIED_API_TOKEN}`,
       });
 

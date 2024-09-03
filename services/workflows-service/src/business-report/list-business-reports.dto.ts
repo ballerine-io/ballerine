@@ -10,6 +10,10 @@ export class ListBusinessReportsDto {
   @IsString()
   businessId?: string;
 
+  @IsOptional()
+  @IsString()
+  batchId?: string;
+
   @ApiProperty({
     required: true,
   })
