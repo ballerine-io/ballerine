@@ -13,15 +13,28 @@ export const ReportsByRiskLevelSchema = z.object({
 });
 
 export const HomeMetricsOutputSchema = z.object({
+  mccCounts: z.array(
+    z.object({
+      mcc: z.number(),
+      count: z.number(),
+      percentage: z.number(),
+      mccDescription: z.string(),
+    }),
+  ),
+  reportStatuses: z.array(
+    z.object({
+      status: z.string(),
+      count: z.number(),
+    }),
+  ),
   riskIndicators: z.array(
     z.object({
       name: z.string(),
       count: z.number(),
     }),
   ),
-  reports: z.object({
+  reportsRisks: z.object({
     all: ReportsByRiskLevelSchema,
-    inProgress: ReportsByRiskLevelSchema,
     approved: ReportsByRiskLevelSchema,
   }),
 });

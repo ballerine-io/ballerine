@@ -130,9 +130,7 @@ export class MetricsController {
   @Validate({
     response: HomeMetricsSchema,
   })
-  async getHomeMetrics(
-    @CurrentProject() currentProjectId: TProjectId,
-  ): Promise<Static<typeof HomeMetricsSchema>> {
+  async getHomeMetrics(@CurrentProject() currentProjectId: TProjectId) {
     return await this.metricsService.getHomeMetrics(currentProjectId);
   }
 }
