@@ -9,7 +9,6 @@ const { theme, style } = buildTheme({
   themeColor: 'blue',
 });
 
-//Add your Client ID here ⬇️
 const clientId = '8f29c89d-ec0e-494d-b18d-6c3590b28be6';
 
 const Chatbot = () => {
