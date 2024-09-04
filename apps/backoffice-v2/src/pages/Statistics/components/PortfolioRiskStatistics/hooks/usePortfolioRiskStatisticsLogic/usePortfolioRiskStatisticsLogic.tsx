@@ -10,8 +10,11 @@ import { HomeMetricsOutputSchema } from '@/domains/metrics/hooks/queries/useHome
 
 export const usePortfolioRiskStatisticsLogic = ({
   riskIndicators,
-  reportsRisks,
-}: z.output<typeof HomeMetricsOutputSchema>) => {
+  reports,
+}: {
+  riskIndicators: z.infer<typeof HomeMetricsOutputSchema>['riskIndicators'];
+  reports: z.infer<typeof HomeMetricsOutputSchema>['reports'];
+}) => {
   const [parent] = useAutoAnimate<HTMLTableSectionElement>();
   const [riskIndicatorsSorting, setRiskIndicatorsSorting] = useState<SortDirection>('desc');
   const onSortRiskIndicators = useCallback(
@@ -41,14 +44,25 @@ export const usePortfolioRiskStatisticsLogic = ({
   }, [filteredRiskIndicators]);
   const filters = [
     {
-      name: 'All Merchant Monitoring Reports by Risk',
-      description: 'Risk levels of all merchant monitoring reports',
+      name: 'Merchant Monitoring',
+      description: 'Risk Risk levels of all merchant monitoring reports.',
       entityPlural: 'Reports',
       riskLevels: {
-        low: reportsRisks?.all?.low,
-        medium: reportsRisks?.all?.medium,
-        high: reportsRisks?.all?.high,
-        critical: reportsRisks?.all?.critical,
+        low: reports.all.low,
+        medium: reports.all.medium,
+        high: reports.all.high,
+        critical: reports.all.critical,
+      },
+    },
+    {
+      name: 'Merchant Onboarding',
+      description: 'Risk levels of all active onboarding cases.',
+      entityPlural: 'Cases',
+      riskLevels: {
+        low: reports.inProgress.low,
+        medium: reports.inProgress.medium,
+        high: reports.inProgress.high,
+        critical: reports.inProgress.critical,
       },
     },
   ];

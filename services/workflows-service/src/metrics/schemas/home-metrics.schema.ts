@@ -8,28 +8,15 @@ export const ReportsByRiskLevelSchema = Type.Object({
 });
 
 export const HomeMetricsSchema = Type.Object({
-  mccCounts: Type.Array(
-    Type.Object({
-      mcc: Type.Number(),
-      count: Type.Number(),
-      percentage: Type.Number(),
-      mccDescription: Type.String(),
-    }),
-  ),
   riskIndicators: Type.Array(
     Type.Object({
       name: Type.String(),
       count: Type.Number(),
     }),
   ),
-  reportStatuses: Type.Array(
-    Type.Object({
-      status: Type.String(),
-      count: Type.Number(),
-    }),
-  ),
-  reportsRisks: Type.Object({
+  reports: Type.Object({
     all: ReportsByRiskLevelSchema,
+    inProgress: ReportsByRiskLevelSchema,
     approved: ReportsByRiskLevelSchema,
   }),
 });
