@@ -279,7 +279,7 @@ export class AlertService {
               executionRow,
               error: new Error('Aggregated row is missing properties '),
             });
-          } 
+          }
 
           const subjectResult = _.map(_.pick(executionRow, inlineRule.subjects), (value, key) => ({
             [key]: value,
