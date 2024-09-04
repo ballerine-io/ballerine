@@ -17,15 +17,8 @@ async function dbReset() {
     process.exit(1);
   }
 
-  console.info('Resetting and seeding the database...');
-
-  // Run Prisma migrate reset
   console.info('Running Prisma migrate reset...');
   execSync('prisma migrate reset --skip-seed -f', { stdio: 'inherit' });
 
-  // Run seed script
-  console.info('Running seed script...');
-  execSync('npm run seed', { stdio: 'inherit' });
-
-  console.info('Reset and seed completed successfully');
+  console.info('Reset completed successfully');
 }
