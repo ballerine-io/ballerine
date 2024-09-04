@@ -310,7 +310,7 @@ export const useKycBlock = ({
               size={'wide'}
               variant={'success'}
               className={ctw({
-                '!bg-success': !isDisabled
+                '!bg-success': !isDisabled,
               })}
             >
               Approve
