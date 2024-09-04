@@ -1,6 +1,6 @@
-import { Webchat, WebchatProvider, Fab, getClient } from '@botpress/webchat';
+import { Webchat, WebchatProvider, getClient } from '@botpress/webchat';
 import { buildTheme } from '@botpress/webchat-generator';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuthenticatedUserQuery } from '../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 
 // declare const themeNames: readonly ["prism", "galaxy", "dusk", "eggplant", "dawn", "midnight"];
@@ -12,7 +12,7 @@ const { theme, style } = buildTheme({
 //Add your Client ID here ⬇️
 const clientId = '8f29c89d-ec0e-494d-b18d-6c3590b28be6';
 
-export default function Chatbot() {
+const Chatbot = () => {
   const client = getClient({ clientId });
   const [isWebchatOpen, setIsWebchatOpen] = useState(false);
   const { data: session } = useAuthenticatedUserQuery();
@@ -20,7 +20,7 @@ export default function Chatbot() {
   useEffect(() => {
     if (session?.user) {
       const { firstName, lastName, email } = session.user;
-      client.updateUser({
+      void client.updateUser({
         data: {
           firstName,
           lastName,
@@ -109,4 +109,6 @@ export default function Chatbot() {
       </WebchatProvider>
     </div>
   );
-}
+};
+
+export default Chatbot;
