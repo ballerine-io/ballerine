@@ -144,7 +144,7 @@ export const PortfolioRiskStatistics: FunctionComponent<
             className={'col-span-full min-h-[13.125rem] rounded-xl bg-[#F6F6F6] p-2'}
           >
             <Card className={'flex h-full flex-col px-3'}>
-              <CardHeader className={'pb-1'}>{'Report Status'}</CardHeader>
+              <CardHeader className={'pb-1'}>Report Status</CardHeader>
               <CardContent>
                 <p className={'mb-8 text-slate-400'}>{'Merchant monitoring statuses'}</p>
                 <div className={'flex items-center space-x-5 pt-3'}>
