@@ -49,6 +49,8 @@ const MEDIUM_LTE_RISK_SCORE = 69;
 const HIGH_LTE_RISK_SCORE = 84;
 const CRITICAL_GTE_RISK_SCORE = 85;
 
+type TBusinessReportStatusWithFailed = keyof typeof BusinessReportStatus | 'failed';
+
 @Injectable()
 export class MetricsRepository {
   constructor(private readonly prismaService: PrismaService) {}
@@ -260,34 +262,99 @@ export class MetricsRepository {
     };
   }
 
-  async getInProgressReportsByRiskLevel(projectId: TProjectId) {
-    const results = await this.prismaService.$queryRaw<
-      Array<{ riskLevel: 'low' | 'medium' | 'high' | 'critical'; count: number }>
-    >`
-        SELECT
-          CASE
-            WHEN "riskScore" <= ${LOW_LTE_RISK_SCORE} THEN 'low'
-            WHEN "riskScore" <= ${MEDIUM_LTE_RISK_SCORE} THEN 'medium'
-            WHEN "riskScore" <= ${HIGH_LTE_RISK_SCORE} THEN 'high'
-            WHEN "riskScore" >= ${CRITICAL_GTE_RISK_SCORE} THEN 'critical'
-          END AS "riskLevel",
-          COUNT(*) AS "count"
-        FROM
-          "BusinessReport"
-        JOIN "Business" ON "BusinessReport"."businessId" = "Business"."id"
-        WHERE
-          "status"::text = ${BusinessReportStatus.in_progress}
-          AND "BusinessReport"."projectId" = ${projectId}
-          AND "Business"."approvalState"::text = ${ApprovalState.PROCESSING}
-        GROUP BY
-          "riskLevel";`;
+  async getReportStatusesCount(projectId: TProjectId) {
+    const reportStatusCounts = await this.prismaService.businessReport.groupBy({
+      by: ['status'],
+      _count: {
+        status: true,
+      },
+      where: {
+        projectId,
+      },
+    });
 
-    return {
-      low: Number(results.find(result => result.riskLevel === 'low')?.count ?? 0),
-      medium: Number(results.find(result => result.riskLevel === 'medium')?.count ?? 0),
-      high: Number(results.find(result => result.riskLevel === 'high')?.count ?? 0),
-      critical: Number(results.find(result => result.riskLevel === 'critical')?.count ?? 0),
-    };
+    const mappedStatuses = reportStatusCounts.reduce((acc, { _count, status }) => {
+      acc[status as keyof typeof BusinessReportStatus] = _count.status;
+
+      return acc;
+    }, {} as Record<TBusinessReportStatusWithFailed, number>);
+
+    const statusOrder = [
+      'completed',
+      'in_progress',
+      'new',
+      'failed',
+    ] satisfies TBusinessReportStatusWithFailed[];
+
+    const result = statusOrder.map(status => ({
+      status: status == 'new' ? 'in_queue' : (status as string),
+      count: mappedStatuses[status] ?? 0,
+    }));
+
+    return result;
+  }
+
+  async getReportMCCsCount(projectId: TProjectId) {
+    const mccCounts = await this.prismaService.$queryRaw<Array<{ mcc: string; count: bigint }>>`
+    WITH "flattenedFormattedMCC" AS (
+      SELECT
+        "projectId",
+        CASE
+          WHEN jsonb_typeof("report"->'data'->'lineOfBusiness'->'formattedMcc') = 'string'
+          THEN jsonb_build_array("report"->'data'->'lineOfBusiness'->>'formattedMcc')
+          WHEN jsonb_typeof("report"->'data'->'lineOfBusiness'->'formattedMcc') = 'array'
+          THEN "report"->'data'->'lineOfBusiness'->'formattedMcc'
+          ELSE NULL
+        END AS mcc_array
+      FROM
+        "BusinessReport"
+      WHERE
+        "status"::text = ${BusinessReportStatus.completed}
+        AND "projectId" = ${projectId}
+    ),
+     "unnested" AS (
+      SELECT
+        "projectId",
+        jsonb_array_elements_text(mcc_array) AS mcc
+      FROM
+        "flattenedFormattedMCC"
+      WHERE
+        mcc_array IS NOT NULL
+    )
+    SELECT
+      mcc,
+      COUNT(*) AS count
+    FROM
+      "unnested"
+    WHERE
+      mcc IS NOT NULL AND mcc != ''
+    GROUP BY
+      mcc
+    ORDER BY
+      count DESC,
+      mcc ASC;
+  `;
+
+    const mccHash = Object.fromEntries(mccCounts.map(({ mcc, count }) => [mcc, Number(count)]));
+    const total = Object.values(mccHash).reduce((sum, count) => sum + count, 0);
+
+    return Object.entries(mccHash)
+      .map(([mccName, count]) => {
+        const [mcc, mccDescription] = mccName.split(' - ');
+
+        if (!mcc || !mccDescription) {
+          return;
+        }
+
+        return {
+          mcc: parseInt(mcc),
+          count,
+          percentage: Number(((count / total) * 100).toFixed(2)),
+          mccDescription,
+        };
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.count - a.count);
   }
 
   async getApprovedBusinessesReportsByRiskLevel(projectId: TProjectId) {
