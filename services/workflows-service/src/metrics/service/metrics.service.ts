@@ -14,6 +14,8 @@ import { UserWorkflowProcessingStatisticModel } from '@/metrics/service/models/u
 import { GetUserWorkflowProcessingStatisticParams } from '@/metrics/service/types/get-user-workflow-processing-statistic.params';
 import type { TProjectId, TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
+import { Static } from '@sinclair/typebox';
+import { HomeMetricsSchema } from '@/metrics/schemas/home-metrics.schema';
 
 @Injectable()
 export class MetricsService {
@@ -94,23 +96,15 @@ export class MetricsService {
     return await this.metricsRepository.getWorkflowDefinitionVariantsMetric(projectIds);
   }
 
-  async getHomeMetrics(currentProjectId: TProjectId) {
-    const [riskIndicators, reportStatuses, mccCounts, allRiskLevels, completedRiskLevels] =
-      await Promise.all([
-        this.metricsRepository.getRiskIndicators(currentProjectId),
-        this.metricsRepository.getReportStatusesCount(currentProjectId),
-        this.metricsRepository.getReportMCCsCount(currentProjectId),
-        this.metricsRepository.getReportsByRiskLevel(currentProjectId),
-        this.metricsRepository.getApprovedBusinessesReportsByRiskLevel(currentProjectId),
-      ]);
-
+  async getHomeMetrics(currentProjectId: TProjectId): Promise<Static<typeof HomeMetricsSchema>> {
     return {
-      mccCounts,
-      riskIndicators,
-      reportStatuses,
-      reportsRisks: {
-        all: allRiskLevels,
-        approved: completedRiskLevels,
+      riskIndicators: await this.metricsRepository.getRiskIndicators(currentProjectId),
+      reports: {
+        all: await this.metricsRepository.getReportsByRiskLevel(currentProjectId),
+        inProgress: await this.metricsRepository.getInProgressReportsByRiskLevel(currentProjectId),
+        approved: await this.metricsRepository.getApprovedBusinessesReportsByRiskLevel(
+          currentProjectId,
+        ),
       },
     };
   }
