@@ -157,9 +157,6 @@ export const CaseCallToActionLegacy: FunctionComponent<ICaseCallToActionLegacyPr
       variant={`success`}
       disabled={data?.disabled || isDisabled}
       onClick={onMutateApproveCase}
-      className={ctw({
-        '!bg-success': !data?.disabled,
-      })}
     >
       {value}
     </Button>
