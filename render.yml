@@ -1,0 +1,102 @@
+services:
+  - type: web
+    name: backoffice
+    env: docker
+    dockerfilePath: ./apps/backoffice-v2/Dockerfile
+    dockerContext: ./apps/backoffice-v2
+    buildCommand: docker build --build-arg NPM_LOG_LEVEL=notice .
+    startCommand: docker run backoffice
+    envVars:
+      - key: PORT
+        value: 80
+
+  - type: web
+    name: kyb-app
+    env: docker
+    dockerfilePath: ./apps/kyb-app/Dockerfile
+    dockerContext: ./apps/kyb-app
+    buildCommand: docker build --build-arg NPM_LOG_LEVEL=notice .
+    startCommand: docker run kyb-app
+    envVars:
+      - key: PORT
+        value: 80
+      - key: VITE_API_URL
+        value: https://${RENDER_EXTERNAL_HOSTNAME}/api/v1/
+      - key: VITE_KYB_DEFINITION_ID
+        value: kyb_parent_kyc_session_example
+
+  - type: web
+    name: workflow-service
+    env: docker
+    image: ghcr.io/ballerine-io/workflows-service:latest
+    disk:
+      name: postgres-data
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 10
+    startCommand: |
+      /bin/sh -c "npm run db:init && npm run seed && dumb-init npm run prod"
+    envVars:
+      - key: BCRYPT_SALT
+        sync: false
+      - key: SESSION_EXPIRATION_IN_MINUTES
+        sync: false
+      - key: DB_URL
+        value: postgres://${DB_USER}:${DB_PASSWORD}@${RENDER_INTERNAL_HOSTNAME}:${DB_PORT}
+      - key: API_KEY
+        sync: false
+      - key: NODE_ENV
+        sync: false
+      - key: COMPOSE_PROJECT_NAME
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: BACKOFFICE_CORS_ORIGIN
+        value: https://${RENDER_EXTERNAL_HOSTNAME}
+      - key: WORKFLOW_DASHBOARD_CORS_ORIGIN
+        value: https://${RENDER_EXTERNAL_HOSTNAME}
+      - key: PORT
+        value: 3000
+      - key: KYB_EXAMPLE_CORS_ORIGIN
+        value: https://${RENDER_EXTERNAL_HOSTNAME}
+      - key: APP_API_URL
+        value: https://alon.ballerine.dev
+      - key: EMAIL_API_TOKEN
+        value: ''
+      - key: EMAIL_API_URL
+        value: https://api.sendgrid.com/v3/mail/send
+      - key: UNIFIED_API_URL
+        value: https://unified-api-test.eu.ballerine.app
+      - key: UNIFIED_API_TOKEN
+        value: ''
+      - key: UNIFIED_API_SHARED_SECRET
+        value: ''
+      - key: ENVIRONMENT_NAME
+        value: development
+      - key: HASHING_KEY_SECRET
+        sync: false
+      - key: HASHING_KEY_SECRET_BASE64
+        sync: false
+      - key: NOTION_API_KEY
+        sync: false
+
+  - type: web
+    name: workflows-dashboard
+    env: docker
+    dockerfilePath: ./apps/workflows-dashboard/Dockerfile
+    dockerContext: ./apps/workflows-dashboard
+    buildCommand: docker build --build-arg NPM_LOG_LEVEL=notice .
+    startCommand: docker run workflows-dashboard
+    envVars:
+      - key: PORT
+        value: 80
+
+databases:
+  - name: postgres
+    plan: standard
+    postgresMajorVersion: 15
