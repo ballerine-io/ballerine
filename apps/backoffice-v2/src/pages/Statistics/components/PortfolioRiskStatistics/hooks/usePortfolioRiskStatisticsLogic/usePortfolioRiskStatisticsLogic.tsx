@@ -11,8 +11,6 @@ import { HomeMetricsOutputSchema } from '@/domains/metrics/hooks/queries/useHome
 export const usePortfolioRiskStatisticsLogic = ({
   riskIndicators,
   reportsRisks,
-  reportStatuses,
-  mccCounts,
 }: z.output<typeof HomeMetricsOutputSchema>) => {
   const [parent] = useAutoAnimate<HTMLTableSectionElement>();
   const [riskIndicatorsSorting, setRiskIndicatorsSorting] = useState<SortDirection>('desc');
@@ -43,8 +41,8 @@ export const usePortfolioRiskStatisticsLogic = ({
   }, [filteredRiskIndicators]);
   const filters = [
     {
-      name: 'All Merchant Monitoring',
-      description: 'Risk Risk levels of all merchant monitoring reports.',
+      name: 'All Merchant Monitoring by Risk',
+      description: 'Risk levels of all merchant monitoring reports',
       entityPlural: 'Reports',
       riskLevels: {
         low: reportsRisks?.all?.low,
@@ -53,17 +51,17 @@ export const usePortfolioRiskStatisticsLogic = ({
         critical: reportsRisks?.all?.critical,
       },
     },
-    {
-      name: 'Approved Merchant Onboarding',
-      description: 'Risk levels of all Approved merchant onboarding reports.',
-      entityPlural: 'Cases',
-      riskLevels: {
-        low: reportsRisks?.approved?.low,
-        medium: reportsRisks?.approved?.medium,
-        high: reportsRisks?.approved?.high,
-        critical: reportsRisks?.approved?.critical,
-      },
-    },
+    // {
+    //   name: 'Approved Merchant Onboarding',
+    //   description: 'Risk levels of all approved merchant onboarding reports',
+    //   entityPlural: 'Cases',
+    //   riskLevels: {
+    //     low: reportsRisks?.approved?.low,
+    //     medium: reportsRisks?.approved?.medium,
+    //     high: reportsRisks?.approved?.high,
+    //     critical: reportsRisks?.approved?.critical,
+    //   },
+    // },
   ];
 
   return {

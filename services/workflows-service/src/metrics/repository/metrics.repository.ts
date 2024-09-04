@@ -271,11 +271,25 @@ export class MetricsRepository {
       },
     });
 
-    const mappedStatuses = reportStatusCounts.flatMap(({ _count, status }) => {
-      return { status: status as string, count: _count.status };
-    });
+    const mappedStatuses = reportStatusCounts.reduce((acc, { _count, status }) => {
+      acc[status as keyof typeof BusinessReportStatus] = _count.status;
 
-    return mappedStatuses.sort((a, b) => b.count - a.count);
+      return acc;
+    }, {} as Record<keyof typeof BusinessReportStatus, number>);
+
+    const statusOrder: Array<keyof typeof BusinessReportStatus> = [
+      'completed',
+      'in_progress',
+      'new',
+      'failed',
+    ];
+
+    const result = statusOrder.map(status => ({
+      status: status == 'new' ? 'in_queue' : status,
+      count: mappedStatuses[status] || 0,
+    }));
+
+    return result;
   }
 
   async getReportMCCsCount(projectId: TProjectId) {
