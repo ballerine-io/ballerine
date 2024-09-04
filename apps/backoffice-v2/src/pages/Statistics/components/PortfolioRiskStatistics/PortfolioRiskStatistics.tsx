@@ -146,7 +146,7 @@ export const PortfolioRiskStatistics: FunctionComponent<
             <Card className={'flex h-full flex-col px-3'}>
               <CardHeader className={'pb-1'}>Report Status</CardHeader>
               <CardContent>
-                <p className={'mb-8 text-slate-400'}>{'Merchant monitoring statuses'}</p>
+                <p className={'mb-8 text-slate-400'}>Merchant monitoring statuses</p>
                 <div className={'flex items-center space-x-5 pt-3'}>
                   <PieChart width={104} height={104}>
                     <text
@@ -169,7 +169,7 @@ export const PortfolioRiskStatistics: FunctionComponent<
                     </text>
                     <Pie
                       data={reportStatuses.map(({ status, count }) => ({
-                        name: `${titleCase(status)}`,
+                        name: titleCase(status),
                         count,
                       }))}
                       cx={47}
@@ -267,7 +267,6 @@ export const PortfolioRiskStatistics: FunctionComponent<
                           >
                             {`${mcc} - ${mccDescription}`}
                           </div>
-                          {/*<span className={'relative z-50 ms-4'}>{titleCase(name ?? '')}</span>*/}
                         </div>
                       </TableCell>
                       <TableCell className={'pb-0 ps-0'}>
@@ -346,7 +345,6 @@ export const PortfolioRiskStatistics: FunctionComponent<
                           >
                             {titleCase(name ?? '')}
                           </div>
-                          {/*<span className={'relative z-50 ms-4'}>{titleCase(name ?? '')}</span>*/}
                         </div>
                       </TableCell>
                       <TableCell className={'pb-0 ps-0'}>

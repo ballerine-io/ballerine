@@ -49,6 +49,8 @@ const MEDIUM_LTE_RISK_SCORE = 69;
 const HIGH_LTE_RISK_SCORE = 84;
 const CRITICAL_GTE_RISK_SCORE = 85;
 
+type TBusinessReportStatusWithFailed = keyof typeof BusinessReportStatus | 'failed';
+
 @Injectable()
 export class MetricsRepository {
   constructor(private readonly prismaService: PrismaService) {}
@@ -275,18 +277,18 @@ export class MetricsRepository {
       acc[status as keyof typeof BusinessReportStatus] = _count.status;
 
       return acc;
-    }, {} as Record<keyof typeof BusinessReportStatus, number>);
+    }, {} as Record<TBusinessReportStatusWithFailed, number>);
 
-    const statusOrder: Array<keyof typeof BusinessReportStatus> = [
+    const statusOrder = [
       'completed',
       'in_progress',
       'new',
       'failed',
-    ];
+    ] satisfies TBusinessReportStatusWithFailed[];
 
     const result = statusOrder.map(status => ({
-      status: status == 'new' ? 'in_queue' : status,
-      count: mappedStatuses[status] || 0,
+      status: status == 'new' ? 'in_queue' : (status as string),
+      count: mappedStatuses[status] ?? 0,
     }));
 
     return result;

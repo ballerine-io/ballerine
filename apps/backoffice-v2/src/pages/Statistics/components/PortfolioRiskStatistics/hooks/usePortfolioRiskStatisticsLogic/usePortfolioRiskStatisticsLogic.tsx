@@ -41,7 +41,7 @@ export const usePortfolioRiskStatisticsLogic = ({
   }, [filteredRiskIndicators]);
   const filters = [
     {
-      name: 'All Merchant Monitoring by Risk',
+      name: 'All Merchant Monitoring Reports by Risk',
       description: 'Risk levels of all merchant monitoring reports',
       entityPlural: 'Reports',
       riskLevels: {
@@ -51,17 +51,6 @@ export const usePortfolioRiskStatisticsLogic = ({
         critical: reportsRisks?.all?.critical,
       },
     },
-    // {
-    //   name: 'Approved Merchant Onboarding',
-    //   description: 'Risk levels of all approved merchant onboarding reports',
-    //   entityPlural: 'Cases',
-    //   riskLevels: {
-    //     low: reportsRisks?.approved?.low,
-    //     medium: reportsRisks?.approved?.medium,
-    //     high: reportsRisks?.approved?.high,
-    //     critical: reportsRisks?.approved?.critical,
-    //   },
-    // },
   ];
 
   return {

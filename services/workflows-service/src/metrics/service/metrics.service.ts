@@ -95,13 +95,14 @@ export class MetricsService {
   }
 
   async getHomeMetrics(currentProjectId: TProjectId) {
-    // TODO - Add to read replica
-    const riskIndicators = await this.metricsRepository.getRiskIndicators(currentProjectId);
-    const reportStatuses = await this.metricsRepository.getReportStatusesCount(currentProjectId);
-    const mccCounts = await this.metricsRepository.getReportMCCsCount(currentProjectId);
-    const allRiskLevels = await this.metricsRepository.getReportsByRiskLevel(currentProjectId);
-    const completedRiskLevels =
-      await this.metricsRepository.getApprovedBusinessesReportsByRiskLevel(currentProjectId);
+    const [riskIndicators, reportStatuses, mccCounts, allRiskLevels, completedRiskLevels] =
+      await Promise.all([
+        this.metricsRepository.getRiskIndicators(currentProjectId),
+        this.metricsRepository.getReportStatusesCount(currentProjectId),
+        this.metricsRepository.getReportMCCsCount(currentProjectId),
+        this.metricsRepository.getReportsByRiskLevel(currentProjectId),
+        this.metricsRepository.getApprovedBusinessesReportsByRiskLevel(currentProjectId),
+      ]);
 
     return {
       mccCounts,

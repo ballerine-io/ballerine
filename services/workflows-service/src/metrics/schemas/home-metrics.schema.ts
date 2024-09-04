@@ -7,13 +7,6 @@ export const ReportsByRiskLevelSchema = Type.Object({
   critical: Type.Number(),
 });
 
-// export const ReportStatusesCountSchema = Type.Object({
-//   [BusinessReportStatus.new]: Type.Optional(Type.Number()),
-//   [BusinessReportStatus.failed]: Type.Optional(Type.Number()),
-//   [BusinessReportStatus.in_progress]: Type.Optional(Type.Number()),
-//   [BusinessReportStatus.completed]: Type.Optional(Type.Number()),
-// });
-
 export const HomeMetricsSchema = Type.Object({
   mccCounts: Type.Array(
     Type.Object({
