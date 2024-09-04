@@ -1,3 +1,7 @@
+import {
+  getAlertDefinitionCreateData,
+  ALERT_DEFINITIONS,
+} from './../../scripts/alerts/generate-alerts';
 import request from 'supertest';
 import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
 import { INestApplication } from '@nestjs/common';
@@ -11,6 +15,7 @@ import { createAlertDefinition } from '@/test/helpers/create-alert-definition';
 import {
   AlertDefinition,
   Business,
+  Counterparty,
   Customer,
   EndUser,
   PaymentAcquirer,
@@ -36,6 +41,7 @@ import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.r
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { ConfigService } from '@nestjs/config';
 import { AlertService } from '@/alert/alert.service';
+import { TransactionFactory } from './test-utils/transaction-factory';
 
 const getBusinessCounterpartyData = (business?: Business) => {
   if (business) {
@@ -150,6 +156,7 @@ describe('#TransactionControllerExternal', () => {
     app = await initiateNestApp(
       app,
       [
+        PrismaService,
         ProjectScopeService,
         AlertService,
         AlertRepository,
@@ -596,8 +603,9 @@ describe('#TransactionControllerExternal', () => {
     let customer: Customer;
     let project: Project;
     let alertDefinition: AlertDefinition;
+    let baseTransactionFactory: TransactionFactory;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
       customer = await createCustomer(
         app.get(PrismaService),
         faker.datatype.uuid(),
@@ -607,6 +615,13 @@ describe('#TransactionControllerExternal', () => {
         'webhook-shared-secret',
       );
       project = await createProject(app.get(PrismaService), customer, faker.datatype.uuid());
+
+      baseTransactionFactory = new TransactionFactory({
+        prisma: app.get(PrismaService),
+        projectId: project.id,
+      })
+        .paymentMethod(PaymentMethod.credit_card)
+        .transactionDate(faker.date.recent(6));
     });
 
     const getAlertDefinitionWithTimeOptions = (timeUnit: string, timeAmount: number) => ({
@@ -632,6 +647,62 @@ describe('#TransactionControllerExternal', () => {
         date: new Date(currentDate.getTime() - daysAgo * 24 * 60 * 60 * 1000),
       });
     };
+
+    describe('investigation transactions by alert', () => {
+      let alertDefinition: AlertDefinition;
+      let prismaService: PrismaService;
+
+      beforeAll(async () => {
+        prismaService = app.get(PrismaService);
+
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.PAY_HCA_CC, project, undefined, {
+            crossEnvKey: faker.datatype.uuid(),
+          }),
+        });
+
+        expect(
+          ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold,
+        ).toBeGreaterThanOrEqual(1000);
+
+        expect(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.direction).toBe(
+          TransactionDirection.inbound,
+        );
+      });
+
+      it.only('returns transactions associated with the given alertId', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .amount(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold + 1)
+          .count(1)
+          .create();
+
+        // Act
+        await app.get(AlertService).checkAllAlerts();
+
+        // Assert
+        const alerts = await app.get(PrismaService).alert.findMany();
+        if (alerts.length === 0 || alerts[0] === undefined) {
+          throw new Error('No alerts found');
+        }
+        expect(alerts).toHaveLength(1);
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0] as any).toMatchObject({
+          executionDetails: { executionRow: { transactionCount: '1', totalAmount: 1001 } },
+        });
+
+        const response = await request(app.getHttpServer())
+          .get(`/external/transactions/by-alert?alertId=${alerts[0].id}`)
+          .set('authorization', `Bearer ${API_KEY}`);
+
+        expect(response.status).toBe(200);
+        console.log(response.body);
+        expect(response.body).toMatchInlineSnapshot();
+      });
+    });
 
     it('returns transactions associated with the given alertId', async () => {
       alertDefinition = await createAlertDefinition(

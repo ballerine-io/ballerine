@@ -44,21 +44,25 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'PAY_HCA_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
         havingAggregate: AggregateType.SUM,
+        groupBy: ['counterpartyBeneficiaryId'],
+
         direction: TransactionDirection.inbound,
+
         excludedCounterparty: {
           counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
           counterpartyOriginatorIds: [],
         },
+
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
 
         timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
         amountThreshold: 1000,
-        groupBy: ['counterpartyBeneficiaryId'],
       },
     },
   },
@@ -70,9 +74,11 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'PAY_HCA_APM',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
         havingAggregate: AggregateType.SUM,
+        groupBy: ['counterpartyBeneficiaryId'],
 
         direction: TransactionDirection.inbound,
 
@@ -88,533 +94,534 @@ export const ALERT_DEFINITIONS = {
         timeUnit: TIME_UNITS.days,
 
         amountThreshold: 1000,
-
-        groupBy: ['counterpartyBeneficiaryId'],
       },
     },
   },
-  STRUC_CC: {
-    enabled: true,
-    defaultSeverity: AlertSeverity.high,
-    description:
-      'Structuring - Significant number of low value incoming transactions just below a threshold of credit card',
-    inlineRule: {
-      id: 'STRUC_CC',
-      fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId'],
-      options: {
-        havingAggregate: AggregateType.COUNT,
-        groupBy: ['counterpartyBeneficiaryId'],
+  // STRUC_CC: {
+  //   enabled: true,
+  //   defaultSeverity: AlertSeverity.high,
+  //   description:
+  //     'Structuring - Significant number of low value incoming transactions just below a threshold of credit card',
+  //   inlineRule: {
+  //     id: 'STRUC_CC',
+  //     fnName: 'evaluateTransactionsAgainstDynamicRules',
+  //     subjects: ['counterpartyBeneficiaryId'],
+  //     options: {
+  //       havingAggregate: AggregateType.COUNT,
+  //       groupBy: ['counterpartyBeneficiaryId'],
 
-        direction: TransactionDirection.inbound,
-        excludedCounterparty: {
-          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
-          counterpartyOriginatorIds: [],
-        },
+  //       direction: TransactionDirection.inbound,
 
-        paymentMethods: [PaymentMethod.credit_card],
-        excludePaymentMethods: false,
+  //       excludedCounterparty: {
+  //         counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+  //         counterpartyOriginatorIds: [],
+  //       },
 
-        timeAmount: SEVEN_DAYS,
-        timeUnit: TIME_UNITS.days,
+  //       paymentMethods: [PaymentMethod.credit_card],
+  //       excludePaymentMethods: false,
 
-        amountThreshold: 5,
-        amountBetween: { min: 500, max: 999 },
-      },
-    },
-  },
-  STRUC_APM: {
-    enabled: true,
-    defaultSeverity: AlertSeverity.high,
-    description:
-      'Structuring - Significant number of low value incoming transactions just below a threshold of APM',
-    inlineRule: {
-      id: 'STRUC_APM',
-      fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId'],
-      options: {
-        havingAggregate: AggregateType.COUNT,
-        groupBy: ['counterpartyBeneficiaryId'],
+  //       timeAmount: SEVEN_DAYS,
+  //       timeUnit: TIME_UNITS.days,
 
-        direction: TransactionDirection.inbound,
-        excludedCounterparty: {
-          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
-          counterpartyOriginatorIds: [],
-        },
-        paymentMethods: [PaymentMethod.credit_card],
-        excludePaymentMethods: true,
+  //       amountThreshold: 5,
+  //       amountBetween: { min: 500, max: 999 },
+  //     },
+  //   },
+  // },
+  // STRUC_APM: {
+  //   enabled: true,
+  //   defaultSeverity: AlertSeverity.high,
+  //   description:
+  //     'Structuring - Significant number of low value incoming transactions just below a threshold of APM',
+  //   inlineRule: {
+  //     id: 'STRUC_APM',
+  //     fnName: 'evaluateTransactionsAgainstDynamicRules',
+  //     subjects: ['counterpartyId'],
+  //     options: {
+  //       havingAggregate: AggregateType.COUNT,
+  //       groupBy: ['counterpartyBeneficiaryId'],
 
-        timeAmount: SEVEN_DAYS,
-        timeUnit: TIME_UNITS.days,
-        amountBetween: { min: 500, max: 999 },
-        amountThreshold: 5,
-      },
-    },
-  },
-  HCAI_CC: {
-    enabled: false,
-    defaultSeverity: AlertSeverity.medium,
-    description:
-      'High Cumulative Amount - Total sum of inbound credit card transactions received from counterparty is greater than a limit over a set period of time',
-    inlineRule: {
-      id: 'HCAI_CC',
-      fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId', 'counterpartyOriginatorId'],
-      options: {
-        havingAggregate: AggregateType.SUM,
-        groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
+  //       direction: TransactionDirection.inbound,
+  //       excludedCounterparty: {
+  //         counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+  //         counterpartyOriginatorIds: [],
+  //       },
+  //       paymentMethods: [PaymentMethod.credit_card],
+  //       excludePaymentMethods: true,
 
-        direction: TransactionDirection.inbound,
-        excludedCounterparty: {
-          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
-          counterpartyOriginatorIds: [],
-        },
+  //       timeAmount: SEVEN_DAYS,
+  //       timeUnit: TIME_UNITS.days,
+  //       amountBetween: { min: 500, max: 999 },
+  //       amountThreshold: 5,
+  //     },
+  //   },
+  // },
+  // HCAI_CC: {
+  //   enabled: false,
+  //   defaultSeverity: AlertSeverity.medium,
+  //   description:
+  //     'High Cumulative Amount - Total sum of inbound credit card transactions received from counterparty is greater than a limit over a set period of time',
+  //   inlineRule: {
+  //     id: 'HCAI_CC',
+  //     fnName: 'evaluateTransactionsAgainstDynamicRules',
+  //     subjects: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
+  //     options: {
+  //       havingAggregate: AggregateType.SUM,
+  //       groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
 
-        paymentMethods: [PaymentMethod.credit_card],
-        excludePaymentMethods: false,
+  //       direction: TransactionDirection.inbound,
 
-        timeAmount: SEVEN_DAYS,
-        timeUnit: TIME_UNITS.days,
+  //       excludedCounterparty: {
+  //         counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+  //         counterpartyOriginatorIds: [],
+  //       },
 
-        amountThreshold: 3000,
-      },
-    },
-  },
-  HACI_APM: {
-    enabled: false,
-    defaultSeverity: AlertSeverity.medium,
-    description:
-      'High Cumulative Amount - Total sum of inbound non-traditional payment transactions received from counterparty is greater than a limit over a set period of time',
-    inlineRule: {
-      id: 'HACI_APM',
-      fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId', 'counterpartyOriginatorId'],
-      options: {
-        havingAggregate: AggregateType.SUM,
-        groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
+  //       paymentMethods: [PaymentMethod.credit_card],
+  //       excludePaymentMethods: false,
 
-        direction: TransactionDirection.inbound,
-        excludedCounterparty: {
-          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
-          counterpartyOriginatorIds: [],
-        },
+  //       timeAmount: SEVEN_DAYS,
+  //       timeUnit: TIME_UNITS.days,
 
-        paymentMethods: [PaymentMethod.credit_card],
-        excludePaymentMethods: true,
+  //       amountThreshold: 3000,
+  //     },
+  //   },
+  // },
+  // HACI_APM: {
+  //   enabled: false,
+  //   defaultSeverity: AlertSeverity.medium,
+  //   description:
+  //     'High Cumulative Amount - Total sum of inbound non-traditional payment transactions received from counterparty is greater than a limit over a set period of time',
+  //   inlineRule: {
+  //     id: 'HACI_APM',
+  //     fnName: 'evaluateTransactionsAgainstDynamicRules',
+  //     subjects: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
+  //     options: {
+  //       havingAggregate: AggregateType.SUM,
+  //       groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
 
-        timeAmount: SEVEN_DAYS,
-        timeUnit: TIME_UNITS.days,
+  //       direction: TransactionDirection.inbound,
+  //       excludedCounterparty: {
+  //         counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+  //         counterpartyOriginatorIds: [],
+  //       },
 
-        amountThreshold: 3000,
-      },
-    },
-  },
-  HVIC_CC: {
-    enabled: false,
-    defaultSeverity: AlertSeverity.medium,
-    description:
-      'High Velocity - High number of inbound credit card transactions received from a Counterparty over a set period of time',
-    inlineRule: {
-      id: 'HVIC_CC',
-      fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId', 'counterpartyOriginatorId'],
-      options: {
-        havingAggregate: AggregateType.COUNT,
-        groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
+  //       paymentMethods: [PaymentMethod.credit_card],
+  //       excludePaymentMethods: true,
 
-        direction: TransactionDirection.inbound,
-        excludedCounterparty: {
-          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
-          counterpartyOriginatorIds: [],
-        },
+  //       timeAmount: SEVEN_DAYS,
+  //       timeUnit: TIME_UNITS.days,
 
-        paymentMethods: [PaymentMethod.credit_card],
-        excludePaymentMethods: false,
+  //       amountThreshold: 3000,
+  //     },
+  //   },
+  // },
+  // HVIC_CC: {
+  //   enabled: false,
+  //   defaultSeverity: AlertSeverity.medium,
+  //   description:
+  //     'High Velocity - High number of inbound credit card transactions received from a Counterparty over a set period of time',
+  //   inlineRule: {
+  //     id: 'HVIC_CC',
+  //     fnName: 'evaluateTransactionsAgainstDynamicRules',
+  //     subjects: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
+  //     options: {
+  //       havingAggregate: AggregateType.COUNT,
+  //       groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
 
-        timeAmount: SEVEN_DAYS,
-        timeUnit: TIME_UNITS.days,
+  //       direction: TransactionDirection.inbound,
+  //       excludedCounterparty: {
+  //         counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+  //         counterpartyOriginatorIds: [],
+  //       },
 
-        amountThreshold: 2,
-      },
-    },
-  },
-  HVIC_APM: {
-    enabled: false,
-    defaultSeverity: AlertSeverity.medium,
-    description:
-      'High Velocity - High number of inbound non-traditional payment transactions received from a Counterparty over a set period of time',
-    inlineRule: {
-      id: 'HVIC_CC',
-      fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId', 'counterpartyOriginatorId'],
-      options: {
-        havingAggregate: AggregateType.COUNT,
-        groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
+  //       paymentMethods: [PaymentMethod.credit_card],
+  //       excludePaymentMethods: false,
 
-        direction: TransactionDirection.inbound,
-        excludedCounterparty: {
-          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
-          counterpartyOriginatorIds: [],
-        },
+  //       timeAmount: SEVEN_DAYS,
+  //       timeUnit: TIME_UNITS.days,
 
-        paymentMethods: [PaymentMethod.credit_card],
-        excludePaymentMethods: true,
+  //       amountThreshold: 2,
+  //     },
+  //   },
+  // },
+  // HVIC_APM: {
+  //   enabled: false,
+  //   defaultSeverity: AlertSeverity.medium,
+  //   description:
+  //     'High Velocity - High number of inbound non-traditional payment transactions received from a Counterparty over a set period of time',
+  //   inlineRule: {
+  //     id: 'HVIC_CC',
+  //     fnName: 'evaluateTransactionsAgainstDynamicRules',
+  //     subjects: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
+  //     options: {
+  //       havingAggregate: AggregateType.COUNT,
+  //       groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
 
-        timeAmount: SEVEN_DAYS,
-        timeUnit: TIME_UNITS.days,
+  //       direction: TransactionDirection.inbound,
+  //       excludedCounterparty: {
+  //         counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+  //         counterpartyOriginatorIds: [],
+  //       },
 
-        amountThreshold: 2,
-      },
-    },
-  },
-  CHVC_C: {
-    enabled: true,
-    defaultSeverity: AlertSeverity.medium,
-    description:
-      'High Cumulative Amount - Chargeback - Significant number of chargebacks over a set period of time',
-    inlineRule: {
-      id: 'CHVC_C',
-      fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId'],
-      options: {
-        transactionType: [TransactionRecordType.chargeback],
-        paymentMethods: [PaymentMethod.credit_card],
-        amountThreshold: 14,
+  //       paymentMethods: [PaymentMethod.credit_card],
+  //       excludePaymentMethods: true,
 
-        timeAmount: SEVEN_DAYS,
-        timeUnit: TIME_UNITS.days,
+  //       timeAmount: SEVEN_DAYS,
+  //       timeUnit: TIME_UNITS.days,
 
-        groupBy: ['counterpartyOriginatorId'],
-        havingAggregate: AggregateType.COUNT,
-      },
-    },
-  },
-  SHCAC_C: {
-    enabled: true,
-    defaultSeverity: AlertSeverity.high,
-    description:
-      'High Cumulative Amount - Chargeback - High sum of chargebacks over a set period of time',
-    inlineRule: {
-      id: 'SHCAC_C',
-      fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId'],
-      options: {
-        transactionType: [TransactionRecordType.chargeback],
-        paymentMethods: [PaymentMethod.credit_card],
+  //       amountThreshold: 2,
+  //     },
+  //   },
+  // },
+  // CHVC_C: {
+  //   enabled: true,
+  //   defaultSeverity: AlertSeverity.medium,
+  //   description:
+  //     'High Cumulative Amount - Chargeback - Significant number of chargebacks over a set period of time',
+  //   inlineRule: {
+  //     id: 'CHVC_C',
+  //     fnName: 'evaluateTransactionsAgainstDynamicRules',
+  //     subjects: ['counterpartyOriginatorId'],
+  //     options: {
+  //       transactionType: [TransactionRecordType.chargeback],
+  //       paymentMethods: [PaymentMethod.credit_card],
+  //       amountThreshold: 14,
 
-        amountThreshold: 5_000,
+  //       timeAmount: SEVEN_DAYS,
+  //       timeUnit: TIME_UNITS.days,
 
-        timeAmount: SEVEN_DAYS,
-        timeUnit: TIME_UNITS.days,
+  //       groupBy: ['counterpartyOriginatorId'],
+  //       havingAggregate: AggregateType.COUNT,
+  //     },
+  //   },
+  // },
+  // SHCAC_C: {
+  //   enabled: true,
+  //   defaultSeverity: AlertSeverity.high,
+  //   description:
+  //     'High Cumulative Amount - Chargeback - High sum of chargebacks over a set period of time',
+  //   inlineRule: {
+  //     id: 'SHCAC_C',
+  //     fnName: 'evaluateTransactionsAgainstDynamicRules',
+  //     subjects: ['counterpartyOriginatorId'],
+  //     options: {
+  //       transactionType: [TransactionRecordType.chargeback],
+  //       paymentMethods: [PaymentMethod.credit_card],
 
-        groupBy: ['counterpartyOriginatorId'],
-        havingAggregate: AggregateType.SUM,
-      },
-    },
-  },
-  CHCR_C: {
-    enabled: true,
-    defaultSeverity: AlertSeverity.medium,
-    description: 'High Velocity - Refund - Significant number of refunds over a set period of time',
-    inlineRule: {
-      id: 'CHCR_C',
-      fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId'],
-      options: {
-        transactionType: [TransactionRecordType.refund],
-        paymentMethods: [PaymentMethod.credit_card],
+  //       amountThreshold: 5_000,
 
-        amountThreshold: 14,
+  //       timeAmount: SEVEN_DAYS,
+  //       timeUnit: TIME_UNITS.days,
 
-        timeAmount: SEVEN_DAYS,
-        timeUnit: TIME_UNITS.days,
+  //       groupBy: ['counterpartyOriginatorId'],
+  //       havingAggregate: AggregateType.SUM,
+  //     },
+  //   },
+  // },
+  // CHCR_C: {
+  //   enabled: true,
+  //   defaultSeverity: AlertSeverity.medium,
+  //   description: 'High Velocity - Refund - Significant number of refunds over a set period of time',
+  //   inlineRule: {
+  //     id: 'CHCR_C',
+  //     fnName: 'evaluateTransactionsAgainstDynamicRules',
+  //     subjects: ['counterpartyOriginatorId'],
+  //     options: {
+  //       transactionType: [TransactionRecordType.refund],
+  //       paymentMethods: [PaymentMethod.credit_card],
 
-        groupBy: ['counterpartyOriginatorId'],
-        havingAggregate: AggregateType.COUNT,
-      },
-    },
-  },
-  SHCAR_C: {
-    enabled: true,
-    defaultSeverity: AlertSeverity.high,
-    description: 'High Cumulative Amount - Refund - High sum of refunds over a set period of time',
-    inlineRule: {
-      id: 'SHCAR_C',
-      fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId'],
-      options: {
-        transactionType: [TransactionRecordType.refund],
-        paymentMethods: [PaymentMethod.credit_card],
-        amountThreshold: 5_000,
+  //       amountThreshold: 14,
 
-        timeAmount: SEVEN_DAYS,
-        timeUnit: TIME_UNITS.days,
-        groupBy: ['counterpartyOriginatorId'],
-        havingAggregate: AggregateType.SUM,
-      },
-    },
-  },
-  HPC: {
-    enabled: true,
-    defaultSeverity: AlertSeverity.high,
-    description:
-      'High Percentage of Chargebacks - High percentage of chargebacks over a set period of time',
-    dedupeStrategy: {
-      mute: false,
-      cooldownTimeframeInMinutes: daysToMinutesConverter(TWENTY_ONE_DAYS),
-    },
-    inlineRule: {
-      id: 'HPC',
-      fnName: 'evaluateHighTransactionTypePercentage',
-      subjects: ['counterpartyId'],
-      options: {
-        transactionType: TransactionRecordType.chargeback,
-        subjectColumn: 'counterpartyOriginatorId',
-        minimumCount: 3,
-        minimumPercentage: 50,
-        timeAmount: TWENTY_ONE_DAYS,
-        timeUnit: TIME_UNITS.days,
-      },
-    },
-  },
-  TLHAICC: {
-    enabled: false,
-    defaultSeverity: AlertSeverity.medium,
-    description: `Transaction Limit - Historic Average - Inbound - Inbound transaction exceeds client's historical average`,
-    inlineRule: {
-      id: 'TLHAICC',
-      fnName: 'evaluateTransactionAvg',
-      subjects: ['counterpartyId'],
-      options: {
-        transactionDirection: TransactionDirection.inbound,
-        minimumCount: 2,
-        paymentMethod: {
-          value: PaymentMethod.credit_card,
-          operator: '=',
-        },
-        minimumTransactionAmount: 100,
-        transactionFactor: 1,
-        customerType: undefined,
-        timeUnit: undefined,
-        timeAmount: undefined,
-      },
-    },
-  },
-  TLHAIAPM: {
-    enabled: false,
-    defaultSeverity: AlertSeverity.medium,
-    description: `Transaction Limit - Historic Average - Inbound - Inbound transaction exceeds client's historical average`,
-    inlineRule: {
-      id: 'TLHAIAPM',
-      fnName: 'evaluateTransactionAvg',
-      subjects: ['counterpartyId'],
-      options: {
-        transactionDirection: TransactionDirection.inbound,
-        minimumCount: 2,
-        paymentMethod: {
-          value: PaymentMethod.credit_card,
-          operator: '!=',
-        },
-        minimumTransactionAmount: 100,
-        transactionFactor: 1,
-        customerType: undefined,
-        timeUnit: undefined,
-        timeAmount: undefined,
-      },
-    },
-  },
-  PGAICT: {
-    enabled: true,
-    defaultSeverity: AlertSeverity.medium,
-    description: `An Credit card inbound transaction value was over the peer group average within a set period of time`,
-    inlineRule: {
-      id: 'PGAICT',
-      fnName: 'evaluateTransactionAvg',
-      subjects: ['counterpartyId'],
-      options: {
-        transactionDirection: TransactionDirection.inbound,
-        minimumCount: 2,
-        paymentMethod: {
-          value: PaymentMethod.credit_card,
-          operator: '=',
-        },
-        minimumTransactionAmount: 100,
-        transactionFactor: 2,
+  //       timeAmount: SEVEN_DAYS,
+  //       timeUnit: TIME_UNITS.days,
 
-        customerType: 'test',
-        timeAmount: SEVEN_DAYS,
-        timeUnit: TIME_UNITS.days,
-      },
-    },
-  },
-  PGAIAPM: {
-    enabled: true,
-    defaultSeverity: AlertSeverity.medium,
-    description: `An non credit card inbound transaction value was over the peer group average within a set period of time`,
-    inlineRule: {
-      id: 'PGAIAPM',
-      fnName: 'evaluateTransactionAvg',
-      subjects: ['counterpartyId'],
-      options: {
-        transactionDirection: TransactionDirection.inbound,
-        minimumCount: 2,
-        paymentMethod: {
-          value: PaymentMethod.credit_card,
-          operator: '!=',
-        },
-        customerType: 'test',
-        minimumTransactionAmount: 100,
-        transactionFactor: 2,
+  //       groupBy: ['counterpartyOriginatorId'],
+  //       havingAggregate: AggregateType.COUNT,
+  //     },
+  //   },
+  // },
+  // SHCAR_C: {
+  //   enabled: true,
+  //   defaultSeverity: AlertSeverity.high,
+  //   description: 'High Cumulative Amount - Refund - High sum of refunds over a set period of time',
+  //   inlineRule: {
+  //     id: 'SHCAR_C',
+  //     fnName: 'evaluateTransactionsAgainstDynamicRules',
+  //     subjects: ['counterpartyOriginatorId'],
+  //     options: {
+  //       transactionType: [TransactionRecordType.refund],
+  //       paymentMethods: [PaymentMethod.credit_card],
+  //       amountThreshold: 5_000,
 
-        timeAmount: SEVEN_DAYS,
-        timeUnit: TIME_UNITS.days,
-      },
-    },
-  },
-  DORMANT: {
-    enabled: true,
-    defaultSeverity: AlertSeverity.high,
-    description: `First activity of client after a long period of dormancy`,
-    inlineRule: {
-      id: 'DORMANT',
-      fnName: 'evaluateDormantAccount',
-      subjects: ['counterpartyId'],
-      options: {
-        timeAmount: 180,
-        timeUnit: TIME_UNITS.days,
-      },
-    },
-  },
-  HVHAI_CC: {
-    enabled: true,
-    defaultSeverity: AlertSeverity.medium,
-    description: `Total number of incoming credit cards transactions exceeds client’s historical average`,
-    inlineRule: {
-      id: 'HVHAI_CC',
-      fnName: 'evaluateHighVelocityHistoricAverage',
-      subjects: ['counterpartyId'],
-      options: {
-        transactionDirection: TransactionDirection.inbound,
-        minimumCount: 3,
-        transactionFactor: 2,
-        paymentMethod: {
-          value: PaymentMethod.credit_card,
-          operator: '=',
-        },
-        activeUserPeriod: {
-          timeAmount: 180,
-        },
-        lastDaysPeriod: {
-          timeAmount: THREE_DAYS,
-        },
-        timeUnit: TIME_UNITS.days,
-      },
-    },
-  },
-  HVHAI_APM: {
-    enabled: true,
-    defaultSeverity: AlertSeverity.medium,
-    description: `Total number of incoming credit cards transactions exceeds client’s historical average`,
-    inlineRule: {
-      id: 'HVHAI_APM',
-      fnName: 'evaluateHighVelocityHistoricAverage',
-      subjects: ['counterpartyId'],
-      options: {
-        transactionDirection: TransactionDirection.inbound,
-        minimumCount: 3,
-        transactionFactor: 2,
-        paymentMethod: {
-          value: PaymentMethod.credit_card,
-          operator: '!=',
-        },
-        activeUserPeriod: {
-          timeAmount: 180,
-        },
-        lastDaysPeriod: {
-          timeAmount: THREE_DAYS,
-        },
-        timeUnit: TIME_UNITS.days,
-      },
-    },
-  },
-  MMOC_CC: {
-    enabled: true,
-    defaultSeverity: AlertSeverity.high,
-    description: `Card numbers that are appearing in too many different merchant IDs for credit card transactions`,
-    inlineRule: {
-      id: 'MMOC_CC',
-      fnName: 'evaluateMultipleMerchantsOneCounterparty',
-      subjects: ['counterpartyId'],
-      options: {
-        excludedCounterparty: {
-          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
-          counterpartyOriginatorIds: [],
-        },
-        minimumCount: 2,
-        timeAmount: SEVEN_DAYS,
-        timeUnit: TIME_UNITS.days,
-      },
-    },
-  },
-  MMOC_APM: {
-    enabled: true,
-    defaultSeverity: AlertSeverity.high,
-    description: `Card numbers that are appearing in too many different merchant IDs for non credit card transactions`,
-    inlineRule: {
-      id: 'MMOC_APM',
-      fnName: 'evaluateMultipleMerchantsOneCounterparty',
-      subjects: ['counterpartyId'],
-      options: {
-        excludedCounterparty: {
-          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
-          counterpartyOriginatorIds: [],
-        },
-        minimumCount: 2,
-        timeAmount: SEVEN_DAYS,
-        timeUnit: TIME_UNITS.days,
-      },
-    },
-  },
-  MGAV_CC: {
-    enabled: false,
-    defaultSeverity: AlertSeverity.high,
-    description: `Merchant's average credit card transaction volume deviating significantly from the norm within their segment`,
-    inlineRule: {
-      id: 'MGAV_CC',
-      fnName: 'evaluateMerchantGroupAverage',
-      subjects: ['counterpartyId'],
-      options: {
-        paymentMethod: {
-          value: PaymentMethod.credit_card,
-          operator: '=',
-        },
-        transactionFactor: 5,
-        minimumCount: 2,
-        timeAmount: SEVEN_DAYS,
-        timeUnit: TIME_UNITS.days,
-      },
-    },
-  },
-  MGAV_APM: {
-    enabled: false,
-    defaultSeverity: AlertSeverity.high,
-    description: `Merchant's average non credit card transaction volume deviating significantly from the norm within their segment`,
-    inlineRule: {
-      id: 'MGAV_APM',
-      fnName: 'evaluateMerchantGroupAverage',
-      subjects: ['counterpartyId'],
-      options: {
-        paymentMethod: {
-          value: PaymentMethod.credit_card,
-          operator: '!=',
-        },
-        transactionFactor: 5,
-        minimumCount: 2,
-        timeAmount: SEVEN_DAYS,
-        timeUnit: TIME_UNITS.days,
-      },
-    },
-  },
+  //       timeAmount: SEVEN_DAYS,
+  //       timeUnit: TIME_UNITS.days,
+  //       groupBy: ['counterpartyOriginatorId'],
+  //       havingAggregate: AggregateType.SUM,
+  //     },
+  //   },
+  // },
+  // HPC: {
+  //   enabled: true,
+  //   defaultSeverity: AlertSeverity.high,
+  //   description:
+  //     'High Percentage of Chargebacks - High percentage of chargebacks over a set period of time',
+  //   dedupeStrategy: {
+  //     mute: false,
+  //     cooldownTimeframeInMinutes: daysToMinutesConverter(TWENTY_ONE_DAYS),
+  //   },
+  //   inlineRule: {
+  //     id: 'HPC',
+  //     fnName: 'evaluateHighTransactionTypePercentage',
+  //     subjects: ['counterpartyOriginatorId'],
+  //     options: {
+  //       transactionType: TransactionRecordType.chargeback,
+  //       subjectColumn: 'counterpartyOriginatorId',
+  //       minimumCount: 3,
+  //       minimumPercentage: 50,
+  //       timeAmount: TWENTY_ONE_DAYS,
+  //       timeUnit: TIME_UNITS.days,
+  //     },
+  //   },
+  // },
+  // TLHAICC: {
+  //   enabled: false,
+  //   defaultSeverity: AlertSeverity.medium,
+  //   description: `Transaction Limit - Historic Average - Inbound - Inbound transaction exceeds client's historical average`,
+  //   inlineRule: {
+  //     id: 'TLHAICC',
+  //     fnName: 'evaluateTransactionAvg',
+  //     subjects: ['counterpartyBeneficiaryId'],
+  //     options: {
+  //       transactionDirection: TransactionDirection.inbound,
+  //       minimumCount: 2,
+  //       paymentMethod: {
+  //         value: PaymentMethod.credit_card,
+  //         operator: '=',
+  //       },
+  //       minimumTransactionAmount: 100,
+  //       transactionFactor: 1,
+  //       customerType: undefined,
+  //       timeUnit: undefined,
+  //       timeAmount: undefined,
+  //     },
+  //   },
+  // },
+  // TLHAIAPM: {
+  //   enabled: false,
+  //   defaultSeverity: AlertSeverity.medium,
+  //   description: `Transaction Limit - Historic Average - Inbound - Inbound transaction exceeds client's historical average`,
+  //   inlineRule: {
+  //     id: 'TLHAIAPM',
+  //     fnName: 'evaluateTransactionAvg',
+  //     subjects: ['counterpartyBeneficiaryId'],
+  //     options: {
+  //       transactionDirection: TransactionDirection.inbound,
+  //       minimumCount: 2,
+  //       paymentMethod: {
+  //         value: PaymentMethod.credit_card,
+  //         operator: '!=',
+  //       },
+  //       minimumTransactionAmount: 100,
+  //       transactionFactor: 1,
+  //       customerType: undefined,
+  //       timeUnit: undefined,
+  //       timeAmount: undefined,
+  //     },
+  //   },
+  // },
+  // PGAICT: {
+  //   enabled: true,
+  //   defaultSeverity: AlertSeverity.medium,
+  //   description: `An Credit card inbound transaction value was over the peer group average within a set period of time`,
+  //   inlineRule: {
+  //     id: 'PGAICT',
+  //     fnName: 'evaluateTransactionAvg',
+  //     subjects: ['counterpartyId'],
+  //     options: {
+  //       transactionDirection: TransactionDirection.inbound,
+  //       minimumCount: 2,
+  //       paymentMethod: {
+  //         value: PaymentMethod.credit_card,
+  //         operator: '=',
+  //       },
+  //       minimumTransactionAmount: 100,
+  //       transactionFactor: 2,
+
+  //       customerType: 'test',
+  //       timeAmount: SEVEN_DAYS,
+  //       timeUnit: TIME_UNITS.days,
+  //     },
+  //   },
+  // },
+  // PGAIAPM: {
+  //   enabled: true,
+  //   defaultSeverity: AlertSeverity.medium,
+  //   description: `An non credit card inbound transaction value was over the peer group average within a set period of time`,
+  //   inlineRule: {
+  //     id: 'PGAIAPM',
+  //     fnName: 'evaluateTransactionAvg',
+  //     subjects: ['counterpartyId'],
+  //     options: {
+  //       transactionDirection: TransactionDirection.inbound,
+  //       minimumCount: 2,
+  //       paymentMethod: {
+  //         value: PaymentMethod.credit_card,
+  //         operator: '!=',
+  //       },
+  //       customerType: 'test',
+  //       minimumTransactionAmount: 100,
+  //       transactionFactor: 2,
+
+  //       timeAmount: SEVEN_DAYS,
+  //       timeUnit: TIME_UNITS.days,
+  //     },
+  //   },
+  // },
+  // DORMANT: {
+  //   enabled: true,
+  //   defaultSeverity: AlertSeverity.high,
+  //   description: `First activity of client after a long period of dormancy`,
+  //   inlineRule: {
+  //     id: 'DORMANT',
+  //     fnName: 'evaluateDormantAccount',
+  //     subjects: ['counterpartyId'],
+  //     options: {
+  //       timeAmount: 180,
+  //       timeUnit: TIME_UNITS.days,
+  //     },
+  //   },
+  // },
+  // HVHAI_CC: {
+  //   enabled: true,
+  //   defaultSeverity: AlertSeverity.medium,
+  //   description: `Total number of incoming credit cards transactions exceeds client’s historical average`,
+  //   inlineRule: {
+  //     id: 'HVHAI_CC',
+  //     fnName: 'evaluateHighVelocityHistoricAverage',
+  //     subjects: ['counterpartyId'],
+  //     options: {
+  //       transactionDirection: TransactionDirection.inbound,
+  //       minimumCount: 3,
+  //       transactionFactor: 2,
+  //       paymentMethod: {
+  //         value: PaymentMethod.credit_card,
+  //         operator: '=',
+  //       },
+  //       activeUserPeriod: {
+  //         timeAmount: 180,
+  //       },
+  //       lastDaysPeriod: {
+  //         timeAmount: THREE_DAYS,
+  //       },
+  //       timeUnit: TIME_UNITS.days,
+  //     },
+  //   },
+  // },
+  // HVHAI_APM: {
+  //   enabled: true,
+  //   defaultSeverity: AlertSeverity.medium,
+  //   description: `Total number of incoming credit cards transactions exceeds client’s historical average`,
+  //   inlineRule: {
+  //     id: 'HVHAI_APM',
+  //     fnName: 'evaluateHighVelocityHistoricAverage',
+  //     fnfnInvestigationName: 'investigationHighVelocityHistoricAverage',
+  //     subjects: ['counterpartyBeneficiaryId'],
+  //     options: {
+  //       minimumCount: 3,
+  //       transactionFactor: 2,
+  //       transactionDirection: TransactionDirection.inbound,
+  //       paymentMethod: {
+  //         value: PaymentMethod.credit_card,
+  //         operator: '!=',
+  //       },
+  //       activeUserPeriod: {
+  //         timeAmount: 180,
+  //       },
+  //       lastDaysPeriod: {
+  //         timeAmount: THREE_DAYS,
+  //       },
+  //       timeUnit: TIME_UNITS.days,
+  //     },
+  //   },
+  // },
+  // MMOC_CC: {
+  //   enabled: true,
+  //   defaultSeverity: AlertSeverity.high,
+  //   description: `Card numbers that are appearing in too many different merchant IDs for credit card transactions`,
+  //   inlineRule: {
+  //     id: 'MMOC_CC',
+  //     fnName: 'evaluateMultipleMerchantsOneCounterparty',
+  //     subjects: ['counterpartyId'],
+  //     options: {
+  //       excludedCounterparty: {
+  //         counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+  //         counterpartyOriginatorIds: [],
+  //       },
+  //       minimumCount: 2,
+  //       timeAmount: SEVEN_DAYS,
+  //       timeUnit: TIME_UNITS.days,
+  //     },
+  //   },
+  // },
+  // MMOC_APM: {
+  //   enabled: true,
+  //   defaultSeverity: AlertSeverity.high,
+  //   description: `Card numbers that are appearing in too many different merchant IDs for non credit card transactions`,
+  //   inlineRule: {
+  //     id: 'MMOC_APM',
+  //     fnName: 'evaluateMultipleMerchantsOneCounterparty',
+  //     subjects: ['counterpartyId'],
+  //     options: {
+  //       excludedCounterparty: {
+  //         counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+  //         counterpartyOriginatorIds: [],
+  //       },
+  //       minimumCount: 2,
+  //       timeAmount: SEVEN_DAYS,
+  //       timeUnit: TIME_UNITS.days,
+  //     },
+  //   },
+  // },
+  // MGAV_CC: {
+  //   enabled: false,
+  //   defaultSeverity: AlertSeverity.high,
+  //   description: `Merchant's average credit card transaction volume deviating significantly from the norm within their segment`,
+  //   inlineRule: {
+  //     id: 'MGAV_CC',
+  //     fnName: 'evaluateMerchantGroupAverage',
+  //     subjects: ['counterpartyId'],
+  //     options: {
+  //       paymentMethod: {
+  //         value: PaymentMethod.credit_card,
+  //         operator: '=',
+  //       },
+  //       transactionFactor: 5,
+  //       minimumCount: 2,
+  //       timeAmount: SEVEN_DAYS,
+  //       timeUnit: TIME_UNITS.days,
+  //     },
+  //   },
+  // },
+  // MGAV_APM: {
+  //   enabled: false,
+  //   defaultSeverity: AlertSeverity.high,
+  //   description: `Merchant's average non credit card transaction volume deviating significantly from the norm within their segment`,
+  //   inlineRule: {
+  //     id: 'MGAV_APM',
+  //     fnName: 'evaluateMerchantGroupAverage',
+  //     subjects: ['counterpartyId'],
+  //     options: {
+  //       paymentMethod: {
+  //         value: PaymentMethod.credit_card,
+  //         operator: '!=',
+  //       },
+  //       transactionFactor: 5,
+  //       minimumCount: 2,
+  //       timeAmount: SEVEN_DAYS,
+  //       timeUnit: TIME_UNITS.days,
+  //     },
+  //   },
+  // },
 } as const satisfies Record<string, Parameters<typeof getAlertDefinitionCreateData>[0]>;
 
 export const MERCHANT_MONITORING_ALERT_DEFINITIONS = {
@@ -626,6 +633,7 @@ export const MERCHANT_MONITORING_ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'MERCHANT_ONGOING_RISK_ALERT_RISK_INCREASE',
       fnName: 'checkMerchantOngoingAlert',
+      fnInvestigationName: 'investigateMerchantOngoingAlert',
       subjects: ['businessId', 'projectId'],
       options: {
         increaseRiskScore: 20,
@@ -641,6 +649,7 @@ export const MERCHANT_MONITORING_ALERT_DEFINITIONS = {
       id: 'MERCHANT_ONGOING_RISK_ALERT_THRESHOLD',
       fnName: 'checkMerchantOngoingAlert',
       subjects: ['businessId', 'projectId'],
+      fnInvestigationName: 'investigateMerchantOngoingAlert',
       options: {
         maxRiskScoreThreshold: 60,
       },
@@ -654,6 +663,7 @@ export const MERCHANT_MONITORING_ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'MERCHANT_ONGOING_RISK_ALERT_PERCENTAGE',
       fnName: 'checkMerchantOngoingAlert',
+      fnInvestigationName: 'investigateMerchantOngoingAlert',
       subjects: ['businessId', 'projectId'],
       options: {
         increaseRiskScorePercentage: 30,

@@ -52,10 +52,6 @@ export class GetTransactionsByAlertDto {
 
 export class GetTransactionsDto {
   @IsOptional()
-  @IsString()
-  counterpartyId?: string;
-
-  @IsOptional()
   @IsEnum(PaymentMethod)
   paymentMethod?: PaymentMethod;
 

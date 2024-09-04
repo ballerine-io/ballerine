@@ -289,11 +289,6 @@ export class TransactionControllerExternal {
   @swagger.ApiOkResponse({ description: 'Returns an array of transactions.' })
   @swagger.ApiQuery({ name: 'businessId', description: 'Filter by business ID.', required: false })
   @swagger.ApiQuery({
-    name: 'counterpartyId',
-    description: 'Filter by counterparty ID.',
-    required: false,
-  })
-  @swagger.ApiQuery({
     name: 'startDate',
     type: Date,
     description: 'Filter by transactions after or on this date.',
@@ -354,6 +349,53 @@ export class TransactionControllerExternal {
         ? this.alertService.buildTransactionsFiltersByAlert(alert)
         : {}),
     };
+
+    const hasBeneficiary = alert.executionDetails.subject.some('counterpartyBeneficiaryId');
+    const hasOriginator = alert.executionDetails.subject.some('counterpartyOriginatorId');
+
+    // this.prisma.alert.findMany({
+    //   where: {
+    //     id: 'aaaa'
+    //   },
+    //   include: {
+    //     counterpartyOriginator: {
+    //       select: {
+    //         correlationId: true,
+    //         business: {
+    //           select: {
+    //             correlationId: true,
+    //             companyName: true,
+    //           },
+    //         },
+    //         endUser: {
+    //           select: {
+    //             correlationId: true,
+    //             firstName: true,
+    //             lastName: true,
+    //           },
+    //         },
+    //       },
+    //     },
+    //     counterpartyBeneficiary: {
+    //       select: {
+    //         correlationId: true,
+    //         business: {
+    //           select: {
+    //             correlationId: true,
+    //             companyName: true,
+    //           },
+    //         },
+    //         endUser: {
+    //           select: {
+    //             correlationId: true,
+    //             firstName: true,
+    //             lastName: true,
+    //           },
+    //         },
+    //       }
+    //     }
+    //   }
+    // });
 
     return this.service.getTransactions(filters, projectId, {
       include: {

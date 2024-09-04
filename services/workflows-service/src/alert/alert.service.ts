@@ -18,6 +18,7 @@ import {
   AlertStatus,
   BusinessReport,
   MonitoringType,
+  Prisma,
 } from '@prisma/client';
 import _ from 'lodash';
 import { AlertExecutionStatus } from './consts';
@@ -325,20 +326,29 @@ export class AlertService {
     executionRow: Record<string, unknown>,
     additionalInfo?: Record<string, unknown>,
   ) {
+    const mergedSubject = Object.assign({}, ...(subject || []));
+
+    const projectId = alertDef.projectId;
+    const now = new Date();
+
     return this.alertRepository.create({
       data: {
+        projectId,
         alertDefinitionId: alertDef.id,
-        projectId: alertDef.projectId,
         severity: alertDef.defaultSeverity,
-        dataTimestamp: new Date(),
+        updatedAt: now,
+        createdAt: now,
+        dataTimestamp: now,
         state: AlertState.triggered,
         status: AlertStatus.new,
         additionalInfo: additionalInfo,
         executionDetails: {
-          checkpoint: {
-            hash: computeHash(executionRow),
-          },
-          subject: Object.assign({}, ...(subject || [])),
+          subject: mergedSubject,
+          filters: this.dataAnalyticsService.getInvestigationFilter(
+            projectId!,
+            alertDef.inlineRule as InlineRule,
+            mergedSubject,
+          ),
           executionRow,
         } satisfies TExecutionDetails as InputJsonValue,
         ...Object.assign({}, ...(subject || [])),
