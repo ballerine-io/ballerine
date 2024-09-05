@@ -2,7 +2,7 @@ name: Under Testing - Build & Push workflows-service image
 
 on:
   repository_dispatch:
-    types: [invoke-cd-from-external-repo]
+    types: [run-test-migration]
   workflow_dispatch:
     inputs:
       operation: 
@@ -15,9 +15,9 @@ on:
           - 'Run Migrations'
           - 'Do Nothing'
   push:
-    # paths:
-    #   # Run this pipeline only if there are changes in specified path
-    #   - 'services/workflows-service/**'
+    paths:
+      # Run this pipeline only if there are changes in specified path
+      - 'services/workflows-service/**'
     branches:
     - "dev-318/workflow-on-demand-migration"
 
