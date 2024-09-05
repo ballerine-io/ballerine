@@ -12,11 +12,10 @@ export const getRGBColorFromElement = (element: HTMLElement) => {
   const style = window.getComputedStyle(element);
   const bgColor = style.background;
 
-  // Regex to extract RGB values
   const rgbValues = bgColor.match(/\d+/g);
 
   if (rgbValues && rgbValues.length >= 3) {
-    return rgbValues.map(Number); // Convert strings to numbers
+    return rgbValues.map(Number);
   }
 
   return null;
