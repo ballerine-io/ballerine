@@ -80,7 +80,8 @@ export class BusinessReportControllerInternal {
       config,
     } = await this.customerService.getByProjectId(currentProjectId);
 
-    await this.checkBusinessReportsLimit(config?.maxBusinessReports, currentProjectId);
+    const { maxBusinessReports, withQualityControl } = config || {};
+    await this.checkBusinessReportsLimit(maxBusinessReports, currentProjectId);
 
     let business: Pick<Business, 'id' | 'correlationId'> | undefined;
     const merchantNameWithDefault = merchantName || 'Not detected';
@@ -125,8 +126,6 @@ export class BusinessReportControllerInternal {
         projectId: currentProjectId,
       },
     });
-
-    const { withQualityControl } = config || {};
 
     const response = await axios.post(
       `${env.UNIFIED_API_URL}/merchants/analysis`,
@@ -367,8 +366,8 @@ export class BusinessReportControllerInternal {
   ) {
     const { config } = await this.customerService.getByProjectId(currentProjectId);
 
-    await this.checkBusinessReportsLimit(config.maxBusinessReports, currentProjectId);
     const { maxBusinessReports, withQualityControl } = config || {};
+    await this.checkBusinessReportsLimit(maxBusinessReports, currentProjectId);
 
     const result = await this.businessReportService.processBatchFile({
       type,
