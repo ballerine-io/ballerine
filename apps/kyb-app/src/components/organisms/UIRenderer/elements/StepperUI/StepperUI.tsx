@@ -90,8 +90,6 @@ export const StepperUI = () => {
             return (
               <VerticalLayout>
                 {items.map(itemProps => {
-                  console.log({ itemProps });
-
                   return (
                     <div
                       data-breadcrumb-id={itemProps.active ? itemProps.id : undefined}

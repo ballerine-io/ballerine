@@ -10,13 +10,12 @@ export const useAppExit = () => {
   const { trackExit } = useFlowTracking();
   const { customer } = useCustomerQuery();
 
-  console.log(uiSchema);
-
   const kybOnExitAction = uiSchema?.config?.kybOnExitAction || 'send-event';
 
   const exit = useCallback(() => {
     if (kybOnExitAction === 'send-event') {
       trackExit();
+
       return;
     }
 
