@@ -21,7 +21,7 @@
   "types": "dist/index.d.ts",
   "name": "@ballerine/web-ui-sdk",
   "private": false,
-  "version": "1.5.26",
+  "version": "1.5.27",
   "type": "module",
   "files": [
     "dist"
@@ -70,7 +70,7 @@
     "@types/lodash.keyby": "^4.6.7",
     "@types/node": "^18.11.9",
     "@types/testing-library__jest-dom": "^5.14.5",
-    "@typescript-eslint/eslint-plugin": "^5.41.0",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^5.41.0",
     "cspell": "^6.31.2",
     "editorconfig": "^1.0.1",
@@ -96,7 +96,7 @@
     "vitest": "^0.24.5"
   },
   "dependencies": {
-    "@ballerine/common": "0.9.25",
+    "@ballerine/common": "0.9.26",
     "@zerodevx/svelte-toast": "^0.8.0",
     "compressorjs": "^1.1.1",
     "deepmerge": "^4.3.0",

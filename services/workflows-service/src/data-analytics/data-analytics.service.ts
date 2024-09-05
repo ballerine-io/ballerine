@@ -40,7 +40,7 @@ export class DataAnalyticsService {
   ) {}
 
   private buildTransactionsFiltersByAlert(inlineRule: InlineRule, alert?: Alert) {
-    const whereClause: Pick<Prisma.TransactionRecordWhereInput, 'transactionDate'> = {};
+    let whereClause: Prisma.TransactionRecordWhereInput = {};
 
     const filters: {
       endDate: Date | undefined;
@@ -145,11 +145,11 @@ export class DataAnalyticsService {
     }
 
     return {
-      projectId,
       counterpartyBeneficiaryId: subject.counterpartyBeneficiaryId,
       counterpartyOriginatorId: subject.counterpartyOriginatorId,
       ...investigationFilter,
       ...this.buildTransactionsFiltersByAlert(inlineRule),
+      projectId,
     };
   }
 
@@ -380,11 +380,11 @@ export class DataAnalyticsService {
       transactionType: _transactionType,
       paymentMethods = [],
       excludePaymentMethods = false,
-      timeAmount,
-      timeUnit,
+      projectId,
     } = options;
 
     return {
+      projectId,
       transactionAmount: {
         gte: amountBetween?.min,
         lte: amountBetween?.max,

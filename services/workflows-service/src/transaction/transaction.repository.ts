@@ -3,9 +3,7 @@ import { Prisma, TransactionRecord } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { TProjectId } from '@/types';
-import { GetTransactionsDto } from './dtos/get-transactions.dto';
-import { DateTimeFilter } from '@/common/query-filters/date-time-filter';
-import { toPrismaOrderByGeneric } from '@/workflow/utils/toPrismaOrderBy';
+import { buildPaginationFilter } from '@/common/dto';
 
 @Injectable()
 export class TransactionRepository {
@@ -30,80 +28,20 @@ export class TransactionRepository {
   }
 
   async findManyWithFilters(
-    getTransactionsParameters: Parameters<typeof this.buildFilters>[0],
+    // getTransactionsParameters: Parameters<typeof this.buildFilters>[0],
     projectId: string,
     options?: Prisma.TransactionRecordFindManyArgs,
   ): Promise<TransactionRecord[]> {
-    const args: Prisma.TransactionRecordFindManyArgs = {};
-
-    if (getTransactionsParameters.page?.number && getTransactionsParameters.page?.size) {
-      // Temporary fix for pagination (class transformer issue)
-      const size = parseInt(getTransactionsParameters.page.size as unknown as string, 10);
-      const number = parseInt(getTransactionsParameters.page.number as unknown as string, 10);
-
-      args.take = size;
-      args.skip = size * (number - 1);
-    }
-
-    if (getTransactionsParameters.orderBy) {
-      args.orderBy = toPrismaOrderByGeneric(getTransactionsParameters.orderBy);
-    }
-
     return this.prisma.transactionRecord.findMany(
       this.scopeService.scopeFindMany(
         {
           ...options,
           where: {
-            ...args.where,
-            ...this.buildFilters(getTransactionsParameters),
+            ...((options || {}).where || {}),
           },
-          ...args,
         },
         [projectId],
       ),
     );
-  }
-
-  // eslint-disable-next-line ballerine/verify-repository-project-scoped
-  private buildFilters(
-    getTransactionsParameters: GetTransactionsDto & {
-      counterpartyOriginatorId?: string;
-      counterpartyBeneficiaryId?: string;
-    },
-  ): Prisma.TransactionRecordWhereInput {
-    const whereClause: Prisma.TransactionRecordWhereInput = {};
-
-    whereClause.AND = [];
-
-    if (getTransactionsParameters.counterpartyOriginatorId) {
-      whereClause.AND.push({
-        counterpartyOriginatorId: getTransactionsParameters.counterpartyOriginatorId,
-      });
-    }
-    if (getTransactionsParameters.counterpartyBeneficiaryId) {
-      whereClause.AND.push({
-        counterpartyBeneficiaryId: getTransactionsParameters.counterpartyBeneficiaryId,
-      });
-    }
-
-    if (getTransactionsParameters.startDate) {
-      whereClause.transactionDate = {
-        ...(whereClause.transactionDate as DateTimeFilter),
-        gte: getTransactionsParameters.startDate,
-      };
-    }
-
-    if (getTransactionsParameters.endDate) {
-      whereClause.transactionDate = {
-        ...(whereClause.transactionDate as DateTimeFilter),
-        lte: getTransactionsParameters.endDate,
-      };
-    }
-
-    if (getTransactionsParameters.paymentMethod) {
-      whereClause.paymentMethod = getTransactionsParameters.paymentMethod;
-    }
-
-    return whereClause;
   }
 }

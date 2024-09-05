@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import type { TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
+import { InvalidArgumentParser } from '@/common/filters/prisma-client-validation-filter/utils/parsers/invalid-argument-parser/invalid-argument.parser';
 
 export interface PrismaGeneralQueryArgs {
   select?: Record<string, unknown> | null;
@@ -31,12 +32,21 @@ export class ProjectScopeService {
   ): T {
     // @ts-expect-error - dynamically typed for all queries
     args ||= {};
+
+    const projectIdsClause = projectIds?.length || 0 > 1 ? { in: projectIds } : projectIds?.[0];
+
+    if (!projectIdsClause) {
+      throw new Error(
+        `Missing or empty 'projectId': A valid 'projectId' is required to proceed with the query.`,
+      );
+    }
+
     // @ts-expect-error - dynamically typed for all queries
     args!.where = {
       // @ts-expect-error - dynamically typed for all queries
       ...args?.where,
       project: {
-        id: { in: projectIds },
+        id: projectIdsClause,
       },
     };
 

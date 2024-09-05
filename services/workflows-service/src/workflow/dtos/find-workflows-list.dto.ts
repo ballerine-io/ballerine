@@ -1,7 +1,8 @@
-import { PageDto, sortDirections, validateOrderBy } from '@/common/dto';
+import { PageDto, validateOrderBy } from '@/common/dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { WorkflowRuntimeDataStatus } from '@prisma/client';
 import { z } from 'zod';
+import { sortDirections } from '@/prisma/prisma.util';
 
 class FilterDto {
   @ApiProperty()
