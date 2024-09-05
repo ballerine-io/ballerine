@@ -87,3 +87,7 @@ export const isPrismaClientKnownRequestError = (
     error instanceof Error && 'name' in error && error.name === 'PrismaClientKnownRequestError'
   );
 };
+
+export const sortDirections: Array<keyof typeof Prisma.SortOrder> = ['asc', 'desc'];
+
+export type Direction = (typeof Prisma.SortOrder)[keyof typeof Prisma.SortOrder];

@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/react-pdf-toolkit",
   "private": false,
-  "version": "1.2.20",
+  "version": "1.2.21",
   "types": "./dist/build.d.ts",
   "main": "./dist/react-pdf-toolkit.js",
   "module": "./dist/react-pdf-toolkit.mjs",
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@ballerine/config": "^1.1.11",
-    "@ballerine/ui": "0.5.20",
+    "@ballerine/ui": "0.5.21",
     "@react-pdf/renderer": "^3.1.14",
     "@sinclair/typebox": "^0.31.7",
     "ajv": "^8.12.0",
@@ -47,7 +47,7 @@
     "@storybook/testing-library": "^0.0.14-next.2",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
-    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^6.14.0",
     "@vitejs/plugin-react": "^4.2.1",
     "eslint": "^8.55.0",

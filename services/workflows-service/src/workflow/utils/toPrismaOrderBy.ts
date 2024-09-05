@@ -1,6 +1,6 @@
+import { Direction } from '@/prisma/prisma.util';
 import { Prisma } from '@prisma/client';
 
-type Direction = 'asc' | 'desc';
 type IndividualsColumns = 'firstName' | 'lastName' | 'email';
 type BusinessesColumns = 'companyName';
 type WorkflowColumns = 'createdAt';
@@ -14,7 +14,7 @@ type EntityType = 'individuals' | 'businesses';
 export const toPrismaOrderBy = <
   TEntityType extends EntityType,
   TColumn extends AvailableColumns<TEntityType>,
-  TDirection extends Direction,
+  TDirection extends Prisma.SortOrder,
 >(
   orderBy: `${TColumn}:${TDirection}`,
   entityType: TEntityType,
@@ -39,15 +39,5 @@ export const toPrismaOrderBy = <
     business: {
       [column]: direction,
     },
-  };
-};
-
-export const toPrismaOrderByGeneric = <TColumn extends string, TDirection extends Direction>(
-  orderBy: `${TColumn}:${TDirection}`,
-): { [x: string]: TDirection } => {
-  const [column, direction] = orderBy.split(':') as [TColumn, TDirection];
-
-  return {
-    [column]: direction,
   };
 };

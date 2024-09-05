@@ -3,12 +3,13 @@ import { TransactionRepository } from '@/transaction/transaction.repository';
 import { TransactionCreateDto } from './dtos/transaction-create.dto';
 import { TransactionEntityMapper } from './transaction.mapper';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { GetTransactionsDto } from './dtos/get-transactions.dto';
 import { TProjectId } from '@/types';
 import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
 import { SentryService } from '@/sentry/sentry.service';
 import { isPrismaClientKnownRequestError } from '@/prisma/prisma.util';
 import { getErrorMessageFromPrismaError } from '@/common/filters/HttpExceptions.filter';
+import { Prisma } from '@prisma/client';
+import { DateTimeFilter } from '@/common/query-filters/date-time-filter';
 
 @Injectable()
 export class TransactionService {
@@ -75,4 +76,27 @@ export class TransactionService {
   async getTransactions(...params: Parameters<TransactionRepository['findManyWithFilters']>) {
     return this.repository.findManyWithFilters(...params);
   }
+
+  // buildFilters(
+  //   getTransactionsDto: GetTransactionsDto,
+  // ): Prisma.TransactionRecordWhereInput {
+  //   let whereClause: Prisma.TransactionRecordWhereInput = {};
+
+  //   const {counterpartyOriginatorId, counterpartyBeneficiaryId} = (getTransactionsDto?.subject || {});
+
+  //   whereClause = {
+  //     ...(counterpartyOriginatorId ? { counterpartyOriginatorId } : {}),
+  //     ...(counterpartyBeneficiaryId ? { counterpartyBeneficiaryId } : {}),
+  //     ...(getTransactionsDto.paymentMethod ? { paymentMethod: getTransactionsDto.paymentMethod } : {}),
+  //     transactionDate: {
+  //       ...(getTransactionsDto.startDate ? { gte: getTransactionsDto.startDate } : {}),
+  //       ...(getTransactionsDto.startDate ? { gte: getTransactionsDto.startDate } : {}),
+  //       ...(getTransactionsDto.endDate ? { lte: getTransactionsDto.endDate } : {}),
+  //     },
+  //     ...(whereClause.transactionDate ? { transactionDate : whereClause.transactionDate } : {}),
+  //   }
+
+  //   // TODO: take care for pagination
+  //   return whereClause;
+  // }
 }

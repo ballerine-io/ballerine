@@ -26,6 +26,16 @@
     "kyc",
     "kyb"
   ],
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "sdks/*",
+    "services/*",
+    "websites/*",
+    "examples/headless-example",
+    "examples/report-generation-example",
+    "apps/kyb-ap"
+  ],
   "scripts": {
     "spellcheck": "nx run-many --target=spellcheck",
     "monorepo:init": "node ./scripts/init.js",
@@ -60,7 +70,6 @@
     "workflow-builder:dev": "echo \"Error: no test specified\" && exit 1",
     "web-ui:dev": "echo \"Error: no test specified\" && exit 1",
     "commit": "git add . && git-cz",
-    "prepare": "husky install",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "update-packages": "pnpm run changeset && pnpm run version-packages && pnpm install",
@@ -75,7 +84,6 @@
     "@changesets/cli": "^2.26.1",
     "@commitlint/cli": "^17.5.0",
     "@commitlint/config-conventional": "^17.4.4",
-    "commitizen": "^4.3.0",
     "cz-conventional-changelog": "^3.3.0",
     "editorconfig": "^1.0.2",
     "husky": "^8.0.3",

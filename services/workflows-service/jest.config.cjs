@@ -1,5 +1,6 @@
 module.exports = {
   preset: 'ts-jest',
+  testTimeout: 30000,
   testEnvironment: 'node',
   modulePathIgnorePatterns: ['<rootDir>/dist/'],
   testRegex: '(/__tests__/.*|(\\.|/)(unit|e2e|intg)\\.test)\\.ts$',

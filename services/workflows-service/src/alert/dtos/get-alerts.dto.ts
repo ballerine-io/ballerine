@@ -1,9 +1,10 @@
-import { PageDto, sortDirections, validateOrderBy } from '@/common/dto';
+import { PageDto, validateOrderBy } from '@/common/dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { AlertState, AlertStatus, Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { IsOptional } from 'class-validator';
 import { SortableByModel } from '@/common/types';
+import { sortDirections } from '@/prisma/prisma.util';
 
 export class FilterDto {
   @ApiProperty({
@@ -37,6 +38,7 @@ export class FilterDto {
   })
   correlationIds?: string[];
 }
+type TAlertOrderBy = 'createdAt' | 'dataTimestamp' | 'status';
 
 export class FindAlertsDto {
   @ApiProperty({ required: false })
@@ -62,7 +64,7 @@ export class FindAlertsDto {
       { value: 'status:asc' },
     ],
   })
-  orderBy?: `${string}:asc` | `${string}:desc`;
+  orderBy?: `${TAlertOrderBy}:${Prisma.SortOrder}`;
 }
 
 const sortableColumnsAlerts: SortableByModel<Prisma.AlertOrderByWithRelationInput> = [

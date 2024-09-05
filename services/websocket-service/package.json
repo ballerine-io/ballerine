@@ -1,6 +1,6 @@
 {
   "name": "@ballerine/websocket-service",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "websocket-service",
   "private": false,
   "scripts": {
@@ -41,7 +41,7 @@
     "@types/jest": "^26.0.19",
     "@types/node": "^18.14.6",
     "@types/supertest": "2.0.11",
-    "@typescript-eslint/eslint-plugin": "^5.54.1",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^5.54.1",
     "cspell": "^6.31.2",
     "@cspell/cspell-types": "^6.31.1",

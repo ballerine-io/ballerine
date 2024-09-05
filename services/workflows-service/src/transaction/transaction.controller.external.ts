@@ -24,11 +24,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 
-import {
-  GetTransactionsByAlertDto,
-  GetTransactionsDto,
-} from '@/transaction/dtos/get-transactions.dto';
-import { PaymentMethod } from '@prisma/client';
+import { GetTransactionsByAlertDto } from '@/transaction/dtos/get-transactions.dto';
 import { BulkTransactionsCreatedDto } from '@/transaction/dtos/bulk-transactions-created.dto';
 import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
 import { BulkStatus } from '@/alert/types';
@@ -38,6 +34,8 @@ import { TIME_UNITS } from '@/data-analytics/consts';
 import { TransactionEntityMapper } from './transaction.mapper';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { AlertService } from '@/alert/alert.service';
+import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
+import { buildPaginationFilter } from '@/common/dto';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('Transactions')
@@ -45,6 +43,7 @@ import { AlertService } from '@/alert/alert.service';
 export class TransactionControllerExternal {
   constructor(
     protected readonly service: TransactionService,
+    protected readonly dataAnalyticsService: DataAnalyticsService,
     protected readonly scopeService: ProjectScopeService,
     protected readonly prisma: PrismaService,
     protected readonly logger: AppLoggerService,
@@ -195,209 +194,28 @@ export class TransactionControllerExternal {
     res.status(hasErrors ? 207 : 201).json(response);
   }
 
-  @Get('')
-  // @UseGuards(CustomerAuthGuard)
-  @swagger.ApiOkResponse({ description: 'Returns an array of transactions.' })
-  @swagger.ApiQuery({ name: 'businessId', description: 'Filter by business ID.', required: false })
-  @swagger.ApiQuery({
-    name: 'counterpartyId',
-    description: 'Filter by counterparty ID.',
-    required: false,
-  })
-  @swagger.ApiQuery({
-    name: 'startDate',
-    type: Date,
-    description: 'Filter by transactions after or on this date.',
-    required: false,
-  })
-  @swagger.ApiQuery({
-    name: 'endDate',
-    type: Date,
-    description: 'Filter by transactions before or on this date.',
-    required: false,
-  })
-  @swagger.ApiQuery({
-    name: 'paymentMethod',
-    description: 'Filter by payment method.',
-    required: false,
-    enum: PaymentMethod,
-  })
-  @swagger.ApiQuery({
-    name: 'timeValue',
-    type: 'number',
-    description: 'Number of time units to filter on',
-    required: false,
-  })
-  @swagger.ApiQuery({
-    name: 'timeUnit',
-    type: 'enum',
-    enum: Object.values(TIME_UNITS),
-    description: 'The time unit used in conjunction with timeValue',
-    required: false,
-  })
-  async getTransactions(
-    @Query() getTransactionsParameters: GetTransactionsDto,
-    @CurrentProject() projectId: types.TProjectId,
-  ) {
-    return this.service.getTransactions(getTransactionsParameters, projectId, {
-      include: {
-        counterpartyBeneficiary: {
-          select: {
-            correlationId: true,
-            business: {
-              select: {
-                correlationId: true,
-                companyName: true,
-              },
-            },
-            endUser: {
-              select: {
-                correlationId: true,
-                firstName: true,
-                lastName: true,
-              },
-            },
-          },
-        },
-        counterpartyOriginator: {
-          select: {
-            correlationId: true,
-            business: {
-              select: {
-                correlationId: true,
-                companyName: true,
-              },
-            },
-            endUser: {
-              select: {
-                correlationId: true,
-                firstName: true,
-                lastName: true,
-              },
-            },
-          },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-  }
-
   @Get('/by-alert')
-  // @UseCustomerAuthGuard()
-  @swagger.ApiOkResponse({ description: 'Returns an array of transactions.' })
-  @swagger.ApiQuery({ name: 'businessId', description: 'Filter by business ID.', required: false })
-  @swagger.ApiQuery({
-    name: 'startDate',
-    type: Date,
-    description: 'Filter by transactions after or on this date.',
-    required: false,
-  })
-  @swagger.ApiQuery({
-    name: 'endDate',
-    type: Date,
-    description: 'Filter by transactions before or on this date.',
-    required: false,
-  })
-  @swagger.ApiQuery({
-    name: 'paymentMethod',
-    description: 'Filter by payment method.',
-    required: false,
-    enum: PaymentMethod,
-  })
-  @swagger.ApiQuery({
-    name: 'timeValue',
-    type: 'number',
-    description: 'Number of time units to filter on',
-    required: false,
-  })
-  @swagger.ApiQuery({
-    name: 'timeUnit',
-    type: 'enum',
-    enum: Object.values(TIME_UNITS),
-    description: 'The time unit used in conjunction with timeValue',
-    required: false,
-  })
   @swagger.ApiQuery({
     name: 'alertId',
     description: 'Filter by alert ID.',
     required: true,
   })
   async getTransactionsByAlert(
-    @Query() getTransactionsByAlertParameters: GetTransactionsByAlertDto,
+    @Query() byAlertFilters: GetTransactionsByAlertDto,
     @CurrentProject() projectId: types.TProjectId,
   ) {
-    const alert = await this.alertService.getAlertWithDefinition(
-      getTransactionsByAlertParameters.alertId,
-      projectId,
-    );
+    const alert = await this.alertService.getAlertWithDefinition(byAlertFilters.alertId, projectId);
 
     if (!alert) {
-      throw new errors.NotFoundException(
-        `Alert with id ${getTransactionsByAlertParameters.alertId} not found`,
-      );
+      throw new errors.NotFoundException(`Alert with id ${byAlertFilters.alertId} not found`);
     }
 
     if (!alert.alertDefinition) {
       throw new errors.NotFoundException(`Alert definition not found for alert ${alert.id}`);
     }
 
-    const filters: GetTransactionsByAlertDto = {
-      ...getTransactionsByAlertParameters,
-      ...(!getTransactionsByAlertParameters.startDate && !getTransactionsByAlertParameters.endDate
-        ? this.alertService.buildTransactionsFiltersByAlert(alert)
-        : {}),
-    };
-
-    const hasBeneficiary = alert.executionDetails.subject.some('counterpartyBeneficiaryId');
-    const hasOriginator = alert.executionDetails.subject.some('counterpartyOriginatorId');
-
-    // this.prisma.alert.findMany({
-    //   where: {
-    //     id: 'aaaa'
-    //   },
-    //   include: {
-    //     counterpartyOriginator: {
-    //       select: {
-    //         correlationId: true,
-    //         business: {
-    //           select: {
-    //             correlationId: true,
-    //             companyName: true,
-    //           },
-    //         },
-    //         endUser: {
-    //           select: {
-    //             correlationId: true,
-    //             firstName: true,
-    //             lastName: true,
-    //           },
-    //         },
-    //       },
-    //     },
-    //     counterpartyBeneficiary: {
-    //       select: {
-    //         correlationId: true,
-    //         business: {
-    //           select: {
-    //             correlationId: true,
-    //             companyName: true,
-    //           },
-    //         },
-    //         endUser: {
-    //           select: {
-    //             correlationId: true,
-    //             firstName: true,
-    //             lastName: true,
-    //           },
-    //         },
-    //       }
-    //     }
-    //   }
-    // });
-
-    return this.service.getTransactions(filters, projectId, {
+    return this.service.getTransactions(projectId, {
+      where: alert.executionDetails.filters,
       include: {
         counterpartyBeneficiary: {
           select: {
@@ -436,9 +254,8 @@ export class TransactionControllerExternal {
           },
         },
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      ...buildPaginationFilter({ page: byAlertFilters.page }),
+      orderBy: byAlertFilters.orderBy,
     });
   }
 }
