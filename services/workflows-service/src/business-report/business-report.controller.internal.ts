@@ -9,6 +9,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 import type { InputJsonValue, TProjectId } from '@/types';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import * as errors from '@/errors';
@@ -42,7 +43,6 @@ import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { fileFilter } from '@/storage/file-filter';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
 import { CreateBusinessReportBatchBodyDto } from '@/business-report/dto/create-business-report-batch-body.dto';
-import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { CreateBusinessReportBatchQueryParamsDto } from '@/business-report/dto/create-business-report-batch-query-params.dto';
 
@@ -80,7 +80,7 @@ export class BusinessReportControllerInternal {
       config,
     } = await this.customerService.getByProjectId(currentProjectId);
 
-    await this.checkBusinessReportsLimit(config, currentProjectId);
+    await this.checkBusinessReportsLimit(config?.maxBusinessReports, currentProjectId);
 
     let business: Pick<Business, 'id' | 'correlationId'> | undefined;
     const merchantNameWithDefault = merchantName || 'Not detected';
@@ -367,7 +367,7 @@ export class BusinessReportControllerInternal {
   ) {
     const { config } = await this.customerService.getByProjectId(currentProjectId);
 
-    await this.checkBusinessReportsLimit(config, currentProjectId);
+    await this.checkBusinessReportsLimit(config.maxBusinessReports, currentProjectId);
     const { maxBusinessReports, withQualityControl } = config || {};
 
     const result = await this.businessReportService.processBatchFile({
@@ -388,14 +388,16 @@ export class BusinessReportControllerInternal {
     maxBusinessReports: number | undefined,
     currentProjectId: string,
   ) {
-    if (isNumber(maxBusinessReports) && maxBusinessReports > 0) {
-      const businessReportsCount = await this.businessReportService.count({}, [currentProjectId]);
+    if (!isNumber(maxBusinessReports) || maxBusinessReports <= 0) {
+      return;
+    }
 
-      if (businessReportsCount >= maxBusinessReports) {
-        throw new BadRequestException(
-          `You have reached the maximum number of business reports allowed (${maxBusinessReports}).`,
-        );
-      }
+    const businessReportsCount = await this.businessReportService.count({}, [currentProjectId]);
+
+    if (businessReportsCount >= maxBusinessReports) {
+      throw new BadRequestException(
+        `You have reached the maximum number of business reports allowed (${maxBusinessReports}).`,
+      );
     }
   }
 }
