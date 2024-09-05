@@ -1,8 +1,9 @@
 import { APP_LANGUAGE_QUERY_KEY } from '@/common/consts/consts';
+import { ITheme } from '@/common/types/settings';
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { transformThemeToInlineStyles } from '@/utils/transform-theme-to-inline-styles';
 import { useLayoutEffect, useMemo } from 'react';
-import defaultTheme from '../../../../theme.json';
+import defaultTheme from '../../../../theme-dark.json';
 
 interface Props {
   children: React.ReactNode | React.ReactNode[];
@@ -31,7 +32,7 @@ export const ThemeProvider = ({ children }: Props) => {
 
     document
       .getElementsByTagName('html')[0]
-      ?.setAttribute('style', transformThemeToInlineStyles(theme));
+      ?.setAttribute('style', transformThemeToInlineStyles(theme as ITheme));
   }, [theme]);
 
   return <>{children}</>;

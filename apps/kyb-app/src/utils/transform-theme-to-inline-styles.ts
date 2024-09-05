@@ -1,8 +1,8 @@
 import { ITheme } from '@/common/types/settings';
 
-function createInlineVariable(key: string, value: string): string {
+const createInlineVariable = (key: string, value: string) => {
   return `--${key}: ${value};`;
-}
+};
 
 export const transformThemeToInlineStyles = (theme: ITheme): string => {
   let styles = '';
@@ -12,9 +12,17 @@ export const transformThemeToInlineStyles = (theme: ITheme): string => {
     styles += createInlineVariable(`${variableKey}-foreground`, value.foreground);
   });
 
-  Object.entries(theme.elements).forEach(([variableKey, value]) => {
-    styles += createInlineVariable(variableKey, value);
-  });
+  const buildInlineVariableForElements = (elements: ITheme['elements'], path?: string) => {
+    Object.entries(elements).forEach(([variableKey, value]) => {
+      if (typeof value === 'string') {
+        styles += createInlineVariable(`${path ? `${path}-` : ''}${variableKey}`, value);
+      } else {
+        buildInlineVariableForElements(value, `${path ? `${path}-` : ''}${variableKey}`);
+      }
+    });
+  };
+
+  buildInlineVariableForElements(theme.elements);
 
   return styles;
 };

@@ -2,12 +2,12 @@
   "theme": {
     "pallete": {
       "primary": {
-        "color": "hsl(0, 0%, 100%)",
-        "foreground": "hsl(0, 0%, 0%)"
+        "color": "hsl(240, 100%, 6%)",
+        "foreground": "hsl(0, 0%, 100%)"
       },
       "secondary": {
-        "color": "hsl(226, 100%, 97%)",
-        "foreground": "hsl(0, 0%, 0%)"
+        "color": "linear-gradient(311.17deg, #F7F8FF 27.39%, #FFFFFF 47.49%)",
+        "foreground": "hsla(222, 47%, 11%, 1)"
       },
       "controls": {
         "color": "hsl(0, 0%, 0%)",
@@ -28,13 +28,17 @@
             "inner": {},
             "outer": {
               "border-color": "transparent",
-              "active-border-color": "#007AFF33"
+              "active-border-color": "hsla(343, 92%, 46%, 1)"
             },
             "wrapper": {
               "border-color": "rgb(226, 232, 240)",
-              "active-border-color": "#007AFF"
+              "active-border-color": "transparent"
             },
-            "label": {}
+            "label": {
+              "color": "hsla(212, 12%, 56%, 1)",
+              "active-color": "hsla(0, 0%, 100%, 1)",
+              "opacity": "1"
+            }
           },
           "warning": {
             "inner": {
@@ -43,6 +47,11 @@
             "outer": {
               "border-color": "transparent",
               "active-border-color": "#FF8A0055"
+            },
+            "label": {
+              "color": "hsla(212, 12%, 56%, 1)",
+              "active-color": "hsla(0, 0%, 100%, 1)",
+              "opacity": "1"
             }
           },
           "completed": {
@@ -55,6 +64,11 @@
             },
             "wrapper": {
               "active-border-color": "#20B064"
+            },
+            "label": {
+              "color": "hsla(212, 12%, 56%, 1)",
+              "active-color": "hsla(0, 0%, 100%, 1)",
+              "opacity": "1"
             }
           }
         }
