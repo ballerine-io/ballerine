@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { StepperProgress } from '@/common/components/atoms/StepperProgress';
 import { ProgressBar } from '@/common/components/molecules/ProgressBar';
 import { AppShell } from '@/components/layouts/AppShell';
+import { PoweredByLogo } from '@/components/molecules/PoweredByLogo';
 import { DynamicUI, State } from '@/components/organisms/DynamicUI';
 import { usePageErrors } from '@/components/organisms/DynamicUI/Page/hooks/usePageErrors';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
@@ -102,6 +103,7 @@ export const CollectionFlow = withSessionProtected(() => {
       filteredNonEmptyErrors?.[0]?.stateName ||
       context?.flowConfig?.appState ||
       elements?.at(0)?.stateName;
+
     if (!appState) return null;
 
     return {
@@ -131,6 +133,7 @@ export const CollectionFlow = withSessionProtected(() => {
   }, [customer?.logoImageUri]);
 
   if (initialContext?.flowConfig?.appState === 'approved') return <Approved />;
+
   if (initialContext?.flowConfig?.appState == 'rejected') return <Rejected />;
 
   return definition && context ? (
@@ -197,7 +200,8 @@ export const CollectionFlow = withSessionProtected(() => {
                                       }
                                     </div>
                                   )}
-                                  <img src={'/poweredby.svg'} className="mt-6" />
+                                  {/* <img src={'/poweredby.svg'} className="mt-6" /> */}
+                                  <PoweredByLogo className="mt-8" sidebarRootId="sidebar" />
                                 </div>
                               </div>
                             </div>
