@@ -4,8 +4,9 @@ import { Providers } from '../../common/components/templates/Providers/Providers
 import { ServerDownLayout } from './ServerDown.layout';
 import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
-import Chatbot, { IFrame } from '@/domains/chat/chatbot-opengpt';
+import Chatbot from '@/domains/chat/chatbot-opengpt';
 import { ctw } from '@/common/utils/ctw/ctw';
+import { RenderChildrenInIFrame } from '@/common/components/organisms/RenderChildrenInIFrame/RenderChildrenInIFrame';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
@@ -31,14 +32,14 @@ const ChatbotLayout: FunctionComponent = () => {
   }
 
   return (
-    <IFrame
+    <RenderChildrenInIFrame
       className={ctw('fixed bottom-right-0', {
         'h-[700px] w-[400px]': isWebchatOpen,
         'd-[80px]': !isWebchatOpen,
       })}
     >
       <Chatbot isWebchatOpen={isWebchatOpen} toggleIsWebchatOpen={toggleIsWebchatOpen} />
-    </IFrame>
+    </RenderChildrenInIFrame>
   );
 };
 
