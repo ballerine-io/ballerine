@@ -43,11 +43,11 @@ export const LanguagePicker = () => {
         content: { className: 'w-[204px] p-1', align: 'start' },
         trigger: {
           icon: (
-            <span className="!text-primary-foreground">
+            <span className="text-primary-foreground">
               <GlobeIcon />
             </span>
           ),
-          className: 'px-3 gap-x-2 text-primary-foreground bg-primary',
+          className: 'px-3 gap-x-2 bg-primary text-primary-foreground',
         },
       }}
       onChange={selectedLanguage => {

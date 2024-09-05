@@ -23,10 +23,12 @@ export const Navigation = () => {
   const onPrevious = useCallback(() => {
     if (!isFirstStep) {
       stateApi.sendEvent('PREVIOUS');
+
       return;
     }
 
     exit();
+
     return;
   }, [stateApi, exit]);
 
@@ -34,7 +36,7 @@ export const Navigation = () => {
 
   return (
     <button
-      className={ctw('cursor-pointer select-none ', {
+      className={ctw('cursor-pointer select-none', {
         'pointer-events-none opacity-50': isDisabled,
       })}
       aria-disabled={isDisabled}

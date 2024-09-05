@@ -67,6 +67,7 @@ export const StepperUI = () => {
 
   const activeStep = useMemo(() => {
     const activeStep = steps.find(step => step.id === currentPage?.stateName);
+
     if (!activeStep) return null;
 
     return activeStep;
@@ -89,6 +90,8 @@ export const StepperUI = () => {
             return (
               <VerticalLayout>
                 {items.map(itemProps => {
+                  console.log({ itemProps });
+
                   return (
                     <div
                       data-breadcrumb-id={itemProps.active ? itemProps.id : undefined}
