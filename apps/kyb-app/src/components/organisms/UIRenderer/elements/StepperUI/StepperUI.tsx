@@ -13,7 +13,7 @@ import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
 import { UIPage } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { isPageCompleted } from '@/helpers/prepareInitialUIState';
-import { ScrollArea, ScrollBar, ctw } from '@ballerine/ui';
+import { ScrollArea, ScrollBar } from '@ballerine/ui';
 import { useEffect, useMemo, useState } from 'react';
 
 export const StepperUI = () => {
@@ -93,7 +93,7 @@ export const StepperUI = () => {
                   return (
                     <div
                       data-breadcrumb-id={itemProps.active ? itemProps.id : undefined}
-                      className={ctw('last:bg- flex flex-row items-center gap-4')}
+                      className={'last:bg- flex flex-row items-center gap-4'}
                       key={itemProps.id}
                     >
                       <Breadcrumbs.Item
