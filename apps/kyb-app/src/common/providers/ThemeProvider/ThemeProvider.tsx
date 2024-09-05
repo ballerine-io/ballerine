@@ -3,7 +3,7 @@ import { ITheme } from '@/common/types/settings';
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { transformThemeToInlineStyles } from '@/utils/transform-theme-to-inline-styles';
 import { useLayoutEffect, useMemo } from 'react';
-import defaultTheme from '../../../../theme-dark.json';
+import defaultTheme from '../../../../theme.json';
 
 interface Props {
   children: React.ReactNode | React.ReactNode[];
