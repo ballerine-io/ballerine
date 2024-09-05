@@ -139,6 +139,7 @@ export const DocumentField = (
             message: response.message as string,
             type: 'warning',
           });
+
           return;
         }
 
@@ -159,7 +160,7 @@ export const DocumentField = (
   );
 
   const handleChange = useCallback(
-    (fileId: string) => {
+    (fileId: string, clear?: boolean) => {
       //@ts-ignore
       const destinationParser = new DocumentValueDestinationParser(definition.valueDestination);
       const pathToDocumentsList = destinationParser.extractRootPath();
@@ -202,8 +203,13 @@ export const DocumentField = (
         ({} as Document['pages'][number]);
 
       // Assigning file properties
+      if (clear) {
+        set(documentPage, pathToFileId!, undefined);
+      } else {
+        set(documentPage, pathToFileId!, fileId);
+      }
+
       //@ts-ignore
-      set(documentPage, pathToFileId, fileId);
       set(documentPage, 'fileName', file?.name);
       set(documentPage, 'type', file?.type);
 
