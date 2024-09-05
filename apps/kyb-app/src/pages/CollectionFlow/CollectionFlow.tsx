@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { StepperProgress } from '@/common/components/atoms/StepperProgress';
 import { ProgressBar } from '@/common/components/molecules/ProgressBar';
 import { AppShell } from '@/components/layouts/AppShell';
+import { PoweredByLogo } from '@/components/molecules/PoweredByLogo';
 import { DynamicUI, State } from '@/components/organisms/DynamicUI';
 import { usePageErrors } from '@/components/organisms/DynamicUI/Page/hooks/usePageErrors';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
@@ -209,7 +210,8 @@ export const CollectionFlow = withSessionProtected(() => {
                                       }
                                     </div>
                                   )}
-                                  <img src={'/poweredby.svg'} className="mt-6" />
+                                  {/* <img src={'/poweredby.svg'} className="mt-6" /> */}
+                                  <PoweredByLogo className="mt-8" sidebarRootId="sidebar" />
                                 </div>
                               </div>
                             </div>
