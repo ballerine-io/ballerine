@@ -12,6 +12,7 @@ export type TReportRequest = Array<{
   merchantName?: string;
   websiteName?: string;
   businessReportId?: string;
+  withQualityControl?: boolean;
 }>;
 
 export class UnifiedApiClient {
