@@ -1,10 +1,11 @@
-import React, { FunctionComponent, lazy } from 'react';
+import React, { FunctionComponent, lazy, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Providers } from '../../common/components/templates/Providers/Providers';
 import { ServerDownLayout } from './ServerDown.layout';
 import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
-import Chatbot from '@/domains/chat/chatbot-opengpt';
+import Chatbot, { IFrame } from '@/domains/chat/chatbot-opengpt';
+import { ctw } from '@/common/utils/ctw/ctw';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
@@ -16,6 +17,10 @@ const ReactQueryDevtools = lazy(() =>
 
 const ChatbotLayout: FunctionComponent = () => {
   const { data: customer, isLoading: isLoadingCustomer } = useCustomerQuery();
+  const [isWebchatOpen, setIsWebchatOpen] = useState(false);
+  const toggleIsWebchatOpen = () => {
+    setIsWebchatOpen(prevState => !prevState);
+  };
 
   if (isLoadingCustomer) {
     return <FullScreenLoader />;
@@ -25,7 +30,16 @@ const ChatbotLayout: FunctionComponent = () => {
     return null;
   }
 
-  return <Chatbot />;
+  return (
+    <IFrame
+      className={ctw('fixed bottom-right-0', {
+        'h-[700px] w-[400px]': isWebchatOpen,
+        'd-[80px]': !isWebchatOpen,
+      })}
+    >
+      <Chatbot isWebchatOpen={isWebchatOpen} toggleIsWebchatOpen={toggleIsWebchatOpen} />
+    </IFrame>
+  );
 };
 
 export const Root: FunctionComponent = () => {

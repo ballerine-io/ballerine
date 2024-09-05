@@ -1,7 +1,9 @@
-import { Webchat, WebchatProvider, getClient } from '@botpress/webchat';
+import { getClient, Webchat, WebchatProvider } from '@botpress/webchat';
 import { buildTheme } from '@botpress/webchat-generator';
-import { useState, useEffect } from 'react';
+import { ComponentProps, useEffect, useState } from 'react';
 import { useAuthenticatedUserQuery } from '../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { createPortal } from 'react-dom';
+import { FunctionComponentWithChildren } from '@ballerine/ui';
 
 // declare const themeNames: readonly ["prism", "galaxy", "dusk", "eggplant", "dawn", "midnight"];
 const { theme, style } = buildTheme({
@@ -11,9 +13,28 @@ const { theme, style } = buildTheme({
 
 const clientId = '8f29c89d-ec0e-494d-b18d-6c3590b28be6';
 
-const Chatbot = () => {
+export const IFrame: FunctionComponentWithChildren<ComponentProps<'iframe'>> = ({
+  children,
+  ...props
+}) => {
+  const [contentRef, setContentRef] = useState<HTMLIFrameElement | null>(null);
+  const mountNode = contentRef?.contentWindow?.document?.body;
+
+  return (
+    <iframe {...props} ref={setContentRef}>
+      {mountNode && createPortal(children, mountNode)}
+    </iframe>
+  );
+};
+
+const Chatbot = ({
+  isWebchatOpen,
+  toggleIsWebchatOpen,
+}: {
+  isWebchatOpen: boolean;
+  toggleIsWebchatOpen: () => void;
+}) => {
   const client = getClient({ clientId });
-  const [isWebchatOpen, setIsWebchatOpen] = useState(false);
   const { data: session } = useAuthenticatedUserQuery();
 
   useEffect(() => {
@@ -28,10 +49,6 @@ const Chatbot = () => {
       });
     }
   }, [session, client]);
-
-  const toggleWebchat = () => {
-    setIsWebchatOpen(prevState => !prevState);
-  };
 
   return (
     <div>
@@ -61,9 +78,10 @@ const Chatbot = () => {
             link: 'https://ballerine.com/terms',
           },
         }}
+        closeWindow={toggleIsWebchatOpen}
       >
         <button
-          onClick={toggleWebchat}
+          onClick={toggleIsWebchatOpen}
           style={{
             width: '60px',
             height: '60px',
