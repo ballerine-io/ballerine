@@ -69,9 +69,6 @@ export const CaseCallToActionLegacy: FunctionComponent<ICaseCallToActionLegacyPr
             size="wide"
             variant="warning"
             disabled={data?.disabled || isDisabled}
-            className={ctw({
-              '!bg-warning': !data?.disabled,
-            })}
           >
             {value}
           </MotionButton>
@@ -135,7 +132,7 @@ export const CaseCallToActionLegacy: FunctionComponent<ICaseCallToActionLegacyPr
           <DialogFooter>
             <DialogClose asChild>
               <Button
-                className={ctw(`gap-x-2 !bg-foreground`, {
+                className={ctw(`gap-x-2`, {
                   loading: isLoadingRevisionCase,
                 })}
                 disabled={isLoadingRevisionCase}
