@@ -49,7 +49,6 @@ export class JsonSchemaRuleEngine implements RuleEngine {
   }
 
   private extractErrorsWithFields(validator: Ajv, definition: UIElement<AnyObject>) {
-    console.log({ errors: validator.errors, definition });
     const result = validator.errors?.map(error => {
       const erroredParams = Object.values(error.params) as string[];
       const uniqueErroredParams = Array.from(new Set(erroredParams));
