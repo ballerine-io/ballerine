@@ -309,6 +309,9 @@ export const useKycBlock = ({
               disabled={isDisabled}
               size={'wide'}
               variant={'success'}
+              className={ctw({
+                '!bg-success': !isDisabled,
+              })}
             >
               Approve
             </MotionButton>
