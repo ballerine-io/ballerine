@@ -1,8 +1,8 @@
 name: Under Testing - Build & Push workflows-service image
 
 on:
-  repository_dispatch:
-    types: [invoke-cd-from-external-repo]
+  # repository_dispatch:
+  #   types: [run-test-migration]
   workflow_dispatch:
     inputs:
       operation: 
