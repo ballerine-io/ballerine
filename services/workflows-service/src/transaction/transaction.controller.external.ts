@@ -36,6 +36,7 @@ import { ProjectScopeService } from '@/project/project-scope.service';
 import { AlertService } from '@/alert/alert.service';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { buildPaginationFilter } from '@/common/dto';
+import { InlineRule } from '@/data-analytics/types';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('Transactions')
@@ -215,7 +216,13 @@ export class TransactionControllerExternal {
     }
 
     return this.service.getTransactions(projectId, {
-      where: alert.executionDetails.filters,
+      where:
+        alert.executionDetails.filters ||
+        this.dataAnalyticsService.getInvestigationFilter(
+          projectId,
+          alert.alertDefinition.inlineRule as InlineRule,
+          alert.executionDetails.subjects,
+        ),
       include: {
         counterpartyBeneficiary: {
           select: {

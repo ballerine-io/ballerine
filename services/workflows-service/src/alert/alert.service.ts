@@ -392,6 +392,7 @@ export class AlertService {
         data: {
           updatedAt: new Date(),
         },
+        // TODO: Take care when filters has changed, update the filters on the executionAlert
       });
 
       return true;
