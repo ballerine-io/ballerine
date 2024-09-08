@@ -11,9 +11,11 @@ import { isObject } from '@ballerine/common';
 export const useCreateBusinessReportBatchMutation = ({
   reportType,
   onSuccess,
+  onSettled,
 }: {
   reportType: TBusinessReportType;
   onSuccess?: <TData>(data: TData) => void;
+  onSettled?: () => void;
 }) => {
   const queryClient = useQueryClient();
 
@@ -45,6 +47,9 @@ export const useCreateBusinessReportBatchMutation = ({
           errorMessage: isObject(error) && 'message' in error ? error.message : error,
         }),
       );
+    },
+    onSettled: () => {
+      onSettled?.();
     },
   });
 };
