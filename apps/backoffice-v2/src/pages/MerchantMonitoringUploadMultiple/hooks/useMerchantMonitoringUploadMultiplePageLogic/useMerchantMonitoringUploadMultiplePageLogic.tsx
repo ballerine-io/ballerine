@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { t } from 'i18next';
 import { toast } from 'sonner';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
@@ -20,17 +20,13 @@ export const useMerchantMonitoringUploadMultiplePageLogic = () => {
   const locale = useLocale();
   const navigate = useNavigate();
 
-  const { mutate: mutateCreateBusinessReportBatch } = useCreateBusinessReportBatchMutation({
-    reportType: 'MERCHANT_REPORT_T1',
-    onSuccess: () => {
-      navigate(`/${locale}/merchant-monitoring`);
-    },
-    onSettled: () => {
-      setIsSubmitting(false);
-    },
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { mutate: mutateCreateBusinessReportBatch, isLoading } =
+    useCreateBusinessReportBatchMutation({
+      reportType: 'MERCHANT_REPORT_T1',
+      onSuccess: () => {
+        navigate(`/${locale}/merchant-monitoring`);
+      },
+    });
 
   const onSubmit: SubmitHandler<z.output<typeof CreateBusinessReportBatchSchema>> = ({
     merchantSheet,
@@ -40,8 +36,6 @@ export const useMerchantMonitoringUploadMultiplePageLogic = () => {
 
       return;
     }
-
-    setIsSubmitting(true);
 
     mutateCreateBusinessReportBatch(merchantSheet);
   };
@@ -68,7 +62,7 @@ export const useMerchantMonitoringUploadMultiplePageLogic = () => {
     locale,
     onSubmit,
     onChange,
-    isSubmitting,
     csvTemplateUrl,
+    isSubmitting: isLoading,
   };
 };
