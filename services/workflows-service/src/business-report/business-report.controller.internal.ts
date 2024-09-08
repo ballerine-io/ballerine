@@ -71,6 +71,7 @@ export class BusinessReportControllerInternal {
       merchantName,
       businessCorrelationId,
       reportType,
+      workflowVersion,
     }: CreateBusinessReportDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
@@ -136,6 +137,7 @@ export class BusinessReportControllerInternal {
         reportType,
         withQualityControl,
         callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${business.id}&businessReportId=${businessReport.id}`,
+        workflowVersion: workflowVersion || '1',
         metadata: {
           customerId,
           customerName,
