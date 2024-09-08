@@ -20,12 +20,13 @@ export const useMerchantMonitoringUploadMultiplePageLogic = () => {
   const locale = useLocale();
   const navigate = useNavigate();
 
-  const { mutate: mutateCreateBusinessReportBatch } = useCreateBusinessReportBatchMutation({
-    reportType: 'MERCHANT_REPORT_T1',
-    onSuccess: () => {
-      navigate(`/${locale}/merchant-monitoring`);
-    },
-  });
+  const { mutate: mutateCreateBusinessReportBatch, isLoading } =
+    useCreateBusinessReportBatchMutation({
+      reportType: 'MERCHANT_REPORT_T1',
+      onSuccess: () => {
+        navigate(`/${locale}/merchant-monitoring`);
+      },
+    });
 
   const onSubmit: SubmitHandler<z.output<typeof CreateBusinessReportBatchSchema>> = ({
     merchantSheet,
@@ -62,5 +63,6 @@ export const useMerchantMonitoringUploadMultiplePageLogic = () => {
     onSubmit,
     onChange,
     csvTemplateUrl,
+    isSubmitting: isLoading,
   };
 };
