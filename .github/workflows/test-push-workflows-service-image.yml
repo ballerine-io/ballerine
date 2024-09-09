@@ -38,7 +38,7 @@ jobs:
           if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
             echo "branch=${{ github.event.client_payload.ref }}" >> $GITHUB_OUTPUT
           else
-            echo "branch=dev" >> $GITHUB_OUTPUT
+            echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           fi
           echo "local branch=${{ github.ref_name }}, client_payload ref=${{ github.event.client_payload.ref }}"
 
@@ -210,7 +210,8 @@ jobs:
 
   build-and-push-ee-image:
     runs-on: ubuntu-latest
-    needs: [build-and-push-image, determine_branch]
+    needs: [build-and-push-image, check_if_data_migration_needed, determine_branch]
+    if: ${{ needs.check_if_data_migration_needed.outputs.should_build == 'true' }}
     outputs:
       wf_m_sha_short: ${{ steps.fetch-submodule.outputs.wf_m_sha_short }} # short sha of the commit
       docker_tag: ${{ steps.docker-version.outputs.wf_m_tag }} 
@@ -306,40 +307,6 @@ jobs:
             "BASE_IMAGE=${{needs.build-and-push-image.outputs.docker_full_image}}"
             "RELEASE=${{ needs.build-and-push-image.outputs.bumped_tag }}"
             "SHORT_SHA=${{ needs.build-and-push-image.outputs.sha_short }}"
-
-  # perform_operations:
-  #   runs-on: ubuntu-latest
-  #   needs: build-and-push-ee-image
-  #   outputs:
-  #     operation: ${{ steps.perform-operation.outputs.operation }} # short sha of the commit
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 1
-  #         submodules: 'recursive'
-  #         token: ${{ secrets.SUBMODULES_TOKEN }}
-          
-  #     - name: Perform operation
-  #       id: perform-operation
-  #       run: |
-  #         case "${{ github.event.inputs.operation }}" in
-  #           "Deploy to Dev")
-  #             echo "Deploying to Dev environment"
-  #             gh workflow run deploy-wf-service.yml -f environment=dev -f tag=${{ needs.build-and-push-ee-image.outputs.docker_tag }}
-  #             ;;
-  #           "Run Migrations")
-  #             echo "Running database migrations"
-  #             gh workflow run db-ops.yml -f environment=dev -f tag=${{ needs.build-and-push-ee-image.outputs.docker_tag }}
-  #             ;;
-  #           "Do Nothing")
-  #             echo "No additional operation requested"
-  #             ;;
-  #           *)
-  #             echo "Unknown operation"
-  #             exit 1
-  #             ;;
-  #         esac
 
   deploy-to-dev:
     needs: build-and-push-ee-image
