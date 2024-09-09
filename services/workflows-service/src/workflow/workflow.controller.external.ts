@@ -262,6 +262,15 @@ export class WorkflowControllerExternal {
               },
             },
             documents: [],
+            config: {
+              subscriptions: [
+                {
+                  type: 'webhook',
+                  url: 'https://webhook.site/f82ea191-9d64-424f-887e-f8418faf4fe9',
+                  events: ['workflow.completed'],
+                },
+              ],
+            },
           },
         },
       },
