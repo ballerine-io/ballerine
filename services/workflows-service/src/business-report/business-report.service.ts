@@ -228,6 +228,7 @@ export class BusinessReportService {
           reportRequests: businessReportRequests,
           clientName: 'merchant',
           reportType: type,
+          withQualityControl,
           workflowVersion: '3',
         });
       },
