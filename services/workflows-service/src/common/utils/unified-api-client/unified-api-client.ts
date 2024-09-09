@@ -34,8 +34,8 @@ export class UnifiedApiClient {
       clientName,
       metadata,
       withQualityControl,
-      reportType = BusinessReportType.MERCHANT_REPORT_T1_LITE,
-      workflowVersion = '3',
+      reportType = BusinessReportType.MERCHANT_REPORT_T1,
+      workflowVersion = '2',
     }: {
       reportRequests: TReportRequest;
       clientName?: string;

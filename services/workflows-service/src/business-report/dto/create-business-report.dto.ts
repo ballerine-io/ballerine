@@ -45,4 +45,13 @@ export class CreateBusinessReportDto {
   })
   @IsIn(Object.values(BusinessReportType))
   reportType!: ObjectValues<typeof BusinessReportType>;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+    default: '2',
+    description: 'Workflow version',
+  })
+  @IsString()
+  workflowVersion!: '1' | '2' | '3';
 }

@@ -24,7 +24,6 @@ export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
   const { isLoading: isLoadingCustomer } = useCustomerQuery();
   const navigate = useNavigate();
   const { mutate: mutateCreateBusinessReport } = useCreateBusinessReportMutation({
-    reportType: 'MERCHANT_REPORT_T1',
     onSuccess: () => {
       navigate(`/${locale}/merchant-monitoring`);
     },

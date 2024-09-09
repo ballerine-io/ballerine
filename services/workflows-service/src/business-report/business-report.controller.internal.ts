@@ -44,7 +44,6 @@ import { fileFilter } from '@/storage/file-filter';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
 import { CreateBusinessReportBatchBodyDto } from '@/business-report/dto/create-business-report-batch-body.dto';
 import type { Response } from 'express';
-import { CreateBusinessReportBatchQueryParamsDto } from '@/business-report/dto/create-business-report-batch-query-params.dto';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Business Reports')
@@ -71,6 +70,7 @@ export class BusinessReportControllerInternal {
       merchantName,
       businessCorrelationId,
       reportType,
+      workflowVersion,
     }: CreateBusinessReportDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
@@ -134,6 +134,7 @@ export class BusinessReportControllerInternal {
         countryCode,
         parentCompanyName: merchantName,
         reportType,
+        workflowVersion,
         withQualityControl,
         callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${business.id}&businessReportId=${businessReport.id}`,
         metadata: {
@@ -347,7 +348,7 @@ export class BusinessReportControllerInternal {
     });
   }
 
-  @common.Post('/upload-batch/:type')
+  @common.Post('/upload-batch')
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
@@ -359,8 +360,7 @@ export class BusinessReportControllerInternal {
   )
   async createBusinessReportBatch(
     @UploadedFile() file: Express.Multer.File,
-    @Param() { type }: CreateBusinessReportBatchQueryParamsDto,
-    @Body() body: CreateBusinessReportBatchBodyDto,
+    @Body() { type, workflowVersion }: CreateBusinessReportBatchBodyDto,
     @Res() res: Response,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
@@ -371,6 +371,7 @@ export class BusinessReportControllerInternal {
 
     const result = await this.businessReportService.processBatchFile({
       type,
+      workflowVersion,
       currentProjectId,
       maxBusinessReports,
       merchantSheet: file,
