@@ -167,3 +167,6 @@ export const MatchReasonCode = {
   '21': 'Listing under Privacy Review',
   '24': 'Illegal Transactions',
 } as const;
+
+export const URL_PATTERN =
+  /^((https?):\/\/)?([\dA-Za-z][\w-]*\.)+[\dA-Za-z]+(\.[a-z]{2})?(\/[\w#.-]+)*(\/)?(\?[\w.-]+=[\w.-]+(&[\w.-]+=[\w.-]+)*)?(#[\w-]+)?$/;

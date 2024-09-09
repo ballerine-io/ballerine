@@ -62,8 +62,20 @@ export const ConfigSchema = z
     hasUboOngoingMonitoring: z.boolean().optional(),
     maxBusinessReports: z.number().nonnegative().optional(),
     isMerchantMonitoringEnabled: z.boolean().optional(),
+    isChatbotEnabled: z.boolean().optional(),
   })
   .strict()
   .optional();
 
 export type WorkflowConfig = z.infer<typeof ConfigSchema>;
+
+export const CustomerConfigSchema = z.object({
+  ongoingWorkflowDefinitionId: z.string().optional(),
+  hideCreateMerchantMonitoringButton: z.boolean().optional(),
+  isExample: z.boolean().optional(),
+  isMerchantMonitoringEnabled: z.boolean().optional(),
+  isDemo: z.boolean().optional(),
+  maxBusinessReports: z.number().optional(),
+});
+
+export type TCustomerConfig = z.infer<typeof CustomerConfigSchema>;
