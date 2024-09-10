@@ -49,17 +49,7 @@ export type {
   ObjectValues,
 } from './types';
 
-export {
-  WorkflowDefinitionConfigThemeSchema,
-  defaultContextSchema,
-  findDocumentSchemaByTypeAndCategory,
-  getDocumentId,
-  getDocumentSchemaByCountry,
-  getDocumentsByCountry,
-  getGhanaDocuments,
-  DocumentsSchema,
-  DocumentInsertSchema,
-} from './schemas';
+export * from './schemas';
 
 export * from './consts';
 
