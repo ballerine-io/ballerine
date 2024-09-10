@@ -1,0 +1,120 @@
+name: Under Testing - Database Operations
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: 'Choose Environment'
+        required: true
+        default: 'dev'
+        options:
+          - 'dev'
+          - 'sb'
+          - 'prod'
+      tag:
+        type: string
+        description: 'Image Tag'
+        required: true
+        default: ''
+        
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        description: 'Environment'
+        required: true
+        default: 'dev'
+      tag:
+        type: string
+        description: 'Image Tag'
+        required: true
+        default: ''
+
+jobs:
+  update-helm-chart:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Checkout cloud-infra-config repository
+        uses: actions/checkout@v4
+        with:
+          repository: ballerine-io/cloud-infra-config
+          token: ${{ secrets.GIT_TOKEN }}
+          ref: main
+          fetch-depth: 1
+          sparse-checkout: |
+            kubernetes/helm/wf-service-migration
+          sparse-checkout-cone-mode: true
+      - name: Check if values yaml file exists 
+        id: update_helm_check
+        shell: bash
+        run: |
+          if [ -f "kubernetes/helm/wf-service-migration/${{ inputs.environment }}-custom-values.yaml" ]; then
+            echo "file_name=${{ inputs.environment }}-custom-values.yaml" >> "$GITHUB_OUTPUT"
+          elif [ "${{ inputs.environment }}" == "dev" ]; then
+            echo "file_name=dev-custom-values.yaml" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip_helm=true" >> "$GITHUB_OUTPUT"
+          fi
+            
+      - name: Update workflow-service image version in the HelmChart
+        if: ${{ steps.update_helm_check.outputs.skip_helm != 'true' }}
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          repository: ballerine-io/cloud-infra-config
+          branch: main
+          commitChange: true
+          message: 'Update wf-service-migration image Version to ${{ inputs.tag }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
+          token: ${{ secrets.GIT_TOKEN }}
+          changes: |
+            {
+              "kubernetes/helm/wf-service-migration/${{steps.update_helm_check.outputs.file_name}}": {
+                "prismaMigrate.image.tag": "${{ inputs.tag }}",
+                "dbMigrate.image.tag": "${{ inputs.tag }}",
+                "dataSync.image.tag": "${{ inputs.tag }}"
+              }
+            }
+
+  # sync-argo-app:
+  #   runs-on: ubuntu-latest
+  #   environment: ${{ inputs.environment }}
+  #   env:
+  #     stage: ${{ inputs.environment }}
+  #   permissions:
+  #     contents: read
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+
+  #     - name: Run ArgoCD Action
+  #       id: argocd_api
+  #       uses: ./.github/actions/argocd-action
+  #       with:
+  #         argocd_username: ${{ secrets.ARGOCD_USERNAME }}
+  #         argocd_password: ${{ secrets.ARGOCD_PASSWORD }}
+  #         argocd_server: ${{ secrets.ARGOCD_SERVER }}
+        
+  send-to-slack:
+    runs-on: ubuntu-latest
+    needs: [update-helm-chart]
+    if: ${{ needs.update-helm-chart.result == 'success' }}
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Send alert to Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
+          slack-message: "Wf-service Migrations in ${{ github.ref_name }} build result: ${{ job.status }}. successfully updated the Wf-service-migration helm values for ${{ github.ref_name }}."
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}

@@ -2,19 +2,20 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { t } from 'i18next';
 import { createBusinessReport } from '@/domains/business-reports/fetchers';
-import { TBusinessReportType } from '@/domains/business-reports/types';
 import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
 import { HttpError } from '@/common/errors/http-error';
+import { isObject } from '@ballerine/common';
 
 export const useCreateBusinessReportMutation = ({
-  reportType,
   onSuccess,
 }: {
-  reportType: TBusinessReportType;
   onSuccess?: <TData>(data: TData) => void;
 }) => {
   const queryClient = useQueryClient();
   const { data: customer } = useCustomerQuery();
+
+  const reportType = customer?.features?.createBusinessReport?.options.type ?? 'MERCHANT_REPORT_T1';
+  const workflowVersion = customer?.features?.createBusinessReport?.options.version ?? '2';
 
   return useMutation({
     mutationFn: ({
@@ -39,7 +40,8 @@ export const useCreateBusinessReportMutation = ({
         companyName,
         businessCorrelationId,
         reportType,
-        isExample: customer?.config?.isExample,
+        workflowVersion,
+        isExample: customer?.config?.isExample ?? false,
       }),
     onSuccess: data => {
       if (customer?.config?.isExample) {
@@ -51,14 +53,18 @@ export const useCreateBusinessReportMutation = ({
       toast.success(t(`toast:business_report_creation.success`));
       onSuccess?.(data);
     },
-    onError: error => {
+    onError: (error: unknown) => {
       if (error instanceof HttpError && error.code === 400) {
         toast.error(error.message);
 
         return;
       }
 
-      toast.error(t(`toast:business_report_creation.error`, { errorMessage: error.message }));
+      toast.error(
+        t(`toast:business_report_creation.error`, {
+          errorMessage: isObject(error) && 'message' in error ? error.message : error,
+        }),
+      );
     },
   });
 };
