@@ -221,7 +221,7 @@ jobs:
           changes: |
             {
               "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
-                "image.tag": "${{ needs.build-and-push-ee-image.outputs.docker_tag }}",
+                "image.tag": "${{ needs.build-and-push-ee-image.outputs.docker_tag }}"
               }
             }
 
