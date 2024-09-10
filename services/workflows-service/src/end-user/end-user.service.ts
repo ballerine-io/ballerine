@@ -4,7 +4,7 @@ import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
 import type { TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { Business, BusinessPosition, EndUser, Prisma } from '@prisma/client';
-import { EndUserActiveMonitoringsSchema, EndUserAmlHitsSchema } from '@/end-user/end-user.schema';
+import { EndUserActiveMonitoringsSchema, EndUserAmlHitsSchema } from '@ballerine/common';
 
 @Injectable()
 export class EndUserService {
