@@ -21,7 +21,7 @@ import * as tmp from 'tmp';
 import { AlertService } from '@/alert/alert.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { z } from 'zod';
-import { EndUserActiveMonitoringsSchema } from '@/end-user/end-user.schema';
+import { EndUserActiveMonitoringsSchema } from '@ballerine/common';
 
 export const ReportWithRiskScoreSchema = z
   .object({
