@@ -118,6 +118,9 @@ jobs:
           tags: |
             type=raw,value=${{ needs.determine_branch.outputs.branch }}
             type=raw,value=${{ steps.version.outputs.sha_short }}-${{ needs.determine_branch.outputs.branch }}
+            type=raw,value=${{ steps.version.outputs.sha_short }}-dev,enable=${{ needs.determine_branch.outputs.branch != 'dev' }}
+            type=raw,value=${{ steps.version.outputs.sha_short }}-sb,enable=${{ needs.determine_branch.outputs.branch != 'sb' }}
+            type=raw,value=${{ steps.version.outputs.sha_short }}-prod,enable=${{ needs.determine_branch.outputs.branch != 'prod' }}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'prod') }}
             type=sha,format=short
 
@@ -276,6 +279,9 @@ jobs:
           tags: |
             type=raw,value=${{ needs.determine_branch.outputs.branch }}
             type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.fetch-submodule.outputs.wf_m_sha_short }}-${{ needs.determine_branch.outputs.branch }}
+            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.fetch-submodule.outputs.wf_m_sha_short }}-dev,enable=${{ needs.determine_branch.outputs.branch != 'dev' }}
+            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.fetch-submodule.outputs.wf_m_sha_short }}-sb,enable=${{ needs.determine_branch.outputs.branch != 'sb' }}
+            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.fetch-submodule.outputs.wf_m_sha_short }}-prod,enable=${{ needs.determine_branch.outputs.branch != 'prod' }}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'prod') }}
             type=sha,format=short
 
@@ -318,11 +324,11 @@ jobs:
     secrets: inherit
 
   run-migrations:
-    needs: build-and-push-ee-image
+    needs: [build-and-push-ee-image,determine_branch]
     if: ${{(github.event_name == 'repository_dispatch') || (github.event_name == 'workflow_dispatch' && inputs.operation == 'Run Migrations')}}
     uses: ./.github/workflows/test-db-ops.yaml
     with:
-      environment: 'dev'
+      environment: ${{ needs.determine_branch.outputs.branch }}
       tag: ${{ needs.build-and-push-ee-image.outputs.docker_tag }}
     secrets: inherit
 
