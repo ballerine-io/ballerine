@@ -7,6 +7,8 @@ import { WebsiteCredibility } from '@/components/templates/report/components/Web
 import { Ecosystem } from 'src/components/templates/report/components/Ecosystem';
 import { AdsAndSocialMedia } from '@/components/templates/report/components/AdsAndSocialMedia';
 import { Writable } from 'type-fest';
+import { Transactions } from '../../components/Transactions/Transactions';
+import { Crown } from 'lucide-react';
 
 export const useReportTabs = ({
   reportVersion,
@@ -157,9 +159,19 @@ export const useReportTabs = ({
             />
           ),
         },
+        {
+          label: (
+            <span className={`flex items-center space-x-2`}>
+              <span>Transaction Analysis</span>
+              <Crown className={`d-4 rounded-full`} />
+            </span>
+          ),
+          value: 'transactionAnalysis',
+          content: <Transactions />,
+        },
       ] as const satisfies ReadonlyArray<{
-        label: string;
         value: string;
+        label: ReactNode | ReactNode[];
         content: ReactNode | ReactNode[];
       }>,
     [
