@@ -59,3 +59,7 @@ deploy/caddy/caddy_config
 todo.md
 services/workflows-service/test-report.html
 services/workflows-service/ci/*
+
+
+.nx/cache
+.nx/workspace-data
