@@ -4,7 +4,7 @@ import { BusinessReportSummary } from '@/components/templates/report/components/
 import { WebsitesCompany } from '@/components/templates/report/components/WebsitesCompany';
 import { WebsiteLineOfBusiness } from '@/components/templates/report/components/WebsiteLineOfBusiness';
 import { WebsiteCredibility } from '@/components/templates/report/components/WebsiteCredibility';
-import { EcosystemAndTransactions } from '@/components/templates/report/components/EcosystemAndTransactions';
+import { Ecosystem } from 'src/components/templates/report/components/Ecosystem';
 import { AdsAndSocialMedia } from '@/components/templates/report/components/AdsAndSocialMedia';
 import { Writable } from 'type-fest';
 
@@ -28,7 +28,7 @@ export const useReportTabs = ({
     adsAndSocialMediaAnalysis,
     adsAndSocialMediaPresence,
     websiteLineOfBusinessAnalysis,
-    ecosystemAndTransactionsAnalysis,
+    ecosystemAnalysis,
     summary,
     riskScore,
     riskLevels,
@@ -39,7 +39,7 @@ export const useReportTabs = ({
     pricingAnalysis,
     websiteStructureAndContentEvaluation,
     trafficAnalysis,
-    ecosystemAndTransactionsMatches,
+    ecosystemMatches,
     adsImages,
     relatedAdsImages,
     homepageScreenshotUrl,
@@ -67,9 +67,9 @@ export const useReportTabs = ({
       violations: websiteLineOfBusinessAnalysis ?? [],
     },
     {
-      title: 'Ecosystem and Transactions Analysis',
-      search: '?activeTab=ecosystemAndTransactions',
-      violations: ecosystemAndTransactionsAnalysis ?? [],
+      title: 'Ecosystem Analysis',
+      search: '?activeTab=ecosystem',
+      violations: ecosystemAnalysis ?? [],
     },
   ] as const satisfies ReadonlyArray<{
     title: string;
@@ -138,13 +138,10 @@ export const useReportTabs = ({
           ),
         },
         {
-          label: 'Ecosystem and Transactions',
-          value: 'ecosystemAndTransactions',
+          label: 'Ecosystem',
+          value: 'ecosystem',
           content: (
-            <EcosystemAndTransactions
-              violations={ecosystemAndTransactionsAnalysis ?? []}
-              matches={ecosystemAndTransactionsMatches ?? []}
-            />
+            <Ecosystem violations={ecosystemAnalysis ?? []} matches={ecosystemMatches ?? []} />
           ),
         },
         {
@@ -172,8 +169,8 @@ export const useReportTabs = ({
       adsImages,
       companyName,
       companyReputationAnalysis,
-      ecosystemAndTransactionsAnalysis,
-      ecosystemAndTransactionsMatches,
+      ecosystemAnalysis,
+      ecosystemMatches,
       formattedMcc,
       homepageScreenshotUrl,
       lineOfBusinessDescription,
