@@ -10,9 +10,11 @@ import { isObject } from '@ballerine/common';
 
 export const useCreateBusinessReportBatchMutation = ({
   reportType,
+  workflowVersion,
   onSuccess,
 }: {
   reportType: TBusinessReportType;
+  workflowVersion: string;
   onSuccess?: <TData>(data: TData) => void;
 }) => {
   const queryClient = useQueryClient();
@@ -23,6 +25,7 @@ export const useCreateBusinessReportBatchMutation = ({
     mutationFn: (merchantSheet: File) =>
       createBusinessReportBatch({
         reportType,
+        workflowVersion,
         merchantSheet,
         isExample: customer?.config?.isExample ?? false,
       }),

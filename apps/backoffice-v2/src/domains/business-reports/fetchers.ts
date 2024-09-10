@@ -120,13 +120,13 @@ export const fetchBusinessReports = async ({
 };
 
 export const fetchBusinessReportById = async ({ id }: { id: string }) => {
-  const [filter, error] = await apiClient({
+  const [businessReport, error] = await apiClient({
     endpoint: `business-reports/${id}`,
     method: Method.GET,
     schema: BusinessReportSchema,
   });
 
-  return handleZodError(error, filter);
+  return handleZodError(error, businessReport);
 };
 
 export const createBusinessReport = async ({
@@ -135,12 +135,14 @@ export const createBusinessReport = async ({
   companyName,
   businessCorrelationId,
   reportType,
+  workflowVersion,
   isExample,
 }:
   | {
       websiteUrl: string;
       operatingCountry?: string;
       reportType: TBusinessReportType;
+      workflowVersion: '1' | '2' | '3';
       companyName: string;
       isExample: boolean;
     }
@@ -148,6 +150,7 @@ export const createBusinessReport = async ({
       websiteUrl: string;
       operatingCountry?: string;
       reportType: TBusinessReportType;
+      workflowVersion: '1' | '2' | '3';
       businessCorrelationId: string;
       isExample: boolean;
     }) => {
@@ -167,6 +170,7 @@ export const createBusinessReport = async ({
       merchantName: companyName,
       businessCorrelationId,
       reportType,
+      workflowVersion,
     },
   });
 
@@ -177,10 +181,12 @@ export const createBusinessReportBatch = async ({
   merchantSheet,
   isExample,
   reportType,
+  workflowVersion,
 }: {
   merchantSheet: File;
   isExample: boolean;
   reportType: TBusinessReportType;
+  workflowVersion: string;
 }) => {
   if (isExample) {
     toast.info(t('toast:batch_business_report_creation.is_example'));
@@ -190,9 +196,11 @@ export const createBusinessReportBatch = async ({
 
   const formData = new FormData();
   formData.append('file', merchantSheet);
+  formData.append('type', reportType);
+  formData.append('workflowVersion', workflowVersion);
 
   const [batchId, error] = await apiClient({
-    endpoint: `business-reports/upload-batch/${reportType}`,
+    endpoint: `business-reports/upload-batch`,
     method: Method.POST,
     schema: z.object({ batchId: z.string() }),
     body: formData,
