@@ -41,7 +41,8 @@ export const useMerchantMonitoringLogic = () => {
   return {
     totalPages: data?.meta.totalPages || 0,
     totalItems: data?.meta.totalItems || 0,
-    hideCreateMerchantMonitoringButton: customer?.config?.hideCreateMerchantMonitoringButton,
+    createBusinessReport: customer?.features?.createBusinessReport,
+    createBusinessReportBatch: customer?.features?.createBusinessReportBatch,
     businessReports: data?.businessReports || [],
     isLoadingBusinessReports,
     search,
