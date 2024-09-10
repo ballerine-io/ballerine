@@ -2,8 +2,9 @@ import {
   firstPage,
   PageDto,
   buildOrderByGenericFilter,
-  TransformPageDecorator,
   buildPaginationFilter,
+  OrderBySchema,
+  PageSchema,
 } from '@/common/dto';
 import type { Pagination } from '@/common/dto';
 import { ApiProperty } from '@nestjs/swagger';
@@ -15,6 +16,7 @@ import { Transform, Type } from 'class-transformer';
 import { Direction } from '@/prisma/prisma.util';
 import { SortOrder } from '@/common/query-filters/sort-order';
 import { first, orderBy } from 'lodash';
+import { string, z } from 'zod';
 
 export class SubjectDto {
   @IsOptional()
@@ -53,32 +55,24 @@ const TransactionOrderByEnum: TransactionOrderOptions[] = [
   'status:asc',
   'status:desc',
 ];
+
 class TransactionOrderDto {
   @IsOptional()
   @IsEnum(TransactionOrderByEnum)
   @ApiProperty({
-    type: String,
     required: false,
+    type: String,
+    enum: TransactionOrderByEnum,
     description: 'Column to sort by and direction separated by a colon',
-    examples: [
-      { value: 'createdAt:asc' },
-      { value: 'dataTimestamp:desc' },
-      { value: 'status:asc' },
-    ],
+    examples: ['createdAt:asc', 'dataTimestamp:desc', 'status:asc'],
   })
   @Transform(({ value }) =>
-    value ? buildOrderByGenericFilter(value) : buildOrderByGenericFilter('dataTimestamp:desc'),
+    buildOrderByGenericFilter({
+      orderBy: value,
+      default: 'dataTimestamp:desc',
+    }),
   )
   orderBy?: Prisma.Enumerable<Prisma.TransactionRecordOrderByWithRelationInput>;
-}
-
-class TransactionPageDto {
-  @IsOptional()
-  @IsEnum(TransactionOrderByEnum)
-  @Transform(({ value }) =>
-    value ? buildOrderByGenericFilter(value) : buildOrderByGenericFilter('dataTimestamp:desc'),
-  )
-  orderBy?: Prisma.Enumerable<Pick<Prisma.TransactionRecordFindManyArgs, 'orderBy'>>;
 }
 
 // export class GetTransactionsDto extends TransactionOrderDto {
@@ -108,12 +102,37 @@ class TransactionPageDto {
 //   page!: Pagination;
 // }
 
-export class GetTransactionsByAlertDto extends TransactionOrderDto {
+export const GetTransactionsByAlertSchema = OrderBySchema(TransactionOrderByEnum as any)
+  .merge(PageSchema)
+  .merge(
+    z.object({
+      alertId: z.string(),
+    }),
+  );
+
+export class GetTransactionsByAlertDto {
+  // extends TransactionOrderDto {
   @IsString()
   alertId!: string;
 
   @ApiProperty({ type: PageDto })
   @Type(() => PageDto) // Use Type decorator for class-transformer
-  @Transform(({ value }) => buildPaginationFilter({ page: value } as any)) // Customize if needed
   page!: PageDto;
+
+  @IsOptional()
+  @IsEnum(TransactionOrderByEnum)
+  @ApiProperty({
+    required: false,
+    type: String,
+    enum: TransactionOrderByEnum,
+    description: 'Column to sort by and direction separated by a colon',
+    examples: ['createdAt:asc', 'dataTimestamp:desc', 'status:asc'],
+  })
+  @Transform(({ value }) =>
+    buildOrderByGenericFilter({
+      orderBy: value,
+      default: 'dataTimestamp:desc',
+    }),
+  )
+  orderBy?: Prisma.Enumerable<Prisma.TransactionRecordOrderByWithRelationInput>;
 }

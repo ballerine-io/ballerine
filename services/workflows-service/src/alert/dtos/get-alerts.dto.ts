@@ -1,10 +1,11 @@
 import { PageDto, validateOrderBy } from '@/common/dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { AlertState, AlertStatus, Prisma } from '@prisma/client';
-import { z } from 'zod';
-import { IsOptional } from 'class-validator';
+import { z, ZodError } from 'zod';
+import { IsOptional, ValidateNested } from 'class-validator';
 import { SortableByModel } from '@/common/types';
 import { sortDirections } from '@/prisma/prisma.util';
+import { Type } from 'class-transformer';
 
 export class FilterDto {
   @ApiProperty({
@@ -45,6 +46,8 @@ export class FindAlertsDto {
   search?: string;
 
   @ApiProperty({ type: PageDto })
+  @ValidateNested({ each: false })
+  @Type(() => PageDto)
   page!: PageDto;
 
   @ApiProperty({
@@ -79,20 +82,20 @@ export const FindAlertsSchema = z.object({
     number: z.coerce.number().int().positive(),
     size: z.coerce.number().int().positive().max(100),
   }),
-  orderBy: z
-    .custom<`${(typeof sortableColumnsAlerts)[number]}:${(typeof sortDirections)[number]}`>(value =>
-      validateOrderBy(value, sortableColumnsAlerts),
-    )
-    .transform(value => {
-      const [column = '', direction = ''] = value.split(':');
+  // orderBy: z
+  //   .custom<`${(typeof sortableColumnsAlerts)[number]}:${(typeof sortDirections)[number]}`>(value =>
+  //     validateOrderBy(value, sortableColumnsAlerts),
+  //   )
+  //   .transform(value => {
+  //     const [column = '', direction = ''] = value.split(':');
 
-      if (!column || !direction) throw new Error('Invalid orderBy');
+  //     if (!column || !direction) throw new Error('Invalid orderBy');
 
-      return {
-        [column]: direction,
-      };
-    })
-    .optional(),
+  //     return {
+  //       [column]: direction,
+  //     };
+  //   })
+  //   .optional(),
   filter: z
     .object({
       assigneeId: z

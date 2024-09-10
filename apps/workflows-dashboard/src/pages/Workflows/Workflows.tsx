@@ -71,7 +71,7 @@ export const Workflows = withFilters<FiltersProps<WorkflowsFiltersValues>, Workf
           <WorkflowsLayout.Footer>
             <Pagination
               totalPages={data.meta.pages || 1}
-              page={filters.page || 1}
+              page={filters || 1}
               onChange={handlePageChange}
             />
           </WorkflowsLayout.Footer>

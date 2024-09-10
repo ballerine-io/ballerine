@@ -118,7 +118,8 @@ export class CaseManagementController {
           },
           Counterparty: {
             select: {
-              alerts: true,
+              alertsBenefiting: true,
+              alertsOriginating: true,
             },
           },
           workflowRuntimeData: {

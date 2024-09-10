@@ -1,9 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BusinessReportType, Prisma } from '@prisma/client';
 import { IsIn, IsOptional, IsString } from 'class-validator';
-import { PageDto, sortDirections, validateOrderBy } from '@/common/dto';
+import { sortDirections } from '@/prisma/prisma.util';
+import { PageDto, validateOrderBy } from '@/common/dto';
 import { z } from 'zod';
 import { SortableByModel } from '@/common/types';
+
+type TBusinessOrderBy = 'createdAt' | 'dataTimestamp' | 'status';
 
 export class ListBusinessReportsDto {
   @IsOptional()
@@ -34,7 +37,7 @@ export class ListBusinessReportsDto {
       { value: 'status:asc' },
     ],
   })
-  orderBy?: `${string}:asc` | `${string}:desc`;
+  orderBy?: `${TBusinessOrderBy}:${Prisma.SortOrder}`;
 }
 
 const sortableColumnsAlerts: Array<

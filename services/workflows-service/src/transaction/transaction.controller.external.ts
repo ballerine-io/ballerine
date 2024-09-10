@@ -1,18 +1,17 @@
-import * as swagger from '@nestjs/swagger';
-import { TransactionService } from '@/transaction/transaction.service';
+import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import {
   TransactionCreateAltDto,
   TransactionCreateAltDtoWrapper,
   TransactionCreateDto,
 } from '@/transaction/dtos/transaction-create.dto';
-import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
+import { TransactionService } from '@/transaction/transaction.service';
+import * as swagger from '@nestjs/swagger';
 
-import * as types from '@/types';
 import { PrismaService } from '@/prisma/prisma.service';
+import * as types from '@/types';
 
-import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import express from 'express';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import {
   Body,
   Controller,
@@ -21,22 +20,28 @@ import {
   Post,
   Query,
   Res,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import express from 'express';
 
-import { GetTransactionsByAlertDto } from '@/transaction/dtos/get-transactions.dto';
-import { BulkTransactionsCreatedDto } from '@/transaction/dtos/bulk-transactions-created.dto';
-import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
+import { AlertService } from '@/alert/alert.service';
 import { BulkStatus } from '@/alert/types';
+import { buildPaginationFilter } from '@/common/dto';
+import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
+import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
+import { InlineRule } from '@/data-analytics/types';
 import * as errors from '@/errors';
 import { exceptionValidationFactory } from '@/errors';
-import { TIME_UNITS } from '@/data-analytics/consts';
-import { TransactionEntityMapper } from './transaction.mapper';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { AlertService } from '@/alert/alert.service';
-import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
-import { buildPaginationFilter } from '@/common/dto';
-import { InlineRule } from '@/data-analytics/types';
+import { BulkTransactionsCreatedDto } from '@/transaction/dtos/bulk-transactions-created.dto';
+import {
+  GetTransactionsByAlertDto,
+  GetTransactionsByAlertSchema,
+} from '@/transaction/dtos/get-transactions.dto';
+import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
+import { TransactionEntityMapper } from './transaction.mapper';
+import z from 'zod';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('Transactions')
@@ -201,8 +206,9 @@ export class TransactionControllerExternal {
     description: 'Filter by alert ID.',
     required: true,
   })
+  @UsePipes(new ZodValidationPipe(GetTransactionsByAlertSchema, 'query'))
   async getTransactionsByAlert(
-    @Query() byAlertFilters: GetTransactionsByAlertDto,
+    @Query() byAlertFilters: z.infer<typeof GetTransactionsByAlertSchema>,
     @CurrentProject() projectId: types.TProjectId,
   ) {
     const alert = await this.alertService.getAlertWithDefinition(byAlertFilters.alertId, projectId);
@@ -261,7 +267,7 @@ export class TransactionControllerExternal {
           },
         },
       },
-      ...buildPaginationFilter({ page: byAlertFilters.page }),
+      ...buildPaginationFilter(byAlertFilters.page),
       orderBy: byAlertFilters.orderBy,
     });
   }
