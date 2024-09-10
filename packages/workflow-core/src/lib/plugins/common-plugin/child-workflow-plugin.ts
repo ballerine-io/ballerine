@@ -13,6 +13,8 @@ export class ChildWorkflowPlugin {
   transformers: ChildWorkflowPluginParams['transformers'];
   action: ChildWorkflowPluginParams['action'];
   initEvent: ChildWorkflowPluginParams['initEvent'];
+  successAction: ChildWorkflowPluginParams['successAction'];
+  errorAction: ChildWorkflowPluginParams['errorAction'];
 
   constructor(pluginParams: ChildWorkflowPluginParams) {
     this.name = pluginParams.name;
@@ -23,6 +25,8 @@ export class ChildWorkflowPlugin {
     this.transformers = pluginParams.transformers;
     this.initEvent = pluginParams.initEvent;
     this.action = pluginParams.action;
+    this.successAction = pluginParams.successAction;
+    this.errorAction = pluginParams.errorAction;
   }
 
   async invoke(context: TContext) {
@@ -50,6 +54,13 @@ export class ChildWorkflowPlugin {
         definitionId: this.definitionId,
         parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
       });
+      logger.log(`Child workflow plugin completed`, {
+        name: this.name,
+        definitionId: this.definitionId,
+        parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
+      });
+
+      return { callbackAction: this.successAction };
     } catch (error) {
       logger.error(`Error occurred while invoking child workflow plugin`, {
         error,
@@ -57,14 +68,14 @@ export class ChildWorkflowPlugin {
         definitionId: this.definitionId,
         parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
       });
-    } finally {
+
       logger.log(`Child workflow plugin completed`, {
         name: this.name,
         definitionId: this.definitionId,
         parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
       });
 
-      return Promise.resolve();
+      return { callbackAction: this.errorAction };
     }
   }
 

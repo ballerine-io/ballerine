@@ -1,5 +1,50 @@
 # @ballerine/workflow-core
 
+## 0.6.39
+
+### Patch Changes
+
+- Version bump
+- Updated dependencies
+  - @ballerine/common@0.9.28
+
+## 0.6.38
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.27
+
+## 0.6.37
+
+### Patch Changes
+
+- pushing fixes
+- Updated dependencies
+  - @ballerine/common@0.9.26
+
+## 0.6.36
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.25
+
+## 0.6.35
+
+### Patch Changes
+
+- fixed handling of child workflows
+
+## 0.6.34
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.23
+
 ## 0.6.33
 
 ### Patch Changes

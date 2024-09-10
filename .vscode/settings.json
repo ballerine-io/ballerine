@@ -1,3 +1,9 @@
 {
-  "jest.jestCommandLine": "node_modules/.bin/jest"
+  "jest.jestCommandLine": "node_modules/.bin/jest",
+  "eslint.workingDirectories": [
+    "apps/backoffice-v2",
+    "apps/workflows-dashboard",
+    "packages/workflow-core",
+    "services/workflows-service"
+  ]
 }

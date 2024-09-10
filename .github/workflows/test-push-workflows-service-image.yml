@@ -21,6 +21,7 @@ on:
     branches:
     - "dev-318/workflow-on-demand-migration"
 
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service

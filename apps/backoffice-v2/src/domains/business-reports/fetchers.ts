@@ -4,10 +4,9 @@ import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { TBusinessReportType } from '@/domains/business-reports/types';
 import qs from 'qs';
-import { Severities } from '@ballerine/common';
+import { ObjectValues, Severities } from '@ballerine/common';
 import { toast } from 'sonner';
 import { t } from 'i18next';
-import { ObjectValues } from '@ballerine/common';
 
 export const BusinessReportStatus = {
   NEW: 'new',
@@ -83,13 +82,13 @@ export const fetchLatestBusinessReport = async ({
   businessId: string;
   reportType: TBusinessReportType;
 }) => {
-  const [filter, error] = await apiClient({
+  const [data, error] = await apiClient({
     endpoint: `business-reports/latest?businessId=${businessId}&type=${reportType}`,
     method: Method.GET,
     schema: BusinessReportSchema,
   });
 
-  return handleZodError(error, filter);
+  return handleZodError(error, data);
 };
 
 export const fetchBusinessReports = async ({
@@ -121,13 +120,13 @@ export const fetchBusinessReports = async ({
 };
 
 export const fetchBusinessReportById = async ({ id }: { id: string }) => {
-  const [filter, error] = await apiClient({
+  const [businessReport, error] = await apiClient({
     endpoint: `business-reports/${id}`,
     method: Method.GET,
     schema: BusinessReportSchema,
   });
 
-  return handleZodError(error, filter);
+  return handleZodError(error, businessReport);
 };
 
 export const createBusinessReport = async ({
@@ -136,12 +135,14 @@ export const createBusinessReport = async ({
   companyName,
   businessCorrelationId,
   reportType,
+  workflowVersion,
   isExample,
 }:
   | {
       websiteUrl: string;
       operatingCountry?: string;
       reportType: TBusinessReportType;
+      workflowVersion: '1' | '2' | '3';
       companyName: string;
       isExample: boolean;
     }
@@ -149,6 +150,7 @@ export const createBusinessReport = async ({
       websiteUrl: string;
       operatingCountry?: string;
       reportType: TBusinessReportType;
+      workflowVersion: '1' | '2' | '3';
       businessCorrelationId: string;
       isExample: boolean;
     }) => {
@@ -168,8 +170,42 @@ export const createBusinessReport = async ({
       merchantName: companyName,
       businessCorrelationId,
       reportType,
+      workflowVersion,
     },
   });
 
   return handleZodError(error, businessReport);
+};
+
+export const createBusinessReportBatch = async ({
+  merchantSheet,
+  isExample,
+  reportType,
+  workflowVersion,
+}: {
+  merchantSheet: File;
+  isExample: boolean;
+  reportType: TBusinessReportType;
+  workflowVersion: string;
+}) => {
+  if (isExample) {
+    toast.info(t('toast:batch_business_report_creation.is_example'));
+
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('file', merchantSheet);
+  formData.append('type', reportType);
+  formData.append('workflowVersion', workflowVersion);
+
+  const [batchId, error] = await apiClient({
+    endpoint: `business-reports/upload-batch`,
+    method: Method.POST,
+    schema: z.object({ batchId: z.string() }),
+    body: formData,
+    isFormData: true,
+  });
+
+  return handleZodError(error, batchId);
 };
