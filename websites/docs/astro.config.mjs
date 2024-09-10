@@ -172,8 +172,12 @@ export default defineConfig({
               collapsed: true,
               items: [
                 {
-                  label: `Using webhooks`,
+                  label: `Using Webhooks`,
                   link: `/en/learn/how_to_use_webhooks`,
+                },
+                {
+                  label: `Webhooks Security`,
+                  link: `/en/learn/webhooks_security`,
                 },
               ],
             },

@@ -31,7 +31,9 @@ import {
   getAlertDefinitionCreateData,
 } from '../../scripts/alerts/generate-alerts';
 
-import { PrismaService } from './../prisma/prisma.service';
+import { PrismaService } from '@/prisma/prisma.service';
+import { BusinessService } from '@/business/business.service';
+import { BusinessRepository } from '@/business/business.repository';
 
 type AsyncTransactionFactoryCallback = (
   transactionFactory: TransactionFactory,
@@ -45,9 +47,7 @@ const maskedVisaCardNumber = () => {
   const lastFour = cardNumber.substring(cardNumber.length - 4);
 
   // Construct the masked number with the desired pattern
-  const maskedNumber = `${firstSix}******${lastFour}`.replace('-', '');
-
-  return maskedNumber;
+  return `${firstSix}******${lastFour}`.replace('-', '');
 };
 
 const createTransactionsWithCounterpartyAsync = async (
@@ -70,6 +70,13 @@ const createTransactionsWithCounterpartyAsync = async (
   return baseTransactionFactory;
 };
 
+const createFutureDate = (daysToAdd: number) => {
+  const currentDate = new Date();
+  const futureDate = new Date(currentDate);
+  futureDate.setDate(currentDate.getDate() + daysToAdd);
+  return futureDate;
+};
+
 describe('AlertService', () => {
   let prismaService: PrismaService;
   let alertService: AlertService;
@@ -90,6 +97,8 @@ describe('AlertService', () => {
         BusinessReportService,
         BusinessReportRepository,
         AlertService,
+        BusinessService,
+        BusinessRepository,
       ],
     }).compile();
 
@@ -429,7 +438,7 @@ describe('AlertService', () => {
         });
       });
 
-      it.only('When there are more than or equal to 15 chargeback transactions, an alert should be created', async () => {
+      it('When there are more than or equal to 15 chargeback transactions, an alert should be created', async () => {
         // Arrange
         const business1Transactions = await baseTransactionFactory
           .withBusinessOriginator()
@@ -1003,8 +1012,8 @@ describe('AlertService', () => {
           .withBusinessBeneficiary()
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
-          .amount(2)
-          .count(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold + 1)
+          .amount(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold + 1)
+          .count(1)
           .create();
 
         // Act
@@ -1015,7 +1024,7 @@ describe('AlertService', () => {
         expect(alerts).toHaveLength(1);
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
         expect(alerts[0] as any).toMatchObject({
-          executionDetails: { executionRow: { transactionCount: '1001', totalAmount: 2002 } },
+          executionDetails: { executionRow: { transactionCount: '1', totalAmount: 1001 } },
         });
       });
 
@@ -1065,6 +1074,36 @@ describe('AlertService', () => {
         );
 
         expect(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.excludePaymentMethods).toBe(true);
+      });
+
+      it('When there more than 1k credit card transactions, an alert should be created', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.debit_card)
+          .amount(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold + 1)
+          .count(1)
+          .create();
+
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.apple_pay)
+          .amount(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold + 1)
+          .transactionDate(createFutureDate(1))
+          .count(1)
+          .create();
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(1);
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0] as any).toMatchObject({
+          executionDetails: { executionRow: { transactionCount: '1', totalAmount: 1001 } },
+        });
       });
 
       it('When there more than 1k credit card transactions, an alert should be created', async () => {

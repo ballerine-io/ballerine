@@ -3,6 +3,7 @@
  */
 import * as dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
+import * as process from 'node:process';
 
 if (require.main === module) {
   dotenv.config();
@@ -13,6 +14,10 @@ if (require.main === module) {
 }
 
 async function clean() {
+  if (process.env.DB_URL?.includes('rds.amazonaws.com')) {
+    console.error('This script is not intended to be used in cloud');
+    process.exit(1);
+  }
   console.info('Dropping all tables in the database...');
   const prisma = new PrismaClient();
   const tables = await getTables(prisma);

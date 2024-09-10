@@ -1,5 +1,49 @@
 # web-ui-sdk
 
+## 1.5.29
+
+### Patch Changes
+
+- Version bump
+- Updated dependencies
+  - @ballerine/common@0.9.28
+
+## 1.5.28
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.27
+
+## 1.5.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.26
+
+## 1.5.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.25
+
+## 1.5.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.24
+
+## 1.5.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.23
+
 ## 1.5.23
 
 ### Patch Changes

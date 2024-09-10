@@ -52,6 +52,15 @@ export class WorkflowRunDto {
     required: false,
     type: 'object',
     description: 'Additional configuration for the workflow run.',
+    example: {
+      subscriptions: [
+        {
+          type: 'webhook',
+          url: 'https://webhook.site/f82ea191-9d64-424f-887e-f84b8fcf4fe9',
+          events: ['workflow.completed'],
+        },
+      ],
+    },
   })
   @IsObject()
   @IsOptional()

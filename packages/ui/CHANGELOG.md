@@ -1,5 +1,47 @@
 # @ballerine/ui
 
+## 0.5.24
+
+### Patch Changes
+
+- Version bump
+- Updated dependencies
+  - @ballerine/common@0.9.28
+
+## 0.5.23
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.27
+
+## 0.5.22
+
+### Patch Changes
+
+- readded content explanations and screenshots
+
+## 0.5.21
+
+### Patch Changes
+
+- changed tsconfig settings for ui package
+
+## 0.5.20
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.25
+
+## 0.5.19
+
+### Patch Changes
+
+- Updated exports
+
 ## 0.5.18
 
 ### Patch Changes

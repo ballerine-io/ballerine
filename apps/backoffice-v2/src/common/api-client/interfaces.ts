@@ -14,6 +14,7 @@ export interface IApiClient {
     timeout?: number;
     schema: TZodSchema;
     isBlob?: boolean;
+    isFormData?: boolean;
   }): Promise<[z.infer<TZodSchema>, undefined] | [undefined, Error]>;
 
   <TBody extends AnyRecord, TZodSchema extends ZodSchema>(params: {
@@ -24,6 +25,7 @@ export interface IApiClient {
     timeout?: number;
     schema: TZodSchema;
     isBlob?: boolean;
+    isFormData?: boolean;
   }): Promise<[z.infer<TZodSchema>, undefined] | [undefined, Error]>;
 
   <TZodSchema extends ZodSchema>(params: {

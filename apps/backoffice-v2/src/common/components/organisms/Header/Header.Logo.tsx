@@ -6,6 +6,7 @@ import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQue
 import { AspectRatio } from '../../atoms/AspectRatio/AspectRatio';
 import { useRedirectToRootUrl } from '@/common/hooks/useRedirectToRootUrl/useRedirectToRootUrl';
 import { Skeleton } from '@ballerine/ui';
+import { buttonVariants } from '@/common/components/atoms/Button/Button';
 
 /**
  * @description {@link BallerineLogo} with navigation to "/" on click.
@@ -20,7 +21,10 @@ export const Logo: FunctionComponent = () => {
     <h1 className={`mb-11 flex`}>
       <Link
         to={urlToRoot}
-        className={`btn btn-ghost flex h-20 w-full gap-x-3 text-2xl  normal-case focus:outline-primary`}
+        className={buttonVariants({
+          className: `h-20 w-full hover:bg-slate-300/70`,
+          variant: 'ghost',
+        })}
       >
         {isLoading && <Skeleton className={`h-24 w-full`} />}
         {!isLoading && imageUrl && (
