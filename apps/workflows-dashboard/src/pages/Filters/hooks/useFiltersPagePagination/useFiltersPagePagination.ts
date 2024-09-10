@@ -17,6 +17,6 @@ export const useFiltersPagePagination = () => {
   return {
     handlePageChange,
     total: data?.meta.pages || 1,
-    page: filters.page || 1,
+    page: filters || 1,
   };
 };

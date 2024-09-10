@@ -1,7 +1,11 @@
-import { PageDto } from '@/common/dto';
+import { buildOrderByGenericFilter, PageDto } from '@/common/dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { BusinessReportType } from '@prisma/client';
-import { IsIn, IsOptional, IsString } from 'class-validator';
+import { BusinessReportType, Prisma } from '@prisma/client';
+import { Transform } from 'class-transformer';
+import { IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
+import { orderBy } from 'lodash';
+
+type TBusniessReportOrderBy = 'createdAt' | 'status';
 
 export class GetBusinessReportDto {
   @IsOptional()
@@ -21,7 +25,14 @@ export class GetBusinessReportDto {
     description: 'Column to sort by and direction separated by a colon',
     examples: [{ value: 'createdAt:asc' }, { value: 'status:asc' }],
   })
-  orderBy?: `${string}:asc` | `${string}:desc`;
+  @Transform(({ value }) =>
+    buildOrderByGenericFilter({
+      orderBy: value,
+      default: 'createdAt:asc',
+    }),
+  )
+  @IsEnum(['createdAt:asc', 'status:asc', 'createdAt:desc', 'status:desc'])
+  orderBy?: Prisma.Enumerable<Prisma.BusinessReportOrderByWithRelationInput>;
 
   @ApiProperty({ type: PageDto })
   page!: PageDto;

@@ -3,7 +3,6 @@ import { Prisma, TransactionRecord } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { TProjectId } from '@/types';
-import { buildPaginationFilter } from '@/common/dto';
 
 @Injectable()
 export class TransactionRepository {

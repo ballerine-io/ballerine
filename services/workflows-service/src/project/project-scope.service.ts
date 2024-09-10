@@ -33,8 +33,9 @@ export class ProjectScopeService {
     // @ts-expect-error - dynamically typed for all queries
     args ||= {};
 
-    const projectIdsClause = projectIds?.length || 0 > 1 ? { in: projectIds } : projectIds?.[0];
-
+    const projectLength = projectIds?.length ?? 0;
+    const projectIdsClause =
+      projectLength > 1 ? { in: projectIds } : projectLength === 1 ? projectIds?.[0] : undefined;
     if (!projectIdsClause) {
       throw new Error(
         `Missing or empty 'projectId': A valid 'projectId' is required to proceed with the query.`,
