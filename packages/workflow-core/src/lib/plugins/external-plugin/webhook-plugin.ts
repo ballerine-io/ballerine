@@ -76,4 +76,25 @@ export class WebhookPlugin extends ApiPlugin {
 
     return {};
   }
+
+  async composeRequestHeaders(headers: HeadersInit, context: TContext) {
+    const secrets = await this.secretsManager?.getAll();
+
+    if (secrets && secrets['webhookSharedSecret']) {
+      headers = {
+        ...headers,
+        webhookSharedSecret: secrets['webhookSharedSecret'],
+      };
+    }
+
+    const headersEntries = await Promise.all(
+      Object.entries(headers).map(async header => [
+        header[0],
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        await this.replaceValuePlaceholders(header[1], context),
+      ]),
+    );
+
+    return Object.fromEntries(headersEntries);
+  }
 }
