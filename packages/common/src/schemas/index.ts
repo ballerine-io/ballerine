@@ -12,4 +12,5 @@ export {
 } from './documents/workflow/documents/schemas/index';
 export { type TAvailableDocuments, type TDocument } from './documents/workflow/documents/types';
 export { WorkflowDefinitionConfigThemeSchema } from './workflow/workflow-config-theme';
+export * from './workflow/end-user.schema';
 export { DocumentsSchema, DocumentInsertSchema } from './documents/schemas/documents-schema';

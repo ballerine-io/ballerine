@@ -1,4 +1,3 @@
-import { EndUserAmlHitsSchema } from './../../../../../services/workflows-service/src/end-user/end-user.schema';
 import get from 'lodash.get';
 import isEmpty from 'lodash.isempty';
 
@@ -18,6 +17,7 @@ import { BetweenSchema, LastYearsSchema, PrimitiveArraySchema, PrimitiveSchema }
 import { ValidationFailedError, DataValueNotFoundError } from '../errors';
 import { OperationHelpers } from './constants';
 import { Rule } from '../rules/types';
+import { EndUserAmlHitsSchema } from '@/schemas';
 
 export abstract class BaseOperator<T = Primitive> {
   operator: string;

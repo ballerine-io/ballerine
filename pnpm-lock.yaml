@@ -61,7 +61,7 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.2.14
+        specifier: 0.2.15
         version: link:../../packages/blocks
       '@ballerine/common':
         specifier: 0.9.28
@@ -425,7 +425,7 @@ importers:
   apps/kyb-app:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.2.14
+        specifier: 0.2.15
         version: link:../../packages/blocks
       '@ballerine/common':
         specifier: ^0.9.28
@@ -7578,7 +7578,7 @@ packages:
     engines: {node: '>=v14'}
     dependencies:
       '@commitlint/types': 17.8.1
-      ajv: 8.12.0
+      ajv: 8.13.0
     dev: true
 
   /@commitlint/config-validator@18.5.0:
@@ -7587,7 +7587,7 @@ packages:
     requiresBuild: true
     dependencies:
       '@commitlint/types': 18.4.4
-      ajv: 8.12.0
+      ajv: 8.13.0
     dev: true
     optional: true
 
@@ -11437,7 +11437,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.2
+      '@babel/runtime': 7.23.8
       '@radix-ui/primitive': 1.0.1
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.37)(react@18.2.0)
       '@radix-ui/react-context': 1.0.1(@types/react@18.2.37)(react@18.2.0)
@@ -11771,7 +11771,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.2
+      '@babel/runtime': 7.23.8
       '@radix-ui/primitive': 1.0.1
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.37)(react@18.2.0)
       '@radix-ui/react-context': 1.0.1(@types/react@18.2.37)(react@18.2.0)

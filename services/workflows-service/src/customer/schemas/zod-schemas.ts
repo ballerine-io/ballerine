@@ -5,6 +5,10 @@ export const CustomerSubscriptionSchema = z.object({ subscriptions: z.array(Subs
 
 export type TCustomerSubscription = z.infer<typeof CustomerSubscriptionSchema>;
 
-const CustomerConfigSchema = z.object({ ongoingWorkflowDefinitionId: z.string() });
+const CustomerConfigSchema = z.object({
+  ongoingWorkflowDefinitionId: z.string(),
+  isDemo: z.boolean().default(false),
+  hideCreateMerchantMonitoringButton: z.boolean().default(true),
+});
 
 export type TCustomerConfig = z.infer<typeof CustomerConfigSchema>;
