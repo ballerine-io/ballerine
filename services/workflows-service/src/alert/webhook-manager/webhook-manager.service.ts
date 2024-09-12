@@ -8,8 +8,8 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { WebhookEventEmitterService } from './webhook-event-emitter.service';
 import { IWebhookEntityEventData } from './types';
 import { Webhook } from '@/events/get-webhooks';
-import { sign } from '@/common/utils/sign/sign';
 import { HttpService } from '@nestjs/axios';
+import { sign } from '@ballerine/common';
 
 @common.Injectable()
 export abstract class WebhookHttpService extends HttpService {}
