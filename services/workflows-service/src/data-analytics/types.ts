@@ -8,7 +8,7 @@ export type InlineRule = {
 } & (
   | {
       fnName: 'evaluateHighTransactionTypePercentage';
-      fnInvestigationName: 'investigateHighTransactionTypePercentage';
+      fnInvestigationName?: 'investigateHighTransactionTypePercentage';
       options: Omit<HighTransactionTypePercentage, 'projectId'>;
     }
   | {
@@ -18,42 +18,42 @@ export type InlineRule = {
     }
   | {
       fnName: 'evaluateCustomersTransactionType';
-      fnInvestigationName: 'investigateCustomersTransactionType';
+      fnInvestigationName?: 'investigateCustomersTransactionType';
       options: Omit<TCustomersTransactionTypeOptions, 'projectId'>;
     }
   | {
       fnName: 'evaluateTransactionAvg';
-      fnInvestigationName: 'investigateTransactionAvg';
+      fnInvestigationName?: 'investigateTransactionAvg';
       options: Omit<TransactionLimitHistoricAverageOptions, 'projectId'>;
     }
   | {
       fnName: 'evaluateTransactionAvg';
-      fnInvestigationName: 'investigateTransactionAvg';
+      fnInvestigationName?: 'investigateTransactionAvg';
       options: Omit<TPeerGroupTransactionAverageOptions, 'projectId'>;
     }
   | {
       fnName: 'evaluateDormantAccount';
-      fnInvestigationName: 'investigateDormantAccount';
+      fnInvestigationName?: 'investigateDormantAccount';
       options: Omit<TDormantAccountOptions, 'projectId'>;
     }
   | {
       fnName: 'checkMerchantOngoingAlert';
-      fnInvestigationName: 'investigateMerchantOngoingAlert';
+      fnInvestigationName?: 'investigateMerchantOngoingAlert';
       options: CheckRiskScoreOptions;
     }
   | {
       fnName: 'evaluateHighVelocityHistoricAverage';
-      fnInvestigationName: 'investigateHighVelocityHistoricAverage';
+      fnInvestigationName?: 'investigateHighVelocityHistoricAverage';
       options: Omit<HighVelocityHistoricAverageOptions, 'projectId'>;
     }
   | {
       fnName: 'evaluateMultipleMerchantsOneCounterparty';
-      fnInvestigationName: 'investigateMultipleMerchantsOneCounterparty';
+      fnInvestigationName?: 'investigateMultipleMerchantsOneCounterparty';
       options: Omit<TMultipleMerchantsOneCounterparty, 'projectId'>;
     }
   | {
       fnName: 'evaluateMerchantGroupAverage';
-      fnInvestigationName: 'investigateMerchantGroupAverage';
+      fnInvestigationName?: 'investigateMerchantGroupAverage';
       options: Omit<TMerchantGroupAverage, 'projectId'>;
     }
 );

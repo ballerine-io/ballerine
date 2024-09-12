@@ -1,3 +1,7 @@
+import {
+  getAlertDefinitionCreateData,
+  ALERT_DEFINITIONS,
+} from './../../scripts/alerts/generate-alerts';
 import request from 'supertest';
 import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
 import { INestApplication } from '@nestjs/common';
@@ -11,6 +15,7 @@ import { createAlertDefinition } from '@/test/helpers/create-alert-definition';
 import {
   AlertDefinition,
   Business,
+  Counterparty,
   Customer,
   EndUser,
   PaymentAcquirer,
@@ -36,6 +41,8 @@ import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.r
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { ConfigService } from '@nestjs/config';
 import { AlertService } from '@/alert/alert.service';
+import { TransactionFactory } from './test-utils/transaction-factory';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
 const getBusinessCounterpartyData = (business?: Business) => {
   if (business) {
@@ -135,7 +142,7 @@ const getBaseTransactionData = () => {
   } as const satisfies TransactionCreateDto;
 };
 
-const API_KEY = faker.datatype.uuid();
+const API_KEY = 'FAKE_API_KEY';
 
 describe('#TransactionControllerExternal', () => {
   let app: INestApplication;
@@ -150,12 +157,28 @@ describe('#TransactionControllerExternal', () => {
     app = await initiateNestApp(
       app,
       [
+        PrismaService,
         ProjectScopeService,
         AlertService,
         AlertRepository,
-        AlertDefinitionRepository,
         DataAnalyticsService,
         ConfigService,
+        AlertDefinitionRepository,
+        AppLoggerService,
+        {
+          provide: AlertRepository,
+          useClass: AlertRepository,
+        },
+        {
+          provide: 'LOGGER',
+          useValue: {
+            setContext: jest.fn(),
+            log: jest.fn(),
+            error: jest.fn(),
+            warn: jest.fn(),
+            debug: jest.fn(),
+          },
+        },
       ],
       [TransactionControllerExternal],
       [TransactionModule],
@@ -596,8 +619,9 @@ describe('#TransactionControllerExternal', () => {
     let customer: Customer;
     let project: Project;
     let alertDefinition: AlertDefinition;
+    let baseTransactionFactory: TransactionFactory;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
       customer = await createCustomer(
         app.get(PrismaService),
         faker.datatype.uuid(),
@@ -607,6 +631,13 @@ describe('#TransactionControllerExternal', () => {
         'webhook-shared-secret',
       );
       project = await createProject(app.get(PrismaService), customer, faker.datatype.uuid());
+
+      baseTransactionFactory = new TransactionFactory({
+        prisma: app.get(PrismaService),
+        projectId: project.id,
+      })
+        .paymentMethod(PaymentMethod.credit_card)
+        .transactionDate(faker.date.recent(6));
     });
 
     const getAlertDefinitionWithTimeOptions = (timeUnit: string, timeAmount: number) => ({
@@ -638,7 +669,7 @@ describe('#TransactionControllerExternal', () => {
         project.id,
         getAlertDefinitionWithTimeOptions('days', 7) as any,
       );
-      const alert = await await createAlert(app, alertDefinition);
+      const alert = await createAlert(app, alertDefinition);
 
       await Promise.all([
         // 5 transactions in the past 7 days
@@ -676,7 +707,7 @@ describe('#TransactionControllerExternal', () => {
         project.id,
         getAlertDefinitionWithTimeOptions('days', 1) as any,
       );
-      const alert = await await createAlert(app, alertDefinition);
+      const alert = await createAlert(app, alertDefinition);
 
       // Create a transaction older than the alert criteria
       await createTransactionRecord(app.get(PrismaService), project, {
@@ -711,7 +742,7 @@ describe('#TransactionControllerExternal', () => {
         getAlertDefinitionWithTimeOptions('days', 7) as any,
       );
 
-      const alert = await createAlert(otherProject.id, alertDefinition);
+      const alert = await createAlert(app, alertDefinition);
 
       const response = await request(app.getHttpServer())
         .get(`/external/transactions/by-alert?alertId=${alert.id}`)
@@ -736,7 +767,7 @@ describe('#TransactionControllerExternal', () => {
         getAlertDefinitionWithTimeOptions('days', 15) as any,
       );
 
-      const alert = await await createAlert(app, alertDefinition);
+      const alert = await createAlert(app, alertDefinition);
 
       const response = await request(app.getHttpServer())
         .get(`/external/transactions/by-alert?alertId=${alert.id}`)
