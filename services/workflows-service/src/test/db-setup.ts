@@ -9,7 +9,7 @@ process.env.LOG_LEVEL = 'error';
 const DATABASE_NAME = 'test';
 
 module.exports = async () => {
-  if (process.env.SKIP_DB_SETUP_TEARDOWN) return;
+  if (process.env.SKIP_DB_SETUP_TEARDOWN === 'true') return;
 
   const container = await new PostgreSqlContainer('sibedge/postgres-plv8:15.3-3.1.7')
     .withDatabase(DATABASE_NAME)

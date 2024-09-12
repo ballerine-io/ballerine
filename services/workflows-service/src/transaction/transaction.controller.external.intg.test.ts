@@ -638,7 +638,7 @@ describe('#TransactionControllerExternal', () => {
         project.id,
         getAlertDefinitionWithTimeOptions('days', 7) as any,
       );
-      const alert = await createAlert(project.id, alertDefinition);
+      const alert = await await createAlert(app, alertDefinition);
 
       await Promise.all([
         // 5 transactions in the past 7 days
@@ -676,7 +676,7 @@ describe('#TransactionControllerExternal', () => {
         project.id,
         getAlertDefinitionWithTimeOptions('days', 1) as any,
       );
-      const alert = await createAlert(project.id, alertDefinition);
+      const alert = await await createAlert(app, alertDefinition);
 
       // Create a transaction older than the alert criteria
       await createTransactionRecord(app.get(PrismaService), project, {
@@ -736,7 +736,7 @@ describe('#TransactionControllerExternal', () => {
         getAlertDefinitionWithTimeOptions('days', 15) as any,
       );
 
-      const alert = await createAlert(project.id, alertDefinition);
+      const alert = await await createAlert(app, alertDefinition);
 
       const response = await request(app.getHttpServer())
         .get(`/external/transactions/by-alert?alertId=${alert.id}`)
