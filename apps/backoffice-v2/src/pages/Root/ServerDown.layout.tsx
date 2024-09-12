@@ -1,14 +1,14 @@
+import { FunctionComponent } from 'react';
 import { useHealthQuery } from './hooks/useHealthQuery/useHealthQuery';
+import { Outlet } from 'react-router-dom';
 import { ErrorAlert } from '../../common/components/atoms/ErrorAlert/ErrorAlert';
 import { FullScreenLoader } from '../../common/components/molecules/FullScreenLoader/FullScreenLoader';
-import { FunctionComponentWithChildren } from '@ballerine/ui';
 
-export const ServerDownLayout: FunctionComponentWithChildren = ({ children }) => {
+export const ServerDownLayout: FunctionComponent = () => {
   const { isSuccess, isLoading } = useHealthQuery();
 
   if (isLoading) return <FullScreenLoader />;
-
-  if (isSuccess) return children;
+  if (isSuccess) return <Outlet />;
 
   return (
     <main className={`flex h-full flex-col items-center`}>
