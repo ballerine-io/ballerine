@@ -19,8 +19,7 @@ on:
       # Run this pipeline only if there are changes in specified path
       - 'services/workflows-service/**'
     branches:
-    - "dev-318/workflow-on-demand-migration"
-
+    - "dev"
 
 env:
   REGISTRY: ghcr.io
