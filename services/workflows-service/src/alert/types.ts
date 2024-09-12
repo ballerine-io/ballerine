@@ -1,7 +1,7 @@
 import { Alert, AlertDefinition, Business, EndUser, Prisma, User } from '@prisma/client';
 
 export type TExecutionDetails = {
-  subject: Array<Record<string, unknown>>;
+  subjects: Array<Record<string, unknown>>;
   filters: Prisma.TransactionRecordWhereInput;
   executionRow: unknown;
 };
