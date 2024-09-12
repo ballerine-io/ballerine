@@ -88,7 +88,6 @@ export class WebhookPlugin extends ApiPlugin {
     if (secrets && webhookSharedSecret) {
       headers = {
         ...headers,
-        'X-Authorization': webhookSharedSecret,
         'X-HMAC-Signature': sign({ payload, key: webhookSharedSecret }),
       };
     }
