@@ -76,6 +76,47 @@ export class AlertControllerExternal {
               avatarUrl: true,
             },
           },
+          counterpartyOriginator: {
+            select: {
+              id: true,
+              business: {
+                select: {
+                  id: true,
+                  correlationId: true,
+                  companyName: true,
+                },
+              },
+              endUser: {
+                select: {
+                  id: true,
+                  correlationId: true,
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
+          },
+          counterpartyBeneficiary: {
+            select: {
+              id: true,
+              business: {
+                select: {
+                  id: true,
+                  correlationId: true,
+                  companyName: true,
+                },
+              },
+              endUser: {
+                select: {
+                  id: true,
+                  correlationId: true,
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
+          },
+          // TODO: remove this after migration
           counterparty: {
             select: {
               id: true,
