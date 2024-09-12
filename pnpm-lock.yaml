@@ -64,20 +64,20 @@ importers:
         specifier: 0.2.15
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: 0.9.29
-        version: link:../../packages/common
+        specifier: 0.9.28
+        version: 0.9.28
       '@ballerine/react-pdf-toolkit':
         specifier: ^1.2.24
         version: link:../../packages/react-pdf-toolkit
       '@ballerine/ui':
-        specifier: ^0.5.24
+        specifier: ^0.5.25
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.40
-        version: link:../../sdks/workflow-browser-sdk
+        specifier: 0.6.39
+        version: 0.6.39
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.40
-        version: link:../../sdks/workflow-node-sdk
+        specifier: 0.6.39
+        version: 0.6.39
       '@botpress/webchat':
         specifier: ^2.1.10
         version: 2.1.10(@types/react-dom@18.2.15)(@types/react@18.2.37)(csstype@3.1.3)(redux@5.0.1)
@@ -428,14 +428,14 @@ importers:
         specifier: 0.2.15
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: ^0.9.29
+        specifier: ^0.9.28
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.5.24
+        specifier: 0.5.25
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.40
-        version: link:../../sdks/workflow-browser-sdk
+        specifier: 0.6.39
+        version: 0.6.39
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
         version: 1.3.2(@tanstack/query-core@5.17.19)(@tanstack/react-query@4.36.1)
@@ -898,10 +898,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.29
+        specifier: 0.9.30
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.40
+        specifier: 0.6.41
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -1393,7 +1393,7 @@ importers:
         specifier: ^1.1.13
         version: link:../config
       '@ballerine/ui':
-        specifier: 0.5.24
+        specifier: 0.5.25
         version: link:../ui
       '@react-pdf/renderer':
         specifier: ^3.1.14
@@ -1840,7 +1840,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.29
+        specifier: 0.9.30
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -2015,7 +2015,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.29
+        specifier: 0.9.30
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -2142,10 +2142,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.29
+        specifier: 0.9.30
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.40
+        specifier: 0.6.41
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -2284,7 +2284,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.6.40
+        specifier: 0.6.41
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2529,13 +2529,13 @@ importers:
         specifier: 3.347.1
         version: 3.347.1
       '@ballerine/common':
-        specifier: 0.9.29
+        specifier: 0.9.30
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.40
+        specifier: 0.6.41
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.40
+        specifier: 0.6.41
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -2872,7 +2872,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(astro@3.3.3)(tailwindcss@3.3.5)(ts-node@10.9.1)
       '@ballerine/common':
-        specifier: ^0.9.29
+        specifier: ^0.9.30
         version: link:../../packages/common
       astro:
         specifier: 3.3.3
@@ -7239,6 +7239,51 @@ packages:
   /@balena/dockerignore@1.0.2:
     resolution: {integrity: sha512-wMue2Sy4GAVTk6Ic4tJVcnfdau+gx2EnG7S+uAEe+TWJFqE4YoWN4/H8MSLj4eYJKxGg26lZwboEniNiNwZQ6Q==}
     dev: true
+
+  /@ballerine/common@0.9.28:
+    resolution: {integrity: sha512-Cb2+JuPLo6vYsXB/2NCnRfHVxp84r44bv3cPh0JCpjoLV1BEzYLy92jAJWM02L1qQNqn4Hh30Uxpjz84YKQbWQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@sinclair/typebox': 0.32.15
+      ajv: 8.13.0
+      dayjs: 1.11.10
+      json-schema-to-zod: 0.6.3
+      lodash.get: 4.4.2
+      lodash.isempty: 4.4.0
+      zod: 3.23.8
+    dev: false
+
+  /@ballerine/workflow-browser-sdk@0.6.39:
+    resolution: {integrity: sha512-rf2oxda6nOYeC0eOmZ4xLcAR0XJj1l7XPBkR0X6hWK4vvjFCn+/kvv5jYkcIQe9zwG/BUVLhvxk/+aCtUkfpsA==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@ballerine/common': 0.9.28
+      '@ballerine/workflow-core': 0.6.39
+      xstate: 4.38.3
+    dev: false
+
+  /@ballerine/workflow-core@0.6.39:
+    resolution: {integrity: sha512-du/G8I4CAEfYWHlo9axHxeLDEx1kKOHaewB8KPxoObpN0B3FGz8a7cj8qPNcQKjl8MEg3Y/CsB2fDHa92J8VKA==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@ballerine/common': 0.9.28
+      ajv: 8.13.0
+      i18n-iso-countries: 7.7.0
+      jmespath: 0.16.0
+      json-logic-js: 2.0.2
+      lodash.groupby: 4.6.0
+      lodash.maxby: 4.6.0
+      xstate: 4.38.3
+    dev: false
+
+  /@ballerine/workflow-node-sdk@0.6.39:
+    resolution: {integrity: sha512-k2mBThD2QBoY9bAm+5852AKPX4RRlqaxtBW5GUGfRnujG03A+8NoSprUo8RiQyRTbWMBehC9QaIx5TTA5iAZFQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@ballerine/workflow-core': 0.6.39
+      json-logic-js: 2.0.2
+      xstate: 4.38.3
+    dev: false
 
   /@base2/pretty-print-object@1.0.1:
     resolution: {integrity: sha512-4iri8i1AqYHJE2DstZYkyEprg6Pq6sKx3xn5FpySk9sNhH7qN2LLlHJCfDTZRILNwQNPD7mATWM0TBui7uC1pA==}
@@ -20010,7 +20055,6 @@ packages:
       json-schema-traverse: 1.0.0
       require-from-string: 2.0.2
       uri-js: 4.4.1
-    dev: true
 
   /ansi-align@3.0.1:
     resolution: {integrity: sha512-IOfwwBF5iczOjp/WeY4YxyjqAFMQoZufdQWDd19SEExbVLNXqvpzSJ/M7Za4/sCPmQ0+GRquoA7bGcINcxew6w==}
