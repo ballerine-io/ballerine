@@ -1,6 +1,6 @@
 import { Input } from '@ballerine/ui';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, Download } from 'lucide-react';
+import { ChevronLeft, Download, Loader2 } from 'lucide-react';
 import React, { FunctionComponent } from 'react';
 
 import { Card } from '@/common/components/atoms/Card/Card';
@@ -15,7 +15,7 @@ import { FormDescription } from '@/common/components/organisms/Form/Form.Descrip
 import { useMerchantMonitoringUploadMultiplePageLogic } from '@/pages/MerchantMonitoringUploadMultiple/hooks/useMerchantMonitoringUploadMultiplePageLogic/useMerchantMonitoringUploadMultiplePageLogic';
 
 export const MerchantMonitoringUploadMultiplePage: FunctionComponent = () => {
-  const { form, onSubmit, onChange, locale, csvTemplateUrl } =
+  const { form, isSubmitting, onSubmit, onChange, locale, csvTemplateUrl } =
     useMerchantMonitoringUploadMultiplePageLogic();
 
   return (
@@ -56,10 +56,13 @@ export const MerchantMonitoringUploadMultiplePage: FunctionComponent = () => {
                   </FormItem>
                 )}
               />
-              <div className={`flex space-x-[54px]`}>
-                <Button type="submit" size={`wide`}>
-                  Start Analyzing
-                </Button>
+              <div className={`flex space-x-[50px]`}>
+                <div className={`flex w-[200px] items-center`}>
+                  <Button type="submit" size={`wide`} disabled={isSubmitting}>
+                    Start Analyzing
+                  </Button>
+                  {isSubmitting && <Loader2 className={'ml-2 w-6 animate-spin'} />}
+                </div>
                 <a
                   href={csvTemplateUrl}
                   download="batch-report-template.csv"

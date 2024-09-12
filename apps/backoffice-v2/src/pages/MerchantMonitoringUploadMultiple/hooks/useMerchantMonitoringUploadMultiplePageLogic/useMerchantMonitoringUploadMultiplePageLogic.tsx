@@ -9,8 +9,11 @@ import csvContent from './batch-report-template.csv?raw';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { CreateBusinessReportBatchSchema } from '@/pages/MerchantMonitoringUploadMultiple/create-business-report-batch-schema';
 import { useCreateBusinessReportBatchMutation } from '@/domains/business-reports/hooks/mutations/useCreateBusinessReportBatchMutation/useCreateBusinessReportBatchMutation';
+import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
 
 export const useMerchantMonitoringUploadMultiplePageLogic = () => {
+  const { data: customer } = useCustomerQuery();
+
   const form = useForm<{ merchantSheet: File | undefined }>({
     defaultValues: {
       merchantSheet: undefined,
@@ -20,12 +23,15 @@ export const useMerchantMonitoringUploadMultiplePageLogic = () => {
   const locale = useLocale();
   const navigate = useNavigate();
 
-  const { mutate: mutateCreateBusinessReportBatch } = useCreateBusinessReportBatchMutation({
-    reportType: 'MERCHANT_REPORT_T1',
-    onSuccess: () => {
-      navigate(`/${locale}/merchant-monitoring`);
-    },
-  });
+  const { mutate: mutateCreateBusinessReportBatch, isLoading } =
+    useCreateBusinessReportBatchMutation({
+      reportType:
+        customer?.features?.createBusinessReportBatch?.options.type ?? 'MERCHANT_REPORT_T1',
+      workflowVersion: customer?.features?.createBusinessReportBatch?.options.version ?? '2',
+      onSuccess: () => {
+        navigate(`/${locale}/merchant-monitoring`);
+      },
+    });
 
   const onSubmit: SubmitHandler<z.output<typeof CreateBusinessReportBatchSchema>> = ({
     merchantSheet,
@@ -62,5 +68,6 @@ export const useMerchantMonitoringUploadMultiplePageLogic = () => {
     onSubmit,
     onChange,
     csvTemplateUrl,
+    isSubmitting: isLoading,
   };
 };

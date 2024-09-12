@@ -134,6 +134,7 @@ export class BusinessReportService {
     type,
     projectId,
     merchantSheet,
+    workflowVersion,
     currentProjectId,
     maxBusinessReports,
     withQualityControl,
@@ -143,6 +144,7 @@ export class BusinessReportService {
     currentProjectId: string;
     maxBusinessReports: number;
     withQualityControl: boolean;
+    workflowVersion: '1' | '2' | '3';
     merchantSheet: Express.Multer.File;
   }) {
     const businessReportsRequests = await parseCsv({
@@ -228,7 +230,8 @@ export class BusinessReportService {
           reportRequests: businessReportRequests,
           clientName: 'merchant',
           reportType: type,
-          workflowVersion: '3',
+          withQualityControl,
+          workflowVersion,
         });
       },
       {

@@ -60,3 +60,6 @@ todo.md
 services/workflows-service/test-report.html
 services/workflows-service/ci/*
 logs
+
+.nx/cache
+.nx/workspace-data

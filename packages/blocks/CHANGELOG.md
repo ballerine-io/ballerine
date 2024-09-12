@@ -1,5 +1,19 @@
 # @ballerine/blocks
 
+## 0.2.15
+
+### Patch Changes
+
+- updated social block link
+
+## 0.2.14
+
+### Patch Changes
+
+- Version bump
+- Updated dependencies
+  - @ballerine/common@0.9.28
+
 ## 0.2.13
 
 ### Patch Changes
