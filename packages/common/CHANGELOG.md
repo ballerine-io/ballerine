@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.29
+
+### Patch Changes
+
+- Added signing logic with crypt
+
 ## 0.9.28
 
 ### Patch Changes
