@@ -2,7 +2,7 @@ import { ApiPlugin } from './api-plugin';
 import { TContext } from '../../utils/types';
 import { IApiPluginParams } from './types';
 import { logger } from '../../logger';
-import { AnyRecord } from '@ballerine/common';
+import { AnyRecord, sign } from '@ballerine/common';
 
 export class WebhookPlugin extends ApiPlugin {
   public static pluginType = 'http';
@@ -30,7 +30,7 @@ export class WebhookPlugin extends ApiPlugin {
         urlWithoutPlaceholders,
         this.method,
         requestPayload,
-        await this.composeRequestHeaders(this.headers!, context),
+        await this.composeRequestSignedHeaders(this.headers!, context, requestPayload),
       );
 
       logger.log('Webhook Plugin - Received response', {
@@ -77,13 +77,19 @@ export class WebhookPlugin extends ApiPlugin {
     return {};
   }
 
-  async composeRequestHeaders(headers: HeadersInit, context: TContext) {
+  async composeRequestSignedHeaders(
+    headers: HeadersInit,
+    context: TContext,
+    payload: AnyRecord | undefined,
+  ) {
     const secrets = await this.secretsManager?.getAll();
+    const webhookSharedSecret = secrets?.['webhookSharedSecret'];
 
-    if (secrets && secrets['webhookSharedSecret']) {
+    if (secrets && webhookSharedSecret) {
       headers = {
         ...headers,
-        webhookSharedSecret: secrets['webhookSharedSecret'],
+        'X-Authorization': webhookSharedSecret,
+        'X-HMAC-Signature': sign({ payload, key: webhookSharedSecret }),
       };
     }
 
