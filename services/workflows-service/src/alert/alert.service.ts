@@ -1,8 +1,6 @@
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { AlertRepository } from '@/alert/alert.repository';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { computeHash } from '@/common/utils/sign/sign';
-import { TIME_UNITS } from '@/data-analytics/consts';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { CheckRiskScoreOptions, InlineRule } from '@/data-analytics/types';
 import * as errors from '@/errors';
@@ -277,7 +275,7 @@ export class AlertService {
               status: AlertExecutionStatus.FAILED,
               alertDefinition,
               executionRow,
-              error: new Error('Aggregated row is missing properties '),
+              error: new Error('Aggregated row is missing properties'),
             });
           }
 
@@ -325,20 +323,29 @@ export class AlertService {
     executionRow: Record<string, unknown>,
     additionalInfo?: Record<string, unknown>,
   ) {
+    const mergedSubject = Object.assign({}, ...(subject || []));
+
+    const projectId = alertDef.projectId;
+    const now = new Date();
+
     return this.alertRepository.create({
       data: {
+        projectId,
         alertDefinitionId: alertDef.id,
-        projectId: alertDef.projectId,
         severity: alertDef.defaultSeverity,
-        dataTimestamp: new Date(),
+        updatedAt: now,
+        createdAt: now,
+        dataTimestamp: now,
         state: AlertState.triggered,
         status: AlertStatus.new,
         additionalInfo: additionalInfo,
         executionDetails: {
-          checkpoint: {
-            hash: computeHash(executionRow),
-          },
-          subject: Object.assign({}, ...(subject || [])),
+          subject: mergedSubject,
+          filters: this.dataAnalyticsService.getInvestigationFilter(
+            projectId!,
+            alertDef.inlineRule as InlineRule,
+            mergedSubject,
+          ),
           executionRow,
         } satisfies TExecutionDetails as InputJsonValue,
         ...Object.assign({}, ...(subject || [])),
@@ -384,6 +391,7 @@ export class AlertService {
         data: {
           updatedAt: new Date(),
         },
+        // TODO: Take care when filters has changed, update the filters on the executionAlert
       });
 
       return true;
