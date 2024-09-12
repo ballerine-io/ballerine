@@ -1,6 +1,6 @@
-import { getClient, Webchat, WebchatProvider } from '@botpress/webchat';
+import { Webchat, WebchatProvider, getClient } from '@botpress/webchat';
 import { buildTheme } from '@botpress/webchat-generator';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuthenticatedUserQuery } from '../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 
 // declare const themeNames: readonly ["prism", "galaxy", "dusk", "eggplant", "dawn", "midnight"];
@@ -11,14 +11,9 @@ const { theme, style } = buildTheme({
 
 const clientId = '8f29c89d-ec0e-494d-b18d-6c3590b28be6';
 
-const Chatbot = ({
-  isWebchatOpen,
-  toggleIsWebchatOpen,
-}: {
-  isWebchatOpen: boolean;
-  toggleIsWebchatOpen: () => void;
-}) => {
+const Chatbot = () => {
   const client = getClient({ clientId });
+  const [isWebchatOpen, setIsWebchatOpen] = useState(false);
   const { data: session } = useAuthenticatedUserQuery();
 
   useEffect(() => {
@@ -33,6 +28,10 @@ const Chatbot = ({
       });
     }
   }, [session, client]);
+
+  const toggleWebchat = () => {
+    setIsWebchatOpen(prevState => !prevState);
+  };
 
   return (
     <div>
@@ -62,10 +61,9 @@ const Chatbot = ({
             link: 'https://ballerine.com/terms',
           },
         }}
-        closeWindow={toggleIsWebchatOpen}
       >
         <button
-          onClick={toggleIsWebchatOpen}
+          onClick={toggleWebchat}
           style={{
             width: '60px',
             height: '60px',
