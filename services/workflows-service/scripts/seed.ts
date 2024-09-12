@@ -475,7 +475,6 @@ async function seed() {
         id: 'risk-score-improvement',
         initial: DEFAULT_INITIAL_STATE,
         states: generateBaseTaskLevelStates(),
-        ex,
       },
       projectId: project1.id,
     },
