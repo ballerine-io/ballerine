@@ -1952,7 +1952,22 @@ export class WorkflowService {
         transaction,
       );
 
-      const customer = await this.customerService.getByProjectId(projectIds![0]!);
+      const customer = await this.customerService.getByProjectId(projectIds![0]!, {
+        select: {
+          id: true,
+          name: true,
+          displayName: true,
+          logoImageUri: true,
+          faviconImageUri: true,
+          country: true,
+          language: true,
+          websiteUrl: true,
+          projects: true,
+          subscriptions: true,
+          config: true,
+          authenticationConfiguration: true,
+        },
+      });
 
       const secretsManager = this.secretsManagerFactory.create({
         provider: env.SECRETS_MANAGER_PROVIDER,
@@ -2257,7 +2272,7 @@ export class WorkflowService {
   ) {
     return async () => {
       const secrets = await secretsManager.getAll();
-      const webhookSharedSecret = authenticationConfiguration.webhookSharedSecret;
+      const webhookSharedSecret = authenticationConfiguration?.webhookSharedSecret;
 
       return {
         ...(webhookSharedSecret ? { webhookSharedSecret } : {}),
