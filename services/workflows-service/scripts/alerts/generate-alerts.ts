@@ -615,6 +615,98 @@ export const ALERT_DEFINITIONS = {
       },
     },
   },
+  DSTA_CC: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    description: `High inbound credit card transaction amount detected, A single transaction exceeding the defined threshold`,
+    inlineRule: {
+      id: 'DSTA_CC',
+      fnName: 'evaluateDailySingleTransactionAmount',
+      subjects: ['counterpartyId'],
+      options: {
+        ruleType: 'amount',
+
+        amountThreshold: 5_000,
+
+        direction: TransactionDirection.inbound,
+
+        paymentMethods: [PaymentMethod.credit_card],
+        excludePaymentMethods: false,
+
+        timeAmount: 1,
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  DSTA_APM: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    description: `High value inbound transactions across different payment methods. A single transaction exceeding the defined threshold`,
+    inlineRule: {
+      id: 'DSTA_APM',
+      fnName: 'evaluateDailySingleTransactionAmount',
+      subjects: ['counterpartyId'],
+      options: {
+        ruleType: 'amount',
+
+        amountThreshold: 2_000,
+
+        direction: TransactionDirection.inbound,
+
+        paymentMethods: [PaymentMethod.credit_card],
+        excludePaymentMethods: true,
+
+        timeAmount: 1,
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  DMT_CC: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    description: `High inbound credit card transaction amount detected, A single transaction exceeding the defined threshold`,
+    inlineRule: {
+      id: 'DSTA_CC',
+      fnName: 'evaluateDailySingleTransactionAmount',
+      subjects: ['counterpartyId'],
+      options: {
+        ruleType: 'count',
+
+        amountThreshold: 3,
+
+        direction: TransactionDirection.inbound,
+
+        paymentMethods: [PaymentMethod.credit_card],
+        excludePaymentMethods: false,
+
+        timeAmount: 1,
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  DMT_APM: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    description: `High value inbound transactions across different payment methods. A single transaction exceeding the defined threshold`,
+    inlineRule: {
+      id: 'DMT_APM',
+      fnName: 'evaluateDailySingleTransactionAmount',
+      subjects: ['counterpartyId'],
+      options: {
+        ruleType: 'count',
+
+        amountThreshold: 3,
+
+        direction: TransactionDirection.inbound,
+
+        paymentMethods: [PaymentMethod.credit_card],
+        excludePaymentMethods: true,
+
+        timeAmount: 1,
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
 } as const satisfies Record<string, Parameters<typeof getAlertDefinitionCreateData>[0]>;
 
 export const MERCHANT_MONITORING_ALERT_DEFINITIONS = {
