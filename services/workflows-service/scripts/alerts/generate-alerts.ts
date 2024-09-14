@@ -664,7 +664,7 @@ export const ALERT_DEFINITIONS = {
   DMT_CC: {
     enabled: true,
     defaultSeverity: AlertSeverity.medium,
-    description: `High inbound credit card transaction amount detected, A single transaction exceeding the defined threshold`,
+    description: `Number of inbound credit card transactions to an account in a single day`,
     inlineRule: {
       id: 'DSTA_CC',
       fnName: 'evaluateDailySingleTransactionAmount',
@@ -687,7 +687,7 @@ export const ALERT_DEFINITIONS = {
   DMT_APM: {
     enabled: true,
     defaultSeverity: AlertSeverity.medium,
-    description: `High value inbound transactions across different payment methods. A single transaction exceeding the defined threshold`,
+    description: `Number of inbound transactions across different payment methods to an account in a single day`,
     inlineRule: {
       id: 'DMT_APM',
       fnName: 'evaluateDailySingleTransactionAmount',
