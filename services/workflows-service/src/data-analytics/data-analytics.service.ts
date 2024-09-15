@@ -1,4 +1,3 @@
-import { groupBy } from 'lodash.groupby';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
@@ -74,7 +73,14 @@ export class DataAnalyticsService {
           ...inlineRule.options,
           projectId,
         });
+
       case 'evaluateMerchantGroupAverage':
+        return await this[inlineRule.fnName]({
+          ...inlineRule.options,
+          projectId,
+        });
+
+      case 'evaluateDailySingleTransactionAmount':
         return await this[inlineRule.fnName]({
           ...inlineRule.options,
           projectId,
