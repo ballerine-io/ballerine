@@ -21,6 +21,7 @@ export const ReadOnlyDetailsCell: FunctionComponent<ExtractCellProps<'readOnlyDe
       className={ctw(`grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3`, className)}
     >
       {value
+        ?.slice()
         ?.sort((a, b) => a.label.localeCompare(b.label))
         .map(({ label, value }) => {
           return (
