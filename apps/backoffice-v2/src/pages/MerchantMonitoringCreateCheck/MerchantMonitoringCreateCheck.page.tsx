@@ -33,7 +33,7 @@ export const MerchantMonitoringCreateCheckPage: FunctionComponent = () => {
     checksConfiguration,
     riskLabels,
     industries,
-    isLoadingCustomer,
+    showLoader,
     onValueChange,
   } = useMerchantMonitoringCreateBusinessReportPageLogic();
 
@@ -228,12 +228,13 @@ export const MerchantMonitoringCreateCheckPage: FunctionComponent = () => {
               )}
               <Button
                 type="submit"
-                size={`wide`}
-                aria-disabled={isLoadingCustomer}
+                size={`x-wide`}
+                disabled={showLoader}
+                aria-disabled={showLoader}
                 className={'aria-disabled:pointer-events-none aria-disabled:opacity-50'}
               >
-                {isLoadingCustomer && <Loader2 className={'mr-2 h-4 w-4 animate-spin'} />}
-                Start Analyzing
+                {showLoader && <Loader2 className={'mr-2 h-4 w-4 animate-spin'} />}
+                {!showLoader && 'Start Analyzing'}
               </Button>
             </form>
           </Form>

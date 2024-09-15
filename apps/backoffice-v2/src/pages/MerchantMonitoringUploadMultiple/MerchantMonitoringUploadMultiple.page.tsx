@@ -15,7 +15,7 @@ import { FormDescription } from '@/common/components/organisms/Form/Form.Descrip
 import { useMerchantMonitoringUploadMultiplePageLogic } from '@/pages/MerchantMonitoringUploadMultiple/hooks/useMerchantMonitoringUploadMultiplePageLogic/useMerchantMonitoringUploadMultiplePageLogic';
 
 export const MerchantMonitoringUploadMultiplePage: FunctionComponent = () => {
-  const { form, isSubmitting, onSubmit, onChange, locale, csvTemplateUrl } =
+  const { form, showLoader, onSubmit, onChange, locale, csvTemplateUrl } =
     useMerchantMonitoringUploadMultiplePageLogic();
 
   return (
@@ -58,10 +58,15 @@ export const MerchantMonitoringUploadMultiplePage: FunctionComponent = () => {
               />
               <div className={`flex space-x-[50px]`}>
                 <div className={`flex w-[200px] items-center`}>
-                  <Button type="submit" size={`wide`} disabled={isSubmitting}>
-                    Start Analyzing
+                  <Button
+                    type="submit"
+                    size={`x-wide`}
+                    disabled={showLoader}
+                    aria-disabled={showLoader}
+                  >
+                    {!showLoader && 'Start Analyzing'}
+                    {showLoader && <Loader2 className={'w-6 animate-spin'} />}
                   </Button>
-                  {isSubmitting && <Loader2 className={'ml-2 w-6 animate-spin'} />}
                 </div>
                 <a
                   href={csvTemplateUrl}
