@@ -2311,7 +2311,7 @@ describe('AlertService', () => {
       });
     });
 
-    describe.only('Rule: DMT_APM', () => {
+    describe('Rule: DMT_APM', () => {
       let counterparty: Awaited<ReturnType<typeof createBusinessCounterparty>>;
       let alertDefinition: AlertDefinition;
 
