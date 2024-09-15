@@ -161,10 +161,10 @@ export const useReportTabs = ({
         },
         {
           label: (
-            <span className={`flex items-center space-x-2`}>
+            <div className={`flex items-center space-x-2`}>
               <span>Transaction Analysis</span>
               <Crown className={`d-4 rounded-full`} />
-            </span>
+            </div>
           ),
           value: 'transactionAnalysis',
           content: <Transactions />,

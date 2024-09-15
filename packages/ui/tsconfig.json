@@ -8,7 +8,7 @@
       "@/*": ["./src/*"]
     },
     "module": "preserve",
-    "moduleResolution": "node"
+    "moduleResolution": "bundler"
   },
   "include": ["src"]
 }

@@ -14,6 +14,7 @@ export const Transactions: FunctionComponent = () => (
       className={`d-full max-w-[1236px]`}
     />
     <PremiumFeature
+      className={`right-6 top-5 2xl:right-[4.5rem]`}
       content={
         <p className={`mt-3 text-xs`}>
           Use Ballerine’s Transactions Analysis tool to leverage transaction data for additional

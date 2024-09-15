@@ -2,18 +2,28 @@ import React, { ReactNode } from 'react';
 import { Crown } from 'lucide-react';
 
 import { Card, CardContent, CardFooter, CardHeader, Image } from '@/components';
+import { ctw } from '@/common';
 
-export const PremiumFeature = ({ footer, content }: { footer: ReactNode; content: ReactNode }) => (
+interface IPremiumFeatureProps {
+  footer: ReactNode;
+  content: ReactNode;
+  className: string;
+}
+
+export const PremiumFeature = ({ footer, content, className }: IPremiumFeatureProps) => (
   <Card
-    className={`bg-background absolute right-6 top-5 flex max-h-[328px] max-w-[293px] flex-col rounded-lg border-[1px] border-[#E3E0E9] p-6 2xl:right-[4.5rem]`}
+    className={ctw(
+      `bg-background absolute flex max-h-[328px] max-w-[293px] flex-col rounded-lg border-[1px] border-[#E3E0E9] p-6`,
+      className,
+    )}
   >
     <CardHeader className={`p-0`}>
       <Image
         width={224}
         height={129}
+        className={`self-center`}
         alt={`Transaction Illustration`}
         src={'/images/transaction-illustration.png'}
-        className={`max-h-[129px] max-w-[224px] self-center`}
       />
     </CardHeader>
     <CardContent className={`p-0`}>
