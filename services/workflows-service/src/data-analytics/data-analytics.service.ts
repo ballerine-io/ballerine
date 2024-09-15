@@ -850,7 +850,7 @@ export class DataAnalyticsService {
         ' AND ',
       )} GROUP BY "counterpartyBeneficiaryId"`;
     } else if (ruleType === 'count') {
-      query = Prisma.sql`SELECT "counterpartyBeneficiaryId", 
+      query = Prisma.sql`SELECT "counterpartyBeneficiaryId" as "counterpartyId", 
          COUNT(id) AS "transactionCount" FROM "TransactionRecord" "tr" WHERE ${Prisma.join(
            conditions,
            ' AND ',

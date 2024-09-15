@@ -1986,7 +1986,7 @@ describe('AlertService', () => {
         expect(alerts).toHaveLength(0);
       });
 
-      it(`Shouldnt create alert for transaction with less than tha requested amount`, async () => {
+      it(`Shouldnt create alert for transaction with less than the requested amount`, async () => {
         // Arrange
         await baseTransactionFactory
           .withBusinessBeneficiary()
@@ -2016,10 +2016,9 @@ describe('AlertService', () => {
         await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
-          .amount(ALERT_DEFINITIONS.DSTA_CC.inlineRule.options.amountThreshold + 1)
           .direction(TransactionDirection.outbound)
           .paymentMethod(PaymentMethod.credit_card)
-          .count(1)
+          .count(ALERT_DEFINITIONS.DSTA_CC.inlineRule.options.amountThreshold + 1)
           .create();
 
         // Act
@@ -2125,7 +2124,7 @@ describe('AlertService', () => {
         expect(alerts).toHaveLength(0);
       });
 
-      it(`Shouldnt create alert for transaction with less than tha requested amount`, async () => {
+      it(`Shouldnt create alert for transaction with less than the requested amount`, async () => {
         // Arrange
         await baseTransactionFactory
           .withBusinessBeneficiary()
@@ -2176,7 +2175,7 @@ describe('AlertService', () => {
       });
     });
 
-    describe('Rule: DSTA_APM', () => {
+    describe('Rule: DMT_CC', () => {
       let counterparty: Awaited<ReturnType<typeof createBusinessCounterparty>>;
       let alertDefinition: AlertDefinition;
 
@@ -2190,13 +2189,13 @@ describe('AlertService', () => {
         alertDefinition = await prismaService.alertDefinition.create({
           data: getAlertDefinitionCreateData(
             {
-              ...ALERT_DEFINITIONS.DSTA_APM,
+              ...ALERT_DEFINITIONS.DMT_CC,
 
-              ...ALERT_DEFINITIONS.DSTA_APM,
+              ...ALERT_DEFINITIONS.DMT_CC,
               inlineRule: {
-                ...ALERT_DEFINITIONS.DSTA_APM.inlineRule,
+                ...ALERT_DEFINITIONS.DMT_CC.inlineRule,
                 options: {
-                  ...ALERT_DEFINITIONS.DSTA_APM.inlineRule.options,
+                  ...ALERT_DEFINITIONS.DMT_CC.inlineRule.options,
                   timeAmount: 1,
                   timeUnit: 'days',
                   direction: TransactionDirection.inbound,
@@ -2216,10 +2215,9 @@ describe('AlertService', () => {
         await baseTransactionFactory
           .withCounterpartyBeneficiary(counterparty.id)
           .withEndUserOriginator()
-          .amount(ALERT_DEFINITIONS.DSTA_APM.inlineRule.options.amountThreshold + 1)
           .direction(TransactionDirection.inbound)
-          .paymentMethod(PaymentMethod.apm)
-          .count(1)
+          .paymentMethod(PaymentMethod.credit_card)
+          .count(ALERT_DEFINITIONS.DMT_CC.inlineRule.options.amountThreshold + 1)
           .create();
 
         // Act
@@ -2244,10 +2242,9 @@ describe('AlertService', () => {
         await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
-          .amount(ALERT_DEFINITIONS.DSTA_APM.inlineRule.options.amountThreshold + 1)
           .direction(TransactionDirection.inbound)
-          .paymentMethod(PaymentMethod.credit_card)
-          .count(1)
+          .paymentMethod(PaymentMethod.apple_pay)
+          .count(ALERT_DEFINITIONS.DMT_CC.inlineRule.options.amountThreshold + 1)
           .create();
 
         // Act
@@ -2264,14 +2261,13 @@ describe('AlertService', () => {
         expect(alerts).toHaveLength(0);
       });
 
-      it(`Shouldnt create alert for transaction with less than tha requested amount`, async () => {
+      it(`Shouldnt create alert for transaction with less than the requested amount`, async () => {
         // Arrange
         await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
-          .amount(ALERT_DEFINITIONS.DSTA_APM.inlineRule.options.amountThreshold - 1)
           .direction(TransactionDirection.inbound)
-          .paymentMethod(PaymentMethod.apm)
+          .paymentMethod(PaymentMethod.credit_card)
           .count(1)
           .create();
 
@@ -2294,10 +2290,98 @@ describe('AlertService', () => {
         await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
-          .amount(ALERT_DEFINITIONS.DSTA_APM.inlineRule.options.amountThreshold + 1)
+          .amount(ALERT_DEFINITIONS.DMT_CC.inlineRule.options.amountThreshold + 1)
           .direction(TransactionDirection.outbound)
-          .paymentMethod(PaymentMethod.apm)
+          .paymentMethod(PaymentMethod.credit_card)
           .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany({
+          where: {
+            alertDefinitionId: alertDefinition.id,
+            projectId: project.id,
+          },
+        });
+
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
+    describe.only('Rule: DMT_APM', () => {
+      let counterparty: Awaited<ReturnType<typeof createBusinessCounterparty>>;
+      let alertDefinition: AlertDefinition;
+
+      beforeEach(async () => {
+        counterparty = await createBusinessCounterparty({
+          prismaService,
+          projectId: project.id,
+          businessTypeFn: () => 'businessA',
+        });
+
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.DMT_APM,
+
+              ...ALERT_DEFINITIONS.DMT_APM,
+              inlineRule: {
+                ...ALERT_DEFINITIONS.DMT_APM.inlineRule,
+                options: {
+                  ...ALERT_DEFINITIONS.DMT_APM.inlineRule.options,
+                  timeAmount: 1,
+                  timeUnit: 'days',
+                  direction: TransactionDirection.inbound,
+                },
+              },
+              enabled: true,
+            },
+            project,
+            undefined,
+            { crossEnvKey: 'TEST' },
+          ),
+        });
+      });
+
+      it(`Trigger an alert`, async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withCounterpartyBeneficiary(counterparty.id)
+          .withEndUserOriginator()
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.apm)
+          .count(ALERT_DEFINITIONS.DMT_APM.inlineRule.options.amountThreshold + 1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany({
+          where: {
+            alertDefinitionId: alertDefinition.id,
+            projectId: project.id,
+          },
+        });
+
+        expect(alerts).toHaveLength(1);
+
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0]?.counterpartyId).toEqual(counterparty.id);
+      });
+
+      it(`Shouldnt trigger alert for old transactions`, async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withCounterpartyBeneficiary(counterparty.id)
+          .withEndUserOriginator()
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.apm)
+          .count(ALERT_DEFINITIONS.DMT_APM.inlineRule.options.amountThreshold + 1)
+          .transactionDate(faker.date.recent(10, new Date().getDate() - 2))
           .create();
 
         // Act
