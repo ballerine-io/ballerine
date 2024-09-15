@@ -2036,6 +2036,284 @@ describe('AlertService', () => {
         expect(alerts).toHaveLength(0);
       });
     });
+
+    describe('Rule: DSTA_APM', () => {
+      let counterparty: Awaited<ReturnType<typeof createBusinessCounterparty>>;
+      let alertDefinition: AlertDefinition;
+
+      beforeEach(async () => {
+        counterparty = await createBusinessCounterparty({
+          prismaService,
+          projectId: project.id,
+          businessTypeFn: () => 'businessA',
+        });
+
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.DSTA_APM,
+
+              ...ALERT_DEFINITIONS.DSTA_APM,
+              inlineRule: {
+                ...ALERT_DEFINITIONS.DSTA_APM.inlineRule,
+                options: {
+                  ...ALERT_DEFINITIONS.DSTA_APM.inlineRule.options,
+                  timeAmount: 1,
+                  timeUnit: 'days',
+                  direction: TransactionDirection.inbound,
+                },
+              },
+              enabled: true,
+            },
+            project,
+            undefined,
+            { crossEnvKey: 'TEST' },
+          ),
+        });
+      });
+
+      it(`Trigger an alert`, async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withCounterpartyBeneficiary(counterparty.id)
+          .withEndUserOriginator()
+          .amount(ALERT_DEFINITIONS.DSTA_APM.inlineRule.options.amountThreshold + 1)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.apm)
+          .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany({
+          where: {
+            alertDefinitionId: alertDefinition.id,
+            projectId: project.id,
+          },
+        });
+
+        expect(alerts).toHaveLength(1);
+
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0]?.counterpartyId).toEqual(counterparty.id);
+      });
+
+      it(`Shouldnt create alert for non credit card transaction`, async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .withEndUserOriginator()
+          .amount(ALERT_DEFINITIONS.DSTA_APM.inlineRule.options.amountThreshold + 1)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany({
+          where: {
+            alertDefinitionId: alertDefinition.id,
+            projectId: project.id,
+          },
+        });
+
+        expect(alerts).toHaveLength(0);
+      });
+
+      it(`Shouldnt create alert for transaction with less than tha requested amount`, async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .withEndUserOriginator()
+          .amount(ALERT_DEFINITIONS.DSTA_APM.inlineRule.options.amountThreshold - 1)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.apm)
+          .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany({
+          where: {
+            alertDefinitionId: alertDefinition.id,
+            projectId: project.id,
+          },
+        });
+
+        expect(alerts).toHaveLength(0);
+      });
+
+      it(`Shouldnt create alert for non inbound transaction`, async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .withEndUserOriginator()
+          .amount(ALERT_DEFINITIONS.DSTA_APM.inlineRule.options.amountThreshold + 1)
+          .direction(TransactionDirection.outbound)
+          .paymentMethod(PaymentMethod.apm)
+          .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany({
+          where: {
+            alertDefinitionId: alertDefinition.id,
+            projectId: project.id,
+          },
+        });
+
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
+    describe('Rule: DSTA_APM', () => {
+      let counterparty: Awaited<ReturnType<typeof createBusinessCounterparty>>;
+      let alertDefinition: AlertDefinition;
+
+      beforeEach(async () => {
+        counterparty = await createBusinessCounterparty({
+          prismaService,
+          projectId: project.id,
+          businessTypeFn: () => 'businessA',
+        });
+
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.DSTA_APM,
+
+              ...ALERT_DEFINITIONS.DSTA_APM,
+              inlineRule: {
+                ...ALERT_DEFINITIONS.DSTA_APM.inlineRule,
+                options: {
+                  ...ALERT_DEFINITIONS.DSTA_APM.inlineRule.options,
+                  timeAmount: 1,
+                  timeUnit: 'days',
+                  direction: TransactionDirection.inbound,
+                },
+              },
+              enabled: true,
+            },
+            project,
+            undefined,
+            { crossEnvKey: 'TEST' },
+          ),
+        });
+      });
+
+      it(`Trigger an alert`, async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withCounterpartyBeneficiary(counterparty.id)
+          .withEndUserOriginator()
+          .amount(ALERT_DEFINITIONS.DSTA_APM.inlineRule.options.amountThreshold + 1)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.apm)
+          .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany({
+          where: {
+            alertDefinitionId: alertDefinition.id,
+            projectId: project.id,
+          },
+        });
+
+        expect(alerts).toHaveLength(1);
+
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0]?.counterpartyId).toEqual(counterparty.id);
+      });
+
+      it(`Shouldnt create alert for non credit card transaction`, async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .withEndUserOriginator()
+          .amount(ALERT_DEFINITIONS.DSTA_APM.inlineRule.options.amountThreshold + 1)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany({
+          where: {
+            alertDefinitionId: alertDefinition.id,
+            projectId: project.id,
+          },
+        });
+
+        expect(alerts).toHaveLength(0);
+      });
+
+      it(`Shouldnt create alert for transaction with less than tha requested amount`, async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .withEndUserOriginator()
+          .amount(ALERT_DEFINITIONS.DSTA_APM.inlineRule.options.amountThreshold - 1)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.apm)
+          .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany({
+          where: {
+            alertDefinitionId: alertDefinition.id,
+            projectId: project.id,
+          },
+        });
+
+        expect(alerts).toHaveLength(0);
+      });
+
+      it(`Shouldnt create alert for non inbound transaction`, async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .withEndUserOriginator()
+          .amount(ALERT_DEFINITIONS.DSTA_APM.inlineRule.options.amountThreshold + 1)
+          .direction(TransactionDirection.outbound)
+          .paymentMethod(PaymentMethod.apm)
+          .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany({
+          where: {
+            alertDefinitionId: alertDefinition.id,
+            projectId: project.id,
+          },
+        });
+
+        expect(alerts).toHaveLength(0);
+      });
+    });
   });
 });
 const createCounterparty = async (
