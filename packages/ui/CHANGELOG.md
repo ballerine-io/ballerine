@@ -4,13 +4,13 @@
 
 ### Patch Changes
 
-- update ui pakcages
+- version update
 
 ## 0.5.25
 
 ### Patch Changes
 
-- version bump
+- update ui pakcages
 
 ## 0.5.24
 
