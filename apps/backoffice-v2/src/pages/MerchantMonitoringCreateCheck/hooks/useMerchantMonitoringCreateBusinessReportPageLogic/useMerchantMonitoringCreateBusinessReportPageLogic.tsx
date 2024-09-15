@@ -209,7 +209,7 @@ export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
           },
           {
             label: 'Transactions Analysis',
-            name: 'transactionsAnalysis',
+            name: 'transactions',
             defaultChecked: false,
             disabled: true,
           },
