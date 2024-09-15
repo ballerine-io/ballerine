@@ -2016,9 +2016,10 @@ describe('AlertService', () => {
         await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
+          .amount(ALERT_DEFINITIONS.DSTA_CC.inlineRule.options.amountThreshold + 1)
           .direction(TransactionDirection.outbound)
           .paymentMethod(PaymentMethod.credit_card)
-          .count(ALERT_DEFINITIONS.DSTA_CC.inlineRule.options.amountThreshold + 1)
+          .count(1)
           .create();
 
         // Act
