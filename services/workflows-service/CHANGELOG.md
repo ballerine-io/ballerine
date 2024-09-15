@@ -1,5 +1,11 @@
 # @ballerine/workflows-service
 
+## 0.7.41
+
+### Patch Changes
+
+- version bump
+
 ## 0.7.40
 
 ### Patch Changes
