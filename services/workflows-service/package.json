@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflows-service",
   "private": false,
-  "version": "0.7.38",
+  "version": "0.7.40",
   "description": "workflow-service",
   "scripts": {
     "spellcheck": "cspell \"*\"",

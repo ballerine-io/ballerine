@@ -30,7 +30,7 @@ export const MonitoringReportsTabs = [
   'websitesCompany',
   'websiteLineOfBusiness',
   'websiteCredibility',
-  'ecosystemAndTransactions',
+  'ecosystem',
   'adsAndSocialMedia',
 ] as const;
 
