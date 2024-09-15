@@ -15,7 +15,7 @@ export const RiskIndicator = ({
   violations: Array<{
     label: string;
     severity: string;
-  }>;
+  }> | null;
   Link: FunctionComponent<{
     search: string;
   }>;
@@ -27,7 +27,8 @@ export const RiskIndicator = ({
         {search && <Link search={search} />}
       </h3>
       <ul className="list-inside list-disc">
-        {!!violations?.length &&
+        {Array.isArray(violations) &&
+          violations.length &&
           violations.map(violation => (
             <li key={violation.label} className="flex list-none items-center text-slate-500">
               {violation.severity !== Severity.LOW && (
@@ -52,7 +53,7 @@ export const RiskIndicator = ({
               {violation.label}
             </li>
           ))}
-        {!violations?.length && (
+        {Array.isArray(violations) && (
           <li className="flex list-none items-center text-slate-500">
             <CheckCircle
               size={18}

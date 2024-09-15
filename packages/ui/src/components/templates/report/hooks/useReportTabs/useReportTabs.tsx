@@ -71,7 +71,12 @@ export const useReportTabs = ({
     {
       title: 'Ecosystem Analysis',
       search: '?activeTab=ecosystem',
-      violations: ecosystemAnalysis ?? [],
+      violations: null,
+    },
+    {
+      title: 'Transactions Analysis',
+      search: '?activeTab=transactions',
+      violations: null,
     },
   ] as const satisfies ReadonlyArray<{
     title: string;
@@ -79,7 +84,7 @@ export const useReportTabs = ({
     violations: Array<{
       label: string;
       severity: string;
-    }>;
+    }> | null;
   }>;
 
   const tabs = useMemo(
@@ -166,7 +171,7 @@ export const useReportTabs = ({
               <Crown className={`d-4 rounded-full`} />
             </div>
           ),
-          value: 'transactionAnalysis',
+          value: 'transactions',
           content: <Transactions />,
         },
       ] as const satisfies ReadonlyArray<{

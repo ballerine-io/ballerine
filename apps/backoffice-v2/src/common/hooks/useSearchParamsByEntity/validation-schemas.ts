@@ -32,6 +32,7 @@ export const MonitoringReportsTabs = [
   'websiteCredibility',
   'ecosystem',
   'adsAndSocialMedia',
+  'transactions',
 ] as const;
 
 export const CaseTabs = [
