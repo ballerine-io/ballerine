@@ -38,7 +38,7 @@ fi
 
 cat << EOF > /usr/share/nginx/html/config.js
 globalThis.env = {
-  VITE_API_URL: "http://$VITE_DOMAIN/api/v1/",
+  VITE_API_URL: "http://$VITE_DOMAIN/api/v1/internal",
   VITE_API_KEY: "$VITE_API_KEY",
   VITE_AUTH_ENABLED: "$VITE_AUTH_ENABLED",
   VITE_MOCK_SERVER: "$VITE_MOCK_SERVER",
