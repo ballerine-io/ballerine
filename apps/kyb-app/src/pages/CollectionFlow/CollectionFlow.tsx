@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { StepperProgress } from '@/common/components/atoms/StepperProgress';
 import { ProgressBar } from '@/common/components/molecules/ProgressBar';
+import { useTheme } from '@/common/providers/ThemeProvider';
 import { AppShell } from '@/components/layouts/AppShell';
 import { PoweredByLogo } from '@/components/molecules/PoweredByLogo';
 import { DynamicUI, State } from '@/components/organisms/DynamicUI';
@@ -90,6 +91,7 @@ export const CollectionFlow = withSessionProtected(() => {
   const { data: context } = useFlowContextQuery();
   const { customer } = useCustomer();
   const { t } = useTranslation();
+  const { themeDefinition } = useTheme();
 
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;
@@ -190,7 +192,7 @@ export const CollectionFlow = withSessionProtected(() => {
                                   {customer?.logoImageUri && (
                                     <AppShell.Logo
                                       // @ts-ignore
-                                      logoSrc={customer?.logoImageUri}
+                                      logoSrc={themeDefinition.logo || customer?.logoImageUri}
                                       // @ts-ignore
                                       appName={customer?.displayName}
                                       onLoad={() => setLogoLoaded(true)}
