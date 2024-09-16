@@ -182,19 +182,17 @@ export class BusinessReportService {
               projectId,
             ]));
 
-          const data = {
-            ...(businessReportRequest.correlationId
-              ? { correlationId: businessReportRequest.correlationId }
-              : {}),
-            companyName: businessReportRequest.merchantName || 'Not detected',
-            website: businessReportRequest.websiteUrl || '',
-            country: businessReportRequest.countryCode || '',
-            projectId,
-          };
-
           business ||= await this.businessService.create(
             {
-              data,
+              data: {
+                ...(businessReportRequest.correlationId
+                  ? { correlationId: businessReportRequest.correlationId }
+                  : {}),
+                companyName: businessReportRequest.merchantName || 'Not detected',
+                website: businessReportRequest.websiteUrl || '',
+                country: businessReportRequest.countryCode || '',
+                projectId,
+              },
             },
             transaction,
           );
