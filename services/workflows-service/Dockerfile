@@ -17,7 +17,7 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 RUN npm run prisma:generate
-RUN npm run build
+# RUN npm run build
 
 CMD [ "dumb-init", "npm", "run", "dev", "--host" ]
 
