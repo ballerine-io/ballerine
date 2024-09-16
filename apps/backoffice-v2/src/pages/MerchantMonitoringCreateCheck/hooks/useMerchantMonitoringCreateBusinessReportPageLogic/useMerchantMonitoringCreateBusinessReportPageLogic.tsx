@@ -309,7 +309,7 @@ export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
   return {
     form,
     onSubmit,
-    showLoader: isLoadingCustomer || isSubmitting,
+    isCreateReportReady: isLoadingCustomer || isSubmitting,
     comboboxCountryCodes,
     locale,
     isChangeChecksConfigurationOpen,

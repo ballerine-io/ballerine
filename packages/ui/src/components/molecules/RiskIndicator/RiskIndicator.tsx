@@ -1,6 +1,6 @@
 import { CheckCircle } from '@/components/atoms/CheckCircle/CheckCircle';
 import React, { FunctionComponent } from 'react';
-import { Severity } from '@ballerine/common';
+import { isNonEmptyArray, Severity } from '@ballerine/common';
 import { ctw } from '@/common';
 import { WarningFilledSvg } from '@/components/atoms/WarningFilledSvg/WarningFilledSvg';
 
@@ -27,8 +27,8 @@ export const RiskIndicator = ({
         {search && <Link search={search} />}
       </h3>
       <ul className="list-inside list-disc">
-        {Array.isArray(violations) &&
-          violations.length &&
+        {!!violations &&
+          isNonEmptyArray(violations) &&
           violations.map(violation => (
             <li key={violation.label} className="flex list-none items-center text-slate-500">
               {violation.severity !== Severity.LOW && (

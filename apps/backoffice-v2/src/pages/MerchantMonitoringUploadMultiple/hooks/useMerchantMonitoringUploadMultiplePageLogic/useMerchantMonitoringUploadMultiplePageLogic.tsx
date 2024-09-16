@@ -68,6 +68,6 @@ export const useMerchantMonitoringUploadMultiplePageLogic = () => {
     onSubmit,
     onChange,
     csvTemplateUrl,
-    showLoader: isLoadingCustomer || isSubmitting,
+    isCreateReportBatchReady: isLoadingCustomer || isSubmitting,
   };
 };

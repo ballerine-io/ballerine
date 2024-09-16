@@ -248,19 +248,19 @@ export class BusinessReportService {
     );
 
     await Promise.all(
-      results.map(async ({ reportId, businessReportId }) =>
-        reportId && businessReportId
-          ? await this.updateById(
-              { id: businessReportId },
-              {
-                data: {
-                  reportId,
-                  status: BusinessReportStatus.in_progress,
-                },
+      results
+        .filter(({ reportId, businessReportId }) => reportId && businessReportId)
+        .map(async ({ reportId, businessReportId }) => {
+          await this.updateById(
+            { id: businessReportId },
+            {
+              data: {
+                reportId,
+                status: BusinessReportStatus.in_progress,
               },
-            )
-          : Promise.resolve(),
-      ),
+            },
+          );
+        }),
     );
 
     return { batchId };
