@@ -160,7 +160,7 @@ describe('AlertService', () => {
         expect(ALERT_DEFINITIONS.DORMANT).not.toHaveProperty('options');
       });
 
-      test.only('When there is activity in the last 180 days', async () => {
+      test('When there is activity in the last 180 days', async () => {
         // Arrange
         const baseTransactionFactory = await createTransactionsWithCounterpartyAsync(
           project,
