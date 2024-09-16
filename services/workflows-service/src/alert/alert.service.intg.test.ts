@@ -160,7 +160,7 @@ describe('AlertService', () => {
         expect(ALERT_DEFINITIONS.DORMANT).not.toHaveProperty('options');
       });
 
-      test('When there is activity in the last 180 days', async () => {
+      test.only('When there is activity in the last 180 days', async () => {
         // Arrange
         const baseTransactionFactory = await createTransactionsWithCounterpartyAsync(
           project,
@@ -168,7 +168,14 @@ describe('AlertService', () => {
           async (transactionFactory: TransactionFactory) => {
             const castedTransactionFactory = transactionFactory as TransactionFactory;
 
-            await castedTransactionFactory.transactionDate(faker.date.past(10)).count(9).create();
+            const pastSixMonth = new Date();
+            pastSixMonth.setMonth(pastSixMonth.getMonth() - 6);
+            pastSixMonth.setDate(pastSixMonth.getDate() - 1);
+
+            await castedTransactionFactory
+              .transactionDate(faker.date.recent(30, pastSixMonth))
+              .count(2)
+              .create();
 
             await castedTransactionFactory.transactionDate(faker.date.recent(30)).count(1).create();
           },
