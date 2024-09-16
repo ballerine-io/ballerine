@@ -1,4 +1,4 @@
-name: Publish workflows-service image
+name: Under Testing - Database Operations
 
 on:
   workflow_dispatch:
@@ -31,10 +31,6 @@ on:
         required: true
         default: ''
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
-
 jobs:
   update-helm-chart:
     runs-on: ubuntu-latest
@@ -60,9 +56,9 @@ jobs:
         id: update_helm_check
         shell: bash
         run: |
-          if [ -f "kubernetes/helm/wf-service/${{ github.event.inputs.environment }}-custom-values.yaml" ]; then
-            echo "file_name=${{ github.event.inputs.environment }}-custom-values.yaml" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event.inputs.environment }}" == "dev" ]; then
+          if [ -f "kubernetes/helm/wf-service/${{ inputs.environment }}-custom-values.yaml" ]; then
+            echo "file_name=${{ inputs.environment }}-custom-values.yaml" >> "$GITHUB_OUTPUT"
+          elif [ "${{ inputs.environment }}" == "dev" ]; then
             echo "file_name=dev-custom-values.yaml" >> "$GITHUB_OUTPUT"
           else
             echo "skip_helm=true" >> "$GITHUB_OUTPUT"
@@ -75,14 +71,50 @@ jobs:
           repository: ballerine-io/cloud-infra-config
           branch: main
           commitChange: true
-          message: 'Update wf-service image Version to ${{ github.event.inputs.tag }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
+          message: 'Update wf-service image Version to ${{ inputs.tag }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
               "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
-                "image.tag": "${{ github.event.inputs.tag }}",
-                "prismaMigrate.image.tag": "${{ github.event.inputs.tag }}",
-                "dbMigrate.image.tag": "${{ github.event.inputs.tag }}",
-                "dbSync.image.tag": "${{ github.event.inputs.tag }}",
+                "prismaMigrate.image.tag": "${{ inputs.tag }}",
+                "dbMigrate.image.tag": "${{ inputs.tag }}",
+                "dataSync.image.tag": "${{ inputs.tag }}"
               }
             }
+
+  # sync-argo-app:
+  #   runs-on: ubuntu-latest
+  #   environment: ${{ inputs.environment }}
+  #   env:
+  #     stage: ${{ inputs.environment }}
+  #   permissions:
+  #     contents: read
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+
+  #     - name: Run ArgoCD Action
+  #       id: argocd_api
+  #       uses: ./.github/actions/argocd-action
+  #       with:
+  #         argocd_username: ${{ secrets.ARGOCD_USERNAME }}
+  #         argocd_password: ${{ secrets.ARGOCD_PASSWORD }}
+  #         argocd_server: ${{ secrets.ARGOCD_SERVER }}
+        
+  send-to-slack:
+    runs-on: ubuntu-latest
+    needs: [update-helm-chart]
+    if: ${{ needs.update-helm-chart.result == 'success' }}
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Send alert to Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
+          slack-message: "Wf-service Migrations in ${{ github.ref_name }} build result: ${{ job.status }}. successfully updated the wf-service helm values for ${{ github.ref_name }}."
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}
