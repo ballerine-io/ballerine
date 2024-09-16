@@ -12,7 +12,7 @@ import { useCreateBusinessReportBatchMutation } from '@/domains/business-reports
 import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
 
 export const useMerchantMonitoringUploadMultiplePageLogic = () => {
-  const { data: customer } = useCustomerQuery();
+  const { data: customer, isLoading: isLoadingCustomer } = useCustomerQuery();
 
   const form = useForm<{ merchantSheet: File | undefined }>({
     defaultValues: {
@@ -23,7 +23,7 @@ export const useMerchantMonitoringUploadMultiplePageLogic = () => {
   const locale = useLocale();
   const navigate = useNavigate();
 
-  const { mutate: mutateCreateBusinessReportBatch, isLoading } =
+  const { mutate: mutateCreateBusinessReportBatch, isLoading: isSubmitting } =
     useCreateBusinessReportBatchMutation({
       reportType:
         customer?.features?.createBusinessReportBatch?.options.type ?? 'MERCHANT_REPORT_T1',
@@ -68,6 +68,6 @@ export const useMerchantMonitoringUploadMultiplePageLogic = () => {
     onSubmit,
     onChange,
     csvTemplateUrl,
-    isSubmitting: isLoading,
+    isCreateReportBatchReady: isLoadingCustomer || isSubmitting,
   };
 };

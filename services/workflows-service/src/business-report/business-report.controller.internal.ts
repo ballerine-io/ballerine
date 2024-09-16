@@ -159,8 +159,6 @@ export class BusinessReportControllerInternal {
         },
       },
     );
-
-    return;
   }
 
   @common.Post('/hook')
