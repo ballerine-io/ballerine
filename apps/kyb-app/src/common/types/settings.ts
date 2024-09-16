@@ -1,4 +1,5 @@
 export interface ITheme {
+  logo?: string;
   pallete: Record<string, { color: string; foreground: string }>;
   elements: Record<string, string | Record<string, string>>;
 }
