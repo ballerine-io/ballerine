@@ -1,8 +1,6 @@
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { AlertRepository } from '@/alert/alert.repository';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { computeHash } from '@/common/utils/sign/sign';
-import { TIME_UNITS } from '@/data-analytics/consts';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { CheckRiskScoreOptions, InlineRule } from '@/data-analytics/types';
 import * as errors from '@/errors';
@@ -277,7 +275,7 @@ export class AlertService {
               status: AlertExecutionStatus.FAILED,
               alertDefinition,
               executionRow,
-              error: new Error('Aggregated row is missing properties '),
+              error: new Error('Aggregated row is missing properties'),
             });
           }
 
@@ -325,20 +323,29 @@ export class AlertService {
     executionRow: Record<string, unknown>,
     additionalInfo?: Record<string, unknown>,
   ) {
+    const mergedSubject = Object.assign({}, ...(subject || []));
+
+    const projectId = alertDef.projectId;
+    const now = new Date();
+
     return this.alertRepository.create({
       data: {
+        projectId,
         alertDefinitionId: alertDef.id,
-        projectId: alertDef.projectId,
         severity: alertDef.defaultSeverity,
-        dataTimestamp: new Date(),
+        updatedAt: now,
+        createdAt: now,
+        dataTimestamp: now,
         state: AlertState.triggered,
         status: AlertStatus.new,
         additionalInfo: additionalInfo,
         executionDetails: {
-          checkpoint: {
-            hash: computeHash(executionRow),
-          },
-          subject: Object.assign({}, ...(subject || [])),
+          subject: mergedSubject,
+          filters: this.dataAnalyticsService.getInvestigationFilter(
+            projectId!,
+            alertDef.inlineRule as InlineRule,
+            mergedSubject,
+          ),
           executionRow,
         } satisfies TExecutionDetails as InputJsonValue,
         ...Object.assign({}, ...(subject || [])),
@@ -384,6 +391,7 @@ export class AlertService {
         data: {
           updatedAt: new Date(),
         },
+        // TODO: Take care when filters has changed, update the filters on the executionAlert
       });
 
       return true;
@@ -462,71 +470,5 @@ export class AlertService {
     }
 
     return alertSeverityToNumber(a) < alertSeverityToNumber(b) ? 1 : -1;
-  }
-
-  buildTransactionsFiltersByAlert(alert: Alert & { alertDefinition: AlertDefinition }) {
-    const filters: {
-      endDate: Date | undefined;
-      startDate: Date | undefined;
-    } = {
-      endDate: undefined,
-      startDate: undefined,
-    };
-
-    const endDate = alert.updatedAt || alert.createdAt;
-    endDate.setHours(23, 59, 59, 999);
-    filters.endDate = endDate;
-
-    const inlineRule = alert?.alertDefinition?.inlineRule as InlineRule;
-
-    // @ts-ignore - TODO: Replace logic with proper implementation for each rule
-    // eslint-disable-next-line
-    let { timeAmount, timeUnit } = inlineRule.options;
-
-    if (!timeAmount || !timeUnit) {
-      if (
-        inlineRule.fnName === 'evaluateHighVelocityHistoricAverage' &&
-        inlineRule.options.lastDaysPeriod &&
-        timeUnit
-      ) {
-        timeAmount = inlineRule.options.lastDaysPeriod.timeAmount;
-      } else {
-        return filters;
-      }
-    }
-
-    let startDate = new Date(endDate);
-
-    let subtractValue = 0;
-
-    const baseSubstractByMin = timeAmount * 60 * 1000;
-
-    switch (timeUnit) {
-      case TIME_UNITS.minutes:
-        subtractValue = baseSubstractByMin;
-        break;
-      case TIME_UNITS.hours:
-        subtractValue = 60 * baseSubstractByMin;
-        break;
-      case TIME_UNITS.days:
-        subtractValue = 24 * 60 * baseSubstractByMin;
-        break;
-      case TIME_UNITS.months:
-        startDate.setMonth(startDate.getMonth() - timeAmount);
-        break;
-      case TIME_UNITS.years:
-        startDate.setFullYear(startDate.getFullYear() - timeAmount);
-        break;
-    }
-
-    startDate.setHours(0, 0, 0, 0);
-    startDate = new Date(startDate.getTime() - subtractValue);
-
-    const oldestDate = new Date(Math.min(startDate.getTime(), new Date(alert.createdAt).getTime()));
-
-    oldestDate.setHours(0, 0, 0, 0);
-    filters.startDate = oldestDate;
-
-    return filters;
   }
 }

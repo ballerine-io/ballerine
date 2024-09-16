@@ -72,11 +72,7 @@ export class TransactionService {
     return this.repository.findMany(args, projectId);
   }
 
-  async getTransactions(
-    filters: GetTransactionsDto,
-    projectId: string,
-    args?: Parameters<typeof this.repository.findManyWithFilters>[2],
-  ) {
-    return this.repository.findManyWithFilters(filters, projectId, args);
+  async getTransactions(projectId: string, args: Parameters<typeof this.repository.findMany>[0]) {
+    return this.repository.findMany(args, projectId);
   }
 }

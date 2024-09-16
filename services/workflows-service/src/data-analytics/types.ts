@@ -8,42 +8,52 @@ export type InlineRule = {
 } & (
   | {
       fnName: 'evaluateHighTransactionTypePercentage';
+      fnInvestigationName?: 'investigateHighTransactionTypePercentage';
       options: Omit<HighTransactionTypePercentage, 'projectId'>;
     }
   | {
       fnName: 'evaluateTransactionsAgainstDynamicRules';
+      fnInvestigationName: 'investigateTransactionsAgainstDynamicRules';
       options: Omit<TransactionsAgainstDynamicRulesType, 'projectId'>;
     }
   | {
       fnName: 'evaluateCustomersTransactionType';
+      fnInvestigationName?: 'investigateCustomersTransactionType';
       options: Omit<TCustomersTransactionTypeOptions, 'projectId'>;
     }
   | {
       fnName: 'evaluateTransactionAvg';
+      fnInvestigationName?: 'investigateTransactionAvg';
       options: Omit<TransactionLimitHistoricAverageOptions, 'projectId'>;
     }
   | {
       fnName: 'evaluateTransactionAvg';
+      fnInvestigationName?: 'investigateTransactionAvg';
       options: Omit<TPeerGroupTransactionAverageOptions, 'projectId'>;
     }
   | {
       fnName: 'evaluateDormantAccount';
+      fnInvestigationName?: 'investigateDormantAccount';
       options: Omit<TDormantAccountOptions, 'projectId'>;
     }
   | {
       fnName: 'checkMerchantOngoingAlert';
+      fnInvestigationName?: 'investigateMerchantOngoingAlert';
       options: CheckRiskScoreOptions;
     }
   | {
       fnName: 'evaluateHighVelocityHistoricAverage';
+      fnInvestigationName?: 'investigateHighVelocityHistoricAverage';
       options: Omit<HighVelocityHistoricAverageOptions, 'projectId'>;
     }
   | {
       fnName: 'evaluateMultipleMerchantsOneCounterparty';
+      fnInvestigationName?: 'investigateMultipleMerchantsOneCounterparty';
       options: Omit<TMultipleMerchantsOneCounterparty, 'projectId'>;
     }
   | {
       fnName: 'evaluateMerchantGroupAverage';
+      fnInvestigationName?: 'investigateMerchantGroupAverage';
       options: Omit<TMerchantGroupAverage, 'projectId'>;
     }
 );
