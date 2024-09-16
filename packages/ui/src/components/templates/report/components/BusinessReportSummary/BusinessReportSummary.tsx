@@ -19,7 +19,7 @@ export const BusinessReportSummary: FunctionComponent<{
     violations: Array<{
       label: string;
       severity: string;
-    }>;
+    }> | null;
   }>;
   riskScore: number;
   homepageScreenshotUrl: string | null;
