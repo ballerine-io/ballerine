@@ -53,7 +53,7 @@ export const RiskIndicator = ({
               {violation.label}
             </li>
           ))}
-        {Array.isArray(violations) && (
+        {Array.isArray(violations) && !violations.length && (
           <li className="flex list-none items-center text-slate-500">
             <CheckCircle
               size={18}
