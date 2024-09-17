@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.28
+
+### Patch Changes
+
+- Added customization to date input & output formats on DateInput
+
 ## 0.5.27
 
 ### Patch Changes
