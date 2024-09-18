@@ -1,5 +1,6 @@
 import {
   RegisterFileFn,
+  RemoveFileFn,
   UseFileRepositoryResult,
 } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading/types';
 import { useRefValue } from '@/hooks/useRefValue';
@@ -26,6 +27,14 @@ export const useFileRepository = (
     [fileRepository],
   );
 
+  const removeFile: RemoveFileFn = useCallback(
+    (fileId: string) => {
+      fileRepository.removeByFileId(fileId);
+      setFile(null);
+    },
+    [fileRepository],
+  );
+
   const repositoryListener: FileRepositoryListener = useCallback(
     (updatedFileId, action) => {
       if (fileId === updatedFileId && action === 'add') {
@@ -48,5 +57,6 @@ export const useFileRepository = (
   return {
     file,
     registerFile,
+    removeFile,
   };
 };
