@@ -103,6 +103,7 @@ export class CollectionFlowService {
     return {
       id: workflowDefinition.id,
       config: workflowDefinition.config,
+      uiOptions: uiDefintion.uiOptions,
       uiSchema: {
         // @ts-expect-error - error from Prisma types fix
         elements: this.traverseUiSchema(
