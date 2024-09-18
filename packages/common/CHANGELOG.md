@@ -1,5 +1,23 @@
 # @ballerine/common
 
+## 0.9.30
+
+### Patch Changes
+
+- Bump
+
+## 0.9.29
+
+### Patch Changes
+
+- version bump fix
+
+## 0.9.28
+
+### Patch Changes
+
+- Version bump
+
 ## 0.9.27
 
 ### Patch Changes

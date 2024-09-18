@@ -1,8 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { Prisma } from '@prisma/client';
-import { StateTag } from '@ballerine/common';
+import { EndUserAmlHitsSchema, StateTag } from '@ballerine/common';
 import { z } from 'zod';
-import { EndUserAmlHitsSchema } from '@/end-user/end-user.schema';
 
 export const endUserIds = [
   'ckkt3qnv40001qxtt7nmj9r2r',

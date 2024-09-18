@@ -1,0 +1,53 @@
+name: "Sync ArgoCD APP"
+description: "Syncs an ArgoCD application"
+inputs:
+  argocd_username:
+    description: "ArgoCD Username"
+    required: true
+  argocd_password:
+    description: "ArgoCD Password"
+    required: true
+  argocd_server:
+    description: "ArgoCD Server"
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Setup Twingate
+      uses: twingate/github-action@v1
+      with:
+        service-key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
+
+    - name: Obtain ArgoCD JWT Token
+      id: get_token
+      shell: bash
+      env:
+        ARGOCD_USERNAME: ${{ inputs.argocd_username }}
+        ARGOCD_PASSWORD: ${{ inputs.argocd_password }}
+        ARGOCD_SERVER: ${{ inputs.argocd_server }}
+      run: |
+        TOKEN=$(curl -s -X POST "${ARGOCD_SERVER}/api/v1/session" \
+          -d '{"username": "'"${ARGOCD_USERNAME}"'", "password": "'"${ARGOCD_PASSWORD}"'"}' \
+          -H "Content-Type: application/json" | jq -r '.token')
+        echo "ARGOCD_TOKEN=$TOKEN" >> $GITHUB_ENV
+    
+    - name: Sync ArgoCD Application
+      shell: bash
+      env:
+        ARGOCD_TOKEN: ${{ env.ARGOCD_TOKEN }}
+        ARGOCD_SERVER: ${{ inputs.argocd_server }}
+      run: |
+        APP_NAME="wf-service"
+
+        curl -X POST "${ARGOCD_SERVER}/api/v1/applications/${APP_NAME}/sync" \
+          -H "Authorization: Bearer ${ARGOCD_TOKEN}" \
+          -H "Content-Type: application/json" \
+          -d '{
+                "prune": false,
+                "dryRun": false,
+                "strategy": {
+                  "hook": {
+                    "syncStrategy": "apply"
+                  }
+                }
+              }'
