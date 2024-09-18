@@ -97,7 +97,7 @@ export class WebhooksService {
       context: {
         aml: data,
         entity: {
-          // @ts-expect-error -- date not compatible with typebox
+          // @ts-expect-error -- prisma date not compatible with typebox
           data: {
             ...rest,
             additionalInfo: rest.additionalInfo ?? {},
