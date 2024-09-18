@@ -170,7 +170,7 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
           }
           stats.totalSyncObjectsForCurrentEnv++;
 
-          appLoggerService.log(`Stating object sync for ${crossEnvKey} in ${tableName}`);
+          appLoggerService.log(`Starting object sync for ${crossEnvKey} in ${tableName}`);
           let existingRecord: DataSyncPayload['scalars'] | null = null;
           try {
             const columnsHash = objectMd5(stableStringify(columns));

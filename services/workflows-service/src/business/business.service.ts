@@ -87,16 +87,15 @@ export class BusinessService {
 
       this.logger.log('Finished company information fetch');
 
-      const companyInformation = plainToClass(CompanyInformationModel, {
+      return plainToClass(CompanyInformationModel, {
         name: result.name,
         companyNumber: result.companyNumber,
         companyType: result.companyType,
         jurisdictionCode: result.jurisdictionCode,
         incorporationDate: result.incorporationDate,
+        currentStatus: result.currentStatus,
         vat: '',
       });
-
-      return companyInformation;
     } catch (e) {
       // TODO: have global axios error handler - BAL-916, BAL-917
       if (e instanceof AxiosError) {

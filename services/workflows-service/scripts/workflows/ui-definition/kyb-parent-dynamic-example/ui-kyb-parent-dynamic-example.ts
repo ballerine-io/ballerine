@@ -21,6 +21,7 @@ export const uiKybParentUiSchema = (workflowDefinitionId: string, projectId: str
     definition: definition,
     workflowDefinitionId: workflowDefinitionId,
     projectId: projectId,
+    crossEnvKey: workflowDefinitionId,
   } as const satisfies Prisma.UiDefinitionUncheckedCreateInput);
 
 export const uiKybParentDynamicExample = async (
