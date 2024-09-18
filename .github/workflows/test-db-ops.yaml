@@ -76,7 +76,6 @@ jobs:
           changes: |
             {
               "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
-                "prismaMigrate.image.tag": "${{ inputs.tag }}",
                 "dbMigrate.image.tag": "${{ inputs.tag }}",
                 "dataSync.image.tag": "${{ inputs.tag }}"
               }
