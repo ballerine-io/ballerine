@@ -17,7 +17,7 @@ import { ICallToActionDocumentSelection } from '@/lib/blocks/components/Director
 import { IEditableDetailsDocument } from '@/lib/blocks/components/EditableDetails/interfaces';
 import { TPDFViewerCell } from '@/lib/blocks/components/PDFViewerCell/interfaces';
 import { Block } from '@ballerine/blocks';
-import { CommonWorkflowStates, GenericFunction } from '@ballerine/common';
+import { CommonWorkflowStates, GenericFunction, SortDirection } from '@ballerine/common';
 import { AnyChildren, AnyObject, Image } from '@ballerine/ui';
 import { ColumnDef, TableOptions } from '@tanstack/react-table';
 import { ComponentProps, ReactNode } from 'react';
@@ -132,6 +132,11 @@ export type TDetailsCell = {
       minimum?: string;
       maximum?: string;
     }>;
+  };
+  props?: {
+    config?: {
+      sort?: { direction?: SortDirection; predefinedOrder?: string[] };
+    };
   };
   onSubmit?: (document: AnyObject) => void;
 };

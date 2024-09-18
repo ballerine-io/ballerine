@@ -1,9 +1,9 @@
 import React, { FunctionComponent } from 'react';
-import { columns } from '@/components/templates/report/components/EcosystemAndTransactions/components/EcosystemAndTransactionsTable/columns';
+import { columns } from '@/components/templates/report/components/Ecosystem/components/EcosystemTable/columns';
 import { DataTable } from '@/components/organisms/DataTable/DataTable';
 import { ColumnDef } from '@tanstack/react-table';
 
-export const EcosystemAndTransactionsTable: FunctionComponent<{
+export const EcosystemTable: FunctionComponent<{
   data: Array<{
     matchedName: string;
     relatedNodeType: string;
