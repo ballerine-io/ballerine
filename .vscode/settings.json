@@ -4,6 +4,7 @@
     "apps/backoffice-v2",
     "apps/workflows-dashboard",
     "packages/workflow-core",
-    "services/workflows-service"
+    "services/workflows-service",
+    "packages/common"
   ]
 }
