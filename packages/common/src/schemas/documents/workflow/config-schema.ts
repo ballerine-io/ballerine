@@ -34,7 +34,6 @@ const language = Type.Optional(Type.String());
 const initialEvent = Type.Optional(Type.String());
 const subscriptions = Type.Optional(Type.Array(SubscriptionSchema));
 
-// WorkflowRuntimeConfigSchema
 export const WorkflowRuntimeConfigSchema = Type.Object({
   language,
   initialEvent,
@@ -43,7 +42,6 @@ export const WorkflowRuntimeConfigSchema = Type.Object({
 
 export type TWorkflowRuntimeConfig = Static<typeof WorkflowRuntimeConfigSchema>;
 
-// WorkflowConfigSchema
 export const WorkflowConfigSchema = Type.Object({
   language,
   initialEvent,

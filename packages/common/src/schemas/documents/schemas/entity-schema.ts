@@ -3,6 +3,7 @@ import { Type } from '@sinclair/typebox';
 export const EntitySchema = Type.Object(
   {
     type: Type.String({ enum: ['individual', 'business'] }),
+    id: Type.String(),
     data: Type.Union([
       Type.Object({
         isContactPerson: Type.Optional(Type.Boolean()),
