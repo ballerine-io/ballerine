@@ -6,7 +6,7 @@
 
 */
 -- AlterTable
-ALTER TABLE "UiDefinition" ADD COLUMN     "crossEnvKey" TEXT NOT NULL;
+ALTER TABLE "UiDefinition" ADD COLUMN     "crossEnvKey" TEXT;
 
 -- CreateIndex
 CREATE UNIQUE INDEX "UiDefinition_crossEnvKey_key" ON "UiDefinition"("crossEnvKey");
