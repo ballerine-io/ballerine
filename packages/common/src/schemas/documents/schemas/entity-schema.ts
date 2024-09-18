@@ -3,7 +3,6 @@ import { Type } from '@sinclair/typebox';
 export const EntitySchema = Type.Object(
   {
     type: Type.String({ enum: ['individual', 'business'] }),
-    id: Type.String(),
     data: Type.Union([
       Type.Object({
         isContactPerson: Type.Optional(Type.Boolean()),
@@ -14,7 +13,9 @@ export const EntitySchema = Type.Object(
         email: Type.Optional(Type.Union([Type.String(), Type.Null()])),
         phone: Type.Optional(Type.Union([Type.String(), Type.Null()])),
         country: Type.Optional(Type.Union([Type.String(), Type.Null()])),
-        dateOfBirth: Type.Optional(Type.Union([Type.Date(), Type.String(), Type.Null()])),
+        dateOfBirth: Type.Optional(
+          Type.Union([Type.String({ format: 'date' }), Type.String(), Type.Null()]),
+        ),
         avatarUrl: Type.Optional(Type.Union([Type.String(), Type.Null()])),
         nationalId: Type.Optional(Type.Union([Type.String(), Type.Null()])),
         additionalInfo: Type.Optional(Type.Union([Type.Object({}), Type.Null()])),
@@ -27,7 +28,9 @@ export const EntitySchema = Type.Object(
         legalForm: Type.Optional(Type.Union([Type.String(), Type.Null()])),
         country: Type.Optional(Type.Union([Type.String(), Type.Null()])),
         countryOfIncorporation: Type.Optional(Type.Union([Type.String(), Type.Null()])),
-        dateOfIncorporation: Type.Optional(Type.Union([Type.Date(), Type.String(), Type.Null()])),
+        dateOfIncorporation: Type.Optional(
+          Type.Union([Type.String({ format: 'date' }), Type.String(), Type.Null()]),
+        ),
         address: Type.Optional(Type.Union([Type.Object({}), Type.Null()])),
         phoneNumber: Type.Optional(Type.Union([Type.String(), Type.Null()])),
         email: Type.Optional(Type.Union([Type.String(), Type.Null()])),

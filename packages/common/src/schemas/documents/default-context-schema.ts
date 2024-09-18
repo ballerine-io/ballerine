@@ -12,7 +12,10 @@ import { BusinessInformationPluginSchema } from '@/schemas/documents/schemas/bus
 
 export const defaultInputContextSchema = Type.Object({
   customData: Type.Optional(Type.Object({}, { additionalProperties: true })),
-  entity: Type.Composite([EntitySchema, Type.Object({ ballerineEntityId: Type.String() })]),
+  entity: Type.Union([
+    Type.Composite([EntitySchema, Type.Object({ ballerineEntityId: Type.String() })]),
+    Type.Composite([EntitySchema, Type.Object({ id: Type.String() })]),
+  ]),
   documents: DocumentsSchema,
 });
 

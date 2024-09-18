@@ -348,9 +348,9 @@ export class WorkflowControllerExternal {
     const { workflowId, context, config } = body;
     const { entity } = context;
 
-    // @ts-expect-error -- Something with swagger package
-    if (!entity.id && !entity.ballerineEntityId)
+    if (!('id' in entity) && !('ballerineEntityId' in entity)) {
       throw new common.BadRequestException('Entity id is required');
+    }
 
     const hasSalesforceRecord =
       Boolean(body.salesforceObjectName) && Boolean(body.salesforceRecordId);
@@ -419,7 +419,6 @@ export class WorkflowControllerExternal {
     };
   }
 
-  /// POST /event
   @common.Post('/:id/event')
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
@@ -441,7 +440,6 @@ export class WorkflowControllerExternal {
     );
   }
 
-  // POST /event
   @common.Post('/:id/send-event')
   @swagger.ApiOkResponse()
   @UseCustomerAuthGuard()
@@ -464,12 +462,18 @@ export class WorkflowControllerExternal {
     );
   }
 
-  // curl -X GET -H "Content-Type: application/json" http://localhost:3000/api/v1/external/workflows/:id/context
   @common.Get('/:id/context')
   @UseCustomerAuthGuard()
   @swagger.ApiOkResponse({
-    // @ts-expect-error -- Something with swagger package
-    schema: defaultContextSchema,
+    schema: {
+      type: 'object',
+      properties: {
+        context: {
+          type: 'object',
+          properties: defaultContextSchema,
+        },
+      },
+    },
   })
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
