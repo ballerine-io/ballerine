@@ -33,5 +33,46 @@
       "dependsOn": [{ "projects": "self", "target": "build" }]
     }
   },
-  "defaultBase": "main"
+  "defaultBase": "main",
+  "release": {
+    "projectsRelationship": "independent",
+    "releaseTagPattern": "{projectName}@{version}",
+    "conventionalCommits": {
+      "types": {
+        "chore": {
+          "semverBump": "patch"
+        },
+        "feat": {
+          "semverBump": "patch"
+        },
+        "fix": {
+          "semverBump": "patch"
+        }
+      }
+    },
+    "projects": [
+      "packages/*",
+      "sdks/*",
+      "services/websocket-service",
+      "services/workflows-service",
+      "!private"
+    ],
+    "version": {
+      "conventionalCommits": true
+    },
+    "changelog": {
+      "projectChangelogs": {
+        "renderOptions": {
+          "authors": true,
+          "mapAuthorsToGitHubUsernames": true,
+          "commitReferences": true,
+          "versionTitleDate": true
+        },
+        "createRelease": "github"
+      },
+      "workspaceChangelog": {
+        "createRelease": "github"
+      }
+    }
+  }
 }
