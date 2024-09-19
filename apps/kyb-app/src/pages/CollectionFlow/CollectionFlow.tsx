@@ -24,7 +24,9 @@ import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
+import { LoadingScreen } from '@/pages/CollectionFlow/components/atoms/LoadingScreen';
 import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
+import { Failed } from '@/pages/CollectionFlow/components/pages/Failed';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
 import { AnyObject } from '@ballerine/ui';
@@ -79,6 +81,9 @@ export const useCompleteLastStep = () => {
     })();
   }, [elements, refetch, state, stateApi]);
 };
+
+const isSuccess = (state: string) => state === 'success' || state === 'finish';
+const isFailed = (state: string) => state === 'failed';
 
 export const CollectionFlow = withSessionProtected(() => {
   const { language } = useLanguageParam();
@@ -147,10 +152,15 @@ export const CollectionFlow = withSessionProtected(() => {
         extensions={schema?.definition.extensions}
         definition={definition as State}
       >
-        {({ state, stateApi }) =>
-          state === 'finish' ? (
-            <Success />
-          ) : (
+        {({ state, stateApi }) => {
+          // Temp state, has to be resolved to success or failure by plugins
+          if (state === 'done') return <LoadingScreen />;
+
+          if (isSuccess(state)) return <Success />;
+
+          if (isFailed(state)) return <Failed />;
+
+          return (
             <DynamicUI.PageResolver state={state} pages={elements ?? []}>
               {({ currentPage }) => {
                 return currentPage ? (
@@ -250,8 +260,8 @@ export const CollectionFlow = withSessionProtected(() => {
                 ) : null;
               }}
             </DynamicUI.PageResolver>
-          )
-        }
+          );
+        }}
       </DynamicUI.StateManager>
     </DynamicUI>
   ) : null;

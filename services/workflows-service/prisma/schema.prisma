@@ -419,6 +419,7 @@ enum UiDefinitionContext {
 
 model UiDefinition {
   id                   String              @id @default(cuid())
+  crossEnvKey          String              @unique
   workflowDefinitionId String
   uiContext            UiDefinitionContext
 

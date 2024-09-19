@@ -24,25 +24,28 @@ export const MerchantMonitoring: FunctionComponent = () => {
     onPaginate,
     isLastPage,
     locale,
-    hideCreateMerchantMonitoringButton,
+    createBusinessReport,
+    createBusinessReportBatch,
   } = useMerchantMonitoringLogic();
 
   return (
     <div className="flex h-full flex-col space-y-4 px-6 pb-6 pt-10">
       <div className={`flex justify-between`}>
         <h1 className="pb-5 text-2xl font-bold">Merchant Monitoring</h1>
-        {!hideCreateMerchantMonitoringButton && (
+        {createBusinessReport?.enabled && (
           <div className={`flex space-x-3`}>
-            <Link
-              className={buttonVariants({
-                variant: 'outline',
-                className: 'flex items-center justify-start gap-2 font-semibold',
-              })}
-              to={`/${locale}/merchant-monitoring/upload-multiple-merchants`}
-            >
-              <Table2 />
-              <span>Upload Multiple Merchants</span>
-            </Link>
+            {createBusinessReportBatch?.enabled && (
+              <Link
+                className={buttonVariants({
+                  variant: 'outline',
+                  className: 'flex items-center justify-start gap-2 font-semibold',
+                })}
+                to={`/${locale}/merchant-monitoring/upload-multiple-merchants`}
+              >
+                <Table2 />
+                <span>Upload Multiple Merchants</span>
+              </Link>
+            )}
             <Link
               className={buttonVariants({
                 variant: 'outline',

@@ -15,8 +15,9 @@ export const composeAssociatedUiDefinition = (workflowDefinitionId: string, proj
         AssociatedCompanyDocumentsPage,
       ],
     },
-    definition: definition,
+    definition,
     workflowDefinitionId: workflowDefinitionId,
-    projectId: projectId,
+    projectId,
+    crossEnvKey: workflowDefinitionId,
   } satisfies Prisma.UiDefinitionUncheckedCreateInput;
 };

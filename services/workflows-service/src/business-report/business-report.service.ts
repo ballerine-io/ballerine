@@ -134,6 +134,7 @@ export class BusinessReportService {
     type,
     projectId,
     merchantSheet,
+    workflowVersion,
     currentProjectId,
     maxBusinessReports,
     withQualityControl,
@@ -143,6 +144,7 @@ export class BusinessReportService {
     currentProjectId: string;
     maxBusinessReports: number;
     withQualityControl: boolean;
+    workflowVersion: '1' | '2' | '3';
     merchantSheet: Express.Multer.File;
   }) {
     const businessReportsRequests = await parseCsv({
@@ -169,6 +171,8 @@ export class BusinessReportService {
 
     const batchId = randomUUID();
 
+    let results: Awaited<ReturnType<UnifiedApiClient['postBatchBusinessReport']>> = [];
+
     await this.prisma.$transaction(
       async transaction => {
         const businessCreatePromises = businessReportsRequests.map(async businessReportRequest => {
@@ -184,7 +188,9 @@ export class BusinessReportService {
                 ...(businessReportRequest.correlationId
                   ? { correlationId: businessReportRequest.correlationId }
                   : {}),
-                companyName: businessReportRequest.parentCompanyName || '',
+                companyName: businessReportRequest.merchantName || 'Not detected',
+                website: businessReportRequest.websiteUrl || '',
+                country: businessReportRequest.countryCode || '',
                 projectId,
               },
             },
@@ -206,8 +212,8 @@ export class BusinessReportService {
           );
 
           return {
-            businessReport: businessReport,
-            businessReportRequest: businessReportRequest,
+            businessReport,
+            businessReportRequest,
             businessId: business.id,
           } as const;
         });
@@ -215,26 +221,46 @@ export class BusinessReportService {
         const businessWithRequests = await Promise.all(businessCreatePromises);
 
         const businessReportRequests = businessWithRequests.map(
-          ({ businessReport, businessReportRequest }) => ({
-            withQualityControl,
-            callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${businessReport.businessId}&businessReportId=${businessReport.id}`,
-            websiteUrl: businessReportRequest.websiteUrl,
-            parentCompanyName: businessReportRequest.parentCompanyName,
-            lineOfBusiness: businessReportRequest.lineOfBusiness,
-          }),
+          ({ businessReport, businessReportRequest }) => {
+            return {
+              withQualityControl,
+              businessReportId: businessReport.id,
+              websiteUrl: businessReportRequest.websiteUrl,
+              lineOfBusiness: businessReportRequest.lineOfBusiness,
+              parentCompanyName: businessReportRequest.parentCompanyName,
+              callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${businessReport.businessId}&businessReportId=${businessReport.id}`,
+            };
+          },
         ) satisfies TReportRequest;
 
-        await new UnifiedApiClient().postBatchBusinessReport({
+        results = await new UnifiedApiClient().postBatchBusinessReport({
           reportRequests: businessReportRequests,
           clientName: 'merchant',
           reportType: type,
-          workflowVersion: '3',
+          withQualityControl,
+          workflowVersion,
         });
       },
       {
         timeout: 1000 * 60 * 3,
         maxWait: 1000 * 60 * 3,
       },
+    );
+
+    await Promise.all(
+      results
+        .filter(({ reportId, businessReportId }) => reportId && businessReportId)
+        .map(async ({ reportId, businessReportId }) => {
+          await this.updateById(
+            { id: businessReportId },
+            {
+              data: {
+                reportId,
+                status: BusinessReportStatus.in_progress,
+              },
+            },
+          );
+        }),
     );
 
     return { batchId };

@@ -1,7 +1,8 @@
 import { Input } from '@ballerine/ui';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, Download } from 'lucide-react';
+import { ctw } from '@/common/utils/ctw/ctw';
 import React, { FunctionComponent } from 'react';
+import { ChevronLeft, Download, Loader2 } from 'lucide-react';
 
 import { Card } from '@/common/components/atoms/Card/Card';
 import { Form } from '@/common/components/organisms/Form/Form';
@@ -15,7 +16,7 @@ import { FormDescription } from '@/common/components/organisms/Form/Form.Descrip
 import { useMerchantMonitoringUploadMultiplePageLogic } from '@/pages/MerchantMonitoringUploadMultiple/hooks/useMerchantMonitoringUploadMultiplePageLogic/useMerchantMonitoringUploadMultiplePageLogic';
 
 export const MerchantMonitoringUploadMultiplePage: FunctionComponent = () => {
-  const { form, onSubmit, onChange, locale, csvTemplateUrl } =
+  const { form, isCreateReportBatchReady, onSubmit, onChange, locale, csvTemplateUrl } =
     useMerchantMonitoringUploadMultiplePageLogic();
 
   return (
@@ -56,8 +57,18 @@ export const MerchantMonitoringUploadMultiplePage: FunctionComponent = () => {
                   </FormItem>
                 )}
               />
-              <div className={`flex space-x-[54px]`}>
-                <Button type="submit" size={`wide`}>
+              <div className={`flex space-x-12`}>
+                <Button
+                  type="submit"
+                  size={`wide`}
+                  aria-disabled={isCreateReportBatchReady}
+                  className={'aria-disabled:pointer-events-none aria-disabled:opacity-50'}
+                >
+                  <Loader2
+                    className={ctw('me-2 h-4 w-4 animate-spin', {
+                      hidden: !isCreateReportBatchReady,
+                    })}
+                  />
                   Start Analyzing
                 </Button>
                 <a

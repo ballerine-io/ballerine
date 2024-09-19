@@ -39,7 +39,7 @@ const prepare = async () => {
 };
 
 void prepare().then(() => {
-  if (!rootElement.innerHTML) {
+  if (rootElement && !rootElement?.innerHTML) {
     const root = createRoot(rootElement);
 
     root.render(

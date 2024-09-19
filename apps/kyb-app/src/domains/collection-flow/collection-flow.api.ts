@@ -12,6 +12,7 @@ import posthog from 'posthog-js';
 
 export const fetchUser = async (): Promise<TUser> => {
   const user = await request.get('collection-flow/user').json<TUser>();
+
   if (user) {
     try {
       posthog.identify(user.id, {
@@ -21,6 +22,7 @@ export const fetchUser = async (): Promise<TUser> => {
       console.error('Error identifying user in PostHog:', error);
     }
   }
+
   return user;
 };
 

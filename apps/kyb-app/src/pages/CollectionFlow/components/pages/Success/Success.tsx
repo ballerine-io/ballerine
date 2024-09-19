@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useCustomer } from '@/components/providers/CustomerProvider';
 import { useAppExit } from '@/hooks/useAppExit/useAppExit';
 import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
+import { useUIOptionsRedirect } from '@/hooks/useUIOptionsRedirect';
 import { Button, Card } from '@ballerine/ui';
 
 export const Success = withSessionProtected(() => {
@@ -11,6 +12,8 @@ export const Success = withSessionProtected(() => {
   const { customer } = useCustomer();
 
   const { exit, isExitAvailable } = useAppExit();
+
+  useUIOptionsRedirect('success');
 
   return (
     <div className="flex h-full items-center justify-center">

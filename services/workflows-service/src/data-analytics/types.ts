@@ -46,6 +46,10 @@ export type InlineRule = {
       fnName: 'evaluateMerchantGroupAverage';
       options: Omit<TMerchantGroupAverage, 'projectId'>;
     }
+  | {
+      fnName: 'evaluateDailySingleTransactionAmount';
+      options: Omit<DailySingleTransactionAmountType, 'projectId'>;
+    }
 );
 
 export type TAggregations = keyof typeof AggregateType;
@@ -161,4 +165,24 @@ export type TMerchantGroupAverage = {
   };
   minimumCount: number;
   transactionFactor: number;
+};
+
+export type DailySingleTransactionAmountType = {
+  projectId: TProjectId;
+
+  ruleType: 'amount' | 'count'; // Either monitor by amount or by count
+
+  amountThreshold?: number;
+
+  timeUnit: TimeUnit;
+  timeAmount: number;
+
+  transactionType?: TransactionRecordType[] | readonly TransactionRecordType[];
+
+  direction: TransactionDirection;
+
+  paymentMethods: PaymentMethod[] | readonly PaymentMethod[];
+  excludePaymentMethods: boolean;
+
+  // subjectColumn: 'counterpartyOriginatorId' | 'counterpartyBeneficiaryId';
 };
