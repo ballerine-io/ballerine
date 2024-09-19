@@ -468,10 +468,8 @@ export class WorkflowControllerExternal {
     schema: {
       type: 'object',
       properties: {
-        context: {
-          type: 'object',
-          properties: defaultContextSchema,
-        },
+        // @ts-expect-error -- ss
+        context: defaultContextSchema,
       },
     },
   })
