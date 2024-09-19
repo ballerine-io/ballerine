@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.32
+
+### Patch Changes
+
+- Fixed report content violation explanation
+
 ## 0.5.31
 
 ### Patch Changes
