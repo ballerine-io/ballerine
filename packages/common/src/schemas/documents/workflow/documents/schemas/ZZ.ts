@@ -226,5 +226,13 @@ export const getUniversalDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: {},
     },
+    {
+      category: 'general_documents',
+      type: 'letter_of_authorization',
+      issuer: { country: 'ZZ' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {},
+    },
   ];
 };

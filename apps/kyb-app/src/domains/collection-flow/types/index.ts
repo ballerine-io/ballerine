@@ -60,7 +60,7 @@ export interface Document {
     revisionReason?: string;
     rejectionReason?: string;
   };
-  pages?: { ballerineFileId: string }[];
+  pages?: Array<{ ballerineFileId: string }>;
 }
 
 export interface UBO {
@@ -127,7 +127,7 @@ export interface UIPage {
   name: string;
   number: number;
   stateName: string;
-  elements: UIElement<AnyObject>[];
+  elements: Array<UIElement<AnyObject>>;
   actions: Action[];
   pageValidation?: Rule[];
 }
@@ -135,6 +135,13 @@ export interface UIPage {
 export interface UISchemaConfig {
   kybOnExitAction?: 'send-event' | 'redirect-to-customer-portal';
   supportedLanguages: string[];
+}
+
+export interface UIOptions {
+  redirectUrls?: {
+    success?: string;
+    failure?: string;
+  };
 }
 
 export interface UISchema {
@@ -149,6 +156,7 @@ export interface UISchema {
     definition: AnyObject;
     extensions: AnyObject;
   };
+  uiOptions?: UIOptions;
 }
 
 export * from './ui-schema.types';

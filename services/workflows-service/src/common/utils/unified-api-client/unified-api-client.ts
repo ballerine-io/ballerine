@@ -12,6 +12,7 @@ export type TReportRequest = Array<{
   merchantName?: string;
   websiteName?: string;
   businessReportId?: string;
+  withQualityControl?: boolean;
 }>;
 
 export class UnifiedApiClient {
@@ -32,14 +33,16 @@ export class UnifiedApiClient {
       reportRequests,
       clientName,
       metadata,
-      reportType = BusinessReportType.MERCHANT_REPORT_T1_LITE,
-      workflowVersion = '3',
+      withQualityControl,
+      reportType = BusinessReportType.MERCHANT_REPORT_T1,
+      workflowVersion = '2',
     }: {
       reportRequests: TReportRequest;
       clientName?: string;
       reportType?: BusinessReportType;
       workflowVersion?: '1' | '2' | '3';
       metadata?: Record<string, unknown>;
+      withQualityControl?: boolean;
     },
     endpoint = '/merchants/analysis/batch',
   ) {
@@ -56,6 +59,7 @@ export class UnifiedApiClient {
           clientName,
           metadata,
           reportType,
+          withQualityControl,
           workflowVersion,
         },
         {

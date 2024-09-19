@@ -222,6 +222,9 @@ jobs:
             {
               "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
                 "image.tag": "${{ needs.build-and-push-ee-image.outputs.docker_tag }}",
+                "prismaMigrate.image.tag": "${{ needs.build-and-push-ee-image.outputs.docker_tag }}",
+                "dbMigrate.image.tag": "${{ needs.build-and-push-ee-image.outputs.docker_tag }}",
+                "dataSync.image.tag": "${{ needs.build-and-push-ee-image.outputs.docker_tag }}"
               }
             }
 

@@ -43,7 +43,7 @@ export const FileUploaderField = ({
     [uploadFile, registerFile, onChange],
   );
 
-  const handleContainerClick = useCallback(() => {
+  const handdleContainerClick = useCallback(() => {
     inputRef.current?.click();
   }, [inputRef]);
 
@@ -64,7 +64,7 @@ export const FileUploaderField = ({
   return (
     <div
       className="relative flex h-[56px] flex-row items-center gap-3 rounded-[16px] border bg-white px-4"
-      onClick={handleContainerClick}
+      onClick={handdleContainerClick}
     >
       <div className="flex gap-3 text-[#007AFF]">
         <Upload />
