@@ -1,5 +1,6 @@
 import { SerializableValidatableTransformer } from './types';
 
+// @deprecated
 const _generateMappingString = (dataMapping?: Record<string, string>) => {
   if (!dataMapping || (Array.isArray(dataMapping) && dataMapping.length === 0)) {
     return '';
@@ -95,13 +96,13 @@ export type ApiBallerinePlugin = {
 type EmailOptions = {
   pluginKind: 'template-email';
   template: ApiEmailTemplates;
-  dataMapping?: Record<string, string>;
+  dataMapping?: string;
 };
 
 type MerchantMonirotingOptions = {
   pluginKind: 'merchant-monitoring';
   vendor: MerchantMonitoringVendors;
-  dataMapping?: Record<string, string>;
+  dataMapping?: string;
   merchantMonitoringQualityControl: boolean;
   reportType?:
     | 'MERCHANT_REPORT_T1'
@@ -253,6 +254,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
   [BALLERINE_API_PLUGINS['individual-sanctions']]: {
     [INDIVIDUAL_SCREENING_VENDORS['dow-jones']]: (options: DowJonesOptions) => ({
       ...BASE_SANCSIONS_SCREENING_OPTIONS,
+      name: 'sanctionsScreening',
       pluginKind: 'individual-sanctions',
       request: {
         transform: [
@@ -276,7 +278,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
         transform: [
           {
             mapping:
-              "merge({ name: 'sanctions_screening', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
+              "merge({ name: 'sanctionsScreening', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
             transformer: 'jmespath',
           },
           {
@@ -338,7 +340,8 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
     [COMPANY_SCREENING_VENDORS['asia-verify']]: (options: ApiPluginOptions) => ({
       pluginKind: 'company-sanctions',
       vendor: 'asia-verify',
-      url: `{secret.UNIFIED_API_URL}/companies/{entity.data.country}/{entity.data.companyName}/sanctions`,
+      // TODO: lior - remoave|deprecate useage of country, use address.country only
+      url: `{secret.UNIFIED_API_URL}/companies/{entity.data.country || entity.data.address.country}/{entity.data.companyName}/sanctions`,
       headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
       method: 'GET' as const,
       displayName: 'Company Sanctions',
@@ -355,7 +358,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
         transform: [
           {
             mapping:
-              "merge({ name: 'company_sanctions', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'SUCCESS' }, @)",
+              "merge({ name: 'companySanctions', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'SUCCESS' }, @)",
             transformer: 'jmespath',
           },
           {
@@ -374,9 +377,9 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
   },
   [BALLERINE_API_PLUGINS['merchant-monitoring']]: {
     [MERCHANT_MONITORING_VENDORS['ballerine']]: (options: MerchantMonirotingOptions) => ({
-      name: 'merchant_monitoring',
+      name: 'merchantMonitoring',
       pluginKind: 'api',
-      url: `{secret.UNIFIED_API_URL}/tld/reports`,
+      url: `{secret.UNIFIED_API_URL}/merchants/analysis`,
       method: 'POST',
       headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
       persistResponseDestination: 'pluginsOutput.merchantMonitoring',
@@ -385,13 +388,13 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
           {
             transformer: 'jmespath',
             mapping: `{
-              ${_generateMappingString(options.dataMapping)}
+              ${options.dataMapping || ''}
               reportType: '${options.reportType || 'MERCHANT_REPORT_T1'}',
               vendor: 'legitscript',
               callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.merchantMonitoring&processName=website-monitoring'])
               withQualityControl: ${
                 options.merchantMonitoringQualityControl || true ? 'true' : 'false'
-              }
+              }  
             }`, // jmespath
           },
         ],
@@ -468,7 +471,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             transformer: 'jmespath',
             // #TODO: create new token (new using old one)
             mapping: `{
-              ${_generateMappingString(options.dataMapping)}
+              ${options.dataMapping || ''}
               kybCompanyName: entity.data.companyName,
               customerCompanyName: metadata.customerName,
               firstName: entity.data.additionalInfo.mainRepresentative.firstName,
@@ -504,7 +507,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
           {
             transformer: 'jmespath',
             mapping: `{
-          ${_generateMappingString(options.dataMapping)}
+          ${options.dataMapping || ''}
           kybCompanyName: entity.data.additionalInfo.companyName,
           customerCompanyName: entity.data.additionalInfo.customerCompany,
           firstName: entity.data.firstName,
@@ -575,7 +578,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
           {
             transformer: 'jmespath',
             mapping: `{
-                    ${_generateMappingString(options.dataMapping)}
+                    ${options.dataMapping || ''}
                     customerName: metadata.customerName,
                     collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
                     from: 'no-reply@ballerine.com',

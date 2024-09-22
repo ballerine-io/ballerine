@@ -1,6 +1,5 @@
 import { AnyRecord } from '@ballerine/common';
 import { WorkflowRunner } from '../../workflow-runner';
-import { IBallerineApiPluginParams } from './ballerine-plugin';
 import { ApiPlugin, IApiPluginParams } from '.';
 import { ApiBallerinePlugins, BALLERINE_API_PLUGIN_FACTORY } from './vendor-consts';
 
@@ -76,7 +75,7 @@ export class BallerineApiPlugin extends ApiPlugin {
   }
 
   // TODO: remove #  after refactoring plugins
-  async #_onReplaceVariable(variableKey: string, content: string, placeholder: string) {
+  async _onReplaceVariable(variableKey: string, content: string, placeholder: string) {
     let replacedSecrets = await this.replaceSecretsByProvider(
       'ballerine',
       variableKey,
