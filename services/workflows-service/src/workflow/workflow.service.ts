@@ -109,7 +109,7 @@ import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { Prisma } from '@prisma/client/extension';
 import { StorageService } from '@/storage/storage.service';
-import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
+import { TOcrImages, UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 
 type TEntityId = string;
 
@@ -2548,8 +2548,10 @@ export class WorkflowService {
     workflowId: string;
     projectId: string;
     documentId: string;
-    transaction: PrismaTransaction;
+    transaction?: PrismaTransaction;
   }) {
+    transaction ||= await this.prismaService.transaction();
+
     const document = (await this.findDocumentById({
       workflowId,
       projectId,
@@ -2582,7 +2584,7 @@ export class WorkflowService {
       return { base64: `data:${mimeType};base64,${base64String}` };
     });
 
-    const images = await Promise.all(documentPagesContent);
+    const images = (await Promise.all(documentPagesContent)) satisfies TOcrImages;
 
     await new UnifiedApiClient().runDocumentOcr({
       images,
