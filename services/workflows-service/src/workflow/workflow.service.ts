@@ -48,6 +48,7 @@ import {
 import {
   AnyRecord,
   DefaultContextSchema,
+  DocumentsSchema,
   getDocumentId,
   isErrorWithMessage,
   isObject,
@@ -79,7 +80,6 @@ import {
   BusinessReportStatus,
   BusinessReportType,
   EndUser,
-  Prisma,
   PrismaClient,
   UiDefinitionContext,
   User,
@@ -107,6 +107,9 @@ import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-
 import { entitiesUpdate } from './utils/entities-update';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
+import { Prisma } from '@prisma/client/extension';
+import { StorageService } from '@/storage/storage.service';
+import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 
 type TEntityId = string;
 
@@ -142,6 +145,7 @@ export class WorkflowService {
     private readonly salesforceService: SalesforceService,
     private readonly workflowTokenService: WorkflowTokenService,
     private readonly uiDefinitionService: UiDefinitionService,
+    private readonly storageService: StorageService,
     private readonly prismaService: PrismaService,
     private readonly riskRuleService: RiskRuleService,
     private readonly ruleEngineService: RuleEngineService,
@@ -2496,6 +2500,92 @@ export class WorkflowService {
   async updateById(workflowRuntimeDataId: string, args: Prisma.WorkflowRuntimeDataUpdateInput) {
     return await this.workflowRuntimeDataRepository.updateById(workflowRuntimeDataId, {
       data: args,
+    });
+  }
+
+  async findDocumentById({
+    workflowId,
+    projectId,
+    documentId,
+    transaction,
+  }: {
+    workflowId: string;
+    projectId: string;
+    documentId: string;
+    transaction: PrismaTransaction;
+  }) {
+    const runtimeData = await this.workflowRuntimeDataRepository.findByIdAndLock(
+      workflowId,
+      {},
+      [projectId],
+      transaction,
+    );
+    const workflowDef = await this.workflowDefinitionRepository.findById(
+      runtimeData.workflowDefinitionId,
+      {},
+      [projectId],
+      transaction,
+    );
+    const document = runtimeData?.context?.documents?.find(
+      (document: DefaultContextSchema['documents'][number]) => document.id === documentId,
+    );
+
+    const documentSchema = addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);
+    const propertiesSchema = documentSchema?.propertiesSchema ?? {};
+
+    return {
+      documentSchema,
+      ...propertiesSchema,
+    };
+  }
+
+  async runOCROnDocument({
+    workflowId,
+    projectId,
+    documentId,
+    transaction,
+  }: {
+    workflowId: string;
+    projectId: string;
+    documentId: string;
+    transaction: PrismaTransaction;
+  }) {
+    const document = (await this.findDocumentById({
+      workflowId,
+      projectId,
+      documentId,
+      transaction,
+    })) as unknown as Static<typeof DocumentsSchema>[number];
+
+    if (!('pages' in document)) {
+      throw new BadRequestException('Cannot run document OCR on document without pages');
+    }
+
+    const documentPagesContent = document.pages.map(async page => {
+      const { signedUrl, mimeType, filePath } = await this.storageService.fetchFileContent({
+        id: page.ballerineFileId!,
+        format: 'signed-url',
+        projectIds: [projectId],
+      });
+
+      if (signedUrl) {
+        return {
+          remote: {
+            imageUri: signedUrl,
+            mimeType,
+          },
+        };
+      }
+
+      const base64String = this.storageService.fileToBase64(filePath!);
+
+      return { base64: `data:${mimeType};base64,${base64String}` };
+    });
+
+    const images = await Promise.all(documentPagesContent);
+
+    await new UnifiedApiClient().runDocumentOcr({
+      images,
     });
   }
 }

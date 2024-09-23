@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import { env } from '@/env';
 import { Logger } from '@nestjs/common';
 import { BusinessReportType } from '@prisma/client';
+import { TSchema } from '@sinclair/typebox';
 
 export type TReportRequest = Array<{
   websiteUrl: string;
@@ -14,8 +15,39 @@ export type TReportRequest = Array<{
   businessReportId?: string;
   withQualityControl?: boolean;
 }>;
+export type TOcrImages = Array<
+  | {
+      remote: {
+        imageUri: string;
+        mimeType: string;
+      };
+    }
+  | {
+      base64: string;
+    }
+>;
 
-export class UnifiedApiClient {
+interface TOcrImage {
+  runOcr({
+    images,
+    schema,
+  }: {
+    images: Array<
+      | {
+          remote: {
+            imageUri: string;
+            mimeType: string;
+          };
+        }
+      | {
+          base64: string;
+        }
+    >;
+    schema: TSchema;
+  }): Promise<axios.AxiosResponse<any>>;
+}
+
+export class UnifiedApiClient implements TOcrImage {
   private readonly axiosInstance: AxiosInstance;
   private readonly logger = new Logger(UnifiedApiClient.name);
 
@@ -73,5 +105,35 @@ export class UnifiedApiClient {
 
       throw error;
     }
+  }
+
+  async runOcr({ images, schema }: { images: TOcrImages; schema: TSchema }) {
+    return await this.axiosInstance.post('/v1/smart-ocr', {
+      images,
+      schema,
+    });
+  }
+
+  async runDocumentOcr({
+    images,
+    supportedCountries,
+    overrideSchemas,
+  }: {
+    images: TOcrImages;
+    supportedCountries: string[];
+    overrideSchemas: {
+      overrideSchemas: Array<{
+        countryCode: string;
+        documentType: string;
+        documentCategory: string;
+        schema: TSchema;
+      }>;
+    };
+  }) {
+    return await this.axiosInstance.post('/v1/document/smart-ocr', {
+      images,
+      supportedCountries,
+      overrideSchemas,
+    });
   }
 }
