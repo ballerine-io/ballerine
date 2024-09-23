@@ -14,8 +14,11 @@ import { Head } from './Head';
 import './i18next';
 import './index.css';
 import { initializeMonitoring } from '@/initialize-monitoring/initialize-monitoring';
+import { initializeSessionRecording } from '@/initialize-session-recording/initialize-session-recording';
 
 initializeMonitoring();
+
+initializeSessionRecording();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
