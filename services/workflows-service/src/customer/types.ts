@@ -10,7 +10,6 @@ export type TAuthenticationConfiguration = {
 
 export const FEATURE_LIST = {
   ONGOING_MERCHANT_REPORT_T1: 'ONGOING_MERCHANT_REPORT_T1',
-  ONGOING_MERCHANT_REPORT_T2: 'ONGOING_MERCHANT_REPORT_T2',
 } as const;
 
 export type TCustomerFeatures = {
@@ -20,10 +19,7 @@ export type TCustomerFeatures = {
 };
 
 export type TOngoingAuditReportDefinitionConfig = {
-  definitionVariation: string;
   intervalInDays: number;
-  active: boolean;
-  checkTypes: string[];
   proxyViaCountry: string;
 };
 
@@ -32,21 +28,7 @@ export const CUSTOMER_FEATURES = {
     name: 'ONGOING_MERCHANT_REPORT_T1',
     enabled: true, // show option in UI
     options: {
-      definitionVariation: 'ongoing_merchant_audit_t1',
-      intervalInDays: 7,
-      active: true,
-      checkTypes: ['lob', 'content', 'reputation'],
-      proxyViaCountry: 'GB',
-    },
-  },
-  [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2]: {
-    name: 'ONGOING_MERCHANT_REPORT_T2',
-    enabled: false, // show option in UI
-    options: {
-      definitionVariation: 'ongoing_merchant_audit_t2',
-      intervalInDays: 7,
-      active: false,
-      checkTypes: ['lob', 'content', 'reputation'],
+      intervalInDays: 30,
       proxyViaCountry: 'GB',
     },
   },
