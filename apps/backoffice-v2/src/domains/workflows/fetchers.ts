@@ -299,7 +299,7 @@ export const createWorkflowRequest = async ({
   return handleZodError(error, workflow);
 };
 
-export const executeWorkflowDocumentOCR = async ({
+export const fetchWorkflowDocumentOCRResult = async ({
   workflowDefinitionId,
   documentId,
 }: {

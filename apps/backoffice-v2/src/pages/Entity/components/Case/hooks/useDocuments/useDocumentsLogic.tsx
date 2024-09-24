@@ -1,5 +1,3 @@
-import { t } from 'i18next';
-import { toast } from 'sonner';
 import { ComponentProps, useCallback, useRef, useState } from 'react';
 
 import { IDocumentsProps } from '../../interfaces';
@@ -11,59 +9,15 @@ import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useTesseract } from '@/common/hooks/useTesseract/useTesseract';
 import { createArrayOfNumbers } from '@/common/utils/create-array-of-numbers/create-array-of-numbers';
 import { useStorageFileByIdQuery } from '@/domains/storage/hooks/queries/useStorageFileByIdQuery/useStorageFileByIdQuery';
-import { copyToClipboard } from '@/common/utils/copy-to-clipboard/copy-to-clipboard';
 
-export const useDocuments = (documents: IDocumentsProps['documents']) => {
+export const useDocumentsLogic = (documents: IDocumentsProps['documents']) => {
   const initialImage = documents?.[0];
-  const {
-    crop,
-    isCropping,
-    onCrop,
-    cropImage,
-    toggleOnIsCropping,
-    toggleOffIsCropping,
-    onCancelCrop,
-  } = useCrop();
+  const { crop, isCropping, onCrop, onCancelCrop } = useCrop();
   const [isLoadingOCR, , toggleOnIsLoadingOCR, toggleOffIsLoadingOCR] = useToggle(false);
   const selectedImageRef = useRef<HTMLImageElement>();
   const recognize = useTesseract();
   const filterId = useFilterId();
-  const onOcr = useCallback(async () => {
-    if (!isCropping) {
-      toggleOnIsCropping();
 
-      return;
-    }
-
-    toggleOnIsLoadingOCR();
-
-    try {
-      const croppedBase64 = await cropImage(selectedImageRef.current);
-      const result = await recognize(croppedBase64);
-      const text = result?.data?.text;
-
-      if (!text) {
-        throw new Error('No document OCR text found');
-      }
-
-      await copyToClipboard(text)();
-    } catch (err) {
-      console.error(err);
-
-      toast.error(t('toast:ocr_document_error'));
-    }
-
-    toggleOffIsLoadingOCR();
-    toggleOffIsCropping();
-  }, [
-    isCropping,
-    toggleOnIsLoadingOCR,
-    toggleOffIsLoadingOCR,
-    toggleOffIsCropping,
-    toggleOnIsCropping,
-    cropImage,
-    recognize,
-  ]);
   const skeletons = createArrayOfNumbers(4);
   const [selectedImage, setSelectedImage] = useState<{
     imageUrl: string;
@@ -114,7 +68,7 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
     onCrop,
     onCancelCrop,
     isCropping,
-    onOcr,
+    shouldOCR: true,
     selectedImageRef,
     initialImage,
     skeletons,

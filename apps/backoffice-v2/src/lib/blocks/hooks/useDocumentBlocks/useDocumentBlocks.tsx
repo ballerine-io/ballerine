@@ -29,6 +29,7 @@ import { X } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useCallback, useMemo } from 'react';
 import { toTitleCase } from 'string-ts';
+import { useDocumentOrc } from '@/domains/entities/hooks/mutations/useDocumentOcr/useDocumentOcr';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -79,6 +80,12 @@ export const useDocumentBlocks = ({
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id);
+  const { mutate: mutateOCRDocument, isLoading: isLoadingOCRDocument } = useDocumentOrc({
+    workflowId: workflow?.id,
+    onSuccess: (ocrProperties, document) => {
+      console.log(ocrProperties, document);
+    },
+  });
   const { isLoading: isLoadingRejectTaskById } = useRejectTaskByIdMutation(workflow?.id);
 
   const { comment, onClearComment, onCommentChange } = useCommentInputLogic();
@@ -450,6 +457,7 @@ export const useDocumentBlocks = ({
             type: 'multiDocuments',
             value: {
               isLoading: storageFilesQueryResult?.some(({ isLoading }) => isLoading),
+              onOCRClicked: () => mutateOCRDocument({ documentId: id }),
               data:
                 documents?.[docIndex]?.pages?.map(
                   ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({

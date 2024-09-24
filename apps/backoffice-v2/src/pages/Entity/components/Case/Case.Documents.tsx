@@ -7,7 +7,7 @@ import { ImageViewer } from '@/common/components/organisms/ImageViewer/ImageView
 import { ctw } from '@/common/utils/ctw/ctw';
 import { keyFactory } from '@/common/utils/key-factory/key-factory';
 import { DocumentsToolbar } from '@/pages/Entity/components/Case/Case.Documents.Toolbar';
-import { useDocuments } from './hooks/useDocuments/useDocuments';
+import { useDocumentsLogic } from './hooks/useDocuments/useDocumentsLogic';
 import { IDocumentsProps } from './interfaces';
 
 /**
@@ -24,6 +24,7 @@ import { IDocumentsProps } from './interfaces';
  */
 export const Documents: FunctionComponent<IDocumentsProps> = ({
   documents,
+  onOcrPressed,
   isLoading,
   hideOpenExternalButton,
 }) => {
@@ -32,7 +33,6 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
     onCrop,
     onCancelCrop,
     isCropping,
-    onOcr,
     selectedImageRef,
     initialImage,
     skeletons,
@@ -45,8 +45,9 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
     onTransformed,
     isRotatedOrTransformed,
     shouldDownload,
+    shouldOCR,
     fileToDownloadBase64,
-  } = useDocuments(documents);
+  } = useDocumentsLogic(documents);
 
   return (
     <ImageViewer selectedImage={selectedImage} onSelectImage={onSelectImage}>
@@ -88,6 +89,8 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
             onOpenDocumentInNewTab={onOpenDocumentInNewTab}
             // isRotatedOrTransformed={isRotatedOrTransformed}
             shouldDownload={shouldDownload}
+            shouldOCR={shouldOCR}
+            onOcrPressed={onOcrPressed}
             // isCropping={isCropping}
             // isLoadingOCR={isLoadingOCR}
             // onCancelCrop={onCancelCrop}
