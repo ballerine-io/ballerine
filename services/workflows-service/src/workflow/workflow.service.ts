@@ -80,6 +80,7 @@ import {
   BusinessReportStatus,
   BusinessReportType,
   EndUser,
+  Prisma,
   PrismaClient,
   UiDefinitionContext,
   User,
@@ -87,7 +88,7 @@ import {
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
-import { Static } from '@sinclair/typebox';
+import { Static, TSchema } from '@sinclair/typebox';
 import { plainToClass } from 'class-transformer';
 import dayjs from 'dayjs';
 import { isEqual, merge } from 'lodash';
@@ -107,7 +108,6 @@ import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-
 import { entitiesUpdate } from './utils/entities-update';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
-import { Prisma } from '@prisma/client/extension';
 import { StorageService } from '@/storage/storage.service';
 import { TOcrImages, UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 
@@ -2512,7 +2512,7 @@ export class WorkflowService {
     workflowId: string;
     projectId: string;
     documentId: string;
-    transaction: PrismaTransaction;
+    transaction: PrismaTransaction | PrismaClient;
   }) {
     const runtimeData = await this.workflowRuntimeDataRepository.findByIdAndLock(
       workflowId,
@@ -2540,54 +2540,69 @@ export class WorkflowService {
   }
 
   async runOCROnDocument({
-    workflowId,
+    workflowRuntimeId,
     projectId,
     documentId,
-    transaction,
   }: {
-    workflowId: string;
+    workflowRuntimeId: string;
     projectId: string;
     documentId: string;
-    transaction?: PrismaTransaction;
   }) {
-    transaction ||= await this.prismaService.transaction();
+    await this.prismaService.$transaction(
+      async transaction => {
+        const workflowDef = await this.workflowDefinitionRepository.findById(
+          workflowRuntimeId,
+          {},
+          [projectId],
+          transaction,
+        );
 
-    const document = (await this.findDocumentById({
-      workflowId,
-      projectId,
-      documentId,
-      transaction,
-    })) as unknown as Static<typeof DocumentsSchema>[number];
+        const document = (await this.findDocumentById({
+          workflowId: workflowRuntimeId,
+          projectId,
+          documentId,
+          transaction,
+        })) as unknown as Static<typeof DocumentsSchema>[number];
 
-    if (!('pages' in document)) {
-      throw new BadRequestException('Cannot run document OCR on document without pages');
-    }
+        if (!('pages' in document)) {
+          throw new BadRequestException('Cannot run document OCR on document without pages');
+        }
 
-    const documentPagesContent = document.pages.map(async page => {
-      const { signedUrl, mimeType, filePath } = await this.storageService.fetchFileContent({
-        id: page.ballerineFileId!,
-        format: 'signed-url',
-        projectIds: [projectId],
-      });
+        const documentWithSchema = addPropertiesSchemaToDocument(
+          document,
+          workflowDef.documentsSchema,
+        );
+        const documentPagesContent = documentWithSchema.pages.map(async page => {
+          const { signedUrl, mimeType, filePath } = await this.storageService.fetchFileContent({
+            id: page.ballerineFileId!,
+            format: 'signed-url',
+            projectIds: [projectId],
+          });
 
-      if (signedUrl) {
-        return {
-          remote: {
-            imageUri: signedUrl,
-            mimeType,
-          },
-        };
-      }
+          if (signedUrl) {
+            return {
+              remote: {
+                imageUri: signedUrl,
+                mimeType,
+              },
+            };
+          }
 
-      const base64String = this.storageService.fileToBase64(filePath!);
+          const base64String = this.storageService.fileToBase64(filePath!);
 
-      return { base64: `data:${mimeType};base64,${base64String}` };
-    });
+          return { base64: `data:${mimeType};base64,${base64String}` };
+        });
 
-    const images = (await Promise.all(documentPagesContent)) satisfies TOcrImages;
+        const images = (await Promise.all(documentPagesContent)) satisfies TOcrImages;
 
-    await new UnifiedApiClient().runDocumentOcr({
-      images,
-    });
+        return await new UnifiedApiClient().runOcr({
+          images,
+          schema: documentWithSchema.propertiesSchema as unknown as TSchema,
+        });
+      },
+      {
+        timeout: 180_000,
+      },
+    );
   }
 }

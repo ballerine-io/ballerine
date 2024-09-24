@@ -348,7 +348,7 @@ export class WorkflowControllerInternal {
     @CurrentProject() currentProjectId: TProjectId,
   ) {
     return await this.service.runOCROnDocument({
-      workflowId: params?.id,
+      workflowRuntimeId: params?.id,
       documentId: params?.documentId,
       projectId: currentProjectId,
     });
