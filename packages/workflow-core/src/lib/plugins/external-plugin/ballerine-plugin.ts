@@ -32,6 +32,7 @@ const _getPluginOptions = (params: IBallerineApiPluginParams & IApiPluginParams)
     if (!params.vendor) {
       throw new Error(`Missed vendor for: ${params.pluginKind}`);
     }
+
     optionsFactoryFn = pluginOptionFactoryFn[params.vendor];
   }
 
@@ -39,6 +40,7 @@ const _getPluginOptions = (params: IBallerineApiPluginParams & IApiPluginParams)
     if (!params.template) {
       throw new Error(`Missed templateName for: ${params.pluginKind}`);
     }
+
     optionsFactoryFn = pluginOptionFactoryFn[params.template];
   }
 
@@ -53,9 +55,9 @@ export class BallerineApiPlugin extends ApiPlugin {
   public static pluginType = 'http';
 
   constructor(params: IBallerineApiPluginParams & IApiPluginParams) {
-    let options = _getPluginOptions(params);
+    const options = _getPluginOptions(params);
 
-    let { requestTransformer, requestValidator, responseTransformer, responseValidator } =
+    const { requestTransformer, requestValidator, responseTransformer, responseValidator } =
       WorkflowRunner.reqResTransformersObj({
         params,
         ...options,

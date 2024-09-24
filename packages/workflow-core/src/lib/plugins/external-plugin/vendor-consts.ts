@@ -135,6 +135,7 @@ type AsiaVerifyOptions = {
 type CompanySanctionsAsiaVerifyOptions = {
   pluginKind: 'company-sanctions';
   vendor: 'asia-verify';
+  url: string;
 };
 
 type UboAsiaVerifyOptions = {
@@ -210,7 +211,7 @@ const getKycEntityMapping = (takeEntityDetailFromKyc: boolean) => {
 
 export const BALLERINE_API_PLUGIN_FACTORY = {
   [BALLERINE_API_PLUGINS['registry-information']]: _ => ({
-    name: 'registry-information',
+    name: 'businessInformation',
     displayName: 'Registry Verification',
     pluginKind: 'registry-information',
     vendor: 'asia-verify',
@@ -337,11 +338,13 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
     }),
   },
   [BALLERINE_API_PLUGINS['company-sanctions']]: {
-    [COMPANY_SCREENING_VENDORS['asia-verify']]: (options: ApiPluginOptions) => ({
+    [COMPANY_SCREENING_VENDORS['asia-verify']]: (options: CompanySanctionsAsiaVerifyOptions) => ({
       pluginKind: 'company-sanctions',
       vendor: 'asia-verify',
       // TODO: lior - remoave|deprecate useage of country, use address.country only
-      url: `{secret.UNIFIED_API_URL}/companies/{entity.data.country || entity.data.address.country}/{entity.data.companyName}/sanctions`,
+      url: `{secret.UNIFIED_API_URL}/companies/${
+        options.url ?? `{entity.data.country}/{entity.data.companyName}/sanctions`
+      }`,
       headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
       method: 'GET' as const,
       displayName: 'Company Sanctions',
