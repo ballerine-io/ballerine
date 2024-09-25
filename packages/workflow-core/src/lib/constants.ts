@@ -7,6 +7,7 @@ import { MastercardMerchantScreeningPlugin } from './plugins/external-plugin/mas
 import { ObjectValues } from './types';
 import { BALLERINE_API_PLUGINS } from './plugins/external-plugin/vendor-consts';
 import { BallerineApiPlugin } from './plugins/external-plugin/ballerine-plugin';
+import { BallerineEmailPlugin } from './plugins/external-plugin/ballerine-email-plugin';
 
 export const PluginKind = {
   KYC: 'kyc',
@@ -30,7 +31,7 @@ export const pluginsRegistry = {
   [BALLERINE_API_PLUGINS['company-sanctions']]: BallerineApiPlugin,
   [BALLERINE_API_PLUGINS['ubo']]: BallerineApiPlugin,
   [BALLERINE_API_PLUGINS['registry-information']]: BallerineApiPlugin,
-  [BALLERINE_API_PLUGINS['template-email']]: BallerineApiPlugin,
+  [BALLERINE_API_PLUGINS['template-email']]: BallerineEmailPlugin,
   [BALLERINE_API_PLUGINS['merchant-monitoring']]: BallerineApiPlugin,
 } as const satisfies Readonly<
   Record<

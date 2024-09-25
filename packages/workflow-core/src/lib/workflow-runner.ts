@@ -74,6 +74,7 @@ import { BUILT_IN_EVENT } from './index';
 import { logger } from './logger';
 import { hasPersistResponseDestination } from './utils/has-persistence-response-destination';
 import { pluginsRegistry } from './constants';
+import { fetchTransformers, reqResTransformersObj } from './workflow-runner-utils';
 
 export class WorkflowRunner {
   #__subscriptions: Partial<Record<string, Array<(event: WorkflowEvent) => Promise<void>>>>;
@@ -178,7 +179,7 @@ export class WorkflowRunner {
 
       return new DispatchEventPlugin({
         ...dispatchEventPlugin,
-        transformers: WorkflowRunner.fetchTransformers(dispatchEventPlugin.transformers || []),
+        transformers: fetchTransformers(dispatchEventPlugin.transformers || []),
       });
     });
   }
@@ -186,7 +187,7 @@ export class WorkflowRunner {
   initiateApiPlugins(apiPluginSchemas: Array<ISerializableHttpPluginParams>) {
     return apiPluginSchemas?.map(apiPluginSchema => {
       let { requestTransformer, requestValidator, responseTransformer, responseValidator } =
-        WorkflowRunner.reqResTransformersObj(apiPluginSchema);
+        reqResTransformersObj(apiPluginSchema);
 
       const apiPluginClass = this.pickApiPluginClass(apiPluginSchema);
 
@@ -209,48 +210,6 @@ export class WorkflowRunner {
         secretsManager: this.#__secretsManager,
       });
     });
-  }
-
-  static reqResTransformersObj(
-    apiPluginSchema: Pick<ISerializableHttpPluginParams, 'request' | 'response'>,
-  ) {
-    let requestTransformer;
-    let responseTransformer: ValidatableTransformer | undefined;
-    let requestValidator: Validator | undefined;
-    let responseValidator: Validator | undefined;
-
-    if ('request' in apiPluginSchema) {
-      if (apiPluginSchema.request && 'transform' in apiPluginSchema.request) {
-        const requestTransformerLogic = apiPluginSchema.request
-          .transform as SerializableValidatableTransformer['transform'] & {
-          name?: string;
-        };
-        requestTransformer = WorkflowRunner.fetchTransformers(requestTransformerLogic);
-
-        requestValidator = WorkflowRunner.fetchValidator(
-          'json-schema',
-          // @ts-expect-error TODO: fix this
-          apiPluginSchema?.request?.schema,
-        );
-      }
-
-      if (apiPluginSchema.response && 'transform' in apiPluginSchema.response) {
-        const responseTransformerLogic = apiPluginSchema.response
-          .transform as SerializableValidatableTransformer['transform'] & {
-          name?: string;
-        };
-        // @ts-ignore
-        responseTransformer =
-          responseTransformerLogic && WorkflowRunner.fetchTransformers(responseTransformerLogic);
-
-        responseValidator = WorkflowRunner.fetchValidator(
-          'json-schema',
-          // @ts-expect-error TODO: fix this
-          apiPluginSchema?.response?.schema,
-        );
-      }
-    }
-    return { requestTransformer, requestValidator, responseTransformer, responseValidator };
   }
 
   initiateRiskRulePlugin(
@@ -288,7 +247,7 @@ export class WorkflowRunner {
   ) {
     return childPluginSchemas?.map(childPluginSchema => {
       logger.log('Initiating child plugin', childPluginSchema);
-      const transformers = WorkflowRunner.fetchTransformers(childPluginSchema.transformers) || [];
+      const transformers = fetchTransformers(childPluginSchema.transformers) || [];
 
       return new ChildWorkflowPlugin({
         name: childPluginSchema.name,
@@ -368,7 +327,7 @@ export class WorkflowRunner {
       name: iterarivePluginParams.name,
       stateNames: iterarivePluginParams.stateNames,
       //@ts-ignore
-      iterateOn: WorkflowRunner.fetchTransformers(iterarivePluginParams.iterateOn),
+      iterateOn: fetchTransformers(iterarivePluginParams.iterateOn),
       action: (context: TContext) =>
         actionPlugin!.invoke({
           ...context,
@@ -381,11 +340,10 @@ export class WorkflowRunner {
   }
 
   private pickApiPluginClass(apiPluginSchema: ISerializableHttpPluginParams) {
-
     if (apiPluginSchema.pluginKind === BALLERINE_API_PLUGINS['template-email']) {
       return BallerineEmailPlugin;
     }
-    
+
     if (
       BALLERINE_API_PLUGINS_KINDS.includes(
         apiPluginSchema.pluginKind as (typeof BALLERINE_API_PLUGINS_KINDS)[number],
@@ -405,32 +363,6 @@ export class WorkflowRunner {
 
   private isPluginWithCallbackAction(apiPluginSchema: IApiPluginParams) {
     return !!apiPluginSchema.successAction && !!apiPluginSchema.errorAction;
-  }
-
-  static fetchTransformers(
-    transformers: SerializableValidatableTransformer['transform'] & {
-      name?: string;
-    },
-  ) {
-    return (Array.isArray(transformers) ? transformers : []).map(transformer => {
-      if (transformer.transformer === 'jmespath')
-        return new JmespathTransformer((transformer.mapping as string).replace(/\s+/g, ' '));
-      if (transformer.transformer === 'helper') {
-        return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
-      }
-
-      throw new Error(`Transformer ${transformer} is not supported`);
-    });
-  }
-
-  static fetchValidator(
-    validatorName: string,
-    schema: ConstructorParameters<typeof JsonSchemaValidator>[0] | undefined,
-  ) {
-    if (!schema) return;
-    if (validatorName === 'json-schema') return new JsonSchemaValidator(schema);
-
-    throw new Error(`Validator ${validatorName} is not supported`);
   }
 
   #__handleAction({

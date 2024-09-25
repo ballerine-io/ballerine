@@ -1,7 +1,7 @@
 import { AnyRecord } from '@ballerine/common';
-import { WorkflowRunner } from '../../workflow-runner';
 import { ApiPlugin, IApiPluginParams } from '.';
 import { ApiBallerinePlugins, BALLERINE_API_PLUGIN_FACTORY } from './vendor-consts';
+import { reqResTransformersObj } from '../../workflow-runner-utils';
 
 export interface IBallerineApiPluginParams {
   pluginKind: ApiBallerinePlugins;
@@ -58,7 +58,7 @@ export class BallerineApiPlugin extends ApiPlugin {
     const options = _getPluginOptions(params);
 
     const { requestTransformer, requestValidator, responseTransformer, responseValidator } =
-      WorkflowRunner.reqResTransformersObj({
+      reqResTransformersObj({
         params,
         ...options,
       });
