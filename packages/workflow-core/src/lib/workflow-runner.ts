@@ -5,7 +5,6 @@ import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
 import { HttpError } from './errors';
 import {
-  ChildPluginCallbackOutput,
   Error as ErrorEnum,
   ObjectValues,
   SecretsManager,
@@ -19,6 +18,7 @@ import { JmespathTransformer } from './utils/context-transformers/jmespath-trans
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
 import {
   ActionablePlugins,
+  ChildPlugins,
   CommonPlugin,
   CommonPlugins,
   HttpPlugin,
@@ -52,16 +52,11 @@ import {
   HelpersTransformer,
   TContext,
   THelperFormatingLogic,
-  Transformer,
-  Transformers,
   Validator,
 } from './utils';
 import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
 import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plugin';
 import { search } from 'jmespath';
-import { KybPlugin } from './plugins/external-plugin/kyb-plugin';
-import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
-import { EmailPlugin } from './plugins/external-plugin/email-plugin';
 import { WorkflowTokenPlugin } from './plugins/common-plugin/workflow-token-plugin';
 import { RiskRulePlugin } from './plugins/common-plugin/risk-rules-plugin';
 import { BallerineApiPlugin } from './plugins/external-plugin/ballerine-plugin';
@@ -78,10 +73,7 @@ import {
 import { BUILT_IN_EVENT } from './index';
 import { logger } from './logger';
 import { hasPersistResponseDestination } from './utils/has-persistence-response-destination';
-
-export interface ChildCallabackable {
-  invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
-}
+import { pluginsRegistry } from './constants';
 
 export class WorkflowRunner {
   #__subscriptions: Partial<Record<string, Array<(event: WorkflowEvent) => Promise<void>>>>;
@@ -130,7 +122,7 @@ export class WorkflowRunner {
     );
 
     // @ts-expect-error TODO: fix this
-    this.#__extensions.childWorkflowPlugins = this.initiateChildPlugin(
+    this.#__extensions.childWorkflowPlugins = this.initiateChildPlugins(
       this.#__extensions.childWorkflowPlugins ?? [],
       runtimeId,
       config,
@@ -288,7 +280,7 @@ export class WorkflowRunner {
     });
   }
 
-  initiateChildPlugin(
+  initiateChildPlugins(
     childPluginSchemas: Array<ISerializableChildPluginParams>,
     parentWorkflowRuntimeId: string,
     parentWorkflowRuntimeConfig: unknown,
@@ -307,6 +299,8 @@ export class WorkflowRunner {
         transformers: transformers,
         initEvent: childPluginSchema.initEvent,
         action: callbackAction!,
+        successAction: childPluginSchema.successAction,
+        errorAction: childPluginSchema.errorAction,
       });
     });
   }
@@ -322,11 +316,11 @@ export class WorkflowRunner {
     invokeWorkflowTokenAction?: WorkflowTokenPluginParams['action'],
   ) {
     return pluginSchemas.map(pluginSchema => {
-      if (pluginSchema.pluginKind == 'riskRules') {
+      if (pluginSchema.pluginKind === 'riskRules') {
         return this.initiateRiskRulePlugin(pluginSchema, invokeRiskRulesAction);
       }
 
-      if (pluginSchema.pluginKind == 'attach-ui-definition') {
+      if (pluginSchema.pluginKind === 'attach-ui-definition') {
         return this.initiateWorkflowTokenPlugin(pluginSchema, invokeWorkflowTokenAction);
       }
 
@@ -387,27 +381,26 @@ export class WorkflowRunner {
   }
 
   private pickApiPluginClass(apiPluginSchema: ISerializableHttpPluginParams) {
-    // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'kyc') return KycPlugin;
-    // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'kyc-session') return KycSessionPlugin;
-    // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'kyb') return KybPlugin;
-    // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'webhook') return WebhookPlugin;
-    // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'api') return ApiPlugin;
-    // @ts-ignore
-    if (apiPluginSchema.pluginKind === 'email') return EmailPlugin;
 
     if (apiPluginSchema.pluginKind === BALLERINE_API_PLUGINS['template-email']) {
       return BallerineEmailPlugin;
     }
+    
+    if (
+      BALLERINE_API_PLUGINS_KINDS.includes(
+        apiPluginSchema.pluginKind as (typeof BALLERINE_API_PLUGINS_KINDS)[number],
+      )
+    ) {
+      return BallerineApiPlugin;
+    }
 
-    // @ts-ignore
-    if (BALLERINE_API_PLUGINS_KINDS.includes(apiPluginSchema.pluginKind)) return BallerineApiPlugin;
+    const Plugin = pluginsRegistry[apiPluginSchema.pluginKind as keyof typeof pluginsRegistry];
 
-    return this.isPluginWithCallbackAction(apiPluginSchema) ? ApiPlugin : WebhookPlugin;
+    if (!Plugin) {
+      return this.isPluginWithCallbackAction(apiPluginSchema) ? ApiPlugin : WebhookPlugin;
+    }
+
+    return Plugin;
   }
 
   private isPluginWithCallbackAction(apiPluginSchema: IApiPluginParams) {
@@ -722,6 +715,10 @@ export class WorkflowRunner {
       plugin.stateNames.includes(this.#__currentState),
     );
 
+    let childPlugins = (this.#__extensions.childWorkflowPlugins as unknown as ChildPlugins)?.filter(
+      plugin => plugin.stateNames?.includes(this.#__currentState),
+    );
+
     const stateApiPlugins = (this.#__extensions.apiPlugins as HttpPlugins)?.filter(plugin =>
       plugin.stateNames.includes(this.#__currentState),
     );
@@ -733,6 +730,12 @@ export class WorkflowRunner {
     if (dispatchEventPlugins) {
       for (const dispatchEventPlugin of dispatchEventPlugins) {
         await this.__dispatchEvent(dispatchEventPlugin);
+      }
+    }
+
+    if (childPlugins) {
+      for (const childPlugin of childPlugins) {
+        await this.__invokeChildPlugin(childPlugin);
       }
     }
 
@@ -808,6 +811,18 @@ export class WorkflowRunner {
     }
   }
 
+  private async __invokeChildPlugin(childPlugin: ChildWorkflowPlugin) {
+    const { callbackAction } = await childPlugin.invoke?.({
+      ...this.context,
+      workflowRuntimeConfig: this.#__config,
+      workflowRuntimeId: this.#__runtimeId,
+    });
+
+    if (callbackAction) {
+      await this.sendEvent({ type: callbackAction });
+    }
+  }
+
   private async __invokeApiPlugin(apiPlugin: HttpPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
     const { callbackAction, responseBody, error } = await apiPlugin.invoke?.({
@@ -862,25 +877,27 @@ export class WorkflowRunner {
   private async __dispatchEvent(dispatchEventPlugin: DispatchEventPlugin) {
     const { eventName, event } = await dispatchEventPlugin.getPluginEvent(this.context);
 
-    try {
-      logger.log('Dispatching event', {
-        eventName,
-        event,
-      });
+    logger.log('Dispatching notification to host', {
+      eventName,
+      event,
+    });
 
+    try {
       await this.notify(eventName, event);
 
-      logger.log('Dispatched event successfully', { eventName });
-
-      if (dispatchEventPlugin.successAction) {
-        await this.sendEvent({ type: dispatchEventPlugin.successAction });
-      }
+      logger.log('Dispatched notification to host successfully', { eventName });
     } catch (error) {
-      logger.error('Failed dispatching event', { eventName, event, error });
+      logger.error('Failed dispatching notification to host', { eventName, event, error });
 
       if (dispatchEventPlugin.errorAction) {
         await this.sendEvent({ type: dispatchEventPlugin.errorAction });
       }
+
+      return;
+    }
+
+    if (dispatchEventPlugin.successAction) {
+      await this.sendEvent({ type: dispatchEventPlugin.successAction });
     }
   }
 

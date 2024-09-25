@@ -24,7 +24,10 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 
-import { GetTransactionsDto } from '@/transaction/dtos/get-transactions.dto';
+import {
+  GetTransactionsByAlertDto,
+  GetTransactionsDto,
+} from '@/transaction/dtos/get-transactions.dto';
 import { PaymentMethod } from '@prisma/client';
 import { BulkTransactionsCreatedDto } from '@/transaction/dtos/bulk-transactions-created.dto';
 import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
@@ -33,14 +36,19 @@ import * as errors from '@/errors';
 import { exceptionValidationFactory } from '@/errors';
 import { TIME_UNITS } from '@/data-analytics/consts';
 import { TransactionEntityMapper } from './transaction.mapper';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { AlertService } from '@/alert/alert.service';
 
+@swagger.ApiBearerAuth()
 @swagger.ApiTags('Transactions')
 @Controller('external/transactions')
 export class TransactionControllerExternal {
   constructor(
     protected readonly service: TransactionService,
+    protected readonly scopeService: ProjectScopeService,
     protected readonly prisma: PrismaService,
     protected readonly logger: AppLoggerService,
+    protected readonly alertService: AlertService,
   ) {}
 
   @Post()
@@ -187,7 +195,7 @@ export class TransactionControllerExternal {
     res.status(hasErrors ? 207 : 201).json(response);
   }
 
-  @Get()
+  @Get('')
   // @UseGuards(CustomerAuthGuard)
   @swagger.ApiOkResponse({ description: 'Returns an array of transactions.' })
   @swagger.ApiQuery({ name: 'businessId', description: 'Filter by business ID.', required: false })
@@ -232,6 +240,122 @@ export class TransactionControllerExternal {
     @CurrentProject() projectId: types.TProjectId,
   ) {
     return this.service.getTransactions(getTransactionsParameters, projectId, {
+      include: {
+        counterpartyBeneficiary: {
+          select: {
+            correlationId: true,
+            business: {
+              select: {
+                correlationId: true,
+                companyName: true,
+              },
+            },
+            endUser: {
+              select: {
+                correlationId: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
+        counterpartyOriginator: {
+          select: {
+            correlationId: true,
+            business: {
+              select: {
+                correlationId: true,
+                companyName: true,
+              },
+            },
+            endUser: {
+              select: {
+                correlationId: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  @Get('/by-alert')
+  // @UseCustomerAuthGuard()
+  @swagger.ApiOkResponse({ description: 'Returns an array of transactions.' })
+  @swagger.ApiQuery({ name: 'businessId', description: 'Filter by business ID.', required: false })
+  @swagger.ApiQuery({
+    name: 'counterpartyId',
+    description: 'Filter by counterparty ID.',
+    required: false,
+  })
+  @swagger.ApiQuery({
+    name: 'startDate',
+    type: Date,
+    description: 'Filter by transactions after or on this date.',
+    required: false,
+  })
+  @swagger.ApiQuery({
+    name: 'endDate',
+    type: Date,
+    description: 'Filter by transactions before or on this date.',
+    required: false,
+  })
+  @swagger.ApiQuery({
+    name: 'paymentMethod',
+    description: 'Filter by payment method.',
+    required: false,
+    enum: PaymentMethod,
+  })
+  @swagger.ApiQuery({
+    name: 'timeValue',
+    type: 'number',
+    description: 'Number of time units to filter on',
+    required: false,
+  })
+  @swagger.ApiQuery({
+    name: 'timeUnit',
+    type: 'enum',
+    enum: Object.values(TIME_UNITS),
+    description: 'The time unit used in conjunction with timeValue',
+    required: false,
+  })
+  @swagger.ApiQuery({
+    name: 'alertId',
+    description: 'Filter by alert ID.',
+    required: true,
+  })
+  async getTransactionsByAlert(
+    @Query() getTransactionsByAlertParameters: GetTransactionsByAlertDto,
+    @CurrentProject() projectId: types.TProjectId,
+  ) {
+    const alert = await this.alertService.getAlertWithDefinition(
+      getTransactionsByAlertParameters.alertId,
+      projectId,
+    );
+
+    if (!alert) {
+      throw new errors.NotFoundException(
+        `Alert with id ${getTransactionsByAlertParameters.alertId} not found`,
+      );
+    }
+
+    if (!alert.alertDefinition) {
+      throw new errors.NotFoundException(`Alert definition not found for alert ${alert.id}`);
+    }
+
+    const filters: GetTransactionsByAlertDto = {
+      ...getTransactionsByAlertParameters,
+      ...(!getTransactionsByAlertParameters.startDate && !getTransactionsByAlertParameters.endDate
+        ? this.alertService.buildTransactionsFiltersByAlert(alert)
+        : {}),
+    };
+
+    return this.service.getTransactions(filters, projectId, {
       include: {
         counterpartyBeneficiary: {
           select: {

@@ -6,7 +6,7 @@ import { withCaseCreation } from '@/pages/Entities/components/CaseCreation/conte
 import { useCaseCreationContext } from '@/pages/Entities/components/CaseCreation/context/case-creation-context/hooks/useCaseCreationContext';
 import { useCaseCreationWorkflowDefinition } from '@/pages/Entities/components/CaseCreation/hooks/useCaseCreationWorkflowDefinition';
 import { Plus } from 'lucide-react';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { valueOrNA } from '@ballerine/common';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { titleCase } from 'string-ts';
 import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';

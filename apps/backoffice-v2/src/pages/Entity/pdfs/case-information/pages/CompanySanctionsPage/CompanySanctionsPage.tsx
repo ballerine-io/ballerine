@@ -1,4 +1,3 @@
-import { isValidUrl } from '@/common/utils/is-valid-url';
 import { CaseInformationDisclaimer } from '@/pages/Entity/pdfs/case-information/components/CaseInformationDisclaimer/CaseInformationDisclaimer';
 import { CaseInformationPageContainer } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageContainer/CaseInformationPageContainer';
 import { CaseInformationPageHeader } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageHeader/CaseInformationPageHeader';
@@ -10,6 +9,7 @@ import { tw, Typography } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
 import dayjs from 'dayjs';
 import { FunctionComponent } from 'react';
+import { checkIsUrl } from '@ballerine/common';
 
 export const CompanySanctionsPage: FunctionComponent<TCompanySanctionsData> = ({
   sanctions,
@@ -59,7 +59,7 @@ export const CompanySanctionsPage: FunctionComponent<TCompanySanctionsData> = ({
                   matchNumber={index + 1}
                   lastReviewedDate={item.reviewDate ? new Date(item.reviewDate) : undefined}
                   matchReasons={item.matchReasons}
-                  sources={item.sources.filter(source => isValidUrl(source))}
+                  sources={item.sources.filter(source => checkIsUrl(source))}
                   addresses={item.addresses}
                 />
               ))}

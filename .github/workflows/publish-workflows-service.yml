@@ -31,9 +31,6 @@ env:
 
   
 jobs:
-  call_release:
-    uses: ./.github/workflows/release.yml
-    secrets: inherit
 
   determine_branch:
     runs-on: ubuntu-latest
@@ -52,8 +49,7 @@ jobs:
 
   build-and-push-image:
     runs-on: ubuntu-latest
-    needs: [determine_branch,call_release]
-    if: ${{ needs.call_release.result=='success' }}
+    needs: [determine_branch]
     permissions:
       contents: read
       packages: write
@@ -225,7 +221,10 @@ jobs:
           changes: |
             {
               "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
-                "image.tag": "${{ needs.build-and-push-ee-image.outputs.docker_tag }}"
+                "image.tag": "${{ needs.build-and-push-ee-image.outputs.docker_tag }}",
+                "prismaMigrate.image.tag": "${{ needs.build-and-push-ee-image.outputs.docker_tag }}",
+                "dbMigrate.image.tag": "${{ needs.build-and-push-ee-image.outputs.docker_tag }}",
+                "dataSync.image.tag": "${{ needs.build-and-push-ee-image.outputs.docker_tag }}"
               }
             }
 

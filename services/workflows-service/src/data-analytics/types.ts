@@ -46,6 +46,10 @@ export type InlineRule = {
       fnName: 'evaluateMerchantGroupAverage';
       options: Omit<TMerchantGroupAverage, 'projectId'>;
     }
+  | {
+      fnName: 'evaluateDailySingleTransactionAmount';
+      options: Omit<DailySingleTransactionAmountType, 'projectId'>;
+    }
 );
 
 export type TAggregations = keyof typeof AggregateType;
@@ -61,9 +65,9 @@ export type TransactionsAgainstDynamicRulesType = {
   projectId: TProjectId;
   havingAggregate?: TAggregations;
   amountBetween?: { min: number; max: number };
-  timeAmount?: number;
+  timeUnit: TimeUnit;
+  timeAmount: number;
   transactionType?: TransactionRecordType[] | readonly TransactionRecordType[];
-  timeUnit?: TimeUnit;
   direction?: TransactionDirection;
   excludedCounterparty?: TExcludedCounterparty;
   paymentMethods?: PaymentMethod[] | readonly PaymentMethod[];
@@ -88,8 +92,8 @@ export type TCustomersTransactionTypeOptions = {
   transactionType?: TransactionRecordType[] | readonly TransactionRecordType[];
   threshold?: number;
   paymentMethods?: PaymentMethod[] | readonly PaymentMethod[];
-  timeAmount?: number;
-  timeUnit?: TimeUnit;
+  timeAmount: number;
+  timeUnit: TimeUnit;
   isPerBrand?: boolean;
   havingAggregate?: TAggregations;
 };
@@ -161,4 +165,24 @@ export type TMerchantGroupAverage = {
   };
   minimumCount: number;
   transactionFactor: number;
+};
+
+export type DailySingleTransactionAmountType = {
+  projectId: TProjectId;
+
+  ruleType: 'amount' | 'count'; // Either monitor by amount or by count
+
+  amountThreshold?: number;
+
+  timeUnit: TimeUnit;
+  timeAmount: number;
+
+  transactionType?: TransactionRecordType[] | readonly TransactionRecordType[];
+
+  direction: TransactionDirection;
+
+  paymentMethods: PaymentMethod[] | readonly PaymentMethod[];
+  excludePaymentMethods: boolean;
+
+  // subjectColumn: 'counterpartyOriginatorId' | 'counterpartyBeneficiaryId';
 };

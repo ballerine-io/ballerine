@@ -46,7 +46,7 @@ export class AlertControllerExternal {
     @common.Body() createAlertDto: CreateAlertDefinitionDto,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<AlertDefinition> {
-    // Assuming create method in AlertService accepts CreateAlertDto and returns AlertDefinition
+    // @ts-expect-error
     return await this.alertService.create(createAlertDto, currentProjectId);
   }
 

@@ -309,6 +309,7 @@ enum BusinessReportType {
   ONGOING_MERCHANT_REPORT_T2
   MERCHANT_REPORT_T1
   MERCHANT_REPORT_T2
+  MERCHANT_REPORT_T1_LITE
 }
 
 model Customer {
@@ -418,6 +419,7 @@ enum UiDefinitionContext {
 
 model UiDefinition {
   id                   String              @id @default(cuid())
+  crossEnvKey          String?              @unique
   workflowDefinitionId String
   uiContext            UiDefinitionContext
 
@@ -874,6 +876,7 @@ model BusinessReport {
   status     BusinessReportStatus
   businessId String
   business   Business             @relation(fields: [businessId], references: [id])
+  batchId    String?
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
@@ -886,4 +889,5 @@ model BusinessReport {
   @@index([projectId])
   @@index([riskScore])
   @@index([type])
+  @@index([batchId])
 }

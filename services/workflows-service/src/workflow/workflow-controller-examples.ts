@@ -60,7 +60,7 @@ export const putPluginsExampleResponse = {
   ],
   commonPlugins: [
     {
-      name: 'risk_evaluation',
+      name: 'riskEvaluation',
       pluginKind: 'riskRules',
       stateNames: ['manual_review'],
       rulesSource: {

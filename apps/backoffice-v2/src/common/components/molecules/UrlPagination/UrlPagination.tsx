@@ -5,6 +5,7 @@ import { PaginationItem } from '@/common/components/molecules/Pagination/Paginat
 import { PaginationFirst } from '@/common/components/molecules/Pagination/Pagination.First';
 import { PaginationPrevious } from '@/common/components/molecules/Pagination/Pagination.Previous';
 import { PaginationNext } from '@/common/components/molecules/Pagination/Pagination.Next';
+import { PaginationLast } from '@/common/components/molecules/Pagination/Pagination.Last';
 
 export const UrlPagination: FunctionComponent<{
   page: number;
@@ -13,9 +14,19 @@ export const UrlPagination: FunctionComponent<{
    */
   onPrevPage: () => string;
   onNextPage: () => string;
+  onLastPage: () => string;
   onPaginate: (page: number) => string;
+  isLastPageEnabled?: boolean;
   isLastPage: boolean;
-}> = ({ page, onPrevPage, onNextPage, onPaginate, isLastPage }) => {
+}> = ({
+  page,
+  onPrevPage,
+  onNextPage,
+  onLastPage,
+  onPaginate,
+  isLastPage,
+  isLastPageEnabled = true,
+}) => {
   return (
     <Pagination className={`justify-start`}>
       <PaginationContent>
@@ -46,6 +57,17 @@ export const UrlPagination: FunctionComponent<{
             aria-disabled={isLastPage}
           />
         </PaginationItem>
+        {isLastPageEnabled && (
+          <PaginationItem>
+            <PaginationLast
+              to={{
+                search: onLastPage(),
+              }}
+              iconOnly
+              aria-disabled={isLastPage}
+            />
+          </PaginationItem>
+        )}
       </PaginationContent>
     </Pagination>
   );

@@ -1,13 +1,15 @@
 import React, { FunctionComponent } from 'react';
-import { Severity, TSeverity } from '@/common/types';
-import { getSeverityFromRiskScore } from '@/common/utils/get-severity-from-risk-score';
+import { getSeverityFromRiskScore, Severity, SeverityType } from '@ballerine/common';
 import { Card } from '@/common/components/atoms/Card/Card';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { severityToClassName, severityToTextClassName } from '@/common/constants';
-import { Badge } from '@ballerine/ui';
+import {
+  Badge,
+  severityToClassName,
+  severityToTextClassName,
+  TextWithNAFallback,
+} from '@ballerine/ui';
 import { titleCase } from 'string-ts';
 import {
   Table,
@@ -20,7 +22,7 @@ import {
 
 export const OverallRiskLevel: FunctionComponent<{
   riskScore: number;
-  riskLevels: Record<string, TSeverity>;
+  riskLevels: Record<string, SeverityType>;
 }> = ({ riskScore, riskLevels }) => {
   const severity = getSeverityFromRiskScore(riskScore);
 

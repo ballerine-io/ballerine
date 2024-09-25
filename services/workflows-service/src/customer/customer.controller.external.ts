@@ -65,6 +65,7 @@ export class CustomerControllerExternal {
         language: true,
         customerStatus: true,
         config: true,
+        features: true,
       },
     });
   }

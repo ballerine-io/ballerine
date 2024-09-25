@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
-import { ctw } from '@/utils';
+import { ctw } from '@/common';
 
 export const AccordionContent = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Content>,
@@ -14,4 +14,5 @@ export const AccordionContent = React.forwardRef<
     <div className={ctw('pb-4 pt-0', className)}>{children}</div>
   </AccordionPrimitive.Content>
 ));
+
 AccordionContent.displayName = AccordionPrimitive.Content.displayName;

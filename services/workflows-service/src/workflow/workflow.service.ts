@@ -1465,7 +1465,6 @@ export class WorkflowService {
             workflowDefinitionId,
             UiDefinitionContext.collection_flow,
             projectIds,
-            {},
           );
         } catch (err) {
           if (isErrorWithMessage(err)) {
@@ -1507,6 +1506,11 @@ export class WorkflowService {
                 ...contextToInsert,
                 documents: documentsWithPersistedImages,
                 flowConfig: (contextToInsert as any)?.flowConfig ?? createFlowConfig(uiSchema),
+                metadata: {
+                  customerId: customer.id,
+                  customerNormalizedName: customer.name,
+                  customerName: customer.displayName,
+                },
               } as InputJsonValue,
               config: mergedConfig as InputJsonValue,
               // @ts-expect-error - error from Prisma types fix
@@ -1556,6 +1560,11 @@ export class WorkflowService {
             });
 
             entities.push({ type: 'business', id: entityId });
+
+            if (workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative) {
+              workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.ballerineEntityId =
+                endUserId;
+            }
           }
 
           const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
@@ -1576,8 +1585,7 @@ export class WorkflowService {
                 context: {
                   ...workflowRuntimeData.context,
                   metadata: {
-                    customerNormalizedName: customer.name,
-                    customerName: customer.displayName,
+                    ...(workflowRuntimeData.context.metadata ?? {}),
                     token: workflowToken.token,
                     collectionFlowUrl: env.COLLECTION_FLOW_URL,
                     webUiSDKUrl: env.WEB_UI_SDK_URL,
@@ -1691,31 +1699,42 @@ export class WorkflowService {
     entityId: string;
     position?: BusinessPosition;
   }) {
-    if (entityData && entityType === 'business') {
-      return (
-        await this.endUserService.createWithBusiness(
-          {
-            endUser: {
-              ...entityData,
-              isContactPerson: true,
-            },
-            business: {
-              companyName: '',
-              ...workflowRuntimeData.context.entity.data,
-              projectId: currentProjectId,
-            },
-            position,
-          },
-          currentProjectId,
-          entityId,
-        )
-      ).id;
+    if (!entityData) {
+      throw new BadRequestException('Entity data is missing. Please provide end user data.');
     }
 
-    throw new Error(
-      `Invalid entity type or payload for child workflow creation for entity: ${entityType} with context:`,
-      workflowRuntimeData.context.entity,
-    );
+    if (entityType !== 'business') {
+      throw new BadRequestException(`Invalid entity type: ${entityType}. Expected 'business'.`);
+    }
+
+    try {
+      const result = await this.endUserService.createWithBusiness(
+        {
+          endUser: {
+            ...entityData,
+            isContactPerson: true,
+          },
+          business: {
+            companyName: '',
+            ...workflowRuntimeData.context.entity.data,
+            projectId: currentProjectId,
+          },
+          position,
+        },
+        currentProjectId,
+        entityId,
+      );
+
+      return result.id;
+    } catch (error) {
+      this.logger.error('Failed to create end user with business', {
+        error,
+        entityType,
+        entityId,
+        currentProjectId,
+      });
+      throw new Error('Failed to create end user with business. Please try again later.');
+    }
   }
 
   private async __persistDocumentPagesFiles(

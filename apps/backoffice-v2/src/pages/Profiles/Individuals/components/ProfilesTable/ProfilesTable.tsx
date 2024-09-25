@@ -1,7 +1,8 @@
 import React, { FunctionComponent } from 'react';
 import { IProfilesTableProps } from '@/pages/Profiles/Individuals/components/ProfilesTable/interfaces';
-import { DataTable, IDataTableProps } from '@/common/components/organisms/DataTable/DataTable';
+import { IDataTableProps } from '@/common/components/organisms/DataTable/DataTable';
 import { columns } from './columns';
+import { UrlDataTable } from '@/common/components/organisms/UrlDataTable/UrlDataTable';
 
 export const ProfilesTable: FunctionComponent<IProfilesTableProps> = ({ data }) => {
   // const locale = useLocale();
@@ -19,11 +20,15 @@ export const ProfilesTable: FunctionComponent<IProfilesTableProps> = ({ data }) 
   };
 
   return (
-    <DataTable
+    <UrlDataTable
       data={data}
       columns={columns}
       CellContentWrapper={Cell}
-      sortByField={`createdAt`}
+      options={{
+        initialState: {
+          sorting: [{ id: 'createdAt', desc: true }],
+        },
+      }}
       props={{ scroll: { className: 'h-full' }, cell: { className: '!p-0' } }}
     />
   );

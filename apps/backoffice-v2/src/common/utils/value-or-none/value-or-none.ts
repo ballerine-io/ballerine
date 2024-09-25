@@ -1,3 +1,3 @@
-import { valueOrFallback } from '@/common/utils/value-or-fallback/value-or-fallback';
+import { valueOrFallback } from '@ballerine/common';
 
 export const valueOrNone = valueOrFallback('None', { checkFalsy: true });

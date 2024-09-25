@@ -1,7 +1,7 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { valueOrNA } from '@ballerine/common';
 import { toTitleCase } from 'string-ts';
 
 export const useAddressBlock = ({
@@ -58,6 +58,11 @@ export const useAddressBlock = ({
                       value,
                       isEditable: false,
                     })),
+            },
+            props: {
+              config: {
+                sort: { predefinedOrder: ['street', 'streetNumber', 'city', 'country'] },
+              },
             },
             workflowId: workflow?.id,
             documents: workflow?.context?.documents,

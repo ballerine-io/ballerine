@@ -34,7 +34,7 @@ export const composePickableCategoryType = (
   categoryValue: string,
   typeValue: string,
   documentsSchemas: TDocument[],
-  config?: Record<any, any> | null,
+  config?: Record<PropertyKey, any> | null,
 ) => {
   const documentCategoryDropdownOptions: TDropdownOption[] = [];
   const documentTypesDropdownOptions: TDropdownOption[] = [];
@@ -62,7 +62,7 @@ export const composePickableCategoryType = (
 
   const categoryDropdownOptions = uniqueArrayByKey(documentCategoryDropdownOptions, 'value');
   const typeDropdownOptions = documentTypesDropdownOptions;
-  const isEditable = !(config?.isLockedDocumentCategoryAndType === true);
+  const isEditable = !config?.isLockedDocumentCategoryAndType;
 
   return {
     ...composeDataFormCell('category', categoryDropdownOptions, categoryValue, isEditable),

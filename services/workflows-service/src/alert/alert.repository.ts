@@ -42,11 +42,11 @@ export class AlertRepository {
   }
 
   // Method to find a single alert by ID
-  async findById<T extends Pick<Prisma.AlertFindFirstOrThrowArgs, 'where'>>(
+  async findById<T extends Pick<Prisma.AlertFindUniqueOrThrowArgs, 'where'>>(
     id: string,
-    args: Prisma.SelectSubset<T, Pick<Prisma.AlertFindFirstOrThrowArgs, 'where'>>,
+    args: Prisma.SelectSubset<T, Pick<Prisma.AlertFindUniqueOrThrowArgs, 'where' | 'include'>>,
     projectIds: TProjectIds,
-  ): Promise<Alert> {
+  ) {
     const queryArgs = this.scopeService.scopeFindOne(
       {
         ...args,
@@ -58,7 +58,7 @@ export class AlertRepository {
       projectIds,
     );
 
-    return await this.prisma.alert.findFirstOrThrow(queryArgs);
+    return (await this.prisma.alert.findMany(queryArgs))[0];
   }
 
   // Method to update an alerts

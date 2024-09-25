@@ -34,15 +34,15 @@ export const useMerchantMonitoringLogic = () => {
     sortDir,
   });
 
-  const { onPaginate, onPrevPage, onNextPage } = usePagination();
-
-  const isLastPage =
-    (data?.businessReports?.length ?? 0) < pageSize || data?.businessReports?.length === 0;
+  const { onPaginate, onPrevPage, onNextPage, onLastPage, isLastPage } = usePagination({
+    totalPages: data?.meta.totalPages ?? 0,
+  });
 
   return {
     totalPages: data?.meta.totalPages || 0,
     totalItems: data?.meta.totalItems || 0,
-    hideCreateMerchantMonitoringButton: customer?.config?.hideCreateMerchantMonitoringButton,
+    createBusinessReport: customer?.features?.createBusinessReport,
+    createBusinessReportBatch: customer?.features?.createBusinessReportBatch,
     businessReports: data?.businessReports || [],
     isLoadingBusinessReports,
     search,
@@ -50,6 +50,7 @@ export const useMerchantMonitoringLogic = () => {
     page,
     onPrevPage,
     onNextPage,
+    onLastPage,
     onPaginate,
     isLastPage,
     locale,

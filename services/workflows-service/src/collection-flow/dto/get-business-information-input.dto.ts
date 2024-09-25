@@ -11,9 +11,9 @@ export class GetBusinessInformationDto {
   @IsString()
   @IsOptional()
   @IsNullable()
-  state!: string | null;
+  state?: string | null;
 
   @IsString()
   @IsOptional()
-  vendor!: string;
+  vendor?: string;
 }
