@@ -7,7 +7,11 @@ export const MultiDocuments: FunctionComponent<IMultiDocumentsProps> = ({ value 
 
   return (
     <div className={`m-2 rounded p-1`}>
-      <Case.Documents documents={documents} isLoading={value?.isLoading} />
+      <Case.Documents
+        documents={documents}
+        isLoading={value?.isLoading}
+        onOcrPressed={value?.onOcrPressed}
+      />
     </div>
   );
 };

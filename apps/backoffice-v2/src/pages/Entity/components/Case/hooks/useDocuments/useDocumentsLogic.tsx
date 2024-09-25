@@ -9,9 +9,11 @@ import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useTesseract } from '@/common/hooks/useTesseract/useTesseract';
 import { createArrayOfNumbers } from '@/common/utils/create-array-of-numbers/create-array-of-numbers';
 import { useStorageFileByIdQuery } from '@/domains/storage/hooks/queries/useStorageFileByIdQuery/useStorageFileByIdQuery';
+import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
 
 export const useDocumentsLogic = (documents: IDocumentsProps['documents']) => {
   const initialImage = documents?.[0];
+  const { data: customer } = useCustomerQuery();
   const { crop, isCropping, onCrop, onCancelCrop } = useCrop();
   const [isLoadingOCR, , toggleOnIsLoadingOCR, toggleOffIsLoadingOCR] = useToggle(false);
   const selectedImageRef = useRef<HTMLImageElement>();

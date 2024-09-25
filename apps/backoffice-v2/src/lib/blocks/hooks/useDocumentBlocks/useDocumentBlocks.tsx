@@ -83,9 +83,11 @@ export const useDocumentBlocks = ({
   const { mutate: mutateOCRDocument, isLoading: isLoadingOCRDocument } = useDocumentOrc({
     workflowId: workflow?.id,
     onSuccess: (ocrProperties, document) => {
+      debugger;
       console.log(ocrProperties, document);
     },
   });
+
   const { isLoading: isLoadingRejectTaskById } = useRejectTaskByIdMutation(workflow?.id);
 
   const { comment, onClearComment, onCommentChange } = useCommentInputLogic();
@@ -457,7 +459,7 @@ export const useDocumentBlocks = ({
             type: 'multiDocuments',
             value: {
               isLoading: storageFilesQueryResult?.some(({ isLoading }) => isLoading),
-              onOCRClicked: () => mutateOCRDocument({ documentId: id }),
+              onOcrPressed: documentId => mutateOCRDocument({ documentId }),
               data:
                 documents?.[docIndex]?.pages?.map(
                   ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({

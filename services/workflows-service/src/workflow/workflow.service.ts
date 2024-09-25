@@ -2550,8 +2550,15 @@ export class WorkflowService {
   }) {
     await this.prismaService.$transaction(
       async transaction => {
-        const workflowDef = await this.workflowDefinitionRepository.findById(
+        const workflowRuntime = await this.workflowRuntimeDataRepository.findById(
           workflowRuntimeId,
+          {},
+          [projectId],
+          transaction,
+        );
+
+        const workflowDef = await this.workflowDefinitionRepository.findById(
+          workflowRuntime.workflowDefinitionId,
           {},
           [projectId],
           transaction,

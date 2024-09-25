@@ -17,11 +17,14 @@ export const useDocumentOrc = ({
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ documentId }: { documentId: string }) =>
-      fetchWorkflowDocumentOCRResult({
+    mutationFn: ({ documentId }: { documentId: string }) => {
+      debugger;
+
+      return fetchWorkflowDocumentOCRResult({
         workflowDefinitionId: workflowId,
         documentId,
-      }),
+      });
+    },
     onSuccess: (data, variables) => {
       void queryClient.invalidateQueries(workflowsQueryKeys._def);
 
