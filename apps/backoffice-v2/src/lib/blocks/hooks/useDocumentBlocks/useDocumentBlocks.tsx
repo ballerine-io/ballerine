@@ -435,6 +435,11 @@ export const useDocumentBlocks = ({
                     },
                   ),
                 },
+                props: {
+                  config: {
+                    sort: { predefinedOrder: ['category', 'type'] },
+                  },
+                },
                 workflowId: workflow?.id,
                 documents: workflow?.context?.documents,
               })
