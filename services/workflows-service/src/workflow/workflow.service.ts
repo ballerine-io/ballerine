@@ -2548,7 +2548,7 @@ export class WorkflowService {
     projectId: string;
     documentId: string;
   }) {
-    await this.prismaService.$transaction(
+    const ocrResult = await this.prismaService.$transaction(
       async transaction => {
         const workflowRuntime = await this.workflowRuntimeDataRepository.findById(
           workflowRuntimeId,
@@ -2569,14 +2569,16 @@ export class WorkflowService {
           projectId,
           documentId,
           transaction,
-        })) as unknown as Static<typeof DocumentsSchema>[number];
+        })) as unknown as { documentSchema: Static<typeof DocumentsSchema>[number] };
 
-        if (!('pages' in document)) {
+        const documentSchema = document.documentSchema;
+
+        if (!('pages' in documentSchema)) {
           throw new BadRequestException('Cannot run document OCR on document without pages');
         }
 
         const documentWithSchema = addPropertiesSchemaToDocument(
-          document,
+          documentSchema,
           workflowDef.documentsSchema,
         );
         const documentPagesContent = documentWithSchema.pages.map(async page => {
@@ -2602,14 +2604,18 @@ export class WorkflowService {
 
         const images = (await Promise.all(documentPagesContent)) satisfies TOcrImages;
 
-        return await new UnifiedApiClient().runOcr({
-          images,
-          schema: documentWithSchema.propertiesSchema as unknown as TSchema,
-        });
+        return (
+          await new UnifiedApiClient().runOcr({
+            images,
+            schema: documentWithSchema.propertiesSchema as unknown as TSchema,
+          })
+        )?.data;
       },
       {
         timeout: 180_000,
       },
     );
+
+    return ocrResult;
   }
 }

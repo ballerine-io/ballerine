@@ -5,21 +5,13 @@ import { t } from 'i18next';
 import { workflowsQueryKeys } from '@/domains/workflows/query-keys';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 
-export const useDocumentOrc = ({
-  workflowId,
-  onSuccess,
-}: {
-  workflowId: string;
-  onSuccess: (ocrProperties: Record<string, unknown>, document: { documentId: string }) => void;
-}) => {
+export const useDocumentOrc = ({ workflowId }: { workflowId: string }) => {
   const filterId = useFilterId();
   const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ documentId }: { documentId: string }) => {
-      debugger;
-
       return fetchWorkflowDocumentOCRResult({
         workflowDefinitionId: workflowId,
         documentId,
@@ -27,10 +19,7 @@ export const useDocumentOrc = ({
     },
     onSuccess: (data, variables) => {
       void queryClient.invalidateQueries(workflowsQueryKeys._def);
-
-      toast.error(t('toast:document_ocr.success'));
-
-      onSuccess(data, variables);
+      toast.success(t('toast:document_ocr.success'));
     },
     onError: (_error, _variables) => {
       console.error(_error);

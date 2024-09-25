@@ -1,7 +1,7 @@
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { checkIsBusiness } from '@/common/utils/check-is-business/check-is-business';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { CommonWorkflowStates, StateTag, valueOrNA } from '@ballerine/common';
+import { CommonWorkflowStates, isObject, StateTag, valueOrNA } from '@ballerine/common';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
 import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
@@ -80,12 +80,12 @@ export const useDocumentBlocks = ({
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id);
-  const { mutate: mutateOCRDocument, isLoading: isLoadingOCRDocument } = useDocumentOrc({
+  const {
+    mutate: mutateOCRDocument,
+    isLoading: isLoadingOCRDocument,
+    data: ocrResult,
+  } = useDocumentOrc({
     workflowId: workflow?.id,
-    onSuccess: (ocrProperties, document) => {
-      debugger;
-      console.log(ocrProperties, document);
-    },
   });
 
   const { isLoading: isLoadingRejectTaskById } = useRejectTaskByIdMutation(workflow?.id);
@@ -367,6 +367,19 @@ export const useDocumentBlocks = ({
           })
           .cellAt(0, 0);
 
+        const documentEntries = Object.entries(
+          {
+            ...additionalProperties,
+            ...propertiesSchema?.properties,
+          } ?? {},
+        ).map(([title, formattedValue]) => {
+          if (isObject(formattedValue)) {
+            formattedValue.value ||= ocrResult?.parsedData?.[title];
+          }
+
+          return [title, formattedValue];
+        });
+
         const detailsCell = createBlocksTyped()
           .addBlock()
           .addCell({
@@ -379,12 +392,7 @@ export const useDocumentBlocks = ({
                 value: {
                   id,
                   title: `${category} - ${docType}`,
-                  data: Object.entries(
-                    {
-                      ...additionalProperties,
-                      ...propertiesSchema?.properties,
-                    } ?? {},
-                  )?.map(
+                  data: documentEntries?.map(
                     ([
                       title,
                       {
@@ -459,7 +467,7 @@ export const useDocumentBlocks = ({
             type: 'multiDocuments',
             value: {
               isLoading: storageFilesQueryResult?.some(({ isLoading }) => isLoading),
-              onOcrPressed: documentId => mutateOCRDocument({ documentId }),
+              onOcrPressed: () => mutateOCRDocument({ documentId: id }),
               data:
                 documents?.[docIndex]?.pages?.map(
                   ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({

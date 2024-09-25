@@ -14,7 +14,7 @@ export const DocumentsToolbar: FunctionComponent<{
   onRotateDocument: () => void;
   onOpenDocumentInNewTab: (id: string) => void;
   shouldDownload: boolean;
-  onOcrPressed?: (documentId: string) => void;
+  onOcrPressed?: () => void;
   shouldOCR: boolean;
   fileToDownloadBase64: string;
 }> = ({
@@ -38,7 +38,7 @@ export const DocumentsToolbar: FunctionComponent<{
     <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
       {shouldOCR && image && (
         <div className={`gap-y-50 mb-10 flex h-full flex-col items-center`}>
-          <ImageOCR isOcrDisabled={!shouldOCR} onOcrPressed={onOcrPressed} documentId={image?.id} />
+          <ImageOCR isOcrDisabled={!shouldOCR} onOcrPressed={onOcrPressed} />
         </div>
       )}
       {!hideOpenExternalButton && !isLoading && image?.id && (

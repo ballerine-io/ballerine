@@ -3,7 +3,7 @@ import { ComponentProps, FunctionComponent } from 'react';
 import { ScanTextIcon } from 'lucide-react';
 
 export interface IImageOCR extends ComponentProps<'div'> {
-  onOcrPressed?: (documentId: string) => void;
+  onOcrPressed?: () => void;
   isOcrDisabled: boolean;
   documentId: string;
 }
@@ -21,7 +21,7 @@ export const ImageOCR: FunctionComponent<IImageOCR> = ({
       className={ctw(
         `btn btn-circle btn-ghost btn-sm bg-base-300/70 text-[0.688rem] focus:outline-primary`,
       )}
-      onClick={() => onOcrPressed?.(documentId)}
+      onClick={() => onOcrPressed?.()}
       disabled={isOcrDisabled}
     >
       <ScanTextIcon />

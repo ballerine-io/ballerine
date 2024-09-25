@@ -347,11 +347,13 @@ export class WorkflowControllerInternal {
     @common.Param() params: DocumentUpdateParamsInput,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    return await this.service.runOCROnDocument({
+    const ocrResult = await this.service.runOCROnDocument({
       workflowRuntimeId: params?.id,
       documentId: params?.documentId,
       projectId: currentProjectId,
     });
+
+    return ocrResult;
   }
 
   // @nestAccessControl.UseRoles({
