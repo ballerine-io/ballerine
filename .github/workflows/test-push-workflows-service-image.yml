@@ -296,7 +296,7 @@ jobs:
 
       - name: Release
         run: |
-          if [ "${{ github.event.inputs.operation }}" == "Deploy to Dev" ]; then
+          if [ "${{ inputs.operation }}" == "Deploy to Dev" || [ "${{ github.event_name }}" == "push" ]; then
             suffix="-dev-${{ needs.build-and-push-image.outputs.sha_short }}"
           else
             suffix=""
