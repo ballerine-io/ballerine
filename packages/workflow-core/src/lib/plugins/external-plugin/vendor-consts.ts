@@ -1,17 +1,5 @@
 import { SerializableValidatableTransformer } from './types';
 
-// @deprecated
-const _generateMappingString = (dataMapping?: Record<string, string>) => {
-  if (!dataMapping || (Array.isArray(dataMapping) && dataMapping.length === 0)) {
-    return '';
-  }
-
-  const entries = Object.entries(dataMapping).map(([key, value]) => `${key}: ${value}`);
-
-  // Join with a comma and newline, and add a trailing comma if entries exist
-  return entries.join(',\n') + ',';
-};
-
 export const INDIVIDUAL_SCREENING_VENDORS = {
   'dow-jones': 'dow-jones',
   'comply-advantage': 'comply-advantage',
@@ -396,7 +384,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               vendor: 'legitscript',
               callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.merchantMonitoring&processName=website-monitoring'])
               withQualityControl: ${
-                options.merchantMonitoringQualityControl || true ? 'true' : 'false'
+                options.merchantMonitoringQualityControl ?? true ? 'true' : 'false'
               }  
             }`, // jmespath
           },
