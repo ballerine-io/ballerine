@@ -49,7 +49,7 @@ export class KycSessionPlugin extends ApiPlugin {
     payload: AnyRecord,
     headers: HeadersInit,
   ) {
-    const callbackUrlWithPlaceholder = await this.replaceValuePlaceholders(
+    const callbackUrlWithPlaceholder = await this.replaceAllVariables(
       payload['callbackUrl'] as string,
       payload,
     );

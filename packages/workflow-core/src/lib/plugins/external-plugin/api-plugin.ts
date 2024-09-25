@@ -115,8 +115,8 @@ export class ApiPlugin {
     }
   }
 
-  protected async _getPluginUrl(_: AnyRecord) {
-    return this.url;
+  protected async _getPluginUrl(context: AnyRecord) {
+    return await this.replaceAllVariables(this.url, context);
   }
 
   returnSuccessResponse(callbackAction: string, responseBody: AnyRecord) {
@@ -238,21 +238,21 @@ export class ApiPlugin {
   }
 
   async _onReplaceVariable(variableKey: string, replacedContent: string, placeholder: string) {
-    let replacedSecrets = await this.replaceSecretsByProvider(
+    return await this.replaceSecretsByProvider(
       'customer',
       variableKey,
       replacedContent,
       placeholder,
     );
 
-    // TODO: Remove this line when migrate to new ballerine plugins
-    replacedSecrets = await this.replaceBallerineVariable(
-      variableKey,
-      replacedContent,
-      placeholder,
-    );
-
-    return replacedSecrets;
+    // // TODO: Remove this line when migrate to new ballerine plugins
+    // replacedSecrets = await this.replaceBallerineVariable(
+    //   variableKey,
+    //   replacedContent,
+    //   placeholder,
+    // );
+    //
+    // return replacedSecrets;
   }
 
   async replaceBallerineVariable(variableKey: string, content: string, placeholder: string) {
@@ -271,9 +271,11 @@ export class ApiPlugin {
 
       replacedContent = await this._onReplaceVariable(variableKey, replacedContent, placeholder);
 
-      const placeholderValue = `${this.fetchObjectPlaceholderValue(context, variableKey)}`;
+      const placeholderValue = this.fetchObjectPlaceholderValue(context, variableKey);
 
-      replacedContent = replacedContent.replace(placeholder, placeholderValue);
+      replacedContent = placeholderValue
+        ? replacedContent.replace(placeholder, `${placeholderValue}`)
+        : replacedContent;
     }
 
     return replacedContent;
