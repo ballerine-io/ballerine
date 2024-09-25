@@ -50,6 +50,7 @@ export interface IDocumentsProps {
   }>;
   onOcrPressed: (documentId: string) => void;
   isLoading?: boolean;
+  isLoadingOCR?: boolean;
   hideOpenExternalButton?: boolean;
 }
 

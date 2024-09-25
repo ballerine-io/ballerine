@@ -16,6 +16,7 @@ export const DocumentsToolbar: FunctionComponent<{
   shouldDownload: boolean;
   onOcrPressed?: () => void;
   shouldOCR: boolean;
+  isLoadingOCR: boolean;
   fileToDownloadBase64: string;
 }> = ({
   image,
@@ -25,6 +26,7 @@ export const DocumentsToolbar: FunctionComponent<{
   onOpenDocumentInNewTab,
   onOcrPressed,
   shouldDownload,
+  isLoadingOCR,
   shouldOCR,
   fileToDownloadBase64,
 }) => {
@@ -38,7 +40,11 @@ export const DocumentsToolbar: FunctionComponent<{
     <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
       {shouldOCR && image && (
         <div className={`gap-y-50 mb-10 flex h-full flex-col items-center`}>
-          <ImageOCR isOcrDisabled={!shouldOCR} onOcrPressed={onOcrPressed} />
+          <ImageOCR
+            isOcrDisabled={!shouldOCR}
+            onOcrPressed={onOcrPressed}
+            isLoadingOCR={isLoadingOCR}
+          />
         </div>
       )}
       {!hideOpenExternalButton && !isLoading && image?.id && (

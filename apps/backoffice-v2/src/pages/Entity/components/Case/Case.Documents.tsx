@@ -26,6 +26,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
   documents,
   onOcrPressed,
   isLoading,
+  isLoadingOCR,
   hideOpenExternalButton,
 }) => {
   const {
@@ -36,7 +37,6 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
     selectedImageRef,
     initialImage,
     skeletons,
-    isLoadingOCR,
     selectedImage,
     onSelectImage,
     documentRotation,
@@ -92,7 +92,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
             shouldOCR={shouldOCR}
             onOcrPressed={onOcrPressed}
             // isCropping={isCropping}
-            // isLoadingOCR={isLoadingOCR}
+            isLoadingOCR={isLoadingOCR}
             // onCancelCrop={onCancelCrop}
             fileToDownloadBase64={fileToDownloadBase64}
           />

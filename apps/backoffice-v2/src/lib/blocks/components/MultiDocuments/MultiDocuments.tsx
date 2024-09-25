@@ -11,6 +11,7 @@ export const MultiDocuments: FunctionComponent<IMultiDocumentsProps> = ({ value 
         documents={documents}
         isLoading={value?.isLoading}
         onOcrPressed={value?.onOcrPressed}
+        isLoadingOCR={value?.isLoadingOCR}
       />
     </div>
   );

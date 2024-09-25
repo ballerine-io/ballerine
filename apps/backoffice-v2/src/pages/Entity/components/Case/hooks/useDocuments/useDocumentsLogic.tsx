@@ -4,7 +4,6 @@ import { IDocumentsProps } from '../../interfaces';
 import { TransformWrapper } from 'react-zoom-pan-pinch';
 import { useCrop } from '@/common/hooks/useCrop/useCrop';
 import { DOWNLOAD_ONLY_MIME_TYPES } from '@/common/constants';
-import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useTesseract } from '@/common/hooks/useTesseract/useTesseract';
 import { createArrayOfNumbers } from '@/common/utils/create-array-of-numbers/create-array-of-numbers';
@@ -15,7 +14,6 @@ export const useDocumentsLogic = (documents: IDocumentsProps['documents']) => {
   const initialImage = documents?.[0];
   const { data: customer } = useCustomerQuery();
   const { crop, isCropping, onCrop, onCancelCrop } = useCrop();
-  const [isLoadingOCR, , toggleOnIsLoadingOCR, toggleOffIsLoadingOCR] = useToggle(false);
   const selectedImageRef = useRef<HTMLImageElement>();
   const recognize = useTesseract();
   const filterId = useFilterId();
@@ -70,11 +68,10 @@ export const useDocumentsLogic = (documents: IDocumentsProps['documents']) => {
     onCrop,
     onCancelCrop,
     isCropping,
-    shouldOCR: true,
+    shouldOCR: customer?.features?.isDocumentOcrEnabled || true, // TODO remove default true after review
     selectedImageRef,
     initialImage,
     skeletons,
-    isLoadingOCR,
     selectedImage,
     onSelectImage,
     documentRotation,

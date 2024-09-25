@@ -453,6 +453,7 @@ export const useDocumentBlocks = ({
                   ),
                 },
                 workflowId: workflow?.id,
+                isSaveDisabled: isLoadingOCRDocument,
                 documents: workflow?.context?.documents,
               })
               .addCell(decisionCell)
@@ -465,9 +466,11 @@ export const useDocumentBlocks = ({
           .addBlock()
           .addCell({
             type: 'multiDocuments',
+
             value: {
               isLoading: storageFilesQueryResult?.some(({ isLoading }) => isLoading),
               onOcrPressed: () => mutateOCRDocument({ documentId: id }),
+              isLoadingOCR: isLoadingOCRDocument,
               data:
                 documents?.[docIndex]?.pages?.map(
                   ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({
