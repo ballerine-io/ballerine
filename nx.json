@@ -58,7 +58,10 @@
       "!private"
     ],
     "version": {
-      "conventionalCommits": true
+      "conventionalCommits": true,
+      "generatorOptions": {
+        "updateDependents": "auto"
+      }
     },
     "changelog": {
       "projectChangelogs": {
