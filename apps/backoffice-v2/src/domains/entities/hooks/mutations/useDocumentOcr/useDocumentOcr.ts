@@ -5,7 +5,7 @@ import { t } from 'i18next';
 import { workflowsQueryKeys } from '@/domains/workflows/query-keys';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 
-export const useDocumentOrc = ({ workflowId }: { workflowId: string }) => {
+export const useDocumentOcr = ({ workflowId }: { workflowId: string }) => {
   const filterId = useFilterId();
   const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
   const queryClient = useQueryClient();
