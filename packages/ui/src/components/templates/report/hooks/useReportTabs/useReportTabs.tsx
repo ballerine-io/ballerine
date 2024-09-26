@@ -4,9 +4,11 @@ import { BusinessReportSummary } from '@/components/templates/report/components/
 import { WebsitesCompany } from '@/components/templates/report/components/WebsitesCompany';
 import { WebsiteLineOfBusiness } from '@/components/templates/report/components/WebsiteLineOfBusiness';
 import { WebsiteCredibility } from '@/components/templates/report/components/WebsiteCredibility';
-import { EcosystemAndTransactions } from '@/components/templates/report/components/EcosystemAndTransactions';
+import { Ecosystem } from 'src/components/templates/report/components/Ecosystem';
 import { AdsAndSocialMedia } from '@/components/templates/report/components/AdsAndSocialMedia';
 import { Writable } from 'type-fest';
+import { Transactions } from '../../components/Transactions/Transactions';
+import { Crown } from 'lucide-react';
 
 export const useReportTabs = ({
   reportVersion,
@@ -28,7 +30,7 @@ export const useReportTabs = ({
     adsAndSocialMediaAnalysis,
     adsAndSocialMediaPresence,
     websiteLineOfBusinessAnalysis,
-    ecosystemAndTransactionsAnalysis,
+    ecosystemAnalysis,
     summary,
     riskScore,
     riskLevels,
@@ -39,7 +41,7 @@ export const useReportTabs = ({
     pricingAnalysis,
     websiteStructureAndContentEvaluation,
     trafficAnalysis,
-    ecosystemAndTransactionsMatches,
+    ecosystemMatches,
     adsImages,
     relatedAdsImages,
     homepageScreenshotUrl,
@@ -67,9 +69,14 @@ export const useReportTabs = ({
       violations: websiteLineOfBusinessAnalysis ?? [],
     },
     {
-      title: 'Ecosystem and Transactions Analysis',
-      search: '?activeTab=ecosystemAndTransactions',
-      violations: ecosystemAndTransactionsAnalysis ?? [],
+      title: 'Ecosystem Analysis',
+      search: '?activeTab=ecosystem',
+      violations: null,
+    },
+    {
+      title: 'Transactions Analysis',
+      search: '?activeTab=transactions',
+      violations: null,
     },
   ] as const satisfies ReadonlyArray<{
     title: string;
@@ -77,7 +84,7 @@ export const useReportTabs = ({
     violations: Array<{
       label: string;
       severity: string;
-    }>;
+    }> | null;
   }>;
 
   const tabs = useMemo(
@@ -138,13 +145,10 @@ export const useReportTabs = ({
           ),
         },
         {
-          label: 'Ecosystem and Transactions',
-          value: 'ecosystemAndTransactions',
+          label: 'Ecosystem',
+          value: 'ecosystem',
           content: (
-            <EcosystemAndTransactions
-              violations={ecosystemAndTransactionsAnalysis ?? []}
-              matches={ecosystemAndTransactionsMatches ?? []}
-            />
+            <Ecosystem violations={ecosystemAnalysis ?? []} matches={ecosystemMatches ?? []} />
           ),
         },
         {
@@ -160,9 +164,19 @@ export const useReportTabs = ({
             />
           ),
         },
+        {
+          label: (
+            <div className={`flex items-center space-x-2`}>
+              <span>Transaction Analysis</span>
+              <Crown className={`d-4 rounded-full`} />
+            </div>
+          ),
+          value: 'transactions',
+          content: <Transactions />,
+        },
       ] as const satisfies ReadonlyArray<{
-        label: string;
         value: string;
+        label: ReactNode | ReactNode[];
         content: ReactNode | ReactNode[];
       }>,
     [
@@ -172,8 +186,8 @@ export const useReportTabs = ({
       adsImages,
       companyName,
       companyReputationAnalysis,
-      ecosystemAndTransactionsAnalysis,
-      ecosystemAndTransactionsMatches,
+      ecosystemAnalysis,
+      ecosystemMatches,
       formattedMcc,
       homepageScreenshotUrl,
       lineOfBusinessDescription,

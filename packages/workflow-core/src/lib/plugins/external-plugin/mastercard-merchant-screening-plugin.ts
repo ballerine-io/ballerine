@@ -41,7 +41,7 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
         line1: [entity?.data?.address?.street, entity?.data?.address?.streetNumber]
           .filter(Boolean)
           .join(' '),
-        city: entity?.data?.address?.city,
+        city: entity?.data?.address?.city || 'Singapore',
         country: alpha2ToAlpha3(entity?.data?.address?.country),
         postalCode: entity?.data?.address?.postalCode,
         countrySubdivision: countrySubdivisionSupportedCountries.includes(

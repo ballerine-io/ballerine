@@ -18,14 +18,13 @@ export interface IEditableDetails {
     pattern?: string;
     maximum?: string;
     minimum?: string;
-    dropdownOptions?: Array<TDropdownOption>;
+    dropdownOptions?: TDropdownOption[];
   }>;
   valueId: string;
   id: string;
-  documents: Array<IEditableDetailsDocument>;
+  documents: IEditableDetailsDocument[];
   title: string;
   workflowId: string;
   contextUpdateMethod?: 'base' | 'director';
   onSubmit?: (document: AnyObject) => void;
-  config: Record<string, unknown>;
 }

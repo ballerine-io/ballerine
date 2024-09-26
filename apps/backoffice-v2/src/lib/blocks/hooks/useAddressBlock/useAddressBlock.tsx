@@ -59,6 +59,11 @@ export const useAddressBlock = ({
                       isEditable: false,
                     })),
             },
+            props: {
+              config: {
+                sort: { predefinedOrder: ['street', 'streetNumber', 'city', 'country'] },
+              },
+            },
             workflowId: workflow?.id,
             documents: workflow?.context?.documents,
           })

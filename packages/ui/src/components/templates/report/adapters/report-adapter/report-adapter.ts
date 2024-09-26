@@ -72,6 +72,7 @@ export const reportAdapter = {
             riskLevel,
             sourceUrl,
             screenshot,
+            explanation,
           }: {
             name: string;
             riskLevel: string;
@@ -79,6 +80,7 @@ export const reportAdapter = {
             screenshot: {
               screenshotUrl: string;
             };
+            explanation: string;
           }) => ({
             label: name,
             severity:
@@ -86,12 +88,11 @@ export const reportAdapter = {
               riskLevel,
             screenshotUrl: screenshot?.screenshotUrl,
             sourceUrl,
+            explanation,
           }),
         ),
-      ecosystemAndTransactionsAnalysis: toRiskLabels(
-        report?.summary?.riskIndicatorsByDomain?.ecosystemViolations,
-      ),
-      ecosystemAndTransactionsMatches: report?.ecosystem?.domains?.map(
+      ecosystemAnalysis: toRiskLabels(report?.summary?.riskIndicatorsByDomain?.ecosystemViolations),
+      ecosystemMatches: report?.ecosystem?.domains?.map(
         ({
           domain,
           relatedNode,
@@ -236,10 +237,8 @@ export const reportAdapter = {
             sourceUrl,
           }),
         ),
-      ecosystemAndTransactionsAnalysis: toRiskLabels(
-        report?.summary?.riskIndicatorsByDomain?.ecosystemViolations,
-      ),
-      ecosystemAndTransactionsMatches: report?.ecosystem?.domains?.map(
+      ecosystemAnalysis: toRiskLabels(report?.summary?.riskIndicatorsByDomain?.ecosystemViolations),
+      ecosystemMatches: report?.ecosystem?.domains?.map(
         ({
           domain,
           relatedNode,

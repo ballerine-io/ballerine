@@ -18,7 +18,7 @@ import { JsonDialog } from '@ballerine/ui';
 export const useMerchantScreeningBlock = ({
   terminatedMatchedMerchants,
   inquiredMatchedMerchants,
-  logoUrl,
+  logoUrl = 'https://cdn.ballerine.io/logos/Mastercard%20logo.svg',
   rawData,
   checkDate,
 }: {
