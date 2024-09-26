@@ -259,7 +259,7 @@ jobs:
             "SHORT_SHA=${{ needs.build-and-push-image.outputs.sha_short }}"
 
   deploy-to-dev:
-    needs: build-and-push-image
+    needs: [build-and-push-image,build-and-push-ee-image]
     if: ${{(github.event_name == 'push') || (github.event_name == 'workflow_dispatch' && inputs.operation == 'Deploy to Dev')}}
     uses: ./.github/workflows/test-deploy-wf-service.yml
     with:
@@ -268,7 +268,7 @@ jobs:
     secrets: inherit
 
   run-migrations:
-    needs: [build-and-push-image]
+    needs: [build-and-push-image,build-and-push-ee-image]
     if: ${{(github.event_name == 'repository_dispatch') || (github.event_name == 'workflow_dispatch' && inputs.operation == 'Run Migrations')}}
     uses: ./.github/workflows/test-db-ops.yaml
     with:
