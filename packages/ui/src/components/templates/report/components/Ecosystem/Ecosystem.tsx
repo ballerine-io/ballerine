@@ -1,8 +1,8 @@
 import React, { FunctionComponent } from 'react';
 import { Card, CardContent, CardHeader } from '@/components';
-import { EcosystemAndTransactionsTable } from '@/components/templates/report/components/EcosystemAndTransactions/components/EcosystemAndTransactionsTable/EcosystemAndTransactionsTable';
+import { EcosystemTable } from '@/components/templates/report/components/Ecosystem/components/EcosystemTable/EcosystemTable';
 
-export const EcosystemAndTransactions: FunctionComponent<{
+export const Ecosystem: FunctionComponent<{
   violations: Array<{
     label: string;
     severity: string;
@@ -19,11 +19,11 @@ export const EcosystemAndTransactions: FunctionComponent<{
 }> = ({ violations, matches }) => {
   return (
     <div className={'space-y-8'}>
-      <h3 className={'col-span-full text-lg font-bold'}>Ecosystem and Transactions Analysis</h3>
+      <h3 className={'col-span-full text-lg font-bold'}>Ecosystem Analysis</h3>
       <Card>
         <CardHeader className={'pt-4 font-bold'}>Ecosystem</CardHeader>
         <CardContent>
-          <EcosystemAndTransactionsTable data={matches} />
+          <EcosystemTable data={matches} />
         </CardContent>
       </Card>
     </div>

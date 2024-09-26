@@ -16,7 +16,10 @@ export type UseFileUploadOnUploadCallback = (fileId: string) => void;
 
 export type RegisterFileFn = (file: File, fileId: string) => File;
 
+export type RemoveFileFn = (fileId: string) => void;
+
 export interface UseFileRepositoryResult {
   file: File | null;
   registerFile: RegisterFileFn;
+  removeFile: RemoveFileFn;
 }

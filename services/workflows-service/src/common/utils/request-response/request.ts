@@ -18,6 +18,10 @@ export const removeSensitiveHeaders = (headers: Record<string, unknown>) => ({
 
 export const getReqMetadataObj = (req: Request<unknown>) => {
   const cleanHeaders = removeSensitiveHeaders(req.headers);
+  const isJsonPayload = req.headers['content-type']?.includes('application/json');
+  const isValidBody = isJsonPayload && req.body !== null && typeof req.body === 'object';
+
+  const safeBody = isValidBody ? req.body : undefined;
 
   return {
     startTime: req.startTime ? new Date(req.startTime)?.toISOString() : new Date().toISOString(),
@@ -27,6 +31,10 @@ export const getReqMetadataObj = (req: Request<unknown>) => {
     url: req.originalUrl,
     method: req.method,
     headers: cleanHeaders,
-    body: req.body,
+    body: safeBody,
+    user: req.user,
+    ip: req.ip,
+    userAgent: req.get('user-agent'),
+    referer: req.get('referer'),
   };
 };

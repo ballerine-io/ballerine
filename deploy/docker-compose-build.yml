@@ -28,7 +28,8 @@ services:
   ballerine-workflow-service:
     container_name: workflow-service
     platform: linux/amd64
-    image: ghcr.io/ballerine-io/workflows-service:latest
+    build:
+      context: ../services/workflows-service/
     command:
       - /bin/sh
       - -c

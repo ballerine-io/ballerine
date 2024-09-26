@@ -9,7 +9,7 @@ export const RiskIndicatorsSummary: FunctionComponent<{
     violations: Array<{
       label: string;
       severity: string;
-    }>;
+    }> | null;
   }>;
   Link: ComponentProps<typeof RiskIndicator>['Link'];
 }> = ({ riskIndicators, Link }) => {

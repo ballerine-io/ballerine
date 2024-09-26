@@ -218,6 +218,7 @@ describe('OngoingMonitoringCron', () => {
     return [
       {
         id: 'business1',
+        companyName: 'Test Business 1',
         metadata: {
           featureConfig: {
             [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
@@ -236,9 +237,11 @@ describe('OngoingMonitoringCron', () => {
       },
       {
         id: 'business2',
+        companyName: 'Test Business 2',
       },
       {
         id: 'business3',
+        companyName: 'Test Business 3',
         metadata: {
           featureConfig: {
             [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
@@ -257,6 +260,7 @@ describe('OngoingMonitoringCron', () => {
       },
       {
         id: 'business4',
+        companyName: 'Test Business 4',
         metadata: {
           featureConfig: {
             [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {

@@ -1702,31 +1702,42 @@ export class WorkflowService {
     entityId: string;
     position?: BusinessPosition;
   }) {
-    if (entityData && entityType === 'business') {
-      return (
-        await this.endUserService.createWithBusiness(
-          {
-            endUser: {
-              ...entityData,
-              isContactPerson: true,
-            },
-            business: {
-              companyName: '',
-              ...workflowRuntimeData.context.entity.data,
-              projectId: currentProjectId,
-            },
-            position,
-          },
-          currentProjectId,
-          entityId,
-        )
-      ).id;
+    if (!entityData) {
+      throw new BadRequestException('Entity data is missing. Please provide end user data.');
     }
 
-    throw new Error(
-      `Invalid entity type or payload for child workflow creation for entity: ${entityType} with context:`,
-      workflowRuntimeData.context.entity,
-    );
+    if (entityType !== 'business') {
+      throw new BadRequestException(`Invalid entity type: ${entityType}. Expected 'business'.`);
+    }
+
+    try {
+      const result = await this.endUserService.createWithBusiness(
+        {
+          endUser: {
+            ...entityData,
+            isContactPerson: true,
+          },
+          business: {
+            companyName: '',
+            ...workflowRuntimeData.context.entity.data,
+            projectId: currentProjectId,
+          },
+          position,
+        },
+        currentProjectId,
+        entityId,
+      );
+
+      return result.id;
+    } catch (error) {
+      this.logger.error('Failed to create end user with business', {
+        error,
+        entityType,
+        entityId,
+        currentProjectId,
+      });
+      throw new Error('Failed to create end user with business. Please try again later.');
+    }
   }
 
   private async __persistDocumentPagesFiles(
