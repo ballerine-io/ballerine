@@ -82,7 +82,7 @@
     "plugin-terser": "link:@types/@rollup/plugin-terser",
     "prettier": "^2.1.1",
     "rimraf": "^4.1.2",
-    "rollup": "2.70.2",
+    "rollup": "2.79.2",
     "rollup-plugin-dts": "4.2.2",
     "rollup-plugin-size": "0.2.2",
     "rollup-plugin-visualizer": "5.6.0",
