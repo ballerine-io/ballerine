@@ -176,14 +176,14 @@ jobs:
         run: |
           cd services/workflows-service/prisma/data-migrations
 
-          is_exists=$(git ls-remote --exit-code --heads -t --ref -q origin "${{ github.ref_name }}" | wc -l)
+          is_exists=$(git ls-remote --exit-code --heads -t --ref -q origin "${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || github.ref_name }}" | wc -l)
 
           # Check if the branch exists by counting the number of results
           if [ $is_exists -eq 0  ]; then
-            echo "Branch '${{ github.ref_name }}' does not exist."
+            echo "Branch '${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || github.ref_name }}' does not exist."
             echo "ref=main" >> $GITHUB_OUTPUT
           else
-            echo "ref=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+            echo "ref=${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || github.ref_name }}" >> $GITHUB_OUTPUT
           fi
           exit 0
 
@@ -240,7 +240,7 @@ jobs:
           images: ${{needs.build-and-push-image.outputs.docker_image}}-ee
           tags: |
             type=raw,value=${{ github.ref_name }}
-            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ github.ref_name }}
+            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || github.ref_name }}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'prod') }}
             type=sha,format=short
 
@@ -272,7 +272,7 @@ jobs:
     if: ${{(github.event_name == 'repository_dispatch') || (github.event_name == 'workflow_dispatch' && inputs.operation == 'Run Migrations')}}
     uses: ./.github/workflows/test-db-ops.yaml
     with:
-      environment: 'dev'
+      environment: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || 'dev' }}
       sha: ${{ needs.build-and-push-image.outputs.sha_short }}
     secrets: inherit
 
