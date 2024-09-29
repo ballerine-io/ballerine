@@ -133,6 +133,13 @@ export const validate = async (config: Record<string, unknown>) => {
     RuleEngineModule,
     NotionModule,
     SecretsManagerModule,
+    BullModule.forRoot({
+      connection: {
+        host: env.REDIS_HOST || 'localhost',
+        port: env.REDIS_PORT,
+        password: env.REDIS_PASSWORD,
+      },
+    }),
   ],
   providers: [
     {
