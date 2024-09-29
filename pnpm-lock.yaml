@@ -1212,6 +1212,9 @@ importers:
       ajv:
         specifier: ^8.12.0
         version: 8.12.0
+      crypto-js:
+        specifier: ^4.2.0
+        version: 4.2.0
       dayjs:
         specifier: ^1.11.6
         version: 1.11.10
@@ -1261,6 +1264,9 @@ importers:
       '@types/babel__core':
         specifier: ^7.20.0
         version: 7.20.4
+      '@types/crypto-js':
+        specifier: ^4.2.2
+        version: 4.2.2
       '@types/fs-extra':
         specifier: ^11.0.1
         version: 11.0.4
@@ -17422,6 +17428,10 @@ packages:
     resolution: {integrity: sha512-wsIMP68FvGXk+RaWhraz6Xp4v7sl4qwzHAmtPaJEN2NRTXXI9LtFawUpeTsBNL/pd6QoLStdytCaAyiK7AEd/Q==}
     dependencies:
       '@types/node': 18.17.19
+    dev: true
+
+  /@types/crypto-js@4.2.2:
+    resolution: {integrity: sha512-sDOLlVbHhXpAUAL0YHDUUwDZf3iN4Bwi4W6a0W0b+QcAezUbRtH4FVb+9J4h+XFPW7l/gQ9F8qC7P+Ec4k8QVQ==}
     dev: true
 
   /@types/d3-array@3.2.1:
