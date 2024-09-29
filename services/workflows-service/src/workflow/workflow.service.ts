@@ -48,7 +48,6 @@ import {
 import {
   AnyRecord,
   DefaultContextSchema,
-  DocumentsSchema,
   getDocumentId,
   isErrorWithMessage,
   isObject,
@@ -2530,13 +2529,7 @@ export class WorkflowService {
       (document: DefaultContextSchema['documents'][number]) => document.id === documentId,
     );
 
-    const documentSchema = addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);
-    const propertiesSchema = documentSchema?.propertiesSchema ?? {};
-
-    return {
-      documentSchema,
-      ...propertiesSchema,
-    };
+    return addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);
   }
 
   async runOCROnDocument({
@@ -2557,31 +2550,18 @@ export class WorkflowService {
           transaction,
         );
 
-        const workflowDef = await this.workflowDefinitionRepository.findById(
-          workflowRuntime.workflowDefinitionId,
-          {},
-          [projectId],
-          transaction,
-        );
-
-        const document = (await this.findDocumentById({
+        const document = await this.findDocumentById({
           workflowId: workflowRuntimeId,
           projectId,
           documentId,
           transaction,
-        })) as unknown as { documentSchema: Static<typeof DocumentsSchema>[number] };
+        });
 
-        const documentSchema = document.documentSchema;
-
-        if (!('pages' in documentSchema)) {
+        if (!('pages' in document)) {
           throw new BadRequestException('Cannot run document OCR on document without pages');
         }
 
-        const documentWithSchema = addPropertiesSchemaToDocument(
-          documentSchema,
-          workflowDef.documentsSchema,
-        );
-        const documentPagesContent = documentWithSchema.pages.map(async page => {
+        const documentPagesContent = document.pages.map(async page => {
           const { signedUrl, mimeType, filePath } = await this.storageService.fetchFileContent({
             id: page.ballerineFileId!,
             format: 'signed-url',
@@ -2607,7 +2587,7 @@ export class WorkflowService {
         return (
           await new UnifiedApiClient().runOcr({
             images,
-            schema: documentWithSchema.propertiesSchema as unknown as TSchema,
+            schema: document.propertiesSchema as unknown as TSchema,
           })
         )?.data;
       },

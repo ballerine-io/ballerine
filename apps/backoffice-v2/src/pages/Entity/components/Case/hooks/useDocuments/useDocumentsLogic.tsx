@@ -68,7 +68,7 @@ export const useDocumentsLogic = (documents: IDocumentsProps['documents']) => {
     onCrop,
     onCancelCrop,
     isCropping,
-    shouldOCR: customer?.features?.isDocumentOcrEnabled || true, // TODO remove default true after review
+    isOCREnabled: !!customer?.features?.isDocumentOcrEnabled,
     selectedImageRef,
     initialImage,
     skeletons,

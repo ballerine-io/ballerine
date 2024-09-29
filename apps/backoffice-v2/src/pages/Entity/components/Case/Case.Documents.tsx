@@ -26,6 +26,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
   documents,
   onOcrPressed,
   isLoading,
+  isDocumentEditable,
   isLoadingOCR,
   hideOpenExternalButton,
 }) => {
@@ -45,7 +46,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
     onTransformed,
     isRotatedOrTransformed,
     shouldDownload,
-    shouldOCR,
+    isOCREnabled,
     fileToDownloadBase64,
   } = useDocumentsLogic(documents);
 
@@ -89,10 +90,10 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
             onOpenDocumentInNewTab={onOpenDocumentInNewTab}
             // isRotatedOrTransformed={isRotatedOrTransformed}
             shouldDownload={shouldDownload}
-            shouldOCR={shouldOCR}
+            isOCREnabled={!!isDocumentEditable && isOCREnabled}
             onOcrPressed={onOcrPressed}
+            isLoadingOCR={!!isLoadingOCR}
             // isCropping={isCropping}
-            isLoadingOCR={isLoadingOCR}
             // onCancelCrop={onCancelCrop}
             fileToDownloadBase64={fileToDownloadBase64}
           />

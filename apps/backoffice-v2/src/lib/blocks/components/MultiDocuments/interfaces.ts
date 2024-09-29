@@ -3,6 +3,7 @@ export interface IMultiDocumentsProps {
     isLoading: boolean;
     onOcrPressed: () => void;
     isLoadingOCR: boolean;
+    isDocumentEditable: boolean;
     data: Array<{
       imageUrl: string;
       title: string;

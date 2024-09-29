@@ -466,10 +466,10 @@ export const useDocumentBlocks = ({
           .addBlock()
           .addCell({
             type: 'multiDocuments',
-
             value: {
               isLoading: storageFilesQueryResult?.some(({ isLoading }) => isLoading),
               onOcrPressed: () => mutateOCRDocument({ documentId: id }),
+              isDocumentEditable: caseState.writeEnabled,
               isLoadingOCR: isLoadingOCRDocument,
               data:
                 documents?.[docIndex]?.pages?.map(
