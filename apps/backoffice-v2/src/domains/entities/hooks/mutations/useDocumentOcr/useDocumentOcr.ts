@@ -13,7 +13,7 @@ export const useDocumentOcr = ({ workflowId }: { workflowId: string }) => {
   return useMutation({
     mutationFn: ({ documentId }: { documentId: string }) => {
       return fetchWorkflowDocumentOCRResult({
-        workflowDefinitionId: workflowId,
+        workflowRuntimeId: workflowId,
         documentId,
       });
     },
@@ -21,8 +21,8 @@ export const useDocumentOcr = ({ workflowId }: { workflowId: string }) => {
       void queryClient.invalidateQueries(workflowsQueryKeys._def);
       toast.success(t('toast:document_ocr.success'));
     },
-    onError: (_error, _variables) => {
-      console.error(_error);
+    onError: (error, variables) => {
+      console.error('OCR error:', error, 'for document:', variables.documentId);
       void queryClient.invalidateQueries(workflowsQueryKeys._def);
       toast.error(t('toast:document_ocr.error'));
     },

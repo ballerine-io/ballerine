@@ -32,17 +32,7 @@ interface TOcrImage {
     images,
     schema,
   }: {
-    images: Array<
-      | {
-          remote: {
-            imageUri: string;
-            mimeType: string;
-          };
-        }
-      | {
-          base64: string;
-        }
-    >;
+    images: TOcrImages;
     schema: TSchema;
   }): Promise<axios.AxiosResponse<any>>;
 }

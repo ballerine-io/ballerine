@@ -300,17 +300,17 @@ export const createWorkflowRequest = async ({
 };
 
 export const fetchWorkflowDocumentOCRResult = async ({
-  workflowDefinitionId,
+  workflowRuntimeId,
   documentId,
 }: {
-  workflowDefinitionId: string;
+  workflowRuntimeId: string;
   documentId: string;
 }) => {
   const [workflow, error] = await apiClient({
     method: Method.PATCH,
     url: `${getOriginUrl(
       env.VITE_API_URL,
-    )}/api/v1/internal/workflows/${workflowDefinitionId}/documents/${documentId}/run-ocr`,
+    )}/api/v1/internal/workflows/${workflowRuntimeId}/documents/${documentId}/run-ocr`,
     schema: z.any(),
   });
 
