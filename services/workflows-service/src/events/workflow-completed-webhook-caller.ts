@@ -1,34 +1,29 @@
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { AxiosInstance } from 'axios';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { alertWebhookFailure } from '@/events/alert-webhook-failure';
 import { ExtractWorkflowEventData } from '@/workflow/types';
 import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeData } from '@prisma/client';
-import { sign, StateTag } from '@ballerine/common';
+import { StateTag } from '@ballerine/common';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
+import { WebhooksService } from '@/webhooks/webhooks.service';
 
 @Injectable()
 export class WorkflowCompletedWebhookCaller {
-  #__axios: AxiosInstance;
-
   constructor(
-    private httpService: HttpService,
     workflowEventEmitter: WorkflowEventEmitterService,
     private configService: ConfigService,
     private readonly logger: AppLoggerService,
     private readonly workflowService: WorkflowService,
     private readonly customerService: CustomerService,
     private readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
+    private readonly webhooksService: WebhooksService,
   ) {
-    this.#__axios = this.httpService.axiosRef;
-
     workflowEventEmitter.on('workflow.completed', async data => {
       try {
         await this.handleWorkflowEvent(data);
@@ -94,60 +89,41 @@ export class WorkflowCompletedWebhookCaller {
     webhook: Webhook;
     webhookSharedSecret: string;
   }) {
-    this.logger.log('Sending webhook', { id, url });
+    // Omit from data properties already sent as part of the webhook payload
+    const { runtimeData, correlationId, entityId, childWorkflowsRuntimeData, ...restData } = data;
+    const {
+      createdAt,
+      resolvedAt,
+      workflowDefinitionId,
+      id: runtimeDataId,
+      ...restRuntimeData
+    } = runtimeData;
+    const payload = {
+      id,
+      eventName: 'workflow.completed',
+      apiVersion,
+      timestamp: new Date().toISOString(),
+      workflowCreatedAt: createdAt,
+      workflowResolvedAt: resolvedAt,
+      workflowDefinitionId,
+      workflowRuntimeId: runtimeDataId,
+      workflowStatus: data.runtimeData.status,
+      workflowFinalState: data.runtimeData.state,
+      ballerineEntityId: entityId,
+      correlationId,
+      environment,
+      data: {
+        ...restRuntimeData.context,
+        childWorkflowsRuntimeData,
+      },
+    } as const;
 
-    try {
-      // Omit from data properties already sent as part of the webhook payload
-      const { runtimeData, correlationId, entityId, childWorkflowsRuntimeData, ...restData } = data;
-      const {
-        createdAt,
-        resolvedAt,
-        workflowDefinitionId,
-        id: runtimeDataId,
-        ...restRuntimeData
-      } = runtimeData;
-      const payload = {
-        id,
-        eventName: 'workflow.completed',
-        apiVersion,
-        timestamp: new Date().toISOString(),
-        workflowCreatedAt: createdAt,
-        workflowResolvedAt: resolvedAt,
-        workflowDefinitionId,
-        workflowRuntimeId: runtimeDataId,
-        workflowStatus: data.runtimeData.status,
-        workflowFinalState: data.runtimeData.state,
-        ballerineEntityId: entityId,
-        correlationId,
-        environment,
-        data: {
-          ...restRuntimeData.context,
-          childWorkflowsRuntimeData,
-        },
-      };
-
-      const res = await this.#__axios.post(url, payload, {
-        headers: {
-          'X-Authorization': webhookSharedSecret,
-          'X-HMAC-Signature': sign({ payload, key: webhookSharedSecret }),
-        },
-      });
-
-      this.logger.log('Webhook Result:', {
-        status: res.status,
-        statusText: res.statusText,
-        data: res.data,
-      });
-    } catch (error: Error | any) {
-      this.logger.log('Webhook error data::  ', {
-        state: data.state,
-        entityId: data.entityId,
-        correlationId: data.correlationId,
-        id: data.runtimeData.id,
-      });
-      this.logger.error('Failed to send webhook', { id, message: error?.message, error });
-      alertWebhookFailure(error);
-    }
+    return this.webhooksService.invokeWebhook(payload.eventName, {
+      url,
+      method: 'POST',
+      data: payload,
+      secret: webhookSharedSecret,
+    });
   }
 
   private async updateSalesforceRecord(workflowRuntimeData: WorkflowRuntimeData) {

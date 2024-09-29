@@ -107,13 +107,14 @@ export const serverEnvSchema = {
   IN_MEMORIES_SECRET_ACQUIRER_ID: z.string().optional(),
   IN_MEMORIES_SECRET_PRIVATE_KEY: z.string().optional(),
   IN_MEMORIES_SECRET_CONSUMER_KEY: z.string().optional(),
-  SYNC_UNIFIED_API: optionalBooleanSchema.default(true),
-  DEFAULT_DEMO_DURATION_DAYS: z.number().optional().default(14),
-  MAGIC_LINK_AUTH_JWT_SECRET: z.string(),
-  MAGIC_LINK_AUTH_JWT_ALGORITHMS: z.string().default('HS256'),
-  POSTHOG_HOST: z.string().optional(),
-  POSTHOG_KEY: z.string().optional(),
-  WORKFLOW_LOGGING_ENABLED: optionalBooleanSchema.default(false),
+  SYNC_UNIFIED_API: z.string().optional().default('true'),
+  REDIS_HOST: z.string(),
+  REDIS_PORT: z.coerce.number(),
+  REDIS_PASSWORD: z.string().optional(),
+  QUEUE_SYSTEM_ENABLED: z
+    .string()
+    .optional()
+    .transform(value => value === 'true'),
 };
 
 if (!process.env['ENVIRONMENT_NAME'] || process.env['ENVIRONMENT_NAME'] === 'local') {
