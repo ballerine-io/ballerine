@@ -78,6 +78,7 @@ import {
   BusinessPosition,
   BusinessReportStatus,
   BusinessReportType,
+  Customer,
   EndUser,
   Prisma,
   PrismaClient,
@@ -107,6 +108,8 @@ import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-
 import { entitiesUpdate } from './utils/entities-update';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
+import { AwsSecretsManager } from '@/secrets-manager/aws-secrets-manager';
+import { InMemorySecretsManager } from '@/secrets-manager/in-memory-secrets-manager';
 
 type TEntityId = string;
 
@@ -2029,7 +2032,7 @@ export class WorkflowService {
             transaction,
           );
         },
-        secretsManager: { getAll: secretsManager.getAll.bind(secretsManager) },
+        secretsManager: { getAll: this.getCustomerSecrets(secretsManager, customer) },
         invokeWorkflowTokenAction: async (workflowTokenAction: TWorkflowTokenPluginCallback) => {
           const workflowRuntimeId = workflowTokenAction.workflowRuntimeId;
           const defaultDaysExpiry = 30;
@@ -2257,6 +2260,21 @@ export class WorkflowService {
 
       return updatedRuntimeData;
     });
+  }
+
+  private getCustomerSecrets(
+    secretsManager: AwsSecretsManager | InMemorySecretsManager,
+    { authenticationConfiguration }: Customer,
+  ) {
+    return async () => {
+      const secrets = await secretsManager.getAll();
+      const webhookSharedSecret = authenticationConfiguration.webhookSharedSecret;
+
+      return {
+        ...(webhookSharedSecret ? { webhookSharedSecret } : {}),
+        ...secrets,
+      } as Record<string, string>;
+    };
   }
 
   async persistChildWorkflowToParent(
