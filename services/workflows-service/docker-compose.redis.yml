@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - '${REDIS_PORT}:6379'
+    volumes:
+      - redis-data:/data
+    command: >
+      --requirepass ${REDIS_PASSWORD}
+      --appendonly yes
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT=${REDIS_PORT}
+    networks:
+      - app-network
+volumes:
+  redis-data:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: size=100m
+networks:
+  app-network:
+    driver: bridge
