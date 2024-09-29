@@ -92,10 +92,7 @@ export const serverEnvSchema = {
   IN_MEMORIES_SECRET_CONSUMER_KEY: z.string().optional(),
   REDIS_HOST: z.string(),
   REDIS_PASSWORD: z.string(),
-  REDIS_PORT: z
-    .string()
-    .default('6379')
-    .transform(value => Number(value)),
+  REDIS_PORT: z.string().transform(value => Number(value)),
 };
 
 if (!process.env['ENVIRONMENT_NAME'] || process.env['ENVIRONMENT_NAME'] === 'local') {
