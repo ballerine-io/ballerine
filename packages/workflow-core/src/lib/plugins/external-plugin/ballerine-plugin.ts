@@ -76,17 +76,17 @@ export class BallerineApiPlugin extends ApiPlugin {
     return await this.replaceAllVariables(this.url, context);
   }
 
-  // TODO: remove #  after refactoring plugins
-  async _onReplaceVariable(variableKey: string, content: string, placeholder: string) {
-    let replacedSecrets = await this.replaceSecretsByProvider(
-      'ballerine',
-      variableKey,
-      content,
-      placeholder,
-    );
+  // TODO: To use after implmentation of the new plugin system
+  // async _onReplaceVariable(variableKey: string, content: string, placeholder: string) {
+  //   let replacedSecrets = await this.replaceSecretsByProvider(
+  //     'ballerine',
+  //     variableKey,
+  //     content,
+  //     placeholder,
+  //   );
 
-    replacedSecrets = await super._onReplaceVariable(variableKey, replacedSecrets, placeholder);
+  //   replacedSecrets = await super._onReplaceVariable(variableKey, replacedSecrets, placeholder);
 
-    return replacedSecrets;
-  }
+  //   return replacedSecrets;
+  // }
 }

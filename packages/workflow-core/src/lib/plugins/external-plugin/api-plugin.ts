@@ -59,7 +59,7 @@ export class ApiPlugin {
         }
       }
 
-      const _url = await this._getPluginUrl(context);
+      const _url = (await this._getPluginUrl(context)).replace(/\/+$/, '');
 
       logger.log('API Plugin - Sending API request', {
         url: _url,
@@ -238,25 +238,28 @@ export class ApiPlugin {
   }
 
   async _onReplaceVariable(variableKey: string, replacedContent: string, placeholder: string) {
-    return await this.replaceSecretsByProvider(
-      'customer',
+    let replacedSecrets = await this.replaceCustomerVariable(
       variableKey,
       replacedContent,
       placeholder,
     );
 
     // // TODO: Remove this line when migrate to new ballerine plugins
-    // replacedSecrets = await this.replaceBallerineVariable(
-    //   variableKey,
-    //   replacedContent,
-    //   placeholder,
-    // );
-    //
-    // return replacedSecrets;
+    replacedSecrets = await this.replaceBallerineVariable(
+      variableKey,
+      replacedContent,
+      placeholder,
+    );
+
+    return replacedSecrets;
   }
 
   async replaceBallerineVariable(variableKey: string, content: string, placeholder: string) {
     return await this.replaceSecretsByProvider('ballerine', variableKey, content, placeholder);
+  }
+
+  async replaceCustomerVariable(variableKey: string, content: string, placeholder: string) {
+    return await this.replaceSecretsByProvider('customer', variableKey, content, placeholder);
   }
 
   async replaceAllVariables(content: string, context: TContext) {
