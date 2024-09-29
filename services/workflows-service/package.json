@@ -5,7 +5,7 @@
   "description": "workflow-service",
   "scripts": {
     "spellcheck": "cspell \"*\"",
-    "setup": "npm run docker:db:down && npm run docker:db && wait-on tcp:5432 && npm run docker:redis &&  npm run db:reset && npm run seed",
+    "setup": "npm run docker:db:down && npm run docker:db && wait-on tcp:5432 && npm run docker:redis:down && npm run docker:redis && npm run db:reset && npm run seed",
     "format": "prettier --write . '!**/*.{md,hbs}'",
     "format:check": "prettier --check . '!**/*.{md,hbs}'",
     "lint": "eslint . --fix",
@@ -52,6 +52,9 @@
     "@ballerine/common": "0.9.33",
     "@ballerine/workflow-core": "0.6.45",
     "@ballerine/workflow-node-sdk": "0.6.45",
+    "@bull-board/api": "^6.0.0",
+    "@bull-board/express": "^6.0.0",
+    "@bull-board/nestjs": "^6.0.0",
     "@faker-js/faker": "^7.6.0",
     "@nestjs/axios": "^2.0.0",
     "@nestjs/bullmq": "^10.2.1",
