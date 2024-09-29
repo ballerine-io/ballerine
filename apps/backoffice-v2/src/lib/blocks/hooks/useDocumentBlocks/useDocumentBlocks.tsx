@@ -29,7 +29,7 @@ import { X } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useCallback, useMemo } from 'react';
 import { toTitleCase } from 'string-ts';
-import { useDocumentOrc } from '@/domains/entities/hooks/mutations/useDocumentOcr/useDocumentOcr';
+import { useDocumentOcr } from '@/domains/entities/hooks/mutations/useDocumentOcr/useDocumentOcr';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -84,7 +84,7 @@ export const useDocumentBlocks = ({
     mutate: mutateOCRDocument,
     isLoading: isLoadingOCRDocument,
     data: ocrResult,
-  } = useDocumentOrc({
+  } = useDocumentOcr({
     workflowId: workflow?.id,
   });
 
