@@ -1,116 +1,177 @@
-import { Injectable } from '@nestjs/common';
-import { IndividualAmlWebhookInput } from '@/webhooks/dtos/individual-aml-webhook-input';
-import { EndUserRepository } from '@/end-user/end-user.repository';
-import { CustomerService } from '@/customer/customer.service';
-import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
-import { WorkflowService } from '@/workflow/workflow.service';
+import { sign } from '@ballerine/common';
+import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
+import { HttpService } from '@nestjs/axios';
+import { Inject, Injectable } from '@nestjs/common';
+import * as Sentry from '@sentry/node';
+import { isAxiosError, RawAxiosRequestHeaders } from 'axios';
+import { ConnectionOptions } from 'bullmq';
+import IORedis from 'ioredis';
+
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { EndUserService } from '@/end-user/end-user.service';
+import { env } from '@/env';
+import { RetryableQueue } from './retryable-queue';
+import { BULLBOARD_INSTANCE_INJECTION_TOKEN, type BullBoardInjectedInstance } from './types/bull';
+import { type OutgoingWebhookJobData, type OutgoingWebhookPayloads } from './types/webhook';
+
+export const alertWebhookFailure = (errorPayload: Record<string, unknown>) => {
+  Sentry.captureException(
+    new Error('Failed to send a webhook', {
+      cause: errorPayload,
+    }),
+    { extra: errorPayload },
+  );
+};
 
 @Injectable()
 export class WebhooksService {
+  private queue: RetryableQueue | null = null;
+
   constructor(
-    private readonly customerService: CustomerService,
-    private readonly workflowService: WorkflowService,
-    private readonly endUserRepository: EndUserRepository,
-    private readonly workflowDefinitionService: WorkflowDefinitionService,
     private readonly logger: AppLoggerService,
-    private readonly endUserService: EndUserService,
-  ) {}
+    private readonly httpService: HttpService,
+    @Inject(BULLBOARD_INSTANCE_INJECTION_TOKEN)
+    private bullBoard: BullBoardInjectedInstance,
+  ) {
+    this.init();
+  }
 
-  async handleIndividualAmlHit({
-    endUserId,
-    data,
-  }: {
-    endUserId: string;
-    data: IndividualAmlWebhookInput['data'];
-  }) {
-    this.logger.log('Started handling individual AML hit', { endUserId });
+  private init() {
+    const connection: ConnectionOptions = {
+      host: env.REDIS_HOST,
+      port: env.REDIS_PORT,
+      password: env.REDIS_PASSWORD,
+    };
 
-    const { projectId, ...rest } = await this.endUserRepository.findByIdUnscoped(endUserId, {
-      select: {
-        approvalState: true,
-        stateReason: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        phone: true,
-        country: true,
-        nationalId: true,
-        dateOfBirth: true,
-        additionalInfo: true,
-        createdAt: true,
-        updatedAt: true,
-        projectId: true,
-        businesses: {
-          select: {
-            address: true,
-            country: true,
-            website: true,
-            companyName: true,
-            businessType: true,
-            approvalState: true,
-            registrationNumber: true,
-            dateOfIncorporation: true,
-            countryOfIncorporation: true,
-          },
+    if (!env.QUEUE_SYSTEM_ENABLED) {
+      return;
+    }
+
+    const redis = new IORedis({
+      ...connection,
+      retryStrategy: () => 10_000,
+      connectTimeout: 5_000,
+      maxRetriesPerRequest: null,
+    });
+
+    redis.on('connect', () => {
+      this.setupQueues(redis);
+    });
+
+    redis.on('error', err => {
+      this.degradeQueueSystem(err);
+    });
+  }
+
+  private setupQueues(redis: IORedis) {
+    this.queue = new RetryableQueue<OutgoingWebhookJobData>('outgoing-webhooks', {
+      connection: redis,
+      defaultJobOptions: { attempts: 2, backoff: { type: 'exponential', delay: 5_000 } },
+      handlers: {
+        handleJob: async job => {
+          try {
+            const res = await this.httpService.axiosRef.request(job.data);
+
+            return res.data;
+          } catch (error) {
+            // Rethrow useful error data
+            if (isAxiosError(error)) {
+              throw error.response?.data ?? error;
+            }
+          }
+        },
+        handleDLQJob: async job => {
+          this.logger.error('Failed to send webhook through queue system.', {
+            id: job.id,
+            jobData: job.data,
+            error: job.data.error,
+          });
+
+          alertWebhookFailure({ ...job.data.error, url: job.data.url, method: job.data.method });
+
+          // Process unsent data
+          // ...
+        },
+        onRetry: (job, err, attemptsLeft) => {
+          this.logger.warn(`Failed to send webhook. Retrying... ${attemptsLeft} attempts left.`, {
+            id: job.id,
+            jobData: job.data,
+            error: err,
+          });
         },
       },
     });
 
-    const { config } = await this.customerService.getByProjectId(projectId, {
-      select: { config: true },
-    });
-
-    if (!config?.ongoingWorkflowDefinitionId) {
-      this.logger.error('No ongoing workflow definition found for project', { projectId });
-
-      return;
-    }
-
-    const { id: workflowDefinitionId } = await this.workflowDefinitionService.getLatestVersion(
-      config.ongoingWorkflowDefinitionId,
-      [projectId],
+    this.bullBoard.boardInstance.setQueues(
+      [this.queue.queue, this.queue.dlq].map(queue => new BullMQAdapter(queue)),
     );
+  }
 
-    const hits = data?.hits ?? [];
+  private degradeQueueSystem(err?: Error) {
+    this.logger.log('Queue system in degraded mode due to Redis unavailability.', { err });
 
-    const amlHits = hits.map(hit => ({
-      ...hit,
-      vendor: data?.vendor,
-    }));
+    this.queue = null;
+    this.bullBoard.boardInstance.setQueues([]);
+  }
 
-    await this.endUserService.updateById(endUserId, {
-      data: {
-        amlHits,
-      },
-    });
+  async invokeWebhook<T extends keyof OutgoingWebhookPayloads>(
+    name: T,
+    config: OutgoingWebhookJobData,
+  ) {
+    const { url, method, headers: argHeaders, data, secret, timeout } = config;
 
-    if (hits.length === 0) {
-      this.logger.log('No AML hits found', { endUserId });
+    this.logger.log('Sending webhook...', { url, method });
 
-      return;
+    const headers: RawAxiosRequestHeaders = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      ...argHeaders,
+    };
+
+    if (!secret) {
+      this.logger.warn('Secret is missing when sending a webhook', { url, method });
+    } else if (data) {
+      headers['X-Authorization'] = secret;
+      headers['X-HMAC-Signature'] = sign({ payload: data, key: secret });
     }
 
-    const workflow = await this.workflowService.createOrUpdateWorkflowRuntime({
-      workflowDefinitionId,
-      context: {
-        aml: data,
-        entity: {
-          // @ts-expect-error -- prisma date not compatible with typebox
-          data: {
-            ...rest,
-            additionalInfo: rest.additionalInfo ?? {},
-          },
-          ballerineEntityId: endUserId,
-          type: 'individual',
-        },
-        documents: [],
-      },
-      projectIds: [projectId],
-      currentProjectId: projectId,
-    });
+    const requestData: OutgoingWebhookJobData = {
+      url,
+      method,
+      headers,
+      data,
+      timeout: timeout ?? 15_000,
+    };
 
-    this.logger.log(`Created workflow for AML hits`, { workflow });
+    if (this.queue) {
+      try {
+        return await this.queue.queue.add(name, requestData);
+      } catch (error) {
+        this.logger.error('Failed to add webhook job to the queue:: ', { error });
+        this.logger.log('Attempting to send the request directly...');
+      }
+    }
+
+    try {
+      return await this.httpService.axiosRef.request(requestData);
+    } catch (error) {
+      const { id, state, entityId, correlationId, runtimeData } = data as Record<string, any>;
+
+      const errorPayload = { ...(isAxiosError(error) ? error.response?.data : error), url, method };
+
+      this.logger.error('Failed to send webhook', {
+        id: runtimeData.id ?? id,
+        error: errorPayload,
+        state,
+        entityId,
+        correlationId,
+      });
+
+      alertWebhookFailure(errorPayload);
+    }
+  }
+
+  async onModuleDestroy() {
+    await this.queue?.shutdown();
   }
 }

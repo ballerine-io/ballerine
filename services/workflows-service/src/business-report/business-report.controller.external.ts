@@ -16,8 +16,8 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CustomerService } from '@/customer/customer.service';
 import { BusinessService } from '@/business/business.service';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
-import type { AuthenticatedEntity, TProjectId } from '@/types';
-import { GetLatestBusinessReportDto } from '@/business-report/get-latest-business-report.dto';
+import type { TProjectId } from '@/types';
+import { GetLatestBusinessReportDto } from '@/business-report/dtos/get-latest-business-report.dto';
 import {
   BusinessReportListRequestParamDto,
   BusinessReportListResponseDto,

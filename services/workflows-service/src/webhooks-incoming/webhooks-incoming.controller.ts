@@ -1,14 +1,14 @@
 import * as common from '@nestjs/common';
-import * as swagger from '@nestjs/swagger';
-import * as errors from '../errors';
-import { Public } from '@/common/decorators/public.decorator';
-import { AmlWebhookInput } from './dtos/aml-webhook-input';
-import { IndividualAmlWebhookInput } from '@/webhooks/dtos/individual-aml-webhook-input';
-import { WebhooksService } from '@/webhooks/webhooks.service';
-import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
 import { BadRequestException } from '@nestjs/common';
-import { isObject } from '@ballerine/common';
+import * as swagger from '@nestjs/swagger';
+
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { Public } from '@/common/decorators/public.decorator';
+import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
+import * as errors from '../errors';
+import { AmlWebhookInput } from './types/aml-webhook-input.dto';
+import { IndividualAmlWebhookInput } from './types/individual-aml-webhook-input.dto';
+import { IncomingWebhooksService } from './webhooks-incoming.service';
 
 const EntityType = {
   BUSINESS: 'business',
@@ -19,9 +19,9 @@ const EntityType = {
 @swagger.ApiTags('Internal Webhooks')
 @swagger.ApiExcludeController()
 @common.Controller('webhooks')
-export class WebhooksController {
+export class IncomingWebhooksController {
   constructor(
-    private readonly webhooksService: WebhooksService,
+    private readonly incomingWebhooksService: IncomingWebhooksService,
     private readonly logger: AppLoggerService,
   ) {}
 
@@ -35,24 +35,23 @@ export class WebhooksController {
     @common.Param() { entityType }: AmlWebhookInput,
     @common.Body() { data }: IndividualAmlWebhookInput,
   ) {
-    if (!(isObject(data) && 'endUserId' in data && data.endUserId)) {
+    if (!data?.endUserId) {
       throw new BadRequestException('Missing endUserId');
     }
 
     try {
       if (entityType === EntityType.INDIVIDUAL) {
-        await this.webhooksService.handleIndividualAmlHit({ endUserId: data.endUserId, data });
-      } else {
-        this.logger.error(`Unknown entity type: ${entityType}`);
-
-        throw new BadRequestException('Unknown entity type');
+        return await this.incomingWebhooksService.handleIndividualAmlHit({
+          endUserId: data.endUserId,
+          data,
+        });
       }
+
+      this.logger.error(`Unknown entity type: ${entityType}`);
+      throw new BadRequestException('Unknown entity type');
     } catch (error) {
       this.logger.error('amlHook::', { entityType, data, error });
-
       throw error;
     }
-
-    return;
   }
 }

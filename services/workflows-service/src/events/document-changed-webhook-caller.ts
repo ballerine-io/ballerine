@@ -3,16 +3,15 @@ import {
   WorkflowEventEmitterService,
 } from '@/workflow/workflow-event-emitter.service';
 import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { AxiosInstance } from 'axios';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { DefaultContextSchema, getDocumentId, sign } from '@ballerine/common';
+import { DefaultContextSchema, getDocumentId } from '@ballerine/common';
 import { alertWebhookFailure } from '@/events/alert-webhook-failure';
 import { ExtractWorkflowEventData } from '@/workflow/types';
 import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { ConfigService } from '@nestjs/config';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
+import { WebhooksService } from '@/webhooks/webhooks.service';
 
 const getExtensionFromMimeType = (mimeType: string) => {
   const parts = mimeType?.split('/');
@@ -26,17 +25,13 @@ const getExtensionFromMimeType = (mimeType: string) => {
 
 @Injectable()
 export class DocumentChangedWebhookCaller {
-  #__axios: AxiosInstance;
-
   constructor(
-    private httpService: HttpService,
     private readonly configService: ConfigService,
     workflowEventEmitter: WorkflowEventEmitterService,
     private readonly logger: AppLoggerService,
     private readonly customerService: CustomerService,
+    private readonly webhooksService: WebhooksService,
   ) {
-    this.#__axios = this.httpService.axiosRef;
-
     workflowEventEmitter.on(
       'workflow.context.changed',
       async (data: ExtractWorkflowEventData<'workflow.context.changed'>, config) => {
@@ -156,56 +151,35 @@ export class DocumentChangedWebhookCaller {
     webhook: Webhook;
     webhookSharedSecret: string;
   }) {
-    this.logger.log('Sending webhook', { id, url });
+    const payload = {
+      id,
+      eventName: 'workflow.context.document.changed',
+      apiVersion,
+      timestamp: new Date().toISOString(),
+      assignee: data.assignee
+        ? {
+            id: data.assignee.id,
+            firstName: data.assignee.firstName,
+            lastName: data.assignee.lastName,
+            email: data.assignee.email,
+          }
+        : null,
+      assignedAt: data.assignedAt,
+      workflowCreatedAt: data.updatedRuntimeData.createdAt,
+      workflowResolvedAt: data.updatedRuntimeData.resolvedAt,
+      workflowDefinitionId: data.updatedRuntimeData.workflowDefinitionId,
+      workflowRuntimeId: data.updatedRuntimeData.id,
+      ballerineEntityId: data.entityId,
+      correlationId: data.correlationId,
+      environment,
+      data: data.updatedRuntimeData.context,
+    } as const;
 
-    try {
-      const payload = {
-        id,
-        eventName: 'workflow.context.document.changed',
-        apiVersion,
-        timestamp: new Date().toISOString(),
-        assignee: data.assignee
-          ? {
-              id: data.assignee.id,
-              firstName: data.assignee.firstName,
-              lastName: data.assignee.lastName,
-              email: data.assignee.email,
-            }
-          : null,
-        assignedAt: data.assignedAt,
-        workflowCreatedAt: data.updatedRuntimeData.createdAt,
-        workflowResolvedAt: data.updatedRuntimeData.resolvedAt,
-        workflowDefinitionId: data.updatedRuntimeData.workflowDefinitionId,
-        workflowRuntimeId: data.updatedRuntimeData.id,
-        ballerineEntityId: data.entityId,
-        correlationId: data.correlationId,
-        environment,
-        data: data.updatedRuntimeData.context,
-      };
-
-      const res = await this.#__axios.post(url, payload, {
-        headers: {
-          'X-Authorization': webhookSharedSecret,
-          'X-HMAC-Signature': sign({ payload, key: webhookSharedSecret }),
-        },
-      });
-
-      this.logger.log('Webhook Result:', {
-        status: res.status,
-        statusText: res.statusText,
-        data: res.data,
-      });
-    } catch (error: Error | any) {
-      this.logger.log('Webhook error data::  ', {
-        state: data.state,
-        entityId: data.entityId,
-        correlationId: data.correlationId,
-        id: data.updatedRuntimeData.id,
-        newDocumentsByIdentifier,
-        oldDocuments,
-      });
-      this.logger.error('Failed to send webhook', { id, message: error?.message, error });
-      alertWebhookFailure(error);
-    }
+    await this.webhooksService.invokeWebhook(payload.eventName, {
+      url,
+      method: 'POST',
+      data: payload,
+      secret: webhookSharedSecret,
+    });
   }
 }
