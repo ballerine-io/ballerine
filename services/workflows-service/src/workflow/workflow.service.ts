@@ -144,12 +144,12 @@ export class WorkflowService {
     private readonly salesforceService: SalesforceService,
     private readonly workflowTokenService: WorkflowTokenService,
     private readonly uiDefinitionService: UiDefinitionService,
-    private readonly storageService: StorageService,
     private readonly prismaService: PrismaService,
     private readonly riskRuleService: RiskRuleService,
     private readonly ruleEngineService: RuleEngineService,
     private readonly sentry: SentryService,
     private readonly secretsManagerFactory: SecretsManagerFactory,
+    private readonly storageService: StorageService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
