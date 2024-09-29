@@ -11,7 +11,7 @@ import { ServeStaticOptionsService } from './serve-static-options.service';
 import { EndUserModule } from './end-user/end-user.module';
 import { BusinessModule } from './business/business.module';
 import { StorageModule } from './storage/storage.module';
-import { MulterModule } from '@nestjs/platform-express';
+import { ExpressAdapter, MulterModule } from '@nestjs/platform-express';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { FilterModule } from '@/filter/filter.module';
 import { configs, env, serverEnvSchema } from '@/env';
@@ -133,13 +133,7 @@ export const validate = async (config: Record<string, unknown>) => {
     RuleEngineModule,
     NotionModule,
     SecretsManagerModule,
-    BullModule.forRoot({
-      connection: {
-        host: env.REDIS_HOST || 'localhost',
-        port: env.REDIS_PORT,
-        password: env.REDIS_PASSWORD,
-      },
-    }),
+    BullMqModule
   ],
   providers: [
     {
