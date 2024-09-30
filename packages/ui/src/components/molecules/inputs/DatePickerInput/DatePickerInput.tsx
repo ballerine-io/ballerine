@@ -59,7 +59,17 @@ export const DatePickerInput = ({
         return value.toISOString();
       }
 
-      return value.format(outputValueFormat);
+      const date = value.format(outputValueFormat);
+
+      if (!dayjs(date).isValid()) {
+        console.warn(
+          `Invalid outputValueFormat: "${outputValueFormat}" provided. iso will be used.`,
+        );
+
+        return value.toISOString();
+      }
+
+      return date;
     },
     [outputValueFormat],
   );
