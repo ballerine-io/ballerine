@@ -5,7 +5,7 @@ export type UploadedFileResult = { fileId: string };
 export type UploadFileCallback = (file: File) => Promise<UploadedFileResult>;
 
 export interface DocumentUploadFieldProps {
-  onChange: (fileId: string) => void;
+  onChange: (fileId: string, clear?: boolean) => void;
   uploadFile: UploadFileFn;
   onBlur?: () => void;
   fileRepository: FileRepository;

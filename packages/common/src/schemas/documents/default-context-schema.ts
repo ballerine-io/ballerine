@@ -9,12 +9,13 @@ import { MerchantScreeningPluginSchema } from '@/schemas/documents/merchant-scre
 import { CompanySanctionsPluginSchema } from '@/schemas/documents/schemas/company-sanctions-plugin-schema';
 import { MerchantMonitoringPluginSchema } from '@/schemas/documents/schemas/merchant-monitoring-plugin-schema';
 import { BusinessInformationPluginSchema } from '@/schemas/documents/schemas/business-information-plugin-schema';
+import { RiskEvaluationPluginSchema } from './schemas/risk-evaluation-plugin-schema';
 
 export const defaultInputContextSchema = Type.Object({
   customData: Type.Optional(Type.Object({}, { additionalProperties: true })),
   entity: Type.Union([
-    Type.Composite([EntitySchema, Type.Object({ id: Type.String() })]),
     Type.Composite([EntitySchema, Type.Object({ ballerineEntityId: Type.String() })]),
+    Type.Composite([EntitySchema, Type.Object({ id: Type.String() })]),
   ]),
   documents: DocumentsSchema,
 });
@@ -32,6 +33,7 @@ export const defaultContextSchema = Type.Composite([
           merchantMonitoring: MerchantMonitoringPluginSchema,
           businessInformation: BusinessInformationPluginSchema,
           merchantScreening: MerchantScreeningPluginSchema,
+          riskEvaluation: RiskEvaluationPluginSchema,
         },
         { additionalProperties: true },
       ),

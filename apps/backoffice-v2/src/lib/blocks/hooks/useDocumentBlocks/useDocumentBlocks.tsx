@@ -452,6 +452,11 @@ export const useDocumentBlocks = ({
                     },
                   ),
                 },
+                props: {
+                  config: {
+                    sort: { predefinedOrder: ['category', 'type'] },
+                  },
+                },
                 workflowId: workflow?.id,
                 isSaveDisabled: isLoadingOCRDocument,
                 documents: workflow?.context?.documents,

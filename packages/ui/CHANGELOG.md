@@ -1,5 +1,35 @@
 # @ballerine/ui
 
+## 0.5.33
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.33
+
+## 0.5.32
+
+### Patch Changes
+
+- Fixed report content violation explanation
+
+## 0.5.31
+
+### Patch Changes
+
+- d
+- Updated dependencies
+  - @ballerine/common@0.9.32
+
+## 0.5.30
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.31
+
 ## 0.5.29
 
 ### Patch Changes
