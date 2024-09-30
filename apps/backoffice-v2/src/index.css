@@ -135,3 +135,7 @@
     }
   }
 }
+
+a.bpComposerPoweredBy {
+  display: none !important;
+}
