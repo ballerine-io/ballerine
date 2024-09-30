@@ -82,7 +82,7 @@ export class StorageService {
     let mimeType =
       persistedFile.mimeType ||
       mime.getType(persistedFile.fileName || persistedFile.uri || '') ||
-      'image/jpg';
+      'image/jpeg';
 
     if (persistedFile.fileNameInBucket && format === 'signed-url') {
       const signedUrl = await createPresignedUrlWithClient({
