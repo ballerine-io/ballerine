@@ -2605,7 +2605,7 @@ export class WorkflowService {
           throw new BadRequestException('Cannot run document OCR on document without pages');
         }
 
-        const documentPagesContent = document.pages.map(async page => {
+        const documentFetchPagesContentPromise = document.pages.map(async page => {
           const { signedUrl, mimeType, filePath } = await this.storageService.fetchFileContent({
             id: page.ballerineFileId!,
             format: 'signed-url',
@@ -2626,7 +2626,7 @@ export class WorkflowService {
           return { base64: `data:${mimeType};base64,${base64String}` };
         });
 
-        const images = (await Promise.all(documentPagesContent)) satisfies TOcrImages;
+        const images = (await Promise.all(documentFetchPagesContentPromise)) satisfies TOcrImages;
 
         return (
           await new UnifiedApiClient().runOcr({
