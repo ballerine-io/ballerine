@@ -1,9 +1,5 @@
-import { Method } from 'axios';
-
-export interface WebhookJobData {
-  url: string;
-  method: Method;
-  headers?: Record<string, string>;
-  body?: Record<string, unknown>;
-  timeout?: number;
+export interface IncomingWebhookData {
+  source: string;
+  payload: Record<string, unknown>;
+  service: (payload: Record<string, unknown>) => Promise<void>;
 }
