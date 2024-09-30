@@ -1,22 +1,18 @@
-import { InjectQueue, Processor, OnQueueEvent } from '@nestjs/bullmq';
+import { InjectQueue, OnQueueEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job, Queue } from 'bullmq';
-import axios, { AxiosRequestConfig, Method } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { WebhookJobData } from '@/bull-mq/webhook/types/types';
+import { QUEUES } from '@/bull-mq/consts';
 
-export interface WebhookJobData {
-  url: string;
-  method: Method;
-  headers?: Record<string, string>;
-  body?: Record<string, unknown>;
-  timeout?: number;
-}
-
-@Processor('webhook-queue')
-export class WebhookProcessor {
+@Processor(QUEUES.INCOMING_WEBHOOKS_QUEUE.name)
+export class WebhookProcessor extends WorkerHost {
   constructor(
     protected readonly logger: AppLoggerService,
-    @InjectQueue('webhook-queue') private webhookQueue: Queue,
-  ) {}
+    @InjectQueue(QUEUES.INCOMING_WEBHOOKS_QUEUE.name) private webhookQueue: Queue,
+  ) {
+    super();
+  }
 
   async process(job: Job<WebhookJobData>) {
     this.logger.log(`Processing webhook job ${job.id}`);
