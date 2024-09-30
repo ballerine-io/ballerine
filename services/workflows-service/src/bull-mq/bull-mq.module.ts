@@ -1,26 +1,17 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { ExpressAdapter } from '@bull-board/express';
 import { BullAdapter } from '@bull-board/api/bullAdapter';
 import { env } from '@/env';
 import { WebhookService } from '@/bull-mq/webhook/webhook.service';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { WebhookProcessor } from '@/bull-mq/webhook/webhook.processor';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
-
-const QUEUE_NAMES = [
-  {
-    name: 'webhook-queue',
-    config: {},
-  },
-];
+import { QUEUES } from '@/bull-mq/consts';
 
 @Module({
   imports: [
     AppLoggerModule,
-    ConfigModule.forRoot({ isGlobal: true }),
     BullModule.forRootAsync({
       useFactory: () => ({
         connection: {
@@ -30,19 +21,24 @@ const QUEUE_NAMES = [
         },
       }),
     }),
-    BullModule.registerQueue(...QUEUE_NAMES.map(({ name }) => ({ name }))),
+    BullModule.registerQueue(
+      ...Object.values(QUEUES).map(queue => ({
+        name: queue.name,
+        ...queue.config,
+      })),
+    ),
     BullBoardModule.forRoot({
       route: '/queues',
       adapter: ExpressAdapter,
     }),
-    ...QUEUE_NAMES.map(({ name }) =>
+    ...Object.values(QUEUES).map(queue =>
       BullBoardModule.forFeature({
-        name,
+        name: queue.name,
         adapter: BullAdapter,
       }),
     ),
   ],
-  providers: [WebhookProcessor, WebhookService, AppLoggerService],
+  providers: [WebhookProcessor, WebhookService],
   exports: [BullModule, WebhookService],
 })
 export class BullMqModule {}

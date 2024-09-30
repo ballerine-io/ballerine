@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { WebhookJobData } from './webhook.processor'; // You might want to move this interface to a separate file
+import { WebhookJobData } from '@/bull-mq/webhook/types/types';
 
 @Injectable()
 export class WebhookService {
