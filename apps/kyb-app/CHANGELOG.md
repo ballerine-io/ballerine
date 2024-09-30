@@ -4,6 +4,8 @@
 
 ### Patch Changes
 
+- Updated dependencies
+  - @ballerine/ui@0.5.34
 - Bump
 - Updated dependencies
   - @ballerine/blocks@0.2.20
