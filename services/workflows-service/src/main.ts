@@ -53,10 +53,12 @@ const main = async () => {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true, //will be buffered until a custom logger is attached
     snapshot: true,
-    cors: {
-      origin: corsOrigins,
-      credentials: true,
-    },
+    cors: env.DISABLE_CORS
+      ? false
+      : {
+          origin: corsOrigins,
+          credentials: true,
+        },
   });
 
   const logger = app.get(AppLoggerService);
