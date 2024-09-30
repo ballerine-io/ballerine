@@ -17,10 +17,6 @@ services:
 volumes:
   redis-data:
     driver: local
-    driver_opts:
-      type: tmpfs
-      device: tmpfs
-      o: size=100m
 networks:
   app-network:
     driver: bridge
