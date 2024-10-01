@@ -7,8 +7,8 @@ import { BusinessService } from '@/business/business.service';
 import { Business, Project } from '@prisma/client';
 import {
   FEATURE_LIST,
-  TCustomerFeatures,
   TCustomerWithDefinitionsFeatures,
+  TFeaturesWithFeatures,
   TOngoingAuditReportDefinitionConfig,
 } from '@/customer/types';
 import { BusinessReportService } from '@/business-report/business-report.service';
@@ -49,7 +49,6 @@ describe('OngoingMonitoringCron', () => {
       jest.spyOn(prismaService, 'acquireLock').mockResolvedValue(true);
       jest.spyOn(customerService, 'list').mockResolvedValue(mockCustomers());
       jest.spyOn(businessService, 'list').mockResolvedValue(mockBusinesses());
-      // Mock additional service methods as needed
 
       await service.handleCron();
 
@@ -232,7 +231,7 @@ describe('OngoingMonitoringCron', () => {
                 proxyViaCountry: 'US',
               } as TOngoingAuditReportDefinitionConfig,
             },
-          } as Record<string, TCustomerFeatures>,
+          } as TFeaturesWithFeatures,
         },
       },
       {
@@ -255,7 +254,7 @@ describe('OngoingMonitoringCron', () => {
                 proxyViaCountry: 'GB',
               } as TOngoingAuditReportDefinitionConfig,
             },
-          } as Record<string, TCustomerFeatures>,
+          } as TFeaturesWithFeatures,
         },
       },
       {
@@ -274,13 +273,13 @@ describe('OngoingMonitoringCron', () => {
                 proxyViaCountry: 'CA',
               } as TOngoingAuditReportDefinitionConfig,
             },
-          } as Record<string, TCustomerFeatures>,
+          } as TFeaturesWithFeatures,
         },
       },
     ] as unknown as Array<
       Business & {
         metadata?: {
-          featureConfig?: TCustomerWithDefinitionsFeatures['features'];
+          featureConfig?: TFeaturesWithFeatures;
           lastOngoingAuditReportInvokedAt?: number;
         };
       }

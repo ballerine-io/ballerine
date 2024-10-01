@@ -20,6 +20,7 @@ import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Business, Project } from '@prisma/client';
 import get from 'lodash/get';
+import { isBoolean } from 'lodash';
 
 @Injectable()
 export class OngoingMonitoringCron {
@@ -141,6 +142,7 @@ export class OngoingMonitoringCron {
           customer.features &&
           Object.entries(customer.features).find(([featureName, featureConfig]) => {
             return (
+              !isBoolean(featureConfig) &&
               featureName === this.processFeatureName &&
               featureConfig.enabled &&
               featureConfig.options.active
@@ -171,13 +173,12 @@ export class OngoingMonitoringCron {
     return await Promise.all(customersWithDefinitionsPromise);
   }
 
-  private extractDefinitionConfig(
-    featureConfig: Record<string, TCustomerFeatures> | null | undefined,
-  ) {
+  private extractDefinitionConfig(featureConfig: TCustomerWithDefinitionsFeatures['features']) {
     if (!featureConfig) return null;
 
     return Object.entries(featureConfig).find(([featureName, featureConfig]) => {
       return (
+        !isBoolean(featureConfig) &&
         featureName === this.processFeatureName &&
         featureConfig.enabled &&
         featureConfig.options.active
