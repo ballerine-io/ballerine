@@ -2593,13 +2593,6 @@ export class WorkflowService {
           throw new BadRequestException('Document OCR is not enabled for this customer');
         }
 
-        const workflowRuntime = await this.workflowRuntimeDataRepository.findById(
-          workflowRuntimeId,
-          {},
-          [projectId],
-          transaction,
-        );
-
         const document = await this.findDocumentById({
           workflowId: workflowRuntimeId,
           projectId,
