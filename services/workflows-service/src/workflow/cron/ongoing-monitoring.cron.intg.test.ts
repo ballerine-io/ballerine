@@ -9,7 +9,7 @@ import {
   FEATURE_LIST,
   TCustomerFeatures,
   TCustomerWithDefinitionsFeatures,
-  TOngoingAuditReportDefinitionConfig,
+  TOngoingMerchantReportOptions,
 } from '@/customer/types';
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
@@ -137,8 +137,8 @@ describe('OngoingMonitoringCron', () => {
         displayName: 'Test Customer Display 1',
         logoImageUri: 'http://example.com/logo1.png',
         features: {
-          [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
-            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
+          [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
+            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT,
             enabled: true,
             options: {
               definitionVariation: 'ongoing_merchant_audit_t1',
@@ -221,8 +221,8 @@ describe('OngoingMonitoringCron', () => {
         companyName: 'Test Business 1',
         metadata: {
           featureConfig: {
-            [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
-              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
+            [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
+              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT,
               enabled: false,
               options: {
                 definitionVariation: 'variation1',
@@ -230,7 +230,7 @@ describe('OngoingMonitoringCron', () => {
                 active: true, // active false
                 checkTypes: ['type1', 'type2'],
                 proxyViaCountry: 'US',
-              } as TOngoingAuditReportDefinitionConfig,
+              } as TOngoingMerchantReportOptions,
             },
           } as Record<string, TCustomerFeatures>,
         },
@@ -244,8 +244,8 @@ describe('OngoingMonitoringCron', () => {
         companyName: 'Test Business 3',
         metadata: {
           featureConfig: {
-            [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
-              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
+            [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
+              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT,
               enabled: true,
               options: {
                 definitionVariation: 'variation2',
@@ -253,7 +253,7 @@ describe('OngoingMonitoringCron', () => {
                 active: true,
                 checkTypes: ['lob', 'content', 'reputation', 'businessConfig'],
                 proxyViaCountry: 'GB',
-              } as TOngoingAuditReportDefinitionConfig,
+              } as TOngoingMerchantReportOptions,
             },
           } as Record<string, TCustomerFeatures>,
         },
@@ -263,8 +263,8 @@ describe('OngoingMonitoringCron', () => {
         companyName: 'Test Business 4',
         metadata: {
           featureConfig: {
-            [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
-              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
+            [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
+              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT,
               enabled: true,
               options: {
                 definitionVariation: 'variation3',
@@ -272,7 +272,7 @@ describe('OngoingMonitoringCron', () => {
                 active: false,
                 checkTypes: ['type5', 'type6'],
                 proxyViaCountry: 'CA',
-              } as TOngoingAuditReportDefinitionConfig,
+              } as TOngoingMerchantReportOptions,
             },
           } as Record<string, TCustomerFeatures>,
         },

@@ -207,6 +207,7 @@ export class BusinessReportControllerInternal {
         },
         select: {
           id: true,
+          type: true,
           createdAt: true,
           updatedAt: true,
           report: true,
@@ -214,6 +215,7 @@ export class BusinessReportControllerInternal {
           status: true,
           business: {
             select: {
+              id: true,
               companyName: true,
               country: true,
               website: true,
@@ -254,6 +256,7 @@ export class BusinessReportControllerInternal {
       },
       select: {
         id: true,
+        type: true,
         createdAt: true,
         updatedAt: true,
         report: true,
@@ -261,6 +264,7 @@ export class BusinessReportControllerInternal {
         status: true,
         business: {
           select: {
+            id: true,
             companyName: true,
             country: true,
             website: true,
@@ -300,6 +304,7 @@ export class BusinessReportControllerInternal {
     return await this.businessReportService.findById(id, [currentProjectId], {
       select: {
         id: true,
+        type: true,
         createdAt: true,
         updatedAt: true,
         report: true,
@@ -307,6 +312,7 @@ export class BusinessReportControllerInternal {
         status: true,
         business: {
           select: {
+            id: true,
             companyName: true,
             country: true,
             website: true,

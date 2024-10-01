@@ -32,7 +32,7 @@ export class BusinessService {
       Business & {
         metadata?: {
           featureConfig?: TCustomerWithDefinitionsFeatures['features'];
-          lastOngoingAuditReportInvokedAt?: number;
+          lastOngoingReportInvokedAt?: number;
         };
       }
     >;

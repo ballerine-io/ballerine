@@ -9,31 +9,45 @@ export type TAuthenticationConfiguration = {
 };
 
 export const FEATURE_LIST = {
-  ONGOING_MERCHANT_REPORT_T1: 'ONGOING_MERCHANT_REPORT_T1',
+  ONGOING_MERCHANT_REPORT: 'ONGOING_MERCHANT_REPORT',
 } as const;
 
-export type TCustomerFeatures = {
-  name: keyof typeof FEATURE_LIST;
-  enabled: boolean;
-  options: TOngoingAuditReportDefinitionConfig;
-};
-
-export type TOngoingAuditReportDefinitionConfig = {
-  intervalInDays: number;
+export type TOngoingMerchantReportOptions = {
+  runByDefault?: boolean;
   proxyViaCountry: string;
+  workflowVersion: '1' | '2' | '3';
+  reportType: 'ONGOING_MERCHANT_REPORT_T1';
+} & (
+  | {
+      specificDates: {
+        dayInMonth: number;
+      };
+    }
+  | {
+      intervalInDays: number;
+    }
+);
+
+type FeaturesOptions = TOngoingMerchantReportOptions;
+
+export type TCustomerFeatures = {
+  enabled: boolean;
+  options: FeaturesOptions;
 };
 
 export const CUSTOMER_FEATURES = {
-  [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
-    name: 'ONGOING_MERCHANT_REPORT_T1',
-    enabled: true, // show option in UI
+  [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
+    enabled: true,
     options: {
       intervalInDays: 30,
+      runByDefault: true,
+      workflowVersion: '2',
       proxyViaCountry: 'GB',
+      reportType: 'ONGOING_MERCHANT_REPORT_T1',
     },
   },
 } satisfies Record<string, TCustomerFeatures>;
 
 export type TCustomerWithDefinitionsFeatures = Customer & {
-  features?: Record<string, TCustomerFeatures> | null;
+  features?: Record<keyof typeof FEATURE_LIST, TCustomerFeatures> | null;
 };

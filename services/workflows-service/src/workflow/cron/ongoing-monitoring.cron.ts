@@ -2,11 +2,8 @@ import { BusinessReportService } from '@/business-report/business-report.service
 import { BusinessService } from '@/business/business.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CustomerService } from '@/customer/customer.service';
-import {
-  FEATURE_LIST,
-  TCustomerFeatures,
-  TCustomerWithDefinitionsFeatures,
-} from '@/customer/types';
+import { FEATURE_LIST, TCustomerFeatures } from '@/customer/types';
+import { env } from '@/env';
 import { PrismaService } from '@/prisma/prisma.service';
 import { TProjectIds } from '@/types';
 import { ONGOING_MONITORING_LOCK_KEY } from '@/workflow/cron/lock-keys';
@@ -22,7 +19,7 @@ const ONE_DAY = 24 * 60 * 60 * 1000;
 @Injectable()
 export class OngoingMonitoringCron {
   private readonly lockKey = ONGOING_MONITORING_LOCK_KEY;
-  private readonly processFeatureName = FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1;
+  private readonly processFeatureName = FEATURE_LIST.ONGOING_MERCHANT_REPORT;
 
   constructor(
     protected readonly prisma: PrismaService,
@@ -33,7 +30,7 @@ export class OngoingMonitoringCron {
     protected readonly businessReportService: BusinessReportService,
   ) {}
 
-  // @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  // @Cron(CronExpression.EVERY_10_MINUTES)
   @Cron(CronExpression.EVERY_10_SECONDS)
   async handleCron() {
     const lockAcquired = await this.prisma.acquireLock(this.lockKey);
@@ -44,18 +41,33 @@ export class OngoingMonitoringCron {
       return;
     }
 
+    let ongoingReportsCounter = 0;
+
     try {
       const customers = await this.customerService.list({
         select: { projects: true, features: true, id: true },
       });
 
-      const featureConfiguration = await this.fetchCustomerFeatureConfiguration(customers);
+      for (const { projects, features } of customers) {
+        const projectIds = projects.map(({ id }: { id: string }) => id);
 
-      for (const { projectIds } of featureConfiguration) {
+        if (!features?.[this.processFeatureName]?.enabled) {
+          continue;
+        }
+
         const businesses = await this.businessService.list({}, projectIds);
 
         for (const business of businesses) {
           try {
+            if (
+              !business.metadata?.featureConfig?.[this.processFeatureName]?.enabled &&
+              !features[this.processFeatureName].options.runByDefault
+            ) {
+              this.logger.debug(`Ongoing monitoring is not enabled for business ${business.id}.`);
+
+              continue;
+            }
+
             const lastReceivedReport = await this.findLastBusinessReport(business, projectIds);
 
             if (!lastReceivedReport?.reportId) {
@@ -64,24 +76,42 @@ export class OngoingMonitoringCron {
               continue;
             }
 
-            const dateToRunReport = new Date(
-              new Date().setTime(
-                // lastReceivedReport.createdAt.getTime() + processConfig.intervalInDays * ONE_DAY,
-                lastReceivedReport.createdAt.getTime() + 1000,
-              ),
-            );
+            const now = new Date().getTime();
+            const options = features[this.processFeatureName].options;
 
-            if (dateToRunReport <= new Date()) {
-              await this.invokeOngoingAuditReport({
-                business: business as Business & {
-                  metadata?: { featureConfig?: Record<string, TCustomerFeatures> };
-                },
-                currentProjectId: business.projectId,
-                lastReportId: lastReceivedReport.reportId,
-                workflowVersion: '2',
-                reportType: this.processFeatureName,
-              });
+            const lastReceivedReportTime = lastReceivedReport.createdAt.getTime();
+
+            if (
+              ('specificDates' in options &&
+                new Date().getDate() !== options.specificDates.dayInMonth &&
+                lastReceivedReportTime + 32 * ONE_DAY < now) ||
+              ('intervalInDays' in options &&
+                now - lastReceivedReportTime < options.intervalInDays * ONE_DAY)
+            ) {
+              this.logger.debug(`Skipping ongoing report for business: ${business.id}`);
+
+              continue;
             }
+
+            if (ongoingReportsCounter > env.ONGOING_REPORTS_LIMIT) {
+              this.logger.debug(`Ongoing reports limit reached for current run`);
+
+              continue;
+            }
+
+            await this.invokeOngoingMerchantReport({
+              currentProjectId: business.projectId,
+              lastReportId: lastReceivedReport.reportId,
+              workflowVersion: features[this.processFeatureName].options.workflowVersion ?? '2',
+              reportType:
+                features[this.processFeatureName].options.reportType ??
+                'ONGOING_MERCHANT_REPORT_T1',
+              business: business as Business & {
+                metadata?: { featureConfig?: Record<string, TCustomerFeatures> };
+              },
+            });
+
+            ongoingReportsCounter++;
           } catch (error) {
             this.logger.error(
               `Failed to Invoke Ongoing Report for businessId: ${
@@ -119,29 +149,18 @@ export class OngoingMonitoringCron {
     return businessReports[0];
   }
 
-  private async fetchCustomerFeatureConfiguration(customers: TCustomerWithDefinitionsFeatures[]) {
-    return customers.filter(
-      customer =>
-        customer.features &&
-        Object.entries(customer.features).find(
-          ([featureName, featureConfig]) =>
-            featureName === this.processFeatureName && featureConfig.enabled,
-        ),
-    );
-  }
-
-  private async invokeOngoingAuditReport({
+  private async invokeOngoingMerchantReport({
     business,
-    currentProjectId,
+    reportType,
     lastReportId,
     workflowVersion,
-    reportType,
+    currentProjectId,
   }: {
-    business: Business & { metadata?: { featureConfig?: Record<string, TCustomerFeatures> } };
-    currentProjectId: string;
     lastReportId: string;
+    currentProjectId: string;
     workflowVersion: '1' | '2' | '3';
     reportType: ObjectValues<typeof BusinessReportType>;
+    business: Business & { metadata?: { featureConfig?: Record<string, TCustomerFeatures> } };
   }) {
     const {
       id: customerId,
@@ -172,7 +191,7 @@ export class OngoingMonitoringCron {
       data: {
         metadata: {
           ...((business.metadata ?? {}) as Record<string, unknown>),
-          lastOngoingAuditReportInvokedAt: new Date().getTime(),
+          lastOngoingReportInvokedAt: new Date().getTime(),
         },
       },
     });
