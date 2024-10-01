@@ -1,4 +1,4 @@
-import { IBaseValueValidatorParams } from '@/components/providers/Validator/types';
+import { IBaseValueValidatorParams, IFieldContext } from '@/components/providers/Validator/types';
 import { FormatValueValidator } from '@/components/providers/Validator/value-validators/format.value.validator';
 import { MaxLengthValueValidator } from '@/components/providers/Validator/value-validators/max-length.value.validator';
 import { MaximumValueValidator } from '@/components/providers/Validator/value-validators/maximum.value.validator';
@@ -26,9 +26,10 @@ export class ValueValidatorManager {
     value: unknown,
     key: TValidator,
     params: TValidatorParams,
+    fieldContext: IFieldContext,
   ) {
     const validator = new this.validators[key](params as any);
     //@ts-ignore
-    return validator.validate(value as any);
+    return validator.validate(value, fieldContext);
   }
 }

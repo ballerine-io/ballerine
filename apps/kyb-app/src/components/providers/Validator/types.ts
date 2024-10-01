@@ -5,6 +5,7 @@ import { IMinLengthValueValidatorParams } from '@/components/providers/Validator
 import { IPatternValidatorParams } from '@/components/providers/Validator/value-validators/pattern.value.validator';
 import { IRequiredValueValidatorParams } from '@/components/providers/Validator/value-validators/required.value-validator';
 import { Rule } from '@/domains/collection-flow';
+import { AnyObject } from '@ballerine/ui';
 
 export type TFormats = 'email';
 
@@ -51,4 +52,9 @@ export interface UIElementV2<TFieldParams = IBaseFieldParams> {
 export interface IBaseValueValidatorParams {
   message?: string;
   applyWhen?: Rule[];
+}
+
+export interface IFieldContext {
+  context: AnyObject;
+  stack: number[];
 }
