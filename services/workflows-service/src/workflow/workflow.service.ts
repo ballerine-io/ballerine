@@ -2589,8 +2589,6 @@ export class WorkflowService {
       async transaction => {
         const customer = await this.customerService.getByProjectId(projectId);
 
-        customer.features;
-
         if (customer.features?.['isDocumentOcrEnabled'] === true) {
           throw new BadRequestException('Document OCR is not enabled for this customer');
         }
