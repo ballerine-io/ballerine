@@ -338,7 +338,7 @@ export class WorkflowControllerInternal {
     }
   }
 
-  @common.Patch(':id/documents/:documentId/run-ocr')
+  @common.Get(':id/documents/:documentId/run-ocr')
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })

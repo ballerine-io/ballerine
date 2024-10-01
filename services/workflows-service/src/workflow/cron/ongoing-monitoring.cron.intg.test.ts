@@ -6,7 +6,7 @@ import { CustomerService } from '@/customer/customer.service';
 import { BusinessService } from '@/business/business.service';
 import { Business, Project } from '@prisma/client';
 import {
-  FEATURE_LIST,
+  FEATURE_LIST_WITH_OPTIONS,
   TCustomerFeatures,
   TCustomerWithDefinitionsFeatures,
   TOngoingAuditReportDefinitionConfig,
@@ -137,8 +137,8 @@ describe('OngoingMonitoringCron', () => {
         displayName: 'Test Customer Display 1',
         logoImageUri: 'http://example.com/logo1.png',
         features: {
-          [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
-            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
+          [FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T1]: {
+            name: FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T1,
             enabled: true,
             options: {
               definitionVariation: 'ongoing_merchant_audit_t1',
@@ -157,8 +157,8 @@ describe('OngoingMonitoringCron', () => {
         displayName: 'Test Customer Display 2',
         logoImageUri: 'http://example.com/logo2.png',
         features: {
-          [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2]: {
-            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2,
+          [FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T2]: {
+            name: FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T2,
             enabled: true,
             options: {
               definitionVariation: 'ongoing_merchant_audit_t2',
@@ -177,8 +177,8 @@ describe('OngoingMonitoringCron', () => {
         displayName: 'Test Customer Display 3',
         logoImageUri: 'http://example.com/logo3.png',
         features: {
-          [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2]: {
-            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2,
+          [FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T2]: {
+            name: FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T2,
             enabled: false,
             options: {
               definitionVariation: 'ongoing_merchant_audit_t2',
@@ -197,8 +197,8 @@ describe('OngoingMonitoringCron', () => {
         displayName: 'Test Customer Display 4',
         logoImageUri: 'http://example.com/logo4.png',
         features: {
-          [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2]: {
-            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2,
+          [FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T2]: {
+            name: FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T2,
             enabled: true,
             options: {
               definitionVariation: 'ongoing_merchant_audit_t2',
@@ -221,8 +221,8 @@ describe('OngoingMonitoringCron', () => {
         companyName: 'Test Business 1',
         metadata: {
           featureConfig: {
-            [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
-              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
+            [FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T1]: {
+              name: FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T1,
               enabled: false,
               options: {
                 definitionVariation: 'variation1',
@@ -244,8 +244,8 @@ describe('OngoingMonitoringCron', () => {
         companyName: 'Test Business 3',
         metadata: {
           featureConfig: {
-            [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
-              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
+            [FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T1]: {
+              name: FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T1,
               enabled: true,
               options: {
                 definitionVariation: 'variation2',
@@ -263,8 +263,8 @@ describe('OngoingMonitoringCron', () => {
         companyName: 'Test Business 4',
         metadata: {
           featureConfig: {
-            [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
-              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
+            [FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T1]: {
+              name: FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T1,
               enabled: true,
               options: {
                 definitionVariation: 'variation3',

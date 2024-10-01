@@ -2587,6 +2587,14 @@ export class WorkflowService {
   }) {
     const ocrResult = await this.prismaService.$transaction(
       async transaction => {
+        const customer = await this.customerService.getByProjectId(projectId);
+
+        customer.features;
+
+        if (customer.features?.['isDocumentOcrEnabled'] === true) {
+          throw new BadRequestException('Document OCR is not enabled for this customer');
+        }
+
         const workflowRuntime = await this.workflowRuntimeDataRepository.findById(
           workflowRuntimeId,
           {},
@@ -2606,8 +2614,14 @@ export class WorkflowService {
         }
 
         const documentFetchPagesContentPromise = document.pages.map(async page => {
+          const ballerineFileId = page.ballerineFileId;
+
+          if (!ballerineFileId) {
+            throw new BadRequestException('Cannot run document OCR on document without pages');
+          }
+
           const { signedUrl, mimeType, filePath } = await this.storageService.fetchFileContent({
-            id: page.ballerineFileId!,
+            id: ballerineFileId,
             format: 'signed-url',
             projectIds: [projectId],
           });

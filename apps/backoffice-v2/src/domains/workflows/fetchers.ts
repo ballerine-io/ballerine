@@ -307,7 +307,7 @@ export const fetchWorkflowDocumentOCRResult = async ({
   documentId: string;
 }) => {
   const [workflow, error] = await apiClient({
-    method: Method.PATCH,
+    method: Method.GET,
     url: `${getOriginUrl(
       env.VITE_API_URL,
     )}/api/v1/internal/workflows/${workflowRuntimeId}/documents/${documentId}/run-ocr`,

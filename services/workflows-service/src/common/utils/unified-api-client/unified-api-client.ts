@@ -27,17 +27,7 @@ export type TOcrImages = Array<
     }
 >;
 
-interface TOcrImage {
-  runOcr({
-    images,
-    schema,
-  }: {
-    images: TOcrImages;
-    schema: TSchema;
-  }): Promise<axios.AxiosResponse<any>>;
-}
-
-export class UnifiedApiClient implements TOcrImage {
+export class UnifiedApiClient {
   private readonly axiosInstance: AxiosInstance;
   private readonly logger = new Logger(UnifiedApiClient.name);
 

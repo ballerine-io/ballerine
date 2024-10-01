@@ -374,7 +374,13 @@ export const useDocumentBlocks = ({
           } ?? {},
         ).map(([title, formattedValue]) => {
           if (isObject(formattedValue)) {
-            formattedValue.value ||= ocrResult?.parsedData?.[title];
+            return [
+              title,
+              {
+                ...formattedValue,
+                value: formattedValue.value || ocrResult?.parsedData?.[title],
+              },
+            ];
           }
 
           return [title, formattedValue];

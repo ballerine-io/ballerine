@@ -38,13 +38,11 @@ export const DocumentsToolbar: FunctionComponent<{
 
   return (
     <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
-      {image && (
-        <ImageOCR
-          isOcrDisabled={!isOCREnabled}
-          onOcrPressed={onOcrPressed}
-          isLoadingOCR={isLoadingOCR}
-        />
-      )}
+      <ImageOCR
+        isOcrDisabled={!isOCREnabled}
+        onOcrPressed={onOcrPressed}
+        isLoadingOCR={isLoadingOCR}
+      />
       {!hideOpenExternalButton && !isLoading && image?.id && (
         <button
           type={`button`}

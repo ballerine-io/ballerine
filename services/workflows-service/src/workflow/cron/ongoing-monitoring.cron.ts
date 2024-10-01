@@ -4,7 +4,6 @@ import { ajv } from '@/common/ajv/ajv.validator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CustomerService } from '@/customer/customer.service';
 import {
-  FEATURE_LIST,
   TCustomerFeatures,
   TCustomerWithDefinitionsFeatures,
   TOngoingAuditReportDefinitionConfig,
