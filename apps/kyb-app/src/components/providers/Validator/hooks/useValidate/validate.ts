@@ -14,6 +14,10 @@ export const validate = (elements: UIElementV2[], context: object) => {
     stack: number[] = [],
   ): IValidationError[] => {
     const value = element.getValue();
+    const fieldContext = {
+      context,
+      stack,
+    };
 
     const isShouldApplyValidation = <TParams extends IBaseValueValidatorParams>(
       params: TParams,
@@ -32,14 +36,14 @@ export const validate = (elements: UIElementV2[], context: object) => {
           const isRequired = element.isRequired();
           if (!isRequired && value === undefined) return;
 
-          validatorManager.validate(value, validator as any, params);
+          validatorManager.validate(value, validator as any, params, fieldContext);
         } else {
           if (!isShouldApplyValidation(params as unknown as IBaseValueValidatorParams, context))
             return;
 
           if (value === undefined) return;
 
-          validatorManager.validate(value, validator as any, params);
+          validatorManager.validate(value, validator as any, params, fieldContext);
         }
       } catch (error) {
         return {

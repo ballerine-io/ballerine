@@ -1,4 +1,5 @@
 import { testRule } from '@/components/organisms/DynamicUI/rule-engines/utils/execute-rules';
+import { formatValueDestinationAndApplyStackIndexes } from '@/components/providers/Validator/hooks/useValidate/utils/format-value-destination-and-apply-stack-indexes';
 import { TValidationParams, UIElementV2 } from '@/components/providers/Validator/types';
 import { fieldElelements, fieldGroups } from '@/pages/CollectionFlowV2/renderer-schema';
 import { AnyObject } from '@ballerine/ui';
@@ -44,15 +45,11 @@ export class UIElement {
   }
 
   private formatValueDestination(valueDestination: string) {
-    return this.formatValueAndApplyStackIndexes(valueDestination);
+    return this.formatValueDestinationAndApplyStackIndexes(valueDestination);
   }
 
-  private formatValueAndApplyStackIndexes(value: string) {
-    this.stack.forEach((stackValue, index) => {
-      value = value.replace(`$${index}`, String(stackValue));
-    });
-
-    return value;
+  private formatValueDestinationAndApplyStackIndexes(valueDestination: string) {
+    return formatValueDestinationAndApplyStackIndexes(valueDestination, this.stack);
   }
 
   getValue() {
