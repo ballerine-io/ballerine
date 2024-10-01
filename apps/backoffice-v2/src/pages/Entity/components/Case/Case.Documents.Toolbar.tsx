@@ -5,6 +5,7 @@ import { ImageViewer } from '@/common/components/organisms/ImageViewer/ImageView
 import { ctw } from '@/common/utils/ctw/ctw';
 import { isPdf } from '@/common/utils/is-pdf/is-pdf';
 import { useDocumentsToolbarLogic } from '@/pages/Entity/components/Case/hooks/useDocumentsToolbarLogic/useDocumentsToolbarLogic';
+import { ImageOCR } from '@/common/components/molecules/ImageOCR/ImageOCR';
 
 export const DocumentsToolbar: FunctionComponent<{
   image: { id: string; imageUrl: string; fileType: string; fileName: string };
@@ -13,6 +14,9 @@ export const DocumentsToolbar: FunctionComponent<{
   onRotateDocument: () => void;
   onOpenDocumentInNewTab: (id: string) => void;
   shouldDownload: boolean;
+  onOcrPressed?: () => void;
+  isOCREnabled: boolean;
+  isLoadingOCR: boolean;
   fileToDownloadBase64: string;
 }> = ({
   image,
@@ -20,7 +24,10 @@ export const DocumentsToolbar: FunctionComponent<{
   hideOpenExternalButton,
   onRotateDocument,
   onOpenDocumentInNewTab,
+  onOcrPressed,
   shouldDownload,
+  isLoadingOCR,
+  isOCREnabled,
   fileToDownloadBase64,
 }) => {
   const { onOpenInNewTabClick } = useDocumentsToolbarLogic({
@@ -31,6 +38,11 @@ export const DocumentsToolbar: FunctionComponent<{
 
   return (
     <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
+      <ImageOCR
+        isOcrDisabled={!isOCREnabled}
+        onOcrPressed={onOcrPressed}
+        isLoadingOCR={isLoadingOCR}
+      />
       {!hideOpenExternalButton && !isLoading && image?.id && (
         <button
           type={`button`}
