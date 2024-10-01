@@ -4,7 +4,7 @@ import {
   TCompanyInformation,
 } from '@/business/types/business-information';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
+import { TFeaturesWithFeatures } from '@/customer/types';
 import { env } from '@/env';
 import type { PrismaTransaction, TProjectIds } from '@/types';
 import { HttpService } from '@nestjs/axios';
@@ -31,7 +31,7 @@ export class BusinessService {
     return (await this.repository.findMany(args, projectIds)) as Array<
       Business & {
         metadata?: {
-          featureConfig?: TCustomerWithDefinitionsFeatures['features'];
+          featureConfig?: TFeaturesWithFeatures;
           lastOngoingAuditReportInvokedAt?: number;
         };
       }

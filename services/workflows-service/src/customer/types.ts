@@ -13,13 +13,11 @@ export const FEATURE_LIST = {
   ONGOING_MERCHANT_REPORT_T2: 'ONGOING_MERCHANT_REPORT_T2',
 } as const;
 
-export type TCustomerFeatures =
-  | {
-      name: keyof typeof FEATURE_LIST;
-      enabled: boolean;
-      options: TOngoingAuditReportDefinitionConfig;
-    }
-  | boolean;
+export type TCustomerFeatures = {
+  name: keyof typeof FEATURE_LIST;
+  enabled: boolean;
+  options: TOngoingAuditReportDefinitionConfig;
+};
 
 export type TOngoingAuditReportDefinitionConfig = {
   definitionVariation: string;
@@ -28,6 +26,8 @@ export type TOngoingAuditReportDefinitionConfig = {
   checkTypes: string[];
   proxyViaCountry: string;
 };
+
+export type TFeaturesWithFeatures = Record<string, TCustomerFeatures>;
 
 export const CUSTOMER_FEATURES = {
   [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
@@ -52,8 +52,8 @@ export const CUSTOMER_FEATURES = {
       proxyViaCountry: 'GB',
     },
   },
-} satisfies Record<string, TCustomerFeatures>;
+} satisfies TFeaturesWithFeatures;
 
 export type TCustomerWithDefinitionsFeatures = Customer & {
-  features?: Record<string, TCustomerFeatures> | null;
+  features?: TFeaturesWithFeatures | Record<string, boolean> | null;
 };
