@@ -6,14 +6,13 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { AxiosInstance } from 'axios';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { DefaultContextSchema, getDocumentId } from '@ballerine/common';
+import { DefaultContextSchema, getDocumentId, sign } from '@ballerine/common';
 import { alertWebhookFailure } from '@/events/alert-webhook-failure';
 import { ExtractWorkflowEventData } from '@/workflow/types';
 import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { ConfigService } from '@nestjs/config';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
-import { sign } from '@/common/utils/sign/sign';
 
 const getExtensionFromMimeType = (mimeType: string) => {
   const parts = mimeType?.split('/');

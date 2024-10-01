@@ -72,6 +72,7 @@ export const reportAdapter = {
             riskLevel,
             sourceUrl,
             screenshot,
+            explanation,
           }: {
             name: string;
             riskLevel: string;
@@ -79,6 +80,7 @@ export const reportAdapter = {
             screenshot: {
               screenshotUrl: string;
             };
+            explanation: string;
           }) => ({
             label: name,
             severity:
@@ -86,6 +88,7 @@ export const reportAdapter = {
               riskLevel,
             screenshotUrl: screenshot?.screenshotUrl,
             sourceUrl,
+            explanation,
           }),
         ),
       ecosystemAnalysis: toRiskLabels(report?.summary?.riskIndicatorsByDomain?.ecosystemViolations),
