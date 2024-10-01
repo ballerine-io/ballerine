@@ -1,6 +1,6 @@
 {
   "name": "@ballerine/backoffice-v2",
-  "version": "0.7.47",
+  "version": "0.7.49",
   "description": "Ballerine - Backoffice",
   "homepage": "https://github.com/ballerine-io/ballerine",
   "repository": {
@@ -50,12 +50,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ballerine/blocks": "0.2.19",
-    "@ballerine/common": "0.9.33",
-    "@ballerine/react-pdf-toolkit": "^1.2.32",
-    "@ballerine/ui": "^0.5.32",
-    "@ballerine/workflow-browser-sdk": "0.6.44",
-    "@ballerine/workflow-node-sdk": "0.6.44",
+    "@ballerine/blocks": "0.2.20",
+    "@ballerine/common": "0.9.34",
+    "@ballerine/react-pdf-toolkit": "^1.2.34",
+    "@ballerine/ui": "^0.5.34",
+    "@ballerine/workflow-browser-sdk": "0.6.46",
+    "@ballerine/workflow-node-sdk": "0.6.46",
     "@botpress/webchat": "^2.1.10",
     "@botpress/webchat-generator": "^0.2.9",
     "@fontsource/inter": "^4.5.15",
@@ -80,6 +80,7 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@react-pdf/renderer": "^3.1.14",
     "@rjsf/utils": "^5.9.0",
+    "@saola.ai/browser": "^1.1.7",
     "@sentry/react": "^7.77.0",
     "@tanstack/react-query": "^4.19.1",
     "@tanstack/react-table": "^8.9.2",
@@ -125,8 +126,8 @@
     "zod": "^3.22.3"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.1.17",
-    "@ballerine/eslint-config-react": "^2.0.17",
+    "@ballerine/config": "^1.1.18",
+    "@ballerine/eslint-config-react": "^2.0.18",
     "@cspell/cspell-types": "^6.31.1",
     "@faker-js/faker": "^7.6.0",
     "@playwright/test": "^1.32.1",

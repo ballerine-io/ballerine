@@ -24,7 +24,9 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
     [search],
   );
   const riskIndicators = Object.entries(
-    workflow?.context?.pluginsOutput?.risk_evaluation?.riskIndicatorsByDomain ?? {},
+    workflow?.context?.pluginsOutput?.riskEvaluation?.riskIndicatorsByDomain ??
+      workflow?.context?.pluginsOutput?.risk_evaluation?.riskIndicatorsByDomain ??
+      {},
   )?.map(([domain, riskIndicators]) => {
     const tab = camelCase(domain);
     const isValidCaseTab = CaseTabs.includes(tab);
@@ -55,7 +57,10 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
     <div className="grid grid-cols-2 gap-4 xl:grid-cols-3 2xl:grid-cols-4">
       {workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled && (
         <OverallRiskLevel
-          riskScore={workflow?.context?.pluginsOutput?.risk_evaluation?.riskScore}
+          riskScore={
+            workflow?.context?.pluginsOutput?.riskEvaluation?.riskScore ??
+            workflow?.context?.pluginsOutput?.risk_evaluation?.riskScore
+          }
           riskLevels={{}}
         />
       )}

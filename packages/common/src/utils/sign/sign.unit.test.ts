@@ -1,4 +1,5 @@
 import { sign } from './sign';
+import { describe, expect, it } from 'vitest';
 
 const cases: Array<{
   name: string;
@@ -28,7 +29,7 @@ const cases: Array<{
 
 describe('sign', () => {
   describe.each(cases)('$name', ({ payload, differentPayload, expectedSignature }) => {
-    test('When signing a payload, it should return a signature', () => {
+    it('signing a payload, it should return a signature', () => {
       // Arrange
       const key = 'secret';
 
@@ -39,7 +40,7 @@ describe('sign', () => {
       expect(signature).toBe(expectedSignature);
     });
 
-    test('When signing the same payload with a different key, it should return a different signature', () => {
+    it('signing the same payload with a different key, it should return a different signature', () => {
       // Arrange
       const key1 = 'secret';
       const key2 = 'secret2';
@@ -52,7 +53,7 @@ describe('sign', () => {
       expect(signature1).not.toBe(signature2);
     });
 
-    test('When signing different payloads with the same key, it should return different signatures', () => {
+    it('signing different payloads with the same key, it should return different signatures', () => {
       // Arrange
       const key = 'secret';
 

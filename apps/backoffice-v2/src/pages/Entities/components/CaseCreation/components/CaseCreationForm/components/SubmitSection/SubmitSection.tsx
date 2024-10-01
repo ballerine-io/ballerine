@@ -20,7 +20,7 @@ export const SubmitSection = ({ uiSchema }: SubmitButtonProps) => {
         <Label htmlFor="add_more_switch">Add more</Label>
       </div>
       {!norender && (
-        <Button type="submit" disabled={disabled}>
+        <Button className={'!bg-foreground'} type="submit" disabled={disabled}>
           Add Case
         </Button>
       )}
