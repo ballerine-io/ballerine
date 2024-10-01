@@ -9,7 +9,6 @@ import { themeContext } from './theme.context';
 
 const { Provider } = themeContext;
 interface Props {
-  theme: ITheme;
   children: React.ReactNode | React.ReactNode[];
 }
 
@@ -34,9 +33,11 @@ export const ThemeProvider = ({ children }: Props) => {
   const context = useMemo(() => ({ themeDefinition: theme } as IThemeContext), [theme]);
 
   useLayoutEffect(() => {
-    document
-      .getElementsByTagName('html')[0]
-      ?.setAttribute('style', transformThemeToInlineStyles(theme as ITheme));
+    if (theme) {
+      document
+        .getElementsByTagName('html')[0]
+        ?.setAttribute('style', transformThemeToInlineStyles(theme as ITheme));
+    }
   }, [theme]);
 
   return <Provider value={context}>{children}</Provider>;
