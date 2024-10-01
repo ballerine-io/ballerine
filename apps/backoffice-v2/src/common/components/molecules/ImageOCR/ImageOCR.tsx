@@ -19,7 +19,7 @@ export const ImageOCR: FunctionComponent<IImageOCR> = ({
     {...props}
     type="button"
     className={ctw(
-      'disabled: btn btn-circle btn-ghost btn-sm bg-base-300/70 text-[0.688rem] focus:outline-primary disabled:bg-base-300/70',
+      'btn btn-circle btn-ghost btn-sm bg-base-300/70 text-[0.688rem] focus:outline-primary disabled:bg-base-300/70',
       isLoadingOCR,
       className,
     )}
