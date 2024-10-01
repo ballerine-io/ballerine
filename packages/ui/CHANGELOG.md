@@ -1,5 +1,14 @@
 # @ballerine/ui
 
+## 0.5.34
+
+### Patch Changes
+
+- Added fallback date format to date input
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.34
+
 ## 0.5.33
 
 ### Patch Changes
