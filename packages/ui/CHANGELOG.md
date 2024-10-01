@@ -21,6 +21,9 @@
 
 ### Patch Changes
 
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.33
 - Fixed report content violation explanation
 
 ## 0.5.31

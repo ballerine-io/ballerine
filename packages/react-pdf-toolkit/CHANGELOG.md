@@ -23,6 +23,9 @@
 
 ### Patch Changes
 
+- bump
+- Updated dependencies
+  - @ballerine/config@1.1.17
 - Updated dependencies
   - @ballerine/ui@0.5.32
 

@@ -10,7 +10,7 @@
 
 ### Patch Changes
 
-- Bump
+- bump
 
 ## 1.1.16
 

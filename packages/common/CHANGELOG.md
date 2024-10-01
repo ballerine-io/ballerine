@@ -22,6 +22,7 @@
 
 ### Patch Changes
 
+- bump
 - Bump
 
 ## 0.9.32

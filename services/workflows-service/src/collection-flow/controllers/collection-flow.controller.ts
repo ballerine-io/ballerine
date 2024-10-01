@@ -1,19 +1,22 @@
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
 import { FinishFlowDto } from '@/collection-flow/dto/finish-flow.dto';
 import { GetFlowConfigurationInputDto } from '@/collection-flow/dto/get-flow-configuration-input.dto';
+import { UpdateConfigurationDto } from '@/collection-flow/dto/update-configuration-input.dto';
 import { UpdateContextInputDto } from '@/collection-flow/dto/update-context-input.dto';
 import { UpdateFlowDto, UpdateFlowLanguageDto } from '@/collection-flow/dto/update-flow-input.dto';
 import { UnsupportedFlowTypeException } from '@/collection-flow/exceptions/unsupported-flow-type.exception';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
-import { type ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { TokenScope, type ITokenScope } from '@/common/decorators/token-scope.decorator';
+import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
+import type { TProjectIds } from '@/types';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import * as common from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 
-@UseTokenAuthGuard()
 @ApiExcludeController()
 @common.Controller('collection-flow')
 export class ColectionFlowController {
@@ -23,16 +26,19 @@ export class ColectionFlowController {
     protected readonly workflowService: WorkflowService,
   ) {}
 
+  @UseTokenAuthGuard()
   @common.Get('/customer')
   async getCustomer(@TokenScope() tokenScope: ITokenScope) {
     return this.service.getCustomerDetails(tokenScope.projectId);
   }
 
+  @UseTokenAuthGuard()
   @common.Get('/user')
   async getUser(@TokenScope() tokenScope: ITokenScope) {
     return this.service.getUser(tokenScope.endUserId, tokenScope.projectId);
   }
 
+  @UseTokenAuthGuard()
   @common.Get('/active-flow')
   async getActiveFlow(@TokenScope() tokenScope: ITokenScope) {
     const activeWorkflow = await this.service.getActiveFlow(tokenScope.workflowRuntimeDataId, [
@@ -58,6 +64,7 @@ export class ColectionFlowController {
     }
   }
 
+  @UseTokenAuthGuard()
   @common.Get('/context')
   async getContext(@TokenScope() tokenScope: ITokenScope) {
     return await this.workflowService.getWorkflowRuntimeDataById(
@@ -67,6 +74,7 @@ export class ColectionFlowController {
     );
   }
 
+  @UseTokenAuthGuard()
   @common.Get('/configuration/:language')
   async getFlowConfiguration(
     @TokenScope() tokenScope: ITokenScope,
@@ -89,21 +97,37 @@ export class ColectionFlowController {
     );
   }
 
-  // @common.Put('/configuration/:configurationId')
-  // async updateFlowConfiguration(
-  //   @common.Param('configurationId') configurationId: string,
-  //   @common.Body() dto: UpdateConfigurationDto,
-  //   @ProjectIds() projectIds: TProjectIds,
-  //   @CurrentProject() currentProjectId: TProjectId,
-  // ) {
-  //   return this.service.updateFlowConfiguration(
-  //     configurationId,
-  //     dto.steps,
-  //     projectIds,
-  //     currentProjectId,
-  //   );
-  // }
+  @UseCustomerAuthGuard()
+  @common.Patch('/configuration/:configurationId')
+  async patchUIDefinition(
+    @common.Param('configurationId') configurationId: string,
+    @common.Body() payload: UpdateConfigurationDto,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
+    return this.service.patchUIDefinition(configurationId, payload, projectIds);
+  }
 
+  @UseCustomerAuthGuard()
+  @common.Put('/configuration/:configurationId')
+  async updateUIDefinition(
+    @common.Param('configurationId') configurationId: string,
+    @common.Body() payload: UpdateConfigurationDto,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
+    return this.service.updateUIDefinition(configurationId, payload, projectIds);
+  }
+
+  @UseCustomerAuthGuard()
+  @common.Delete('/configuration/:configurationId')
+  async deleteUIElements(
+    @common.Param('configurationId') configurationId: string,
+    @common.Body() payload: UpdateConfigurationDto,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
+    return this.service.deleteUIDefinitionElements(configurationId, payload, projectIds);
+  }
+
+  @UseTokenAuthGuard()
   @common.Put('/language')
   async updateFlowLanguage(
     @common.Body() { language }: UpdateFlowLanguageDto,
@@ -112,11 +136,13 @@ export class ColectionFlowController {
     return await this.service.updateWorkflowRuntimeLanguage(language, tokenScope);
   }
 
+  @UseTokenAuthGuard()
   @common.Put('/sync')
   async syncWorkflow(@common.Body() payload: UpdateFlowDto, @TokenScope() tokenScope: ITokenScope) {
     return await this.service.syncWorkflow(payload, tokenScope);
   }
 
+  @UseTokenAuthGuard()
   @common.Patch('/sync/context')
   async updateContextById(
     @common.Body() { context }: UpdateContextInputDto,
@@ -136,6 +162,7 @@ export class ColectionFlowController {
     );
   }
 
+  @UseTokenAuthGuard()
   @common.Post('/send-event')
   async finishFlow(@TokenScope() tokenScope: ITokenScope, @common.Body() body: FinishFlowDto) {
     return await this.workflowService.event(
@@ -148,6 +175,7 @@ export class ColectionFlowController {
     );
   }
 
+  @UseTokenAuthGuard()
   @common.Post('resubmit')
   async resubmitFlow(@TokenScope() tokenScope: ITokenScope) {
     await this.workflowService.event(

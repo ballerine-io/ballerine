@@ -15,6 +15,7 @@ export const useAppExit = () => {
   const exit = useCallback(() => {
     if (kybOnExitAction === 'send-event') {
       trackExit();
+
       return;
     }
 

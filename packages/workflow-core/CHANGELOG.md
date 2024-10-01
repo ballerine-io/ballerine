@@ -247,6 +247,7 @@
 
 ### Patch Changes
 
+- Added deep merge with mutation
 - Updated dependencies
   - @ballerine/common@0.9.9
 

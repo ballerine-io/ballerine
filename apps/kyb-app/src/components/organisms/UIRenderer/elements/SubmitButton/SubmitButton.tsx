@@ -11,11 +11,11 @@ import { useUIElementHandlers } from '@/components/organisms/UIRenderer/hooks/us
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
 import { UIElementComponent } from '@/components/organisms/UIRenderer/types';
 import { UIPage } from '@/domains/collection-flow';
+import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
 import { useFlowTracking } from '@/hooks/useFlowTracking';
 import { Button } from '@ballerine/ui';
-import { useCallback, useMemo } from 'react';
 import set from 'lodash/set';
-import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
+import { useCallback, useMemo } from 'react';
 
 export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition }) => {
   const { helpers } = useDynamicUIContext();
@@ -93,10 +93,10 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
 
   return (
     <Button
-      variant="secondary"
       onClick={handleClick}
       disabled={state.isLoading || uiElementState.isLoading || isPluginLoading}
       data-testid={definition.name}
+      className="bg-controls text-controls-foreground"
     >
       {definition.options.text || 'Submit'}
     </Button>

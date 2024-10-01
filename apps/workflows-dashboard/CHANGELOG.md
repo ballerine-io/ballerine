@@ -13,6 +13,10 @@
 
 ### Patch Changes
 
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.33
+  - @ballerine/ui@0.5.32
 - Bump
 - Updated dependencies
   - @ballerine/common@0.9.33

@@ -12,6 +12,9 @@
 
 ### Patch Changes
 
+- bump
+- Updated dependencies
+  - @ballerine/react-pdf-toolkit@1.2.32
 - Bump
 - Updated dependencies
   - @ballerine/react-pdf-toolkit@1.2.33
