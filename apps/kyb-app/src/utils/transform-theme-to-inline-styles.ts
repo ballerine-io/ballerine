@@ -7,7 +7,7 @@ const createInlineVariable = (key: string, value: string) => {
 export const transformThemeToInlineStyles = (theme: ITheme): string => {
   let styles = '';
 
-  Object.entries(theme.pallete).forEach(([variableKey, value]) => {
+  Object.entries(theme.palette).forEach(([variableKey, value]) => {
     styles += createInlineVariable(variableKey, value.color);
     styles += createInlineVariable(`${variableKey}-foreground`, value.foreground);
   });
