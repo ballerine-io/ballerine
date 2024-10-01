@@ -6,9 +6,9 @@ import { CustomerService } from '@/customer/customer.service';
 import { BusinessService } from '@/business/business.service';
 import { Business, Project } from '@prisma/client';
 import {
-  FEATURE_LIST_WITH_OPTIONS,
-  TCustomerFeatures,
+  FEATURE_LIST,
   TCustomerWithDefinitionsFeatures,
+  TFeaturesWithFeatures,
   TOngoingAuditReportDefinitionConfig,
 } from '@/customer/types';
 import { BusinessReportService } from '@/business-report/business-report.service';
@@ -49,7 +49,6 @@ describe('OngoingMonitoringCron', () => {
       jest.spyOn(prismaService, 'acquireLock').mockResolvedValue(true);
       jest.spyOn(customerService, 'list').mockResolvedValue(mockCustomers());
       jest.spyOn(businessService, 'list').mockResolvedValue(mockBusinesses());
-      // Mock additional service methods as needed
 
       await service.handleCron();
 
@@ -137,8 +136,8 @@ describe('OngoingMonitoringCron', () => {
         displayName: 'Test Customer Display 1',
         logoImageUri: 'http://example.com/logo1.png',
         features: {
-          [FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T1]: {
-            name: FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T1,
+          [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
+            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
             enabled: true,
             options: {
               definitionVariation: 'ongoing_merchant_audit_t1',
@@ -157,8 +156,8 @@ describe('OngoingMonitoringCron', () => {
         displayName: 'Test Customer Display 2',
         logoImageUri: 'http://example.com/logo2.png',
         features: {
-          [FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T2]: {
-            name: FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T2,
+          [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2]: {
+            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2,
             enabled: true,
             options: {
               definitionVariation: 'ongoing_merchant_audit_t2',
@@ -177,8 +176,8 @@ describe('OngoingMonitoringCron', () => {
         displayName: 'Test Customer Display 3',
         logoImageUri: 'http://example.com/logo3.png',
         features: {
-          [FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T2]: {
-            name: FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T2,
+          [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2]: {
+            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2,
             enabled: false,
             options: {
               definitionVariation: 'ongoing_merchant_audit_t2',
@@ -197,8 +196,8 @@ describe('OngoingMonitoringCron', () => {
         displayName: 'Test Customer Display 4',
         logoImageUri: 'http://example.com/logo4.png',
         features: {
-          [FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T2]: {
-            name: FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T2,
+          [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2]: {
+            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2,
             enabled: true,
             options: {
               definitionVariation: 'ongoing_merchant_audit_t2',
@@ -221,8 +220,8 @@ describe('OngoingMonitoringCron', () => {
         companyName: 'Test Business 1',
         metadata: {
           featureConfig: {
-            [FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T1]: {
-              name: FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T1,
+            [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
+              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
               enabled: false,
               options: {
                 definitionVariation: 'variation1',
@@ -232,7 +231,7 @@ describe('OngoingMonitoringCron', () => {
                 proxyViaCountry: 'US',
               } as TOngoingAuditReportDefinitionConfig,
             },
-          } as Record<string, TCustomerFeatures>,
+          } as TFeaturesWithFeatures,
         },
       },
       {
@@ -244,8 +243,8 @@ describe('OngoingMonitoringCron', () => {
         companyName: 'Test Business 3',
         metadata: {
           featureConfig: {
-            [FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T1]: {
-              name: FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T1,
+            [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
+              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
               enabled: true,
               options: {
                 definitionVariation: 'variation2',
@@ -255,7 +254,7 @@ describe('OngoingMonitoringCron', () => {
                 proxyViaCountry: 'GB',
               } as TOngoingAuditReportDefinitionConfig,
             },
-          } as Record<string, TCustomerFeatures>,
+          } as TFeaturesWithFeatures,
         },
       },
       {
@@ -263,8 +262,8 @@ describe('OngoingMonitoringCron', () => {
         companyName: 'Test Business 4',
         metadata: {
           featureConfig: {
-            [FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T1]: {
-              name: FEATURE_LIST_WITH_OPTIONS.ONGOING_MERCHANT_REPORT_T1,
+            [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
+              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
               enabled: true,
               options: {
                 definitionVariation: 'variation3',
@@ -274,13 +273,13 @@ describe('OngoingMonitoringCron', () => {
                 proxyViaCountry: 'CA',
               } as TOngoingAuditReportDefinitionConfig,
             },
-          } as Record<string, TCustomerFeatures>,
+          } as TFeaturesWithFeatures,
         },
       },
     ] as unknown as Array<
       Business & {
         metadata?: {
-          featureConfig?: TCustomerWithDefinitionsFeatures['features'];
+          featureConfig?: TFeaturesWithFeatures;
           lastOngoingAuditReportInvokedAt?: number;
         };
       }
