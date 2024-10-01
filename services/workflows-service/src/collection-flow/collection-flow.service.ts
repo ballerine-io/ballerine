@@ -91,7 +91,7 @@ export class CollectionFlowService {
       projectIds,
     );
 
-    const uiDefintion = await this.uiDefinitionService.getByWorkflowDefinitionId(
+    const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
       workflowDefinition.id,
       'collection_flow' as const,
       projectIds,
@@ -99,7 +99,7 @@ export class CollectionFlowService {
     );
 
     const translationService = new TranslationService(
-      this.getTranslationServiceResources(uiDefintion),
+      this.getTranslationServiceResources(uiDefinition),
     );
 
     await translationService.init();
@@ -107,20 +107,20 @@ export class CollectionFlowService {
     return {
       id: workflowDefinition.id,
       config: workflowDefinition.config,
-      uiOptions: uiDefintion.uiOptions,
+      uiOptions: uiDefinition.uiOptions,
       uiSchema: {
         // @ts-expect-error - error from Prisma types fix
         elements: this.traverseUiSchema(
           // @ts-expect-error - error from Prisma types fix
-          uiDefintion.uiSchema.elements,
+          uiDefinition.uiSchema.elements,
           context,
           language,
           translationService,
         ) as UiSchemaStep[],
-        theme: uiDefintion.theme,
+        theme: uiDefinition.theme,
       },
-      definition: uiDefintion.definition
-        ? (uiDefintion.definition as unknown as UiDefDefinition)
+      definition: uiDefinition.definition
+        ? (uiDefinition.definition as unknown as UiDefDefinition)
         : undefined,
     };
   }
