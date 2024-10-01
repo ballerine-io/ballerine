@@ -1,6 +1,6 @@
 {
   "theme": {
-    "pallete": {
+    "palette": {
       "primary": {
         "color": "hsl(240, 100%, 6%)",
         "foreground": "hsl(0, 0%, 100%)"
