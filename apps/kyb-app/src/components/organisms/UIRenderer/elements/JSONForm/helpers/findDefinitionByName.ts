@@ -4,7 +4,7 @@ import { AnyObject } from '@ballerine/ui';
 
 export const findDefinitionByName = (
   name: string,
-  elements: UIElement<AnyObject>[],
+  elements: Array<UIElement<AnyObject>>,
 ): UIElement<AnyObject> | undefined => {
   for (const element of elements) {
     if (element.name === name) {
@@ -13,6 +13,7 @@ export const findDefinitionByName = (
 
     if (element.elements) {
       const foundInChildren = findDefinitionByName(name, element.elements);
+
       if (foundInChildren) {
         return foundInChildren;
       }
@@ -24,7 +25,7 @@ export const findDefinitionByName = (
 
 export const findDefinitionByDestinationPath = (
   destination: string,
-  elements: UIElement<AnyObject>[],
+  elements: Array<UIElement<AnyObject>>,
 ): UIElement<AnyObject> | undefined => {
   for (const element of elements) {
     if (element.valueDestination === destination) {
@@ -33,6 +34,7 @@ export const findDefinitionByDestinationPath = (
 
     if (element.elements) {
       const foundInChildren = findDefinitionByDestinationPath(destination, element.elements);
+
       if (foundInChildren) {
         return foundInChildren;
       }
@@ -44,7 +46,7 @@ export const findDefinitionByDestinationPath = (
 
 export const findDocumentDefinitionById = (
   id: string,
-  elements: UIElement<AnyObject>[],
+  elements: Array<UIElement<AnyObject>>,
 ): UIElement<AnyObject> | undefined => {
   for (const element of elements) {
     if ((element?.options?.documentData?.id as string) === deserializeDocumentId(id)) {
@@ -53,6 +55,7 @@ export const findDocumentDefinitionById = (
 
     if (element.elements) {
       const foundInChildren = findDocumentDefinitionById(id, element.elements);
+
       if (foundInChildren) {
         return foundInChildren;
       }
@@ -62,10 +65,10 @@ export const findDocumentDefinitionById = (
   return undefined;
 };
 
-export const getAllDefinitions = (elements: UIElement<AnyObject>[]) => {
-  const items: UIElement<AnyObject>[] = [];
+export const getAllDefinitions = (elements: Array<UIElement<AnyObject>>) => {
+  const items: Array<UIElement<AnyObject>> = [];
 
-  const run = (elements: UIElement<AnyObject>[]) => {
+  const run = (elements: Array<UIElement<AnyObject>>) => {
     for (const element of elements) {
       if (element.valueDestination) {
         items.push(element);
