@@ -211,7 +211,7 @@ importers:
         specifier: ^1.10.49
         version: 1.10.49
       lucide-react:
-        specifier: ^0.445.0
+        specifier: 0.445.0
         version: 0.445.0(react@18.2.0)
       match-sorter:
         specifier: ^6.3.1
