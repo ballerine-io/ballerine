@@ -37,5 +37,5 @@ export const PoweredByLogo: FunctionComponent<IPoweredByLogoProps> = ({
 
   if (!logoSrc) return null;
 
-  return <img src={logoSrc} className={className} />;
+  return <img src={logoSrc} className={className} alt="Powered by logo" />;
 };

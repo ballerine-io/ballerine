@@ -21,7 +21,7 @@ export const useUIElementProps = (
     return injectIndexesAtRulesPaths(definition.visibleOn || [], index);
   }, [definition, index]);
 
-  const [availabilityTestResulsts, visibilityTestResults] = [
+  const [availabilityTestResults, visibilityTestResults] = [
     useRuleExecutor(
       payload,
       // @ts-ignore
@@ -44,10 +44,10 @@ export const useUIElementProps = (
   const disabled = useMemo(() => {
     if (isLoading || isDisabled || state.isRevision) return true;
 
-    return availabilityTestResulsts.length
-      ? availabilityTestResulsts.some(result => !result.isValid)
+    return availabilityTestResults.length
+      ? availabilityTestResults.some(result => !result.isValid)
       : false;
-  }, [availabilityTestResulsts, isLoading, isDisabled, state.isRevision]);
+  }, [availabilityTestResults, isLoading, isDisabled, state.isRevision]);
 
   const hidden = useMemo(() => {
     if (!definition.visibleOn || !definition.visibleOn.length) return false;
