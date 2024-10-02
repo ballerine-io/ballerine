@@ -8,11 +8,12 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { TProjectIds } from '@/types';
 import { ONGOING_MONITORING_LOCK_KEY } from '@/workflow/cron/lock-keys';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { isErrorWithMessage, ObjectValues } from '@ballerine/common';
+import { isErrorWithMessage, isObject, ObjectValues } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Business, BusinessReportType } from '@prisma/client';
 import get from 'lodash/get';
+import { isBoolean } from 'lodash';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
@@ -49,19 +50,24 @@ export class OngoingMonitoringCron {
       });
 
       for (const { projects, features } of customers) {
-        const projectIds = projects.map(({ id }: { id: string }) => id);
+        const featureConfig = features?.[this.processFeatureName];
 
-        if (!features?.[this.processFeatureName]?.enabled) {
+        if (
+          !featureConfig ||
+          isBoolean(featureConfig) ||
+          (isObject(featureConfig) && 'enabled' in featureConfig && !featureConfig?.enabled)
+        ) {
           continue;
         }
 
+        const projectIds = projects.map(({ id }: { id: string }) => id);
         const businesses = await this.businessService.list({}, projectIds);
 
         for (const business of businesses) {
           try {
             if (
               !business.metadata?.featureConfig?.[this.processFeatureName]?.enabled &&
-              !features[this.processFeatureName].options.runByDefault
+              !featureConfig.options.runByDefault
             ) {
               this.logger.debug(`Ongoing monitoring is not enabled for business ${business.id}.`);
 
@@ -77,15 +83,15 @@ export class OngoingMonitoringCron {
             }
 
             const now = new Date().getTime();
-            const options = features[this.processFeatureName].options;
+            const options = featureConfig.options;
 
             const lastReceivedReportTime = lastReceivedReport.createdAt.getTime();
 
             if (
-              ('specificDates' in options &&
+              (options.scheduleType === 'specific' &&
                 new Date().getDate() !== options.specificDates.dayInMonth &&
                 lastReceivedReportTime + 32 * ONE_DAY < now) ||
-              ('intervalInDays' in options &&
+              (options.scheduleType === 'interval' &&
                 now - lastReceivedReportTime < options.intervalInDays * ONE_DAY)
             ) {
               this.logger.debug(`Skipping ongoing report for business: ${business.id}`);
@@ -93,7 +99,7 @@ export class OngoingMonitoringCron {
               continue;
             }
 
-            if (ongoingReportsCounter > env.ONGOING_REPORTS_LIMIT) {
+            if (ongoingReportsCounter >= env.ONGOING_REPORTS_LIMIT) {
               this.logger.debug(`Ongoing reports limit reached for current run`);
 
               continue;
@@ -102,10 +108,8 @@ export class OngoingMonitoringCron {
             await this.invokeOngoingMerchantReport({
               currentProjectId: business.projectId,
               lastReportId: lastReceivedReport.reportId,
-              workflowVersion: features[this.processFeatureName].options.workflowVersion ?? '2',
-              reportType:
-                features[this.processFeatureName].options.reportType ??
-                'ONGOING_MERCHANT_REPORT_T1',
+              workflowVersion: options.workflowVersion ?? '2',
+              reportType: options.reportType ?? 'ONGOING_MERCHANT_REPORT_T1',
               business: business as Business & {
                 metadata?: { featureConfig?: Record<string, TCustomerFeatures> };
               },

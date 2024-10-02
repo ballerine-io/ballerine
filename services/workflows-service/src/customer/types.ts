@@ -19,26 +19,31 @@ export type TOngoingMerchantReportOptions = {
   reportType: 'ONGOING_MERCHANT_REPORT_T1';
 } & (
   | {
+      scheduleType: 'specific';
       specificDates: {
         dayInMonth: number;
       };
     }
   | {
+      scheduleType: 'interval';
       intervalInDays: number;
     }
 );
 
 type FeaturesOptions = TOngoingMerchantReportOptions;
 
-export type TCustomerFeatures = {
-  enabled: boolean;
-  options: FeaturesOptions;
-};
+export type TCustomerFeatures =
+  | boolean
+  | {
+      enabled: boolean;
+      options: FeaturesOptions;
+    };
 
 export const CUSTOMER_FEATURES = {
   [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
     enabled: true,
     options: {
+      scheduleType: 'interval',
       intervalInDays: 30,
       runByDefault: true,
       workflowVersion: '2',
@@ -46,7 +51,7 @@ export const CUSTOMER_FEATURES = {
       reportType: 'ONGOING_MERCHANT_REPORT_T1',
     },
   },
-} satisfies Record<string, TCustomerFeatures>;
+} satisfies TCustomerWithDefinitionsFeatures['features'];
 
 export type TCustomerWithDefinitionsFeatures = Customer & {
   features?: Record<keyof typeof FEATURE_LIST, TCustomerFeatures> | null;

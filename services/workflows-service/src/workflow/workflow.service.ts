@@ -78,6 +78,7 @@ import {
   BusinessPosition,
   BusinessReportStatus,
   BusinessReportType,
+  Customer,
   EndUser,
   Prisma,
   PrismaClient,
@@ -87,7 +88,7 @@ import {
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
-import { Static } from '@sinclair/typebox';
+import { Static, TSchema } from '@sinclair/typebox';
 import { plainToClass } from 'class-transformer';
 import dayjs from 'dayjs';
 import { isEqual, merge } from 'lodash';
@@ -107,6 +108,10 @@ import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-
 import { entitiesUpdate } from './utils/entities-update';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
+import { StorageService } from '@/storage/storage.service';
+import { TOcrImages, UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
+import { AwsSecretsManager } from '@/secrets-manager/aws-secrets-manager';
+import { InMemorySecretsManager } from '@/secrets-manager/in-memory-secrets-manager';
 
 type TEntityId = string;
 
@@ -147,6 +152,7 @@ export class WorkflowService {
     private readonly ruleEngineService: RuleEngineService,
     private readonly sentry: SentryService,
     private readonly secretsManagerFactory: SecretsManagerFactory,
+    private readonly storageService: StorageService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -1960,7 +1966,22 @@ export class WorkflowService {
         transaction,
       );
 
-      const customer = await this.customerService.getByProjectId(projectIds![0]!);
+      const customer = await this.customerService.getByProjectId(projectIds![0]!, {
+        select: {
+          id: true,
+          name: true,
+          displayName: true,
+          logoImageUri: true,
+          faviconImageUri: true,
+          country: true,
+          language: true,
+          websiteUrl: true,
+          projects: true,
+          subscriptions: true,
+          config: true,
+          authenticationConfiguration: true,
+        },
+      });
 
       const secretsManager = this.secretsManagerFactory.create({
         provider: env.SECRETS_MANAGER_PROVIDER,
@@ -2029,7 +2050,7 @@ export class WorkflowService {
             transaction,
           );
         },
-        secretsManager: { getAll: secretsManager.getAll.bind(secretsManager) },
+        secretsManager: { getAll: this.getCustomerSecrets(secretsManager, customer) },
         invokeWorkflowTokenAction: async (workflowTokenAction: TWorkflowTokenPluginCallback) => {
           const workflowRuntimeId = workflowTokenAction.workflowRuntimeId;
           const defaultDaysExpiry = 30;
@@ -2257,6 +2278,21 @@ export class WorkflowService {
 
       return updatedRuntimeData;
     });
+  }
+
+  private getCustomerSecrets(
+    secretsManager: AwsSecretsManager | InMemorySecretsManager,
+    { authenticationConfiguration }: Customer,
+  ) {
+    return async () => {
+      const secrets = await secretsManager.getAll();
+      const webhookSharedSecret = authenticationConfiguration?.webhookSharedSecret;
+
+      return {
+        ...(webhookSharedSecret ? { webhookSharedSecret } : {}),
+        ...secrets,
+      } as Record<string, string>;
+    };
   }
 
   async persistChildWorkflowToParent(
@@ -2508,5 +2544,107 @@ export class WorkflowService {
     return await this.workflowRuntimeDataRepository.updateById(workflowRuntimeDataId, {
       data: args,
     });
+  }
+
+  async findDocumentById({
+    workflowId,
+    projectId,
+    documentId,
+    transaction,
+  }: {
+    workflowId: string;
+    projectId: string;
+    documentId: string;
+    transaction: PrismaTransaction | PrismaClient;
+  }) {
+    const runtimeData = await this.workflowRuntimeDataRepository.findByIdAndLock(
+      workflowId,
+      {},
+      [projectId],
+      transaction,
+    );
+    const workflowDef = await this.workflowDefinitionRepository.findById(
+      runtimeData.workflowDefinitionId,
+      {},
+      [projectId],
+      transaction,
+    );
+    const document = runtimeData?.context?.documents?.find(
+      (document: DefaultContextSchema['documents'][number]) => document.id === documentId,
+    );
+
+    return addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);
+  }
+
+  async runOCROnDocument({
+    workflowRuntimeId,
+    projectId,
+    documentId,
+  }: {
+    workflowRuntimeId: string;
+    projectId: string;
+    documentId: string;
+  }) {
+    const ocrResult = await this.prismaService.$transaction(
+      async transaction => {
+        const customer = await this.customerService.getByProjectId(projectId);
+
+        if (customer.features?.['isDocumentOcrEnabled'] === true) {
+          throw new BadRequestException('Document OCR is not enabled for this customer');
+        }
+
+        const document = await this.findDocumentById({
+          workflowId: workflowRuntimeId,
+          projectId,
+          documentId,
+          transaction,
+        });
+
+        if (!('pages' in document)) {
+          throw new BadRequestException('Cannot run document OCR on document without pages');
+        }
+
+        const documentFetchPagesContentPromise = document.pages.map(async page => {
+          const ballerineFileId = page.ballerineFileId;
+
+          if (!ballerineFileId) {
+            throw new BadRequestException('Cannot run document OCR on document without pages');
+          }
+
+          const { signedUrl, mimeType, filePath } = await this.storageService.fetchFileContent({
+            id: ballerineFileId,
+            format: 'signed-url',
+            projectIds: [projectId],
+          });
+
+          if (signedUrl) {
+            return {
+              remote: {
+                imageUri: signedUrl,
+                mimeType,
+              },
+            };
+          }
+
+          const base64String = this.storageService.fileToBase64(filePath!);
+
+          return { base64: `data:${mimeType};base64,${base64String}` };
+        });
+
+        const images = (await Promise.all(documentFetchPagesContentPromise)) satisfies TOcrImages;
+
+        return (
+          await new UnifiedApiClient().runOcr({
+            images,
+            schema: document.propertiesSchema as unknown as TSchema,
+          })
+        )?.data;
+      },
+      {
+        timeout: 180_000,
+      },
+    );
+
+    return ocrResult;
   }
 }

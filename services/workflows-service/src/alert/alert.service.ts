@@ -1,7 +1,6 @@
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { AlertRepository } from '@/alert/alert.repository';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { computeHash } from '@/common/utils/sign/sign';
 import { TIME_UNITS } from '@/data-analytics/consts';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { CheckRiskScoreOptions, InlineRule } from '@/data-analytics/types';
@@ -23,6 +22,7 @@ import _ from 'lodash';
 import { AlertExecutionStatus } from './consts';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { TDedupeStrategy, TExecutionDetails } from './types';
+import { computeHash } from '@ballerine/common';
 
 const DEFAULT_DEDUPE_STRATEGIES = {
   cooldownTimeframeInMinutes: 60 * 24,
