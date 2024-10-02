@@ -7,9 +7,9 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { alertWebhookFailure } from '@/events/alert-webhook-failure';
 import { ExtractWorkflowEventData } from '@/workflow/types';
 import { getWebhooks, Webhook } from '@/events/get-webhooks';
-import { sign } from '@/common/utils/sign/sign';
 import { CustomerService } from '@/customer/customer.service';
 import type { TAuthenticationConfiguration } from '@/customer/types';
+import { sign } from '@ballerine/common';
 
 @Injectable()
 export class WorkflowStateChangedWebhookCaller {

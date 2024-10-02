@@ -1,4 +1,4 @@
-import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
+import { AnyRecord, isErrorWithMessage, sign } from '@ballerine/common';
 import { logger } from '../../logger';
 import { TContext } from '../../utils/types';
 import { BallerineApiPlugin, IBallerineApiPluginParams } from './ballerine-plugin';
@@ -30,7 +30,7 @@ export class WebhookPlugin extends BallerineApiPlugin {
         urlWithoutPlaceholders,
         this.method,
         requestPayload,
-        await this.composeRequestHeaders(this.headers!, context),
+        await this.composeRequestSignedHeaders(this.headers!, context, requestPayload),
       );
 
       logger.log('Webhook Plugin - Received response', {
@@ -79,5 +79,31 @@ export class WebhookPlugin extends BallerineApiPlugin {
 
   protected async _getPluginUrl(context: AnyRecord) {
     return await this.replaceAllVariables(this.url, context);
+  }
+
+  async composeRequestSignedHeaders(
+    headers: HeadersInit,
+    context: TContext,
+    payload: AnyRecord | undefined,
+  ) {
+    const secrets = await this.secretsManager?.getAll();
+    const webhookSharedSecret = secrets?.['webhookSharedSecret'];
+
+    if (secrets && webhookSharedSecret) {
+      headers = {
+        ...headers,
+        'X-HMAC-Signature': sign({ payload, key: webhookSharedSecret }),
+      };
+    }
+
+    const headersEntries = await Promise.all(
+      Object.entries(headers).map(async header => [
+        header[0],
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        await this.replaceValuePlaceholders(header[1], context),
+      ]),
+    );
+
+    return Object.fromEntries(headersEntries);
   }
 }

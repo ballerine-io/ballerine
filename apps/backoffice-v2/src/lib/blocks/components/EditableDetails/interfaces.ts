@@ -25,6 +25,7 @@ export interface IEditableDetails {
   documents: IEditableDetailsDocument[];
   title: string;
   workflowId: string;
+  isSaveDisabled?: boolean;
   contextUpdateMethod?: 'base' | 'director';
   onSubmit?: (document: AnyObject) => void;
 }
