@@ -35,7 +35,7 @@ const CustomerSchema = z.object({
       isMerchantMonitoringEnabled: z.boolean().default(false),
       isExample: z.boolean().default(false),
       isDemo: z.boolean().default(false),
-      isChatbotEnabled: z.boolean().default(true),
+      isChatbotEnabled: z.boolean().default(false),
     })
     .nullable()
     .default({

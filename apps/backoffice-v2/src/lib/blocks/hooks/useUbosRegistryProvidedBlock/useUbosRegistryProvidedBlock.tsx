@@ -42,6 +42,7 @@ export const useUbosRegistryProvidedBlock = ({
 
   const getCell = useCallback(() => {
     if (Array.isArray(uiNodes) && uiNodes?.length && Array.isArray(uiEdges) && uiEdges?.length) {
+      // TODO create a graph cell
       return {
         type: 'node',
         value: (

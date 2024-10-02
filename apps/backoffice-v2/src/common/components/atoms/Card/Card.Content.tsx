@@ -1,8 +1,5 @@
 import * as React from 'react';
-import { PropsWithChildren } from 'react';
 import { ctw } from '../../../utils/ctw/ctw';
-
-type Test = PropsWithChildren;
 
 export const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (

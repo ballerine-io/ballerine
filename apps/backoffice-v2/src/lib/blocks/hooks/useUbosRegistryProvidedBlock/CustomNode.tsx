@@ -1,7 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { Card, CardContent } from '@ballerine/ui';
 import { Handle, NodeProps, Position } from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
 
 export const CustomNode: FunctionComponent<NodeProps> = ({
   positionAbsoluteX,
