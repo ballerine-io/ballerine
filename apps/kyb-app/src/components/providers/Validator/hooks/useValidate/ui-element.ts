@@ -3,7 +3,7 @@ import { formatValueDestinationAndApplyStackIndexes } from '@/components/provide
 import { TValidationParams, UIElementV2 } from '@/components/providers/Validator/types';
 import { IDocumentValueValidatorParams } from '@/components/providers/Validator/value-validators/document.value.validator';
 import { IRequiredValueValidatorParams } from '@/components/providers/Validator/value-validators/required.value-validator';
-import { fieldElelements, fieldGroups } from '@/pages/CollectionFlowV2/renderer-schema';
+import { fieldElelements } from '@/pages/CollectionFlowV2/renderer-schema';
 import { AnyObject } from '@ballerine/ui';
 import get from 'lodash/get';
 
@@ -71,8 +71,8 @@ export class UIElement {
   }
 
   getFieldType() {
+    if (this.element.element === 'fieldlist') return 'field-list';
     if (this.element.element in fieldElelements) return 'field';
-    if (this.element.element in fieldGroups) return 'field-list';
 
     return 'ui';
   }
