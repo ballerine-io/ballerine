@@ -1,6 +1,7 @@
 import { UIElementV2 } from '@/components/providers/Validator/types';
 import { SubmitButton } from '@/pages/CollectionFlowV2/components/ui/controls/SubmitButton';
 import { DateField } from '@/pages/CollectionFlowV2/components/ui/fields/DateField';
+import { DocumentField } from '@/pages/CollectionFlowV2/components/ui/fields/DocumentField';
 import { PhoneField } from '@/pages/CollectionFlowV2/components/ui/fields/PhoneField';
 import { TextField } from '@/pages/CollectionFlowV2/components/ui/fields/TextField';
 import { Container } from '@/pages/CollectionFlowV2/components/ui/layout/Container';
@@ -66,6 +67,7 @@ export const fieldElelements = applyHocToElements(
     textfield: TextField,
     datefield: DateField,
     phonefield: PhoneField,
+    documentfield: DocumentField,
   },
   withConnectedField,
 );

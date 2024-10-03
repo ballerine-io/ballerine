@@ -1,6 +1,8 @@
 import { testRule } from '@/components/organisms/DynamicUI/rule-engines/utils/execute-rules';
 import { formatValueDestinationAndApplyStackIndexes } from '@/components/providers/Validator/hooks/useValidate/utils/format-value-destination-and-apply-stack-indexes';
 import { TValidationParams, UIElementV2 } from '@/components/providers/Validator/types';
+import { IDocumentValueValidatorParams } from '@/components/providers/Validator/value-validators/document.value.validator';
+import { IRequiredValueValidatorParams } from '@/components/providers/Validator/value-validators/required.value-validator';
 import { fieldElelements, fieldGroups } from '@/pages/CollectionFlowV2/renderer-schema';
 import { AnyObject } from '@ballerine/ui';
 import get from 'lodash/get';
@@ -17,9 +19,10 @@ export class UIElement {
   }
 
   isRequired() {
-    const requiredParams = this.element.validation?.required;
+    const requiredParams = this.element.validation?.required as IRequiredValueValidatorParams;
+    const documentParams = this.element.validation?.document as IDocumentValueValidatorParams;
 
-    const applyRules = requiredParams?.applyWhen || [];
+    const applyRules = requiredParams?.applyWhen || documentParams?.applyWhen || [];
 
     if (applyRules.length) {
       const isShouldApplyRequired = applyRules.every(rule =>
@@ -28,11 +31,7 @@ export class UIElement {
 
       return Boolean(isShouldApplyRequired);
     } else {
-      if (Array.isArray(this.element.validation?.required)) {
-        return Boolean(this.element.validation?.required[0]);
-      }
-
-      return Boolean(this.element.validation?.required);
+      return Boolean(requiredParams?.required);
     }
   }
 
