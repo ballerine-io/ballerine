@@ -4,5 +4,5 @@ import { UIElement } from '@/components/providers/Validator/hooks/useValidate/ui
 export const useIsLoadingState = (uiElement: UIElement) => {
   const { state } = useDynamicUIContext();
 
-  return Boolean(state.elements[uiElement.getId()]?.isLoading);
+  return Boolean(state.elements?.[uiElement.getId()]?.isLoading);
 };

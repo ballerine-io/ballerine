@@ -27,8 +27,6 @@ export const FieldList: FunctionComponent<
 
   const { payload } = useStateManagerContext();
 
-  console.log({ CONTEXT: payload });
-
   return (
     <div className="flex flex-col gap-4">
       {items.map((item, index) => {

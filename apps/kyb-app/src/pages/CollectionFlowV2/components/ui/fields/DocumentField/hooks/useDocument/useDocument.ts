@@ -34,10 +34,8 @@ export const useDocument = ({ documents, params, uiElement }: IUseDocumentParams
         const newDocuments = [...documents, newDocument];
 
         const context = stateApi.getContext();
-        console.log('destination', uiElement.getValueDestination());
         set(context, uiElement.getValueDestination(), newDocuments);
 
-        console.log('context', context);
         stateApi.setContext(context);
       } else {
         document.pages![pageIndex] = { ballerineFileId: fileId };

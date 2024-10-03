@@ -6,7 +6,13 @@ export const transformV1UIElementToV2UIElement = (element: UIElementDefinition):
     id: element.name,
     valueDestination: element.valueDestination,
     validation: element.validation,
-    children: element.elements ? transformV1UIElementsToV2UIElements(element.elements) : [],
+    //@ts-ignore
+    children: element.children
+      ? //@ts-ignore
+        element.children
+      : element.elements
+      ? transformV1UIElementsToV2UIElements(element.elements)
+      : [],
   } as UIElementV2;
 };
 

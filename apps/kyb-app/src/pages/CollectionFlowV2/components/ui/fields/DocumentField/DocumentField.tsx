@@ -6,6 +6,7 @@ import { Document } from '@/domains/collection-flow';
 import { fetchFile } from '@/domains/storage/storage.api';
 import { collectionFlowFileStorage } from '@/pages/CollectionFlow/collection-flow.file-storage';
 import { FieldErrors } from '@/pages/CollectionFlowV2/components/ui/field-parts/FieldErrors';
+import { FieldLayout } from '@/pages/CollectionFlowV2/components/ui/field-parts/FieldLayout';
 import { useDocument } from '@/pages/CollectionFlowV2/components/ui/fields/DocumentField/hooks/useDocument';
 import { useDocumentUpload } from '@/pages/CollectionFlowV2/components/ui/fields/DocumentField/hooks/useDocumentUpload';
 import { useDocuments } from '@/pages/CollectionFlowV2/components/ui/fields/DocumentField/hooks/useDocuments';
@@ -26,6 +27,7 @@ export const DocumentField: FunctionComponent<
 > = ({ definition, stack, options, fieldProps }) => {
   const { payload } = useStateManagerContext();
   const uiElement = useUIElement(definition, payload, stack);
+  console.log('doc id', uiElement.getId());
   const documents = useDocuments(uiElement);
   const { fileId, setDocument, clearDocument } = useDocument({
     documents,
@@ -66,7 +68,7 @@ export const DocumentField: FunctionComponent<
   );
 
   return (
-    <div className="flex flex-col gap-2">
+    <FieldLayout definition={definition}>
       <FileUploaderField
         uploadFile={fileUploader}
         disabled={
@@ -85,6 +87,6 @@ export const DocumentField: FunctionComponent<
       )} */}
       {uploadError && <ErrorsList errors={[uploadError.message]} />}
       <FieldErrors definition={definition} />
-    </div>
+    </FieldLayout>
   );
 };
