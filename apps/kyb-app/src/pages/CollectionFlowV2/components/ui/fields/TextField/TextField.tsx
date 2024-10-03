@@ -29,7 +29,7 @@ export const TextField: FunctionComponent<
   );
 
   const inputProps = {
-    value,
+    value: value || '',
     placeholder,
     disabled,
     onChange: handleChange,

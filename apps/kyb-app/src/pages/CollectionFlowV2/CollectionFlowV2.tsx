@@ -20,9 +20,11 @@ import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
+import { StackProvider } from '@/pages/CollectionFlowV2/components/ui/fields/FieldList/providers/StackProvider';
 import { rendererSchema } from '@/pages/CollectionFlowV2/renderer-schema';
 import { Renderer } from '@ballerine/ui';
 import set from 'lodash/set';
+import ReactJson from 'react-json-view';
 
 // TODO: Find a way to make this work via the workflow-browser-sdk `subscribe` method.
 export const useCompleteLastStep = () => {
@@ -215,10 +217,24 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                     <ProgressBar />
                                   </div>
                                   <div>
-                                    <Renderer
-                                      elements={currentPage.elements}
-                                      schema={rendererSchema}
-                                    />
+                                    <StackProvider>
+                                      {localStorage.getItem('devmode') ? (
+                                        <div className="flex flex-row flex-nowrap gap-4">
+                                          <div className="min-w-[60%]">
+                                            <Renderer
+                                              elements={currentPage.elements}
+                                              schema={rendererSchema}
+                                            />
+                                          </div>
+                                          <ReactJson src={payload} />
+                                        </div>
+                                      ) : (
+                                        <Renderer
+                                          elements={currentPage?.elements}
+                                          schema={rendererSchema}
+                                        />
+                                      )}
+                                    </StackProvider>
                                   </div>
                                 </div>
                               </AppShell.FormContainer>
