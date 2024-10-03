@@ -27,7 +27,7 @@ export const useUIElementToolsLogic = (elementId: string) => {
   );
 
   const elementState = useMemo(
-    () => state?.elements[elementId] || null,
+    () => state?.elements?.[elementId] || null,
     [state.elements, elementId],
   );
 

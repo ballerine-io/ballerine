@@ -32,7 +32,7 @@ export const validate = (elements: UIElementV2[], context: object) => {
 
     const validationErrors = element.getValidatorsParams().map(({ validator, params }) => {
       try {
-        if (validator === 'required') {
+        if (validator === 'required' || validator === 'document') {
           const isRequired = element.isRequired();
           if (!isRequired && value === undefined) return;
 

@@ -36,7 +36,7 @@ export const useTouched = (uiElement: UIElement, currentPage?: UIPage) => {
   }, [state, uiElements, payload]);
 
   const isTouched = useMemo(
-    () => Boolean(state.elements[uiElement.getId()]?.isTouched),
+    () => Boolean(state.elements?.[uiElement.getId()]?.isTouched),
     [state.elements, uiElement],
   );
 

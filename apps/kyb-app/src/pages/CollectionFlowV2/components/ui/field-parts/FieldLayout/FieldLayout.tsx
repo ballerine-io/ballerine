@@ -25,7 +25,7 @@ export const FieldLayout: FunctionComponent<IFieldLayoutProps<IFieldLayoutBasePa
   const { label } = definition.options || {};
 
   return (
-    <div className={ctw('flex flex-col', { 'gap-4': Boolean(label) })}>
+    <div className={ctw('flex flex-col', { 'gap-2': Boolean(label) })}>
       <div>
         {label && (
           <Label

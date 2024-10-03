@@ -31,7 +31,7 @@ export class UIElement {
 
       return Boolean(isShouldApplyRequired);
     } else {
-      return Boolean(requiredParams?.required);
+      return Boolean(requiredParams?.required) || Boolean(documentParams?.documentId);
     }
   }
 

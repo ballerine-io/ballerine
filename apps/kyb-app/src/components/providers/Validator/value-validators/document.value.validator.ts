@@ -23,6 +23,8 @@ export class DocumentValueValidator extends ValueValidator<IDocumentValueValidat
 
     const document = documents?.find((document: Document) => document.id === documentId);
 
+    debugger;
+
     if (!document || !document.pages?.[pageIndex]?.ballerineFileId) {
       throw new Error(this.getErrorMessage());
     }

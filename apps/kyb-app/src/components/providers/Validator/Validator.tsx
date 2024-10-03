@@ -16,6 +16,8 @@ export const Validator: FunctionComponent<IValidatorProps> = ({ children, elemen
   const validate = useValidate({ elements, context });
   const [validationErrors, setValiationErrors] = useState<TValidationErrors>({});
 
+  console.log({ validationErrors });
+
   const onValidate = useCallback(() => {
     const errors = validate();
     const validationErrors = errors.reduce((acc, error) => {
