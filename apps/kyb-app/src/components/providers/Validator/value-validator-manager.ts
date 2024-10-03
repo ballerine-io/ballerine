@@ -1,4 +1,5 @@
 import { IBaseValueValidatorParams, IFieldContext } from '@/components/providers/Validator/types';
+import { DocumentValueValidator } from '@/components/providers/Validator/value-validators/document.value.validator';
 import { FormatValueValidator } from '@/components/providers/Validator/value-validators/format.value.validator';
 import { MaxLengthValueValidator } from '@/components/providers/Validator/value-validators/max-length.value.validator';
 import { MaximumValueValidator } from '@/components/providers/Validator/value-validators/maximum.value.validator';
@@ -15,6 +16,7 @@ const validatorsMap = {
   minimum: MinimumValueValidator,
   maximum: MaximumValueValidator,
   format: FormatValueValidator,
+  document: DocumentValueValidator,
 };
 
 export type TValidator = keyof typeof validatorsMap;

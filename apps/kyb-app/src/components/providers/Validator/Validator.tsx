@@ -28,7 +28,7 @@ export const Validator: FunctionComponent<IValidatorProps> = ({ children, elemen
     setValiationErrors(validationErrors);
 
     return Boolean(errors.length);
-  }, [validate]);
+  }, [validate, context]);
 
   const ctx = useMemo(
     () => ({ validate: onValidate, errors: validationErrors }),

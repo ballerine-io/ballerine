@@ -1,3 +1,4 @@
+import { IDocumentValueValidatorParams } from '@/components/providers/Validator/value-validators/document.value.validator';
 import { IFormatValueValidatorParams } from '@/components/providers/Validator/value-validators/format.value.validator';
 import { IMaxLengthValueValidatorParams } from '@/components/providers/Validator/value-validators/max-length.value.validator';
 import { IMaximumValueValidatorParams } from '@/components/providers/Validator/value-validators/maximum.value.validator';
@@ -20,7 +21,8 @@ export type TValidationParams =
   | IMaximumValueValidatorParams
   | IMinLengthValueValidatorParams
   | IRequiredValueValidatorParams
-  | IPatternValidatorParams;
+  | IPatternValidatorParams
+  | IDocumentValueValidatorParams;
 
 export type TValidators =
   | 'required'
@@ -29,7 +31,8 @@ export type TValidators =
   | 'pattern'
   | 'minimum'
   | 'maximum'
-  | 'format';
+  | 'format'
+  | 'document';
 
 export interface IBaseFieldParams {
   label?: string;
