@@ -153,7 +153,7 @@ export const dynamicUiWorkflowDefinition = {
         stateNames: ['idle', 'collection_invite'],
       },
       {
-        name: 'kyb',
+        name: 'businessInformation',
         vendor: 'asia-verify',
         pluginKind: 'registry-information',
         displayName: 'Registry Verification',

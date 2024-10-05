@@ -9,7 +9,7 @@ export const putPluginsExampleResponse = {
       stateNames: ['collection_invite'],
     },
     {
-      name: 'kyb',
+      name: 'businessInformation',
       vendor: 'asia-verify',
       pluginKind: 'registry-information',
       stateNames: ['run_vendor_data'],
