@@ -7,8 +7,8 @@ import { BusinessService } from '@/business/business.service';
 import { Business, Project } from '@prisma/client';
 import {
   FEATURE_LIST,
-  TCustomerFeatures,
   TCustomerWithDefinitionsFeatures,
+  TFeaturesWithFeatures,
   TOngoingAuditReportDefinitionConfig,
 } from '@/customer/types';
 import { BusinessReportService } from '@/business-report/business-report.service';
@@ -49,7 +49,6 @@ describe('OngoingMonitoringCron', () => {
       jest.spyOn(prismaService, 'acquireLock').mockResolvedValue(true);
       jest.spyOn(customerService, 'list').mockResolvedValue(mockCustomers());
       jest.spyOn(businessService, 'list').mockResolvedValue(mockBusinesses());
-      // Mock additional service methods as needed
 
       await service.handleCron();
 
@@ -218,6 +217,7 @@ describe('OngoingMonitoringCron', () => {
     return [
       {
         id: 'business1',
+        companyName: 'Test Business 1',
         metadata: {
           featureConfig: {
             [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
@@ -231,14 +231,16 @@ describe('OngoingMonitoringCron', () => {
                 proxyViaCountry: 'US',
               } as TOngoingAuditReportDefinitionConfig,
             },
-          } as Record<string, TCustomerFeatures>,
+          } as TFeaturesWithFeatures,
         },
       },
       {
         id: 'business2',
+        companyName: 'Test Business 2',
       },
       {
         id: 'business3',
+        companyName: 'Test Business 3',
         metadata: {
           featureConfig: {
             [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
@@ -252,11 +254,12 @@ describe('OngoingMonitoringCron', () => {
                 proxyViaCountry: 'GB',
               } as TOngoingAuditReportDefinitionConfig,
             },
-          } as Record<string, TCustomerFeatures>,
+          } as TFeaturesWithFeatures,
         },
       },
       {
         id: 'business4',
+        companyName: 'Test Business 4',
         metadata: {
           featureConfig: {
             [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
@@ -270,13 +273,13 @@ describe('OngoingMonitoringCron', () => {
                 proxyViaCountry: 'CA',
               } as TOngoingAuditReportDefinitionConfig,
             },
-          } as Record<string, TCustomerFeatures>,
+          } as TFeaturesWithFeatures,
         },
       },
     ] as unknown as Array<
       Business & {
         metadata?: {
-          featureConfig?: TCustomerWithDefinitionsFeatures['features'];
+          featureConfig?: TFeaturesWithFeatures;
           lastOngoingAuditReportInvokedAt?: number;
         };
       }

@@ -1,4 +1,5 @@
 import { DocumentsRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/documents.rule-engine';
+import { IsStepValidRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/is-step-valid.rule-engine';
 import { JmespathRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/jmespath.rule-engine';
 import { JsonLogicRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/json-logic.rule-engine';
 import { JsonSchemaRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
@@ -11,7 +12,7 @@ const rulesManages = new EngineManager([
   // @ts-ignore
   new JsonSchemaRuleEngine(),
   new JmespathRuleEngine(),
-  // new IsStepValidRuleEngine(),
+  new IsStepValidRuleEngine(),
   new DocumentsRuleEngine(),
 ]);
 

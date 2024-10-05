@@ -87,7 +87,7 @@ export const DynamicForm = forwardRef(
         <Form
           className={className}
           schema={schema}
-          formData={formData}
+          formData={formData as TFormData}
           uiSchema={uiSchema}
           onSubmit={handleSubmit}
           onChange={handleChange}

@@ -1,3 +1,4 @@
+import { ITheme } from '@/common/types/settings';
 import { Action, Rule, UIElementDefinition } from '@/domains/collection-flow/types/ui-schema.types';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
@@ -59,7 +60,7 @@ export interface Document {
     revisionReason?: string;
     rejectionReason?: string;
   };
-  pages?: { ballerineFileId: string }[];
+  pages?: Array<{ ballerineFileId: string }>;
 }
 
 export interface UBO {
@@ -126,7 +127,7 @@ export interface UIPage {
   name: string;
   number: number;
   stateName: string;
-  elements: UIElementDefinition<AnyObject>[];
+  elements: Array<UIElementDefinition<AnyObject>>;
   actions: Action[];
   pageValidation?: Rule[];
 }
@@ -136,11 +137,19 @@ export interface UISchemaConfig {
   supportedLanguages: string[];
 }
 
+export interface UIOptions {
+  redirectUrls?: {
+    success?: string;
+    failure?: string;
+  };
+}
+
 export interface UISchema {
   id: string;
   config: UISchemaConfig;
   uiSchema: {
     elements: UIPage[];
+    theme: ITheme;
   };
   definition: {
     definitionType: string;
@@ -148,6 +157,7 @@ export interface UISchema {
     extensions: AnyObject;
   };
   version: number;
+  uiOptions?: UIOptions;
 }
 
 export * from './ui-schema.types';

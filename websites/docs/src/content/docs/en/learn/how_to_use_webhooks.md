@@ -3,6 +3,8 @@ title: How to use webhooks
 description: A guide on setting up and handling webhooks to receive real-time notifications from Ballerine's system events.
 ---
 
+import CodeBlock from '../../../../components/CodeBlock/CodeBlock.astro';
+
 **Ballerine supports two types of webhooks: system webhooks and custom webhooks.
 These webhooks allow you to integrate external systems and automate actions based on specific events in your workflows.**
 
@@ -100,7 +102,21 @@ curl --location 'http://localhost:3000/api/v1/external/workflows/run' \
 }'
 ``` 
 
-System webhooks are useful for monitoring and reacting to important events in real-time.
+### List of Webhook Events
+
+The following events can trigger webhooks, allowing for real-time interaction and automation based on activities within Ballerine's workflows:
+
+#### Workflow Events
+
+- **workflow.state.changed**  
+  Triggered when the state of a workflow changes, which can include transitions like pending to active, active to review, or any custom defined states within your workflows.
+
+- **workflow.context.changed**  
+  Triggered when there is a change in the workflow context, such as updates to data fields, user interactions, or integration responses that affect the workflow execution.
+
+- **workflow.completed**  
+  Triggered when a workflow reaches its final state and is marked as completed, providing the outcome of the workflow process.
+
 
 ### Custom Webhooks
 
@@ -218,9 +234,32 @@ A webhook will have the following data structure:
 
 ## Example Use Cases
 
-### Notification on Case Approval/Rejection
+### Fetching Workflow Decision Data
 
-Use the 'workflow.context.document.completed' event to trigger notifications or update your system when a case is approved or rejected.
+For workflows that require decision extraction based on the final state of a process, the `workflow.completed` event provides critical data. An example use case is when a workflow decision needs to be fetched directly from the webhook payload. Here's how you can extract the final decision of the workflow: 
+
+```json
+{
+  "eventName": "workflow.completed",
+  "workflowFinalState": "approved", // Possible values: "approved", "rejected", "auto_approved", "auto_rejected"
+  "data": {
+    "documents": [
+      {
+        "id": "9fe6060a-53ae-4a71-b57e-336a24a16cc3",
+        "category": "business_document",
+        "decision": {
+          "status": "approved",
+          "revisionReason": "",
+          "rejectionReason": ""
+        }
+      }
+    ]
+  }
+}
+```
+
+This event indicates the completion of the workflow and the final decision state, which can be critical for downstream processing or reporting within your systems.
+
 
 ### Tracking Case Updates
 

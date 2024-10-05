@@ -1,5 +1,85 @@
 # @ballerine/eslint-config-react
 
+## 2.0.18
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.18
+
+## 2.0.17
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.17
+
+## 2.0.16
+
+### Patch Changes
+
+- d
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.16
+
+## 2.0.15
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.15
+
+## 2.0.14
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.14
+
+## 2.0.13
+
+### Patch Changes
+
+- Version bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.13
+
+## 2.0.12
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.12
+
+## 2.0.11
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.11
+
+## 2.0.10
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.10
+
+## 2.0.9
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.9
+
 ## 2.0.8
 
 ### Patch Changes

@@ -1,7 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { Outlet } from 'react-router-dom';
 import { UserAvatar } from '@/common/components/atoms/UserAvatar/UserAvatar';
-import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
 import { useHomeLogic } from '@/common/hooks/useHomeLogic/useHomeLogic';
 import { t } from 'i18next';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
@@ -41,10 +40,10 @@ export const Home: FunctionComponent = () => {
             {firstName && ` ${firstName}`}
           </h3>
         </div>
-        <DateRangePicker
-          onChange={onDateRangeChange}
-          value={{ from: from ? new Date(from) : undefined, to: to ? new Date(to) : undefined }}
-        />
+        {/*<DateRangePicker*/}
+        {/*  onChange={onDateRangeChange}*/}
+        {/*  value={{ from: from ? new Date(from) : undefined, to: to ? new Date(to) : undefined }}*/}
+        {/*/>*/}
       </div>
       <div>
         {/*<Tabs defaultValue={defaultTabValue} key={defaultTabValue}>*/}

@@ -21,7 +21,7 @@ export const createFormSchemaFromUIElements = (
   if (formSchema.type === 'object') {
     formSchema.properties = {};
 
-    (formElement.elements as UIElementDefinition<JSONFormElementBaseParams>[])?.forEach(
+    (formElement.elements as Array<UIElementDefinition<JSONFormElementBaseParams>>)?.forEach(
       uiElement => {
         if (!uiElement.options?.jsonFormDefinition) return;
 
@@ -51,6 +51,7 @@ export const createFormSchemaFromUIElements = (
 
   if (formSchema.type === 'array') {
     uiSchema.titleTemplate = formElement.options?.uiSchema?.titleTemplate as string;
+    uiSchema.addText = (formElement.options?.uiSchema?.addText as string) || undefined;
     formSchema.items = {
       type: 'object',
       required: formElement.options?.jsonFormDefinition?.required,
@@ -62,7 +63,7 @@ export const createFormSchemaFromUIElements = (
       'ui:label': false,
     } as AnyObject;
 
-    (formElement.elements as UIElementDefinition<JSONFormElementBaseParams>[])?.forEach(
+    (formElement.elements as Array<UIElementDefinition<JSONFormElementBaseParams>>)?.forEach(
       uiElement => {
         if (!uiElement.options?.jsonFormDefinition) return;
 

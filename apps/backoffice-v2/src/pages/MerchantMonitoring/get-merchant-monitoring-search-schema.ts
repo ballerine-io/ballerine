@@ -1,7 +1,7 @@
 import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 import { z } from 'zod';
-import { BooleanishSchema } from '@/lib/zod/utils/checkers';
 import { TBusinessReport } from '@/domains/business-reports/fetchers';
+import { BooleanishSchema } from '@ballerine/ui';
 
 export const getMerchantMonitoringSearchSchema = () =>
   BaseSearchSchema.extend({

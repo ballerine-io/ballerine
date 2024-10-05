@@ -26,7 +26,7 @@ import { AlertService } from '@/alert/alert.service';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { ListIndividualsProfilesSchema } from '@/case-management/dtos/list-individuals-profiles.dto';
 import { z } from 'zod';
-import { EndUserAmlHitsSchema } from '@/end-user/end-user.schema';
+import { EndUserAmlHitsSchema } from '@ballerine/common';
 import { Business, EndUsersOnBusinesses } from '@prisma/client';
 
 @Controller('case-management')

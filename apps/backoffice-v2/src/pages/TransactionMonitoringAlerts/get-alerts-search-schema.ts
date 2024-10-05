@@ -1,7 +1,7 @@
 import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 import { z } from 'zod';
 import { AlertStatus, AlertStatuses, TAlertsList } from '@/domains/alerts/fetchers';
-import { BooleanishSchema } from '@/lib/zod/utils/checkers';
+import { BooleanishSchema } from '@ballerine/ui';
 
 export const getAlertsSearchSchema = (authenticatedUserId: string | undefined) =>
   BaseSearchSchema.extend({

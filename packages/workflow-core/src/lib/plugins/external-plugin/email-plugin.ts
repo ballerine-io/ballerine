@@ -2,6 +2,7 @@ import { ApiPlugin } from './api-plugin';
 import { IApiPluginParams } from './types';
 import { AnyRecord } from '@ballerine/common';
 import { logger } from '../../logger';
+
 export class EmailPlugin extends ApiPlugin {
   public static pluginType = 'http';
   public static pluginKind = 'email';
@@ -17,10 +18,10 @@ export class EmailPlugin extends ApiPlugin {
   ) {
     const from = { from: { email: payload.from, ...(payload.name ? { name: payload.name } : {}) } };
     const subject = payload.subject
-      ? { subject: this.replaceValuePlaceholders(payload.subject as string, payload) }
+      ? { subject: await this.replaceValuePlaceholders(payload.subject as string, payload) }
       : {};
     const preheader = payload.preheader
-      ? { preheader: this.replaceValuePlaceholders(payload.preheader as string, payload) }
+      ? { preheader: await this.replaceValuePlaceholders(payload.preheader as string, payload) }
       : {};
     const receivers = (payload.receivers as string[]).map(receiver => {
       return { email: receiver };
@@ -28,11 +29,12 @@ export class EmailPlugin extends ApiPlugin {
     const to = { to: receivers };
     const templateId = { template_id: payload.templateId };
 
-    Object.keys(payload).forEach(key => {
+    for (const key of Object.keys(payload)) {
       if (typeof payload[key] === 'string') {
-        payload[key] = this.replaceValuePlaceholders(payload[key] as string, payload);
+        payload[key] = await this.replaceValuePlaceholders(payload[key] as string, payload);
       }
-    });
+    }
+
     const emailPayload = {
       ...from,
       personalizations: [

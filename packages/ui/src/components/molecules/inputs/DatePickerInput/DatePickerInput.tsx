@@ -20,6 +20,10 @@ export type DatePickerValue = number | string | Date | null;
 export interface DatePickerParams {
   disableFuture?: boolean;
   disablePast?: boolean;
+  // dayjs format string or iso
+  outputValueFormat?: string;
+  // MUI date picker date format
+  inputDateFormat?: string;
 }
 
 export interface DatePickerProps {
@@ -28,7 +32,6 @@ export interface DatePickerProps {
   disabled?: boolean;
   params?: DatePickerParams;
   testId?: string;
-  outputFormat?: 'iso' | 'date';
   onChange: (event: DatePickerChangeEvent) => void;
   onBlur?: (event: FocusEvent<any>) => void;
 }
@@ -38,22 +41,37 @@ export const DatePickerInput = ({
   name,
   disabled = false,
   params,
-  outputFormat = 'iso',
   testId,
   onChange,
   onBlur,
 }: DatePickerProps) => {
+  const {
+    outputValueFormat = 'iso',
+    inputDateFormat = 'MM/DD/YYYY',
+    disableFuture = false,
+    disablePast = false,
+  } = params || {};
   const [isFocused, setFocused] = useState(false);
 
   const serializeValue = useCallback(
     (value: Dayjs): string => {
-      if (outputFormat === 'iso') {
+      if (outputValueFormat.toLowerCase() === 'iso') {
         return value.toISOString();
       }
 
-      return value.format('YYYY-MM-DD');
+      const date = value.format(outputValueFormat);
+
+      if (!dayjs(date).isValid()) {
+        console.warn(
+          `Invalid outputValueFormat: "${outputValueFormat}" provided. iso will be used.`,
+        );
+
+        return value.toISOString();
+      }
+
+      return date;
     },
-    [outputFormat],
+    [outputValueFormat],
   );
 
   const deserializeValue = useCallback((value: DatePickerValue) => {
@@ -129,17 +147,19 @@ export const DatePickerInput = ({
     };
 
     return Component;
-  }, [isFocused]);
+  }, [isFocused, onBlur, testId]);
 
   return (
     <ThemeProvider theme={muiTheme}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
-          {...params}
+          disablePast={disablePast}
+          disableFuture={disableFuture}
           disabled={disabled}
           value={value}
           onChange={handleChange}
           reduceAnimations
+          format={inputDateFormat}
           slots={{
             textField: Field,
             openPickerIcon: () => <CalendarDays size="16" color="#64748B" className="opacity-50" />,

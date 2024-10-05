@@ -23,12 +23,12 @@ export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
   });
   const { isLoading: isLoadingCustomer } = useCustomerQuery();
   const navigate = useNavigate();
-  const { mutate: mutateCreateBusinessReport } = useCreateBusinessReportMutation({
-    reportType: 'MERCHANT_REPORT_T1',
-    onSuccess: () => {
-      navigate(`/${locale}/merchant-monitoring`);
-    },
-  });
+  const { mutate: mutateCreateBusinessReport, isLoading: isSubmitting } =
+    useCreateBusinessReportMutation({
+      onSuccess: () => {
+        navigate(`/${locale}/merchant-monitoring`);
+      },
+    });
   const onSubmit: SubmitHandler<z.output<typeof CreateBusinessReportSchema>> = data => {
     mutateCreateBusinessReport(data);
   };
@@ -209,7 +209,7 @@ export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
           },
           {
             label: 'Transactions Analysis',
-            name: 'transactionsAnalysis',
+            name: 'transactions',
             defaultChecked: false,
             disabled: true,
           },
@@ -309,6 +309,7 @@ export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
   return {
     form,
     onSubmit,
+    isCreateReportReady: isLoadingCustomer || isSubmitting,
     comboboxCountryCodes,
     locale,
     isChangeChecksConfigurationOpen,

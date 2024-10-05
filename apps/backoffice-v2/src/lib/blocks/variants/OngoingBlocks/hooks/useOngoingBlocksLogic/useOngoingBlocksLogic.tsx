@@ -16,7 +16,10 @@ export const useOngoingBlocksLogic = () => {
 
   const amlData = useMemo(() => [workflow?.context?.aml], [workflow?.context?.aml]);
 
-  const amlBlock = useAmlBlock(amlData);
+  const amlBlock = useAmlBlock({
+    data: amlData,
+    vendor: workflow?.context?.aml?.vendor ?? '',
+  });
 
   const amlWithContainerBlock = useMemo(() => {
     if (!amlBlock?.length) {

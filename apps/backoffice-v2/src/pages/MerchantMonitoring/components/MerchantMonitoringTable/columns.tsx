@@ -1,16 +1,14 @@
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import dayjs from 'dayjs';
 import React from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
 import { BusinessReportStatus, TBusinessReport } from '@/domains/business-reports/fetchers';
 import { titleCase } from 'string-ts';
 
-import { severityToClassName } from '@/common/constants';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { getSeverityFromRiskScore } from '@/common/utils/get-severity-from-risk-score';
-import { Badge } from '@ballerine/ui';
-import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
+import { getSeverityFromRiskScore } from '@ballerine/common';
+import { Badge, severityToClassName, TextWithNAFallback } from '@ballerine/ui';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
+import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
 
 const columnHelper = createColumnHelper<TBusinessReport>();
 
@@ -23,7 +21,7 @@ export const columns = [
       const id = info.getValue();
 
       return (
-        <div className={`ml-[10px] flex w-full max-w-[36ch] items-center space-x-2`}>
+        <div className={`ml-[10px] flex w-full max-w-[12ch] items-center space-x-2`}>
           <TextWithNAFallback style={{ ...styles, width: '70%' }} ref={ref}>
             {id}
           </TextWithNAFallback>

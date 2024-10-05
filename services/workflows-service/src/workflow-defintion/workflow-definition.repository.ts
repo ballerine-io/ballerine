@@ -122,10 +122,19 @@ export class WorkflowDefinitionRepository {
     projectIds: TProjectIds,
     noValidate = false,
   ): Promise<Prisma.BatchPayload> {
+    const workflowDefinition = await this.prisma.workflowDefinition.findUnique({
+      where: { id },
+      select: { isPublic: true },
+    });
+
+    if (workflowDefinition?.isPublic) {
+      throw new Error('Cannot update public workflow definition templates');
+    }
+
     const scopedArgs = this.scopeService.scopeUpdateMany(
       {
         ...args,
-        where: { id },
+        where: { id, isPublic: false },
       },
       projectIds,
     );
@@ -142,6 +151,14 @@ export class WorkflowDefinitionRepository {
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionDeleteArgs, 'where'>>,
     projectIds: TProjectIds,
   ): Promise<WorkflowDefinition> {
+    const workflowDefinition = await this.prisma.workflowDefinition.findUnique({
+      where: { id },
+      select: { isPublic: true },
+    });
+
+    if (workflowDefinition?.isPublic) {
+      throw new Error('Cannot delete public workflow definition templates');
+    }
     return await this.prisma.workflowDefinition.delete(
       this.scopeService.scopeDelete(
         {

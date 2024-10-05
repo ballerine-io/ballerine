@@ -11,6 +11,7 @@ export type {
   WorkflowContext,
   ExtensionRunOrder,
   Transformer,
+  TWorkflowTokenPluginCallback,
   SerializableTransformer,
   ValidatableTransformer,
   ChildToParentCallback,

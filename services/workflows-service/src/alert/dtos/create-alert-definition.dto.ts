@@ -16,11 +16,11 @@ export class CreateAlertDefinitionDto {
 
   @ApiProperty({ example: 1 }) // Example value; replace with actual ruleSetId if applicable
   @IsNotEmpty()
-  rulesetId!: number;
+  rulesetId!: string;
 
   @ApiProperty({ example: 1 }) // Example value; replace with actual ruleId if applicable
   @IsNotEmpty()
-  ruleId!: number;
+  ruleId!: string;
 
   @ApiProperty({
     example:
@@ -40,7 +40,7 @@ export class CreateAlertDefinitionDto {
     required: false,
   })
   @IsOptional()
-  dedupeStrategies?: Record<string, any>;
+  dedupeStrategy?: Record<string, any>;
 
   @ApiProperty({ example: '{}', type: 'object', required: false })
   @IsOptional()
@@ -53,9 +53,4 @@ export class CreateAlertDefinitionDto {
   @ApiProperty({ example: '{}', type: 'object', required: false })
   @IsOptional()
   additionalInfo?: Record<string, any>;
-
-  @ApiProperty({ required: true, example: 'YOUR_PROJECT_ID' }) // Replace with actual project ID
-  @IsString()
-  @IsNotEmpty()
-  projectId!: string;
 }

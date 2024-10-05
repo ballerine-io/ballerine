@@ -349,7 +349,7 @@ describe('initiateApiPlugins #unit', () => {
               },
             ],
           },
-        ] satisfies Parameters<(typeof workflow)['initiateChildPlugin']>[0];
+        ] satisfies Parameters<(typeof workflow)['initiateChildPlugins']>[0];
         const expectedPluginStructure = {
           name: childPluginSchemas[0]!.name,
           stateNames: childPluginSchemas[0]!.stateNames,
@@ -359,7 +359,7 @@ describe('initiateApiPlugins #unit', () => {
         };
 
         // Act
-        const result = workflow.initiateChildPlugin(childPluginSchemas, 'parent', {});
+        const result = workflow.initiateChildPlugins(childPluginSchemas, 'parent', {});
 
         // Assert
         const actualPluginStructure = {

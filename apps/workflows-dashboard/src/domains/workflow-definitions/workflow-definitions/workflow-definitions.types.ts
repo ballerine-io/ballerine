@@ -43,3 +43,9 @@ export interface UpdateWorkflowDefinitionExtensionsByIdDto {
 export interface UpgradeWorkflowDefinitionVersionByIdDto {
   workflowDefinitionId: string;
 }
+
+export interface CloneWorkflowDefinitionByIdDto {
+  workflowDefinitionId: string;
+  name: string;
+  displayName: string;
+}

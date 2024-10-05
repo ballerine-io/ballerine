@@ -338,6 +338,24 @@ export class WorkflowControllerInternal {
     }
   }
 
+  @common.Get(':id/documents/:documentId/run-ocr')
+  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseGuards(WorkflowAssigneeGuard)
+  async runDocumentOcr(
+    @common.Param() params: DocumentUpdateParamsInput,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    const ocrResult = await this.service.runOCROnDocument({
+      workflowRuntimeId: params?.id,
+      documentId: params?.documentId,
+      projectId: currentProjectId,
+    });
+
+    return ocrResult;
+  }
+
   // @nestAccessControl.UseRoles({
   //   resource: 'Workflow',
   //   action: 'delete',

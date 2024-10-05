@@ -1,4 +1,4 @@
-import { StateTag, TStateTags, isObject } from '@ballerine/common';
+import { isObject, StateTag, TStateTags, valueOrNA } from '@ballerine/common';
 import { ComponentProps, useCallback, useMemo } from 'react';
 
 import { Separator } from '@/common/components/atoms/Separator/Separator';
@@ -19,7 +19,6 @@ import { Button } from '@ballerine/ui';
 import { toTitleCase } from 'string-ts';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
-import { valueOrNA } from '../../../../../../common/utils/value-or-na/value-or-na';
 import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 
@@ -109,9 +108,36 @@ export const useKycBlock = ({
         childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult?.aml ??
         childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml,
     );
-  }, [kycSessionKeys]);
+  }, [childWorkflow?.context?.pluginsOutput?.kyc_session, kycSessionKeys]);
+  const vendor = useMemo(() => {
+    if (!kycSessionKeys?.length) {
+      return;
+    }
 
-  const amlBlock = useAmlBlock(amlData);
+    const amlVendor = kycSessionKeys
+      .map(
+        key =>
+          childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult?.aml
+            ?.vendor ??
+          childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml?.vendor,
+      )
+      .filter(Boolean);
+
+    if (!amlVendor.length) {
+      const kycVendor = kycSessionKeys
+        .map(key => childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.vendor)
+        .filter(Boolean);
+
+      return kycVendor.join(', ');
+    }
+
+    return amlVendor.join(', ');
+  }, [childWorkflow?.context?.pluginsOutput?.kyc_session, kycSessionKeys]);
+
+  const amlBlock = useAmlBlock({
+    data: amlData,
+    vendor: vendor ?? '',
+  });
 
   const documentExtractedData = kycSessionKeys?.length
     ? kycSessionKeys?.map((key, index, collection) =>
@@ -282,7 +308,9 @@ export const useKycBlock = ({
               }}
               disabled={isDisabled}
               size={'wide'}
-              variant={'success'}
+              className={ctw({
+                '!bg-success': !isDisabled,
+              })}
             >
               Approve
             </MotionButton>

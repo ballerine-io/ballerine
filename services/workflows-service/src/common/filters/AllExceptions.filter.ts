@@ -6,6 +6,7 @@ import type { Request, Response } from 'express';
 import { HttpStatusCode } from 'axios';
 import { ValidationError } from '@/errors';
 import { inspect } from 'node:util';
+import { getReqMetadataObj } from '../utils/request-response/request';
 
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
@@ -77,6 +78,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
       error: inspect(errorRes),
       message: error.message,
       responseTime: Date.now() - request.startTime,
+      ...getReqMetadataObj(request),
     });
   }
 

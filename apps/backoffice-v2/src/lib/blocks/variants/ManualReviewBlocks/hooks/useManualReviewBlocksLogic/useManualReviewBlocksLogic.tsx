@@ -27,6 +27,7 @@ export const useManualReviewBlocksLogic = () => {
     mainRepresentative: _mainRepresentative,
     mainContact: _mainContact,
     openCorporate: _openCorporate,
+    associatedCompanies: _associatedCompanies,
     ...entityDataAdditionalInfo
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
   const { mutate: mutateRevisionTaskById, isLoading: isLoadingReuploadNeeded } =

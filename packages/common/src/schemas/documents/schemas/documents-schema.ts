@@ -14,6 +14,7 @@ const issuerSchema = Type.Object(
     country: Type.String({
       transform: ['trim', 'toUpperCase'],
       enum: [
+        'ZZ',
         'AF',
         'AX',
         'AL',

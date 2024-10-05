@@ -7,7 +7,6 @@ import { useIndividualsProfilesQuery } from '@/domains/profiles/hook/queries/use
 export const useIndividualsLogic = () => {
   const [{ search: searchValue, filter, page, pageSize, sortBy, sortDir }] =
     useZodSearchParams(ProfilesSearchSchema);
-  const { onPaginate, onPrevPage, onNextPage } = usePagination();
   const { data: individualsProfiles, isLoading: isLoadingIndividualsProfiles } =
     useIndividualsProfilesQuery({
       search: searchValue,
@@ -17,6 +16,9 @@ export const useIndividualsLogic = () => {
       sortBy,
       sortDir,
     });
+  const { onPaginate, onPrevPage, onNextPage, onLastPage } = usePagination({
+    totalPages: 0,
+  });
   const isLastPage =
     (individualsProfiles?.length ?? 0) < pageSize || individualsProfiles?.length === 0;
   const { search, onSearch } = useSearch({
@@ -29,6 +31,7 @@ export const useIndividualsLogic = () => {
     onPaginate,
     onPrevPage,
     onNextPage,
+    onLastPage,
     isLastPage,
     page,
     search,

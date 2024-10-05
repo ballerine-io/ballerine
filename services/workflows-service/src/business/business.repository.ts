@@ -17,6 +17,7 @@ export class BusinessRepository {
 
   async create<T extends Prisma.BusinessCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessCreateArgs>,
+    transaction: PrismaClient | PrismaTransaction = this.prisma,
   ) {
     const result = BusinessCreateInputSchema.safeParse(args.data);
 
@@ -24,7 +25,7 @@ export class BusinessRepository {
       throw ValidationError.fromZodError(result.error);
     }
 
-    return await this.prisma.business.create({
+    return await transaction.business.create({
       ...args,
       data: result.data,
     });

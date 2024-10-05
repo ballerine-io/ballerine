@@ -11,8 +11,7 @@ import { UserAvatar } from '../../../../common/components/atoms/UserAvatar/UserA
 import { createInitials } from '../../../../common/utils/create-initials/create-initials';
 import { useEllipsesWithTitle } from '../../../../common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import dayjs from 'dayjs';
-import { StateTag } from '@ballerine/common';
-import { valueOrNA } from '../../../../common/utils/value-or-na/value-or-na';
+import { StateTag, valueOrNA } from '@ballerine/common';
 
 /**
  * @description To be used by {@link Cases}, and be wrapped by {@link Cases.List}. Uses li element with default styling to display a single case's data. Navigates to the selected entity on click by setting the entity id into the path param.

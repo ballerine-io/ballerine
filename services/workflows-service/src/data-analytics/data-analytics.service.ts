@@ -12,8 +12,10 @@ import {
   TMultipleMerchantsOneCounterparty,
   TExcludedCounterparty,
   TMerchantGroupAverage,
+  DailySingleTransactionAmountType,
 } from './types';
-import { AggregateType, TIME_UNITS } from './consts';
+import { AggregateType } from './consts';
+import { calculateStartDate } from './utils';
 import { AlertSeverity, BusinessReport, BusinessReportType, Prisma } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isEmpty } from 'lodash';
@@ -71,7 +73,14 @@ export class DataAnalyticsService {
           ...inlineRule.options,
           projectId,
         });
+
       case 'evaluateMerchantGroupAverage':
+        return await this[inlineRule.fnName]({
+          ...inlineRule.options,
+          projectId,
+        });
+
+      case 'evaluateDailySingleTransactionAmount':
         return await this[inlineRule.fnName]({
           ...inlineRule.options,
           projectId,
@@ -260,8 +269,8 @@ export class DataAnalyticsService {
     },
     paymentMethods = [],
     excludePaymentMethods = false,
-    timeAmount = 7,
-    timeUnit = TIME_UNITS.days,
+    timeAmount,
+    timeUnit,
     groupBy = [],
     havingAggregate = AggregateType.SUM,
   }: TransactionsAgainstDynamicRulesType) {
@@ -278,6 +287,7 @@ export class DataAnalyticsService {
       Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
         `${timeAmount} ${timeUnit}`,
       )}'`,
+      Prisma.sql`"transactionDate" <= NOW()`,
     ];
 
     if (!isEmpty(transactionType)) {
@@ -396,6 +406,7 @@ export class DataAnalyticsService {
           AND "transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
             `${timeAmount} ${timeUnit}`,
           )}'
+          AND "transactionDate" <= NOW()
         GROUP BY
           "${Prisma.raw(subjectColumn)}"
       )
@@ -454,6 +465,7 @@ export class DataAnalyticsService {
     WHERE
       "tr"."projectId" = ${projectId}
       AND  "tr"."counterpartyBeneficiaryId" IS NOT NULL
+      AND  "tr"."transactionDate" <= NOW()
     GROUP BY
       "tr"."counterpartyBeneficiaryId"
   )
@@ -474,8 +486,8 @@ export class DataAnalyticsService {
     transactionType = [],
     threshold = 5_000,
     paymentMethods = [],
-    timeAmount = 7,
-    timeUnit = TIME_UNITS.days,
+    timeAmount,
+    timeUnit,
     isPerBrand = false,
     havingAggregate = AggregateType.SUM,
   }: TCustomersTransactionTypeOptions) {
@@ -492,9 +504,10 @@ export class DataAnalyticsService {
       Prisma.sql`"tr"."businessId" IS NOT NULL`,
       // TODO: should we use equation instead of IN clause?
       Prisma.sql`"tr"."transactionType"::text IN (${Prisma.join(transactionType, ',')})`,
-      Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+      Prisma.sql`"tr"."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
         `${timeAmount} ${timeUnit}`,
       )}'`,
+      Prisma.sql`"tr"."transactionDate" <= NOW()`,
     ];
 
     if (Array.isArray(paymentMethods.length)) {
@@ -516,7 +529,7 @@ export class DataAnalyticsService {
 
     switch (havingAggregate) {
       case AggregateType.COUNT:
-        havingClause = `${AggregateType.COUNT}(id)`;
+        havingClause = `${AggregateType.COUNT}("id")`;
         break;
       case AggregateType.SUM:
         havingClause = `${AggregateType.SUM}("tr"."transactionBaseAmount")`;
@@ -555,6 +568,7 @@ export class DataAnalyticsService {
       Prisma.sql`"tr"."paymentMethod"::text ${Prisma.raw(paymentMethod.operator)} ${
         paymentMethod.value
       }`,
+      Prisma.sql`"transactionDate" <= NOW()`,
       !!timeAmount &&
         !!timeUnit &&
         Prisma.sql`"tr"."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
@@ -633,6 +647,7 @@ export class DataAnalyticsService {
         paymentMethod.value
       }`,
       historicalTransactionClause,
+      Prisma.sql`"transactionDate" <= NOW()`,
     ];
 
     return await this._executeQuery<Array<{ counterpartyId: string }>>(
@@ -672,6 +687,7 @@ export class DataAnalyticsService {
       Prisma.sql`"tr"."projectId" = ${projectId}`,
       Prisma.sql`"tr"."counterpartyOriginatorId" IS NOT NULL`,
       Prisma.sql`"cpOriginator"."correlationId" LIKE '%****%'`,
+      Prisma.sql`"tr"."transactionDate" <= NOW()`,
       !!timeAmount &&
         !!timeUnit &&
         Prisma.sql`"tr"."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
@@ -733,6 +749,7 @@ export class DataAnalyticsService {
         paymentMethod.value
       }`,
       !!customerType && Prisma.sql`b."businessType" = ${customerType}`,
+      Prisma.sql`"tr"."transactionDate" <= NOW()`,
     ].filter(Boolean);
 
     const sqlQuery = Prisma.sql`WITH tx_by_business AS
@@ -772,6 +789,79 @@ export class DataAnalyticsService {
    t."recentDaysTransactionCount" > ${transactionFactor} * ((avg_business."totalTransactionsCount" - t."recentDaysTransactionCount")::FLOAT / (avg_business."merchantCount" - 1));`;
 
     return await this._executeQuery<Array<{ counterpartyId: string }>>(sqlQuery);
+  }
+
+  async evaluateDailySingleTransactionAmount({
+    projectId,
+
+    ruleType,
+    amountThreshold,
+
+    timeUnit,
+    timeAmount,
+
+    direction,
+
+    paymentMethods,
+    excludePaymentMethods,
+
+    transactionType = [],
+  }: DailySingleTransactionAmountType) {
+    if (!projectId) {
+      throw new Error('projectId is required');
+    }
+
+    const startDate = calculateStartDate(timeUnit, timeAmount);
+    startDate.setHours(0, 0, 0, 0);
+
+    const conditions: Prisma.Sql[] = [
+      Prisma.sql`"projectId" = ${projectId}`,
+      Prisma.sql`"transactionDate" >= ${startDate}`,
+      Prisma.sql`"transactionDate" <= NOW()`,
+    ];
+
+    if (!isEmpty(transactionType)) {
+      conditions.push(
+        Prisma.sql`"tr"."transactionType"::text IN (${Prisma.join([...transactionType], ',')})`,
+      );
+    }
+
+    if (direction) {
+      conditions.push(Prisma.sql`"transactionDirection"::text = ${direction}`);
+    }
+
+    if (paymentMethods.length) {
+      const methodCondition = excludePaymentMethods ? `NOT IN` : `IN`;
+
+      conditions.push(
+        Prisma.sql`"paymentMethod"::text ${Prisma.raw(methodCondition)} (${Prisma.join([
+          ...paymentMethods,
+        ])})`,
+      );
+    }
+
+    let query: Prisma.Sql;
+
+    if (ruleType === 'amount') {
+      conditions.push(Prisma.sql`"transactionBaseAmount" > ${amountThreshold}`);
+
+      query = Prisma.sql`SELECT "counterpartyBeneficiaryId" AS "counterpartyId" FROM "TransactionRecord" "tr" WHERE ${Prisma.join(
+        conditions,
+        ' AND ',
+      )} GROUP BY "counterpartyBeneficiaryId"`;
+    } else if (ruleType === 'count') {
+      query = Prisma.sql`SELECT "counterpartyBeneficiaryId" as "counterpartyId", 
+         COUNT(id) AS "transactionCount" FROM "TransactionRecord" "tr" WHERE ${Prisma.join(
+           conditions,
+           ' AND ',
+         )} GROUP BY "counterpartyBeneficiaryId" HAVING ${Prisma.raw(
+        `${AggregateType.COUNT}(id)`,
+      )} > ${amountThreshold}`;
+    } else {
+      throw new Error(`Invalid rule type: ${ruleType}`);
+    }
+
+    return await this._executeQuery<Array<Record<string, unknown>>>(query);
   }
 
   private async _executeQuery<T = unknown>(query: Prisma.Sql) {

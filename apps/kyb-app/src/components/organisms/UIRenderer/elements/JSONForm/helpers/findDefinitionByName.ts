@@ -4,7 +4,7 @@ import { AnyObject } from '@ballerine/ui';
 
 export const findDefinitionByName = (
   name: string,
-  elements: UIElementDefinition<AnyObject>[],
+  elements: Array<UIElementDefinition<AnyObject>>,
 ): UIElementDefinition<AnyObject> | undefined => {
   for (const element of elements) {
     if (element.name === name) {
@@ -13,6 +13,7 @@ export const findDefinitionByName = (
 
     if (element.elements) {
       const foundInChildren = findDefinitionByName(name, element.elements);
+
       if (foundInChildren) {
         return foundInChildren;
       }
@@ -24,7 +25,7 @@ export const findDefinitionByName = (
 
 export const findDefinitionByDestinationPath = (
   destination: string,
-  elements: UIElementDefinition<AnyObject>[],
+  elements: Array<UIElementDefinition<AnyObject>>,
 ): UIElementDefinition<AnyObject> | undefined => {
   for (const element of elements) {
     if (element.valueDestination === destination) {
@@ -33,6 +34,7 @@ export const findDefinitionByDestinationPath = (
 
     if (element.elements) {
       const foundInChildren = findDefinitionByDestinationPath(destination, element.elements);
+
       if (foundInChildren) {
         return foundInChildren;
       }
@@ -44,7 +46,7 @@ export const findDefinitionByDestinationPath = (
 
 export const findDocumentDefinitionById = (
   id: string,
-  elements: UIElementDefinition<AnyObject>[],
+  elements: Array<UIElementDefinition<AnyObject>>,
 ): UIElementDefinition<AnyObject> | undefined => {
   for (const element of elements) {
     if ((element?.options?.documentData?.id as string) === deserializeDocumentId(id)) {
@@ -53,6 +55,7 @@ export const findDocumentDefinitionById = (
 
     if (element.elements) {
       const foundInChildren = findDocumentDefinitionById(id, element.elements);
+
       if (foundInChildren) {
         return foundInChildren;
       }
@@ -62,10 +65,10 @@ export const findDocumentDefinitionById = (
   return undefined;
 };
 
-export const getAllDefinitions = (elements: UIElementDefinition<AnyObject>[]) => {
-  const items: UIElementDefinition<AnyObject>[] = [];
+export const getAllDefinitions = (elements: Array<UIElementDefinition<AnyObject>>) => {
+  const items: Array<UIElementDefinition<AnyObject>> = [];
 
-  const run = (elements: UIElementDefinition<AnyObject>[]) => {
+  const run = (elements: Array<UIElementDefinition<AnyObject>>) => {
     for (const element of elements) {
       if (element.valueDestination) {
         items.push(element);

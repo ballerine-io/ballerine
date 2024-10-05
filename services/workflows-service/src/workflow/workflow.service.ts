@@ -1,4 +1,5 @@
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { BusinessReportService } from '@/business-report/business-report.service';
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
 import { ajv } from '@/common/ajv/ajv.validator';
@@ -20,7 +21,11 @@ import {
 } from '@/prisma/prisma.util';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { FileService } from '@/providers/file/file.service';
+import { RiskRuleService, TFindAllRulesOptions } from '@/rule-engine/risk-rule.service';
+import { RuleEngineService } from '@/rule-engine/rule-engine.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
+import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
+import { SentryService } from '@/sentry/sentry.service';
 import type {
   InputJsonValue,
   IObjectWithId,
@@ -60,6 +65,7 @@ import {
   SerializableTransformer,
   THelperFormatingLogic,
   Transformer,
+  TWorkflowTokenPluginCallback,
 } from '@ballerine/workflow-core';
 import {
   BadRequestException,
@@ -72,6 +78,7 @@ import {
   BusinessPosition,
   BusinessReportStatus,
   BusinessReportType,
+  Customer,
   EndUser,
   Prisma,
   PrismaClient,
@@ -81,7 +88,9 @@ import {
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
+import { Static, TSchema } from '@sinclair/typebox';
 import { plainToClass } from 'class-transformer';
+import dayjs from 'dayjs';
 import { isEqual, merge } from 'lodash';
 import mime from 'mime';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
@@ -96,15 +105,13 @@ import {
   WorkflowRuntimeListQueryResult,
 } from './types';
 import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-document';
+import { entitiesUpdate } from './utils/entities-update';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
-import { Static } from '@sinclair/typebox';
-import dayjs from 'dayjs';
-import { entitiesUpdate } from './utils/entities-update';
-import { BusinessReportService } from '@/business-report/business-report.service';
-import { RuleEngineService } from '@/rule-engine/rule-engine.service';
-import { RiskRuleService, TFindAllRulesOptions } from '@/rule-engine/risk-rule.service';
-import { SentryService } from '@/sentry/sentry.service';
+import { StorageService } from '@/storage/storage.service';
+import { TOcrImages, UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
+import { AwsSecretsManager } from '@/secrets-manager/aws-secrets-manager';
+import { InMemorySecretsManager } from '@/secrets-manager/in-memory-secrets-manager';
 
 type TEntityId = string;
 
@@ -144,6 +151,8 @@ export class WorkflowService {
     private readonly riskRuleService: RiskRuleService,
     private readonly ruleEngineService: RuleEngineService,
     private readonly sentry: SentryService,
+    private readonly secretsManagerFactory: SecretsManagerFactory,
+    private readonly storageService: StorageService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -1462,7 +1471,6 @@ export class WorkflowService {
             workflowDefinitionId,
             UiDefinitionContext.collection_flow,
             projectIds,
-            {},
           );
         } catch (err) {
           if (isErrorWithMessage(err)) {
@@ -1504,6 +1512,11 @@ export class WorkflowService {
                 ...contextToInsert,
                 documents: documentsWithPersistedImages,
                 flowConfig: (contextToInsert as any)?.flowConfig ?? createFlowConfig(uiSchema),
+                metadata: {
+                  customerId: customer.id,
+                  customerNormalizedName: customer.name,
+                  customerName: customer.displayName,
+                },
               } as InputJsonValue,
               config: mergedConfig as InputJsonValue,
               // @ts-expect-error - error from Prisma types fix
@@ -1553,6 +1566,11 @@ export class WorkflowService {
             });
 
             entities.push({ type: 'business', id: entityId });
+
+            if (workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative) {
+              workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.ballerineEntityId =
+                endUserId;
+            }
           }
 
           const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
@@ -1573,8 +1591,7 @@ export class WorkflowService {
                 context: {
                   ...workflowRuntimeData.context,
                   metadata: {
-                    customerNormalizedName: customer.name,
-                    customerName: customer.displayName,
+                    ...(workflowRuntimeData.context.metadata ?? {}),
                     token: workflowToken.token,
                     collectionFlowUrl: env.COLLECTION_FLOW_URL,
                     webUiSDKUrl: env.WEB_UI_SDK_URL,
@@ -1688,31 +1705,42 @@ export class WorkflowService {
     entityId: string;
     position?: BusinessPosition;
   }) {
-    if (entityData && entityType === 'business') {
-      return (
-        await this.endUserService.createWithBusiness(
-          {
-            endUser: {
-              ...entityData,
-              isContactPerson: true,
-            },
-            business: {
-              companyName: '',
-              ...workflowRuntimeData.context.entity.data,
-              projectId: currentProjectId,
-            },
-            position,
-          },
-          currentProjectId,
-          entityId,
-        )
-      ).id;
+    if (!entityData) {
+      throw new BadRequestException('Entity data is missing. Please provide end user data.');
     }
 
-    throw new Error(
-      `Invalid entity type or payload for child workflow creation for entity: ${entityType} with context:`,
-      workflowRuntimeData.context.entity,
-    );
+    if (entityType !== 'business') {
+      throw new BadRequestException(`Invalid entity type: ${entityType}. Expected 'business'.`);
+    }
+
+    try {
+      const result = await this.endUserService.createWithBusiness(
+        {
+          endUser: {
+            ...entityData,
+            isContactPerson: true,
+          },
+          business: {
+            companyName: '',
+            ...workflowRuntimeData.context.entity.data,
+            projectId: currentProjectId,
+          },
+          position,
+        },
+        currentProjectId,
+        entityId,
+      );
+
+      return result.id;
+    } catch (error) {
+      this.logger.error('Failed to create end user with business', {
+        error,
+        entityType,
+        entityId,
+        currentProjectId,
+      });
+      throw new Error('Failed to create end user with business. Please try again later.');
+    }
   }
 
   private async __persistDocumentPagesFiles(
@@ -1938,6 +1966,28 @@ export class WorkflowService {
         transaction,
       );
 
+      const customer = await this.customerService.getByProjectId(projectIds![0]!, {
+        select: {
+          id: true,
+          name: true,
+          displayName: true,
+          logoImageUri: true,
+          faviconImageUri: true,
+          country: true,
+          language: true,
+          websiteUrl: true,
+          projects: true,
+          subscriptions: true,
+          config: true,
+          authenticationConfiguration: true,
+        },
+      });
+
+      const secretsManager = this.secretsManagerFactory.create({
+        provider: env.SECRETS_MANAGER_PROVIDER,
+        customerId: customer.id,
+      });
+
       const service = createWorkflow({
         runtimeId: workflowRuntimeData.id,
         // @ts-expect-error - error from Prisma types fix
@@ -1949,7 +1999,6 @@ export class WorkflowService {
           machineContext: workflowRuntimeData.context,
           state: workflowRuntimeData.state,
         },
-        // @ts-expect-error - error from Prisma types fix
         extensions: workflowDefinition.extensions,
         invokeRiskRulesAction: async (
           context: object,
@@ -2000,6 +2049,84 @@ export class WorkflowService {
             currentProjectId,
             transaction,
           );
+        },
+        secretsManager: { getAll: this.getCustomerSecrets(secretsManager, customer) },
+        invokeWorkflowTokenAction: async (workflowTokenAction: TWorkflowTokenPluginCallback) => {
+          const workflowRuntimeId = workflowTokenAction.workflowRuntimeId;
+          const defaultDaysExpiry = 30;
+
+          const expiresAt = workflowTokenAction.expiresInMinutes
+            ? new Date(Date.now() + workflowTokenAction.expiresInMinutes * 60 * 1000)
+            : new Date(Date.now() + defaultDaysExpiry * 24 * 60 * 60 * 1000);
+
+          const customer = await this.customerService.getByProjectId(currentProjectId);
+
+          const representativeEndUserId =
+            await this.workflowRuntimeDataRepository.findMainBusinessWorkflowRepresentative(
+              {
+                workflowRuntimeId: workflowRuntimeId,
+                transaction: transaction,
+              },
+              [currentProjectId],
+            );
+
+          const uiDefinition = await this.uiDefinitionService.findByArgs(
+            {
+              where: {
+                OR: [
+                  {
+                    id: workflowTokenAction.uiDefinitionId,
+                  },
+                  {
+                    projectId: currentProjectId,
+                    name: workflowTokenAction.uiDefinitionId,
+                  },
+                ],
+              },
+            },
+            [currentProjectId],
+          );
+
+          if (!representativeEndUserId) {
+            throw new InternalServerErrorException({
+              descriptionOrOptions:
+                "Couldn't find main representative for business, Make sure you set the plugin on the correct definition!",
+            });
+          }
+
+          if (!uiDefinition.id) {
+            throw new InternalServerErrorException({
+              descriptionOrOptions:
+                "Couldn't find uiDefinitionId for token action, Make sure you set the plugin Properly",
+            });
+          }
+
+          const { id, token } = await this.workflowTokenService.create(
+            currentProjectId,
+            {
+              workflowRuntimeDataId: workflowRuntimeId,
+              expiresAt,
+              endUserId: representativeEndUserId,
+            },
+            transaction,
+          );
+
+          await this.workflowRuntimeDataRepository.updateById(
+            workflowRuntimeId,
+            {
+              data: {
+                uiDefinitionId: uiDefinition.id,
+              },
+            },
+            transaction,
+          );
+
+          return {
+            token: token,
+            customerName: customer.displayName,
+            collectionFlowUrl: env.COLLECTION_FLOW_URL!,
+            customerNormalizedName: customer.name,
+          };
         },
       });
 
@@ -2151,6 +2278,21 @@ export class WorkflowService {
 
       return updatedRuntimeData;
     });
+  }
+
+  private getCustomerSecrets(
+    secretsManager: AwsSecretsManager | InMemorySecretsManager,
+    { authenticationConfiguration }: Customer,
+  ) {
+    return async () => {
+      const secrets = await secretsManager.getAll();
+      const webhookSharedSecret = authenticationConfiguration?.webhookSharedSecret;
+
+      return {
+        ...(webhookSharedSecret ? { webhookSharedSecret } : {}),
+        ...secrets,
+      } as Record<string, string>;
+    };
   }
 
   async persistChildWorkflowToParent(
@@ -2402,5 +2544,107 @@ export class WorkflowService {
     return await this.workflowRuntimeDataRepository.updateById(workflowRuntimeDataId, {
       data: args,
     });
+  }
+
+  async findDocumentById({
+    workflowId,
+    projectId,
+    documentId,
+    transaction,
+  }: {
+    workflowId: string;
+    projectId: string;
+    documentId: string;
+    transaction: PrismaTransaction | PrismaClient;
+  }) {
+    const runtimeData = await this.workflowRuntimeDataRepository.findByIdAndLock(
+      workflowId,
+      {},
+      [projectId],
+      transaction,
+    );
+    const workflowDef = await this.workflowDefinitionRepository.findById(
+      runtimeData.workflowDefinitionId,
+      {},
+      [projectId],
+      transaction,
+    );
+    const document = runtimeData?.context?.documents?.find(
+      (document: DefaultContextSchema['documents'][number]) => document.id === documentId,
+    );
+
+    return addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);
+  }
+
+  async runOCROnDocument({
+    workflowRuntimeId,
+    projectId,
+    documentId,
+  }: {
+    workflowRuntimeId: string;
+    projectId: string;
+    documentId: string;
+  }) {
+    const ocrResult = await this.prismaService.$transaction(
+      async transaction => {
+        const customer = await this.customerService.getByProjectId(projectId);
+
+        if (customer.features?.['isDocumentOcrEnabled'] === true) {
+          throw new BadRequestException('Document OCR is not enabled for this customer');
+        }
+
+        const document = await this.findDocumentById({
+          workflowId: workflowRuntimeId,
+          projectId,
+          documentId,
+          transaction,
+        });
+
+        if (!('pages' in document)) {
+          throw new BadRequestException('Cannot run document OCR on document without pages');
+        }
+
+        const documentFetchPagesContentPromise = document.pages.map(async page => {
+          const ballerineFileId = page.ballerineFileId;
+
+          if (!ballerineFileId) {
+            throw new BadRequestException('Cannot run document OCR on document without pages');
+          }
+
+          const { signedUrl, mimeType, filePath } = await this.storageService.fetchFileContent({
+            id: ballerineFileId,
+            format: 'signed-url',
+            projectIds: [projectId],
+          });
+
+          if (signedUrl) {
+            return {
+              remote: {
+                imageUri: signedUrl,
+                mimeType,
+              },
+            };
+          }
+
+          const base64String = this.storageService.fileToBase64(filePath!);
+
+          return { base64: `data:${mimeType};base64,${base64String}` };
+        });
+
+        const images = (await Promise.all(documentFetchPagesContentPromise)) satisfies TOcrImages;
+
+        return (
+          await new UnifiedApiClient().runOcr({
+            images,
+            schema: document.propertiesSchema as unknown as TSchema,
+          })
+        )?.data;
+      },
+      {
+        timeout: 180_000,
+      },
+    );
+
+    return ocrResult;
   }
 }

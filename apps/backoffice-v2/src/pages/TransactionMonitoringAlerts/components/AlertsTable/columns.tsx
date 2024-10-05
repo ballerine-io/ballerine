@@ -1,8 +1,7 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import { TAlertsList, TAlertState } from '@/domains/alerts/fetchers';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import dayjs from 'dayjs';
-import { Badge } from '@ballerine/ui';
+import { Badge, severityToClassName, TextWithNAFallback } from '@ballerine/ui';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { UserCircle2 } from 'lucide-react';
 import { Avatar } from '@/common/components/atoms/Avatar_/Avatar_';
@@ -15,7 +14,6 @@ import { SnakeCase, titleCase } from 'string-ts';
 import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-screaming-snake-case';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import { buttonVariants } from '@/common/components/atoms/Button/Button';
-import { severityToClassName } from '@/common/constants';
 
 const columnHelper = createColumnHelper<
   TAlertsList[number] & {
