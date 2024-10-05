@@ -100,7 +100,7 @@ export class WebhookPlugin extends BallerineApiPlugin {
       Object.entries(headers).map(async header => [
         header[0],
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        await this.replaceValuePlaceholders(header[1], context),
+        await this.replaceAllVariables(header[1], context),
       ]),
     );
 
