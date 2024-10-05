@@ -7,7 +7,7 @@ import { useUIElementErrors } from '@/components/organisms/UIRenderer/hooks/useU
 import { useUIElementHandlers } from '@/components/organisms/UIRenderer/hooks/useUIElementHandlers';
 import { useUIElementProps } from '@/components/organisms/UIRenderer/hooks/useUIElementProps';
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
-import { UIElement } from '@/domains/collection-flow';
+import { UIElementDefinition } from '@/domains/collection-flow';
 import { AnyObject, ErrorsList, RJSFInputAdapter, RJSFInputProps } from '@ballerine/ui';
 import get from 'lodash/get';
 import { useCallback, useMemo } from 'react';
@@ -37,7 +37,7 @@ const injectIndexToDestinationIfNeeded = (destination: string, index: number | n
 };
 
 export type DynamicUIComponent<TProps, TParams = AnyObject> = React.ComponentType<
-  TProps & { definition: UIElement<TParams> }
+  TProps & { definition: UIElementDefinition<TParams> }
 >;
 
 export const withDynamicUIInput = (

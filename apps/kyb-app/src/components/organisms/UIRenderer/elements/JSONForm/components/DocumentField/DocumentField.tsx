@@ -10,7 +10,7 @@ import { useFileRepository } from '@/components/organisms/UIRenderer/elements/JS
 import { UploadFileFn } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading/types';
 import { useUIElementErrors } from '@/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
-import { Document, UIElement } from '@/domains/collection-flow';
+import { Document, UIElementDefinition } from '@/domains/collection-flow';
 import { fetchFile, uploadFile } from '@/domains/storage/storage.api';
 import { collectionFlowFileStorage } from '@/pages/CollectionFlow/collection-flow.file-storage';
 import { findDocumentSchemaByTypeAndCategory } from '@ballerine/common';
@@ -25,7 +25,7 @@ export interface DocumentFieldParams {
 }
 
 export const DocumentField = (
-  props: RJSFInputProps<string> & { definition: UIElement<DocumentFieldParams> } & {
+  props: RJSFInputProps<string> & { definition: UIElementDefinition<DocumentFieldParams> } & {
     inputIndex: number | null;
   },
 ) => {

@@ -2,7 +2,7 @@ import {
   ErrorField,
   RuleEngine,
 } from '@/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
-import { Rule, UIElement } from '@/domains/collection-flow';
+import { Rule, UIElementDefinition } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import ajvErrors from 'ajv-errors';
 import addFormats, { FormatName } from 'ajv-formats';
@@ -16,7 +16,7 @@ export class JsonSchemaRuleEngine implements RuleEngine {
   public readonly ENGINE_NAME = JsonSchemaRuleEngine.ENGINE_NAME;
 
   // @ts-ignore
-  validate(context: unknown, rule: Rule, definition: UIElement<AnyObject>) {
+  validate(context: unknown, rule: Rule, definition: UIElementDefinition<AnyObject>) {
     const validator = new Ajv({ allErrors: true, useDefaults: true });
     addFormats(validator, {
       formats: JsonSchemaRuleEngine.ALLOWED_FORMATS,
@@ -48,7 +48,7 @@ export class JsonSchemaRuleEngine implements RuleEngine {
     return validationResult;
   }
 
-  private extractErrorsWithFields(validator: Ajv, definition: UIElement<AnyObject>) {
+  private extractErrorsWithFields(validator: Ajv, definition: UIElementDefinition<AnyObject>) {
     const result = validator.errors?.map(error => {
       const erroredParams = Object.values(error.params) as string[];
       const uniqueErroredParams = Array.from(new Set(erroredParams));

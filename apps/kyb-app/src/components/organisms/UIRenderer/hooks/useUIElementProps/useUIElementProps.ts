@@ -3,12 +3,12 @@ import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useD
 import { useRuleExecutor } from '@/components/organisms/DynamicUI/hooks/useRuleExecutor';
 import { injectIndexesAtRulesPaths } from '@/components/organisms/UIRenderer/hooks/useUIElementProps/helpers';
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
-import { UIElement } from '@/domains/collection-flow';
+import { UIElementDefinition } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 
 export const useUIElementProps = (
-  definition: UIElement<AnyObject>,
+  definition: UIElementDefinition<AnyObject>,
   index: number | null = null,
 ) => {
   const { payload } = useStateManagerContext();

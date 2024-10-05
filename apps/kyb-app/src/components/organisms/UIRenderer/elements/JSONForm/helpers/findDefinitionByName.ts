@@ -1,11 +1,11 @@
 import { deserializeDocumentId } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/serialize-document-id';
-import { UIElement } from '@/domains/collection-flow';
+import { UIElementDefinition } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 
 export const findDefinitionByName = (
   name: string,
-  elements: Array<UIElement<AnyObject>>,
-): UIElement<AnyObject> | undefined => {
+  elements: Array<UIElementDefinition<AnyObject>>,
+): UIElementDefinition<AnyObject> | undefined => {
   for (const element of elements) {
     if (element.name === name) {
       return element;
@@ -25,8 +25,8 @@ export const findDefinitionByName = (
 
 export const findDefinitionByDestinationPath = (
   destination: string,
-  elements: Array<UIElement<AnyObject>>,
-): UIElement<AnyObject> | undefined => {
+  elements: Array<UIElementDefinition<AnyObject>>,
+): UIElementDefinition<AnyObject> | undefined => {
   for (const element of elements) {
     if (element.valueDestination === destination) {
       return element;
@@ -46,8 +46,8 @@ export const findDefinitionByDestinationPath = (
 
 export const findDocumentDefinitionById = (
   id: string,
-  elements: Array<UIElement<AnyObject>>,
-): UIElement<AnyObject> | undefined => {
+  elements: Array<UIElementDefinition<AnyObject>>,
+): UIElementDefinition<AnyObject> | undefined => {
   for (const element of elements) {
     if ((element?.options?.documentData?.id as string) === deserializeDocumentId(id)) {
       return element;
@@ -65,10 +65,10 @@ export const findDocumentDefinitionById = (
   return undefined;
 };
 
-export const getAllDefinitions = (elements: Array<UIElement<AnyObject>>) => {
-  const items: Array<UIElement<AnyObject>> = [];
+export const getAllDefinitions = (elements: Array<UIElementDefinition<AnyObject>>) => {
+  const items: Array<UIElementDefinition<AnyObject>> = [];
 
-  const run = (elements: Array<UIElement<AnyObject>>) => {
+  const run = (elements: Array<UIElementDefinition<AnyObject>>) => {
     for (const element of elements) {
       if (element.valueDestination) {
         items.push(element);

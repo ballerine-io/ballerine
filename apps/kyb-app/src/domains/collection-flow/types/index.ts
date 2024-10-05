@@ -1,5 +1,5 @@
 import { ITheme } from '@/common/types/settings';
-import { Action, Rule, UIElement } from '@/domains/collection-flow/types/ui-schema.types';
+import { Action, Rule, UIElementDefinition } from '@/domains/collection-flow/types/ui-schema.types';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 
@@ -127,7 +127,7 @@ export interface UIPage {
   name: string;
   number: number;
   stateName: string;
-  elements: Array<UIElement<AnyObject>>;
+  elements: Array<UIElementDefinition<AnyObject>>;
   actions: Action[];
   pageValidation?: Rule[];
 }
@@ -156,6 +156,7 @@ export interface UISchema {
     definition: AnyObject;
     extensions: AnyObject;
   };
+  version: number;
   uiOptions?: UIOptions;
 }
 

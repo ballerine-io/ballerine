@@ -1,14 +1,14 @@
 import { baseElements } from '@/components/organisms/UIRenderer/base-elements';
 import { ElementsMap } from '@/components/organisms/UIRenderer/types/elements.types';
 import { generateBlocks } from '@/components/organisms/UIRenderer/utils/generateBlocks';
-import { UIElement } from '@/domains/collection-flow';
+import { UIElementDefinition } from '@/domains/collection-flow';
 import { BlocksComponent } from '@ballerine/blocks';
 import { AnyObject } from '@ballerine/ui';
 import { ComponentProps, FunctionComponent, useMemo } from 'react';
 import { UiRendererContext } from './ui-renderer.context';
 
 export interface UIRendererProps {
-  schema: UIElement<AnyObject>[];
+  schema: UIElementDefinition<AnyObject>[];
   elements?: ElementsMap;
 }
 

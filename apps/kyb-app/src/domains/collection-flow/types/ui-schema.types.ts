@@ -1,3 +1,4 @@
+import { UIElementV2 } from '@/components/providers/Validator/types';
 import { AnyObject } from '@ballerine/ui';
 
 export type UIElementType = string;
@@ -27,6 +28,10 @@ export interface JMESPathRule extends BaseRule {
   value: string;
 }
 
+export interface ValidContextRule extends BaseRule {
+  value: AnyObject;
+}
+
 export interface IRule extends BaseRule {
   value: string;
   persistStateRule?: boolean;
@@ -53,7 +58,7 @@ export type Rule = JSONLogicRule | JMESPathRule | DocumentsValidatorRule;
 
 export type UIElementDestination = string;
 
-export interface UIElement<TElementParams = AnyObject> {
+export interface UIElementDefinition<TElementParams = AnyObject> {
   name: string;
   type: UIElementType;
   availableOn?: Rule[];
@@ -62,5 +67,6 @@ export interface UIElement<TElementParams = AnyObject> {
   required?: boolean;
   options: TElementParams;
   valueDestination?: UIElementDestination;
-  elements?: UIElement<AnyObject>[];
+  elements?: UIElementDefinition<AnyObject>[];
+  validation?: UIElementV2['validation'];
 }

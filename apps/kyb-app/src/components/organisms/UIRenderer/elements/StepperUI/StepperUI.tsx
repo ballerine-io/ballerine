@@ -47,7 +47,7 @@ export const StepperUI = () => {
     return pages.map(page => {
       const stepStatus = computeStepStatus({
         // @ts-ignore
-        uiElementState: uiState.elements[page.stateName],
+        uiElementState: uiState.elements?.[page.stateName],
         // @ts-ignore
         pageError: pageErrors?.[page.stateName],
         page,

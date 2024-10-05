@@ -2,7 +2,10 @@ import { withTokenProtected } from '@/hocs/withTokenProtected';
 import { CollectionFlow } from '@/pages/CollectionFlow';
 import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
+import { CollectionFlowV2 } from '@/pages/CollectionFlowV2';
 import { SignIn } from '@/pages/SignIn';
+import * as Sentry from '@sentry/react';
+import React from 'react';
 import {
   createBrowserRouter,
   createRoutesFromChildren,
@@ -10,8 +13,6 @@ import {
   useLocation,
   useNavigationType,
 } from 'react-router-dom';
-import * as Sentry from '@sentry/react';
-import React from 'react';
 
 export const sentryRouterInstrumentation = Sentry.reactRouterV6Instrumentation(
   React.useEffect,
@@ -39,5 +40,22 @@ export const router = sentryCreateBrowserRouter([
   {
     path: 'approved',
     Component: withTokenProtected(Approved),
+  },
+  {
+    path: '/v2',
+    children: [
+      {
+        path: 'collection-flow',
+        Component: withTokenProtected(CollectionFlowV2),
+      },
+      {
+        path: 'rejected',
+        Component: withTokenProtected(Rejected),
+      },
+      {
+        path: 'approved',
+        Component: withTokenProtected(Approved),
+      },
+    ],
   },
 ]);
