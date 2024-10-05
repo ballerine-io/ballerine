@@ -114,7 +114,7 @@ export const context = {
           matchedFields: ['PrimaryName'],
         },
       ],
-      name: 'company_sanctions',
+      name: 'companySanctions',
       status: 'SUCCESS',
       invokedAt: 1716447914675,
     },

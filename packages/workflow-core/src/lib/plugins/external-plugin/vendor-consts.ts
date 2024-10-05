@@ -9,6 +9,10 @@ export const COMPANY_SCREENING_VENDORS = {
   'asia-verify': 'asia-verify',
 } as const;
 
+export const KYC_VENDORS = {
+  veriff: 'veriff',
+} as const;
+
 export const MERCHANT_MONITORING_VENDORS = {
   ballerine: 'ballerine',
 } as const;
@@ -30,6 +34,8 @@ export type ApiIndividualScreeningVendors =
 export type ApiCompanyScreeningVendors =
   (typeof COMPANY_SCREENING_VENDORS)[keyof typeof COMPANY_SCREENING_VENDORS];
 
+export type KycSessionVendors = (typeof KYC_VENDORS)[keyof typeof KYC_VENDORS];
+
 export type MerchantMonitoringVendors =
   (typeof MERCHANT_MONITORING_VENDORS)[keyof typeof MERCHANT_MONITORING_VENDORS];
 
@@ -44,6 +50,7 @@ export const BALLERINE_API_PLUGINS = {
   'registry-information': 'registry-information',
   'template-email': 'template-email',
   'merchant-monitoring': 'merchant-monitoring',
+  'kyc-session': 'kyc-session',
 } as const satisfies Record<string, string>;
 
 type PluginFactoryFnHelper<TPluginKind extends ApiPluginOptions['pluginKind'] | string> = (
@@ -85,6 +92,7 @@ type EmailOptions = {
   pluginKind: 'template-email';
   template: ApiEmailTemplates;
   dataMapping?: string;
+  templateId?: string;
 };
 
 type MerchantMonirotingOptions = {
@@ -113,6 +121,15 @@ type ComplyAdvantageOptions = {
   successAction: string;
 };
 
+type KycSessionOptions = {
+  pluginKind: 'kyc-session';
+  vendor: 'veriff';
+  errorAction: string;
+  successAction: string;
+  withAml?: boolean;
+  dataMapping?: string;
+};
+
 type AsiaVerifyOptions = {
   pluginKind: 'individual-sanctions';
   vendor: 'asia-verify';
@@ -124,6 +141,7 @@ type CompanySanctionsAsiaVerifyOptions = {
   pluginKind: 'company-sanctions';
   vendor: 'asia-verify';
   url: string;
+  response?: 'async' | 'sync';
 };
 
 type UboAsiaVerifyOptions = {
@@ -144,12 +162,18 @@ type ApiPluginOptions =
   | UboAsiaVerifyOptions
   | RegistryInformationAsiaVerifyOptions
   | MerchantMonirotingOptions
-  | EmailOptions;
+  | EmailOptions
+  | KycSessionOptions;
 
 type TPluginFactory = {
   [TKey in Exclude<
     ApiBallerinePlugins,
-    'individual-sanctions' | 'company-sanctions' | 'ubo' | 'template-email' | 'merchant-monitoring'
+    | 'individual-sanctions'
+    | 'company-sanctions'
+    | 'ubo'
+    | 'template-email'
+    | 'merchant-monitoring'
+    | 'kyc-session'
   >]: PluginFactoryFnHelper<TKey>;
 } & Record<
   'individual-sanctions',
@@ -179,6 +203,12 @@ type TPluginFactory = {
     'merchant-monitoring',
     {
       [TKey in MerchantMonitoringVendors]: PluginVendorFnHelper<'merchant-monitoring', TKey>;
+    }
+  > &
+  Record<
+    'kyc-session',
+    {
+      [TKey in KycSessionVendors]: PluginVendorFnHelper<'kyc-session', TKey>;
     }
   >;
 
@@ -327,6 +357,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
   },
   [BALLERINE_API_PLUGINS['company-sanctions']]: {
     [COMPANY_SCREENING_VENDORS['asia-verify']]: (options: CompanySanctionsAsiaVerifyOptions) => ({
+      name: 'companySanctions',
       pluginKind: 'company-sanctions',
       vendor: 'asia-verify',
       // TODO: lior - remoave|deprecate useage of country, use address.country only
@@ -349,7 +380,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
         transform: [
           {
             mapping:
-              "merge({ name: 'companySanctions', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'SUCCESS' }, @)",
+              "merge({ name: 'companySanctions', status: contains(['NOT_IMPLEMENTED', 'NOT_AVAILABLE'], reason) && 'CANCELED' || error != `null` && 'ERROR' || 'SUCCESS'  }, @)",
             transformer: 'jmespath',
           },
           {
@@ -575,7 +606,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
                     from: 'no-reply@ballerine.com',
                     receivers: [entity.data.additionalInfo.mainRepresentative.email],
                     language: workflowRuntimeConfig.language,
-                    templateId: 'd-8949519316074e03909042cfc5eb4f02',
+                    templateId: '${options.templateId ?? 'd-8949519316074e03909042cfc5eb4f02'}',
                     adapter: '{secret.MAIL_ADAPTER}'
             }`, // jmespath
           },
@@ -583,6 +614,41 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
       },
       response: {
         transform: [],
+      },
+    }),
+  },
+  [BALLERINE_API_PLUGINS['kyc-session']]: {
+    [KYC_VENDORS['veriff']]: (options: KycSessionOptions) => ({
+      ...(options ?? {}),
+      name: 'kyc_session',
+      pluginKind: 'kyc-session',
+      vendor: 'veriff',
+      url: `{secret.UNIFIED_API_URL}/individual-verification-sessions`,
+      method: 'POST',
+      headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+      request: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: `{
+              ${options.dataMapping || ''}
+              endUserId: join('__',[entity.ballerineEntityId || entity.data.id || entity.data.identityNumber, pluginsOutput.kyc_session.kyc_session_1.result.metadata.id || '']),
+              firstName: entity.data.firstName,
+              lastName: entity.data.lastName,
+                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/KYC_RESPONSE_RECEIVED','?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result']),
+                vendor: 'veriff',
+                withAml: ${options.withAml ?? false ? 'true' : 'false'}
+              }`, // jmespath
+          },
+        ],
+      },
+      response: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: "{kyc_session_1: {vendor: 'veriff', type: 'kyc', result: {metadata: @}}}", // jmespath
+          },
+        ],
       },
     }),
   },

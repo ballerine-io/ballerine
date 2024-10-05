@@ -154,94 +154,30 @@ export const dynamicUiWorkflowDefinition = {
       },
       {
         name: 'kyb',
-        pluginKind: 'api',
-        url: `{secret.UNIFIED_API_URL}/companies-v2/{entity.data.country}/{entity.data.registrationNumber}`,
-        method: 'GET',
+        vendor: 'asia-verify',
+        pluginKind: 'registry-information',
+        displayName: 'Registry Verification',
         stateNames: ['run_vendor_data'],
         successAction: 'VENDOR_DONE',
         errorAction: 'VENDOR_FAILED',
-        persistResponseDestination: 'pluginsOutput.businessInformation',
-        headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `merge(
-                { vendor: 'asia-verify' },
-                entity.data.country == 'HK' && {
-                  callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.businessInformation.data&processName=kyb-unified-api'])
-                }
-              )`, // jmespath
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '@', // jmespath
-            },
-          ],
-        },
       },
       {
-        name: 'company_sanctions',
-        pluginKind: 'api',
-        url: `{secret.UNIFIED_API_URL}/companies/{entity.data.country}/{entity.data.companyName}/sanctions`,
-        method: 'GET',
+        name: 'companySanctions',
+        vendor: 'asia-verify',
+        pluginKind: 'company-sanctions',
         stateNames: ['run_vendor_data'],
-        successAction: 'VENDOR_DONE',
-        errorAction: 'VENDOR_FAILED',
-        persistResponseDestination: 'pluginsOutput.companySanctions',
-        headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-                vendor: 'asia-verify'
-              }`, // jmespath
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '@', // jmespath
-            },
-          ],
-        },
+        displayName: 'Company Sanctions',
+        errorAction: 'VENDOR_DONE',
+        successAction: 'VENDOR_FAILED',
       },
       {
         name: 'ubo',
-        pluginKind: 'api',
-        url: `{secret.UNIFIED_API_URL}/companies/{entity.data.country}/{entity.data.registrationNumber}/ubo`,
-        method: 'GET',
+        vendor: 'asia-verify',
+        pluginKind: 'ubo',
         stateNames: ['run_vendor_data'],
+        displayName: 'UBO Check',
+        errorAction: 'VENDOR_DONE',
         successAction: 'VENDOR_DONE',
-        errorAction: 'VENDOR_FAILED',
-        persistResponseDestination: 'pluginsOutput.ubo.request',
-        headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-                vendor: 'asia-verify',
-                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.ubo.data&processName=ubo-unified-api'])
-              }`, // jmespath
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '{request: @}', // jmespath
-            },
-          ],
-        },
       },
       {
         name: 'resubmission-email',

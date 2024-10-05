@@ -128,7 +128,7 @@ export const kybKycWorkflowDefinition = {
             {
               transformer: 'jmespath',
               mapping: `{
-              templateId: 'd-00a0d5d14cb14fbb9034b53c6ef7e5fa',
+              templateId: 'd-8949519316074e03909042cfc5eb4f02',
               adapter: '${env.MAIL_ADAPTER}'
               from: 'no-reply@ballerine.com',
               receivers: [mainRepresentative.email],
