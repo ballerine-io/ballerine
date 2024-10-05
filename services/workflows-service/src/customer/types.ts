@@ -27,6 +27,8 @@ export type TOngoingAuditReportDefinitionConfig = {
   proxyViaCountry: string;
 };
 
+export type TFeaturesWithFeatures = Record<string, TCustomerFeatures>;
+
 export const CUSTOMER_FEATURES = {
   [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
     name: 'ONGOING_MERCHANT_REPORT_T1',
@@ -50,8 +52,8 @@ export const CUSTOMER_FEATURES = {
       proxyViaCountry: 'GB',
     },
   },
-} satisfies Record<string, TCustomerFeatures>;
+} satisfies TFeaturesWithFeatures;
 
 export type TCustomerWithDefinitionsFeatures = Customer & {
-  features?: Record<string, TCustomerFeatures> | null;
+  features?: TFeaturesWithFeatures | Record<string, boolean> | null;
 };

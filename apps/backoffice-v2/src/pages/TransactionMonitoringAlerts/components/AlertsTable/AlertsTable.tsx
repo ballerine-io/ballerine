@@ -1,14 +1,14 @@
 import React, { FunctionComponent } from 'react';
 import { IAlertsTableProps } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/interfaces';
-import { DataTable } from '@/common/components/organisms/DataTable/DataTable';
 import { columns } from './columns';
 import { useAlertsTableLogic } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/hooks/useAlertsTableLogic';
+import { UrlDataTable } from '@/common/components/organisms/UrlDataTable/UrlDataTable';
 
 export const AlertsTable: FunctionComponent<IAlertsTableProps> = ({ data }) => {
   const { Cell } = useAlertsTableLogic({ data });
 
   return (
-    <DataTable
+    <UrlDataTable
       data={data}
       columns={columns}
       CellContentWrapper={Cell}

@@ -1,36 +1,33 @@
 import {
-  DataValueNotFoundError,
-  MissingKeyError,
-  OperationHelpers,
-  OperationNotFoundError,
-  OPERATOR,
   Rule,
   RuleResult,
   RuleResultSet,
   RuleSet,
+  OperatorNotFoundError,
+  OperationHelpers,
+  OPERATOR,
+  RuleSchema,
+  ValidationFailedError,
 } from '@ballerine/common';
-import { get, isEmpty } from 'lodash';
 
 export const validateRule = (rule: Rule, data: any): RuleResult => {
-  if (isEmpty(rule.key)) {
-    throw new MissingKeyError();
+  const result = RuleSchema.safeParse(rule);
+
+  if (!result.success) {
+    throw new ValidationFailedError('rule', 'parsing failed', result.error);
   }
 
-  // TODO: we might want to extract the key value in the rule itself?
-  const value = get(data, rule.key);
+  const operator = OperationHelpers[rule.operator as keyof typeof OperationHelpers];
 
-  if (value === undefined || value === null) {
-    throw new DataValueNotFoundError(rule.key);
+  if (!operator) {
+    throw new OperatorNotFoundError(rule.operator);
   }
 
-  const operation = OperationHelpers[rule.operation];
-
-  if (!operation) {
-    throw new OperationNotFoundError(rule.operation);
-  }
+  const value = operator.extractValue(data, rule);
 
   try {
-    const result = operation.execute(value, rule.value);
+    // @ts-expect-error - rule
+    const result = operator.execute(value, rule.value);
 
     return { status: result ? 'PASSED' : 'FAILED', error: undefined };
   } catch (error) {
@@ -44,7 +41,22 @@ export const validateRule = (rule: Rule, data: any): RuleResult => {
 
 export const runRuleSet = (ruleSet: RuleSet, data: any): RuleResultSet => {
   return ruleSet.rules.map(rule => {
-    if ('key' in rule) {
+    if ('rules' in rule) {
+      // RuleSet
+      const nestedResults = runRuleSet(rule, data);
+
+      const passed =
+        rule.operator === OPERATOR.AND
+          ? nestedResults.every(r => r.status === 'PASSED')
+          : nestedResults.some(r => r.status === 'PASSED');
+
+      const status = passed ? 'PASSED' : 'SKIPPED';
+
+      return {
+        status,
+        rule,
+      };
+    } else {
       // Rule
       try {
         return { ...validateRule(rule, data), rule };
@@ -61,21 +73,6 @@ export const runRuleSet = (ruleSet: RuleSet, data: any): RuleResultSet => {
           throw error;
         }
       }
-    } else {
-      // RuleSet
-      const nestedResults = runRuleSet(rule, data);
-
-      const passed =
-        rule.operator === OPERATOR.AND
-          ? nestedResults.every(r => r.status === 'PASSED')
-          : nestedResults.some(r => r.status === 'PASSED');
-
-      const status = passed ? 'PASSED' : 'SKIPPED';
-
-      return {
-        status,
-        rule,
-      };
     }
   });
 };

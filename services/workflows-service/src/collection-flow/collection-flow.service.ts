@@ -21,7 +21,7 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { AnyRecord } from '@ballerine/common';
 import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
-import { EndUser, UiDefinition, UiDefinitionContext, WorkflowRuntimeData } from '@prisma/client';
+import { EndUser, Prisma, UiDefinition, WorkflowRuntimeData } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import get from 'lodash/get';
 
@@ -75,26 +75,27 @@ export class CollectionFlowService {
   }
 
   async getFlowConfiguration(
-    configurationId: string,
+    workflowDefinitionId: string,
     context: WorkflowRuntimeData['context'],
     language: string,
     projectIds: TProjectIds,
+    args?: Prisma.UiDefinitionFindFirstOrThrowArgs,
   ): Promise<FlowConfigurationModel> {
     const workflowDefinition = await this.workflowService.getWorkflowDefinitionById(
-      configurationId,
+      workflowDefinitionId,
       {},
       projectIds,
     );
 
-    const uiDefintion = await this.uiDefinitionService.getByWorkflowDefinitionId(
+    const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
       workflowDefinition.id,
-      'collection_flow' as keyof typeof UiDefinitionContext,
+      'collection_flow' as const,
       projectIds,
-      {},
+      args,
     );
 
     const translationService = new TranslationService(
-      this.getTranslationServiceResources(uiDefintion),
+      this.getTranslationServiceResources(uiDefinition),
     );
 
     await translationService.init();
@@ -102,25 +103,27 @@ export class CollectionFlowService {
     return {
       id: workflowDefinition.id,
       config: workflowDefinition.config,
+      uiOptions: uiDefinition.uiOptions,
       uiSchema: {
         // @ts-expect-error - error from Prisma types fix
         elements: this.traverseUiSchema(
           // @ts-expect-error - error from Prisma types fix
-          uiDefintion.uiSchema.elements,
+          uiDefinition.uiSchema.elements,
           context,
           language,
           translationService,
         ) as UiSchemaStep[],
+        theme: uiDefinition.theme,
       },
-      definition: uiDefintion.definition
-        ? (uiDefintion.definition as unknown as UiDefDefinition)
+      definition: uiDefinition.definition
+        ? (uiDefinition.definition as unknown as UiDefDefinition)
         : undefined,
-      version: uiDefintion.version,
+      version: uiDefinition.version,
     };
   }
 
   private getTranslationServiceResources(
-    uiDefinition: UiDefinition,
+    uiDefinition: UiDefinition & { locales?: unknown },
   ): ITranslationServiceResource[] | undefined {
     if (!uiDefinition.locales) return undefined;
 
@@ -227,7 +230,8 @@ export class CollectionFlowService {
 
   async syncWorkflow(payload: UpdateFlowDto, tokenScope: ITokenScope) {
     if (payload.data.endUser) {
-      await this.endUserService.updateById(tokenScope.endUserId, { data: payload.data.endUser });
+      const { ballerineEntityId: _, ...endUserData } = payload.data.endUser;
+      await this.endUserService.updateById(tokenScope.endUserId, { data: endUserData });
     }
 
     if (payload.data.ballerineEntityId && payload.data.business) {

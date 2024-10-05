@@ -69,6 +69,7 @@ export default defineConfig({
           items: [
             {
               label: `Workflows`,
+              collapsed: true,
               items: [
                 {
                   label: `Understanding workflows technology`,
@@ -90,6 +91,7 @@ export default defineConfig({
             },
             {
               label: `Collection Flows`,
+              collapsed: true,
               items: [
                 // {
                 //   label: `Creating a collection flow`,
@@ -115,6 +117,7 @@ export default defineConfig({
             },
             {
               label: `Rule Engine`,
+              collapsed: true,
               items: [
                 {
                   label: `Making a rule affect a workflow state`,
@@ -128,6 +131,7 @@ export default defineConfig({
             },
             {
               label: `Case Management`,
+              collapsed: true,
               items: [
                 {
                   label: `Overview of case management`,
@@ -145,6 +149,7 @@ export default defineConfig({
             },
             {
               label: `Unified API`,
+              collapsed: true,
               items: [
                 {
                   label: `Adding a 3rd Party check to a workflow`,
@@ -154,6 +159,7 @@ export default defineConfig({
             },
             {
               label: `Plugins`,
+              collapsed: true,
               items: [
                 {
                   label: `Using Plugins`,
@@ -163,15 +169,21 @@ export default defineConfig({
             },
             {
               label: `Webhooks`,
+              collapsed: true,
               items: [
                 {
-                  label: `Using webhooks`,
+                  label: `Using Webhooks`,
                   link: `/en/learn/how_to_use_webhooks`,
+                },
+                {
+                  label: `Webhooks Security`,
+                  link: `/en/learn/webhooks_security`,
                 },
               ],
             },
             {
               label: `KYC Collection Flow (SDK)`,
+              collapsed: true,
               items: [
                 {
                   label: 'Introduction',

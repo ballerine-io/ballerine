@@ -12,8 +12,10 @@ import { GetRuntimeStatusCaseCountParams } from '@/metrics/repository/types/get-
 import { ListUserCasesResolvedDailyParams } from '@/metrics/repository/types/list-user-cases-resolved-daily.params';
 import { UserWorkflowProcessingStatisticModel } from '@/metrics/service/models/user-workflow-processing-statistic.model';
 import { GetUserWorkflowProcessingStatisticParams } from '@/metrics/service/types/get-user-workflow-processing-statistic.params';
-import type { TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
+import { Static } from '@sinclair/typebox';
+import { HomeMetricsSchema } from '@/metrics/schemas/home-metrics.schema';
 
 @Injectable()
 export class MetricsService {
@@ -92,5 +94,18 @@ export class MetricsService {
     projectIds: TProjectIds,
   ): Promise<WorkflowDefinitionVariantsMetricModel[]> {
     return await this.metricsRepository.getWorkflowDefinitionVariantsMetric(projectIds);
+  }
+
+  async getHomeMetrics(currentProjectId: TProjectId): Promise<Static<typeof HomeMetricsSchema>> {
+    return {
+      riskIndicators: await this.metricsRepository.getRiskIndicators(currentProjectId),
+      reports: {
+        all: await this.metricsRepository.getReportsByRiskLevel(currentProjectId),
+        inProgress: await this.metricsRepository.getInProgressReportsByRiskLevel(currentProjectId),
+        approved: await this.metricsRepository.getApprovedBusinessesReportsByRiskLevel(
+          currentProjectId,
+        ),
+      },
+    };
   }
 }

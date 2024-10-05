@@ -4,10 +4,10 @@ import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugi
 import React, { useCallback } from 'react';
 import { CaseTabs } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 import { camelCase, titleCase } from 'string-ts';
-import { toRiskLabels } from '@/domains/business-reports/adapters/report-adapter/report-adapter';
 import { OverallRiskLevel } from '@/common/components/molecules/OverallRiskLevel/OverallRiskLevel';
 import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
-import { RiskIndicatorsSummary } from '@/common/components/molecules/RiskIndicatorsSummary/RiskIndicatorsSummary';
+import { RiskIndicatorsSummary, toRiskLabels } from '@ballerine/ui';
+import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
 
 export const CaseOverview = ({ processes }: { processes: string[] }) => {
   const { search } = useLocation();
@@ -24,7 +24,9 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
     [search],
   );
   const riskIndicators = Object.entries(
-    workflow?.context?.pluginsOutput?.risk_evaluation?.riskIndicatorsByDomain ?? {},
+    workflow?.context?.pluginsOutput?.riskEvaluation?.riskIndicatorsByDomain ??
+      workflow?.context?.pluginsOutput?.risk_evaluation?.riskIndicatorsByDomain ??
+      {},
   )?.map(([domain, riskIndicators]) => {
     const tab = camelCase(domain);
     const isValidCaseTab = CaseTabs.includes(tab);
@@ -55,13 +57,16 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
     <div className="grid grid-cols-2 gap-4 xl:grid-cols-3 2xl:grid-cols-4">
       {workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled && (
         <OverallRiskLevel
-          riskScore={workflow?.context?.pluginsOutput?.risk_evaluation?.riskScore}
+          riskScore={
+            workflow?.context?.pluginsOutput?.riskEvaluation?.riskScore ??
+            workflow?.context?.pluginsOutput?.risk_evaluation?.riskScore
+          }
           riskLevels={{}}
         />
       )}
       <ProcessTracker workflow={workflow} plugins={plugins} processes={processes} />
       {workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled && (
-        <RiskIndicatorsSummary riskIndicators={riskIndicators} />
+        <RiskIndicatorsSummary riskIndicators={riskIndicators} Link={RiskIndicatorLink} />
       )}
     </div>
   );

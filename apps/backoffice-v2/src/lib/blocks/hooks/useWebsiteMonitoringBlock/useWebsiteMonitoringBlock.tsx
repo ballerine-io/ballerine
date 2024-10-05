@@ -2,10 +2,9 @@ import { ctw } from '@/common/utils/ctw/ctw';
 import { toTitleCase, toUpperCase } from 'string-ts';
 import * as React from 'react';
 import { ComponentProps, useMemo } from 'react';
-import { Badge } from '@ballerine/ui';
+import { Badge, WarningFilledSvg } from '@ballerine/ui';
 import { includesValues } from '@/common/utils/includes-values/includes-values';
 import { isNullish } from '@ballerine/common';
-import { WarningFilledSvg } from '@/common/components/atoms/icons';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 

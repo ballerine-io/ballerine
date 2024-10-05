@@ -121,3 +121,122 @@ export const context = {
   },
   workflowRuntimeId: '1',
 };
+
+export const amlContext = {
+  childWorkflows: {
+    kyc_email_session_example: {
+      example_id_001: {
+        tags: ['approved'],
+        state: 'approved',
+        result: {
+          childEntity: {
+            email: 'test.user+1234567890@example.com',
+            lastName: 'Doe',
+            firstName: 'John',
+            nationalId: '123456789012345678',
+            additionalInfo: {
+              companyName: 'Example Company',
+              fullAddress: '123 Example Street, Example City',
+              nationality: 'XX',
+              customerCompany: 'SampleCorp',
+              percentageOfOwnership: 25,
+              __isGeneratedAutomatically: true,
+            },
+            ballerineEntityId: 'example_entity_001',
+          },
+          vendorResult: {
+            aml: {
+              id: 'example_aml_id_001',
+              hits: [
+                {
+                  pep: [
+                    {
+                      date: null,
+                      sourceUrl: 'http://example.gov/disqualifieddirectorslist.html',
+                      sourceName:
+                        'Example Ministry of Corporate Affairs List of Disqualified Directors Division XYZ (Suspended)',
+                    },
+                  ],
+                  warnings: [
+                    {
+                      date: null,
+                      sourceUrl: 'http://example.gov/disqualifieddirectorslist.html',
+                      sourceName:
+                        'Example Ministry of Corporate Affairs List of Disqualified Directors Division XYZ (Suspended)',
+                    },
+                  ],
+                  countries: [],
+                  sanctions: [
+                    {
+                      date: null,
+                      sourceUrl: 'http://example.gov/disqualifieddirectorslist.html',
+                      sourceName:
+                        'Example Ministry of Corporate Affairs List of Disqualified Directors Division XYZ (Suspended)',
+                    },
+                  ],
+                  matchTypes: ['name_exact'],
+                  matchedName: 'Jane Smith',
+                  adverseMedia: [
+                    {
+                      date: null,
+                      sourceUrl: 'http://example.gov/disqualifieddirectorslist.html',
+                      sourceName:
+                        'Example Ministry of Corporate Affairs List of Disqualified Directors Division XYZ (Suspended)',
+                    },
+                  ],
+                  fitnessProbity: [
+                    {
+                      date: null,
+                      sourceUrl: 'http://example.gov/disqualifieddirectorslist.html',
+                      sourceName:
+                        'Example Ministry of Corporate Affairs List of Disqualified Directors Division XYZ (Suspended)',
+                    },
+                  ],
+                },
+                {
+                  pep: [],
+                  warnings: [],
+                  countries: [],
+                  sanctions: [],
+                  matchTypes: ['name_fuzzy'],
+                  matchedName: 'Janet Smyth',
+                  adverseMedia: [],
+                  fitnessProbity: [
+                    {
+                      date: null,
+                      sourceUrl: 'http://example.gov/disqualifieddirectorslist.html',
+                      sourceName:
+                        'Example Ministry of Corporate Affairs List of Disqualified Directors Section XYZ (Suspended)',
+                    },
+                  ],
+                },
+              ],
+              clientId: 'example_client_id_001',
+              checkType: 'initial_result',
+              createdAt: '2024-06-26T09:16:17.562Z',
+              endUserId: 'example_entity_001',
+              matchStatus: 'no_match',
+            },
+            entity: {
+              data: {
+                lastName: null,
+                firstName: 'JANE SMITH',
+                dateOfBirth: '1990-01-01',
+                additionalInfo: {
+                  gender: null,
+                  nationality: null,
+                },
+              },
+              type: 'individual',
+            },
+            decision: {
+              status: 'declined',
+              decisionScore: 0.47,
+            },
+          },
+        },
+        status: 'completed',
+      },
+    },
+  },
+};

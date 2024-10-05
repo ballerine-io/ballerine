@@ -4,6 +4,7 @@ import { AlertDefinitions } from '@/pages/AlertDefinitions';
 import { Filters } from '@/pages/Filters';
 import { Overview } from '@/pages/Overview';
 import { SignIn } from '@/pages/SignIn';
+import { UIDefinition } from '@/pages/UIDefinition';
 import { UIDefinitions } from '@/pages/UIDefinitions';
 import { WorkflowDefinition } from '@/pages/WorkflowDefinition';
 import { WorkflowDefinitions } from '@/pages/WorkflowDefinitions';
@@ -47,6 +48,10 @@ export const router = createBrowserRouter([
       {
         path: 'ui-definitions',
         Component: withSessionProtected(UIDefinitions),
+      },
+      {
+        path: 'ui-definitions/:id',
+        Component: withSessionProtected(UIDefinition),
       },
       {
         path: 'alert-definitions',

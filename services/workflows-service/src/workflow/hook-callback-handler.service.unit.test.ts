@@ -1,4 +1,4 @@
-import { setPluginStatusToSuccess } from './hook-callback-handler.service';
+import { setPluginStatus } from './hook-callback-handler.service';
 import { ProcessStatus } from '@ballerine/common';
 
 describe('setPluginStatusToSuccess', () => {
@@ -13,10 +13,11 @@ describe('setPluginStatusToSuccess', () => {
     };
     const data = { key: 'value' };
 
-    const result = setPluginStatusToSuccess({
+    const result = setPluginStatus({
       resultDestinationPath,
       context,
       data,
+      status: ProcessStatus.SUCCESS,
     });
 
     expect(result).toEqual({
@@ -40,10 +41,11 @@ describe('setPluginStatusToSuccess', () => {
     };
     const data = { key: 'value' };
 
-    const result = setPluginStatusToSuccess({
+    const result = setPluginStatus({
       resultDestinationPath,
       context,
       data,
+      status: ProcessStatus.SUCCESS,
       ignoreLastKey: false,
     });
 
@@ -62,10 +64,11 @@ describe('setPluginStatusToSuccess', () => {
     const context = { apiPlugins: { merchantMonitoring: 'not an object' } };
     const data = { key: 'value' };
 
-    const result = setPluginStatusToSuccess({
+    const result = setPluginStatus({
       resultDestinationPath,
       context,
       data,
+      status: ProcessStatus.SUCCESS,
       ignoreLastKey: true,
     });
 
@@ -88,10 +91,11 @@ describe('setPluginStatusToSuccess', () => {
     };
     const data = { key: 'value' };
 
-    const result = setPluginStatusToSuccess({
+    const result = setPluginStatus({
       resultDestinationPath,
       context,
       data,
+      status: ProcessStatus.SUCCESS,
     });
 
     expect(result).toEqual({

@@ -135,3 +135,11 @@
     }
   }
 }
+
+a.bpComposerPoweredBy {
+  display: none !important;
+}
+
+button.bpModalDialogNewConversationButton {
+  background-color: var(--bpPrimary-500) !important;
+}

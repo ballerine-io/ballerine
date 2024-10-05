@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react';
 import { ExtractCellProps } from '@ballerine/blocks';
-import { DataTable } from '@/common/components/organisms/DataTable/DataTable';
+import { UrlDataTable } from '@/common/components/organisms/UrlDataTable/UrlDataTable';
 
 export const DataTableCell: FunctionComponent<ExtractCellProps<'dataTable'>> = ({ value }) => (
-  <DataTable {...value} />
+  <UrlDataTable {...value} />
 );

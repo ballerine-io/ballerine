@@ -27,6 +27,7 @@ import { ExternalLink, Send } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { associatedCompanyToWorkflowAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-to-workflow-adapter';
 
 export const useKybExampleBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
@@ -205,9 +206,16 @@ export const useKybExampleBlocksLogic = () => {
   const kybChildWorkflows = workflow?.childWorkflows?.filter(
     childWorkflow => childWorkflow?.context?.entity?.type === 'business',
   );
+  const associatedCompanies =
+    !kybChildWorkflows?.length &&
+    !workflow?.workflowDefinition?.config?.isAssociatedCompanyKybEnabled
+      ? workflow?.context?.entity?.data?.additionalInfo?.associatedCompanies?.map(
+          associatedCompanyToWorkflowAdapter,
+        )
+      : kybChildWorkflows;
 
   const associatedCompaniesBlock = useAssociatedCompaniesBlock({
-    workflows: kybChildWorkflows ?? [],
+    workflows: associatedCompanies ?? [],
     dialog: {
       Trigger: props => (
         <MotionButton

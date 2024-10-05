@@ -24,7 +24,9 @@ import { Type } from '@sinclair/typebox';
 import { Validate } from 'ballerine-nestjs-typebox';
 import * as errors from '../errors';
 
-@ApiTags('Workflow Definition')
+export const WORKFLOW_DEFINITION_TAG = 'Workflow Definition';
+
+@ApiTags(WORKFLOW_DEFINITION_TAG)
 @ApiBearerAuth()
 @Controller('workflow-definition')
 export class WorkflowDefinitionController {

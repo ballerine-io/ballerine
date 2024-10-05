@@ -1,7 +1,7 @@
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { checkIsBusiness } from '@/common/utils/check-is-business/check-is-business';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { CommonWorkflowStates, isObject, StateTag, valueOrNA } from '@ballerine/common';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
 import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
@@ -24,12 +24,12 @@ import {
 } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { selectWorkflowDocuments } from '@/pages/Entity/selectors/selectWorkflowDocuments';
 import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
-import { CommonWorkflowStates, StateTag } from '@ballerine/common';
 import { Button, TextArea } from '@ballerine/ui';
 import { X } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useCallback, useMemo } from 'react';
 import { toTitleCase } from 'string-ts';
+import { useDocumentOcr } from '@/domains/entities/hooks/mutations/useDocumentOcr/useDocumentOcr';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -80,6 +80,14 @@ export const useDocumentBlocks = ({
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id);
+  const {
+    mutate: mutateOCRDocument,
+    isLoading: isLoadingOCRDocument,
+    data: ocrResult,
+  } = useDocumentOcr({
+    workflowId: workflow?.id,
+  });
+
   const { isLoading: isLoadingRejectTaskById } = useRejectTaskByIdMutation(workflow?.id);
 
   const { comment, onClearComment, onCommentChange } = useCommentInputLogic();
@@ -312,8 +320,8 @@ export const useDocumentBlocks = ({
         const entityNameOrNA = valueOrNA(toTitleCase(workflow?.entity?.name ?? ''));
         const categoryOrNA = valueOrNA(toTitleCase(category ?? ''));
         const documentTypeOrNA = valueOrNA(toTitleCase(docType ?? ''));
-        const documentNameOrNA = `${categoryOrNA} - ${
-          withEntityNameInHeader ? '' : ` ${documentTypeOrNA}`
+        const documentNameOrNA = `${categoryOrNA}${
+          withEntityNameInHeader ? '' : ` - ${documentTypeOrNA}`
         }`;
         const headerCell = createBlocksTyped()
           .addBlock()
@@ -359,6 +367,25 @@ export const useDocumentBlocks = ({
           })
           .cellAt(0, 0);
 
+        const documentEntries = Object.entries(
+          {
+            ...additionalProperties,
+            ...propertiesSchema?.properties,
+          } ?? {},
+        ).map(([title, formattedValue]) => {
+          if (isObject(formattedValue)) {
+            return [
+              title,
+              {
+                ...formattedValue,
+                value: formattedValue.value || ocrResult?.parsedData?.[title],
+              },
+            ];
+          }
+
+          return [title, formattedValue];
+        });
+
         const detailsCell = createBlocksTyped()
           .addBlock()
           .addCell({
@@ -371,12 +398,7 @@ export const useDocumentBlocks = ({
                 value: {
                   id,
                   title: `${category} - ${docType}`,
-                  data: Object.entries(
-                    {
-                      ...additionalProperties,
-                      ...propertiesSchema?.properties,
-                    } ?? {},
-                  )?.map(
+                  data: documentEntries?.map(
                     ([
                       title,
                       {
@@ -388,9 +410,32 @@ export const useDocumentBlocks = ({
                         value,
                         formatMinimum,
                         formatMaximum,
+                        default: defaultValue,
                       },
                     ]) => {
-                      const fieldValue = value || (properties?.[title] ?? '');
+                      const getFieldValue = () => {
+                        if (typeof value !== 'undefined') {
+                          return value;
+                        }
+
+                        if (
+                          typeof properties?.[title] === 'undefined' &&
+                          typeof defaultValue !== 'undefined'
+                        ) {
+                          return defaultValue;
+                        }
+
+                        if (typeof properties?.[title] === 'undefined' && type === 'boolean') {
+                          return false;
+                        }
+
+                        if (typeof properties?.[title] === 'undefined') {
+                          return '';
+                        }
+
+                        return properties?.[title];
+                      };
+                      const fieldValue = getFieldValue();
                       const isEditableDecision = isDoneWithRevision || !decision?.status;
                       const isEditableType =
                         (title === 'type' && !checkIsBusiness(workflow)) || title !== 'type';
@@ -413,7 +458,13 @@ export const useDocumentBlocks = ({
                     },
                   ),
                 },
+                props: {
+                  config: {
+                    sort: { predefinedOrder: ['category', 'type'] },
+                  },
+                },
                 workflowId: workflow?.id,
+                isSaveDisabled: isLoadingOCRDocument,
                 documents: workflow?.context?.documents,
               })
               .addCell(decisionCell)
@@ -428,6 +479,9 @@ export const useDocumentBlocks = ({
             type: 'multiDocuments',
             value: {
               isLoading: storageFilesQueryResult?.some(({ isLoading }) => isLoading),
+              onOcrPressed: () => mutateOCRDocument({ documentId: id }),
+              isDocumentEditable: caseState.writeEnabled,
+              isLoadingOCR: isLoadingOCRDocument,
               data:
                 documents?.[docIndex]?.pages?.map(
                   ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({

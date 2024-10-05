@@ -5,82 +5,77 @@ import {
   riskLevelToBackgroundColor,
   riskLevelToFillColor,
 } from '@/pages/Statistics/components/PortfolioRiskStatistics/constants';
+import { z } from 'zod';
+import { HomeMetricsOutputSchema } from '@/domains/metrics/hooks/queries/useHomeMetricsQuery/useHomeMetricsQuery';
 
-export const usePortfolioRiskStatisticsLogic = () => {
+export const usePortfolioRiskStatisticsLogic = ({
+  riskIndicators,
+  reports,
+}: {
+  riskIndicators: z.infer<typeof HomeMetricsOutputSchema>['riskIndicators'];
+  reports: z.infer<typeof HomeMetricsOutputSchema>['reports'];
+}) => {
   const [parent] = useAutoAnimate<HTMLTableSectionElement>();
-  const [sorting, setSorting] = useState<SortDirection>('desc');
-  const onSort = useCallback(
+  const [riskIndicatorsSorting, setRiskIndicatorsSorting] = useState<SortDirection>('desc');
+  const onSortRiskIndicators = useCallback(
     (sort: SortDirection) => () => {
-      setSorting(sort);
+      setRiskIndicatorsSorting(sort);
     },
     [],
   );
-  const sortedData = useMemo(
-    () =>
-      [
-        { riskType: 'Scam and fraud', amount: 15 },
-        { riskType: 'IP Rights Infringement', amount: 12 },
-        { riskType: 'Missing Terms and Conditions', amount: 10 },
-        { riskType: 'Counterfeit Goods', amount: 8 },
-        { riskType: 'Sanctions', amount: 4 },
-      ]
-        ?.slice()
-        .sort((a, b) => {
-          if (sorting === 'asc') {
-            return a.amount - b.amount;
-          }
+  const totalRiskIndicators = riskIndicators.reduce((acc, curr) => acc + curr.count, 0);
+  const filteredRiskIndicators = useMemo(() => {
+    return structuredClone(riskIndicators)
+      .sort((a, b) => {
+        if (riskIndicatorsSorting === 'asc') {
+          return a.count - b.count;
+        }
 
-          return b.amount - a.amount;
-        }),
-    [sorting],
-  );
+        return b.count - a.count;
+      })
+      .slice(0, 5);
+  }, [riskIndicators, riskIndicatorsSorting]);
   const widths = useMemo(() => {
-    const maxValue = Math.max(...sortedData.map(item => item.amount), 0);
+    const maxValue = Math.max(...filteredRiskIndicators.map(item => item.count), 0);
 
-    return sortedData.map(item =>
-      item.amount === 0 ? 0 : Math.max((item.amount / maxValue) * 100, 2),
+    return filteredRiskIndicators.map(item =>
+      item.count === 0 ? 0 : Math.max((item.count / maxValue) * 100, 2),
     );
-  }, [sortedData]);
+  }, [filteredRiskIndicators]);
   const filters = [
     {
       name: 'Merchant Monitoring',
+      description: 'Risk Risk levels of all merchant monitoring reports.',
+      entityPlural: 'Reports',
       riskLevels: {
-        low: 15,
-        medium: 50,
-        high: 32,
-        critical: 12,
+        low: reports.all.low,
+        medium: reports.all.medium,
+        high: reports.all.high,
+        critical: reports.all.critical,
       },
     },
     {
       name: 'Merchant Onboarding',
+      description: 'Risk levels of all active onboarding cases.',
+      entityPlural: 'Cases',
       riskLevels: {
-        low: 3,
-        medium: 5,
-        high: 6,
-        critical: 4,
+        low: reports.inProgress.low,
+        medium: reports.inProgress.medium,
+        high: reports.inProgress.high,
+        critical: reports.inProgress.critical,
       },
     },
   ];
-  const totalIndicators = 49;
-  const portfolio = {
-    riskLevels: {
-      low: 10,
-      medium: 30,
-      high: 25,
-      critical: 15,
-    },
-  };
 
   return {
-    portfolio,
     riskLevelToFillColor,
     parent,
     widths,
     riskLevelToBackgroundColor,
     filters,
-    totalIndicators,
-    sorting,
-    onSort,
-    sortedData,
+    riskIndicatorsSorting,
+    onSortRiskIndicators,
+    filteredRiskIndicators,
+    totalRiskIndicators,
   };
 };

@@ -14,7 +14,7 @@ import {
   useNavigationType,
 } from 'react-router-dom';
 
-export const sentyRouterInstrumentation = Sentry.reactRouterV6Instrumentation(
+export const sentryRouterInstrumentation = Sentry.reactRouterV6Instrumentation(
   React.useEffect,
   useLocation,
   useNavigationType,

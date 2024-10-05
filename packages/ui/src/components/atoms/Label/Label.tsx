@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { LabelProps, Root } from '@radix-ui/react-label';
-import { ctw } from '@/utils/ctw';
+import { ctw } from '@/common/utils/ctw';
 
 const Label = React.forwardRef<HTMLLabelElement, LabelProps>(({ className, ...props }, ref) => (
   <Root

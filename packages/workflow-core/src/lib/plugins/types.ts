@@ -6,6 +6,7 @@ import { TContext } from '../utils';
 import { ChildWorkflowPlugin } from './common-plugin/child-workflow-plugin';
 import { TransformerPlugin } from '../plugins/common-plugin/transformer-plugin';
 import { RiskRulePlugin } from '@/lib/plugins/common-plugin/risk-rules-plugin';
+import { WorkflowTokenPlugin } from '@/lib/plugins/common-plugin/workflow-token-plugin';
 
 export type PluginAction = { workflowId: string; context: any; event: any; state: any };
 export type InvokePluginAction = { context: TContext };
@@ -30,14 +31,18 @@ export interface StatePlugin extends WorkflowPlugin {
   /**
    * States already defined in the statechart
    */
-  stateNames: Array<string>;
+  stateNames: string[];
 }
 
 export type StatePlugins = StatePlugin[];
 export type HttpPlugin = ApiPlugin | WebhookPlugin | KycPlugin;
-export type CommonPlugin = IterativePlugin | TransformerPlugin | RiskRulePlugin;
-export type HttpPlugins = Array<HttpPlugin>;
-export type CommonPlugins = Array<CommonPlugin>;
-export type ChildPlugins = Array<ChildWorkflowPlugin>;
+export type CommonPlugin =
+  | IterativePlugin
+  | TransformerPlugin
+  | RiskRulePlugin
+  | WorkflowTokenPlugin;
+export type HttpPlugins = HttpPlugin[];
+export type CommonPlugins = CommonPlugin[];
+export type ChildPlugins = ChildWorkflowPlugin[];
 export type ActionablePlugin = HttpPlugin;
-export type ActionablePlugins = Array<ActionablePlugin>;
+export type ActionablePlugins = ActionablePlugin[];

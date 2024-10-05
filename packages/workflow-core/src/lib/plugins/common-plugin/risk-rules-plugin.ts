@@ -23,6 +23,11 @@ export class RiskRulePlugin {
 
   async invoke(context: TContext) {
     try {
+      logger.log('Risk Rules PLugin - Invoking', {
+        context,
+        name: this.name,
+      });
+
       const rulesetResult = await this.action(context, this.rulesSource);
 
       const { riskScore, rulesResults } = this.calculateRiskScore(
@@ -38,7 +43,12 @@ export class RiskRulePlugin {
             domain: rule.domain,
           };
         });
+
       const riskIndicatorsByDomain = groupBy(indicators, 'domain');
+
+      logger.log('Risk Rules Plugin - Success', {
+        name: this.name,
+      });
 
       return {
         response: {
@@ -50,7 +60,8 @@ export class RiskRulePlugin {
         callbackAction: this.successAction,
       } as const;
     } catch (error) {
-      logger.error(`Rules Plugin Failed`, {
+      logger.error(`Risk Rules Plugin - Failed`, {
+        context,
         name: this.name,
         databaseId: this.rulesSource.databaseId,
         source: this.rulesSource.source,

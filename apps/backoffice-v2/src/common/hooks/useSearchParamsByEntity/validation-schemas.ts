@@ -30,8 +30,9 @@ export const MonitoringReportsTabs = [
   'websitesCompany',
   'websiteLineOfBusiness',
   'websiteCredibility',
-  'ecosystemAndTransactions',
+  'ecosystem',
   'adsAndSocialMedia',
+  'transactions',
 ] as const;
 
 export const CaseTabs = [
@@ -43,13 +44,16 @@ export const CaseTabs = [
   'associatedCompanies',
   'directors',
   'monitoringReports',
+  'customData',
 ] as const;
+
+export const CaseTabsSchema = z.enum(CaseTabs);
 
 export const IndividualsSearchSchema = (authenticatedUserId: string) =>
   SearchSchema.extend({
     sortBy: z.enum(['firstName', 'lastName', 'email', 'createdAt']).catch('createdAt'),
     filter: createFilterSchema(authenticatedUserId),
-    activeTab: z.enum(CaseTabs).catch(CaseTabs[0]),
+    activeTab: CaseTabsSchema.catch(CaseTabs[0]),
     activeMonitoringTab: z.enum(MonitoringReportsTabs).catch(MonitoringReportsTabs[0]),
   });
 

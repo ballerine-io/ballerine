@@ -1,6 +1,7 @@
 import { TContext, Transformer, Transformers } from '../../utils';
 import { ChildWorkflowPluginParams } from './types';
 import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
+import { logger } from '../../logger';
 
 export class ChildWorkflowPlugin {
   public static pluginType = 'child';
@@ -12,6 +13,8 @@ export class ChildWorkflowPlugin {
   transformers: ChildWorkflowPluginParams['transformers'];
   action: ChildWorkflowPluginParams['action'];
   initEvent: ChildWorkflowPluginParams['initEvent'];
+  successAction: ChildWorkflowPluginParams['successAction'];
+  errorAction: ChildWorkflowPluginParams['errorAction'];
 
   constructor(pluginParams: ChildWorkflowPluginParams) {
     this.name = pluginParams.name;
@@ -22,10 +25,12 @@ export class ChildWorkflowPlugin {
     this.transformers = pluginParams.transformers;
     this.initEvent = pluginParams.initEvent;
     this.action = pluginParams.action;
+    this.successAction = pluginParams.successAction;
+    this.errorAction = pluginParams.errorAction;
   }
 
   async invoke(context: TContext) {
-    console.log(`Invoking child workflow plugin`, {
+    logger.log(`Invoking child workflow plugin`, {
       name: this.name,
       definitionId: this.definitionId,
       parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
@@ -44,33 +49,43 @@ export class ChildWorkflowPlugin {
           },
         },
       });
-      console.log(`Child workflow plugin invoked`, {
+      logger.log(`Child workflow plugin invoked`, {
         name: this.name,
         definitionId: this.definitionId,
         parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
       });
+      logger.log(`Child workflow plugin completed`, {
+        name: this.name,
+        definitionId: this.definitionId,
+        parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
+      });
+
+      return { callbackAction: this.successAction };
     } catch (error) {
-      console.error(`Error occurred while invoking child workflow plugin`, {
+      logger.error(`Error occurred while invoking child workflow plugin`, {
         error,
         name: this.name,
         definitionId: this.definitionId,
         parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
       });
-    } finally {
-      console.log(`Child workflow plugin completed`, {
+
+      logger.log(`Child workflow plugin completed`, {
         name: this.name,
         definitionId: this.definitionId,
         parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
       });
-      return Promise.resolve();
+
+      return { callbackAction: this.errorAction };
     }
   }
 
   async transformData(transformers: Transformers, record: AnyRecord) {
     let mutatedRecord = record;
+
     for (const transformer of transformers) {
       mutatedRecord = await this.transformByTransformer(transformer, mutatedRecord);
     }
+
     return mutatedRecord;
   }
 

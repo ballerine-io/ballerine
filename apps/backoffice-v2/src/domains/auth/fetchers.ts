@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { handleZodError } from '../../common/utils/handle-zod-error/handle-zod-error';
 import { Method } from '../../common/enums';
 import { AuthenticatedUserSchema } from './validation-schemas';
+import posthog from 'posthog-js';
 
 export const fetchSignOut = async ({ callbackUrl }: ISignInProps) => {
   const [session, error] = await apiClient({
@@ -14,6 +15,13 @@ export const fetchSignOut = async ({ callbackUrl }: ISignInProps) => {
       callbackUrl,
     },
   });
+  try {
+    posthog.reset();
+  } catch (error) {
+    console.error('Error resetting PostHog:', error);
+  }
+
+  posthog.reset();
 
   return handleZodError(error, session);
 };
@@ -51,6 +59,15 @@ export const fetchAuthenticatedUser = async () => {
       user: AuthenticatedUserSchema,
     }),
   });
+
+  try {
+    posthog.identify(session?.user?.id, {
+      email: session?.user?.email,
+      name: session?.user?.fullName,
+    });
+  } catch (error) {
+    console.error('Error identifying user in PostHog:', error);
+  }
 
   return handleZodError(error, session);
 };

@@ -9,6 +9,7 @@ PARENT_DIR=$(dirname "$SCRIPT_DIR")
 WF_FOLDER="$PARENT_DIR/services/workflows-service"
 env_file="$WF_FOLDER/.env"
 env_example_file="$WF_FOLDER/.env.example"
+deploy_env_file="$PARENT_DIR/deploy/.env"
 
 # Check if the .env file exists
 if [[ ! -f "$env_file" ]]; then
@@ -48,7 +49,7 @@ set_bcrypt_salt_windows() {
 update_env_file() {
   adjusted_value="\"$sanitized_value\""
 
-  for file in "$env_file" "$env_example_file"; do
+  for file in "$env_file" "$env_example_file" "$deploy_env_file"; do
     grep -v '^HASHING_KEY_SECRET_BASE64=' "$file" > "${file}.tmp" && mv "${file}.tmp" "$file"
     echo -e "HASHING_KEY_SECRET_BASE64=$sanitized_value" >> "$file"
   done

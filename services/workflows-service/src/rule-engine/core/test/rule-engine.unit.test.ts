@@ -1,21 +1,20 @@
-import { RuleEngine, runRuleSet } from '@/rule-engine/core/rule-engine';
 import {
   DataValueNotFoundError,
-  MissingKeyError,
   OPERATION,
-  OperationNotFoundError,
   OPERATOR,
+  RuleResult,
   RuleResultSet,
   RuleSet,
-  RuleResult,
 } from '@ballerine/common';
-import { context } from './data-helper';
 import z from 'zod';
+import { amlContext, context } from './data-helper';
+import { RuleEngine, runRuleSet } from '../rule-engine';
 
 const mockData = {
   country: 'US',
   name: 'John',
   age: 35,
+  createdAt: new Date().toISOString(),
 };
 
 describe('Rule Engine', () => {
@@ -25,7 +24,7 @@ describe('Rule Engine', () => {
       rules: [
         {
           key: 'country',
-          operation: OPERATION.EQUALS,
+          operator: OPERATION.EQUALS,
           value: 'US',
         },
         {
@@ -33,7 +32,7 @@ describe('Rule Engine', () => {
           rules: [
             {
               key: 'name',
-              operation: OPERATION.EQUALS,
+              operator: OPERATION.EQUALS,
               value: 'John',
             },
             {
@@ -41,12 +40,12 @@ describe('Rule Engine', () => {
               rules: [
                 {
                   key: 'age',
-                  operation: OPERATION.GT,
+                  operator: OPERATION.GT,
                   value: 40,
                 },
                 {
                   key: 'age',
-                  operation: OPERATION.LTE,
+                  operator: OPERATION.LTE,
                   value: 35,
                 },
               ],
@@ -72,7 +71,7 @@ describe('Rule Engine', () => {
       rules: [
         {
           key: 'nonexistent',
-          operation: OPERATION.EQUALS,
+          operator: OPERATION.EQUALS,
           value: 'US',
         },
       ],
@@ -86,14 +85,15 @@ describe('Rule Engine', () => {
     expect((validationResults[0] as RuleResult).error).toBeInstanceOf(DataValueNotFoundError);
   });
 
-  it('should throw an error for unknown operation', () => {
+  it('should throw an error for unknown operator', () => {
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.OR,
       rules: [
         {
           key: 'country',
-          // @ts-ignore - intentionally using an unknown operation
-          operation: 'UNKNOWN',
+          // @ts-ignore - intentionally using an unknown operator
+          operator: 'UNKNOWN',
+          // @ts-ignore - intentionally using an unknown operator
           value: 'US',
         },
       ],
@@ -102,16 +102,34 @@ describe('Rule Engine', () => {
     const result = runRuleSet(ruleSetExample, mockData);
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
-    expect(result[0]).toMatchObject({
-      error: expect.any(OperationNotFoundError),
-      message: 'Unknown operation UNKNOWN',
-      rule: {
-        key: 'country',
-        operation: 'UNKNOWN',
-        value: 'US',
-      },
-      status: 'FAILED',
-    });
+    expect(result[0]?.message).toMatchInlineSnapshot(`
+      "Validation failed for 'rule', message: parsing failed, error: {
+        "issues": [
+          {
+            "code": "invalid_union_discriminator",
+            "options": [
+              "LAST_YEAR",
+              "AML_CHECK",
+              "EQUALS",
+              "NOT_EQUALS",
+              "BETWEEN",
+              "GT",
+              "LT",
+              "GTE",
+              "LTE",
+              "EXISTS",
+              "IN",
+              "NOT_IN"
+            ],
+            "path": [
+              "operator"
+            ],
+            "message": "Invalid discriminator value. Expected 'LAST_YEAR' | 'AML_CHECK' | 'EQUALS' | 'NOT_EQUALS' | 'BETWEEN' | 'GT' | 'LT' | 'GTE' | 'LTE' | 'EXISTS' | 'IN' | 'NOT_IN'"
+          }
+        ],
+        "name": "ZodError"
+      }"
+    `);
   });
 
   it('should fail for incorrect value', () => {
@@ -120,7 +138,7 @@ describe('Rule Engine', () => {
       rules: [
         {
           key: 'country',
-          operation: OPERATION.EQUALS,
+          operator: OPERATION.EQUALS,
           value: 'CA',
         },
       ],
@@ -131,49 +149,75 @@ describe('Rule Engine', () => {
     expect((validationResults[0] as RuleResult).error).toBe(undefined);
   });
 
-  it.skip('should validate custom operation with additional params', () => {
+  it('should validate custom operator with additional params', () => {
     // TODO: should spy Date.now() to return a fixed date
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.AND,
       rules: [
         {
           key: 'createdAt',
-          operation: OPERATION.LAST_YEAR,
-          value: { years: 2 },
+          operator: OPERATION.LAST_YEAR,
+          value: { years: 1 },
         },
       ],
     };
 
     const validationResults: RuleResultSet = runRuleSet(ruleSetExample, mockData);
-    expect(validationResults[0]!.status).toBe('PASSED');
+    expect(validationResults[0]).toMatchInlineSnapshot(`
+      {
+        "error": undefined,
+        "rule": {
+          "key": "createdAt",
+          "operator": "LAST_YEAR",
+          "value": {
+            "years": 1,
+          },
+        },
+        "status": "PASSED",
+      }
+    `);
   });
 
-  it('should fail custom operation with missing additional params', () => {
+  it('should fail custom operator with missing additional params', () => {
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.OR,
       rules: [
         {
           key: 'age',
-          operation: OPERATION.LAST_YEAR,
-          value: { years: 'two' }, // Invalid type for years
+          operator: OPERATION.LAST_YEAR,
+          // @ts-ignore - wrong type
+          value: { years: 'two' },
         },
       ],
     };
 
     const validationResults: RuleResultSet = runRuleSet(ruleSetExample, mockData);
-    expect(validationResults[0]!.status).toBe('FAILED');
-    expect((validationResults[0] as RuleResult).message).toContain(
-      `Validation failed for 'LAST_YEAR', message: Invalid condition value`,
-    );
+    expect(validationResults[0]?.message).toMatchInlineSnapshot(`
+      "Validation failed for 'rule', message: parsing failed, error: {
+        "issues": [
+          {
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "string",
+            "path": [
+              "value",
+              "years"
+            ],
+            "message": "Expected number, received string"
+          }
+        ],
+        "name": "ZodError"
+      }"
+    `);
   });
 
-  it('should throw MissingKeyError when rule is missing key field', () => {
+  it('should throw DataValueNotFoundError when rule is missing key field', () => {
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.OR,
       rules: [
         {
           key: '',
-          operation: OPERATION.EQUALS,
+          operator: OPERATION.EQUALS,
           value: 'US',
         },
       ],
@@ -182,16 +226,18 @@ describe('Rule Engine', () => {
     const result = runRuleSet(ruleSetExample, mockData);
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
-    expect(result[0]).toMatchObject({
-      error: expect.any(MissingKeyError),
-      message: 'Rule is missing the key field',
-      rule: {
-        key: '',
-        operation: 'EQUALS',
-        value: 'US',
-      },
-      status: 'FAILED',
-    });
+    expect(result[0]).toMatchInlineSnapshot(`
+      {
+        "error": [DataValueNotFoundError: Field  is missing or null],
+        "message": "Field  is missing or null",
+        "rule": {
+          "key": "",
+          "operator": "EQUALS",
+          "value": "US",
+        },
+        "status": "FAILED",
+      }
+    `);
   });
 
   it('should resolve a nested property from context', () => {
@@ -200,7 +246,7 @@ describe('Rule Engine', () => {
       rules: [
         {
           key: 'pluginsOutput.businessInformation.data[0].establishDate',
-          operation: OPERATION.LAST_YEAR,
+          operator: OPERATION.LAST_YEAR,
           value: { years: 1 },
         },
       ],
@@ -216,7 +262,7 @@ describe('Rule Engine', () => {
         "error": undefined,
         "rule": {
           "key": "pluginsOutput.businessInformation.data[0].establishDate",
-          "operation": "LAST_YEAR",
+          "operator": "LAST_YEAR",
           "value": {
             "years": 1,
           },
@@ -238,7 +284,7 @@ describe('Rule Engine', () => {
         "error": undefined,
         "rule": {
           "key": "pluginsOutput.businessInformation.data[0].establishDate",
-          "operation": "LAST_YEAR",
+          "operator": "LAST_YEAR",
           "value": {
             "years": 1,
           },
@@ -247,13 +293,14 @@ describe('Rule Engine', () => {
       }
     `);
   });
+
   it('should evaluate to true if establishDate is within the last year', () => {
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.AND,
       rules: [
         {
           key: 'pluginsOutput.businessInformation.data[0].establishDate',
-          operation: OPERATION.LAST_YEAR,
+          operator: OPERATION.LAST_YEAR,
           value: { years: 1 },
         },
       ],
@@ -264,678 +311,8 @@ describe('Rule Engine', () => {
     // Test with a date from 6 months ago
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-    const context1 = {
-      id: '892398749',
-      data: {
-        companyName: '1618 Air Conditioning co',
-        additionalInfo: {
-          mainRepresentative: {
-            email: 'nitzan+demo82918739@ballerine.com',
-            lastName: 'guy',
-            firstName: 'nitzan',
-          },
-        },
-      },
-      type: 'business',
-      state: 'personal_details',
-      entity: {
-        id: '892398749',
-        data: {
-          country: 'SG',
-          companyName: '1618 AIR CONDITIONING PTE. LTD.',
-          businessType: 'Local Company - EXEMPT PRIVATE COMPANY LIMITED BY SHARES',
-          additionalInfo: {
-            bank: {
-              iban: '123412351251253',
-              bankName: 'Madeline Haynes',
-              currency: 'USD',
-              subBranch: '12341243',
-              swiftCode: '1234123442',
-              bankAddress: 'Dicta cupiditate ali',
-              accountNumber: '2291241414',
-              cardholderName: 'Anderson Johnston Associates',
-              residentAddress: 'Autem cum modi quibu',
-            },
-            ubos: [
-              {
-                email: 'nitzan+demo82918739@ballerine.com',
-                lastName: 'guy',
-                firstName: 'nitzan',
-                additionalInfo: {
-                  address: '22, Chaoyangmen, Chaoyang District, Beijing',
-                  ownership: 25,
-                  companyName: '1618 AIR CONDITIONING PTE. LTD.',
-                  nationality: 'IL',
-                  identityNumber: '021573872',
-                  customerCompany: 'AXS',
-                  __isGeneratedAutomatically: true,
-                },
-                ballerineEntityId: 'clykbql2c0019uv30xw7x9rmn',
-              },
-            ],
-            store: {
-              dba: 'Qui reiciendis sunt',
-              industry: 'Adult Entertainment and Products',
-              products: 'watches, books, shoes',
-              websiteUrl: 'https://www.thursdayboots.com',
-              established: '2020-10-19T21:00:00.000Z',
-              averagePrice: 631,
-              productsAndServiceDescription: 'Qui ab quia et dolor',
-            },
-            directors: [
-              {
-                email: 'nitzan+demo82918739@ballerine.com',
-                lastName: 'Doe',
-                firstName: 'John',
-                legalName: 'nitzan guy',
-                additionalInfo: {
-                  address: '22, Chaoyangmen, Chaoyang District, Beijing',
-                  documents: [
-                    {
-                      id: 'director-passport-photo-document-[index:0]',
-                      type: 'passport',
-                      pages: [
-                        {
-                          type: 'image/jpeg',
-                          fileName: 'USA_Passport.jpg',
-                          ballerineFileId: 'clykbnvuv000zuv30ktirq06x',
-                        },
-                      ],
-                      issuer: {
-                        country: 'ZZ',
-                      },
-                      version: '1',
-                      category: 'proof_of_identity',
-                      decision: {},
-                      properties: {},
-                      issuingVersion: 1,
-                      propertiesSchema: {
-                        type: 'object',
-                        properties: {
-                          lastName: {
-                            type: 'string',
-                          },
-                          firstName: {
-                            type: 'string',
-                          },
-                          documentNumber: {
-                            type: 'string',
-                          },
-                        },
-                      },
-                    },
-                    {
-                      id: 'director-selfie-photo-[index:0]',
-                      type: 'selfie',
-                      pages: [
-                        {
-                          type: 'image/png',
-                          fileName: 'USA_Passport Selfie.png',
-                          ballerineFileId: 'clykboexb0011uv30euiqhcjx',
-                        },
-                      ],
-                      issuer: {
-                        country: 'ZZ',
-                      },
-                      version: '1',
-                      category: 'proof_of_identity_ownership',
-                      decision: {},
-                      properties: {},
-                      issuingVersion: 1,
-                      propertiesSchema: {
-                        type: 'object',
-                        properties: {
-                          lastName: {
-                            type: 'string',
-                          },
-                          firstName: {
-                            type: 'string',
-                          },
-                          documentNumber: {
-                            type: 'string',
-                          },
-                        },
-                      },
-                    },
-                  ],
-                  companyName: '1618 AIR CONDITIONING PTE. LTD.',
-                  nationality: 'IL',
-                  identityNumber: '2389387927',
-                  customerCompany: 'AXS',
-                  __isGeneratedAutomatically: true,
-                },
-                ballerineEntityId: 'clykbql33001auv30cb8k3jbq',
-              },
-            ],
-            taxNumber: '1893918893',
-            imDirector: true,
-            companyType: 'Partnership',
-            headquarters: {
-              city: 'Sed deserunt itaque ',
-              street: 'Consectetur id fuga',
-              country: 'IR',
-              physical: {},
-              streetNumber: 978,
-              isDifferentFromPhysical: false,
-            },
-            imShareholder: true,
-            openCorporate: {
-              vat: '',
-              name: '1618 AIR CONDITIONING PTE. LTD.',
-              companyType: 'Local Company - EXEMPT PRIVATE COMPANY LIMITED BY SHARES',
-              companyNumber: '202400701R',
-              jurisdictionCode: 'sg',
-              incorporationDate: '2024-01-04',
-            },
-            registeredCapital: 10000000,
-            mainRepresentative: {
-              email: 'nitzan+demo82918739@ballerine.com',
-              phone: '13231312312',
-              lastName: 'guy',
-              firstName: 'nitzan',
-              dateOfBirth: '1986-12-01T22:00:00.000Z',
-              additionalInfo: {
-                jobTitle: 'CPO',
-              },
-            },
-            thereNoCompaniesWithMoreThan25: true,
-          },
-          numberOfEmployees: 50,
-          registrationNumber: '202400701R',
-          taxIdentificationNumber: '',
-        },
-        type: 'business',
-        ballerineEntityId: 'clykbgvzf000wta30lv1zrzsq',
-      },
-      metadata: {
-        token: '2da44cc2-555a-43d4-a7cd-7ebab9bc715d',
-        customerName: 'AXS',
-        collectionFlowUrl: 'https://collection-dev.ballerine.io',
-        customerNormalizedName: 'axs',
-      },
-      documents: [
-        {
-          id: 'document-certificate-of-incorporation',
-          type: 'certificate_of_incorporation',
-          pages: [
-            {
-              type: 'image/jpeg',
-              fileName: 'COI3.jpeg',
-              ballerineFileId: 'clykbqayw001eta30xnhwu6q5',
-            },
-          ],
-          issuer: {
-            country: 'ZZ',
-          },
-          version: '1',
-          category: 'proof_of_registration',
-          decision: {},
-          properties: {},
-          issuingVersion: 1,
-          propertiesSchema: {
-            type: 'object',
-            properties: {
-              issueDate: {
-                type: 'string',
-                format: 'date',
-                formatMaximum: '2024-07-13',
-              },
-              businessName: {
-                type: 'string',
-              },
-              registrationNumber: {
-                type: 'string',
-                pattern: '^[a-zA-Z0-9]*$',
-              },
-            },
-          },
-        },
-        {
-          id: 'document-business-registration-certificate',
-          type: 'business_registration_certificate',
-          pages: [
-            {
-              type: 'image/jpeg',
-              fileName: 'COI1.jpeg',
-              ballerineFileId: 'clykbqdwe0016uv304fa37i98',
-            },
-          ],
-          issuer: {
-            country: 'ZZ',
-          },
-          version: '1',
-          category: 'proof_of_registration',
-          decision: {},
-          properties: {},
-          issuingVersion: 1,
-          propertiesSchema: {
-            type: 'object',
-            properties: {
-              issueDate: {
-                type: 'string',
-                format: 'date',
-                formatMaximum: '2024-07-13',
-              },
-              businessName: {
-                type: 'string',
-              },
-              registrationNumber: {
-                type: 'string',
-                pattern: '^[a-zA-Z0-9]*$',
-              },
-            },
-          },
-        },
-        {
-          id: 'document-certificate-of-directors-and-shareholders',
-          type: 'certificate_of_directors_and_shareholders',
-          pages: [
-            {
-              type: 'image/png',
-              fileName: 'company structure.png',
-              ballerineFileId: 'clykbqhv9001ita30d2vqrp9z',
-            },
-          ],
-          issuer: {
-            country: 'ZZ',
-          },
-          version: '1',
-          category: 'proof_of_ownership',
-          decision: {},
-          properties: {},
-          issuingVersion: 1,
-          propertiesSchema: {
-            type: 'object',
-            properties: {
-              directors: {
-                type: 'string',
-              },
-              issueDate: {
-                type: 'string',
-                format: 'date',
-                formatMaximum: '2024-07-13',
-              },
-              businessName: {
-                type: 'string',
-              },
-              shareholders: {
-                type: 'string',
-              },
-            },
-          },
-        },
-      ],
-      flowConfig: {
-        apiUrl: 'https://api-dev.ballerine.io',
-        tokenId: '2da44cc2-555a-43d4-a7cd-7ebab9bc715d',
-        appState: 'finish',
-        stepsProgress: {
-          store_info: {
-            number: 7,
-            isCompleted: true,
-          },
-          banking_details: {
-            number: 5,
-            isCompleted: true,
-          },
-          personal_details: {
-            number: 1,
-            isCompleted: true,
-          },
-          company_documents: {
-            number: 10,
-            isCompleted: false,
-          },
-          company_ownership: {
-            number: 4,
-            isCompleted: true,
-          },
-          business_information: {
-            number: 2,
-            isCompleted: true,
-          },
-          business_address_information: {
-            number: 3,
-            isCompleted: true,
-          },
-        },
-        customerCompany: 'AXS',
-      },
-      customerName: 'AXS',
-      pluginsOutput: {
-        ubo: {
-          code: 200,
-          data: {
-            layers: '2',
-            uboList: [
-              {
-                name: 'HAO JIAN',
-                type: 'PERSON',
-                enName: 'HAO JIAN',
-                uboPaths: [
-                  {
-                    no: 1,
-                    uboPath: [
-                      {
-                        name: '1618 AIR CONDITIONING PTE. LTD.',
-                        level: '1',
-                        share: '100',
-                        nodeId: 'uboNode202407140011360958434933',
-                      },
-                      {
-                        name: 'HAO JIAN',
-                        level: '2',
-                        share: '100.00',
-                        nodeId: 'uboNode202407140011361717272568',
-                      },
-                    ],
-                    uboShare: '100.00',
-                  },
-                ],
-                companyId: '',
-                personalId: 'SGPS8567940F',
-                jurisdiction: 'Singapore',
-                reasonForType: '',
-                sharePercentage: '100.00',
-              },
-            ],
-            uboGraph: [
-              {
-                id: 'SGPS8567940F',
-                name: 'HAO JIAN',
-                node: 'uboNode202407140011361717272568',
-                type: 'PERSON',
-                level: '2',
-                enName: 'HAO JIAN',
-                reason: '',
-                bizStatus: '',
-                regNumber: '',
-                enBizStatus: '',
-                jurisdiction: 'Singapore',
-                shareHolders: [],
-                establishedDate: '',
-              },
-              {
-                id: 'SGP202400701R',
-                name: '1618 AIR CONDITIONING PTE. LTD.',
-                node: 'uboNode202407140011360958434933',
-                type: 'COMPANY',
-                level: '1',
-                enName: '1618 AIR CONDITIONING PTE. LTD.',
-                reason: '',
-                bizStatus: 'Live Company',
-                regNumber: '202400701R',
-                enBizStatus: 'Live Company',
-                jurisdiction: 'Singapore',
-                shareHolders: [
-                  {
-                    nodeId: 'uboNode202407140011361717272568',
-                    sharePercentage: '100.00',
-                  },
-                ],
-                establishedDate: '2024-01-04',
-              },
-            ],
-            fullUBOGraph: [
-              {
-                id: 'SGPS8567940F',
-                name: 'HAO JIAN',
-                node: 'uboNode202407140011361717272568',
-                type: 'PERSON',
-                level: '2',
-                enName: 'HAO JIAN',
-                reason: '',
-                bizStatus: '',
-                regNumber: '',
-                enBizStatus: '',
-                jurisdiction: 'Singapore',
-                shareHolders: [],
-                establishedDate: '',
-              },
-              {
-                id: 'SGP202400701R',
-                name: '1618 AIR CONDITIONING PTE. LTD.',
-                node: 'uboNode202407140011360958434933',
-                type: 'COMPANY',
-                level: '1',
-                enName: '1618 AIR CONDITIONING PTE. LTD.',
-                reason: '',
-                bizStatus: 'Live Company',
-                regNumber: '202400701R',
-                enBizStatus: 'Live Company',
-                jurisdiction: 'Singapore',
-                shareHolders: [
-                  {
-                    nodeId: 'uboNode202407140011361717272568',
-                    sharePercentage: '100.00',
-                  },
-                ],
-                establishedDate: '2024-01-04',
-              },
-            ],
-            otherUBOList: [],
-          },
-          name: 'ubo',
-          status: 'SUCCESS',
-          orderId: 'ubo202407140011351558978752',
-          invokedAt: 1720887096055,
-        },
-        risk_evaluation: {
-          success: true,
-          riskScore: 60,
-          rulesResults: [
-            {
-              id: 'store-info-high-risk-sector',
-              domain: 'Store Info',
-              result: [
-                {
-                  rule: {
-                    key: 'entity.data.additionalInfo.store.industry',
-                    value: [
-                      'Adult Entertainment and Products',
-                      'Gambling and Casinos',
-                      'eSports and Betting',
-                      'Leisure and Travel',
-                      'Travel Agencies and Tour Operators',
-                      'E-commerce',
-                      'Telemarketing',
-                      'Nutraceuticals and Supplements',
-                      'Financial Services',
-                      'Pharmaceuticals',
-                      'Pharmaceuticals and Drug Stores',
-                      'Multi-Level Marketing (MLM)',
-                      'Dating Services',
-                      'Event Ticket Brokers',
-                      'Events Services',
-                      'Pawn Shops',
-                      'Bail Bonds',
-                      'Weapons and Knives Sales',
-                      'Forex Trading',
-                      'Timeshares',
-                      'Antiques',
-                      'Collectibles',
-                      'Auctions and Auctioneering',
-                      'Auctions and Penny Auctions',
-                      'Charities and Non-Profits',
-                      'Automotive',
-                    ],
-                    operation: 'IN',
-                  },
-                  status: 'PASSED',
-                },
-              ],
-              ruleSet: {
-                rules: [
-                  {
-                    key: 'entity.data.additionalInfo.store.industry',
-                    value: [
-                      'Adult Entertainment and Products',
-                      'Gambling and Casinos',
-                      'eSports and Betting',
-                      'Leisure and Travel',
-                      'Travel Agencies and Tour Operators',
-                      'E-commerce',
-                      'Telemarketing',
-                      'Nutraceuticals and Supplements',
-                      'Financial Services',
-                      'Pharmaceuticals',
-                      'Pharmaceuticals and Drug Stores',
-                      'Multi-Level Marketing (MLM)',
-                      'Dating Services',
-                      'Event Ticket Brokers',
-                      'Events Services',
-                      'Pawn Shops',
-                      'Bail Bonds',
-                      'Weapons and Knives Sales',
-                      'Forex Trading',
-                      'Timeshares',
-                      'Antiques',
-                      'Collectibles',
-                      'Auctions and Auctioneering',
-                      'Auctions and Penny Auctions',
-                      'Charities and Non-Profits',
-                      'Automotive',
-                    ],
-                    operation: 'IN',
-                  },
-                ],
-                operator: 'and',
-              },
-              indicator: 'High risk sector',
-              maxRiskScore: 60,
-              minRiskScore: 60,
-              baseRiskScore: 60,
-              additionalRiskScore: 8,
-            },
-          ],
-          riskIndicatorsByDomain: {
-            'Store Info': [
-              {
-                name: 'High risk sector',
-                domain: 'Store Info',
-              },
-            ],
-          },
-        },
-        companySanctions: {
-          data: [],
-          name: 'company_sanctions',
-          status: 'SUCCESS',
-          invokedAt: 1720887095823,
-        },
-        merchantMonitoring: {
-          name: 'merchant_monitoring',
-          status: 'IN_PROGRESS',
-          reportId: 'xz1relb64ydv8lmfqsgnzvsd',
-          invokedAt: 1720887085222,
-        },
-        businessInformation: {
-          data: [
-            {
-              type: 'COM',
-              number: '202400701R',
-              shares: [
-                {
-                  shareType: 'Ordinary',
-                  issuedCapital: '100000',
-                  paidUpCapital: '1000',
-                  shareAllotted: '100000',
-                  shareCurrency: 'SINGAPORE, DOLLARS',
-                },
-              ],
-              status: 'Live Company',
-              expiryDate: '',
-              statusDate: '2024-01-04',
-              companyName: '1618 AIR CONDITIONING PTE. LTD.',
-              companyType: 'EXEMPT PRIVATE COMPANY LIMITED BY SHARES',
-              lastUpdated: '2024-07-14 00:11:33',
-              historyNames: [],
-              businessScope: {
-                code: '43220',
-                description:
-                  'INSTALLATION OF PLUMBING, HEATING (NON-ELECTRIC) AND AIR-CONDITIONING SYSTEMS',
-                otherDescription: '',
-              },
-              establishDate: '2024-01-04',
-              lastFinancialDate: '',
-              registeredAddress: {
-                postalCode: '048545',
-                streetName: 'ROBINSON ROAD',
-                unitNumber: '01A',
-                levelNumber: '08',
-                buildingName: 'FAR EAST FINANCE BUILDING',
-                blockHouseNumber: '14',
-              },
-              lastAnnualReturnDate: '',
-              lastAnnualGeneralMeetingDate: '',
-            },
-          ],
-          name: 'kyb',
-          status: 'SUCCESS',
-          orderId: 'av202407140011262014213702',
-          invokedAt: 1720887093031,
-        },
-        collection_invite_email: {},
-      },
-      childWorkflows: {
-        kyc_email_session_example: {
-          clykbql7a001euv30ruqmnluk: {
-            tags: ['manual_review'],
-            state: 'kyc_manual_review',
-            result: {
-              childEntity: {
-                email: 'nitzan+demo82918739@ballerine.com',
-                lastName: 'guy',
-                firstName: 'nitzan',
-                additionalInfo: {
-                  address: '22, Chaoyangmen, Chaoyang District, Beijing',
-                  ownership: 25,
-                  companyName: '1618 AIR CONDITIONING PTE. LTD.',
-                  nationality: 'IL',
-                  identityNumber: '021573872',
-                  customerCompany: 'AXS',
-                  __isGeneratedAutomatically: true,
-                },
-                ballerineEntityId: 'clykbql2c0019uv30xw7x9rmn',
-              },
-              vendorResult: {
-                aml: {
-                  id: '484b572e-e814-416f-a127-b8ccbe95451a',
-                  hits: [],
-                  clientId: '7a5a10eb-e01d-4896-a717-9017ab3f84d1',
-                  checkType: 'initial_result',
-                  createdAt: '2024-07-13T16:26:38.397Z',
-                  endUserId: 'clykbql2c0019uv30xw7x9rmn',
-                  matchStatus: 'no_match',
-                },
-                entity: {
-                  data: {
-                    lastName: 'GUY GELBARD',
-                    firstName: 'NITZAN',
-                    dateOfBirth: '1986-02-12',
-                    additionalInfo: {
-                      gender: 'M',
-                      nationality: 'IL',
-                    },
-                  },
-                  type: 'individual',
-                },
-                decision: {
-                  status: 'approved',
-                  decisionScore: 0.96,
-                },
-                metadata: {
-                  id: '484b572e-e814-416f-a127-b8ccbe95451a',
-                  url: 'https://alchemy.veriff.com/v/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MjA4ODcwODUsInNlc3Npb25faWQiOiI0ODRiNTcyZS1lODE0LTQxNmYtYTEyNy1iOGNjYmU5NTQ1MWEiLCJpaWQiOiI5ZTEzOGE1OC0xZWU4LTQzNzctYjE1Yy0xMzNmNDZiNDU0ZmIifQ._t6SdAwfC2CxYrr2BxMnxgQ_aklL5w7MBaFDnRCycr0',
-                },
-              },
-            },
-            status: 'active',
-          },
-        },
-      },
-      workflowRuntimeId: '1',
-    };
+
+    const context1 = JSON.parse(JSON.stringify(context)) as any;
 
     let result = engine.run(context1);
     expect(result).toBeDefined();
@@ -988,15 +365,17 @@ describe('Rule Engine', () => {
     expect(result[0]?.status).toBe('FAILED');
   });
 
-  describe('exists operation', () => {
+  describe('exists operator - not in use', () => {
     it('should resolve a nested property from context', () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
           {
             key: 'pluginsOutput.businessInformation.data[0].shares',
-            operation: OPERATION.EXISTS,
-            value: {},
+            operator: OPERATION.EXISTS,
+            value: {
+              schema: z.object({}),
+            },
           },
         ],
       };
@@ -1006,73 +385,39 @@ describe('Rule Engine', () => {
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
-      expect(result[0]).toMatchInlineSnapshot(`
-        {
-          "error": undefined,
-          "rule": {
-            "key": "pluginsOutput.businessInformation.data[0].shares",
-            "operation": "EXISTS",
-            "value": {},
-          },
-          "status": "PASSED",
-        }
-      `);
 
-      const context2 = JSON.parse(JSON.stringify(context));
+      expect(result[0]?.status).toMatchInlineSnapshot(`"FAILED"`);
+      expect(result[0]?.message).toMatchInlineSnapshot(`undefined`);
+      expect(result[0]?.error).toMatchInlineSnapshot(`undefined`);
 
-      // @ts-ignore
+      const context2 = JSON.parse(JSON.stringify(context)) as any;
+
       context2.pluginsOutput.businessInformation.data[0].shares = [];
 
       result = engine.run(context2 as any);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
-      expect(result[0]).toMatchInlineSnapshot(`
-        {
-          "error": undefined,
-          "rule": {
-            "key": "pluginsOutput.businessInformation.data[0].shares",
-            "operation": "EXISTS",
-            "value": {},
-          },
-          "status": "FAILED",
-        }
-      `);
+      expect(result[0]?.status).toMatchInlineSnapshot(`"FAILED"`);
+      expect(result[0]?.message).toMatchInlineSnapshot(`undefined`);
+      expect(result[0]?.error).toMatchInlineSnapshot(`undefined`);
 
-      // @ts-ignore
       context2.pluginsOutput.businessInformation.data[0].shares = {};
 
       result = engine.run(context2 as any);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
-      expect(result[0]).toMatchInlineSnapshot(`
-        {
-          "error": undefined,
-          "rule": {
-            "key": "pluginsOutput.businessInformation.data[0].shares",
-            "operation": "EXISTS",
-            "value": {},
-          },
-          "status": "FAILED",
-        }
-      `);
+      expect(result[0]?.status).toMatchInlineSnapshot(`"FAILED"`);
+      expect(result[0]?.message).toMatchInlineSnapshot(`undefined`);
+      expect(result[0]?.error).toMatchInlineSnapshot(`undefined`);
 
-      // @ts-ignore
       context2.pluginsOutput.businessInformation.data[0].shares = { item: 1 };
 
       result = engine.run(context2 as any);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
-      expect(result[0]).toMatchInlineSnapshot(`
-        {
-          "error": undefined,
-          "rule": {
-            "key": "pluginsOutput.businessInformation.data[0].shares",
-            "operation": "EXISTS",
-            "value": {},
-          },
-          "status": "PASSED",
-        }
-      `);
+      expect(result[0]?.status).toMatchInlineSnapshot(`"PASSED"`);
+      expect(result[0]?.message).toMatchInlineSnapshot(`undefined`);
+      expect(result[0]?.error).toMatchInlineSnapshot(`undefined`);
     });
 
     it('should check with schema', () => {
@@ -1081,7 +426,7 @@ describe('Rule Engine', () => {
         rules: [
           {
             key: 'pluginsOutput.businessInformation.data[0].shares',
-            operation: OPERATION.EXISTS,
+            operator: OPERATION.EXISTS,
             value: {
               schema: z.object({
                 item: z.coerce.number().int().positive(),
@@ -1122,14 +467,14 @@ describe('Rule Engine', () => {
     });
   });
 
-  describe('not_equals operation', () => {
+  describe('not_equals operator', () => {
     it('should resolve a nested property from context', () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
           {
             key: 'pluginsOutput.companySanctions.data.length',
-            operation: OPERATION.NOT_EQUALS,
+            operator: OPERATION.NOT_EQUALS,
             value: 0,
           },
         ],
@@ -1145,7 +490,7 @@ describe('Rule Engine', () => {
           "error": undefined,
           "rule": {
             "key": "pluginsOutput.companySanctions.data.length",
-            "operation": "NOT_EQUALS",
+            "operator": "NOT_EQUALS",
             "value": 0,
           },
           "status": "PASSED",
@@ -1165,7 +510,7 @@ describe('Rule Engine', () => {
           "error": undefined,
           "rule": {
             "key": "pluginsOutput.companySanctions.data.length",
-            "operation": "NOT_EQUALS",
+            "operator": "NOT_EQUALS",
             "value": 0,
           },
           "status": "FAILED",
@@ -1174,14 +519,14 @@ describe('Rule Engine', () => {
     });
   });
 
-  describe('in operation', () => {
+  describe('in operator', () => {
     it('should resolve a nested property from context', () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
           {
             key: 'entity.data.country',
-            operation: OPERATION.IN,
+            operator: OPERATION.IN,
             value: ['IL', 'AF', 'US', 'GB'],
           },
         ],
@@ -1197,7 +542,7 @@ describe('Rule Engine', () => {
           "error": undefined,
           "rule": {
             "key": "entity.data.country",
-            "operation": "IN",
+            "operator": "IN",
             "value": [
               "IL",
               "AF",
@@ -1222,7 +567,7 @@ describe('Rule Engine', () => {
           "error": undefined,
           "rule": {
             "key": "entity.data.country",
-            "operation": "IN",
+            "operator": "IN",
             "value": [
               "IL",
               "AF",
@@ -1236,14 +581,14 @@ describe('Rule Engine', () => {
     });
   });
 
-  describe('not_in operation', () => {
+  describe('not_in operator', () => {
     it('should resolve a nested property from context', () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
           {
             key: 'entity.data.country',
-            operation: OPERATION.NOT_IN,
+            operator: OPERATION.NOT_IN,
             value: ['IL', 'CA', 'US', 'GB'],
           },
         ],
@@ -1259,7 +604,7 @@ describe('Rule Engine', () => {
           "error": undefined,
           "rule": {
             "key": "entity.data.country",
-            "operation": "NOT_IN",
+            "operator": "NOT_IN",
             "value": [
               "IL",
               "CA",
@@ -1284,13 +629,338 @@ describe('Rule Engine', () => {
           "error": undefined,
           "rule": {
             "key": "entity.data.country",
-            "operation": "NOT_IN",
+            "operator": "NOT_IN",
             "value": [
               "IL",
               "CA",
               "US",
               "GB",
             ],
+          },
+          "status": "FAILED",
+        }
+      `);
+    });
+  });
+
+  describe('aml operator', () => {
+    describe('warning section', () => {
+      it('should resolve a nested property from context', () => {
+        const amlContextHasData = {
+          ...(JSON.parse(JSON.stringify(context)) as any),
+          ...(JSON.parse(JSON.stringify(amlContext)) as any),
+          example_id_002: JSON.parse(
+            JSON.stringify(amlContext.childWorkflows.kyc_email_session_example.example_id_001),
+          ) as any,
+        };
+
+        const warningRule: RuleSet = {
+          operator: OPERATOR.AND,
+          rules: [
+            {
+              key: 'warnings.length',
+              operator: OPERATION.AML_CHECK,
+              value: {
+                childWorkflowName: 'kyc_email_session_example',
+                operator: OPERATION.GTE,
+                value: 1,
+              },
+            },
+          ],
+        };
+
+        const engine = RuleEngine(warningRule);
+
+        amlContextHasData.childWorkflows.kyc_email_session_example.example_id_001.result.vendorResult.aml =
+          {
+            hits: [],
+          };
+
+        const result = engine.run(amlContextHasData);
+
+        expect(result).toBeDefined();
+        expect(result[0]).toMatchInlineSnapshot(`
+          {
+            "error": [DataValueNotFoundError: Field warnings.length is missing or null],
+            "message": "Field warnings.length is missing or null",
+            "rule": {
+              "key": "warnings.length",
+              "operator": "AML_CHECK",
+              "value": {
+                "childWorkflowName": "kyc_email_session_example",
+                "operator": "GTE",
+                "value": 1,
+              },
+            },
+            "status": "FAILED",
+          }
+        `);
+      });
+
+      it('should failed when no data', () => {
+        const amlContextHasData = {
+          ...(JSON.parse(JSON.stringify(context)) as any),
+          ...(JSON.parse(JSON.stringify(amlContext)) as any),
+        };
+
+        const warningRule: RuleSet = {
+          operator: OPERATOR.AND,
+          rules: [
+            {
+              key: 'warnings.length',
+              operator: OPERATION.AML_CHECK,
+              value: {
+                childWorkflowName: 'kyc_email_session_example',
+                operator: OPERATION.GTE,
+                value: 1,
+              },
+            },
+          ],
+        };
+
+        const engine = RuleEngine(warningRule);
+        const result = engine.run(amlContextHasData);
+
+        expect(result).toBeDefined();
+        expect(result).toHaveLength(1);
+        expect(result[0]).toMatchInlineSnapshot(`
+          {
+            "error": undefined,
+            "rule": {
+              "key": "warnings.length",
+              "operator": "AML_CHECK",
+              "value": {
+                "childWorkflowName": "kyc_email_session_example",
+                "operator": "GTE",
+                "value": 1,
+              },
+            },
+            "status": "PASSED",
+          }
+        `);
+      });
+    });
+
+    it('should resolve fitness probity', () => {
+      const amlContextHasData = {
+        ...(JSON.parse(JSON.stringify(context)) as any),
+        ...(JSON.parse(JSON.stringify(amlContext)) as any),
+      };
+
+      const fitnessProbityRule: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'fitnessProbity.length',
+            operator: OPERATION.AML_CHECK,
+            value: {
+              childWorkflowName: 'kyc_email_session_example',
+              operator: OPERATION.GTE,
+              value: 1,
+            },
+          },
+        ],
+      };
+
+      amlContextHasData.childWorkflows.kyc_email_session_example.example_id_001.result.vendorResult.aml =
+        {
+          hits: [
+            {
+              fitnessProbity: [
+                {
+                  date: null,
+                  sourceUrl: 'http://example.gov/disqualifieddirectorslist.html',
+                  sourceName:
+                    'Example Ministry of Corporate Affairs List of Disqualified Directors Division XYZ (Suspended)',
+                },
+              ],
+            },
+          ],
+        };
+
+      const engine = RuleEngine(fitnessProbityRule);
+      const result = engine.run(amlContextHasData);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "fitnessProbity.length",
+            "operator": "AML_CHECK",
+            "value": {
+              "childWorkflowName": "kyc_email_session_example",
+              "operator": "GTE",
+              "value": 1,
+            },
+          },
+          "status": "PASSED",
+        }
+      `);
+    });
+
+    it('should resolve a nested property from context', () => {
+      const amlContext2 = {
+        ...(JSON.parse(JSON.stringify(context)) as any),
+        ...(JSON.parse(JSON.stringify(amlContext)) as any),
+      };
+
+      const warningRule: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'warnings.length',
+            operator: OPERATION.AML_CHECK,
+            value: {
+              childWorkflowName: 'kyc_email_session_example',
+              operator: OPERATION.GTE,
+              value: 1,
+            },
+          },
+        ],
+      };
+
+      amlContext2.childWorkflows.kyc_email_session_example.example_id_001.result.vendorResult.aml =
+        {
+          hits: [
+            {
+              warnings: [
+                {
+                  date: null,
+                  sourceUrl: 'http://example.gov/disqualifieddirectorslist.html',
+                  sourceName:
+                    'Example Ministry of Corporate Affairs List of Disqualified Directors Division XYZ (Suspended)',
+                },
+              ],
+            },
+          ],
+        };
+
+      let engine = RuleEngine(warningRule);
+      let result = engine.run(amlContext2);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "warnings.length",
+            "operator": "AML_CHECK",
+            "value": {
+              "childWorkflowName": "kyc_email_session_example",
+              "operator": "GTE",
+              "value": 1,
+            },
+          },
+          "status": "PASSED",
+        }
+      `);
+
+      const adverseMediaRule: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'adverseMedia.length',
+            operator: OPERATION.AML_CHECK,
+            value: {
+              childWorkflowName: 'kyc_email_session_example',
+              operator: OPERATION.GTE,
+              value: 1,
+            },
+          },
+        ],
+      };
+
+      engine = RuleEngine(adverseMediaRule);
+      result = engine.run(amlContext2);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "adverseMedia.length",
+            "operator": "AML_CHECK",
+            "value": {
+              "childWorkflowName": "kyc_email_session_example",
+              "operator": "GTE",
+              "value": 1,
+            },
+          },
+          "status": "FAILED",
+        }
+      `);
+
+      const fitnessProbityRule: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'fitnessProbity.length',
+            operator: OPERATION.AML_CHECK,
+            value: {
+              childWorkflowName: 'kyc_email_session_example',
+              operator: OPERATION.GTE,
+              value: 1,
+            },
+          },
+        ],
+      };
+
+      engine = RuleEngine(fitnessProbityRule);
+      result = engine.run(amlContext2);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "fitnessProbity.length",
+            "operator": "AML_CHECK",
+            "value": {
+              "childWorkflowName": "kyc_email_session_example",
+              "operator": "GTE",
+              "value": 1,
+            },
+          },
+          "status": "FAILED",
+        }
+      `);
+
+      const pepRule: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'pep.length',
+            operator: OPERATION.AML_CHECK,
+            value: {
+              childWorkflowName: 'kyc_email_session_example',
+              operator: OPERATION.GTE,
+              value: 1,
+            },
+          },
+        ],
+      };
+
+      engine = RuleEngine(pepRule);
+      result = engine.run(amlContext2);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "key": "pep.length",
+            "operator": "AML_CHECK",
+            "value": {
+              "childWorkflowName": "kyc_email_session_example",
+              "operator": "GTE",
+              "value": 1,
+            },
           },
           "status": "FAILED",
         }

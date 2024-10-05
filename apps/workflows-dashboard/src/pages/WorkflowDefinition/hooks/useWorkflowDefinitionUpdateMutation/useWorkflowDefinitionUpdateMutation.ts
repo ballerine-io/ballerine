@@ -1,8 +1,8 @@
 import {
+  IWorkflowDefinition,
   updateWorkflowDefinitionById,
   UpdateWorkflowDefinitionByIdDto,
 } from '@/domains/workflow-definitions';
-import { IWorkflowDefinition } from '@/domains/workflows/api/workflow';
 import { queryClient } from '@/lib/react-query/query-client';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';

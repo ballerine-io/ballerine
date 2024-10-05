@@ -51,6 +51,9 @@ export const getTabsToBlocksMap = ({
     documentReviewBlocks,
     businessInformationBlocks,
     caseOverviewBlock,
+    customDataBlock,
+    amlWithContainerBlock,
+    merchantScreeningBlock,
   ] = blocks;
 
   const defaultTabsMap = {
@@ -60,6 +63,9 @@ export const getTabsToBlocksMap = ({
         : []),
       ...websiteMonitoringBlock,
       ...entityInfoBlock,
+      ...(blocksCreationParams?.workflow?.context?.pluginsOutput?.merchantScreening
+        ? merchantScreeningBlock
+        : []),
     ],
     [Tab.COMPANY_INFORMATION]: [
       ...entityInfoBlock,
@@ -75,10 +81,11 @@ export const getTabsToBlocksMap = ({
       ...processingDetailsBlock,
       ...websiteBasicRequirementBlock,
     ],
-    [Tab.DOCUMENTS]: [...parentDocumentBlocks, ...directorsDocumentsBlocks],
+    [Tab.DOCUMENTS]: [...parentDocumentBlocks],
     [Tab.UBOS]: [
       ...ubosUserProvidedBlock,
       ...ubosRegistryProvidedBlock,
+      ...amlWithContainerBlock,
       ...(createKycBlocks(blocksCreationParams?.workflow as TWorkflowById) || []),
     ],
     [Tab.ASSOCIATED_COMPANIES]: [
@@ -92,6 +99,7 @@ export const getTabsToBlocksMap = ({
       ...directorsDocumentsBlocks,
     ],
     [Tab.MONITORING_REPORTS]: [...websiteMonitoringBlocks],
+    [Tab.CUSTOM_DATA]: [...customDataBlock],
   } as const;
 
   if (theme?.type === WorkflowDefinitionConfigThemeEnum.KYB) {
@@ -106,7 +114,11 @@ export const getTabsToBlocksMap = ({
 
   if (theme?.type === WorkflowDefinitionConfigThemeEnum.KYC) {
     return {
-      [Tab.KYC]: [...businessInformationBlocks, ...createKycBlocks(blocksCreationParams?.workflow)],
+      [Tab.KYC]: [
+        ...businessInformationBlocks,
+        ...amlWithContainerBlock,
+        ...createKycBlocks(blocksCreationParams?.workflow),
+      ],
     } as const;
   }
 

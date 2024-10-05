@@ -6,8 +6,10 @@ import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useD
 import { useRuleExecutor } from '@/components/organisms/DynamicUI/hooks/useRuleExecutor';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { findDefinitionByName } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
+import { getInputIndex } from '@/components/organisms/UIRenderer/elements/JSONForm/hocs/withDynamicUIInput';
 import { useJSONFormDefinition } from '@/components/organisms/UIRenderer/elements/JSONForm/providers/JSONFormDefinitionProvider/useJSONFormDefinition';
-import { UIElementDefinition } from '@/domains/collection-flow';
+import { useUIElementProps } from '@/components/organisms/UIRenderer/hooks/useUIElementProps';
+import { UIElement } from '@/domains/collection-flow';
 import { AnyObject, FieldLayout } from '@ballerine/ui';
 
 export const FieldTemplate = (props: FieldTemplateProps) => {
@@ -18,13 +20,20 @@ export const FieldTemplate = (props: FieldTemplateProps) => {
   const { state } = useDynamicUIContext();
   const { payload } = useStateManagerContext();
   const { definition } = useJSONFormDefinition();
+  const inputIndex = useMemo(() => {
+    const index = getInputIndex(props.id || '');
+
+    return isNaN(index as number) ? null : index;
+  }, [props.id]);
 
   const fieldDefinition = useMemo(
     () =>
-      findDefinitionByName(props.id.replace('root_', ''), definition.elements || []) ||
-      ({} as UIElementDefinition<AnyObject>),
+      findDefinitionByName(props.id.replace(/root_\d*_?/, ''), definition.elements || []) ||
+      ({} as UIElement<AnyObject>),
     [props.id, definition.elements],
   );
+
+  const { hidden } = useUIElementProps(fieldDefinition, inputIndex);
 
   const rules = useMemo(() => fieldDefinition.requiredOn || [], [fieldDefinition.requiredOn]);
 
@@ -38,6 +47,8 @@ export const FieldTemplate = (props: FieldTemplateProps) => {
       props.required,
     [rulesResults, props.required],
   );
+
+  if (hidden) return null;
 
   return (
     <div className="max-w-[385px]">

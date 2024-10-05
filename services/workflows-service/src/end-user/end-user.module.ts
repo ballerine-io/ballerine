@@ -7,7 +7,6 @@ import { FilterService } from '@/filter/filter.service';
 import { FilterRepository } from '@/filter/filter.repository';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
-import { WorkflowService } from '@/workflow/workflow.service';
 import { BusinessRepository } from '@/business/business.repository';
 import { StorageService } from '@/storage/storage.service';
 import { FileService } from '@/providers/file/file.service';
@@ -32,9 +31,17 @@ import { BusinessReportService } from '@/business-report/business-report.service
 import { BusinessReportModule } from '@/business-report/business-report.module';
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
 import { SentryService } from '@/sentry/sentry.service';
+import { WorkflowModule } from '@/workflow/workflow.module';
 
 @Module({
-  imports: [ProjectModule, CustomerModule, HttpModule, BusinessReportModule, RuleEngineModule],
+  imports: [
+    ProjectModule,
+    CustomerModule,
+    HttpModule,
+    BusinessReportModule,
+    RuleEngineModule,
+    WorkflowModule,
+  ],
   controllers: [EndUserControllerInternal, EndUserControllerExternal],
   providers: [
     EndUserRepository,
@@ -51,7 +58,6 @@ import { SentryService } from '@/sentry/sentry.service';
     BusinessService,
     WorkflowDefinitionRepository,
     WorkflowRuntimeDataRepository,
-    WorkflowService,
     UserService,
     UserRepository,
     PasswordService,
