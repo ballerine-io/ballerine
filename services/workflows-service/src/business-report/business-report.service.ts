@@ -80,29 +80,37 @@ export class BusinessReportService {
       },
     });
 
-    const response = await axios.post(
-      `${env.UNIFIED_API_URL}/merchants/analysis`,
-      {
-        websiteUrl,
-        countryCode,
-        parentCompanyName: merchantName,
-        reportType,
-        workflowVersion,
-        compareToReportId,
-        withQualityControl,
-        callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${business.id}&businessReportId=${businessReport.id}`,
-        metadata: {
-          customerId,
-          customerName,
-          workflowRuntimeDataId: null,
+    let response;
+
+    try {
+      response = await axios.post(
+        `${env.UNIFIED_API_URL}/merchants/analysis`,
+        {
+          websiteUrl,
+          countryCode,
+          parentCompanyName: merchantName,
+          reportType,
+          workflowVersion,
+          compareToReportId,
+          withQualityControl,
+          callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${business.id}&businessReportId=${businessReport.id}`,
+          metadata: {
+            customerId,
+            customerName,
+            workflowRuntimeDataId: null,
+          },
         },
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
+        {
+          headers: {
+            Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
+          },
         },
-      },
-    );
+      );
+    } catch (error) {
+      this.logger.error('Failed to initiate report creation', { error });
+
+      throw new Error('Failed to initiate report creation', { cause: error });
+    }
 
     await this.updateById(
       { id: businessReport.id },

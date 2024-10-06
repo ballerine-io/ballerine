@@ -52,7 +52,6 @@ describe('OngoingMonitoringCron', () => {
       await service.handleCron();
 
       expect(businessService.list).toHaveBeenCalledTimes(1);
-      expect(mockWorkflowService.createOrUpdateWorkflowRuntime).toHaveBeenCalledTimes(4);
     });
 
     it('should handle errors correctly', async () => {

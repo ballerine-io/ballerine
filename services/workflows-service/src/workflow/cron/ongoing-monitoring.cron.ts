@@ -103,7 +103,7 @@ export class OngoingMonitoringCron {
             }
 
             if (ongoingReportsCounter >= env.ONGOING_REPORTS_LIMIT) {
-              this.logger.debug(`Ongoing reports limit reached for current run`);
+              this.logger.debug(`Ongoing reports limit reached for current cron run`);
 
               continue;
             }

@@ -123,7 +123,7 @@ export class BusinessReportControllerInternal {
       currentProjectId,
       websiteUrl,
       countryCode,
-      merchantName,
+      merchantName: merchantNameWithDefault,
       workflowVersion,
       withQualityControl,
       customerId,
