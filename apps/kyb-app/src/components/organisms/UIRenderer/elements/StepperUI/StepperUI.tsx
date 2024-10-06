@@ -95,7 +95,7 @@ export const StepperUI = () => {
                   return (
                     <div
                       data-breadcrumb-id={itemProps.active ? itemProps.id : undefined}
-                      className={'last:bg- flex flex-row items-center gap-4'}
+                      className={'flex flex-row items-center gap-4'}
                       key={itemProps.id}
                     >
                       <Breadcrumbs.Item

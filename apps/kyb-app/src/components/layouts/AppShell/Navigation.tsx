@@ -20,9 +20,9 @@ export const Navigation = () => {
   const isFirstStep = currentPage?.number === 1;
   const isDisabled = state.isLoading;
 
-  const onPrevious = useCallback(() => {
+  const onPrevious = useCallback(async () => {
     if (!isFirstStep) {
-      stateApi.sendEvent('PREVIOUS');
+      await stateApi.sendEvent('PREVIOUS');
 
       return;
     }
@@ -30,7 +30,7 @@ export const Navigation = () => {
     exit();
 
     return;
-  }, [stateApi, exit]);
+  }, [stateApi, exit, isFirstStep]);
 
   if (isFirstStep && !isExitAvailable) return null;
 
