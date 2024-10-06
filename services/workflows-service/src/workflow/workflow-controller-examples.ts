@@ -44,7 +44,7 @@ export const putPluginsExampleResponse = {
       successAction: 'EMAIL_SENT',
     },
     {
-      name: 'merchant_monitoring',
+      name: 'merchantMonitoring',
       pluginKind: 'merchant-monitoring',
       vendor: 'ballerine',
       stateNames: ['run_merchant_monitoring'],

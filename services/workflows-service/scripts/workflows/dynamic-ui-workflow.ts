@@ -156,7 +156,7 @@ export const dynamicUiWorkflowDefinition = {
         name: 'businessInformation',
         vendor: 'asia-verify',
         pluginKind: 'registry-information',
-        displayName: 'Registry Verification',
+        displayName: 'Registry Information',
         stateNames: ['run_vendor_data'],
         successAction: 'VENDOR_DONE',
         errorAction: 'VENDOR_FAILED',

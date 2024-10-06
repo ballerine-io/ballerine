@@ -400,6 +400,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
   [BALLERINE_API_PLUGINS['merchant-monitoring']]: {
     [MERCHANT_MONITORING_VENDORS['ballerine']]: (options: MerchantMonirotingOptions) => ({
       name: 'merchantMonitoring',
+      displayName: 'Merchant Monitoring',
       pluginKind: 'api',
       url: `{secret.UNIFIED_API_URL}/merchants/analysis`,
       method: 'POST',
