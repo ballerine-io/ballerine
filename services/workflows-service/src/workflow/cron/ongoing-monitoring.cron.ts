@@ -53,7 +53,9 @@ export class OngoingMonitoringCron {
 
         if (
           !featureConfig ||
-          (isObject(featureConfig) && 'enabled' in featureConfig && !featureConfig?.enabled)
+          (isObject(featureConfig) &&
+            'enabled' in featureConfig &&
+            (!featureConfig.enabled || !featureConfig?.options.runByDefault))
         ) {
           continue;
         }
@@ -69,8 +71,7 @@ export class OngoingMonitoringCron {
             if (
               isObject(businessFeatureConfig) &&
               'enabled' in businessFeatureConfig &&
-              !businessFeatureConfig.enabled &&
-              !featureConfig?.options.runByDefault
+              !businessFeatureConfig.enabled
             ) {
               this.logger.debug(`Ongoing monitoring is not enabled for business ${business.id}.`);
 
