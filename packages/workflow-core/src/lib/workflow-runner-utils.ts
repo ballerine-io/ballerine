@@ -57,12 +57,15 @@ export const reqResTransformersObj = (
         apiPluginSchema?.request?.schema,
       );
     }
+  }
 
+  if ('response' in apiPluginSchema) {
     if (apiPluginSchema.response && 'transform' in apiPluginSchema.response) {
       const responseTransformerLogic = apiPluginSchema.response
         .transform as SerializableValidatableTransformer['transform'] & {
         name?: string;
       };
+
       // @ts-ignore
       responseTransformer = responseTransformerLogic && fetchTransformers(responseTransformerLogic);
 

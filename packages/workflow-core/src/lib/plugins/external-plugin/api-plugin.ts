@@ -175,7 +175,7 @@ export class ApiPlugin {
     return res;
   }
 
-  private async _onPreparePayload(_payload: AnyRecord) {
+  protected async _onPreparePayload(_payload: AnyRecord) {
     const returnObj = JSON.parse(JSON.stringify(_payload));
 
     for (const key of Object.keys(returnObj)) {

@@ -25,30 +25,23 @@ export class BallerineEmailPlugin extends BallerineApiPlugin {
     payload: AnyRecord,
     headers: HeadersInit,
   ) {
-    const from = { from: { email: payload.from, ...(payload.name ? { name: payload.name } : {}) } };
-    const subject = payload.subject
-      ? {
-          subject: await (this as unknown as ApiPlugin).replaceAllVariables(
-            payload.subject as string,
-            payload,
-          ),
-        }
-      : {};
-    const preheader = payload.preheader
-      ? {
-          preheader: await (this as unknown as ApiPlugin).replaceAllVariables(
-            payload.preheader as string,
-            payload,
-          ),
-        }
-      : {};
-    const receivers = (payload.receivers as string[]).map(receiver => {
+    const _payload = await this._onPreparePayload(payload);
+
+    const from = {
+      from: { email: _payload.from, ...(_payload.name ? { name: _payload.name } : {}) },
+    };
+
+    const subject = _payload.subject ?? {};
+
+    const preheader = _payload.preheader ?? {};
+
+    const receivers = (_payload.receivers as string[]).map(receiver => {
       return { email: receiver };
     });
-    const to = { to: receivers };
-    const templateId = { template_id: payload.templateId };
 
-    await this.replaceVariablesInPayload(payload);
+    const to = { to: receivers };
+
+    const templateId = { template_id: _payload.templateId };
 
     const emailPayload = {
       ...from,
@@ -57,15 +50,15 @@ export class BallerineEmailPlugin extends BallerineApiPlugin {
           ...preheader,
           ...subject,
           ...to,
-          ...{ dynamic_template_data: payload },
+          ...{ dynamic_template_data: _payload },
         },
       ],
       ...templateId,
     };
 
-    payload.adapter ??= 'sendgrid';
+    _payload.adapter ??= 'sendgrid';
 
-    if (payload.adapter === 'log') {
+    if (_payload.adapter === 'log') {
       logger.warn('No email provider', { emailPayload });
 
       return {
@@ -76,17 +69,6 @@ export class BallerineEmailPlugin extends BallerineApiPlugin {
     }
 
     return await super.makeApiRequest(url, method, emailPayload, headers);
-  }
-
-  private async replaceVariablesInPayload(payload: AnyRecord) {
-    for (const key of Object.keys(payload)) {
-      if (typeof payload[key] === 'string') {
-        payload[key] = await (this as unknown as ApiPlugin).replaceAllVariables(
-          payload[key] as string,
-          payload,
-        );
-      }
-    }
   }
 
   returnSuccessResponse(callbackAction: string, responseBody: AnyRecord) {

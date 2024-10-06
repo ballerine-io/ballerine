@@ -11,7 +11,6 @@ import { BallerineEmailPlugin } from './plugins/external-plugin/ballerine-email-
 
 export const PluginKind = {
   KYC: 'kyc',
-  KYC_SESSION: 'kyc-session',
   KYB: 'kyb',
   WEBHOOK: 'webhook',
   API: 'api',
@@ -21,7 +20,6 @@ export const PluginKind = {
 
 export const pluginsRegistry = {
   [PluginKind.KYC]: KycPlugin,
-  [PluginKind.KYC_SESSION]: KycSessionPlugin,
   [PluginKind.KYB]: KybPlugin,
   [PluginKind.WEBHOOK]: WebhookPlugin,
   [PluginKind.API]: ApiPlugin,
@@ -31,8 +29,9 @@ export const pluginsRegistry = {
   [BALLERINE_API_PLUGINS['company-sanctions']]: BallerineApiPlugin,
   [BALLERINE_API_PLUGINS['ubo']]: BallerineApiPlugin,
   [BALLERINE_API_PLUGINS['registry-information']]: BallerineApiPlugin,
-  [BALLERINE_API_PLUGINS['template-email']]: BallerineEmailPlugin,
   [BALLERINE_API_PLUGINS['merchant-monitoring']]: BallerineApiPlugin,
+  [BALLERINE_API_PLUGINS['template-email']]: BallerineEmailPlugin,
+  [BALLERINE_API_PLUGINS['kyc-session']]: KycSessionPlugin,
 } as const satisfies Readonly<
   Record<
     ObjectValues<typeof PluginKind & typeof BALLERINE_API_PLUGINS>,

@@ -11,6 +11,7 @@ import { WorkflowEvents, WorkflowExtensions } from '../../types';
 import { ruleValidator } from './rule-validator';
 import { isErrorWithMessage } from '@ballerine/common';
 import type { DispatchEventPlugin } from '@/lib/plugins';
+import { BALLERINE_API_PLUGINS_KINDS } from '@/lib/plugins/external-plugin/vendor-consts';
 
 export const extensionsValidator = (
   extensions: WorkflowExtensions,
@@ -22,9 +23,11 @@ export const extensionsValidator = (
     if (
       pluginKind === 'api' ||
       pluginKind === 'kyb' ||
-      pluginKind === 'kyc-session' ||
       pluginKind === 'email' ||
-      pluginKind === 'kyc'
+      pluginKind === 'kyc' ||
+      BALLERINE_API_PLUGINS_KINDS.includes(
+        pluginKind as (typeof BALLERINE_API_PLUGINS_KINDS)[number],
+      )
     ) {
       validateApiPlugin(plugin as unknown as ISerializableHttpPluginParams, states);
     }
