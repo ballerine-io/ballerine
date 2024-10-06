@@ -77,10 +77,6 @@ export class WebhookPlugin extends BallerineApiPlugin {
     }
   }
 
-  protected async _getPluginUrl(context: AnyRecord) {
-    return await this.replaceAllVariables(this.url, context);
-  }
-
   async composeRequestSignedHeaders(
     headers: HeadersInit,
     context: TContext,

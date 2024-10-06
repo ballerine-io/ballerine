@@ -59,7 +59,7 @@ export class ApiPlugin {
         }
       }
 
-      const _url = (await this._getPluginUrl(context)).replace(/\/+$/, '');
+      const _url = await this._getPluginUrl(context);
 
       logger.log('API Plugin - Sending API request', {
         url: _url,
@@ -116,7 +116,10 @@ export class ApiPlugin {
   }
 
   protected async _getPluginUrl(context: AnyRecord) {
-    return await this.replaceAllVariables(this.url, context);
+    const url = await this.replaceAllVariables(this.url, context);
+
+    // remove last slash from url
+    return url.replace(/\/$/, '');
   }
 
   returnSuccessResponse(callbackAction: string, responseBody: AnyRecord) {

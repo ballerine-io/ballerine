@@ -1,4 +1,3 @@
-import { AnyRecord } from '@ballerine/common';
 import { ApiPlugin, IApiPluginParams } from '.';
 import { ApiBallerinePlugins, BALLERINE_API_PLUGIN_FACTORY } from './vendor-consts';
 import { reqResTransformersObj } from '../../workflow-runner-utils';
@@ -70,10 +69,6 @@ export class BallerineApiPlugin extends ApiPlugin {
       request: { transformers: requestTransformer, schemaValidator: requestValidator } as any,
       response: { transformers: responseTransformer, schemaValidator: responseValidator } as any,
     });
-  }
-
-  protected async _getPluginUrl(context: AnyRecord) {
-    return await this.replaceAllVariables(this.url, context);
   }
 
   async _onReplaceVariable(variableKey: string, content: string, placeholder: string) {
