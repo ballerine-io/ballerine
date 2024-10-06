@@ -117,6 +117,7 @@ jobs:
           else
             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:dev
             docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:dev ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ inputs.environment }}
+          fi
           docker images
           # docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ inputs.environment }}
 
