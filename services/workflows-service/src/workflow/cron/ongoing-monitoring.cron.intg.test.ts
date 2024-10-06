@@ -133,22 +133,24 @@ describe('OngoingMonitoringCron', () => {
         name: 'Test Customer 1',
         displayName: 'Test Customer Display 1',
         logoImageUri: 'http://example.com/logo1.png',
+        config: {},
+        subscriptions: {},
         features: {
           [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
             name: FEATURE_LIST.ONGOING_MERCHANT_REPORT,
             enabled: true,
             options: {
-              definitionVariation: 'ongoing_merchant_audit_t1',
               intervalInDays: 7,
-              active: true,
-              checkTypes: ['lob', 'content', 'reputation'],
+              workflowVersion: '2',
               proxyViaCountry: 'GB',
+              scheduleType: 'interval',
+              reportType: 'ONGOING_MERCHANT_REPORT_T1',
             },
           },
         },
         projects: [{ id: 1 } as unknown as Project],
       },
-    ] as unknown as TCustomerWithFeatures[];
+    ] satisfies TCustomerWithFeatures[];
   };
 
   const mockBusinesses = () => {
@@ -160,12 +162,6 @@ describe('OngoingMonitoringCron', () => {
           featureConfig: {
             [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
               enabled: false,
-              options: {
-                intervalInDays: 30,
-                proxyViaCountry: 'US',
-                scheduleType: 'interval',
-                reportType: 'ONGOING_MERCHANT_REPORT_T1',
-              } as TOngoingMerchantReportOptions,
             },
           },
         },
@@ -184,10 +180,11 @@ describe('OngoingMonitoringCron', () => {
               enabled: true,
               options: {
                 intervalInDays: 1,
+                workflowVersion: '2',
                 proxyViaCountry: 'GB',
                 scheduleType: 'interval',
                 reportType: 'ONGOING_MERCHANT_REPORT_T1',
-              } as TOngoingMerchantReportOptions,
+              } satisfies TOngoingMerchantReportOptions,
             },
           },
         },
@@ -202,10 +199,11 @@ describe('OngoingMonitoringCron', () => {
               enabled: true,
               options: {
                 intervalInDays: 14,
+                workflowVersion: '2',
                 proxyViaCountry: 'CA',
                 scheduleType: 'interval',
                 reportType: 'ONGOING_MERCHANT_REPORT_T1',
-              } as TOngoingMerchantReportOptions,
+              } satisfies TOngoingMerchantReportOptions,
             },
           },
         },

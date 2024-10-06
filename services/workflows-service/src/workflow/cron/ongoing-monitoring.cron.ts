@@ -8,7 +8,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { TProjectIds } from '@/types';
 import { ONGOING_MONITORING_LOCK_KEY } from '@/workflow/cron/lock-keys';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { isErrorWithMessage, isObject, ObjectValues } from '@ballerine/common';
+import { isErrorWithMessage, ObjectValues } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Business, BusinessReportType } from '@prisma/client';
@@ -51,12 +51,7 @@ export class OngoingMonitoringCron {
       for (const { projects, features } of customers) {
         const featureConfig = features?.[this.processFeatureName];
 
-        if (
-          !featureConfig ||
-          (isObject(featureConfig) &&
-            'enabled' in featureConfig &&
-            (!featureConfig.enabled || !featureConfig?.options.runByDefault))
-        ) {
+        if (!featureConfig?.enabled) {
           continue;
         }
 
@@ -65,13 +60,9 @@ export class OngoingMonitoringCron {
 
         for (const business of businesses) {
           try {
-            const businessFeatureConfig =
-              business.metadata?.featureConfig?.[this.processFeatureName];
-
             if (
-              isObject(businessFeatureConfig) &&
-              'enabled' in businessFeatureConfig &&
-              !businessFeatureConfig.enabled
+              !business.metadata?.featureConfig?.[this.processFeatureName]?.enabled ||
+              !featureConfig?.options.runByDefault
             ) {
               this.logger.debug(`Ongoing monitoring is not enabled for business ${business.id}.`);
 
