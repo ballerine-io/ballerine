@@ -30,6 +30,8 @@ export {
   getSeverityFromRiskScore,
   booleanToYesOrNo,
   checkIsIsoDate,
+  sign,
+  computeHash,
 } from './utils';
 
 export type { IErrorWithMessage } from './utils';

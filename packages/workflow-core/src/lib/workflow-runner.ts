@@ -82,7 +82,7 @@ export class WorkflowRunner {
   #__currentState: string | undefined | symbol | number | any;
   private context: any;
   #__config: any;
-  #__extensions: WorkflowExtensions;
+  __extensions: WorkflowExtensions;
   #__debugMode: boolean;
   #__runtimeId: string;
   events: any;
@@ -113,29 +113,29 @@ export class WorkflowRunner {
   ) {
     // global and state specific extensions
     this.#__subscriptions = {};
-    this.#__extensions = extensions ?? {};
-    this.#__extensions.statePlugins ??= [];
+    this.__extensions = extensions ?? {};
+    this.__extensions.statePlugins ??= [];
     this.#__debugMode = debugMode;
     this.#__secretsManager = secretsManager;
 
-    this.#__extensions.dispatchEventPlugins = this.initiateDispatchEventPlugins(
-      this.#__extensions.dispatchEventPlugins ?? [],
+    this.__extensions.dispatchEventPlugins = this.initiateDispatchEventPlugins(
+      this.__extensions.dispatchEventPlugins ?? [],
     );
 
     // @ts-expect-error TODO: fix this
-    this.#__extensions.childWorkflowPlugins = this.initiateChildPlugins(
-      this.#__extensions.childWorkflowPlugins ?? [],
+    this.__extensions.childWorkflowPlugins = this.initiateChildPlugins(
+      this.__extensions.childWorkflowPlugins ?? [],
       runtimeId,
       config,
       invokeChildWorkflowAction,
     );
 
-    this.#__extensions.apiPlugins = this.initiateApiPlugins(this.#__extensions.apiPlugins ?? []);
+    this.__extensions.apiPlugins = this.initiateApiPlugins(this.__extensions.apiPlugins ?? []);
 
-    this.#__extensions.commonPlugins = this.initiateCommonPlugins(
+    this.__extensions.commonPlugins = this.initiateCommonPlugins(
       // @ts-expect-error TODO: fix this
-      this.#__extensions.commonPlugins ?? [],
-      [this.#__extensions.apiPlugins, this.#__extensions.childWorkflowPlugins].flat(1),
+      this.__extensions.commonPlugins ?? [],
+      [this.__extensions.apiPlugins, this.__extensions.childWorkflowPlugins].flat(1),
       invokeRiskRulesAction,
       invokeWorkflowTokenAction,
     );
@@ -441,7 +441,7 @@ export class WorkflowRunner {
      * @see {@link WorkflowRunner.sendEvent}
      *  */
     const nonBlockingPlugins =
-      this.#__extensions.statePlugins?.filter(plugin => !plugin.isBlocking) ?? [];
+      this.__extensions.statePlugins?.filter(plugin => !plugin.isBlocking) ?? [];
 
     for (const statePlugin of nonBlockingPlugins) {
       const when = statePlugin.when === 'pre' ? 'entry' : 'exit';
@@ -614,7 +614,7 @@ export class WorkflowRunner {
     // Non-blocking plugins are executed as actions
     // Un-like state plugins, if a state is transitioned into itself, pre-plugins will be executed each time the function is triggered
     const prePlugins =
-      this.#__extensions.statePlugins?.filter(
+      this.__extensions.statePlugins?.filter(
         plugin =>
           plugin.isBlocking &&
           plugin.when === 'pre' &&
@@ -643,20 +643,20 @@ export class WorkflowRunner {
       return;
     }
 
-    let commonPlugins = (this.#__extensions.commonPlugins as CommonPlugins)?.filter(plugin =>
+    let commonPlugins = (this.__extensions.commonPlugins as CommonPlugins)?.filter(plugin =>
       plugin.stateNames.includes(this.#__currentState),
     );
 
-    let childPlugins = (this.#__extensions.childWorkflowPlugins as unknown as ChildPlugins)?.filter(
+    let childPlugins = (this.__extensions.childWorkflowPlugins as unknown as ChildPlugins)?.filter(
       plugin => plugin.stateNames?.includes(this.#__currentState),
     );
 
-    const stateApiPlugins = (this.#__extensions.apiPlugins as HttpPlugins)?.filter(plugin =>
+    const stateApiPlugins = (this.__extensions.apiPlugins as HttpPlugins)?.filter(plugin =>
       plugin.stateNames.includes(this.#__currentState),
     );
 
     const dispatchEventPlugins = (
-      this.#__extensions.dispatchEventPlugins as DispatchEventPlugin[]
+      this.__extensions.dispatchEventPlugins as DispatchEventPlugin[]
     )?.filter(plugin => plugin.stateNames.includes(this.#__currentState));
 
     if (dispatchEventPlugins) {
@@ -689,7 +689,7 @@ export class WorkflowRunner {
 
     // Intentionally positioned after service.start() and service.send()
     const postPlugins =
-      this.#__extensions.statePlugins?.filter(
+      this.__extensions.statePlugins?.filter(
         plugin =>
           plugin.isBlocking &&
           plugin.when === 'post' &&
@@ -853,7 +853,7 @@ export class WorkflowRunner {
 
   async invokePlugin(pluginName: string) {
     const { apiPlugins, commonPlugins, childWorkflowPlugins, dispatchEventPlugins } =
-      this.#__extensions;
+      this.__extensions;
 
     const pluginToInvoke = [
       ...(apiPlugins ?? []),

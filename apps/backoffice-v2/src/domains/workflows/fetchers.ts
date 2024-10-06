@@ -298,3 +298,21 @@ export const createWorkflowRequest = async ({
 
   return handleZodError(error, workflow);
 };
+
+export const fetchWorkflowDocumentOCRResult = async ({
+  workflowRuntimeId,
+  documentId,
+}: {
+  workflowRuntimeId: string;
+  documentId: string;
+}) => {
+  const [workflow, error] = await apiClient({
+    method: Method.GET,
+    url: `${getOriginUrl(
+      env.VITE_API_URL,
+    )}/api/v1/internal/workflows/${workflowRuntimeId}/documents/${documentId}/run-ocr`,
+    schema: z.any(),
+  });
+
+  return handleZodError(error, workflow);
+};

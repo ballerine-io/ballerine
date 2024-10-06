@@ -1,4 +1,3 @@
-import { CommonWorkflowEvent } from '@ballerine/common';
 import { ComponentProps, FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useApproveTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';

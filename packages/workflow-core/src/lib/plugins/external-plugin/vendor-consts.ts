@@ -254,7 +254,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
       transform: [
         {
           mapping:
-            "merge({ name: 'kyb', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || jurisdictionCode == 'HK' && 'IN_PROGRESS' || 'SUCCESS' }, @)",
+            "merge({ name: 'businessInformation', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || jurisdictionCode == 'HK' && 'IN_PROGRESS' || 'SUCCESS' }, @)",
           transformer: 'jmespath',
         },
         {
