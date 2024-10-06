@@ -10,6 +10,7 @@ export type TAuthenticationConfiguration = {
 
 export const FEATURE_LIST = {
   ONGOING_MERCHANT_REPORT: 'ONGOING_MERCHANT_REPORT',
+  DOCUMENT_OCR: 'DOCUMENT_OCR',
 } as const;
 
 export type TOngoingMerchantReportOptions = {
@@ -32,12 +33,10 @@ export type TOngoingMerchantReportOptions = {
 
 type FeaturesOptions = TOngoingMerchantReportOptions;
 
-export type TCustomerFeatures =
-  | boolean
-  | {
-      enabled: boolean;
-      options: FeaturesOptions;
-    };
+export type TCustomerFeaturesConfig = {
+  enabled: boolean;
+  options: FeaturesOptions;
+};
 
 export const CUSTOMER_FEATURES = {
   [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
@@ -51,8 +50,8 @@ export const CUSTOMER_FEATURES = {
       reportType: 'ONGOING_MERCHANT_REPORT_T1',
     },
   },
-} satisfies TCustomerWithDefinitionsFeatures['features'];
+} satisfies TCustomerWithFeatures['features'];
 
-export type TCustomerWithDefinitionsFeatures = Customer & {
-  features?: Record<keyof typeof FEATURE_LIST, TCustomerFeatures> | null;
+export type TCustomerWithFeatures = Customer & {
+  features?: Partial<Record<keyof typeof FEATURE_LIST, TCustomerFeaturesConfig>> | null;
 };

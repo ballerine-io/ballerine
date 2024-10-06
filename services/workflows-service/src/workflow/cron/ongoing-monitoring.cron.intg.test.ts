@@ -7,7 +7,7 @@ import { BusinessService } from '@/business/business.service';
 import { Business, Project } from '@prisma/client';
 import {
   FEATURE_LIST,
-  TCustomerWithDefinitionsFeatures,
+  TCustomerWithFeatures,
   TOngoingMerchantReportOptions,
 } from '@/customer/types';
 import { BusinessReportService } from '@/business-report/business-report.service';
@@ -149,7 +149,7 @@ describe('OngoingMonitoringCron', () => {
         },
         projects: [{ id: 1 } as unknown as Project],
       },
-    ] as unknown as TCustomerWithDefinitionsFeatures[];
+    ] as unknown as TCustomerWithFeatures[];
   };
 
   const mockBusinesses = () => {
@@ -215,7 +215,7 @@ describe('OngoingMonitoringCron', () => {
       Business & {
         metadata?: {
           lastOngoingReportInvokedAt?: number;
-          featureConfig?: TCustomerWithDefinitionsFeatures['features'];
+          featureConfig?: TCustomerWithFeatures['features'];
         };
       }
     >;

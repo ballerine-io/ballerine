@@ -5,7 +5,7 @@ import { BusinessReportStatus, TBusinessReport } from '@/domains/business-report
 import { titleCase } from 'string-ts';
 
 import { ctw } from '@/common/utils/ctw/ctw';
-import { getSeverityFromRiskScore } from '@ballerine/common';
+import { getSeverityFromRiskScore, isObject } from '@ballerine/common';
 import { Badge, severityToClassName, TextWithNAFallback, WarningFilledSvg } from '@ballerine/ui';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
@@ -26,12 +26,14 @@ const REPORT_TYPE_TO_SCAN_TYPE = {
 export const columns = [
   columnHelper.accessor('report', {
     cell: info => {
-      const isAlert = info.getValue()?.isAlert;
+      const summary = info.getValue()?.data?.summary;
+
+      const isAlert = isObject(summary) && 'isAlert' in summary && summary.isAlert;
 
       return isAlert ? (
-        <WarningFilledSvg className={`d-6`} />
+        <WarningFilledSvg className={`ms-4 d-6`} />
       ) : (
-        <Minus className={`text-[#D9D9D9] d-6`} />
+        <Minus className={`ms-4 text-[#D9D9D9] d-6`} />
       );
     },
     header: 'Alert',

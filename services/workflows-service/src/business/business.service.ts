@@ -4,7 +4,6 @@ import {
   TCompanyInformation,
 } from '@/business/types/business-information';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { TFeaturesWithFeatures } from '@/customer/types';
 import { env } from '@/env';
 import type { PrismaTransaction, TProjectIds } from '@/types';
 import { HttpService } from '@nestjs/axios';
@@ -15,6 +14,7 @@ import { AxiosError } from 'axios';
 import { plainToClass } from 'class-transformer';
 import { lastValueFrom } from 'rxjs';
 import { BusinessRepository } from './business.repository';
+import { TCustomerWithFeatures } from '@/customer/types';
 
 @Injectable()
 export class BusinessService {
@@ -31,7 +31,7 @@ export class BusinessService {
     return (await this.repository.findMany(args, projectIds)) as Array<
       Business & {
         metadata?: {
-          featureConfig?: TFeaturesWithFeatures;
+          featureConfig?: TCustomerWithFeatures['features'];
           lastOngoingReportInvokedAt?: number;
         };
       }

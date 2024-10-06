@@ -2,7 +2,7 @@ import { BusinessReportService } from '@/business-report/business-report.service
 import { BusinessService } from '@/business/business.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CustomerService } from '@/customer/customer.service';
-import { FEATURE_LIST, TCustomerFeatures } from '@/customer/types';
+import { FEATURE_LIST, TCustomerFeaturesConfig } from '@/customer/types';
 import { env } from '@/env';
 import { PrismaService } from '@/prisma/prisma.service';
 import { TProjectIds } from '@/types';
@@ -13,7 +13,6 @@ import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Business, BusinessReportType } from '@prisma/client';
 import get from 'lodash/get';
-import { isBoolean } from 'lodash';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
@@ -54,7 +53,6 @@ export class OngoingMonitoringCron {
 
         if (
           !featureConfig ||
-          isBoolean(featureConfig) ||
           (isObject(featureConfig) && 'enabled' in featureConfig && !featureConfig?.enabled)
         ) {
           continue;
@@ -65,9 +63,14 @@ export class OngoingMonitoringCron {
 
         for (const business of businesses) {
           try {
+            const businessFeatureConfig =
+              business.metadata?.featureConfig?.[this.processFeatureName];
+
             if (
-              !business.metadata?.featureConfig?.[this.processFeatureName]?.enabled &&
-              !featureConfig.options.runByDefault
+              isObject(businessFeatureConfig) &&
+              'enabled' in businessFeatureConfig &&
+              !businessFeatureConfig.enabled &&
+              !featureConfig?.options.runByDefault
             ) {
               this.logger.debug(`Ongoing monitoring is not enabled for business ${business.id}.`);
 
@@ -83,7 +86,7 @@ export class OngoingMonitoringCron {
             }
 
             const now = new Date().getTime();
-            const options = featureConfig.options;
+            const { options } = featureConfig;
 
             const lastReceivedReportTime = lastReceivedReport.createdAt.getTime();
 
@@ -111,7 +114,7 @@ export class OngoingMonitoringCron {
               workflowVersion: options.workflowVersion ?? '2',
               reportType: options.reportType ?? 'ONGOING_MERCHANT_REPORT_T1',
               business: business as Business & {
-                metadata?: { featureConfig?: Record<string, TCustomerFeatures> };
+                metadata?: { featureConfig?: Record<string, TCustomerFeaturesConfig> };
               },
             });
 
@@ -164,7 +167,7 @@ export class OngoingMonitoringCron {
     currentProjectId: string;
     workflowVersion: '1' | '2' | '3';
     reportType: ObjectValues<typeof BusinessReportType>;
-    business: Business & { metadata?: { featureConfig?: Record<string, TCustomerFeatures> } };
+    business: Business & { metadata?: { featureConfig?: Record<string, TCustomerFeaturesConfig> } };
   }) {
     const {
       id: customerId,
