@@ -93,6 +93,10 @@ export const serverEnvSchema = {
   REDIS_HOST: z.string(),
   REDIS_PASSWORD: z.string(),
   REDIS_PORT: z.string().transform(value => Number(value)),
+  QUEUE_SYSTEM_ENABLED: z
+    .string()
+    .transform(value => Boolean(value))
+    .default('false'),
 };
 
 if (!process.env['ENVIRONMENT_NAME'] || process.env['ENVIRONMENT_NAME'] === 'local') {

@@ -1,9 +1,3 @@
-import { Method } from 'axios';
+import { OutgoingWebhooksService } from '@/webhooks/outgoing-webhooks/outgoing-webhooks.service';
 
-export interface WebhookJobData {
-  url: string;
-  method: Method;
-  headers?: Record<string, string>;
-  body?: Record<string, unknown>;
-  timeout?: number;
-}
+export type WebhookJobData = Parameters<OutgoingWebhooksService['invokeWebhook']>[0];
