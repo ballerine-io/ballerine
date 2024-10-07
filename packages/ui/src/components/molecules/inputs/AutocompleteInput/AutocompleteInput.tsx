@@ -6,6 +6,7 @@ import TextField from '@mui/material/TextField';
 import { ComponentProps, FocusEvent, useCallback, useMemo } from 'react';
 
 export interface AutocompleteOption {
+  label: string;
   value: string;
 }
 
@@ -35,11 +36,12 @@ export const AutocompleteInput = ({
   onChange,
   onBlur,
 }: AutocompleteInputProps) => {
-  const optionLabels = useMemo(() => options.map(option => option.value), [options]);
-
+  //@ts-ignore
   const handleChange: NonNullable<ComponentProps<typeof Autocomplete>['onChange']> = useCallback(
-    (_, newValue) => {
-      onChange({ target: { value: newValue, name } } as AutocompleteChangeEvent);
+    (_, newValue: AutocompleteOption | string) => {
+      onChange({
+        target: { value: typeof newValue === 'string' ? newValue : newValue.value, name },
+      } as AutocompleteChangeEvent);
     },
     [name, onChange],
   );
@@ -56,14 +58,20 @@ export const AutocompleteInput = ({
     [name, onChange],
   );
 
+  const selectedOption = useMemo(() => {
+    return options.find(option => option.value === value) || value;
+  }, [options, value]);
+
   return (
     <ThemeProvider theme={muiTheme}>
       <Autocomplete
         disablePortal
-        options={optionLabels}
-        getOptionLabel={label => label}
+        options={options}
+        getOptionLabel={(option: AutocompleteOption | string) =>
+          typeof option === 'string' ? option : option.label || option.value
+        }
         freeSolo
-        inputValue={value}
+        value={selectedOption}
         PaperComponent={Paper as ComponentProps<typeof Autocomplete>['PaperComponent']}
         onChange={handleChange}
         disabled={disabled}
@@ -76,8 +84,12 @@ export const AutocompleteInput = ({
           },
         }}
         renderOption={(props, option) => (
-          <li {...props} key={option} data-testid={testId ? `${testId}-option` : undefined}>
-            {option}
+          <li
+            {...props}
+            key={typeof option === 'string' ? option : option.value}
+            data-testid={testId ? `${testId}-option` : undefined}
+          >
+            {typeof option === 'string' ? option : option.label || option.value}
           </li>
         )}
         renderInput={params => (

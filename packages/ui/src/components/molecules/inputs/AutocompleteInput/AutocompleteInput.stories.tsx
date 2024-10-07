@@ -6,16 +6,16 @@ export default {
 };
 
 const storyOptions: AutocompleteOption[] = [
-  { value: 'carrot' },
-  { value: 'broccoli' },
-  { value: 'potato' },
-  { value: 'cabbage' },
-  { value: 'spinach' },
-  { value: 'tomato' },
-  { value: 'zucchini' },
-  { value: 'eggplant' },
-  { value: 'bell pepper' },
-  { value: 'cucumber' },
+  { value: 'carrot', label: 'Carrot' },
+  { value: 'broccoli', label: 'Broccoli' },
+  { value: 'potato', label: 'Potato' },
+  { value: 'cabbage', label: 'Cabbage' },
+  { value: 'spinach', label: 'Spinach' },
+  { value: 'tomato', label: 'Tomato' },
+  { value: 'zucchini', label: 'Zucchini' },
+  { value: 'eggplant', label: 'Eggplant' },
+  { value: 'bell pepper', label: 'Bell Pepper' },
+  { value: 'cucumber', label: 'Cucumber' },
 ];
 
 export const Default = {
