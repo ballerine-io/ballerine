@@ -112,20 +112,11 @@ import { StorageService } from '@/storage/storage.service';
 import { TOcrImages, UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import { AwsSecretsManager } from '@/secrets-manager/aws-secrets-manager';
 import { InMemorySecretsManager } from '@/secrets-manager/in-memory-secrets-manager';
+import { FEATURE_LIST } from '@/customer/types';
 
 type TEntityId = string;
 
 export type TEntityType = 'endUser' | 'business';
-
-// TODO: TEMP (STUB)
-const policies = {
-  kycSignup: () => {
-    return [{ workflowDefinitionId: 'COLLECT_DOCS_b0002zpeid7bq9aaa', version: 1 }] as const;
-  },
-  kybSignup: () => {
-    return [{ workflowDefinitionId: 'COLLECT_DOCS_b0002zpeid7bq9bbb', version: 1 }] as const;
-  },
-};
 
 @Injectable()
 export class WorkflowService {
@@ -2585,12 +2576,14 @@ export class WorkflowService {
     projectId: string;
     documentId: string;
   }) {
-    const ocrResult = await this.prismaService.$transaction(
+    return await this.prismaService.$transaction(
       async transaction => {
         const customer = await this.customerService.getByProjectId(projectId);
 
-        if (customer.features?.['isDocumentOcrEnabled'] === true) {
-          throw new BadRequestException('Document OCR is not enabled for this customer');
+        if (!customer.features?.[FEATURE_LIST.DOCUMENT_OCR]?.enabled) {
+          throw new BadRequestException(
+            `$Document OCR is not enabled for customer id ${customer.id}`,
+          );
         }
 
         const document = await this.findDocumentById({
@@ -2644,7 +2637,5 @@ export class WorkflowService {
         timeout: 180_000,
       },
     );
-
-    return ocrResult;
   }
 }
