@@ -61,7 +61,7 @@ export class OngoingMonitoringCron {
         for (const business of businesses) {
           try {
             if (
-              !business.metadata?.featureConfig?.[this.processFeatureName]?.enabled ||
+              !business.metadata?.featureConfig?.[this.processFeatureName]?.enabled &&
               !featureConfig?.options.runByDefault
             ) {
               this.logger.debug(`Ongoing monitoring is not enabled for business ${business.id}.`);
