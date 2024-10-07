@@ -11,7 +11,7 @@ import { ServeStaticOptionsService } from './serve-static-options.service';
 import { EndUserModule } from './end-user/end-user.module';
 import { BusinessModule } from './business/business.module';
 import { StorageModule } from './storage/storage.module';
-import { ExpressAdapter, MulterModule } from '@nestjs/platform-express';
+import { MulterModule } from '@nestjs/platform-express';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { FilterModule } from '@/filter/filter.module';
 import { configs, env, serverEnvSchema } from '@/env';
@@ -39,7 +39,6 @@ import { WorkflowModule } from '@/workflow/workflow.module';
 import { TransactionModule } from '@/transaction/transaction.module';
 import { AlertModule } from '@/alert/alert.module';
 import { SwaggerController } from './swagger/swagger.controller';
-import { WebhooksModule } from '@/webhooks/webhooks.module';
 import { BusinessReportModule } from '@/business-report/business-report.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronModule } from '@/workflow/cron/cron.module';
@@ -48,8 +47,9 @@ import { hashKey } from './customer/api-key/utils';
 import { RuleEngineModule } from './rule-engine/rule-engine.module';
 import { NotionModule } from '@/notion/notion.module';
 import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
-import { BullModule } from '@nestjs/bullmq';
-import { BullMqModule } from "@/bull-mq/bull-mq.module";
+import { BullMqModule } from '@/bull-mq/bull-mq.module';
+import { IncomingWebhooksModule } from '@/webhooks/incoming/incoming-webhooks.module';
+import { OutgoingWebhooksModule } from '@/webhooks/outgoing-webhooks/outgoing-webhooks.module';
 
 export const validate = async (config: Record<string, unknown>) => {
   const zodEnvSchema = z
@@ -87,7 +87,8 @@ export const validate = async (config: Record<string, unknown>) => {
     EventEmitterModule.forRoot(),
     UserModule,
     WorkflowModule,
-    WebhooksModule,
+    IncomingWebhooksModule,
+    OutgoingWebhooksModule,
     UiDefinitionModule,
     StorageModule,
     DataMigrationModule,
@@ -128,7 +129,7 @@ export const validate = async (config: Record<string, unknown>) => {
     RuleEngineModule,
     NotionModule,
     SecretsManagerModule,
-    BullMqModule
+    BullMqModule,
   ],
   providers: [
     {
