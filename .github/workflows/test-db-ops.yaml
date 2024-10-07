@@ -144,7 +144,7 @@ jobs:
           context: services/workflows-service
           file: services/workflows-service/Dockerfile.ee
           platforms: linux/amd64
-          push: true
+          push: false
           cache-from: type=local,src=/tmp/.buildx-cache
           tags: ${{ steps.eemeta.outputs.tags }}
           build-args: |
@@ -157,7 +157,7 @@ jobs:
           context: services/workflows-service
           file: services/workflows-service/Dockerfile.ee
           platforms: linux/amd64
-          push: true
+          push: false
           cache-from: type=local,src=/tmp/.buildx-cache
           tags: ${{ steps.eemeta.outputs.tags }}
           build-args: |
