@@ -12,6 +12,7 @@ import { LocaleField } from '@/pages/CollectionFlowV2/components/ui/fields/Local
 import { MultiselectField } from '@/pages/CollectionFlowV2/components/ui/fields/MultiselectField';
 import { NationalityField } from '@/pages/CollectionFlowV2/components/ui/fields/NationalityField';
 import { PhoneField } from '@/pages/CollectionFlowV2/components/ui/fields/PhoneField';
+import { RelationshipField } from '@/pages/CollectionFlowV2/components/ui/fields/RelationshipField';
 import { StateField } from '@/pages/CollectionFlowV2/components/ui/fields/StateField';
 import { TextField } from '@/pages/CollectionFlowV2/components/ui/fields/TextField';
 import { Container } from '@/pages/CollectionFlowV2/components/ui/layout/Container';
@@ -83,6 +84,7 @@ export const fieldElelements = applyHocToElements(
     industriesfield: IndustriesField,
     multiselect: MultiselectField,
     statefield: StateField,
+    relationshipfield: RelationshipField,
   },
   withConnectedField,
 );
