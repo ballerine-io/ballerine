@@ -9,7 +9,7 @@ import { findDefinitionByName } from '@/components/organisms/UIRenderer/elements
 import { getInputIndex } from '@/components/organisms/UIRenderer/elements/JSONForm/hocs/withDynamicUIInput';
 import { useJSONFormDefinition } from '@/components/organisms/UIRenderer/elements/JSONForm/providers/JSONFormDefinitionProvider/useJSONFormDefinition';
 import { useUIElementProps } from '@/components/organisms/UIRenderer/hooks/useUIElementProps';
-import { UIElement } from '@/domains/collection-flow';
+import { UIElementDefinition } from '@/domains/collection-flow';
 import { AnyObject, FieldLayout } from '@ballerine/ui';
 
 export const FieldTemplate = (props: FieldTemplateProps) => {
@@ -29,7 +29,7 @@ export const FieldTemplate = (props: FieldTemplateProps) => {
   const fieldDefinition = useMemo(
     () =>
       findDefinitionByName(props.id.replace(/root_\d*_?/, ''), definition.elements || []) ||
-      ({} as UIElement<AnyObject>),
+      ({} as UIElementDefinition<AnyObject>),
     [props.id, definition.elements],
   );
 
@@ -52,6 +52,7 @@ export const FieldTemplate = (props: FieldTemplateProps) => {
 
   return (
     <div className="max-w-[385px]">
+      {/* @ts-ignore */}
       <FieldLayout {...props} required={isRequired} optionalLabel={optionalLabel} />
     </div>
   );

@@ -1,5 +1,6 @@
 import { UIElementV2 } from '@/components/providers/Validator/types';
 import { SubmitButton } from '@/pages/CollectionFlowV2/components/ui/controls/SubmitButton';
+import { CheckboxField } from '@/pages/CollectionFlowV2/components/ui/fields/CheckboxField';
 import { DateField } from '@/pages/CollectionFlowV2/components/ui/fields/DateField';
 import { DocumentField } from '@/pages/CollectionFlowV2/components/ui/fields/DocumentField';
 import { FieldList } from '@/pages/CollectionFlowV2/components/ui/fields/FieldList';
@@ -65,6 +66,7 @@ export const fieldElelements = applyHocToElements(
     phonefield: PhoneField,
     documentfield: DocumentField,
     fieldlist: FieldList,
+    checkbox: CheckboxField,
   },
   withConnectedField,
 );
