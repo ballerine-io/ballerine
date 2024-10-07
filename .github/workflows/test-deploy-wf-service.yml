@@ -102,7 +102,7 @@ jobs:
 
       - name: Pull and Tag Existing Image
         run: |
-          if [ ${{ inputs.environment }} -eq prod ]; then
+          if [ "${{ inputs.environment }}" == "prod" ]; then
             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:sb
             docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:sb ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ inputs.environment }}
           else
