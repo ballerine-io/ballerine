@@ -15,6 +15,7 @@ import { NationalityField } from '@/pages/CollectionFlowV2/components/ui/fields/
 import { PhoneField } from '@/pages/CollectionFlowV2/components/ui/fields/PhoneField';
 import { RelationshipField } from '@/pages/CollectionFlowV2/components/ui/fields/RelationshipField';
 import { StateField } from '@/pages/CollectionFlowV2/components/ui/fields/StateField';
+import { TagsField } from '@/pages/CollectionFlowV2/components/ui/fields/TagsField';
 import { TextField } from '@/pages/CollectionFlowV2/components/ui/fields/TextField';
 import { Container } from '@/pages/CollectionFlowV2/components/ui/layout/Container';
 import { Heading } from '@/pages/CollectionFlowV2/components/ui/text/Heading';
@@ -87,6 +88,7 @@ export const fieldElelements = applyHocToElements(
     statefield: StateField,
     relationshipfield: RelationshipField,
     mccfield: MCCField,
+    tagsfield: TagsField,
   },
   withConnectedField,
 );
