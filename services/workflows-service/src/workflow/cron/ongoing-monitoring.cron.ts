@@ -197,6 +197,8 @@ export class OngoingMonitoringCron {
   }
 
   private getWebsiteUrl(business: Business) {
-    return business.website || get(business, 'additionalInfo.store.website.mainWebsite', '');
+    return (
+      business.website || (get(business, 'additionalInfo.store.website.mainWebsite', '') as string)
+    );
   }
 }
