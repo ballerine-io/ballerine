@@ -12,12 +12,14 @@ export interface IFieldLayoutProps<TFieldParams extends IFieldLayoutBaseParams> 
   definition: UIElementV2<TFieldParams>;
   stack?: number[];
   children: React.ReactNode[] | React.ReactNode;
+  className?: string;
 }
 
 export const FieldLayout: FunctionComponent<IFieldLayoutProps<IFieldLayoutBaseParams>> = ({
   definition,
   stack,
   children,
+  className,
 }) => {
   const { payload } = useStateManagerContext();
   const uiElement = useUIElement(definition, payload, stack);
@@ -25,15 +27,11 @@ export const FieldLayout: FunctionComponent<IFieldLayoutProps<IFieldLayoutBasePa
   const { label } = definition.options || {};
 
   return (
-    <div className={ctw('flex flex-col', { 'gap-2': Boolean(label) })}>
+    <div className={ctw('flex flex-col', { 'gap-2': Boolean(label) }, className)}>
       <div>
         {label && (
-          <Label
-            id={`label-${uiElement.getId()}`}
-            htmlFor={uiElement.getId()}
-            className={ctw({ 'opacity-50': !isRequired })}
-          >
-            {`${isRequired ? label : `${label} (optional)`} `}
+          <Label id={`label-${uiElement.getId()}`} htmlFor={uiElement.getId()}>
+            {`${isRequired ? `${label} *` : `${label} (optional)`} `}
           </Label>
         )}
       </div>

@@ -1,5 +1,6 @@
+import { FieldLayout } from '@/pages/CollectionFlowV2/components/ui/field-parts/FieldLayout';
 import { IFieldComponentProps } from '@/pages/CollectionFlowV2/types';
-import { Checkbox, createTestId, ctw } from '@ballerine/ui';
+import { Checkbox, createTestId } from '@ballerine/ui';
 import { FunctionComponent } from 'react';
 
 export interface ICheckboxFieldOptions {
@@ -13,10 +14,10 @@ export const CheckboxField: FunctionComponent<
   const { label } = options;
 
   return (
-    <label
-      className={ctw('flex flex-row items-center gap-3', {
-        'pointer-events-none opacity-50': disabled,
-      })}
+    <FieldLayout
+      definition={definition}
+      stack={stack}
+      className="flex-row flex-row-reverse items-center justify-end"
     >
       <Checkbox
         className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground bg-white"
@@ -29,7 +30,6 @@ export const CheckboxField: FunctionComponent<
         }}
         onBlur={onBlur}
       />
-      <span className="select-none">{label}</span>
-    </label>
+    </FieldLayout>
   );
 };

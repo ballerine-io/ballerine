@@ -16,6 +16,7 @@ export const AutocompleteTextInputAdapter: RJSFInputAdapter = ({
   const options = useMemo(() => {
     return uiSchema?.options && Array.isArray(uiSchema?.options)
       ? (uiSchema?.options as AnyObject[]).map(item => ({
+          label: item.title as string,
           value: item.title as string,
         }))
       : [];
