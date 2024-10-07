@@ -96,8 +96,11 @@ export const JSONForm: UIElementComponent<JSONFormElementBaseParams> = ({ defini
         <div className="flex flex-col gap-2">
           <DynamicForm
             schema={formSchema}
+            // @ts-ignore
             uiSchema={uiSchema}
+            // @ts-ignore
             fields={jsonFormFields}
+            // @ts-ignore
             layouts={jsonFormLayouts}
             formData={formData}
             ref={formRef}

@@ -80,6 +80,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
       filteredNonEmptyErrors?.[0]?.stateName ||
       context?.flowConfig?.appState ||
       elements?.at(0)?.stateName;
+
     if (!appState) return null;
 
     return {
@@ -109,6 +110,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
   }, [customer?.logoImageUri]);
 
   if (initialContext?.flowConfig?.appState === 'approved') return <Approved />;
+
   if (initialContext?.flowConfig?.appState == 'rejected') return <Rejected />;
 
   return definition && context ? (
@@ -222,7 +224,9 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                         <div className="flex flex-row flex-nowrap gap-4">
                                           <div className="min-w-[60%]">
                                             <Renderer
-                                              elements={currentPage.elements}
+                                              elements={
+                                                currentPage.elements as unknown as UIElementV2[]
+                                              }
                                               schema={rendererSchema}
                                             />
                                           </div>
@@ -230,7 +234,9 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                         </div>
                                       ) : (
                                         <Renderer
-                                          elements={currentPage?.elements}
+                                          elements={
+                                            currentPage.elements as unknown as UIElementV2[]
+                                          }
                                           schema={rendererSchema}
                                         />
                                       )}

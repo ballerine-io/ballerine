@@ -1,4 +1,3 @@
-import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useFieldList } from '@/pages/CollectionFlowV2/components/ui/fields/FieldList/hooks/useFieldList';
 import {
   StackProvider,
@@ -9,7 +8,7 @@ import { IFieldComponentProps } from '@/pages/CollectionFlowV2/types';
 import { AnyObject, Button, Renderer } from '@ballerine/ui';
 import { FunctionComponent } from 'react';
 
-export type TFieldListValueType<T extends { _id: string }> = Array<T>;
+export type TFieldListValueType<T extends { _id: string }> = T[];
 
 export interface IFieldListOptions {
   defaultValue: AnyObject;
@@ -25,8 +24,6 @@ export const FieldList: FunctionComponent<
   const { addButtonLabel = 'Add Item', removeButtonLabel = 'Remove' } = options || {};
   const { items, addItem, removeItem } = useFieldList(props);
 
-  const { payload } = useStateManagerContext();
-
   return (
     <div className="flex flex-col gap-4">
       {items.map((item, index) => {
@@ -38,7 +35,7 @@ export const FieldList: FunctionComponent<
               </span>
             </div>
             <StackProvider stack={[...(stack || []), index]}>
-              <Renderer elements={definition.children} schema={rendererSchema} />
+              <Renderer elements={definition.children || []} schema={rendererSchema} />
             </StackProvider>
           </div>
         );

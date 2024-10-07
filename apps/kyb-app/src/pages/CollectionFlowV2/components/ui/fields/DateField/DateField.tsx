@@ -35,6 +35,7 @@ export const DateField: FunctionComponent<
   const handleChange = useCallback(
     (event: DatePickerChangeEvent) => {
       const dateValue = event.target.value;
+
       if (dateValue === null) return onChange(null);
 
       if (!isValidDate(dateValue)) return;
@@ -51,8 +52,8 @@ export const DateField: FunctionComponent<
         params={{
           disableFuture,
           disablePast,
+          outputValueFormat: outputFormat,
         }}
-        outputFormat={outputFormat}
         disabled={disabled}
         testId={createTestId(definition, stack)}
         onBlur={onBlur}
