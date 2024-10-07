@@ -306,9 +306,7 @@ enum CustomerStatuses {
 
 enum BusinessReportType {
   ONGOING_MERCHANT_REPORT_T1
-  ONGOING_MERCHANT_REPORT_T2
   MERCHANT_REPORT_T1
-  MERCHANT_REPORT_T2
   MERCHANT_REPORT_T1_LITE
 }
 
@@ -419,7 +417,7 @@ enum UiDefinitionContext {
 
 model UiDefinition {
   id                   String              @id @default(cuid())
-  crossEnvKey          String?              @unique
+  crossEnvKey          String?             @unique
   workflowDefinitionId String
   uiContext            UiDefinitionContext
 
@@ -431,6 +429,7 @@ model UiDefinition {
 
   definition    Json? // Frontend UI xstate definition
   uiSchema      Json // JSON schmea of how to render UI
+  theme         Json? // Theme for the UI
   schemaOptions Json? // Document Schemas, rejectionReasons: {}, documenTypes: {}, documenCateogries: {}
   uiOptions     Json? // how the view will look, overall
   locales       Json? // Locales for the UI

@@ -8,6 +8,7 @@ export const pickInnerProps: ElementPropsPicker<BreadcrumbsInnerProps> = (state,
   const props: BreadcrumbsInnerProps = {
     className: ctw(themeParams.className, { [themeParams.activeClassName || '']: active }),
     icon: active ? themeParams.icon : themeParams.activeIcon || themeParams.icon,
+    style: active ? themeParams.activeStyles : themeParams.styles,
   };
 
   return props;

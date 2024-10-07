@@ -1,5 +1,49 @@
 # @ballerine/workflow-core
 
+## 0.6.49
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.37
+
+## 0.6.48
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.36
+
+## 0.6.47
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.35
+
+## 0.6.46
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.34
+
+## 0.6.45
+
+### Patch Changes
+
+- Added webhook signin
+
+## 0.6.44
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.33
+
 ## 0.6.43
 
 ### Patch Changes
