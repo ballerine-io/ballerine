@@ -5,6 +5,7 @@ import { CheckboxField } from '@/pages/CollectionFlowV2/components/ui/fields/Che
 import { DateField } from '@/pages/CollectionFlowV2/components/ui/fields/DateField';
 import { DocumentField } from '@/pages/CollectionFlowV2/components/ui/fields/DocumentField';
 import { FieldList } from '@/pages/CollectionFlowV2/components/ui/fields/FieldList';
+import { LocaleField } from '@/pages/CollectionFlowV2/components/ui/fields/LocaleField';
 import { NationalityField } from '@/pages/CollectionFlowV2/components/ui/fields/NationalityField';
 import { PhoneField } from '@/pages/CollectionFlowV2/components/ui/fields/PhoneField';
 import { TextField } from '@/pages/CollectionFlowV2/components/ui/fields/TextField';
@@ -71,6 +72,7 @@ export const fieldElelements = applyHocToElements(
     checkbox: CheckboxField,
     autocomplete: AutocompleteField,
     nationalityfield: NationalityField,
+    localefield: LocaleField,
   },
   withConnectedField,
 );

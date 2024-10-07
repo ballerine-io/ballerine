@@ -31,7 +31,7 @@ export const FieldLayout: FunctionComponent<IFieldLayoutProps<IFieldLayoutBasePa
       <div>
         {label && (
           <Label id={`label-${uiElement.getId()}`} htmlFor={uiElement.getId()}>
-            {`${isRequired ? `${label} *` : `${label} (optional)`} `}
+            {`${isRequired ? `${label}` : `${label} (optional)`} `}
           </Label>
         )}
       </div>
