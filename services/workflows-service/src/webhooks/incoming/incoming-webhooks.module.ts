@@ -26,8 +26,7 @@ import { FileRepository } from '@/storage/storage.repository';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { FilterService } from '@/filter/filter.service';
 import { FilterRepository } from '@/filter/filter.repository';
-import { WebhooksController } from '@/webhooks/webhooks.controller';
-import { WebhooksService } from '@/webhooks/webhooks.service';
+import { IncomingWebhooksService } from '@/webhooks/incoming/incoming-webhooks.service';
 import { BusinessService } from '@/business/business.service';
 import { BusinessReportModule } from '@/business-report/business-report.module';
 import { AlertModule } from '@/alert/alert.module';
@@ -36,9 +35,10 @@ import { AlertDefinitionModule } from '@/alert-definition/alert-definition.modul
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
 import { SentryService } from '@/sentry/sentry.service';
 import { WorkflowModule } from '@/workflow/workflow.module';
+import { IncomingWebhooksController } from '@/webhooks/incoming/incoming-webhooks.controller';
 
 @Module({
-  controllers: [WebhooksController],
+  controllers: [IncomingWebhooksController],
   imports: [
     ACLModule,
     forwardRef(() => AuthModule),
@@ -76,9 +76,9 @@ import { WorkflowModule } from '@/workflow/workflow.module';
     HookCallbackHandlerService,
     FilterService,
     FilterRepository,
-    WebhooksService,
+    IncomingWebhooksService,
     SentryService,
   ],
-  exports: [],
+  exports: [IncomingWebhooksService],
 })
-export class WebhooksModule {}
+export class IncomingWebhooksModule {}

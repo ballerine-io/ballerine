@@ -11,7 +11,7 @@ import { ServeStaticOptionsService } from './serve-static-options.service';
 import { EndUserModule } from './end-user/end-user.module';
 import { BusinessModule } from './business/business.module';
 import { StorageModule } from './storage/storage.module';
-import { ExpressAdapter, MulterModule } from '@nestjs/platform-express';
+import { MulterModule } from '@nestjs/platform-express';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { FilterModule } from '@/filter/filter.module';
 import { configs, env, serverEnvSchema } from '@/env';
@@ -39,7 +39,6 @@ import { WorkflowModule } from '@/workflow/workflow.module';
 import { TransactionModule } from '@/transaction/transaction.module';
 import { AlertModule } from '@/alert/alert.module';
 import { SwaggerController } from './swagger/swagger.controller';
-import { WebhooksModule } from '@/webhooks/webhooks.module';
 import { BusinessReportModule } from '@/business-report/business-report.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronModule } from '@/workflow/cron/cron.module';
@@ -133,7 +132,7 @@ export const validate = async (config: Record<string, unknown>) => {
     RuleEngineModule,
     NotionModule,
     SecretsManagerModule,
-    BullMqModule
+    BullMqModule,
   ],
   providers: [
     {
