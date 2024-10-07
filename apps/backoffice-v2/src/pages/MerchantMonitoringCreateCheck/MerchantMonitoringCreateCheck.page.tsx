@@ -126,7 +126,7 @@ export const MerchantMonitoringCreateCheckPage: FunctionComponent = () => {
                   name="businessCorrelationId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Business ID (Optional)</FormLabel>
+                      <FormLabel>Merchant ID (Optional)</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="q1w2e3r4t5y6u7i8o9p0"

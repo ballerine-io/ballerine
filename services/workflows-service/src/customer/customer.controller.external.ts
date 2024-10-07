@@ -10,7 +10,7 @@ import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { CustomerSubscriptionDto } from './dtos/customer-config-create.dto';
 import { ValidationError } from '@/errors';
-import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
+import { TCustomerWithFeatures } from '@/customer/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @swagger.ApiTags('Customers')
@@ -51,7 +51,7 @@ export class CustomerControllerExternal {
   @swagger.ApiForbiddenResponse()
   async getByCurrentProjectId(
     @CurrentProject() currentProjectId: TProjectId,
-  ): Promise<TCustomerWithDefinitionsFeatures | null> {
+  ): Promise<TCustomerWithFeatures | null> {
     if (!currentProjectId) throw new NotFoundException('Customer not found');
 
     return this.service.getByProjectId(currentProjectId, {
