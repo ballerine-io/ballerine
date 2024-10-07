@@ -12,6 +12,7 @@ import { LocaleField } from '@/pages/CollectionFlowV2/components/ui/fields/Local
 import { MultiselectField } from '@/pages/CollectionFlowV2/components/ui/fields/MultiselectField';
 import { NationalityField } from '@/pages/CollectionFlowV2/components/ui/fields/NationalityField';
 import { PhoneField } from '@/pages/CollectionFlowV2/components/ui/fields/PhoneField';
+import { StateField } from '@/pages/CollectionFlowV2/components/ui/fields/StateField';
 import { TextField } from '@/pages/CollectionFlowV2/components/ui/fields/TextField';
 import { Container } from '@/pages/CollectionFlowV2/components/ui/layout/Container';
 import { Heading } from '@/pages/CollectionFlowV2/components/ui/text/Heading';
@@ -81,6 +82,7 @@ export const fieldElelements = applyHocToElements(
     checkboxlist: CheckboxListField,
     industriesfield: IndustriesField,
     multiselect: MultiselectField,
+    statefield: StateField,
   },
   withConnectedField,
 );
