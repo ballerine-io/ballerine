@@ -5,7 +5,7 @@ import { UiDefDefinition, UiSchemaStep } from '@/collection-flow/models/flow-ste
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { type ITokenScope } from '@/common/decorators/token-scope.decorator';
 import { CustomerService } from '@/customer/customer.service';
-import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
+import { TCustomerWithFeatures } from '@/customer/types';
 import { EndUserService } from '@/end-user/end-user.service';
 import { NotFoundException } from '@/errors';
 import { FileService } from '@/providers/file/file.service';
@@ -39,7 +39,7 @@ export class CollectionFlowService {
     protected readonly fileService: FileService,
   ) {}
 
-  async getCustomerDetails(projectId: TProjectId): Promise<TCustomerWithDefinitionsFeatures> {
+  async getCustomerDetails(projectId: TProjectId): Promise<TCustomerWithFeatures> {
     return this.customerService.getByProjectId(projectId);
   }
 

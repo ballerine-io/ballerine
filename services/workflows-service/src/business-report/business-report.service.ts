@@ -1,6 +1,6 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { BusinessReportStatus, BusinessReportType, Prisma } from '@prisma/client';
-import { TProjectId, TProjectIds } from '@/types';
+import { BadRequestException, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Business, BusinessReportStatus, BusinessReportType, Prisma } from '@prisma/client';
+import { type ObjectValues, TProjectId, TProjectIds } from '@/types';
 import { BusinessReportRepository } from '@/business-report/business-report.repository';
 import { GetBusinessReportDto } from './dto/get-business-report.dto';
 import { toPrismaOrderByGeneric } from '@/workflow/utils/toPrismaOrderBy';
@@ -15,6 +15,9 @@ import {
 import { env } from '@/env';
 import { randomUUID } from 'crypto';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { isNumber } from 'lodash';
+import { CountryCode } from '@/common/countries';
+import axios from 'axios';
 
 @Injectable()
 export class BusinessReportService {
@@ -24,6 +27,101 @@ export class BusinessReportService {
     protected readonly businessService: BusinessService,
     protected readonly logger: AppLoggerService,
   ) {}
+
+  async checkBusinessReportsLimit(
+    maxBusinessReports: number | undefined,
+    currentProjectId: string,
+  ) {
+    if (!isNumber(maxBusinessReports) || maxBusinessReports <= 0) {
+      return;
+    }
+
+    const businessReportsCount = await this.count({}, [currentProjectId]);
+
+    if (businessReportsCount >= maxBusinessReports) {
+      throw new BadRequestException(
+        `You have reached the maximum number of business reports allowed (${maxBusinessReports}).`,
+      );
+    }
+  }
+
+  async createBusinessReportAndTriggerReportCreation({
+    reportType,
+    business,
+    currentProjectId,
+    websiteUrl,
+    countryCode,
+    merchantName,
+    workflowVersion,
+    compareToReportId,
+    withQualityControl,
+    customerId,
+    customerName,
+  }: {
+    reportType: ObjectValues<typeof BusinessReportType>;
+    business: Pick<Business, 'id' | 'correlationId'>;
+    currentProjectId: string;
+    websiteUrl: string;
+    countryCode?: CountryCode | undefined;
+    merchantName: string | undefined;
+    compareToReportId?: string;
+    workflowVersion: '1' | '2' | '3';
+    withQualityControl: boolean;
+    customerId: string;
+    customerName: string;
+  }) {
+    const businessReport = await this.create({
+      data: {
+        type: reportType,
+        status: BusinessReportStatus.new,
+        report: {},
+        businessId: business.id,
+        projectId: currentProjectId,
+      },
+    });
+
+    let response;
+
+    try {
+      response = await axios.post(
+        `${env.UNIFIED_API_URL}/merchants/analysis`,
+        {
+          websiteUrl,
+          countryCode,
+          parentCompanyName: merchantName,
+          reportType,
+          workflowVersion,
+          compareToReportId,
+          withQualityControl,
+          callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${business.id}&businessReportId=${businessReport.id}`,
+          metadata: {
+            customerId,
+            customerName,
+            workflowRuntimeDataId: null,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
+          },
+        },
+      );
+    } catch (error) {
+      this.logger.error('Failed to initiate report creation', { error });
+
+      throw new Error('Failed to initiate report creation', { cause: error });
+    }
+
+    await this.updateById(
+      { id: businessReport.id },
+      {
+        data: {
+          reportId: response.data.reportId,
+          status: BusinessReportStatus.in_progress,
+        },
+      },
+    );
+  }
 
   async create<T extends Prisma.BusinessReportCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessReportCreateArgs>,

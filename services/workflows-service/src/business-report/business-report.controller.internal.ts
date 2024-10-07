@@ -22,8 +22,6 @@ import {
 } from '@/business-report/list-business-reports.dto';
 import { Business, BusinessReportStatus, Prisma } from '@prisma/client';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
-import axios from 'axios';
-import { env } from '@/env';
 import { CreateBusinessReportDto } from '@/business-report/dto/create-business-report.dto';
 import {
   HookCallbackHandlerService,
@@ -37,7 +35,6 @@ import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-u
 import { BusinessReportHookBodyDto } from '@/business-report/dtos/business-report-hook-body.dto';
 import { BusinessReportHookSearchQueryParamsDto } from '@/business-report/dtos/business-report-hook-search-query-params.dto';
 import { QueryMode } from '@/common/query-filters/query-mode';
-import { isNumber } from 'lodash';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { fileFilter } from '@/storage/file-filter';
@@ -81,7 +78,10 @@ export class BusinessReportControllerInternal {
     } = await this.customerService.getByProjectId(currentProjectId);
 
     const { maxBusinessReports, withQualityControl } = config || {};
-    await this.checkBusinessReportsLimit(maxBusinessReports, currentProjectId);
+    await this.businessReportService.checkBusinessReportsLimit(
+      maxBusinessReports,
+      currentProjectId,
+    );
 
     let business: Pick<Business, 'id' | 'correlationId'> | undefined;
     const merchantNameWithDefault = merchantName || 'Not detected';
@@ -117,48 +117,18 @@ export class BusinessReportControllerInternal {
       );
     }
 
-    const businessReport = await this.businessReportService.create({
-      data: {
-        type: reportType,
-        status: BusinessReportStatus.new,
-        report: {},
-        businessId: business.id,
-        projectId: currentProjectId,
-      },
+    await this.businessReportService.createBusinessReportAndTriggerReportCreation({
+      reportType,
+      business,
+      currentProjectId,
+      websiteUrl,
+      countryCode,
+      merchantName: merchantNameWithDefault,
+      workflowVersion,
+      withQualityControl,
+      customerId,
+      customerName,
     });
-
-    const response = await axios.post(
-      `${env.UNIFIED_API_URL}/merchants/analysis`,
-      {
-        websiteUrl,
-        countryCode,
-        parentCompanyName: merchantName,
-        reportType,
-        workflowVersion,
-        withQualityControl,
-        callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${business.id}&businessReportId=${businessReport.id}`,
-        metadata: {
-          customerId,
-          customerName,
-          workflowRuntimeDataId: null,
-        },
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
-        },
-      },
-    );
-
-    await this.businessReportService.updateById(
-      { id: businessReport.id },
-      {
-        data: {
-          reportId: response.data.reportId,
-          status: BusinessReportStatus.in_progress,
-        },
-      },
-    );
   }
 
   @common.Post('/hook')
@@ -237,6 +207,7 @@ export class BusinessReportControllerInternal {
         },
         select: {
           id: true,
+          type: true,
           createdAt: true,
           updatedAt: true,
           report: true,
@@ -244,6 +215,7 @@ export class BusinessReportControllerInternal {
           status: true,
           business: {
             select: {
+              id: true,
               companyName: true,
               country: true,
               website: true,
@@ -284,6 +256,7 @@ export class BusinessReportControllerInternal {
       },
       select: {
         id: true,
+        type: true,
         createdAt: true,
         updatedAt: true,
         report: true,
@@ -291,6 +264,7 @@ export class BusinessReportControllerInternal {
         status: true,
         business: {
           select: {
+            id: true,
             companyName: true,
             country: true,
             website: true,
@@ -330,6 +304,7 @@ export class BusinessReportControllerInternal {
     return await this.businessReportService.findById(id, [currentProjectId], {
       select: {
         id: true,
+        type: true,
         createdAt: true,
         updatedAt: true,
         report: true,
@@ -337,6 +312,7 @@ export class BusinessReportControllerInternal {
         status: true,
         business: {
           select: {
+            id: true,
             companyName: true,
             country: true,
             website: true,
@@ -365,7 +341,10 @@ export class BusinessReportControllerInternal {
     const { config } = await this.customerService.getByProjectId(currentProjectId);
 
     const { maxBusinessReports, withQualityControl } = config || {};
-    await this.checkBusinessReportsLimit(maxBusinessReports, currentProjectId);
+    await this.businessReportService.checkBusinessReportsLimit(
+      maxBusinessReports,
+      currentProjectId,
+    );
 
     const result = await this.businessReportService.processBatchFile({
       type,
@@ -380,22 +359,5 @@ export class BusinessReportControllerInternal {
     res.status(201);
     res.setHeader('content-type', 'application/json');
     res.send(result);
-  }
-
-  private async checkBusinessReportsLimit(
-    maxBusinessReports: number | undefined,
-    currentProjectId: string,
-  ) {
-    if (!isNumber(maxBusinessReports) || maxBusinessReports <= 0) {
-      return;
-    }
-
-    const businessReportsCount = await this.businessReportService.count({}, [currentProjectId]);
-
-    if (businessReportsCount >= maxBusinessReports) {
-      throw new BadRequestException(
-        `You have reached the maximum number of business reports allowed (${maxBusinessReports}).`,
-      );
-    }
   }
 }
