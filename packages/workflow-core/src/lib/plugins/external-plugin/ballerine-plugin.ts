@@ -24,9 +24,13 @@ const _getPluginOptions = (params: IBallerineApiPluginParams & IApiPluginParams)
   }
 
   if (
-    ['individual-sanctions', 'company-sanctions', 'ubo', 'merchant-monitoring'].includes(
-      params.pluginKind,
-    )
+    [
+      'individual-sanctions',
+      'company-sanctions',
+      'ubo',
+      'merchant-monitoring',
+      'kyc-session',
+    ].includes(params.pluginKind)
   ) {
     if (!params.vendor) {
       throw new Error(`Missed vendor for: ${params.pluginKind}`);

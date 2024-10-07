@@ -14,8 +14,6 @@ import {
   WorkflowExtensions,
   WorkflowRunnerArgs,
 } from './types';
-import { JmespathTransformer } from './utils/context-transformers/jmespath-transformer';
-import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
 import {
   ActionablePlugins,
   ChildPlugins,
@@ -75,6 +73,7 @@ import { logger } from './logger';
 import { hasPersistResponseDestination } from './utils/has-persistence-response-destination';
 import { pluginsRegistry } from './constants';
 import { fetchTransformers, reqResTransformersObj } from './workflow-runner-utils';
+import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
 
 export class WorkflowRunner {
   #__subscriptions: Partial<Record<string, Array<(event: WorkflowEvent) => Promise<void>>>>;
@@ -342,6 +341,10 @@ export class WorkflowRunner {
   private pickApiPluginClass(apiPluginSchema: ISerializableHttpPluginParams) {
     if (apiPluginSchema.pluginKind === BALLERINE_API_PLUGINS['template-email']) {
       return BallerineEmailPlugin;
+    }
+
+    if (apiPluginSchema.pluginKind === BALLERINE_API_PLUGINS['kyc-session']) {
+      return KycSessionPlugin;
     }
 
     if (

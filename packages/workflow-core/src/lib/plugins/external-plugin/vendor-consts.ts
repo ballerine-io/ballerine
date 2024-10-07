@@ -1,3 +1,4 @@
+import { PluginKind } from '@/lib/constants';
 import { SerializableValidatableTransformer } from './types';
 
 export const INDIVIDUAL_SCREENING_VENDORS = {
@@ -413,7 +414,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             mapping: `{
               ${options.dataMapping || ''}
               reportType: '${options.reportType || 'MERCHANT_REPORT_T1'}',
-              vendor: 'legitscript',
               callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.merchantMonitoring&processName=website-monitoring'])
               withQualityControl: ${
                 options.merchantMonitoringQualityControl ?? true ? 'true' : 'false'
@@ -425,8 +425,19 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
       response: {
         transform: [
           {
+            mapping:
+              "merge({ name: 'merchantMonitoring', status: contains(['NOT_IMPLEMENTED', 'NOT_AVAILABLE'], reason) && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS'  }, @)",
             transformer: 'jmespath',
-            mapping: '@', // jmespath
+          },
+          {
+            mapping: [
+              {
+                method: 'setTimeToRecordUTC',
+                source: 'invokedAt',
+                target: 'invokedAt',
+              },
+            ],
+            transformer: 'helper',
           },
         ],
       },
@@ -502,7 +513,11 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             supportEmail: join('',['support@',metadata.customerName]),
             from: 'no-reply@ballerine.com',
             receivers: [entity.data.additionalInfo.mainRepresentative.email],
-            templateId: '${options.templateId ?? 'd-706793b7bef041ee86bf12cf0359e76d'}',
+            templateId: ${
+              options.templateId
+                ? `'${options.templateId}'`
+                : `'d-706793b7bef041ee86bf12cf0359e76d'`
+            },
             adapter: '{secret.MAIL_ADAPTER}'
           }`, // jmespath
           },
@@ -540,7 +555,11 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               from: 'no-reply@ballerine.com',
               name: join(' ',[metadata.customerName,'Team']),
               receivers: [entity.data.additionalInfo.mainRepresentative.email],
-              templateId: '${options.templateId ?? 'd-7305991b3e5840f9a14feec767ea7301'}',
+              templateId: ${
+                options.templateId
+                  ? `'${options.templateId}'`
+                  : `'d-7305991b3e5840f9a14feec767ea7301'`
+              },
               revisionReason: documents[].decision[].revisionReason | [0],
               language: workflowRuntimeConfig.language,
               adapter: '{secret.MAIL_ADAPTER}'
@@ -576,10 +595,11 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
           name: join(' ',[entity.data.additionalInfo.customerCompany,'Team']),
           receivers: [entity.data.email],
           subject: '{customerCompanyName} activation, Action needed.',
-          templateId: '${
-            options.templateId ??
-            `(documents[].decision[].revisionReason | [0])!=null && 'd-2c6ae291d9df4f4a8770d6a4e272d803' || 'd-61c568cfa5b145b5916ff89790fe2065'`
-          }',
+          templateId: ${
+            options.templateId
+              ? `'${options.templateId}'`
+              : `(documents[].decision[].revisionReason | [0] != null) && 'd-2c6ae291d9df4f4a8770d6a4e272d803' || 'd-61c568cfa5b145b5916ff89790fe2065'`
+          },
           revisionReason: documents[].decision[].revisionReason | [0],
           language: workflowRuntimeConfig.language,
           supportEmail: join('',['support@',entity.data.additionalInfo.customerCompany,'.com']),
@@ -613,7 +633,11 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
                     from: 'no-reply@ballerine.com',
                     receivers: [entity.data.additionalInfo.mainRepresentative.email],
                     language: workflowRuntimeConfig.language,
-                    templateId: '${options.templateId ?? 'd-8949519316074e03909042cfc5eb4f02'}',
+                    templateId: ${
+                      options.templateId
+                        ? `'${options.templateId}'`
+                        : `'d-8949519316074e03909042cfc5eb4f02'`
+                    },
                     adapter: '{secret.MAIL_ADAPTER}'
             }`, // jmespath
           },

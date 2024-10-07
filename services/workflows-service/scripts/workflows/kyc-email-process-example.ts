@@ -34,13 +34,13 @@ export const kycEmailSessionDefinition = {
       email_sent: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
-          KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }],
+          KYC_RESPONSE_RECEIVED: [{ target: 'kyc_manual_review' }],
         },
       },
       revision_email_sent: {
         tags: [StateTag.REVISION],
         on: {
-          KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }],
+          KYC_RESPONSE_RECEIVED: [{ target: 'kyc_manual_review' }],
         },
       },
       kyc_manual_review: {
