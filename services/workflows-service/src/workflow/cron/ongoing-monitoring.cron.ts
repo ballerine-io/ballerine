@@ -30,101 +30,102 @@ export class OngoingMonitoringCron {
     protected readonly businessReportService: BusinessReportService,
   ) {}
 
-  // @Cron(CronExpression.EVERY_10_MINUTES)
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
-    const lockAcquired = await this.prisma.acquireLock(this.lockKey);
+    await this.prisma.$transaction(async transaction => {
+      const lockAcquired = await this.prisma.acquireLock(this.lockKey, transaction);
 
-    if (!lockAcquired) {
-      this.logger.log('Lock not acquired, another instance might be running the job.');
+      if (!lockAcquired) {
+        this.logger.log('Lock not acquired, another instance might be running the job.');
 
-      return;
-    }
+        return;
+      }
 
-    let ongoingReportsCounter = 0;
+      let ongoingReportsCounter = 0;
 
-    try {
-      const customers = await this.customerService.list({
-        select: { projects: true, features: true, id: true },
-      });
+      try {
+        const customers = await this.customerService.list({
+          select: { projects: true, features: true, id: true },
+        });
 
-      for (const { projects, features } of customers) {
-        const featureConfig = features?.[this.processFeatureName];
+        for (const { projects, features } of customers) {
+          const featureConfig = features?.[this.processFeatureName];
 
-        if (!featureConfig?.enabled) {
-          continue;
-        }
+          if (!featureConfig?.enabled) {
+            continue;
+          }
 
-        const projectIds = projects.map(({ id }: { id: string }) => id);
-        const businesses = await this.businessService.list({}, projectIds);
+          const projectIds = projects.map(({ id }: { id: string }) => id);
+          const businesses = await this.businessService.list({}, projectIds);
 
-        for (const business of businesses) {
-          try {
-            if (
-              !business.metadata?.featureConfig?.[this.processFeatureName]?.enabled &&
-              !featureConfig?.options.runByDefault
-            ) {
-              this.logger.debug(`Ongoing monitoring is not enabled for business ${business.id}.`);
+          for (const business of businesses) {
+            try {
+              if (
+                !business.metadata?.featureConfig?.[this.processFeatureName]?.enabled &&
+                !featureConfig?.options.runByDefault
+              ) {
+                this.logger.debug(`Ongoing monitoring is not enabled for business ${business.id}.`);
 
-              continue;
+                continue;
+              }
+
+              const lastReceivedReport = await this.findLastBusinessReport(business, projectIds);
+
+              if (!lastReceivedReport?.reportId) {
+                this.logger.debug(`No initial report found for business: ${business.id}`);
+
+                continue;
+              }
+
+              const now = new Date().getTime();
+              const { options } = featureConfig;
+
+              const lastReceivedReportTime = lastReceivedReport.createdAt.getTime();
+
+              if (
+                (options.scheduleType === 'specific' &&
+                  new Date().getDate() !== options.specificDates.dayInMonth &&
+                  lastReceivedReportTime + 32 * ONE_DAY < now) ||
+                (options.scheduleType === 'interval' &&
+                  now - lastReceivedReportTime < options.intervalInDays * ONE_DAY)
+              ) {
+                this.logger.debug(`Skipping ongoing report for business: ${business.id}`);
+
+                continue;
+              }
+
+              if (ongoingReportsCounter >= env.ONGOING_REPORTS_LIMIT) {
+                this.logger.debug(`Ongoing reports limit reached for current cron run`);
+
+                continue;
+              }
+
+              await this.invokeOngoingMerchantReport({
+                currentProjectId: business.projectId,
+                lastReportId: lastReceivedReport.reportId,
+                workflowVersion: options.workflowVersion ?? '2',
+                reportType: options.reportType ?? 'ONGOING_MERCHANT_REPORT_T1',
+                business: business as Business & {
+                  metadata?: { featureConfig?: Record<string, TCustomerFeaturesConfig> };
+                },
+              });
+
+              ongoingReportsCounter++;
+            } catch (error) {
+              this.logger.error(
+                `Failed to Invoke Ongoing Report for businessId: ${
+                  business.id
+                } - An error occurred: ${isErrorWithMessage(error) && error.message}`,
+              );
             }
-
-            const lastReceivedReport = await this.findLastBusinessReport(business, projectIds);
-
-            if (!lastReceivedReport?.reportId) {
-              this.logger.debug(`No initial report found for business: ${business.id}`);
-
-              continue;
-            }
-
-            const now = new Date().getTime();
-            const { options } = featureConfig;
-
-            const lastReceivedReportTime = lastReceivedReport.createdAt.getTime();
-
-            if (
-              (options.scheduleType === 'specific' &&
-                new Date().getDate() !== options.specificDates.dayInMonth &&
-                lastReceivedReportTime + 32 * ONE_DAY < now) ||
-              (options.scheduleType === 'interval' &&
-                now - lastReceivedReportTime < options.intervalInDays * ONE_DAY)
-            ) {
-              this.logger.debug(`Skipping ongoing report for business: ${business.id}`);
-
-              continue;
-            }
-
-            if (ongoingReportsCounter >= env.ONGOING_REPORTS_LIMIT) {
-              this.logger.debug(`Ongoing reports limit reached for current cron run`);
-
-              continue;
-            }
-
-            await this.invokeOngoingMerchantReport({
-              currentProjectId: business.projectId,
-              lastReportId: lastReceivedReport.reportId,
-              workflowVersion: options.workflowVersion ?? '2',
-              reportType: options.reportType ?? 'ONGOING_MERCHANT_REPORT_T1',
-              business: business as Business & {
-                metadata?: { featureConfig?: Record<string, TCustomerFeaturesConfig> };
-              },
-            });
-
-            ongoingReportsCounter++;
-          } catch (error) {
-            this.logger.error(
-              `Failed to Invoke Ongoing Report for businessId: ${
-                business.id
-              } - An error occurred: ${isErrorWithMessage(error) && error.message}`,
-            );
           }
         }
+      } catch (error) {
+        this.logger.error(`An error occurred: ${isErrorWithMessage(error) && error.message}`);
+      } finally {
+        await this.prisma.releaseLock(this.lockKey, transaction);
       }
-    } catch (error) {
-      this.logger.error(`An error occurred: ${isErrorWithMessage(error) && error.message}`);
-    } finally {
-      await this.prisma.releaseLock(this.lockKey);
-    }
+    });
   }
 
   private async findLastBusinessReport(business: Business, projectIds: TProjectIds) {
