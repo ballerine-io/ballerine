@@ -2,6 +2,7 @@ import { UIElementV2 } from '@/components/providers/Validator/types';
 import { SubmitButton } from '@/pages/CollectionFlowV2/components/ui/controls/SubmitButton';
 import { AutocompleteField } from '@/pages/CollectionFlowV2/components/ui/fields/AutocompleteField';
 import { CheckboxField } from '@/pages/CollectionFlowV2/components/ui/fields/CheckboxField';
+import { CheckboxListField } from '@/pages/CollectionFlowV2/components/ui/fields/CheckboxList';
 import { CountryField } from '@/pages/CollectionFlowV2/components/ui/fields/CountryField';
 import { DateField } from '@/pages/CollectionFlowV2/components/ui/fields/DateField';
 import { DocumentField } from '@/pages/CollectionFlowV2/components/ui/fields/DocumentField';
@@ -75,6 +76,7 @@ export const fieldElelements = applyHocToElements(
     nationalityfield: NationalityField,
     localefield: LocaleField,
     countryfield: CountryField,
+    checkboxlist: CheckboxListField,
   },
   withConnectedField,
 );
