@@ -7,6 +7,7 @@ import { CountryField } from '@/pages/CollectionFlowV2/components/ui/fields/Coun
 import { DateField } from '@/pages/CollectionFlowV2/components/ui/fields/DateField';
 import { DocumentField } from '@/pages/CollectionFlowV2/components/ui/fields/DocumentField';
 import { FieldList } from '@/pages/CollectionFlowV2/components/ui/fields/FieldList';
+import { IndustriesField } from '@/pages/CollectionFlowV2/components/ui/fields/IndustriesField';
 import { LocaleField } from '@/pages/CollectionFlowV2/components/ui/fields/LocaleField';
 import { NationalityField } from '@/pages/CollectionFlowV2/components/ui/fields/NationalityField';
 import { PhoneField } from '@/pages/CollectionFlowV2/components/ui/fields/PhoneField';
@@ -77,6 +78,7 @@ export const fieldElelements = applyHocToElements(
     localefield: LocaleField,
     countryfield: CountryField,
     checkboxlist: CheckboxListField,
+    industriesfield: IndustriesField,
   },
   withConnectedField,
 );
