@@ -79,6 +79,7 @@ describe('OngoingMonitoringCron', () => {
   const mockPrismaService = () => ({
     acquireLock: jest.fn(),
     releaseLock: jest.fn(),
+    $transaction: jest.fn().mockImplementation(operations => operations()),
   });
 
   const mockWorkflowService = {
