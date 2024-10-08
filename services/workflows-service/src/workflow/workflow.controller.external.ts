@@ -44,6 +44,7 @@ import { PutWorkflowExtensionSchema, WorkflowExtensionSchema } from './schemas/e
 import { type Static, Type } from '@sinclair/typebox';
 import { defaultContextSchema } from '@ballerine/common';
 import { WorkflowRunSchema } from './schemas/workflow-run';
+import { ValidationError } from '@/errors';
 
 export const WORKFLOW_TAG = 'Workflows';
 @swagger.ApiBearerAuth()
@@ -260,6 +261,8 @@ export class WorkflowControllerExternal {
   @UseCustomerAuthGuard()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiBadRequestResponse({ type: ValidationError })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     // @ts-expect-error -- Something with swagger package
     schema: WorkflowRunSchema,
