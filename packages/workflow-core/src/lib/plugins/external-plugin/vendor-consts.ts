@@ -112,6 +112,9 @@ type DowJonesOptions = {
   vendor: 'dow-jones';
   takeEntityDetailFromKyc: boolean;
   successAction: string;
+  dateOfBirth?: string;
+  dataMapping?: string;
+  ongoingMonitoring?: boolean;
 };
 
 type ComplyAdvantageOptions = {
@@ -119,6 +122,9 @@ type ComplyAdvantageOptions = {
   vendor: 'comply-advantage';
   takeEntityDetailFromKyc: boolean;
   successAction: string;
+  dateOfBirth?: string;
+  dataMapping?: string;
+  ongoingMonitoring?: boolean;
 };
 
 type KycSessionOptions = {
@@ -230,7 +236,7 @@ const getKycEntityMapping = (takeEntityDetailFromKyc: boolean) => {
 export const BALLERINE_API_PLUGIN_FACTORY = {
   [BALLERINE_API_PLUGINS['registry-information']]: _ => ({
     name: 'businessInformation',
-    displayName: 'Registry Verification',
+    displayName: 'Registry Information',
     pluginKind: 'registry-information',
     vendor: 'asia-verify',
     url: `{secret.UNIFIED_API_URL}/companies-v2/{entity.data.country}/{entity.data.registrationNumber}`,
@@ -281,10 +287,10 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             transformer: 'jmespath',
             mapping: `{
                 vendor: 'dow-jones',
-                dateOfBirth: '1990-01-01'
-                ongoingMonitoring: false,
-                endUserId: join('__', [entity.ballerineEntityId, '']),
                 ${getKycEntityMapping(options.takeEntityDetailFromKyc)}
+                dateOfBirth: ${options.dateOfBirth ? `'${options.dateOfBirth}'` : '1990-01-01'}
+                ongoingMonitoring: ${options.ongoingMonitoring || false ? 'true' : 'false'},
+                endUserId: join('__', [entity.ballerineEntityId, '']),
                 clientId: clientId,
                 callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/${
                   options.successAction
@@ -323,10 +329,11 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             transformer: 'jmespath',
             mapping: `{
                     vendor: 'veriff',
-                    dateOfBirth: '1990-01-01'
-                    ongoingMonitoring: false,
-                    endUserId: join('__', [entity.ballerineEntityId, '']),
                     ${getKycEntityMapping(options.takeEntityDetailFromKyc)}
+                    ${options.dataMapping || ''}
+                    dateOfBirth: ${options.dateOfBirth ? `'${options.dateOfBirth}'` : '1990-01-01'}
+                    ongoingMonitoring: ${options.ongoingMonitoring || false ? 'true' : 'false'},
+                    endUserId: join('__', [entity.ballerineEntityId, '']),
                     callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/${
                       options.successAction
                     }','?resultDestination=aml&processName=aml-unified-api'])
