@@ -15,10 +15,10 @@
     "lint": "eslint . --fix"
   },
   "dependencies": {
-    "@astrojs/starlight": "0.11.1",
-    "@astrojs/tailwind": "^4.0.0",
+    "@astrojs/starlight": "0.28.3",
+    "@astrojs/tailwind": "^5.1.1",
     "@ballerine/common": "^0.9.37",
-    "astro": "3.3.3",
+    "astro": "4.15.12",
     "sharp": "^0.32.4",
     "shiki": "^0.14.3"
   },
