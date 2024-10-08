@@ -70,7 +70,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     await this.$disconnect();
   }
 
-  async acquireLock(lockId: number, transaction: PrismaTransaction): Promise<boolean> {
+  async acquireLock(
+    lockId: number,
+    transaction: PrismaTransaction | PrismaClient = this,
+  ): Promise<boolean> {
     try {
       const result = await transaction.$queryRaw<
         Array<{ acquired: boolean }>
@@ -85,7 +88,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     }
   }
 
-  async releaseLock(lockId: number, transaction: PrismaTransaction): Promise<void> {
+  async releaseLock(
+    lockId: number,
+    transaction: PrismaTransaction | PrismaClient = this,
+  ): Promise<void> {
     try {
       await transaction.$queryRaw`SELECT pg_advisory_unlock(${lockId});`;
       this.logger.debug('Lock released.');
