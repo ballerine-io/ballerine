@@ -36,7 +36,7 @@ export class OngoingMonitoringCron {
       const lockAcquired = await this.prisma.acquireLock(this.lockKey, transaction);
 
       if (!lockAcquired) {
-        this.logger.log('Lock not acquired, another instance might be running the job.');
+        this.logger.debug('Lock not acquired, another instance might be running the job.');
 
         return;
       }
@@ -48,10 +48,12 @@ export class OngoingMonitoringCron {
           select: { projects: true, features: true, id: true },
         });
 
-        for (const { projects, features } of customers) {
+        for (const { projects, features, id: customerId } of customers) {
           const featureConfig = features?.[this.processFeatureName];
 
           if (!featureConfig?.enabled) {
+            this.logger.debug(`Ongoing monitoring is not enabled for customer ${customerId}`);
+
             continue;
           }
 
@@ -64,7 +66,7 @@ export class OngoingMonitoringCron {
                 !business.metadata?.featureConfig?.[this.processFeatureName]?.enabled &&
                 !featureConfig?.options.runByDefault
               ) {
-                this.logger.debug(`Ongoing monitoring is not enabled for business ${business.id}.`);
+                this.logger.debug(`Ongoing monitoring is not enabled for business ${business.id}`);
 
                 continue;
               }
