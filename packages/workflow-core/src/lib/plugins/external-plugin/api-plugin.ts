@@ -8,7 +8,7 @@ export class ApiPlugin {
   public static pluginKind = 'api';
   name: string;
   stateNames: string[];
-  url: string;
+  url: IApiPluginParams['url'];
   method: IApiPluginParams['method'];
   vendor?: IApiPluginParams['vendor'];
   headers: IApiPluginParams['headers'];
@@ -116,10 +116,26 @@ export class ApiPlugin {
   }
 
   protected async _getPluginUrl(context: AnyRecord) {
-    const url = await this.replaceAllVariables(this.url, context);
+    let _url: string;
 
-    // remove last slash from url
-    return url.replace(/\/$/, '');
+    if (typeof this.url === 'string') {
+      _url = this.url;
+    } else {
+      if (!this.url.url) {
+        throw new Error('URL is required');
+      }
+
+      const { options } = this.url;
+
+      if (options !== null && typeof options === 'object' && !Array.isArray(options)) {
+        _url = await this.replaceAllVariables(this.url.url, this.url.options);
+      } else {
+        // if options is not an object
+        throw new Error('Url options should be an object');
+      }
+    }
+
+    return await this.replaceAllVariables(_url, context);
   }
 
   returnSuccessResponse(callbackAction: string, responseBody: AnyRecord) {

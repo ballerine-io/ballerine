@@ -14,7 +14,7 @@ export interface IApiPluginParams {
   name: string;
   pluginKind?: string;
   stateNames: string[];
-  url: string;
+  url: string | { url: string; options: Record<string, string> };
   vendor?: string;
   template?: ApiEmailTemplates;
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';

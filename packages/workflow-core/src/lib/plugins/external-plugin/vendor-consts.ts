@@ -1,5 +1,4 @@
-import { PluginKind } from '@/lib/constants';
-import { SerializableValidatableTransformer } from './types';
+import { IApiPluginParams, SerializableValidatableTransformer } from './types';
 
 export const INDIVIDUAL_SCREENING_VENDORS = {
   'dow-jones': 'dow-jones',
@@ -80,7 +79,7 @@ export type ApiBallerinePlugins =
 export const BALLERINE_API_PLUGINS_KINDS = Object.values(BALLERINE_API_PLUGINS);
 
 export type ApiBallerinePlugin = {
-  url: string;
+  url: IApiPluginParams['url'];
   displayName?: string;
   method: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE';
   headers: HeadersInit;
@@ -154,6 +153,7 @@ type CompanySanctionsAsiaVerifyOptions = {
 type UboAsiaVerifyOptions = {
   pluginKind: 'ubo';
   vendor: 'asia-verify';
+  defaultCountry?: string;
 };
 
 type RegistryInformationAsiaVerifyOptions = {
@@ -451,12 +451,17 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
     }),
   },
   [BALLERINE_API_PLUGINS['ubo']]: {
-    [UBO_VENDORS['asia-verify']]: _ => ({
+    [UBO_VENDORS['asia-verify']]: (options: UboAsiaVerifyOptions) => ({
       name: 'ubo',
       pluginKind: 'ubo',
       vendor: 'asia-verify',
       displayName: 'UBO Check',
-      url: `{secret.UNIFIED_API_URL}/companies/{entity.data.country}/{entity.data.registrationNumber}/ubo`,
+      url: {
+        url: `{secret.UNIFIED_API_URL}/companies/{country}/{entity.data.companyName}/ubo`,
+        options: {
+          country: options.defaultCountry || 'entity.data.country',
+        },
+      },
       method: 'GET',
       persistResponseDestination: 'pluginsOutput.ubo',
       headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
