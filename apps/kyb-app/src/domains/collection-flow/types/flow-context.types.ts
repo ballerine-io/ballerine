@@ -1,3 +1,5 @@
+import { UIOptions } from '@/domains/collection-flow/types';
+
 export interface FlowConfig {
   apiUrl: string;
   tokenId: string;
@@ -9,3 +11,11 @@ export interface FlowConfig {
 export type CollectionFlowContext = Record<string, unknown> & {
   flowConfig?: FlowConfig;
 };
+
+export interface CollectionFlowConfig {
+  uiOptions?: UIOptions;
+}
+export interface CollectionFlowContextData {
+  context: CollectionFlowContext;
+  config: CollectionFlowConfig;
+}
