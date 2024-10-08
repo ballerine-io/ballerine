@@ -10,7 +10,7 @@ export type TAuthenticationConfiguration = {
 
 export const FEATURE_LIST = {
   ONGOING_MERCHANT_REPORT: 'ONGOING_MERCHANT_REPORT',
-  DOCUMENT_OCR: 'DOCUMENT_OCR',
+  DOCUMENT_OCR: 'isDocumentOcrEnabled',
 } as const;
 
 export type TOngoingMerchantReportOptions = {
