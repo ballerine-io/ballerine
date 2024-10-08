@@ -22,6 +22,7 @@ export const WebsiteMonitoringBusinessReportTab = ({
     riskScore,
     tabs,
     summary,
+    ongoingMonitoringSummary,
     getUpdatedSearchParamsWithActiveMonitoringTab,
     search,
     homepageScreenshotUrl,
@@ -33,6 +34,7 @@ export const WebsiteMonitoringBusinessReportTab = ({
     <div className={'grid gap-y-4'}>
       <BusinessReportSummary
         summary={summary}
+        ongoingMonitoringSummary={ongoingMonitoringSummary}
         riskLevels={riskLevels}
         riskIndicators={riskIndicators}
         riskScore={riskScore}

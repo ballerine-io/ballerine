@@ -5,7 +5,7 @@ import { CustomerService } from '@/customer/customer.service';
 import { CustomerModel } from '@/customer/customer.model';
 import { InputJsonValue, type TProjectIds } from '@/types';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
+import { TCustomerWithFeatures } from '@/customer/types';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { CustomerCreateDto } from '@/customer/dtos/customer-create';
 import { ConfigSchema } from '@/workflow/schemas/zod-schemas';
@@ -31,9 +31,7 @@ export class CustomerControllerInternal {
   @common.Get()
   @swagger.ApiOkResponse({ type: [CustomerModel] })
   @swagger.ApiForbiddenResponse()
-  async find(
-    @ProjectIds() projectIds: TProjectIds,
-  ): Promise<TCustomerWithDefinitionsFeatures | null> {
+  async find(@ProjectIds() projectIds: TProjectIds): Promise<TCustomerWithFeatures | null> {
     const projectId = projectIds?.[0];
 
     if (!projectId) throw new NotFoundException('Customer not found');
