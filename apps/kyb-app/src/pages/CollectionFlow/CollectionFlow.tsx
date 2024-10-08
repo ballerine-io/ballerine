@@ -62,20 +62,25 @@ export const useCompleteLastStep = () => {
   const isPendingSync = useRef(false);
 
   useEffect(() => {
-    (async () => {
+    void (async () => {
       if (state !== 'finish') return;
 
-      const { data: context } = await refetch();
+      const { data: contextData } = await refetch();
 
       if (
-        !context ||
-        context?.flowConfig?.stepsProgress?.[elements?.at(-1)?.stateName ?? '']?.isCompleted ||
+        !contextData ||
+        contextData?.context?.flowConfig?.stepsProgress?.[elements?.at(-1)?.stateName ?? '']
+          ?.isCompleted ||
         isPendingSync.current
       ) {
         return;
       }
 
-      set(context, `flowConfig.stepsProgress.${elements?.at(-1)?.stateName}.isCompleted`, true);
+      set(
+        contextData.context,
+        `flowConfig.stepsProgress.${elements?.at(-1)?.stateName}.isCompleted`,
+        true,
+      );
       await stateApi.invokePlugin('sync_workflow_runtime');
       isPendingSync.current = true;
     })();
@@ -88,7 +93,7 @@ const isFailed = (state: string) => state === 'failed';
 export const CollectionFlow = withSessionProtected(() => {
   const { language } = useLanguageParam();
   const { data: schema } = useUISchemasQuery(language);
-  const { data: context } = useFlowContextQuery();
+  const { data: contextData } = useFlowContextQuery();
   const { customer } = useCustomer();
   const { t } = useTranslation();
   const { themeDefinition } = useTheme();
@@ -96,7 +101,7 @@ export const CollectionFlow = withSessionProtected(() => {
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;
 
-  const pageErrors = usePageErrors(context ?? {}, elements || []);
+  const pageErrors = usePageErrors(contextData ?? {}, elements || []);
   const isRevision = useMemo(
     () => pageErrors.some(error => error.errors?.some(error => error.type === 'warning')),
     [pageErrors],
@@ -108,24 +113,24 @@ export const CollectionFlow = withSessionProtected(() => {
   const initialContext: CollectionFlowContext | null = useMemo(() => {
     const appState =
       filteredNonEmptyErrors?.[0]?.stateName ||
-      context?.flowConfig?.appState ||
+      contextData?.context?.flowConfig?.appState ||
       elements?.at(0)?.stateName;
 
     if (!appState) return null;
 
     return {
-      ...context,
+      ...contextData?.context,
       flowConfig: {
-        ...context?.flowConfig,
+        ...contextData?.context?.flowConfig,
         appState,
       },
       state: appState,
     };
-  }, [context, elements, filteredNonEmptyErrors]);
+  }, [contextData, elements, filteredNonEmptyErrors]);
 
   const initialUIState = useMemo(() => {
-    return prepareInitialUIState(elements || [], context || {}, isRevision);
-  }, [elements, context, isRevision]);
+    return prepareInitialUIState(elements || [], contextData?.context || {}, isRevision);
+  }, [elements, contextData, isRevision]);
 
   // Breadcrumbs now using scrollIntoView method to make sure that breadcrumb is always in viewport.
   // Due to dynamic dimensions of logo it doesnt work well if scroll happens before logo is loaded.
@@ -143,7 +148,7 @@ export const CollectionFlow = withSessionProtected(() => {
 
   if (initialContext?.flowConfig?.appState == 'rejected') return <Rejected />;
 
-  return definition && context ? (
+  return definition && contextData ? (
     <DynamicUI initialState={initialUIState}>
       <DynamicUI.StateManager
         initialContext={initialContext}
@@ -151,6 +156,7 @@ export const CollectionFlow = withSessionProtected(() => {
         definitionType={schema?.definition.definitionType}
         extensions={schema?.definition.extensions}
         definition={definition as State}
+        config={contextData?.config}
       >
         {({ state, stateApi }) => {
           // Temp state, has to be resolved to success or failure by plugins
