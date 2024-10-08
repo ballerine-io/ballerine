@@ -9,6 +9,10 @@
         "color": "hsl(226, 100%, 97%)",
         "foreground": "hsl(0, 0%, 0%)"
       },
+      "muted": {
+        "color": "hsl(223, 47%, 11%)",
+        "foreground": "hsl(215.4, 16.3%, 56.9%)"
+      },
       "controls": {
         "color": "hsl(0, 0%, 0%)",
         "foreground": "hsl(0, 0%, 100%)"
