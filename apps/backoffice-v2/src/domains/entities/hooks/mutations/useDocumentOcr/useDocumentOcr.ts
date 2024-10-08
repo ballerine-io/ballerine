@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { t } from 'i18next';
 import { workflowsQueryKeys } from '@/domains/workflows/query-keys';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
+import { isEmptyObject } from '@ballerine/common';
 
 export const useDocumentOcr = ({ workflowId }: { workflowId: string }) => {
   const filterId = useFilterId();
@@ -19,6 +20,18 @@ export const useDocumentOcr = ({ workflowId }: { workflowId: string }) => {
     },
     onSuccess: (data, variables) => {
       void queryClient.invalidateQueries(workflowsQueryKeys._def);
+
+      if (
+        !data.parsedData ||
+        isEmptyObject(data.parsedData) ||
+        Object.entries(data.parsedData).filter(([_, value]) => {
+          return !(typeof value === 'string' && value.trim() === '');
+          //TODO fix this logic
+        }).length === 0
+      ) {
+        toast.success(t('toast:document_ocr.empty_extraction'));
+      }
+
       toast.success(t('toast:document_ocr.success'));
     },
     onError: (error, variables) => {
