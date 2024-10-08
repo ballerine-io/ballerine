@@ -32,11 +32,13 @@ export class OngoingMonitoringCron {
 
   @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
+    this.logger.log('Ongoing monitoring cron started');
+
     await this.prisma.$transaction(async transaction => {
       const lockAcquired = await this.prisma.acquireLock(this.lockKey, transaction);
 
       if (!lockAcquired) {
-        this.logger.debug('Lock not acquired, another instance might be running the job.');
+        this.logger.log('Lock not acquired, another instance might be running the job.');
 
         return;
       }
@@ -45,14 +47,16 @@ export class OngoingMonitoringCron {
 
       try {
         const customers = await this.customerService.list({
-          select: { projects: true, features: true, id: true },
+          select: { projects: true, features: true, id: true, name: true },
         });
 
-        for (const { projects, features, id: customerId } of customers) {
+        for (const { projects, features, id: customerId, name: customerName } of customers) {
           const featureConfig = features?.[this.processFeatureName];
 
           if (!featureConfig?.enabled) {
-            this.logger.debug(`Ongoing monitoring is not enabled for customer ${customerId}`);
+            this.logger.log(
+              `Ongoing monitoring is not enabled for customer ${customerName} (id: ${customerId})`,
+            );
 
             continue;
           }
@@ -66,7 +70,7 @@ export class OngoingMonitoringCron {
                 !business.metadata?.featureConfig?.[this.processFeatureName]?.enabled &&
                 !featureConfig?.options.runByDefault
               ) {
-                this.logger.debug(`Ongoing monitoring is not enabled for business ${business.id}`);
+                this.logger.log(`Ongoing monitoring is not enabled for business ${business.id}`);
 
                 continue;
               }
@@ -74,7 +78,7 @@ export class OngoingMonitoringCron {
               const lastReceivedReport = await this.findLastBusinessReport(business, projectIds);
 
               if (!lastReceivedReport?.reportId) {
-                this.logger.debug(`No initial report found for business: ${business.id}`);
+                this.logger.log(`No initial report found for business: ${business.id}`);
 
                 continue;
               }
@@ -91,13 +95,15 @@ export class OngoingMonitoringCron {
                 (options.scheduleType === 'interval' &&
                   now - lastReceivedReportTime < options.intervalInDays * ONE_DAY)
               ) {
-                this.logger.debug(`Skipping ongoing report for business: ${business.id}`);
+                this.logger.log(
+                  `Skipping ongoing report for business ${business.companyName} (id: ${business.id})`,
+                );
 
                 continue;
               }
 
               if (ongoingReportsCounter >= env.ONGOING_REPORTS_LIMIT) {
-                this.logger.debug(`Ongoing reports limit reached for current cron run`);
+                this.logger.log(`Ongoing reports limit reached for current cron run`);
 
                 continue;
               }
@@ -115,9 +121,9 @@ export class OngoingMonitoringCron {
               ongoingReportsCounter++;
             } catch (error) {
               this.logger.error(
-                `Failed to Invoke Ongoing Report for businessId: ${
+                `Failed to Invoke Ongoing Report for business ${business.companyName} (id: ${
                   business.id
-                } - An error occurred: ${isErrorWithMessage(error) && error.message}`,
+                }) - An error occurred: ${isErrorWithMessage(error) && error.message}`,
               );
             }
           }
