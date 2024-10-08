@@ -112,7 +112,6 @@ import { StorageService } from '@/storage/storage.service';
 import { TOcrImages, UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import { AwsSecretsManager } from '@/secrets-manager/aws-secrets-manager';
 import { InMemorySecretsManager } from '@/secrets-manager/in-memory-secrets-manager';
-import { FEATURE_LIST } from '@/customer/types';
 
 type TEntityId = string;
 
@@ -2580,7 +2579,7 @@ export class WorkflowService {
       async transaction => {
         const customer = await this.customerService.getByProjectId(projectId);
 
-        if (!customer.features?.[FEATURE_LIST.DOCUMENT_OCR]) {
+        if (!customer.features?.['isDocumentOcrEnabled']) {
           throw new BadRequestException(
             `Document OCR is not enabled for customer id ${customer.id}`,
           );
