@@ -4,8 +4,8 @@ import { UserInfo } from '@/user/user-info';
 import * as common from '@nestjs/common';
 import { HttpStatus, NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
-import { ApiOkResponse, ApiResponse } from '@nestjs/swagger';
-import { WorkflowRuntimeData } from '@prisma/client';
+import { ApiOkResponse, ApiProperty, ApiResponse } from '@nestjs/swagger';
+import type { WorkflowRuntimeData } from '@prisma/client';
 // import * as nestAccessControl from 'nest-access-control';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { putPluginsExampleResponse } from '@/workflow/workflow-controller-examples';
@@ -45,6 +45,15 @@ import { type Static, Type } from '@sinclair/typebox';
 import { defaultContextSchema } from '@ballerine/common';
 import { WorkflowRunSchema } from './schemas/workflow-run';
 import { ValidationError } from '@/errors';
+import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
+
+class Test {
+  @ApiProperty()
+  workflowDefinition!: WorkflowDefinitionModel;
+
+  @ApiProperty()
+  workflowRuntimeData!: WorkflowRuntimeListItemModel;
+}
 
 export const WORKFLOW_TAG = 'Workflows';
 @swagger.ApiBearerAuth()
@@ -181,7 +190,7 @@ export class WorkflowControllerExternal {
   }
 
   @common.Get('/:id')
-  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiOkResponse({ type: Test })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @UseCustomerAuthGuard()
