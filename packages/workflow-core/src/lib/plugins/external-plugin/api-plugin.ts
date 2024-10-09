@@ -121,14 +121,18 @@ export class ApiPlugin {
     if (typeof this.url === 'string') {
       _url = this.url;
     } else {
-      if (!this.url.url) {
+      // expected url to be an object { url: string, options: Record<string, string> }
+
+      if (this.url.url) {
+        _url = this.url.url;
+      } else {
         throw new Error('URL is required');
       }
 
       const { options } = this.url;
 
       if (options !== null && typeof options === 'object' && !Array.isArray(options)) {
-        _url = await this.replaceAllVariables(this.url.url, this.url.options);
+        _url = await this.replaceVariablesFromContext(this.url.url, this.url.options);
       } else {
         // if options is not an object
         throw new Error('Url options should be an object');
@@ -282,6 +286,12 @@ export class ApiPlugin {
   }
 
   async replaceAllVariables(content: string, context: TContext) {
+    const replacedContent = await this.replaceSecrets(content);
+
+    return this.replaceVariablesFromContext(replacedContent, context);
+  }
+
+  async replaceSecrets(content: string) {
     const placeholders = content.match(/{(.*?)}/g);
 
     if (!placeholders) return content;
@@ -292,12 +302,32 @@ export class ApiPlugin {
       const variableKey = placeholder.replace(/{|}/g, '');
 
       replacedContent = await this._onReplaceVariable(variableKey, replacedContent, placeholder);
+    }
+
+    return replacedContent;
+  }
+
+  async replaceVariablesFromContext(content: string, context: TContext) {
+    const placeholders = content.match(/{(.*?)}/g);
+
+    if (!placeholders) return content;
+
+    let replacedContent = content;
+
+    for (const placeholder of placeholders) {
+      const variableKey = placeholder.replace(/{|}/g, '');
+
+      if (variableKey.startsWith('secret')) {
+        continue;
+      }
 
       const placeholderValue = this.fetchObjectPlaceholderValue(context, variableKey);
 
-      replacedContent = placeholderValue
-        ? replacedContent.replace(placeholder, `${placeholderValue}`)
-        : replacedContent;
+      if (placeholderValue === undefined) {
+        continue;
+      }
+
+      replacedContent = replacedContent.replace(placeholder, `${placeholderValue}`);
     }
 
     return replacedContent;

@@ -159,6 +159,7 @@ type UboAsiaVerifyOptions = {
 type RegistryInformationAsiaVerifyOptions = {
   pluginKind: 'registry-information';
   vendor: 'asia-verify';
+  defaultCountry?: string;
 };
 
 type ApiPluginOptions =
@@ -235,12 +236,19 @@ const getKycEntityMapping = (takeEntityDetailFromKyc: boolean) => {
 };
 
 export const BALLERINE_API_PLUGIN_FACTORY = {
-  [BALLERINE_API_PLUGINS['registry-information']]: _ => ({
+  [BALLERINE_API_PLUGINS['registry-information']]: (
+    options: RegistryInformationAsiaVerifyOptions,
+  ) => ({
     name: 'businessInformation',
     displayName: 'Registry Information',
     pluginKind: 'registry-information',
     vendor: 'asia-verify',
-    url: `{secret.UNIFIED_API_URL}/companies-v2/{entity.data.country}/{entity.data.registrationNumber}`,
+    url: {
+      url: `{secret.UNIFIED_API_URL}/companies-v2/{country}/{entity.data.registrationNumber}`,
+      options: {
+        country: options.defaultCountry || 'entity.data.country',
+      },
+    },
     method: 'GET',
     persistResponseDestination: 'pluginsOutput.businessInformation',
     headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
@@ -457,7 +465,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
       vendor: 'asia-verify',
       displayName: 'UBO Check',
       url: {
-        url: `{secret.UNIFIED_API_URL}/companies/{country}/{entity.data.companyName}/ubo`,
+        url: `{secret.UNIFIED_API_URL}/companies/{country}/{entity.data.registrationNumber}/ubo`,
         options: {
           country: options.defaultCountry || 'entity.data.country',
         },
