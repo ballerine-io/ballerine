@@ -2,7 +2,16 @@ import { IsNullable } from '@/common/decorators/is-nullable.decorator';
 import { ApiProperty } from '@nestjs/swagger';
 import { WorkflowRuntimeDataStatus } from '@prisma/client';
 import { Expose } from 'class-transformer';
-import { IsDate, IsJSON, IsNotEmptyObject, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsDate,
+  IsJSON,
+  IsNotEmptyObject,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 
 export class WorkflowAssignee {
   @Expose()
@@ -21,6 +30,55 @@ export class WorkflowRuntimeListItemModel {
   @ApiProperty()
   @IsString()
   id!: string;
+
+  @Expose()
+  @ApiProperty({ required: false, type: String })
+  @IsOptional()
+  @IsString()
+  projectId?: string;
+
+  @ApiProperty({ required: false, type: String })
+  @IsOptional()
+  @IsNullable()
+  @IsString()
+  salesforceObjectName?: string | null;
+
+  @ApiProperty({ required: false, type: String })
+  @IsOptional()
+  @IsNullable()
+  @IsString()
+  salesforceRecordId?: string | null;
+
+  @ApiProperty({ required: false, type: String })
+  @IsOptional()
+  @IsNullable()
+  @IsString()
+  parentRuntimeDataId?: string | null;
+
+  @ApiProperty({ required: false, type: String })
+  @IsOptional()
+  @IsString()
+  endUserId?: string;
+
+  @ApiProperty({ required: false, type: String })
+  @IsOptional()
+  @IsString()
+  businessId?: string;
+
+  @ApiProperty({ required: false, type: String })
+  @IsOptional()
+  @IsString()
+  assigneeId?: string;
+
+  @ApiProperty({ required: false, type: String })
+  @IsOptional()
+  @IsString()
+  uiDefinitionId?: string;
+
+  @ApiProperty({ required: false, type: Number })
+  @IsOptional()
+  @IsNumber()
+  workflowDefinitionVersion?: number;
 
   @Expose()
   @ApiProperty()
@@ -48,14 +106,27 @@ export class WorkflowRuntimeListItemModel {
   context!: JSON;
 
   @Expose()
+  @ApiProperty()
+  @IsJSON()
+  config!: JSON;
+
+  @Expose()
   @IsNullable()
   @IsString()
   state!: string | null;
 
   @Expose()
   @IsNullable()
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  tags?: string[] | null;
+
+  @Expose()
+  @IsNullable()
+  @IsOptional()
   @ValidateNested()
-  assignee!: WorkflowAssignee | null;
+  assignee?: WorkflowAssignee | null;
 
   @Expose()
   @IsString()
@@ -75,4 +146,9 @@ export class WorkflowRuntimeListItemModel {
   @ApiProperty()
   @IsDate()
   updatedAt!: Date;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsDate()
+  assignedAt?: Date;
 }

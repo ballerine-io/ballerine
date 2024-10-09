@@ -379,7 +379,6 @@ export class WorkflowControllerInternal {
 
             definition: true,
             definitionType: true,
-            backend: true,
 
             extensions: true,
             persistStates: true,
