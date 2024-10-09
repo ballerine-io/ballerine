@@ -12,7 +12,7 @@ services:
     ports:
       - ${BACKOFFICE_PORT}:${BACKOFFICE_PORT}
     depends_on:
-      - service      
+      - service
     restart: on-failure
   headlessservice:
     volumes:
@@ -27,7 +27,7 @@ services:
       - ${HEADLESS_SVC_PORT}:${HEADLESS_SVC_PORT}
     depends_on:
       - service
-    restart: on-failure    
+    restart: on-failure
   workflows-dashboard:
     volumes:
       - ../apps/workflows-dashboard/:/app
@@ -42,20 +42,6 @@ services:
     depends_on:
       - service
     restart: on-failure
-  websocket-service:
-    volumes:
-      - ../services/websocket-service/:/app
-      - /app/node_modules  
-    build:
-      context: ../services/websocket-service
-      target: "dev"
-      args:
-        NPM_LOG_LEVEL: notice
-    ports:
-      - ${WEBSOCKET_SVC_PORT}:${WEBSOCKET_SVC_PORT}
-    depends_on:
-      - service
-    restart: on-failure    
   service:
     volumes:
       - ../services/workflows-service/:/app

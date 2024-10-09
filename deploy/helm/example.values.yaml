@@ -171,45 +171,6 @@ workflowsdashboard:
       #   hosts:
       #     - workflowdashboard.ballerine.io
 
-websocketService:
-  enabled: true
-  replicas: 1
-  strategyType: RollingUpdate
-  updateStrategy:
-    maxSurge: 1
-    maxUnavailable: '0'
-  nameOverride: websocketservice
-  service:
-    port: 3500
-    type: ClusterIP
-    protocol: TCP
-  image:
-    registry: ghcr.io
-    repository: 'ballerine-io/websocket-service'
-    pullPolicy: Always
-    tag: "dev"
-  ingress:
-    enabled: true
-    className: "nginx"
-    pathtype: Prefix
-    annotations:
-      kubernetes.io/ingress.class: nginx
-      ingress.annotations.service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "<your aws acm arn>"
-      # acme.cert-manager.io/http01-edit-in-place: "true"
-      # cert-manager.io/cluster-issuer: letsencrypt-staging
-      # cert-manager.io/common-name: websocket.ballerine.io
-      # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      nginx.ingress.kubernetes.io/limit-rps: "15"
-    tls : {}
-    hosts:
-      - host: websocket.dev.eu.ballerine.app
-        paths:
-          - path: /
-  applicationConfig:
-    PORT: 3500
-    NODE_ENV: development
-    COMPOSE_PROJECT_NAME: ballerine-x
-
 workflowService:
   enabled: true
   replicas: 1
