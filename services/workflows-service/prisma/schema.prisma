@@ -180,11 +180,9 @@ model WorkflowDefinition {
   contextSchema      Json?
   documentsSchema    Json?
   config             Json?
-  supportedPlatforms Json?
   extensions         Json?
   variant            String @default("DEFAULT")
 
-  backend       Json?
   persistStates Json?
   submitStates  Json?
 

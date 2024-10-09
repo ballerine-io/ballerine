@@ -143,7 +143,6 @@ export class WorkflowControllerInternal {
     status: 400,
     description: 'Validation error',
     schema: Type.Object({
-      errorCode: Type.Literal('BadRequest'),
       message: Type.String(),
       statusCode: Type.Literal(400),
       timestamp: Type.String({
@@ -380,7 +379,6 @@ export class WorkflowControllerInternal {
 
             definition: true,
             definitionType: true,
-            backend: true,
 
             extensions: true,
             persistStates: true,
