@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsDate,
   IsNotEmptyObject,
   IsNumber,
@@ -26,6 +27,8 @@ export class WorkflowDefinitionModel {
   projectId?: string;
 
   @ApiProperty()
+  @IsOptional()
+  @IsBoolean()
   isPublic?: boolean;
 
   @ApiProperty({ required: false, type: String })

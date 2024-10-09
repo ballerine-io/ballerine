@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { WorkflowRuntimeDataStatus } from '@prisma/client';
 import { Expose } from 'class-transformer';
 import {
+  IsArray,
   IsDate,
   IsJSON,
   IsNotEmptyObject,
@@ -32,21 +33,25 @@ export class WorkflowRuntimeListItemModel {
 
   @Expose()
   @ApiProperty({ required: false, type: String })
+  @IsOptional()
   @IsString()
-  projectId!: string;
+  projectId?: string;
 
   @ApiProperty({ required: false, type: String })
   @IsOptional()
+  @IsNullable()
   @IsString()
   salesforceObjectName?: string | null;
 
   @ApiProperty({ required: false, type: String })
   @IsOptional()
+  @IsNullable()
   @IsString()
   salesforceRecordId?: string | null;
 
   @ApiProperty({ required: false, type: String })
   @IsOptional()
+  @IsNullable()
   @IsString()
   parentRuntimeDataId?: string | null;
 
@@ -112,11 +117,14 @@ export class WorkflowRuntimeListItemModel {
 
   @Expose()
   @IsNullable()
-  @IsString()
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
   tags?: string[] | null;
 
   @Expose()
   @IsNullable()
+  @IsOptional()
   @ValidateNested()
   assignee?: WorkflowAssignee | null;
 
