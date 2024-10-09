@@ -247,7 +247,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
     url: {
       url: `{secret.UNIFIED_API_URL}/companies-v2/{country}/{entity.data.registrationNumber}`,
       options: {
-        country: options.defaultCountry ?? 'entity.data.country',
+        country: options.defaultCountry ?? '{entity.data.country}',
       },
     },
     method: 'GET',
@@ -380,7 +380,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
       url: {
         url: `{secret.UNIFIED_API_URL}/companies/{country}/{entity.data.companyName}/sanctions`,
         options: {
-          country: options.defaultCountry ?? 'entity.data.country',
+          country: options.defaultCountry ?? '{entity.data.country}',
         },
       },
       headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
@@ -470,7 +470,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
       url: {
         url: `{secret.UNIFIED_API_URL}/companies/{country}/{entity.data.registrationNumber}/ubo`,
         options: {
-          country: options.defaultCountry ?? 'entity.data.country',
+          country: options.defaultCountry ?? '{entity.data.country}',
         },
       },
       method: 'GET',
