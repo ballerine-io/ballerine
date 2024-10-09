@@ -26,7 +26,7 @@ export class WorkflowDefinitionModel {
   @IsString()
   projectId?: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false, type: Boolean })
   @IsOptional()
   @IsBoolean()
   isPublic?: boolean;
