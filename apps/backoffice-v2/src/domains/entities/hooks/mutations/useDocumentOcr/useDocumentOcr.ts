@@ -24,12 +24,11 @@ export const useDocumentOcr = ({ workflowId }: { workflowId: string }) => {
       if (
         !data.parsedData ||
         isEmptyObject(data.parsedData) ||
-        Object.entries(data.parsedData).filter(([_, value]) => {
-          return !(typeof value === 'string' && value.trim() === '');
-          //TODO fix this logic
-        }).length === 0
+        Object.entries(data.parsedData).every(([_, value]) => {
+          return (typeof value === 'string' && value.trim() === '') || !value;
+        })
       ) {
-        toast.success(t('toast:document_ocr.empty_extraction'));
+        return toast.info(t('toast:document_ocr.empty_extraction'));
       }
 
       toast.success(t('toast:document_ocr.success'));

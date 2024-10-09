@@ -1,7 +1,7 @@
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { checkIsBusiness } from '@/common/utils/check-is-business/check-is-business';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { CommonWorkflowStates, isObject, StateTag, valueOrNA } from '@ballerine/common';
+import { CommonWorkflowStates, StateTag, valueOrNA } from '@ballerine/common';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
 import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
@@ -373,16 +373,6 @@ export const useDocumentBlocks = ({
             ...propertiesSchema?.properties,
           } ?? {},
         ).map(([title, formattedValue]) => {
-          if (isObject(formattedValue)) {
-            return [
-              title,
-              {
-                ...formattedValue,
-                value: formattedValue.value || ocrResult?.parsedData?.[title],
-              },
-            ];
-          }
-
           return [title, formattedValue];
         });
 
@@ -416,6 +406,18 @@ export const useDocumentBlocks = ({
                       const getFieldValue = () => {
                         if (typeof value !== 'undefined') {
                           return value;
+                        }
+
+                        if (ocrResult?.parsedData?.[title]) {
+                          const isOcrValueString = typeof ocrResult.parsedData[title] === 'string';
+
+                          if (isOcrValueString && ocrResult.parsedData[title].length > 0) {
+                            return ocrResult.parsedData[title];
+                          }
+
+                          if (!isOcrValueString) {
+                            return ocrResult.parsedData[title];
+                          }
                         }
 
                         if (
