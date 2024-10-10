@@ -1,14 +1,17 @@
-import { createReportAdapter } from '@/components';
 import React, { ComponentProps, ReactNode, useMemo } from 'react';
-import { BusinessReportSummary } from '@/components/templates/report/components/BusinessReportSummary';
-import { WebsitesCompany } from '@/components/templates/report/components/WebsitesCompany';
-import { WebsiteLineOfBusiness } from '@/components/templates/report/components/WebsiteLineOfBusiness';
-import { WebsiteCredibility } from '@/components/templates/report/components/WebsiteCredibility';
-import { Ecosystem } from 'src/components/templates/report/components/Ecosystem';
-import { AdsAndSocialMedia } from '@/components/templates/report/components/AdsAndSocialMedia';
 import { Writable } from 'type-fest';
-import { Transactions } from '../../components/Transactions/Transactions';
 import { Crown } from 'lucide-react';
+
+import {
+  BusinessReportSummary,
+  WebsitesCompany,
+  WebsiteLineOfBusiness,
+  WebsiteCredibility,
+  Ecosystem,
+  AdsAndSocialMedia,
+  Transactions,
+  createReportAdapter,
+} from '@/components';
 
 export const useReportTabs = ({
   reportVersion,
@@ -24,6 +27,7 @@ export const useReportTabs = ({
   const adapter = createReportAdapter({
     reportVersion,
   });
+
   const {
     websitesCompanyAnalysis,
     websiteCredibilityAnalysis,
@@ -32,6 +36,7 @@ export const useReportTabs = ({
     websiteLineOfBusinessAnalysis,
     ecosystemAnalysis,
     summary,
+    ongoingMonitoringSummary,
     riskScore,
     riskLevels,
     companyReputationAnalysis,
@@ -98,6 +103,7 @@ export const useReportTabs = ({
               <h3 className={'mb-8 text-lg font-bold'}>Summary</h3>
               <BusinessReportSummary
                 summary={summary}
+                ongoingMonitoringSummary={ongoingMonitoringSummary}
                 riskScore={riskScore}
                 riskIndicators={riskIndicators as Writable<typeof riskIndicators>}
                 riskLevels={

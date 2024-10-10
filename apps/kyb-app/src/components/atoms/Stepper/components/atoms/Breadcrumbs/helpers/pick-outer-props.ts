@@ -11,6 +11,7 @@ export const pickOuterProps: ElementPropsPicker<BreadcrumbsOuterProps> = (
 
   const props: BreadcrumbsOuterProps = {
     className: ctw(themeParams.className, { [themeParams.activeClassName || '']: active }),
+    style: active ? themeParams.activeStyles : themeParams.styles,
   };
 
   return props;

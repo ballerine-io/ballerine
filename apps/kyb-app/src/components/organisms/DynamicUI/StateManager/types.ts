@@ -1,5 +1,8 @@
 import { StateMachineAPI } from '@/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
-import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
+import {
+  CollectionFlowConfig,
+  CollectionFlowContext,
+} from '@/domains/collection-flow/types/flow-context.types';
 import { AnyChildren, AnyObject } from '@ballerine/ui';
 import { MachineConfig } from 'xstate';
 
@@ -9,6 +12,7 @@ export interface StateManagerContext {
   stateApi: StateMachineAPI;
   state: string;
   payload: AnyObject;
+  config?: CollectionFlowConfig;
   isPluginLoading: boolean;
 }
 
@@ -21,4 +25,5 @@ export interface StateManagerProps {
   extensions: AnyObject;
   children: AnyChildren | StateManagerChildCallback;
   initialContext: CollectionFlowContext | null;
+  config?: CollectionFlowConfig;
 }

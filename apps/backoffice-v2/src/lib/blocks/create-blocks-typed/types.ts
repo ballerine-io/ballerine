@@ -115,6 +115,7 @@ export type TDetailsCell = {
   hideSeparator?: boolean;
   documents?: IEditableDetailsDocument[];
   contextUpdateMethod?: 'base' | 'director';
+  isSaveDisabled?: boolean;
   value: {
     id: string;
     title: string;

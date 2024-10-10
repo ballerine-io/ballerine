@@ -85,6 +85,11 @@ export const serverEnvSchema = {
     .optional()
     .default('/dev/customers/')
     .describe('AWS Secrets Manager prefix'),
+  ONGOING_REPORTS_LIMIT: z
+    .number()
+    .optional()
+    .default(50)
+    .describe('Limit of ongoing reports for each run'),
 
   // IN_MEMORY is reserved for environment variables
   IN_MEMORIES_SECRET_ACQUIRER_ID: z.string().optional(),

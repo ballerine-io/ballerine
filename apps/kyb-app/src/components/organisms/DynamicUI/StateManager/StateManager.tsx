@@ -15,6 +15,7 @@ export const StateManager = ({
   children,
   workflowId,
   initialContext,
+  config,
 }: StateManagerProps) => {
   const machine = useMemo(() => {
     const initialMachineState = {
@@ -31,6 +32,7 @@ export const StateManager = ({
     );
 
     machine.overrideContext(initialMachineState);
+
     return machine;
   }, []);
 
@@ -60,13 +62,16 @@ export const StateManager = ({
       },
       state,
       payload: contextPayload,
+      config,
       isPluginLoading: isPluginLoading,
     };
+
     return ctx;
   }, [
     state,
     contextPayload,
     isPluginLoading,
+    config,
     getState,
     sendEvent,
     invokePlugin,

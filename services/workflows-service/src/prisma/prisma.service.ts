@@ -3,6 +3,7 @@ import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isErrorWithMessage } from '@ballerine/common';
 import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaTransaction } from '@/types';
 
 const prismaExtendedClient = (prismaClient: PrismaClient) =>
   prismaClient.$extends({
@@ -69,9 +70,12 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     await this.$disconnect();
   }
 
-  async acquireLock(lockId: number) {
+  async acquireLock(
+    lockId: number,
+    transaction: PrismaTransaction | PrismaClient = this,
+  ): Promise<boolean> {
     try {
-      const result = await this.$queryRaw<
+      const result = await transaction.$queryRaw<
         Array<{ acquired: boolean }>
       >`SELECT pg_try_advisory_lock(${lockId}) AS acquired;`;
       const aquiredResult = result[0];
@@ -84,9 +88,12 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     }
   }
 
-  async releaseLock(lockId: number): Promise<void> {
+  async releaseLock(
+    lockId: number,
+    transaction: PrismaTransaction | PrismaClient = this,
+  ): Promise<void> {
     try {
-      await this.$queryRaw`SELECT pg_advisory_unlock(${lockId});`;
+      await transaction.$queryRaw`SELECT pg_advisory_unlock(${lockId});`;
       this.logger.debug('Lock released.');
     } catch (error) {
       this.logger.error(`Failed to release lock: ${isErrorWithMessage(error) && error.message}`);

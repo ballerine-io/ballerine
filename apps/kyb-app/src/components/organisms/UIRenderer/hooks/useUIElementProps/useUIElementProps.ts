@@ -1,26 +1,38 @@
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { useRuleExecutor } from '@/components/organisms/DynamicUI/hooks/useRuleExecutor';
+import { injectIndexesAtRulesPaths } from '@/components/organisms/UIRenderer/hooks/useUIElementProps/helpers';
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
 import { UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 
-export const useUIElementProps = (definition: UIElement<AnyObject>) => {
+export const useUIElementProps = (
+  definition: UIElement<AnyObject>,
+  index: number | null = null,
+) => {
   const { payload } = useStateManagerContext();
   const { state } = useDynamicUIContext();
-  const [availabilityTestResulsts, visibilityTestResults] = [
+  const availabilityRules = useMemo(() => {
+    return injectIndexesAtRulesPaths(definition.availableOn || [], index);
+  }, [definition, index]);
+
+  const visibilityRules = useMemo(() => {
+    return injectIndexesAtRulesPaths(definition.visibleOn || [], index);
+  }, [definition, index]);
+
+  const [availabilityTestResults, visibilityTestResults] = [
     useRuleExecutor(
       payload,
       // @ts-ignore
-      definition.availableOn,
+      availabilityRules,
       definition,
       state,
     ),
     useRuleExecutor(
       payload,
       // @ts-ignore
-      definition.visibleOn,
+      visibilityRules,
       definition,
       state,
     ),
@@ -32,10 +44,10 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
   const disabled = useMemo(() => {
     if (isLoading || isDisabled || state.isRevision) return true;
 
-    return availabilityTestResulsts.length
-      ? availabilityTestResulsts.some(result => !result.isValid)
+    return availabilityTestResults.length
+      ? availabilityTestResults.some(result => !result.isValid)
       : false;
-  }, [availabilityTestResulsts, isLoading, isDisabled, state.isRevision]);
+  }, [availabilityTestResults, isLoading, isDisabled, state.isRevision]);
 
   const hidden = useMemo(() => {
     if (!definition.visibleOn || !definition.visibleOn.length) return false;

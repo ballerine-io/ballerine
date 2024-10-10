@@ -20,9 +20,8 @@ export const useWebsiteMonitoringBusinessReportTab = ({
   const adapter = createReportAdapter({
     reportVersion: businessReport?.report?.version,
   });
-  const { riskLevels, riskScore, summary, homepageScreenshotUrl } = adapter(
-    businessReport?.report?.data ?? {},
-  );
+  const { riskLevels, riskScore, summary, ongoingMonitoringSummary, homepageScreenshotUrl } =
+    adapter(businessReport?.report?.data ?? {});
   const tabs = tabsWithSummary?.filter(tab => tab.value !== 'summary');
   const [{ activeMonitoringTab }] = useSearchParamsByEntity();
   const { search } = useLocation();
@@ -51,6 +50,7 @@ export const useWebsiteMonitoringBusinessReportTab = ({
     riskScore,
     tabs,
     summary,
+    ongoingMonitoringSummary,
     getUpdatedSearchParamsWithActiveMonitoringTab,
     search,
     homepageScreenshotUrl,

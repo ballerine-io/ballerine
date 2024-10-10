@@ -12,7 +12,12 @@ export const EntitySchema = Type.Object(
         lastName: Type.String(),
         email: Type.Optional(Type.Union([Type.String(), Type.Null()])),
         phone: Type.Optional(Type.Union([Type.String(), Type.Null()])),
-        country: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+        country: Type.Optional(
+          Type.Union([
+            Type.String({ description: 'ISO 3166-1 alpha-2 country code' }),
+            Type.Null(),
+          ]),
+        ),
         dateOfBirth: Type.Optional(
           Type.Union([Type.String({ format: 'date' }), Type.String(), Type.Null()]),
         ),
@@ -26,8 +31,18 @@ export const EntitySchema = Type.Object(
         companyName: Type.String(),
         registrationNumber: Type.Optional(Type.Union([Type.String(), Type.Null()])),
         legalForm: Type.Optional(Type.Union([Type.String(), Type.Null()])),
-        country: Type.Optional(Type.Union([Type.String(), Type.Null()])),
-        countryOfIncorporation: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+        country: Type.Optional(
+          Type.Union([
+            Type.String({ description: 'ISO 3166-1 alpha-2 country code' }),
+            Type.Null(),
+          ]),
+        ),
+        countryOfIncorporation: Type.Optional(
+          Type.Union([
+            Type.String({ description: 'ISO 3166-1 alpha-2 country code' }),
+            Type.Null(),
+          ]),
+        ),
         dateOfIncorporation: Type.Optional(
           Type.Union([Type.String({ format: 'date' }), Type.String(), Type.Null()]),
         ),

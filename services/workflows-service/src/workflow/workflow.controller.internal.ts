@@ -143,7 +143,6 @@ export class WorkflowControllerInternal {
     status: 400,
     description: 'Validation error',
     schema: Type.Object({
-      errorCode: Type.Literal('BadRequest'),
       message: Type.String(),
       statusCode: Type.Literal(400),
       timestamp: Type.String({
@@ -338,6 +337,24 @@ export class WorkflowControllerInternal {
     }
   }
 
+  @common.Get(':id/documents/:documentId/run-ocr')
+  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseGuards(WorkflowAssigneeGuard)
+  async runDocumentOcr(
+    @common.Param() params: DocumentUpdateParamsInput,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    const ocrResult = await this.service.runOCROnDocument({
+      workflowRuntimeId: params?.id,
+      documentId: params?.documentId,
+      projectId: currentProjectId,
+    });
+
+    return ocrResult;
+  }
+
   // @nestAccessControl.UseRoles({
   //   resource: 'Workflow',
   //   action: 'delete',
@@ -362,7 +379,6 @@ export class WorkflowControllerInternal {
 
             definition: true,
             definitionType: true,
-            backend: true,
 
             extensions: true,
             persistStates: true,

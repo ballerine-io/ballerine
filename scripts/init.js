@@ -27,7 +27,6 @@ console.log('🍎 preparing environment');
 
 const directories = [
   'services/workflows-service',
-  'services/websocket-service',
   'apps/backoffice-v2',
   'apps/kyb-app',
   'apps/workflows-dashboard',
