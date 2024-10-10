@@ -7,6 +7,7 @@ import { TextWithNAFallback } from '@/components/atoms/TextWithNAFallback';
 
 export const BusinessReportSummary: FunctionComponent<{
   summary: string;
+  ongoingMonitoringSummary?: string;
   riskLevels: {
     legalRisk: SeverityType;
     chargebackRisk: SeverityType;
@@ -24,7 +25,15 @@ export const BusinessReportSummary: FunctionComponent<{
   riskScore: number;
   homepageScreenshotUrl: string | null;
   Link: ComponentProps<typeof RiskIndicatorsSummary>['Link'];
-}> = ({ riskIndicators, summary, riskLevels, riskScore, homepageScreenshotUrl, Link }) => {
+}> = ({
+  riskIndicators,
+  summary,
+  ongoingMonitoringSummary,
+  riskLevels,
+  riskScore,
+  homepageScreenshotUrl,
+  Link,
+}) => {
   const severity = getSeverityFromRiskScore(riskScore);
 
   return (
@@ -50,6 +59,14 @@ export const BusinessReportSummary: FunctionComponent<{
             )}
           </div>
         </CardHeader>
+        {ongoingMonitoringSummary && (
+          <CardContent>
+            <div>
+              <h4 className={'mb-4 font-semibold'}>Ongoing Monitoring Summary</h4>
+              <TextWithNAFallback as={'p'}>{ongoingMonitoringSummary}</TextWithNAFallback>
+            </div>
+          </CardContent>
+        )}
         <CardContent>
           <div>
             <h4 className={'mb-4 font-semibold'}>Merchant Risk Summary</h4>

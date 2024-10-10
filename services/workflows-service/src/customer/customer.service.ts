@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CustomerRepository } from '@/customer/customer.repository';
 import { Prisma } from '@prisma/client';
-import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
+import { TCustomerWithFeatures } from '@/customer/types';
 import { ApiKeyService } from '@/customer/api-key/api-key.service';
 import { generateHashedKey } from '@/customer/api-key/utils';
 
@@ -33,28 +33,22 @@ export class CustomerService {
   }
 
   async list(args?: Parameters<CustomerRepository['findMany']>[0]) {
-    return (await this.repository.findMany(args)) as unknown as TCustomerWithDefinitionsFeatures[];
+    return (await this.repository.findMany(args)) as unknown as TCustomerWithFeatures[];
   }
 
   async getById(id: string, args?: Parameters<CustomerRepository['findById']>[1]) {
-    return (await this.repository.findById(
-      id,
-      args,
-    )) as unknown as TCustomerWithDefinitionsFeatures;
+    return (await this.repository.findById(id, args)) as unknown as TCustomerWithFeatures;
   }
 
   async getByProjectId(projectId: string, args?: Omit<Prisma.CustomerFindFirstArgsBase, 'where'>) {
     return (await this.repository.findByProjectId(
       projectId,
       args,
-    )) as unknown as TCustomerWithDefinitionsFeatures;
+    )) as unknown as TCustomerWithFeatures;
   }
 
   async updateById(id: string, args: Parameters<CustomerRepository['updateById']>[1]) {
-    return (await this.repository.updateById(
-      id,
-      args,
-    )) as unknown as TCustomerWithDefinitionsFeatures;
+    return (await this.repository.updateById(id, args)) as unknown as TCustomerWithFeatures;
   }
 
   async deleteById(id: string, args?: Parameters<CustomerRepository['deleteById']>[1]) {
