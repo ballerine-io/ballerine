@@ -1,0 +1,11 @@
+- name: Deploy Ballerine with localhost
+  shell: sudo docker-compose -f docker-compose-build.yml up -d
+  args:
+    chdir: "{{ install_dir }}/deploy"
+  when: vite_api_url == ""
+
+- name: Deploy Ballerine with custom Domain
+  shell: sudo docker-compose -f docker-compose-build-https.yml up -d
+  args:
+    chdir: "{{ install_dir }}/deploy"
+  when: vite_api_url != ""

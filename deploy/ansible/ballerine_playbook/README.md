@@ -99,7 +99,7 @@ You can run the ansible playbook with the following command
 
 ```bash
 cd ballerine/deploy/ansible/ballerine_playbook
-ansible-playbook -i inventory.txt ballerine-playbook.yml
+ansible-playbook -i inventory.txt ballerine-playbook.yml --skip-tags packer
 ```
 
 The command above will use the host information from the `inventory` file.
