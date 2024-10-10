@@ -17,6 +17,7 @@ import { StepperUI } from '@/components/organisms/UIRenderer/elements/StepperUI'
 import { SubmitButton } from '@/components/organisms/UIRenderer/elements/SubmitButton';
 import { Title } from '@/components/organisms/UIRenderer/elements/Title';
 import { useCustomer } from '@/components/providers/CustomerProvider';
+import { fetchFlowContext } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { prepareInitialUIState } from '@/helpers/prepareInitialUIState';
 import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
@@ -140,18 +141,21 @@ export const CollectionFlow = withSessionProtected(() => {
               }}
               onFinish={async (tools, lastState) => {
                 tools.setElementCompleted(lastState, true);
-
                 const isAlreadyCompleted = get(
                   stateApi.getContext(),
                   `flowConfig.stepsProgress.${lastState}.isCompleted`,
                 );
 
                 if (!isAlreadyCompleted) {
+                  const latestContext = await fetchFlowContext();
+
                   set(
-                    stateApi.getContext(),
+                    latestContext.context,
                     `flowConfig.stepsProgress.${lastState}.isCompleted`,
                     true,
                   );
+
+                  stateApi.setContext(latestContext.context);
 
                   await stateApi.invokePlugin('sync_workflow_runtime');
                 }

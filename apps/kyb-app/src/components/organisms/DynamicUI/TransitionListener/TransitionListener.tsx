@@ -51,7 +51,7 @@ export const TransitionListener = ({
   useEffect(() => {
     const currentPageIndex = pages.findIndex(page => page.stateName === state);
 
-    if (currentPageIndex === -1) {
+    if (currentPageIndex === -1 && state === 'finish') {
       onFinish && onFinish({ setElementCompleted: helpersRef.current }, prevStateRef.current);
     }
   }, [state, pages, helpersRef, prevStateRef]);
