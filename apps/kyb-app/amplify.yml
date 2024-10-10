@@ -7,7 +7,7 @@ applications:
             - npm install --legacy-peer-deps
         build:
           commands:
-            - "NODE_OPTIONS=--max-old-space-size=8192 npm run build"
+            - 'NODE_OPTIONS=--max-old-space-size=8192 npm run build'
       artifacts:
         baseDirectory: /dist
         files:
