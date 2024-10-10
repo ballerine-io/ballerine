@@ -153,7 +153,6 @@ export class WorkflowService {
       version: true,
       definition: true,
       definitionType: true,
-      backend: true,
       extensions: true,
       persistStates: true,
       submitStates: true,
@@ -166,9 +165,7 @@ export class WorkflowService {
         contextSchema: data.contextSchema as InputJsonValue,
         documentsSchema: data.documentsSchema as InputJsonValue,
         config: data.config as InputJsonValue,
-        supportedPlatforms: data.supportedPlatforms as InputJsonValue,
         extensions: data.extensions as InputJsonValue,
-        backend: data.backend as InputJsonValue,
         persistStates: data.persistStates as InputJsonValue,
         submitStates: data.submitStates as InputJsonValue,
       },
@@ -193,9 +190,7 @@ export class WorkflowService {
       definition: true,
       contextSchema: true,
       config: true,
-      supportedPlatforms: true,
       extensions: true,
-      backend: true,
       persistStates: true,
       submitStates: true,
     };
@@ -705,7 +700,6 @@ export class WorkflowService {
       version: true,
       definition: true,
       definitionType: true,
-      backend: true,
       extensions: true,
       persistStates: true,
       submitStates: true,
@@ -2580,9 +2574,9 @@ export class WorkflowService {
       async transaction => {
         const customer = await this.customerService.getByProjectId(projectId);
 
-        if (!customer.features?.[FEATURE_LIST.DOCUMENT_OCR]?.enabled) {
+        if (!customer.features?.[FEATURE_LIST.DOCUMENT_OCR]) {
           throw new BadRequestException(
-            `$Document OCR is not enabled for customer id ${customer.id}`,
+            `Document OCR is not enabled for customer id ${customer.id}`,
           );
         }
 

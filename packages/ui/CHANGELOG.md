@@ -1,5 +1,19 @@
 # @ballerine/ui
 
+## 0.5.37
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.39
+
+## 0.5.36
+
+### Patch Changes
+
+- Fixed text field placeholder color
+
 ## 0.5.35
 
 ### Patch Changes
