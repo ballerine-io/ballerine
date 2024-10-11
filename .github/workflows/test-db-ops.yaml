@@ -36,7 +36,9 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
-  SHORT_HASH: ''
+  SHORT_HASH: ${{ github.event.client_payload.environment == 'prod' && github.env.PROD_WF_SHORT_SHA || github.event.client_payload.environment == 'sb' && github.env.SB_WF_SHORT_SHA || github.env.DEV_WF_SHORT_SHA }}
+  MIGRATION_ENV: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.environment || inputs.environment }}
+  MIGRATION_REF: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || inputs.environment }}
 
 jobs:
   check_if_data_migration_needed:
@@ -56,11 +58,11 @@ jobs:
         run: |
           cd services/workflows-service/prisma/data-migrations
 
-          is_exists=$(git ls-remote --exit-code --heads -t --ref -q origin "${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || inputs.environment }}" | wc -l)
+          is_exists=$(git ls-remote --exit-code --heads -t --ref -q origin "${{ env.MIGRATION_REF }}" | wc -l)
 
           # Check if the branch exists by counting the number of results
           if [ $is_exists -eq 0  ]; then
-            echo "Branch '${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || inputs.environment }}' does not exist."
+            echo "Branch '${{ env.MIGRATION_REF }}' does not exist."
             echo "should_build=false" >> $GITHUB_OUTPUT
           else
             echo "should_build=true" >> $GITHUB_OUTPUT
@@ -70,36 +72,34 @@ jobs:
     runs-on: ubuntu-latest
     needs: [check_if_data_migration_needed]
     if: ${{ needs.check_if_data_migration_needed.outputs.should_build == 'true' }}
-    outputs:
-      shorthash: ${{ steps.lastcommit.outputs.shorthash }}
     permissions:
       contents: read
       packages: write
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Get Latest Commit ID
-        id: lastcommit
-        if: ${{ github.event_name == 'repository_dispatch' }}
-        uses: nmbgeek/github-action-get-latest-commit@main
-        with:
-          owner: ${{ github.repository_owner }}
-          repo: ballerine
-          branch: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || inputs.environment }}
-
-      - name: Set Commit Id as Env 
-        run: echo "SHORT_HASH=${{ steps.lastcommit.outputs.shorthash }}" >> $GITHUB_ENV  
+        uses: actions/checkout@v4 
       
       - name: Checkout wf-data-migration
         uses: actions/checkout@v4
         with:
           repository: ballerine-io/wf-data-migration
           token: ${{ secrets.SUBMODULES_TOKEN }}
-          ref: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || inputs.environment }}
+          ref: ${{ env.MIGRATION_REF }}
           fetch-depth: 1
           path: services/workflows-service/prisma/data-migrations
+
+      - name: Get Latest Commit ID
+        id: lastcommit
+        uses: nmbgeek/github-action-get-latest-commit@main
+        with:
+          owner: ${{ github.repository_owner }}
+          token: ${{ secrets.SUBMODULES_TOKEN }}
+          repo: wf-data-migrations
+          branch: ${{ env.MIGRATION_REF }}
+  
+      - name: Set Commit Id as Env 
+        run: echo "SUBMODULE_SHORT_HASH=${{ steps.lastcommit.outputs.shorthash }}" >> $GITHUB_ENV
       
       - name: Cache Docker layers
         id: cache
@@ -132,13 +132,12 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}-ee
           tags: |
-            type=raw,value=${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || inputs.environment }}
-            type=raw,value=${{ github.event_name == 'repository_dispatch' && steps.lastcommit.outputs.shorthash || inputs.sha }}-${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || inputs.environment }}
-            type=raw,value=latest,enable=${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref  == 'prod' ||  inputs.environment == 'prod' }}
+            type=raw,value=${{ env.MIGRATION_ENV }}
+            type=raw,value=${{ env.SHORT_HASH }}-${{ github.env.SUBMODULE_SHORT_HASH }}-${{ env.MIGRATION_ENV }}
+            type=raw,value=latest,enable=${{ env.MIGRATION_ENV == 'prod' }}
             type=sha,format=short
             
       - name: Build and push ee Docker image
-        if: ${{ github.event_name != 'repository_dispatch' }}
         uses: docker/build-push-action@v5
         with:
           context: services/workflows-service
@@ -148,20 +147,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           tags: ${{ steps.eemeta.outputs.tags }}
           build-args: |
-            "BASE_IMAGE=ghcr.io/${{ github.repository_owner }}/workflows-service:${{ inputs.sha }}-${{ inputs.environment }}"
-      
-      - name: Build and push ee Docker image
-        if: ${{ github.event_name == 'repository_dispatch' }}
-        uses: docker/build-push-action@v5
-        with:
-          context: services/workflows-service
-          file: services/workflows-service/Dockerfile.ee
-          platforms: linux/amd64
-          push: false
-          cache-from: type=local,src=/tmp/.buildx-cache
-          tags: ${{ steps.eemeta.outputs.tags }}
-          build-args: |
-            "BASE_IMAGE=ghcr.io/${{ github.repository_owner }}/workflows-service:${{ steps.lastcommit.outputs.shorthash }}-${{ github.event.client_payload.ref }}"
+            "BASE_IMAGE=ghcr.io/${{ github.repository_owner }}/workflows-service:${{ env.SHORT_HASH }}-${{ env.MIGRATION_ENV }}"
   update-helm-chart:
     runs-on: ubuntu-latest
     needs: build-and-push-ee-image
@@ -187,35 +173,35 @@ jobs:
         id: update_helm_check
         shell: bash
         run: |
-          if [ -f "kubernetes/helm/wf-service/${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || inputs.environment }}-custom-values.yaml" ]; then
-            echo "file_name=${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || inputs.environment }}-custom-values.yaml" >> "$GITHUB_OUTPUT"
-            echo ${{ github.event_name == 'workflow_dispatch' && needs.build-and-push-ee-image.outputs.shorthash || inputs.sha }}
+          if [ -f "kubernetes/helm/wf-service/${{ env.MIGRATION_ENV }}-custom-values.yaml" ]; then
+            echo "file_name=${{ env.MIGRATION_ENV }}-custom-values.yaml" >> "$GITHUB_OUTPUT"
+            echo ${{ env.SHORT_HASH }}-${{ github.env.SUBMODULE_SHORT_HASH }}
           else
             echo "file_name=dev-custom-values.yaml" >> "$GITHUB_OUTPUT"
-            echo ${{ github.event_name == 'workflow_dispatch' && needs.build-and-push-ee-image.outputs.shorthash || inputs.sha }}
+            echo ${{ env.SHORT_HASH }}-${{ github.env.SUBMODULE_SHORT_HASH }}
           fi
             
-      # - name: Update workflow-service image version in the HelmChart
-      #   uses: fjogeleit/yaml-update-action@main
-      #   with:
-      #     repository: ballerine-io/cloud-infra-config
-      #     branch: main
-      #     commitChange: true
-      #     message: "Update wf-service image Version to ${{ github.event_name == 'workflow_dispatch' && needs.build-and-push-ee-image.outputs.shorthash || inputs.sha }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})"
-      #     token: ${{ secrets.GIT_TOKEN }}
-      #     changes: |
-      #       {
-      #         "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
-      #           "dbMigrate.image.tag": "${{ github.event_name == 'repository_dispatch' && needs.build-and-push-ee-image.outputs.shorthash || inputs.sha }}-${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || inputs.environment}}",
-      #           "dataSync.image.tag": "${{ github.event_name == 'repository_dispatch' && needs.build-and-push-ee-image.outputs.shorthash || inputs.sha }}-${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || inputs.environment}}"
-      #         }
-      #       }
+      - name: Update workflow-service image version in the HelmChart
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          repository: ballerine-io/cloud-infra-config
+          branch: main
+          commitChange: true
+          message: "Update ${{ env.MIGRATION_ENV }} wf-service image Version to ${{ env.SHORT_HASH }}-${{ github.env.SUBMODULE_SHORT_HASH }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})"
+          token: ${{ secrets.GIT_TOKEN }}
+          changes: |
+            {
+              "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
+                "dbMigrate.image.tag": "${{ env.SHORT_HASH }}-${{ github.env.SUBMODULE_SHORT_HASH }}-${{ env.MIGRATION_ENV }}",
+                "dataSync.image.tag": "${{ env.SHORT_HASH }}-${{ github.env.SUBMODULE_SHORT_HASH }}-${{ env.MIGRATION_ENV }}"
+              }
+            }
 
   # sync-argo-app:
   #   runs-on: ubuntu-latest
-  #   environment: ${{ inputs.environment }}
+  #   environment: ${{ env.MIGRATION_ENV }}
   #   env:
-  #     stage: ${{ inputs.environment }}
+  #     stage: ${{ env.MIGRATION_ENV }}
   #   permissions:
   #     contents: read
   #   steps:
@@ -230,20 +216,20 @@ jobs:
   #         argocd_password: ${{ secrets.ARGOCD_PASSWORD }}
   #         argocd_server: ${{ secrets.ARGOCD_SERVER }}
         
-  # send-to-slack:
-  #   runs-on: ubuntu-latest
-  #   needs: [update-helm-chart]
-  #   if: ${{ needs.update-helm-chart.result == 'success' }}
-  #   permissions:
-  #     contents: read
-  #     packages: write
+  send-to-slack:
+    runs-on: ubuntu-latest
+    needs: [update-helm-chart]
+    if: ${{ needs.update-helm-chart.result == 'success' }}
+    permissions:
+      contents: read
+      packages: write
 
-  #   steps:
-  #     - name: Send alert to Slack channel
-  #       id: slack
-  #       uses: slackapi/slack-github-action@v1.26.0
-  #       with:
-  #         channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
-  #         slack-message: "Wf-service Migrations in ${{ inputs.environment }} build result: ${{ job.status }}. successfully updated the wf-service migration jobs helm values for ${{ inputs.environment }}."
-  #       env:
-  #         SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}
+    steps:
+      - name: Send alert to Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
+          slack-message: "Wf-service Migrations in ${{ env.MIGRATION_ENV }} with tag: ${{ env.SHORT_HASH }}-${{ github.env.SUBMODULE_SHORT_HASH }}-${{ env.MIGRATION_ENV }} and build result: ${{ job.status }}. successfully updated the wf-service migration jobs helm values for ${{ env.MIGRATION_ENV }}."
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}
