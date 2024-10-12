@@ -2,7 +2,7 @@ import { useFileAssigner } from '@/components/organisms/UIRenderer/elements/JSON
 import { useFileRepository } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileRepository';
 import { useFileUploading } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading';
 import { DocumentUploadFieldProps } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/types';
-import { Button, Input } from '@ballerine/ui';
+import { Button, ctw, Input } from '@ballerine/ui';
 import { Upload, XCircle } from 'lucide-react';
 import { useCallback, useRef } from 'react';
 
@@ -63,7 +63,10 @@ export const FileUploaderField = ({
 
   return (
     <div
-      className="relative flex h-[56px] flex-row items-center gap-3 rounded-[16px] border bg-white px-4"
+      className={ctw(
+        'relative flex h-[56px] flex-row items-center gap-3 rounded-[16px] border bg-white px-4',
+        { 'opacity-50 pointer-events-none': disabled },
+      )}
       onClick={handleContainerClick}
     >
       <div className="flex gap-3 text-[#007AFF]">
