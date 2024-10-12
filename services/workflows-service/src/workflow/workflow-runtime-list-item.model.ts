@@ -27,7 +27,7 @@ export class WorkflowAssignee {
 
 export class WorkflowRuntimeListItemModel {
   @Expose()
-  @ApiProperty()
+  @ApiProperty({ required: true, type: String })
   @IsString()
   id!: string;
 
@@ -81,17 +81,20 @@ export class WorkflowRuntimeListItemModel {
   workflowDefinitionVersion?: number;
 
   @Expose()
-  @ApiProperty()
+  @ApiProperty({ required: true, type: String })
   @IsString()
   workflowDefinitionName!: string;
 
   @Expose()
-  @ApiProperty()
+  @ApiProperty({ required: true, type: String })
   @IsString()
   workflowDefinitionId!: string;
 
   @Expose()
-  @ApiProperty()
+  @ApiProperty({
+    required: true,
+    type: 'object',
+  })
   @IsNotEmptyObject()
   workflowDefinition!: object;
 
@@ -101,18 +104,25 @@ export class WorkflowRuntimeListItemModel {
   status!: WorkflowRuntimeDataStatus;
 
   @Expose()
-  @ApiProperty()
+  @ApiProperty({
+    required: true,
+    type: 'object',
+  })
   @IsJSON()
   context!: JSON;
 
   @Expose()
-  @ApiProperty()
+  @ApiProperty({
+    required: true,
+    type: 'object',
+  })
   @IsJSON()
   config!: JSON;
 
   @Expose()
   @IsNullable()
   @IsString()
+  @ApiProperty({ required: true, type: String })
   state!: string | null;
 
   @Expose()

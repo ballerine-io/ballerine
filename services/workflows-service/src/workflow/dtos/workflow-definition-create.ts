@@ -53,7 +53,10 @@ export class WorkflowDefinitionCreateDto {
   @IsString()
   definitionType!: string;
 
-  @ApiProperty({ required: true, type: Object })
+  @ApiProperty({
+    required: true,
+    type: 'object',
+  })
   @IsNotEmptyObject()
   @IsObject()
   definition!: Record<string, unknown>;
