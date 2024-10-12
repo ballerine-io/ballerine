@@ -9,7 +9,7 @@ export interface PageError {
   pageName: string;
   stateName: string;
   errors: ErrorField[];
-  _elements: UIElement<AnyObject>[];
+  _elements: Array<UIElement<AnyObject>>;
 }
 
 export const selectDirectors = (context: AnyObject) =>

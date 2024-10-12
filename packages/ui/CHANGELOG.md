@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.38
+
+### Patch Changes
+
+- Fixed textarea placeholder
+
 ## 0.5.37
 
 ### Patch Changes
