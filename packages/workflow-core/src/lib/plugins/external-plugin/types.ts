@@ -4,6 +4,7 @@ import { ActionablePlugin } from '../types';
 
 import { AnyRecord } from '@ballerine/common';
 import { SecretsManager } from '@/lib/types';
+import { ApiEmailTemplates } from './vendor-consts';
 
 export interface ValidatableTransformer {
   transformers?: Transformers;
@@ -13,8 +14,9 @@ export interface IApiPluginParams {
   name: string;
   pluginKind?: string;
   stateNames: string[];
-  url: string;
+  url: string | { url: string; options: Record<string, string> };
   vendor?: string;
+  template?: ApiEmailTemplates;
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
   request?: ValidatableTransformer;
   response?: ValidatableTransformer;
