@@ -46,12 +46,23 @@ export const useUbosRegistryProvidedBlock = ({
       return {
         type: 'node',
         value: (
-          <div className={'min-h-[27rem] w-full'}>
-            <ReactFlow nodeTypes={nodeTypes} nodes={uiNodes} edges={uiEdges} fitView>
-              <MiniMap />
-              <Controls />
-              <Background />
-            </ReactFlow>
+          <div className="min-h-[27rem] p-4">
+            <div className={'d-full rounded-sm border border-slate-200'}>
+              <ReactFlow
+                nodeTypes={nodeTypes}
+                nodes={uiNodes}
+                edges={uiEdges}
+                defaultViewport={{
+                  x: 500,
+                  y: 50,
+                  zoom: 0.8,
+                }}
+              >
+                <MiniMap />
+                <Controls />
+                <Background />
+              </ReactFlow>
+            </div>
           </div>
         ),
       } satisfies Extract<

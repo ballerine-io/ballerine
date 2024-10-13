@@ -15,11 +15,15 @@ export const CustomNode: FunctionComponent<NodeProps> = ({
       <div className={'relative'}>
         <Handle type="source" position={Position.Top} />
         <Card className={'w-48'}>
-          <CardContent className={'p-4 text-center'}>{data.label}</CardContent>
+          <CardContent className={'p-4 text-center'}>
+            {data.label}
+            {data.sharePercentage && (
+              <div className={'text-sm font-bold'}>{data.sharePercentage}</div>
+            )}
+          </CardContent>
         </Card>
         <Handle type="target" position={Position.Bottom} />
       </div>
-      {data.sharePercentage && <span className={'text-xs'}>{data.sharePercentage}</span>}
     </div>
   );
 };
