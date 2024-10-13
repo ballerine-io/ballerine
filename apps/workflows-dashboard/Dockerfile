@@ -19,10 +19,18 @@ CMD ["npm", "run", "dev", "--host"]
 
 FROM nginx:stable-alpine as prod
 
+WORKDIR /app
+
 COPY --from=dev /app/dist /usr/share/nginx/html
+
+COPY --from=dev /app/entrypoint.sh /app/entrypoint.sh
 
 COPY example.nginx.conf /etc/nginx/conf.d/default.conf
 
+RUN chmod a+x /app/entrypoint.sh;
+
 EXPOSE 80
+
+ENTRYPOINT [ "/app/entrypoint.sh" ]
 
 CMD ["nginx", "-g", "daemon off;"]
