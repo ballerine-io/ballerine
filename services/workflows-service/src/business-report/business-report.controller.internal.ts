@@ -20,7 +20,7 @@ import {
   ListBusinessReportsDto,
   ListBusinessReportsSchema,
 } from '@/business-report/list-business-reports.dto';
-import { Business, BusinessReportStatus, Prisma } from '@prisma/client';
+import { Business, BusinessReportStatus, BusinessReportType, Prisma } from '@prisma/client';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { CreateBusinessReportDto } from '@/business-report/dto/create-business-report.dto';
 import {
@@ -239,6 +239,19 @@ export class BusinessReportControllerInternal {
       where: {
         businessId,
         batchId,
+        OR: [
+          {
+            type: {
+              not: {
+                equals: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+              },
+            },
+          },
+          {
+            type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+            status: BusinessReportStatus.completed,
+          },
+        ],
         ...(type ? { type } : {}),
         ...(search
           ? {
