@@ -312,6 +312,7 @@ export const fetchWorkflowDocumentOCRResult = async ({
       env.VITE_API_URL,
     )}/api/v1/internal/workflows/${workflowRuntimeId}/documents/${documentId}/run-ocr`,
     schema: z.any(),
+    timeout: 20_000,
   });
 
   return handleZodError(error, workflow);
