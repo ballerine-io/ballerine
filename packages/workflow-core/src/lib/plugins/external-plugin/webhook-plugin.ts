@@ -1,12 +1,12 @@
-import { AnyRecord, isErrorWithMessage, sign } from '@ballerine/common';
-import { logger } from '../../logger';
+import { ApiPlugin } from './api-plugin';
 import { TContext } from '../../utils/types';
-import { BallerineApiPlugin, IBallerineApiPluginParams } from './ballerine-plugin';
 import { IApiPluginParams } from './types';
+import { logger } from '../../logger';
+import { AnyRecord, sign } from '@ballerine/common';
 
-export class WebhookPlugin extends BallerineApiPlugin {
+export class WebhookPlugin extends ApiPlugin {
   public static pluginType = 'http';
-  constructor(pluginParams: IBallerineApiPluginParams & IApiPluginParams) {
+  constructor(pluginParams: IApiPluginParams) {
     super(pluginParams);
   }
 
@@ -19,7 +19,7 @@ export class WebhookPlugin extends BallerineApiPlugin {
     }
 
     try {
-      const urlWithoutPlaceholders = await this._getPluginUrl(context);
+      const urlWithoutPlaceholders = await this.replaceValuePlaceholders(this.url, context);
 
       logger.log('Webhook Plugin - Sending API request', {
         url: urlWithoutPlaceholders,
@@ -70,11 +70,11 @@ export class WebhookPlugin extends BallerineApiPlugin {
           'Request Failed: ' + apiResponse.statusText + ' Error: ' + JSON.stringify(errorResponse),
         );
       }
-    } catch (error) {
-      logger.error('Error occurred while sending an API request', { error });
-
-      return this.returnErrorResponse(isErrorWithMessage(error) ? error.message : '');
+    } catch (err) {
+      logger.error('Error occurred while sending an API request', { err });
     }
+
+    return {};
   }
 
   async composeRequestSignedHeaders(
@@ -96,7 +96,7 @@ export class WebhookPlugin extends BallerineApiPlugin {
       Object.entries(headers).map(async header => [
         header[0],
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        await this.replaceAllVariables(header[1], context),
+        await this.replaceValuePlaceholders(header[1], context),
       ]),
     );
 

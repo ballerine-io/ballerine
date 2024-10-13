@@ -8,7 +8,7 @@ export class ApiPlugin {
   public static pluginKind = 'api';
   name: string;
   stateNames: string[];
-  url: IApiPluginParams['url'];
+  url: string;
   method: IApiPluginParams['method'];
   vendor?: IApiPluginParams['vendor'];
   headers: IApiPluginParams['headers'];
@@ -59,15 +59,15 @@ export class ApiPlugin {
         }
       }
 
-      const _url = await this._getPluginUrl(context);
+      const urlWithoutPlaceholders = await this.replaceValuePlaceholders(this.url, context);
 
       logger.log('API Plugin - Sending API request', {
-        url: _url,
+        url: urlWithoutPlaceholders,
         method: this.method,
       });
 
       const apiResponse = await this.makeApiRequest(
-        _url,
+        urlWithoutPlaceholders,
         this.method,
         requestPayload,
         await this.composeRequestHeaders(this.headers!, context),
@@ -75,7 +75,7 @@ export class ApiPlugin {
 
       logger.log('API Plugin - Received response', {
         status: apiResponse.statusText,
-        url: _url,
+        url: urlWithoutPlaceholders,
       });
 
       if (apiResponse.ok) {
@@ -115,33 +115,6 @@ export class ApiPlugin {
     }
   }
 
-  protected async _getPluginUrl(context: AnyRecord) {
-    let _url: string;
-
-    if (typeof this.url === 'string') {
-      _url = this.url;
-    } else {
-      // expected url to be an object { url: string, options: Record<string, string> }
-
-      if (this.url.url) {
-        _url = this.url.url;
-      } else {
-        throw new Error('URL is required');
-      }
-
-      const { options } = this.url;
-
-      if (options !== null && typeof options === 'object' && !Array.isArray(options)) {
-        _url = await this.replaceVariablesFromContext(this.url.url, this.url.options);
-      } else {
-        // if options is not an object
-        throw new Error('Url options should be an object');
-      }
-    }
-
-    return await this.replaceAllVariables(_url, context);
-  }
-
   returnSuccessResponse(callbackAction: string, responseBody: AnyRecord) {
     return { callbackAction, responseBody };
   }
@@ -169,7 +142,11 @@ export class ApiPlugin {
     };
 
     if (payload) {
-      payload = await this._onPreparePayload(payload);
+      for (const key of Object.keys(payload)) {
+        if (typeof payload[key] === 'string') {
+          payload[key] = await this.replaceValuePlaceholders(payload[key] as string, payload);
+        }
+      }
 
       // @TODO: Use an enum over string literals for HTTP methods
       if (method.toUpperCase() !== 'GET') {
@@ -193,18 +170,6 @@ export class ApiPlugin {
     }
 
     return res;
-  }
-
-  protected async _onPreparePayload(_payload: AnyRecord) {
-    const returnObj = JSON.parse(JSON.stringify(_payload));
-
-    for (const key of Object.keys(returnObj)) {
-      if (typeof returnObj[key] === 'string') {
-        returnObj[key] = await this.replaceAllVariables(returnObj[key] as string, returnObj);
-      }
-    }
-
-    return returnObj;
   }
 
   async transformData(transformers: Transformers | undefined, record: AnyRecord) {
@@ -253,45 +218,14 @@ export class ApiPlugin {
       Object.entries(headers).map(async header => [
         header[0],
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        await this.replaceAllVariables(header[1], context),
+        await this.replaceValuePlaceholders(header[1], context),
       ]),
     );
 
     return Object.fromEntries(headersEntries);
   }
 
-  async _onReplaceVariable(variableKey: string, replacedContent: string, placeholder: string) {
-    let replacedSecrets = await this.replaceCustomerVariable(
-      variableKey,
-      replacedContent,
-      placeholder,
-    );
-
-    // // TODO: Remove this line when migrate to new ballerine plugins
-    replacedSecrets = await this.replaceBallerineVariable(
-      variableKey,
-      replacedContent,
-      placeholder,
-    );
-
-    return replacedSecrets;
-  }
-
-  async replaceBallerineVariable(variableKey: string, content: string, placeholder: string) {
-    return await this.replaceSecretsByProvider('ballerine', variableKey, content, placeholder);
-  }
-
-  async replaceCustomerVariable(variableKey: string, content: string, placeholder: string) {
-    return await this.replaceSecretsByProvider('customer', variableKey, content, placeholder);
-  }
-
-  async replaceAllVariables(content: string, context: TContext) {
-    const replacedContent = await this.replaceSecrets(content);
-
-    return this.replaceVariablesFromContext(replacedContent, context);
-  }
-
-  async replaceSecrets(content: string) {
+  async replaceValuePlaceholders(content: string, context: TContext) {
     const placeholders = content.match(/{(.*?)}/g);
 
     if (!placeholders) return content;
@@ -301,58 +235,24 @@ export class ApiPlugin {
     for (const placeholder of placeholders) {
       const variableKey = placeholder.replace(/{|}/g, '');
 
-      replacedContent = await this._onReplaceVariable(variableKey, replacedContent, placeholder);
-    }
+      const isSystemSecret = variableKey.includes('secret.');
+      const isSecret = variableKey.includes('secrets.');
 
-    return replacedContent;
-  }
+      if (isSystemSecret) {
+        const secretKey = variableKey.replace('secret.', '');
+        const secretValue = `${this.getSystemSecret(secretKey)}`;
 
-  async replaceVariablesFromContext(content: string, context: TContext) {
-    const placeholders = content.match(/{(.*?)}/g);
+        replacedContent = replacedContent.replace(placeholder, secretValue);
+      } else if (isSecret) {
+        const secretKey = variableKey.replace('secrets.', '');
+        const secretValue = `${await this.fetchSecret(secretKey)}`;
 
-    if (!placeholders) return content;
+        replacedContent = replacedContent.replace(placeholder, secretValue);
+      } else {
+        const placeholderValue = `${this.fetchObjectPlaceholderValue(context, variableKey)}`;
 
-    let replacedContent = content;
-
-    for (const placeholder of placeholders) {
-      const variableKey = placeholder.replace(/{|}/g, '');
-
-      if (variableKey.startsWith('secret')) {
-        continue;
+        replacedContent = replacedContent.replace(placeholder, placeholderValue);
       }
-
-      const placeholderValue = this.fetchObjectPlaceholderValue(context, variableKey);
-
-      if (placeholderValue === undefined) {
-        continue;
-      }
-
-      replacedContent = replacedContent.replace(placeholder, `${placeholderValue}`);
-    }
-
-    return replacedContent;
-  }
-
-  async replaceSecretsByProvider(
-    provider: 'ballerine' | 'customer',
-    variableKey: string,
-    content: string,
-    placeholder: string,
-  ) {
-    const variableName = provider === 'ballerine' ? 'secret.' : 'secrets.';
-
-    let replacedContent = content;
-
-    if (provider === 'ballerine' && variableKey.includes(variableName)) {
-      const secretKey = variableKey.replace(variableName, '');
-      const secretValue = `${this.getSystemSecret(secretKey)}`;
-
-      replacedContent = content.replace(placeholder, secretValue);
-    } else if (provider === 'customer' && variableKey.includes(variableName)) {
-      const secretKey = variableKey.replace('secrets.', '');
-      const secretValue = `${await this.fetchSecret(secretKey)}`;
-
-      replacedContent = content.replace(placeholder, secretValue);
     }
 
     return replacedContent;

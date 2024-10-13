@@ -1,9 +1,9 @@
 import { IDispatchEventPluginParams } from './types';
+import { WorkflowRunner } from '../../../lib/workflow-runner';
 import { Transformer, Transformers } from '../../../lib/utils';
 import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
-import { fetchTransformers } from '../../workflow-runner-utils';
 
-type WorkerflowFetchTransformers = typeof fetchTransformers;
+type WorkerflowFetchTransformers = typeof WorkflowRunner.fetchTransformers;
 
 export type IDispatchEventPluginParamsWithTransfomers = Omit<
   IDispatchEventPluginParams,

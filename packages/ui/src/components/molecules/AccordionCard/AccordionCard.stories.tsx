@@ -60,7 +60,7 @@ export const Default = {
               subitems={[
                 {
                   leftIcon: <Clock4 size={18} className={`fill-purple-500 stroke-white`} />,
-                  text: 'Registry Information',
+                  text: 'Registry Verification',
                 },
                 {
                   leftIcon: <CheckCircle2 size={18} className={`fill-green-500 stroke-white`} />,

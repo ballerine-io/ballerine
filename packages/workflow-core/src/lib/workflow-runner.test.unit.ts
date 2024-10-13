@@ -98,7 +98,6 @@ describe('sendEvent #unit', () => {
               name: 'test',
               displayName: 'Test',
               stateNames: ['second'],
-              pluginKind: 'api',
               method: 'GET',
               request: {
                 transform: [
@@ -135,7 +134,7 @@ describe('sendEvent #unit', () => {
       // expect(res.isDone()).toBe(true);
     });
 
-    it.skip('should execute common plugins', async () => {
+    it('should execute common plugins', async () => {
       // Arrange
       const workflow = generateWorkflow({
         workflowContext: {
@@ -149,7 +148,6 @@ describe('sendEvent #unit', () => {
               name: 'test',
               displayName: 'Test',
               stateNames: ['second'],
-              pluginKind: 'api',
               method: 'GET',
               request: {
                 transform: [
@@ -173,7 +171,7 @@ describe('sendEvent #unit', () => {
           commonPlugins: [
             {
               name: 'test',
-              pluginKind: 'iterative',
+              actionPluginName: 'test',
               stateNames: ['second'],
               iterateOn: [
                 {
@@ -270,7 +268,6 @@ describe('initiateApiPlugins #unit', () => {
         {
           name: 'TestPlugin1',
           displayName: 'Test',
-          pluginKind: 'api',
           stateNames: ['state1', 'state2'],
           url: 'http://example.com/api1',
           method: 'GET' as const,
@@ -294,24 +291,47 @@ describe('initiateApiPlugins #unit', () => {
           successAction: 'successAction1',
           errorAction: 'errorAction1',
         },
-      ];
+      ] satisfies Parameters<(typeof workflow)['initiateApiPlugins']>[0];
+      const expectedPluginStructure = {
+        name: apiPluginSchemas[0]!.name,
+        stateNames: apiPluginSchemas[0]!.stateNames,
+        url: apiPluginSchemas[0]!.url,
+        method: apiPluginSchemas[0]!.method,
+        headers: {
+          ...apiPluginSchemas[0]!.headers,
+          accept: 'application/json',
+        },
+        request: { transformers: [new JmespathTransformer(`@`)], schemaValidator: undefined },
+        response: { transformers: [new JmespathTransformer(`@`)], schemaValidator: undefined },
+        successAction: apiPluginSchemas[0]!.successAction,
+        errorAction: apiPluginSchemas[0]!.errorAction,
+      };
 
       // Act
       const result = workflow.initiateApiPlugins(apiPluginSchemas);
 
       // Assert
+      const actualPluginStructure = {
+        name: result[0]!.name,
+        stateNames: result[0]!.stateNames,
+        url: result[0]!.url,
+        method: result[0]!.method,
+        headers: result[0]!.headers,
+        request: result[0]!.request,
+        response: result[0]!.response,
+        successAction: result[0]!.successAction,
+        errorAction: result[0]!.errorAction,
+      };
+
       expect(result).toHaveLength(apiPluginSchemas.length);
+      expect(actualPluginStructure).toEqual(expectedPluginStructure);
       expect(result[0]).toBeInstanceOf(ApiPlugin);
-      expect(result[0]?.name).toBe('TestPlugin1');
-      expect(result[0]?.stateNames).toEqual(['state1', 'state2']);
-      expect(result[0]?.url).toBe('http://example.com/api1');
-      expect(result[0]?.method).toBe('GET');
     });
   });
 
   describe('initiateChildPlugin #unit', () => {
     describe('when valid childPluginSchemas are provided', () => {
-      it('should initialize child plugins based on the schemas', () => {
+      it('should initialize API plugins based on the schemas', () => {
         // Arrange
         const workflow = generateWorkflow();
         const childPluginSchemas = [
@@ -322,32 +342,44 @@ describe('initiateApiPlugins #unit', () => {
             stateNames: ['state1', 'state2'],
             definitionId: 'definitionId1',
             initEvent: 'initEvent1',
-            transform: [
+            transformers: [
               {
                 transformer: 'jmespath',
                 mapping: `@`,
               },
             ],
           },
-        ];
+        ] satisfies Parameters<(typeof workflow)['initiateChildPlugins']>[0];
+        const expectedPluginStructure = {
+          name: childPluginSchemas[0]!.name,
+          stateNames: childPluginSchemas[0]!.stateNames,
+          definitionId: childPluginSchemas[0]!.definitionId,
+          initEvent: childPluginSchemas[0]!.initEvent,
+          transformers: [new JmespathTransformer(`@`)],
+        };
 
         // Act
         const result = workflow.initiateChildPlugins(childPluginSchemas, 'parent', {});
 
         // Assert
+        const actualPluginStructure = {
+          name: result[0]!.name,
+          stateNames: result[0]!.stateNames,
+          definitionId: result[0]!.definitionId,
+          initEvent: result[0]!.initEvent,
+          transformers: result[0]!.transformers,
+        };
+
         expect(result).toHaveLength(childPluginSchemas.length);
+        expect(actualPluginStructure).toEqual(expectedPluginStructure);
         expect(result[0]).toBeInstanceOf(ChildWorkflowPlugin);
-        expect(result[0]?.name).toBe('TestPlugin1');
-        expect(result[0]?.stateNames).toEqual(['state1', 'state2']);
-        expect(result[0]?.definitionId).toBe('definitionId1');
-        expect(result[0]?.initEvent).toBe('initEvent1');
       });
     });
   });
 
   describe('initiateCommonPlugins #unit', () => {
     describe('when valid commonPluginSchemas are provided', () => {
-      it('should initialize common plugins based on the schemas', () => {
+      it('should initialize API plugins based on the schemas', () => {
         // Arrange
         const workflow = generateWorkflow();
         const commonPluginSchemas = [
@@ -355,12 +387,7 @@ describe('initiateApiPlugins #unit', () => {
             pluginKind: 'iterative',
             name: 'TestPlugin1',
             stateNames: ['state1', 'state2'],
-            iterateOn: [
-              {
-                transformer: 'jmespath',
-                mapping: `users`,
-              },
-            ],
+            actionPluginName: 'actionPluginName1',
             response: {
               transform: [
                 {
@@ -369,19 +396,33 @@ describe('initiateApiPlugins #unit', () => {
                 },
               ],
             },
+            iterateOn: [
+              {
+                transformer: 'jmespath',
+                mapping: `users`,
+              },
+            ],
           },
-        ];
+        ] satisfies Parameters<(typeof workflow)['initiateCommonPlugins']>[0];
+        const expectedPluginStructure = {
+          name: commonPluginSchemas[0]!.name,
+          stateNames: commonPluginSchemas[0]!.stateNames,
+          iterateOn: [new JmespathTransformer(`users`)],
+        };
 
         // Act
         const result = workflow.initiateCommonPlugins(commonPluginSchemas, []);
 
         // Assert
+        const actualPluginStructure = {
+          name: result[0]!.name,
+          stateNames: result[0]!.stateNames,
+          iterateOn: result[0]!.iterateOn,
+        };
+
         expect(result).toHaveLength(commonPluginSchemas.length);
+        expect(actualPluginStructure).toEqual(expectedPluginStructure);
         expect(result[0]).toBeInstanceOf(IterativePlugin);
-        expect(result[0]?.name).toBe('TestPlugin1');
-        expect(result[0]?.stateNames).toEqual(['state1', 'state2']);
-        expect(result[0]?.iterateOn).toHaveLength(1);
-        expect(result[0]?.iterateOn[0]).toBeInstanceOf(JmespathTransformer);
       });
     });
   });

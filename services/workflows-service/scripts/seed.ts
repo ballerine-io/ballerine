@@ -657,7 +657,7 @@ async function seed() {
     data: {
       id: onboardingMachineKybId, // should be auto generated normally
       reviewMachineId: kybManualMachineId,
-      name: 'businessInformation',
+      name: 'kyb',
       version: 1,
       definitionType: 'statechart-json',
       definition: {

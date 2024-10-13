@@ -6,7 +6,6 @@
   "scripts": {
     "spellcheck": "cspell \"*\"",
     "dev": "vite --host",
-    "start": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --fix",
     "format": "prettier --write .",

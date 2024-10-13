@@ -2,7 +2,6 @@ import { AnyRecord } from '@ballerine/common';
 import { ApiPlugin } from './api-plugin';
 import { JsonSchemaValidator } from '../../utils/context-validator/json-schema-validator';
 import { Validator } from '../../utils';
-import { BallerineApiPlugin } from './ballerine-plugin';
 
 const kycIndividualRequestSchema = {
   $schema: 'http://json-schema.org/draft-07/schema#',
@@ -82,11 +81,9 @@ const kycIndividualRequestSchema = {
   },
   required: ['endUserId', 'callbackUrl', 'person', 'document', 'images', 'address', 'vendor'],
 };
-export class KycPlugin extends BallerineApiPlugin {
+export class KycPlugin extends ApiPlugin {
   public static pluginType = 'http';
-
   public static pluginKind = 'kyc';
-
   async validateContent<TValidationContext extends 'Request' | 'Response'>(
     schemaValidator: Validator | undefined,
     transformedRequest: AnyRecord,
