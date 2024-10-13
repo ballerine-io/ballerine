@@ -8,7 +8,6 @@ export const ApiValidationErrorResponse = () => {
       status: 400,
       description: 'Validation error',
       schema: Type.Object({
-        errorCode: Type.Literal('BadRequest'),
         message: Type.String(),
         statusCode: Type.Literal(400),
         timestamp: Type.String({
@@ -26,9 +25,12 @@ export const ApiUnauthorizedErrorResponse = () => {
     ApiResponse({
       status: 401,
       schema: Type.Object({
-        errorCode: Type.Literal('Unauthorized'),
         message: Type.Literal('Unauthorized'),
         statusCode: Type.Literal(401),
+        path: Type.String(),
+        timestamp: Type.String({
+          format: 'date-time',
+        }),
       }),
     }),
   );

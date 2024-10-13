@@ -30,6 +30,23 @@ export const WorkflowDefinitionConfigSchema = z
     theme: WorkflowDefinitionConfigThemeSchema.default({
       type: WorkflowDefinitionConfigThemeEnum.KYB,
     }),
+    uiOptions: z
+      .object({
+        backoffice: z
+          .object({
+            blocks: z
+              .object({
+                businessInformation: z
+                  .object({
+                    predefinedOrder: z.array(z.string()).default([]),
+                  })
+                  .optional(),
+              })
+              .optional(),
+          })
+          .optional(),
+      })
+      .optional(),
   })
   .passthrough()
   .nullable();
