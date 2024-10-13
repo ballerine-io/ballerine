@@ -1,12 +1,12 @@
-import { ApiPlugin } from './api-plugin';
-import { TContext } from '../../utils/types';
-import { IApiPluginParams } from './types';
+import { AnyRecord, isErrorWithMessage, sign } from '@ballerine/common';
 import { logger } from '../../logger';
-import { AnyRecord, sign } from '@ballerine/common';
+import { TContext } from '../../utils/types';
+import { BallerineApiPlugin, IBallerineApiPluginParams } from './ballerine-plugin';
+import { IApiPluginParams } from './types';
 
-export class WebhookPlugin extends ApiPlugin {
+export class WebhookPlugin extends BallerineApiPlugin {
   public static pluginType = 'http';
-  constructor(pluginParams: IApiPluginParams) {
+  constructor(pluginParams: IBallerineApiPluginParams & IApiPluginParams) {
     super(pluginParams);
   }
 
@@ -19,7 +19,7 @@ export class WebhookPlugin extends ApiPlugin {
     }
 
     try {
-      const urlWithoutPlaceholders = await this.replaceValuePlaceholders(this.url, context);
+      const urlWithoutPlaceholders = await this._getPluginUrl(context);
 
       logger.log('Webhook Plugin - Sending API request', {
         url: urlWithoutPlaceholders,
@@ -70,11 +70,11 @@ export class WebhookPlugin extends ApiPlugin {
           'Request Failed: ' + apiResponse.statusText + ' Error: ' + JSON.stringify(errorResponse),
         );
       }
-    } catch (err) {
-      logger.error('Error occurred while sending an API request', { err });
-    }
+    } catch (error) {
+      logger.error('Error occurred while sending an API request', { error });
 
-    return {};
+      return this.returnErrorResponse(isErrorWithMessage(error) ? error.message : '');
+    }
   }
 
   async composeRequestSignedHeaders(
@@ -96,7 +96,7 @@ export class WebhookPlugin extends ApiPlugin {
       Object.entries(headers).map(async header => [
         header[0],
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        await this.replaceValuePlaceholders(header[1], context),
+        await this.replaceAllVariables(header[1], context),
       ]),
     );
 

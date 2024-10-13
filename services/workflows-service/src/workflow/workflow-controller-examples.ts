@@ -1,16 +1,15 @@
 export const putPluginsExampleResponse = {
   apiPlugins: [
     {
-      name: 'company-sanctions',
-      vendor: 'asia-verify',
-      pluginKind: 'company-sanctions',
-      stateNames: ['run_vendor_data'],
-      displayName: 'Company Sanctions',
-      errorAction: 'VENDOR_FAILED',
-      successAction: 'VENDOR_DONE',
+      name: 'invitation-email',
+      pluginKind: 'template-email',
+      template: 'invitation',
+      successAction: 'INVITATION_SENT',
+      errorAction: 'INVITATION_FAILURE',
+      stateNames: ['collection_invite'],
     },
     {
-      name: 'kyb',
+      name: 'businessInformation',
       vendor: 'asia-verify',
       pluginKind: 'registry-information',
       stateNames: ['get_vendor_data'],
@@ -19,7 +18,7 @@ export const putPluginsExampleResponse = {
       successAction: 'VENDOR_DONE',
     },
     {
-      name: 'company-sanctions',
+      name: 'companySanctions',
       vendor: 'asia-verify',
       pluginKind: 'company-sanctions',
       stateNames: ['get_vendor_data'],
@@ -38,10 +37,25 @@ export const putPluginsExampleResponse = {
     },
     {
       name: 'resubmission-email',
-      pluginKind: 'resubmission-email',
+      pluginKind: 'template-email',
+      template: 'resubmission',
       stateNames: ['pending_resubmission'],
       errorAction: 'EMAIL_FAILURE',
       successAction: 'EMAIL_SENT',
+    },
+    {
+      name: 'merchantMonitoring',
+      pluginKind: 'merchant-monitoring',
+      vendor: 'ballerine',
+      stateNames: ['run_merchant_monitoring'],
+      successAction: 'MERCHANT_MONITORING_SUCCESS',
+      errorAction: 'MERCHANT_MONITORING_FAILED',
+      reportType: 'MERCHANT_REPORT_T1',
+      merchantMonitoringQualityControl: false,
+      dataMapping: `
+        countryCode: entity.data.country,
+        websiteUrl: entity.data.additionalInfo.store.website.mainWebsite,
+      `,
     },
   ],
   commonPlugins: [

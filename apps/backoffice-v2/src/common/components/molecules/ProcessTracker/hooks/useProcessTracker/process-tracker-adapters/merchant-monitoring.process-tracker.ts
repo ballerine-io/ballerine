@@ -7,7 +7,7 @@ import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { StateTag } from '@ballerine/common';
 
 export class MerchantMonitoringProcessTracker implements IProcessTracker {
-  PROCESS_NAME = 'merchant-monitoring';
+  PROCESS_NAME = 'merchantMonitoring';
 
   constructor(public readonly workflow: TWorkflowById) {}
 
