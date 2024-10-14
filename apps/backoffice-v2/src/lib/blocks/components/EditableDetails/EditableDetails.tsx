@@ -103,6 +103,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   documents,
   title,
   workflowId,
+  isSaveDisabled,
   contextUpdateMethod = 'base',
   onSubmit: onSubmitCallback,
 }) => {
@@ -427,7 +428,11 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
         </div>
         <div className={`flex justify-end`}>
           {data?.some(({ isEditable }) => isEditable) && (
-            <Button type="submit" className={`ms-auto mt-3`}>
+            <Button
+              type="submit"
+              className={`ms-auto mt-3 aria-disabled:pointer-events-none aria-disabled:opacity-50`}
+              aria-disabled={isSaveDisabled}
+            >
               Save
             </Button>
           )}

@@ -20,21 +20,23 @@ export const Navigation = () => {
   const isFirstStep = currentPage?.number === 1;
   const isDisabled = state.isLoading;
 
-  const onPrevious = useCallback(() => {
+  const onPrevious = useCallback(async () => {
     if (!isFirstStep) {
-      stateApi.sendEvent('PREVIOUS');
+      await stateApi.sendEvent('PREVIOUS');
+
       return;
     }
 
     exit();
+
     return;
-  }, [stateApi, exit]);
+  }, [stateApi, exit, isFirstStep]);
 
   if (isFirstStep && !isExitAvailable) return null;
 
   return (
     <button
-      className={ctw('cursor-pointer select-none ', {
+      className={ctw('cursor-pointer select-none', {
         'pointer-events-none opacity-50': isDisabled,
       })}
       aria-disabled={isDisabled}

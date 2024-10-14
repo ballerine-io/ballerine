@@ -135,38 +135,12 @@ export const parentKybWithSessionWorkflowDefinition = {
         },
       },
       {
-        name: 'resubmission_email',
-        pluginKind: 'email',
-        url: `{secret.EMAIL_API_URL}`,
-        method: 'POST',
+        name: 'resubmission-email',
+        pluginKind: 'template-email',
+        template: 'resubmission',
+        successAction: 'EMAIL_SENT',
+        errorAction: 'EMAIL_FAILURE',
         stateNames: ['pending_resubmission'],
-        headers: {
-          Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
-          'Content-Type': 'application/json',
-        },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-              kybCompanyName: entity.data.companyName,
-              customerCompanyName: entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,
-              firstName: entity.data.additionalInfo.mainRepresentative.firstName,
-              resubmissionLink: join('',['https://',entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.normalizedCustomerCompany,'.demo.ballerine.app','/workflowRuntimeId=',workflowRuntimeId,'?resubmitEvent=RESUBMITTED']),
-              supportEmail: join('',[entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.normalizedCustomerCompany,'@support.com']),
-              from: 'no-reply@ballerine.com',
-              name: join(' ',[entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,'Team']),
-              receivers: [entity.data.additionalInfo.mainRepresentative.email],
-              templateId: 'd-7305991b3e5840f9a14feec767ea7301',
-              revisionReason: documents[].decision[].revisionReason | [0],
-              adapter: '${env.MAIL_ADAPTER}'
-              }`, // jmespath
-            },
-          ],
-        },
-        response: {
-          transform: [],
-        },
       },
     ],
     childWorkflowPlugins: [

@@ -5,7 +5,7 @@ import * as common from '@nestjs/common';
 import { HttpStatus, NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { ApiOkResponse, ApiResponse } from '@nestjs/swagger';
-import { WorkflowRuntimeData } from '@prisma/client';
+import type { WorkflowRuntimeData } from '@prisma/client';
 // import * as nestAccessControl from 'nest-access-control';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { putPluginsExampleResponse } from '@/workflow/workflow-controller-examples';
@@ -36,7 +36,6 @@ import {
   WorkflowDefinitionWhereUniqueInput,
   WorkflowDefinitionWhereUniqueInputSchema,
 } from './dtos/workflow-where-unique-input';
-import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
 import { Validate } from 'ballerine-nestjs-typebox';
@@ -44,6 +43,8 @@ import { PutWorkflowExtensionSchema, WorkflowExtensionSchema } from './schemas/e
 import { type Static, Type } from '@sinclair/typebox';
 import { defaultContextSchema } from '@ballerine/common';
 import { WorkflowRunSchema } from './schemas/workflow-run';
+import { ValidationError } from '@/errors';
+import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
 
 export const WORKFLOW_TAG = 'Workflows';
 @swagger.ApiBearerAuth()
@@ -180,14 +181,14 @@ export class WorkflowControllerExternal {
   }
 
   @common.Get('/:id')
-  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiOkResponse({ type: WorkflowRuntimeListItemModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @UseCustomerAuthGuard()
   async getRunnableWorkflowDataById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @ProjectIds() projectIds: TProjectIds,
-  ): Promise<RunnableWorkflowData> {
+  ): Promise<WorkflowRuntimeData> {
     const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(
       params.id,
       {},
@@ -198,16 +199,7 @@ export class WorkflowControllerExternal {
       throw new NotFoundException(`No resource with id [${params.id}] was found`);
     }
 
-    const workflowDefinition = await this.service.getWorkflowDefinitionById(
-      workflowRuntimeData.workflowDefinitionId,
-      {},
-      projectIds,
-    );
-
-    return {
-      workflowDefinition,
-      workflowRuntimeData,
-    };
+    return workflowRuntimeData;
   }
 
   // PATCH /workflows/:id
@@ -259,7 +251,10 @@ export class WorkflowControllerExternal {
   })
   @UseCustomerAuthGuard()
   @common.HttpCode(200)
+  @swagger.ApiUnauthorizedResponse({ type: common.UnauthorizedException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiBadRequestResponse({ type: ValidationError })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     // @ts-expect-error -- Something with swagger package
     schema: WorkflowRunSchema,
@@ -286,15 +281,15 @@ export class WorkflowControllerExternal {
               },
             },
             documents: [],
-            config: {
-              subscriptions: [
-                {
-                  type: 'webhook',
-                  url: 'https://webhook.site/f82ea191-9d64-424f-887e-f8418faf4fe9',
-                  events: ['workflow.completed'],
-                },
-              ],
-            },
+          },
+          config: {
+            subscriptions: [
+              {
+                type: 'webhook',
+                url: 'https://webhook.site/f82ea191-9d64-424f-887e-f8418faf4fe9',
+                events: ['workflow.completed'],
+              },
+            ],
           },
         },
       },

@@ -1,5 +1,47 @@
 # @ballerine/common
 
+## 0.9.40
+
+### Patch Changes
+
+- update plugin schema and ballerine plugins
+
+## 0.9.39
+
+### Patch Changes
+
+- bump
+
+## 0.9.38
+
+### Patch Changes
+
+- bump
+
+## 0.9.37
+
+### Patch Changes
+
+- version bump
+
+## 0.9.36
+
+### Patch Changes
+
+- version bump
+
+## 0.9.35
+
+### Patch Changes
+
+- bump
+
+## 0.9.34
+
+### Patch Changes
+
+- Bump
+
 ## 0.9.33
 
 ### Patch Changes

@@ -1,8 +1,6 @@
 name: Under Testing - Build & Push workflows-service image
 
 on:
-  repository_dispatch:
-    types: [run-test-migration]
   workflow_dispatch:
     inputs:
       operation: 
@@ -12,8 +10,7 @@ on:
         default: 'Deploy to Dev'
         options:
           - 'Deploy to Dev'
-          - 'Run Migrations'
-          - 'Do Nothing'
+          - 'Run Migrations to Dev'
   push:
     paths:
       # Run this pipeline only if there are changes in specified path
@@ -27,24 +24,8 @@ env:
 
 jobs:
 
-  determine_branch:
-    runs-on: ubuntu-latest
-    outputs:
-      branch: ${{ steps.set-branch.outputs.branch }}
-    steps:
-      - name: Set branch
-        id: set-branch
-        run: |
-          if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
-            echo "branch=${{ github.event.client_payload.ref }}" >> $GITHUB_OUTPUT
-          else
-            echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          fi
-          echo "local branch=${{ github.ref_name }}, client_payload ref=${{ github.event.client_payload.ref }}"
-
   build-and-push-image:
     runs-on: ubuntu-latest
-    needs: [determine_branch]
     permissions:
       contents: read
       packages: write
@@ -116,11 +97,11 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ needs.determine_branch.outputs.branch }}
-            type=raw,value=${{ steps.version.outputs.sha_short }}-${{ needs.determine_branch.outputs.branch }}
-            type=raw,value=${{ steps.version.outputs.sha_short }}-dev,enable=${{ needs.determine_branch.outputs.branch != 'dev' }}
-            type=raw,value=${{ steps.version.outputs.sha_short }}-sb,enable=${{ needs.determine_branch.outputs.branch != 'sb' }}
-            type=raw,value=${{ steps.version.outputs.sha_short }}-prod,enable=${{ needs.determine_branch.outputs.branch != 'prod' }}
+            type=raw,value=${{ github.ref_name }}
+            type=raw,value=${{ steps.version.outputs.sha_short }}-${{ github.ref_name }}
+            type=raw,value=${{ steps.version.outputs.sha_short }}-dev,enable=${{ github.ref_name != 'dev' }}
+            type=raw,value=${{ steps.version.outputs.sha_short }}-sb,enable=${{ github.ref_name != 'sb' }}
+            type=raw,value=${{ steps.version.outputs.sha_short }}-prod,enable=${{ github.ref_name != 'prod' }}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'prod') }}
             type=sha,format=short
 
@@ -128,8 +109,8 @@ jobs:
         id: docker-version
         run: |
           DOCKER_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          DOCKER_TAG=${{ steps.version.outputs.sha_short }}-${{ needs.determine_branch.outputs.branch }}
-          DOCKER_FULL_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.sha_short }}-${{ needs.determine_branch.outputs.branch }}
+          DOCKER_TAG=${{ steps.version.outputs.sha_short }}-${{ github.ref_name }}
+          DOCKER_FULL_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.sha_short }}-${{ github.ref_name }}
 
           echo "DOCKER_IMAGE=$DOCKER_IMAGE"
           echo "DOCKER_TAG=$DOCKER_TAG"
@@ -174,170 +155,125 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL'
 
-  
-
-  check_if_data_migration_needed:
-    runs-on: ubuntu-latest
-    needs: determine_branch
-    outputs:
-      should_build: ${{ steps.check-branch-existance.outputs.should_build }} # short sha of the commit
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-          submodules: 'recursive'
-          token: ${{ secrets.SUBMODULES_TOKEN }}
+  # check_if_data_migration_needed:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     should_build: ${{ steps.check-branch-existance.outputs.should_build }}
+  #     # ref: ${{ steps.check-branch-existance.outputs.ref }} # short sha of the commit
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 1
+  #         submodules: 'recursive'
+  #         token: ${{ secrets.SUBMODULES_TOKEN }}
           
-      - name: Check if branch exists
-        id: check-branch-existance
-        run: |
-          cd services/workflows-service/prisma/data-migrations
-          git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/${{ needs.determine_branch.outputs.branch }}
-          git checkout -b ${{ needs.determine_branch.outputs.branch }} origin/${{ needs.determine_branch.outputs.branch }}
-          git config --global user.email "github-actions@example.com"
-          git config --global user.name "GitHub Actions"
-          git reset --hard HEAD
-          git pull origin ${{ needs.determine_branch.outputs.branch }} --rebase
+  #     - name: Check if branch exists
+  #       id: check-branch-existance
+  #       run: |
+  #         cd services/workflows-service/prisma/data-migrations
 
-          is_exists=$(git ls-remote --exit-code --heads -t --ref -q origin "${{ needs.determine_branch.outputs.branch }}" | wc -l)
+  #         is_exists=$(git ls-remote --exit-code --heads -t --ref -q origin "${{ github.ref_name }}" | wc -l)
 
-          # Check if the branch exists by counting the number of results
-          if [ $is_exists -eq 0  ]; then
-            echo "Branch '${{ needs.determine_branch.outputs.branch }}' does not exist."
-            echo "should_build=false" >> $GITHUB_OUTPUT
-          else
-            echo "should_build=true" >> $GITHUB_OUTPUT
-          fi
-          exit 0
+  #         # Check if the branch exists by counting the number of results
+  #         if [ $is_exists -eq 0  ]; then
+  #           # echo "ref=main" >> $GITHUB_OUTPUT
+  #           echo "Branch '${{ github.ref_name }}' does not exist."
+  #           echo "should_build=false" >> $GITHUB_OUTPUT
+  #         else
+  #           echo "Branch '${{ github.ref_name }}' exists."
+  #           echo "should_build=true" >> $GITHUB_OUTPUT
+  #         fi
+  #         exit 0
 
-  build-and-push-ee-image:
-    runs-on: ubuntu-latest
-    needs: [build-and-push-image, check_if_data_migration_needed, determine_branch]
-    if: ${{ needs.check_if_data_migration_needed.outputs.should_build == 'true' }}
-    outputs:
-      wf_m_sha_short: ${{ steps.fetch-submodule.outputs.wf_m_sha_short }} # short sha of the commit
-      docker_tag: ${{ steps.docker-version.outputs.wf_m_tag }} 
+  # build-and-push-ee-image:
+  #   runs-on: ubuntu-latest
+  #   needs: [build-and-push-image, check_if_data_migration_needed]
+  #   if: ${{ needs.check_if_data_migration_needed.outputs.should_build == 'true' }}
+  #   permissions:
+  #     contents: read
+  #     packages: write
 
-    permissions:
-      contents: read
-      packages: write
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+      
+  #     - name: Checkout wf-data-migration
+  #       uses: actions/checkout@v4
+  #       with:
+  #         repository: ballerine-io/wf-data-migration
+  #         token: ${{ secrets.SUBMODULES_TOKEN }}
+  #         ref: ${{ github.ref_name }}
+  #         fetch-depth: 1
+  #         path: services/workflows-service/prisma/data-migrations
+      
+  #     - name: Cache Docker layers
+  #       id: cache
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: /tmp/.buildx-cache
+  #         key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
+  #           ${{ runner.os }}-docker-
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-          submodules: 'recursive'
-          token: ${{ secrets.SUBMODULES_TOKEN }}
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v2
 
-      - name: Cache Docker layers
-        id: cache
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
-          restore-keys: |
-            ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
-            ${{ runner.os }}-docker-
+  #     - name: Set up QEMU
+  #       uses: docker/setup-qemu-action@v2
+  #       with:
+  #         platforms: 'arm64,arm'
 
-      - name: Fetch submodule branch
-        id: fetch-submodule
-        run: |
-          cd services/workflows-service/prisma/data-migrations
-          git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/${{ needs.determine_branch.outputs.branch }}
-          git checkout -b ${{ needs.determine_branch.outputs.branch }} origin/${{ needs.determine_branch.outputs.branch }}
-          git config --global user.email "github-actions@example.com"
-          git config --global user.name "GitHub Actions"
-          git reset --hard HEAD
-          git pull origin ${{ needs.determine_branch.outputs.branch }} --rebase
-          WF_M_SHORT_SHA=$(git rev-parse --short HEAD)
-          echo "sha_short=$WF_M_SHORT_SHA"
-          echo "wf_m_sha_short=$WF_M_SHORT_SHA" >> $GITHUB_OUTPUT
-          cd ../../../..
+  #     - name: Log in to the container registry
+  #       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+  #       with:
+  #         registry: ${{ env.REGISTRY }}
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+  #     - name: Extract metadata for ee Docker images
+  #       id: eemeta
+  #       uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+  #       with:
+  #         images: ${{needs.build-and-push-image.outputs.docker_image}}-ee
+  #         tags: |
+  #           type=raw,value=${{ github.ref_name }}
+  #           type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ github.ref_name }}
+  #           type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'prod') }}
+  #           type=sha,format=short
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-        with:
-          platforms: 'arm64,arm'
-
-      - name: Log in to the container registry
-        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata for ee Docker images
-        id: eemeta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{needs.build-and-push-image.outputs.docker_image}}-ee
-          tags: |
-            type=raw,value=${{ needs.determine_branch.outputs.branch }}
-            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.fetch-submodule.outputs.wf_m_sha_short }}-${{ needs.determine_branch.outputs.branch }}
-            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.fetch-submodule.outputs.wf_m_sha_short }}-dev,enable=${{ needs.determine_branch.outputs.branch != 'dev' }}
-            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.fetch-submodule.outputs.wf_m_sha_short }}-sb,enable=${{ needs.determine_branch.outputs.branch != 'sb' }}
-            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.fetch-submodule.outputs.wf_m_sha_short }}-prod,enable=${{ needs.determine_branch.outputs.branch != 'prod' }}
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'prod') }}
-            type=sha,format=short
-
-      - name: Docker metadata version
-        id: docker-version
-        run: |
-          DOCKER_IMAGE=${{needs.build-and-push-image.outputs.docker_image}}-ee
-          DOCKER_TAG=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.fetch-submodule.outputs.wf_m_sha_short }}-${{ needs.determine_branch.outputs.branch }}
-          DOCKER_FULL_IMAGE=$DOCKER_IMAGE:$DOCKER_TAG
-
-          echo "DOCKER_IMAGE=$DOCKER_IMAGE"
-          echo "DOCKER_TAG=$DOCKER_TAG"
-          echo "DOCKER_FULL_IMAGE=$DOCKER_FULL_IMAGE"
-
-          echo "wf_m_image=$DOCKER_IMAGE" >> $GITHUB_OUTPUT
-          echo "wf_m_tag=$DOCKER_TAG" >> $GITHUB_OUTPUT
-          echo "wf_m_full_image=$DOCKER_FULL_IMAGE" >> $GITHUB_OUTPUT
-
-      - name: Build and push ee Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: services/workflows-service
-          file: services/workflows-service/Dockerfile.ee
-          platforms: linux/amd64
-          push: true
-          cache-from: type=local,src=/tmp/.buildx-cache
-          tags: ${{ steps.eemeta.outputs.tags }}
-          build-args: |
-            "BASE_IMAGE=${{needs.build-and-push-image.outputs.docker_full_image}}"
-            "RELEASE=${{ needs.build-and-push-image.outputs.bumped_tag }}"
-            "SHORT_SHA=${{ needs.build-and-push-image.outputs.sha_short }}"
+  #     - name: Build and push ee Docker image
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         context: services/workflows-service
+  #         file: services/workflows-service/Dockerfile.ee
+  #         platforms: linux/amd64
+  #         push: true
+  #         cache-from: type=local,src=/tmp/.buildx-cache
+  #         tags: ${{ steps.eemeta.outputs.tags }}
+  #         build-args: |
+  #           "BASE_IMAGE=${{needs.build-and-push-image.outputs.docker_full_image}}"
+  #           "RELEASE=${{ needs.build-and-push-image.outputs.bumped_tag }}"
+  #           "SHORT_SHA=${{ needs.build-and-push-image.outputs.sha_short }}"
 
   deploy-to-dev:
-    needs: build-and-push-ee-image
+    needs: [build-and-push-image]
     if: ${{(github.event_name == 'push') || (github.event_name == 'workflow_dispatch' && inputs.operation == 'Deploy to Dev')}}
     uses: ./.github/workflows/test-deploy-wf-service.yml
     with:
       environment: 'dev'
-      tag: ${{ needs.build-and-push-ee-image.outputs.docker_tag }}
+      sha: ${{ needs.build-and-push-image.outputs.sha_short }}
     secrets: inherit
 
-  run-migrations:
-    needs: [build-and-push-ee-image,determine_branch]
-    if: ${{(github.event_name == 'repository_dispatch') || (github.event_name == 'workflow_dispatch' && inputs.operation == 'Run Migrations')}}
-    uses: ./.github/workflows/test-db-ops.yaml
-    with:
-      environment: ${{ needs.determine_branch.outputs.branch }}
-      tag: ${{ needs.build-and-push-ee-image.outputs.docker_tag }}
-    secrets: inherit
-
-  do-nothing:
-    needs: build-and-push-ee-image
-    if: ${{github.event_name == 'workflow_dispatch' && inputs.operation == 'Do Nothing'}}
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "No additional operation requested"
+  # run-migrations:
+  #   needs: [build-and-push-image,build-and-push-ee-image]
+  #   if: ${{(github.event_name == 'repository_dispatch') || (github.event_name == 'workflow_dispatch' && inputs.operation == 'Run Migrations')}}
+  #   uses: ./.github/workflows/test-db-ops.yaml
+  #   with:
+  #     environment: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || 'dev' }}
+  #     sha: ${{ needs.build-and-push-image.outputs.sha_short }}
+  #   secrets: inherit
 
   release:
     runs-on: ubuntu-latest
@@ -351,7 +287,7 @@ jobs:
 
       - name: Release
         run: |
-          if [ "${{ github.event.inputs.operation }}" == "Deploy to Dev" ]; then
+          if [ "${{ inputs.operation }}" == "Deploy to Dev" || [ "${{ github.event_name }}" == "push" ]; then
             suffix="-dev-${{ needs.build-and-push-image.outputs.sha_short }}"
           else
             suffix=""

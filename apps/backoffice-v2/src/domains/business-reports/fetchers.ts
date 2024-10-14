@@ -39,16 +39,19 @@ export const SeveritySchema = z.preprocess(value => {
 export const BusinessReportSchema = z
   .object({
     id: z.string(),
+    type: z.string(),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
     riskScore: z.number().nullable(),
     status: z.enum(BusinessReportStatuses),
     report: z.object({
+      isAlert: z.boolean().optional(),
       reportFileId: z.union([z.string(), z.undefined()]),
       data: z.union([z.record(z.string(), z.unknown()), z.undefined()]),
     }),
     business: z
       .object({
+        id: z.string(),
         companyName: z.string(),
         country: z.string().nullable(),
         website: z.string().nullable(),

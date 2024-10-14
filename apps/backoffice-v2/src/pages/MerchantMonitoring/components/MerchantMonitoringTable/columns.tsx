@@ -5,32 +5,47 @@ import { BusinessReportStatus, TBusinessReport } from '@/domains/business-report
 import { titleCase } from 'string-ts';
 
 import { ctw } from '@/common/utils/ctw/ctw';
-import { getSeverityFromRiskScore } from '@ballerine/common';
-import { Badge, severityToClassName, TextWithNAFallback } from '@ballerine/ui';
+import { getSeverityFromRiskScore, isObject } from '@ballerine/common';
+import { Badge, severityToClassName, TextWithNAFallback, WarningFilledSvg } from '@ballerine/ui';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
+import { Minus } from 'lucide-react';
 
 const columnHelper = createColumnHelper<TBusinessReport>();
 
+const SCAN_TYPES = {
+  ONBOARDING: 'Onboarding',
+  MONITORING: 'Monitoring',
+};
+
+const REPORT_TYPE_TO_SCAN_TYPE = {
+  MERCHANT_REPORT_T1: SCAN_TYPES.ONBOARDING,
+  ONGOING_MERCHANT_REPORT_T1: SCAN_TYPES.MONITORING,
+};
+
 export const columns = [
-  columnHelper.accessor('id', {
+  columnHelper.accessor('report', {
     cell: info => {
-      // eslint-disable-next-line react-hooks/rules-of-hooks -- ESLint doesn't like `cell` not being `Cell`.
-      const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
+      const summary = info.getValue()?.data?.summary;
 
-      const id = info.getValue();
+      const isAlert = isObject(summary) && 'isAlert' in summary && summary.isAlert;
 
-      return (
-        <div className={`ml-[10px] flex w-full max-w-[12ch] items-center space-x-2`}>
-          <TextWithNAFallback style={{ ...styles, width: '70%' }} ref={ref}>
-            {id}
-          </TextWithNAFallback>
-
-          <CopyToClipboardButton textToCopy={id ?? ''} />
-        </div>
+      return isAlert ? (
+        <WarningFilledSvg className={`ms-4 d-6`} />
+      ) : (
+        <Minus className={`ms-4 text-[#D9D9D9] d-6`} />
       );
     },
-    header: 'Report ID',
+    header: 'Alert',
+  }),
+  columnHelper.accessor('type', {
+    cell: info => {
+      const scanType =
+        REPORT_TYPE_TO_SCAN_TYPE[info.getValue() as keyof typeof REPORT_TYPE_TO_SCAN_TYPE];
+
+      return <TextWithNAFallback>{scanType}</TextWithNAFallback>;
+    },
+    header: 'Scan Type',
   }),
   columnHelper.accessor('createdAt', {
     cell: info => {
@@ -52,25 +67,43 @@ export const columns = [
     },
     header: 'Created At',
   }),
-  columnHelper.accessor('updatedAt', {
+  columnHelper.accessor('business.id', {
     cell: info => {
-      const updatedAt = info.getValue();
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- ESLint doesn't like `cell` not being `Cell`.
+      const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
 
-      if (!updatedAt) {
-        return <TextWithNAFallback>{updatedAt}</TextWithNAFallback>;
-      }
-
-      const date = dayjs(updatedAt).format('MMM DD, YYYY');
-      const time = dayjs(updatedAt).format('hh:mm');
+      const id = info.getValue();
 
       return (
-        <div className={`flex flex-col space-y-0.5`}>
-          <span className={`font-semibold`}>{date}</span>
-          <span className={`text-xs text-[#999999]`}>{time}</span>
+        <div className={`ml-[10px] flex w-full max-w-[12ch] items-center space-x-2`}>
+          <TextWithNAFallback style={{ ...styles, width: '70%' }} ref={ref}>
+            {id}
+          </TextWithNAFallback>
+
+          <CopyToClipboardButton textToCopy={id ?? ''} />
         </div>
       );
     },
-    header: 'Updated At',
+    header: 'Merchant ID',
+  }),
+  columnHelper.accessor('id', {
+    cell: info => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- ESLint doesn't like `cell` not being `Cell`.
+      const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
+
+      const id = info.getValue();
+
+      return (
+        <div className={`ml-[10px] flex w-full max-w-[12ch] items-center space-x-2`}>
+          <TextWithNAFallback style={{ ...styles, width: '70%' }} ref={ref}>
+            {id}
+          </TextWithNAFallback>
+
+          <CopyToClipboardButton textToCopy={id ?? ''} />
+        </div>
+      );
+    },
+    header: 'Report ID',
   }),
   columnHelper.accessor('website', {
     cell: info => {
@@ -87,14 +120,6 @@ export const columns = [
       return <TextWithNAFallback>{companyName}</TextWithNAFallback>;
     },
     header: 'Company Name',
-  }),
-  columnHelper.accessor('business.country', {
-    cell: info => {
-      const companyName = info.getValue();
-
-      return <TextWithNAFallback>{companyName}</TextWithNAFallback>;
-    },
-    header: 'Country',
   }),
   columnHelper.accessor('riskScore', {
     cell: info => {

@@ -6,3 +6,4 @@ export * from './WebsiteCredibility';
 export * from './BusinessReportSummary';
 export * from './WebsiteLineOfBusiness';
 export * from './Ecosystem';
+export * from './Transactions';

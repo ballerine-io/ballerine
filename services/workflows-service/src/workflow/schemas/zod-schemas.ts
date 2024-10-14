@@ -1,6 +1,6 @@
 import { SubscriptionSchema } from '@/common/types';
-import { z } from 'zod';
 import { WorkflowDefinitionConfigThemeSchema } from '@ballerine/common';
+import { z } from 'zod';
 
 export const ConfigSchema = z
   .object({
@@ -63,6 +63,14 @@ export const ConfigSchema = z
     maxBusinessReports: z.number().nonnegative().optional(),
     isMerchantMonitoringEnabled: z.boolean().optional(),
     isChatbotEnabled: z.boolean().optional(),
+    uiOptions: z
+      .object({
+        redirectUrls: z.object({
+          success: z.string().url().optional(),
+          failure: z.string().url().optional(),
+        }),
+      })
+      .optional(),
   })
   .strict()
   .optional();

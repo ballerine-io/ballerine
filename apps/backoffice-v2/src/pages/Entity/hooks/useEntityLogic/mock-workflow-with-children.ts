@@ -511,7 +511,7 @@ export const workflow = {
             approve: { tags: [StateTag.APPROVED], type: 'final' },
             email_sent: {
               tags: [StateTag.REVISION],
-              on: { KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }] },
+              on: { KYC_RESPONSE_RECEIVED: [{ target: 'kyc_manual_review' }] },
             },
             get_kyc_session: {
               tags: [StateTag.PENDING_PROCESS],
@@ -805,7 +805,7 @@ export const workflow = {
             approve: { tags: [StateTag.APPROVED], type: 'final' },
             email_sent: {
               tags: [StateTag.REVISION],
-              on: { KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }] },
+              on: { KYC_RESPONSE_RECEIVED: [{ target: 'kyc_manual_review' }] },
             },
             get_kyc_session: {
               tags: [StateTag.PENDING_PROCESS],
