@@ -6,4 +6,5 @@ export const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes
     <div ref={ref} className={ctw('p-6 pt-0', className)} {...props} />
   ),
 );
+
 CardContent.displayName = 'CardContent';
