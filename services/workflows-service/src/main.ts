@@ -18,6 +18,7 @@ import { AppLoggerService } from './common/app-logger/app-logger.service';
 import { exceptionValidationFactory } from './errors';
 import swagger from '@/swagger/swagger';
 import { applyFormats, patchNestJsSwagger } from 'ballerine-nestjs-typebox';
+import { WorkerAppModule } from '@/worker-app.module';
 
 // provide swagger OpenAPI generator support
 patchNestJsSwagger();
@@ -50,6 +51,13 @@ const corsOrigins = [
 ];
 
 const main = async () => {
+  if (env.IS_WORKER_SERVICE) {
+    return await NestFactory.create(WorkerAppModule, {
+      bufferLogs: true,
+      snapshot: true,
+    });
+  }
+
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true, //will be buffered until a custom logger is attached
     snapshot: true,
