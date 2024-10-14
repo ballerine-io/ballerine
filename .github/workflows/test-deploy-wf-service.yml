@@ -25,14 +25,13 @@ on:
         type: string
         description: 'SHA ID'
         required: true
-        default: 'dev'
 
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
-  SHORT_HASH: ${{ (github.event_name == 'workflow_call' && inputs.sha) || (inputs.environment == 'prod' && github.env.SB_WF_SHORT_SHA || github.env.DEV_WF_SHORT_SHA) }}
-
+  # SHORT_HASH: ${{ (github.event_name == 'workflow_call' && inputs.sha) || (inputs.environment == 'prod' && github.env.SB_WF_SHORT_SHA || github.env.DEV_WF_SHORT_SHA) }}
+  SHORT_HASH: ${{ inputs.sha }}
 
 jobs:
   check_if_data_migration_needed:
