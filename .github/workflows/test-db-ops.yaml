@@ -31,7 +31,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
-  SHORT_HASH: ${{ github.event.client_payload.environment == 'prod' && github.env.PROD_WF_SHORT_SHA || github.event.client_payload.environment == 'sb' && github.env.SB_WF_SHORT_SHA || github.env.DEV_WF_SHORT_SHA }}
+  SHORT_HASH: ${{ github.event.client_payload.environment == 'prod' && github.env.SB_WF_SHORT_SHA || github.event.client_payload.environment == 'sb' && github.env.DEV_WF_SHORT_SHA || github.env.DEV_WF_SHORT_SHA }}
   MIGRATION_ENV: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.environment || inputs.environment }}
   MIGRATION_REF: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || inputs.environment }}
 
