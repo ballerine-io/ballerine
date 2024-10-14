@@ -53,7 +53,10 @@ export class WorkflowDefinitionCreateDto {
   @IsString()
   definitionType!: string;
 
-  @ApiProperty({ required: true, type: Object })
+  @ApiProperty({
+    required: true,
+    type: 'object',
+  })
   @IsNotEmptyObject()
   @IsObject()
   definition!: Record<string, unknown>;
@@ -73,11 +76,6 @@ export class WorkflowDefinitionCreateDto {
   @IsObject()
   config?: Record<string, unknown> | null;
 
-  @ApiProperty({ required: false, type: Array, nullable: true })
-  @IsOptional()
-  @IsArray()
-  supportedPlatforms?: unknown[] | null;
-
   @ApiProperty({ required: false, type: Object, nullable: true })
   @IsOptional()
   @IsObject()
@@ -87,11 +85,6 @@ export class WorkflowDefinitionCreateDto {
   @IsOptional()
   @IsString()
   variant?: string;
-
-  @ApiProperty({ required: false, type: Object, nullable: true })
-  @IsOptional()
-  @IsObject()
-  backend?: Record<string, unknown> | null;
 
   @ApiProperty({ required: false, type: Array, nullable: true })
   @IsOptional()

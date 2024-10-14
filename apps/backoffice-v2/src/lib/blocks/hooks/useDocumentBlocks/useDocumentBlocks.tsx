@@ -1,7 +1,7 @@
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { checkIsBusiness } from '@/common/utils/check-is-business/check-is-business';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { CommonWorkflowStates, StateTag, valueOrNA } from '@ballerine/common';
+import { CommonWorkflowStates, isObject, StateTag, valueOrNA } from '@ballerine/common';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
 import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
@@ -29,6 +29,7 @@ import { X } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useCallback, useMemo } from 'react';
 import { toTitleCase } from 'string-ts';
+import { useDocumentOcr } from '@/domains/entities/hooks/mutations/useDocumentOcr/useDocumentOcr';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -79,6 +80,14 @@ export const useDocumentBlocks = ({
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id);
+  const {
+    mutate: mutateOCRDocument,
+    isLoading: isLoadingOCRDocument,
+    data: ocrResult,
+  } = useDocumentOcr({
+    workflowId: workflow?.id,
+  });
+
   const { isLoading: isLoadingRejectTaskById } = useRejectTaskByIdMutation(workflow?.id);
 
   const { comment, onClearComment, onCommentChange } = useCommentInputLogic();
@@ -358,6 +367,25 @@ export const useDocumentBlocks = ({
           })
           .cellAt(0, 0);
 
+        const documentEntries = Object.entries(
+          {
+            ...additionalProperties,
+            ...propertiesSchema?.properties,
+          } ?? {},
+        ).map(([title, formattedValue]) => {
+          if (isObject(formattedValue)) {
+            return [
+              title,
+              {
+                ...formattedValue,
+                value: formattedValue.value || ocrResult?.parsedData?.[title],
+              },
+            ];
+          }
+
+          return [title, formattedValue];
+        });
+
         const detailsCell = createBlocksTyped()
           .addBlock()
           .addCell({
@@ -370,12 +398,7 @@ export const useDocumentBlocks = ({
                 value: {
                   id,
                   title: `${category} - ${docType}`,
-                  data: Object.entries(
-                    {
-                      ...additionalProperties,
-                      ...propertiesSchema?.properties,
-                    } ?? {},
-                  )?.map(
+                  data: documentEntries?.map(
                     ([
                       title,
                       {
@@ -441,6 +464,7 @@ export const useDocumentBlocks = ({
                   },
                 },
                 workflowId: workflow?.id,
+                isSaveDisabled: isLoadingOCRDocument,
                 documents: workflow?.context?.documents,
               })
               .addCell(decisionCell)
@@ -455,6 +479,9 @@ export const useDocumentBlocks = ({
             type: 'multiDocuments',
             value: {
               isLoading: storageFilesQueryResult?.some(({ isLoading }) => isLoading),
+              onOcrPressed: () => mutateOCRDocument({ documentId: id }),
+              isDocumentEditable: caseState.writeEnabled,
+              isLoadingOCR: isLoadingOCRDocument,
               data:
                 documents?.[docIndex]?.pages?.map(
                   ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({

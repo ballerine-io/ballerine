@@ -88,7 +88,7 @@ import {
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
-import { Static } from '@sinclair/typebox';
+import { Static, TSchema } from '@sinclair/typebox';
 import { plainToClass } from 'class-transformer';
 import dayjs from 'dayjs';
 import { isEqual, merge } from 'lodash';
@@ -108,22 +108,15 @@ import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-
 import { entitiesUpdate } from './utils/entities-update';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
+import { StorageService } from '@/storage/storage.service';
+import { TOcrImages, UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import { AwsSecretsManager } from '@/secrets-manager/aws-secrets-manager';
 import { InMemorySecretsManager } from '@/secrets-manager/in-memory-secrets-manager';
+import { FEATURE_LIST } from '@/customer/types';
 
 type TEntityId = string;
 
 export type TEntityType = 'endUser' | 'business';
-
-// TODO: TEMP (STUB)
-const policies = {
-  kycSignup: () => {
-    return [{ workflowDefinitionId: 'COLLECT_DOCS_b0002zpeid7bq9aaa', version: 1 }] as const;
-  },
-  kybSignup: () => {
-    return [{ workflowDefinitionId: 'COLLECT_DOCS_b0002zpeid7bq9bbb', version: 1 }] as const;
-  },
-};
 
 @Injectable()
 export class WorkflowService {
@@ -150,6 +143,7 @@ export class WorkflowService {
     private readonly ruleEngineService: RuleEngineService,
     private readonly sentry: SentryService,
     private readonly secretsManagerFactory: SecretsManagerFactory,
+    private readonly storageService: StorageService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -159,7 +153,6 @@ export class WorkflowService {
       version: true,
       definition: true,
       definitionType: true,
-      backend: true,
       extensions: true,
       persistStates: true,
       submitStates: true,
@@ -172,9 +165,7 @@ export class WorkflowService {
         contextSchema: data.contextSchema as InputJsonValue,
         documentsSchema: data.documentsSchema as InputJsonValue,
         config: data.config as InputJsonValue,
-        supportedPlatforms: data.supportedPlatforms as InputJsonValue,
         extensions: data.extensions as InputJsonValue,
-        backend: data.backend as InputJsonValue,
         persistStates: data.persistStates as InputJsonValue,
         submitStates: data.submitStates as InputJsonValue,
       },
@@ -199,9 +190,7 @@ export class WorkflowService {
       definition: true,
       contextSchema: true,
       config: true,
-      supportedPlatforms: true,
       extensions: true,
-      backend: true,
       persistStates: true,
       submitStates: true,
     };
@@ -711,7 +700,6 @@ export class WorkflowService {
       version: true,
       definition: true,
       definitionType: true,
-      backend: true,
       extensions: true,
       persistStates: true,
       submitStates: true,
@@ -2541,5 +2529,107 @@ export class WorkflowService {
     return await this.workflowRuntimeDataRepository.updateById(workflowRuntimeDataId, {
       data: args,
     });
+  }
+
+  async findDocumentById({
+    workflowId,
+    projectId,
+    documentId,
+    transaction,
+  }: {
+    workflowId: string;
+    projectId: string;
+    documentId: string;
+    transaction: PrismaTransaction | PrismaClient;
+  }) {
+    const runtimeData = await this.workflowRuntimeDataRepository.findByIdAndLock(
+      workflowId,
+      {},
+      [projectId],
+      transaction,
+    );
+    const workflowDef = await this.workflowDefinitionRepository.findById(
+      runtimeData.workflowDefinitionId,
+      {},
+      [projectId],
+      transaction,
+    );
+    const document = runtimeData?.context?.documents?.find(
+      (document: DefaultContextSchema['documents'][number]) => document.id === documentId,
+    );
+
+    return addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);
+  }
+
+  async runOCROnDocument({
+    workflowRuntimeId,
+    projectId,
+    documentId,
+  }: {
+    workflowRuntimeId: string;
+    projectId: string;
+    documentId: string;
+  }) {
+    return await this.prismaService.$transaction(
+      async transaction => {
+        const customer = await this.customerService.getByProjectId(projectId);
+
+        if (!customer.features?.[FEATURE_LIST.DOCUMENT_OCR]) {
+          throw new BadRequestException(
+            `Document OCR is not enabled for customer id ${customer.id}`,
+          );
+        }
+
+        const document = await this.findDocumentById({
+          workflowId: workflowRuntimeId,
+          projectId,
+          documentId,
+          transaction,
+        });
+
+        if (!('pages' in document)) {
+          throw new BadRequestException('Cannot run document OCR on document without pages');
+        }
+
+        const documentFetchPagesContentPromise = document.pages.map(async page => {
+          const ballerineFileId = page.ballerineFileId;
+
+          if (!ballerineFileId) {
+            throw new BadRequestException('Cannot run document OCR on document without pages');
+          }
+
+          const { signedUrl, mimeType, filePath } = await this.storageService.fetchFileContent({
+            id: ballerineFileId,
+            format: 'signed-url',
+            projectIds: [projectId],
+          });
+
+          if (signedUrl) {
+            return {
+              remote: {
+                imageUri: signedUrl,
+                mimeType,
+              },
+            };
+          }
+
+          const base64String = this.storageService.fileToBase64(filePath!);
+
+          return { base64: `data:${mimeType};base64,${base64String}` };
+        });
+
+        const images = (await Promise.all(documentFetchPagesContentPromise)) satisfies TOcrImages;
+
+        return (
+          await new UnifiedApiClient().runOcr({
+            images,
+            schema: document.propertiesSchema as unknown as TSchema,
+          })
+        )?.data;
+      },
+      {
+        timeout: 180_000,
+      },
+    );
   }
 }

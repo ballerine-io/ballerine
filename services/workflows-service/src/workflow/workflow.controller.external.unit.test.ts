@@ -1,10 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CallHandler, ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
-// import { ACGuard } from 'nest-access-control';
 import { ACLModule } from '@/common/access-control/acl.module';
-// import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
-// import { AclValidateRequestInterceptor } from '@/common/access-control/interceptors/acl-validate-request.interceptor';
 import { WorkflowControllerExternal } from './workflow.controller.external';
 import { WorkflowService } from './workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -16,24 +13,6 @@ import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definit
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
-// import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
-
-const acGuard = {
-  canActivate: () => {
-    return true;
-  },
-};
-
-const aclFilterResponseInterceptor = {
-  intercept: (_context: ExecutionContext, next: CallHandler) => {
-    return next.handle();
-  },
-};
-const aclValidateRequestInterceptor = {
-  intercept: (_context: ExecutionContext, next: CallHandler) => {
-    return next.handle();
-  },
-};
 
 describe('Workflow (external)', () => {
   let app: INestApplication;
@@ -164,10 +143,7 @@ describe('Workflow (external)', () => {
       .get(`${'/external/workflows'}/abcde`)
       .set('authorization', 'Bearer secret')
       .expect(HttpStatus.OK)
-      .expect({
-        workflowDefinition: { id: 'a' },
-        workflowRuntimeData: { state: { id: 'b' } },
-      });
+      .expect({ state: { id: 'b' } });
   });
 
   afterAll(async () => {

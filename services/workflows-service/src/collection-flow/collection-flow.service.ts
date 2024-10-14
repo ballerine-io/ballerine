@@ -5,7 +5,7 @@ import { UiDefDefinition, UiSchemaStep } from '@/collection-flow/models/flow-ste
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { type ITokenScope } from '@/common/decorators/token-scope.decorator';
 import { CustomerService } from '@/customer/customer.service';
-import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
+import { TCustomerWithFeatures } from '@/customer/types';
 import { EndUserService } from '@/end-user/end-user.service';
 import { NotFoundException } from '@/errors';
 import { FileService } from '@/providers/file/file.service';
@@ -39,7 +39,7 @@ export class CollectionFlowService {
     protected readonly fileService: FileService,
   ) {}
 
-  async getCustomerDetails(projectId: TProjectId): Promise<TCustomerWithDefinitionsFeatures> {
+  async getCustomerDetails(projectId: TProjectId): Promise<TCustomerWithFeatures> {
     return this.customerService.getByProjectId(projectId);
   }
 
@@ -87,7 +87,7 @@ export class CollectionFlowService {
       projectIds,
     );
 
-    const uiDefintion = await this.uiDefinitionService.getByWorkflowDefinitionId(
+    const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
       workflowDefinition.id,
       'collection_flow' as const,
       projectIds,
@@ -95,7 +95,7 @@ export class CollectionFlowService {
     );
 
     const translationService = new TranslationService(
-      this.getTranslationServiceResources(uiDefintion),
+      this.getTranslationServiceResources(uiDefinition),
     );
 
     await translationService.init();
@@ -103,19 +103,20 @@ export class CollectionFlowService {
     return {
       id: workflowDefinition.id,
       config: workflowDefinition.config,
-      uiOptions: uiDefintion.uiOptions,
+      uiOptions: uiDefinition.uiOptions,
       uiSchema: {
         // @ts-expect-error - error from Prisma types fix
         elements: this.traverseUiSchema(
           // @ts-expect-error - error from Prisma types fix
-          uiDefintion.uiSchema.elements,
+          uiDefinition.uiSchema.elements,
           context,
           language,
           translationService,
         ) as UiSchemaStep[],
+        theme: uiDefinition.theme,
       },
-      definition: uiDefintion.definition
-        ? (uiDefintion.definition as unknown as UiDefDefinition)
+      definition: uiDefinition.definition
+        ? (uiDefinition.definition as unknown as UiDefDefinition)
         : undefined,
     };
   }
