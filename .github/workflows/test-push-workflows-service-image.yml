@@ -99,7 +99,8 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ github.ref_name }}
-            type=raw,value=${{ steps.version.outputs.sha_short }}-${{ github.ref_name }}
+            type=raw,value=dev
+            type=raw,value=${{ steps.version.outputs.sha_short }}-dev
             # type=raw,value=${{ steps.version.outputs.sha_short }}-dev,enable=${{ github.ref_name != 'dev' }}
             # type=raw,value=${{ steps.version.outputs.sha_short }}-sb,enable=${{ github.ref_name != 'sb' }}
             # type=raw,value=${{ steps.version.outputs.sha_short }}-prod,enable=${{ github.ref_name != 'prod' }}
