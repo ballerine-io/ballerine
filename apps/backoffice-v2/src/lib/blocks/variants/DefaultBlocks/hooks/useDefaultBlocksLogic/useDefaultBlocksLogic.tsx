@@ -176,13 +176,6 @@ export const useDefaultBlocksLogic = () => {
     }),
   );
 
-  const ubosRegistryProvided = workflow?.context?.pluginsOutput?.ubo?.data?.uboGraph?.map(ubo => ({
-    name: ubo?.name,
-    percentage: ubo?.shareHolders?.[0]?.sharePercentage,
-    type: ubo?.type,
-    level: ubo?.level,
-  }));
-
   const directorsRegistryProvided = workflow?.context?.pluginsOutput?.directors?.data?.map(
     ({ name, position }) => ({
       name,
@@ -306,12 +299,14 @@ export const useDefaultBlocksLogic = () => {
 
   const ubosUserProvidedBlock = useUbosUserProvidedBlock(ubosUserProvided);
 
-  const ubosRegistryProvidedBlock = useUbosRegistryProvidedBlock(
-    ubosRegistryProvided,
-    workflow?.context?.pluginsOutput?.ubo?.message ??
+  const ubosRegistryProvidedBlock = useUbosRegistryProvidedBlock({
+    nodes: workflow?.context?.pluginsOutput?.ubo?.data?.nodes ?? [],
+    edges: workflow?.context?.pluginsOutput?.ubo?.data?.edges ?? [],
+    message:
+      workflow?.context?.pluginsOutput?.ubo?.message ??
       workflow?.context?.pluginsOutput?.ubo?.data?.message,
-    workflow?.context?.pluginsOutput?.ubo?.isRequestTimedOut,
-  );
+    isRequestTimedOut: workflow?.context?.pluginsOutput?.ubo?.isRequestTimedOut,
+  });
 
   const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
 
