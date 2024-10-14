@@ -10,6 +10,8 @@ import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { CustomerService } from '@/customer/customer.service';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { sign } from '@ballerine/common';
+import { env } from '@/env';
+import { OutgoingWebhookQueueService } from '@/bull-mq/outgoing-webhook/outgoing-webhook-queue.service';
 
 @Injectable()
 export class WorkflowStateChangedWebhookCaller {
@@ -21,6 +23,7 @@ export class WorkflowStateChangedWebhookCaller {
     private configService: ConfigService,
     private readonly logger: AppLoggerService,
     private readonly customerService: CustomerService,
+    private readonly outgoingWebhookQueueService: OutgoingWebhookQueueService,
   ) {
     this.#__axios = this.httpService.axiosRef;
 
@@ -88,6 +91,21 @@ export class WorkflowStateChangedWebhookCaller {
       environment,
       data: data.runtimeData.context,
     };
+
+    if (env.QUEUE_SYSTEM_ENABLED) {
+      return await this.outgoingWebhookQueueService.addJob({
+        requestConfig: {
+          url,
+          method: 'POST',
+          headers: {},
+          body: payload,
+          timeout: 15_000,
+        },
+        customerConfig: {
+          webhookSharedSecret,
+        },
+      });
+    }
 
     try {
       const res = await this.#__axios.post(url, payload, {

@@ -100,11 +100,11 @@ export const serverEnvSchema = {
   REDIS_PORT: z.string().transform(value => Number(value)),
   QUEUE_SYSTEM_ENABLED: z
     .string()
-    .transform(value => Boolean(value))
+    .transform(value => value === 'true')
     .default('false'),
   IS_WORKER_SERVICE: z
     .string()
-    .transform(value => Boolean(value))
+    .transform(value => value === 'true')
     .default('false'),
 };
 

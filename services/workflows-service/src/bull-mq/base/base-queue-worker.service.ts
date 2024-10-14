@@ -15,7 +15,7 @@ export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy
       ...REDIS_CONFIG,
     };
 
-    if (env.QUEUE_SYSTEM_ENABLED !== true) {
+    if (!env.QUEUE_SYSTEM_ENABLED) {
       return;
     }
 

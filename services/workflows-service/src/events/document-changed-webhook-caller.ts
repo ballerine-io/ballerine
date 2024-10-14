@@ -13,6 +13,8 @@ import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { ConfigService } from '@nestjs/config';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
+import { env } from '@/env';
+import { OutgoingWebhookQueueService } from '@/bull-mq/outgoing-webhook/outgoing-webhook-queue.service';
 
 const getExtensionFromMimeType = (mimeType: string) => {
   const parts = mimeType?.split('/');
@@ -34,6 +36,7 @@ export class DocumentChangedWebhookCaller {
     workflowEventEmitter: WorkflowEventEmitterService,
     private readonly logger: AppLoggerService,
     private readonly customerService: CustomerService,
+    private readonly outgoingWebhookQueueService: OutgoingWebhookQueueService,
   ) {
     this.#__axios = this.httpService.axiosRef;
 
@@ -172,31 +175,46 @@ export class DocumentChangedWebhookCaller {
   }) {
     this.logger.log('Sending webhook', { id, url });
 
-    try {
-      const payload = {
-        id,
-        eventName: 'workflow.context.document.changed',
-        apiVersion,
-        timestamp: new Date().toISOString(),
-        assignee: data.assignee
-          ? {
-              id: data.assignee.id,
-              firstName: data.assignee.firstName,
-              lastName: data.assignee.lastName,
-              email: data.assignee.email,
-            }
-          : null,
-        assignedAt: data.assignedAt,
-        workflowCreatedAt: data.updatedRuntimeData.createdAt,
-        workflowResolvedAt: data.updatedRuntimeData.resolvedAt,
-        workflowDefinitionId: data.updatedRuntimeData.workflowDefinitionId,
-        workflowRuntimeId: data.updatedRuntimeData.id,
-        ballerineEntityId: data.entityId,
-        correlationId: data.correlationId,
-        environment,
-        data: data.updatedRuntimeData.context,
-      };
+    const payload = {
+      id,
+      eventName: 'workflow.context.document.changed',
+      apiVersion,
+      timestamp: new Date().toISOString(),
+      assignee: data.assignee
+        ? {
+            id: data.assignee.id,
+            firstName: data.assignee.firstName,
+            lastName: data.assignee.lastName,
+            email: data.assignee.email,
+          }
+        : null,
+      assignedAt: data.assignedAt,
+      workflowCreatedAt: data.updatedRuntimeData.createdAt,
+      workflowResolvedAt: data.updatedRuntimeData.resolvedAt,
+      workflowDefinitionId: data.updatedRuntimeData.workflowDefinitionId,
+      workflowRuntimeId: data.updatedRuntimeData.id,
+      ballerineEntityId: data.entityId,
+      correlationId: data.correlationId,
+      environment,
+      data: data.updatedRuntimeData.context,
+    };
 
+    if (env.QUEUE_SYSTEM_ENABLED) {
+      return await this.outgoingWebhookQueueService.addJob({
+        requestConfig: {
+          url,
+          method: 'POST',
+          headers: {},
+          body: payload,
+          timeout: 15_000,
+        },
+        customerConfig: {
+          webhookSharedSecret,
+        },
+      });
+    }
+
+    try {
       const res = await this.#__axios.post(url, payload, {
         headers: {
           'X-Authorization': webhookSharedSecret,
