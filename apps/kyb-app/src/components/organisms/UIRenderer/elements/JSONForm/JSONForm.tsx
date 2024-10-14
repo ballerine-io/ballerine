@@ -97,6 +97,7 @@ export const JSONForm: UIElementComponent<JSONFormElementBaseParams> = ({ defini
           <DynamicForm
             schema={formSchema}
             uiSchema={uiSchema}
+            // @ts-ignore
             fields={jsonFormFields}
             layouts={jsonFormLayouts}
             formData={formData}

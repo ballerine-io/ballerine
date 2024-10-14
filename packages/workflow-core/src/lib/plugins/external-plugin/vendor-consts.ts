@@ -19,6 +19,12 @@ export const MERCHANT_MONITORING_VENDORS = {
 
 export const UBO_VENDORS = {
   'asia-verify': 'asia-verify',
+  kyckr: 'kyckr',
+} as const;
+
+export const REGISTRY_INFORMATION_VENDORS = {
+  'asia-verify': 'asia-verify',
+  kyckr: 'kyckr',
 } as const;
 
 export const EMAIL_TEMPLATES = {
@@ -40,6 +46,9 @@ export type MerchantMonitoringVendors =
   (typeof MERCHANT_MONITORING_VENDORS)[keyof typeof MERCHANT_MONITORING_VENDORS];
 
 export type ApiUboVendors = (typeof UBO_VENDORS)[keyof typeof UBO_VENDORS];
+
+export type ApiRegistryInformationVendors =
+  (typeof REGISTRY_INFORMATION_VENDORS)[keyof typeof REGISTRY_INFORMATION_VENDORS];
 
 export type ApiEmailTemplates = (typeof EMAIL_TEMPLATES)[keyof typeof EMAIL_TEMPLATES];
 
@@ -157,9 +166,21 @@ type UboAsiaVerifyOptions = {
   defaultCountry?: string;
 };
 
+type UboKyckrOptions = {
+  pluginKind: 'ubo';
+  vendor: 'kyckr';
+  defaultCountry?: string;
+};
+
 type RegistryInformationAsiaVerifyOptions = {
   pluginKind: 'registry-information';
   vendor: 'asia-verify';
+  defaultCountry?: string;
+};
+
+type RegistryInformationKyckrOptions = {
+  pluginKind: 'registry-information';
+  vendor: 'kyckr';
   defaultCountry?: string;
 };
 
@@ -169,22 +190,14 @@ type ApiPluginOptions =
   | AsiaVerifyOptions
   | CompanySanctionsAsiaVerifyOptions
   | UboAsiaVerifyOptions
+  | UboKyckrOptions
   | RegistryInformationAsiaVerifyOptions
+  | RegistryInformationKyckrOptions
   | MerchantMonirotingOptions
   | EmailOptions
   | KycSessionOptions;
 
-type TPluginFactory = {
-  [TKey in Exclude<
-    ApiBallerinePlugins,
-    | 'individual-sanctions'
-    | 'company-sanctions'
-    | 'ubo'
-    | 'template-email'
-    | 'merchant-monitoring'
-    | 'kyc-session'
-  >]: PluginFactoryFnHelper<TKey>;
-} & Record<
+type TPluginFactory = Record<
   'individual-sanctions',
   {
     [TKey in ApiIndividualScreeningVendors]: PluginVendorFnHelper<'individual-sanctions', TKey>;
@@ -219,6 +232,12 @@ type TPluginFactory = {
     {
       [TKey in KycSessionVendors]: PluginVendorFnHelper<'kyc-session', TKey>;
     }
+  > &
+  Record<
+    'registry-information',
+    {
+      [TKey in ApiRegistryInformationVendors]: PluginVendorFnHelper<'registry-information', TKey>;
+    }
   >;
 
 const BASE_SANCSIONS_SCREENING_OPTIONS = {
@@ -237,55 +256,102 @@ const getKycEntityMapping = (takeEntityDetailFromKyc: boolean) => {
 };
 
 export const BALLERINE_API_PLUGIN_FACTORY = {
-  [BALLERINE_API_PLUGINS['registry-information']]: (
-    options: RegistryInformationAsiaVerifyOptions,
-  ) => ({
-    name: 'businessInformation',
-    displayName: 'Registry Information',
-    pluginKind: 'registry-information',
-    vendor: 'asia-verify',
-    url: {
-      url: `{secret.UNIFIED_API_URL}/companies-v2/{country}/{entity.data.registrationNumber}`,
-      options: {
-        country: options.defaultCountry ?? '{entity.data.country}',
+  [BALLERINE_API_PLUGINS['registry-information']]: {
+    [REGISTRY_INFORMATION_VENDORS['asia-verify']]: (
+      options: RegistryInformationAsiaVerifyOptions,
+    ) => ({
+      name: 'businessInformation',
+      displayName: 'Registry Information',
+      pluginKind: 'registry-information',
+      vendor: 'asia-verify',
+      url: {
+        url: `{secret.UNIFIED_API_URL}/companies-v2/{country}/{entity.data.registrationNumber}`,
+        options: {
+          country: options.defaultCountry ?? '{entity.data.country}',
+        },
       },
-    },
-    method: 'GET',
-    persistResponseDestination: 'pluginsOutput.businessInformation',
-    headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
-    request: {
-      transform: [
-        {
-          transformer: 'jmespath',
-          mapping: `merge(
+      method: 'GET',
+      persistResponseDestination: 'pluginsOutput.businessInformation',
+      headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+      request: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: `merge(
             { vendor: 'asia-verify' },
             entity.data.country == 'HK' && {
               callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.businessInformation.data&processName=kyb-unified-api'])
             }
           )`, // jmespath
+          },
+        ],
+      },
+      response: {
+        transform: [
+          {
+            mapping:
+              "merge({ name: 'businessInformation', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || jurisdictionCode == 'HK' && 'IN_PROGRESS' || 'SUCCESS' }, @)",
+            transformer: 'jmespath',
+          },
+          {
+            mapping: [
+              {
+                method: 'setTimeToRecordUTC',
+                source: 'invokedAt',
+                target: 'invokedAt',
+              },
+            ],
+            transformer: 'helper',
+          },
+        ],
+      },
+    }),
+    [REGISTRY_INFORMATION_VENDORS['kyckr']]: (options: RegistryInformationKyckrOptions) => ({
+      name: 'businessInformation',
+      displayName: 'Registry Information',
+      pluginKind: 'registry-information',
+      vendor: 'kyckr',
+      url: {
+        url: `{secret.UNIFIED_API_URL}/companies-v2/{country}/{entity.data.registrationNumber}`,
+        options: {
+          country: options.defaultCountry ?? '{entity.data.country}',
         },
-      ],
-    },
-    response: {
-      transform: [
-        {
-          mapping:
-            "merge({ name: 'businessInformation', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || jurisdictionCode == 'HK' && 'IN_PROGRESS' || 'SUCCESS' }, @)",
-          transformer: 'jmespath',
-        },
-        {
-          mapping: [
-            {
-              method: 'setTimeToRecordUTC',
-              source: 'invokedAt',
-              target: 'invokedAt',
-            },
-          ],
-          transformer: 'helper',
-        },
-      ],
-    },
-  }),
+      },
+      method: 'GET',
+      persistResponseDestination: 'pluginsOutput.businessInformation',
+      headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+      request: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: `{
+              vendor: 'kyckr',
+              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.businessInformation.data&processName=kyb-unified-api'])
+            }`, // jmespath
+          },
+        ],
+      },
+      response: {
+        transform: [
+          {
+            mapping:
+              "merge({ name: 'businessInformation', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || jurisdictionCode == 'HK' && 'IN_PROGRESS' || 'SUCCESS' }, @)",
+            transformer: 'jmespath',
+          },
+          {
+            mapping: [
+              {
+                method: 'setTimeToRecordUTC',
+                source: 'invokedAt',
+                target: 'invokedAt',
+              },
+            ],
+            transformer: 'helper',
+          },
+        ],
+      },
+    }),
+  },
   [BALLERINE_API_PLUGINS['individual-sanctions']]: {
     [INDIVIDUAL_SCREENING_VENDORS['dow-jones']]: (options: DowJonesOptions) => ({
       ...BASE_SANCSIONS_SCREENING_OPTIONS,
@@ -435,7 +501,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.merchantMonitoring&processName=website-monitoring'])
               withQualityControl: ${
                 options.merchantMonitoringQualityControl ?? true ? 'true' : 'false'
-              }  
+              }
             }`, // jmespath
           },
         ],
@@ -482,6 +548,51 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             transformer: 'jmespath',
             mapping: `{
               vendor: 'asia-verify',
+              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.ubo.data&processName=ubo-unified-api'])
+            }`, // jmespath
+          },
+        ],
+      },
+      response: {
+        transform: [
+          {
+            mapping:
+              "merge({ name: 'ubo', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
+            transformer: 'jmespath',
+          },
+          {
+            mapping: [
+              {
+                method: 'setTimeToRecordUTC',
+                source: 'invokedAt',
+                target: 'invokedAt',
+              },
+            ],
+            transformer: 'helper',
+          },
+        ],
+      },
+    }),
+    [UBO_VENDORS['kyckr']]: (options: UboKyckrOptions) => ({
+      name: 'ubo',
+      pluginKind: 'ubo',
+      vendor: 'kyckr',
+      displayName: 'UBO Check',
+      url: {
+        url: `{secret.UNIFIED_API_URL}/companies/{country}/{entity.data.registrationNumber}/ubo`,
+        options: {
+          country: options.defaultCountry ?? '{entity.data.country}',
+        },
+      },
+      method: 'GET',
+      persistResponseDestination: 'pluginsOutput.ubo',
+      headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+      request: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: `{
+              vendor: 'kyckr',
               callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.ubo.data&processName=ubo-unified-api'])
             }`, // jmespath
           },
