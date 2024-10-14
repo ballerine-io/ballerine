@@ -268,19 +268,7 @@ export class BusinessReportControllerInternal {
             }
           : {}),
         AND: {
-          OR: [
-            {
-              type: {
-                not: {
-                  equals: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
-                },
-              },
-            },
-            {
-              type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
-              status: BusinessReportStatus.completed,
-            },
-          ],
+          OR: ongoingOrCondition,
         },
       },
       select: {
