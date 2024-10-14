@@ -31,9 +31,26 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
   # SHORT_HASH: ${{ (github.event_name == 'workflow_call' && inputs.sha) || (inputs.environment == 'prod' && github.env.SB_WF_SHORT_SHA || github.env.DEV_WF_SHORT_SHA) }}
-  SHORT_HASH: ${{ inputs.sha }}
+  # SHORT_HASH: ${{ inputs.sha }}
 
 jobs:
+  set_short_hash:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set SHORT_HASH based on conditions
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_call" && "${{ inputs.sha }}" != "" ]]; then
+            echo "SHORT_HASH=${{ inputs.sha }}" >> $GITHUB_ENV
+          elif [[ "${{ inputs.environment }}" == "prod" && "${{ github.env.SB_WF_SHORT_SHA }}" != "" ]]; then
+            echo "SHORT_HASH=${{ github.env.SB_WF_SHORT_SHA }}" >> $GITHUB_ENV
+          else
+            echo "SHORT_HASH=${{ github.env.DEV_WF_SHORT_SHA }}" >> $GITHUB_ENV
+          fi
+
+      - name: Verify SHORT_HASH
+        run: |
+          echo "SHORT_HASH is ${{ github.env.SHORT_HASH }}"
+          echo "SHORT_HASH is $SHORT_HASH"
   check_if_data_migration_needed:
     runs-on: ubuntu-latest
     outputs:
