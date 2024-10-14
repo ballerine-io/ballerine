@@ -30,25 +30,11 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
   SHORT_HASH: ${{ (inputs.environment == 'dev' && inputs.sha) || (inputs.environment == 'prod' && github.env.SB_WF_SHORT_SHA || github.env.DEV_WF_SHORT_SHA) }}
-  # SHORT_HASH: ${{ inputs.sha }}
 
 jobs:
   set_short_hash:
     runs-on: ubuntu-latest
     steps:
-  #     - name: Set SHORT_HASH based on conditions
-  #       run: |
-  #         if [[ "${{ inputs.environment }}" == "dev" && "${{ inputs.sha }}" != "" ]]; then
-  #           echo "SHORT_HASH=${{ inputs.sha }}" >> $GITHUB_ENV
-  #           echo "SHORT_HASH=${{ inputs.sha }}" >> $GITHUB_OUTPUT
-  #         elif [[ "${{ inputs.environment }}" == "prod" && "${{ github.env.SB_WF_SHORT_SHA }}" != "" ]]; then
-  #           echo "SHORT_HASH=${{ github.env.SB_WF_SHORT_SHA }}" >> $GITHUB_ENV
-  #           echo "SHORT_HASH=${{ inputs.sha }}" >> $GITHUB_OUTPUT
-  #         else
-  #           echo "SHORT_HASH=${{ github.env.DEV_WF_SHORT_SHA }}" >> $GITHUB_ENV
-  #           echo "SHORT_HASH=${{ github.env.DEV_WF_SHORT_SHA }}" >> $GITHUB_OUTPUT
-  #         fi
-
       - name: Verify SHORT_HASH
         run: |
           echo "SHORT_HASH is ${{ env.SHORT_HASH }}"
@@ -84,8 +70,7 @@ jobs:
 
   tag-and-push-image:
     runs-on: ubuntu-latest
-    # needs: set_short_hash
-    # if: ${{ inputs.environment != 'dev' }}
+    if: ${{ inputs.environment != 'dev' }}
     permissions:
       contents: read
       packages: write
@@ -140,15 +125,15 @@ jobs:
             docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-dev ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ inputs.environment }}
           fi
           docker images
-          # docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-${{ inputs.environment }}
-          # docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ inputs.environment }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-${{ inputs.environment }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ inputs.environment }}
 
   build-and-push-ee-image:
     runs-on: ubuntu-latest
     needs: [check_if_data_migration_needed,tag-and-push-image]
     if: always() && ${{(needs.check_if_data_migration_needed.outputs.should_build == 'true')}}
     outputs:
-      shorthash: ${{ steps.lastcommit.outputs.shorthash }}
+      SUBMODULE_SHORT_HASH: ${{ steps.lastcommit.outputs.shorthash }}
     permissions:
       contents: read
       packages: write
@@ -210,7 +195,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}-ee
           tags: |
             type=raw,value=${{ inputs.environment }}
-            type=raw,value=${{ env.SHORT_HASH }}-${{ github.env.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}
+            type=raw,value=${{ env.SHORT_HASH }}-${{ steps.lastcommit.outputs.shorthash }}-${{ inputs.environment }}
             type=raw,value=latest,enable=${{ inputs.environment == 'prod' }}
             type=sha,format=short
             
@@ -253,10 +238,10 @@ jobs:
         run: |
           if [ -f "kubernetes/helm/wf-service-migration/${{ inputs.environment }}-custom-values.yaml" ]; then
             echo "file_name=${{ inputs.environment }}-custom-values.yaml" >> "$GITHUB_OUTPUT"
-            echo ${{ env.SHORT_HASH }}-${{ github.env.SUBMODULE_SHORT_HASH }}
+            echo ${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}
           else
             echo "file_name=dev-custom-values.yaml" >> "$GITHUB_OUTPUT"
-            echo ${{ env.SHORT_HASH }}-${{ github.env.SUBMODULE_SHORT_HASH }}
+            echo ${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}
           fi
             
       - name: Update workflow-service image version in the HelmChart
@@ -265,20 +250,20 @@ jobs:
           repository: ballerine-io/cloud-infra-config
           branch: main
           commitChange: true
-          message: "Update ${{ inputs.environment }} wf-service image Version to ${{ env.SHORT_HASH }}-${{ github.env.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})"
+          message: "Update ${{ inputs.environment }} wf-service image Version to ${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})"
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
               "kubernetes/helm/wf-service-migration/${{steps.update_helm_check.outputs.file_name}}": {
-                "image.tag": "${{ env.SHORT_HASH }}-${{ github.env.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}",
-                "prismaMigrate.image.tag": "${{ env.SHORT_HASH }}-${{ github.env.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}",
-                "dbMigrate.image.tag": "${{ env.SHORT_HASH }}-${{ github.env.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}",
-                "dataSync.image.tag": "${{ env.SHORT_HASH }}-${{ github.env.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}"
+                "image.tag": "${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}",
+                "prismaMigrate.image.tag": "${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}",
+                "dbMigrate.image.tag": "${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}",
+                "dataSync.image.tag": "${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}"
               }
             }
   send-to-slack:
     runs-on: ubuntu-latest
-    needs: [update-helm-chart]
+    needs: [update-helm-chart,build-and-push-ee-image]
     if: ${{ needs.update-helm-chart.result == 'success' }}
     permissions:
       contents: read
@@ -290,7 +275,7 @@ jobs:
         uses: slackapi/slack-github-action@v1.26.0
         with:
           channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
-          slack-message: "Test Wf-service Deployment in ${{ inputs.environment }} with tag ${{ env.SHORT_HASH }}-${{ github.env.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }} build result: ${{ job.status }}. successfully updated the wf-service helm values for ${{ inputs.environment }}."
+          slack-message: "Test Wf-service Deployment in ${{ inputs.environment }} with tag ${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }} build result: ${{ job.status }}. successfully updated the wf-service helm values for ${{ inputs.environment }}."
         env:
           SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}
 
