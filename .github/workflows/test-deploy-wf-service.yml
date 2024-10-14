@@ -70,7 +70,6 @@ jobs:
 
   tag-and-push-image:
     runs-on: ubuntu-latest
-    if: ${{ inputs.environment != 'dev' }}
     permissions:
       contents: read
       packages: write
@@ -114,6 +113,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull and Tag Existing Image
+        if: ${{ inputs.environment != 'dev' }}
         run: |
           if [ "${{ inputs.environment }}" == "prod" ]; then
             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-sb
