@@ -51,7 +51,7 @@ jobs:
 
       - name: Verify SHORT_HASH
         run: |
-          echo "SHORT_HASH is ${{ github.env.SHORT_HASH }}"
+          echo "SHORT_HASH is ${{ env.SHORT_HASH }}"
           echo "SHORT_HASH is $SHORT_HASH"
   check_if_data_migration_needed:
     runs-on: ubuntu-latest
@@ -95,7 +95,7 @@ jobs:
       - name: Get version
         id: version
         run: |
-          echo "sha_short=${{ github.env.SHORT_HASH}}" >> $GITHUB_OUTPUT
+          echo "sha_short=$SHORT_HASH}" >> $GITHUB_OUTPUT
           if [ "${{ inputs.environment }}" == "prod" ]; then
           echo "PROD_WF_SHORT_SHA=${{ github.env.SHORT_HASH}}" >> $GITHUB_ENV
           else
