@@ -84,7 +84,7 @@ jobs:
   tag-and-push-image:
     runs-on: ubuntu-latest
     needs: set_short_hash
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    # if: ${{ inputs.environment != 'dev' }}
     permissions:
       contents: read
       packages: write
