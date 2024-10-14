@@ -55,39 +55,6 @@ export const UboPluginSchema = Type.Optional(
     message: Type.Optional(Type.String()),
     orderId: Type.Optional(Type.String()),
     invokedAt: Type.Optional(Type.Number()),
-    data: Type.Optional(
-      Type.Union([
-        // Backward compatibility
-        Type.Object({
-          uboList: Type.Array(UboSchema),
-          otherUBOList: Type.Array(UboSchema),
-          uboGraph: Type.Array(UboGraphSchema),
-          fullUBOGraph: Type.Array(UboGraphSchema),
-        }),
-        // New format
-        Type.Object({
-          nodes: Type.Array(
-            Type.Object({
-              id: Type.String(),
-              data: Type.Object({
-                name: Type.String(),
-                type: Type.String(),
-                sharePercentage: Type.Optional(Type.Number()),
-              }),
-            }),
-          ),
-          edges: Type.Array(
-            Type.Object({
-              id: Type.String(),
-              source: Type.String(),
-              target: Type.String(),
-              data: Type.Object({
-                sharePercentage: Type.Optional(Type.Number()),
-              }),
-            }),
-          ),
-        }),
-      ]),
-    ),
+    data: Type.Optional(Type.Record(Type.String(), Type.Unknown())),
   }),
 );
