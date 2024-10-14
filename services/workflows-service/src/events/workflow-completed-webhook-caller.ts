@@ -12,6 +12,8 @@ import { WorkflowRuntimeData } from '@prisma/client';
 import { sign, StateTag } from '@ballerine/common';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
+import { env } from '@/env';
+import { OutgoingWebhookQueueService } from '@/bull-mq/outgoing-webhook/outgoing-webhook-queue.service';
 
 @Injectable()
 export class WorkflowCompletedWebhookCaller {
@@ -24,6 +26,7 @@ export class WorkflowCompletedWebhookCaller {
     private readonly logger: AppLoggerService,
     private readonly workflowService: WorkflowService,
     private readonly customerService: CustomerService,
+    private readonly outgoingWebhookQueueService: OutgoingWebhookQueueService,
   ) {
     this.#__axios = this.httpService.axiosRef;
 
@@ -106,6 +109,21 @@ export class WorkflowCompletedWebhookCaller {
           ...restRuntimeData.context,
         },
       };
+
+      if (env.QUEUE_SYSTEM_ENABLED) {
+        return await this.outgoingWebhookQueueService.addJob({
+          requestConfig: {
+            url,
+            method: 'POST',
+            headers: {},
+            body: payload,
+            timeout: 15_000,
+          },
+          customerConfig: {
+            webhookSharedSecret,
+          },
+        });
+      }
 
       const res = await this.#__axios.post(url, payload, {
         headers: {
