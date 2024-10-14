@@ -3,6 +3,7 @@ import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { REDIS_CONFIG } from '@/redis/const/redis-config';
 import { env } from '@/env';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { QUEUES } from '@/bull-mq/consts';
 
 @Injectable()
 export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy {
@@ -19,7 +20,13 @@ export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy
       return;
     }
 
-    this.queue = new Queue(queueName, { connection: this.connectionOptions });
+    this.queue = new Queue(queueName, {
+      connection: this.connectionOptions,
+      defaultJobOptions: {
+        ...Object.entries(QUEUES).find(([_, queueOptions]) => queueOptions.name === queueName)?.[1]
+          .config,
+      },
+    });
 
     if (env.IS_WORKER_SERVICE !== true) {
       this.initializeWorker();

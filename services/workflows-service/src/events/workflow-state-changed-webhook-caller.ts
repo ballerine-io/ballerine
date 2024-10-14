@@ -9,9 +9,9 @@ import { ExtractWorkflowEventData } from '@/workflow/types';
 import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { CustomerService } from '@/customer/customer.service';
 import type { TAuthenticationConfiguration } from '@/customer/types';
-import { sign } from '@ballerine/common';
 import { env } from '@/env';
 import { OutgoingWebhookQueueService } from '@/bull-mq/outgoing-webhook/outgoing-webhook-queue.service';
+import { OutgoingWebhooksService } from '@/webhooks/outgoing-webhooks/outgoing-webhooks.service';
 
 @Injectable()
 export class WorkflowStateChangedWebhookCaller {
@@ -24,6 +24,7 @@ export class WorkflowStateChangedWebhookCaller {
     private readonly logger: AppLoggerService,
     private readonly customerService: CustomerService,
     private readonly outgoingWebhookQueueService: OutgoingWebhookQueueService,
+    private readonly outgoingWebhooksService: OutgoingWebhooksService,
   ) {
     this.#__axios = this.httpService.axiosRef;
 
@@ -92,28 +93,25 @@ export class WorkflowStateChangedWebhookCaller {
       data: data.runtimeData.context,
     };
 
+    const webhookArgs = {
+      requestConfig: {
+        url,
+        method: 'POST',
+        headers: {},
+        body: payload,
+        timeout: 15_000,
+      },
+      customerConfig: {
+        webhookSharedSecret,
+      },
+    } as const;
+
     if (env.QUEUE_SYSTEM_ENABLED) {
-      return await this.outgoingWebhookQueueService.addJob({
-        requestConfig: {
-          url,
-          method: 'POST',
-          headers: {},
-          body: payload,
-          timeout: 15_000,
-        },
-        customerConfig: {
-          webhookSharedSecret,
-        },
-      });
+      return await this.outgoingWebhookQueueService.addJob(webhookArgs);
     }
 
     try {
-      const res = await this.#__axios.post(url, payload, {
-        headers: {
-          'X-Authorization': webhookSharedSecret,
-          'X-HMAC-Signature': sign({ payload, key: webhookSharedSecret }),
-        },
-      });
+      const res = await this.outgoingWebhooksService.invokeWebhook(webhookArgs);
 
       this.logger.log('Webhook Result:', {
         status: res.status,
