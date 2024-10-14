@@ -1,12 +1,12 @@
 import * as common from '@nestjs/common';
-import * as swagger from '@nestjs/swagger';
-import * as errors from '../errors';
-import { Public } from '@/common/decorators/public.decorator';
-import { AmlWebhookInput } from './dtos/aml-webhook-input';
-import { IndividualAmlWebhookInput } from '@/webhooks/dtos/individual-aml-webhook-input';
-import { WebhooksService } from '@/webhooks/webhooks.service';
-import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
 import { BadRequestException } from '@nestjs/common';
+import * as swagger from '@nestjs/swagger';
+import * as errors from '../../errors';
+import { Public } from '@/common/decorators/public.decorator';
+import { AmlWebhookInput } from '../dtos/aml-webhook-input';
+import { IndividualAmlWebhookInput } from '@/webhooks/dtos/individual-aml-webhook-input';
+import { IncomingWebhooksService } from '@/webhooks/incoming/incoming-webhooks.service';
+import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
 import { isObject } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
@@ -19,9 +19,9 @@ const EntityType = {
 @swagger.ApiTags('Internal Webhooks')
 @swagger.ApiExcludeController()
 @common.Controller('webhooks')
-export class WebhooksController {
+export class IncomingWebhooksController {
   constructor(
-    private readonly webhooksService: WebhooksService,
+    private readonly webhooksService: IncomingWebhooksService,
     private readonly logger: AppLoggerService,
   ) {}
 
