@@ -133,6 +133,21 @@ export class WorkflowCompletedWebhookCaller {
         },
       };
 
+      if (env.QUEUE_SYSTEM_ENABLED) {
+        return await this.outgoingWebhookQueueService.addJob({
+          requestConfig: {
+            url,
+            method: 'POST',
+            headers: {},
+            body: payload,
+            timeout: 15_000,
+          },
+          customerConfig: {
+            webhookSharedSecret,
+          },
+        });
+      }
+
       const res = await this.#__axios.post(url, payload, {
         headers: {
           'X-Authorization': webhookSharedSecret,
