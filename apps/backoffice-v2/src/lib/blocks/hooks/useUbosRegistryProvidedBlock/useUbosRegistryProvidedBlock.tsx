@@ -33,7 +33,7 @@ export const useUbosRegistryProvidedBlock = ({
     };
   }>;
   message: string | undefined;
-  isRequestTimedOut: string | undefined;
+  isRequestTimedOut: boolean | undefined;
 }) => {
   const { nodes: uiNodes, edges: uiEdges } = buildTree({
     nodes,
