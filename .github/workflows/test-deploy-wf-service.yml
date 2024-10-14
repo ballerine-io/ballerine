@@ -164,7 +164,7 @@ jobs:
           token: ${{ secrets.SUBMODULES_TOKEN }}
           ref: ${{ inputs.environment }}
           fetch-depth: 1
-          path: services/workflows-service/prisma/data-migration
+          path: services/workflows-service/prisma/data-migrations
 
       - name: Get Latest Commit ID
         id: lastcommit
@@ -172,7 +172,7 @@ jobs:
         with:
           owner: ${{ github.repository_owner }}
           token: ${{ secrets.SUBMODULES_TOKEN }}
-          repo: wf-data-migrations
+          repo: wf-data-migration
           branch: ${{ inputs.environment }}
 
       - name: Set Commit Id as Env 
