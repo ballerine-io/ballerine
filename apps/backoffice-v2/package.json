@@ -1,6 +1,6 @@
 {
   "name": "@ballerine/backoffice-v2",
-  "version": "0.7.46",
+  "version": "0.7.54",
   "description": "Ballerine - Backoffice",
   "homepage": "https://github.com/ballerine-io/ballerine",
   "repository": {
@@ -50,12 +50,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ballerine/blocks": "0.2.18",
-    "@ballerine/common": "0.9.32",
-    "@ballerine/react-pdf-toolkit": "^1.2.31",
-    "@ballerine/ui": "^0.5.31",
-    "@ballerine/workflow-browser-sdk": "0.6.43",
-    "@ballerine/workflow-node-sdk": "0.6.43",
+    "@ballerine/blocks": "0.2.23",
+    "@ballerine/common": "0.9.39",
+    "@ballerine/react-pdf-toolkit": "^1.2.37",
+    "@ballerine/ui": "^0.5.37",
+    "@ballerine/workflow-browser-sdk": "0.6.51",
+    "@ballerine/workflow-node-sdk": "0.6.51",
     "@botpress/webchat": "^2.1.10",
     "@botpress/webchat-generator": "^0.2.9",
     "@fontsource/inter": "^4.5.15",
@@ -80,6 +80,7 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@react-pdf/renderer": "^3.1.14",
     "@rjsf/utils": "^5.9.0",
+    "@saola.ai/browser": "^1.1.7",
     "@sentry/react": "^7.77.0",
     "@tanstack/react-query": "^4.19.1",
     "@tanstack/react-table": "^8.9.2",
@@ -97,7 +98,7 @@
     "i18next-http-backend": "^2.1.1",
     "leaflet": "^1.9.4",
     "libphonenumber-js": "^1.10.49",
-    "lucide-react": "^0.239.0",
+    "lucide-react": "0.445.0",
     "match-sorter": "^6.3.1",
     "msw": "^1.0.0",
     "posthog-js": "^1.154.2",
@@ -125,8 +126,8 @@
     "zod": "^3.22.3"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.1.16",
-    "@ballerine/eslint-config-react": "^2.0.16",
+    "@ballerine/config": "^1.1.21",
+    "@ballerine/eslint-config-react": "^2.0.21",
     "@cspell/cspell-types": "^6.31.1",
     "@faker-js/faker": "^7.6.0",
     "@playwright/test": "^1.32.1",

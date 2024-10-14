@@ -1,12 +1,12 @@
-import { ApiPlugin } from './api-plugin';
-import { TContext } from '../../utils/types';
-import { IApiPluginParams } from './types';
+import { AnyRecord, isErrorWithMessage, sign } from '@ballerine/common';
 import { logger } from '../../logger';
-import { AnyRecord } from '@ballerine/common';
+import { TContext } from '../../utils/types';
+import { BallerineApiPlugin, IBallerineApiPluginParams } from './ballerine-plugin';
+import { IApiPluginParams } from './types';
 
-export class WebhookPlugin extends ApiPlugin {
+export class WebhookPlugin extends BallerineApiPlugin {
   public static pluginType = 'http';
-  constructor(pluginParams: IApiPluginParams) {
+  constructor(pluginParams: IBallerineApiPluginParams & IApiPluginParams) {
     super(pluginParams);
   }
 
@@ -19,7 +19,7 @@ export class WebhookPlugin extends ApiPlugin {
     }
 
     try {
-      const urlWithoutPlaceholders = await this.replaceValuePlaceholders(this.url, context);
+      const urlWithoutPlaceholders = await this._getPluginUrl(context);
 
       logger.log('Webhook Plugin - Sending API request', {
         url: urlWithoutPlaceholders,
@@ -30,7 +30,7 @@ export class WebhookPlugin extends ApiPlugin {
         urlWithoutPlaceholders,
         this.method,
         requestPayload,
-        await this.composeRequestHeaders(this.headers!, context),
+        await this.composeRequestSignedHeaders(this.headers!, context, requestPayload),
       );
 
       logger.log('Webhook Plugin - Received response', {
@@ -70,10 +70,36 @@ export class WebhookPlugin extends ApiPlugin {
           'Request Failed: ' + apiResponse.statusText + ' Error: ' + JSON.stringify(errorResponse),
         );
       }
-    } catch (err) {
-      logger.error('Error occurred while sending an API request', { err });
+    } catch (error) {
+      logger.error('Error occurred while sending an API request', { error });
+
+      return this.returnErrorResponse(isErrorWithMessage(error) ? error.message : '');
+    }
+  }
+
+  async composeRequestSignedHeaders(
+    headers: HeadersInit,
+    context: TContext,
+    payload: AnyRecord | undefined,
+  ) {
+    const secrets = await this.secretsManager?.getAll();
+    const webhookSharedSecret = secrets?.['webhookSharedSecret'];
+
+    if (secrets && webhookSharedSecret) {
+      headers = {
+        ...headers,
+        'X-HMAC-Signature': sign({ payload, key: webhookSharedSecret }),
+      };
     }
 
-    return {};
+    const headersEntries = await Promise.all(
+      Object.entries(headers).map(async header => [
+        header[0],
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        await this.replaceAllVariables(header[1], context),
+      ]),
+    );
+
+    return Object.fromEntries(headersEntries);
   }
 }

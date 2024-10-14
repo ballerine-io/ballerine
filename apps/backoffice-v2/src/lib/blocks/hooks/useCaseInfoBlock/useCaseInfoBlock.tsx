@@ -14,6 +14,16 @@ export const useCaseInfoBlock = ({
   workflow: TWorkflowById;
   entityDataAdditionalInfo: TWorkflowById['context']['entity']['data']['additionalInfo'];
 }) => {
+  const predefinedOrder = useMemo(
+    () =>
+      workflow.workflowDefinition.config?.uiOptions?.backoffice?.blocks?.businessInformation
+        ?.predefinedOrder ?? [],
+    [
+      workflow.workflowDefinition.config?.uiOptions?.backoffice?.blocks?.businessInformation
+        ?.predefinedOrder,
+    ],
+  );
+
   return useMemo(() => {
     const entityDetails = [
       ...Object.entries(omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {}),
@@ -65,6 +75,7 @@ export const useCaseInfoBlock = ({
                 // TO DO: Remove this as soon as BE updated
                 .filter(elem => !elem.title.startsWith('__')),
             },
+            props: { config: { sort: { predefinedOrder } } },
             workflowId: workflow?.id,
             documents: workflow?.context?.documents,
           })

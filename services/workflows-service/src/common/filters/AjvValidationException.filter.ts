@@ -3,7 +3,6 @@ import { BaseExceptionFilter } from '@nestjs/core';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { AjvValidationException } from 'ballerine-nestjs-typebox';
 import { ValidationError } from '@/errors';
-import { HttpStatusCode } from 'axios';
 
 @Catch(AjvValidationException)
 export class AjvValidationExceptionFilter extends BaseExceptionFilter {
@@ -35,7 +34,6 @@ export class AjvValidationExceptionFilter extends BaseExceptionFilter {
       .status(HttpStatus.BAD_REQUEST)
       .setHeader('Content-Type', 'application/json')
       .json({
-        errorCode: HttpStatusCode[HttpStatus.BAD_REQUEST],
         message: errorResponse?.message ?? 'Validation error',
         statusCode: HttpStatus.BAD_REQUEST,
         timestamp: new Date().toISOString(),
