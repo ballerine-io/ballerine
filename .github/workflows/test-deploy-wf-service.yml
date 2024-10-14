@@ -12,11 +12,6 @@ on:
           - 'dev'
           - 'sb'
           - 'prod'
-      sha:
-        type: string
-        description: 'Commit SHA ID'
-        # required: true
-        default: ''
         
   workflow_call:
     inputs:
@@ -25,11 +20,6 @@ on:
         description: 'Environment'
         required: true
         default: 'dev'
-      sha:
-        type: string
-        description: 'Commit SHA ID'
-        required: true
-        default: ''
 
 env:
   REGISTRY: ghcr.io
@@ -122,8 +112,8 @@ jobs:
             docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-dev ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ inputs.environment }}
           fi
           docker images
-          # docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-${{ inputs.environment }}
-          # docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ inputs.environment }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-${{ inputs.environment }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ inputs.environment }}
 
   build-and-push-ee-image:
     runs-on: ubuntu-latest

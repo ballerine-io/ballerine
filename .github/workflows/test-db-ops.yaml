@@ -27,11 +27,6 @@ on:
         description: 'Environment'
         required: true
         default: 'dev'
-      sha:
-        type: string
-        description: 'Commit SHA ID'
-        required: true
-        default: ''
 
 env:
   REGISTRY: ghcr.io
