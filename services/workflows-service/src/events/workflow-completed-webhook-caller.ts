@@ -9,11 +9,12 @@ import { ExtractWorkflowEventData } from '@/workflow/types';
 import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeData } from '@prisma/client';
-import { sign, StateTag } from '@ballerine/common';
+import { StateTag } from '@ballerine/common';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
 import { env } from '@/env';
 import { OutgoingWebhookQueueService } from '@/bull-mq/outgoing-webhook/outgoing-webhook-queue.service';
+import { OutgoingWebhooksService } from '@/webhooks/outgoing-webhooks/outgoing-webhooks.service';
 
 @Injectable()
 export class WorkflowCompletedWebhookCaller {
@@ -27,6 +28,7 @@ export class WorkflowCompletedWebhookCaller {
     private readonly workflowService: WorkflowService,
     private readonly customerService: CustomerService,
     private readonly outgoingWebhookQueueService: OutgoingWebhookQueueService,
+    private readonly outgoingWebhooksService: OutgoingWebhooksService,
   ) {
     this.#__axios = this.httpService.axiosRef;
 
@@ -81,56 +83,53 @@ export class WorkflowCompletedWebhookCaller {
   }) {
     this.logger.log('Sending webhook', { id, url });
 
+    // Omit from data properties already sent as part of the webhook payload
+    const { runtimeData, correlationId, entityId, ...restData } = data;
+    const {
+      createdAt,
+      resolvedAt,
+      workflowDefinitionId,
+      id: runtimeDataId,
+      ...restRuntimeData
+    } = runtimeData;
+    const payload = {
+      id,
+      eventName: 'workflow.completed',
+      apiVersion,
+      timestamp: new Date().toISOString(),
+      workflowCreatedAt: createdAt,
+      workflowResolvedAt: resolvedAt,
+      workflowDefinitionId,
+      workflowRuntimeId: runtimeDataId,
+      workflowStatus: data.runtimeData.status,
+      workflowFinalState: data.runtimeData.state,
+      ballerineEntityId: entityId,
+      correlationId,
+      environment,
+      data: {
+        ...restRuntimeData.context,
+      },
+    };
+
+    const webhookArgs = {
+      requestConfig: {
+        url,
+        method: 'POST',
+        headers: {},
+        body: payload,
+        timeout: 15_000,
+      },
+      customerConfig: {
+        webhookSharedSecret,
+      },
+    } as const;
+
+    if (env.QUEUE_SYSTEM_ENABLED) {
+      return await this.outgoingWebhookQueueService.addJob(webhookArgs);
+    }
+
     try {
-      // Omit from data properties already sent as part of the webhook payload
-      const { runtimeData, correlationId, entityId, ...restData } = data;
-      const {
-        createdAt,
-        resolvedAt,
-        workflowDefinitionId,
-        id: runtimeDataId,
-        ...restRuntimeData
-      } = runtimeData;
-      const payload = {
-        id,
-        eventName: 'workflow.completed',
-        apiVersion,
-        timestamp: new Date().toISOString(),
-        workflowCreatedAt: createdAt,
-        workflowResolvedAt: resolvedAt,
-        workflowDefinitionId,
-        workflowRuntimeId: runtimeDataId,
-        workflowStatus: data.runtimeData.status,
-        workflowFinalState: data.runtimeData.state,
-        ballerineEntityId: entityId,
-        correlationId,
-        environment,
-        data: {
-          ...restRuntimeData.context,
-        },
-      };
-
-      if (env.QUEUE_SYSTEM_ENABLED) {
-        return await this.outgoingWebhookQueueService.addJob({
-          requestConfig: {
-            url,
-            method: 'POST',
-            headers: {},
-            body: payload,
-            timeout: 15_000,
-          },
-          customerConfig: {
-            webhookSharedSecret,
-          },
-        });
-      }
-
-      const res = await this.#__axios.post(url, payload, {
-        headers: {
-          'X-Authorization': webhookSharedSecret,
-          'X-HMAC-Signature': sign({ payload, key: webhookSharedSecret }),
-        },
-      });
+      const res = await this.outgoingWebhooksService.invokeWebhook(webhookArgs);
 
       this.logger.log('Webhook Result:', {
         status: res.status,

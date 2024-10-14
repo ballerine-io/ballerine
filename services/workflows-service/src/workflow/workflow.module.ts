@@ -48,6 +48,7 @@ import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
 import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
 import { BullMqModule } from '@/bull-mq/bull-mq.module';
+import { OutgoingWebhooksService } from '@/webhooks/outgoing-webhooks/outgoing-webhooks.service';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
@@ -66,6 +67,7 @@ import { BullMqModule } from '@/bull-mq/bull-mq.module';
     AlertDefinitionModule,
     RuleEngineModule,
     SecretsManagerModule,
+    OutgoingWebhooksService,
     BullMqModule,
   ],
   providers: [
