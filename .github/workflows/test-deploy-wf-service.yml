@@ -29,29 +29,30 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
-  # SHORT_HASH: ${{ (github.event_name == 'workflow_call' && inputs.sha) || (inputs.environment == 'prod' && github.env.SB_WF_SHORT_SHA || github.env.DEV_WF_SHORT_SHA) }}
+  SHORT_HASH: ${{ (inputs.environment == 'dev' && inputs.sha) || (inputs.environment == 'prod' && github.env.SB_WF_SHORT_SHA || github.env.DEV_WF_SHORT_SHA) }}
   # SHORT_HASH: ${{ inputs.sha }}
 
 jobs:
   set_short_hash:
     runs-on: ubuntu-latest
     steps:
-      - name: Set SHORT_HASH based on conditions
-        run: |
-          if [[ "${{ inputs.environment }}" == "dev" && "${{ inputs.sha }}" != "" ]]; then
-            echo "SHORT_HASH=${{ inputs.sha }}" >> $GITHUB_ENV
-            echo "SHORT_HASH=${{ inputs.sha }}" >> $GITHUB_OUTPUT
-          elif [[ "${{ inputs.environment }}" == "prod" && "${{ github.env.SB_WF_SHORT_SHA }}" != "" ]]; then
-            echo "SHORT_HASH=${{ github.env.SB_WF_SHORT_SHA }}" >> $GITHUB_ENV
-            echo "SHORT_HASH=${{ inputs.sha }}" >> $GITHUB_OUTPUT
-          else
-            echo "SHORT_HASH=${{ github.env.DEV_WF_SHORT_SHA }}" >> $GITHUB_ENV
-            echo "SHORT_HASH=${{ github.env.DEV_WF_SHORT_SHA }}" >> $GITHUB_OUTPUT
-          fi
+  #     - name: Set SHORT_HASH based on conditions
+  #       run: |
+  #         if [[ "${{ inputs.environment }}" == "dev" && "${{ inputs.sha }}" != "" ]]; then
+  #           echo "SHORT_HASH=${{ inputs.sha }}" >> $GITHUB_ENV
+  #           echo "SHORT_HASH=${{ inputs.sha }}" >> $GITHUB_OUTPUT
+  #         elif [[ "${{ inputs.environment }}" == "prod" && "${{ github.env.SB_WF_SHORT_SHA }}" != "" ]]; then
+  #           echo "SHORT_HASH=${{ github.env.SB_WF_SHORT_SHA }}" >> $GITHUB_ENV
+  #           echo "SHORT_HASH=${{ inputs.sha }}" >> $GITHUB_OUTPUT
+  #         else
+  #           echo "SHORT_HASH=${{ github.env.DEV_WF_SHORT_SHA }}" >> $GITHUB_ENV
+  #           echo "SHORT_HASH=${{ github.env.DEV_WF_SHORT_SHA }}" >> $GITHUB_OUTPUT
+  #         fi
 
       - name: Verify SHORT_HASH
         run: |
           echo "SHORT_HASH is ${{ env.SHORT_HASH }}"
+          echo "SHORT_HASH is ${{ github.env.SHORT_HASH }}"
           echo "SHORT_HASH is $SHORT_HASH"
   check_if_data_migration_needed:
     runs-on: ubuntu-latest
@@ -83,7 +84,7 @@ jobs:
 
   tag-and-push-image:
     runs-on: ubuntu-latest
-    needs: set_short_hash
+    # needs: set_short_hash
     # if: ${{ inputs.environment != 'dev' }}
     permissions:
       contents: read
@@ -95,7 +96,7 @@ jobs:
       - name: Get version
         id: version
         run: |
-          echo "sha_short=$SHORT_HASH}" >> $GITHUB_OUTPUT
+          echo "sha_short=${{ github.env.SHORT_HASH }}" >> $GITHUB_OUTPUT
           if [ "${{ inputs.environment }}" == "prod" ]; then
           echo "PROD_WF_SHORT_SHA=${{ github.env.SHORT_HASH}}" >> $GITHUB_ENV
           else
