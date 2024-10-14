@@ -9,7 +9,6 @@ on:
         required: true
         default: 'dev'
         options:
-          - 'dev'
           - 'sb'
           - 'prod'
 
@@ -39,7 +38,7 @@ jobs:
     steps:
       - name: Set SHORT_HASH based on conditions
         run: |
-          if [[ "${{ github.event_name }}" == "workflow_call" && "${{ inputs.sha }}" != "" ]]; then
+          if [[ "${{ inputs.environment }}" == "dev" && "${{ inputs.sha }}" != "" ]]; then
             echo "SHORT_HASH=${{ inputs.sha }}" >> $GITHUB_ENV
             echo "SHORT_HASH=${{ inputs.sha }}" >> $GITHUB_OUTPUT
           elif [[ "${{ inputs.environment }}" == "prod" && "${{ github.env.SB_WF_SHORT_SHA }}" != "" ]]; then
@@ -47,7 +46,7 @@ jobs:
             echo "SHORT_HASH=${{ inputs.sha }}" >> $GITHUB_OUTPUT
           else
             echo "SHORT_HASH=${{ github.env.DEV_WF_SHORT_SHA }}" >> $GITHUB_ENV
-            echo "SHORT_HASH=${{ inputs.sha }}" >> $GITHUB_OUTPUT
+            echo "SHORT_HASH=${{ github.env.DEV_WF_SHORT_SHA }}" >> $GITHUB_OUTPUT
           fi
 
       - name: Verify SHORT_HASH
