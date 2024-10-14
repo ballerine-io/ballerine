@@ -164,7 +164,7 @@ jobs:
           token: ${{ secrets.SUBMODULES_TOKEN }}
           ref: ${{ inputs.environment }}
           fetch-depth: 1
-          path: services/workflows-service/prisma/data-migrations
+          path: services/workflows-service/prisma/data-migration
 
       - name: Get Latest Commit ID
         id: lastcommit
