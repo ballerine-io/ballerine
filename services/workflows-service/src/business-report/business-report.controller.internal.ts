@@ -235,23 +235,23 @@ export class BusinessReportControllerInternal {
     @CurrentProject() currentProjectId: TProjectId,
     @Query() { businessId, batchId, page, search, type, orderBy }: ListBusinessReportsDto,
   ) {
+    const ongoingOrCondition = [
+      {
+        type: {
+          not: {
+            equals: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+          },
+        },
+      },
+      {
+        type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+        status: BusinessReportStatus.completed,
+      },
+    ];
     const args = {
       where: {
         businessId,
         batchId,
-        OR: [
-          {
-            type: {
-              not: {
-                equals: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
-              },
-            },
-          },
-          {
-            type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
-            status: BusinessReportStatus.completed,
-          },
-        ],
         ...(type ? { type } : {}),
         ...(search
           ? {
@@ -263,9 +263,10 @@ export class BusinessReportControllerInternal {
                   },
                 },
                 { business: { website: { contains: search, mode: QueryMode.Insensitive } } },
+                ...ongoingOrCondition,
               ],
             }
-          : {}),
+          : { OR: ongoingOrCondition }),
       },
       select: {
         id: true,
