@@ -8,8 +8,7 @@ import { Job } from 'bullmq';
 @Injectable()
 export class IncomingWebhookQueueService extends BaseQueueWorkerService<IncomingWebhookData> {
   constructor(protected readonly logger: AppLoggerService) {
-    super(QUEUES.INCOMING_WEBHOOKS_QUEUE.name);
-    this.initializeWorker();
+    super(QUEUES.INCOMING_WEBHOOKS_QUEUE.name, logger);
   }
 
   async handleJob(job: Job<IncomingWebhookData>) {
@@ -17,23 +16,5 @@ export class IncomingWebhookQueueService extends BaseQueueWorkerService<Incoming
 
     const { service: workingService, payload } = job.data;
     //   TODO - handle the invoking webhook job internally
-  }
-
-  protected initializeWorker() {
-    super.initializeWorker();
-
-    this.worker?.on('completed', (job: Job) => {
-      this.logger.log(`Outgoing Webhook job ${job.id} completed successfully`);
-    });
-
-    this.worker?.on('failed', (job, error, prev) => {
-      this.logger.error(`Outgoing Webhook job ${job?.id} failed after retries: ${error.message}`);
-    });
-
-    this.queue?.on('cleaned', (jobs, type) => {
-      this.logger.log(
-        `${jobs.length} ${type} Outgoing Webhook jobs have been cleaned from the webhook queue`,
-      );
-    });
   }
 }
