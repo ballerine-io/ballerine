@@ -9,7 +9,7 @@ import { ExtractWorkflowEventData } from '@/workflow/types';
 import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeData } from '@prisma/client';
-import { sign, StateTag } from '@ballerine/common';
+import { StateTag } from '@ballerine/common';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
@@ -102,6 +102,51 @@ export class WorkflowCompletedWebhookCaller {
     webhookSharedSecret: string;
   }) {
     this.logger.log('Sending webhook', { id, url });
+
+    // Omit from data properties already sent as part of the webhook payload
+    const { runtimeData, correlationId, entityId, ...restData } = data;
+    const {
+      createdAt,
+      resolvedAt,
+      workflowDefinitionId,
+      id: runtimeDataId,
+      ...restRuntimeData
+    } = runtimeData;
+    const payload = {
+      id,
+      eventName: 'workflow.completed',
+      apiVersion,
+      timestamp: new Date().toISOString(),
+      workflowCreatedAt: createdAt,
+      workflowResolvedAt: resolvedAt,
+      workflowDefinitionId,
+      workflowRuntimeId: runtimeDataId,
+      workflowStatus: data.runtimeData.status,
+      workflowFinalState: data.runtimeData.state,
+      ballerineEntityId: entityId,
+      correlationId,
+      environment,
+      data: {
+        ...restRuntimeData.context,
+      },
+    };
+
+    const webhookArgs = {
+      requestConfig: {
+        url,
+        method: 'POST',
+        headers: {},
+        body: payload,
+        timeout: 15_000,
+      },
+      customerConfig: {
+        webhookSharedSecret,
+      },
+    } as const;
+
+    if (env.QUEUE_SYSTEM_ENABLED) {
+      return await this.outgoingWebhookQueueService.addJob(webhookArgs);
+    }
 
     try {
       // Omit from data properties already sent as part of the webhook payload
