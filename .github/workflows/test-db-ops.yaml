@@ -35,6 +35,7 @@ env:
   MIGRATION_ENV: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.environment || inputs.environment }}
   MIGRATION_REF: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || inputs.environment }}
 
+
 jobs:
   check_if_data_migration_needed:
     runs-on: ubuntu-latest
@@ -52,6 +53,7 @@ jobs:
         id: check-branch-existance
         run: |
           cd services/workflows-service/prisma/data-migrations
+
 
           is_exists=$(git ls-remote --exit-code --heads -t --ref -q origin "${{ env.MIGRATION_REF }}" | wc -l)
 
@@ -138,11 +140,12 @@ jobs:
           context: services/workflows-service
           file: services/workflows-service/Dockerfile.ee
           platforms: linux/amd64
-          push: false
+          push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           tags: ${{ steps.eemeta.outputs.tags }}
           build-args: |
             "BASE_IMAGE=ghcr.io/${{ github.repository_owner }}/workflows-service:${{ env.SHORT_HASH }}-${{ env.MIGRATION_ENV }}"
+
   update-helm-chart:
     runs-on: ubuntu-latest
     needs: build-and-push-ee-image
@@ -218,7 +221,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-
     steps:
       - name: Send alert to Slack channel
         id: slack

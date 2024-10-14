@@ -22,6 +22,7 @@ export class CustomerAuthGuard implements CanActivate {
         query: req.query,
         params: req.params,
       });
+
       throw new UnauthorizedException('Unauthorized');
     }
 

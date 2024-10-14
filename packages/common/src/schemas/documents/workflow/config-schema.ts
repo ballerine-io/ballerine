@@ -2,7 +2,7 @@ import { Static, Type } from '@sinclair/typebox';
 
 const SubscriptionSchema = Type.Object({
   type: Type.String(),
-  url: Type.String(),
+  url: Type.String({ format: 'uri', pattern: '^https://' }),
   events: Type.Array(Type.String()),
 });
 
@@ -33,11 +33,22 @@ const AvailableDocumentSchema = Type.Object({
 const language = Type.Optional(Type.String());
 const initialEvent = Type.Optional(Type.String());
 const subscriptions = Type.Optional(Type.Array(SubscriptionSchema));
+const uiOptions = Type.Optional(
+  Type.Object({
+    redirectUrls: Type.Optional(
+      Type.Object({
+        success: Type.String({ format: 'uri' }),
+        failure: Type.String({ format: 'uri' }),
+      }),
+    ),
+  }),
+);
 
 export const WorkflowRuntimeConfigSchema = Type.Object({
   language,
   initialEvent,
   subscriptions,
+  uiOptions,
 });
 
 export type TWorkflowRuntimeConfig = Static<typeof WorkflowRuntimeConfigSchema>;

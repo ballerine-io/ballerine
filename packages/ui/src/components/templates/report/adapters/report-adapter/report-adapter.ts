@@ -148,6 +148,7 @@ export const reportAdapter = {
           url: sourceUrl,
         })),
       summary: report?.summary?.summary,
+      ongoingMonitoringSummary: report?.summary?.ongoingMonitoringSummary,
       riskScore: report?.summary?.riskScore,
       riskLevels: normalizeRiskLevel(report?.summary?.riskLevels ?? {}),
       companyReputationAnalysis: report?.websiteCompanyAnalysis?.scamOrFraud?.indicators
@@ -294,6 +295,7 @@ export const reportAdapter = {
           url: sourceUrl,
         })),
       summary: report?.summary?.summary,
+      ongoingMonitoringSummary: report?.summary?.ongoingMonitoringSummary,
       riskScore: report?.summary?.riskScore,
       riskLevels: normalizeRiskLevel(report?.summary?.riskLevels ?? {}),
       companyReputationAnalysis: report?.websiteCompanyAnalysis?.scamOrFraud?.indicators

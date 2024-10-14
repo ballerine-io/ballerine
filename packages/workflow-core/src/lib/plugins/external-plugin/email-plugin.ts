@@ -18,10 +18,10 @@ export class EmailPlugin extends ApiPlugin {
   ) {
     const from = { from: { email: payload.from, ...(payload.name ? { name: payload.name } : {}) } };
     const subject = payload.subject
-      ? { subject: await this.replaceValuePlaceholders(payload.subject as string, payload) }
+      ? { subject: await this.replaceAllVariables(payload.subject as string, payload) }
       : {};
     const preheader = payload.preheader
-      ? { preheader: await this.replaceValuePlaceholders(payload.preheader as string, payload) }
+      ? { preheader: await this.replaceAllVariables(payload.preheader as string, payload) }
       : {};
     const receivers = (payload.receivers as string[]).map(receiver => {
       return { email: receiver };
@@ -31,7 +31,7 @@ export class EmailPlugin extends ApiPlugin {
 
     for (const key of Object.keys(payload)) {
       if (typeof payload[key] === 'string') {
-        payload[key] = await this.replaceValuePlaceholders(payload[key] as string, payload);
+        payload[key] = await this.replaceAllVariables(payload[key] as string, payload);
       }
     }
 

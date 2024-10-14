@@ -1,10 +1,10 @@
-import styles from './ProgressBar.module.css';
 import { Chip } from '@/common/components/atoms/Chip';
 import { LoadingSpinner } from '@/common/components/atoms/LoadingSpinner';
-import { Check } from 'lucide-react';
-import { ctw } from '@ballerine/ui';
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { ctw } from '@ballerine/ui';
+import { Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import styles from './ProgressBar.module.css';
 
 interface Props {
   className?: string;

@@ -1,5 +1,50 @@
 # @ballerine/ui
 
+## 0.5.38
+
+### Patch Changes
+
+- Fixed textarea placeholder
+
+## 0.5.37
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.39
+
+## 0.5.36
+
+### Patch Changes
+
+- Fixed text field placeholder color
+
+## 0.5.35
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.37
+
+## 0.5.34
+
+### Patch Changes
+
+- Added fallback date format to date input
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.34
+
+## 0.5.33
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.33
+
 ## 0.5.32
 
 ### Patch Changes

@@ -27,6 +27,7 @@ const CustomerSchema = z.object({
       createBusinessReportBatch: z
         .object({ enabled: z.boolean().default(false), options: createBusinessReportOptions })
         .optional(),
+      isDocumentOcrEnabled: z.boolean().default(false).optional(),
     })
     .nullable(),
   config: z

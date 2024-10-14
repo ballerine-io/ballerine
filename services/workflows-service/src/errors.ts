@@ -9,8 +9,15 @@ import { ValidationError as ClassValidatorValidationError } from 'class-validato
 export class ForbiddenException extends common.ForbiddenException {
   @ApiProperty()
   statusCode!: number;
+
   @ApiProperty()
   message!: string;
+
+  @ApiProperty()
+  path!: string;
+
+  @ApiProperty()
+  timestamp!: string;
 
   constructor(message: string, options?: { cause?: Error }) {
     super(message, options);
@@ -21,8 +28,15 @@ export class ForbiddenException extends common.ForbiddenException {
 export class NotFoundException extends common.NotFoundException {
   @ApiProperty()
   statusCode!: number;
+
   @ApiProperty()
   message!: string;
+
+  @ApiProperty()
+  path!: string;
+
+  @ApiProperty()
+  timestamp!: string;
 
   constructor(message: string, options?: { cause?: Error }) {
     super(message, options);
@@ -33,8 +47,15 @@ export class NotFoundException extends common.NotFoundException {
 export class SessionExpiredException extends common.UnauthorizedException {
   @ApiProperty()
   statusCode!: number;
+
   @ApiProperty()
   message!: string;
+
+  @ApiProperty()
+  path!: string;
+
+  @ApiProperty()
+  timestamp!: string;
 
   constructor(message: string, options?: { cause?: Error }) {
     super(message, options);
@@ -57,11 +78,21 @@ export const exceptionValidationFactory = (errors: ClassValidatorValidationError
 export class ValidationError extends common.BadRequestException {
   @ApiProperty()
   statusCode!: number;
+
   @ApiProperty()
   static message = 'Validation error';
 
+  @ApiProperty()
+  message!: string;
+
+  @ApiProperty()
+  path!: string;
+
+  @ApiProperty()
+  timestamp!: string;
+
   @ApiProperty({ type: DetailedValidationError })
-  errors!: Array<{ message: string; path: string }>;
+  errors?: Array<{ message: string; path: string }>;
 
   constructor(errors: Array<{ message: string; path: string }>) {
     super(

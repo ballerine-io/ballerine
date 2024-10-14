@@ -12,6 +12,7 @@ on:
           - 'dev'
           - 'sb'
           - 'prod'
+
         
   workflow_call:
     inputs:
@@ -21,10 +22,12 @@ on:
         required: true
         default: 'dev'
 
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
   SHORT_HASH: ${{ inputs.environment == 'prod' && github.env.SB_WF_SHORT_SHA || github.env.DEV_WF_SHORT_SHA }}
+
 
 jobs:
   check_if_data_migration_needed:
@@ -265,3 +268,4 @@ jobs:
           slack-message: "Test Wf-service Deployment in ${{ inputs.environment }} with tag ${{ env.SHORT_HASH }}-${{ github.env.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }} build result: ${{ job.status }}. successfully updated the wf-service helm values for ${{ inputs.environment }}."
         env:
           SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}
+

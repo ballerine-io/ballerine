@@ -6,5 +6,12 @@
     "packages/workflow-core",
     "services/workflows-service",
     "packages/common"
-  ]
+  ],
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/data-migrations": false
+  },
+  "search.followSymlinks": true,
+  "search.useIgnoreFiles": false
 }
