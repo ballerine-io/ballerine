@@ -70,7 +70,7 @@ importers:
         specifier: 0.2.23
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: 0.9.40
+        specifier: 0.9.41
         version: link:../../packages/common
       '@ballerine/react-pdf-toolkit':
         specifier: ^1.2.37
@@ -79,10 +79,10 @@ importers:
         specifier: ^0.5.37
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.52
+        specifier: 0.6.53
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.52
+        specifier: 0.6.53
         version: link:../../sdks/workflow-node-sdk
       '@botpress/webchat':
         specifier: ^2.1.10
@@ -446,13 +446,13 @@ importers:
         specifier: 0.2.23
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: ^0.9.40
+        specifier: ^0.9.41
         version: link:../../packages/common
       '@ballerine/ui':
         specifier: 0.5.38
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.52
+        specifier: 0.6.53
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -919,10 +919,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.40
+        specifier: 0.9.41
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.52
+        specifier: 0.6.53
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -1861,7 +1861,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.40
+        specifier: 0.9.41
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -2036,7 +2036,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.40
+        specifier: 0.9.41
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -2163,10 +2163,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.40
+        specifier: 0.9.41
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.52
+        specifier: 0.6.53
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -2305,7 +2305,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.6.52
+        specifier: 0.6.53
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2550,13 +2550,13 @@ importers:
         specifier: 3.347.1
         version: 3.347.1
       '@ballerine/common':
-        specifier: 0.9.40
+        specifier: 0.9.41
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.52
+        specifier: 0.6.53
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.52
+        specifier: 0.6.53
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -2893,7 +2893,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(astro@3.3.3)(tailwindcss@3.3.5)(ts-node@10.9.1)
       '@ballerine/common':
-        specifier: ^0.9.40
+        specifier: ^0.9.41
         version: link:../../packages/common
       astro:
         specifier: 3.3.3
@@ -23601,7 +23601,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-easy-sort: 1.6.0(react-dom@18.2.0)(react@18.2.0)
-      tailwind-merge: 2.5.3
+      tailwind-merge: 2.5.4
       tsup: 6.7.0(postcss@8.4.41)(ts-node@10.9.1)(typescript@5.1.6)
     transitivePeerDependencies:
       - '@swc/core'
@@ -35068,8 +35068,8 @@ packages:
     resolution: {integrity: sha512-3mFKyCo/MBcgyOTlrY8T7odzZFx+w+qKSMAmdFzRvqBfLlSigU6TZnlFHK0lkMwj9Bj8OYU+9yW9lmGuS0QEnQ==}
     dev: false
 
-  /tailwind-merge@2.5.3:
-    resolution: {integrity: sha512-d9ZolCAIzom1nf/5p4LdD5zvjmgSxY0BGgdSvmXIoMYAiPdAW/dSpP7joCDYFY7r/HkEa2qmPtkgsu0xjQeQtw==}
+  /tailwind-merge@2.5.4:
+    resolution: {integrity: sha512-0q8cfZHMu9nuYP/b5Shb7Y7Sh1B7Nnl5GqNr1U+n2p6+mybvRtayrQ+0042Z5byvTA8ihjlP8Odo8/VnHbZu4Q==}
     dev: false
 
   /tailwindcss-animate@1.0.5(tailwindcss@3.3.5):
