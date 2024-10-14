@@ -6,10 +6,10 @@ import { configs, env, serverEnvSchema } from '@/env';
 import { SentryModule } from '@/sentry/sentry.module';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import z from 'zod';
+import { ClsModule } from 'nestjs-cls';
 import { hashKey } from './customer/api-key/utils';
 import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
 import { BullMqModule } from '@/bull-mq/bull-mq.module';
-import { IncomingWebhooksModule } from '@/webhooks/incoming/incoming-webhooks.module';
 import { OutgoingWebhooksModule } from '@/webhooks/outgoing-webhooks/outgoing-webhooks.module';
 
 export const validate = async (config: Record<string, unknown>) => {
@@ -40,10 +40,12 @@ export const validate = async (config: Record<string, unknown>) => {
 @Module({
   imports: [
     SentryModule,
-    IncomingWebhooksModule,
     OutgoingWebhooksModule,
     HealthModule,
     PrismaModule,
+    ClsModule.forRoot({
+      global: true,
+    }),
     ConfigModule.forRoot({
       validate,
       isGlobal: true,
