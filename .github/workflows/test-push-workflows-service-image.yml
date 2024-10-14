@@ -16,7 +16,7 @@ on:
       # Run this pipeline only if there are changes in specified path
       - 'services/workflows-service/**'
     branches:
-    - "dev"
+    - "dev-318/ci-checkout-submodule"
 
 env:
   REGISTRY: ghcr.io
