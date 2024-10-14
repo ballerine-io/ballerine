@@ -248,6 +248,7 @@ export class BusinessReportControllerInternal {
         status: BusinessReportStatus.completed,
       },
     ];
+
     const args = {
       where: {
         businessId,
@@ -263,10 +264,12 @@ export class BusinessReportControllerInternal {
                   },
                 },
                 { business: { website: { contains: search, mode: QueryMode.Insensitive } } },
-                ...ongoingOrCondition,
               ],
             }
-          : { OR: ongoingOrCondition }),
+          : {}),
+        AND: {
+          OR: ongoingOrCondition,
+        },
       },
       select: {
         id: true,
@@ -290,7 +293,7 @@ export class BusinessReportControllerInternal {
         | undefined,
       take: page.size,
       skip: (page.number - 1) * page.size,
-    };
+    } satisfies Parameters<typeof this.businessReportService.findMany>[0];
 
     const businessReports = await this.businessReportService.findMany(args, [currentProjectId]);
 
