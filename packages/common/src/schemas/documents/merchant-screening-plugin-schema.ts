@@ -414,7 +414,7 @@ export const MerchantScreeningAggregatedSchema = Type.Object({
 });
 
 export const MerchantScreeningProcessedSchema = Type.Object({
-  terminatedMatchedMerchant: Type.Array(
+  terminatedMatchedMerchants: Type.Array(
     Type.Composite([
       MerchantScreeningAggregatedSchema,
       Type.Object({
