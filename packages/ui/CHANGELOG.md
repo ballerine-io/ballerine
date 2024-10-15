@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.39
+
+### Patch Changes
+
+- Fixed scrollarea ref
+
 ## 0.5.38
 
 ### Patch Changes

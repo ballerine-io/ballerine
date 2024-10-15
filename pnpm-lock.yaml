@@ -449,7 +449,7 @@ importers:
         specifier: ^0.9.42
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.5.38
+        specifier: 0.5.39
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.6.54
@@ -1414,7 +1414,7 @@ importers:
         specifier: ^1.1.21
         version: link:../config
       '@ballerine/ui':
-        specifier: 0.5.38
+        specifier: 0.5.39
         version: link:../ui
       '@react-pdf/renderer':
         specifier: ^3.1.14
