@@ -13,8 +13,6 @@ export const TagsInput: FunctionComponent<ITagsInputProps> = ({
 }) => {
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
-  console.log('schema', uiSchema);
-
   const tags = useMemo(() => {
     if (!Array.isArray(formData)) return [];
 
