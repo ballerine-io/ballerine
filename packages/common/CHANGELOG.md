@@ -1,5 +1,17 @@
 # @ballerine/common
 
+## 0.9.42
+
+### Patch Changes
+
+- fix match schema
+
+## 0.9.41
+
+### Patch Changes
+
+- schema fix
+
 ## 0.9.40
 
 ### Patch Changes
