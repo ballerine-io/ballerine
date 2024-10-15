@@ -13,6 +13,8 @@ export const TagsInput: FunctionComponent<ITagsInputProps> = ({
 }) => {
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
+  console.log('schema', uiSchema);
+
   const tags = useMemo(() => {
     if (!Array.isArray(formData)) return [];
 
@@ -33,6 +35,10 @@ export const TagsInput: FunctionComponent<ITagsInputProps> = ({
       setActiveTagIndex={setActiveTagIndex}
       placeholder={uiSchema?.['ui:placeholder']}
       addTagsOnBlur
+      styleClasses={{
+        input:
+          'border-none outline-none focus:outline-none focus:ring-0 shadow-none placeholder:text-muted-foreground',
+      }}
     />
   );
 };
