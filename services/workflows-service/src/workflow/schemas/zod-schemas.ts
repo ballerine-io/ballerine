@@ -65,10 +65,12 @@ export const ConfigSchema = z
     isChatbotEnabled: z.boolean().optional(),
     uiOptions: z
       .object({
-        redirectUrls: z.object({
-          success: z.string().url().optional(),
-          failure: z.string().url().optional(),
-        }),
+        redirectUrls: z
+          .object({
+            success: z.string().url().optional(),
+            failure: z.string().url().optional(),
+          })
+          .optional(),
       })
       .optional(),
   })
