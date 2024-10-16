@@ -422,7 +422,7 @@ export const MerchantScreeningProcessedSchema = Type.Object({
       }),
     ]),
   ),
-  inquiredMatchedMerchant: Type.Array(
+  inquiredMatchedMerchants: Type.Array(
     Type.Composite([
       MerchantScreeningAggregatedSchema,
       Type.Object({
