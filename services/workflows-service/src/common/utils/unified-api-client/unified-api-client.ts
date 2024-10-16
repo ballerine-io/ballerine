@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import { env } from '@/env';
 import { Logger } from '@nestjs/common';
-import { BusinessReportType } from '@prisma/client';
+import { BusinessReportType, Customer } from '@prisma/client';
 import { TSchema } from '@sinclair/typebox';
 
 export type TReportRequest = Array<{
@@ -115,5 +115,17 @@ export class UnifiedApiClient {
       supportedCountries,
       overrideSchemas,
     });
+  }
+
+  public async createCustomer(payload: Customer) {
+    return await this.axiosInstance.post('/customers', payload);
+  }
+
+  public async updateCustomer(id: string, payload: Customer) {
+    return await this.axiosInstance.put(`/customers/${id}`, payload);
+  }
+
+  public async deleteCustomer(id: string) {
+    return await this.axiosInstance.delete(`/customers/${id}`);
   }
 }
