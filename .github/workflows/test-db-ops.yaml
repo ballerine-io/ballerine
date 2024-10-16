@@ -31,7 +31,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
-  SHORT_HASH: ${{ github.event.client_payload.environment == 'prod' && github.env.SB_WF_SHORT_SHA || github.event.client_payload.environment == 'sb' && github.env.DEV_WF_SHORT_SHA || github.env.DEV_WF_SHORT_SHA }}
+  SHORT_HASH: ${{ github.event.client_payload.environment == 'prod' && vars.PROD_WF_SHORT_SHA || github.event.client_payload.environment == 'sb' && vars.SB_WF_SHORT_SHA || vars.DEV_WF_SHORT_SHA }}
   MIGRATION_ENV: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.environment || inputs.environment }}
   MIGRATION_REF: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || inputs.environment }}
 
@@ -163,13 +163,14 @@ jobs:
           ref: main
           fetch-depth: 1
           sparse-checkout: |
-            kubernetes/helm/wf-service
+            # kubernetes/helm/wf-service
+            kubernetes/helm/
           sparse-checkout-cone-mode: true
       - name: Check if values yaml file exists 
         id: update_helm_check
         shell: bash
         run: |
-          if [ -f "kubernetes/helm/wf-service/${{ env.MIGRATION_ENV }}-custom-values.yaml" ]; then
+          if [ -f "kubernetes/helm/wf-service-migration/${{ env.MIGRATION_ENV }}-custom-values.yaml" ]; then
             echo "file_name=${{ env.MIGRATION_ENV }}-custom-values.yaml" >> "$GITHUB_OUTPUT"
             echo ${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}
           else
@@ -187,7 +188,7 @@ jobs:
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
-              "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
+              "kubernetes/helm/wf-service-migration/${{steps.update_helm_check.outputs.file_name}}": {
                 "dbMigrate.image.tag": "${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ env.MIGRATION_ENV }}",
                 "dataSync.image.tag": "${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ env.MIGRATION_ENV }}"
               }
