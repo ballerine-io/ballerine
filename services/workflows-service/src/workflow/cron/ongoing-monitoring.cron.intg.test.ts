@@ -4,7 +4,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CustomerService } from '@/customer/customer.service';
 import { BusinessService } from '@/business/business.service';
-import { Business, Project } from '@prisma/client';
+import { Business, BusinessReportStatus, BusinessReportType, Project } from '@prisma/client';
 import {
   FEATURE_LIST,
   TCustomerWithFeatures,
@@ -20,7 +20,7 @@ describe('OngoingMonitoringCron', () => {
   let customerService: CustomerService;
   let businessService: BusinessService;
   let loggerService: AppLoggerService;
-  // Add other services as needed
+  let businessReportService: BusinessReportService;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -40,6 +40,7 @@ describe('OngoingMonitoringCron', () => {
     prismaService = module.get<PrismaService>(PrismaService);
     customerService = module.get<CustomerService>(CustomerService);
     businessService = module.get<BusinessService>(BusinessService);
+    businessReportService = module.get<BusinessReportService>(BusinessReportService);
     loggerService = module.get<AppLoggerService>(AppLoggerService);
   });
 
@@ -66,6 +67,37 @@ describe('OngoingMonitoringCron', () => {
       expect(errorLogSpy).toHaveBeenCalledWith(expect.stringContaining('An error occurred'));
     });
 
+    it('should not create an ongoing report when the last business report is incomplete', async () => {
+      jest.spyOn(prismaService, 'acquireLock').mockResolvedValue(true);
+      jest.spyOn(customerService, 'list').mockResolvedValue(mockCustomers());
+      jest
+        .spyOn(businessService, 'list')
+        .mockResolvedValue(mockBusinesses().filter(business => business.id === 'business3'));
+      jest.spyOn(businessReportService, 'createBusinessReportAndTriggerReportCreation');
+      jest.spyOn(businessReportService, 'findMany').mockResolvedValue([
+        {
+          id: 'business1',
+          reportId: 'mockReport1',
+          report: {},
+          riskScore: 0,
+          batchId: null,
+          projectId: '1',
+          businessId: 'business3',
+          status: BusinessReportStatus.in_progress,
+          type: BusinessReportType.MERCHANT_REPORT_T1,
+          createdAt: new Date(new Date().setDate(new Date().getDate() - 31)),
+          updatedAt: new Date(new Date().setDate(new Date().getDate() - 30)),
+        },
+      ]);
+
+      await service.handleCron();
+
+      expect(businessReportService.findMany).toHaveBeenCalled();
+      expect(
+        businessReportService.createBusinessReportAndTriggerReportCreation,
+      ).not.toHaveBeenCalled();
+    });
+
     it('should always release the lock after processing', async () => {
       jest.spyOn(prismaService, 'acquireLock').mockResolvedValue(true);
       const releaseLockSpy = jest.spyOn(prismaService, 'releaseLock');
@@ -83,7 +115,7 @@ describe('OngoingMonitoringCron', () => {
   });
 
   const mockWorkflowService = {
-    createOrUpdateWorkflowRuntime: jest.fn().mockImplementation(params => {
+    createOrUpdateWorkflowRuntime: jest.fn().mockImplementation(() => {
       return Promise.resolve(true);
     }),
   };
@@ -108,9 +140,8 @@ describe('OngoingMonitoringCron', () => {
   };
 
   const mockBusinessReportService = {
-    findMany: jest.fn().mockImplementation(criteria => {
-      // Return an array of mock reports or a Promise of such an array
-      return Promise.resolve([
+    findMany: jest.fn().mockImplementation(() =>
+      Promise.resolve([
         {
           id: 'mockReport1',
           reportId: 'mockReport1',
@@ -118,15 +149,14 @@ describe('OngoingMonitoringCron', () => {
           report: { reportId: 'mockReport1' },
         },
         { id: 'mockReport2', createdAt: new Date(), report: { reportId: 'mockReport2' } },
-      ]); // Example, adjust as needed
-    }),
-    // Simulate other needed service methods
+      ]),
+    ),
+    createBusinessReportAndTriggerReportCreation: jest.fn(),
     createReport: jest.fn().mockImplementation(reportDetails => {
       return Promise.resolve({ id: 'newMockReport', ...reportDetails });
     }),
   };
 
-  // Mock data generators
   const mockCustomers = async () => {
     return [
       {
@@ -149,7 +179,7 @@ describe('OngoingMonitoringCron', () => {
             },
           },
         },
-        projects: [{ id: 1 } as unknown as Project],
+        projects: [{ id: '1' } as unknown as Project],
       },
     ] satisfies TCustomerWithFeatures[];
   };
