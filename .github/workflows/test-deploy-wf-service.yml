@@ -244,7 +244,8 @@ jobs:
           ref: main
           fetch-depth: 1
           sparse-checkout: |
-            kubernetes/helm/wf-service
+            kubernetes/helm
+            # kubernetes/helm/wf-service
           sparse-checkout-cone-mode: true
       - name: Check if values yaml file exists 
         id: update_helm_check
