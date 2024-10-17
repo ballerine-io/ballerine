@@ -17,7 +17,6 @@ import { StepperUI } from '@/components/organisms/UIRenderer/elements/StepperUI'
 import { SubmitButton } from '@/components/organisms/UIRenderer/elements/SubmitButton';
 import { Title } from '@/components/organisms/UIRenderer/elements/Title';
 import { useCustomer } from '@/components/providers/CustomerProvider';
-import { fetchFlowContext } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { prepareInitialUIState } from '@/helpers/prepareInitialUIState';
 import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
@@ -30,7 +29,6 @@ import { Failed } from '@/pages/CollectionFlow/components/pages/Failed';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
 import { AnyObject } from '@ballerine/ui';
-import get from 'lodash/get';
 import set from 'lodash/set';
 
 const elems = {
@@ -138,27 +136,6 @@ export const CollectionFlow = withSessionProtected(() => {
                 );
 
                 await stateApi.invokePlugin('sync_workflow_runtime');
-              }}
-              onFinish={async (tools, lastState) => {
-                tools.setElementCompleted(lastState, true);
-                const isAlreadyCompleted = get(
-                  stateApi.getContext(),
-                  `flowConfig.stepsProgress.${lastState}.isCompleted`,
-                );
-
-                if (!isAlreadyCompleted) {
-                  const latestContext = await fetchFlowContext();
-
-                  set(
-                    latestContext.context,
-                    `flowConfig.stepsProgress.${lastState}.isCompleted`,
-                    true,
-                  );
-
-                  stateApi.setContext(latestContext.context);
-
-                  await stateApi.invokePlugin('sync_workflow_runtime');
-                }
               }}
             >
               {() => {
