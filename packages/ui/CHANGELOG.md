@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.39
+
+### Patch Changes
+
+- Fixed styles in dynamic form
+
 ## 0.5.38
 
 ### Patch Changes
