@@ -3,37 +3,13 @@ name: Under Testing - Database Operations
 on:
   repository_dispatch:
     types: [run-test-migration]
-  # workflow_dispatch:
-  #   inputs:
-  #     environment:
-  #       type: choice
-  #       description: 'Choose Environment'
-  #       required: true
-  #       default: 'dev'
-  #       options:
-  #         - 'dev'
-  #         - 'sb'
-  #         - 'prod'
-  #     sha:
-  #       type: string
-  #       description: 'Commit SHA ID'
-  #       required: true
-        # default: ''
-        
-  workflow_call:
-    inputs:
-      environment:
-        type: string
-        description: 'Environment'
-        required: true
-        default: 'dev'
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
   SHORT_HASH: ${{ github.event.client_payload.environment == 'prod' && vars.PROD_WF_SHORT_SHA || github.event.client_payload.environment == 'sb' && vars.SB_WF_SHORT_SHA || vars.DEV_WF_SHORT_SHA }}
-  MIGRATION_ENV: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.environment || inputs.environment }}
-  MIGRATION_REF: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || inputs.environment }}
+  MIGRATION_ENV: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.environment }}
+  MIGRATION_REF: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref }}
 
 
 jobs:
@@ -163,14 +139,13 @@ jobs:
           ref: main
           fetch-depth: 1
           sparse-checkout: |
-            # kubernetes/helm/wf-service
-            kubernetes/helm/
+            kubernetes/helm/wf-service
           sparse-checkout-cone-mode: true
       - name: Check if values yaml file exists 
         id: update_helm_check
         shell: bash
         run: |
-          if [ -f "kubernetes/helm/wf-service-migration/${{ env.MIGRATION_ENV }}-custom-values.yaml" ]; then
+          if [ -f "kubernetes/helm/wf-service/${{ env.MIGRATION_ENV }}-custom-values.yaml" ]; then
             echo "file_name=${{ env.MIGRATION_ENV }}-custom-values.yaml" >> "$GITHUB_OUTPUT"
             echo ${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}
           else
@@ -184,34 +159,34 @@ jobs:
           repository: ballerine-io/cloud-infra-config
           branch: main
           commitChange: true
-          message: "Update ${{ env.MIGRATION_ENV }} wf-service image Version to ${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})"
+          message: "Update ${{ env.MIGRATION_ENV }} wf-service image Version to ${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }} - (Commit hash: ${{ github.sha }})"
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
-              "kubernetes/helm/wf-service-migration/${{steps.update_helm_check.outputs.file_name}}": {
+              "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
                 "dbMigrate.image.tag": "${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ env.MIGRATION_ENV }}",
                 "dataSync.image.tag": "${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ env.MIGRATION_ENV }}"
               }
             }
 
-  # sync-argo-app:
-  #   runs-on: ubuntu-latest
-  #   environment: ${{ env.MIGRATION_ENV }}
-  #   env:
-  #     stage: ${{ env.MIGRATION_ENV }}
-  #   permissions:
-  #     contents: read
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
+  sync-argo-app:
+    runs-on: ubuntu-latest
+    environment: ${{ github.env.MIGRATION_ENV }}
+    env:
+      stage: ${{ github.env.MIGRATION_ENV }}
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-  #     - name: Run ArgoCD Action
-  #       id: argocd_api
-  #       uses: ./.github/actions/argocd-action
-  #       with:
-  #         argocd_username: ${{ secrets.ARGOCD_USERNAME }}
-  #         argocd_password: ${{ secrets.ARGOCD_PASSWORD }}
-  #         argocd_server: ${{ secrets.ARGOCD_SERVER }}
+      - name: Run ArgoCD Action
+        id: argocd_api
+        uses: ./.github/actions/argocd-action
+        with:
+          argocd_username: ${{ secrets.ARGOCD_USERNAME }}
+          argocd_password: ${{ secrets.ARGOCD_PASSWORD }}
+          argocd_server: ${{ secrets.ARGOCD_SERVER }}
         
   send-to-slack:
     runs-on: ubuntu-latest
