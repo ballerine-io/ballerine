@@ -84,7 +84,8 @@
     "inquirer": "^10.2.0",
     "lint-staged": "^11.2.6",
     "ngrok": "5.0.0-beta.2",
-    "nx": "15.0.2",
+    "@nx/js": "^19.5.7",
+    "nx": "^19.5.7",
     "prettier": "^2.8.7"
   },
   "dependencies": {
