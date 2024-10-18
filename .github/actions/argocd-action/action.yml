@@ -26,7 +26,7 @@ runs:
         ARGOCD_PASSWORD: ${{ inputs.argocd_password }}
         ARGOCD_SERVER: ${{ inputs.argocd_server }}
       run: |
-        TOKEN=$(curl -s -X POST "${ARGOCD_SERVER}/api/v1/session" \
+        TOKEN=$(curl -k --insecure -s -X POST "${ARGOCD_SERVER}/api/v1/session" \
           -d '{"username": "'"${ARGOCD_USERNAME}"'", "password": "'"${ARGOCD_PASSWORD}"'"}' \
           -H "Content-Type: application/json" | jq -r '.token')
         echo "ARGOCD_TOKEN=$TOKEN" >> $GITHUB_ENV
