@@ -22,7 +22,7 @@ export const CheckboxList = (props: WithTestId<RJSFInputProps>) => {
       {options.map(option => (
         <label className="flex items-center gap-2" key={option.value}>
           <Checkbox
-            className="border-secondary data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground bg-white"
+            className="border bg-white data-[state=checked]:bg-white data-[state=checked]:text-black"
             color="primary"
             value={option.value}
             checked={Array.isArray(formData) && formData.includes(option.value)}

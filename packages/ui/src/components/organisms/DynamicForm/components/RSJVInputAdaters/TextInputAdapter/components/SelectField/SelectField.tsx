@@ -49,6 +49,7 @@ export const SelectField = ({
       value={formData}
       disabled={disabled}
       testId={testId}
+      textInputClassName="placeholder:text-gray-400"
       onChange={onChange}
       onBlur={handleBlur}
     />
