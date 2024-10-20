@@ -47,7 +47,7 @@ const main = async () => {
     );
   }
 
-  const { data, error } = await supabase.from('infra').insert([infradata]);
+  const { data, error } = await SupabaseClient.from('infra').insert([infradata]);
   if (error) {
     console.error('Error inserting data:', error.message);
   } else {

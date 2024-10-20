@@ -37,3 +37,4 @@ COPY --from=dev /app/entrypoint.sh ./entrypoint.sh
 EXPOSE 3000
 
 ENTRYPOINT ["/app/entrypoint.sh"]
+
