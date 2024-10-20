@@ -35,7 +35,6 @@ const corsOrigins = [
 ];
 
 const infradata = require('/tmp/infra.json');
-console.log(infradata);
 
 if (env.TELEMETRY_ENABLED && env.TELEMETRY_SUPABASE_URL && env.TELEMETRY_SUPABASE_API_KEY) {
   const SupabaseClient = createClient(
