@@ -92,6 +92,10 @@ export class NotionService {
       return notionField.title[0]?.plain_text;
     }
 
+    if (notionField.type === 'unique_id') {
+      return notionField.unique_id.number;
+    }
+
     throw new Error(`Notion field type ${notionField.type} is not supported`);
   }
 }

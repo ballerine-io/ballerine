@@ -11,6 +11,7 @@ import {
   NOT_EQUALS,
   EXISTS,
   NOT_IN,
+  IN_CASE_INSENSITIVE,
 } from './helpers';
 
 import { OPERATION } from './enums';
@@ -26,6 +27,7 @@ export const OperationHelpers = {
   [OPERATION.LTE]: LTE,
   [OPERATION.LAST_YEAR]: LAST_YEAR,
   [OPERATION.IN]: IN,
+  [OPERATION.IN_CASE_INSENSITIVE]: IN_CASE_INSENSITIVE,
   [OPERATION.NOT_IN]: NOT_IN,
   [OPERATION.AML_CHECK]: AML_CHECK,
 } as const;

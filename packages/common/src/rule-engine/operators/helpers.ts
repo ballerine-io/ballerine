@@ -2,7 +2,6 @@ import get from 'lodash.get';
 import isEmpty from 'lodash.isempty';
 
 import {
-  ConditionFn,
   BetweenParams,
   LastYearsParams,
   ExistsParams,
@@ -16,10 +15,10 @@ import { BetweenSchema, LastYearsSchema, PrimitiveArraySchema, PrimitiveSchema }
 
 import { ValidationFailedError, DataValueNotFoundError } from '../errors';
 import { OperationHelpers } from './constants';
-import { Rule } from '../rules/types';
+import { Rule } from '@/rule-engine';
 import { EndUserAmlHitsSchema } from '@/schemas';
 
-export abstract class BaseOperator<T = Primitive> {
+export abstract class BaseOperator<TDataValue = Primitive, TConditionValue = Primitive> {
   operator: string;
   conditionValueSchema?: ZodSchema<any>;
   dataValueSchema?: ZodSchema<any>;
@@ -36,7 +35,7 @@ export abstract class BaseOperator<T = Primitive> {
     this.dataValueSchema = dataValueSchema;
   }
 
-  abstract evaluate(dataValue: Primitive, conditionValue: T): boolean;
+  abstract evaluate(dataValue: TDataValue, conditionValue: TConditionValue): boolean;
 
   extractValue(data: unknown, rule: Rule) {
     const value = get(data, rule.key);
@@ -48,7 +47,7 @@ export abstract class BaseOperator<T = Primitive> {
     return value;
   }
 
-  execute(dataValue: Primitive, conditionValue: T): boolean {
+  execute(dataValue: TDataValue, conditionValue: TConditionValue) {
     this.validate({ dataValue, conditionValue });
 
     return this.evaluate(dataValue, conditionValue);
@@ -86,7 +85,7 @@ class Equals extends BaseOperator {
     });
   }
 
-  evaluate: ConditionFn<Primitive> = (dataValue: Primitive, conditionValue: Primitive): boolean => {
+  evaluate = (dataValue: Primitive, conditionValue: Primitive) => {
     return dataValue === conditionValue;
   };
 }
@@ -100,12 +99,12 @@ class NotEquals extends BaseOperator {
     });
   }
 
-  evaluate: ConditionFn<Primitive> = (dataValue: Primitive, conditionValue: Primitive): boolean => {
+  evaluate = (dataValue: Primitive, conditionValue: Primitive) => {
     return dataValue !== conditionValue;
   };
 }
 
-class In extends BaseOperator<Primitive[]> {
+class In extends BaseOperator<Primitive, Primitive[]> {
   constructor() {
     super({
       operator: 'IN',
@@ -114,15 +113,50 @@ class In extends BaseOperator<Primitive[]> {
     });
   }
 
-  evaluate: ConditionFn<Primitive[]> = (
-    dataValue: Primitive,
-    conditionValue: Primitive[],
-  ): boolean => {
+  evaluate = (dataValue: Primitive, conditionValue: Primitive[]) => {
     return conditionValue.includes(dataValue);
   };
 }
 
-class NotIn extends BaseOperator<Primitive[]> {
+class InCaseInsensitive extends BaseOperator<Primitive | Primitive[], Primitive[]> {
+  constructor() {
+    super({
+      operator: 'IN_CASE_INSENSITIVE',
+      dataValueSchema: z.union([PrimitiveSchema, PrimitiveArraySchema]),
+      conditionValueSchema: PrimitiveArraySchema,
+    });
+  }
+
+  evaluate = (dataValue: Primitive | Primitive[], conditionValue: Primitive[]) => {
+    let lowercaseDataValue = Array.isArray(dataValue)
+      ? dataValue.map(item => (typeof item === 'string' ? item.toLowerCase() : item))
+      : dataValue;
+
+    if (typeof lowercaseDataValue === 'string') {
+      lowercaseDataValue = lowercaseDataValue.toLowerCase();
+    }
+
+    return conditionValue.some(item => {
+      const lowercasedItem = typeof item === 'string' ? item.toLowerCase() : item;
+
+      const checkValue = (value: Primitive) => {
+        if (typeof value === 'string') {
+          return value.includes(lowercasedItem.toString());
+        }
+
+        return value === lowercasedItem;
+      };
+
+      if (Array.isArray(lowercaseDataValue)) {
+        return lowercaseDataValue.some(checkValue);
+      }
+
+      return checkValue(lowercaseDataValue);
+    });
+  };
+}
+
+class NotIn extends BaseOperator<Primitive, Primitive[]> {
   constructor() {
     super({
       operator: 'NOT_IN',
@@ -131,10 +165,7 @@ class NotIn extends BaseOperator<Primitive[]> {
     });
   }
 
-  evaluate: ConditionFn<Primitive[]> = (
-    dataValue: Primitive,
-    conditionValue: Primitive[],
-  ): boolean => {
+  evaluate = (dataValue: Primitive, conditionValue: Primitive[]) => {
     return !conditionValue.includes(dataValue);
   };
 }
@@ -148,7 +179,7 @@ class GreaterThan extends BaseOperator {
     });
   }
 
-  evaluate: ConditionFn<Primitive> = (dataValue: Primitive, conditionValue: Primitive): boolean => {
+  evaluate = (dataValue: Primitive, conditionValue: Primitive) => {
     return dataValue > conditionValue;
   };
 }
@@ -162,7 +193,7 @@ class LessThan extends BaseOperator {
     });
   }
 
-  evaluate: ConditionFn<Primitive> = (dataValue: Primitive, conditionValue: Primitive): boolean => {
+  evaluate = (dataValue: Primitive, conditionValue: Primitive) => {
     return dataValue < conditionValue;
   };
 }
@@ -177,11 +208,12 @@ class GreaterThanOrEqual extends BaseOperator {
       conditionValueSchema: PrimitiveSchema,
       dataValueSchema: PrimitiveSchema,
     });
+
     this.equals = new Equals();
     this.greaterThan = new GreaterThan();
   }
 
-  evaluate: ConditionFn<Primitive> = (dataValue: Primitive, conditionValue: Primitive): boolean => {
+  evaluate = (dataValue: Primitive, conditionValue: Primitive) => {
     return (
       this.equals.execute(dataValue, conditionValue) ||
       this.greaterThan.execute(dataValue, conditionValue)
@@ -204,7 +236,7 @@ class LessThanOrEqual extends BaseOperator {
     this.lessThan = new LessThan();
   }
 
-  evaluate: ConditionFn<Primitive> = (dataValue: Primitive, conditionValue: Primitive): boolean => {
+  evaluate = (dataValue: Primitive, conditionValue: Primitive) => {
     return (
       this.equals.execute(dataValue, conditionValue) ||
       this.lessThan.execute(dataValue, conditionValue)
@@ -212,7 +244,7 @@ class LessThanOrEqual extends BaseOperator {
   };
 }
 
-class Between extends BaseOperator<BetweenParams> {
+class Between extends BaseOperator<Primitive, BetweenParams> {
   gte: GreaterThanOrEqual;
   lte: LessThanOrEqual;
 
@@ -226,10 +258,7 @@ class Between extends BaseOperator<BetweenParams> {
     this.lte = new LessThanOrEqual();
   }
 
-  evaluate: ConditionFn<BetweenParams> = (
-    dataValue: Primitive,
-    conditionValue: BetweenParams,
-  ): boolean => {
+  evaluate = (dataValue: Primitive, conditionValue: BetweenParams) => {
     return (
       this.gte.execute(dataValue, conditionValue.min) &&
       this.lte.execute(dataValue, conditionValue.max)
@@ -237,7 +266,7 @@ class Between extends BaseOperator<BetweenParams> {
   };
 }
 
-class LastYear extends BaseOperator<LastYearsParams> {
+class LastYear extends BaseOperator<unknown, LastYearsParams> {
   constructor() {
     super({
       operator: 'LAST_YEAR',
@@ -246,16 +275,14 @@ class LastYear extends BaseOperator<LastYearsParams> {
     });
   }
 
-  evaluate: ConditionFn<LastYearsParams> = (
-    dataValue: unknown,
-    conditionValue: LastYearsParams,
-  ): boolean => {
+  evaluate = (dataValue: unknown, conditionValue: LastYearsParams) => {
     if (typeof dataValue === 'string' || dataValue instanceof Date) {
       const date = new Date(dataValue);
       const yearsAgo = new Date();
-      yearsAgo.setFullYear(yearsAgo.getFullYear() - conditionValue.years);
 
+      yearsAgo.setFullYear(yearsAgo.getFullYear() - conditionValue.years);
       yearsAgo.setHours(0, 0, 0, 0);
+
       return date >= yearsAgo;
     }
 
@@ -266,17 +293,14 @@ class LastYear extends BaseOperator<LastYearsParams> {
 /*
   @deprecated - not in use
 */
-class Exists extends BaseOperator<ExistsParams> {
+class Exists extends BaseOperator<Primitive, ExistsParams> {
   constructor() {
     super({
       operator: 'EXISTS',
     });
   }
 
-  evaluate: ConditionFn<ExistsParams> = (
-    dataValue: Primitive,
-    conditionValue: ExistsParams,
-  ): boolean => {
+  evaluate = (dataValue: Primitive, conditionValue: ExistsParams) => {
     if (conditionValue.schema) {
       const result = conditionValue.schema.safeParse(dataValue);
 
@@ -289,7 +313,7 @@ class Exists extends BaseOperator<ExistsParams> {
   };
 }
 
-class AmlCheck extends BaseOperator<AmlCheckParams> {
+class AmlCheck extends BaseOperator<any, AmlCheckParams> {
   constructor() {
     super({
       operator: 'AML_CHECK',
@@ -311,7 +335,7 @@ class AmlCheck extends BaseOperator<AmlCheckParams> {
 
     const childWorkflowKeys = childWorkflows ? Object.keys(childWorkflows || {}) : [];
 
-    const hits: z.infer<typeof EndUserAmlHitsSchema>[] = childWorkflowKeys
+    const hits: Array<z.infer<typeof EndUserAmlHitsSchema>> = childWorkflowKeys
       .map(workflowId => get(childWorkflows, `${workflowId}.result.vendorResult.aml.hits`))
       .flat(1)
       .filter(Boolean);
@@ -327,14 +351,11 @@ class AmlCheck extends BaseOperator<AmlCheckParams> {
     return hits.map(hit => get(hit, rule.key)).filter(Boolean);
   }
 
-  evaluate: ConditionFn<AmlCheckParams> = (
-    dataValue: any,
-    conditionValue: AmlCheckParams,
-  ): boolean => {
+  evaluate = (dataValue: any, conditionValue: AmlCheckParams) => {
     const amlOperator = OperationHelpers[conditionValue.operator];
 
     const evaluateOperatorCheck = (data: any) => {
-      let result = amlOperator.dataValueSchema?.safeParse(data);
+      const result = amlOperator.dataValueSchema?.safeParse(data);
 
       if (result && !result.success) {
         return false;
@@ -367,5 +388,6 @@ export const LTE = new LessThanOrEqual();
 export const BETWEEN = new Between();
 export const LAST_YEAR = new LastYear();
 export const IN = new In();
+export const IN_CASE_INSENSITIVE = new InCaseInsensitive();
 export const NOT_IN = new NotIn();
 export const AML_CHECK = new AmlCheck();
