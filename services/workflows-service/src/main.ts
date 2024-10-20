@@ -17,6 +17,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppLoggerService } from './common/app-logger/app-logger.service';
 import { exceptionValidationFactory } from './errors';
 import swagger from '@/swagger/swagger';
+import { createClient } from '@supabase/supabase-js';
 
 // This line is used to improve Sentry's stack traces
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
@@ -32,6 +33,20 @@ const corsOrigins = [
   /\.ballerine\.app$/,
   ...(env.ENVIRONMENT_NAME !== 'production' ? devOrigins : []),
 ];
+
+const infradata = require('/tmp/infra.json');
+console.log(infradata);
+
+if (env.TELEMETRY_ENABLED && env.TELEMETRY_SUPABASE_URL && env.TELEMETRY_SUPABASE_API_KEY) {
+  const SupabaseClient = createClient(
+    env.TELEMETRY_SUPABASE_URL,
+    env.TELEMETRY_SUPABASE_API_KEY,
+    {
+      db: { schema: 'public' },
+    },
+  );
+  await SupabaseClient.from('infra').insert([infradata]);
+}
 
 const main = async () => {
   const app = await NestFactory.create(AppModule, {
