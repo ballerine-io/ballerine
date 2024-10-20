@@ -18,7 +18,7 @@ import { AnyObject, ErrorsList, RJSFInputProps } from '@ballerine/ui';
 import { HTTPError } from 'ky';
 import get from 'lodash/get';
 import set from 'lodash/set';
-import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 export interface DocumentFieldParams {
   documentData: Partial<Document>;
@@ -62,6 +62,8 @@ export const DocumentField = (
     [documentDefinition],
   );
   const { validationErrors, warnings } = useUIElementErrors(documentDefinition, getErrorKey);
+  const warningsRef = useRef(warnings);
+
   const { isTouched } = elementState;
 
   const fileId = useMemo(() => {
@@ -224,13 +226,19 @@ export const DocumentField = (
     [stateApi, options, definition, inputIndex, sendEvent],
   );
 
+  console.log('IS LOADING', elementState.isLoading);
+
   return (
     <div className="flex flex-col gap-2">
       <FileUploaderField
         uploadFile={fileUploader}
         disabled={
-          //@ts-ignore
-          state.isRevision && warnings.length ? false : elementState.isLoading || restProps.disabled
+          elementState.isLoading ||
+          (state.isRevision && warnings.length
+            ? false
+            : warningsRef.current?.length
+            ? false
+            : restProps.disabled)
         }
         fileId={fileId}
         fileRepository={collectionFlowFileStorage}

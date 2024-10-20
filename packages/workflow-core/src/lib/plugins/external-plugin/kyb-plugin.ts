@@ -20,7 +20,9 @@ export class KybPlugin extends ApiPlugin {
       companyNumber = '',
       vendor = 'open-corporates',
     } = payload;
-    let countryCode: string;
+
+    let countryCode: string | undefined;
+
     if (
       typeof countryOfIncorporation === 'string' &&
       countryOfIncorporation.length === 2 &&
@@ -33,6 +35,7 @@ export class KybPlugin extends ApiPlugin {
 
     if (typeof countryCode !== 'string')
       throw new Error('Invalid countryOfIncorporation for KYB process');
+
     if (typeof companyNumber !== 'string') throw new Error('Invalid companyNumber for KYB process');
 
     const jurisdictionCode =

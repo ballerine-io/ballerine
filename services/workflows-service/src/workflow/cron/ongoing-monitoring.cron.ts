@@ -70,7 +70,9 @@ export class OngoingMonitoringCron {
                 !business.metadata?.featureConfig?.[this.processFeatureName]?.enabled &&
                 !featureConfig?.options.runByDefault
               ) {
-                this.logger.log(`Ongoing monitoring is not enabled for business ${business.id}`);
+                this.logger.log(
+                  `Ongoing monitoring is not enabled for business ${business.companyName} (id: ${business.id})`,
+                );
 
                 continue;
               }
@@ -78,7 +80,9 @@ export class OngoingMonitoringCron {
               const lastReceivedReport = await this.findLastBusinessReport(business, projectIds);
 
               if (!lastReceivedReport?.reportId) {
-                this.logger.log(`No initial report found for business: ${business.id}`);
+                this.logger.log(
+                  `No initial report found for business: ${business.companyName} (id: ${business.id})`,
+                );
 
                 continue;
               }
@@ -117,6 +121,10 @@ export class OngoingMonitoringCron {
                   metadata?: { featureConfig?: Record<string, TCustomerFeaturesConfig> };
                 },
               });
+
+              this.logger.log(
+                `Invoked Ongoing Report for business ${business.companyName} (id: ${business.id})`,
+              );
 
               ongoingReportsCounter++;
             } catch (error) {
