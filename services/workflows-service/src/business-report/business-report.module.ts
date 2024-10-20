@@ -9,6 +9,7 @@ import { HttpModule } from '@nestjs/axios';
 import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
 // eslint-disable-next-line import/no-cycle
 import { WorkflowModule } from '@/workflow/workflow.module';
+// eslint-disable-next-line import/no-cycle
 import { AlertModule } from '@/alert/alert.module';
 // eslint-disable-next-line import/no-cycle
 import { EndUserModule } from '@/end-user/end-user.module';
