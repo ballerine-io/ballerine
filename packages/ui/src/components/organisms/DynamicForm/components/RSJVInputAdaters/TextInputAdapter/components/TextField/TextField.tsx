@@ -1,4 +1,4 @@
-import { WithTestId } from '@/common';
+import { ctw, WithTestId } from '@/common';
 import { Input, TextArea } from '@/components/atoms';
 import { FieldProps } from '@rjsf/utils';
 import { useCallback } from 'react';
@@ -11,6 +11,7 @@ export const TextField = ({
   disabled,
   schema,
   testId,
+  className,
   onChange,
   onBlur,
 }: WithTestId<FieldProps<string | number>>) => {
@@ -44,12 +45,17 @@ export const TextField = ({
   };
 
   return uiSchema?.['ui:widget'] === 'textarea' ? (
-    <TextArea {...inputProps} data-testid={testId} />
+    <TextArea
+      {...inputProps}
+      data-testid={testId}
+      className={ctw('placeholder:text-gray-400', className)}
+    />
   ) : (
     <Input
       {...inputProps}
       type={schema.type === 'number' ? 'number' : 'text'}
       data-testid={testId}
+      className={ctw('placeholder:text-gray-400', className)}
     />
   );
 };

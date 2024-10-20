@@ -1,3 +1,4 @@
+import { ctw } from '@/common';
 import { muiTheme } from '@/common/mui-theme';
 import { Paper } from '@/components/atoms';
 import { TextField, TextFieldProps, ThemeProvider } from '@mui/material';
@@ -32,6 +33,7 @@ export interface DatePickerProps {
   disabled?: boolean;
   params?: DatePickerParams;
   testId?: string;
+  textInputClassName?: string;
   onChange: (event: DatePickerChangeEvent) => void;
   onBlur?: (event: FocusEvent<any>) => void;
 }
@@ -42,6 +44,7 @@ export const DatePickerInput = ({
   disabled = false,
   params,
   testId,
+  textInputClassName,
   onChange,
   onBlur,
 }: DatePickerProps) => {
@@ -131,7 +134,10 @@ export const DatePickerInput = ({
           InputProps={{
             ...props.InputProps,
             classes: {
-              root: 'shadow-none bg-background border-input rounded-md border text-sm shadow-sm transition-colors px-3 py-0',
+              root: ctw(
+                'bg-background border-input rounded-md border text-sm shadow-sm transition-colors px-3 py-0',
+                textInputClassName,
+              ),
               focused: 'border-input ring-ring ring-1',
               disabled: 'opacity-50 cursor-not-allowed',
             },

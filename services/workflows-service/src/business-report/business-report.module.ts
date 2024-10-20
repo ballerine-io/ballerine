@@ -16,9 +16,10 @@ import { EndUserModule } from '@/end-user/end-user.module';
 // eslint-disable-next-line import/no-cycle
 import { BusinessModule } from '@/business/business.module';
 import { CustomerModule } from '@/customer/customer.module';
+import { BusinessReportControllerExternal } from '@/business-report/business-report.controller.external';
 
 @Module({
-  controllers: [BusinessReportControllerInternal],
+  controllers: [BusinessReportControllerInternal, BusinessReportControllerExternal],
   imports: [
     forwardRef(() => WorkflowModule),
     forwardRef(() => EndUserModule),

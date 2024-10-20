@@ -77,26 +77,26 @@ export const BaseWorkflowByIdSchema = z.object({
           .object({
             data: z
               .object({
-                nodes: z.array(
-                  z.object({
-                    id: z.string(),
-                    data: z.object({
-                      name: z.string(),
-                      type: z.string(),
-                      sharePercentage: z.number().optional(),
-                    }),
-                  }),
-                ),
-                edges: z.array(
-                  z.object({
-                    id: z.string(),
-                    source: z.string(),
-                    target: z.string(),
-                    data: z.object({
-                      sharePercentage: z.number().optional(),
-                    }),
-                  }),
-                ),
+                // nodes: z.array(
+                //   z.object({
+                //     id: z.string(),
+                //     data: z.object({
+                //       name: z.string(),
+                //       type: z.string(),
+                //       sharePercentage: z.number().optional(),
+                //     }),
+                //   }),
+                // ),
+                // edges: z.array(
+                //   z.object({
+                //     id: z.string(),
+                //     source: z.string(),
+                //     target: z.string(),
+                //     data: z.object({
+                //       sharePercentage: z.number().optional(),
+                //     }),
+                //   }),
+                // ),
               })
               .passthrough()
               .optional(),
@@ -347,6 +347,7 @@ export const fetchWorkflowDocumentOCRResult = async ({
       env.VITE_API_URL,
     )}/api/v1/internal/workflows/${workflowRuntimeId}/documents/${documentId}/run-ocr`,
     schema: z.any(),
+    timeout: 40_000,
   });
 
   return handleZodError(error, workflow);
