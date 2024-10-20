@@ -45,13 +45,13 @@ const main = async () => {
         db: { schema: 'public' },
       },
     );
-  }
 
-  const { data, error } = await SupabaseClient.from('infra').insert([infradata]);
-  if (error) {
-    console.error('Error inserting data:', error.message);
-  } else {
-    console.log('Data inserted successfully:', data);
+    const { data, error } = await SupabaseClient.from('infra').insert([infradata]);
+    if (error) {
+      console.error('Error inserting data:', error.message);
+    } else {
+      console.log('Data inserted successfully:', data);
+    }
   }
 
   const app = await NestFactory.create(AppModule, {
