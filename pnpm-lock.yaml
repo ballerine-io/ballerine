@@ -70,7 +70,7 @@ importers:
         specifier: 0.2.23
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: 0.9.40
+        specifier: 0.9.43
         version: link:../../packages/common
       '@ballerine/react-pdf-toolkit':
         specifier: ^1.2.37
@@ -79,10 +79,10 @@ importers:
         specifier: ^0.5.37
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.52
+        specifier: 0.6.55
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.52
+        specifier: 0.6.55
         version: link:../../sdks/workflow-node-sdk
       '@botpress/webchat':
         specifier: ^2.1.10
@@ -446,13 +446,13 @@ importers:
         specifier: 0.2.23
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: ^0.9.40
+        specifier: ^0.9.43
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.5.38
+        specifier: 0.5.39
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.52
+        specifier: 0.6.55
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -919,10 +919,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.40
+        specifier: 0.9.43
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.52
+        specifier: 0.6.55
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -1414,7 +1414,7 @@ importers:
         specifier: ^1.1.21
         version: link:../config
       '@ballerine/ui':
-        specifier: 0.5.38
+        specifier: 0.5.39
         version: link:../ui
       '@react-pdf/renderer':
         specifier: ^3.1.14
@@ -1861,7 +1861,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.40
+        specifier: 0.9.43
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -2036,7 +2036,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.40
+        specifier: 0.9.43
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -2163,10 +2163,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.40
+        specifier: 0.9.43
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.52
+        specifier: 0.6.55
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -2305,7 +2305,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.6.52
+        specifier: 0.6.55
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2550,13 +2550,13 @@ importers:
         specifier: 3.347.1
         version: 3.347.1
       '@ballerine/common':
-        specifier: 0.9.40
+        specifier: 0.9.43
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.52
+        specifier: 0.6.55
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.52
+        specifier: 0.6.55
         version: link:../../sdks/workflow-node-sdk
       '@bull-board/api':
         specifier: ^6.0.0
@@ -2714,6 +2714,9 @@ importers:
       object-hash:
         specifier: ^3.0.0
         version: 3.0.0
+      p-retry:
+        specifier: ^6.2.0
+        version: 6.2.0
       passport:
         specifier: 0.6.0
         version: 0.6.0
@@ -2908,7 +2911,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(astro@3.3.3)(tailwindcss@3.3.5)(ts-node@10.9.1)
       '@ballerine/common':
-        specifier: ^0.9.40
+        specifier: ^0.9.43
         version: link:../../packages/common
       astro:
         specifier: 3.3.3
@@ -18481,6 +18484,10 @@ packages:
       '@types/node': 18.17.19
     dev: true
 
+  /@types/retry@0.12.2:
+    resolution: {integrity: sha512-XISRgDJ2Tc5q4TRqvgJtzsRkFYNJzZrhTdtMoGVBttwzzQJkPnS3WWTFc7kuDRoPtPakl+T+OfdEUjYJj7Jbow==}
+    dev: false
+
   /@types/sass@1.45.0:
     resolution: {integrity: sha512-jn7qwGFmJHwUSphV8zZneO3GmtlgLsmhs/LQyVvQbIIa+fzGMUiHI4HXJZL3FT8MJmgXWbLGiVVY7ElvHq6vDA==}
     deprecated: This is a stub types definition. sass provides its own type definitions, so you do not need this installed.
@@ -24057,7 +24064,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-easy-sort: 1.6.0(react-dom@18.2.0)(react@18.2.0)
-      tailwind-merge: 2.5.3
+      tailwind-merge: 2.5.4
       tsup: 6.7.0(postcss@8.4.41)(ts-node@10.9.1)(typescript@5.1.6)
     transitivePeerDependencies:
       - '@swc/core'
@@ -28138,6 +28145,11 @@ packages:
     resolution: {integrity: sha512-dqJvarLawXsFbNDeJW7zAz8ItJ9cd28YufuuFzh0G8pNHjJMnY08Dv7sYX2uF5UpQOwieAeOExEYAWWfu7ZZUA==}
     engines: {node: '>= 0.4'}
 
+  /is-network-error@1.1.0:
+    resolution: {integrity: sha512-tUdRRAnhT+OtCZR/LxZelH/C7QtjtFrTu5tXCA8pl55eTUElUHT+GPYV8MBMBvea/j+NxQqVt3LbWMRir7Gx9g==}
+    engines: {node: '>=16'}
+    dev: false
+
   /is-node-process@1.2.0:
     resolution: {integrity: sha512-Vg4o6/fqPxIjtxgUH5QLJhwZ7gW5diGCVlXpuUfELC62CuxM1iHcRe51f2W1FDy04Ai4KJkagKjx3XaqyfRKXw==}
 
@@ -32093,6 +32105,15 @@ packages:
       p-timeout: 5.1.0
     dev: false
 
+  /p-retry@6.2.0:
+    resolution: {integrity: sha512-JA6nkq6hKyWLLasXQXUrO4z8BUZGUt/LjlJxx8Gb2+2ntodU/SS63YZ8b0LUTbQ8ZB9iwOfhEPhg4ykKnn2KsA==}
+    engines: {node: '>=16.17'}
+    dependencies:
+      '@types/retry': 0.12.2
+      is-network-error: 1.1.0
+      retry: 0.13.1
+    dev: false
+
   /p-timeout@3.2.0:
     resolution: {integrity: sha512-rhIwUycgwwKcP9yTOOFK/AKsAopjjCakVqLHePO3CC6Mir1Z99xT+R63jZxAT5lFZLa2inS5h+ZS2GvR99/FBg==}
     engines: {node: '>=8'}
@@ -34205,6 +34226,11 @@ packages:
       unified: 10.1.2
     dev: false
 
+  /retry@0.13.1:
+    resolution: {integrity: sha512-XQBQ3I8W1Cge0Seh+6gjj03LbmRFWuoszgK9ooCpwYIrhhoO80pfq4cUkU5DkknwfOfFteRwlZ56PYOGYyFWdg==}
+    engines: {node: '>= 4'}
+    dev: false
+
   /reusify@1.0.4:
     resolution: {integrity: sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==}
     engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
@@ -35751,8 +35777,8 @@ packages:
     resolution: {integrity: sha512-3mFKyCo/MBcgyOTlrY8T7odzZFx+w+qKSMAmdFzRvqBfLlSigU6TZnlFHK0lkMwj9Bj8OYU+9yW9lmGuS0QEnQ==}
     dev: false
 
-  /tailwind-merge@2.5.3:
-    resolution: {integrity: sha512-d9ZolCAIzom1nf/5p4LdD5zvjmgSxY0BGgdSvmXIoMYAiPdAW/dSpP7joCDYFY7r/HkEa2qmPtkgsu0xjQeQtw==}
+  /tailwind-merge@2.5.4:
+    resolution: {integrity: sha512-0q8cfZHMu9nuYP/b5Shb7Y7Sh1B7Nnl5GqNr1U+n2p6+mybvRtayrQ+0042Z5byvTA8ihjlP8Odo8/VnHbZu4Q==}
     dev: false
 
   /tailwindcss-animate@1.0.5(tailwindcss@3.3.5):

@@ -18,7 +18,7 @@ export const RadioInputAdapter: RJSFInputAdapter<string> = ({
     [schema],
   );
 
-  return !!options?.length ? (
+  return options?.length ? (
     <RadioGroup
       value={formData}
       onValueChange={onChange}
@@ -32,7 +32,11 @@ export const RadioInputAdapter: RJSFInputAdapter<string> = ({
           key={`radio-group-item-${value}`}
           data-testid={testId ? `${testId}-radio-group-item` : undefined}
         >
-          <RadioGroupItem value={value} id={`radio-group-item-${value}`}></RadioGroupItem>
+          <RadioGroupItem
+            value={value}
+            id={`radio-group-item-${value}`}
+            className="!bg-white"
+          ></RadioGroupItem>
           <Label htmlFor={`radio-group-item-${value}`}>{label}</Label>
         </div>
       ))}

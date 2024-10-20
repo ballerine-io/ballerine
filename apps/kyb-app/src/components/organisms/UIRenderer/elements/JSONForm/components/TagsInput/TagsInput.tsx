@@ -33,6 +33,10 @@ export const TagsInput: FunctionComponent<ITagsInputProps> = ({
       setActiveTagIndex={setActiveTagIndex}
       placeholder={uiSchema?.['ui:placeholder']}
       addTagsOnBlur
+      styleClasses={{
+        input:
+          'border-none outline-none focus:outline-none focus:ring-0 shadow-none placeholder:text-muted-foreground',
+      }}
     />
   );
 };

@@ -63,6 +63,7 @@ export const DateInputAdapter: RJSFInputAdapter<string | null> = ({
       disabled={disabled}
       onBlur={handleBlur}
       testId={testId}
+      textInputClassName={'placeholder:text-gray-400'}
     />
   );
 };

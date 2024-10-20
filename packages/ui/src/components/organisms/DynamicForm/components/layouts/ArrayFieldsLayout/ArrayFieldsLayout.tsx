@@ -44,7 +44,7 @@ export const ArrayFieldsLayout = ({
       <Button
         type="button"
         variant="outline"
-        className="flex gap-2"
+        className="flex gap-2 !bg-white"
         onClick={onAddClick}
         disabled={!canAdd}
       >

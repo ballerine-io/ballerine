@@ -35,6 +35,7 @@ export const AutocompleteTextInputAdapter: RJSFInputAdapter = ({
       testId={testId}
       placeholder={placeholder || uiSchema?.['ui:placeholder']}
       onChange={event => void onChange(event.target.value || '')}
+      textInputClassName={'placeholder:text-gray-400'}
       onBlur={handleBlur}
     />
   );

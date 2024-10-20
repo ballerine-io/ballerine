@@ -53,6 +53,7 @@ export const MultiselectInputAdapter: RJSFInputAdapter<MultiSelectValue[], Multi
         </Chip>
       );
     };
+
     return defaultRenderer;
   }, [renderSelected]);
 
@@ -67,6 +68,7 @@ export const MultiselectInputAdapter: RJSFInputAdapter<MultiSelectValue[], Multi
       onBlur={handleBlur}
       renderSelected={selectedItemRenderer}
       testId={testId}
+      textInputClassName={'placeholder:text-gray-400'}
     />
   );
 };

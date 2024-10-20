@@ -30,7 +30,7 @@ export const RadioInputAdapter: RJSFInputAdapter<string> = ({
           data-testid={testId ? `${testId}-radio-group-item` : undefined}
         >
           <RadioGroupItem
-            className="border-secondary text-black"
+            className="border-secondary bg-white text-black"
             value={value}
             id={`radio-group-item-${value}`}
           ></RadioGroupItem>
