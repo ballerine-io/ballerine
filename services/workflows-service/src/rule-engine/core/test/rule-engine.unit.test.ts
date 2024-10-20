@@ -119,12 +119,13 @@ describe('Rule Engine', () => {
               "LTE",
               "EXISTS",
               "IN",
-              "NOT_IN"
+              "NOT_IN",
+              "IN_CASE_INSENSITIVE"
             ],
             "path": [
               "operator"
             ],
-            "message": "Invalid discriminator value. Expected 'LAST_YEAR' | 'AML_CHECK' | 'EQUALS' | 'NOT_EQUALS' | 'BETWEEN' | 'GT' | 'LT' | 'GTE' | 'LTE' | 'EXISTS' | 'IN' | 'NOT_IN'"
+            "message": "Invalid discriminator value. Expected 'LAST_YEAR' | 'AML_CHECK' | 'EQUALS' | 'NOT_EQUALS' | 'BETWEEN' | 'GT' | 'LT' | 'GTE' | 'LTE' | 'EXISTS' | 'IN' | 'NOT_IN' | 'IN_CASE_INSENSITIVE'"
           }
         ],
         "name": "ZodError"
