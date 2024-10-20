@@ -10,6 +10,7 @@ export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy
   protected queue?: Queue;
   protected worker?: Worker;
   protected connectionOptions: ConnectionOptions;
+  protected deadLetterQueue?: Queue;
 
   protected constructor(protected queueName: string, protected readonly logger: AppLoggerService) {
     this.connectionOptions = {
@@ -27,6 +28,8 @@ export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy
           .config,
       },
     });
+
+    this.deadLetterQueue = new Queue(`${queueName}-dlq`, { connection: this.connectionOptions });
 
     if (env.IS_WORKER_SERVICE !== true) {
       this.initializeWorker();
@@ -52,10 +55,22 @@ export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy
       this.logger.log(`Webhook job ${job.id} completed successfully`);
     });
 
-    this.worker?.on('failed', (job, error, prev) => {
-      this.logger.error(
-        `Webhook job ${job?.id} failed after in queue: ${this.queue?.name} retries: ${error.message}`,
-      );
+    this.worker?.on('failed', async (job, error, prev) => {
+      const queueConfig = Object.entries(QUEUES).find(
+        ([_, queueOptions]) => queueOptions.name === this.queueName,
+      )?.[1]?.config;
+
+      const maxAllowedRetries = queueConfig?.attempts || 15;
+      const maxRetries = job?.attemptsMade || 0;
+
+      if (maxRetries >= maxAllowedRetries) {
+        this.logger.error(`Job ${job?.id} failed permanently. Moving to DLQ.`);
+        await this.deadLetterQueue?.add(`${this.queueName}-dlq`, job?.data);
+      } else {
+        this.logger.error(
+          `Webhook job ${job?.id} failed. Attempt: ${maxRetries}. Error: ${error.message}`,
+        );
+      }
     });
 
     this.queue?.on('cleaned', (jobs, type) => {
