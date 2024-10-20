@@ -34,20 +34,26 @@ const corsOrigins = [
   ...(env.ENVIRONMENT_NAME !== 'production' ? devOrigins : []),
 ];
 
-const infradata = require('/tmp/infra.json');
-
-if (env.TELEMETRY_ENABLED && env.TELEMETRY_SUPABASE_URL && env.TELEMETRY_SUPABASE_API_KEY) {
-  const SupabaseClient = createClient(
-    env.TELEMETRY_SUPABASE_URL,
-    env.TELEMETRY_SUPABASE_API_KEY,
-    {
-      db: { schema: 'public' },
-    },
-  );
-  await SupabaseClient.from('infra').insert([infradata]);
-}
-
 const main = async () => {
+  // Infra related data
+  const infradata = require('/tmp/infra.json');
+  if (env.TELEMETRY_ENABLED && env.TELEMETRY_SUPABASE_URL && env.TELEMETRY_SUPABASE_API_KEY) {
+    const SupabaseClient = createClient(
+      env.TELEMETRY_SUPABASE_URL,
+      env.TELEMETRY_SUPABASE_API_KEY,
+      {
+        db: { schema: 'public' },
+      },
+    );
+  }
+
+  const { data, error } = await supabase.from('infra').insert([infradata]);
+  if (error) {
+    console.error('Error inserting data:', error.message);
+  } else {
+    console.log('Data inserted successfully:', data);
+  }
+
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true, //will be buffered until a custom logger is attached
     snapshot: true,
