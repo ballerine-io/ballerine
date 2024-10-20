@@ -1,5 +1,29 @@
 # @ballerine/common
 
+## 0.9.43
+
+### Patch Changes
+
+- updated schema
+
+## 0.9.42
+
+### Patch Changes
+
+- fix match schema
+
+## 0.9.41
+
+### Patch Changes
+
+- schema fix
+
+## 0.9.40
+
+### Patch Changes
+
+- update plugin schema and ballerine plugins
+
 ## 0.9.39
 
 ### Patch Changes

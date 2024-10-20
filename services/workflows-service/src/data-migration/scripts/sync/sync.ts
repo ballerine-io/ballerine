@@ -535,6 +535,7 @@ async function updateSynced(
       diff: diff as InputJsonValue | undefined,
       fullDataHash: columnsHash,
       lastCheckAt: new Date(),
+      failureReason: null,
       lastSyncAt: new Date(),
       auditLog: {
         ...(existingRecord.auditLog && typeof existingRecord.auditLog === 'object'

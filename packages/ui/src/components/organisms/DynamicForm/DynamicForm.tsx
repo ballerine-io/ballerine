@@ -87,13 +87,17 @@ export const DynamicForm = forwardRef(
         <Form
           className={className}
           schema={schema}
+          // @ts-ignore
           formData={formData}
+          // @ts-ignore
           uiSchema={uiSchema}
           onSubmit={handleSubmit}
           onChange={handleChange}
+          // @ts-ignore
           validator={validator}
           fields={fieldsWithBaseFields as unknown as RegistryFieldsType}
           autoComplete="on"
+          // @ts-ignore
           templates={layoutsWithBaseLayouts}
           showErrorList={false}
           disabled={disabled}

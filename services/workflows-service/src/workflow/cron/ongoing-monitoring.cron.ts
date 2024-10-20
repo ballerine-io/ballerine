@@ -11,7 +11,7 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { isErrorWithMessage, ObjectValues } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { Business, BusinessReportType } from '@prisma/client';
+import { Business, BusinessReportStatus, BusinessReportType } from '@prisma/client';
 import get from 'lodash/get';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
@@ -70,7 +70,9 @@ export class OngoingMonitoringCron {
                 !business.metadata?.featureConfig?.[this.processFeatureName]?.enabled &&
                 !featureConfig?.options.runByDefault
               ) {
-                this.logger.log(`Ongoing monitoring is not enabled for business ${business.id}`);
+                this.logger.log(
+                  `Ongoing monitoring is not enabled for business ${business.companyName} (id: ${business.id})`,
+                );
 
                 continue;
               }
@@ -78,12 +80,23 @@ export class OngoingMonitoringCron {
               const lastReceivedReport = await this.findLastBusinessReport(business, projectIds);
 
               if (!lastReceivedReport?.reportId) {
-                this.logger.log(`No initial report found for business: ${business.id}`);
+                this.logger.log(
+                  `No initial report found for business ${business.companyName} (id: ${business.id})`,
+                );
+
+                continue;
+              }
+
+              if (lastReceivedReport.status !== BusinessReportStatus.completed) {
+                this.logger.log(
+                  `Last report for business ${business.companyName} (id: ${business.id}) was not completed`,
+                );
 
                 continue;
               }
 
               const now = new Date().getTime();
+
               const { options } = featureConfig;
 
               const lastReceivedReportTime = lastReceivedReport.createdAt.getTime();
@@ -117,6 +130,10 @@ export class OngoingMonitoringCron {
                   metadata?: { featureConfig?: Record<string, TCustomerFeaturesConfig> };
                 },
               });
+
+              this.logger.log(
+                `Invoked Ongoing Report for business ${business.companyName} (id: ${business.id})`,
+              );
 
               ongoingReportsCounter++;
             } catch (error) {
