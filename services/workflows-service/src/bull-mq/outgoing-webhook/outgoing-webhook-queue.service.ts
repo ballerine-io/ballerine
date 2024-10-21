@@ -73,20 +73,4 @@ export class OutgoingWebhookQueueService extends BaseQueueWorkerService<WebhookJ
     await job.updateProgress(nextAttempt);
     await job.moveToDelayed(Date.now() + delayMs);
   }
-
-  protected initializeWorker() {
-    super.initializeWorker();
-
-    this.worker?.on('completed', (job: Job) => {
-      this.logger.log(`Webhook job ${job.id} completed successfully`);
-    });
-
-    this.worker?.on('failed', (job, error, prev) => {
-      this.logger.error(`Webhook job ${job?.id} failed after retries: ${error.message}`);
-    });
-
-    this.queue?.on('cleaned', (jobs, type) => {
-      this.logger.log(`${jobs.length} ${type} jobs have been cleaned from the webhook queue`);
-    });
-  }
 }

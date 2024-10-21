@@ -73,6 +73,7 @@ export const Detail: FunctionComponent<IDetailProps> = ({
 
     return value;
   };
+
   const value = getValue(children);
 
   return (

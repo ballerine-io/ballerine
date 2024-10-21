@@ -106,10 +106,6 @@ export const serverEnvSchema = {
     .string()
     .transform(value => value === 'true')
     .default('false'),
-  IS_WORKER_SERVICE: z
-    .string()
-    .transform(value => value === 'true')
-    .default('false'),
 };
 
 if (!process.env['ENVIRONMENT_NAME'] || process.env['ENVIRONMENT_NAME'] === 'local') {
