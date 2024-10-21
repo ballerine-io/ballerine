@@ -128,6 +128,8 @@ export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy
   async onModuleDestroy() {
     await this.queue?.pause();
     await Promise.all([this.worker?.close(), this.queue?.close()]);
+
+    this.logger.log(`Queue ${this.queueName} is paused and closed`);
   }
 
   async onModuleInit() {
