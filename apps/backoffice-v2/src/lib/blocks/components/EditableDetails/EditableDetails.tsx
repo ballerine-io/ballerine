@@ -346,6 +346,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                         )}
                         {isSelect && (
                           <Select
+                            key={keyFactory(field.value, title, `select`, id)}
                             disabled={!isEditable}
                             onValueChange={field.onChange}
                             defaultValue={field.value}
