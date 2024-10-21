@@ -1,5 +1,5 @@
 import { ConnectionOptions, Job, Queue, QueueListener, Worker } from 'bullmq';
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { REDIS_CONFIG } from '@/redis/const/redis-config';
 import { env } from '@/env';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -7,7 +7,7 @@ import { QUEUES } from '@/bull-mq/consts';
 import { WorkerListener } from 'bullmq/dist/esm/classes/worker';
 
 @Injectable()
-export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy {
+export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy, OnModuleInit {
   protected queue?: Queue;
   protected worker?: Worker;
   protected connectionOptions: ConnectionOptions;
@@ -97,10 +97,6 @@ export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy
     });
   }
 
-  async onModuleDestroy() {
-    await Promise.all([this.worker?.close(), this.queue?.close()]);
-  }
-
   protected setWorkerListener<T extends keyof WorkerListener>({
     worker,
     eventName,
@@ -127,5 +123,26 @@ export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy
       queue?.removeAllListeners(eventName);
       queue?.on(eventName, listener);
     };
+  }
+
+  async onModuleDestroy() {
+    await this.queue?.pause();
+    await Promise.all([this.worker?.close(), this.queue?.close()]);
+  }
+
+  async onModuleInit() {
+    if (this.queue) {
+      const isPaused = await this.queue.isPaused();
+
+      if (isPaused) {
+        await this.queue.resume();
+      }
+
+      const isPausedAfterResume = await this.queue?.isPaused();
+
+      if (isPausedAfterResume) {
+        this.logger.error(`Queue ${this.queueName} is still paused after trying to resume it`);
+      }
+    }
   }
 }
