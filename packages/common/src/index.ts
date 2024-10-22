@@ -1,14 +1,20 @@
 export * from './rule-engine';
 
 export {
+  booleanToYesOrNo,
+  checkIsIsoDate,
+  checkIsUrl,
+  computeHash,
   dump,
   everyDocumentDecisionStatus,
+  getSeverityFromRiskScore,
   handlePromise,
   isEmptyObject,
   isErrorWithCode,
   isErrorWithMessage,
   isErrorWithName,
   isFunction,
+  isInstanceOfFunction,
   isNonEmptyArray,
   isNullish,
   isObject,
@@ -18,25 +24,20 @@ export {
   raise,
   replaceNullsWithUndefined,
   safeEvery,
+  sign,
   sleep,
   someDocumentDecisionStatus,
   uniqueArray,
-  zodBuilder,
-  zodErrorToReadable,
   valueOrFallback,
   valueOrNA,
-  checkIsUrl,
-  isInstanceOfFunction,
-  getSeverityFromRiskScore,
-  booleanToYesOrNo,
-  checkIsIsoDate,
-  sign,
-  computeHash,
+  zodBuilder,
+  zodErrorToReadable,
 } from './utils';
 
 export type { IErrorWithMessage } from './utils';
 
 export type {
+  CollectionFlowContextSchema,
   DefaultContextSchema,
   TAvailableDocuments,
   TDefaultSchemaDocumentPage,
@@ -44,11 +45,11 @@ export type {
 } from './schemas';
 export type {
   AnyRecord,
+  GenericFunction,
   LoggerInterface,
+  ObjectValues,
   Serializable,
   SortDirection,
-  GenericFunction,
-  ObjectValues,
 } from './types';
 
 export * from './schemas';

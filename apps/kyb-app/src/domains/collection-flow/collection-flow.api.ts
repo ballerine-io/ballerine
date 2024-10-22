@@ -7,11 +7,7 @@ import {
   TUser,
   UISchema,
 } from '@/domains/collection-flow/types';
-import {
-  CollectionFlowConfig,
-  CollectionFlowContext,
-  CollectionFlowContextData,
-} from '@/domains/collection-flow/types/flow-context.types';
+import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import posthog from 'posthog-js';
 
 export const fetchUser = async (): Promise<TUser> => {
@@ -68,12 +64,9 @@ export const fetchCustomer = async (): Promise<TCustomer> => {
   return await request.get('collection-flow/customer').json<TCustomer>();
 };
 
-export const fetchFlowContext = async (): Promise<CollectionFlowContextData> => {
+export const fetchFlowContext = async (): Promise<CollectionFlowContext> => {
   const result = await request.get('collection-flow/context');
-  const resultJson = await result.json<{
-    context: CollectionFlowContext;
-    config: CollectionFlowConfig;
-  }>();
+  const resultJson = await result.json<CollectionFlowContext>();
 
   return resultJson;
 };

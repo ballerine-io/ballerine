@@ -4,7 +4,6 @@ import { useCustomer } from '@/components/providers/CustomerProvider';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { getAccessToken } from '@/helpers/get-access-token.helper';
 import { isErrorWithMessage } from '@ballerine/common';
-import { AnyObject } from '@ballerine/ui';
 import isEqual from 'lodash/isEqual';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -52,7 +51,7 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
   }, []);
 
   const setContext = useCallback(
-    (newContext: AnyObject) => {
+    (newContext: CollectionFlowContext) => {
       const newCtx = { ...newContext };
       machineApi.setContext(newCtx);
 

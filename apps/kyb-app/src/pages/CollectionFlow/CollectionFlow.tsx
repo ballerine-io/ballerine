@@ -57,7 +57,7 @@ const isFailed = (state: string) => state === 'failed';
 export const CollectionFlow = withSessionProtected(() => {
   const { language } = useLanguageParam();
   const { data: schema } = useUISchemasQuery(language);
-  const { data: contextData } = useFlowContextQuery();
+  const { data: context } = useFlowContextQuery();
   const { customer } = useCustomer();
   const { t } = useTranslation();
   const { themeDefinition } = useTheme();
@@ -65,7 +65,7 @@ export const CollectionFlow = withSessionProtected(() => {
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;
 
-  const pageErrors = usePageErrors(contextData?.context ?? {}, elements || []);
+  const pageErrors = usePageErrors(context ?? {}, elements || []);
   const isRevision = useMemo(
     () => pageErrors.some(error => error.errors?.some(error => error.type === 'warning')),
     [pageErrors],
@@ -77,24 +77,24 @@ export const CollectionFlow = withSessionProtected(() => {
   const initialContext: CollectionFlowContext | null = useMemo(() => {
     const appState =
       filteredNonEmptyErrors?.[0]?.stateName ||
-      contextData?.context?.flowConfig?.appState ||
+      context?.flowConfig?.appState ||
       elements?.at(0)?.stateName;
 
     if (!appState) return null;
 
     return {
-      ...contextData?.context,
+      ...context,
       flowConfig: {
-        ...contextData?.context?.flowConfig,
+        ...context?.flowConfig,
         appState,
       },
       state: appState,
     };
-  }, [contextData, elements, filteredNonEmptyErrors]);
+  }, [context, elements, filteredNonEmptyErrors]);
 
   const initialUIState = useMemo(() => {
-    return prepareInitialUIState(elements || [], contextData?.context || {}, isRevision);
-  }, [elements, contextData, isRevision]);
+    return prepareInitialUIState(elements || [], context! || {}, isRevision);
+  }, [elements, context, isRevision]);
 
   // Breadcrumbs now using scrollIntoView method to make sure that breadcrumb is always in viewport.
   // Due to dynamic dimensions of logo it doesnt work well if scroll happens before logo is loaded.
@@ -112,7 +112,7 @@ export const CollectionFlow = withSessionProtected(() => {
 
   if (initialContext?.flowConfig?.appState == 'rejected') return <Rejected />;
 
-  return definition && contextData ? (
+  return definition && context ? (
     <DynamicUI initialState={initialUIState}>
       <DynamicUI.StateManager
         initialContext={initialContext}
@@ -120,7 +120,7 @@ export const CollectionFlow = withSessionProtected(() => {
         definitionType={schema?.definition.definitionType}
         extensions={schema?.definition.extensions}
         definition={definition as State}
-        config={contextData?.config}
+        config={schema?.config}
       >
         {({ state, stateApi }) => {
           return (
