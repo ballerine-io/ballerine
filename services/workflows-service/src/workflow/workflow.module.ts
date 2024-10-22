@@ -47,6 +47,8 @@ import { BusinessReportService } from '@/business-report/business-report.service
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
 import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
+import { BullMqModule } from '@/bull-mq/bull-mq.module';
+import { OutgoingWebhooksModule } from '@/webhooks/outgoing-webhooks/outgoing-webhooks.module';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
@@ -65,6 +67,8 @@ import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
     AlertDefinitionModule,
     RuleEngineModule,
     SecretsManagerModule,
+    OutgoingWebhooksModule,
+    BullMqModule,
   ],
   providers: [
     WorkflowDefinitionRepository,

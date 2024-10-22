@@ -8,7 +8,7 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { EndUserService } from '@/end-user/end-user.service';
 
 @Injectable()
-export class WebhooksService {
+export class IncomingWebhooksService {
   constructor(
     private readonly customerService: CustomerService,
     private readonly workflowService: WorkflowService,
