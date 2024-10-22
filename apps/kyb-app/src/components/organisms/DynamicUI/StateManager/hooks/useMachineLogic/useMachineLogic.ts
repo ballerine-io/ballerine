@@ -1,13 +1,14 @@
+import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
+import { isErrorWithMessage } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 import { WorkflowBrowserSDK } from '@ballerine/workflow-browser-sdk';
 import { useCallback, useMemo, useState } from 'react';
-import { isErrorWithMessage } from '@ballerine/common';
 
 export interface StateMachineAPI {
   invokePlugin: (pluginName: string) => Promise<void>;
   sendEvent: (eventName: string) => Promise<void>;
-  setContext: (newContext: AnyObject) => AnyObject;
-  getContext: () => AnyObject;
+  setContext: (newContext: CollectionFlowContext) => CollectionFlowContext;
+  getContext: () => CollectionFlowContext;
   getState: () => string;
 }
 
@@ -55,7 +56,7 @@ export const useMachineLogic = (
   );
 
   const setContext = useCallback(
-    (newContext: AnyObject) => {
+    (newContext: CollectionFlowContext) => {
       machine.overrideContext(newContext);
 
       return newContext;
@@ -68,7 +69,7 @@ export const useMachineLogic = (
       invokePlugin,
       sendEvent,
       setContext,
-      getContext: () => machine.getSnapshot().context as AnyObject,
+      getContext: () => machine.getSnapshot().context as CollectionFlowContext,
       getState: () => machine.getSnapshot().value as string,
     }),
     [invokePlugin, sendEvent, setContext, machine],
