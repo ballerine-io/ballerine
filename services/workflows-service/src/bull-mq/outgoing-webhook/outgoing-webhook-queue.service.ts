@@ -23,7 +23,6 @@ export class OutgoingWebhookQueueService extends BaseQueueWorkerService<WebhookJ
   async handleJob(job: Job<TJobArgs>) {
     this.logger.log(`Processing webhook job ${job.id}`);
 
-    throw new Error('Method not implemented.');
     const response = await this.webhookService.invokeWebhook({
       ...job.data.jobData,
     });
