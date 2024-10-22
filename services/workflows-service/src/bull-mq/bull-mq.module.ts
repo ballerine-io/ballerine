@@ -9,6 +9,35 @@ import { OutgoingWebhookQueueService } from '@/bull-mq/outgoing-webhook/outgoing
 import { REDIS_CONFIG } from '@/redis/const/redis-config';
 import { OutgoingWebhooksModule } from '@/webhooks/outgoing-webhooks/outgoing-webhooks.module';
 
+// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
+function composeQueueAndDlqBoard(queue: (typeof QUEUES)[keyof typeof QUEUES]) {
+  const baseFeature = BullBoardModule.forFeature({
+    name: queue.name,
+    adapter: BullAdapter,
+  });
+
+  const dlqFeature =
+    'dlq' in queue
+      ? BullBoardModule.forFeature({
+          name: `${queue.name}-dlq`,
+          adapter: BullAdapter,
+        })
+      : null;
+
+  return dlqFeature ? [baseFeature, dlqFeature] : [baseFeature];
+}
+
+const composeInitiateQueueWithDlq = (queue: (typeof QUEUES)[keyof typeof QUEUES]) =>
+  [
+    {
+      name: queue.name,
+      ...queue.config,
+    },
+    'dlq' in queue && {
+      name: queue.dlq,
+    },
+  ].filter(Boolean);
+
 @Module({
   imports: [
     AppLoggerModule,
@@ -23,21 +52,17 @@ import { OutgoingWebhooksModule } from '@/webhooks/outgoing-webhooks/outgoing-we
       },
     }),
     BullModule.registerQueue(
-      ...Object.values(QUEUES).map(queue => ({
-        name: queue.name,
-        ...queue.config,
-      })),
+      ...Object.values(QUEUES).flatMap(queue => {
+        return composeInitiateQueueWithDlq(queue);
+      }),
     ),
     BullBoardModule.forRoot({
       route: '/queues',
       adapter: ExpressAdapter,
     }),
-    ...Object.values(QUEUES).map(queue =>
-      BullBoardModule.forFeature({
-        name: queue.name,
-        adapter: BullAdapter,
-      }),
-    ),
+    ...Object.values(QUEUES)
+      .map(queue => composeQueueAndDlqBoard(queue))
+      .flat(),
   ],
   providers: [OutgoingWebhookQueueService],
   exports: [BullModule, OutgoingWebhookQueueService],
