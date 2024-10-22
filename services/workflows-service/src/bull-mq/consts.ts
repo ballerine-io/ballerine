@@ -3,6 +3,7 @@ import { BaseJobOptions } from 'bullmq/dist/esm/interfaces';
 export const QUEUES = {
   DEFAULT: {
     name: 'default',
+    dlq: 'default-dlq',
     config: {
       attempts: 15,
       backoff: {
@@ -31,4 +32,4 @@ export const QUEUES = {
       },
     },
   },
-} satisfies Record<string, { name: string; config: BaseJobOptions }>;
+} satisfies Record<string, { name: string; dlq?: string; config: BaseJobOptions }>;

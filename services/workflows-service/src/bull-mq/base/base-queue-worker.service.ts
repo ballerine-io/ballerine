@@ -5,13 +5,14 @@ import { env } from '@/env';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { QUEUES } from '@/bull-mq/consts';
 import { WorkerListener } from 'bullmq/dist/esm/classes/worker';
+import { TJobPayloadMetadata } from '@/bull-mq/types';
 
 @Injectable()
 export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy, OnModuleInit {
   protected queue?: Queue;
   protected worker?: Worker;
   protected connectionOptions: ConnectionOptions;
-  protected deadLetterQueue?: Queue;
+  protected deadLetterQueue?: Queue | undefined;
 
   protected constructor(protected queueName: string, protected readonly logger: AppLoggerService) {
     this.connectionOptions = {
@@ -22,23 +23,34 @@ export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy
       return;
     }
 
+    const currentQueue = Object.entries(QUEUES).find(
+      ([_, queueOptions]) => queueOptions.name === queueName,
+    );
+
+    if (!currentQueue) {
+      throw new Error(`Queue configuration of ${queueName} not found in QUEUES`);
+    }
+
+    const queueConfig = currentQueue[1];
     this.queue = new Queue(queueName, {
       connection: this.connectionOptions,
       defaultJobOptions: {
-        ...Object.entries(QUEUES).find(([_, queueOptions]) => queueOptions.name === queueName)?.[1]
-          .config,
+        ...queueConfig.config,
       },
     });
 
-    this.deadLetterQueue = new Queue(`${queueName}-dlq`, { connection: this.connectionOptions });
+    this.deadLetterQueue =
+      'dlq' in queueConfig
+        ? new Queue(queueConfig.dlq, { connection: this.connectionOptions })
+        : undefined;
 
     this.initializeWorker();
   }
 
   abstract handleJob(job: Job<T>): Promise<void>;
 
-  async addJob(jobData: T, jobOptions = {}): Promise<void> {
-    await this.queue?.add(this.queueName, jobData, jobOptions);
+  async addJob(jobData: T, metadata: TJobPayloadMetadata = {}, jobOptions = {}): Promise<void> {
+    await this.queue?.add(this.queueName, { metadata, ...jobData }, jobOptions);
   }
 
   protected initializeWorker() {
@@ -73,14 +85,18 @@ export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy
           )?.[1]?.config || QUEUES.DEFAULT.config;
 
         const maxAllowedRetries = queueConfig.attempts;
-        const maxRetries = job?.attemptsMade || 0;
+        const currentAttempts = job?.attemptsMade ?? 0;
 
-        if (maxRetries >= maxAllowedRetries) {
-          this.logger.error(`Job ${job?.id} failed permanently. Moving to DLQ.`);
-          await this.deadLetterQueue?.add(`${this.queueName}-dlq`, job?.data);
+        if (currentAttempts >= maxAllowedRetries) {
+          if (this.deadLetterQueue) {
+            this.logger.error(`Job ${job?.id} failed permanently. Moving to DLQ.`);
+            await this.deadLetterQueue.add(`${this.queueName}-dlq`, job?.data);
+          }
+
+          this.logger.error(`Job ${job?.id} failed permanently. Max attempts reached.`);
         } else {
-          this.logger.error(
-            `Webhook job ${job?.id} failed. Attempt: ${maxRetries}. Error: ${error.message}`,
+          this.logger.warn(
+            `Webhook job ${job?.id} failed. Attempt: ${currentAttempts}. Error: ${error.message}`,
           );
         }
       },
