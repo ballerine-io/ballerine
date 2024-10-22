@@ -1,19 +1,20 @@
 import { z } from 'zod';
 
-import { OPERATION, OPERATOR } from '../operators/enums';
 import { RuleSet } from './types';
 import {
+  OPERATION,
+  OPERATOR,
   AmlCheckSchema,
   BetweenSchema,
   ExistsSchema,
   LastYearsSchema,
   PrimitiveArraySchema,
   PrimitiveSchema,
-} from '../operators/schemas';
+} from '@/rule-engine';
 
-export function getValues<T extends Record<string, unknown>>(obj: T) {
+export const getValues = <T extends Record<string, unknown>>(obj: T) => {
   return Object.values(obj) as [(typeof obj)[keyof T]];
-}
+};
 
 export const RuleSchema = z.discriminatedUnion('operator', [
   z.object({
@@ -77,6 +78,11 @@ export const RuleSchema = z.discriminatedUnion('operator', [
   z.object({
     key: z.string(),
     operator: z.literal(OPERATION.IN),
+    value: PrimitiveArraySchema,
+  }),
+  z.object({
+    key: z.string(),
+    operator: z.literal(OPERATION.IN_CASE_INSENSITIVE),
     value: PrimitiveArraySchema,
   }),
   z.object({
