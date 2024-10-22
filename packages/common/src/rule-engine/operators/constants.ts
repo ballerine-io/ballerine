@@ -5,13 +5,13 @@ import {
   GT,
   GTE,
   IN,
+  IN_CASE_INSENSITIVE,
   LAST_YEAR,
   LT,
   LTE,
   NOT_EQUALS,
   EXISTS,
   NOT_IN,
-  IN_CASE_INSENSITIVE,
 } from './helpers';
 
 import { OPERATION } from './enums';
