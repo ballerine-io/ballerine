@@ -6,6 +6,9 @@ import { Job } from 'bullmq';
 import { HttpStatusCode } from 'axios';
 import { WebhookJobData } from '@/bull-mq/outgoing-webhook/types/types';
 import { OutgoingWebhooksService } from '@/webhooks/outgoing-webhooks/outgoing-webhooks.service';
+import { TJobPayloadMetadata } from '@/bull-mq/types';
+
+type TJobArgs = { jobData: WebhookJobData; metadata: TJobPayloadMetadata };
 
 @Injectable()
 export class OutgoingWebhookQueueService extends BaseQueueWorkerService<WebhookJobData> {
@@ -17,12 +20,12 @@ export class OutgoingWebhookQueueService extends BaseQueueWorkerService<WebhookJ
     this.initializeWorker();
   }
 
-  async handleJob(job: Job<WebhookJobData>) {
+  async handleJob(job: Job<TJobArgs>) {
     this.logger.log(`Processing webhook job ${job.id}`);
 
     throw new Error('Method not implemented.');
     const response = await this.webhookService.invokeWebhook({
-      ...job.data,
+      ...job.data.jobData,
     });
 
     this.logger.log(`Webhook job ${job.id} completed with status: ${response.status}`);
@@ -34,7 +37,7 @@ export class OutgoingWebhookQueueService extends BaseQueueWorkerService<WebhookJ
     await this.handleRetryStrategy(response.status, job);
   }
 
-  private async handleRetryStrategy(status: number, job: Job<WebhookJobData>) {
+  private async handleRetryStrategy(status: number, job: Job<TJobArgs>) {
     if (job.opts.attempts && job.attemptsMade >= job.opts.attempts) {
       this.logger.warn(`Job ${job.id} reached the maximum retry attempts (${job.opts.attempts})`);
       throw new Error(`Job ${job.id} failed after reaching max attempts`);
@@ -65,7 +68,7 @@ export class OutgoingWebhookQueueService extends BaseQueueWorkerService<WebhookJ
     await this.retryJob(job, delayMs);
   }
 
-  private async retryJob(job: Job<WebhookJobData>, delayMs: number) {
+  private async retryJob(job: Job<TJobArgs>, delayMs: number) {
     const nextAttempt = job.attemptsMade + 1;
     this.logger.log(
       `Scheduling retry for job ${job.id}. Next attempt: ${nextAttempt}, delay: ${delayMs}ms`,

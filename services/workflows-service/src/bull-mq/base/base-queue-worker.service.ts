@@ -47,16 +47,16 @@ export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy
     this.initializeWorker();
   }
 
-  abstract handleJob(job: Job<T>): Promise<void>;
+  abstract handleJob(job: Job<{ jobData: T; metadata: TJobPayloadMetadata }>): Promise<void>;
 
   async addJob(jobData: T, metadata: TJobPayloadMetadata = {}, jobOptions = {}): Promise<void> {
-    await this.queue?.add(this.queueName, { metadata, ...jobData }, jobOptions);
+    await this.queue?.add(this.queueName, { metadata, jobData }, jobOptions);
   }
 
   protected initializeWorker() {
     this.worker = new Worker(
       this.queueName,
-      async (job: Job<T>) => {
+      async (job: Job<{ jobData: T; metadata: TJobPayloadMetadata }>) => {
         await this.handleJob(job);
       },
       { connection: this.connectionOptions },
