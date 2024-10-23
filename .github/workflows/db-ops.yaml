@@ -1,4 +1,4 @@
-name: Database Operations
+name: New Database Operations
 
 on:
   repository_dispatch:
