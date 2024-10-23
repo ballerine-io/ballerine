@@ -1,36 +1,41 @@
 import { Static, Type } from '@sinclair/typebox';
 import { defaultContextSchema } from './default-context-schema';
 
+export enum CollectionFlowStateEnum {
+  pending = 'pending',
+  inprogress = 'inprogress',
+  approved = 'approved',
+  rejected = 'rejected',
+  failed = 'failed',
+  revision = 'revision',
+}
+
 export const collectionFlowContextSchema = Type.Composite([
   defaultContextSchema,
   Type.Object({
-    flowConfig: Type.Optional(
+    collectionFlow: Type.Optional(
       Type.Object({
-        // Workflow Service URL
-        apiUrl: Type.String(),
-
-        // Session Token
-        tokenId: Type.String(),
-
-        // Reflects current active state of UI
-        appState: Type.String(),
-
-        // Reflects current state of the process
-        processState: Type.String(),
-
-        // Name of the customer company
-        customerCompany: Type.String(),
-
-        // Reflects progress of the steps in the UI
-        stepsProgress: Type.Optional(
-          Type.Record(Type.String(), Type.Object({ isCompleted: Type.Boolean() })),
+        config: Type.Optional(
+          Type.Object({
+            apiUrl: Type.String(),
+            tokenId: Type.String(),
+          }),
+        ),
+        state: Type.Optional(
+          Type.Object({
+            uiState: Type.String(),
+            collectionFlowState: Type.Enum(CollectionFlowStateEnum),
+            progress: Type.Optional(
+              Type.Record(Type.String(), Type.Object({ isCompleted: Type.Boolean() })),
+            ),
+          }),
+        ),
+        additionalInformation: Type.Optional(
+          Type.Object({
+            customerCompany: Type.Optional(Type.String()),
+          }),
         ),
       }),
-    ),
-    state: Type.Optional(Type.String()),
-    processState: Type.Optional(Type.String()),
-    stepsProgress: Type.Optional(
-      Type.Record(Type.String(), Type.Object({ isCompleted: Type.Boolean() })),
     ),
   }),
 ]);
