@@ -28,8 +28,8 @@ import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Failed } from '@/pages/CollectionFlow/components/pages/Failed';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
+import { CollectionFlowManager, CollectionFlowStateEnum } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
-import set from 'lodash/set';
 
 const elems = {
   h1: Title,
@@ -71,26 +71,11 @@ export const CollectionFlow = withSessionProtected(() => {
     [pageErrors],
   );
 
-  const filteredNonEmptyErrors = pageErrors?.filter(pageError => !!pageError.errors.length);
-
-  // @ts-ignore
-  const initialContext: CollectionFlowContext | null = useMemo(() => {
-    const appState =
-      filteredNonEmptyErrors?.[0]?.stateName ||
-      context?.flowConfig?.appState ||
-      elements?.at(0)?.stateName;
-
-    if (!appState) return null;
-
+  const initialContext: CollectionFlowContext = useMemo(() => {
     return {
       ...context,
-      flowConfig: {
-        ...context?.flowConfig,
-        appState,
-      },
-      state: appState,
-    };
-  }, [context, elements, filteredNonEmptyErrors]);
+    } as CollectionFlowContext;
+  }, [context]);
 
   const initialUIState = useMemo(() => {
     return prepareInitialUIState(elements || [], context! || {}, isRevision);
@@ -108,9 +93,15 @@ export const CollectionFlow = withSessionProtected(() => {
     setLogoLoaded(false);
   }, [customer?.logoImageUri]);
 
-  if (initialContext?.flowConfig?.appState === 'approved') return <Approved />;
+  if (
+    initialContext?.collectionFlow?.state?.collectionFlowState === CollectionFlowStateEnum.approved
+  )
+    return <Approved />;
 
-  if (initialContext?.flowConfig?.appState == 'rejected') return <Rejected />;
+  if (
+    initialContext?.collectionFlow?.state?.collectionFlowState === CollectionFlowStateEnum.rejected
+  )
+    return <Rejected />;
 
   return definition && context ? (
     <DynamicUI initialState={initialUIState}>
@@ -126,14 +117,27 @@ export const CollectionFlow = withSessionProtected(() => {
           return (
             <DynamicUI.TransitionListener
               pages={elements ?? []}
-              onNext={async (tools, prevState) => {
+              onNext={async (tools, prevState, currentState) => {
                 tools.setElementCompleted(prevState, true);
 
-                set(
-                  stateApi.getContext(),
-                  `flowConfig.stepsProgress.${prevState}.isCompleted`,
-                  true,
-                );
+                const collectionFlowManager = new CollectionFlowManager(stateApi.getContext());
+
+                const isAnyStepCompleted = Object.values(
+                  collectionFlowManager.state().progress || {},
+                ).some(step => step.isCompleted);
+
+                collectionFlowManager.state().setStepCompletionState(prevState, true);
+                collectionFlowManager.state().uiState = currentState;
+
+                if (!isAnyStepCompleted) {
+                  console.log('Collection flow touched, changing state to inprogress');
+                  collectionFlowManager.state().collectionFlowState =
+                    CollectionFlowStateEnum.inprogress;
+
+                  console.log('Updating context to', collectionFlowManager.context);
+                }
+
+                stateApi.setContext(collectionFlowManager.context);
 
                 await stateApi.invokePlugin('sync_workflow_runtime');
               }}

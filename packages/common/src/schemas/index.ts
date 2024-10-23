@@ -1,4 +1,5 @@
 export {
+  CollectionFlowStateEnum,
   collectionFlowContextSchema,
   type CollectionFlowContextSchema,
 } from './documents/collection-flow-context-schema';

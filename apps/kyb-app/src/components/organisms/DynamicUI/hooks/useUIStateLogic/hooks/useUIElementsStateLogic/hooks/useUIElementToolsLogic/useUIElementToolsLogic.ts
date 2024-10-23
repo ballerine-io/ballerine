@@ -1,9 +1,13 @@
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { useRefValue } from '@/hooks/useRefValue';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 export const useUIElementToolsLogic = (elementId: string) => {
   const { helpers, state } = useDynamicUIContext();
   const { setUIElementState } = helpers;
+  const { payload, stateApi } = useStateManagerContext();
+  const payloadRef = useRefValue(payload);
 
   const elementsStateRef = useRef(state.elements);
 
@@ -23,7 +27,7 @@ export const useUIElementToolsLogic = (elementId: string) => {
 
       setUIElementState(elementId, { ...prevState, isCompleted: completed });
     },
-    [elementsStateRef, setUIElementState],
+    [elementsStateRef, payloadRef, stateApi, setUIElementState],
   );
 
   const elementState = useMemo(
