@@ -1,4 +1,4 @@
-name: Deploy workflows-service image
+name: New Deploy workflows-service image
 
 on:
   workflow_dispatch:
