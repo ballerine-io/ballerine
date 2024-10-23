@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.44
+
+### Patch Changes
+
+- In case insensitive risk rule engine operator
+
 ## 0.9.43
 
 ### Patch Changes
