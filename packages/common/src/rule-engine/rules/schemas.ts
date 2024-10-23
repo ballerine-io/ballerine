@@ -12,8 +12,9 @@ import {
   PrimitiveSchema,
 } from '@/rule-engine';
 
-export const getValues = <T extends Record<string, unknown>>(obj: T) =>
-  Object.values(obj) as [(typeof obj)[keyof T]];
+export const getValues = <T extends Record<string, unknown>>(obj: T) => {
+  return Object.values(obj) as [(typeof obj)[keyof T]];
+};
 
 export const RuleSchema = z.discriminatedUnion('operator', [
   z.object({
@@ -81,12 +82,12 @@ export const RuleSchema = z.discriminatedUnion('operator', [
   }),
   z.object({
     key: z.string(),
-    operator: z.literal(OPERATION.NOT_IN),
+    operator: z.literal(OPERATION.IN_CASE_INSENSITIVE),
     value: PrimitiveArraySchema,
   }),
   z.object({
     key: z.string(),
-    operator: z.literal(OPERATION.IN_CASE_INSENSITIVE),
+    operator: z.literal(OPERATION.NOT_IN),
     value: PrimitiveArraySchema,
   }),
 ]);
