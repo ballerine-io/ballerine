@@ -83,6 +83,7 @@
   },
   "document_ocr": {
     "success": "OCR performed successfully.",
+    "empty_extraction": "Unable to extract the document's relevant fields.",
     "error": "Failed to perform OCR on the document."
   },
   "business_report_creation": {

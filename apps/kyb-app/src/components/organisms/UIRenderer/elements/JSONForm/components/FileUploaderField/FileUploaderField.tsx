@@ -65,7 +65,7 @@ export const FileUploaderField = ({
     <div
       className={ctw(
         'relative flex h-[56px] flex-row items-center gap-3 rounded-[16px] border bg-white px-4',
-        { 'opacity-50 pointer-events-none': disabled },
+        { 'pointer-events-none opacity-50': disabled },
       )}
       onClick={handleContainerClick}
     >

@@ -6,7 +6,6 @@ import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error
 import { WorkflowDefinitionByIdSchema } from '@/domains/workflow-definitions/fetchers';
 import { AmlSchema } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
 import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
-import { zPropertyKey } from '@/lib/zod/utils/z-property-key/z-property-key';
 import qs from 'qs';
 import { deepCamelKeys } from 'string-ts';
 import { z } from 'zod';
@@ -72,7 +71,43 @@ export const BaseWorkflowByIdSchema = z.object({
     parentMachine: ObjectWithIdSchema.extend({
       status: z.union([z.literal('active'), z.literal('failed'), z.literal('completed')]),
     }).optional(),
-    pluginsOutput: z.record(zPropertyKey, z.any()).optional(),
+    pluginsOutput: z
+      .object({
+        ubo: z
+          .object({
+            data: z
+              .object({
+                // nodes: z.array(
+                //   z.object({
+                //     id: z.string(),
+                //     data: z.object({
+                //       name: z.string(),
+                //       type: z.string(),
+                //       sharePercentage: z.number().optional(),
+                //     }),
+                //   }),
+                // ),
+                // edges: z.array(
+                //   z.object({
+                //     id: z.string(),
+                //     source: z.string(),
+                //     target: z.string(),
+                //     data: z.object({
+                //       sharePercentage: z.number().optional(),
+                //     }),
+                //   }),
+                // ),
+              })
+              .passthrough()
+              .optional(),
+            message: z.string().optional(),
+            isRequestTimedOut: z.boolean().optional(),
+          })
+          .passthrough()
+          .optional(),
+      })
+      .passthrough()
+      .optional(),
     metadata: z
       .object({
         collectionFlowUrl: z.string().url().optional(),
@@ -312,6 +347,7 @@ export const fetchWorkflowDocumentOCRResult = async ({
       env.VITE_API_URL,
     )}/api/v1/internal/workflows/${workflowRuntimeId}/documents/${documentId}/run-ocr`,
     schema: z.any(),
+    timeout: 40_000,
   });
 
   return handleZodError(error, workflow);

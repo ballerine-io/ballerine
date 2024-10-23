@@ -11,7 +11,7 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { isErrorWithMessage, ObjectValues } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { Business, BusinessReportType } from '@prisma/client';
+import { Business, BusinessReportStatus, BusinessReportType } from '@prisma/client';
 import get from 'lodash/get';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
@@ -30,7 +30,7 @@ export class OngoingMonitoringCron {
     protected readonly businessReportService: BusinessReportService,
   ) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_HOUR)
   async handleCron() {
     this.logger.log('Ongoing monitoring cron started');
 
@@ -81,13 +81,22 @@ export class OngoingMonitoringCron {
 
               if (!lastReceivedReport?.reportId) {
                 this.logger.log(
-                  `No initial report found for business: ${business.companyName} (id: ${business.id})`,
+                  `No initial report found for business ${business.companyName} (id: ${business.id})`,
+                );
+
+                continue;
+              }
+
+              if (lastReceivedReport.status !== BusinessReportStatus.completed) {
+                this.logger.log(
+                  `Last report for business ${business.companyName} (id: ${business.id}) was not completed`,
                 );
 
                 continue;
               }
 
               const now = new Date().getTime();
+
               const { options } = featureConfig;
 
               const lastReceivedReportTime = lastReceivedReport.createdAt.getTime();
