@@ -1,4 +1,4 @@
-name: Under Testing - Database Operations
+name: Database Operations
 
 on:
   repository_dispatch:

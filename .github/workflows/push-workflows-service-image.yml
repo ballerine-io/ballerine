@@ -1,4 +1,4 @@
-name: Under Testing - Build & Push workflows-service image
+name: Build & Push workflows-service image
 
 on:
   workflow_dispatch:
