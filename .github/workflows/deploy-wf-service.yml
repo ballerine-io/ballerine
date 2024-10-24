@@ -40,33 +40,6 @@ jobs:
           echo "SHORT_HASH is ${{ env.SHORT_HASH }}"
           echo "SHORT_HASH is ${{ env.SHORT_HASH }}"
           echo "SHORT_HASH is $SHORT_HASH"
-  check_if_data_migration_needed:
-    runs-on: ubuntu-latest
-    outputs:
-      should_build: ${{ steps.check-branch-existance.outputs.should_build }} # short sha of the commit
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-          submodules: 'recursive'
-          token: ${{ secrets.SUBMODULES_TOKEN }}
-          
-      - name: Check if branch exists
-        id: check-branch-existance
-        run: |
-          cd services/workflows-service/prisma/data-migrations
-
-          is_exists=$(git ls-remote --exit-code --heads -t --ref -q origin "${{ inputs.environment }}" | wc -l)
-
-          # Check if the branch exists by counting the number of results
-          if [ $is_exists -eq 0  ]; then
-            echo "Branch '${{ inputs.environment }}' does not exist."
-            echo "should_build=false" >> $GITHUB_OUTPUT
-          else
-            echo "should_build=true" >> $GITHUB_OUTPUT
-          fi
-          exit 0
 
   tag-and-push-image:
     runs-on: ubuntu-latest
@@ -146,8 +119,7 @@ jobs:
 
   build-and-push-ee-image:
     runs-on: ubuntu-latest
-    needs: [check_if_data_migration_needed,tag-and-push-image]
-    if: always() && ${{(needs.check_if_data_migration_needed.outputs.should_build == 'true')}}
+    needs: [tag-and-push-image]
     outputs:
       SUBMODULE_SHORT_HASH: ${{ steps.lastcommit.outputs.shorthash }}
     permissions:
