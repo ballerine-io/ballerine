@@ -2,12 +2,18 @@ import { Static, Type } from '@sinclair/typebox';
 import { defaultContextSchema } from './default-context-schema';
 
 export enum CollectionFlowStateEnum {
+  // Collection Flow created but never touched by end user
   pending = 'pending',
+  // Collection Flow is in progress
   inprogress = 'inprogress',
+  // Collection Flow is approved
   approved = 'approved',
+  // Collection Flow is rejected
   rejected = 'rejected',
-  failed = 'failed',
+  // Collection Flow is in revision
   revision = 'revision',
+  // Collection Flow failed (by plugins)
+  failed = 'failed',
 }
 
 export const collectionFlowContextSchema = Type.Composite([

@@ -6,7 +6,9 @@ import { CollectionFlowManager } from '@ballerine/common';
 export const isPageCompleted = (page: UIPage, context: CollectionFlowContext) => {
   const collectionFlow = new CollectionFlowManager(context);
 
-  return collectionFlow.state().isStepCompleted(page.stateName!);
+  const result = collectionFlow.state().isStepCompleted(page.stateName!);
+
+  return result;
 };
 
 export const prepareInitialUIState = (
