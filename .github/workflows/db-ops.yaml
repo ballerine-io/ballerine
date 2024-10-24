@@ -140,6 +140,8 @@ jobs:
             }
 
   sync-argo-app:
+    needs: update-helm-chart
+    if: ${{ needs.update-helm-chart.result == 'success' }}
     runs-on: ubuntu-latest
     environment: ${{ github.env.MIGRATION_ENV }}
     env:
