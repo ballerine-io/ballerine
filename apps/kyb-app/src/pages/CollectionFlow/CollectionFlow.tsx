@@ -8,7 +8,10 @@ import { useTheme } from '@/common/providers/ThemeProvider';
 import { AppShell } from '@/components/layouts/AppShell';
 import { PoweredByLogo } from '@/components/molecules/PoweredByLogo';
 import { DynamicUI, State } from '@/components/organisms/DynamicUI';
-import { usePageErrors } from '@/components/organisms/DynamicUI/Page/hooks/usePageErrors';
+import {
+  PageError,
+  usePageErrors,
+} from '@/components/organisms/DynamicUI/Page/hooks/usePageErrors';
 import { UIRenderer } from '@/components/organisms/UIRenderer';
 import { Cell } from '@/components/organisms/UIRenderer/elements/Cell';
 import { Divider } from '@/components/organisms/UIRenderer/elements/Divider';
@@ -54,6 +57,10 @@ const elems = {
 const isSuccess = (state: string) => state === 'success' || state === 'finish';
 const isFailed = (state: string) => state === 'failed';
 
+const getRevisionStateName = (pageErrors: PageError[]) => {
+  return pageErrors?.filter(pageError => !!pageError.errors.length)?.[0]?.stateName;
+};
+
 export const CollectionFlow = withSessionProtected(() => {
   const { language } = useLanguageParam();
   const { data: schema } = useUISchemasQuery(language);
@@ -67,15 +74,21 @@ export const CollectionFlow = withSessionProtected(() => {
 
   const pageErrors = usePageErrors(context ?? {}, elements || []);
   const isRevision = useMemo(
-    () => pageErrors.some(error => error.errors?.some(error => error.type === 'warning')),
-    [pageErrors],
+    () => context?.collectionFlow?.state?.collectionFlowState === CollectionFlowStateEnum.revision,
+    [context],
   );
 
   const initialContext: CollectionFlowContext = useMemo(() => {
-    return {
-      ...context,
-    } as CollectionFlowContext;
-  }, [context]);
+    const collectionFlowManager = new CollectionFlowManager(context as CollectionFlowContext);
+
+    if (isRevision) {
+      const revisionStateName = getRevisionStateName(pageErrors);
+      collectionFlowManager.state().uiState =
+        revisionStateName || collectionFlowManager.state().uiState;
+    }
+
+    return collectionFlowManager.context as CollectionFlowContext;
+  }, [isRevision, pageErrors]);
 
   const initialUIState = useMemo(() => {
     return prepareInitialUIState(elements || [], context! || {}, isRevision);

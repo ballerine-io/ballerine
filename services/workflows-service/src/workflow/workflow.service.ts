@@ -53,6 +53,7 @@ import {
 import {
   AnyRecord,
   CollectionFlowManager,
+  CollectionFlowStateEnum,
   DefaultContextSchema,
   getDocumentId,
   isErrorWithMessage,
@@ -1480,7 +1481,7 @@ export class WorkflowService {
           {
             apiUrl: env.APP_API_URL,
             tokenId: '',
-            steps: uiSchema.elements,
+            steps: uiSchema?.elements || [],
           },
         );
 
@@ -2179,7 +2180,18 @@ export class WorkflowService {
 
       const snapshot = service.getSnapshot();
       const currentState = snapshot.value;
-      const context = snapshot.machine?.context;
+      let context = snapshot.machine?.context;
+
+      if (context?.collectionFlow) {
+        const collectionFlowManager = new CollectionFlowManager(context);
+
+        if (currentState in CollectionFlowStateEnum) {
+          collectionFlowManager.state().collectionFlowState = currentState;
+        }
+
+        context = collectionFlowManager.context;
+      }
+
       // TODO: Refactor to use snapshot.done instead
       // @ts-ignore
       const isFinal = snapshot.machine?.states[currentState].type === 'final';
@@ -2636,5 +2648,25 @@ export class WorkflowService {
         timeout: 180_000,
       },
     );
+  }
+
+  async updateWorkflowInRevision(workflowId: string, projectId: TProjectId) {
+    const workflow = await this.workflowRuntimeDataRepository.findById(workflowId, {}, [projectId]);
+    const isCollectionFlow = workflow?.context?.collectionFlow;
+
+    if (!isCollectionFlow) return workflow;
+
+    if (!workflow) {
+      throw new NotFoundException(`Workflow with id ${workflowId} not found`);
+    }
+
+    const collectionFlowManager = new CollectionFlowManager(workflow.context);
+
+    collectionFlowManager.state().collectionFlowState = CollectionFlowStateEnum.revision;
+
+    return await this.workflowRuntimeDataRepository.updateById(workflowId, {
+      //@ts-ignore
+      data: { context: collectionFlowManager.context },
+    });
   }
 }
