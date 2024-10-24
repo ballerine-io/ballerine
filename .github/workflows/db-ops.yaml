@@ -187,6 +187,7 @@ jobs:
           argocd_username: ${{ secrets.ARGOCD_USERNAME }}
           argocd_password: ${{ secrets.ARGOCD_PASSWORD }}
           argocd_server: ${{ secrets.ARGOCD_SERVER }}
+          tg_svc_key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
         
   send-to-slack:
     runs-on: ubuntu-latest
