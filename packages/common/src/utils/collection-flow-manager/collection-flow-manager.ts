@@ -27,7 +27,6 @@ export class CollectionFlowManager<TContext extends DefaultContextSchema> {
 
     const config: NonNullable<DefaultContextSchema['collectionFlow']>['config'] = {
       apiUrl: this._config?.apiUrl || '',
-      tokenId: this._config?.tokenId || '',
     };
 
     console.log('Collection Flow Context initiated with config: ', config);

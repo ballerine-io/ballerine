@@ -43,7 +43,6 @@ describe('CollectionFlowManager', () => {
     test('config is provided', () => {
       const collectionFlowManager = new CollectionFlowManager({} as DefaultContextSchema, {
         apiUrl: 'https://api.example.com',
-        tokenId: '1234567890',
         steps: [{ stateName: 'step1' }],
       });
 
@@ -51,7 +50,6 @@ describe('CollectionFlowManager', () => {
 
       expect(context).toBeDefined();
       expect(context.collectionFlow?.config?.apiUrl).toBe('https://api.example.com');
-      expect(context.collectionFlow?.config?.tokenId).toBe('1234567890');
       expect(context.collectionFlow?.state?.progress).toEqual({
         step1: {
           isCompleted: false,
@@ -64,7 +62,6 @@ describe('CollectionFlowManager', () => {
 
       const collectionFlowManager = new CollectionFlowManager(inputContext, {
         apiUrl: 'https://api.example.com',
-        tokenId: '1234567890',
         steps: [{ stateName: 'step1' }],
       });
 
@@ -78,7 +75,6 @@ describe('CollectionFlowManager', () => {
     test('config is provided', () => {
       const collectionFlowManager = new CollectionFlowManager({} as DefaultContextSchema, {
         apiUrl: 'https://api.example.com',
-        tokenId: '1234567890',
         steps: [{ stateName: 'step1' }],
       });
 
@@ -105,7 +101,6 @@ describe('CollectionFlowManager', () => {
           {} as DefaultContextSchema,
           {
             apiUrl: 'https://api.example.com',
-            tokenId: '1234567890',
             steps: [{ stateName: 'step1' }],
           },
         );
@@ -139,7 +134,6 @@ describe('CollectionFlowManager', () => {
           {} as DefaultContextSchema,
           {
             apiUrl: 'https://api.example.com',
-            tokenId: '1234567890',
             steps: [{ stateName: 'step1' }],
           },
         );

@@ -46,7 +46,6 @@ export const defaultContextSchema = Type.Composite([
         config: Type.Optional(
           Type.Object({
             apiUrl: Type.String(),
-            tokenId: Type.String(),
           }),
         ),
         state: Type.Optional(

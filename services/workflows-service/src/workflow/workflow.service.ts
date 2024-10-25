@@ -1482,7 +1482,6 @@ export class WorkflowService {
           },
           {
             apiUrl: env.APP_API_URL,
-            tokenId: '',
             steps: uiSchema?.elements || [],
           },
         );
@@ -1575,7 +1574,6 @@ export class WorkflowService {
           collectionFlowManager.updateAdditionalInformation({
             customerCompany: customer.displayName,
           });
-          collectionFlowManager.config().tokenId = workflowToken.token;
 
           workflowRuntimeData = await this.workflowRuntimeDataRepository.updateStateById(
             workflowRuntimeData.id,
@@ -2184,7 +2182,19 @@ export class WorkflowService {
       const currentState = snapshot.value;
       let context = snapshot.machine?.context;
 
-      if (COLLECTION_FLOW_EVENTS_WHITELIST.includes(currentState)) {
+      // Checking if event type is candidate for "revision" state
+      const nextCollectionFlowState = COLLECTION_FLOW_EVENTS_WHITELIST.includes(type)
+        ? type
+        : // Using current state of workflow for approved, rejected, failed
+        COLLECTION_FLOW_EVENTS_WHITELIST.includes(currentState)
+        ? currentState
+        : undefined;
+
+      this.logger.log('Next collection flow state', {
+        nextCollectionFlowState: nextCollectionFlowState || 'N/A',
+      });
+
+      if (nextCollectionFlowState) {
         const collectionFlowManager = new CollectionFlowManager(context);
 
         if (currentState in CollectionFlowStates) {

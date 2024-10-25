@@ -9,7 +9,6 @@ const TCollectionFlowStepSchema = Type.Object({
 
 export const CollectionFlowManagerConfigSchema = Type.Object({
   apiUrl: Type.String(),
-  tokenId: Type.Optional(Type.String()),
   steps: Type.Array(TCollectionFlowStepSchema),
   additionalInformation: Type.Optional(
     Type.Object({
