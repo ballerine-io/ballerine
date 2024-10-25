@@ -1,4 +1,4 @@
-import { IsArray, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { BusinessUpdateDocumentsDto } from '@/business/dtos/business.update';
@@ -127,4 +127,12 @@ export class BusinessPatchDto {
   @IsOptional()
   @IsNumber()
   mccCode?: number;
+
+  @ApiProperty({
+    required: false,
+    type: 'object',
+  })
+  @IsObject()
+  @IsOptional()
+  metadata?: Record<string, unknown>;
 }

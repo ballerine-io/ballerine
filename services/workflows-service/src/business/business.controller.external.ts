@@ -154,6 +154,7 @@ export class BusinessControllerExternal {
     return await this.prismaService.$transaction(
       async transaction => {
         try {
+          // Validating the business exists
           await this.businessService.getById(businessId, { select: { metadata: true } }, [
             currentProjectId,
           ]);
@@ -161,17 +162,15 @@ export class BusinessControllerExternal {
           if (metadata) {
             const stringifiedMetadata = JSON.stringify(metadata);
 
-            const metadataUpdateResult = await transaction.$executeRaw`
+            await transaction.$executeRaw`
               UPDATE "Business"
-              SET "mbetadata" = jsonb_deep_merge_with_options(
+              SET "metadata" = jsonb_deep_merge_with_options(
                 COALESCE("metadata", '{}'::jsonb),
                 ${stringifiedMetadata}::jsonb,
                 ${ARRAY_MERGE_OPTION.BY_INDEX}
               )
-              WHERE "id" = ${businessId} AND "projectId" = '${currentProjectId}'
+              WHERE "id" = ${businessId} AND "projectId" = ${currentProjectId};
             `;
-
-            console.log({ metadataUpdateResult });
           }
 
           return this.businessService.updateById(
