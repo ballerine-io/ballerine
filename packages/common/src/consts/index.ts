@@ -184,6 +184,8 @@ export const CollectionFlowStates = {
   revision: 'revision',
   // Collection Flow failed (by plugins)
   failed: 'failed',
+  // Collection Flow is completed (by end user)
+  completed: 'completed',
 } as const;
 
 export type TCollectionFlowState = (typeof CollectionFlowStates)[keyof typeof CollectionFlowStates];
