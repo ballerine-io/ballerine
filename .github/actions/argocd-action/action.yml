@@ -10,13 +10,16 @@ inputs:
   argocd_server:
     description: "ArgoCD Server"
     required: true
+  tg_svc_key:
+    description: "Twingate Key"
+    required: true
 runs:
   using: composite
   steps:
     - name: Setup Twingate
       uses: twingate/github-action@v1
       with:
-        service-key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
+        service-key: ${{ inputs.tg_svc_key }}
 
     - name: Obtain ArgoCD JWT Token
       id: get_token
@@ -26,7 +29,7 @@ runs:
         ARGOCD_PASSWORD: ${{ inputs.argocd_password }}
         ARGOCD_SERVER: ${{ inputs.argocd_server }}
       run: |
-        TOKEN=$(curl -s -X POST "${ARGOCD_SERVER}/api/v1/session" \
+        TOKEN=$(curl -k --insecure -s -X POST "${ARGOCD_SERVER}/api/v1/session" \
           -d '{"username": "'"${ARGOCD_USERNAME}"'", "password": "'"${ARGOCD_PASSWORD}"'"}' \
           -H "Content-Type: application/json" | jq -r '.token')
         echo "ARGOCD_TOKEN=$TOKEN" >> $GITHUB_ENV
