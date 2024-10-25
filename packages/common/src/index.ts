@@ -39,7 +39,6 @@ export * from './utils/collection-flow-manager';
 export type { IErrorWithMessage } from './utils';
 
 export type {
-  CollectionFlowContextSchema,
   DefaultContextSchema,
   TAvailableDocuments,
   TDefaultSchemaDocumentPage,

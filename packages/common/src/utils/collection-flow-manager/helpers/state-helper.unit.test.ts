@@ -1,5 +1,5 @@
-import { CollectionFlowContextSchema } from '@/schemas';
-import { CollectionFlowStateEnum } from '@/schemas/documents/collection-flow-context-schema';
+import { CollectionFlowStates, TCollectionFlowState } from '@/consts';
+import { DefaultContextSchema } from '@/schemas';
 import { describe, expect, it, test } from 'vitest';
 import { StateHelper } from './state-helper';
 
@@ -7,14 +7,14 @@ describe('StateHelper', () => {
   it('should be defined', () => {
     const stateHelper = new StateHelper({
       collectionFlow: { state: {} },
-    } as CollectionFlowContextSchema);
+    } as DefaultContextSchema);
 
     expect(stateHelper).toBeDefined();
   });
 
   describe('state helper will throw', () => {
     test('if state in context is missing', () => {
-      expect(() => new StateHelper({} as CollectionFlowContextSchema)).toThrow();
+      expect(() => new StateHelper({} as DefaultContextSchema)).toThrow();
     });
   });
 
@@ -22,7 +22,7 @@ describe('StateHelper', () => {
     test('if uiState is not in progress', () => {
       const stateHelper = new StateHelper({
         collectionFlow: { state: { progress: {} } },
-      } as CollectionFlowContextSchema);
+      } as DefaultContextSchema);
 
       expect(() => {
         stateHelper.uiState = 'invalid';
@@ -40,11 +40,11 @@ describe('StateHelper', () => {
               step1: { isCompleted: false },
               step2: { isCompleted: false },
             } as NonNullable<
-              NonNullable<CollectionFlowContextSchema['collectionFlow']>['state']
+              NonNullable<DefaultContextSchema['collectionFlow']>['state']
             >['progress'],
           },
         },
-      } as CollectionFlowContextSchema);
+      } as DefaultContextSchema);
 
       stateHelper.uiState = 'step2';
 
@@ -54,26 +54,26 @@ describe('StateHelper', () => {
 
   describe('collectionFlowState', () => {
     describe('will throw on update', () => {
-      test('if collectionFlowState is not in CollectionFlowStateEnum', () => {
+      test('if collectionFlowState is not in DefaultContextSchema', () => {
         const stateHelper = new StateHelper({
           collectionFlow: { state: {} },
-        } as CollectionFlowContextSchema);
+        } as DefaultContextSchema);
 
         expect(() => {
-          stateHelper.collectionFlowState = 'invalid' as CollectionFlowStateEnum;
+          stateHelper.collectionFlowState = 'invalid' as TCollectionFlowState;
         }).toThrow();
       });
     });
 
     describe('will update', () => {
-      test('if collectionFlowState is in CollectionFlowStateEnum', () => {
+      test('if collectionFlowState is in DefaultContextSchema', () => {
         const stateHelper = new StateHelper({
           collectionFlow: {
             state: {},
           },
-        } as CollectionFlowContextSchema);
+        } as DefaultContextSchema);
 
-        stateHelper.collectionFlowState = CollectionFlowStateEnum.revision;
+        stateHelper.collectionFlowState = CollectionFlowStates.revision;
 
         expect(stateHelper.collectionFlowState).toBe('revision');
       });
@@ -84,15 +84,15 @@ describe('StateHelper', () => {
     test('will override state', () => {
       const stateHelper = new StateHelper({
         collectionFlow: { state: {} },
-      } as CollectionFlowContextSchema);
+      } as DefaultContextSchema);
 
       stateHelper.override({
         uiState: 'step1',
-        collectionFlowState: CollectionFlowStateEnum.revision,
+        collectionFlowState: CollectionFlowStates.revision,
       });
 
       expect(stateHelper.uiState).toBe('step1');
-      expect(stateHelper.collectionFlowState).toBe(CollectionFlowStateEnum.revision);
+      expect(stateHelper.collectionFlowState).toBe(CollectionFlowStates.revision);
     });
   });
 
@@ -106,11 +106,11 @@ describe('StateHelper', () => {
                 isCompleted: false,
               },
             } as NonNullable<
-              NonNullable<CollectionFlowContextSchema['collectionFlow']>['state']
+              NonNullable<DefaultContextSchema['collectionFlow']>['state']
             >['progress'],
           },
         },
-      } as CollectionFlowContextSchema;
+      } as DefaultContextSchema;
 
       const stateHelper = new StateHelper(ctx);
 

@@ -1,10 +1,8 @@
-import {
-  CollectionFlowContextSchema,
-  CollectionFlowStateEnum,
-} from '../../../schemas/documents/collection-flow-context-schema';
+import { CollectionFlowStates, TCollectionFlowState } from '@/consts';
+import { defaultContextSchema, DefaultContextSchema } from '@/schemas';
 
 export class StateHelper {
-  constructor(private context: CollectionFlowContextSchema) {
+  constructor(private context: DefaultContextSchema) {
     if (!this.context.collectionFlow?.state) {
       throw new Error('Collection flow state is not set.');
     }
@@ -27,10 +25,10 @@ export class StateHelper {
     return this.context.collectionFlow!.state!.uiState;
   }
 
-  set collectionFlowState(collectionFlowState: CollectionFlowStateEnum) {
-    if (!(collectionFlowState in CollectionFlowStateEnum)) {
+  set collectionFlowState(collectionFlowState: TCollectionFlowState) {
+    if (!(collectionFlowState in CollectionFlowStates)) {
       throw new Error(
-        `collectionFlowState not found in ${Object.keys(CollectionFlowStateEnum).join(
+        `collectionFlowState not found in ${Object.keys(defaultContextSchema).join(
           ', ',
         )}: ${collectionFlowState}`,
       );
@@ -72,9 +70,7 @@ export class StateHelper {
     return this.context.collectionFlow!.state!.progress![step]?.isCompleted || false;
   }
 
-  override(
-    state: NonNullable<NonNullable<CollectionFlowContextSchema['collectionFlow']>['state']>,
-  ) {
+  override(state: NonNullable<NonNullable<DefaultContextSchema['collectionFlow']>['state']>) {
     this.context.collectionFlow!.state = state;
 
     console.log('StateHelper, context override', this.context.collectionFlow!.state);

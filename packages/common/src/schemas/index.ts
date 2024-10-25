@@ -1,8 +1,3 @@
-export {
-  CollectionFlowStateEnum,
-  collectionFlowContextSchema,
-  type CollectionFlowContextSchema,
-} from './documents/collection-flow-context-schema';
 export { type TDefaultSchemaDocumentPage } from './documents/default-context-page-schema';
 export {
   defaultContextSchema,

@@ -288,7 +288,7 @@ export class WorkflowControllerInternal {
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     try {
-      let workflowData = await this.service.updateDocumentDecisionById(
+      const workflowData = await this.service.updateDocumentDecisionById(
         {
           workflowId: params?.id,
           documentId: params?.documentId,
@@ -302,10 +302,6 @@ export class WorkflowControllerInternal {
         projectIds,
         currentProjectId,
       );
-
-      if (data.decision === 'revision') {
-        workflowData = await this.service.updateWorkflowInRevision(params.id, currentProjectId);
-      }
 
       return workflowData;
     } catch (error) {

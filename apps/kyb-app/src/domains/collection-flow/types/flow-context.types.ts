@@ -1,7 +1,7 @@
 import { UIOptions } from '@/domains/collection-flow/types';
-import { CollectionFlowContextSchema } from '@ballerine/common';
+import { DefaultContextSchema } from '@ballerine/common';
 
-export type CollectionFlowContext = CollectionFlowContextSchema;
+export type CollectionFlowContext = DefaultContextSchema;
 
 export interface CollectionFlowConfig {
   uiOptions?: UIOptions;

@@ -1,5 +1,6 @@
 import { Static, Type } from '@sinclair/typebox';
 
+import { CollectionFlowStates } from '@/consts';
 import { MerchantScreeningPluginSchema } from '@/schemas/documents/merchant-screening-plugin-schema';
 import { BusinessInformationPluginSchema } from '@/schemas/documents/schemas/business-information-plugin-schema';
 import { CompanySanctionsPluginSchema } from '@/schemas/documents/schemas/company-sanctions-plugin-schema';
@@ -37,6 +38,32 @@ export const defaultContextSchema = Type.Composite([
         },
         { additionalProperties: true },
       ),
+    ),
+  }),
+  Type.Object({
+    collectionFlow: Type.Optional(
+      Type.Object({
+        config: Type.Optional(
+          Type.Object({
+            apiUrl: Type.String(),
+            tokenId: Type.String(),
+          }),
+        ),
+        state: Type.Optional(
+          Type.Object({
+            uiState: Type.String(),
+            collectionFlowState: Type.Enum(CollectionFlowStates),
+            progress: Type.Optional(
+              Type.Record(Type.String(), Type.Object({ isCompleted: Type.Boolean() })),
+            ),
+          }),
+        ),
+        additionalInformation: Type.Optional(
+          Type.Object({
+            customerCompany: Type.Optional(Type.String()),
+          }),
+        ),
+      }),
     ),
   }),
 ]);

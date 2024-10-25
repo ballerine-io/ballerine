@@ -31,7 +31,7 @@ import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Failed } from '@/pages/CollectionFlow/components/pages/Failed';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
-import { CollectionFlowManager, CollectionFlowStateEnum } from '@ballerine/common';
+import { CollectionFlowManager, CollectionFlowStates } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 
 const elems = {
@@ -74,7 +74,7 @@ export const CollectionFlow = withSessionProtected(() => {
 
   const pageErrors = usePageErrors(context ?? {}, elements || []);
   const isRevision = useMemo(
-    () => context?.collectionFlow?.state?.collectionFlowState === CollectionFlowStateEnum.revision,
+    () => context?.collectionFlow?.state?.collectionFlowState === CollectionFlowStates.revision,
     [context],
   );
 
@@ -106,14 +106,10 @@ export const CollectionFlow = withSessionProtected(() => {
     setLogoLoaded(false);
   }, [customer?.logoImageUri]);
 
-  if (
-    initialContext?.collectionFlow?.state?.collectionFlowState === CollectionFlowStateEnum.approved
-  )
+  if (initialContext?.collectionFlow?.state?.collectionFlowState === CollectionFlowStates.approved)
     return <Approved />;
 
-  if (
-    initialContext?.collectionFlow?.state?.collectionFlowState === CollectionFlowStateEnum.rejected
-  )
+  if (initialContext?.collectionFlow?.state?.collectionFlowState === CollectionFlowStates.rejected)
     return <Rejected />;
 
   return definition && context ? (
@@ -145,7 +141,7 @@ export const CollectionFlow = withSessionProtected(() => {
                 if (!isAnyStepCompleted) {
                   console.log('Collection flow touched, changing state to inprogress');
                   collectionFlowManager.state().collectionFlowState =
-                    CollectionFlowStateEnum.inprogress;
+                    CollectionFlowStates.inprogress;
 
                   console.log('Updating context to', collectionFlowManager.context);
                 }

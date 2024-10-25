@@ -1,7 +1,7 @@
-import { CollectionFlowContextSchema } from '../../../schemas/documents/collection-flow-context-schema';
+import { DefaultContextSchema } from '@/schemas';
 
 export class ConfigHelper {
-  constructor(private context: CollectionFlowContextSchema) {}
+  constructor(private context: DefaultContextSchema) {}
 
   get apiUrl(): string {
     return this.context.collectionFlow?.config?.apiUrl as string;
@@ -29,9 +29,7 @@ export class ConfigHelper {
     this.context.collectionFlow.config.tokenId = tokenId;
   }
 
-  override(
-    config: NonNullable<NonNullable<CollectionFlowContextSchema['collectionFlow']>['config']>,
-  ) {
+  override(config: NonNullable<NonNullable<DefaultContextSchema['collectionFlow']>['config']>) {
     this.context.collectionFlow = {
       config,
     };

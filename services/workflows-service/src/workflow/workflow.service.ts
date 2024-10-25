@@ -53,7 +53,7 @@ import {
 import {
   AnyRecord,
   CollectionFlowManager,
-  CollectionFlowStateEnum,
+  CollectionFlowStates,
   DefaultContextSchema,
   getDocumentId,
   isErrorWithMessage,
@@ -119,6 +119,8 @@ import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repositor
 type TEntityId = string;
 
 export type TEntityType = 'endUser' | 'business';
+
+const COLLECTION_FLOW_EVENTS_WHITELIST = ['approved', 'rejected', 'failed', 'revision'];
 
 @Injectable()
 export class WorkflowService {
@@ -2182,10 +2184,10 @@ export class WorkflowService {
       const currentState = snapshot.value;
       let context = snapshot.machine?.context;
 
-      if (context?.collectionFlow) {
+      if (COLLECTION_FLOW_EVENTS_WHITELIST.includes(currentState)) {
         const collectionFlowManager = new CollectionFlowManager(context);
 
-        if (currentState in CollectionFlowStateEnum) {
+        if (currentState in CollectionFlowStates) {
           collectionFlowManager.state().collectionFlowState = currentState;
         }
 
@@ -2648,25 +2650,5 @@ export class WorkflowService {
         timeout: 180_000,
       },
     );
-  }
-
-  async updateWorkflowInRevision(workflowId: string, projectId: TProjectId) {
-    const workflow = await this.workflowRuntimeDataRepository.findById(workflowId, {}, [projectId]);
-    const isCollectionFlow = workflow?.context?.collectionFlow;
-
-    if (!isCollectionFlow) return workflow;
-
-    if (!workflow) {
-      throw new NotFoundException(`Workflow with id ${workflowId} not found`);
-    }
-
-    const collectionFlowManager = new CollectionFlowManager(workflow.context);
-
-    collectionFlowManager.state().collectionFlowState = CollectionFlowStateEnum.revision;
-
-    return await this.workflowRuntimeDataRepository.updateById(workflowId, {
-      //@ts-ignore
-      data: { context: collectionFlowManager.context },
-    });
   }
 }

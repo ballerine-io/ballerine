@@ -1,7 +1,5 @@
-import {
-  CollectionFlowContextSchema,
-  CollectionFlowStateEnum,
-} from '../../schemas/documents/collection-flow-context-schema';
+import { CollectionFlowStates } from '@/consts';
+import { DefaultContextSchema } from '@/schemas';
 import { ConfigHelper } from './helpers/config-helper';
 import { StateHelper } from './helpers/state-helper';
 import {
@@ -9,7 +7,7 @@ import {
   CollectionFlowManagerConfig,
 } from './schemas/config-schema';
 
-export class CollectionFlowManager<TContext extends CollectionFlowContextSchema> {
+export class CollectionFlowManager<TContext extends DefaultContextSchema> {
   constructor(public context: TContext, private readonly _config?: CollectionFlowManagerConfig) {
     if (_config && !collectionFlowConfigValidationSchema(_config)) {
       throw new Error('Invalid collection flow manager config.');
@@ -27,22 +25,22 @@ export class CollectionFlowManager<TContext extends CollectionFlowContextSchema>
       throw new Error('Collection flow already started.');
     }
 
-    const config: NonNullable<CollectionFlowContextSchema['collectionFlow']>['config'] = {
+    const config: NonNullable<DefaultContextSchema['collectionFlow']>['config'] = {
       apiUrl: this._config?.apiUrl || '',
       tokenId: this._config?.tokenId || '',
     };
 
     console.log('Collection Flow Context initiated with config: ', config);
 
-    const state: NonNullable<CollectionFlowContextSchema['collectionFlow']>['state'] = {
+    const state: NonNullable<DefaultContextSchema['collectionFlow']>['state'] = {
       uiState: this._config?.steps[0]?.stateName as string,
-      collectionFlowState: CollectionFlowStateEnum.pending,
+      collectionFlowState: CollectionFlowStates.pending,
       progress: this.buildProgressState(),
     };
 
     console.log('Collection Flow Context initiated with state: ', state);
 
-    const collectionFlow: CollectionFlowContextSchema['collectionFlow'] = {
+    const collectionFlow: DefaultContextSchema['collectionFlow'] = {
       config,
       state,
       additionalInformation: this._config?.additionalInformation || {},
