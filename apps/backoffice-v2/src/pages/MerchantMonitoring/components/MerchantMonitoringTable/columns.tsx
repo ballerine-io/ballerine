@@ -1,5 +1,11 @@
 import dayjs from 'dayjs';
-import React from 'react';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+// Add these plugins to dayjs
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 import { createColumnHelper } from '@tanstack/react-table';
 import { BusinessReportStatus, TBusinessReport } from '@/domains/business-reports/fetchers';
 import { titleCase } from 'string-ts';
@@ -55,8 +61,11 @@ export const columns = [
         return <TextWithNAFallback>{createdAt}</TextWithNAFallback>;
       }
 
-      const date = dayjs(createdAt).format('MMM DD, YYYY');
-      const time = dayjs(createdAt).format('hh:mm');
+      // Convert UTC time to local browser time
+      const localDateTime = dayjs.utc(createdAt).local();
+
+      const date = localDateTime.format('MMM DD, YYYY');
+      const time = localDateTime.format('HH:mm');
 
       return (
         <div className={`flex flex-col space-y-0.5`}>
