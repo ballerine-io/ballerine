@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.44
+
+### Patch Changes
+
+- Added collection flow manager & updated schema
+
 ## 0.9.43
 
 ### Patch Changes
