@@ -1,4 +1,4 @@
-name: Build & Push workflows-service image
+name: New Build Push workflows-service image
 
 on:
   workflow_dispatch:
@@ -165,7 +165,7 @@ jobs:
 
   deploy-to-dev:
     needs: [build-and-push-image]
-    uses: ./.github/workflows/test-deploy-wf-service.yml
+    uses: ./.github/workflows/deploy-wf-service.yml
     with:
       environment: 'dev'
       sha: ${{ needs.build-and-push-image.outputs.sha_short }}
