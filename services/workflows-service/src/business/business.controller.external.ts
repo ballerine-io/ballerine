@@ -2,7 +2,7 @@ import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import * as common from '@nestjs/common';
 import { Param } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
-import { ApiExcludeEndpoint } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiExcludeEndpoint } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 import type { Request } from 'express';
 import * as errors from '../errors';
@@ -28,6 +28,7 @@ import { BusinessDto } from '@/business/dtos/business.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { ARRAY_MERGE_OPTION } from '@ballerine/workflow-core';
 
+@ApiBearerAuth()
 @swagger.ApiTags('Businesses')
 @common.Controller('external/businesses')
 export class BusinessControllerExternal {
@@ -151,18 +152,17 @@ export class BusinessControllerExternal {
       ...restOfData
     } = data;
 
-    return await this.prismaService.$transaction(
-      async transaction => {
-        try {
-          // Validating the business exists
-          await this.businessService.getById(businessId, { select: { metadata: true } }, [
-            currentProjectId,
-          ]);
+    return await this.prismaService.$transaction(async transaction => {
+      try {
+        // Validating the business exists
+        await this.businessService.getById(businessId, { select: { metadata: true } }, [
+          currentProjectId,
+        ]);
 
-          if (metadata) {
-            const stringifiedMetadata = JSON.stringify(metadata);
+        if (metadata) {
+          const stringifiedMetadata = JSON.stringify(metadata);
 
-            await transaction.$executeRaw`
+          await transaction.$executeRaw`
               UPDATE "Business"
               SET "metadata" = jsonb_deep_merge_with_options(
                 COALESCE("metadata", '{}'::jsonb),
@@ -171,36 +171,34 @@ export class BusinessControllerExternal {
               )
               WHERE "id" = ${businessId} AND "projectId" = ${currentProjectId};
             `;
-          }
-
-          return this.businessService.updateById(
-            businessId,
-            {
-              data: {
-                ...restOfData,
-                documents: documents ? JSON.stringify(documents) : undefined,
-                additionalInfo: additionalInfo ? JSON.stringify(additionalInfo) : undefined,
-                bankInformation: bankInformation ? JSON.stringify(bankInformation) : undefined,
-                address: address ? JSON.stringify(address) : undefined,
-                shareholderStructure:
-                  shareholderStructure && shareholderStructure.length
-                    ? JSON.stringify(shareholderStructure)
-                    : undefined,
-                projectId: currentProjectId,
-              },
-            },
-            transaction,
-          );
-        } catch (error) {
-          if (isRecordNotFoundError(error)) {
-            throw new errors.NotFoundException(`No business was found for id "${businessId}"`);
-          }
-
-          throw error;
         }
-      },
-      { timeout: 6000000 },
-    );
+
+        return this.businessService.updateById(
+          businessId,
+          {
+            data: {
+              ...restOfData,
+              documents: documents ? JSON.stringify(documents) : undefined,
+              additionalInfo: additionalInfo ? JSON.stringify(additionalInfo) : undefined,
+              bankInformation: bankInformation ? JSON.stringify(bankInformation) : undefined,
+              address: address ? JSON.stringify(address) : undefined,
+              shareholderStructure:
+                shareholderStructure && shareholderStructure.length
+                  ? JSON.stringify(shareholderStructure)
+                  : undefined,
+              projectId: currentProjectId,
+            },
+          },
+          transaction,
+        );
+      } catch (error) {
+        if (isRecordNotFoundError(error)) {
+          throw new errors.NotFoundException(`No business was found for id "${businessId}"`);
+        }
+
+        throw error;
+      }
+    });
   }
 
   // curl -v http://localhost:3000/api/v1/external/businesses/:businessId/workflows

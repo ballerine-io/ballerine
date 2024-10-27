@@ -1,4 +1,13 @@
-import { IsArray, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsEmail,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { BusinessUpdateDocumentsDto } from '@/business/dtos/business.update';
@@ -46,6 +55,7 @@ export class BusinessPatchDto {
   @ApiProperty({ type: String, required: false })
   @IsOptional()
   @IsString()
+  @IsEmail()
   email?: string;
 
   @ApiProperty({ type: String, required: false })
@@ -76,6 +86,7 @@ export class BusinessPatchDto {
   @ApiProperty({ type: Number, required: false })
   @IsOptional()
   @IsNumber()
+  @Min(0)
   numberOfEmployees?: number;
 
   @ApiProperty({ type: String, required: false })
@@ -97,7 +108,7 @@ export class BusinessPatchDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
-  additionalInfo?: ApprovalState;
+  additionalInfo?: Record<string, unknown>;
 
   @ApiProperty({ type: String, required: false })
   @IsOptional()
