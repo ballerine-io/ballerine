@@ -609,7 +609,7 @@ describe('Rule Engine', () => {
       expect(validationResults[0]!.status).toBe('FAILED');
     });
 
-    it('should correctly evaluate when using a string property', () => {
+    it('should correctly evaluate when using a string array property', () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
