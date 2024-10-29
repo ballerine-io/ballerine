@@ -6,6 +6,7 @@ import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error
 import { WorkflowDefinitionByIdSchema } from '@/domains/workflow-definitions/fetchers';
 import { AmlSchema } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
 import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
+import { CollectionFlowStates } from '@ballerine/common';
 import qs from 'qs';
 import { deepCamelKeys } from 'string-ts';
 import { z } from 'zod';
@@ -124,13 +125,13 @@ export const BaseWorkflowByIdSchema = z.object({
         state: z.object({
           uiState: z.string(),
           collectionFlowState: z.enum([
-            'pending',
-            'inprogress',
-            'completed',
-            'approved',
-            'revision',
-            'rejected',
-            'failed',
+            CollectionFlowStates.failed,
+            CollectionFlowStates.completed,
+            CollectionFlowStates.pending,
+            CollectionFlowStates.inprogress,
+            CollectionFlowStates.approved,
+            CollectionFlowStates.rejected,
+            CollectionFlowStates.revision,
           ]),
           progress: z.record(z.string(), z.object({ isCompleted: z.boolean() })),
         }),
