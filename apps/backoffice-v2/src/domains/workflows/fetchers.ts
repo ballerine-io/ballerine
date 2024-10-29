@@ -115,18 +115,25 @@ export const BaseWorkflowByIdSchema = z.object({
       })
       .passthrough()
       .optional(),
-    flowConfig: z
+    collectionFlow: z
       .object({
-        stepsProgress: z
-          .record(
-            z.string(),
-            z.object({
-              // TODO Until backwards compatibility is handled
-              number: z.number().default(0),
-              isCompleted: z.boolean(),
-            }),
-          )
-          .or(z.undefined()),
+        config: z.object({
+          apiUrl: z.string().url(),
+        }),
+        state: z.object({
+          uiState: z.string(),
+          collectionFlowState: z.enum([
+            'pending',
+            'inprogress',
+            'completed',
+            'approved',
+            'revision',
+            'rejected',
+            'failed',
+          ]),
+          progress: z.record(z.string(), z.object({ isCompleted: z.boolean() })),
+        }),
+        additionalInformation: z.record(z.string(), z.unknown()).optional(),
       })
       .optional(),
     customData: z.record(z.string(), z.unknown()).optional(),
@@ -150,7 +157,7 @@ export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
         context: true,
       }).extend({
         context: BaseWorkflowByIdSchema.shape.context.omit({
-          flowConfig: true,
+          collectionFlow: true,
         }),
       }),
     )

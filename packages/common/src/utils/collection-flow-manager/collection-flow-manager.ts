@@ -9,6 +9,8 @@ import {
 
 export class CollectionFlowManager<TContext extends DefaultContextSchema> {
   constructor(public context: TContext, private readonly _config?: CollectionFlowManagerConfig) {
+    console.log('config', _config);
+
     if (_config && !collectionFlowConfigValidationSchema(_config)) {
       throw new Error('Invalid collection flow manager config.');
     }
