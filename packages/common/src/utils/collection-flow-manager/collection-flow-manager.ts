@@ -9,8 +9,6 @@ import {
 
 export class CollectionFlowManager<TContext extends DefaultContextSchema> {
   constructor(public context: TContext, private readonly _config?: CollectionFlowManagerConfig) {
-    console.log('config', _config);
-
     if (_config && !collectionFlowConfigValidationSchema(_config)) {
       throw new Error('Invalid collection flow manager config.');
     }
@@ -29,6 +27,7 @@ export class CollectionFlowManager<TContext extends DefaultContextSchema> {
 
     const config: NonNullable<DefaultContextSchema['collectionFlow']>['config'] = {
       apiUrl: this._config?.apiUrl || '',
+      steps: this._config?.steps || [],
     };
 
     console.log('Collection Flow Context initiated with config: ', config);

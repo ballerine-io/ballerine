@@ -72,7 +72,7 @@ export const CollectionFlow = withSessionProtected(() => {
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;
 
-  const pageErrors = usePageErrors(context ?? {}, elements || []);
+  const pageErrors = usePageErrors(context ?? ({} as CollectionFlowContext), elements || []);
   const isRevision = useMemo(
     () => context?.collectionFlow?.state?.collectionFlowState === CollectionFlowStates.revision,
     [context],

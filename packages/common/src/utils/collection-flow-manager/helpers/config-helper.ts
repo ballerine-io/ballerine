@@ -1,4 +1,5 @@
 import { DefaultContextSchema } from '@/schemas';
+import { CollectionFlowManagerConfig } from '../schemas/config-schema';
 
 export class ConfigHelper {
   constructor(private context: DefaultContextSchema) {}
@@ -14,6 +15,14 @@ export class ConfigHelper {
 
     console.log(`API URL updated from ${this.apiUrl} to ${apiUrl}`);
     this.context.collectionFlow.config.apiUrl = apiUrl;
+  }
+
+  get steps(): CollectionFlowManagerConfig['steps'] {
+    return this.context.collectionFlow?.config?.steps || [];
+  }
+
+  set steps(_) {
+    throw new Error('Setting steps is not allowed after initialization.');
   }
 
   override(config: NonNullable<NonNullable<DefaultContextSchema['collectionFlow']>['config']>) {

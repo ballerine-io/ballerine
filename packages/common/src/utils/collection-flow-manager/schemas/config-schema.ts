@@ -5,6 +5,7 @@ const ajv = new Ajv();
 
 const TCollectionFlowStepSchema = Type.Object({
   stateName: Type.String(),
+  orderNumber: Type.Number(),
 });
 
 export const CollectionFlowManagerConfigSchema = Type.Object({

@@ -119,6 +119,7 @@ export const BaseWorkflowByIdSchema = z.object({
       .object({
         config: z.object({
           apiUrl: z.string().url(),
+          steps: z.array(z.object({ stateName: z.string(), orderNumber: z.number() })),
         }),
         state: z.object({
           uiState: z.string(),

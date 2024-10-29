@@ -2,6 +2,7 @@ import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.servi
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
+import { getStepsInOrder } from '@/collection-flow/helpers/get-steps-in-order';
 import { ajv } from '@/common/ajv/ajv.validator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
@@ -89,6 +90,7 @@ import {
   EndUser,
   Prisma,
   PrismaClient,
+  UiDefinition,
   UiDefinitionContext,
   User,
   WorkflowDefinition,
@@ -1467,8 +1469,6 @@ export class WorkflowService {
           }
         }
 
-        const uiSchema = (uiDefinition as Record<string, any>)?.uiSchema;
-
         // Initializing Collection Flow
         const collectionFlowManager = new CollectionFlowManager(
           {
@@ -1482,7 +1482,7 @@ export class WorkflowService {
           },
           {
             apiUrl: env.APP_API_URL,
-            steps: uiSchema?.elements || [],
+            steps: await getStepsInOrder(uiDefinition as UiDefinition),
           },
         );
 

@@ -46,6 +46,14 @@ export const defaultContextSchema = Type.Composite([
         config: Type.Optional(
           Type.Object({
             apiUrl: Type.String(),
+            steps: Type.Optional(
+              Type.Array(
+                Type.Object({
+                  stateName: Type.String(),
+                  orderNumber: Type.Number(),
+                }),
+              ),
+            ),
           }),
         ),
         state: Type.Optional(
