@@ -181,7 +181,7 @@ export const CollectionFlow = withSessionProtected(() => {
                                     </div>
                                     <div>
                                       {customer?.displayName && (
-                                        <div className="border-b pb-12">
+                                        <div>
                                           {
                                             t('contact', {
                                               companyName: customer.displayName,
@@ -189,8 +189,12 @@ export const CollectionFlow = withSessionProtected(() => {
                                           }
                                         </div>
                                       )}
-                                      {/* <img src={'/poweredby.svg'} className="mt-6" /> */}
-                                      <PoweredByLogo className="mt-8" sidebarRootId="sidebar" />
+                                      {themeDefinition.ui?.poweredBy !== false && (
+                                        <div className="flex flex-col">
+                                          <div className="pb-12 border-b" />
+                                          <PoweredByLogo className="mt-8" sidebarRootId="sidebar" />
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
                                 </div>
