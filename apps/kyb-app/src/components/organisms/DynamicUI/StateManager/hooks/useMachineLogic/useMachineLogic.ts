@@ -38,15 +38,10 @@ export const useMachineLogic = (
       const nextTransitionState = eventsWithStates?.[eventName];
 
       if (nextTransitionState) {
-        const nextStateName = nextTransitionState.target;
         const context = machine.getSnapshot().context as AnyObject;
 
         machine.overrideContext({
           ...context,
-          flowConfig: {
-            ...(context.flowConfig as AnyObject),
-            appState: nextStateName,
-          },
         });
       }
 
