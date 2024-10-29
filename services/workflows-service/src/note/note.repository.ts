@@ -3,6 +3,26 @@ import { Note, Prisma, PrismaClient } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { PrismaTransaction } from '@/types';
 
+const defaultFieldsSelect = {
+  id: true,
+  entityId: true,
+  entityType: true,
+  noteableId: true,
+  noteableType: true,
+  content: true,
+  fileIds: true,
+  createdAt: true,
+  updatedAt: true,
+};
+
+const defaultArgs = {
+  select: {
+    ...defaultFieldsSelect,
+    parentNote: { select: defaultFieldsSelect },
+    childrenNotes: { select: defaultFieldsSelect },
+  },
+};
+
 @Injectable()
 export class NoteRepository {
   constructor(protected readonly prismaService: PrismaService) {}
@@ -23,21 +43,7 @@ export class NoteRepository {
     transaction: PrismaTransaction | PrismaClient = this.prismaService,
   ) {
     return transaction.note.findMany({
-      select: {
-        ...(args?.select || {
-          id: true,
-          entityId: true,
-          entityType: true,
-          noteableId: true,
-          noteableType: true,
-          content: true,
-          parentNote: true,
-          fileIds: true,
-          createdAt: true,
-          updatedAt: true,
-          childrenNotes: true,
-        }),
-      },
+      ...((args || defaultArgs) as Prisma.NoteFindManyArgs),
       where: { ...(args?.where || {}), deletedAt: null, projectId },
     });
   }
@@ -45,11 +51,11 @@ export class NoteRepository {
   async findById(
     id: string,
     projectId: string,
-    args?: Omit<Prisma.NoteFindManyArgs, 'where'>,
+    args?: Omit<Prisma.NoteFindFirstOrThrowArgs, 'where'>,
     transaction: PrismaTransaction | PrismaClient = this.prismaService,
-  ): Promise<Note> {
+  ) {
     return transaction.note.findFirstOrThrow({
-      ...args,
+      ...((args || defaultArgs) as Prisma.NoteFindFirstOrThrowArgs),
       where: { id, deletedAt: null, projectId },
     });
   }
@@ -59,22 +65,8 @@ export class NoteRepository {
     args?: Prisma.SelectSubset<T, Omit<Prisma.NoteFindManyArgs, 'where'>>,
   ) {
     return this.prismaService.note.findMany({
-      where: { project: { id: projectId } },
-      ...(args || {
-        select: {
-          id: true,
-          entityId: true,
-          entityType: true,
-          noteableId: true,
-          noteableType: true,
-          content: true,
-          parentNote: true,
-          fileIds: true,
-          createdAt: true,
-          updatedAt: true,
-          childrenNotes: true,
-        },
-      }),
+      ...((args || defaultArgs) as Prisma.NoteFindManyArgs),
+      where: { deletedAt: null, projectId },
     });
   }
 
