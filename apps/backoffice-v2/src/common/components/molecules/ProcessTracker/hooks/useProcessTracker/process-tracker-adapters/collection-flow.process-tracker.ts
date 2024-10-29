@@ -30,14 +30,10 @@ export class CollectionFlowProcessTracker implements IProcessTracker {
   private getSteps() {
     return Object.keys(this.workflow?.context?.collectionFlow?.state?.progress ?? {})?.sort(
       (a, b) => {
-        const aCompleted =
-          this.workflow?.context?.collectionFlow?.state?.progress?.[a]?.isCompleted ?? false;
-        const bCompleted =
-          this.workflow?.context?.collectionFlow?.state?.progress?.[b]?.isCompleted ?? false;
-
-        if (aCompleted === bCompleted) return 0;
-
-        return aCompleted ? -1 : 1;
+        return (
+          (this.workflow?.context?.collectionFlow?.state?.progress?.[a]?.isCompleted ?? 0) -
+          (this.workflow?.context?.collectionFlow?.state?.progress?.[b]?.isCompleted ?? 0)
+        );
       },
     );
   }
