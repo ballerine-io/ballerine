@@ -1,9 +1,16 @@
 import { UIState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
 import { UIPage } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
+import { CollectionFlowManager } from '@ballerine/common';
 
 export const isPageCompleted = (page: UIPage, context: CollectionFlowContext) => {
-  return context?.flowConfig?.stepsProgress?.[page.stateName]?.isCompleted;
+  const flow = new CollectionFlowManager(context);
+
+  const result = flow.state().isStepCompleted(page.stateName!);
+
+  if (!page.stateName) return false;
+
+  return result;
 };
 
 export const prepareInitialUIState = (
@@ -16,7 +23,8 @@ export const prepareInitialUIState = (
     isRevision,
     elements: {},
   };
-  if (pages[0]?.stateName === context.state) return initialUIState;
+
+  if (pages[0]?.stateName === context.collectionFlow?.state?.uiState) return initialUIState;
 
   pages.forEach(page => {
     initialUIState.elements[page.stateName] = {
