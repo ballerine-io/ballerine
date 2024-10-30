@@ -25,7 +25,9 @@ describe('CollectionFlowManager', () => {
         },
       } as DefaultContextSchema);
 
-      expect(() => collectionFlowManager.start()).toThrow('Collection flow already started.');
+      expect(() => collectionFlowManager.initializeCollectionFlowContext()).toThrow(
+        'Collection flow already started.',
+      );
     });
   });
 
@@ -43,10 +45,10 @@ describe('CollectionFlowManager', () => {
     test('config is provided', () => {
       const collectionFlowManager = new CollectionFlowManager({} as DefaultContextSchema, {
         apiUrl: 'https://api.example.com',
-        steps: [{ stateName: 'step1' }],
+        steps: [{ stateName: 'step1', orderNumber: 1 }],
       });
 
-      const context = collectionFlowManager.start();
+      const context = collectionFlowManager.initializeCollectionFlowContext();
 
       expect(context).toBeDefined();
       expect(context.collectionFlow?.config?.apiUrl).toBe('https://api.example.com');
@@ -62,10 +64,10 @@ describe('CollectionFlowManager', () => {
 
       const collectionFlowManager = new CollectionFlowManager(inputContext, {
         apiUrl: 'https://api.example.com',
-        steps: [{ stateName: 'step1' }],
+        steps: [{ stateName: 'step1', orderNumber: 1 }],
       });
 
-      collectionFlowManager.start();
+      collectionFlowManager.initializeCollectionFlowContext();
 
       expect(inputContext).not.to.be.equal(collectionFlowManager.context);
     });
@@ -75,10 +77,10 @@ describe('CollectionFlowManager', () => {
     test('config is provided', () => {
       const collectionFlowManager = new CollectionFlowManager({} as DefaultContextSchema, {
         apiUrl: 'https://api.example.com',
-        steps: [{ stateName: 'step1' }],
+        steps: [{ stateName: 'step1', orderNumber: 1 }],
       });
 
-      const context = collectionFlowManager.start();
+      const context = collectionFlowManager.initializeCollectionFlowContext();
 
       expect(context).toBeDefined();
     });
@@ -101,11 +103,11 @@ describe('CollectionFlowManager', () => {
           {} as DefaultContextSchema,
           {
             apiUrl: 'https://api.example.com',
-            steps: [{ stateName: 'step1' }],
+            steps: [{ stateName: 'step1', orderNumber: 1 }],
           },
         );
 
-        const ctx = notStartedCollectionFlowManager.start();
+        const ctx = notStartedCollectionFlowManager.initializeCollectionFlowContext();
 
         const startedCollectionFlowManager = new CollectionFlowManager(ctx);
 
@@ -134,11 +136,11 @@ describe('CollectionFlowManager', () => {
           {} as DefaultContextSchema,
           {
             apiUrl: 'https://api.example.com',
-            steps: [{ stateName: 'step1' }],
+            steps: [{ stateName: 'step1', orderNumber: 1 }],
           },
         );
 
-        const ctx = notStartedCollectionFlowManager.start();
+        const ctx = notStartedCollectionFlowManager.initializeCollectionFlowContext();
 
         const startedCollectionFlowManager = new CollectionFlowManager(ctx);
 

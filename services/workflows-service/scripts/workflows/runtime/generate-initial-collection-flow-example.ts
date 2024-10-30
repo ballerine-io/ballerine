@@ -79,7 +79,7 @@ export const generateInitialCollectionFlowExample = async (
     steps: await getStepsInOrder(uiDefinition as UiDefinition),
   });
 
-  collectionFlowManager.start();
+  collectionFlowManager.initializeCollectionFlowContext();
 
   const creationArgs = {
     data: {

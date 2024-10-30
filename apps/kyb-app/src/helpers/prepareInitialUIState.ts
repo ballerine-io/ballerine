@@ -4,9 +4,11 @@ import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-cont
 import { CollectionFlowManager } from '@ballerine/common';
 
 export const isPageCompleted = (page: UIPage, context: CollectionFlowContext) => {
-  const collectionFlow = new CollectionFlowManager(context);
+  const flow = new CollectionFlowManager(context);
 
-  const result = collectionFlow.state().isStepCompleted(page.stateName!);
+  const result = flow.state().isStepCompleted(page.stateName!);
+
+  if (!page.stateName) return false;
 
   return result;
 };

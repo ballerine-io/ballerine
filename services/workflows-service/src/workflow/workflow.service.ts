@@ -122,7 +122,13 @@ type TEntityId = string;
 
 export type TEntityType = 'endUser' | 'business';
 
-const COLLECTION_FLOW_EVENTS_WHITELIST = ['approved', 'rejected', 'failed', 'revision'];
+type CollectionFlowEvent = 'approved' | 'rejected' | 'failed' | 'revision';
+const COLLECTION_FLOW_EVENTS_WHITELIST: readonly CollectionFlowEvent[] = [
+  'approved',
+  'rejected',
+  'failed',
+  'revision',
+] as const;
 
 @Injectable()
 export class WorkflowService {
@@ -1563,7 +1569,7 @@ export class WorkflowService {
             },
           );
 
-          collectionFlowManager.start();
+          collectionFlowManager.initializeCollectionFlowContext();
 
           workflowRuntimeData = await this.workflowRuntimeDataRepository.updateStateById(
             workflowRuntimeData.id,

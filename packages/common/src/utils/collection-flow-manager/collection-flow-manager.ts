@@ -20,7 +20,7 @@ export class CollectionFlowManager<TContext extends DefaultContextSchema> {
     return Boolean(this.context?.collectionFlow?.state?.uiState);
   }
 
-  start() {
+  initializeCollectionFlowContext() {
     if (this.isStarted()) {
       throw new Error('Collection flow already started.');
     }

@@ -2,7 +2,11 @@ import { DefaultContextSchema } from '@/schemas';
 import { CollectionFlowManagerConfig } from '../schemas/config-schema';
 
 export class ConfigHelper {
-  constructor(private context: DefaultContextSchema) {}
+  constructor(private context: DefaultContextSchema) {
+    if (!this.context.collectionFlow?.config) {
+      throw new Error('Collection flow config is not set.');
+    }
+  }
 
   get apiUrl(): string {
     return this.context.collectionFlow?.config?.apiUrl as string;

@@ -124,15 +124,7 @@ export const BaseWorkflowByIdSchema = z.object({
         }),
         state: z.object({
           uiState: z.string(),
-          collectionFlowState: z.enum([
-            CollectionFlowStates.failed,
-            CollectionFlowStates.completed,
-            CollectionFlowStates.pending,
-            CollectionFlowStates.inprogress,
-            CollectionFlowStates.approved,
-            CollectionFlowStates.rejected,
-            CollectionFlowStates.revision,
-          ]),
+          collectionFlowState: z.enum(Object.values(CollectionFlowStates) as [string, ...string[]]),
           progress: z.record(z.string(), z.object({ isCompleted: z.boolean() })),
         }),
         additionalInformation: z.record(z.string(), z.unknown()).optional(),

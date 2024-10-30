@@ -31,7 +31,7 @@ export const usePageErrors = (context: CollectionFlowContext, pages: UIPage[]): 
       )?.orderNumber;
 
       const pageErrorBase: PageError = {
-        page: pageNumber || page.number,
+        page: pageNumber ?? page.number,
         pageName: page.name,
         stateName: page.stateName,
         errors: [],

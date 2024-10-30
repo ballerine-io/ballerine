@@ -65,8 +65,17 @@ export const fetchCustomer = async (): Promise<TCustomer> => {
 };
 
 export const fetchFlowContext = async (): Promise<CollectionFlowContext> => {
-  const result = await request.get('collection-flow/context');
-  const resultJson = await result.json<CollectionFlowContext>();
+  try {
+    const result = await request.get('collection-flow/context');
+    const resultJson = await result.json<CollectionFlowContext>();
 
-  return resultJson;
+    if (!resultJson || typeof resultJson !== 'object') {
+      throw new Error('Invalid flow context');
+    }
+
+    return resultJson;
+  } catch (error) {
+    console.error('Error fetching flow context:', error);
+    throw error;
+  }
 };
