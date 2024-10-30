@@ -18,6 +18,7 @@ import { faker } from '@faker-js/faker';
 import { Test } from '@nestjs/testing';
 import {
   AlertDefinition,
+  AlertState,
   Counterparty,
   Customer,
   PaymentMethod,
@@ -315,6 +316,70 @@ describe('AlertService', () => {
         // Assert
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(0);
+      });
+
+      test('Assigning and deciding alerts should set audit timestamps', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .withEndUserOriginator()
+          .amount(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min + 1)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .count(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold + 1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+
+        expect(alerts).toHaveLength(1);
+
+        const user = await prismaService.user.create({
+          data: {
+            firstName: 'Test',
+            lastName: 'User',
+            password: '',
+            email: faker.internet.email(),
+            roles: [],
+          },
+        });
+
+        await alertService.updateAlertsAssignee(
+          alerts.map(alert => alert.id),
+          project.id,
+          user.id,
+        );
+
+        const assignedAlerts = await prismaService.alert.findMany({
+          where: {
+            assignedAt: {
+              not: null,
+            },
+          },
+        });
+        expect(assignedAlerts).toHaveLength(1);
+        expect(assignedAlerts[0]?.assignedAt).toBeDefined();
+
+        // whenever update Decision we set the assignee to the authicated user
+        await alertService.updateAlertsDecision(
+          alerts.map(alert => alert.id),
+          project.id,
+          AlertState.rejected,
+        );
+
+        const updatedAlerts = await prismaService.alert.findMany({
+          where: {
+            decisionAt: {
+              not: null,
+            },
+          },
+        });
+
+        expect(updatedAlerts).toHaveLength(1);
+        expect(updatedAlerts[0]?.decisionAt).toBeDefined();
       });
     });
 
