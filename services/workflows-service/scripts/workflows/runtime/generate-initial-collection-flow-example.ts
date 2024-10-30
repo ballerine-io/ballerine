@@ -46,22 +46,25 @@ export const generateInitialCollectionFlowExample = async (
   },
 ) => {
   const initialContext = {
-    ballerineEntityId: businessId,
-    type: 'business',
-    data: {
-      additionalInfo: {
-        mainRepresentative: {
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'test@gmail.com',
+    workflowId: workflowDefinitionId,
+    entity: {
+      ballerineEntityId: businessId,
+      type: 'business',
+      data: {
+        additionalInfo: {
+          mainRepresentative: {
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'test@gmail.com',
+          },
         },
       },
     },
     documents: [],
     metadata: {
-      token,
       collectionFlowUrl: env.COLLECTION_FLOW_URL,
       webUiSDKUrl: env.WEB_UI_SDK_URL,
+      token,
     },
   };
 
