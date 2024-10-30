@@ -67,7 +67,9 @@ export class StateHelper {
   }
 
   isStepCompleted(step: string) {
-    return this.context.collectionFlow!.state!.progress![step]?.isCompleted || false;
+    const progress = this.context.collectionFlow?.state?.progress;
+
+    return progress?.[step]?.isCompleted || false;
   }
 
   override(state: NonNullable<NonNullable<DefaultContextSchema['collectionFlow']>['state']>) {
