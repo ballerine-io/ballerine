@@ -17,7 +17,7 @@ export const useTransactionMonitoringAlertsAnalysisPageLogic = () => {
     // @TODO: Remove
     counterpartyId: counterpartyId ?? '',
     page: 1,
-    pageSize: 50,
+    pageSize: 500,
   });
   const navigate = useNavigate();
   const onNavigateBack = useCallback(() => {
