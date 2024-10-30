@@ -1469,32 +1469,13 @@ export class WorkflowService {
           }
         }
 
-        // Initializing Collection Flow
-        const collectionFlowManager = new CollectionFlowManager(
-          {
-            ...contextToInsert,
-            documents: documentsWithPersistedImages as DefaultContextSchema['documents'],
-            metadata: {
-              customerId: customer.id,
-              customerNormalizedName: customer.name,
-              customerName: customer.displayName,
-            },
-          },
-          {
-            apiUrl: env.APP_API_URL,
-            steps: await getStepsInOrder(uiDefinition as UiDefinition),
-          },
-        );
-
-        collectionFlowManager.start();
-
         workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
           {
             data: {
               ...entityConnect,
               workflowDefinitionVersion: workflowDefinition.version,
               context: {
-                ...collectionFlowManager.context,
+                ...contextToInsert,
                 documents: documentsWithPersistedImages,
                 metadata: {
                   customerId: customer.id,
@@ -1520,8 +1501,6 @@ export class WorkflowService {
           },
           transaction,
         );
-
-        collectionFlowManager.updateContext(workflowRuntimeData.context);
 
         logDocumentWithoutId({
           line: 'createOrUpdateWorkflow 1476',
@@ -1570,10 +1549,21 @@ export class WorkflowService {
             transaction,
           );
 
-          collectionFlowManager.updateContext(workflowRuntimeData.context);
-          collectionFlowManager.updateAdditionalInformation({
-            customerCompany: customer.displayName,
-          });
+          // Initializing Collection Flow
+          const collectionFlowManager = new CollectionFlowManager(
+            {
+              ...workflowRuntimeData.context,
+            },
+            {
+              apiUrl: env.APP_API_URL,
+              steps: await getStepsInOrder(uiDefinition as UiDefinition),
+              additionalInformation: {
+                customerCompany: customer.displayName,
+              },
+            },
+          );
+
+          collectionFlowManager.start();
 
           workflowRuntimeData = await this.workflowRuntimeDataRepository.updateStateById(
             workflowRuntimeData.id,
