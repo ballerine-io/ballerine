@@ -2,6 +2,7 @@ import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.servi
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
+import { getStepsInOrder } from '@/collection-flow/helpers/get-steps-in-order';
 import { ajv } from '@/common/ajv/ajv.validator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
@@ -9,7 +10,9 @@ import { SortOrder } from '@/common/query-filters/sort-order';
 import { TDocumentsWithoutPageType, TDocumentWithoutPageType } from '@/common/types';
 import { aliasIndividualAsEndUser } from '@/common/utils/alias-individual-as-end-user/alias-individual-as-end-user';
 import { logDocumentWithoutId } from '@/common/utils/log-document-without-id/log-document-without-id';
+import { TOcrImages, UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import { CustomerService } from '@/customer/customer.service';
+import { FEATURE_LIST } from '@/customer/types';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { EndUserService } from '@/end-user/end-user.service';
 import { env } from '@/env';
@@ -24,8 +27,11 @@ import { FileService } from '@/providers/file/file.service';
 import { RiskRuleService, TFindAllRulesOptions } from '@/rule-engine/risk-rule.service';
 import { RuleEngineService } from '@/rule-engine/rule-engine.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
+import { AwsSecretsManager } from '@/secrets-manager/aws-secrets-manager';
+import { InMemorySecretsManager } from '@/secrets-manager/in-memory-secrets-manager';
 import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
 import { SentryService } from '@/sentry/sentry.service';
+import { StorageService } from '@/storage/storage.service';
 import type {
   InputJsonValue,
   IObjectWithId,
@@ -47,6 +53,8 @@ import {
 } from '@/workflow/workflow-runtime-list-item.model';
 import {
   AnyRecord,
+  CollectionFlowManager,
+  CollectionFlowStates,
   DefaultContextSchema,
   getDocumentId,
   isErrorWithMessage,
@@ -82,6 +90,7 @@ import {
   EndUser,
   Prisma,
   PrismaClient,
+  UiDefinition,
   UiDefinitionContext,
   User,
   WorkflowDefinition,
@@ -108,15 +117,18 @@ import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-
 import { entitiesUpdate } from './utils/entities-update';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
-import { StorageService } from '@/storage/storage.service';
-import { TOcrImages, UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
-import { AwsSecretsManager } from '@/secrets-manager/aws-secrets-manager';
-import { InMemorySecretsManager } from '@/secrets-manager/in-memory-secrets-manager';
-import { FEATURE_LIST } from '@/customer/types';
 
 type TEntityId = string;
 
 export type TEntityType = 'endUser' | 'business';
+
+type CollectionFlowEvent = 'approved' | 'rejected' | 'failed' | 'revision';
+const COLLECTION_FLOW_EVENTS_WHITELIST: readonly CollectionFlowEvent[] = [
+  'approved',
+  'rejected',
+  'failed',
+  'revision',
+] as const;
 
 @Injectable()
 export class WorkflowService {
@@ -1463,31 +1475,6 @@ export class WorkflowService {
           }
         }
 
-        const uiSchema = (uiDefinition as Record<string, any>)?.uiSchema;
-
-        const createFlowConfig = (uiSchema: Record<string, any>) => {
-          return {
-            stepsProgress: (
-              uiSchema?.elements as Array<{
-                type: string;
-                number: number;
-                stateName: string;
-              }>
-            )?.reduce((acc, curr) => {
-              if (curr?.type !== 'page') {
-                return acc;
-              }
-
-              acc[curr?.stateName] = {
-                number: curr?.number,
-                isCompleted: false,
-              };
-
-              return acc;
-            }, {} as { [key: string]: { number: number; isCompleted: boolean } }),
-          };
-        };
-
         workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
           {
             data: {
@@ -1496,7 +1483,6 @@ export class WorkflowService {
               context: {
                 ...contextToInsert,
                 documents: documentsWithPersistedImages,
-                flowConfig: (contextToInsert as any)?.flowConfig ?? createFlowConfig(uiSchema),
                 metadata: {
                   customerId: customer.id,
                   customerNormalizedName: customer.name,
@@ -1569,19 +1555,35 @@ export class WorkflowService {
             transaction,
           );
 
+          // Initializing Collection Flow
+          const collectionFlowManager = new CollectionFlowManager(
+            {
+              ...workflowRuntimeData.context,
+            },
+            {
+              apiUrl: env.APP_API_URL,
+              steps: await getStepsInOrder(uiDefinition as UiDefinition),
+              additionalInformation: {
+                customerCompany: customer.displayName,
+              },
+            },
+          );
+
+          collectionFlowManager.initializeCollectionFlowContext();
+
           workflowRuntimeData = await this.workflowRuntimeDataRepository.updateStateById(
             workflowRuntimeData.id,
             {
               data: {
                 context: {
-                  ...workflowRuntimeData.context,
+                  ...collectionFlowManager.context,
                   metadata: {
                     ...(workflowRuntimeData.context.metadata ?? {}),
                     token: workflowToken.token,
                     collectionFlowUrl: env.COLLECTION_FLOW_URL,
                     webUiSDKUrl: env.WEB_UI_SDK_URL,
                   },
-                },
+                } as InputJsonValue,
                 projectId: currentProjectId,
               },
             },
@@ -2174,7 +2176,30 @@ export class WorkflowService {
 
       const snapshot = service.getSnapshot();
       const currentState = snapshot.value;
-      const context = snapshot.machine?.context;
+      let context = snapshot.machine?.context;
+
+      // Checking if event type is candidate for "revision" state
+      const nextCollectionFlowState = COLLECTION_FLOW_EVENTS_WHITELIST.includes(type)
+        ? type
+        : // Using current state of workflow for approved, rejected, failed
+        COLLECTION_FLOW_EVENTS_WHITELIST.includes(currentState)
+        ? currentState
+        : undefined;
+
+      this.logger.log('Next collection flow state', {
+        nextCollectionFlowState: nextCollectionFlowState || 'N/A',
+      });
+
+      if (nextCollectionFlowState) {
+        const collectionFlowManager = new CollectionFlowManager(context);
+
+        if (currentState in CollectionFlowStates) {
+          collectionFlowManager.state().collectionFlowState = currentState;
+        }
+
+        context = collectionFlowManager.context;
+      }
+
       // TODO: Refactor to use snapshot.done instead
       // @ts-ignore
       const isFinal = snapshot.machine?.states[currentState].type === 'final';

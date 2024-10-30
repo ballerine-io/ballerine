@@ -170,3 +170,22 @@ export const MatchReasonCode = {
 
 export const URL_PATTERN =
   /^((https?):\/\/)?([\dA-Za-z][\w-]*\.)+[\dA-Za-z]+(\.[a-z]{2})?(\/[\w#.-]+)*(\/)?(\?[\w.-]+=[\w.-]+(&[\w.-]+=[\w.-]+)*)?(#[\w-]+)?$/;
+
+export const CollectionFlowStates = {
+  // Collection Flow created but never touched by end user
+  pending: 'pending',
+  // Collection Flow is in progress
+  inprogress: 'inprogress',
+  // Collection Flow is approved
+  approved: 'approved',
+  // Collection Flow is rejected
+  rejected: 'rejected',
+  // Collection Flow is in revision
+  revision: 'revision',
+  // Collection Flow failed (by plugins)
+  failed: 'failed',
+  // Collection Flow is completed (by end user)
+  completed: 'completed',
+} as const;
+
+export type TCollectionFlowState = (typeof CollectionFlowStates)[keyof typeof CollectionFlowStates];
