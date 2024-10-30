@@ -777,10 +777,12 @@ model Alert {
   project   Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
   dataTimestamp DateTime
-  state         AlertState
   status        AlertStatus
   tags          String[]
   severity      AlertSeverity?
+  
+  state         AlertState
+  decisionAt    DateTime?
 
   executionDetails Json
   additionalInfo   Json?
@@ -789,6 +791,7 @@ model Alert {
   assigneeId String?
   assignedAt DateTime?
 
+  dedupedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
