@@ -28,6 +28,7 @@ export interface IActionsProps {
   id: string;
   fullName: string;
   avatarUrl: string;
+  numberOfNotes: number;
   showResolutionButtons?: boolean;
   workflow: TWorkflowById;
 }

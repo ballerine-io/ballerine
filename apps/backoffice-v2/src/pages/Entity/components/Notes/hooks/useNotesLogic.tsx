@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 
 import { useCreateNoteMutation } from '@/pages/Entity/components/Notes/hooks/mutations/useCreateNoteMutation/useCreateNoteMutation';
-import { CreateNoteSchema } from '@/pages/Entity/components/Notes/hooks/create-note-schema';
+import { CreateNoteSchema } from '@/pages/Entity/components/Notes/hooks/schemas/create-note-schema';
 
 export const useNotesLogic = () => {
   const [note, setNote] = useState('');
@@ -12,7 +12,7 @@ export const useNotesLogic = () => {
     setNote(event.target.value);
   }, []);
 
-  const { mutate: mutateCreateNote, isLoading: isSubmitting } = useCreateNoteMutation({});
+  const { mutate: mutateCreateNote, isLoading: isSubmitting } = useCreateNoteMutation();
 
   const onSubmit: SubmitHandler<z.output<typeof CreateNoteSchema>> = data => {
     mutateCreateNote(data);

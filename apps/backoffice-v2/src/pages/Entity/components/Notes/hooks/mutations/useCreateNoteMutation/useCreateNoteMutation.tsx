@@ -5,12 +5,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { HttpError } from '@/common/errors/http-error';
 import { createNote } from '@/pages/Entity/components/Notes/hooks/fetchers';
+import { NoteableType } from '@/pages/Entity/components/Notes/types';
 
-export const useCreateNoteMutation = ({
-  onSuccess,
-}: {
-  onSuccess?: <TData>(data: TData) => void;
-}) => {
+export const useCreateNoteMutation = (onSuccess?: <TData>(data: TData) => void) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -25,7 +22,7 @@ export const useCreateNoteMutation = ({
       entityId: string;
       entityType: 'Business' | 'EndUser';
       noteableId: string;
-      noteableType: 'Report' | 'Alert' | 'Workflow';
+      noteableType: NoteableType;
       content: string;
       parentNoteId: string | null;
     }) =>

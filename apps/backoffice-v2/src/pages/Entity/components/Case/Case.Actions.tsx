@@ -27,6 +27,7 @@ import { ActionsVariant } from '@/pages/Entity/components/Case/actions-variants/
 export const Actions: FunctionComponent<IActionsProps> = ({
   id,
   fullName,
+  numberOfNotes,
   showResolutionButtons,
 }) => {
   const {
@@ -85,7 +86,16 @@ export const Actions: FunctionComponent<IActionsProps> = ({
             )}
             <div className={`flex items-center space-x-2`}>
               <span className={`me-2 text-sm leading-6`}>Notes</span>
-              <SquarePen className={`cursor-pointer d-5`} onClick={toggleNotes} />
+              <div className={`relative flex`}>
+                <SquarePen className={`cursor-pointer d-5`} onClick={toggleNotes} />
+                {numberOfNotes > 0 && (
+                  <div
+                    className={`absolute left-3 top-3 rounded-full bg-[#007AFF] ps-1 text-xs font-bold text-white d-4`}
+                  >
+                    {numberOfNotes}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

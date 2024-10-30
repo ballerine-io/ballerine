@@ -8,7 +8,7 @@ import { BlocksVariant } from '@/lib/blocks/variants/BlocksVariant/BlocksVariant
 import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
 
 export const Entity = () => {
-  const { workflow, selectedEntity } = useEntityLogic();
+  const { workflow, notes, selectedEntity } = useEntityLogic();
   const { isNotesOpen } = useNotes();
 
   if (!workflow) {
@@ -21,6 +21,7 @@ export const Entity = () => {
       <Case key={workflow?.id}>
         {/* Reject and approve header */}
         <Case.Actions
+          numberOfNotes={notes?.length ?? 0}
           id={workflow?.id}
           fullName={selectedEntity?.name}
           avatarUrl={selectedEntity?.avatarUrl}
@@ -46,6 +47,7 @@ export const Entity = () => {
       <AnimatePresence>
         {isNotesOpen && (
           <Notes
+            notes={notes}
             displayName={workflow.entity.name}
             entityId={workflow.entity.id}
             entityType={`Business`}

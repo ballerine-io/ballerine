@@ -43,7 +43,7 @@ export class NoteRepository {
     transaction: PrismaTransaction | PrismaClient = this.prismaService,
   ) {
     return transaction.note.findMany({
-      ...((args || defaultArgs) as Prisma.NoteFindManyArgs),
+      select: { ...(args?.select || defaultArgs.select) } as Prisma.NoteFindManyArgs['select'],
       where: { ...(args?.where || {}), deletedAt: null, projectId },
     });
   }
@@ -55,7 +55,9 @@ export class NoteRepository {
     transaction: PrismaTransaction | PrismaClient = this.prismaService,
   ) {
     return transaction.note.findFirstOrThrow({
-      ...((args || defaultArgs) as Prisma.NoteFindFirstOrThrowArgs),
+      select: {
+        ...(args?.select || defaultArgs.select),
+      } as Prisma.NoteFindFirstOrThrowArgs['select'],
       where: { id, deletedAt: null, projectId },
     });
   }
@@ -65,7 +67,7 @@ export class NoteRepository {
     args?: Prisma.SelectSubset<T, Omit<Prisma.NoteFindManyArgs, 'where'>>,
   ) {
     return this.prismaService.note.findMany({
-      ...((args || defaultArgs) as Prisma.NoteFindManyArgs),
+      select: { ...(args?.select || defaultArgs.select) } as Prisma.NoteFindManyArgs['select'],
       where: { deletedAt: null, projectId },
     });
   }

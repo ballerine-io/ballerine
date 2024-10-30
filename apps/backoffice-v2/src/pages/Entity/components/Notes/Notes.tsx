@@ -3,23 +3,26 @@ import { motion } from 'framer-motion';
 import { TextArea } from '@ballerine/ui';
 import { Loader2, X } from 'lucide-react';
 
+import { NoteableType } from './types';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { useNotes } from '@/domains/notes/hooks/useNotes';
 import { Button } from '@/common/components/atoms/Button/Button';
 import { useNotesLogic } from '@/pages/Entity/components/Notes/hooks/useNotesLogic';
 
 export const Notes = ({
+  notes,
   displayName,
   entityId,
   entityType,
   noteableId,
   noteableType,
 }: {
+  notes: any[];
   displayName: string;
   entityId: string;
   entityType: 'Business' | 'EndUser';
   noteableId: string;
-  noteableType: 'Report' | 'Alert' | 'Workflow';
+  noteableType: NoteableType;
 }) => {
   const { toggleNotes } = useNotes();
   const { note, onNoteChange, onSubmit } = useNotesLogic();
