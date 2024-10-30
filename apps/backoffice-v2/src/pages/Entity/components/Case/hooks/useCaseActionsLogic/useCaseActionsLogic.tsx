@@ -1,15 +1,17 @@
-import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useCallback, useMemo } from 'react';
-import { useDebounce } from '../../../../../../common/hooks/useDebounce/useDebounce';
-import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
-import { createInitials } from '../../../../../../common/utils/create-initials/create-initials';
-import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useUsersQuery } from '../../../../../../domains/users/hooks/queries/useUsersQuery/useUsersQuery';
-import { useAssignWorkflowMutation } from '../../../../../../domains/workflows/hooks/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
+
 import { tagToBadgeData } from '../../consts';
-import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
-import { useCaseState } from '../useCaseState/useCaseState';
 import { IUseActions } from './interfaces';
+import { useNotes } from '@/domains/notes/hooks/useNotes';
+import { useCaseState } from '../useCaseState/useCaseState';
+import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
+import { useDebounce } from '@/common/hooks/useDebounce/useDebounce';
+import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
+import { createInitials } from '@/common/utils/create-initials/create-initials';
+import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUsersQuery';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
+import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useAssignWorkflowMutation } from '@/domains/workflows/hooks/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
 
 export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const filterId = useFilterId();
@@ -47,6 +49,8 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     return workflow?.tags?.find(t => tagToBadgeData[t]);
   }, [workflow]) as keyof typeof tagToBadgeData;
 
+  const { toggleNotes, isNotesOpen } = useNotes();
+
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
 
   const assignedUser = workflow?.assignee
@@ -77,5 +81,7 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     workflow,
     workflowDefinition: workflow?.workflowDefinition,
     isWorkflowCompleted,
+    toggleNotes,
+    isNotesOpen,
   };
 };

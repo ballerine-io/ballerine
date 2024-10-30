@@ -1,14 +1,15 @@
-import { StateTag } from '@ballerine/common';
 import { Badge } from '@ballerine/ui';
+import { SquarePen } from 'lucide-react';
 import { FunctionComponent } from 'react';
+import { StateTag } from '@ballerine/common';
 
-import { ActionsVariant } from '@/pages/Entity/components/Case/actions-variants/ActionsVariant/ActionsVariant';
-import { CaseOptions } from '@/pages/Entity/components/Case/components/CaseOptions/CaseOptions';
-import { AssignDropdown } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
-import { ctw } from '../../../../common/utils/ctw/ctw';
 import { tagToBadgeData } from './consts';
-import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
+import { ctw } from '@/common/utils/ctw/ctw';
 import { IActionsProps } from './interfaces';
+import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
+import { AssignDropdown } from '@/common/components/atoms/AssignDropdown/AssignDropdown';
+import { CaseOptions } from '@/pages/Entity/components/Case/components/CaseOptions/CaseOptions';
+import { ActionsVariant } from '@/pages/Entity/components/Case/actions-variants/ActionsVariant/ActionsVariant';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
@@ -37,6 +38,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     onMutateAssignWorkflow,
     workflowDefinition,
     isWorkflowCompleted,
+    toggleNotes,
   } = useCaseActionsLogic({ workflowId: id, fullName });
 
   return (
@@ -63,23 +65,29 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           >
             {fullName}
           </h2>
-          {tag && (
-            <div className={`flex items-center`}>
-              <span className={`me-2 text-sm leading-6`}>Status</span>
-              <Badge
-                variant={tagToBadgeData[tag].variant}
-                className={ctw(`whitespace-nowrap text-sm font-bold`, {
-                  'bg-info/20 text-info': tag === StateTag.MANUAL_REVIEW,
-                  'bg-violet-500/20 text-violet-500': [
-                    StateTag.COLLECTION_FLOW,
-                    StateTag.DATA_ENRICHMENT,
-                  ].includes(tag),
-                })}
-              >
-                {tagToBadgeData[tag].text}
-              </Badge>
+          <div className={`flex items-center space-x-6`}>
+            {tag && (
+              <div className={`flex space-x-2`}>
+                <span className={`me-2 text-sm leading-6`}>Status</span>
+                <Badge
+                  variant={tagToBadgeData[tag].variant}
+                  className={ctw(`whitespace-nowrap text-sm font-bold`, {
+                    'bg-info/20 text-info': tag === StateTag.MANUAL_REVIEW,
+                    'bg-violet-500/20 text-violet-500': [
+                      StateTag.COLLECTION_FLOW,
+                      StateTag.DATA_ENRICHMENT,
+                    ].includes(tag),
+                  })}
+                >
+                  {tagToBadgeData[tag].text}
+                </Badge>
+              </div>
+            )}
+            <div className={`flex items-center space-x-2`}>
+              <span className={`me-2 text-sm leading-6`}>Notes</span>
+              <SquarePen className={`cursor-pointer d-5`} onClick={toggleNotes} />
             </div>
-          )}
+          </div>
         </div>
         {showResolutionButtons && workflowDefinition && (
           <ActionsVariant

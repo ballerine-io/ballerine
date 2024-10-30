@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { HttpError } from '@/common/errors/http-error';
 import { TBusinessReportType } from '@/domains/business-reports/types';
 import { createBusinessReportBatch } from '@/domains/business-reports/fetchers';
-import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { isObject } from '@ballerine/common';
 
 export const useCreateBusinessReportBatchMutation = ({

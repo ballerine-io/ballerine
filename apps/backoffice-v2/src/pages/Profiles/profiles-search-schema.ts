@@ -10,7 +10,7 @@ export const ProfilesSearchSchema = BaseSearchSchema.extend({
       'createdAt',
       'name',
       'businesses',
-      'role',
+      'roles',
       'kyc',
       'isMonitored',
       'matches',

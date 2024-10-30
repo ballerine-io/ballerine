@@ -9,7 +9,7 @@ import csvContent from './batch-report-template.csv?raw';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { CreateBusinessReportBatchSchema } from '@/pages/MerchantMonitoringUploadMultiple/create-business-report-batch-schema';
 import { useCreateBusinessReportBatchMutation } from '@/domains/business-reports/hooks/mutations/useCreateBusinessReportBatchMutation/useCreateBusinessReportBatchMutation';
-import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 
 export const useMerchantMonitoringUploadMultiplePageLogic = () => {
   const { data: customer, isLoading: isLoadingCustomer } = useCustomerQuery();

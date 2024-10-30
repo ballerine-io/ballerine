@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { t } from 'i18next';
 import { createBusinessReport } from '@/domains/business-reports/fetchers';
-import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { HttpError } from '@/common/errors/http-error';
 import { isObject } from '@ballerine/common';
 
