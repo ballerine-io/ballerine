@@ -1,13 +1,12 @@
 import { FunctionComponent } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
 
 import { Header } from '@/common/components/organisms/Header';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
 import { useAuthenticatedLayoutLogic } from './hooks/useAuthenticatedLayoutLogic/useAuthenticatedLayoutLogic';
 
 export const AuthenticatedLayout: FunctionComponent = () => {
-  const { shouldRedirect, isLoading, isNotesOpen, redirectUnauthenticatedTo, location } =
+  const { shouldRedirect, isLoading, redirectUnauthenticatedTo, location } =
     useAuthenticatedLayoutLogic();
 
   if (isLoading || !redirectUnauthenticatedTo) {
@@ -34,20 +33,10 @@ export const AuthenticatedLayout: FunctionComponent = () => {
           <Outlet />
         </main>
       </div>
-      <AnimatePresence>
-        {!isNotesOpen && (
-          <motion.div
-            exit={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            initial={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className={`drawer-side w-[250px]`}
-          >
-            <label htmlFor="app-drawer" className="drawer-overlay"></label>
-            <Header />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <div className={`drawer-side w-[250px]`}>
+        <label htmlFor="app-drawer" className="drawer-overlay"></label>
+        <Header />
+      </div>
       <label
         htmlFor="app-drawer"
         className="btn btn-square drawer-button fixed z-50 bottom-right-6 lg:hidden"

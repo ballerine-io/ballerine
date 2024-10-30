@@ -5,6 +5,6 @@ export const CreateNoteSchema = z.object({
   entityType: z.enum(['Business', 'EndUser']),
   noteableId: z.string(),
   noteableType: z.enum(['Report', 'Alert', 'Workflow']),
-  content: z.string(),
+  content: z.string().min(1, { message: 'Note cannot be empty' }),
   parentNoteId: z.union([z.string(), z.null()]),
 });

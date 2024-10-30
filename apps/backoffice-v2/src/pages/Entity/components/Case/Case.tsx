@@ -6,7 +6,6 @@ import { FaceMatch } from './Case.FaceMatch';
 import { Info } from './Case.Info';
 import { ICaseChildren } from './interfaces';
 import { ctw } from '@ballerine/ui';
-import { useNotes } from '@/domains/notes/hooks/useNotes';
 
 /**
  * @description A component which handles a single case's reject/approve mutation, and displays the entity's information and documents.
@@ -24,13 +23,7 @@ import { useNotes } from '@/domains/notes/hooks/useNotes';
  * @constructor
  */
 export const Case: FunctionComponent<PropsWithChildren> & ICaseChildren = ({ children }) => {
-  const { isNotesOpen } = useNotes();
-
-  return (
-    <div className={ctw(`col-span-3 flex h-full flex-col`, { 'col-span-2': isNotesOpen })}>
-      {children}
-    </div>
-  );
+  return <div className={ctw(`flex h-full flex-col`)}>{children}</div>;
 };
 
 Case.Actions = Actions;

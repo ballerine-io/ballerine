@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { env } from '@/common/env/env';
-import { useNotes } from '@/domains/notes/hooks/useNotes';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { useAuthContext } from '../../../../context/AuthProvider/hooks/useAuthContext/useAuthContext';
 import { useIsAuthenticated } from '../../../../context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
@@ -27,10 +26,7 @@ export const useAuthenticatedLayoutLogic = () => {
     [isLoading, isAuthenticated, redirectUnauthenticatedTo],
   );
 
-  const { isNotesOpen } = useNotes();
-
   return {
-    isNotesOpen,
     shouldRedirect,
     isLoading,
     redirectUnauthenticatedTo,

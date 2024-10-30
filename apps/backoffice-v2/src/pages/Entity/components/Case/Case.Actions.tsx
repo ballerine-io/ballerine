@@ -86,13 +86,16 @@ export const Actions: FunctionComponent<IActionsProps> = ({
             )}
             <div className={`flex items-center space-x-2`}>
               <span className={`me-2 text-sm leading-6`}>Notes</span>
-              <div className={`relative flex`}>
-                <SquarePen className={`cursor-pointer d-5`} onClick={toggleNotes} />
+              <div className={`relative flex cursor-pointer`} onClick={toggleNotes}>
+                <SquarePen className={`d-5`} />
                 {numberOfNotes > 0 && (
                   <div
-                    className={`absolute left-3 top-3 rounded-full bg-[#007AFF] ps-1 text-xs font-bold text-white d-4`}
+                    className={ctw(
+                      `absolute left-3 top-3 rounded-full bg-slate-600 text-center text-[10px] font-bold text-white`,
+                      { 'd-[14px]': numberOfNotes < 10, 'h-[14px] w-5': numberOfNotes >= 10 },
+                    )}
                   >
-                    {numberOfNotes}
+                    {numberOfNotes > 9 ? '+9' : numberOfNotes}
                   </div>
                 )}
               </div>
