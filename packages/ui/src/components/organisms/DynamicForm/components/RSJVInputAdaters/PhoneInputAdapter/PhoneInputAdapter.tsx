@@ -7,9 +7,12 @@ export const PhoneInputAdapter: RJSFInputAdapter = ({
   formData,
   disabled,
   testId,
+  uiSchema,
   onChange,
   onBlur,
 }) => {
+  const { defaultCountry = 'us' } = uiSchema || {};
+
   const handleBlur = useCallback(() => {
     // @ts-ignore
     onBlur && onBlur(id, formData);
@@ -17,7 +20,7 @@ export const PhoneInputAdapter: RJSFInputAdapter = ({
 
   return (
     <PhoneNumberInput
-      country="us"
+      country={defaultCountry}
       value={formData}
       disabled={disabled}
       enableSearch
