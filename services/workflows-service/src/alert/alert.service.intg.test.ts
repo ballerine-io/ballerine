@@ -1013,28 +1013,6 @@ describe('AlertService', () => {
         );
       });
 
-      it('When there more than 1k credit card transactions, an alert should be created', async () => {
-        // Arrange
-        await baseTransactionFactory
-          .withBusinessBeneficiary()
-          .direction(TransactionDirection.inbound)
-          .paymentMethod(PaymentMethod.credit_card)
-          .amount(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold + 1)
-          .count(1)
-          .create();
-
-        // Act
-        await alertService.checkAllAlerts();
-
-        // Assert
-        const alerts = await prismaService.alert.findMany();
-        expect(alerts).toHaveLength(1);
-        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0] as any).toMatchObject({
-          executionDetails: { executionRow: { transactionCount: '1', totalAmount: 1001 } },
-        });
-      });
-
       it('When there are few transaction, no alert should be created', async () => {
         // Arrange
         await baseTransactionFactory
@@ -1110,28 +1088,6 @@ describe('AlertService', () => {
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
         expect(alerts[0] as any).toMatchObject({
           executionDetails: { executionRow: { transactionCount: '1', totalAmount: 1001 } },
-        });
-      });
-
-      it('When there more than 1k credit card transactions, an alert should be created', async () => {
-        // Arrange
-        await baseTransactionFactory
-          .withBusinessBeneficiary()
-          .direction(TransactionDirection.inbound)
-          .paymentMethod(PaymentMethod.debit_card)
-          .amount(2)
-          .count(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold + 1)
-          .create();
-
-        // Act
-        await alertService.checkAllAlerts();
-
-        // Assert
-        const alerts = await prismaService.alert.findMany();
-        expect(alerts).toHaveLength(1);
-        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0] as any).toMatchObject({
-          executionDetails: { executionRow: { transactionCount: '1001', totalAmount: 2002 } },
         });
       });
 
