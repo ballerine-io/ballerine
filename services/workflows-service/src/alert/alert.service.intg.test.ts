@@ -19,6 +19,7 @@ import { Test } from '@nestjs/testing';
 import {
   AlertDefinition,
   AlertState,
+  AlertStatus,
   Counterparty,
   Customer,
   PaymentMethod,
@@ -318,7 +319,7 @@ describe('AlertService', () => {
         expect(alerts).toHaveLength(0);
       });
 
-      test('Assigning and deciding alerts should set audit timestamps', async () => {
+      test.only('Assigning and deciding alerts should set audit timestamps', async () => {
         // Arrange
         await baseTransactionFactory
           .withBusinessBeneficiary()
@@ -361,8 +362,8 @@ describe('AlertService', () => {
           },
         });
         expect(assignedAlerts).toHaveLength(1);
-        expect(assignedAlerts[0]?.assignedAt).toBeDefined();
-
+        expect(assignedAlerts[0]?.assignedAt).toBeInstanceOf(Date);
+        expect(assignedAlerts[0]?.assignedAt).not.toBeNull();
         // whenever update Decision we set the assignee to the authicated user
         await alertService.updateAlertsDecision(
           alerts.map(alert => alert.id),
@@ -379,7 +380,82 @@ describe('AlertService', () => {
         });
 
         expect(updatedAlerts).toHaveLength(1);
-        expect(updatedAlerts[0]?.decisionAt).toBeDefined();
+        expect(updatedAlerts[0]?.decisionAt).toBeInstanceOf(Date);
+        expect(updatedAlerts[0]?.decisionAt).not.toBeNull();
+        expect(updatedAlerts[0]?.status).toBe(AlertStatus.completed);
+      });
+
+      test.only('Dedupe - Alert should be deduped', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .withEndUserOriginator()
+          .amount(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min + 1)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .count(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold + 1)
+          .create();
+
+        await alertService.checkAllAlerts();
+
+        const alerts = await prismaService.alert.findMany();
+
+        expect(alerts).toHaveLength(1);
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const updatedAlerts = await prismaService.alert.findMany({
+          where: {
+            dedupedAt: {
+              not: null,
+            },
+          },
+        });
+
+        expect(updatedAlerts).toHaveLength(1);
+        expect(updatedAlerts[0]?.dedupedAt).toBeInstanceOf(Date);
+        expect(updatedAlerts[0]?.dedupedAt).not.toBeNull();
+      });
+
+      test.only('Dedupe - Only non completed alerts will be dedupe', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .withEndUserOriginator()
+          .amount(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min + 1)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .count(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold + 1)
+          .create();
+
+        await alertService.checkAllAlerts();
+
+        const alerts = await prismaService.alert.findMany();
+
+        expect(alerts).toHaveLength(1);
+
+        // whenever update Decision we set the assignee to the authicated user
+        await alertService.updateAlertsDecision(
+          alerts.map(alert => alert.id),
+          project.id,
+          AlertState.rejected,
+        );
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const updatedAlerts = await prismaService.alert.findMany({
+          where: {
+            dedupedAt: {
+              not: null,
+            },
+          },
+        });
+
+        expect(updatedAlerts).toHaveLength(0);
       });
     });
 
