@@ -22,8 +22,15 @@ export const getStepsInOrder = async (uiDefinition: UiDefinition) => {
   });
 
   while (!stateMachine.getSnapshot().done) {
-    stepsInOrder.push(stateMachine.getSnapshot().value);
-    await stateMachine.sendEvent({ type: 'NEXT' });
+    const snapshot = stateMachine.getSnapshot();
+    stepsInOrder.push(snapshot.value);
+
+    // Check if NEXT event is available in current state
+    if (snapshot.nextEvents.includes('NEXT')) {
+      await stateMachine.sendEvent({ type: 'NEXT' });
+    } else {
+      break; // Exit if no NEXT event available
+    }
   }
 
   return stepsInOrder.map((stepName, index) => ({ stateName: stepName, orderNumber: index + 1 }));
