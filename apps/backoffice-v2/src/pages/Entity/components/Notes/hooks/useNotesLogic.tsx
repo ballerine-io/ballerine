@@ -1,27 +1,38 @@
 import { z } from 'zod';
-import { useCallback, useState } from 'react';
-import { SubmitHandler } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { useCreateNoteMutation } from '@/pages/Entity/components/Notes/hooks/mutations/useCreateNoteMutation/useCreateNoteMutation';
 import { CreateNoteSchema } from '@/pages/Entity/components/Notes/hooks/schemas/create-note-schema';
+import { useNotes } from '@/domains/notes/hooks/useNotes';
+import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUsersQuery';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 export const useNotesLogic = () => {
-  const [note, setNote] = useState('');
+  const { toggleNotes } = useNotes();
+  const { data: users } = useUsersQuery();
 
-  const onNoteChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setNote(event.target.value);
-  }, []);
+  const form = useForm({
+    defaultValues: {
+      content: '',
+    },
+    resolver: zodResolver(CreateNoteSchema.pick({ content: true })),
+  });
 
-  const { mutate: mutateCreateNote, isLoading: isSubmitting } = useCreateNoteMutation();
+  const { mutate: mutateCreateNote, isLoading: isSubmitting } = useCreateNoteMutation({
+    onSuccess: () => {
+      form.reset();
+    },
+  });
 
   const onSubmit: SubmitHandler<z.output<typeof CreateNoteSchema>> = data => {
     mutateCreateNote(data);
   };
 
   return {
-    note,
+    form,
+    users,
     onSubmit,
-    onNoteChange,
+    toggleNotes,
     isLoading: isSubmitting,
   };
 };

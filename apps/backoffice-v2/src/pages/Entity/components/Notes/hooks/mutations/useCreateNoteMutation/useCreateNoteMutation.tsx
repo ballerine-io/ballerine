@@ -7,7 +7,11 @@ import { HttpError } from '@/common/errors/http-error';
 import { createNote } from '@/pages/Entity/components/Notes/hooks/fetchers';
 import { NoteableType } from '@/pages/Entity/components/Notes/types';
 
-export const useCreateNoteMutation = (onSuccess?: <TData>(data: TData) => void) => {
+export const useCreateNoteMutation = ({
+  onSuccess,
+}: {
+  onSuccess?: <TData>(data: TData) => void;
+}) => {
   const queryClient = useQueryClient();
 
   return useMutation({

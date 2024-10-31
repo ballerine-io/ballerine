@@ -1,18 +1,18 @@
 import * as React from 'react';
-
-import type { Content, Editor } from '@tiptap/react';
-import type { UseMinimalTiptapEditorProps } from './hooks/use-minimal-tiptap';
+import { ctw } from '@ballerine/ui';
 import { EditorContent } from '@tiptap/react';
+import type { Content, Editor } from '@tiptap/react';
+
 import { SectionOne } from './components/section/one';
 import { SectionTwo } from './components/section/two';
-import { SectionThree } from './components/section/three';
 import { SectionFour } from './components/section/four';
 import { SectionFive } from './components/section/five';
-import { LinkBubbleMenu } from './components/bubble-menu/link-bubble-menu';
+import { SectionThree } from './components/section/three';
+import { Separator } from '../../atoms/Separator/Separator';
 import { useMinimalTiptapEditor } from './hooks/use-minimal-tiptap';
 import { MeasuredContainer } from './components/measured-container';
-import { Separator } from '../../atoms/Separator/Separator';
-import { ctw } from '@ballerine/ui';
+import { LinkBubbleMenu } from './components/bubble-menu/link-bubble-menu';
+import type { UseMinimalTiptapEditorProps } from './hooks/use-minimal-tiptap';
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, 'onUpdate'> {
   value?: Content;
@@ -60,6 +60,7 @@ const Toolbar = ({ editor }: { editor: Editor }) => (
 export const MinimalTiptapEditor = React.forwardRef<HTMLDivElement, MinimalTiptapProps>(
   ({ value, onChange, className, editorContentClassName, ...props }, ref) => {
     const editor = useMinimalTiptapEditor({
+      onCreate: () => onChange?.({ content: [] }),
       value,
       onUpdate: onChange,
       ...props,

@@ -53,7 +53,6 @@ export const Entity = () => {
       </SidebarInset>
       <Notes
         notes={notes}
-        displayName={workflow.entity.name}
         entityId={workflow.entity.id}
         entityType={`Business`}
         noteableId={workflow.id}

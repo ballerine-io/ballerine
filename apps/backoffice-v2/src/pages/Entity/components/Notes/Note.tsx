@@ -1,4 +1,5 @@
 import * as React from 'react';
+import DOMPurify from 'dompurify';
 
 import { TNote } from './types';
 import { TUsers } from '@/domains/users/types';
@@ -46,7 +47,11 @@ export const Note = ({ content, createdAt, user }: TNote & { user: TUsers[number
         <div className={`text-xs`}>{prettyDate}</div>
       </div>
       <div className={`p-3 text-sm leading-6`}>
-        <span>{content}</span>
+        <span
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(content) as string,
+          }}
+        />
       </div>
     </div>
   );

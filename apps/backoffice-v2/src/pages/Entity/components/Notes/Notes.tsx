@@ -1,24 +1,19 @@
 import * as React from 'react';
-import { useForm } from 'react-hook-form';
 import { Loader2, X } from 'lucide-react';
 import { ctw } from '@ballerine/ui';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Note } from './Note';
 import { NoteableType, TNotes } from './types';
-import { useNotes } from '@/domains/notes/hooks/useNotes';
 import { Form } from '@/common/components/organisms/Form/Form';
 import { Button } from '@/common/components/atoms/Button/Button';
 import { FormItem } from '@/common/components/organisms/Form/Form.Item';
 import { FormField } from '@/common/components/organisms/Form/Form.Field';
+import { Separator } from '@/common/components/atoms/Separator/Separator';
 import { MinimalTiptapEditor } from '@/common/components/organisms/Editor';
 import { FormControl } from '@/common/components/organisms/Form/Form.Control';
 import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarHeader } from './Sidebar';
 import { useNotesLogic } from '@/pages/Entity/components/Notes/hooks/useNotesLogic';
-import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUsersQuery';
-import { CreateNoteSchema } from '@/pages/Entity/components/Notes/hooks/schemas/create-note-schema';
-import { Separator } from '@/common/components/atoms/Separator/Separator';
 
 const fallbackUser = {
   id: 'test',
@@ -34,26 +29,15 @@ const fallbackUser = {
 
 export const Notes = ({
   notes,
-  displayName,
   ...data
 }: {
   notes: TNotes;
-  displayName: string;
   entityId: string;
   entityType: 'Business' | 'EndUser';
   noteableId: string;
   noteableType: NoteableType;
 }) => {
-  const { toggleNotes } = useNotes();
-  const { data: users } = useUsersQuery();
-  const { onSubmit, isLoading } = useNotesLogic();
-
-  const form = useForm({
-    defaultValues: {
-      content: '',
-    },
-    resolver: zodResolver(CreateNoteSchema.pick({ content: true })),
-  });
+  const { form, users, toggleNotes, onSubmit, isLoading } = useNotesLogic();
 
   return (
     <Sidebar side={`right`} className={`bg-slate-50`}>

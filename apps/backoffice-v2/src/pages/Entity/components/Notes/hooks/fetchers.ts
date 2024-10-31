@@ -1,10 +1,8 @@
-import { z } from 'zod';
-
 import { Method } from '@/common/enums';
 import { apiClient } from '@/common/api-client/api-client';
 import { NoteableType } from '@/pages/Entity/components/Notes/types';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
-import { NotesSchema } from '@/pages/Entity/components/Notes/hooks/schemas/note-schema';
+import { NoteSchema, NotesSchema } from '@/pages/Entity/components/Notes/hooks/schemas/note-schema';
 
 export const createNote = async ({
   entityId,
@@ -24,7 +22,7 @@ export const createNote = async ({
   const [note, error] = await apiClient({
     endpoint: `../external/notes`,
     method: Method.POST,
-    schema: z.undefined(),
+    schema: NoteSchema,
     body: {
       entityId,
       entityType,
