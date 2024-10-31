@@ -88,6 +88,7 @@
     "json-schema-to-zod": "^0.6.3",
     "lodash.get": "^4.4.2",
     "lodash.isempty": "^4.4.0",
+    "xstate": "^5.18.2",
     "zod": "^3.22.4"
   }
 }

@@ -2,7 +2,6 @@ import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.servi
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
-import { getStepsInOrder } from '@/collection-flow/helpers/get-steps-in-order';
 import { ajv } from '@/common/ajv/ajv.validator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
@@ -57,6 +56,7 @@ import {
   CollectionFlowStatusesEnum,
   DefaultContextSchema,
   getDocumentId,
+  getOrderedSteps,
   isErrorWithMessage,
   isObject,
   ProcessStatus,
@@ -91,7 +91,6 @@ import {
   EndUser,
   Prisma,
   PrismaClient,
-  UiDefinition,
   UiDefinitionContext,
   User,
   WorkflowDefinition,
@@ -103,6 +102,7 @@ import { plainToClass } from 'class-transformer';
 import dayjs from 'dayjs';
 import { isEqual, merge } from 'lodash';
 import mime from 'mime';
+import { WORKFLOW_TERMINAL_STATES } from './consts';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
@@ -1558,7 +1558,12 @@ export class WorkflowService {
 
           const collectionFlow = buildCollectionFlowState({
             apiUrl: env.APP_API_URL,
-            steps: await getStepsInOrder(uiDefinition as UiDefinition),
+            steps: getOrderedSteps(
+              (uiDefinition?.definition as Prisma.JsonObject)?.definition as Record<string, any>,
+              { terminalStates: [...WORKFLOW_TERMINAL_STATES] },
+            ).map(stepName => ({
+              stateName: stepName,
+            })),
             additionalInformation: {
               customerCompany: customer.displayName,
             },

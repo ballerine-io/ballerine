@@ -3,6 +3,7 @@ export * from './enums/collection-flow-status-enum';
 export * from './get-collection-flow-additional-information';
 export * from './get-collection-flow-config';
 export * from './get-collection-flow-state';
+export * from './get-ordered-steps';
 export * from './schemas/config-schema';
 export * from './set-collection-flow-status';
 export * from './set-step-completion-state';
