@@ -1,4 +1,4 @@
-import { CollectionFlowManager } from '@ballerine/common';
+import { buildCollectionFlowState } from '@ballerine/common';
 import { createWorkflow } from '@ballerine/workflow-core';
 import { Prisma, PrismaClient, UiDefinition } from '@prisma/client';
 import { env } from '../../../src/env';
@@ -56,7 +56,18 @@ export const generateInitialCollectionFlowExample = async (
     token: string;
   },
 ) => {
-  const initialContext = {
+  const uiDefinition = await prismaClient.uiDefinition.findFirst({
+    where: {
+      workflowDefinitionId,
+    },
+  });
+
+  const collectionFlow = buildCollectionFlowState({
+    apiUrl: env.APP_API_URL,
+    steps: await getStepsInOrder(uiDefinition as UiDefinition),
+  });
+
+  const context = {
     workflowId: workflowDefinitionId,
     entity: {
       ballerineEntityId: businessId,
@@ -72,6 +83,7 @@ export const generateInitialCollectionFlowExample = async (
       },
     },
     documents: [],
+    collectionFlow,
     metadata: {
       collectionFlowUrl: env.COLLECTION_FLOW_URL,
       webUiSDKUrl: env.WEB_UI_SDK_URL,
@@ -79,26 +91,13 @@ export const generateInitialCollectionFlowExample = async (
     },
   };
 
-  const uiDefinition = await prismaClient.uiDefinition.findFirst({
-    where: {
-      workflowDefinitionId,
-    },
-  });
-
-  const collectionFlowManager = new CollectionFlowManager(initialContext, {
-    apiUrl: env.APP_API_URL,
-    steps: await getStepsInOrder(uiDefinition as UiDefinition),
-  });
-
-  collectionFlowManager.initializeCollectionFlowContext();
-
   const creationArgs = {
     data: {
       endUserId: endUserId,
       workflowDefinitionId: workflowDefinitionId,
       projectId: projectId,
       state: 'collection_flow',
-      context: collectionFlowManager.context,
+      context,
       businessId: businessId,
       workflowDefinitionVersion: 1,
     },

@@ -28,26 +28,21 @@ export class CollectionFlowProcessTracker implements IProcessTracker {
   }
 
   private getSteps() {
-    const steps = this.workflow?.context?.collectionFlow?.config?.steps;
+    const steps = this.workflow?.context?.collectionFlow?.state?.steps;
 
     if (!steps?.length) return [];
 
-    // Create a map of stateName to orderNumber for efficient lookup
-    const stateOrderMap = new Map(steps.map(step => [step.stateName, step.orderNumber]));
-
-    // Get progress states and sort them by their corresponding orderNumber
-    return Object.keys(this.workflow?.context?.collectionFlow?.state?.progressBreakdown ?? {}).sort(
-      (a, b) => {
-        const orderA = stateOrderMap.get(a) ?? 0;
-        const orderB = stateOrderMap.get(b) ?? 0;
-
-        return orderA - orderB;
-      },
-    );
+    return steps.map(step => step.stepName);
   }
 
   private getCollectionFlowStatus(step: string) {
-    if (this.workflow?.context?.collectionFlow?.state?.progressBreakdown?.[step]?.isCompleted) {
+    const stepItem = this.workflow?.context?.collectionFlow?.state?.steps?.find(
+      s => s.stepName === step,
+    );
+
+    if (!stepItem) return processStatusToIcon[ProcessStatus.IDLE];
+
+    if (stepItem?.isCompleted) {
       return processStatusToIcon[ProcessStatus.SUCCESS];
     }
 

@@ -53,13 +53,14 @@ import {
 } from '@/workflow/workflow-runtime-list-item.model';
 import {
   AnyRecord,
-  CollectionFlowManager,
-  CollectionFlowStatuses,
+  buildCollectionFlowState,
+  CollectionFlowStatusesEnum,
   DefaultContextSchema,
   getDocumentId,
   isErrorWithMessage,
   isObject,
   ProcessStatus,
+  setCollectionFlowStatus,
 } from '@ballerine/common';
 import {
   ARRAY_MERGE_OPTION,
@@ -1555,28 +1556,21 @@ export class WorkflowService {
             transaction,
           );
 
-          // Initializing Collection Flow
-          const collectionFlowManager = new CollectionFlowManager(
-            {
-              ...workflowRuntimeData.context,
+          const collectionFlow = buildCollectionFlowState({
+            apiUrl: env.APP_API_URL,
+            steps: await getStepsInOrder(uiDefinition as UiDefinition),
+            additionalInformation: {
+              customerCompany: customer.displayName,
             },
-            {
-              apiUrl: env.APP_API_URL,
-              steps: await getStepsInOrder(uiDefinition as UiDefinition),
-              additionalInformation: {
-                customerCompany: customer.displayName,
-              },
-            },
-          );
-
-          collectionFlowManager.initializeCollectionFlowContext();
+          });
 
           workflowRuntimeData = await this.workflowRuntimeDataRepository.updateStateById(
             workflowRuntimeData.id,
             {
               data: {
                 context: {
-                  ...collectionFlowManager.context,
+                  ...workflowRuntimeData.context,
+                  collectionFlow,
                   metadata: {
                     ...(workflowRuntimeData.context.metadata ?? {}),
                     token: workflowToken.token,
@@ -2176,7 +2170,7 @@ export class WorkflowService {
 
       const snapshot = service.getSnapshot();
       const currentState = snapshot.value;
-      let context = snapshot.machine?.context;
+      const context = snapshot.machine?.context;
 
       // Checking if event type is candidate for "revision" state
       const nextCollectionFlowState = COLLECTION_FLOW_EVENTS_WHITELIST.includes(type)
@@ -2191,13 +2185,9 @@ export class WorkflowService {
       });
 
       if (nextCollectionFlowState) {
-        const collectionFlowManager = new CollectionFlowManager(context);
-
-        if (currentState in CollectionFlowStatuses) {
-          collectionFlowManager.state().status = currentState;
+        if (currentState in CollectionFlowStatusesEnum) {
+          setCollectionFlowStatus(context, currentState);
         }
-
-        context = collectionFlowManager.context;
       }
 
       // TODO: Refactor to use snapshot.done instead
