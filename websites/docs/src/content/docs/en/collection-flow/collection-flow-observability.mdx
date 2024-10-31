@@ -1,0 +1,97 @@
+---
+title: Collection Flow Observability
+description: Understanding and monitoring the state of your collection flow
+---
+
+import CodeBlock from '../../../../components/CodeBlock/CodeBlock.astro';
+
+## Overview
+
+The Collection Flow provides comprehensive observability into its internal state through the workflow context. This allows you to monitor and understand the current state of the collection flow, its configuration, and progress in real-time.
+
+## Workflow Context Structure
+
+The workflow context contains several key components that provide insights into the collection flow:
+
+### Configuration (config)
+
+The configuration section defines the basic setup of your collection flow:
+
+<CodeBlock lang="json" code={`{
+  "config": {
+    "apiUrl": "https://api.example.com",
+    "steps": [
+      {
+        "stateName": "personal_info",
+        "orderNumber": 1
+      },
+      {
+        "stateName": "company_details", 
+        "orderNumber": 2
+      }
+    ]
+  }
+}`}/>
+
+### State Management
+
+The state section tracks the current progress and status of the collection flow:
+
+<CodeBlock lang="json" code={`{
+  "state": {
+    "currentStep": "company_details",
+    "status": "inprogress",
+    "progressBreakdown": {
+      "personal_info": true,
+      "company_details": false
+    }
+  }
+}`}/>
+
+#### Status Values
+
+The collection flow can have the following status values:
+
+- `pending`: Initial state, awaiting user data entry
+- `inprogress`: Active user engagement with form submission ongoing
+- `completed`: All steps finished, awaiting plugin processing and review
+- `approved`: Application approved by Backoffice
+- `revision`: Returned to client for corrections
+- `rejected`: Application rejected by Backoffice
+- `failed`: Plugin execution failure
+
+### Additional Information
+
+The context can include supplementary data used by plugins:
+
+<CodeBlock lang="json" code={`{
+  "additionalInformation": {
+    "customField": "value",
+    "pluginSpecificData": {
+      // Plugin-specific information
+    }
+  }
+}`}/>
+
+## Monitoring and Debugging
+
+You can inspect the workflow context to:
+
+1. Track progress through the collection flow
+2. Debug issues with form submissions
+3. Understand the current state of plugin processing
+4. Verify configuration settings
+5. Monitor user progression through steps
+
+To access the workflow context, you can use the workflow runtime API or inspect it through the Backoffice interface.
+
+## Real-time Updates
+
+The context maintains bidirectional updates, meaning changes can occur from:
+
+- Frontend user interactions
+- Backend plugin processing
+- Administrative actions in the Backoffice
+- System automated processes
+
+This ensures you always have an accurate view of the collection flow's current state.
