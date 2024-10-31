@@ -20,7 +20,7 @@ describe('CollectionFlowManager', () => {
       const collectionFlowManager = new CollectionFlowManager({
         collectionFlow: {
           state: {
-            uiState: 'step1',
+            currentStep: 'step1',
           },
         },
       } as DefaultContextSchema);
@@ -34,7 +34,7 @@ describe('CollectionFlowManager', () => {
   describe('collection flow is considered started', () => {
     test('when uiState is set', () => {
       const collectionFlowManager = new CollectionFlowManager({
-        collectionFlow: { state: { uiState: 'step1' } },
+        collectionFlow: { state: { currentStep: 'step1' } },
       } as DefaultContextSchema);
 
       expect(collectionFlowManager.isStarted()).toBe(true);
@@ -52,7 +52,7 @@ describe('CollectionFlowManager', () => {
 
       expect(context).toBeDefined();
       expect(context.collectionFlow?.config?.apiUrl).toBe('https://api.example.com');
-      expect(context.collectionFlow?.state?.progress).toEqual({
+      expect(context.collectionFlow?.state?.progressBreakdown).toEqual({
         step1: {
           isCompleted: false,
         },

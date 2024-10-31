@@ -54,7 +54,7 @@ import {
 import {
   AnyRecord,
   CollectionFlowManager,
-  CollectionFlowStates,
+  CollectionFlowStatuses,
   DefaultContextSchema,
   getDocumentId,
   isErrorWithMessage,
@@ -2193,8 +2193,8 @@ export class WorkflowService {
       if (nextCollectionFlowState) {
         const collectionFlowManager = new CollectionFlowManager(context);
 
-        if (currentState in CollectionFlowStates) {
-          collectionFlowManager.state().collectionFlowState = currentState;
+        if (currentState in CollectionFlowStatuses) {
+          collectionFlowManager.state().status = currentState;
         }
 
         context = collectionFlowManager.context;

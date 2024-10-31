@@ -1,4 +1,4 @@
-import { CollectionFlowStates, TCollectionFlowState } from '@/consts';
+import { CollectionFlowStatuses, TCollectionFlowStatus } from '@/consts';
 import { DefaultContextSchema } from '@/schemas';
 import { describe, expect, it, test } from 'vitest';
 import { StateHelper } from './state-helper';
@@ -21,11 +21,11 @@ describe('StateHelper', () => {
   describe('uiState will throw on update', () => {
     test('if uiState is not in progress', () => {
       const stateHelper = new StateHelper({
-        collectionFlow: { state: { progress: {} } },
+        collectionFlow: { state: { progressBreakdown: {} } },
       } as DefaultContextSchema);
 
       expect(() => {
-        stateHelper.uiState = 'invalid';
+        stateHelper.currentStep = 'invalid';
       }).toThrow();
     });
   });
@@ -35,20 +35,20 @@ describe('StateHelper', () => {
       const stateHelper = new StateHelper({
         collectionFlow: {
           state: {
-            uiState: 'step1',
-            progress: {
+            currentStep: 'step1',
+            progressBreakdown: {
               step1: { isCompleted: false },
               step2: { isCompleted: false },
             } as NonNullable<
               NonNullable<DefaultContextSchema['collectionFlow']>['state']
-            >['progress'],
+            >['progressBreakdown'],
           },
         },
       } as DefaultContextSchema);
 
-      stateHelper.uiState = 'step2';
+      stateHelper.currentStep = 'step2';
 
-      expect(stateHelper.uiState).toBe('step2');
+      expect(stateHelper.currentStep).toBe('step2');
     });
   });
 
@@ -60,7 +60,7 @@ describe('StateHelper', () => {
         } as DefaultContextSchema);
 
         expect(() => {
-          stateHelper.collectionFlowState = 'invalid' as TCollectionFlowState;
+          stateHelper.status = 'invalid' as TCollectionFlowStatus;
         }).toThrow();
       });
     });
@@ -73,9 +73,9 @@ describe('StateHelper', () => {
           },
         } as DefaultContextSchema);
 
-        stateHelper.collectionFlowState = CollectionFlowStates.revision;
+        stateHelper.status = CollectionFlowStatuses.revision;
 
-        expect(stateHelper.collectionFlowState).toBe('revision');
+        expect(stateHelper.status).toBe('revision');
       });
     });
   });
@@ -87,12 +87,12 @@ describe('StateHelper', () => {
       } as DefaultContextSchema);
 
       stateHelper.override({
-        uiState: 'step1',
-        collectionFlowState: CollectionFlowStates.revision,
+        currentStep: 'step1',
+        status: CollectionFlowStatuses.revision,
       });
 
-      expect(stateHelper.uiState).toBe('step1');
-      expect(stateHelper.collectionFlowState).toBe(CollectionFlowStates.revision);
+      expect(stateHelper.currentStep).toBe('step1');
+      expect(stateHelper.status).toBe(CollectionFlowStatuses.revision);
     });
   });
 
@@ -101,13 +101,13 @@ describe('StateHelper', () => {
       const ctx = {
         collectionFlow: {
           state: {
-            progress: {
+            progressBreakdown: {
               step1: {
                 isCompleted: false,
               },
             } as NonNullable<
               NonNullable<DefaultContextSchema['collectionFlow']>['state']
-            >['progress'],
+            >['progressBreakdown'],
           },
         },
       } as DefaultContextSchema;
@@ -116,11 +116,11 @@ describe('StateHelper', () => {
 
       stateHelper.setStepCompletionState('step1', true);
 
-      expect(ctx.collectionFlow?.state?.progress?.step1?.isCompleted).toBe(true);
+      expect(ctx.collectionFlow?.state?.progressBreakdown?.step1?.isCompleted).toBe(true);
 
       stateHelper.setStepCompletionState('step1', false);
 
-      expect(ctx.collectionFlow?.state?.progress?.step1?.isCompleted).toBe(false);
+      expect(ctx.collectionFlow?.state?.progressBreakdown?.step1?.isCompleted).toBe(false);
     });
   });
 });
