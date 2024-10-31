@@ -22,6 +22,9 @@ const defaultArgs = {
     parentNote: { select: defaultFieldsSelect },
     childrenNotes: { select: defaultFieldsSelect },
   },
+  orderBy: {
+    createdAt: 'desc',
+  },
 };
 
 @Injectable()
@@ -44,8 +47,9 @@ export class NoteRepository {
     transaction: PrismaTransaction | PrismaClient = this.prismaService,
   ) {
     return transaction.note.findMany({
-      select: { ...(args?.select || defaultArgs.select) } as Prisma.NoteFindManyArgs['select'],
       where: { ...(args?.where || {}), deletedAt: null, projectId },
+      select: { ...(args?.select || defaultArgs.select) } as Prisma.NoteFindManyArgs['select'],
+      orderBy: { ...(args?.orderBy || defaultArgs?.orderBy) } as Prisma.NoteFindManyArgs['orderBy'],
     });
   }
 
@@ -68,8 +72,9 @@ export class NoteRepository {
     args?: Prisma.SelectSubset<T, Omit<Prisma.NoteFindManyArgs, 'where'>>,
   ) {
     return this.prismaService.note.findMany({
-      select: { ...(args?.select || defaultArgs.select) } as Prisma.NoteFindManyArgs['select'],
       where: { deletedAt: null, projectId },
+      select: { ...(args?.select || defaultArgs.select) } as Prisma.NoteFindManyArgs['select'],
+      orderBy: { ...(args?.orderBy || defaultArgs?.orderBy) } as Prisma.NoteFindManyArgs['orderBy'],
     });
   }
 
