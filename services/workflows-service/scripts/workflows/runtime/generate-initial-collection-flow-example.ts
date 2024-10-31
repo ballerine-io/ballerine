@@ -3,6 +3,8 @@ import { createWorkflow } from '@ballerine/workflow-core';
 import { Prisma, PrismaClient, UiDefinition } from '@prisma/client';
 import { env } from '../../../src/env';
 
+const EVENTS_BLACK_LIST = ['done', 'success', 'failed'];
+
 export const getStepsInOrder = async (uiDefinition: UiDefinition) => {
   if (!uiDefinition?.uiSchema) return [];
 
@@ -23,7 +25,9 @@ export const getStepsInOrder = async (uiDefinition: UiDefinition) => {
 
   while (!stateMachine.getSnapshot().done) {
     const snapshot = stateMachine.getSnapshot();
-    stepsInOrder.push(snapshot.value);
+    if (!EVENTS_BLACK_LIST.includes(snapshot.value)) {
+      stepsInOrder.push(snapshot.value);
+    }
 
     // Check if NEXT event is available in current state
     if (snapshot.nextEvents.includes('NEXT')) {
