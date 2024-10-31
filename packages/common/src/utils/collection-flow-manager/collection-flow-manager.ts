@@ -1,4 +1,4 @@
-import { CollectionFlowStates } from '@/consts';
+import { CollectionFlowStatuses } from '@/consts';
 import { DefaultContextSchema } from '@/schemas';
 import { ConfigHelper } from './helpers/config-helper';
 import { StateHelper } from './helpers/state-helper';
@@ -17,7 +17,7 @@ export class CollectionFlowManager<TContext extends DefaultContextSchema> {
   }
 
   isStarted() {
-    return Boolean(this.context?.collectionFlow?.state?.uiState);
+    return Boolean(this.context?.collectionFlow?.state?.currentStep);
   }
 
   initializeCollectionFlowContext() {
@@ -33,9 +33,9 @@ export class CollectionFlowManager<TContext extends DefaultContextSchema> {
     console.log('Collection Flow Context initiated with config: ', config);
 
     const state: NonNullable<DefaultContextSchema['collectionFlow']>['state'] = {
-      uiState: this._config?.steps[0]?.stateName as string,
-      collectionFlowState: CollectionFlowStates.pending,
-      progress: this.buildProgressState(),
+      currentStep: this._config?.steps[0]?.stateName as string,
+      status: CollectionFlowStatuses.pending,
+      progressBreakdown: this.buildProgressState(),
     };
 
     console.log('Collection Flow Context initiated with state: ', state);

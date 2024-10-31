@@ -20,7 +20,7 @@ export const StateManager = ({
   const machine = useMemo(() => {
     const initialMachineState = {
       ...initialContext,
-      state: initialContext?.collectionFlow?.state?.uiState,
+      state: initialContext?.collectionFlow?.state?.currentStep,
     };
 
     const machine = createStateMachine(

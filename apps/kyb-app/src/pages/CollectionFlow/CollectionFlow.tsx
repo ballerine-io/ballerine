@@ -31,7 +31,7 @@ import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Failed } from '@/pages/CollectionFlow/components/pages/Failed';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
-import { CollectionFlowManager, CollectionFlowStates } from '@ballerine/common';
+import { CollectionFlowManager, CollectionFlowStatuses } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 
 const elems = {
@@ -74,7 +74,7 @@ export const CollectionFlow = withSessionProtected(() => {
 
   const pageErrors = usePageErrors(context ?? ({} as CollectionFlowContext), elements || []);
   const isRevision = useMemo(
-    () => context?.collectionFlow?.state?.collectionFlowState === CollectionFlowStates.revision,
+    () => context?.collectionFlow?.state?.status === CollectionFlowStatuses.revision,
     [context],
   );
 
@@ -83,8 +83,8 @@ export const CollectionFlow = withSessionProtected(() => {
 
     if (isRevision) {
       const revisionStateName = getRevisionStateName(pageErrors);
-      collectionFlowManager.state().uiState =
-        revisionStateName || collectionFlowManager.state().uiState;
+      collectionFlowManager.state().currentStep =
+        revisionStateName || collectionFlowManager.state().currentStep;
     }
 
     return collectionFlowManager.context as CollectionFlowContext;
@@ -106,10 +106,10 @@ export const CollectionFlow = withSessionProtected(() => {
     setLogoLoaded(false);
   }, [customer?.logoImageUri]);
 
-  if (initialContext?.collectionFlow?.state?.collectionFlowState === CollectionFlowStates.approved)
+  if (initialContext?.collectionFlow?.state?.status === CollectionFlowStatuses.approved)
     return <Approved />;
 
-  if (initialContext?.collectionFlow?.state?.collectionFlowState === CollectionFlowStates.rejected)
+  if (initialContext?.collectionFlow?.state?.status === CollectionFlowStatuses.rejected)
     return <Rejected />;
 
   return definition && context ? (
@@ -132,16 +132,15 @@ export const CollectionFlow = withSessionProtected(() => {
                 const collectionFlowManager = new CollectionFlowManager(stateApi.getContext());
 
                 const isAnyStepCompleted = Object.values(
-                  collectionFlowManager.state().progress || {},
+                  collectionFlowManager.state().progressBreakdown || {},
                 ).some(step => step.isCompleted);
 
                 collectionFlowManager.state().setStepCompletionState(prevState, true);
-                collectionFlowManager.state().uiState = currentState;
+                collectionFlowManager.state().currentStep = currentState;
 
                 if (!isAnyStepCompleted) {
                   console.log('Collection flow touched, changing state to inprogress');
-                  collectionFlowManager.state().collectionFlowState =
-                    CollectionFlowStates.inprogress;
+                  collectionFlowManager.state().status = CollectionFlowStatuses.inprogress;
 
                   console.log('Updating context to', collectionFlowManager.context);
                 }

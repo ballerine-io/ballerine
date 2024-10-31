@@ -36,7 +36,7 @@ export class CollectionFlowProcessTracker implements IProcessTracker {
     const stateOrderMap = new Map(steps.map(step => [step.stateName, step.orderNumber]));
 
     // Get progress states and sort them by their corresponding orderNumber
-    return Object.keys(this.workflow?.context?.collectionFlow?.state?.progress ?? {}).sort(
+    return Object.keys(this.workflow?.context?.collectionFlow?.state?.progressBreakdown ?? {}).sort(
       (a, b) => {
         const orderA = stateOrderMap.get(a) ?? 0;
         const orderB = stateOrderMap.get(b) ?? 0;
@@ -47,7 +47,7 @@ export class CollectionFlowProcessTracker implements IProcessTracker {
   }
 
   private getCollectionFlowStatus(step: string) {
-    if (this.workflow?.context?.collectionFlow?.state?.progress?.[step]?.isCompleted) {
+    if (this.workflow?.context?.collectionFlow?.state?.progressBreakdown?.[step]?.isCompleted) {
       return processStatusToIcon[ProcessStatus.SUCCESS];
     }
 

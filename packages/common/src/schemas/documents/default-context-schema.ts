@@ -1,6 +1,6 @@
 import { Static, Type } from '@sinclair/typebox';
 
-import { CollectionFlowStates } from '@/consts';
+import { CollectionFlowStatuses } from '@/consts';
 import { MerchantScreeningPluginSchema } from '@/schemas/documents/merchant-screening-plugin-schema';
 import { BusinessInformationPluginSchema } from '@/schemas/documents/schemas/business-information-plugin-schema';
 import { CompanySanctionsPluginSchema } from '@/schemas/documents/schemas/company-sanctions-plugin-schema';
@@ -58,9 +58,9 @@ export const defaultContextSchema = Type.Composite([
         ),
         state: Type.Optional(
           Type.Object({
-            uiState: Type.String(),
-            collectionFlowState: Type.Enum(CollectionFlowStates),
-            progress: Type.Optional(
+            currentStep: Type.String(),
+            status: Type.Enum(CollectionFlowStatuses),
+            progressBreakdown: Type.Optional(
               Type.Record(Type.String(), Type.Object({ isCompleted: Type.Boolean() })),
             ),
           }),
