@@ -10,7 +10,7 @@ export const Entity = () => {
   const { workflow, notes, selectedEntity } = useEntityLogic();
   const { isNotesOpen } = useNotes();
 
-  if (!workflow) {
+  if (!workflow || !notes) {
     return null;
   }
 

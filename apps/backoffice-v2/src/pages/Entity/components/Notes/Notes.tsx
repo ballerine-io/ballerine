@@ -1,60 +1,60 @@
 import * as React from 'react';
+import { useForm } from 'react-hook-form';
 import { Loader2, X } from 'lucide-react';
-
-import { NoteableType } from './types';
-import { useNotes } from '@/domains/notes/hooks/useNotes';
-import { useNotesLogic } from '@/pages/Entity/components/Notes/hooks/useNotesLogic';
-import { Sidebar, SidebarContent, SidebarHeader } from './Sidebar';
 import { ctw, TextArea } from '@ballerine/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { CreateNoteSchema } from '@/pages/Entity/components/Notes/hooks/schemas/create-note-schema';
-import { FormField } from '@/common/components/organisms/Form/Form.Field';
-import { FormItem } from '@/common/components/organisms/Form/Form.Item';
-import { FormControl } from '@/common/components/organisms/Form/Form.Control';
-import { useForm } from 'react-hook-form';
+import { Note } from './Note';
+import { NoteableType, TNotes } from './types';
+import { useNotes } from '@/domains/notes/hooks/useNotes';
 import { Form } from '@/common/components/organisms/Form/Form';
 import { Button } from '@/common/components/atoms/Button/Button';
+import { FormItem } from '@/common/components/organisms/Form/Form.Item';
+import { FormField } from '@/common/components/organisms/Form/Form.Field';
+import { FormControl } from '@/common/components/organisms/Form/Form.Control';
 import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
+import { Sidebar, SidebarContent, SidebarGroup, SidebarHeader } from './Sidebar';
+import { useNotesLogic } from '@/pages/Entity/components/Notes/hooks/useNotesLogic';
+import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUsersQuery';
+import { CreateNoteSchema } from '@/pages/Entity/components/Notes/hooks/schemas/create-note-schema';
 
-export const Notes = React.memo(
-  ({
-    notes,
-    displayName,
-    ...data
-  }: {
-    notes: any[];
-    displayName: string;
-    entityId: string;
-    entityType: 'Business' | 'EndUser';
-    noteableId: string;
-    noteableType: NoteableType;
-  }) => {
-    const { toggleNotes } = useNotes();
-    const { onSubmit } = useNotesLogic();
+export const Notes = ({
+  notes,
+  displayName,
+  ...data
+}: {
+  notes: TNotes;
+  displayName: string;
+  entityId: string;
+  entityType: 'Business' | 'EndUser';
+  noteableId: string;
+  noteableType: NoteableType;
+}) => {
+  const { toggleNotes } = useNotes();
+  const { onSubmit } = useNotesLogic();
+  const { data: users } = useUsersQuery();
 
-    const form = useForm({
-      defaultValues: {
-        content: '',
-      },
-      resolver: zodResolver(CreateNoteSchema.pick({ content: true })),
-    });
+  const form = useForm({
+    defaultValues: {
+      content: '',
+    },
+    resolver: zodResolver(CreateNoteSchema.pick({ content: true })),
+  });
 
-    return (
-      <Sidebar side={`right`} className={`bg-[#F4F6FD]`}>
-        <SidebarHeader
-          className={`h-[72px] flex-row items-center justify-between bg-[#E7EBF7] p-6`}
-        >
-          <span className={`text-lg font-semibold`}>{displayName}</span>
-          <X
-            className="cursor-pointer d-6"
-            onClick={() => {
-              toggleNotes();
-            }}
-          />
-        </SidebarHeader>
-        <SidebarContent className={`m-6 flex flex-col`}>
-          <div className={`text-lg font-bold`}>Notes</div>
+  return (
+    <Sidebar side={`right`} className={`bg-[#F4F6FD]`}>
+      <SidebarHeader className={`h-[72px] flex-row items-center justify-between bg-[#E7EBF7] p-6`}>
+        <span className={`text-lg font-semibold`}>{displayName}</span>
+        <X
+          className="cursor-pointer d-6"
+          onClick={() => {
+            toggleNotes();
+          }}
+        />
+      </SidebarHeader>
+      <SidebarContent className={`m-6 flex flex-col`}>
+        <div className={`text-lg font-bold`}>Notes</div>
+        <SidebarGroup>
           <Form {...form}>
             <form
               className={`flex flex-col`}
@@ -96,10 +96,17 @@ export const Notes = React.memo(
               </Button>
             </form>
           </Form>
-        </SidebarContent>
-      </Sidebar>
-    );
-  },
-);
-
-Notes.displayName = 'Notes';
+        </SidebarGroup>
+        <SidebarGroup className={`space-y-5`}>
+          {notes.map(note => (
+            <Note
+              key={note.id}
+              {...note}
+              user={(users || []).find(user => user.id === note.createdBy)}
+            />
+          ))}
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
+  );
+};

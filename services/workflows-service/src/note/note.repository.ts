@@ -12,6 +12,7 @@ const defaultFieldsSelect = {
   content: true,
   fileIds: true,
   createdAt: true,
+  createdBy: true,
   updatedAt: true,
 };
 
