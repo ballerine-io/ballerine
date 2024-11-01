@@ -1,13 +1,13 @@
 import { DefaultContextSchema } from '@/schemas';
 
-export interface ISetStepCompleteioParams {
+export interface ISetStepCompletionStateParams {
   stepName: string;
   completed: boolean;
 }
 
 export const setStepCompletionState = (
   context: DefaultContextSchema,
-  params: ISetStepCompleteioParams,
+  params: ISetStepCompletionStateParams,
 ) => {
   if (!context.collectionFlow?.state?.steps) {
     throw new Error(
