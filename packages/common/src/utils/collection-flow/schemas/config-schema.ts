@@ -1,12 +1,12 @@
 import { Static, Type } from '@sinclair/typebox';
 
-const CollectionFlowStepSchema = Type.Object({
+const InputCollectionFlowStepSchema = Type.Object({
   stateName: Type.String(),
 });
 
 export const CollectionFlowConfigSchema = Type.Object({
   apiUrl: Type.String(),
-  steps: Type.Array(CollectionFlowStepSchema),
+  steps: Type.Array(InputCollectionFlowStepSchema),
   additionalInformation: Type.Optional(
     Type.Object(
       {
