@@ -4,13 +4,13 @@ import { useNotes } from '@/domains/notes/hooks/useNotes';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { BlocksVariant } from '@/lib/blocks/variants/BlocksVariant/BlocksVariant';
 import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
-import { SidebarInset, SidebarProvider } from '@/pages/Entity/components/Notes/Sidebar';
+import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
 
 export const Entity = () => {
   const { workflow, notes, selectedEntity } = useEntityLogic();
   const { isNotesOpen } = useNotes();
 
-  if (!workflow || !notes) {
+  if (!workflow || !notes || !selectedEntity) {
     return null;
   }
 
@@ -29,8 +29,7 @@ export const Entity = () => {
           <Case.Actions
             numberOfNotes={notes?.length ?? 0}
             id={workflow?.id}
-            fullName={selectedEntity?.name}
-            avatarUrl={selectedEntity?.avatarUrl}
+            fullName={selectedEntity.name}
             showResolutionButtons={
               workflow?.workflowDefinition?.config?.workflowLevelResolution ??
               workflow?.context?.entity?.type === 'business'

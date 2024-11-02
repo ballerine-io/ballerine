@@ -20,7 +20,6 @@ import { ActionsVariant } from '@/pages/Entity/components/Case/actions-variants/
  * @param props.showResolutionButtons - Whether to show the reject/approve buttons.
  *
  * @see {@link Case}
- * @see {@link Avatar}
  *
  * @constructor
  */

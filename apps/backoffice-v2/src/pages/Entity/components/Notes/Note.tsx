@@ -10,7 +10,6 @@ import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
 
 import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
-import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provider';
 
 export const Note = ({ content, createdAt, user }: TNote & { user: TUsers[number] }) => {
   const prettyDate = useMemo(() => {
@@ -35,14 +34,12 @@ export const Note = ({ content, createdAt, user }: TNote & { user: TUsers[number
             avatarUrl={user.avatarUrl ?? undefined}
             fullName={fullName ?? ''}
           />
-          <TooltipProvider>
-            <Tooltip delayDuration={0}>
-              <TooltipTrigger asChild>
-                <span className={`max-w-[20ch] truncate`}>{fullName}</span>
-              </TooltipTrigger>
-              <TooltipContent>{fullName}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip delayDuration={300}>
+            <TooltipTrigger asChild>
+              <span className={`max-w-[20ch] truncate`}>{fullName}</span>
+            </TooltipTrigger>
+            <TooltipContent>{fullName}</TooltipContent>
+          </Tooltip>
         </div>
         <div className={`text-xs`}>{prettyDate}</div>
       </div>

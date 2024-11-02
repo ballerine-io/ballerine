@@ -12,18 +12,23 @@ import { Separator } from '@/common/components/atoms/Separator/Separator';
 import { MinimalTiptapEditor } from '@/common/components/organisms/Editor';
 import { FormControl } from '@/common/components/organisms/Form/Form.Control';
 import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
-import { Sidebar, SidebarContent, SidebarGroup, SidebarHeader } from './Sidebar';
 import { useNotesLogic } from '@/pages/Entity/components/Notes/hooks/useNotesLogic';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarHeader,
+} from '@/common/components/organisms/Sidebar/Sidebar';
 
 const fallbackUser = {
   id: 'test',
-  firstName: 'test',
+  email: 'test',
+  phone: 'test',
   lastName: 'test',
   fullName: 'test',
   avatarUrl: 'test',
-  email: 'test',
-  phone: 'test',
   createdAt: 'test',
+  firstName: 'test',
   updatedAt: 'test',
 };
 
