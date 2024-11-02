@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Loader2, X } from 'lucide-react';
 import { ctw } from '@ballerine/ui';
+import { Loader2, X } from 'lucide-react';
 
 import { Note } from './Note';
 import { NoteableType, TNotes } from './types';
@@ -76,7 +76,7 @@ export const Notes = ({
                     <FormControl>
                       <MinimalTiptapEditor
                         className="w-full bg-white"
-                        editorContentClassName="ps-4 pt-4 text-sm h-[120px]"
+                        editorContentClassName="p-2 text-sm h-[120px]"
                         output="html"
                         placeholder="Add a note..."
                         autofocus={true}

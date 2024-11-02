@@ -1,16 +1,18 @@
 import * as React from 'react';
-import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react';
-import type { ElementDimensions } from '../hooks/use-drag-resize';
-import { useDragResize } from '../hooks/use-drag-resize';
-import { ResizeHandle } from './resize-handle';
-import { Controlled as ControlledZoom } from 'react-medium-image-zoom';
-import { ActionButton, ActionWrapper, ImageActions } from './image-actions';
-import { useImageActions } from '../hooks/use-image-actions';
-import { blobUrlToBase64, randomId } from '../../../utils';
+import { ctw } from '@ballerine/ui';
 import { InfoCircledIcon, TrashIcon } from '@radix-ui/react-icons';
+import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react';
+import { Controlled as ControlledZoom } from 'react-medium-image-zoom';
+
 import { ImageOverlay } from './image-overlay';
-import { Spinner } from '../../../components/spinner';
+import { ResizeHandle } from './resize-handle';
 import type { UploadReturnType } from '../image';
+import { Spinner } from '../../../components/spinner';
+import { useDragResize } from '../hooks/use-drag-resize';
+import { blobUrlToBase64, randomId } from '../../../utils';
+import { useImageActions } from '../hooks/use-image-actions';
+import type { ElementDimensions } from '../hooks/use-drag-resize';
+import { ActionButton, ActionWrapper, ImageActions } from './image-actions';
 
 const MAX_HEIGHT = 600;
 const MIN_HEIGHT = 120;
