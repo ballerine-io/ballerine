@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { ctw } from '@ballerine/ui';
+import { Link } from 'react-router-dom';
 import { Loader2, X } from 'lucide-react';
 
 import { Note } from './Note';
@@ -9,9 +10,9 @@ import { Button } from '@/common/components/atoms/Button/Button';
 import { FormItem } from '@/common/components/organisms/Form/Form.Item';
 import { FormField } from '@/common/components/organisms/Form/Form.Field';
 import { Separator } from '@/common/components/atoms/Separator/Separator';
-import { MinimalTiptapEditor } from '@/common/components/organisms/Editor';
 import { FormControl } from '@/common/components/organisms/Form/Form.Control';
 import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
+import { MinimalTiptapEditor } from '@/common/components/organisms/TextEditor';
 import { useNotesLogic } from '@/pages/Entity/components/Notes/hooks/useNotesLogic';
 import {
   Sidebar,
@@ -19,7 +20,6 @@ import {
   SidebarGroup,
   SidebarHeader,
 } from '@/common/components/organisms/Sidebar/Sidebar';
-import { Link } from 'react-router-dom';
 
 const fallbackUser = {
   id: 'test',
@@ -84,7 +84,7 @@ export const Notes = ({
                         placeholder="Add a note..."
                         autofocus={true}
                         editable={true}
-                        editorClassName="focus:outline-none"
+                        editorClassName="focus:outline-none h-full"
                         {...field}
                       />
                     </FormControl>

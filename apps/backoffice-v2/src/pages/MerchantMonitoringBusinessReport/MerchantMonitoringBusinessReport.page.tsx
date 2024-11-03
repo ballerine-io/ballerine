@@ -14,7 +14,6 @@ import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea'
 import { useMerchantMonitoringBusinessReportLogic } from '@/pages/MerchantMonitoringBusinessReport/hooks/useMerchantMonitoringBusinessReportLogic/useMerchantMonitoringBusinessReportLogic';
 import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
 import { Notes } from '@/pages/Entity/components/Notes/Notes';
-import { workflow } from '@/pages/Entity/hooks/useEntityLogic/mock-workflow-with-children';
 import { NotesButton } from '@/common/components/molecules/NotesButton/NotesButton';
 
 export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
@@ -29,7 +28,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     isNotesOpen,
   } = useMerchantMonitoringBusinessReportLogic();
 
-  if (!notes) {
+  if (!notes || !businessReport) {
     return;
   }
 
@@ -60,24 +59,23 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
               <span className={`me-4 text-sm leading-6 text-slate-400`}>Status</span>
               <Badge
                 variant={
-                  statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]
+                  statusToBadgeData[businessReport.status as keyof typeof statusToBadgeData]
                     ?.variant
                 }
                 className={ctw(`text-sm font-bold`, {
-                  'bg-info/20 text-info': businessReport?.status === BusinessReportStatus.COMPLETED,
+                  'bg-info/20 text-info': businessReport.status === BusinessReportStatus.COMPLETED,
                   'bg-violet-500/20 text-violet-500':
-                    businessReport?.status === BusinessReportStatus.IN_PROGRESS,
-                  'bg-slate-200 text-slate-500':
-                    businessReport?.status === BusinessReportStatus.NEW,
+                    businessReport.status === BusinessReportStatus.IN_PROGRESS,
+                  'bg-slate-200 text-slate-500': businessReport.status === BusinessReportStatus.NEW,
                 })}
               >
-                {statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]?.text}
+                {statusToBadgeData[businessReport.status as keyof typeof statusToBadgeData]?.text}
               </Badge>
             </div>
             <div>
               <span className={`me-2 text-sm leading-6 text-slate-400`}>Created at</span>
-              {businessReport?.createdAt &&
-                dayjs(new Date(businessReport?.createdAt)).format('HH:mm MMM Do, YYYY')}
+              {businessReport.createdAt &&
+                dayjs(new Date(businessReport.createdAt)).format('HH:mm MMM Do, YYYY')}
             </div>
             <NotesButton numberOfNotes={notes.length} />
           </div>
@@ -104,14 +102,14 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
             </ScrollArea>
           </Tabs>
         </section>
-        <Notes
-          notes={notes}
-          entityId={workflow.entity.id}
-          entityType={`Business`}
-          noteableId={workflow.id}
-          noteableType={`Report`}
-        />
       </SidebarInset>
+      <Notes
+        notes={notes}
+        entityId={businessReport.business?.id || ''}
+        entityType={`Business`}
+        noteableId={businessReport.id || ''}
+        noteableType={`Report`}
+      />
     </SidebarProvider>
   );
 };

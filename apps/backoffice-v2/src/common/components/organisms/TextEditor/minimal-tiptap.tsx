@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 import { ctw } from '@ballerine/ui';
 import { EditorContent } from '@tiptap/react';
 import type { Content, Editor } from '@tiptap/react';
@@ -10,7 +11,6 @@ import { useMinimalTiptapEditor } from './hooks/use-minimal-tiptap';
 import { MeasuredContainer } from './components/measured-container';
 import { LinkBubbleMenu } from './components/bubble-menu/link-bubble-menu';
 import type { UseMinimalTiptapEditorProps } from './hooks/use-minimal-tiptap';
-import { useEffect } from 'react';
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, 'onUpdate'> {
   value?: Content;
@@ -75,7 +75,7 @@ export const MinimalTiptapEditor = React.forwardRef<HTMLDivElement, MinimalTipta
         <Toolbar editor={editor} />
         <EditorContent
           editor={editor}
-          className={ctw('minimal-tiptap-editor', editorContentClassName)}
+          className={ctw('minimal-tiptap-editor h-full', editorContentClassName)}
         />
         <LinkBubbleMenu editor={editor} />
       </MeasuredContainer>
