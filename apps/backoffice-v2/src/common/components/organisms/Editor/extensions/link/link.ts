@@ -7,7 +7,7 @@ import { Plugin, TextSelection } from '@tiptap/pm/state';
 export const Link = TiptapLink.extend({
   /*
    * Determines whether typing next to a link automatically becomes part of the link.
-   * In this case, we dont want any characters to be included as part of the link.
+   * In this case, we don't want any characters to be included as part of the link.
    */
   inclusive: false,
 

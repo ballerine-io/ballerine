@@ -3,16 +3,14 @@ import { ctw } from '@ballerine/ui';
 import { EditorContent } from '@tiptap/react';
 import type { Content, Editor } from '@tiptap/react';
 
-import { SectionOne } from './components/section/one';
 import { SectionTwo } from './components/section/two';
 import { SectionFour } from './components/section/four';
 import { SectionFive } from './components/section/five';
-import { SectionThree } from './components/section/three';
-import { Separator } from '../../atoms/Separator/Separator';
 import { useMinimalTiptapEditor } from './hooks/use-minimal-tiptap';
 import { MeasuredContainer } from './components/measured-container';
 import { LinkBubbleMenu } from './components/bubble-menu/link-bubble-menu';
 import type { UseMinimalTiptapEditorProps } from './hooks/use-minimal-tiptap';
+import { useEffect } from 'react';
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, 'onUpdate'> {
   value?: Content;
@@ -23,30 +21,18 @@ export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, 'o
 
 const Toolbar = ({ editor }: { editor: Editor }) => (
   <div className="shrink-0 overflow-x-auto border-b border-border p-2">
-    <div className="flex w-max items-center gap-px">
-      <SectionOne editor={editor} activeLevels={[1, 2, 3, 4, 5, 6]} />
-
-      <Separator orientation="vertical" className="mx-2 h-7" />
-
+    <div className="flex w-max items-center gap-px space-x-2">
       <SectionTwo
         editor={editor}
         activeActions={['bold', 'italic', 'strikethrough', 'code', 'clearFormatting']}
         mainActionCount={2}
       />
 
-      <Separator orientation="vertical" className="mx-2 h-7" />
-
-      <SectionThree editor={editor} />
-
-      <Separator orientation="vertical" className="mx-2 h-7" />
-
       <SectionFour
         editor={editor}
         activeActions={['orderedList', 'bulletList']}
         mainActionCount={0}
       />
-
-      <Separator orientation="vertical" className="mx-2 h-7" />
 
       <SectionFive
         editor={editor}
@@ -65,6 +51,12 @@ export const MinimalTiptapEditor = React.forwardRef<HTMLDivElement, MinimalTipta
       onUpdate: onChange,
       ...props,
     });
+
+    useEffect(() => {
+      if (editor && value !== editor.getHTML()) {
+        editor.commands.setContent(value ?? '');
+      }
+    }, [value, editor]);
 
     if (!editor) {
       return null;

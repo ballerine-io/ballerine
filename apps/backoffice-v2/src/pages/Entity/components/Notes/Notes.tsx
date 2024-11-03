@@ -19,6 +19,7 @@ import {
   SidebarGroup,
   SidebarHeader,
 } from '@/common/components/organisms/Sidebar/Sidebar';
+import { Link } from 'react-router-dom';
 
 const fallbackUser = {
   id: 'test',
@@ -42,18 +43,20 @@ export const Notes = ({
   noteableId: string;
   noteableType: NoteableType;
 }) => {
-  const { form, users, toggleNotes, onSubmit, isLoading } = useNotesLogic();
+  const { form, users, onSubmit, isLoading, updateIsNotesOpen } = useNotesLogic();
 
   return (
     <Sidebar side={`right`} className={`bg-slate-50`}>
       <SidebarHeader className={`h-12 flex-row items-center justify-between border-b p-4`}>
         <span className={`text-sm font-medium`}>Notes</span>
-        <X
-          className="cursor-pointer d-4"
-          onClick={() => {
-            toggleNotes();
+        <Link
+          className={`relative`}
+          to={{
+            search: updateIsNotesOpen(),
           }}
-        />
+        >
+          <X className="d-4" />
+        </Link>
       </SidebarHeader>
       <SidebarContent className={`flex flex-col gap-1 border-none`}>
         <SidebarGroup className={`p-4`}>
@@ -76,7 +79,7 @@ export const Notes = ({
                     <FormControl>
                       <MinimalTiptapEditor
                         className="w-full bg-white"
-                        editorContentClassName="p-2 text-sm h-[120px]"
+                        editorContentClassName="p-2 text-sm h-[120px] overflow-y-auto"
                         output="html"
                         placeholder="Add a note..."
                         autofocus={true}

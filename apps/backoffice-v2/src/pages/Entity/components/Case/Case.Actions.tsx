@@ -1,11 +1,11 @@
 import { Badge } from '@ballerine/ui';
-import { SquarePen } from 'lucide-react';
 import { FunctionComponent } from 'react';
 import { StateTag } from '@ballerine/common';
 
 import { tagToBadgeData } from './consts';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { IActionsProps } from './interfaces';
+import { NotesButton } from '@/common/components/molecules/NotesButton/NotesButton';
 import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
 import { AssignDropdown } from '@/common/components/atoms/AssignDropdown/AssignDropdown';
 import { CaseOptions } from '@/pages/Entity/components/Case/components/CaseOptions/CaseOptions';
@@ -38,7 +38,6 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     onMutateAssignWorkflow,
     workflowDefinition,
     isWorkflowCompleted,
-    toggleNotes,
   } = useCaseActionsLogic({ workflowId: id, fullName });
 
   return (
@@ -83,22 +82,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
                 </Badge>
               </div>
             )}
-            <div className={`flex items-center space-x-2`}>
-              <span className={`me-2 text-sm leading-6`}>Notes</span>
-              <div className={`relative flex cursor-pointer`} onClick={toggleNotes}>
-                <SquarePen className={`d-5`} />
-                {numberOfNotes > 0 && (
-                  <div
-                    className={ctw(
-                      `absolute left-3 top-3 rounded-full bg-slate-600 text-center text-[10px] font-bold text-white`,
-                      { 'd-[14px]': numberOfNotes < 10, 'h-[14px] w-5': numberOfNotes >= 10 },
-                    )}
-                  >
-                    {numberOfNotes > 9 ? '+9' : numberOfNotes}
-                  </div>
-                )}
-              </div>
-            </div>
+            <NotesButton numberOfNotes={numberOfNotes} />
           </div>
         </div>
         {showResolutionButtons && workflowDefinition && (

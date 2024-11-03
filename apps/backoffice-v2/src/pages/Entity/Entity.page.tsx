@@ -1,14 +1,12 @@
 import { Case } from './components/Case/Case';
 import { Notes } from './components/Notes/Notes';
-import { useNotes } from '@/domains/notes/hooks/useNotes';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { BlocksVariant } from '@/lib/blocks/variants/BlocksVariant/BlocksVariant';
 import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
 import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
 
 export const Entity = () => {
-  const { workflow, notes, selectedEntity } = useEntityLogic();
-  const { isNotesOpen } = useNotes();
+  const { workflow, notes, selectedEntity, isNotesOpen } = useEntityLogic();
 
   if (!workflow || !notes || !selectedEntity) {
     return null;

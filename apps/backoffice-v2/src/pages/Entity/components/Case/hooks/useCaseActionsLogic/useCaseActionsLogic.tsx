@@ -1,8 +1,7 @@
 import { useCallback, useMemo } from 'react';
 
-import { tagToBadgeData } from '../../consts';
 import { IUseActions } from './interfaces';
-import { useNotes } from '@/domains/notes/hooks/useNotes';
+import { tagToBadgeData } from '../../consts';
 import { useCaseState } from '../useCaseState/useCaseState';
 import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
 import { useDebounce } from '@/common/hooks/useDebounce/useDebounce';
@@ -49,8 +48,6 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     return workflow?.tags?.find(t => tagToBadgeData[t]);
   }, [workflow]) as keyof typeof tagToBadgeData;
 
-  const { toggleNotes, isNotesOpen } = useNotes();
-
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
 
   const assignedUser = workflow?.assignee
@@ -81,7 +78,5 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     workflow,
     workflowDefinition: workflow?.workflowDefinition,
     isWorkflowCompleted,
-    toggleNotes,
-    isNotesOpen,
   };
 };

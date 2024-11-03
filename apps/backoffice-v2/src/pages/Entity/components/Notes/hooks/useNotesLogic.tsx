@@ -1,14 +1,13 @@
 import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { useCreateNoteMutation } from '@/pages/Entity/components/Notes/hooks/mutations/useCreateNoteMutation/useCreateNoteMutation';
-import { CreateNoteSchema } from '@/pages/Entity/components/Notes/hooks/schemas/create-note-schema';
-import { useNotes } from '@/domains/notes/hooks/useNotes';
 import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUsersQuery';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { CreateNoteSchema } from '@/pages/Entity/components/Notes/hooks/schemas/create-note-schema';
+import { useCreateNoteMutation } from '@/pages/Entity/components/Notes/hooks/mutations/useCreateNoteMutation/useCreateNoteMutation';
+import { useUpdateIsNotesOpen } from '@/common/hooks/useUpdateIsNotesOpen/useUpdateIsNotesOpen';
 
 export const useNotesLogic = () => {
-  const { toggleNotes } = useNotes();
   const { data: users } = useUsersQuery();
 
   const form = useForm({
@@ -28,11 +27,13 @@ export const useNotesLogic = () => {
     mutateCreateNote(data);
   };
 
+  const updateIsNotesOpen = useUpdateIsNotesOpen();
+
   return {
     form,
     users,
     onSubmit,
-    toggleNotes,
+    updateIsNotesOpen,
     isLoading: isSubmitting,
   };
 };

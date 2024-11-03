@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { ctw } from '@ballerine/ui';
 
-import { Label } from '@/common/components/atoms/Label/Label';
 import { Input } from '@/common/components/atoms/Input/Input';
-import { Switch } from '@/common/components/atoms/Switch';
+import { Label } from '@/common/components/atoms/Label/Label';
 import { Button } from '@/common/components/atoms/Button/Button';
 
 export interface LinkEditorProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -14,11 +13,10 @@ export interface LinkEditorProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const LinkEditBlock = React.forwardRef<HTMLDivElement, LinkEditorProps>(
-  ({ onSave, defaultIsNewTab, defaultUrl, defaultText, className }, ref) => {
+  ({ onSave, defaultUrl, defaultText, className }, ref) => {
     const formRef = React.useRef<HTMLDivElement>(null);
     const [url, setUrl] = React.useState(defaultUrl || '');
     const [text, setText] = React.useState(defaultText || '');
-    const [isNewTab, setIsNewTab] = React.useState(defaultIsNewTab || false);
 
     const handleSave = React.useCallback(
       (e: React.FormEvent) => {
@@ -30,7 +28,7 @@ export const LinkEditBlock = React.forwardRef<HTMLDivElement, LinkEditorProps>(
           );
 
           if (isValid) {
-            onSave(url, text, isNewTab);
+            onSave(url, text);
           } else {
             formRef.current.querySelectorAll('input').forEach(input => {
               if (!input.checkValidity()) {
@@ -40,7 +38,7 @@ export const LinkEditBlock = React.forwardRef<HTMLDivElement, LinkEditorProps>(
           }
         }
       },
-      [onSave, url, text, isNewTab],
+      [onSave, url, text],
     );
 
     React.useImperativeHandle(ref, () => formRef.current as HTMLDivElement);
@@ -67,11 +65,6 @@ export const LinkEditBlock = React.forwardRef<HTMLDivElement, LinkEditorProps>(
               value={text}
               onChange={e => setText(e.target.value)}
             />
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Label>Open in New Tab</Label>
-            <Switch checked={isNewTab} onCheckedChange={setIsNewTab} />
           </div>
 
           <div className="flex justify-end space-x-2">

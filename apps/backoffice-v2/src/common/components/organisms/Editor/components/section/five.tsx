@@ -2,16 +2,9 @@ import * as React from 'react';
 import type { Editor } from '@tiptap/react';
 import type { FormatAction } from '../../types';
 import type { VariantProps } from 'class-variance-authority';
-import {
-  CaretDownIcon,
-  CodeIcon,
-  DividerHorizontalIcon,
-  PlusIcon,
-  QuoteIcon,
-} from '@radix-ui/react-icons';
+import { CodeIcon, DividerHorizontalIcon, QuoteIcon } from '@radix-ui/react-icons';
 import { LinkEditPopover } from '../link/link-edit-popover';
 import { ImageEditDialog } from '../image/image-edit-dialog';
-import { ToolbarSection } from '../toolbar-section';
 import { toggleVariants } from '@/common/components/atoms/Toggle/Toggle';
 
 type InsertElementAction = 'codeBlock' | 'blockquote' | 'horizontalRule';
@@ -66,21 +59,6 @@ export const SectionFive: React.FC<SectionFiveProps> = ({
     <>
       <LinkEditPopover editor={editor} size={size} variant={variant} />
       <ImageEditDialog editor={editor} size={size} variant={variant} />
-      <ToolbarSection
-        editor={editor}
-        actions={formatActions}
-        activeActions={activeActions}
-        mainActionCount={mainActionCount}
-        dropdownIcon={
-          <>
-            <PlusIcon className="size-5" />
-            <CaretDownIcon className="size-5" />
-          </>
-        }
-        dropdownTooltip="Insert elements"
-        size={size}
-        variant={variant}
-      />
     </>
   );
 };

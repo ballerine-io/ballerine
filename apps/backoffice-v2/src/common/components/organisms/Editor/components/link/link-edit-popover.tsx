@@ -18,7 +18,7 @@ const LinkEditPopover = ({ editor, size, variant }: LinkEditPopoverProps) => {
   const text = editor.state.doc.textBetween(from, to, ' ');
 
   const onSetLink = React.useCallback(
-    (url: string, text?: string, openInNewTab?: boolean) => {
+    (url: string, text?: string) => {
       editor
         .chain()
         .focus()
@@ -31,7 +31,7 @@ const LinkEditPopover = ({ editor, size, variant }: LinkEditPopoverProps) => {
               type: 'link',
               attrs: {
                 href: url,
-                target: openInNewTab ? '_blank' : '',
+                target: '_blank',
               },
             },
           ],
