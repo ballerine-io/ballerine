@@ -60,11 +60,7 @@ export class ColectionFlowController {
 
   @common.Get('/context')
   async getContext(@TokenScope() tokenScope: ITokenScope) {
-    return await this.workflowService.getWorkflowRuntimeDataById(
-      tokenScope.workflowRuntimeDataId,
-      { select: { context: true, state: true, config: true } },
-      [tokenScope.projectId],
-    );
+    return this.service.getCollectionFlowContext(tokenScope);
   }
 
   @common.Get('/configuration/:language')
