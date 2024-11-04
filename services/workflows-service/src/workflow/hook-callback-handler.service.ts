@@ -7,21 +7,20 @@ import { CustomerService } from '@/customer/customer.service';
 import type { InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { AnyRecord, ProcessStatus, TDocument } from '@ballerine/common';
-import { BadRequestException, Injectable } from '@nestjs/common';
 import {
-  BusinessReportStatus,
-  BusinessReportType,
-  Customer,
-  WorkflowRuntimeData,
-} from '@prisma/client';
+  AnyRecord,
+  ProcessStatus,
+  TDocument,
+  EndUserActiveMonitoringsSchema,
+} from '@ballerine/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { Customer, WorkflowRuntimeData } from '@prisma/client';
 import fs from 'fs';
 import { get, isObject, set } from 'lodash';
 import * as tmp from 'tmp';
 import { AlertService } from '@/alert/alert.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { z } from 'zod';
-import { EndUserActiveMonitoringsSchema } from '@ballerine/common';
 
 export const ReportWithRiskScoreSchema = z
   .object({
@@ -159,18 +158,18 @@ export class HookCallbackHandlerService {
     }
 
     if (processName === 'merchant-audit-report') {
-      return await this.prepareMerchantAuditReportContext(
-        data as {
-          reportData: Record<string, unknown>;
-          base64Pdf: string;
-          reportId: string;
-          reportType: string;
-          comparedToReportId?: string;
-        },
-        workflowRuntime,
-        resultDestinationPath,
-        currentProjectId,
-      );
+      // return await this.prepareMerchantAuditReportContext(
+      //   data as {
+      //     reportData: Record<string, unknown>;
+      //     base64Pdf: string;
+      //     reportId: string;
+      //     reportType: string;
+      //     comparedToReportId?: string;
+      //   },
+      //   workflowRuntime,
+      //   resultDestinationPath,
+      //   currentProjectId,
+      // );
     }
 
     return setPluginStatus({
@@ -193,68 +192,25 @@ export class HookCallbackHandlerService {
     const { reportData: unvalidatedReportData, base64Pdf, reportId, reportType } = data;
     const reportData = ReportWithRiskScoreSchema.parse(unvalidatedReportData);
 
-    const { pdfReportBallerineFileId } = await this.persistPDFReportDocumentWithWorkflowDocuments({
-      context,
-      customer,
-      projectId: currentProjectId,
-      base64PDFString: base64Pdf as string,
-    });
-
     const business = await this.businessService.getByCorrelationId(context.entity.id, [
       currentProjectId,
     ]);
 
     if (!business) throw new BadRequestException('Business not found.');
 
-    const currentReportId = reportId as string;
-    const existentBusinessReport = await this.businessReportService.findFirstOrThrow(
-      {
-        where: {
-          businessId: business.id,
-          reportId: currentReportId,
-        },
-      },
-      [currentProjectId],
-    );
-
-    const businessReport = await this.businessReportService.upsert(
-      {
-        create: {
-          type: reportType as BusinessReportType,
-          riskScore: reportData.summary.riskScore,
-          status: BusinessReportStatus.completed,
-          report: {
-            reportFileId: pdfReportBallerineFileId,
-            data: reportData as InputJsonValue,
-          },
-          reportId: currentReportId,
-          businessId: business.id,
-          projectId: currentProjectId,
-        },
-        update: {
-          type: reportType as BusinessReportType,
-          riskScore: reportData.summary.riskScore,
-          status: BusinessReportStatus.completed,
-          report: {
-            reportFileId: pdfReportBallerineFileId,
-            data: reportData as InputJsonValue,
-          },
-        },
-        where: {
-          id: existentBusinessReport?.id,
-        },
-      },
-      [currentProjectId],
-    );
-
-    this.alertService
-      .checkOngoingMonitoringAlert(businessReport, business.companyName)
-      .then(() => {
-        this.logger.debug(`Alert Tested for ${currentReportId}}`);
-      })
-      .catch(error => {
-        this.logger.error(error);
-      });
+    // const currentReportId = reportId as string;
+    //
+    // this.alertService
+    //   .checkOngoingMonitoringAlert({
+    //     businessReport: businessReport,
+    //     businessCompanyName: business.companyName,
+    //   })
+    //   .then(() => {
+    //     this.logger.debug(`Alert Tested for ${currentReportId}}`);
+    //   })
+    //   .catch(error => {
+    //     this.logger.error(error);
+    //   });
 
     return setPluginStatus({
       resultDestinationPath,
@@ -265,77 +221,52 @@ export class HookCallbackHandlerService {
     });
   }
 
-  async prepareMerchantAuditReportContext(
-    data: Record<string, unknown>,
-    workflowRuntime: WorkflowRuntimeData,
-    resultDestinationPath: string,
-    currentProjectId: TProjectId,
-  ) {
-    const { reportData, base64Pdf, reportId, reportType, comparedToReportId } = z
-      .object({
-        reportData: ReportWithRiskScoreSchema,
-        base64Pdf: z.string(),
-        reportId: z.string(),
-        reportType: z.string(),
-        comparedToReportId: z.string().optional(),
-      })
-      .parse(data);
-
-    const { context } = workflowRuntime;
-
-    const businessId = context.entity.id as string;
-
-    const customer = await this.customerService.getByProjectId(currentProjectId);
-
-    if (comparedToReportId) {
-      const comparedToReport = await this.businessReportService.findFirstOrThrow(
-        {
-          where: {
-            businessId,
-            reportId: comparedToReportId,
-          },
-        },
-        [currentProjectId],
-      );
-
-      if (!comparedToReport) {
-        throw new BadRequestException('Compared to report not found.');
-      }
-
-      reportData.previousReport = {
-        summary: (comparedToReport.report as { data: { summary: { summary: unknown } } }).data
-          .summary,
-        reportType: comparedToReport.type,
-      };
-    }
-
-    const { pdfReportBallerineFileId } = await this.persistPDFReportDocumentWithWorkflowDocuments({
-      context,
-      customer,
-      projectId: currentProjectId,
-      base64PDFString: base64Pdf as string,
-    });
-
-    const reportContent = {
-      data: reportData,
-      reportFileId: pdfReportBallerineFileId,
-      reportId,
-    };
-
-    await this.businessReportService.create({
-      data: {
-        type: reportType as BusinessReportType,
-        report: reportContent as InputJsonValue,
-        businessId: businessId,
-        reportId: reportId as string,
-        projectId: currentProjectId,
-        riskScore: reportData.summary.riskScore,
-        status: BusinessReportStatus.completed,
-      },
-    });
-
-    return context;
-  }
+  // async prepareMerchantAuditReportContext(
+  //   data: Record<string, unknown>,
+  //   workflowRuntime: WorkflowRuntimeData,
+  //   resultDestinationPath: string,
+  //   currentProjectId: TProjectId,
+  // ) {
+  //   const { reportData, base64Pdf, reportId, reportType, comparedToReportId } = z
+  //     .object({
+  //       reportData: ReportWithRiskScoreSchema,
+  //       base64Pdf: z.string(),
+  //       reportId: z.string(),
+  //       reportType: z.string(),
+  //       comparedToReportId: z.string().optional(),
+  //     })
+  //     .parse(data);
+  //
+  //   const { context } = workflowRuntime;
+  //
+  //   const businessId = context.entity.id as string;
+  //
+  //   const customer = await this.customerService.getByProjectId(currentProjectId);
+  //
+  //   if (comparedToReportId) {
+  //     const comparedToReport = await this.businessReportService.findFirstOrThrow(
+  //       {
+  //         where: {
+  //           businessId,
+  //           reportId: comparedToReportId,
+  //         },
+  //       },
+  //       [currentProjectId],
+  //     );
+  //
+  //     if (!comparedToReport) {
+  //       throw new BadRequestException('Compared to report not found.');
+  //     }
+  //
+  //     reportData.previousReport = {
+  //       summary: (comparedToReport.report as { data: { summary: { summary: unknown } } }).data
+  //         .summary,
+  //       reportType: comparedToReport.type,
+  //     };
+  //   }
+  //
+  //   return context;
+  // }
 
   async persistPDFReportDocumentWithWorkflowDocuments({
     context,
