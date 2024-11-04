@@ -3,15 +3,20 @@ import React, { useMemo } from 'react';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { useLatestBusinessReportQuery } from '@/domains/business-reports/hooks/queries/useLatestBusinessReportQuery/useLatestBusinessReportQuery';
 import { WebsiteMonitoringBusinessReportTab } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/WebsiteMonitoringBusinessReportTab';
+import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
 
 export const useWebsiteMonitoringReportBlock = () => {
   const { data: workflow } = useCurrentCaseQuery();
-  const { data: businessReport } = useLatestBusinessReportQuery({
+  const { data: lastBusinessReport } = useLatestBusinessReportQuery({
     businessId: workflow?.context?.entity?.ballerineEntityId,
     reportType: 'MERCHANT_REPORT_T1',
   });
+  const { data: businessReport } = useBusinessReportByIdQuery({
+    id: lastBusinessReport?.id ?? '',
+  });
+
   const blocks = useMemo(() => {
-    if (!businessReport?.report?.data) {
+    if (!businessReport?.data) {
       return [];
     }
 

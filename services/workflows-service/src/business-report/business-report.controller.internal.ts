@@ -162,11 +162,13 @@ export class BusinessReportControllerInternal {
   ) {
     const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
 
-    return await this.businessReportService.findLatest({
+    const latestReport = await this.businessReportService.findLatest({
       businessId,
       customerId,
       reportType: type,
     });
+
+    return latestReport ?? {};
   }
 
   @common.Get()

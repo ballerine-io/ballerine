@@ -23,7 +23,7 @@ export const BusinessReportSchema = z
     status: z.enum([MERCHANT_REPORT_STATUSES[0]!, ...MERCHANT_REPORT_STATUSES.slice(1)]),
     parentCompanyName: z.string().nullable(),
     merchantId: z.string(),
-    version: z.enum([MERCHANT_REPORT_VERSIONS[0]!, ...MERCHANT_REPORT_VERSIONS.slice(1)]),
+    workflowVersion: z.enum([MERCHANT_REPORT_VERSIONS[0]!, ...MERCHANT_REPORT_VERSIONS.slice(1)]),
     isAlert: z.boolean().nullable(),
     website: z.object({
       id: z.string(),

@@ -14,8 +14,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     id: businessReportId ?? '',
   });
   const { tabs } = useReportTabs({
-    // Right now there is no `version` property on business reports.
-    reportVersion: businessReport?.version,
+    reportVersion: businessReport?.workflowVersion,
     report: businessReport?.data ?? {},
     companyName: businessReport?.companyName,
     Link: RiskIndicatorLink,
