@@ -25,11 +25,11 @@ To handle exit events from the Collection Flow app, you can use the following Ja
 
 ```javascript
 window.addEventListener('message', function(event) {
-    if (event.data.type === 'ballerine.collection-flow.back-button-pressed') {
+    if (event.data === 'ballerine.collection-flow.back-button-pressed') {
         // Handle "Back to Portal" button press from side menu
         console.log('Back button pressed');
         // Add your custom handling logic here
-    } else if (event.data.type === 'ballerine.collection-flow.finish-button-pressed') {
+    } else if (event.data === 'ballerine.collection-flow.finish-button-pressed') {
         // Handle "Finish" button press from flow complete page
         console.log('Finish button pressed');
         // Add your custom handling logic here
