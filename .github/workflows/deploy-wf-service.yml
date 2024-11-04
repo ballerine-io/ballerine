@@ -61,11 +61,14 @@ jobs:
           fi
 
       - name: Update Service version in Environment
+        if: ${{ inputs.environment != 'dev' }}
         run: |
           if [ "${{ inputs.environment }}" == "prod" ]; then
-          ENV="PROD"
+            ENV="PROD"
+          elif [ "${{ inputs.environment }}" == "sb" ]; then
+            ENV="SB"
           else
-          ENV="SB"
+            ENV="DEV"
           fi
           echo "$ENV"
           curl -X PATCH \

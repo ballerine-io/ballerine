@@ -1,5 +1,44 @@
-import { PrismaClient } from '@prisma/client';
+import { CollectionFlowManager } from '@ballerine/common';
+import { createWorkflow } from '@ballerine/workflow-core';
+import { Prisma, PrismaClient, UiDefinition } from '@prisma/client';
 import { env } from '../../../src/env';
+
+const EVENTS_BLACK_LIST = ['done', 'success', 'failed'];
+
+export const getStepsInOrder = async (uiDefinition: UiDefinition) => {
+  if (!uiDefinition?.uiSchema) return [];
+
+  const { uiSchema = {}, definition } = uiDefinition as Prisma.JsonObject;
+  const { elements } = uiSchema as Prisma.JsonObject;
+
+  if (!elements || !definition) return [];
+
+  const stepsInOrder: string[] = [];
+
+  const stateMachine = createWorkflow({
+    runtimeId: '',
+    definition: (definition as Prisma.JsonObject).definition as any,
+    definitionType: 'statechart-json',
+    extensions: {},
+    workflowContext: {},
+  });
+
+  while (!stateMachine.getSnapshot().done) {
+    const snapshot = stateMachine.getSnapshot();
+    if (!EVENTS_BLACK_LIST.includes(snapshot.value)) {
+      stepsInOrder.push(snapshot.value);
+    }
+
+    // Check if NEXT event is available in current state
+    if (snapshot.nextEvents.includes('NEXT')) {
+      await stateMachine.sendEvent({ type: 'NEXT' });
+    } else {
+      break; // Exit if no NEXT event available
+    }
+  }
+
+  return stepsInOrder.map((stepName, index) => ({ stateName: stepName, orderNumber: index + 1 }));
+};
 
 export const generateInitialCollectionFlowExample = async (
   prismaClient: PrismaClient,
@@ -17,34 +56,49 @@ export const generateInitialCollectionFlowExample = async (
     token: string;
   },
 ) => {
+  const initialContext = {
+    workflowId: workflowDefinitionId,
+    entity: {
+      ballerineEntityId: businessId,
+      type: 'business',
+      data: {
+        additionalInfo: {
+          mainRepresentative: {
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'test@gmail.com',
+          },
+        },
+      },
+    },
+    documents: [],
+    metadata: {
+      collectionFlowUrl: env.COLLECTION_FLOW_URL,
+      webUiSDKUrl: env.WEB_UI_SDK_URL,
+      token,
+    },
+  };
+
+  const uiDefinition = await prismaClient.uiDefinition.findFirst({
+    where: {
+      workflowDefinitionId,
+    },
+  });
+
+  const collectionFlowManager = new CollectionFlowManager(initialContext, {
+    apiUrl: env.APP_API_URL,
+    steps: await getStepsInOrder(uiDefinition as UiDefinition),
+  });
+
+  collectionFlowManager.initializeCollectionFlowContext();
+
   const creationArgs = {
     data: {
       endUserId: endUserId,
       workflowDefinitionId: workflowDefinitionId,
       projectId: projectId,
       state: 'collection_flow',
-      context: {
-        workflowId: workflowDefinitionId,
-        entity: {
-          ballerineEntityId: businessId,
-          type: 'business',
-          data: {
-            additionalInfo: {
-              mainRepresentative: {
-                firstName: 'John',
-                lastName: 'Doe',
-                email: 'test@gmail.com',
-              },
-            },
-          },
-        },
-        documents: [],
-        metadata: {
-          collectionFlowUrl: env.COLLECTION_FLOW_URL,
-          webUiSDKUrl: env.WEB_UI_SDK_URL,
-          token,
-        },
-      },
+      context: collectionFlowManager.context,
       businessId: businessId,
       workflowDefinitionVersion: 1,
     },

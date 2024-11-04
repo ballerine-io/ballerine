@@ -21,6 +21,7 @@ import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 
 // Temporarily identical to StorageControllerInternal
+@swagger.ApiBearerAuth()
 @swagger.ApiTags('Storage')
 @common.Controller('external/storage')
 export class StorageControllerExternal {
