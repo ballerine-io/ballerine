@@ -319,7 +319,7 @@ describe('AlertService', () => {
         expect(alerts).toHaveLength(0);
       });
 
-      test.only('Assigning and deciding alerts should set audit timestamps', async () => {
+      test('Assigning and deciding alerts should set audit timestamps', async () => {
         // Arrange
         await baseTransactionFactory
           .withBusinessBeneficiary()
@@ -385,7 +385,7 @@ describe('AlertService', () => {
         expect(updatedAlerts[0]?.status).toBe(AlertStatus.completed);
       });
 
-      test.only('Dedupe - Alert should be deduped', async () => {
+      test('Dedupe - Alert should be deduped', async () => {
         // Arrange
         await baseTransactionFactory
           .withBusinessBeneficiary()
@@ -419,7 +419,7 @@ describe('AlertService', () => {
         expect(updatedAlerts[0]?.dedupedAt).not.toBeNull();
       });
 
-      test.only('Dedupe - Only non completed alerts will be dedupe', async () => {
+      test('Dedupe - Only non completed alerts will be dedupe', async () => {
         // Arrange
         await baseTransactionFactory
           .withBusinessBeneficiary()
