@@ -24,6 +24,26 @@ export const HomeMetricsOutputSchema = z.object({
     inProgress: ReportsByRiskLevelSchema,
     approved: ReportsByRiskLevelSchema,
   }),
+  cases: z.object({
+    all: z.object({
+      low: z.number(),
+      medium: z.number(),
+      high: z.number(),
+      critical: z.number(),
+    }),
+    inProgress: z.object({
+      low: z.number(),
+      medium: z.number(),
+      high: z.number(),
+      critical: z.number(),
+    }),
+    approved: z.object({
+      low: z.number(),
+      medium: z.number(),
+      high: z.number(),
+      critical: z.number(),
+    }),
+  }),
 });
 
 export const fetchHomeMetrics = async () => {

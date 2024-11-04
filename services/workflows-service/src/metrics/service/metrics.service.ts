@@ -106,6 +106,26 @@ export class MetricsService {
           currentProjectId,
         ),
       },
+      cases: {
+        all: {
+          low: 0,
+          medium: 4,
+          high: 0,
+          critical: 12,
+        },
+        inProgress: {
+          low: 1,
+          medium: 0,
+          high: 2,
+          critical: 14,
+        },
+        approved: {
+          low: 24,
+          medium: 0,
+          high: 12,
+          critical: 0,
+        },
+      },
     };
   }
 }
