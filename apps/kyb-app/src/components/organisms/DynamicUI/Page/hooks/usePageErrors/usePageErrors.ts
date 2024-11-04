@@ -26,12 +26,12 @@ export const selectDirectorsDocuments = (context: unknown): Document[] =>
 export const usePageErrors = (context: CollectionFlowContext, pages: UIPage[]): PageError[] => {
   return useMemo(() => {
     const pagesWithErrors: PageError[] = pages.map(page => {
-      const pageNumber = context?.collectionFlow?.config?.steps?.find(
-        step => step.stateName === page.stateName,
-      )?.orderNumber;
+      const pageNumber = context?.collectionFlow?.state?.steps?.findIndex(
+        step => step.stepName === page.stateName,
+      );
 
       const pageErrorBase: PageError = {
-        page: pageNumber ?? page.number,
+        page: pageNumber !== -1 ? Number(pageNumber) + 1 : page.number,
         pageName: page.name,
         stateName: page.stateName,
         errors: [],
