@@ -1,3 +1,3 @@
 declare global {
-    export var env: {[key: string]: any};
-} 
+  export var env: { [key: string]: any };
+}
