@@ -12,11 +12,15 @@ export const setCollectionFlowStatus = (
   status: CollectionFlowStatuses,
 ) => {
   if (!context.collectionFlow?.state) {
-    throw new Error('Collection flow state is not present.');
+    console.warn('Collection flow state is not present.');
+
+    return context;
   }
 
   if (!(status in CollectionFlowStatusesEnum)) {
-    throw new Error(`Invalid status: ${status}`);
+    console.warn(`Invalid status: ${status}`);
+
+    return context;
   }
 
   context.collectionFlow.state.status = status;
