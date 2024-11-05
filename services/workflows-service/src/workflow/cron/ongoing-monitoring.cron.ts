@@ -9,7 +9,6 @@ import { ONGOING_MONITORING_LOCK_KEY } from '@/workflow/cron/lock-keys';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { isErrorWithMessage } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import { Business } from '@prisma/client';
 import get from 'lodash/get';
 import {
@@ -17,6 +16,7 @@ import {
   MerchantReportType,
   MerchantReportVersion,
 } from '@/business-report/constants';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
@@ -34,7 +34,7 @@ export class OngoingMonitoringCron {
     protected readonly businessReportService: BusinessReportService,
   ) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_HOUR)
   async handleCron() {
     this.logger.log('Ongoing monitoring cron started');
 

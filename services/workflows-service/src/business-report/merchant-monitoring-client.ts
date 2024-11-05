@@ -198,7 +198,7 @@ export class MerchantMonitoringClient {
     const response = await axios.get(`${env.UNIFIED_API_URL}/tld`, {
       params: {
         customerId,
-        ...(businessId && { businessId }),
+        ...(businessId && { merchantId: businessId }),
         limit,
         page,
         withoutUnpublishedOngoingReports,
