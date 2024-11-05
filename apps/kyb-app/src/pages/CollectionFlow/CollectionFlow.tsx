@@ -69,7 +69,7 @@ const getRevisionStateName = (pageErrors: PageError[]) => {
 export const CollectionFlow = withSessionProtected(() => {
   const { language } = useLanguageParam();
   const { data: schema } = useUISchemasQuery(language);
-  const { data: context } = useFlowContextQuery();
+  const { data: collectionFlowData } = useFlowContextQuery();
   const { customer } = useCustomer();
   const { t } = useTranslation();
   const { themeDefinition } = useTheme();
@@ -77,14 +77,18 @@ export const CollectionFlow = withSessionProtected(() => {
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;
 
-  const pageErrors = usePageErrors(context ?? ({} as CollectionFlowContext), elements || []);
+  const pageErrors = usePageErrors(
+    collectionFlowData?.context ?? ({} as CollectionFlowContext),
+    elements || [],
+  );
   const isRevision = useMemo(
-    () => getCollectionFlowState(context)?.status === CollectionFlowStatusesEnum.revision,
-    [context],
+    () =>
+      getCollectionFlowState(collectionFlowData)?.status === CollectionFlowStatusesEnum.revision,
+    [collectionFlowData],
   );
 
   const initialContext: CollectionFlowContext = useMemo(() => {
-    const contextCopy = { ...context };
+    const contextCopy = { ...collectionFlowData?.context };
     const collectionFlow = getCollectionFlowState(contextCopy);
 
     if (isRevision && collectionFlow) {
@@ -97,8 +101,12 @@ export const CollectionFlow = withSessionProtected(() => {
   }, [isRevision, pageErrors]);
 
   const initialUIState = useMemo(() => {
-    return prepareInitialUIState(elements || [], context! || {}, isRevision);
-  }, [elements, context, isRevision]);
+    return prepareInitialUIState(
+      elements || [],
+      (collectionFlowData?.context as CollectionFlowContext) || {},
+      isRevision,
+    );
+  }, [elements, collectionFlowData, isRevision]);
 
   // Breadcrumbs now using scrollIntoView method to make sure that breadcrumb is always in viewport.
   // Due to dynamic dimensions of logo it doesnt work well if scroll happens before logo is loaded.
@@ -118,7 +126,7 @@ export const CollectionFlow = withSessionProtected(() => {
   if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.rejected)
     return <Rejected />;
 
-  return definition && context ? (
+  return definition && collectionFlowData ? (
     <DynamicUI initialState={initialUIState}>
       <DynamicUI.StateManager
         initialContext={initialContext}
@@ -126,7 +134,8 @@ export const CollectionFlow = withSessionProtected(() => {
         definitionType={schema?.definition.definitionType}
         extensions={schema?.definition.extensions}
         definition={definition as State}
-        config={schema?.config}
+        //@ts-ignore
+        config={collectionFlowData?.config}
       >
         {({ state, stateApi }) => {
           return (

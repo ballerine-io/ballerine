@@ -87,21 +87,6 @@ export class ColectionFlowController {
     );
   }
 
-  // @common.Put('/configuration/:configurationId')
-  // async updateFlowConfiguration(
-  //   @common.Param('configurationId') configurationId: string,
-  //   @common.Body() dto: UpdateConfigurationDto,
-  //   @ProjectIds() projectIds: TProjectIds,
-  //   @CurrentProject() currentProjectId: TProjectId,
-  // ) {
-  //   return this.service.updateFlowConfiguration(
-  //     configurationId,
-  //     dto.steps,
-  //     projectIds,
-  //     currentProjectId,
-  //   );
-  // }
-
   @common.Put('/language')
   async updateFlowLanguage(
     @common.Body() { language }: UpdateFlowLanguageDto,
