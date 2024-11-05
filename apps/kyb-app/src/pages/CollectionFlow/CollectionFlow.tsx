@@ -31,7 +31,12 @@ import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Failed } from '@/pages/CollectionFlow/components/pages/Failed';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
-import { CollectionFlowManager, CollectionFlowStatuses } from '@ballerine/common';
+import {
+  CollectionFlowStatusesEnum,
+  getCollectionFlowState,
+  setCollectionFlowStatus,
+  setStepCompletionState,
+} from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 
 const elems = {
@@ -74,20 +79,21 @@ export const CollectionFlow = withSessionProtected(() => {
 
   const pageErrors = usePageErrors(context ?? ({} as CollectionFlowContext), elements || []);
   const isRevision = useMemo(
-    () => context?.collectionFlow?.state?.status === CollectionFlowStatuses.revision,
+    () => getCollectionFlowState(context)?.status === CollectionFlowStatusesEnum.revision,
     [context],
   );
 
   const initialContext: CollectionFlowContext = useMemo(() => {
-    const collectionFlowManager = new CollectionFlowManager(context as CollectionFlowContext);
+    const contextCopy = { ...context };
+    const collectionFlow = getCollectionFlowState(contextCopy);
 
-    if (isRevision) {
+    if (isRevision && collectionFlow) {
       const revisionStateName = getRevisionStateName(pageErrors);
-      collectionFlowManager.state().currentStep =
-        revisionStateName || collectionFlowManager.state().currentStep;
+      collectionFlow.currentStep = revisionStateName || collectionFlow.currentStep;
+      revisionStateName || collectionFlow.currentStep;
     }
 
-    return collectionFlowManager.context as CollectionFlowContext;
+    return contextCopy as CollectionFlowContext;
   }, [isRevision, pageErrors]);
 
   const initialUIState = useMemo(() => {
@@ -106,10 +112,10 @@ export const CollectionFlow = withSessionProtected(() => {
     setLogoLoaded(false);
   }, [customer?.logoImageUri]);
 
-  if (initialContext?.collectionFlow?.state?.status === CollectionFlowStatuses.approved)
+  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.approved)
     return <Approved />;
 
-  if (initialContext?.collectionFlow?.state?.status === CollectionFlowStatuses.rejected)
+  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.rejected)
     return <Rejected />;
 
   return definition && context ? (
@@ -129,25 +135,31 @@ export const CollectionFlow = withSessionProtected(() => {
               onNext={async (tools, prevState, currentState) => {
                 tools.setElementCompleted(prevState, true);
 
-                const collectionFlowManager = new CollectionFlowManager(stateApi.getContext());
+                const context = stateApi.getContext();
 
-                const isAnyStepCompleted = Object.values(
-                  collectionFlowManager.state().progressBreakdown || {},
-                ).some(step => step.isCompleted);
+                const collectionFlow = getCollectionFlowState(context);
 
-                collectionFlowManager.state().setStepCompletionState(prevState, true);
-                collectionFlowManager.state().currentStep = currentState;
+                if (collectionFlow) {
+                  const steps = collectionFlow?.steps || [];
 
-                if (!isAnyStepCompleted) {
-                  console.log('Collection flow touched, changing state to inprogress');
-                  collectionFlowManager.state().status = CollectionFlowStatuses.inprogress;
+                  const isAnyStepCompleted = steps.some(step => step.isCompleted);
 
-                  console.log('Updating context to', collectionFlowManager.context);
+                  setStepCompletionState(context, {
+                    stepName: prevState,
+                    completed: true,
+                  });
+
+                  collectionFlow.currentStep = currentState;
+
+                  if (!isAnyStepCompleted) {
+                    console.log('Collection flow touched, changing state to inprogress');
+                    setCollectionFlowStatus(context, CollectionFlowStatusesEnum.inprogress);
+                  }
+
+                  stateApi.setContext(context);
+
+                  await stateApi.invokePlugin('sync_workflow_runtime');
                 }
-
-                stateApi.setContext(collectionFlowManager.context);
-
-                await stateApi.invokePlugin('sync_workflow_runtime');
               }}
             >
               {() => {
