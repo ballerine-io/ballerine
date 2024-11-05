@@ -4,6 +4,7 @@ import { logger } from '../../logger';
 import { TContext } from '../../utils/types';
 import { ApiPlugin } from './api-plugin';
 import { IApiPluginParams } from './types';
+import { State } from 'country-state-city';
 
 export class MastercardMerchantScreeningPlugin extends ApiPlugin {
   public static pluginType = 'http';
@@ -37,6 +38,7 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
       const url = `${process.env.UNIFIED_API_URL}/merchant-screening/mastercard`;
       const entity = isObject(context.entity) ? context.entity : {};
       const countrySubdivisionSupportedCountries = ['US', 'CA'] as const;
+      const statesOfCountry = State.getStatesOfCountry(entity?.data?.address?.country);
       const address = {
         line1: [entity?.data?.address?.street, entity?.data?.address?.streetNumber]
           .filter(Boolean)
@@ -47,7 +49,9 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
         countrySubdivision: countrySubdivisionSupportedCountries.includes(
           entity?.data?.address?.country,
         )
-          ? requestPayload?.countrySubdivision
+          ? statesOfCountry.find(
+              state => state.name.toLowerCase() === entity?.data?.address?.state?.toLowerCase(),
+            )?.isoCode
           : undefined,
       };
 

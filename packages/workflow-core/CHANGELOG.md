@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.6.61
+
+### Patch Changes
+
+- updated MATCH plugin
+
 ## 0.6.60
 
 ### Patch Changes
