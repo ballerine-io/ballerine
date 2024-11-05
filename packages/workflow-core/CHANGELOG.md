@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.6.59
+
+### Patch Changes
+
+- Updated merchant screening plugin
+
 ## 0.6.58
 
 ### Patch Changes
