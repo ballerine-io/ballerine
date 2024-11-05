@@ -17,9 +17,12 @@ export const Navigation = () => {
   const { customer } = useCustomer();
   const { exit, isExitAvailable } = useAppExit();
 
-  const currentPageNumber = payload?.collectionFlow?.config?.steps?.find(
-    step => step.stateName === currentPage?.stateName,
-  )?.orderNumber;
+  const currentPageNumber =
+    Number(
+      payload?.collectionFlow?.state?.steps?.findIndex(
+        step => step.stepName === currentPage?.stateName,
+      ),
+    ) + 1;
 
   const isFirstStep = currentPageNumber === 1;
   const isDisabled = state.isLoading;
