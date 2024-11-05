@@ -34,7 +34,7 @@ export class OngoingMonitoringCron {
     protected readonly businessReportService: BusinessReportService,
   ) {}
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
     this.logger.log('Ongoing monitoring cron started');
 
@@ -81,7 +81,10 @@ export class OngoingMonitoringCron {
                 continue;
               }
 
-              const lastReceivedReport = await this.findLatestReport(business);
+              const lastReceivedReport = await this.businessReportService.findLatest({
+                businessId: business.id,
+                customerId: customerId,
+              });
 
               if (!lastReceivedReport) {
                 this.logger.log(
@@ -153,13 +156,6 @@ export class OngoingMonitoringCron {
       } finally {
         await this.prisma.releaseLock(this.lockKey, transaction);
       }
-    });
-  }
-
-  private async findLatestReport(business: Business) {
-    return await this.businessReportService.findLatest({
-      customerId: business.projectId,
-      businessId: business.id,
     });
   }
 
