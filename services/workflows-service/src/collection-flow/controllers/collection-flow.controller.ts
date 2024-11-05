@@ -9,9 +9,11 @@ import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manag
 import { type ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { WorkflowService } from '@/workflow/workflow.service';
+import { CollectionFlowStatusesEnum, getCollectionFlowState } from '@ballerine/common';
 import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import * as common from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
+import { CollectionFlowMissingException } from '../exceptions/collection-flow-missing.exception';
 
 @UseTokenAuthGuard()
 @ApiExcludeController()
@@ -142,6 +144,64 @@ export class ColectionFlowController {
       [tokenScope.projectId],
       tokenScope.projectId,
     );
+  }
+
+  @common.Post('/final-submission')
+  async finalSubmission(@TokenScope() tokenScope: ITokenScope, @common.Body() body: FinishFlowDto) {
+    try {
+      const event = await this.workflowService.event(
+        {
+          id: tokenScope.workflowRuntimeDataId,
+          name: body.eventName,
+        },
+        [tokenScope.projectId],
+        tokenScope.projectId,
+      );
+
+      const collectionFlow = getCollectionFlowState(event.context);
+
+      if (!collectionFlow) {
+        throw new CollectionFlowMissingException();
+      }
+
+      collectionFlow.status = CollectionFlowStatusesEnum.completed;
+
+      return await this.workflowService.event(
+        {
+          id: tokenScope.workflowRuntimeDataId,
+          name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+          payload: {
+            newContext: { collectionFlow },
+            arrayMergeOption: ARRAY_MERGE_OPTION.BY_ID,
+          },
+        },
+        [tokenScope.projectId],
+        tokenScope.projectId,
+      );
+    } catch (error) {
+      if (error instanceof CollectionFlowMissingException) {
+        throw error;
+      }
+
+      await this.workflowService.event(
+        {
+          id: tokenScope.workflowRuntimeDataId,
+          name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+          payload: {
+            newContext: {
+              collectionFlow: {
+                status: CollectionFlowStatusesEnum.failed,
+              },
+            },
+            arrayMergeOption: ARRAY_MERGE_OPTION.BY_ID,
+          },
+        },
+        [tokenScope.projectId],
+        tokenScope.projectId,
+      );
+
+      throw new common.InternalServerErrorException(error);
+    }
   }
 
   @common.Post('resubmit')

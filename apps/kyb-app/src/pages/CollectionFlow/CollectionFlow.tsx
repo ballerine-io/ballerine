@@ -28,9 +28,8 @@ import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionPr
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { LoadingScreen } from '@/pages/CollectionFlow/components/atoms/LoadingScreen';
 import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
-import { Failed } from '@/pages/CollectionFlow/components/pages/Failed';
+import { CompletedScreen } from '@/pages/CollectionFlow/components/pages/CompletedScreen';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
-import { Success } from '@/pages/CollectionFlow/components/pages/Success';
 import {
   CollectionFlowStatusesEnum,
   getCollectionFlowState,
@@ -38,6 +37,7 @@ import {
   setStepCompletionState,
 } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
+import { FailedScreen } from './components/pages/FailedScreen';
 
 const elems = {
   h1: Title,
@@ -59,7 +59,7 @@ const elems = {
   divider: Divider,
 };
 
-const isSuccess = (state: string) => state === 'success' || state === 'finish';
+const isCompleted = (state: string) => state === 'completed' || state === 'finish';
 const isFailed = (state: string) => state === 'failed';
 
 const getRevisionStateName = (pageErrors: PageError[]) => {
@@ -166,9 +166,9 @@ export const CollectionFlow = withSessionProtected(() => {
                 // Temp state, has to be resolved to success or failure by plugins
                 if (state === 'done') return <LoadingScreen />;
 
-                if (isSuccess(state)) return <Success />;
+                if (isCompleted(state)) return <CompletedScreen />;
 
-                if (isFailed(state)) return <Failed />;
+                if (isFailed(state)) return <FailedScreen />;
 
                 return (
                   <DynamicUI.PageResolver state={state} pages={elements ?? []}>
@@ -183,11 +183,11 @@ export const CollectionFlow = withSessionProtected(() => {
                               <AppShell.Sidebar>
                                 <div className="flex h-full flex-col">
                                   <div className="flex h-full flex-1 flex-col">
-                                    <div className="flex flex-row justify-between gap-2 whitespace-nowrap pb-10">
-                                      <AppShell.Navigation />
-                                      <div>
+                                    <div className="flex flex-col gap-8 pb-10">
+                                      <div className="flex justify-start">
                                         <AppShell.LanguagePicker />
                                       </div>
+                                      <AppShell.Navigation />
                                     </div>
                                     <div className="pb-10">
                                       {customer?.logoImageUri && (

@@ -43,15 +43,15 @@ export const Navigation = () => {
 
   return (
     <button
-      className={ctw('cursor-pointer select-none', {
+      className={ctw('flex cursor-pointer select-none flex-row flex-nowrap items-center', {
         'pointer-events-none opacity-50': isDisabled,
       })}
       aria-disabled={isDisabled}
       onClick={onPrevious}
       type={'button'}
     >
-      <ArrowLeft className="inline" />
-      <span className="pl-2 align-middle text-sm font-bold">
+      <ArrowLeft size={24} className="flex-shrink-0" />
+      <span className="flex flex-nowrap pl-2 align-middle text-sm font-bold">
         {isFirstStep && customer
           ? t('backToPortal', { companyName: customer.displayName })
           : t('back')}
