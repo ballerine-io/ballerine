@@ -1,5 +1,11 @@
 # @ballerine/eslint-config
 
+## 1.1.23
+
+### Patch Changes
+
+- Change
+
 ## 1.1.22
 
 ### Patch Changes
