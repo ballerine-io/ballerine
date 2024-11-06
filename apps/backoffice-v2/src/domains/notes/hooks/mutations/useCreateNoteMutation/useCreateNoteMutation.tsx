@@ -4,8 +4,8 @@ import { isObject } from '@ballerine/common';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { HttpError } from '@/common/errors/http-error';
-import { createNote } from '@/pages/Entity/components/Notes/hooks/fetchers';
-import { NoteableType } from '@/pages/Entity/components/Notes/types';
+import { createNote } from '@/domains/notes/hooks/fetchers';
+import { TNoteableType } from '@/domains/notes/types';
 
 export const useCreateNoteMutation = ({
   onSuccess,
@@ -26,7 +26,7 @@ export const useCreateNoteMutation = ({
       entityId: string;
       entityType: 'Business' | 'EndUser';
       noteableId: string;
-      noteableType: NoteableType;
+      noteableType: TNoteableType;
       content: string;
       parentNoteId: string | null;
     }) =>
@@ -41,7 +41,7 @@ export const useCreateNoteMutation = ({
     onSuccess: data => {
       void queryClient.invalidateQueries();
 
-      toast.success(t(`toast:note_added.success`));
+      toast.success(t(`toast:note_created.success`));
 
       onSuccess?.(data);
     },
@@ -53,7 +53,7 @@ export const useCreateNoteMutation = ({
       }
 
       toast.error(
-        t(`toast:note_added.error`, {
+        t(`toast:note_created.error`, {
           errorMessage: isObject(error) && 'message' in error ? error.message : error,
         }),
       );

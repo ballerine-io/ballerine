@@ -2,7 +2,7 @@ import * as React from 'react';
 import type { Editor } from '@tiptap/react';
 import type { VariantProps } from 'class-variance-authority';
 import { Link2Icon } from '@radix-ui/react-icons';
-import { ToolbarButton } from '../toolbar-button';
+import { ToolbarButton } from '../ToolbarButton';
 import { LinkEditBlock } from './link-edit-block';
 import { toggleVariants } from '@/common/components/atoms/Toggle/Toggle';
 import { Popover, PopoverContent, PopoverTrigger } from '@ballerine/ui';

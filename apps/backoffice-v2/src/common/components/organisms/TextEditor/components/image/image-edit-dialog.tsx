@@ -2,7 +2,7 @@ import type { Editor } from '@tiptap/react';
 import type { VariantProps } from 'class-variance-authority';
 import { useState } from 'react';
 import { ImageIcon } from '@radix-ui/react-icons';
-import { ToolbarButton } from '../toolbar-button';
+import { ToolbarButton } from '../ToolbarButton';
 import { ImageEditBlock } from './image-edit-block';
 import { toggleVariants } from '@/common/components/atoms/Toggle/Toggle';
 import { Dialog } from '../../../Dialog/Dialog';

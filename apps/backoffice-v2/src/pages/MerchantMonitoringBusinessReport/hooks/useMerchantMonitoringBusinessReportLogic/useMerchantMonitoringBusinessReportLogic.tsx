@@ -6,13 +6,13 @@ import { ParsedBooleanSchema, useReportTabs } from '@ballerine/ui';
 import { safeUrl } from '@/common/utils/safe-url/safe-url';
 import { BusinessReportStatus } from '@/domains/business-reports/fetchers';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
+import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
-import { useNotesByNoteable } from '@/pages/Entity/components/Notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
 import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
 
 export const useMerchantMonitoringBusinessReportLogic = () => {
   const { businessReportId } = useParams();
-  const { data: businessReport } = useBusinessReportByIdQuery({
+  const { data: businessReport, isLoading: isBusinessReportLoading } = useBusinessReportByIdQuery({
     id: businessReportId ?? '',
   });
 
@@ -73,5 +73,6 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     notes,
     activeTab,
     isNotesOpen,
+    isBusinessReportLoading,
   };
 };

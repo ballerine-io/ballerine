@@ -1,14 +1,14 @@
 import { useIsAuthenticated } from '@/domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 import { useQuery } from '@tanstack/react-query';
 import { isString } from '@/common/utils/is-string/is-string';
-import { notesQueryKey } from '@/pages/Entity/components/Notes/hooks/query-keys';
-import { NoteableType } from '@/pages/Entity/components/Notes/types';
+import { notesQueryKey } from '@/domains/notes/hooks/query-keys';
+import { TNoteableType } from '@/domains/notes/types';
 
 export const useNotesByNoteable = ({
   noteableType,
   noteableId = '',
 }: {
-  noteableType: NoteableType;
+  noteableType: TNoteableType;
   noteableId?: string;
 }) => {
   const isAuthenticated = useIsAuthenticated();

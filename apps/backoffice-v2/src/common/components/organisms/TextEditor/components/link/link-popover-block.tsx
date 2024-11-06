@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ToolbarButton } from '../toolbar-button';
+import { ToolbarButton } from '../ToolbarButton';
 import { CopyIcon, ExternalLinkIcon, LinkBreak2Icon } from '@radix-ui/react-icons';
 import { Separator } from '@/common/components/atoms/Separator/Separator';
 

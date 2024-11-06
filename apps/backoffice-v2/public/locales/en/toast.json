@@ -97,7 +97,7 @@
     "error": "Error occurred while creating merchant checks.",
     "is_example": "Please contact Ballerine at oss@ballerine.com for access to this feature."
   },
-  "note_added": {
+  "note_created": {
     "success": "Note added successfully.",
     "error": "Error occurred while adding note."
   }

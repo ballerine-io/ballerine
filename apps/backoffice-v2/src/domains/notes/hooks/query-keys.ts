@@ -1,14 +1,14 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
-import { NoteableType } from '@/pages/Entity/components/Notes/types';
-import { getNotesByNotable } from '@/pages/Entity/components/Notes/hooks/fetchers';
+import { TNoteableType } from '@/domains/notes/types';
+import { getNotesByNotable } from '@/domains/notes/hooks/fetchers';
 
 export const notesQueryKey = createQueryKeys('notes', {
   byNoteable: ({
     noteableType,
     noteableId,
   }: {
-    noteableType: NoteableType;
+    noteableType: TNoteableType;
     noteableId: string;
   }) => ({
     queryKey: [{ noteableType, noteableId }],

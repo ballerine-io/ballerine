@@ -1,8 +1,8 @@
 import { Method } from '@/common/enums';
 import { apiClient } from '@/common/api-client/api-client';
-import { NoteableType } from '@/pages/Entity/components/Notes/types';
+import { TNoteableType } from '@/domains/notes/types';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
-import { NoteSchema, NotesSchema } from '@/pages/Entity/components/Notes/hooks/schemas/note-schema';
+import { NoteSchema, NotesSchema } from '@/domains/notes/hooks/schemas/note-schema';
 
 export const createNote = async ({
   entityId,
@@ -15,7 +15,7 @@ export const createNote = async ({
   entityId: string;
   entityType: 'Business' | 'EndUser';
   noteableId: string;
-  noteableType: NoteableType;
+  noteableType: TNoteableType;
   content: string;
   parentNoteId: string | null;
 }) => {
@@ -41,7 +41,7 @@ export const getNotesByNotable = async ({
   noteableType,
 }: {
   noteableId: string;
-  noteableType: NoteableType;
+  noteableType: TNoteableType;
 }) => {
   const [note, error] = await apiClient({
     endpoint: `../external/notes/${noteableType}/${noteableId}`,

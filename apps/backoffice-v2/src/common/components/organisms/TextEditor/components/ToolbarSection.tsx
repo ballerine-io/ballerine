@@ -1,18 +1,18 @@
 import * as React from 'react';
 import type { Editor } from '@tiptap/react';
-import type { FormatAction } from '../types';
+import { CaretDownIcon } from '@radix-ui/react-icons';
 import type { VariantProps } from 'class-variance-authority';
 
-import { CaretDownIcon } from '@radix-ui/react-icons';
-import { ToolbarButton } from './toolbar-button';
-import { ShortcutKey } from './shortcut-key';
 import { getShortcutKey } from '../utils';
-import { toggleVariants } from '@/common/components/atoms/Toggle/Toggle';
-import { DropdownMenuItem } from '@/common/components/molecules/DropdownMenu/DropdownMenu.Item';
+import { ShortcutKey } from './ShortcutKey';
+import type { FormatAction } from '../types';
 import { ctw } from '@/common/utils/ctw/ctw';
+import { ToolbarButton } from './ToolbarButton';
+import { toggleVariants } from '@/common/components/atoms/Toggle/Toggle';
 import { DropdownMenu } from '@/common/components/molecules/DropdownMenu/DropdownMenu';
-import { DropdownMenuTrigger } from '@/common/components/molecules/DropdownMenu/DropdownMenu.Trigger';
+import { DropdownMenuItem } from '@/common/components/molecules/DropdownMenu/DropdownMenu.Item';
 import { DropdownMenuContent } from '@/common/components/molecules/DropdownMenu/DropdownMenu.Content';
+import { DropdownMenuTrigger } from '@/common/components/molecules/DropdownMenu/DropdownMenu.Trigger';
 
 interface ToolbarSectionProps extends VariantProps<typeof toggleVariants> {
   editor: Editor;

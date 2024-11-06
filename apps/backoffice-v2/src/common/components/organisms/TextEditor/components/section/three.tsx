@@ -1,15 +1,16 @@
 import * as React from 'react';
 import type { Editor } from '@tiptap/react';
+import { Popover, PopoverContent, PopoverTrigger } from '@ballerine/ui';
+
+import { ToolbarButton } from '../ToolbarButton';
+import { useTheme } from '../../hooks/use-theme';
 import type { VariantProps } from 'class-variance-authority';
 import { CaretDownIcon, CheckIcon } from '@radix-ui/react-icons';
-import { ToolbarButton } from '../toolbar-button';
-import { useTheme } from '../../hooks/use-theme';
-import { toggleVariants } from '@/common/components/atoms/Toggle/Toggle';
 import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
+import { toggleVariants } from '@/common/components/atoms/Toggle/Toggle';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
 import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
 import { ToggleGroup, ToggleGroupItem } from '@/common/components/atoms/ToggleGroup/ToggleGroup';
-import { Popover, PopoverContent, PopoverTrigger } from '@ballerine/ui';
 
 interface ColorItem {
   cssVar: string;

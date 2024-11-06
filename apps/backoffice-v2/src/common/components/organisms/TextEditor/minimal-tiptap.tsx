@@ -8,8 +8,8 @@ import { SectionTwo } from './components/section/two';
 import { SectionFour } from './components/section/four';
 import { SectionFive } from './components/section/five';
 import { useMinimalTiptapEditor } from './hooks/use-minimal-tiptap';
-import { MeasuredContainer } from './components/measured-container';
-import { LinkBubbleMenu } from './components/bubble-menu/link-bubble-menu';
+import { MeasuredContainer } from './components/MeasuredContainer';
+import { LinkBubbleMenu } from './components/bubble-menu/LinkBubbleMenu';
 import type { UseMinimalTiptapEditorProps } from './hooks/use-minimal-tiptap';
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, 'onUpdate'> {
@@ -46,7 +46,6 @@ const Toolbar = ({ editor }: { editor: Editor }) => (
 export const MinimalTiptapEditor = React.forwardRef<HTMLDivElement, MinimalTiptapProps>(
   ({ value, onChange, className, editorContentClassName, ...props }, ref) => {
     const editor = useMinimalTiptapEditor({
-      onCreate: () => onChange?.({ content: [] }),
       value,
       onUpdate: onChange,
       ...props,

@@ -5,7 +5,6 @@ import { Documents } from './Case.Documents';
 import { FaceMatch } from './Case.FaceMatch';
 import { Info } from './Case.Info';
 import { ICaseChildren } from './interfaces';
-import { ctw } from '@ballerine/ui';
 
 /**
  * @description A component which handles a single case's reject/approve mutation, and displays the entity's information and documents.
@@ -23,7 +22,7 @@ import { ctw } from '@ballerine/ui';
  * @constructor
  */
 export const Case: FunctionComponent<PropsWithChildren> & ICaseChildren = ({ children }) => {
-  return <div className={ctw(`flex h-full flex-col`)}>{children}</div>;
+  return <div className={`flex h-full flex-col`}>{children}</div>;
 };
 
 Case.Actions = Actions;

@@ -1,11 +1,8 @@
 import * as React from 'react';
 import type { Editor } from '@tiptap/react';
 import type { Level } from '@tiptap/extension-heading';
-import type { FormatAction } from '../../types';
 import type { VariantProps } from 'class-variance-authority';
 import { CaretDownIcon, LetterCaseCapitalizeIcon } from '@radix-ui/react-icons';
-import { ToolbarButton } from '../toolbar-button';
-import { ShortcutKey } from '../shortcut-key';
 import {
   ctw,
   DropdownMenu,
@@ -13,6 +10,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@ballerine/ui';
+
+import { ShortcutKey } from '../ShortcutKey';
+import type { FormatAction } from '../../types';
+import { ToolbarButton } from '../ToolbarButton';
 import { toggleVariants } from '@/common/components/atoms/Toggle/Toggle';
 
 interface TextStyle

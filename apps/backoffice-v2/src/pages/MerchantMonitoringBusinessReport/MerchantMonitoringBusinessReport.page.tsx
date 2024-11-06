@@ -13,7 +13,7 @@ import dayjs from 'dayjs';
 import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
 import { useMerchantMonitoringBusinessReportLogic } from '@/pages/MerchantMonitoringBusinessReport/hooks/useMerchantMonitoringBusinessReportLogic/useMerchantMonitoringBusinessReportLogic';
 import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
-import { Notes } from '@/pages/Entity/components/Notes/Notes';
+import { Notes } from '@/domains/notes/Notes';
 import { NotesButton } from '@/common/components/molecules/NotesButton/NotesButton';
 
 export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
@@ -26,9 +26,10 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     activeTab,
     notes,
     isNotesOpen,
+    isBusinessReportLoading,
   } = useMerchantMonitoringBusinessReportLogic();
 
-  if (!notes || !businessReport) {
+  if (isBusinessReportLoading) {
     return;
   }
 
@@ -59,25 +60,26 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
               <span className={`me-4 text-sm leading-6 text-slate-400`}>Status</span>
               <Badge
                 variant={
-                  statusToBadgeData[businessReport.status as keyof typeof statusToBadgeData]
+                  statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]
                     ?.variant
                 }
                 className={ctw(`text-sm font-bold`, {
-                  'bg-info/20 text-info': businessReport.status === BusinessReportStatus.COMPLETED,
+                  'bg-info/20 text-info': businessReport?.status === BusinessReportStatus.COMPLETED,
                   'bg-violet-500/20 text-violet-500':
-                    businessReport.status === BusinessReportStatus.IN_PROGRESS,
-                  'bg-slate-200 text-slate-500': businessReport.status === BusinessReportStatus.NEW,
+                    businessReport?.status === BusinessReportStatus.IN_PROGRESS,
+                  'bg-slate-200 text-slate-500':
+                    businessReport?.status === BusinessReportStatus.NEW,
                 })}
               >
-                {statusToBadgeData[businessReport.status as keyof typeof statusToBadgeData]?.text}
+                {statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]?.text}
               </Badge>
             </div>
             <div>
               <span className={`me-2 text-sm leading-6 text-slate-400`}>Created at</span>
-              {businessReport.createdAt &&
-                dayjs(new Date(businessReport.createdAt)).format('HH:mm MMM Do, YYYY')}
+              {businessReport?.createdAt &&
+                dayjs(new Date(businessReport?.createdAt)).format('HH:mm MMM Do, YYYY')}
             </div>
-            <NotesButton numberOfNotes={notes.length} />
+            <NotesButton numberOfNotes={notes?.length} />
           </div>
           <Tabs defaultValue={activeTab} className="w-full" key={activeTab}>
             <TabsList className={'mb-4'}>
@@ -104,10 +106,10 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
         </section>
       </SidebarInset>
       <Notes
-        notes={notes}
-        entityId={businessReport.business?.id || ''}
+        notes={notes ?? []}
+        entityId={businessReport?.business?.id || ''}
         entityType={`Business`}
-        noteableId={businessReport.id || ''}
+        noteableId={businessReport?.id || ''}
         noteableType={`Report`}
       />
     </SidebarProvider>

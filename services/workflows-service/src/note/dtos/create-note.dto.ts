@@ -1,6 +1,6 @@
-import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { EntityType, Noteable } from '@prisma/client';
+import { IsArray, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class CreateNoteDto {
   @ApiProperty({
@@ -38,6 +38,7 @@ export class CreateNoteDto {
     type: String,
   })
   @IsString()
+  @MinLength(1)
   content!: string;
 
   @ApiProperty({

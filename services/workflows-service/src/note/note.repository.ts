@@ -14,7 +14,7 @@ const defaultFieldsSelect = {
   createdAt: true,
   createdBy: true,
   updatedAt: true,
-};
+} satisfies Prisma.NoteSelect;
 
 const defaultArgs = {
   select: {
@@ -25,7 +25,7 @@ const defaultArgs = {
   orderBy: {
     createdAt: 'desc',
   },
-};
+} satisfies Prisma.NoteFindManyArgs;
 
 @Injectable()
 export class NoteRepository {
@@ -38,6 +38,10 @@ export class NoteRepository {
   ): Promise<Note> {
     return transaction.note.create({
       data: { ...data, projectId },
+      include: {
+        parentNote: { select: defaultFieldsSelect },
+        childrenNotes: { select: defaultFieldsSelect },
+      },
     });
   }
 
@@ -48,8 +52,8 @@ export class NoteRepository {
   ) {
     return transaction.note.findMany({
       where: { ...(args?.where || {}), deletedAt: null, projectId },
-      select: { ...(args?.select || defaultArgs.select) } as Prisma.NoteFindManyArgs['select'],
-      orderBy: { ...(args?.orderBy || defaultArgs?.orderBy) } as Prisma.NoteFindManyArgs['orderBy'],
+      select: { ...(args?.select || defaultArgs.select) },
+      orderBy: { ...(args?.orderBy || defaultArgs?.orderBy) },
     });
   }
 
@@ -62,7 +66,7 @@ export class NoteRepository {
     return transaction.note.findFirstOrThrow({
       select: {
         ...(args?.select || defaultArgs.select),
-      } as Prisma.NoteFindFirstOrThrowArgs['select'],
+      },
       where: { id, deletedAt: null, projectId },
     });
   }
@@ -73,8 +77,8 @@ export class NoteRepository {
   ) {
     return this.prismaService.note.findMany({
       where: { deletedAt: null, projectId },
-      select: { ...(args?.select || defaultArgs.select) } as Prisma.NoteFindManyArgs['select'],
-      orderBy: { ...(args?.orderBy || defaultArgs?.orderBy) } as Prisma.NoteFindManyArgs['orderBy'],
+      select: { ...(args?.select || defaultArgs.select) },
+      orderBy: { ...(args?.orderBy || defaultArgs?.orderBy) },
     });
   }
 

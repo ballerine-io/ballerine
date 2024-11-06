@@ -5,10 +5,10 @@ import { ctw } from '@/common/utils/ctw/ctw';
 import { useUpdateIsNotesOpen } from '@/common/hooks/useUpdateIsNotesOpen/useUpdateIsNotesOpen';
 
 interface INotesButtonProps {
-  numberOfNotes: number;
+  numberOfNotes: number | undefined;
 }
 
-export const NotesButton = ({ numberOfNotes }: INotesButtonProps) => {
+export const NotesButton = ({ numberOfNotes = 0 }: INotesButtonProps) => {
   const updateIsNotesOpen = useUpdateIsNotesOpen();
 
   return (
@@ -25,7 +25,7 @@ export const NotesButton = ({ numberOfNotes }: INotesButtonProps) => {
           <div
             className={ctw(
               `absolute left-3 top-3 rounded-full bg-slate-600 text-center text-[10px] font-bold text-white`,
-              { 'd-[14px]': numberOfNotes < 10, 'h-[14px] w-5 ps-[3px]': numberOfNotes >= 10 },
+              { 'd-[14px]': numberOfNotes < 10, 'h-3.5 w-5 ps-[3px]': numberOfNotes >= 10 },
             )}
           >
             {numberOfNotes > 9 ? '9+' : numberOfNotes}

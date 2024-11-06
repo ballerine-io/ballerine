@@ -10,17 +10,17 @@ import { UserAvatar } from '@/common/components/atoms/UserAvatar/UserAvatar';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
 import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
 
-export const Note = ({ content, createdAt, user }: TNote & { user: TUsers[number] }) => {
-  const prettyDate = useMemo(() => {
-    const localDateTime = dayjs.utc(createdAt).local();
+export const Note = ({
+  content,
+  createdAt,
+  user,
+}: TNote & { user: TUsers[number] | undefined }) => {
+  const formattedDate = useMemo(
+    () => dayjs.utc(createdAt).local().format('MMM DD, YYYY, HH:mm'),
+    [createdAt],
+  );
 
-    const date = localDateTime.format('MMM DD, YYYY');
-    const time = localDateTime.format('HH:mm');
-
-    return `${date}, ${time}`;
-  }, [createdAt]);
-
-  const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ');
+  const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(' ');
 
   return (
     <div
@@ -32,7 +32,7 @@ export const Note = ({ content, createdAt, user }: TNote & { user: TUsers[number
         <div className={`flex h-8 items-center space-x-2 text-sm font-medium`}>
           <UserAvatar
             className={`d-6`}
-            avatarUrl={user.avatarUrl ?? undefined}
+            avatarUrl={user?.avatarUrl ?? undefined}
             fullName={fullName ?? ''}
           />
           <Tooltip delayDuration={300}>
@@ -42,7 +42,7 @@ export const Note = ({ content, createdAt, user }: TNote & { user: TUsers[number
             <TooltipContent>{fullName}</TooltipContent>
           </Tooltip>
         </div>
-        <div className={`text-xs`}>{prettyDate}</div>
+        <div className={`text-xs`}>{formattedDate}</div>
       </div>
       <div
         className={`p-3 text-sm leading-6`}

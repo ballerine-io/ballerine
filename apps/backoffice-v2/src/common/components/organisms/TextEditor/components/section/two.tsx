@@ -10,7 +10,7 @@ import {
   StrikethroughIcon,
   TextNoneIcon,
 } from '@radix-ui/react-icons';
-import { ToolbarSection } from '../toolbar-section';
+import { ToolbarSection } from '../ToolbarSection';
 import { toggleVariants } from '@/common/components/atoms/Toggle/Toggle';
 
 type TextStyleAction = 'bold' | 'italic' | 'strikethrough' | 'code' | 'clearFormatting';

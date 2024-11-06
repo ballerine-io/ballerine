@@ -4,16 +4,16 @@ import { Link } from 'react-router-dom';
 import { Loader2, X } from 'lucide-react';
 
 import { Note } from './Note';
-import { NoteableType, TNotes } from './types';
+import type { TNoteableType, TNotes } from './types';
 import { Form } from '@/common/components/organisms/Form/Form';
 import { Button } from '@/common/components/atoms/Button/Button';
+import { useNotesLogic } from '@/domains/notes/hooks/useNotesLogic';
 import { FormItem } from '@/common/components/organisms/Form/Form.Item';
 import { FormField } from '@/common/components/organisms/Form/Form.Field';
 import { Separator } from '@/common/components/atoms/Separator/Separator';
 import { FormControl } from '@/common/components/organisms/Form/Form.Control';
 import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
 import { MinimalTiptapEditor } from '@/common/components/organisms/TextEditor';
-import { useNotesLogic } from '@/pages/Entity/components/Notes/hooks/useNotesLogic';
 import {
   Sidebar,
   SidebarContent,
@@ -21,27 +21,17 @@ import {
   SidebarHeader,
 } from '@/common/components/organisms/Sidebar/Sidebar';
 
-const fallbackUser = {
-  id: 'test',
-  email: 'test',
-  phone: 'test',
-  lastName: 'test',
-  fullName: 'test',
-  avatarUrl: 'test',
-  createdAt: 'test',
-  firstName: 'test',
-  updatedAt: 'test',
-};
-
 export const Notes = ({
   notes,
-  ...data
+  noteData,
 }: {
   notes: TNotes;
-  entityId: string;
-  entityType: 'Business' | 'EndUser';
-  noteableId: string;
-  noteableType: NoteableType;
+  noteData: {
+    entityId: string;
+    entityType: 'Business' | 'EndUser';
+    noteableId: string;
+    noteableType: TNoteableType;
+  };
 }) => {
   const { form, users, onSubmit, isLoading, updateIsNotesOpen } = useNotesLogic();
 
@@ -65,7 +55,7 @@ export const Notes = ({
               className={`flex flex-col`}
               onSubmit={form.handleSubmit(formData =>
                 onSubmit({
-                  ...data,
+                  ...noteData,
                   ...formData,
                   parentNoteId: null,
                 }),
@@ -111,11 +101,11 @@ export const Notes = ({
           <Separator />
         </SidebarGroup>
         <SidebarGroup className={`space-y-4 p-4`}>
-          {notes.map(note => (
+          {(notes || []).map(note => (
             <Note
               key={note.id}
               {...note}
-              user={(users || []).find(user => user.id === note.createdBy) ?? fallbackUser}
+              user={(users || []).find(user => user.id === note.createdBy)}
             />
           ))}
         </SidebarGroup>

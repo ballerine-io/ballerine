@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const BasicNoteSchema = z.object({
+const BaseNoteSchema = z.object({
   id: z.string(),
   entityId: z.string(),
   entityType: z.enum(['Business', 'EndUser']),
@@ -13,9 +13,9 @@ const BasicNoteSchema = z.object({
   updatedAt: z.string().datetime(),
 });
 
-export const NoteSchema = BasicNoteSchema.extend({
-  parentNote: z.union([BasicNoteSchema, z.null()]),
-  childrenNotes: z.array(BasicNoteSchema),
+export const NoteSchema = BaseNoteSchema.extend({
+  parentNote: z.union([BaseNoteSchema, z.null()]),
+  childrenNotes: z.array(BaseNoteSchema),
 });
 
 export const NotesSchema = z.array(NoteSchema);

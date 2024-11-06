@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsString, MinLength } from 'class-validator';
 import { EntityType, Noteable } from '@prisma/client';
-import { IsString } from 'class-validator';
 
 export class NoteModel {
   @ApiProperty({
@@ -19,9 +19,9 @@ export class NoteModel {
 
   @ApiProperty({
     required: true,
-    enum: ['Business', 'EndUser'],
+    enum: EntityType,
   })
-  @IsString()
+  @IsEnum(EntityType)
   entityType!: EntityType;
 
   @ApiProperty({
@@ -34,7 +34,7 @@ export class NoteModel {
     required: true,
     enum: ['Workflow', 'Report', 'Alert'],
   })
-  @IsString()
+  @IsEnum(Noteable)
   noteableType!: Noteable;
 
   @ApiProperty({
@@ -42,13 +42,13 @@ export class NoteModel {
     type: String,
   })
   @IsString()
+  @MinLength(1)
   content!: string;
 
   @ApiProperty({
     required: true,
     type: Object,
   })
-  @IsString()
   parentNote!: NoteModel | null;
 
   @ApiProperty({

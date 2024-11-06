@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { useSerializedSearchParams } from '@/common/hooks/useSerializedSearchParams/useSerializedSearchParams';
-import { useNotesByNoteable } from '@/pages/Entity/components/Notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
+import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
 
 export const useEntityLogic = () => {
   const [{ isNotesOpen }] = useSerializedSearchParams();

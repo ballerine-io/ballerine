@@ -1,9 +1,9 @@
 import * as React from 'react';
 import type { Editor } from '@tiptap/react';
 import type { FormatAction } from '../../types';
+import { ToolbarSection } from '../ToolbarSection';
 import type { VariantProps } from 'class-variance-authority';
 import { CaretDownIcon, ListBulletIcon } from '@radix-ui/react-icons';
-import { ToolbarSection } from '../toolbar-section';
 import { toggleVariants } from '@/common/components/atoms/Toggle/Toggle';
 
 type ListItemAction = 'orderedList' | 'bulletList';
