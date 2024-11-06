@@ -1,4 +1,4 @@
 import { isType } from '@ballerine/common';
-import { BooleanishSchema } from '@/common/schemas';
+import { BooleanishRecordSchema } from '@/common/schemas';
 
-export const checkIsBooleanishRecord = isType(BooleanishSchema);
+export const checkIsBooleanishRecord = isType(BooleanishRecordSchema);

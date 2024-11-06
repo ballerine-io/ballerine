@@ -44,6 +44,7 @@ export const BusinessReportSchema = z
     companyName: data?.parentCompanyName,
     website: data?.website.url,
     data: data.status === 'completed' ? data?.data : null,
+    riskScore: data.status === 'completed' ? data?.riskScore : null,
   }));
 
 export const BusinessReportsSchema = z.object({

@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/kyb-app",
   "private": true,
-  "version": "0.3.75",
+  "version": "0.3.76",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@ballerine/blocks": "0.2.25",
-    "@ballerine/ui": "0.5.42",
+    "@ballerine/ui": "0.5.43",
     "@ballerine/common": "^0.9.48",
     "@ballerine/workflow-browser-sdk": "0.6.61",
     "@lukemorales/query-key-factory": "^1.0.3",

@@ -2,7 +2,7 @@ import { usePagination } from '@/common/hooks/usePagination/usePagination';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { ProfilesSearchSchema } from '@/pages/Profiles/profiles-search-schema';
 import { useSearch } from '@/common/hooks/useSearch/useSearch';
-import { useIndividualsProfilesQuery } from '@/domains/profiles/hook/queries/useIndividualsProfilesQuery/useIndividualsProfilesQuery';
+import { useIndividualsProfilesQuery } from '@/domains/profiles/hooks/queries/useIndividualsProfilesQuery/useIndividualsProfilesQuery';
 
 export const useIndividualsLogic = () => {
   const [{ search: searchValue, filter, page, pageSize, sortBy, sortDir }] =

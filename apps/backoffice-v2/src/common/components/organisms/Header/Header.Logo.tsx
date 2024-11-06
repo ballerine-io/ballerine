@@ -2,7 +2,7 @@ import { FunctionComponent } from 'react';
 import { BallerineLogo } from '../../atoms/icons';
 import { Link } from 'react-router-dom';
 import { env } from '../../../env/env';
-import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { AspectRatio } from '../../atoms/AspectRatio/AspectRatio';
 import { useRedirectToRootUrl } from '@/common/hooks/useRedirectToRootUrl/useRedirectToRootUrl';
 import { Skeleton } from '@ballerine/ui';

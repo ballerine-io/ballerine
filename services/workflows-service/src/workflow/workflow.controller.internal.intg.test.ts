@@ -40,6 +40,7 @@ import { RuleEngineService } from '@/rule-engine/rule-engine.service';
 import { RiskRuleService } from '@/rule-engine/risk-rule.service';
 import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
+import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
 
 describe('/api/v1/internal/workflows #api #integration', () => {
   let app: INestApplication;
@@ -90,6 +91,7 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       NotionService,
       SentryService,
       SecretsManagerFactory,
+      MerchantMonitoringClient,
     ];
     workflowService = (await fetchServiceFromModule(WorkflowService, servicesProviders, [
       PrismaModule,

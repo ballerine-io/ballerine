@@ -36,6 +36,7 @@ import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.r
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { ConfigService } from '@nestjs/config';
 import { AlertService } from '@/alert/alert.service';
+import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
 
 const getBusinessCounterpartyData = (business?: Business) => {
   if (business) {
@@ -156,6 +157,7 @@ describe('#TransactionControllerExternal', () => {
         AlertDefinitionRepository,
         DataAnalyticsService,
         ConfigService,
+        MerchantMonitoringClient,
       ],
       [TransactionControllerExternal],
       [TransactionModule],

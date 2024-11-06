@@ -1,11 +1,13 @@
 import { z } from 'zod';
 import { CaseStatus, CaseStatuses } from '../../enums';
+import { ParsedBooleanSchema } from '@ballerine/ui';
 
 export const BaseSearchSchema = z.object({
   sortDir: z.enum(['asc', 'desc']).catch('desc'),
   pageSize: z.coerce.number().int().positive().catch(50),
   page: z.coerce.number().int().positive().catch(1),
   search: z.string().catch(''),
+  isNotesOpen: ParsedBooleanSchema.catch(false),
 });
 
 export const SearchSchema = BaseSearchSchema.extend({
