@@ -2,76 +2,54 @@ import { z } from 'zod';
 import { apiClient } from '@/common/api-client/api-client';
 import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
-import { TBusinessReportType } from '@/domains/business-reports/types';
 import qs from 'qs';
-import { ObjectValues, Severities } from '@ballerine/common';
 import { toast } from 'sonner';
 import { t } from 'i18next';
-
-export const BusinessReportStatus = {
-  NEW: 'new',
-  IN_PROGRESS: 'in_progress',
-  COMPLETED: 'completed',
-} as const;
-
-export type TBusinessReportStatus = ObjectValues<typeof BusinessReportStatus>;
-
-export type TBusinessReportStatuses = TBusinessReportStatus[];
-
-export const BusinessReportStatuses = [
-  BusinessReportStatus.NEW,
-  BusinessReportStatus.IN_PROGRESS,
-  BusinessReportStatus.COMPLETED,
-] as const satisfies readonly TBusinessReportStatus[];
-
-export const SeveritySchema = z.preprocess(value => {
-  if (value === 'moderate') {
-    return 'medium';
-  }
-
-  if (value === 'positive') {
-    return 'low';
-  }
-
-  return value;
-}, z.enum(Severities));
+import {
+  MERCHANT_REPORT_STATUSES,
+  MERCHANT_REPORT_TYPES,
+  MERCHANT_REPORT_VERSIONS,
+  MerchantReportType,
+  MerchantReportVersion,
+} from '@/domains/business-reports/constants';
 
 export const BusinessReportSchema = z
   .object({
     id: z.string(),
-    type: z.string(),
+    reportType: z.enum([MERCHANT_REPORT_TYPES[0]!, ...MERCHANT_REPORT_TYPES.slice(1)]),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
     riskScore: z.number().nullable(),
-    status: z.enum(BusinessReportStatuses),
-    report: z.object({
-      isAlert: z.boolean().optional(),
-      reportFileId: z.union([z.string(), z.undefined()]),
-      data: z.union([z.record(z.string(), z.unknown()), z.undefined()]),
+    status: z.enum([MERCHANT_REPORT_STATUSES[0]!, ...MERCHANT_REPORT_STATUSES.slice(1)]),
+    parentCompanyName: z.string().nullable(),
+    merchantId: z.string(),
+    workflowVersion: z.enum([MERCHANT_REPORT_VERSIONS[0]!, ...MERCHANT_REPORT_VERSIONS.slice(1)]),
+    isAlert: z.boolean().nullable(),
+    website: z.object({
+      id: z.string(),
+      url: z.string().url(),
+      createdAt: z
+        .string()
+        .datetime()
+        .transform(value => new Date(value)),
+      updatedAt: z
+        .string()
+        .datetime()
+        .transform(value => new Date(value)),
     }),
-    business: z
-      .object({
-        id: z.string(),
-        companyName: z.string(),
-        country: z.string().nullable(),
-        website: z.string().nullable(),
-      })
-      .nullable(),
+    data: z.record(z.string(), z.unknown()).nullish(),
   })
-  .optional()
   .transform(data => ({
     ...data,
-    companyName:
-      data?.report.data?.websiteCompanyAnalysis?.companyName || data?.business?.companyName,
-    website: data?.report.data?.websiteCompanyAnalysis?.website.url || data?.business?.website,
+    companyName: data?.parentCompanyName,
+    website: data?.website.url,
+    data: data.status === 'completed' ? data?.data : null,
   }));
 
 export const BusinessReportsSchema = z.object({
-  businessReports: z.array(BusinessReportSchema),
-  meta: z.object({
-    totalItems: z.number().nonnegative(),
-    totalPages: z.number().nonnegative(),
-  }),
+  data: z.array(BusinessReportSchema),
+  totalItems: z.number().nonnegative(),
+  totalPages: z.number().nonnegative(),
 });
 
 export type TBusinessReport = z.infer<typeof BusinessReportSchema>;
@@ -83,7 +61,7 @@ export const fetchLatestBusinessReport = async ({
   reportType,
 }: {
   businessId: string;
-  reportType: TBusinessReportType;
+  reportType: MerchantReportType;
 }) => {
   const [data, error] = await apiClient({
     endpoint: `business-reports/latest?businessId=${businessId}&type=${reportType}`,
@@ -98,7 +76,7 @@ export const fetchBusinessReports = async ({
   reportType,
   ...params
 }: {
-  reportType: TBusinessReportType;
+  reportType: MerchantReportType;
   page: {
     number: number;
     size: number;
@@ -144,16 +122,16 @@ export const createBusinessReport = async ({
   | {
       websiteUrl: string;
       operatingCountry?: string;
-      reportType: TBusinessReportType;
-      workflowVersion: '1' | '2' | '3';
+      reportType: MerchantReportType;
+      workflowVersion: MerchantReportVersion;
       companyName: string;
       isExample: boolean;
     }
   | {
       websiteUrl: string;
       operatingCountry?: string;
-      reportType: TBusinessReportType;
-      workflowVersion: '1' | '2' | '3';
+      reportType: MerchantReportType;
+      workflowVersion: MerchantReportVersion;
       businessCorrelationId: string;
       isExample: boolean;
     }) => {
@@ -188,7 +166,7 @@ export const createBusinessReportBatch = async ({
 }: {
   merchantSheet: File;
   isExample: boolean;
-  reportType: TBusinessReportType;
+  reportType: MerchantReportType;
   workflowVersion: string;
 }) => {
   if (isExample) {

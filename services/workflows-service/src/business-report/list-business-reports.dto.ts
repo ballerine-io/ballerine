@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BusinessReportType, Prisma } from '@prisma/client';
-import { IsIn, IsOptional, IsString } from 'class-validator';
+import { Prisma } from '@prisma/client';
+import { IsOptional, IsString } from 'class-validator';
 import { PageDto, sortDirections, validateOrderBy } from '@/common/dto';
 import { z } from 'zod';
 import { SortableByModel } from '@/common/types';
@@ -9,16 +9,6 @@ export class ListBusinessReportsDto {
   @IsOptional()
   @IsString()
   businessId?: string;
-
-  @IsOptional()
-  @IsString()
-  batchId?: string;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsIn(Object.values(BusinessReportType))
-  type!: BusinessReportType;
 
   @IsOptional()
   @ApiProperty({ type: String, required: false })

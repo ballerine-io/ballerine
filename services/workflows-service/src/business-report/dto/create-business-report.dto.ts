@@ -1,8 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsOptional, IsString, MinLength } from 'class-validator';
 import { countryCodes } from '@ballerine/common';
-import { BusinessReportType } from '@prisma/client';
-import type { ObjectValues } from '@/types';
+import {
+  MERCHANT_REPORT_TYPES,
+  MERCHANT_REPORT_VERSIONS_MAP,
+  type MerchantReportType,
+  type MerchantReportVersion,
+} from '@/business-report/constants';
 
 export class CreateBusinessReportDto {
   @ApiProperty({
@@ -43,15 +47,16 @@ export class CreateBusinessReportDto {
     required: true,
     type: String,
   })
-  @IsIn(Object.values(BusinessReportType))
-  reportType!: ObjectValues<typeof BusinessReportType>;
+  @IsIn(Object.values(MERCHANT_REPORT_TYPES))
+  reportType!: MerchantReportType;
 
   @ApiProperty({
     required: true,
     type: String,
-    default: '2',
+    enum: MERCHANT_REPORT_VERSIONS_MAP,
+    default: MERCHANT_REPORT_VERSIONS_MAP['2'],
     description: 'Workflow version',
   })
   @IsString()
-  workflowVersion!: '1' | '2' | '3';
+  workflowVersion!: MerchantReportVersion;
 }

@@ -18,7 +18,7 @@ export const useCreateBusinessReportMutation = ({
   const workflowVersion = customer?.features?.createBusinessReport?.options.version ?? '2';
 
   return useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       websiteUrl,
       operatingCountry,
       companyName,
@@ -33,8 +33,8 @@ export const useCreateBusinessReportMutation = ({
           websiteUrl: string;
           operatingCountry: string;
           businessCorrelationId: string;
-        }) =>
-      createBusinessReport({
+        }) => {
+      await createBusinessReport({
         websiteUrl,
         operatingCountry,
         companyName,
@@ -42,7 +42,11 @@ export const useCreateBusinessReportMutation = ({
         reportType,
         workflowVersion,
         isExample: customer?.config?.isExample ?? false,
-      }),
+      });
+
+      // Artificial delay to ensure report is created in Unified API's DB
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    },
     onSuccess: data => {
       if (customer?.config?.isExample) {
         return;

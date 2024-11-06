@@ -1,6 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BusinessReportType } from '@prisma/client';
-import { IsEnum, IsString } from 'class-validator';
+import { IsEnum } from 'class-validator';
+import {
+  MERCHANT_REPORT_TYPES_MAP,
+  MERCHANT_REPORT_VERSIONS_MAP,
+  type MerchantReportType,
+  type MerchantReportVersion,
+} from '@/business-report/constants';
 
 export class CreateBusinessReportBatchBodyDto {
   @ApiProperty({
@@ -13,19 +18,20 @@ export class CreateBusinessReportBatchBodyDto {
   @ApiProperty({
     required: true,
     type: String,
-    enum: BusinessReportType,
-    default: BusinessReportType.MERCHANT_REPORT_T1,
+    enum: MERCHANT_REPORT_TYPES_MAP,
+    default: MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1,
     description: 'Type of business report',
   })
-  @IsEnum(BusinessReportType)
-  type!: BusinessReportType;
+  @IsEnum(MERCHANT_REPORT_TYPES_MAP)
+  type!: MerchantReportType;
 
   @ApiProperty({
     required: true,
     type: String,
-    default: '2',
+    enum: MERCHANT_REPORT_VERSIONS_MAP,
+    default: MERCHANT_REPORT_VERSIONS_MAP['2'],
     description: 'Workflow version',
   })
-  @IsString()
-  workflowVersion!: '1' | '2' | '3';
+  @IsEnum(MERCHANT_REPORT_VERSIONS_MAP)
+  workflowVersion!: MerchantReportVersion;
 }

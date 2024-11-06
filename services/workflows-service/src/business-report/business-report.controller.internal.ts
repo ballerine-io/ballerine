@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
-import type { InputJsonValue, TProjectId } from '@/types';
+import type { TProjectId } from '@/types';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import * as errors from '@/errors';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
@@ -20,13 +20,10 @@ import {
   ListBusinessReportsDto,
   ListBusinessReportsSchema,
 } from '@/business-report/list-business-reports.dto';
-import { Business, BusinessReportStatus, BusinessReportType, Prisma } from '@prisma/client';
+import { Business } from '@prisma/client';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { CreateBusinessReportDto } from '@/business-report/dto/create-business-report.dto';
-import {
-  HookCallbackHandlerService,
-  ReportWithRiskScoreSchema,
-} from '@/workflow/hook-callback-handler.service';
+import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { CustomerService } from '@/customer/customer.service';
 import { BusinessService } from '@/business/business.service';
 import { AlertService } from '@/alert/alert.service';
@@ -34,7 +31,6 @@ import { Public } from '@/common/decorators/public.decorator';
 import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
 import { BusinessReportHookBodyDto } from '@/business-report/dtos/business-report-hook-body.dto';
 import { BusinessReportHookSearchQueryParamsDto } from '@/business-report/dtos/business-report-hook-search-query-params.dto';
-import { QueryMode } from '@/common/query-filters/query-mode';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { fileFilter } from '@/storage/file-filter';
@@ -71,17 +67,10 @@ export class BusinessReportControllerInternal {
     }: CreateBusinessReportDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const {
-      id: customerId,
-      displayName: customerName,
-      config,
-    } = await this.customerService.getByProjectId(currentProjectId);
+    const { id: customerId, config } = await this.customerService.getByProjectId(currentProjectId);
 
     const { maxBusinessReports, withQualityControl } = config || {};
-    await this.businessReportService.checkBusinessReportsLimit(
-      maxBusinessReports,
-      currentProjectId,
-    );
+    await this.businessReportService.checkBusinessReportsLimit(maxBusinessReports, customerId);
 
     let business: Pick<Business, 'id' | 'correlationId'> | undefined;
     const merchantNameWithDefault = merchantName || 'Not detected';
@@ -120,14 +109,12 @@ export class BusinessReportControllerInternal {
     await this.businessReportService.createBusinessReportAndTriggerReportCreation({
       reportType,
       business,
-      currentProjectId,
       websiteUrl,
       countryCode,
       merchantName: merchantNameWithDefault,
       workflowVersion,
       withQualityControl,
       customerId,
-      customerName,
     });
   }
 
@@ -137,56 +124,33 @@ export class BusinessReportControllerInternal {
   @Public()
   @VerifyUnifiedApiSignatureDecorator()
   async createBusinessReportCallback(
-    @Query() { businessReportId, businessId }: BusinessReportHookSearchQueryParamsDto,
+    @Query() { businessId }: BusinessReportHookSearchQueryParamsDto,
     @Body()
     { reportData: unvalidatedReportData, base64Pdf, reportId }: BusinessReportHookBodyDto,
   ) {
-    const business = await this.businessService.getByIdUnscoped(businessId, {
-      select: {
-        id: true,
-        companyName: true,
-        projectId: true,
-      },
-    });
-
-    const customer = await this.customerService.getByProjectId(business.projectId);
-    const reportData = ReportWithRiskScoreSchema.parse(unvalidatedReportData);
-    const { pdfReportBallerineFileId } =
-      await this.hookCallbackService.persistPDFReportDocumentWithWorkflowDocuments({
-        context: {
-          entity: {
-            id: business.id,
-          },
-          documents: [],
-        },
-        customer,
-        projectId: business.projectId,
-        base64PDFString: base64Pdf as string,
-      });
-
-    const businessReport = await this.businessReportService.updateById(
-      { id: businessReportId },
-      {
-        data: {
-          riskScore: reportData.summary.riskScore,
-          status: BusinessReportStatus.completed,
-          reportId,
-          report: {
-            reportFileId: pdfReportBallerineFileId,
-            data: reportData as InputJsonValue,
-          },
-        },
-      },
-    );
-
-    this.alertService
-      .checkOngoingMonitoringAlert(businessReport, business.companyName)
-      .then(() => {
-        this.logger.debug(`Alert Tested for ${reportId}}`);
-      })
-      .catch(error => {
-        this.logger.error(error);
-      });
+    // const business = await this.businessService.getByIdUnscoped(businessId, {
+    //   select: {
+    //     id: true,
+    //     companyName: true,
+    //     projectId: true,
+    //   },
+    // });
+    //
+    // const customer = await this.customerService.getByProjectId(business.projectId);
+    // const reportData = ReportWithRiskScoreSchema.parse(unvalidatedReportData);
+    //
+    //
+    // this.alertService
+    //   .checkOngoingMonitoringAlert({
+    //     businessReport: businessReport,
+    //     businessCompanyName: business.companyName,
+    //   })
+    //   .then(() => {
+    //     this.logger.debug(`Alert Tested for ${reportId}}`);
+    //   })
+    //   .catch(error => {
+    //     this.logger.error(error);
+    //   });
   }
 
   @common.Get('/latest')
@@ -196,35 +160,15 @@ export class BusinessReportControllerInternal {
     @CurrentProject() currentProjectId: TProjectId,
     @Query() { businessId, type }: GetLatestBusinessReportDto,
   ) {
-    return await this.businessReportService.findFirstOrThrow(
-      {
-        where: {
-          type,
-          businessId,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-        select: {
-          id: true,
-          type: true,
-          createdAt: true,
-          updatedAt: true,
-          report: true,
-          riskScore: true,
-          status: true,
-          business: {
-            select: {
-              id: true,
-              companyName: true,
-              country: true,
-              website: true,
-            },
-          },
-        },
-      },
-      [currentProjectId],
-    );
+    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
+
+    const latestReport = await this.businessReportService.findLatest({
+      businessId,
+      customerId,
+      reportType: type,
+    });
+
+    return latestReport ?? {};
   }
 
   @common.Get()
@@ -233,81 +177,18 @@ export class BusinessReportControllerInternal {
   @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
   async listBusinessReports(
     @CurrentProject() currentProjectId: TProjectId,
-    @Query() { businessId, batchId, page, search, type, orderBy }: ListBusinessReportsDto,
+    @Query() { businessId, page, search, orderBy }: ListBusinessReportsDto,
   ) {
-    const ongoingOrCondition = [
-      {
-        type: {
-          not: {
-            equals: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
-          },
-        },
-      },
-      {
-        type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
-        status: BusinessReportStatus.completed,
-      },
-    ];
+    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
 
-    const args = {
-      where: {
-        businessId,
-        batchId,
-        ...(type ? { type } : {}),
-        ...(search
-          ? {
-              OR: [
-                { id: { contains: search, mode: QueryMode.Insensitive } },
-                {
-                  business: {
-                    companyName: { contains: search, mode: QueryMode.Insensitive },
-                  },
-                },
-                { business: { website: { contains: search, mode: QueryMode.Insensitive } } },
-              ],
-            }
-          : {}),
-        AND: {
-          OR: ongoingOrCondition,
-        },
-      },
-      select: {
-        id: true,
-        type: true,
-        createdAt: true,
-        updatedAt: true,
-        report: true,
-        riskScore: true,
-        status: true,
-        business: {
-          select: {
-            id: true,
-            companyName: true,
-            country: true,
-            website: true,
-          },
-        },
-      },
-      orderBy: orderBy as
-        | Prisma.Enumerable<Prisma.BusinessReportOrderByWithRelationInput>
-        | undefined,
-      take: page.size,
-      skip: (page.number - 1) * page.size,
-    } satisfies Parameters<typeof this.businessReportService.findMany>[0];
-
-    const businessReports = await this.businessReportService.findMany(args, [currentProjectId]);
-
-    const businessReportCount = await this.businessReportService.count({ where: args.where }, [
-      currentProjectId,
-    ]);
-
-    return {
-      businessReports,
-      meta: {
-        totalItems: businessReportCount,
-        totalPages: Math.max(Math.ceil(businessReportCount / page.size), 1),
-      },
-    };
+    return await this.businessReportService.findMany({
+      withoutUnpublishedOngoingReports: true,
+      limit: page.size,
+      page: page.number,
+      customerId: customerId,
+      ...(businessId ? { businessId } : {}),
+      ...(search ? { searchQuery: search } : {}),
+    });
   }
 
   @common.Get(':id')
@@ -318,25 +199,9 @@ export class BusinessReportControllerInternal {
     @CurrentProject() currentProjectId: TProjectId,
     @Param('id') id: string,
   ) {
-    return await this.businessReportService.findById(id, [currentProjectId], {
-      select: {
-        id: true,
-        type: true,
-        createdAt: true,
-        updatedAt: true,
-        report: true,
-        riskScore: true,
-        status: true,
-        business: {
-          select: {
-            id: true,
-            companyName: true,
-            country: true,
-            website: true,
-          },
-        },
-      },
-    });
+    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
+
+    return await this.businessReportService.findById({ id, customerId });
   }
 
   @common.Post('/upload-batch')
@@ -355,18 +220,15 @@ export class BusinessReportControllerInternal {
     @Res() res: Response,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const { config } = await this.customerService.getByProjectId(currentProjectId);
+    const { id: customerId, config } = await this.customerService.getByProjectId(currentProjectId);
 
     const { maxBusinessReports, withQualityControl } = config || {};
-    await this.businessReportService.checkBusinessReportsLimit(
-      maxBusinessReports,
-      currentProjectId,
-    );
+    await this.businessReportService.checkBusinessReportsLimit(maxBusinessReports, customerId);
 
     const result = await this.businessReportService.processBatchFile({
       type,
       workflowVersion,
-      currentProjectId,
+      customerId,
       maxBusinessReports,
       merchantSheet: file,
       projectId: currentProjectId,

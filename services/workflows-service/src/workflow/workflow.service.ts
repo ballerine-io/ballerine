@@ -85,8 +85,6 @@ import {
 import {
   ApprovalState,
   BusinessPosition,
-  BusinessReportStatus,
-  BusinessReportType,
   Customer,
   EndUser,
   Prisma,
@@ -2137,28 +2135,6 @@ export class WorkflowService {
           businessId: workflowRuntimeData.businessId,
           sendEvent: e => service.sendEvent(e),
           payload: typedPayload,
-        });
-      });
-
-      service.subscribe('PERSIST_BUSINESS_REPORT', async ({ payload }) => {
-        if (!payload?.reportId || !payload.reportType) {
-          return;
-        }
-
-        const typedPayload = payload as {
-          reportId: string;
-          reportType: BusinessReportType;
-        };
-
-        await this.businessReportService.create({
-          data: {
-            report: {},
-            businessId: workflowRuntimeData.context.entity.ballerineEntityId,
-            projectId: currentProjectId,
-            reportId: typedPayload.reportId,
-            type: typedPayload.reportType,
-            status: BusinessReportStatus.in_progress,
-          },
         });
       });
 

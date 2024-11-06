@@ -7,15 +7,19 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 import { createColumnHelper } from '@tanstack/react-table';
-import { BusinessReportStatus, TBusinessReport } from '@/domains/business-reports/fetchers';
+import { TBusinessReport } from '@/domains/business-reports/fetchers';
 import { titleCase } from 'string-ts';
 
 import { ctw } from '@/common/utils/ctw/ctw';
-import { getSeverityFromRiskScore, isObject } from '@ballerine/common';
+import { getSeverityFromRiskScore } from '@ballerine/common';
 import { Badge, severityToClassName, TextWithNAFallback, WarningFilledSvg } from '@ballerine/ui';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
 import { Minus } from 'lucide-react';
+import {
+  MERCHANT_REPORT_STATUSES_MAP,
+  MERCHANT_REPORT_TYPES_MAP,
+} from '@/domains/business-reports/constants';
 
 const columnHelper = createColumnHelper<TBusinessReport>();
 
@@ -25,18 +29,14 @@ const SCAN_TYPES = {
 };
 
 const REPORT_TYPE_TO_SCAN_TYPE = {
-  MERCHANT_REPORT_T1: SCAN_TYPES.ONBOARDING,
-  ONGOING_MERCHANT_REPORT_T1: SCAN_TYPES.MONITORING,
-};
+  [MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1]: SCAN_TYPES.ONBOARDING,
+  [MERCHANT_REPORT_TYPES_MAP.ONGOING_MERCHANT_REPORT_T1]: SCAN_TYPES.MONITORING,
+} as const;
 
 export const columns = [
-  columnHelper.accessor('report', {
-    cell: info => {
-      const summary = info.getValue()?.data?.summary;
-
-      const isAlert = isObject(summary) && 'isAlert' in summary && summary.isAlert;
-
-      return isAlert ? (
+  columnHelper.accessor('isAlert', {
+    cell: ({ getValue }) => {
+      return getValue() ? (
         <WarningFilledSvg className={`ms-4 d-6`} />
       ) : (
         <Minus className={`ms-4 text-[#D9D9D9] d-6`} />
@@ -44,10 +44,9 @@ export const columns = [
     },
     header: 'Alert',
   }),
-  columnHelper.accessor('type', {
+  columnHelper.accessor('reportType', {
     cell: info => {
-      const scanType =
-        REPORT_TYPE_TO_SCAN_TYPE[info.getValue() as keyof typeof REPORT_TYPE_TO_SCAN_TYPE];
+      const scanType = REPORT_TYPE_TO_SCAN_TYPE[info.getValue()];
 
       return <TextWithNAFallback>{scanType}</TextWithNAFallback>;
     },
@@ -76,7 +75,7 @@ export const columns = [
     },
     header: 'Created At',
   }),
-  columnHelper.accessor('business.id', {
+  columnHelper.accessor('merchantId', {
     cell: info => {
       // eslint-disable-next-line react-hooks/rules-of-hooks -- ESLint doesn't like `cell` not being `Cell`.
       const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
@@ -159,13 +158,14 @@ export const columns = [
     cell: info => {
       const status = info.getValue();
       const statusToDisplayStatus = {
-        [BusinessReportStatus.COMPLETED]: 'Manual Review',
+        [MERCHANT_REPORT_STATUSES_MAP.completed]: 'Manual Review',
+        [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: 'Quality Control',
       } as const;
 
       return (
         <TextWithNAFallback
           className={ctw('font-semibold', {
-            'text-slate-400': status === BusinessReportStatus.COMPLETED,
+            'text-slate-400': status === MERCHANT_REPORT_STATUSES_MAP.completed,
           })}
         >
           {titleCase(statusToDisplayStatus[status as keyof typeof statusToDisplayStatus] ?? status)}

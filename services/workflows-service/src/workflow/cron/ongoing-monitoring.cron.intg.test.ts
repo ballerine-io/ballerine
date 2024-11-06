@@ -4,7 +4,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CustomerService } from '@/customer/customer.service';
 import { BusinessService } from '@/business/business.service';
-import { Business, BusinessReportStatus, BusinessReportType, Project } from '@prisma/client';
+import { Business, Project } from '@prisma/client';
 import {
   FEATURE_LIST,
   TCustomerWithFeatures,
@@ -13,6 +13,11 @@ import {
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { WorkflowService } from '@/workflow/workflow.service';
+import {
+  MERCHANT_REPORT_STATUSES_MAP,
+  MERCHANT_REPORT_TYPES_MAP,
+  MERCHANT_REPORT_VERSIONS_MAP,
+} from '@/business-report/constants';
 
 describe('OngoingMonitoringCron', () => {
   let service: OngoingMonitoringCron;
@@ -74,21 +79,33 @@ describe('OngoingMonitoringCron', () => {
         .spyOn(businessService, 'list')
         .mockResolvedValue(mockBusinesses().filter(business => business.id === 'business3'));
       jest.spyOn(businessReportService, 'createBusinessReportAndTriggerReportCreation');
-      jest.spyOn(businessReportService, 'findMany').mockResolvedValue([
-        {
-          id: 'business1',
-          reportId: 'mockReport1',
-          report: {},
-          riskScore: 0,
-          batchId: null,
-          projectId: '1',
-          businessId: 'business3',
-          status: BusinessReportStatus.in_progress,
-          type: BusinessReportType.MERCHANT_REPORT_T1,
-          createdAt: new Date(new Date().setDate(new Date().getDate() - 31)),
-          updatedAt: new Date(new Date().setDate(new Date().getDate() - 30)),
-        },
-      ]);
+      jest.spyOn(businessReportService, 'findMany').mockResolvedValue({
+        data: [
+          {
+            id: 'business1',
+            data: {},
+            riskScore: 0,
+            merchantId: 'business3',
+            status: MERCHANT_REPORT_STATUSES_MAP['in-progress'],
+            reportType: MERCHANT_REPORT_TYPES_MAP.ONGOING_MERCHANT_REPORT_T1,
+            createdAt: new Date(new Date().setDate(new Date().getDate() - 31)),
+            updatedAt: new Date(new Date().setDate(new Date().getDate() - 30)),
+            isAlert: false,
+            website: {
+              id: 'business1',
+              url: 'http://example.com',
+              createdAt: new Date(new Date().setDate(new Date().getDate() - 31)),
+              updatedAt: new Date(new Date().setDate(new Date().getDate() - 30)),
+            },
+            workflowVersion: MERCHANT_REPORT_VERSIONS_MAP['2'],
+            metadata: {},
+            websiteId: 'business1',
+            parentCompanyName: 'Test Business 3',
+          },
+        ],
+        totalItems: 1,
+        totalPages: 1,
+      });
 
       await service.handleCron();
 
