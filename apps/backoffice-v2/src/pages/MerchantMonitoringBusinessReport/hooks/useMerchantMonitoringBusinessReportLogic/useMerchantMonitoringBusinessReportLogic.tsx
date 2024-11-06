@@ -1,11 +1,13 @@
-import { useNavigate, useParams } from 'react-router-dom';
-import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
-import { useCallback, useMemo } from 'react';
 import { z } from 'zod';
-import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
+import { useCallback, useMemo } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { ParsedBooleanSchema, useReportTabs } from '@ballerine/ui';
+
 import { safeUrl } from '@/common/utils/safe-url/safe-url';
-import { useReportTabs } from '@ballerine/ui';
+import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
+import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
+import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
 import { MERCHANT_REPORT_STATUSES_MAP } from '@/domains/business-reports/constants';
 
 export const useMerchantMonitoringBusinessReportLogic = () => {
@@ -13,6 +15,12 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
   const { data: businessReport } = useBusinessReportByIdQuery({
     id: businessReportId ?? '',
   });
+
+  const { data: notes } = useNotesByNoteable({
+    noteableId: businessReportId,
+    noteableType: 'Report',
+  });
+
   const { tabs } = useReportTabs({
     reportVersion: businessReport?.workflowVersion,
     report: businessReport?.data ?? {},
@@ -21,6 +29,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
   });
   const tabsValues = useMemo(() => tabs.map(tab => tab.value), [tabs]);
   const MerchantMonitoringBusinessReportSearchSchema = z.object({
+    isNotesOpen: ParsedBooleanSchema.catch(false),
     activeTab: z
       .enum(
         // @ts-expect-error - zod doesn't like we are using `Array.prototype.map`
@@ -28,7 +37,9 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
       )
       .catch(tabsValues[0]!),
   });
-  const [{ activeTab }] = useZodSearchParams(MerchantMonitoringBusinessReportSearchSchema);
+  const [{ activeTab, isNotesOpen }] = useZodSearchParams(
+    MerchantMonitoringBusinessReportSearchSchema,
+  );
   const navigate = useNavigate();
   const onNavigateBack = useCallback(() => {
     const previousPath = sessionStorage.getItem(
@@ -61,6 +72,8 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     businessReport,
     statusToBadgeData,
     tabs,
+    notes,
     activeTab,
+    isNotesOpen,
   };
 };

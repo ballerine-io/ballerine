@@ -1,14 +1,17 @@
-import { Header } from '../../../../common/components/organisms/Header';
-import { useAuthenticatedLayoutLogic } from './hooks/useAuthenticatedLayoutLogic/useAuthenticatedLayoutLogic';
-import { Navigate, Outlet } from 'react-router-dom';
 import { FunctionComponent } from 'react';
-import { FullScreenLoader } from '../../../../common/components/molecules/FullScreenLoader/FullScreenLoader';
+import { Navigate, Outlet } from 'react-router-dom';
+
+import { Header } from '@/common/components/organisms/Header';
+import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
+import { useAuthenticatedLayoutLogic } from './hooks/useAuthenticatedLayoutLogic/useAuthenticatedLayoutLogic';
 
 export const AuthenticatedLayout: FunctionComponent = () => {
   const { shouldRedirect, isLoading, redirectUnauthenticatedTo, location } =
     useAuthenticatedLayoutLogic();
 
-  if (isLoading) return <FullScreenLoader />;
+  if (isLoading || !redirectUnauthenticatedTo) {
+    return <FullScreenLoader />;
+  }
 
   if (shouldRedirect) {
     return (

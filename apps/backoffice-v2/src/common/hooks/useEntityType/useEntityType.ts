@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import { useFilterId } from '../useFilterId/useFilterId';
-import { useFiltersQuery } from '../../../domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
+import { useFiltersQuery } from '@/domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
 
 export type TEntityType = 'individuals' | 'business';
 
-export function useEntityType(defaultEntityType: TEntityType = 'individuals'): TEntityType {
+export const useEntityType = (defaultEntityType: TEntityType = 'individuals'): TEntityType => {
   const filterId = useFilterId();
   const { data: filters, isLoading } = useFiltersQuery();
 
@@ -17,4 +17,4 @@ export function useEntityType(defaultEntityType: TEntityType = 'individuals'): T
   }, [filterId, filters, isLoading]);
 
   return entityType ? entityType : defaultEntityType;
-}
+};
