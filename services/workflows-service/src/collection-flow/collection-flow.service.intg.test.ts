@@ -36,6 +36,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Customer, EndUser, PrismaClient, Project } from '@prisma/client';
 import { noop } from 'lodash';
 import { CollectionFlowService } from './collection-flow.service';
+import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
 
 const deps: Provider[] = [
   {
@@ -143,6 +144,7 @@ describe('CollectionFlowService', () => {
         CustomerRepository,
         CustomerService,
         EndUserRepository,
+        MerchantMonitoringClient,
       ],
     }).compile();
 

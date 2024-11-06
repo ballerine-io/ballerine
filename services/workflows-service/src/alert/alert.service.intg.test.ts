@@ -35,6 +35,7 @@ import {
 import { PrismaService } from '@/prisma/prisma.service';
 import { BusinessService } from '@/business/business.service';
 import { BusinessRepository } from '@/business/business.repository';
+import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
 
 type AsyncTransactionFactoryCallback = (
   transactionFactory: TransactionFactory,
@@ -99,6 +100,7 @@ describe('AlertService', () => {
         AlertService,
         BusinessService,
         BusinessRepository,
+        MerchantMonitoringClient,
       ],
     }).compile();
 
