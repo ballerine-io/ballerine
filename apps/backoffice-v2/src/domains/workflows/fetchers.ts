@@ -6,6 +6,7 @@ import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error
 import { WorkflowDefinitionByIdSchema } from '@/domains/workflow-definitions/fetchers';
 import { AmlSchema } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
 import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
+import { CollectionFlowStatusesEnum } from '@ballerine/common';
 import qs from 'qs';
 import { deepCamelKeys } from 'string-ts';
 import { z } from 'zod';
@@ -105,6 +106,12 @@ export const BaseWorkflowByIdSchema = z.object({
           })
           .passthrough()
           .optional(),
+        merchantMonitoring: z
+          .object({
+            reportId: z.string().nullish(),
+          })
+          .passthrough()
+          .nullish(),
       })
       .passthrough()
       .optional(),
@@ -115,18 +122,17 @@ export const BaseWorkflowByIdSchema = z.object({
       })
       .passthrough()
       .optional(),
-    flowConfig: z
+    collectionFlow: z
       .object({
-        stepsProgress: z
-          .record(
-            z.string(),
-            z.object({
-              // TODO Until backwards compatibility is handled
-              number: z.number().default(0),
-              isCompleted: z.boolean(),
-            }),
-          )
-          .or(z.undefined()),
+        config: z.object({
+          apiUrl: z.string().url(),
+        }),
+        state: z.object({
+          currentStep: z.string(),
+          status: z.enum(Object.values(CollectionFlowStatusesEnum) as [string, ...string[]]),
+          steps: z.array(z.object({ stepName: z.string(), isCompleted: z.boolean() })),
+        }),
+        additionalInformation: z.record(z.string(), z.unknown()).optional(),
       })
       .optional(),
     customData: z.record(z.string(), z.unknown()).optional(),
@@ -150,7 +156,7 @@ export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
         context: true,
       }).extend({
         context: BaseWorkflowByIdSchema.shape.context.omit({
-          flowConfig: true,
+          collectionFlow: true,
         }),
       }),
     )

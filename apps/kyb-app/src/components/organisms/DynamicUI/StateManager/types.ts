@@ -11,7 +11,7 @@ export type State = MachineConfig<AnyObject, AnyObject, any>;
 export interface StateManagerContext {
   stateApi: StateMachineAPI;
   state: string;
-  payload: AnyObject;
+  payload: CollectionFlowContext;
   config?: CollectionFlowConfig;
   isPluginLoading: boolean;
 }

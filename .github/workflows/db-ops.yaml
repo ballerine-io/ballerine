@@ -143,9 +143,9 @@ jobs:
     needs: update-helm-chart
     if: ${{ needs.update-helm-chart.result == 'success' }}
     runs-on: ubuntu-latest
-    environment: ${{ github.env.MIGRATION_ENV }}
+    environment: ${{ github.event.client_payload.environment }}
     env:
-      stage: ${{ github.env.MIGRATION_ENV }}
+      stage: ${{ github.event.client_payload.environment }}
     permissions:
       contents: read
     steps:

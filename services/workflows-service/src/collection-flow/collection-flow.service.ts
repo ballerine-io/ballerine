@@ -18,7 +18,7 @@ import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { AnyRecord } from '@ballerine/common';
+import { AnyRecord, DefaultContextSchema, TCollectionFlowConfig } from '@ballerine/common';
 import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
 import { EndUser, Prisma, UiDefinition, WorkflowRuntimeData } from '@prisma/client';
@@ -285,5 +285,20 @@ export class CollectionFlowService {
       customer.name,
       { shouldDownloadFromSource: false },
     );
+  }
+
+  async getCollectionFlowContext(
+    tokenScope: ITokenScope,
+  ): Promise<{ context: DefaultContextSchema; config: TCollectionFlowConfig }> {
+    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
+      tokenScope.workflowRuntimeDataId,
+      { select: { context: true, state: true, config: true } },
+      [tokenScope.projectId],
+    );
+
+    return {
+      context: workflowRuntimeData.context,
+      config: workflowRuntimeData.config,
+    };
   }
 }

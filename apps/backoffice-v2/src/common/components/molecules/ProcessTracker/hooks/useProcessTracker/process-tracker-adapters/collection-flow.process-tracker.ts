@@ -28,16 +28,21 @@ export class CollectionFlowProcessTracker implements IProcessTracker {
   }
 
   private getSteps() {
-    return Object.keys(this.workflow?.context?.flowConfig?.stepsProgress ?? {})?.sort((a, b) => {
-      return (
-        (this.workflow?.context?.flowConfig?.stepsProgress?.[a]?.number ?? 0) -
-        (this.workflow?.context?.flowConfig?.stepsProgress?.[b]?.number ?? 0)
-      );
-    });
+    const steps = this.workflow?.context?.collectionFlow?.state?.steps;
+
+    if (!steps?.length) return [];
+
+    return steps.map(step => step.stepName);
   }
 
   private getCollectionFlowStatus(step: string) {
-    if (this.workflow?.context?.flowConfig?.stepsProgress?.[step]?.isCompleted) {
+    const stepItem = this.workflow?.context?.collectionFlow?.state?.steps?.find(
+      s => s.stepName === step,
+    );
+
+    if (!stepItem) return processStatusToIcon[ProcessStatus.IDLE];
+
+    if (stepItem?.isCompleted) {
       return processStatusToIcon[ProcessStatus.SUCCESS];
     }
 

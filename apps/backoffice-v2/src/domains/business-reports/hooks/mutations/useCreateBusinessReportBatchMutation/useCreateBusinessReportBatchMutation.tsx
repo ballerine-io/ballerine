@@ -3,17 +3,17 @@ import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { HttpError } from '@/common/errors/http-error';
-import { TBusinessReportType } from '@/domains/business-reports/types';
 import { createBusinessReportBatch } from '@/domains/business-reports/fetchers';
-import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { isObject } from '@ballerine/common';
+import { MerchantReportType } from '@/domains/business-reports/constants';
 
 export const useCreateBusinessReportBatchMutation = ({
   reportType,
   workflowVersion,
   onSuccess,
 }: {
-  reportType: TBusinessReportType;
+  reportType: MerchantReportType;
   workflowVersion: string;
   onSuccess?: <TData>(data: TData) => void;
 }) => {
@@ -22,13 +22,17 @@ export const useCreateBusinessReportBatchMutation = ({
   const { data: customer } = useCustomerQuery();
 
   return useMutation({
-    mutationFn: (merchantSheet: File) =>
-      createBusinessReportBatch({
+    mutationFn: async (merchantSheet: File) => {
+      await createBusinessReportBatch({
         reportType,
         workflowVersion,
         merchantSheet,
         isExample: customer?.config?.isExample ?? false,
-      }),
+      });
+
+      // Artificial delay to ensure report is created in Unified API's DB
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    },
     onSuccess: data => {
       void queryClient.invalidateQueries();
 
