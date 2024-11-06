@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { AlertState } from '@prisma/client';
-import { ArrayMinSize, IsArray, IsEnum, IsString } from 'class-validator';
+import { ArrayMinSize, IsArray, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class AlertDecisionDto {
@@ -12,6 +12,7 @@ export class AlertDecisionDto {
   @Type(() => Array<String>)
   @IsArray()
   @IsString({ each: true })
+  @IsNotEmpty({ each: true })
   @ArrayMinSize(1)
   alertIds!: string[];
 
