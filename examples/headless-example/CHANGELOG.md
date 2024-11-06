@@ -1,5 +1,13 @@
 # @ballerine/headless-example
 
+## 0.3.61
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.49
+  - @ballerine/workflow-browser-sdk@0.6.62
+
 ## 0.3.60
 
 ### Patch Changes

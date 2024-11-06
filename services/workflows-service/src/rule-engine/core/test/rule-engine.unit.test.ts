@@ -366,7 +366,7 @@ describe('Rule Engine', () => {
     expect(result[0]?.status).toBe('FAILED');
   });
 
-  describe('exists operator - not in use', () => {
+  describe('EXISTS operator - not in use', () => {
     it('should resolve a nested property from context', () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
@@ -468,7 +468,7 @@ describe('Rule Engine', () => {
     });
   });
 
-  describe('not_equals operator', () => {
+  describe('NOT_EQUALS operator', () => {
     it('should resolve a nested property from context', () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
@@ -520,7 +520,7 @@ describe('Rule Engine', () => {
     });
   });
 
-  describe('in operator', () => {
+  describe('IN operator', () => {
     it('should resolve a nested property from context', () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
@@ -579,6 +579,60 @@ describe('Rule Engine', () => {
           "status": "FAILED",
         }
       `);
+    });
+  });
+
+  describe('IN_CASE_INSENSITIVE operator', () => {
+    it('should correctly evaluate when using a string property', () => {
+      const ruleSetExample: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'country',
+            operator: OPERATION.IN_CASE_INSENSITIVE,
+            value: ['us', 'ca'],
+          },
+        ],
+      };
+
+      const data = { country: 'US' };
+
+      let validationResults = runRuleSet(ruleSetExample, data);
+      expect(validationResults[0]!.status).toBe('PASSED');
+
+      data.country = 'Ca';
+      validationResults = runRuleSet(ruleSetExample, data);
+      expect(validationResults[0]!.status).toBe('PASSED');
+
+      data.country = 'GB';
+      validationResults = runRuleSet(ruleSetExample, data);
+      expect(validationResults[0]!.status).toBe('FAILED');
+    });
+
+    it('should correctly evaluate when using a string array property', () => {
+      const ruleSetExample: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'countries',
+            operator: OPERATION.IN_CASE_INSENSITIVE,
+            value: ['us', 'ca'],
+          },
+        ],
+      };
+
+      const data = { countries: ['US'] };
+
+      let validationResults = runRuleSet(ruleSetExample, data);
+      expect(validationResults[0]!.status).toBe('PASSED');
+
+      data.countries = ['Ca'];
+      validationResults = runRuleSet(ruleSetExample, data);
+      expect(validationResults[0]!.status).toBe('PASSED');
+
+      data.countries = ['GB'];
+      validationResults = runRuleSet(ruleSetExample, data);
+      expect(validationResults[0]!.status).toBe('FAILED');
     });
   });
 
