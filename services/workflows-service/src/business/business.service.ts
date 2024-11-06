@@ -58,8 +58,12 @@ export class BusinessService {
     return await this.repository.findByCorrelationId(correlationId, projectids, args);
   }
 
-  async updateById(id: string, args: Parameters<BusinessRepository['updateById']>[1]) {
-    return await this.repository.updateById(id, args);
+  async updateById(
+    id: string,
+    args: Parameters<BusinessRepository['updateById']>[1],
+    transaction?: PrismaTransaction,
+  ) {
+    return await this.repository.updateById(id, args, transaction);
   }
 
   async fetchCompanyInformation({

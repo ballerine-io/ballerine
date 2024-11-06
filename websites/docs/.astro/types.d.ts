@@ -234,6 +234,13 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.md'] };
+      'en/collection-flow/collection-flow-observability.mdx': {
+        id: 'en/collection-flow/collection-flow-observability.mdx';
+        slug: 'en/collection-flow/collection-flow-observability';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
       'en/collection-flow/iframe.mdx': {
         id: 'en/collection-flow/iframe.mdx';
         slug: 'en/collection-flow/iframe';

@@ -12,8 +12,12 @@ import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUI
 import { UIElementComponent } from '@/components/organisms/UIRenderer/types';
 import { UIPage } from '@/domains/collection-flow';
 import { useFlowTracking } from '@/hooks/useFlowTracking';
+import {
+  CollectionFlowStatusesEnum,
+  getCollectionFlowState,
+  setStepCompletionState,
+} from '@ballerine/common';
 import { Button } from '@ballerine/ui';
-import set from 'lodash/set';
 import { useCallback, useMemo } from 'react';
 
 export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition }) => {
@@ -70,9 +74,19 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
     const isFinishPage = currentPage?.name === pages.at(-1)?.name;
 
     if (isFinishPage && isValid) {
-      set(payload, `flowConfig.stepsProgress.${currentPage?.stateName}.isCompleted`, true);
+      const context = stateApi.getContext();
 
-      stateApi.setContext(payload);
+      const collectionFlow = getCollectionFlowState(context);
+
+      if (collectionFlow) {
+        collectionFlow.status = CollectionFlowStatusesEnum.completed;
+        setStepCompletionState(context, {
+          stepName: currentPage?.stateName as string,
+          completed: true,
+        });
+      }
+
+      stateApi.setContext(context);
     }
 
     onClickHandler();
@@ -81,7 +95,6 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
       trackFinish();
     }
   }, [
-    payload,
     currentPage,
     pages,
     state,

@@ -78,8 +78,9 @@ export const JSONForm: UIElementComponent<JSONFormElementBaseParams> = ({ defini
           ...obj,
           additionalInfo: {
             ...obj.additionalInfo,
-            companyName: get(payload, 'entity.data.companyName') as string,
-            customerCompany: (payload as CollectionFlowContext).flowConfig?.customerCompany,
+            companyName: get(payload, 'entity.data.companyName', '') as string,
+            customerCompany: (payload as CollectionFlowContext).collectionFlow
+              ?.additionalInformation?.customerCompany,
           },
         })),
       );

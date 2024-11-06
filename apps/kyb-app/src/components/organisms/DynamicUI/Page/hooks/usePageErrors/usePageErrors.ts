@@ -1,6 +1,7 @@
 import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
 import { findDocumentDefinitionById } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
 import { Document, UIElement, UIPage } from '@/domains/collection-flow';
+import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 
@@ -22,11 +23,15 @@ export const selectDirectorsDocuments = (context: unknown): Document[] =>
     ?.filter(Boolean)
     ?.flat() || [];
 
-export const usePageErrors = (context: AnyObject, pages: UIPage[]): PageError[] => {
+export const usePageErrors = (context: CollectionFlowContext, pages: UIPage[]): PageError[] => {
   return useMemo(() => {
     const pagesWithErrors: PageError[] = pages.map(page => {
+      const pageNumber = context?.collectionFlow?.state?.steps?.findIndex(
+        step => step.stepName === page.stateName,
+      );
+
       const pageErrorBase: PageError = {
-        page: page.number,
+        page: pageNumber !== -1 ? Number(pageNumber) + 1 : page.number,
         pageName: page.name,
         stateName: page.stateName,
         errors: [],

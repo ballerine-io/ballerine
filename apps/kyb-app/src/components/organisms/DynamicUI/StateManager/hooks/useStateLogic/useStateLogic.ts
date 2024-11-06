@@ -1,10 +1,7 @@
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { StateMachineAPI } from '@/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
-import { useCustomer } from '@/components/providers/CustomerProvider';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
-import { getAccessToken } from '@/helpers/get-access-token.helper';
 import { isErrorWithMessage } from '@ballerine/common';
-import { AnyObject } from '@ballerine/ui';
 import isEqual from 'lodash/isEqual';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -23,9 +20,6 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
 
   const contextRef = useRef<State>(contextPayload);
   const { helpers } = useDynamicUIContext();
-  const host = new URL(import.meta.env.VITE_API_URL as string).host;
-  const protocol = new URL(import.meta.env.VITE_API_URL as string).protocol;
-  const { customer } = useCustomer();
 
   useEffect(() => {
     const ctx = machineApi.getContext();
@@ -33,12 +27,6 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
     machineApi.setContext({
       ...ctx,
       ...initialContext,
-      flowConfig: {
-        ...ctx?.flowConfig,
-        apiUrl: `${protocol}//${host}`,
-        tokenId: getAccessToken(),
-        customerCompany: customer?.displayName,
-      } as CollectionFlowContext['flowConfig'],
     } as CollectionFlowContext);
 
     const newState = {
@@ -52,13 +40,14 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
   }, []);
 
   const setContext = useCallback(
-    (newContext: AnyObject) => {
+    (newContext: CollectionFlowContext) => {
       const newCtx = { ...newContext };
       machineApi.setContext(newCtx);
 
       setState(prev => {
         const nextState = { ...prev, payload: newCtx };
         contextRef.current = nextState;
+
         return nextState;
       });
 
