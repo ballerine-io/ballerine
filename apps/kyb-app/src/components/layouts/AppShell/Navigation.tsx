@@ -12,12 +12,19 @@ import { ctw } from '@ballerine/ui';
 export const Navigation = () => {
   const { state } = useDynamicUIContext();
   const { t } = useTranslation();
-  const { stateApi } = useStateManagerContext();
+  const { stateApi, payload } = useStateManagerContext();
   const { currentPage } = usePageResolverContext();
   const { customer } = useCustomer();
   const { exit, isExitAvailable } = useAppExit();
 
-  const isFirstStep = currentPage?.number === 1;
+  const currentPageNumber =
+    Number(
+      payload?.collectionFlow?.state?.steps?.findIndex(
+        step => step.stepName === currentPage?.stateName,
+      ),
+    ) + 1;
+
+  const isFirstStep = currentPageNumber === 1;
   const isDisabled = state.isLoading;
 
   const onPrevious = useCallback(async () => {

@@ -38,7 +38,7 @@ export class ValueApplyHandler implements ActionHandler {
 
     api.setContext(context);
 
-    return api.getContext();
+    return Promise.resolve(api.getContext()) as Promise<TContext>;
   }
 
   private getSelector(selectorType: ValueApplySelectors): ValueApplySelector {

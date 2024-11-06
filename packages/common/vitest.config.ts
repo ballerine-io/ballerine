@@ -7,4 +7,9 @@ export default defineConfig({
       provider: 'istanbul',
     },
   },
+  resolve: {
+    alias: {
+      '@': '/src',
+    },
+  },
 });

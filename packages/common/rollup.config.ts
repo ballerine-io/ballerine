@@ -5,6 +5,7 @@ import { terser } from 'rollup-plugin-terser';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import size from 'rollup-plugin-size';
+import json from '@rollup/plugin-json';
 import visualizer from 'rollup-plugin-visualizer';
 import replace from '@rollup/plugin-replace';
 import nodeResolve from '@rollup/plugin-node-resolve';
@@ -106,6 +107,7 @@ function esm({ input, packageDir, external, banner }: Options): RollupOptions {
       babelPlugin,
       nodeResolve({ extensions: ['.ts'] }),
       typescriptPaths({ preserveExtensions: true }),
+      json(),
     ],
   };
 }
@@ -128,6 +130,7 @@ function cjs({ input, external, packageDir, banner }: Options): RollupOptions {
       typescriptPaths({ preserveExtensions: true }),
       commonjs(),
       nodeResolve({ extensions: ['.ts'] }),
+      json(),
     ],
   };
 }
@@ -150,6 +153,7 @@ function umdDev({ input, umdExternal, packageDir, banner, jsName }: Options): Ro
       commonjs(),
       nodeResolve({ extensions: ['.ts'] }),
       umdDevPlugin('development'),
+      json(),
     ],
   };
 }
@@ -178,6 +182,7 @@ function umdProd({ input, umdExternal, packageDir, banner, jsName }: Options): R
         filename: `${packageDir}/dist/stats-html.html`,
         gzipSize: true,
       }),
+      json(),
     ],
   };
 }
