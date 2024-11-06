@@ -1,20 +1,22 @@
+import dayjs from 'dayjs';
+import { titleCase } from 'string-ts';
+import { Link } from 'react-router-dom';
+import { ChevronLeft } from 'lucide-react';
 import React, { FunctionComponent } from 'react';
+import { Badge, TextWithNAFallback } from '@ballerine/ui';
+
+import { ctw } from '@/common/utils/ctw/ctw';
+import { Notes } from '@/domains/notes/Notes';
 import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
+import { Button } from '@/common/components/atoms/Button/Button';
 import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
 import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
-import { Link } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
-import { Button } from '@/common/components/atoms/Button/Button';
-import { Badge, TextWithNAFallback } from '@ballerine/ui';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { BusinessReportStatus } from '@/domains/business-reports/fetchers';
-import dayjs from 'dayjs';
 import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
-import { useMerchantMonitoringBusinessReportLogic } from '@/pages/MerchantMonitoringBusinessReport/hooks/useMerchantMonitoringBusinessReportLogic/useMerchantMonitoringBusinessReportLogic';
-import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
-import { Notes } from '@/domains/notes/Notes';
 import { NotesButton } from '@/common/components/molecules/NotesButton/NotesButton';
+import { MERCHANT_REPORT_STATUSES_MAP } from '@/domains/business-reports/constants';
+import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
+import { useMerchantMonitoringBusinessReportLogic } from '@/pages/MerchantMonitoringBusinessReport/hooks/useMerchantMonitoringBusinessReportLogic/useMerchantMonitoringBusinessReportLogic';
 
 export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
   const {
@@ -64,14 +66,16 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
                     ?.variant
                 }
                 className={ctw(`text-sm font-bold`, {
-                  'bg-info/20 text-info': businessReport?.status === BusinessReportStatus.COMPLETED,
-                  'bg-violet-500/20 text-violet-500':
-                    businessReport?.status === BusinessReportStatus.IN_PROGRESS,
-                  'bg-slate-200 text-slate-500':
-                    businessReport?.status === BusinessReportStatus.NEW,
+                  'bg-info/20 text-info':
+                    businessReport?.status === MERCHANT_REPORT_STATUSES_MAP.completed,
+                  'bg-violet-500/20 text-violet-500': [
+                    MERCHANT_REPORT_STATUSES_MAP['in-progress'],
+                    MERCHANT_REPORT_STATUSES_MAP['quality-control'],
+                  ].includes(businessReport?.status ?? ''),
                 })}
               >
-                {statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]?.text}
+                {statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]
+                  ?.text ?? titleCase(businessReport?.status ?? '')}
               </Badge>
             </div>
             <div>
@@ -107,10 +111,12 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
       </SidebarInset>
       <Notes
         notes={notes ?? []}
-        entityId={businessReport?.business?.id || ''}
-        entityType={`Business`}
-        noteableId={businessReport?.id || ''}
-        noteableType={`Report`}
+        noteData={{
+          entityId: businessReport?.merchantId || '',
+          entityType: `Business`,
+          noteableId: businessReport?.id || '',
+          noteableType: `Report`,
+        }}
       />
     </SidebarProvider>
   );

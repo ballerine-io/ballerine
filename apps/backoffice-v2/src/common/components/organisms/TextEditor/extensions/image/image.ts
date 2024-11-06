@@ -3,8 +3,8 @@ import { Image as TiptapImage } from '@tiptap/extension-image';
 import type { Editor } from '@tiptap/react';
 import type { Node } from '@tiptap/pm/model';
 import { ReactNodeViewRenderer } from '@tiptap/react';
-import { ImageViewBlock } from './components/image-view-block';
 import { filterFiles, randomId, type FileError, type FileValidationOptions } from '../../utils';
+import { ImageViewBlock } from './components/ImageViewBlock';
 
 type ImageAction = 'download' | 'copyImage' | 'copyLink';
 

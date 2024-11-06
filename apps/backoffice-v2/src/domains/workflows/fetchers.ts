@@ -106,6 +106,12 @@ export const BaseWorkflowByIdSchema = z.object({
           })
           .passthrough()
           .optional(),
+        merchantMonitoring: z
+          .object({
+            reportId: z.string().nullish(),
+          })
+          .passthrough()
+          .nullish(),
       })
       .passthrough()
       .optional(),

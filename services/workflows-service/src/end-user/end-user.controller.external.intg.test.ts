@@ -36,7 +36,6 @@ import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { BusinessService } from '@/business/business.service';
 import { BusinessReportService } from '@/business-report/business-report.service';
-import { BusinessReportRepository } from '@/business-report/business-report.repository';
 import { RiskRuleService } from '@/rule-engine/risk-rule.service';
 import { RuleEngineService } from '@/rule-engine/rule-engine.service';
 import { NotionService } from '@/notion/notion.service';
@@ -62,7 +61,6 @@ describe('#EndUserControllerExternal', () => {
       FilterService,
       ProjectScopeService,
       BusinessReportService,
-      BusinessReportRepository,
       FilterRepository,
       FileRepository,
       FileService,

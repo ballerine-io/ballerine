@@ -1,7 +1,6 @@
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { AlertRepository } from '@/alert/alert.repository';
 import { AlertService } from '@/alert/alert.service';
-import { BusinessReportRepository } from '@/business-report/business-report.repository';
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
@@ -76,6 +75,7 @@ const createFutureDate = (daysToAdd: number) => {
   const currentDate = new Date();
   const futureDate = new Date(currentDate);
   futureDate.setDate(currentDate.getDate() + daysToAdd);
+
   return futureDate;
 };
 
@@ -95,9 +95,7 @@ describe('AlertService', () => {
         AlertRepository,
         AlertDefinitionRepository,
         BusinessReportService,
-        BusinessReportRepository,
         BusinessReportService,
-        BusinessReportRepository,
         AlertService,
         BusinessService,
         BusinessRepository,

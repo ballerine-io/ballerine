@@ -4,15 +4,15 @@ import { InfoCircledIcon, TrashIcon } from '@radix-ui/react-icons';
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react';
 import { Controlled as ControlledZoom } from 'react-medium-image-zoom';
 
-import { ImageOverlay } from './image-overlay';
-import { ResizeHandle } from './resize-handle';
+import { ImageOverlay } from './ImageOverlay';
+import { ResizeHandle } from './ResizeHandle';
 import type { UploadReturnType } from '../image';
-import { Spinner } from '../../../components/spinner';
-import { useDragResize } from '../hooks/use-drag-resize';
+import { useDragResize } from '../hooks/useDragResize';
 import { blobUrlToBase64, randomId } from '../../../utils';
-import { useImageActions } from '../hooks/use-image-actions';
-import type { ElementDimensions } from '../hooks/use-drag-resize';
-import { ActionButton, ActionWrapper, ImageActions } from './image-actions';
+import { useImageActions } from '../hooks/useImageActions';
+import type { ElementDimensions } from '../hooks/useDragResize';
+import { ActionButton, ActionWrapper, ImageActions } from './ImageActions';
+import { Spinner } from '@/common/components/organisms/TextEditor/components/Spinner';
 
 const MAX_HEIGHT = 600;
 const MIN_HEIGHT = 120;
