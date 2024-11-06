@@ -81,6 +81,7 @@ export class AlertService {
     return await this.alertRepository.updateMany(alertIds, projectId, {
       data: {
         state: decision,
+        decisionAt: new Date(),
         status: this.getStatusFromState(decision),
       },
     });
@@ -95,6 +96,7 @@ export class AlertService {
       return await this.alertRepository.updateMany(alertIds, projectId, {
         data: {
           assigneeId: assigneeId,
+          assignedAt: new Date(),
         },
       });
     } catch (error) {
@@ -307,7 +309,7 @@ export class AlertService {
             });
           }
         } catch (error) {
-          console.error(error);
+          this.logger.error('Failed to check alert', { error });
 
           return alertResponse.rejected.push({
             status: AlertExecutionStatus.FAILED,
@@ -389,7 +391,7 @@ export class AlertService {
     if (existingAlert.status !== AlertStatus.completed) {
       await this.alertRepository.updateById(existingAlert.id, {
         data: {
-          updatedAt: new Date(),
+          dedupedAt: new Date(),
         },
       });
 
@@ -480,7 +482,7 @@ export class AlertService {
       startDate: undefined,
     };
 
-    const endDate = alert.updatedAt || alert.createdAt;
+    const endDate = alert.dedupedAt || alert.createdAt;
     endDate.setHours(23, 59, 59, 999);
     filters.endDate = endDate;
 
