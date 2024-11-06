@@ -1557,7 +1557,10 @@ export class WorkflowService {
           const collectionFlow = buildCollectionFlowState({
             apiUrl: env.APP_API_URL,
             steps: getOrderedSteps(
-              (uiDefinition?.definition as Prisma.JsonObject)?.definition as Record<string, any>,
+              (uiDefinition?.definition as Prisma.JsonObject)?.definition as Record<
+                string,
+                Record<string, unknown>
+              >,
               { finalStates: [...WORKFLOW_FINAL_STATES] },
             ).map(stepName => ({
               stateName: stepName,
