@@ -17,16 +17,15 @@ import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { GetLatestBusinessReportDto } from '@/business-report/get-latest-business-report.dto';
 import {
-  ListBusinessReportsDto,
+  BusinessReportListRequestParamDto,
+  BusinessReportListResponseDto,
   ListBusinessReportsSchema,
-} from '@/business-report/list-business-reports.dto';
+} from '@/business-report/business-report-list.dto';
 import { Business } from '@prisma/client';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { CreateBusinessReportDto } from '@/business-report/dto/create-business-report.dto';
-import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { CustomerService } from '@/customer/customer.service';
 import { BusinessService } from '@/business/business.service';
-import { AlertService } from '@/alert/alert.service';
 import { Public } from '@/common/decorators/public.decorator';
 import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
 import { BusinessReportHookBodyDto } from '@/business-report/dtos/business-report-hook-body.dto';
@@ -37,23 +36,96 @@ import { fileFilter } from '@/storage/file-filter';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
 import { CreateBusinessReportBatchBodyDto } from '@/business-report/dto/create-business-report-batch-body.dto';
 import type { Response } from 'express';
+import { BusinessReportDto } from '@/business-report/business-report.dto';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Business Reports')
 @common.Controller('internal/business-reports')
-@swagger.ApiExcludeController()
 export class BusinessReportControllerInternal {
   constructor(
     protected readonly businessReportService: BusinessReportService,
     protected readonly logger: AppLoggerService,
     protected readonly customerService: CustomerService,
     protected readonly businessService: BusinessService,
-    protected readonly alertService: AlertService,
-    protected readonly hookCallbackService: HookCallbackHandlerService,
   ) {}
 
-  @common.Post()
+  @common.Post('/hook')
   @swagger.ApiOkResponse({ type: [String] })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiExcludeEndpoint()
+  @Public()
+  @VerifyUnifiedApiSignatureDecorator()
+  async createBusinessReportCallback(
+    @Query() { businessId }: BusinessReportHookSearchQueryParamsDto,
+    @Body()
+    { reportData: unvalidatedReportData, base64Pdf, reportId }: BusinessReportHookBodyDto,
+  ) {
+    // const business = await this.businessService.getByIdUnscoped(businessId, {
+    //   select: {
+    //     id: true,
+    //     companyName: true,
+    //     projectId: true,
+    //   },
+    // });
+    //
+    // const customer = await this.customerService.getByProjectId(business.projectId);
+    // const reportData = ReportWithRiskScoreSchema.parse(unvalidatedReportData);
+    //
+    //
+    // this.alertService
+    //   .checkOngoingMonitoringAlert({
+    //     businessReport: businessReport,
+    //     businessCompanyName: business.companyName,
+    //   })
+    //   .then(() => {
+    //     this.logger.debug(`Alert Tested for ${reportId}}`);
+    //   })
+    //   .catch(error => {
+    //     this.logger.error(error);
+    //   });
+  }
+
+  @common.Get('/latest')
+  @swagger.ApiOkResponse({ type: [String] })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiExcludeEndpoint()
+  async getLatestBusinessReport(
+    @CurrentProject() currentProjectId: TProjectId,
+    @Query() { businessId, type }: GetLatestBusinessReportDto,
+  ) {
+    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
+
+    const latestReport = await this.businessReportService.findLatest({
+      businessId,
+      customerId,
+      reportType: type,
+    });
+
+    return latestReport ?? {};
+  }
+
+  @common.Get()
+  @swagger.ApiOkResponse({ type: BusinessReportListResponseDto })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
+  async listBusinessReports(
+    @CurrentProject() currentProjectId: TProjectId,
+    @Query() { businessId, page, search }: BusinessReportListRequestParamDto,
+  ) {
+    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
+
+    return await this.businessReportService.findMany({
+      withoutUnpublishedOngoingReports: true,
+      limit: page.size,
+      page: page.number,
+      customerId: customerId,
+      ...(businessId ? { businessId } : {}),
+      ...(search ? { searchQuery: search } : {}),
+    });
+  }
+
+  @common.Post()
+  @swagger.ApiOkResponse({})
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createBusinessReport(
     @Body()
@@ -118,81 +190,8 @@ export class BusinessReportControllerInternal {
     });
   }
 
-  @common.Post('/hook')
-  @swagger.ApiOkResponse({ type: [String] })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @Public()
-  @VerifyUnifiedApiSignatureDecorator()
-  async createBusinessReportCallback(
-    @Query() { businessId }: BusinessReportHookSearchQueryParamsDto,
-    @Body()
-    { reportData: unvalidatedReportData, base64Pdf, reportId }: BusinessReportHookBodyDto,
-  ) {
-    // const business = await this.businessService.getByIdUnscoped(businessId, {
-    //   select: {
-    //     id: true,
-    //     companyName: true,
-    //     projectId: true,
-    //   },
-    // });
-    //
-    // const customer = await this.customerService.getByProjectId(business.projectId);
-    // const reportData = ReportWithRiskScoreSchema.parse(unvalidatedReportData);
-    //
-    //
-    // this.alertService
-    //   .checkOngoingMonitoringAlert({
-    //     businessReport: businessReport,
-    //     businessCompanyName: business.companyName,
-    //   })
-    //   .then(() => {
-    //     this.logger.debug(`Alert Tested for ${reportId}}`);
-    //   })
-    //   .catch(error => {
-    //     this.logger.error(error);
-    //   });
-  }
-
-  @common.Get('/latest')
-  @swagger.ApiOkResponse({ type: [String] })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async getLatestBusinessReport(
-    @CurrentProject() currentProjectId: TProjectId,
-    @Query() { businessId, type }: GetLatestBusinessReportDto,
-  ) {
-    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
-
-    const latestReport = await this.businessReportService.findLatest({
-      businessId,
-      customerId,
-      reportType: type,
-    });
-
-    return latestReport ?? {};
-  }
-
-  @common.Get()
-  @swagger.ApiOkResponse({ type: [String] })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
-  async listBusinessReports(
-    @CurrentProject() currentProjectId: TProjectId,
-    @Query() { businessId, page, search, orderBy }: ListBusinessReportsDto,
-  ) {
-    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
-
-    return await this.businessReportService.findMany({
-      withoutUnpublishedOngoingReports: true,
-      limit: page.size,
-      page: page.number,
-      customerId: customerId,
-      ...(businessId ? { businessId } : {}),
-      ...(search ? { searchQuery: search } : {}),
-    });
-  }
-
   @common.Get(':id')
-  @swagger.ApiOkResponse({ type: [String] })
+  @swagger.ApiOkResponse({ type: BusinessReportDto })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
   async getBusinessReportById(
@@ -204,6 +203,7 @@ export class BusinessReportControllerInternal {
     return await this.businessReportService.findById({ id, customerId });
   }
 
+  @swagger.ApiExcludeEndpoint()
   @common.Post('/upload-batch')
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @ApiConsumes('multipart/form-data')
