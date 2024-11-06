@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { z } from 'zod';
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosError, AxiosInstance } from 'axios';
 import { env } from '@/env';
 import { CountryCode } from '@/common/countries';
 import {
@@ -12,6 +12,7 @@ import {
   MerchantReportVersion,
 } from '@/business-report/constants';
 import { TReportRequest } from '@/common/utils/unified-api-client/unified-api-client';
+import * as errors from '@/errors';
 
 const CreateReportResponseSchema = z.object({});
 const CreateReportBatchResponseSchema = z.array(
@@ -146,16 +147,26 @@ export class MerchantMonitoringClient {
   }
 
   public async findById({ id, customerId }: { id: string; customerId: string }) {
-    const response = await axios.get(`${env.UNIFIED_API_URL}/merchants/analysis/${id}`, {
-      params: {
-        customerId,
-      },
-      headers: {
-        Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
-      },
-    });
+    try {
+      const response = await axios.get(`${env.UNIFIED_API_URL}/merchants/analysis/${id}`, {
+        params: {
+          customerId,
+        },
+        headers: {
+          Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
+        },
+      });
 
-    return ReportSchema.parse(response.data);
+      return ReportSchema.parse(response.data);
+    } catch (error) {
+      console.log(error);
+
+      if (error instanceof AxiosError && error.response?.status === 404) {
+        throw new errors.NotFoundException(`No business report found for id ${id}`);
+      }
+
+      throw error;
+    }
   }
 
   public async findLatest({
