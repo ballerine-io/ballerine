@@ -17,6 +17,7 @@ import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import { initializeMonitoring } from '@/initialize-monitoring/initialize-monitoring';
 import { initializeSessionRecording } from '@/initialize-session-recording/initialize-session-recording';
+import '../public/config.js?url';
 
 initializeMonitoring();
 
@@ -53,3 +54,8 @@ void prepare().then(() => {
     );
   }
 });
+
+//@ts-ignore
+globalThis.env = globalThis.env || {
+  API_URL: import.meta.env.VITE_API_URL,
+};

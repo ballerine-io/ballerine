@@ -10,7 +10,7 @@ export const formatErrors = (errors: ZodFormattedError<Map<string, string>, stri
     .filter(Boolean);
 };
 
-const _env = EnvSchema.safeParse(import.meta.env);
+const _env = EnvSchema.safeParse(globalThis.env);
 
 // TypeScript complains with !env.success
 if (_env.success === false) {
