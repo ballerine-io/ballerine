@@ -3,8 +3,8 @@ import type { Editor } from '@tiptap/react';
 import type { FormatAction } from '../../types';
 import type { VariantProps } from 'class-variance-authority';
 import { CodeIcon, DividerHorizontalIcon, QuoteIcon } from '@radix-ui/react-icons';
-import { LinkEditPopover } from '../link/link-edit-popover';
-import { ImageEditDialog } from '../image/image-edit-dialog';
+import { LinkEditPopover } from '../link/LinkEditPopover';
+import { ImageEditDialog } from '../image/ImageEditDialog';
 import { toggleVariants } from '@/common/components/atoms/Toggle/Toggle';
 
 type InsertElementAction = 'codeBlock' | 'blockquote' | 'horizontalRule';

@@ -3,7 +3,7 @@ import type { VariantProps } from 'class-variance-authority';
 import { useState } from 'react';
 import { ImageIcon } from '@radix-ui/react-icons';
 import { ToolbarButton } from '../ToolbarButton';
-import { ImageEditBlock } from './image-edit-block';
+import { ImageEditBlock } from './ImageEditBlock';
 import { toggleVariants } from '@/common/components/atoms/Toggle/Toggle';
 import { Dialog } from '../../../Dialog/Dialog';
 import { DialogTrigger } from '@/common/components/organisms/Dialog/Dialog.Trigger';

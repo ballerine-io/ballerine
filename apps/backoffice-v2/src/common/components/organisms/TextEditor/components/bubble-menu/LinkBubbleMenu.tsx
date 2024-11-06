@@ -2,8 +2,8 @@ import * as React from 'react';
 import type { ShouldShowProps } from '../../types';
 import type { Editor } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react';
-import { LinkEditBlock } from '../link/link-edit-block';
-import { LinkPopoverBlock } from '../link/link-popover-block';
+import { LinkEditBlock } from '../link/LinkEditBlock';
+import { LinkPopoverBlock } from '../link/LinkPopoverBlock';
 
 interface LinkBubbleMenuProps {
   editor: Editor;

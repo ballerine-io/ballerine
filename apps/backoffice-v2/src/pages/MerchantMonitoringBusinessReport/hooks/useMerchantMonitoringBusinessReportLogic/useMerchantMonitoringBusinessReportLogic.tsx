@@ -12,7 +12,7 @@ import { MERCHANT_REPORT_STATUSES_MAP } from '@/domains/business-reports/constan
 
 export const useMerchantMonitoringBusinessReportLogic = () => {
   const { businessReportId } = useParams();
-  const { data: businessReport, isLoading: isBusinessReportLoading } = useBusinessReportByIdQuery({
+  const { data: businessReport } = useBusinessReportByIdQuery({
     id: businessReportId ?? '',
   });
 
@@ -75,6 +75,5 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     notes,
     activeTab,
     isNotesOpen,
-    isBusinessReportLoading,
   };
 };

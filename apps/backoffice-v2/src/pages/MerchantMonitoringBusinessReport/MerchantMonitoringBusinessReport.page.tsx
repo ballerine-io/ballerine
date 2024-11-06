@@ -28,12 +28,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     activeTab,
     notes,
     isNotesOpen,
-    isBusinessReportLoading,
   } = useMerchantMonitoringBusinessReportLogic();
-
-  if (isBusinessReportLoading) {
-    return;
-  }
 
   return (
     <SidebarProvider
