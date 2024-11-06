@@ -3,6 +3,7 @@ import { IsIn, IsOptional, IsString, MinLength } from 'class-validator';
 import { countryCodes } from '@ballerine/common';
 import {
   MERCHANT_REPORT_TYPES,
+  MERCHANT_REPORT_TYPES_MAP,
   MERCHANT_REPORT_VERSIONS_MAP,
   type MerchantReportType,
   type MerchantReportVersion,
@@ -21,6 +22,7 @@ export class CreateBusinessReportDto {
   @ApiProperty({
     required: true,
     type: String,
+    example: 'https://www.example.com',
   })
   @MinLength(1)
   @IsString()
@@ -38,6 +40,8 @@ export class CreateBusinessReportDto {
   @ApiProperty({
     required: false,
     type: String,
+    enum: countryCodes,
+    default: 'GB',
   })
   @IsOptional()
   @IsIn(Object.values(countryCodes))
@@ -46,6 +50,7 @@ export class CreateBusinessReportDto {
   @ApiProperty({
     required: true,
     type: String,
+    example: MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1,
   })
   @IsIn(Object.values(MERCHANT_REPORT_TYPES))
   reportType!: MerchantReportType;
