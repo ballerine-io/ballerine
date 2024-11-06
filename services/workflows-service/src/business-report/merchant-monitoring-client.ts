@@ -195,7 +195,7 @@ export class MerchantMonitoringClient {
     withoutUnpublishedOngoingReports?: boolean;
     searchQuery?: string;
   }) {
-    const response = await axios.get(`${env.UNIFIED_API_URL}/tld`, {
+    const response = await axios.get(`${env.UNIFIED_API_URL}/external/tld`, {
       params: {
         customerId,
         ...(businessId && { merchantId: businessId }),

@@ -188,7 +188,6 @@ export class BusinessReportControllerInternal {
       customerId: customerId,
       ...(businessId ? { businessId } : {}),
       ...(search ? { searchQuery: search } : {}),
-      // @TODO: order as well
     });
   }
 
