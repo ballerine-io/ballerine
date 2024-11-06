@@ -4,7 +4,9 @@
 
 ### Patch Changes
 
+- Change
 - Updated dependencies
+  - @ballerine/config@1.1.23
   - @ballerine/ui@0.5.42
 
 ## 1.2.41

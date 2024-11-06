@@ -1,5 +1,17 @@
 # @ballerine/common
 
+## 0.9.48
+
+### Patch Changes
+
+- Change
+
+## 0.9.47
+
+### Patch Changes
+
+- Refactored collection flow utils
+
 ## 0.9.46
 
 ### Patch Changes

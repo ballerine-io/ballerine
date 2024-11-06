@@ -28,11 +28,16 @@ import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionPr
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { LoadingScreen } from '@/pages/CollectionFlow/components/atoms/LoadingScreen';
 import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
-import { Failed } from '@/pages/CollectionFlow/components/pages/Failed';
+import { CompletedScreen } from '@/pages/CollectionFlow/components/pages/CompletedScreen';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
-import { Success } from '@/pages/CollectionFlow/components/pages/Success';
-import { CollectionFlowManager, CollectionFlowStatuses } from '@ballerine/common';
+import {
+  CollectionFlowStatusesEnum,
+  getCollectionFlowState,
+  setCollectionFlowStatus,
+  setStepCompletionState,
+} from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
+import { FailedScreen } from './components/pages/FailedScreen';
 
 const elems = {
   h1: Title,
@@ -54,7 +59,7 @@ const elems = {
   divider: Divider,
 };
 
-const isSuccess = (state: string) => state === 'success' || state === 'finish';
+const isCompleted = (state: string) => state === 'completed' || state === 'finish';
 const isFailed = (state: string) => state === 'failed';
 
 const getRevisionStateName = (pageErrors: PageError[]) => {
@@ -64,7 +69,7 @@ const getRevisionStateName = (pageErrors: PageError[]) => {
 export const CollectionFlow = withSessionProtected(() => {
   const { language } = useLanguageParam();
   const { data: schema } = useUISchemasQuery(language);
-  const { data: context } = useFlowContextQuery();
+  const { data: collectionFlowData } = useFlowContextQuery();
   const { customer } = useCustomer();
   const { t } = useTranslation();
   const { themeDefinition } = useTheme();
@@ -72,27 +77,36 @@ export const CollectionFlow = withSessionProtected(() => {
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;
 
-  const pageErrors = usePageErrors(context ?? ({} as CollectionFlowContext), elements || []);
+  const pageErrors = usePageErrors(
+    collectionFlowData?.context ?? ({} as CollectionFlowContext),
+    elements || [],
+  );
   const isRevision = useMemo(
-    () => context?.collectionFlow?.state?.status === CollectionFlowStatuses.revision,
-    [context],
+    () =>
+      getCollectionFlowState(collectionFlowData)?.status === CollectionFlowStatusesEnum.revision,
+    [collectionFlowData],
   );
 
   const initialContext: CollectionFlowContext = useMemo(() => {
-    const collectionFlowManager = new CollectionFlowManager(context as CollectionFlowContext);
+    const contextCopy = { ...collectionFlowData?.context };
+    const collectionFlow = getCollectionFlowState(contextCopy);
 
-    if (isRevision) {
+    if (isRevision && collectionFlow) {
       const revisionStateName = getRevisionStateName(pageErrors);
-      collectionFlowManager.state().currentStep =
-        revisionStateName || collectionFlowManager.state().currentStep;
+      collectionFlow.currentStep = revisionStateName || collectionFlow.currentStep;
+      revisionStateName || collectionFlow.currentStep;
     }
 
-    return collectionFlowManager.context as CollectionFlowContext;
+    return contextCopy as CollectionFlowContext;
   }, [isRevision, pageErrors]);
 
   const initialUIState = useMemo(() => {
-    return prepareInitialUIState(elements || [], context! || {}, isRevision);
-  }, [elements, context, isRevision]);
+    return prepareInitialUIState(
+      elements || [],
+      (collectionFlowData?.context as CollectionFlowContext) || {},
+      isRevision,
+    );
+  }, [elements, collectionFlowData, isRevision]);
 
   // Breadcrumbs now using scrollIntoView method to make sure that breadcrumb is always in viewport.
   // Due to dynamic dimensions of logo it doesnt work well if scroll happens before logo is loaded.
@@ -106,13 +120,13 @@ export const CollectionFlow = withSessionProtected(() => {
     setLogoLoaded(false);
   }, [customer?.logoImageUri]);
 
-  if (initialContext?.collectionFlow?.state?.status === CollectionFlowStatuses.approved)
+  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.approved)
     return <Approved />;
 
-  if (initialContext?.collectionFlow?.state?.status === CollectionFlowStatuses.rejected)
+  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.rejected)
     return <Rejected />;
 
-  return definition && context ? (
+  return definition && collectionFlowData ? (
     <DynamicUI initialState={initialUIState}>
       <DynamicUI.StateManager
         initialContext={initialContext}
@@ -120,7 +134,7 @@ export const CollectionFlow = withSessionProtected(() => {
         definitionType={schema?.definition.definitionType}
         extensions={schema?.definition.extensions}
         definition={definition as State}
-        config={schema?.config}
+        config={collectionFlowData?.config}
       >
         {({ state, stateApi }) => {
           return (
@@ -129,34 +143,40 @@ export const CollectionFlow = withSessionProtected(() => {
               onNext={async (tools, prevState, currentState) => {
                 tools.setElementCompleted(prevState, true);
 
-                const collectionFlowManager = new CollectionFlowManager(stateApi.getContext());
+                const context = stateApi.getContext();
 
-                const isAnyStepCompleted = Object.values(
-                  collectionFlowManager.state().progressBreakdown || {},
-                ).some(step => step.isCompleted);
+                const collectionFlow = getCollectionFlowState(context);
 
-                collectionFlowManager.state().setStepCompletionState(prevState, true);
-                collectionFlowManager.state().currentStep = currentState;
+                if (collectionFlow) {
+                  const steps = collectionFlow?.steps || [];
 
-                if (!isAnyStepCompleted) {
-                  console.log('Collection flow touched, changing state to inprogress');
-                  collectionFlowManager.state().status = CollectionFlowStatuses.inprogress;
+                  const isAnyStepCompleted = steps.some(step => step.isCompleted);
 
-                  console.log('Updating context to', collectionFlowManager.context);
+                  setStepCompletionState(context, {
+                    stepName: prevState,
+                    completed: true,
+                  });
+
+                  collectionFlow.currentStep = currentState;
+
+                  if (!isAnyStepCompleted) {
+                    console.log('Collection flow touched, changing state to inprogress');
+                    setCollectionFlowStatus(context, CollectionFlowStatusesEnum.inprogress);
+                  }
+
+                  stateApi.setContext(context);
+
+                  await stateApi.invokePlugin('sync_workflow_runtime');
                 }
-
-                stateApi.setContext(collectionFlowManager.context);
-
-                await stateApi.invokePlugin('sync_workflow_runtime');
               }}
             >
               {() => {
                 // Temp state, has to be resolved to success or failure by plugins
                 if (state === 'done') return <LoadingScreen />;
 
-                if (isSuccess(state)) return <Success />;
+                if (isCompleted(state)) return <CompletedScreen />;
 
-                if (isFailed(state)) return <Failed />;
+                if (isFailed(state)) return <FailedScreen />;
 
                 return (
                   <DynamicUI.PageResolver state={state} pages={elements ?? []}>
@@ -171,11 +191,11 @@ export const CollectionFlow = withSessionProtected(() => {
                               <AppShell.Sidebar>
                                 <div className="flex h-full flex-col">
                                   <div className="flex h-full flex-1 flex-col">
-                                    <div className="flex flex-row justify-between gap-2 whitespace-nowrap pb-10">
-                                      <AppShell.Navigation />
-                                      <div>
+                                    <div className="flex flex-col gap-8 pb-10">
+                                      <div className="flex justify-start">
                                         <AppShell.LanguagePicker />
                                       </div>
+                                      <AppShell.Navigation />
                                     </div>
                                     <div className="pb-10">
                                       {customer?.logoImageUri && (

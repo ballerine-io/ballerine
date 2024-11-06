@@ -1,10 +1,10 @@
 import { Static, Type } from '@sinclair/typebox';
 
-import { CollectionFlowStatuses } from '@/consts';
 import { MerchantScreeningPluginSchema } from '@/schemas/documents/merchant-screening-plugin-schema';
 import { BusinessInformationPluginSchema } from '@/schemas/documents/schemas/business-information-plugin-schema';
 import { CompanySanctionsPluginSchema } from '@/schemas/documents/schemas/company-sanctions-plugin-schema';
 import { MerchantMonitoringPluginSchema } from '@/schemas/documents/schemas/merchant-monitoring-plugin-schema';
+import { CollectionFlowStatusesEnum } from '@/utils/collection-flow';
 import { AmlSchema } from './schemas/aml-schema';
 import { DocumentsSchema } from './schemas/documents-schema';
 import { EntitySchema } from './schemas/entity-schema';
@@ -46,22 +46,19 @@ export const defaultContextSchema = Type.Composite([
         config: Type.Optional(
           Type.Object({
             apiUrl: Type.String(),
-            steps: Type.Optional(
-              Type.Array(
-                Type.Object({
-                  stateName: Type.String(),
-                  orderNumber: Type.Number(),
-                }),
-              ),
-            ),
           }),
         ),
         state: Type.Optional(
           Type.Object({
             currentStep: Type.String(),
-            status: Type.Enum(CollectionFlowStatuses),
-            progressBreakdown: Type.Optional(
-              Type.Record(Type.String(), Type.Object({ isCompleted: Type.Boolean() })),
+            status: Type.Enum(CollectionFlowStatusesEnum),
+            steps: Type.Optional(
+              Type.Array(
+                Type.Object({
+                  stepName: Type.String(),
+                  isCompleted: Type.Boolean(),
+                }),
+              ),
             ),
           }),
         ),
