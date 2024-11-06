@@ -28,7 +28,7 @@ export const generateInitialCollectionFlowExample = async (
     apiUrl: env.APP_API_URL,
     steps: getOrderedSteps(
       (uiDefinition?.definition as Prisma.JsonObject)?.definition as Record<string, any>,
-      { terminalStates: [...WORKFLOW_FINAL_STATES] },
+      { finalStates: [...WORKFLOW_FINAL_STATES] },
     ).map(stepName => ({
       stateName: stepName,
     })),

@@ -139,7 +139,6 @@ describe('CollectionFlowService', () => {
         UiDefinitionRepository,
         UiDefinitionService,
         CollectionFlowService,
-        WorkflowDefinitionRepository,
         WorkflowDefinitionService,
         CustomerRepository,
         CustomerService,
@@ -157,7 +156,6 @@ describe('CollectionFlowService', () => {
       WorkflowRuntimeDataRepository,
     );
     customerRepository = module.get<CustomerRepository>(CustomerRepository);
-    workflowTokenService = module.get<WorkflowTokenService>(WorkflowTokenService);
     endUserRepository = module.get<EndUserRepository>(EndUserRepository);
   });
 
