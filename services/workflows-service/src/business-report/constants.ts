@@ -22,6 +22,7 @@ export const MERCHANT_REPORT_TYPES = Object.values(MERCHANT_REPORT_TYPES_MAP);
 export const MERCHANT_REPORT_VERSIONS_MAP = {
   '1': '1',
   '2': '2',
+  '3': '3',
 } as const;
 
 export type MerchantReportVersion = keyof typeof MERCHANT_REPORT_VERSIONS_MAP;
