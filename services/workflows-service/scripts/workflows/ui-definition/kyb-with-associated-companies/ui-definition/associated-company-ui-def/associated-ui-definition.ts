@@ -31,9 +31,9 @@ export const definition = {
       {
         name: 'update_end_user',
         pluginKind: 'api',
-        url: `{flowConfig.apiUrl}/api/v1/collection-flow/end-user?token={flowConfig.tokenId}`,
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/end-user?token={metadata.token}`,
         method: 'POST',
-        headers: { Authorization: 'Bearer {flowConfig.tokenId}' },
+        headers: { Authorization: 'Bearer {metadata.token}' },
         stateNames: [],
         request: {
           transform: [
@@ -53,7 +53,7 @@ export const definition = {
       {
         name: 'sync_workflow_runtime',
         pluginKind: 'api',
-        url: `{flowConfig.apiUrl}/api/v1/collection-flow/sync/?token={flowConfig.tokenId}`,
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/sync/?token={metadata.token}`,
         method: 'PUT',
         stateNames: [
           'personal_details',
@@ -64,7 +64,7 @@ export const definition = {
           'company_ownership',
           'company_documents',
         ],
-        headers: { Authorization: 'Bearer {flowConfig.tokenId}' },
+        headers: { Authorization: 'Bearer {metadata.token}' },
         request: {
           transform: [
             {
@@ -84,10 +84,10 @@ export const definition = {
       {
         name: 'finish_workflow',
         pluginKind: 'api',
-        url: `{flowConfig.apiUrl}/api/v1/collection-flow/?token={flowConfig.tokenId}`,
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/?token={metadata.token}`,
         method: 'PUT',
         stateNames: ['finish'],
-        headers: { Authorization: 'Bearer {flowConfig.tokenId}' },
+        headers: { Authorization: 'Bearer {metadata.token}' },
         request: {
           transform: [
             {
@@ -107,16 +107,16 @@ export const definition = {
       {
         name: 'fetch_company_information',
         pluginKind: 'api',
-        url: `{flowConfig.apiUrl}/api/v1/collection-flow/business/business-information`,
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/business/business-information`,
         method: 'GET',
         stateNames: [],
-        headers: { Authorization: 'Bearer {flowConfig.tokenId}' },
+        headers: { Authorization: 'Bearer {metadata.token}' },
         request: {
           transform: [
             {
               transformer: 'jmespath',
               mapping: `{
-              token: flowConfig.tokenId,
+              token: metadata.token,
               registrationNumber: entity.data.registrationNumber,
               countryCode: entity.data.country,
               state: entity.data.additionalInfo.state || '',
@@ -146,10 +146,10 @@ export const definition = {
       {
         name: 'send_collection_flow_finished',
         pluginKind: 'api',
-        url: `{flowConfig.apiUrl}/api/v1/collection-flow/send-event/?token={flowConfig.tokenId}`,
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/send-event/?token={metadata.token}`,
         method: 'POST',
         stateNames: ['finish'],
-        headers: { Authorization: 'Bearer {flowConfig.tokenId}' },
+        headers: { Authorization: 'Bearer {metadata.token}' },
         request: {
           transform: [
             {
