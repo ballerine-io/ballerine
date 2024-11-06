@@ -79,10 +79,10 @@ importers:
         specifier: 0.9.48
         version: link:../../packages/common
       '@ballerine/react-pdf-toolkit':
-        specifier: ^1.2.42
+        specifier: ^1.2.43
         version: link:../../packages/react-pdf-toolkit
       '@ballerine/ui':
-        specifier: ^0.5.42
+        specifier: ^0.5.43
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.6.61
@@ -515,7 +515,7 @@ importers:
         specifier: ^0.9.48
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.5.42
+        specifier: 0.5.43
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.6.61
@@ -1489,7 +1489,7 @@ importers:
         specifier: ^1.1.23
         version: link:../config
       '@ballerine/ui':
-        specifier: 0.5.42
+        specifier: 0.5.43
         version: link:../ui
       '@react-pdf/renderer':
         specifier: ^3.1.14
