@@ -226,8 +226,6 @@ export const DocumentField = (
     [stateApi, options, definition, inputIndex, sendEvent],
   );
 
-  console.log('IS LOADING', elementState.isLoading);
-
   return (
     <div className="flex flex-col gap-2">
       <FileUploaderField

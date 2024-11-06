@@ -71,6 +71,7 @@ export const Page = ({ page, children }: PageProps) => {
       pageErrors: pageErrors.reduce((map, pageError) => {
         map[pageError.stateName] = pageError.errors.reduce((map, error) => {
           map[error.fieldId] = error;
+
           return map;
         }, {} as PageContext['pageErrors'][string]);
 

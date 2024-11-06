@@ -1,1 +1,1 @@
-export const WORKFLOW_TERMINAL_STATES = ['done', 'success', 'failed', 'finish'] as const;
+export const WORKFLOW_FINAL_STATES = ['done', 'completed', 'failed', 'finish'] as const;

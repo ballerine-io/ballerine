@@ -45,7 +45,7 @@ describe('getOrderedSteps', () => {
           },
         },
       },
-      { terminalStates: ['stepThree'] },
+      { finalStates: ['stepThree'] },
     );
 
     expect(result).toEqual(['stepOne', 'stepTwo']);

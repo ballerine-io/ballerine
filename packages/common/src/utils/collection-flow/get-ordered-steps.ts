@@ -5,14 +5,14 @@ export interface IGetOrderedStepsParams {
   eventName?: string;
 
   // When one of these states is reached, the loop will end
-  terminalStates?: string[];
+  finalStates?: string[];
 }
 
 export const getOrderedSteps = (
   definition: Record<string, any>,
   params: IGetOrderedStepsParams = {},
 ) => {
-  const { eventName = 'NEXT', terminalStates = [] } = params;
+  const { eventName = 'NEXT', finalStates = [] } = params;
 
   const steps: string[] = [definition.initial];
 
@@ -28,7 +28,7 @@ export const getOrderedSteps = (
     service.send({ type: eventName });
     const stateValue = service.getSnapshot().value as string;
 
-    if (terminalStates.includes(stateValue)) {
+    if (finalStates.includes(stateValue)) {
       break;
     }
 

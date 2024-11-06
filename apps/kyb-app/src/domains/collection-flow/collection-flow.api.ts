@@ -7,7 +7,10 @@ import {
   TUser,
   UISchema,
 } from '@/domains/collection-flow/types';
-import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
+import {
+  CollectionFlowConfig,
+  CollectionFlowContext,
+} from '@/domains/collection-flow/types/flow-context.types';
 import posthog from 'posthog-js';
 
 export const fetchUser = async (): Promise<TUser> => {
@@ -64,10 +67,15 @@ export const fetchCustomer = async (): Promise<TCustomer> => {
   return await request.get('collection-flow/customer').json<TCustomer>();
 };
 
-export const fetchFlowContext = async (): Promise<CollectionFlowContext> => {
+export interface FlowContextResponse {
+  context: CollectionFlowContext;
+  config: CollectionFlowConfig;
+}
+
+export const fetchFlowContext = async (): Promise<FlowContextResponse> => {
   try {
     const result = await request.get('collection-flow/context');
-    const resultJson = await result.json<CollectionFlowContext>();
+    const resultJson = await result.json<FlowContextResponse>();
 
     if (!resultJson || typeof resultJson !== 'object') {
       throw new Error('Invalid flow context');

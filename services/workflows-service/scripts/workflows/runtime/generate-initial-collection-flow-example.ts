@@ -1,7 +1,7 @@
 import { buildCollectionFlowState, getOrderedSteps } from '@ballerine/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { env } from '../../../src/env';
-import { WORKFLOW_TERMINAL_STATES } from '../../../src/workflow/consts';
+import { WORKFLOW_FINAL_STATES } from '../../../src/workflow/consts';
 export const generateInitialCollectionFlowExample = async (
   prismaClient: PrismaClient,
   {
@@ -28,7 +28,7 @@ export const generateInitialCollectionFlowExample = async (
     apiUrl: env.APP_API_URL,
     steps: getOrderedSteps(
       (uiDefinition?.definition as Prisma.JsonObject)?.definition as Record<string, any>,
-      { terminalStates: [...WORKFLOW_TERMINAL_STATES] },
+      { finalStates: [...WORKFLOW_FINAL_STATES] },
     ).map(stepName => ({
       stateName: stepName,
     })),

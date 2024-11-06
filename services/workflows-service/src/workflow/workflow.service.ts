@@ -102,7 +102,7 @@ import { plainToClass } from 'class-transformer';
 import dayjs from 'dayjs';
 import { isEqual, merge } from 'lodash';
 import mime from 'mime';
-import { WORKFLOW_TERMINAL_STATES } from './consts';
+import { WORKFLOW_FINAL_STATES } from './consts';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
@@ -1560,7 +1560,7 @@ export class WorkflowService {
             apiUrl: env.APP_API_URL,
             steps: getOrderedSteps(
               (uiDefinition?.definition as Prisma.JsonObject)?.definition as Record<string, any>,
-              { terminalStates: [...WORKFLOW_TERMINAL_STATES] },
+              { finalStates: [...WORKFLOW_FINAL_STATES] },
             ).map(stepName => ({
               stateName: stepName,
             })),
