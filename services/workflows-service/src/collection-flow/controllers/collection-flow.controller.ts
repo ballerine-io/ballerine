@@ -6,6 +6,7 @@ import { UpdateFlowDto, UpdateFlowLanguageDto } from '@/collection-flow/dto/upda
 import { UnsupportedFlowTypeException } from '@/collection-flow/exceptions/unsupported-flow-type.exception';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { type ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { WorkflowService } from '@/workflow/workflow.service';
@@ -18,8 +19,9 @@ import { CollectionFlowMissingException } from '../exceptions/collection-flow-mi
 @UseTokenAuthGuard()
 @ApiExcludeController()
 @common.Controller('collection-flow')
-export class ColectionFlowController {
+export class CollectionFlowController {
   constructor(
+    protected readonly appLogger: AppLoggerService,
     protected readonly service: CollectionFlowService,
     protected readonly adapterManager: WorkflowAdapterManager,
     protected readonly workflowService: WorkflowService,
@@ -168,24 +170,32 @@ export class ColectionFlowController {
         throw error;
       }
 
-      await this.workflowService.event(
-        {
-          id: tokenScope.workflowRuntimeDataId,
-          name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
-          payload: {
-            newContext: {
-              collectionFlow: {
-                status: CollectionFlowStatusesEnum.failed,
+      try {
+        await this.workflowService.event(
+          {
+            id: tokenScope.workflowRuntimeDataId,
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+            payload: {
+              newContext: {
+                collectionFlow: {
+                  status: CollectionFlowStatusesEnum.failed,
+                },
               },
+              arrayMergeOption: ARRAY_MERGE_OPTION.BY_ID,
             },
-            arrayMergeOption: ARRAY_MERGE_OPTION.BY_ID,
           },
-        },
-        [tokenScope.projectId],
-        tokenScope.projectId,
-      );
+          [tokenScope.projectId],
+          tokenScope.projectId,
+        );
+      } catch (error) {
+        this.appLogger.error(error);
+        throw new common.InternalServerErrorException(
+          'Failed to set collection flow state as failed.',
+        );
+      }
 
-      throw new common.InternalServerErrorException(error);
+      this.appLogger.error(error);
+      throw new common.InternalServerErrorException('Failed to update collection flow state.');
     }
   }
 

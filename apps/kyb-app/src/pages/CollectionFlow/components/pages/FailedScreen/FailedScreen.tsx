@@ -1,6 +1,6 @@
 import { useCustomer } from '@/components/providers/CustomerProvider';
 import { useFlowTracking } from '@/hooks/useFlowTracking';
-import { CollectionFlowEventsEnum } from '@/hooks/useFlowTracking/enums';
+import { CollectionFlowEvents } from '@/hooks/useFlowTracking/enums';
 import { useUIOptionsRedirect } from '@/hooks/useUIOptionsRedirect';
 import { Card } from '@ballerine/ui';
 import { useEffect } from 'react';
@@ -13,7 +13,7 @@ export const FailedScreen = () => {
   const { trackEvent } = useFlowTracking();
 
   useEffect(() => {
-    trackEvent(CollectionFlowEventsEnum.FLOW_FAILED);
+    trackEvent(CollectionFlowEvents.FLOW_FAILED);
   }, []);
 
   useUIOptionsRedirect('failure');

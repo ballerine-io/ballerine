@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useCustomer } from '@/components/providers/CustomerProvider';
 import { useAppExit } from '@/hooks/useAppExit/useAppExit';
 import { useFlowTracking } from '@/hooks/useFlowTracking';
-import { CollectionFlowEventsEnum } from '@/hooks/useFlowTracking/enums';
+import { CollectionFlowEvents } from '@/hooks/useFlowTracking/enums';
 import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { useUIOptionsRedirect } from '@/hooks/useUIOptionsRedirect';
 import { Button, Card } from '@ballerine/ui';
@@ -18,7 +18,7 @@ export const CompletedScreen = withSessionProtected(() => {
   const { exit, isExitAvailable } = useAppExit();
 
   useEffect(() => {
-    trackEvent(CollectionFlowEventsEnum.FLOW_COMPLETED);
+    trackEvent(CollectionFlowEvents.FLOW_COMPLETED);
   }, [trackEvent]);
 
   useUIOptionsRedirect('success');

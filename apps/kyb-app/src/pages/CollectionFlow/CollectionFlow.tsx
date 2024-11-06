@@ -134,7 +134,6 @@ export const CollectionFlow = withSessionProtected(() => {
         definitionType={schema?.definition.definitionType}
         extensions={schema?.definition.extensions}
         definition={definition as State}
-        //@ts-ignore
         config={collectionFlowData?.config}
       >
         {({ state, stateApi }) => {

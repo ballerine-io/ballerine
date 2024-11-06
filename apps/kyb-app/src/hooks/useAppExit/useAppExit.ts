@@ -3,7 +3,7 @@ import { useFlowTracking } from '@/hooks/useFlowTracking';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { useCallback } from 'react';
-import { CollectionFlowEventsEnum } from '../useFlowTracking/enums';
+import { CollectionFlowEvents } from '../useFlowTracking/enums';
 
 export const useAppExit = () => {
   const appLanguage = useLanguage();
@@ -15,7 +15,7 @@ export const useAppExit = () => {
 
   const exit = useCallback(() => {
     if (kybOnExitAction === 'send-event') {
-      trackEvent(CollectionFlowEventsEnum.USER_EXITED);
+      trackEvent(CollectionFlowEvents.USER_EXITED);
 
       return;
     }

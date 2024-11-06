@@ -1,8 +1,8 @@
-export const CollectionFlowEventsEnum = {
+export const CollectionFlowEvents = {
   USER_EXITED: 'user-exited',
   FLOW_COMPLETED: 'flow-completed',
   FLOW_FAILED: 'flow-failed',
 } as const;
 
-export type CollectionFlowEventsEnum =
-  (typeof CollectionFlowEventsEnum)[keyof typeof CollectionFlowEventsEnum];
+export type TCollectionFlowEvents =
+  (typeof CollectionFlowEvents)[keyof typeof CollectionFlowEvents];

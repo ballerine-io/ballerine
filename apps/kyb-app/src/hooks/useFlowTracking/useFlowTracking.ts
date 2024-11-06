@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { CollectionFlowEventsEnum } from './enums';
+import { TCollectionFlowEvents } from './enums';
 
 const DEFAULT_PREFIX = 'ballerine.collection-flow';
 
@@ -13,7 +13,7 @@ export const useFlowTracking = (
   { prefix = DEFAULT_PREFIX }: IUseFlowTracking = { prefix: DEFAULT_PREFIX },
 ) => {
   const trackEvent = useCallback(
-    (event: CollectionFlowEventsEnum) => {
+    (event: TCollectionFlowEvents) => {
       const formattedEvent = formatEventName(prefix, event);
 
       console.log(`Sending event: ${formattedEvent}`);
