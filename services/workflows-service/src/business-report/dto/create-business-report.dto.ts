@@ -1,8 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsOptional, IsString, MinLength } from 'class-validator';
 import { countryCodes } from '@ballerine/common';
-import { BusinessReportType } from '@prisma/client';
-import type { ObjectValues } from '@/types';
+import {
+  MERCHANT_REPORT_TYPES,
+  MERCHANT_REPORT_TYPES_MAP,
+  MERCHANT_REPORT_VERSIONS_MAP,
+  type MerchantReportType,
+  type MerchantReportVersion,
+} from '@/business-report/constants';
 
 export class CreateBusinessReportDto {
   @ApiProperty({
@@ -17,6 +22,7 @@ export class CreateBusinessReportDto {
   @ApiProperty({
     required: true,
     type: String,
+    example: 'https://www.example.com',
   })
   @MinLength(1)
   @IsString()
@@ -34,6 +40,8 @@ export class CreateBusinessReportDto {
   @ApiProperty({
     required: false,
     type: String,
+    enum: countryCodes,
+    default: 'GB',
   })
   @IsOptional()
   @IsIn(Object.values(countryCodes))
@@ -42,16 +50,18 @@ export class CreateBusinessReportDto {
   @ApiProperty({
     required: true,
     type: String,
+    example: MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1,
   })
-  @IsIn(Object.values(BusinessReportType))
-  reportType!: ObjectValues<typeof BusinessReportType>;
+  @IsIn(Object.values(MERCHANT_REPORT_TYPES))
+  reportType!: MerchantReportType;
 
   @ApiProperty({
     required: true,
     type: String,
-    default: '2',
+    enum: MERCHANT_REPORT_VERSIONS_MAP,
+    default: MERCHANT_REPORT_VERSIONS_MAP['2'],
     description: 'Workflow version',
   })
   @IsString()
-  workflowVersion!: '1' | '2' | '3';
+  workflowVersion!: MerchantReportVersion;
 }

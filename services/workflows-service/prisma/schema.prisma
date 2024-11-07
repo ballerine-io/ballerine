@@ -163,6 +163,40 @@ model Business {
   @@index([businessType])
 }
 
+enum EntityType {
+  Business
+  EndUser
+}
+
+enum Noteable {
+  Report
+  Alert
+  Workflow
+}
+
+model Note {
+  id            String     @id @default(cuid())
+  entityId      String
+  entityType    EntityType
+  noteableId    String
+  noteableType  Noteable
+  content       String
+  parentNoteId  String?
+  parentNote    Note?      @relation("ReplyToNote", fields: [parentNoteId], references: [id])
+  childrenNotes Note[]     @relation("ReplyToNote")
+  fileIds       String[]
+  createdAt     DateTime   @default(now())
+  createdBy     String     @default("SYSTEM")
+  updatedAt     DateTime   @updatedAt
+  deletedAt     DateTime?
+  projectId     String
+  project       Project    @relation(fields: [projectId], references: [id])
+
+  @@index([entityId, entityType, projectId])
+  @@index([noteableId, noteableType, projectId])
+  @@index([projectId])
+}
+
 model WorkflowDefinition {
   id String @id @default(cuid())
 
@@ -175,13 +209,13 @@ model WorkflowDefinition {
   projectId String?
   isPublic  Boolean @default(false)
 
-  definitionType     String
-  definition         Json
-  contextSchema      Json?
-  documentsSchema    Json?
-  config             Json?
-  extensions         Json?
-  variant            String @default("DEFAULT")
+  definitionType  String
+  definition      Json
+  contextSchema   Json?
+  documentsSchema Json?
+  config          Json?
+  extensions      Json?
+  variant         String @default("DEFAULT")
 
   persistStates Json?
   submitStates  Json?
@@ -376,6 +410,7 @@ model Project {
   Alert                    Alert[]
   Counterparty             Counterparty[]
   BusinessReport           BusinessReport[]
+  Note                     Note[]
 
   @@unique([name, customerId])
   @@index(name)
@@ -777,10 +812,12 @@ model Alert {
   project   Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
   dataTimestamp DateTime
-  state         AlertState
   status        AlertStatus
   tags          String[]
   severity      AlertSeverity?
+  
+  state         AlertState
+  decisionAt    DateTime?
 
   executionDetails Json
   additionalInfo   Json?
@@ -789,6 +826,7 @@ model Alert {
   assigneeId String?
   assignedAt DateTime?
 
+  dedupedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

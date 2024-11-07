@@ -1,4 +1,5 @@
 import { Customer } from '@prisma/client';
+import { MerchantReportVersion } from '@/business-report/constants';
 
 export type TAuthenticationConfiguration = {
   apiType: 'API_KEY' | 'OAUTH2' | 'BASIC_AUTH';
@@ -16,7 +17,7 @@ export const FEATURE_LIST = {
 export type TOngoingMerchantReportOptions = {
   runByDefault?: boolean;
   proxyViaCountry: string;
-  workflowVersion: '1' | '2' | '3';
+  workflowVersion: MerchantReportVersion;
   reportType: 'ONGOING_MERCHANT_REPORT_T1';
 } & (
   | {

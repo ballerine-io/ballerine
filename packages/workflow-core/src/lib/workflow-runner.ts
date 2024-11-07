@@ -245,7 +245,7 @@ export class WorkflowRunner {
     callbackAction?: ChildWorkflowPluginParams['action'],
   ) {
     return childPluginSchemas?.map(childPluginSchema => {
-      logger.log('Initiating child plugin', childPluginSchema);
+      logger.log('WORKFLOW CORE:: Initiating child plugin', childPluginSchema);
       const transformers = fetchTransformers(childPluginSchema.transformers) || [];
 
       return new ChildWorkflowPlugin({
@@ -297,9 +297,12 @@ export class WorkflowRunner {
     if (pluginKind === 'iterative') return IterativePlugin;
     if (pluginKind === 'transformer') return TransformerPlugin;
 
-    logger.log('Plugin kind is not supplied or not supported, falling back to Iterative plugin.', {
-      pluginKind,
-    });
+    logger.log(
+      'WORKFLOW CORE:: Plugin kind is not supplied or not supported, falling back to Iterative plugin.',
+      {
+        pluginKind,
+      },
+    );
     return IterativePlugin;
   }
 
@@ -567,8 +570,8 @@ export class WorkflowRunner {
   async sendEvent(event: WorkflowEventWithoutState) {
     const workflow = this.#__workflow.withContext(this.context);
 
-    logger.log('Received event', {
-      event,
+    logger.log('WORKFLOW CORE:: Received event', {
+      eventType: event.type,
       currentState: this.#__currentState,
     });
 
@@ -578,17 +581,17 @@ export class WorkflowRunner {
       .start(this.#__currentState)
       .onTransition((state, context) => {
         if (state.changed) {
-          logger.log('State transitioned', {
+          logger.log('WORKFLOW CORE:: State transitioned', {
             previousState,
             nextState: state.value,
           });
 
           if (state.done) {
-            logger.log('Reached final state');
+            logger.log('WORKFLOW CORE:: Reached final state');
           }
 
           if (state.tags.has('failure')) {
-            logger.log('Reached failure state', {
+            logger.log('WORKFLOW CORE:: Reached failure state', {
               correlationId: context?.entity?.id,
               ballerineEntityId: context?.entity?.ballerineEntityId,
             });
@@ -601,6 +604,12 @@ export class WorkflowRunner {
         }
 
         this.#__currentState = state.value;
+      })
+      .onEvent(event => {
+        logger.log('WORKFLOW CORE:: Event received', { event });
+      })
+      .onChange(state => {
+        logger.log('WORKFLOW CORE:: Context/State changed', { state });
       });
 
     // all sends() will be deferred until the workflow is started
@@ -627,7 +636,9 @@ export class WorkflowRunner {
     const snapshot = service.getSnapshot();
 
     for (const prePlugin of prePlugins) {
-      logger.log('Pre plugins are about to be deprecated. Please contact the team for more info');
+      logger.log(
+        'WORKFLOW CORE:: Pre plugins are about to be deprecated. Please contact the team for more info',
+      );
 
       await this.#__handleAction({
         type: 'STATE_ACTION_STATUS',
@@ -642,7 +653,7 @@ export class WorkflowRunner {
     this.context = postSendSnapshot.context;
 
     if (previousState === postSendSnapshot.value) {
-      logger.log('No transition occurred, skipping plugins');
+      logger.log('WORKFLOW CORE:: No transition occurred, skipping plugins');
       return;
     }
 
@@ -687,7 +698,7 @@ export class WorkflowRunner {
     }
 
     if (this.#__debugMode) {
-      logger.log('context:', this.context);
+      logger.log('WORKFLOW CORE:: context:', this.context);
     }
 
     // Intentionally positioned after service.start() and service.send()
@@ -767,7 +778,7 @@ export class WorkflowRunner {
     });
 
     if (error) {
-      logger.error('Error invoking plugin', {
+      logger.error('WORKFLOW CORE:: Error invoking plugin', {
         error,
         stack: error instanceof Error ? error.stack : undefined,
         name: apiPlugin.name,
@@ -776,7 +787,7 @@ export class WorkflowRunner {
     }
 
     if (!this.isPluginWithCallbackAction(apiPlugin)) {
-      logger.log('Plugin does not have callback action', {
+      logger.log('WORKFLOW CORE:: Plugin does not have callback action', {
         name: apiPlugin.name,
       });
       return;
@@ -812,7 +823,7 @@ export class WorkflowRunner {
   private async __dispatchEvent(dispatchEventPlugin: DispatchEventPlugin) {
     const { eventName, event } = await dispatchEventPlugin.getPluginEvent(this.context);
 
-    logger.log('Dispatching notification to host', {
+    logger.log('WORKFLOW CORE:: Dispatching notification to host', {
       eventName,
       event,
     });
@@ -820,9 +831,13 @@ export class WorkflowRunner {
     try {
       await this.notify(eventName, event);
 
-      logger.log('Dispatched notification to host successfully', { eventName });
+      logger.log('WORKFLOW CORE:: Dispatched notification to host successfully', { eventName });
     } catch (error) {
-      logger.error('Failed dispatching notification to host', { eventName, event, error });
+      logger.error('WORKFLOW CORE:: Failed dispatching notification to host', {
+        eventName,
+        event,
+        error,
+      });
 
       if (dispatchEventPlugin.errorAction) {
         await this.sendEvent({ type: dispatchEventPlugin.errorAction });

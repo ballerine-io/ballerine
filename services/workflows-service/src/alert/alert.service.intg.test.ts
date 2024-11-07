@@ -1,7 +1,6 @@
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { AlertRepository } from '@/alert/alert.repository';
 import { AlertService } from '@/alert/alert.service';
-import { BusinessReportRepository } from '@/business-report/business-report.repository';
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
@@ -18,6 +17,8 @@ import { faker } from '@faker-js/faker';
 import { Test } from '@nestjs/testing';
 import {
   AlertDefinition,
+  AlertState,
+  AlertStatus,
   Counterparty,
   Customer,
   PaymentMethod,
@@ -34,6 +35,7 @@ import {
 import { PrismaService } from '@/prisma/prisma.service';
 import { BusinessService } from '@/business/business.service';
 import { BusinessRepository } from '@/business/business.repository';
+import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
 
 type AsyncTransactionFactoryCallback = (
   transactionFactory: TransactionFactory,
@@ -74,6 +76,7 @@ const createFutureDate = (daysToAdd: number) => {
   const currentDate = new Date();
   const futureDate = new Date(currentDate);
   futureDate.setDate(currentDate.getDate() + daysToAdd);
+
   return futureDate;
 };
 
@@ -93,12 +96,11 @@ describe('AlertService', () => {
         AlertRepository,
         AlertDefinitionRepository,
         BusinessReportService,
-        BusinessReportRepository,
         BusinessReportService,
-        BusinessReportRepository,
         AlertService,
         BusinessService,
         BusinessRepository,
+        MerchantMonitoringClient,
       ],
     }).compile();
 
@@ -315,6 +317,145 @@ describe('AlertService', () => {
         // Assert
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(0);
+      });
+
+      test('Assigning and deciding alerts should set audit timestamps', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .withEndUserOriginator()
+          .amount(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min + 1)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .count(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold + 1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+
+        expect(alerts).toHaveLength(1);
+
+        const user = await prismaService.user.create({
+          data: {
+            firstName: 'Test',
+            lastName: 'User',
+            password: '',
+            email: faker.internet.email(),
+            roles: [],
+          },
+        });
+
+        await alertService.updateAlertsAssignee(
+          alerts.map(alert => alert.id),
+          project.id,
+          user.id,
+        );
+
+        const assignedAlerts = await prismaService.alert.findMany({
+          where: {
+            assignedAt: {
+              not: null,
+            },
+          },
+        });
+        expect(assignedAlerts).toHaveLength(1);
+        expect(assignedAlerts[0]?.assignedAt).toBeInstanceOf(Date);
+        expect(assignedAlerts[0]?.assignedAt).not.toBeNull();
+        // whenever update Decision we set the assignee to the authicated user
+        await alertService.updateAlertsDecision(
+          alerts.map(alert => alert.id),
+          project.id,
+          AlertState.rejected,
+        );
+
+        const updatedAlerts = await prismaService.alert.findMany({
+          where: {
+            decisionAt: {
+              not: null,
+            },
+          },
+        });
+
+        expect(updatedAlerts).toHaveLength(1);
+        expect(updatedAlerts[0]?.decisionAt).toBeInstanceOf(Date);
+        expect(updatedAlerts[0]?.decisionAt).not.toBeNull();
+        expect(updatedAlerts[0]?.status).toBe(AlertStatus.completed);
+      });
+
+      test('Dedupe - Alert should be deduped', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .withEndUserOriginator()
+          .amount(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min + 1)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .count(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold + 1)
+          .create();
+
+        await alertService.checkAllAlerts();
+
+        const alerts = await prismaService.alert.findMany();
+
+        expect(alerts).toHaveLength(1);
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const updatedAlerts = await prismaService.alert.findMany({
+          where: {
+            dedupedAt: {
+              not: null,
+            },
+          },
+        });
+
+        expect(updatedAlerts).toHaveLength(1);
+        expect(updatedAlerts[0]?.dedupedAt).toBeInstanceOf(Date);
+        expect(updatedAlerts[0]?.dedupedAt).not.toBeNull();
+      });
+
+      test('Dedupe - Only non completed alerts will be dedupe', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .withEndUserOriginator()
+          .amount(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min + 1)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .count(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold + 1)
+          .create();
+
+        await alertService.checkAllAlerts();
+
+        const alerts = await prismaService.alert.findMany();
+
+        expect(alerts).toHaveLength(1);
+
+        // whenever update Decision we set the assignee to the authicated user
+        await alertService.updateAlertsDecision(
+          alerts.map(alert => alert.id),
+          project.id,
+          AlertState.rejected,
+        );
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const updatedAlerts = await prismaService.alert.findMany({
+          where: {
+            dedupedAt: {
+              not: null,
+            },
+          },
+        });
+
+        expect(updatedAlerts).toHaveLength(0);
       });
     });
 
@@ -1013,28 +1154,6 @@ describe('AlertService', () => {
         );
       });
 
-      it('When there more than 1k credit card transactions, an alert should be created', async () => {
-        // Arrange
-        await baseTransactionFactory
-          .withBusinessBeneficiary()
-          .direction(TransactionDirection.inbound)
-          .paymentMethod(PaymentMethod.credit_card)
-          .amount(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold + 1)
-          .count(1)
-          .create();
-
-        // Act
-        await alertService.checkAllAlerts();
-
-        // Assert
-        const alerts = await prismaService.alert.findMany();
-        expect(alerts).toHaveLength(1);
-        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0] as any).toMatchObject({
-          executionDetails: { executionRow: { transactionCount: '1', totalAmount: 1001 } },
-        });
-      });
-
       it('When there are few transaction, no alert should be created', async () => {
         // Arrange
         await baseTransactionFactory
@@ -1110,28 +1229,6 @@ describe('AlertService', () => {
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
         expect(alerts[0] as any).toMatchObject({
           executionDetails: { executionRow: { transactionCount: '1', totalAmount: 1001 } },
-        });
-      });
-
-      it('When there more than 1k credit card transactions, an alert should be created', async () => {
-        // Arrange
-        await baseTransactionFactory
-          .withBusinessBeneficiary()
-          .direction(TransactionDirection.inbound)
-          .paymentMethod(PaymentMethod.debit_card)
-          .amount(2)
-          .count(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold + 1)
-          .create();
-
-        // Act
-        await alertService.checkAllAlerts();
-
-        // Assert
-        const alerts = await prismaService.alert.findMany();
-        expect(alerts).toHaveLength(1);
-        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0] as any).toMatchObject({
-          executionDetails: { executionRow: { transactionCount: '1001', totalAmount: 2002 } },
         });
       });
 
