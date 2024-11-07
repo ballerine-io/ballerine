@@ -24,6 +24,7 @@
 
 ### Patch Changes
 
+- Added defaultCountry code for phone input
 - bump
 - Updated dependencies
   - @ballerine/common@0.9.45
