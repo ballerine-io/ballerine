@@ -126,6 +126,12 @@ export const CollectionFlow = withSessionProtected(() => {
   if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.rejected)
     return <Rejected />;
 
+  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.completed)
+    return <CompletedScreen />;
+
+  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.failed)
+    return <FailedScreen />;
+
   return definition && collectionFlowData ? (
     <DynamicUI initialState={initialUIState}>
       <DynamicUI.StateManager
