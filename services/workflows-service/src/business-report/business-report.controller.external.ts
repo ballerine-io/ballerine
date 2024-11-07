@@ -1,7 +1,4 @@
 import * as common from '@nestjs/common';
-import * as swagger from '@nestjs/swagger';
-import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
-import * as errors from '@/errors';
 import {
   BadRequestException,
   Body,
@@ -9,10 +6,11 @@ import {
   Query,
   Res,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
+import * as swagger from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import * as errors from '@/errors';
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CustomerService } from '@/customer/customer.service';
@@ -204,20 +202,20 @@ export class BusinessReportControllerExternal {
     res.send(result);
   }
 
-  @common.Get()
-  @UseGuards(AdminAuthGuard)
-  @swagger.ApiOkResponse({ type: [String] })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiExcludeEndpoint()
-  async list() {
-    return await this.prisma.businessReport.findMany({
-      include: {
-        project: {
-          include: {
-            customer: true,
-          },
-        },
-      },
-    });
-  }
+  // @common.Get()
+  // @UseGuards(AdminAuthGuard)
+  // @swagger.ApiOkResponse({ type: [String] })
+  // @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  // @swagger.ApiExcludeEndpoint()
+  // async list() {
+  //   return await this.prisma.businessReport.findMany({
+  //     include: {
+  //       project: {
+  //         include: {
+  //           customer: true,
+  //         },
+  //       },
+  //     },
+  //   });
+  // }
 }
