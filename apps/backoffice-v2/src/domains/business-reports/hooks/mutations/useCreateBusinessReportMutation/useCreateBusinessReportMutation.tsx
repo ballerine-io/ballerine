@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { t } from 'i18next';
 import { createBusinessReport } from '@/domains/business-reports/fetchers';
-import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { HttpError } from '@/common/errors/http-error';
 import { isObject } from '@ballerine/common';
 
@@ -18,7 +18,7 @@ export const useCreateBusinessReportMutation = ({
   const workflowVersion = customer?.features?.createBusinessReport?.options.version ?? '2';
 
   return useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       websiteUrl,
       operatingCountry,
       companyName,
@@ -33,8 +33,8 @@ export const useCreateBusinessReportMutation = ({
           websiteUrl: string;
           operatingCountry: string;
           businessCorrelationId: string;
-        }) =>
-      createBusinessReport({
+        }) => {
+      await createBusinessReport({
         websiteUrl,
         operatingCountry,
         companyName,
@@ -42,7 +42,11 @@ export const useCreateBusinessReportMutation = ({
         reportType,
         workflowVersion,
         isExample: customer?.config?.isExample ?? false,
-      }),
+      });
+
+      // Artificial delay to ensure report is created in Unified API's DB
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    },
     onSuccess: data => {
       if (customer?.config?.isExample) {
         return;

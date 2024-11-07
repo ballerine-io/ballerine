@@ -5,7 +5,7 @@ import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
 import { CollectionFlowBusinessController } from '@/collection-flow/controllers/collection-flow.business.controller';
-import { ColectionFlowController } from '@/collection-flow/controllers/collection-flow.controller';
+import { CollectionFlowController } from '@/collection-flow/controllers/collection-flow.controller';
 import { CollectionFlowEndUserController } from '@/collection-flow/controllers/collection-flow.end-user.controller';
 import { CollectionFlowFilesController } from '@/collection-flow/controllers/collection-flow.files.controller';
 import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
@@ -22,8 +22,10 @@ import { FilterRepository } from '@/filter/filter.repository';
 import { FilterService } from '@/filter/filter.service';
 import { ProjectModule } from '@/project/project.module';
 import { FileService } from '@/providers/file/file.service';
+import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
 import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 import { SalesforceService } from '@/salesforce/salesforce.service';
+import { SentryService } from '@/sentry/sentry.service';
 import { FileRepository } from '@/storage/storage.repository';
 import { StorageService } from '@/storage/storage.service';
 import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
@@ -34,11 +36,9 @@ import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-defi
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
+import { WorkflowModule } from '@/workflow/workflow.module';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
-import { SentryService } from '@/sentry/sentry.service';
-import { WorkflowModule } from '@/workflow/workflow.module';
 
 @Module({
   imports: [
@@ -55,7 +55,7 @@ import { WorkflowModule } from '@/workflow/workflow.module';
     WorkflowModule,
   ],
   controllers: [
-    ColectionFlowController,
+    CollectionFlowController,
     CollectionFlowFilesController,
     CollectionFlowBusinessController,
     CollectionFlowEndUserController,

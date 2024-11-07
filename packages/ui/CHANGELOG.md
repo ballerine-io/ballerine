@@ -1,5 +1,19 @@
 # @ballerine/ui
 
+## 0.5.43
+
+### Patch Changes
+
+- bump
+
+## 0.5.42
+
+### Patch Changes
+
+- Change
+- Updated dependencies
+  - @ballerine/common@0.9.48
+
 ## 0.5.41
 
 ### Patch Changes
@@ -10,6 +24,7 @@
 
 ### Patch Changes
 
+- Added defaultCountry code for phone input
 - bump
 - Updated dependencies
   - @ballerine/common@0.9.45

@@ -10,7 +10,7 @@ import { useAlertCorrelationIdsQuery } from '@/domains/alerts/hooks/queries/useA
 
 export const useTransactionMonitoringAlertsLogic = () => {
   const { data: session } = useAuthenticatedUserQuery();
-  const AlertsSearchSchema = getAlertsSearchSchema(session?.user?.id);
+  const AlertsSearchSchema = getAlertsSearchSchema();
   const [{ filter, sortBy, sortDir, page, pageSize, search: searchValue }] =
     useZodSearchParams(AlertsSearchSchema);
   const { data: alerts, isLoading: isLoadingAlerts } = useAlertsQuery({

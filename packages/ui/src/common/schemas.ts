@@ -5,4 +5,4 @@ export const ParsedBooleanSchema = z.preprocess(
   z.boolean(),
 );
 
-export const BooleanishSchema = z.record(z.string(), ParsedBooleanSchema);
+export const BooleanishRecordSchema = z.record(z.string(), ParsedBooleanSchema);

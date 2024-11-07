@@ -2,7 +2,6 @@ import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.servi
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
-import { getStepsInOrder } from '@/collection-flow/helpers/get-steps-in-order';
 import { ajv } from '@/common/ajv/ajv.validator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
@@ -53,13 +52,15 @@ import {
 } from '@/workflow/workflow-runtime-list-item.model';
 import {
   AnyRecord,
-  CollectionFlowManager,
-  CollectionFlowStatuses,
+  buildCollectionFlowState,
+  CollectionFlowStatusesEnum,
   DefaultContextSchema,
   getDocumentId,
+  getOrderedSteps,
   isErrorWithMessage,
   isObject,
   ProcessStatus,
+  setCollectionFlowStatus,
 } from '@ballerine/common';
 import {
   ARRAY_MERGE_OPTION,
@@ -84,13 +85,10 @@ import {
 import {
   ApprovalState,
   BusinessPosition,
-  BusinessReportStatus,
-  BusinessReportType,
   Customer,
   EndUser,
   Prisma,
   PrismaClient,
-  UiDefinition,
   UiDefinitionContext,
   User,
   WorkflowDefinition,
@@ -102,6 +100,7 @@ import { plainToClass } from 'class-transformer';
 import dayjs from 'dayjs';
 import { isEqual, merge } from 'lodash';
 import mime from 'mime';
+import { WORKFLOW_FINAL_STATES } from './consts';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
@@ -122,11 +121,10 @@ type TEntityId = string;
 
 export type TEntityType = 'endUser' | 'business';
 
-type CollectionFlowEvent = 'approved' | 'rejected' | 'failed' | 'revision';
+type CollectionFlowEvent = 'approved' | 'rejected' | 'revision';
 const COLLECTION_FLOW_EVENTS_WHITELIST: readonly CollectionFlowEvent[] = [
   'approved',
   'rejected',
-  'failed',
   'revision',
 ] as const;
 
@@ -1555,28 +1553,29 @@ export class WorkflowService {
             transaction,
           );
 
-          // Initializing Collection Flow
-          const collectionFlowManager = new CollectionFlowManager(
-            {
-              ...workflowRuntimeData.context,
+          const collectionFlow = buildCollectionFlowState({
+            apiUrl: env.APP_API_URL,
+            steps: getOrderedSteps(
+              (uiDefinition?.definition as Prisma.JsonObject)?.definition as Record<
+                string,
+                Record<string, unknown>
+              >,
+              { finalStates: [...WORKFLOW_FINAL_STATES] },
+            ).map(stepName => ({
+              stateName: stepName,
+            })),
+            additionalInformation: {
+              customerCompany: customer.displayName,
             },
-            {
-              apiUrl: env.APP_API_URL,
-              steps: await getStepsInOrder(uiDefinition as UiDefinition),
-              additionalInformation: {
-                customerCompany: customer.displayName,
-              },
-            },
-          );
-
-          collectionFlowManager.initializeCollectionFlowContext();
+          });
 
           workflowRuntimeData = await this.workflowRuntimeDataRepository.updateStateById(
             workflowRuntimeData.id,
             {
               data: {
                 context: {
-                  ...collectionFlowManager.context,
+                  ...workflowRuntimeData.context,
+                  collectionFlow,
                   metadata: {
                     ...(workflowRuntimeData.context.metadata ?? {}),
                     token: workflowToken.token,
@@ -2141,28 +2140,6 @@ export class WorkflowService {
         });
       });
 
-      service.subscribe('PERSIST_BUSINESS_REPORT', async ({ payload }) => {
-        if (!payload?.reportId || !payload.reportType) {
-          return;
-        }
-
-        const typedPayload = payload as {
-          reportId: string;
-          reportType: BusinessReportType;
-        };
-
-        await this.businessReportService.create({
-          data: {
-            report: {},
-            businessId: workflowRuntimeData.context.entity.ballerineEntityId,
-            projectId: currentProjectId,
-            reportId: typedPayload.reportId,
-            type: typedPayload.reportType,
-            status: BusinessReportStatus.in_progress,
-          },
-        });
-      });
-
       if (!service.getSnapshot().nextEvents.includes(type)) {
         throw new BadRequestException(
           `Event ${type} does not exist for workflow ${workflowDefinition.id}'s state: ${workflowRuntimeData.state}`,
@@ -2176,7 +2153,7 @@ export class WorkflowService {
 
       const snapshot = service.getSnapshot();
       const currentState = snapshot.value;
-      let context = snapshot.machine?.context;
+      const context = snapshot.machine?.context;
 
       // Checking if event type is candidate for "revision" state
       const nextCollectionFlowState = COLLECTION_FLOW_EVENTS_WHITELIST.includes(type)
@@ -2191,13 +2168,9 @@ export class WorkflowService {
       });
 
       if (nextCollectionFlowState) {
-        const collectionFlowManager = new CollectionFlowManager(context);
-
-        if (currentState in CollectionFlowStatuses) {
-          collectionFlowManager.state().status = currentState;
+        if (currentState in CollectionFlowStatusesEnum) {
+          setCollectionFlowStatus(context, currentState);
         }
-
-        context = collectionFlowManager.context;
       }
 
       // TODO: Refactor to use snapshot.done instead

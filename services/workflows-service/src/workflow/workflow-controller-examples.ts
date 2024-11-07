@@ -53,6 +53,8 @@ export const putPluginsExampleResponse = {
       reportType: 'MERCHANT_REPORT_T1',
       merchantMonitoringQualityControl: false,
       dataMapping: `
+        customerId: metadata.customerId,
+        merchantId: entity.ballerineEntityId,
         countryCode: entity.data.country,
         websiteUrl: entity.data.additionalInfo.store.website.mainWebsite,
       `,

@@ -11,8 +11,7 @@ import { useUIElementHandlers } from '@/components/organisms/UIRenderer/hooks/us
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
 import { UIElementComponent } from '@/components/organisms/UIRenderer/types';
 import { UIPage } from '@/domains/collection-flow';
-import { useFlowTracking } from '@/hooks/useFlowTracking';
-import { CollectionFlowManager, CollectionFlowStatuses } from '@ballerine/common';
+import { getCollectionFlowState, setStepCompletionState } from '@ballerine/common';
 import { Button } from '@ballerine/ui';
 import { useCallback, useMemo } from 'react';
 
@@ -59,8 +58,6 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
     [helpers, errors],
   );
 
-  const { trackFinish } = useFlowTracking();
-
   const handleClick = useCallback(() => {
     setPageElementsTouched(
       // @ts-ignore
@@ -70,29 +67,22 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
     const isFinishPage = currentPage?.name === pages.at(-1)?.name;
 
     if (isFinishPage && isValid) {
-      const collectionFlowManager = new CollectionFlowManager(stateApi.getContext());
+      const context = stateApi.getContext();
 
-      collectionFlowManager.state().status = CollectionFlowStatuses.completed;
-      collectionFlowManager.state().setStepCompletionState(currentPage?.stateName as string, true);
+      const collectionFlow = getCollectionFlowState(context);
 
-      stateApi.setContext(collectionFlowManager.context);
+      if (collectionFlow) {
+        setStepCompletionState(context, {
+          stepName: currentPage?.stateName as string,
+          completed: true,
+        });
+      }
+
+      stateApi.setContext(context);
     }
 
     onClickHandler();
-
-    if (isFinishPage && isValid) {
-      trackFinish();
-    }
-  }, [
-    currentPage,
-    pages,
-    state,
-    isValid,
-    stateApi,
-    setPageElementsTouched,
-    onClickHandler,
-    trackFinish,
-  ]);
+  }, [currentPage, pages, state, isValid, stateApi, setPageElementsTouched, onClickHandler]);
 
   return (
     <Button

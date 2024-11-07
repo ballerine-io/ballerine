@@ -87,7 +87,7 @@ module.exports = {
   },
   plugins: [
     require('tailwindcss-animate'),
-    plugin(function ({ matchUtilities, theme, matchVariant, addVariant }) {
+    plugin(function ({ matchUtilities, theme, matchVariant, addVariant, addComponents }) {
       matchUtilities(
         {
           // Adds support for d-full instead of w-full h-full
@@ -135,6 +135,14 @@ module.exports = {
         values: {
           light: 'winter',
           dark: 'night',
+        },
+      });
+
+      // Adds support for bg-accent-foreground/15
+      addComponents({
+        '.bg-accent-foreground\\/15': {
+          '--tw-bg-opacity': '0.15',
+          backgroundColor: 'hsla(var(--accent-foreground), var(--tw-bg-opacity))',
         },
       });
     }),

@@ -27,9 +27,9 @@ export interface IInfoProps {
 export interface IActionsProps {
   id: string;
   fullName: string;
-  avatarUrl: string;
-  showResolutionButtons?: boolean;
+  numberOfNotes: number;
   workflow: TWorkflowById;
+  showResolutionButtons?: boolean;
 }
 
 export interface ICaseChildren {
