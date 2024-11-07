@@ -67,7 +67,7 @@ export const getTabsToBlocksMap = ({
         ? merchantScreeningBlock
         : []),
     ],
-    [Tab.COMPANY_INFORMATION]: [
+    [Tab.COMPANY]: [
       ...entityInfoBlock,
       // ...mapBlock,
       ...addressWithContainerBlock,
@@ -76,11 +76,7 @@ export const getTabsToBlocksMap = ({
       ...companySanctionsBlock,
       ...bankingDetailsBlock,
     ],
-    [Tab.STORE_INFO]: [
-      ...storeInfoBlock,
-      ...processingDetailsBlock,
-      ...websiteBasicRequirementBlock,
-    ],
+    [Tab.STORE]: [...storeInfoBlock, ...processingDetailsBlock, ...websiteBasicRequirementBlock],
     [Tab.DOCUMENTS]: [...parentDocumentBlocks],
     [Tab.UBOS]: [
       ...ubosUserProvidedBlock,
