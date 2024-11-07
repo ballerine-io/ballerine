@@ -15,7 +15,8 @@ export const useWebsiteMonitoringBusinessReportTab = ({
     reportVersion: businessReport?.workflowVersion,
     report: businessReport?.data ?? {},
     companyName:
-      (businessReport?.data?.companyAnalysis as UnknownRecord | undefined)?.companyName ?? '',
+      (businessReport?.data?.websiteCompanyAnalysis as UnknownRecord | undefined)?.companyName ??
+      '',
     Link: RiskIndicatorLink,
   });
   const adapter = createReportAdapter({

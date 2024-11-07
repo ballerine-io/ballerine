@@ -47,6 +47,9 @@ export class BusinessReportDto {
   @ApiProperty({ type: Number })
   riskScore!: number;
 
+  @ApiProperty({ type: String, nullable: true, required: false })
+  companyName?: string;
+
   @ApiProperty({ type: Boolean })
   isAlert!: boolean;
 
