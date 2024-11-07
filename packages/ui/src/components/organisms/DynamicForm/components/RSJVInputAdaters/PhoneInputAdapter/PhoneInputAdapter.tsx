@@ -14,8 +14,7 @@ export const PhoneInputAdapter: RJSFInputAdapter = ({
   const { defaultCountry = 'us' } = uiSchema || {};
 
   const handleBlur = useCallback(() => {
-    // @ts-ignore
-    onBlur && onBlur(id, formData);
+    onBlur?.(id as string, formData);
   }, [id, onBlur, formData]);
 
   return (
