@@ -35,6 +35,7 @@ const ReportSchema = z.object({
     .nullable(),
   riskScore: z.number().nullable(),
   isAlert: z.boolean().nullable(),
+  companyName: z.string().nullish(),
   website: z.object({
     id: z.string(),
     url: z.string().url(),

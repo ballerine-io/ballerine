@@ -12,6 +12,7 @@ import {
   MerchantReportType,
   MerchantReportVersion,
 } from '@/domains/business-reports/constants';
+import { UnknownRecord } from 'type-fest';
 
 export const BusinessReportSchema = z
   .object({
@@ -25,6 +26,7 @@ export const BusinessReportSchema = z
     merchantId: z.string(),
     workflowVersion: z.enum([MERCHANT_REPORT_VERSIONS[0]!, ...MERCHANT_REPORT_VERSIONS.slice(1)]),
     isAlert: z.boolean().nullable(),
+    companyName: z.string().nullish(),
     website: z.object({
       id: z.string(),
       url: z.string().url(),
@@ -41,7 +43,10 @@ export const BusinessReportSchema = z
   })
   .transform(data => ({
     ...data,
-    companyName: data?.parentCompanyName,
+    companyName:
+      data?.companyName ??
+      (data?.data?.websiteCompanyAnalysis as UnknownRecord | undefined)?.companyName ??
+      data?.parentCompanyName,
     website: data?.website.url,
     data: data.status === 'completed' ? data?.data : null,
     riskScore: data.status === 'completed' ? data?.riskScore : null,
