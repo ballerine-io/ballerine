@@ -121,11 +121,10 @@ type TEntityId = string;
 
 export type TEntityType = 'endUser' | 'business';
 
-type CollectionFlowEvent = 'approved' | 'rejected' | 'failed' | 'revision';
+type CollectionFlowEvent = 'approved' | 'rejected' | 'revision';
 const COLLECTION_FLOW_EVENTS_WHITELIST: readonly CollectionFlowEvent[] = [
   'approved',
   'rejected',
-  'failed',
   'revision',
 ] as const;
 
