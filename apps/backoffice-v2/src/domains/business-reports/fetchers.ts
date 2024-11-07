@@ -70,7 +70,7 @@ export const fetchLatestBusinessReport = async ({
   reportType: MerchantReportType;
 }) => {
   const [data, error] = await apiClient({
-    endpoint: `business-reports/latest?businessId=${businessId}&type=${reportType}`,
+    endpoint: `../external/business-reports/latest?businessId=${businessId}&type=${reportType}`,
     method: Method.GET,
     schema: BusinessReportSchema,
   });
@@ -98,7 +98,7 @@ export const fetchBusinessReports = async ({
   );
 
   const [data, error] = await apiClient({
-    endpoint: `business-reports/?${queryParams}`,
+    endpoint: `../external/business-reports/?${queryParams}`,
     method: Method.GET,
     schema: BusinessReportsSchema,
   });
@@ -108,7 +108,7 @@ export const fetchBusinessReports = async ({
 
 export const fetchBusinessReportById = async ({ id }: { id: string }) => {
   const [businessReport, error] = await apiClient({
-    endpoint: `business-reports/${id}`,
+    endpoint: `../external/business-reports/${id}`,
     method: Method.GET,
     schema: BusinessReportSchema,
   });
@@ -148,7 +148,7 @@ export const createBusinessReport = async ({
   }
 
   const [businessReport, error] = await apiClient({
-    endpoint: `business-reports`,
+    endpoint: `../external/business-reports`,
     method: Method.POST,
     schema: z.undefined(),
     body: {
@@ -187,7 +187,7 @@ export const createBusinessReportBatch = async ({
   formData.append('workflowVersion', workflowVersion);
 
   const [batchId, error] = await apiClient({
-    endpoint: `business-reports/upload-batch`,
+    endpoint: `../external/business-reports/upload-batch`,
     method: Method.POST,
     schema: z.object({ batchId: z.string() }),
     body: formData,
