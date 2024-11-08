@@ -25,6 +25,7 @@
   "devDependencies": {
     "@ballerine/config": "^1.1.23",
     "@ballerine/eslint-config": "^1.1.23",
+    "@typescript-eslint/eslint-plugin": "^5.52.0",
     "eslint": "^8.46.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-standard-with-typescript": "^37.0.0",

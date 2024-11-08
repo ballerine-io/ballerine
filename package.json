@@ -48,6 +48,8 @@
     "web-ui-sdk:dev": "nx run @ballerine/web-ui-sdk:dev",
     "web-ui-sdk:start": "nx run @ballerine/web-ui-sdk:start",
     "workflows-service:start": "nx run @ballerine/workflows-service:start",
+    "workflows-service:dev": "nx run @ballerine/workflows-service:dev",
+    "workflows-service:prisma-generate": "nx run @ballerine/workflows-service:prisma-generate",
     "websocket-service:start": "nx run @ballerine/websocket-service:start",
     "workflow-browser-sdk:build": "nx run @ballerine/workflow-browser-sdk:build",
     "workflow-browser-sdk:dev": "nx run @ballerine/workflow-browser-sdk:dev",
@@ -93,6 +95,7 @@
   "dependencies": {
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
-    "wait-on": "^7.0.1"
+    "wait-on": "^7.0.1",
+    "nx": "15.0.2"
   }
 }

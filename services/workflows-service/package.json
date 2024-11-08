@@ -30,6 +30,7 @@
     "db:reset:dev:with-data": "npm run db:reset:dev && npm run db:data-migration:migrate && npm run db:data-sync",
     "db:init": "npm run db:migrate-dev -- --name 'initial version' && npm run db:migrate-up seed",
     "prisma:generate": "prisma generate",
+    "prisma-generate": "prisma generate",
     "docker:db": "docker compose -f docker-compose.db.yml up -d --wait",
     "docker:db:down": "docker compose -f docker-compose.db.yml down --volumes",
     "docker:build": "docker build .",
