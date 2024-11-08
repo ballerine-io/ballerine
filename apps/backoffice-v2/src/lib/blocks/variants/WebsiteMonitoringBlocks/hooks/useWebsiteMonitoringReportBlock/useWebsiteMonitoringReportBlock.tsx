@@ -3,12 +3,17 @@ import React, { useMemo } from 'react';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { WebsiteMonitoringBusinessReportTab } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/WebsiteMonitoringBusinessReportTab';
 import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 
 export const useWebsiteMonitoringReportBlock = () => {
   const { data: workflow } = useCurrentCaseQuery();
-  const { data: businessReport } = useBusinessReportByIdQuery({
+  const { data: customer } = useCustomerQuery();
+  const { data: nonContextBusinessReport } = useBusinessReportByIdQuery({
     id: workflow?.context?.pluginsOutput?.merchantMonitoring?.reportId ?? '',
   });
+  const businessReport = customer?.config?.isDemo
+    ? workflow?.context?.pluginsOutput?.merchantMonitoring
+    : nonContextBusinessReport;
 
   const blocks = useMemo(() => {
     if (!businessReport?.data) {
