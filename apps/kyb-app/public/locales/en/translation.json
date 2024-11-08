@@ -19,6 +19,10 @@
     "header": "Thank you!<br /> We’re reviewing your application",
     "content": "We will inform you by email once your account is ready."
   },
+  "failed": {
+    "header": "Submission failed.",
+    "content": "Please contact {{companyName}} for support."
+  },
   "industries": [
     "Adult Entertainment and Products",
     "Aerospace Engineering",

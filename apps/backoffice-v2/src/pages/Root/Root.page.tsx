@@ -2,7 +2,7 @@ import React, { FunctionComponent, lazy, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Providers } from '../../common/components/templates/Providers/Providers';
 import { ServerDownLayout } from './ServerDown.layout';
-import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
 import Chatbot from '@/domains/chat/chatbot-opengpt';
 

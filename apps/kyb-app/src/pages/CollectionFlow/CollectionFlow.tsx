@@ -8,7 +8,10 @@ import { useTheme } from '@/common/providers/ThemeProvider';
 import { AppShell } from '@/components/layouts/AppShell';
 import { PoweredByLogo } from '@/components/molecules/PoweredByLogo';
 import { DynamicUI, State } from '@/components/organisms/DynamicUI';
-import { usePageErrors } from '@/components/organisms/DynamicUI/Page/hooks/usePageErrors';
+import {
+  PageError,
+  usePageErrors,
+} from '@/components/organisms/DynamicUI/Page/hooks/usePageErrors';
 import { UIRenderer } from '@/components/organisms/UIRenderer';
 import { Cell } from '@/components/organisms/UIRenderer/elements/Cell';
 import { Divider } from '@/components/organisms/UIRenderer/elements/Divider';
@@ -25,11 +28,16 @@ import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionPr
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { LoadingScreen } from '@/pages/CollectionFlow/components/atoms/LoadingScreen';
 import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
-import { Failed } from '@/pages/CollectionFlow/components/pages/Failed';
+import { CompletedScreen } from '@/pages/CollectionFlow/components/pages/CompletedScreen';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
-import { Success } from '@/pages/CollectionFlow/components/pages/Success';
+import {
+  CollectionFlowStatusesEnum,
+  getCollectionFlowState,
+  setCollectionFlowStatus,
+  setStepCompletionState,
+} from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
-import set from 'lodash/set';
+import { FailedScreen } from './components/pages/FailedScreen';
 
 const elems = {
   h1: Title,
@@ -51,13 +59,17 @@ const elems = {
   divider: Divider,
 };
 
-const isSuccess = (state: string) => state === 'success' || state === 'finish';
+const isCompleted = (state: string) => state === 'completed' || state === 'finish';
 const isFailed = (state: string) => state === 'failed';
+
+const getRevisionStateName = (pageErrors: PageError[]) => {
+  return pageErrors?.filter(pageError => !!pageError.errors.length)?.[0]?.stateName;
+};
 
 export const CollectionFlow = withSessionProtected(() => {
   const { language } = useLanguageParam();
   const { data: schema } = useUISchemasQuery(language);
-  const { data: contextData } = useFlowContextQuery();
+  const { data: collectionFlowData } = useFlowContextQuery();
   const { customer } = useCustomer();
   const { t } = useTranslation();
   const { themeDefinition } = useTheme();
@@ -65,36 +77,36 @@ export const CollectionFlow = withSessionProtected(() => {
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;
 
-  const pageErrors = usePageErrors(contextData?.context ?? {}, elements || []);
+  const pageErrors = usePageErrors(
+    collectionFlowData?.context ?? ({} as CollectionFlowContext),
+    elements || [],
+  );
   const isRevision = useMemo(
-    () => pageErrors.some(error => error.errors?.some(error => error.type === 'warning')),
-    [pageErrors],
+    () =>
+      getCollectionFlowState(collectionFlowData)?.status === CollectionFlowStatusesEnum.revision,
+    [collectionFlowData],
   );
 
-  const filteredNonEmptyErrors = pageErrors?.filter(pageError => !!pageError.errors.length);
+  const initialContext: CollectionFlowContext = useMemo(() => {
+    const contextCopy = { ...collectionFlowData?.context };
+    const collectionFlow = getCollectionFlowState(contextCopy);
 
-  // @ts-ignore
-  const initialContext: CollectionFlowContext | null = useMemo(() => {
-    const appState =
-      filteredNonEmptyErrors?.[0]?.stateName ||
-      contextData?.context?.flowConfig?.appState ||
-      elements?.at(0)?.stateName;
+    if (isRevision && collectionFlow) {
+      const revisionStateName = getRevisionStateName(pageErrors);
+      collectionFlow.currentStep = revisionStateName || collectionFlow.currentStep;
+      revisionStateName || collectionFlow.currentStep;
+    }
 
-    if (!appState) return null;
-
-    return {
-      ...contextData?.context,
-      flowConfig: {
-        ...contextData?.context?.flowConfig,
-        appState,
-      },
-      state: appState,
-    };
-  }, [contextData, elements, filteredNonEmptyErrors]);
+    return contextCopy as CollectionFlowContext;
+  }, [isRevision, pageErrors]);
 
   const initialUIState = useMemo(() => {
-    return prepareInitialUIState(elements || [], contextData?.context || {}, isRevision);
-  }, [elements, contextData, isRevision]);
+    return prepareInitialUIState(
+      elements || [],
+      (collectionFlowData?.context as CollectionFlowContext) || {},
+      isRevision,
+    );
+  }, [elements, collectionFlowData, isRevision]);
 
   // Breadcrumbs now using scrollIntoView method to make sure that breadcrumb is always in viewport.
   // Due to dynamic dimensions of logo it doesnt work well if scroll happens before logo is loaded.
@@ -108,11 +120,19 @@ export const CollectionFlow = withSessionProtected(() => {
     setLogoLoaded(false);
   }, [customer?.logoImageUri]);
 
-  if (initialContext?.flowConfig?.appState === 'approved') return <Approved />;
+  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.approved)
+    return <Approved />;
 
-  if (initialContext?.flowConfig?.appState == 'rejected') return <Rejected />;
+  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.rejected)
+    return <Rejected />;
 
-  return definition && contextData ? (
+  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.completed)
+    return <CompletedScreen />;
+
+  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.failed)
+    return <FailedScreen />;
+
+  return definition && collectionFlowData ? (
     <DynamicUI initialState={initialUIState}>
       <DynamicUI.StateManager
         initialContext={initialContext}
@@ -120,31 +140,49 @@ export const CollectionFlow = withSessionProtected(() => {
         definitionType={schema?.definition.definitionType}
         extensions={schema?.definition.extensions}
         definition={definition as State}
-        config={contextData?.config}
+        config={collectionFlowData?.config}
       >
         {({ state, stateApi }) => {
           return (
             <DynamicUI.TransitionListener
               pages={elements ?? []}
-              onNext={async (tools, prevState) => {
+              onNext={async (tools, prevState, currentState) => {
                 tools.setElementCompleted(prevState, true);
 
-                set(
-                  stateApi.getContext(),
-                  `flowConfig.stepsProgress.${prevState}.isCompleted`,
-                  true,
-                );
+                const context = stateApi.getContext();
 
-                await stateApi.invokePlugin('sync_workflow_runtime');
+                const collectionFlow = getCollectionFlowState(context);
+
+                if (collectionFlow) {
+                  const steps = collectionFlow?.steps || [];
+
+                  const isAnyStepCompleted = steps.some(step => step.isCompleted);
+
+                  setStepCompletionState(context, {
+                    stepName: prevState,
+                    completed: true,
+                  });
+
+                  collectionFlow.currentStep = currentState;
+
+                  if (!isAnyStepCompleted) {
+                    console.log('Collection flow touched, changing state to inprogress');
+                    setCollectionFlowStatus(context, CollectionFlowStatusesEnum.inprogress);
+                  }
+
+                  stateApi.setContext(context);
+
+                  await stateApi.invokePlugin('sync_workflow_runtime');
+                }
               }}
             >
               {() => {
                 // Temp state, has to be resolved to success or failure by plugins
                 if (state === 'done') return <LoadingScreen />;
 
-                if (isSuccess(state)) return <Success />;
+                if (isCompleted(state)) return <CompletedScreen />;
 
-                if (isFailed(state)) return <Failed />;
+                if (isFailed(state)) return <FailedScreen />;
 
                 return (
                   <DynamicUI.PageResolver state={state} pages={elements ?? []}>
@@ -159,11 +197,11 @@ export const CollectionFlow = withSessionProtected(() => {
                               <AppShell.Sidebar>
                                 <div className="flex h-full flex-col">
                                   <div className="flex h-full flex-1 flex-col">
-                                    <div className="flex flex-row justify-between gap-2 whitespace-nowrap pb-10">
-                                      <AppShell.Navigation />
-                                      <div>
+                                    <div className="flex flex-col gap-8 pb-10">
+                                      <div className="flex justify-start">
                                         <AppShell.LanguagePicker />
                                       </div>
+                                      <AppShell.Navigation />
                                     </div>
                                     <div className="pb-10">
                                       {customer?.logoImageUri && (
@@ -181,7 +219,7 @@ export const CollectionFlow = withSessionProtected(() => {
                                     </div>
                                     <div>
                                       {customer?.displayName && (
-                                        <div className="border-b pb-12">
+                                        <div>
                                           {
                                             t('contact', {
                                               companyName: customer.displayName,
@@ -189,8 +227,12 @@ export const CollectionFlow = withSessionProtected(() => {
                                           }
                                         </div>
                                       )}
-                                      {/* <img src={'/poweredby.svg'} className="mt-6" /> */}
-                                      <PoweredByLogo className="mt-8" sidebarRootId="sidebar" />
+                                      {themeDefinition.ui?.poweredBy !== false && (
+                                        <div className="flex flex-col">
+                                          <div className="border-b pb-12" />
+                                          <PoweredByLogo className="mt-8" sidebarRootId="sidebar" />
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
                                 </div>

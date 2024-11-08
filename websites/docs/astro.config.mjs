@@ -113,6 +113,10 @@ export default defineConfig({
                   label: 'Implementing in an iFrame',
                   link: '/en/collection-flow/iframe',
                 },
+                {
+                  label: 'Observability',
+                  link: '/en/collection-flow/collection-flow-observability',
+                },
               ],
             },
             {

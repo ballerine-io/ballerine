@@ -3,7 +3,7 @@ import { AlertRepository } from '@/alert/alert.repository';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { TIME_UNITS } from '@/data-analytics/consts';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
-import { CheckRiskScoreOptions, InlineRule } from '@/data-analytics/types';
+import { InlineRule } from '@/data-analytics/types';
 import * as errors from '@/errors';
 import { PrismaService } from '@/prisma/prisma.service';
 import { isFkConstraintError } from '@/prisma/prisma.util';
@@ -15,7 +15,6 @@ import {
   AlertSeverity,
   AlertState,
   AlertStatus,
-  BusinessReport,
   MonitoringType,
 } from '@prisma/client';
 import _ from 'lodash';
@@ -82,6 +81,7 @@ export class AlertService {
     return await this.alertRepository.updateMany(alertIds, projectId, {
       data: {
         state: decision,
+        decisionAt: new Date(),
         status: this.getStatusFromState(decision),
       },
     });
@@ -96,6 +96,7 @@ export class AlertService {
       return await this.alertRepository.updateMany(alertIds, projectId, {
         data: {
           assigneeId: assigneeId,
+          assignedAt: new Date(),
         },
       });
     } catch (error) {
@@ -185,54 +186,62 @@ export class AlertService {
     }
   }
 
-  async checkOngoingMonitoringAlert(businessReport: BusinessReport, businessCompanyName: string) {
-    const alertDefinitions = await this.alertDefinitionRepository.findMany(
-      {
-        where: {
-          enabled: true,
-          monitoringType: MonitoringType.ongoing_merchant_monitoring,
-        },
-      },
-      [businessReport.projectId],
-    );
-
-    const alertDefinitionsCheck = alertDefinitions.map(async alertDefinition => {
-      const alertResultData = await this.dataAnalyticsService.checkMerchantOngoingAlert(
-        businessReport,
-        (alertDefinition.inlineRule as InlineRule).options as CheckRiskScoreOptions,
-        alertDefinition.defaultSeverity,
-      );
-
-      if (alertResultData) {
-        const { id: businessReportId, businessId, projectId } = businessReport;
-        const subjects = { businessId, projectId };
-
-        const subjectArray = Object.entries(subjects).map(([key, value]) => ({
-          [key]: value,
-        }));
-
-        const createAlertReference = this.createAlert;
-
-        return [
-          alertDefinition,
-          subjectArray,
-          { subjectArray },
-          {
-            ...alertResultData,
-            businessReportId,
-            businessCompanyName,
-          },
-        ] satisfies Parameters<typeof createAlertReference>;
-      }
-    });
-
-    const evaluatedRulesResults = (await Promise.all(alertDefinitionsCheck)).filter(Boolean);
-
-    const alertArgs = evaluatedRulesResults[0];
-
-    if (alertArgs) {
-      return await this.createAlert(...alertArgs);
-    }
+  async checkOngoingMonitoringAlert({
+    businessId,
+    projectId,
+    businessCompanyName,
+  }: {
+    businessId: string;
+    projectId: string;
+    businessCompanyName: string;
+  }) {
+    // const alertDefinitions = await this.alertDefinitionRepository.findMany(
+    //   {
+    //     where: {
+    //       enabled: true,
+    //       monitoringType: MonitoringType.ongoing_merchant_monitoring,
+    //     },
+    //   },
+    //   [projectId],
+    // );
+    //
+    // const alertDefinitionsCheck = alertDefinitions.map(async alertDefinition => {
+    //   const alertResultData = await this.dataAnalyticsService.checkMerchantOngoingAlert(
+    //     {
+    //       // @TODO: Fill in the correct values
+    //     },
+    //     (alertDefinition.inlineRule as InlineRule).options as CheckRiskScoreOptions,
+    //     alertDefinition.defaultSeverity,
+    //   );
+    //
+    //   if (alertResultData) {
+    //     const subjects = { businessId, projectId };
+    //
+    //     const subjectArray = Object.entries(subjects).map(([key, value]) => ({
+    //       [key]: value,
+    //     }));
+    //
+    //     const createAlertReference = this.createAlert;
+    //
+    //     return [
+    //       alertDefinition,
+    //       subjectArray,
+    //       { subjectArray },
+    //       {
+    //         ...alertResultData,
+    //         businessCompanyName,
+    //       },
+    //     ] satisfies Parameters<typeof createAlertReference>;
+    //   }
+    // });
+    //
+    // const evaluatedRulesResults = (await Promise.all(alertDefinitionsCheck)).filter(Boolean);
+    //
+    // const alertArgs = evaluatedRulesResults[0];
+    //
+    // if (alertArgs) {
+    //   return await this.createAlert(...alertArgs);
+    // }
   }
 
   private async checkAlert(alertDefinition: AlertDefinition, ...args: any[]) {
@@ -300,7 +309,7 @@ export class AlertService {
             });
           }
         } catch (error) {
-          console.error(error);
+          this.logger.error('Failed to check alert', { error });
 
           return alertResponse.rejected.push({
             status: AlertExecutionStatus.FAILED,
@@ -382,7 +391,7 @@ export class AlertService {
     if (existingAlert.status !== AlertStatus.completed) {
       await this.alertRepository.updateById(existingAlert.id, {
         data: {
-          updatedAt: new Date(),
+          dedupedAt: new Date(),
         },
       });
 
@@ -473,7 +482,7 @@ export class AlertService {
       startDate: undefined,
     };
 
-    const endDate = alert.updatedAt || alert.createdAt;
+    const endDate = alert.dedupedAt || alert.createdAt;
     endDate.setHours(23, 59, 59, 999);
     filters.endDate = endDate;
 

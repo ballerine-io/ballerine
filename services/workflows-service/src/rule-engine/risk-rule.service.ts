@@ -25,7 +25,7 @@ const NotionRiskRuleRecordSchema = z
       .pipe(RuleSetSchema),
     Domain: z.string().min(1),
     Indicator: z.string().min(1),
-    'Risk level': z.enum(['positive', 'moderate', 'critical']),
+    'Risk level': z.enum(['positive', 'moderate', 'high', 'critical']),
     'Base risk score': z.number().min(0).max(100),
     'Additional risk score': z.number().min(0).max(100),
     'Min risk score': z.number().min(0).max(100),

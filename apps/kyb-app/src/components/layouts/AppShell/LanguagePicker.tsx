@@ -34,27 +34,29 @@ export const LanguagePicker = () => {
   }
 
   return (
-    <DropdownInput
-      value={language}
-      name="languagePicker"
-      options={supportedLanguages}
-      props={{
-        item: { variant: 'inverted' },
-        content: { className: 'w-[204px] p-1', align: 'start' },
-        trigger: {
-          icon: (
-            <span className="text-primary-foreground">
-              <GlobeIcon />
-            </span>
-          ),
-          className: 'px-3 gap-x-2 bg-primary text-primary-foreground',
-        },
-      }}
-      onChange={selectedLanguage => {
-        updateLanguage(selectedLanguage);
-        i18next.changeLanguage(selectedLanguage);
-        setLanguage(selectedLanguage);
-      }}
-    />
+    <div>
+      <DropdownInput
+        value={language}
+        name="languagePicker"
+        options={supportedLanguages}
+        props={{
+          item: { variant: 'inverted' },
+          content: { className: 'w-[204px] p-1', align: 'start' },
+          trigger: {
+            icon: (
+              <span className="text-primary-foreground">
+                <GlobeIcon />
+              </span>
+            ),
+            className: 'px-3 gap-x-2 bg-primary text-primary-foreground',
+          },
+        }}
+        onChange={selectedLanguage => {
+          updateLanguage(selectedLanguage);
+          i18next.changeLanguage(selectedLanguage);
+          setLanguage(selectedLanguage);
+        }}
+      />
+    </div>
   );
 };

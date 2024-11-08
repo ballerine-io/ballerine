@@ -34,13 +34,13 @@ import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-defi
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { BusinessService } from '@/business/business.service';
-import { BusinessReportRepository } from '@/business-report/business-report.repository';
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { NotionService } from '@/notion/notion.service';
 import { RuleEngineService } from '@/rule-engine/rule-engine.service';
 import { RiskRuleService } from '@/rule-engine/risk-rule.service';
 import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
+import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
 
 describe('/api/v1/internal/workflows #api #integration', () => {
   let app: INestApplication;
@@ -68,7 +68,6 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       StorageService,
       WorkflowEventEmitterService,
       BusinessRepository,
-      BusinessReportRepository,
       BusinessReportService,
       BusinessService,
       WorkflowDefinitionRepository,
@@ -92,6 +91,7 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       NotionService,
       SentryService,
       SecretsManagerFactory,
+      MerchantMonitoringClient,
     ];
     workflowService = (await fetchServiceFromModule(WorkflowService, servicesProviders, [
       PrismaModule,

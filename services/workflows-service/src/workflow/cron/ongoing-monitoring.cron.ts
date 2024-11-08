@@ -5,14 +5,18 @@ import { CustomerService } from '@/customer/customer.service';
 import { FEATURE_LIST, TCustomerFeaturesConfig } from '@/customer/types';
 import { env } from '@/env';
 import { PrismaService } from '@/prisma/prisma.service';
-import { TProjectIds } from '@/types';
 import { ONGOING_MONITORING_LOCK_KEY } from '@/workflow/cron/lock-keys';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { isErrorWithMessage, ObjectValues } from '@ballerine/common';
+import { isErrorWithMessage } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { Business, BusinessReportStatus, BusinessReportType } from '@prisma/client';
+import { Business } from '@prisma/client';
 import get from 'lodash/get';
+import {
+  MERCHANT_REPORT_STATUSES_MAP,
+  MerchantReportType,
+  MerchantReportVersion,
+} from '@/business-report/constants';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
@@ -30,7 +34,7 @@ export class OngoingMonitoringCron {
     protected readonly businessReportService: BusinessReportService,
   ) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_HOUR)
   async handleCron() {
     this.logger.log('Ongoing monitoring cron started');
 
@@ -77,17 +81,19 @@ export class OngoingMonitoringCron {
                 continue;
               }
 
-              const lastReceivedReport = await this.findLastBusinessReport(business, projectIds);
+              const lastReceivedReport = await this.businessReportService.findLatest({
+                businessId: business.id,
+                customerId: customerId,
+              });
 
-              if (!lastReceivedReport?.reportId) {
+              if (!lastReceivedReport) {
                 this.logger.log(
                   `No initial report found for business ${business.companyName} (id: ${business.id})`,
                 );
-
                 continue;
               }
 
-              if (lastReceivedReport.status !== BusinessReportStatus.completed) {
+              if (lastReceivedReport.status !== MERCHANT_REPORT_STATUSES_MAP.completed) {
                 this.logger.log(
                   `Last report for business ${business.companyName} (id: ${business.id}) was not completed`,
                 );
@@ -123,7 +129,7 @@ export class OngoingMonitoringCron {
 
               await this.invokeOngoingMerchantReport({
                 currentProjectId: business.projectId,
-                lastReportId: lastReceivedReport.reportId,
+                lastReportId: lastReceivedReport.id,
                 workflowVersion: options.workflowVersion ?? '2',
                 reportType: options.reportType ?? 'ONGOING_MERCHANT_REPORT_T1',
                 business: business as Business & {
@@ -153,27 +159,6 @@ export class OngoingMonitoringCron {
     });
   }
 
-  private async findLastBusinessReport(business: Business, projectIds: TProjectIds) {
-    const businessReports = await this.businessReportService.findMany(
-      {
-        where: {
-          businessId: business.id,
-          projectId: business.projectId,
-          type: {
-            in: ['ONGOING_MERCHANT_REPORT_T1', 'MERCHANT_REPORT_T1'],
-          },
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-        take: 1,
-      },
-      projectIds,
-    );
-
-    return businessReports[0];
-  }
-
   private async invokeOngoingMerchantReport({
     business,
     reportType,
@@ -183,33 +168,24 @@ export class OngoingMonitoringCron {
   }: {
     lastReportId: string;
     currentProjectId: string;
-    workflowVersion: '1' | '2' | '3';
-    reportType: ObjectValues<typeof BusinessReportType>;
+    workflowVersion: MerchantReportVersion;
+    reportType: MerchantReportType;
     business: Business & { metadata?: { featureConfig?: Record<string, TCustomerFeaturesConfig> } };
   }) {
-    const {
-      id: customerId,
-      displayName: customerName,
-      config,
-    } = await this.customerService.getByProjectId(currentProjectId);
+    const { id: customerId, config } = await this.customerService.getByProjectId(currentProjectId);
 
     const { maxBusinessReports, withQualityControl } = config || {};
-    await this.businessReportService.checkBusinessReportsLimit(
-      maxBusinessReports,
-      currentProjectId,
-    );
+    await this.businessReportService.checkBusinessReportsLimit(maxBusinessReports, customerId);
 
     await this.businessReportService.createBusinessReportAndTriggerReportCreation({
       reportType,
       business,
-      currentProjectId,
       websiteUrl: this.getWebsiteUrl(business),
       merchantName: business.companyName,
       compareToReportId: lastReportId,
       workflowVersion,
       withQualityControl,
       customerId,
-      customerName,
     });
 
     await this.businessService.updateById(business.id, {

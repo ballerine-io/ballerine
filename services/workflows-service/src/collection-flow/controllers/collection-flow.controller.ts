@@ -6,18 +6,22 @@ import { UpdateFlowDto, UpdateFlowLanguageDto } from '@/collection-flow/dto/upda
 import { UnsupportedFlowTypeException } from '@/collection-flow/exceptions/unsupported-flow-type.exception';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { type ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { WorkflowService } from '@/workflow/workflow.service';
+import { CollectionFlowStatusesEnum, getCollectionFlowState } from '@ballerine/common';
 import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import * as common from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
+import { CollectionFlowMissingException } from '../exceptions/collection-flow-missing.exception';
 
 @UseTokenAuthGuard()
 @ApiExcludeController()
 @common.Controller('collection-flow')
-export class ColectionFlowController {
+export class CollectionFlowController {
   constructor(
+    protected readonly appLogger: AppLoggerService,
     protected readonly service: CollectionFlowService,
     protected readonly adapterManager: WorkflowAdapterManager,
     protected readonly workflowService: WorkflowService,
@@ -60,11 +64,7 @@ export class ColectionFlowController {
 
   @common.Get('/context')
   async getContext(@TokenScope() tokenScope: ITokenScope) {
-    return await this.workflowService.getWorkflowRuntimeDataById(
-      tokenScope.workflowRuntimeDataId,
-      { select: { context: true, state: true, config: true } },
-      [tokenScope.projectId],
-    );
+    return this.service.getCollectionFlowContext(tokenScope);
   }
 
   @common.Get('/configuration/:language')
@@ -88,21 +88,6 @@ export class ColectionFlowController {
       workflow.uiDefinitionId ? { where: { id: workflow.uiDefinitionId } } : {},
     );
   }
-
-  // @common.Put('/configuration/:configurationId')
-  // async updateFlowConfiguration(
-  //   @common.Param('configurationId') configurationId: string,
-  //   @common.Body() dto: UpdateConfigurationDto,
-  //   @ProjectIds() projectIds: TProjectIds,
-  //   @CurrentProject() currentProjectId: TProjectId,
-  // ) {
-  //   return this.service.updateFlowConfiguration(
-  //     configurationId,
-  //     dto.steps,
-  //     projectIds,
-  //     currentProjectId,
-  //   );
-  // }
 
   @common.Put('/language')
   async updateFlowLanguage(
@@ -146,6 +131,78 @@ export class ColectionFlowController {
       [tokenScope.projectId],
       tokenScope.projectId,
     );
+  }
+
+  @common.Post('/final-submission')
+  async finalSubmission(@TokenScope() tokenScope: ITokenScope, @common.Body() body: FinishFlowDto) {
+    try {
+      const event = await this.workflowService.event(
+        {
+          id: tokenScope.workflowRuntimeDataId,
+          name: body.eventName,
+        },
+        [tokenScope.projectId],
+        tokenScope.projectId,
+      );
+
+      const collectionFlowState = getCollectionFlowState(event.context);
+
+      if (!collectionFlowState) {
+        throw new CollectionFlowMissingException();
+      }
+
+      collectionFlowState.status = CollectionFlowStatusesEnum.completed;
+
+      return await this.workflowService.event(
+        {
+          id: tokenScope.workflowRuntimeDataId,
+          name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+          payload: {
+            newContext: {
+              collectionFlow: {
+                state: collectionFlowState,
+              },
+            },
+            arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
+          },
+        },
+        [tokenScope.projectId],
+        tokenScope.projectId,
+      );
+    } catch (error) {
+      if (error instanceof CollectionFlowMissingException) {
+        throw error;
+      }
+
+      try {
+        await this.workflowService.event(
+          {
+            id: tokenScope.workflowRuntimeDataId,
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+            payload: {
+              newContext: {
+                collectionFlow: {
+                  state: {
+                    status: CollectionFlowStatusesEnum.failed,
+                  },
+                },
+              },
+              arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
+            },
+          },
+          [tokenScope.projectId],
+          tokenScope.projectId,
+        );
+      } catch (error) {
+        this.appLogger.error(error);
+        throw new common.InternalServerErrorException(
+          'Failed to set collection flow state as failed.',
+        );
+      }
+
+      this.appLogger.error(error);
+      throw new common.InternalServerErrorException('Failed to update collection flow state.');
+    }
   }
 
   @common.Post('resubmit')

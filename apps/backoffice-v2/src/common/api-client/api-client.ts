@@ -18,6 +18,7 @@ export const apiClient: IApiClient = async ({ endpoint, method, options, schema,
       url: `${env.VITE_API_URL}/${endpoint}`,
       method,
       options: {
+        timeout: 20_000,
         ...options,
         credentials: 'include',
       },

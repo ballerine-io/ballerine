@@ -5,7 +5,7 @@ import { useMerchantMonitoringTableLogic } from '@/pages/MerchantMonitoring/comp
 import { UrlDataTable } from '@/common/components/organisms/UrlDataTable/UrlDataTable';
 
 export const MerchantMonitoringTable: FunctionComponent<{
-  data: TBusinessReports['businessReports'];
+  data: TBusinessReports['data'];
 }> = ({ data }) => {
   const { Cell } = useMerchantMonitoringTableLogic();
 
@@ -15,7 +15,7 @@ export const MerchantMonitoringTable: FunctionComponent<{
       columns={columns}
       CellContentWrapper={Cell}
       options={{
-        enableSorting: true,
+        enableSorting: false,
         initialState: {
           sorting: [{ id: 'createdAt', desc: true }],
         },
