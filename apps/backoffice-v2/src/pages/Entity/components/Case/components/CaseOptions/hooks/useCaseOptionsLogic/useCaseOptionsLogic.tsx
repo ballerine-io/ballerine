@@ -1,7 +1,7 @@
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { useGeneratePDFMutation } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/mutations/useGeneratePDFMutation/useGeneratePDFMutation';
-import { useCopyCollectionFlowLinkMutation } from './mutations/CopyingCollectionFlowLinkMutation';
+import { useCopyCollectionFlowLinkMutation } from './mutations/useCopyCollectionFlowLinkMutation/useCopyCollectionFlowLinkMutation';
 
 export const useCaseOptionsLogic = () => {
   const { data: workflow } = useCurrentCaseQuery();
