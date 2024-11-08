@@ -39,8 +39,8 @@ export const MonitoringReportsTabs = [
 
 export const CaseTabs = [
   'summary',
-  'companyInformation',
-  'storeInfo',
+  'company',
+  'store',
   'documents',
   'ubos',
   'associatedCompanies',
