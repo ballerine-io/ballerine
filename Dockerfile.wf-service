@@ -23,7 +23,7 @@ RUN NODE_OPTIONS=--max-old-space-size=8192 pnpm nx run-many --target=build --pro
 
 CMD [ "dumb-init", "pnpm", "run", "workflows-service:dev", "--host" ]
 
-FROM node:18.17.1-bullseye-slim as prod
+FROM node:18.17.1-bullseye-slim AS prod
 
 ARG RELEASE
 ENV RELEASE=${RELEASE:-unknown}
