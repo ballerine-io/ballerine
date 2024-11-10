@@ -78,5 +78,6 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     workflow,
     workflowDefinition: workflow?.workflowDefinition,
     isWorkflowCompleted,
+    avatarUrl: workflow?.entity?.avatarUrl || '',
   };
 };

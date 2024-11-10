@@ -5,8 +5,8 @@ import { WorkflowDefinitionConfigThemeEnum } from '@ballerine/common';
 
 export const Tab = {
   SUMMARY: 'SUMMARY',
-  COMPANY: 'COMPANY',
-  STORE: 'STORE',
+  COMPANY_INFORMATION: 'COMPANY_INFORMATION',
+  STORE_INFO: 'STORE_INFO',
   DOCUMENTS: 'DOCUMENTS',
   UBOS: 'UBOS',
   ASSOCIATED_COMPANIES: 'ASSOCIATED_COMPANIES',
@@ -28,14 +28,14 @@ export const getVariantTabs = (
         disabled: !tabBlocks[Tab.SUMMARY]?.length,
       },
       {
-        name: Tab.COMPANY,
+        name: Tab.COMPANY_INFORMATION,
         displayName: 'Company',
-        disabled: !tabBlocks[Tab.COMPANY]?.length,
+        disabled: !tabBlocks[Tab.COMPANY_INFORMATION]?.length,
       },
       {
-        name: Tab.STORE,
+        name: Tab.STORE_INFO,
         displayName: 'Store',
-        disabled: !tabBlocks[Tab.STORE]?.length,
+        disabled: !tabBlocks[Tab.STORE_INFO]?.length,
       },
       {
         name: Tab.DOCUMENTS,
