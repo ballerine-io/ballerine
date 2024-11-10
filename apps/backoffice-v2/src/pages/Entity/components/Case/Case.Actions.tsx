@@ -29,7 +29,6 @@ import { createInitials } from '@/common/utils/create-initials/create-initials';
 export const Actions: FunctionComponent<IActionsProps> = ({
   id,
   fullName,
-  workflow,
   numberOfNotes,
   showResolutionButtons,
 }) => {
@@ -42,6 +41,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     onMutateAssignWorkflow,
     workflowDefinition,
     isWorkflowCompleted,
+    avatarUrl,
   } = useCaseActionsLogic({ workflowId: id, fullName });
 
   const entityInitials = createInitials(fullName);
@@ -65,7 +65,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
         <div className={`flex flex-col space-y-3`}>
           <div className={`flex space-x-4`}>
             <Avatar
-              src={workflow?.entity?.avatarUrl || ''}
+              src={avatarUrl}
               className="text-base font-semibold d-8"
               alt={`${fullName}'s avatar`}
               placeholder={entityInitials}

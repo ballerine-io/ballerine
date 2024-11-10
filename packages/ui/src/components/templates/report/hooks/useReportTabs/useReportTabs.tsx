@@ -1,6 +1,7 @@
-import React, { ComponentProps, ReactNode, useMemo } from 'react';
-import { Writable } from 'type-fest';
 import { Crown } from 'lucide-react';
+import { Writable } from 'type-fest';
+import React, { ComponentProps, ReactNode, useMemo } from 'react';
+
 import {
   BusinessReportSummary,
   WebsitesCompany,
@@ -196,6 +197,7 @@ export const useReportTabs = ({
       formattedMcc,
       homepageScreenshotUrl,
       lineOfBusinessDescription,
+      ongoingMonitoringSummary,
       onlineReputationAnalysis,
       pricingAnalysis,
       relatedAdsImages,

@@ -2,7 +2,7 @@ import { useLocation } from 'react-router-dom';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
 import React, { useCallback } from 'react';
-import { CaseTabs } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
+import { CaseTabs, TabToLabel } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 import { camelCase, titleCase } from 'string-ts';
 import { OverallRiskLevel } from '@/common/components/molecules/OverallRiskLevel/OverallRiskLevel';
 import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
@@ -32,7 +32,7 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
     const isValidCaseTab = CaseTabs.includes(tab);
 
     return {
-      title: titleCase(domain ?? ''),
+      title: TabToLabel[tab as keyof typeof TabToLabel] ?? titleCase(domain ?? ''),
       search: isValidCaseTab
         ? getUpdatedSearchParamsWithActiveTab({
             tab: tab,

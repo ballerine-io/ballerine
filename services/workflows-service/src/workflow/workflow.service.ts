@@ -567,8 +567,6 @@ export class WorkflowService {
     return workflows.map(workflow => {
       const isIndividual = 'endUser' in workflow;
 
-      const businessWebsiteUrl = !isIndividual && getAvatarUrl(workflow?.business?.website);
-
       return {
         id: workflow?.id,
         status: workflow?.status,
@@ -578,7 +576,9 @@ export class WorkflowService {
           name: isIndividual
             ? `${String(workflow?.endUser?.firstName)} ${String(workflow?.endUser?.lastName)}`
             : workflow?.business?.companyName,
-          avatarUrl: isIndividual ? workflow?.endUser?.avatarUrl : businessWebsiteUrl,
+          avatarUrl: isIndividual
+            ? workflow?.endUser?.avatarUrl
+            : getAvatarUrl(workflow?.business?.website),
           approvalState: isIndividual
             ? workflow?.endUser?.approvalState
             : workflow?.business?.approvalState,
