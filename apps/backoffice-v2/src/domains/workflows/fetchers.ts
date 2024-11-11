@@ -68,6 +68,12 @@ export const BaseWorkflowByIdSchema = z.object({
       vendor: z.string().optional(),
     }).optional(),
     documents: z.array(z.any()).default([]),
+    metadata: z
+      .object({
+        collectionFlowUrl: z.string().url().optional(),
+        token: z.string().optional(),
+      })
+      .optional(),
     entity: z.record(z.any(), z.any()),
     parentMachine: ObjectWithIdSchema.extend({
       status: z.union([z.literal('active'), z.literal('failed'), z.literal('completed')]),

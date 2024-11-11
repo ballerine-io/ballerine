@@ -128,6 +128,11 @@ const COLLECTION_FLOW_EVENTS_WHITELIST: readonly CollectionFlowEvent[] = [
   'revision',
 ] as const;
 
+const getAvatarUrl = (website: string | undefined | null) =>
+  website
+    ? `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${website}&size=40`
+    : null;
+
 @Injectable()
 export class WorkflowService {
   constructor(
@@ -281,8 +286,8 @@ export class WorkflowService {
         return {
           id: workflow?.business?.id,
           name: workflow?.business?.companyName,
-          avatarUrl: null,
           approvalState: workflow?.business?.approvalState,
+          avatarUrl: getAvatarUrl(workflow?.business?.website),
         };
       }
 
@@ -571,7 +576,9 @@ export class WorkflowService {
           name: isIndividual
             ? `${String(workflow?.endUser?.firstName)} ${String(workflow?.endUser?.lastName)}`
             : workflow?.business?.companyName,
-          avatarUrl: isIndividual ? workflow?.endUser?.avatarUrl : null,
+          avatarUrl: isIndividual
+            ? workflow?.endUser?.avatarUrl
+            : getAvatarUrl(workflow?.business?.website),
           approvalState: isIndividual
             ? workflow?.endUser?.approvalState
             : workflow?.business?.approvalState,
@@ -2138,6 +2145,25 @@ export class WorkflowService {
           sendEvent: e => service.sendEvent(e),
           payload: typedPayload,
         });
+      });
+
+      service.subscribe('PERSIST_WEBSITE', async ({ payload = {} }) => {
+        if (!payload.website) {
+          return;
+        }
+
+        const typedPayload = payload as {
+          website: string;
+        };
+
+        await this.businessService.updateById(
+          workflowRuntimeData.context.entity.ballerineEntityId,
+          {
+            data: {
+              website: typedPayload.website,
+            },
+          },
+        );
       });
 
       if (!service.getSnapshot().nextEvents.includes(type)) {

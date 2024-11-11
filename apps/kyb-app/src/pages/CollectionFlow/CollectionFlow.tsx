@@ -229,7 +229,7 @@ export const CollectionFlow = withSessionProtected(() => {
                                       )}
                                       {themeDefinition.ui?.poweredBy !== false && (
                                         <div className="flex flex-col">
-                                          <div className="pb-12 border-b" />
+                                          <div className="border-b pb-12" />
                                           <PoweredByLogo className="mt-8" sidebarRootId="sidebar" />
                                         </div>
                                       )}

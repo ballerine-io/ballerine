@@ -1,6 +1,5 @@
 import { ComponentProps } from 'react';
 
-import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { TStateTags } from '@ballerine/common';
 import { TAssignee } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
 import { Actions } from './Case.Actions';
@@ -28,7 +27,6 @@ export interface IActionsProps {
   id: string;
   fullName: string;
   numberOfNotes: number;
-  workflow: TWorkflowById;
   showResolutionButtons?: boolean;
 }
 

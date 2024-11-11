@@ -1,5 +1,5 @@
 import { Badge } from '@ballerine/ui';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useMemo } from 'react';
 import { StateTag } from '@ballerine/common';
 
 import { tagToBadgeData } from './consts';
@@ -10,6 +10,9 @@ import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsL
 import { AssignDropdown } from '@/common/components/atoms/AssignDropdown/AssignDropdown';
 import { CaseOptions } from '@/pages/Entity/components/Case/components/CaseOptions/CaseOptions';
 import { ActionsVariant } from '@/pages/Entity/components/Case/actions-variants/ActionsVariant/ActionsVariant';
+import { Avatar } from '@/common/components/atoms/Avatar';
+import { stringToRGB } from '@/common/utils/string-to-rgb/string-to-rgb';
+import { createInitials } from '@/common/utils/create-initials/create-initials';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
@@ -38,7 +41,11 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     onMutateAssignWorkflow,
     workflowDefinition,
     isWorkflowCompleted,
+    avatarUrl,
   } = useCaseActionsLogic({ workflowId: id, fullName });
+
+  const entityInitials = createInitials(fullName);
+  const rgb = useMemo(() => stringToRGB(fullName), [fullName]);
 
   return (
     <div className={`col-span-2 space-y-2 bg-base-100 px-4 pt-4`}>
@@ -56,14 +63,26 @@ export const Actions: FunctionComponent<IActionsProps> = ({
       </div>
       <div className={`min-h-20 flex justify-between gap-4`}>
         <div className={`flex flex-col space-y-3`}>
-          <h2
-            className={ctw(`w-full max-w-[35ch] break-all text-4xl font-semibold leading-9`, {
-              'h-8 w-full max-w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
-                isLoadingCase,
-            })}
-          >
-            {fullName}
-          </h2>
+          <div className={`flex space-x-4`}>
+            <Avatar
+              src={avatarUrl}
+              className="text-base font-semibold d-8"
+              alt={`${fullName}'s avatar`}
+              placeholder={entityInitials}
+              style={{
+                color: `rgb(${rgb})`,
+                backgroundColor: `rgba(${rgb}, 0.2)`,
+              }}
+            />
+            <h2
+              className={ctw(`w-full max-w-[35ch] break-all text-2xl font-semibold leading-9`, {
+                'h-8 w-full max-w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
+                  isLoadingCase,
+              })}
+            >
+              {fullName}
+            </h2>
+          </div>
           <div className={`flex items-center space-x-6`}>
             {tag && (
               <div className={`flex space-x-2`}>

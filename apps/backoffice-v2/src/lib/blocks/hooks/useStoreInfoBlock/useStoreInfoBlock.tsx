@@ -16,7 +16,7 @@ export const useStoreInfoBlock = ({ storeInfo, workflow }) => {
           .addBlock()
           .addCell({
             type: 'heading',
-            value: 'Store Info',
+            value: 'Store',
           })
           .addCell({
             type: 'subheading',
