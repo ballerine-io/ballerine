@@ -29,7 +29,8 @@ export class WorkflowTokenService {
   async updateByToken(
     token: string,
     data: Parameters<typeof this.workflowTokenRepository.updateByToken>[1],
+    transaction?: PrismaTransaction,
   ) {
-    return await this.workflowTokenRepository.updateByToken(token, data);
+    return await this.workflowTokenRepository.updateByToken(token, data, transaction);
   }
 }

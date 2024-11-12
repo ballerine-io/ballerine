@@ -1,15 +1,11 @@
 import type { Request } from 'express';
-import { ClsService } from 'nestjs-cls';
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 
 @Injectable()
 export class TokenWithoutEnduserAuthGuard implements CanActivate {
-  constructor(
-    protected readonly tokenService: WorkflowTokenService,
-    private readonly cls: ClsService,
-  ) {}
+  constructor(protected readonly tokenService: WorkflowTokenService) {}
 
   async canActivate(context: ExecutionContext) {
     const req = context.switchToHttp().getRequest<Request>();

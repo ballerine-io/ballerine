@@ -1,11 +1,11 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import type { PrismaTransaction, TProjectId } from '@/types';
 import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
 export class WorkflowTokenRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async create(
     projectId: TProjectId,
@@ -13,7 +13,7 @@ export class WorkflowTokenRepository {
       Prisma.WorkflowRuntimeDataTokenUncheckedCreateInput,
       'workflowRuntimeDataId' | 'endUserId' | 'expiresAt'
     >,
-    transaction: PrismaTransaction | PrismaService = this.prisma,
+    transaction: PrismaTransaction | PrismaService = this.prismaService,
   ) {
     return await transaction.workflowRuntimeDataToken.create({
       data: {
@@ -24,7 +24,7 @@ export class WorkflowTokenRepository {
   }
 
   async findByTokenUnscoped(token: string) {
-    return await this.prisma.workflowRuntimeDataToken.findFirst({
+    return await this.prismaService.workflowRuntimeDataToken.findFirst({
       where: {
         token,
         AND: [{ expiresAt: { gt: new Date() } }, { deletedAt: null }],
@@ -33,7 +33,7 @@ export class WorkflowTokenRepository {
   }
 
   async findByTokenWithExpiredUnscoped(token: string) {
-    return await this.prisma.workflowRuntimeDataToken.findFirst({
+    return await this.prismaService.workflowRuntimeDataToken.findFirst({
       where: {
         token,
         deletedAt: null,
@@ -42,7 +42,7 @@ export class WorkflowTokenRepository {
   }
 
   async deleteByTokenUnscoped(token: string) {
-    return await this.prisma.workflowRuntimeDataToken.updateMany({
+    return await this.prismaService.workflowRuntimeDataToken.updateMany({
       data: {
         deletedAt: new Date(),
       },
@@ -56,8 +56,9 @@ export class WorkflowTokenRepository {
   async updateByToken(
     token: string,
     data: Partial<Prisma.WorkflowRuntimeDataTokenUncheckedCreateInput>,
+    transaction: PrismaTransaction | PrismaClient = this.prismaService,
   ) {
-    return await this.prisma.workflowRuntimeDataToken.update({
+    return await transaction.workflowRuntimeDataToken.update({
       where: {
         token,
       },
