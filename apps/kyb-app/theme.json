@@ -63,6 +63,31 @@
           }
         }
       }
+    },
+    "signup": {
+      "companyLogo": {
+        "imageSrc": "https://cdn.ballerine.io/images/axs_logo_l.png",
+        "styles": {
+          "width": "174px",
+          "height": "43px",
+          "marginBottom": "44px"
+        }
+      },
+      "header": {
+        "headingText": "Welcome to AXS",
+        "subheadingText": "Create your account to get started"
+      },
+      "form": {
+        "containerStyles": {
+          "maxWidth": "384px"
+        }
+      },
+      "background": {
+        "imageSrc": "https://s3-alpha-sig.figma.com/img/9dc9/1a86/78c753970c896435a28cbeba03a6762a?Expires=1732492800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=bt0Z1-OXhoqygak-IA0W5DIzCfaYPQrelBKXJ5adqozHCrzJC0Uk4q2bVHrzivXuKTBNNRZqdpugkk7O3O86f3wM-5rANcpd0Xr1L5MWJNPRVv5Puydx3eeHKq5~iZ9MDvehWcBgvZz4a~ahjuhjwhN6ACw1cME8XMaEkSA1ji0t5yaktNJTGxlFaytd6R-Rjg-mWNPnizIaBfpiXAOH41hEwgG2Oi2HXeW-sJZIlAMvP~M6Pocg~LFrOxMO08Mza2diXEBtdnTK8jF~Mrod-U24urzrq1T0R9WMkSruV0lvdZsvpBdwrajutsHR448ErpEcyGcQGTyB0M8Dym1LaA__"
+      },
+      "footer": {
+        "rawHtml": "Contact AXS for support <br /><a href=\"mailto: example@axs.com.sg\">example@axs.com.sg</a> <br />(000) 123-4567"
+      }
     }
   }
 }

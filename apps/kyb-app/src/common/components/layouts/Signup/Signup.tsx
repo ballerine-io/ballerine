@@ -10,8 +10,7 @@ interface ISignupProps {
 export const Signup: FunctionComponent<ISignupProps> = ({ children, themeParams }) => {
   return (
     <SignupLayoutProvider themeParams={themeParams}>
-      {children}
-      <div className="flex min-h-screen w-full flex-row flex-nowrap">{children}</div>
+      <div className="flex h-full min-h-screen w-full flex-row flex-nowrap">{children}</div>
     </SignupLayoutProvider>
   );
 };

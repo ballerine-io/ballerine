@@ -2,7 +2,7 @@ import { FunctionComponent } from 'react';
 import { useSignupLayout } from './hooks/useSignupLayout';
 
 interface IHeaderProps {
-  headingText: string;
+  headingText?: string;
   subheadingText?: string;
 }
 

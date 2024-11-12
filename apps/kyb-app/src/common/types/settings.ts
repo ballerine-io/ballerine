@@ -20,8 +20,13 @@ export interface ITheme {
       headingText: string;
       subheadingText?: string;
     };
-    submit: {
+    form: {
+      containerStyles?: CSSProperties;
       submitText?: string;
+    };
+    footer: {
+      rawHtml?: string;
+      styles?: CSSProperties;
     };
   };
 }
