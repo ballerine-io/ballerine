@@ -25,7 +25,8 @@ export const CaseOptions = () => {
         <DropdownMenuItem className="w-full px-8 py-1" asChild>
           <Button
             onClick={() => generateAndOpenPDFInNewTab()}
-            disabled={isGeneratingPDF}
+            // disabled={isGeneratingPDF}
+            disabled
             variant={'ghost'}
             className="justify-start"
           >
