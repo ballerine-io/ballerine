@@ -6,6 +6,7 @@ import {
   Query,
   Res,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
@@ -34,6 +35,7 @@ import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-fil
 import { CreateBusinessReportBatchBodyDto } from '@/business-report/dto/create-business-report-batch-body.dto';
 import type { Response } from 'express';
 import { PrismaService } from '@/prisma/prisma.service';
+import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Business Reports')
@@ -202,20 +204,20 @@ export class BusinessReportControllerExternal {
     res.send(result);
   }
 
-  // @common.Get()
-  // @UseGuards(AdminAuthGuard)
-  // @swagger.ApiOkResponse({ type: [String] })
-  // @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  // @swagger.ApiExcludeEndpoint()
-  // async list() {
-  //   return await this.prisma.businessReport.findMany({
-  //     include: {
-  //       project: {
-  //         include: {
-  //           customer: true,
-  //         },
-  //       },
-  //     },
-  //   });
-  // }
+  @common.Get('/sync')
+  @UseGuards(AdminAuthGuard)
+  @swagger.ApiOkResponse({ type: [String] })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiExcludeEndpoint()
+  async list() {
+    return await this.prisma.businessReport.findMany({
+      include: {
+        project: {
+          include: {
+            customer: true,
+          },
+        },
+      },
+    });
+  }
 }
