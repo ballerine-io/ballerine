@@ -132,6 +132,8 @@ export const CollectionFlow = withSessionProtected(() => {
   if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.failed)
     return <FailedScreen />;
 
+  console.log('CollectionFlow', initialContext);
+
   return definition && collectionFlowData ? (
     <DynamicUI initialState={initialUIState}>
       <DynamicUI.StateManager

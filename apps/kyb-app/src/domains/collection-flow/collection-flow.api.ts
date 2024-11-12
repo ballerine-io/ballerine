@@ -11,6 +11,7 @@ import {
   CollectionFlowConfig,
   CollectionFlowContext,
 } from '@/domains/collection-flow/types/flow-context.types';
+import delay from 'lodash/delay';
 import posthog from 'posthog-js';
 
 export const fetchUser = async (): Promise<TUser> => {
@@ -47,6 +48,66 @@ export const fetchCollectionFlowSchema = async (): Promise<{
     steps: result.steps,
     documentConfigurations: result.documentConfigurations,
   };
+};
+
+const mockSignupDefinition = {
+  definitionType: 'statechart-json',
+  definition: {
+    id: 'signup',
+    predictableActionArguments: true,
+    initial: 'signup',
+    context: {},
+    states: {
+      signup: { on: { NEXT: 'done' } },
+      done: { on: { NEXT: 'done' } },
+      completed: { type: 'final' },
+      failed: { type: 'final' },
+    },
+  },
+  extensions: {
+    apiPlugins: [
+      {
+        name: 'sync_workflow_runtime',
+        pluginKind: 'api',
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/sync/?token={metadata.token}`,
+        method: 'PUT',
+        stateNames: ['signup'],
+        headers: { Authorization: 'Bearer {metadata.token}' },
+        request: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: `{
+              data: {
+                context: @,
+                endUser: entity.data.additionalInfo.mainRepresentative,
+                business: entity.data,
+                ballerineEntityId: entity.ballerineEntityId
+                }
+              }`,
+            },
+          ],
+        },
+      },
+      {
+        name: 'signup',
+        pluginKind: 'api',
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/send-event/?token={metadata.token}`,
+        method: 'POST',
+        stateNames: ['finish'],
+        headers: { Authorization: 'Bearer {metadata.token}' },
+        request: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: `{eventName: 'COLLECTION_FLOW_FINISHED'}`,
+            },
+          ],
+        },
+      },
+    ],
+    commonPlugins: [],
+  },
 };
 
 export const fetchUISchema = async (language: string): Promise<UISchema> => {
@@ -86,4 +147,10 @@ export const fetchFlowContext = async (): Promise<FlowContextResponse> => {
     console.error('Error fetching flow context:', error);
     throw error;
   }
+};
+
+export const fetchEndUser = async (): Promise<boolean> => {
+  return new Promise(resolve => {
+    delay(() => resolve(false), 1000);
+  });
 };

@@ -1,0 +1,43 @@
+import { getAccessToken } from '@/helpers/get-access-token.helper';
+import { getDefaultLocalAccessToken } from '@/helpers/get-default-local-access-token';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { AccessTokenContext } from './context';
+
+interface IAccessTokenProviderProps {
+  children: React.ReactNode;
+}
+
+export const AccessTokenProvider = ({ children }: IAccessTokenProviderProps) => {
+  const [accessToken, setAccessToken] = useState<string | null>(
+    () => getAccessToken() ?? getDefaultLocalAccessToken(),
+  );
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const context = useMemo(
+    () => ({
+      accessToken,
+      setAccessToken,
+    }),
+    [accessToken, setAccessToken],
+  );
+
+  const applyAccessTokenToUrlIfNeeded = useCallback(
+    (newToken: string) => {
+      const previousToken = searchParams.get('token');
+
+      if (previousToken !== newToken) {
+        setSearchParams({ token: newToken });
+      }
+    },
+    [searchParams, setSearchParams],
+  );
+
+  useEffect(() => {
+    if (accessToken) {
+      applyAccessTokenToUrlIfNeeded(accessToken);
+    }
+  }, [accessToken, applyAccessTokenToUrlIfNeeded]);
+
+  return <AccessTokenContext.Provider value={context}>{children}</AccessTokenContext.Provider>;
+};
