@@ -154,6 +154,23 @@ export class BusinessReportControllerExternal {
     });
   }
 
+  @common.Get('/sync')
+  @UseGuards(AdminAuthGuard)
+  @swagger.ApiOkResponse({ type: [String] })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiExcludeEndpoint()
+  async list() {
+    return await this.prisma.businessReport.findMany({
+      include: {
+        project: {
+          include: {
+            customer: true,
+          },
+        },
+      },
+    });
+  }
+
   @common.Get(':id')
   @swagger.ApiOkResponse({ type: BusinessReportDto })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -202,22 +219,5 @@ export class BusinessReportControllerExternal {
     res.status(201);
     res.setHeader('content-type', 'application/json');
     res.send(result);
-  }
-
-  @common.Get('/sync')
-  @UseGuards(AdminAuthGuard)
-  @swagger.ApiOkResponse({ type: [String] })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiExcludeEndpoint()
-  async list() {
-    return await this.prisma.businessReport.findMany({
-      include: {
-        project: {
-          include: {
-            customer: true,
-          },
-        },
-      },
-    });
   }
 }
