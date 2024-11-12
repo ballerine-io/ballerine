@@ -21,8 +21,12 @@ export class TokenAuthGuard implements CanActivate {
 
     const tokenEntity = await this.tokenService.findByTokenWithExpiredUnscoped(token);
 
-    if (!tokenEntity?.endUserId) {
+    if (!tokenEntity) {
       throw new UnauthorizedException('Unauthorized');
+    }
+
+    if (!tokenEntity.endUserId) {
+      throw new UnauthorizedException('No EndUser is set for this token');
     }
 
     if (tokenEntity.expiresAt < new Date()) {
