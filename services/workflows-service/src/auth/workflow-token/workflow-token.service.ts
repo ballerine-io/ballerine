@@ -18,7 +18,18 @@ export class WorkflowTokenService {
     return await this.workflowTokenRepository.findByTokenUnscoped(token);
   }
 
+  async findByTokenWithExpiredUnscoped(token: string) {
+    return await this.workflowTokenRepository.findByTokenWithExpiredUnscoped(token);
+  }
+
   async deleteByToken(token: string) {
     return await this.workflowTokenRepository.deleteByTokenUnscoped(token);
+  }
+
+  async updateByToken(
+    token: string,
+    data: Parameters<typeof this.workflowTokenRepository.updateByToken>[1],
+  ) {
+    return await this.workflowTokenRepository.updateByToken(token, data);
   }
 }

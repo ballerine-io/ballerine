@@ -32,6 +32,15 @@ export class WorkflowTokenRepository {
     });
   }
 
+  async findByTokenWithExpiredUnscoped(token: string) {
+    return await this.prisma.workflowRuntimeDataToken.findFirst({
+      where: {
+        token,
+        deletedAt: null,
+      },
+    });
+  }
+
   async deleteByTokenUnscoped(token: string) {
     return await this.prisma.workflowRuntimeDataToken.updateMany({
       data: {
@@ -41,6 +50,18 @@ export class WorkflowTokenRepository {
         token,
         AND: [{ expiresAt: { gt: new Date() } }, { deletedAt: null }],
       },
+    });
+  }
+
+  async updateByToken(
+    token: string,
+    data: Partial<Prisma.WorkflowRuntimeDataTokenUncheckedCreateInput>,
+  ) {
+    return await this.prisma.workflowRuntimeDataToken.update({
+      where: {
+        token,
+      },
+      data,
     });
   }
 }

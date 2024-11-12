@@ -5,7 +5,7 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 
 @Injectable()
-export class TokenAuthGuard implements CanActivate {
+export class TokenWithoutEnduserAuthGuard implements CanActivate {
   constructor(
     protected readonly tokenService: WorkflowTokenService,
     private readonly cls: ClsService,
@@ -21,22 +21,13 @@ export class TokenAuthGuard implements CanActivate {
 
     const tokenEntity = await this.tokenService.findByTokenWithExpiredUnscoped(token);
 
-    if (!tokenEntity?.endUserId) {
+    if (!tokenEntity || tokenEntity.endUserId) {
       throw new UnauthorizedException('Unauthorized');
     }
 
     if (tokenEntity.expiresAt < new Date()) {
       throw new UnauthorizedException('Token has expired');
     }
-
-    this.cls.set('entity', {
-      endUser: {
-        workflowRuntimeDataId: tokenEntity.workflowRuntimeDataId,
-        endUserId: tokenEntity.endUserId,
-        id: tokenEntity.id,
-      },
-      type: 'endUser',
-    });
 
     (req as any).tokenScope = tokenEntity;
 
