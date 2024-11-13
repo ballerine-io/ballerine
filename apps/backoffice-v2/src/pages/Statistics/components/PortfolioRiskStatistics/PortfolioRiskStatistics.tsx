@@ -19,10 +19,9 @@ import { usePortfolioRiskStatisticsLogic } from '@/pages/Statistics/components/P
 import { z } from 'zod';
 import { HomeMetricsOutputSchema } from '@/domains/metrics/hooks/queries/useHomeMetricsQuery/useHomeMetricsQuery';
 
-export const PortfolioRiskStatistics: FunctionComponent<{
-  riskIndicators: z.infer<typeof HomeMetricsOutputSchema>['riskIndicators'];
-  reports: z.infer<typeof HomeMetricsOutputSchema>['reports'];
-}> = ({ riskIndicators, reports }) => {
+export const PortfolioRiskStatistics: FunctionComponent<
+  z.infer<typeof HomeMetricsOutputSchema>
+> = ({ riskIndicators, reports, cases }) => {
   const {
     riskLevelToFillColor,
     parent,
@@ -36,6 +35,7 @@ export const PortfolioRiskStatistics: FunctionComponent<{
   } = usePortfolioRiskStatisticsLogic({
     riskIndicators,
     reports,
+    cases,
   });
 
   return (
@@ -58,13 +58,13 @@ export const PortfolioRiskStatistics: FunctionComponent<{
                     dominantBaseline="middle"
                     className={'text-lg font-bold'}
                   >
-                    {Object.values(reports.approved).reduce((acc, curr) => acc + curr, 0)}
+                    {Object.values(cases.approved).reduce((acc, curr) => acc + curr, 0)}
                   </text>
                   <text x={92} y={102} textAnchor="middle" dominantBaseline="middle">
                     Merchants
                   </text>
                   <Pie
-                    data={Object.entries(reports.approved).map(([riskLevel, value]) => ({
+                    data={Object.entries(cases.approved).map(([riskLevel, value]) => ({
                       name: `${titleCase(riskLevel)} Risk`,
                       value,
                     }))}
@@ -89,7 +89,7 @@ export const PortfolioRiskStatistics: FunctionComponent<{
                   </Pie>
                 </PieChart>
                 <ul className={'flex w-full max-w-sm flex-col space-y-2'}>
-                  {Object.entries(reports.approved).map(([riskLevel, value]) => (
+                  {Object.entries(cases.approved).map(([riskLevel, value]) => (
                     <li
                       key={riskLevel}
                       className={'flex items-center space-x-4 border-b py-1 text-xs'}

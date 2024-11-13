@@ -3,11 +3,13 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { ISignInProps } from '../useSignInMutation/interfaces';
 import { authQueryKeys } from '../../../query-keys';
 import { fetchSignOut } from '../../../fetchers';
+import { customerQueryKeys } from '@/domains/customer/query-keys';
 
 export const useSignOutMutation = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const authenticatedUser = authQueryKeys.authenticatedUser();
+  const customer = customerQueryKeys.getCurrent();
   const { state } = useLocation();
 
   return useMutation({
@@ -22,6 +24,7 @@ export const useSignOutMutation = () => {
       queryClient.setQueryData(authenticatedUser.queryKey, {
         user: undefined,
       });
+      queryClient.setQueryData(customer.queryKey, undefined);
 
       if (!callbackUrl || !redirect) return;
 

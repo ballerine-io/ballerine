@@ -1,7 +1,4 @@
 import * as common from '@nestjs/common';
-import * as swagger from '@nestjs/swagger';
-import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
-import * as errors from '@/errors';
 import {
   BadRequestException,
   Body,
@@ -12,7 +9,9 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
+import * as swagger from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import * as errors from '@/errors';
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CustomerService } from '@/customer/customer.service';
@@ -36,6 +35,7 @@ import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-fil
 import { CreateBusinessReportBatchBodyDto } from '@/business-report/dto/create-business-report-batch-body.dto';
 import type { Response } from 'express';
 import { PrismaService } from '@/prisma/prisma.service';
+import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Business Reports')
@@ -154,6 +154,23 @@ export class BusinessReportControllerExternal {
     });
   }
 
+  @common.Get('/sync')
+  @UseGuards(AdminAuthGuard)
+  @swagger.ApiOkResponse({ type: [String] })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiExcludeEndpoint()
+  async list() {
+    return await this.prisma.businessReport.findMany({
+      include: {
+        project: {
+          include: {
+            customer: true,
+          },
+        },
+      },
+    });
+  }
+
   @common.Get(':id')
   @swagger.ApiOkResponse({ type: BusinessReportDto })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -202,22 +219,5 @@ export class BusinessReportControllerExternal {
     res.status(201);
     res.setHeader('content-type', 'application/json');
     res.send(result);
-  }
-
-  @common.Get()
-  @UseGuards(AdminAuthGuard)
-  @swagger.ApiOkResponse({ type: [String] })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiExcludeEndpoint()
-  async list() {
-    return await this.prisma.businessReport.findMany({
-      include: {
-        project: {
-          include: {
-            customer: true,
-          },
-        },
-      },
-    });
   }
 }

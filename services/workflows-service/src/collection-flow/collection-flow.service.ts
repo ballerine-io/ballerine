@@ -15,7 +15,6 @@ import {
 } from '@/providers/translation/translation.service';
 import type { TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { AnyRecord, DefaultContextSchema, TCollectionFlowConfig } from '@ballerine/common';
@@ -31,7 +30,6 @@ export class CollectionFlowService {
     protected readonly logger: AppLoggerService,
     protected readonly endUserService: EndUserService,
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
-    protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly workflowService: WorkflowService,
     protected readonly businessService: BusinessService,
     protected readonly uiDefinitionService: UiDefinitionService,
@@ -126,12 +124,10 @@ export class CollectionFlowService {
   ): ITranslationServiceResource[] | undefined {
     if (!uiDefinition.locales) return undefined;
 
-    const resources = Object.entries(uiDefinition.locales).map(([language, resource]) => ({
+    return Object.entries(uiDefinition.locales).map(([language, resource]) => ({
       language,
       resource,
     }));
-
-    return resources;
   }
 
   // async updateFlowConfiguration(
@@ -228,7 +224,7 @@ export class CollectionFlowService {
   }
 
   async syncWorkflow(payload: UpdateFlowDto, tokenScope: ITokenScope) {
-    if (payload.data.endUser) {
+    if (payload.data.endUser && tokenScope.endUserId) {
       const { ballerineEntityId: _, ...endUserData } = payload.data.endUser;
       await this.endUserService.updateById(tokenScope.endUserId, { data: endUserData });
     }

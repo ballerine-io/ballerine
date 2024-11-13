@@ -128,6 +128,11 @@ const COLLECTION_FLOW_EVENTS_WHITELIST: readonly CollectionFlowEvent[] = [
   'revision',
 ] as const;
 
+const getAvatarUrl = (website: string | undefined | null) =>
+  website
+    ? `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${website}&size=40`
+    : null;
+
 @Injectable()
 export class WorkflowService {
   constructor(
@@ -281,8 +286,8 @@ export class WorkflowService {
         return {
           id: workflow?.business?.id,
           name: workflow?.business?.companyName,
-          avatarUrl: null,
           approvalState: workflow?.business?.approvalState,
+          avatarUrl: getAvatarUrl(workflow?.business?.website),
         };
       }
 
@@ -571,7 +576,9 @@ export class WorkflowService {
           name: isIndividual
             ? `${String(workflow?.endUser?.firstName)} ${String(workflow?.endUser?.lastName)}`
             : workflow?.business?.companyName,
-          avatarUrl: isIndividual ? workflow?.endUser?.avatarUrl : null,
+          avatarUrl: isIndividual
+            ? workflow?.endUser?.avatarUrl
+            : getAvatarUrl(workflow?.business?.website),
           approvalState: isIndividual
             ? workflow?.endUser?.approvalState
             : workflow?.business?.approvalState,
@@ -1512,18 +1519,19 @@ export class WorkflowService {
           workflowRuntimeData,
         });
 
-        let endUserId: string;
+        let endUserId: string | null = null;
+        const entityData =
+          workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative;
 
         if (mergedConfig.createCollectionFlowToken) {
           if (entityType === 'endUser') {
             endUserId = entityId;
             entities.push({ type: 'individual', id: entityId });
-          } else {
+          } else if (entityData) {
             endUserId = await this.__generateEndUserWithBusiness({
               entityType,
               workflowRuntimeData,
-              entityData:
-                workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative,
+              entityData: entityData,
               currentProjectId,
               entityId,
               position: BusinessPosition.representative,
@@ -1536,7 +1544,7 @@ export class WorkflowService {
 
             entities.push({ type: 'business', id: entityId });
 
-            if (workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative) {
+            if (entityData) {
               workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.ballerineEntityId =
                 endUserId;
             }
@@ -1547,7 +1555,7 @@ export class WorkflowService {
             currentProjectId,
             {
               workflowRuntimeDataId: workflowRuntimeData.id,
-              endUserId: endUserId,
+              endUserId: endUserId ?? null,
               expiresAt: nowPlus30Days,
             },
             transaction,
@@ -1686,15 +1694,11 @@ export class WorkflowService {
   }: {
     entityType: string;
     workflowRuntimeData: WorkflowRuntimeData;
-    entityData?: { firstName: string; lastName: string };
+    entityData: { firstName: string; lastName: string };
     currentProjectId: string;
     entityId: string;
     position?: BusinessPosition;
   }) {
-    if (!entityData) {
-      throw new BadRequestException('Entity data is missing. Please provide end user data.');
-    }
-
     if (entityType !== 'business') {
       throw new BadRequestException(`Invalid entity type: ${entityType}. Expected 'business'.`);
     }
@@ -2073,13 +2077,6 @@ export class WorkflowService {
             [currentProjectId],
           );
 
-          if (!representativeEndUserId) {
-            throw new InternalServerErrorException({
-              descriptionOrOptions:
-                "Couldn't find main representative for business, Make sure you set the plugin on the correct definition!",
-            });
-          }
-
           if (!uiDefinition.id) {
             throw new InternalServerErrorException({
               descriptionOrOptions:
@@ -2087,7 +2084,7 @@ export class WorkflowService {
             });
           }
 
-          const { id, token } = await this.workflowTokenService.create(
+          const { token } = await this.workflowTokenService.create(
             currentProjectId,
             {
               workflowRuntimeDataId: workflowRuntimeId,
@@ -2138,6 +2135,25 @@ export class WorkflowService {
           sendEvent: e => service.sendEvent(e),
           payload: typedPayload,
         });
+      });
+
+      service.subscribe('PERSIST_WEBSITE', async ({ payload = {} }) => {
+        if (!payload.website) {
+          return;
+        }
+
+        const typedPayload = payload as {
+          website: string;
+        };
+
+        await this.businessService.updateById(
+          workflowRuntimeData.context.entity.ballerineEntityId,
+          {
+            data: {
+              website: typedPayload.website,
+            },
+          },
+        );
       });
 
       if (!service.getSnapshot().nextEvents.includes(type)) {

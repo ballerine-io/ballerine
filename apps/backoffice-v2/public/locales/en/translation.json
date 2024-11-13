@@ -1,5 +1,8 @@
 {
   "home": {
     "greeting": "Welcome"
+  },
+  "business_report_creation": {
+    "is_disabled": "Contact Ballerine for access"
   }
 }
