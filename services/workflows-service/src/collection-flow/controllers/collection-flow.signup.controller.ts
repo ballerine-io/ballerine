@@ -24,7 +24,6 @@ export class CollectionFlowSignupController {
   @common.Post()
   async signUp(@TokenScope() tokenScope: ITokenScope, @common.Body() payload: SignupDto) {
     try {
-      console.log('in signup');
       await this.prismaService.$transaction(async transaction => {
         const { config } = await this.workflowService.getWorkflowRuntimeDataById(
           tokenScope.workflowRuntimeDataId,
@@ -32,11 +31,7 @@ export class CollectionFlowSignupController {
           [tokenScope.projectId],
         );
 
-        console.log('found workflow runtime');
-
         this.validateSignupInputByConfig(payload, config?.collectionFlow?.signup);
-
-        console.log('validated signup input');
 
         const endUser = await this.endUserService.create(
           {
@@ -45,19 +40,13 @@ export class CollectionFlowSignupController {
           transaction,
         );
 
-        console.log('created end user');
-
         await this.workflowTokenService.updateByToken(
           tokenScope.token,
           { endUserId: endUser.id },
           transaction,
         );
-
-        console.log('updated token');
       });
     } catch (error: unknown) {
-      console.log('error', error);
-
       if (error instanceof common.BadRequestException) {
         throw error;
       }
