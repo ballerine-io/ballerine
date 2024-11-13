@@ -8,7 +8,7 @@ interface ILogoProps {
 
 export const Logo: FunctionComponent<ILogoProps> = props => {
   const { themeParams } = useSignupLayout();
-  const { imageSrc, styles } = themeParams?.companyLogo || props || {};
+  const { imageSrc, styles } = { ...props, ...themeParams?.companyLogo };
 
   if (!imageSrc) return null;
 

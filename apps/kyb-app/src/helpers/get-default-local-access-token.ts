@@ -3,7 +3,7 @@ export const getDefaultLocalAccessToken = () => {
   const environmentName = import.meta.env.VITE_ENVIRONMENT_NAME;
 
   if (defaultExampleToken && environmentName === 'local') {
-    return defaultExampleToken ?? null;
+    return defaultExampleToken;
   }
 
   return null;

@@ -9,7 +9,10 @@ interface IHeaderProps {
 
 export const Header: FunctionComponent<IHeaderProps> = props => {
   const { themeParams } = useSignupLayout();
-  const { headingText, subheadingText, containerStyles } = themeParams?.header || props || {};
+  const { headingText, subheadingText, containerStyles } = {
+    ...props,
+    ...themeParams?.header,
+  };
 
   return (
     <div className="flex flex-col gap-6 pb-6" style={containerStyles}>

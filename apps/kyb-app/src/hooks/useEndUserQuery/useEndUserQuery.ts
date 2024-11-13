@@ -6,7 +6,7 @@ export const useEndUserQuery = () => {
   const { data, isLoading, error, refetch } = useQuery({
     ...collectionFlowQuerykeys.getEndUser(),
     // @ts-ignore
-    staleTime: Infinity,
+    staleTime: Infinity as const,
   });
 
   return {

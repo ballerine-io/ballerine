@@ -2,7 +2,11 @@ import { useContext } from 'react';
 import { SignupLayoutContext } from '../../context/SignupLayoutProvider';
 
 export const useSignupLayout = () => {
-  const { themeParams } = useContext(SignupLayoutContext);
+  const context = useContext(SignupLayoutContext);
 
-  return { themeParams };
+  if (!context) {
+    throw new Error('useSignupLayout must be used within a SignupLayoutProvider');
+  }
+
+  return { themeParams: context.themeParams };
 };

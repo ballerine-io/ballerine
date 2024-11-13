@@ -8,7 +8,7 @@ interface IBackgroundProps {
 
 export const Background: FunctionComponent<IBackgroundProps> = props => {
   const { themeParams } = useSignupLayout();
-  const { imageSrc, styles } = themeParams?.background || props || ({} as IBackgroundProps);
+  const { imageSrc, styles } = { ...props, ...themeParams?.background };
 
   if (!imageSrc) return null;
 

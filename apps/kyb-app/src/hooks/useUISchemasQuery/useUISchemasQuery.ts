@@ -9,7 +9,7 @@ export const useUISchemasQuery = (language: string) => {
   const { data, isLoading, error } = useQuery({
     ...collectionFlowQuerykeys.getUISchema({ language, endUserId: endUser?.id ?? null }),
     // @ts-ignore
-    staleTime: Infinity,
+    staleTime: Infinity as const,
     enabled: !isEndUserLoading,
   });
 

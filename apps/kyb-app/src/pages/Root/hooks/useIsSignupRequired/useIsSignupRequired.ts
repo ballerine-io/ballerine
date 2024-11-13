@@ -8,10 +8,11 @@ export const useIsSignupRequired = () => {
     if (endUser) return false;
 
     return error || isLoading;
-  }, [error, isLoading]);
+  }, [error, isLoading, endUser]);
 
   return {
     isLoading,
     isSignupRequired,
+    error,
   };
 };

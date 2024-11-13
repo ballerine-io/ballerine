@@ -3,12 +3,15 @@ import { useSignupLayout } from './hooks/useSignupLayout';
 
 interface IFormContainerProps {
   children: React.ReactNode;
-  styles?: CSSProperties;
+  containerStyles?: CSSProperties;
 }
 
-export const FormContainer: FunctionComponent<IFormContainerProps> = ({ children }) => {
+export const FormContainer: FunctionComponent<IFormContainerProps> = ({
+  children,
+  containerStyles: _containerStyles,
+}) => {
   const { themeParams } = useSignupLayout();
-  const { containerStyles } = themeParams?.form || {};
+  const { containerStyles } = { ...themeParams?.form, ...{ containerStyles: _containerStyles } };
 
   return (
     <div className="my-6 flex flex-col gap-4 pr-10" style={containerStyles}>

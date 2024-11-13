@@ -9,7 +9,7 @@ interface IFooterProps {
 
 export const Footer: FunctionComponent<IFooterProps> = props => {
   const { themeParams } = useSignupLayout();
-  const { rawHtml, styles } = themeParams?.footer || props || {};
+  const { rawHtml, styles } = { ...props, ...themeParams?.footer };
 
   if (!rawHtml) return null;
 

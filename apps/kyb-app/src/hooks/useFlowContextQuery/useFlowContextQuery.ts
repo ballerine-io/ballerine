@@ -11,7 +11,7 @@ export const useFlowContextQuery = () => {
   const { data, isLoading, isFetched, error, refetch } = useQuery({
     ...collectionFlowQuerykeys.getContext(endUser?.id ?? null),
     // @ts-ignore
-    staleTime: Infinity,
+    staleTime: Infinity as const,
     enabled: !!accessToken,
   });
 
