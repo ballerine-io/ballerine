@@ -146,7 +146,6 @@ export class WorkflowControllerExternal {
       },
       {
         type: 'body',
-
         schema: WorkflowExtensionSchema,
       },
     ],

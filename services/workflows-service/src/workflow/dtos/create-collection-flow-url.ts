@@ -11,12 +11,12 @@ export class CreateCollectionFlowUrlDto {
   workflowRuntimeDataId!: string;
 
   @ApiProperty({
-    required: true,
+    required: false,
     type: String,
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  endUserId!: string;
+  endUserId?: string;
 
   @ApiProperty({
     required: false,

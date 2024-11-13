@@ -1519,18 +1519,19 @@ export class WorkflowService {
           workflowRuntimeData,
         });
 
-        let endUserId: string;
+        let endUserId: string | null = null;
+        const entityData =
+          workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative;
 
         if (mergedConfig.createCollectionFlowToken) {
           if (entityType === 'endUser') {
             endUserId = entityId;
             entities.push({ type: 'individual', id: entityId });
-          } else {
+          } else if (entityData) {
             endUserId = await this.__generateEndUserWithBusiness({
               entityType,
               workflowRuntimeData,
-              entityData:
-                workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative,
+              entityData: entityData,
               currentProjectId,
               entityId,
               position: BusinessPosition.representative,
@@ -1543,7 +1544,7 @@ export class WorkflowService {
 
             entities.push({ type: 'business', id: entityId });
 
-            if (workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative) {
+            if (entityData) {
               workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.ballerineEntityId =
                 endUserId;
             }
@@ -1554,7 +1555,7 @@ export class WorkflowService {
             currentProjectId,
             {
               workflowRuntimeDataId: workflowRuntimeData.id,
-              endUserId: endUserId,
+              endUserId: endUserId ?? null,
               expiresAt: nowPlus30Days,
             },
             transaction,
@@ -1693,15 +1694,11 @@ export class WorkflowService {
   }: {
     entityType: string;
     workflowRuntimeData: WorkflowRuntimeData;
-    entityData?: { firstName: string; lastName: string };
+    entityData: { firstName: string; lastName: string };
     currentProjectId: string;
     entityId: string;
     position?: BusinessPosition;
   }) {
-    if (!entityData) {
-      throw new BadRequestException('Entity data is missing. Please provide end user data.');
-    }
-
     if (entityType !== 'business') {
       throw new BadRequestException(`Invalid entity type: ${entityType}. Expected 'business'.`);
     }
@@ -2080,13 +2077,6 @@ export class WorkflowService {
             [currentProjectId],
           );
 
-          if (!representativeEndUserId) {
-            throw new InternalServerErrorException({
-              descriptionOrOptions:
-                "Couldn't find main representative for business, Make sure you set the plugin on the correct definition!",
-            });
-          }
-
           if (!uiDefinition.id) {
             throw new InternalServerErrorException({
               descriptionOrOptions:
@@ -2094,7 +2084,7 @@ export class WorkflowService {
             });
           }
 
-          const { id, token } = await this.workflowTokenService.create(
+          const { token } = await this.workflowTokenService.create(
             currentProjectId,
             {
               workflowRuntimeDataId: workflowRuntimeId,

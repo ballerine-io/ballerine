@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EndUserRepository } from './end-user.repository';
 import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
-import type { TProjectId, TProjectIds } from '@/types';
+import type { PrismaTransaction, TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { Business, BusinessPosition, EndUser, Prisma } from '@prisma/client';
 import { EndUserActiveMonitoringsSchema, EndUserAmlHitsSchema } from '@ballerine/common';
@@ -13,8 +13,8 @@ export class EndUserService {
     protected readonly scopeService: ProjectScopeService,
   ) {}
 
-  async create(args: Parameters<EndUserRepository['create']>[0]) {
-    return await this.repository.create(args);
+  async create(args: Parameters<EndUserRepository['create']>[0], transaction?: PrismaTransaction) {
+    return await this.repository.create(args, transaction);
   }
 
   async list(args: Parameters<EndUserRepository['findMany']>[0], projectIds: TProjectIds) {

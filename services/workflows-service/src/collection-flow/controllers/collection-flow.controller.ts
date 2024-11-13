@@ -7,7 +7,11 @@ import { UnsupportedFlowTypeException } from '@/collection-flow/exceptions/unsup
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { type ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
+import {
+  type ITokenScope,
+  type ITokenScopeWithEndUserId,
+  TokenScope,
+} from '@/common/decorators/token-scope.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { CollectionFlowStatusesEnum, getCollectionFlowState } from '@ballerine/common';
@@ -22,26 +26,27 @@ import { CollectionFlowMissingException } from '../exceptions/collection-flow-mi
 export class CollectionFlowController {
   constructor(
     protected readonly appLogger: AppLoggerService,
-    protected readonly service: CollectionFlowService,
-    protected readonly adapterManager: WorkflowAdapterManager,
     protected readonly workflowService: WorkflowService,
+    protected readonly adapterManager: WorkflowAdapterManager,
+    protected readonly collectionFlowService: CollectionFlowService,
   ) {}
 
   @common.Get('/customer')
   async getCustomer(@TokenScope() tokenScope: ITokenScope) {
-    return this.service.getCustomerDetails(tokenScope.projectId);
+    return this.collectionFlowService.getCustomerDetails(tokenScope.projectId);
   }
 
   @common.Get('/user')
-  async getUser(@TokenScope() tokenScope: ITokenScope) {
-    return this.service.getUser(tokenScope.endUserId, tokenScope.projectId);
+  async getUser(@TokenScope() tokenScope: ITokenScopeWithEndUserId) {
+    return this.collectionFlowService.getUser(tokenScope.endUserId, tokenScope.projectId);
   }
 
   @common.Get('/active-flow')
   async getActiveFlow(@TokenScope() tokenScope: ITokenScope) {
-    const activeWorkflow = await this.service.getActiveFlow(tokenScope.workflowRuntimeDataId, [
-      tokenScope.projectId,
-    ]);
+    const activeWorkflow = await this.collectionFlowService.getActiveFlow(
+      tokenScope.workflowRuntimeDataId,
+      [tokenScope.projectId],
+    );
 
     if (!activeWorkflow) throw new common.InternalServerErrorException('Workflow not found.');
 
@@ -64,7 +69,7 @@ export class CollectionFlowController {
 
   @common.Get('/context')
   async getContext(@TokenScope() tokenScope: ITokenScope) {
-    return this.service.getCollectionFlowContext(tokenScope);
+    return this.collectionFlowService.getCollectionFlowContext(tokenScope);
   }
 
   @common.Get('/configuration/:language')
@@ -72,15 +77,16 @@ export class CollectionFlowController {
     @TokenScope() tokenScope: ITokenScope,
     @common.Param() params: GetFlowConfigurationInputDto,
   ): Promise<FlowConfigurationModel> {
-    const workflow = await this.service.getActiveFlow(tokenScope.workflowRuntimeDataId, [
-      tokenScope.projectId,
-    ]);
+    const workflow = await this.collectionFlowService.getActiveFlow(
+      tokenScope.workflowRuntimeDataId,
+      [tokenScope.projectId],
+    );
 
     if (!workflow) {
       throw new common.InternalServerErrorException('Workflow not found.');
     }
 
-    return this.service.getFlowConfiguration(
+    return this.collectionFlowService.getFlowConfiguration(
       workflow.workflowDefinitionId,
       workflow.context,
       params.language,
@@ -94,12 +100,12 @@ export class CollectionFlowController {
     @common.Body() { language }: UpdateFlowLanguageDto,
     @TokenScope() tokenScope: ITokenScope,
   ) {
-    return await this.service.updateWorkflowRuntimeLanguage(language, tokenScope);
+    return await this.collectionFlowService.updateWorkflowRuntimeLanguage(language, tokenScope);
   }
 
   @common.Put('/sync')
   async syncWorkflow(@common.Body() payload: UpdateFlowDto, @TokenScope() tokenScope: ITokenScope) {
-    return await this.service.syncWorkflow(payload, tokenScope);
+    return await this.collectionFlowService.syncWorkflow(payload, tokenScope);
   }
 
   @common.Patch('/sync/context')
