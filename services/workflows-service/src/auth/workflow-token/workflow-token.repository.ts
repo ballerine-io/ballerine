@@ -55,7 +55,7 @@ export class WorkflowTokenRepository {
 
   async updateByToken(
     token: string,
-    data: Partial<Prisma.WorkflowRuntimeDataTokenUncheckedCreateInput>,
+    data: Prisma.WorkflowRuntimeDataTokenUpdateInput,
     transaction: PrismaTransaction | PrismaClient = this.prismaService,
   ) {
     return await transaction.workflowRuntimeDataToken.update({

@@ -42,11 +42,11 @@ export class CollectionFlowSignupController {
 
         await this.workflowTokenService.updateByToken(
           tokenScope.token,
-          { endUserId: endUser.id },
+          { endUser: { connect: { id: endUser.id } } },
           transaction,
         );
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof common.BadRequestException) {
         throw error;
       }
