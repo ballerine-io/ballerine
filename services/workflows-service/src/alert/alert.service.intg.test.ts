@@ -1500,30 +1500,53 @@ describe('AlertService', () => {
         oldTransactionFactory = transactionFactory
           .withCounterpartyBeneficiary(counteryparty.id)
           .direction(TransactionDirection.inbound)
-          .paymentMethod(PaymentMethod.credit_card)
-          .transactionDate(faker.date.recent(100));
+          .paymentMethod(PaymentMethod.credit_card);
       });
 
+      // Has the customer been active for over 180 days (Has the customer had at least 1 Inbound credit card transactions more than 180 days ago)? (A condition that is used to ensure that we are calculating an average from an available representative sample of data - this condition would cause the rule not to alert in the customer's first 180 days of their credit card life cycle)
+      // Has the customer had more than a set [Number] of Inbound credit card transactions within the last 3 days? (A condition that is used to exclude cases when the number of Inbound credit card transactions in 3 days is more than 2 times greater than the customer's 3-day historic average number of Inbound credit card transactions, although of an insignificantly low number)
+      // Has the customer's number of Inbound credit card transactions in 3 days been more than a set [Factor] times greater than the customer's 3-day average number of Inbound credit card transactions (when the average is caclulated from the 177 days preceding the evaluated 3 days)?
       it(`Trigger an alert when there inbound credit card transactions more than 180 days ago
           had more than a set X within the last 3 days`, async () => {
-        // Has the customer been active for over 180 days (Has the customer had at least 1 Inbound credit card transactions more than 180 days ago)? (A condition that is used to ensure that we are calculating an average from an available representative sample of data - this condition would cause the rule not to alert in the customer's first 180 days of their credit card life cycle)
-        // Has the customer had more than a set [Number] of Inbound credit card transactions within the last 3 days? (A condition that is used to exclude cases when the number of Inbound credit card transactions in 3 days is more than 2 times greater than the customer's 3-day historic average number of Inbound credit card transactions, although of an insignificantly low number)
-        // Has the customer's number of Inbound credit card transactions in 3 days been more than a set [Factor] times greater than the customer's 3-day average number of Inbound credit card transactions (when the average is caclulated from the 177 days preceding the evaluated 3 days)?
-
         // Arrange
-        await oldTransactionFactory.amount(10).count(3).create();
+
+        // Should have have old transactions
+        const oldDaysAgo = new Date();
+        oldDaysAgo.setDate(
+          oldDaysAgo.getDate() -
+            ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.activeUserPeriod.timeAmount,
+        );
+        oldDaysAgo.setHours(0, 0, 0, 0);
 
         await oldTransactionFactory
-          .transactionDate(faker.date.recent(3, '2020-01-01T00:00:00.000Z'))
+          .transactionDate(faker.date.recent(3, oldDaysAgo))
           .amount(3)
-          .count(3)
+          .count(1)
           .create();
 
-        const thresholdTransaction = ALERT_DEFINITIONS.HVHAI_CC.inlineRule.options.minimumCount + 1;
+        // transactions from last days
         await oldTransactionFactory
-          .transactionDate(faker.date.recent(2))
+          .date(() => faker.date.recent(1))
           .amount(300)
-          .count(thresholdTransaction)
+          .count(60)
+          .create();
+
+        // transactions in the last days
+        const threeDaysAgo = new Date();
+        threeDaysAgo.setDate(
+          threeDaysAgo.getDate() -
+            ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.lastDaysPeriod.timeAmount,
+        );
+        threeDaysAgo.setHours(0, 0, 0, 0);
+
+        const txPeriod =
+          ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.activeUserPeriod.timeAmount -
+          ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.lastDaysPeriod.timeAmount;
+
+        await oldTransactionFactory
+          .date(() => faker.date.recent(txPeriod, threeDaysAgo))
+          .amount(3)
+          .count(125)
           .create();
 
         // Act
@@ -1541,9 +1564,9 @@ describe('AlertService', () => {
             hash: expect.any(String),
           },
           executionRow: {
+            activedaystransactions: '60',
+            alltransactionscount: '186',
             counterpartyId: counteryparty.id,
-            historicalTransactionCount: '7',
-            recentDaysTransactionCount: `${thresholdTransaction}`,
           },
         });
       });
@@ -1597,27 +1620,50 @@ describe('AlertService', () => {
         oldTransactionFactory = transactionFactory
           .withCounterpartyBeneficiary(counteryparty.id)
           .direction(TransactionDirection.inbound)
-          .paymentMethod(PaymentMethod.apple_pay)
-          .transactionDate(faker.date.recent(100));
+          .paymentMethod(PaymentMethod.apple_pay);
       });
 
       it(`Trigger an alert when there inbound and non credit card transactions more than 180 days ago
           had more than a set X within the last 3 days`, async () => {
         // Arrange
-        await oldTransactionFactory.amount(10).count(3).create();
+
+        // Should have have old transactions
+        const oldDaysAgo = new Date();
+        oldDaysAgo.setDate(
+          oldDaysAgo.getDate() -
+            ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.activeUserPeriod.timeAmount,
+        );
+        oldDaysAgo.setHours(0, 0, 0, 0);
 
         await oldTransactionFactory
-          .transactionDate(faker.date.recent(3, '2020-01-01T00:00:00.000Z'))
+          .transactionDate(faker.date.recent(3, oldDaysAgo))
           .amount(3)
-          .count(3)
+          .count(1)
           .create();
 
-        const thresholdTransaction =
-          ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.minimumCount + 1;
+        // transactions from last days
         await oldTransactionFactory
-          .transactionDate(faker.date.recent(2))
+          .date(() => faker.date.recent(1))
           .amount(300)
-          .count(thresholdTransaction)
+          .count(60)
+          .create();
+
+        // transactions in the last days
+        const threeDaysAgo = new Date();
+        threeDaysAgo.setDate(
+          threeDaysAgo.getDate() -
+            ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.lastDaysPeriod.timeAmount,
+        );
+        threeDaysAgo.setHours(0, 0, 0, 0);
+
+        const txPeriod =
+          ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.activeUserPeriod.timeAmount -
+          ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.lastDaysPeriod.timeAmount;
+
+        await oldTransactionFactory
+          .date(() => faker.date.recent(txPeriod, threeDaysAgo))
+          .amount(3)
+          .count(125)
           .create();
 
         // Act
@@ -1635,9 +1681,9 @@ describe('AlertService', () => {
             hash: expect.any(String),
           },
           executionRow: {
+            activedaystransactions: '60',
+            alltransactionscount: '186',
             counterpartyId: counteryparty.id,
-            historicalTransactionCount: '7',
-            recentDaysTransactionCount: `${thresholdTransaction}`,
           },
         });
       });
