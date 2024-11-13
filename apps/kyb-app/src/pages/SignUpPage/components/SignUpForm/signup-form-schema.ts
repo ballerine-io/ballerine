@@ -7,15 +7,18 @@ export const signupFormSchema: RJSFSchema = {
     firstName: {
       type: 'string',
       title: 'First Name',
+      maxLength: 50,
     },
     lastName: {
       type: 'string',
       title: 'Last Name',
+      maxLength: 50,
     },
     email: {
       type: 'string',
       title: 'Email',
       format: 'email',
+      maxLength: 254,
     },
   },
 };
