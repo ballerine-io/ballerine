@@ -46,8 +46,7 @@ export const router = sentryCreateBrowserRouter([
             path: 'signup',
             Component: SignUpPage,
           },
-          // TODO: Error Boundary
-          // TODO: 404 Page
+          // TODO: 404 Page?
         ],
       },
     ],
