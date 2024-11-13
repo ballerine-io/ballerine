@@ -24,15 +24,21 @@ export class CollectionFlowSignupController {
   @common.Post()
   async signUp(@TokenScope() tokenScope: ITokenScope, @common.Body() payload: SignupDto) {
     try {
+      const { workflowDefinitionId } = await this.workflowService.getWorkflowRuntimeDataById(
+        tokenScope.workflowRuntimeDataId,
+        { select: { workflowDefinitionId: true } },
+        [tokenScope.projectId],
+      );
+
+      const { config } = await this.workflowService.getWorkflowDefinitionById(
+        workflowDefinitionId,
+        { select: { config: true } },
+        [tokenScope.projectId],
+      );
+
+      validateSignupInputByConfig(payload, config?.collectionFlow?.signup);
+
       await this.prismaService.$transaction(async transaction => {
-        const { config } = await this.workflowService.getWorkflowRuntimeDataById(
-          tokenScope.workflowRuntimeDataId,
-          {},
-          [tokenScope.projectId],
-        );
-
-        this.validateSignupInputByConfig(payload, config?.collectionFlow?.signup);
-
         const endUser = await this.endUserService.create(
           {
             data: { ...payload, projectId: tokenScope.projectId },
@@ -54,21 +60,19 @@ export class CollectionFlowSignupController {
       throw new common.InternalServerErrorException(error, 'Failed to process signup');
     }
   }
-
-  private validateSignupInputByConfig(payload: SignupDto, config: SignupConfig) {
-    if (!config) {
-      return;
-    }
-
-    if (config.email?.validation) {
-      if (!isEmailValid(payload.email)) {
-        throw new common.BadRequestException('Invalid email');
-      }
-    }
-  }
 }
 
-const isEmailValid = (email: string) => {
+const validateSignupInputByConfig = (payload: SignupDto, config: SignupConfig) => {
+  if (!config) {
+    return;
+  }
+
+  if (config.email?.verification && !isEmailVerified(payload.email)) {
+    throw new common.BadRequestException('Invalid email');
+  }
+};
+
+const isEmailVerified = (email: string) => {
   // @TODO: Implement email validation logic in the future
   return true;
 };

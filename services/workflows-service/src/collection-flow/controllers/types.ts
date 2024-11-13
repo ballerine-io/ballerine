@@ -1,7 +1,7 @@
 export type SignupConfig =
   | {
       email?: {
-        validation: boolean;
+        verification: boolean;
       };
     }
   | null
