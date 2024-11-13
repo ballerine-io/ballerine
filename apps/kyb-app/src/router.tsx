@@ -8,6 +8,7 @@ import {
   useLocation,
   useNavigationType,
 } from 'react-router-dom';
+import { ErrorScreen } from './common/components/organisms/ErrorScreen/ErrorScreen';
 import { withCustomer } from './hocs/withCustomer';
 import { GlobalProviders } from './pages/GlobalProviders';
 import { Root } from './pages/Root';
@@ -27,6 +28,7 @@ export const router = sentryCreateBrowserRouter([
   {
     path: '',
     Component: GlobalProviders,
+    errorElement: <ErrorScreen />,
     children: [
       {
         path: '/',

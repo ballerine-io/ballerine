@@ -1,9 +1,12 @@
+import { InvalidAccessTokenError } from '@/common/errors/invalid-access-token';
 import { useCustomerQuery } from '@/hooks/useCustomerQuery';
 import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { LoadingScreen } from '@/pages/CollectionFlow/components/atoms/LoadingScreen';
-import { FunctionComponent, useMemo } from 'react';
+import { HTTPError } from 'ky';
+import { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import { getJsonErrors, isShouldIgnoreErrors } from './helpers';
 
 interface IDependenciesProviderProps {
   children: React.ReactNode;
@@ -12,6 +15,7 @@ interface IDependenciesProviderProps {
 export const DependenciesProvider: FunctionComponent<IDependenciesProviderProps> = ({
   children,
 }: IDependenciesProviderProps) => {
+  const [error, setError] = useState<Error | null>(null);
   const language = useLanguage();
 
   const dependancyQueries = [
@@ -26,8 +30,38 @@ export const DependenciesProvider: FunctionComponent<IDependenciesProviderProps>
       : false;
   }, [dependancyQueries]);
 
+  const errors = useMemo(() => {
+    return dependancyQueries.filter(dependency => dependency.error);
+  }, [dependancyQueries]);
+
+  useEffect(() => {
+    if (!Array.isArray(errors) || !errors?.length) return;
+
+    const handleErrors = async (errors: HTTPError[]) => {
+      const isShouldIgnore = await isShouldIgnoreErrors(errors);
+
+      if (isShouldIgnore) return;
+
+      const errorResponses = await getJsonErrors(errors);
+
+      if (errorResponses.every(error => error.statusCode === 401)) {
+        setError(new InvalidAccessTokenError());
+
+        return;
+      }
+
+      setError(new Error('Something went wrong'));
+    };
+
+    void handleErrors(errors.map(error => error.error) as HTTPError[]);
+  }, [errors]);
+
   if (isLoading) {
     return <LoadingScreen />;
+  }
+
+  if (error) {
+    throw error;
   }
 
   return <>{children}</>;

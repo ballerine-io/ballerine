@@ -8,6 +8,7 @@ import {
   Signup,
 } from '@/common/components/layouts/Signup';
 import { useTheme } from '@/common/providers/ThemeProvider';
+import { SignUpForm } from './components/SignUpForm';
 
 export const SignUpPage = () => {
   const { themeDefinition } = useTheme();
@@ -18,7 +19,7 @@ export const SignUpPage = () => {
         <Logo />
         <Header />
         <FormContainer>
-          <div className={'h-[400px] bg-green-500'}>Form mock</div>
+          <SignUpForm />
         </FormContainer>
         <Footer />
       </Content>

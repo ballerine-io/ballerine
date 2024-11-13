@@ -2,15 +2,6 @@ import { AppErrorScreen } from '@/common/components/molecules/AppErrorScreen';
 import { FallbackComponent } from '@/components/providers/CustomerProvider';
 
 export const CustomerProviderFallback: FallbackComponent = ({ statusCode }) => {
-  const defaultExampleToken = import.meta.env.VITE_DEFAULT_EXAMPLE_TOKEN;
-  const environmentName = import.meta.env.VITE_ENVIRONMENT_NAME;
-
-  // if (!getAccessToken() && defaultExampleToken && environmentName === 'local') {
-  //   window.location.replace(`/collection-flow/?token=${defaultExampleToken}`);
-
-  //   return null;
-  // }
-
   if (statusCode === 401) {
     return (
       <AppErrorScreen

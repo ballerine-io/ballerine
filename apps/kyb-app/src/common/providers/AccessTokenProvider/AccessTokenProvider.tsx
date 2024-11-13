@@ -2,6 +2,7 @@ import { getAccessToken } from '@/helpers/get-access-token.helper';
 import { getDefaultLocalAccessToken } from '@/helpers/get-default-local-access-token';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { AccessTokenIsMissingError } from '../../errors/access-token-is-missing';
 import { AccessTokenContext } from './context';
 
 interface IAccessTokenProviderProps {
@@ -38,6 +39,12 @@ export const AccessTokenProvider = ({ children }: IAccessTokenProviderProps) => 
       applyAccessTokenToUrlIfNeeded(accessToken);
     }
   }, [accessToken, applyAccessTokenToUrlIfNeeded]);
+
+  useEffect(() => {
+    if (!accessToken) {
+      throw new AccessTokenIsMissingError();
+    }
+  }, [accessToken]);
 
   return <AccessTokenContext.Provider value={context}>{children}</AccessTokenContext.Provider>;
 };

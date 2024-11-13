@@ -19,6 +19,7 @@ export interface ITheme {
     header: {
       headingText: string;
       subheadingText?: string;
+      containerStyles?: CSSProperties;
     };
     form: {
       containerStyles?: CSSProperties;

@@ -11,7 +11,6 @@ import {
   CollectionFlowConfig,
   CollectionFlowContext,
 } from '@/domains/collection-flow/types/flow-context.types';
-import delay from 'lodash/delay';
 import posthog from 'posthog-js';
 
 export const fetchUser = async (): Promise<TUser> => {
@@ -149,8 +148,22 @@ export const fetchFlowContext = async (): Promise<FlowContextResponse> => {
   }
 };
 
-export const fetchEndUser = async (): Promise<boolean> => {
-  return new Promise(resolve => {
-    delay(() => resolve(false), 1000);
-  });
+export interface EndUser {
+  id: string;
+}
+
+export const fetchEndUser = async (): Promise<EndUser> => {
+  const result = await request.get('collection-flow/user');
+
+  return result.json<EndUser>();
+};
+
+export interface CreateEndUserDto {
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+
+export const createEndUserRequest = async ({ email, firstName, lastName }: CreateEndUserDto) => {
+  await request.post('collection-flow/signup', { json: { email, firstName, lastName } });
 };
