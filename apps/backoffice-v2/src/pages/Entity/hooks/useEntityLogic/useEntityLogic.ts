@@ -5,7 +5,7 @@ import { useSerializedSearchParams } from '@/common/hooks/useSerializedSearchPar
 import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
 
 export const useEntityLogic = () => {
-  const [{ isNotesOpen }] = useSerializedSearchParams();
+  const [{ isNotesOpen, isWorkflowOpen }] = useSerializedSearchParams();
   const { entityId } = useParams();
   const { data: notes } = useNotesByNoteable({ noteableId: entityId, noteableType: 'Workflow' });
 
@@ -16,6 +16,7 @@ export const useEntityLogic = () => {
     selectedEntity,
     workflow,
     isNotesOpen: isNotesOpen === 'true',
+    isWorkflowViewerOpen: isWorkflowOpen === 'true',
     notes,
   };
 };

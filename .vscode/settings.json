@@ -5,7 +5,8 @@
     "apps/workflows-dashboard",
     "packages/workflow-core",
     "services/workflows-service",
-    "packages/common"
+    "packages/common",
+    "packages/ui"
   ],
   "search.exclude": {
     "**/node_modules": true,

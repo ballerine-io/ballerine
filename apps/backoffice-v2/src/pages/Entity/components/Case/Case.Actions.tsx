@@ -13,6 +13,7 @@ import { ActionsVariant } from '@/pages/Entity/components/Case/actions-variants/
 import { Avatar } from '@/common/components/atoms/Avatar';
 import { stringToRGB } from '@/common/utils/string-to-rgb/string-to-rgb';
 import { createInitials } from '@/common/utils/create-initials/create-initials';
+import { WorkflowViewerButton } from '@/common/components/molecules/WorkflowViewerButton/WorkflowViewerButton';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
@@ -102,6 +103,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
               </div>
             )}
             <NotesButton numberOfNotes={numberOfNotes} />
+            <WorkflowViewerButton />
           </div>
         </div>
         {showResolutionButtons && workflowDefinition && (

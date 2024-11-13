@@ -4,6 +4,7 @@ import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { BlocksVariant } from '@/lib/blocks/variants/BlocksVariant/BlocksVariant';
 import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
 import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
+import { WorkflowViewer } from '@/domains/workflow-viewer/WorkflowViewer';
 
 export const Entity = () => {
   const { workflow, notes, selectedEntity, isNotesOpen } = useEntityLogic();

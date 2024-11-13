@@ -8,6 +8,7 @@ import { Cases } from './components/Cases/Cases';
 import { useEntities } from './hooks/useEntities/useEntities';
 import { NoCases } from '@/pages/Entities/components/NoCases/NoCases';
 import { UrlPagination } from '@/common/components/molecules/UrlPagination/UrlPagination';
+import { WorkflowViewer } from './components/WorkflowViewer/WorkflowViewer';
 
 export const Entities: FunctionComponent = () => {
   const {

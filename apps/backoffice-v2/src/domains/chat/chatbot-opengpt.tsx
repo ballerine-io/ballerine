@@ -18,12 +18,18 @@ const Chatbot = ({
   isWebchatOpen: boolean;
   toggleIsWebchatOpen: () => void;
 }) => {
+  // Wait for bot initialization (currently the update user dosent work and we suspect it's because of this)
+  // change the client id to the new bot
+  // Get the current case json and send it as event
+  // Fix css issues, firs try the iframe approuch and if it doesn't work reasearch the other options
+
   const client = getClient({ clientId });
   const { data: session } = useAuthenticatedUserQuery();
 
   useEffect(() => {
     if (session?.user) {
       const { firstName, lastName, email } = session.user;
+
       void client.updateUser({
         data: {
           firstName,

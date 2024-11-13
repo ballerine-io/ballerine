@@ -5,6 +5,7 @@ import { ServerDownLayout } from './ServerDown.layout';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
 import Chatbot from '@/domains/chat/chatbot-opengpt';
+import { WorkflowViewer } from '@/domains/workflow-viewer/WorkflowViewer';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
@@ -42,6 +43,7 @@ export const Root: FunctionComponent = () => {
       {/*<Suspense>*/}
       {/*  <ReactQueryDevtools  />*/}
       {/*</Suspense>*/}
+      <WorkflowViewer />
     </Providers>
   );
 };
