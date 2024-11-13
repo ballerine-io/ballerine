@@ -19,7 +19,7 @@ export const collectionFlowQuerykeys = createQueryKeys('collectionFlow', {
   }),
   getUISchema: ({ language, endUserId }: { language: string; endUserId: string | null }) => ({
     queryKey: [{ language, endUserId }],
-    queryFn: () => fetchUISchema(language),
+    queryFn: () => fetchUISchema(language, endUserId),
   }),
   getCustomer: (endUserId: string | null) => ({
     queryKey: [{ endUserId }],

@@ -1,14 +1,17 @@
 import * as common from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 
-import { SignupDto } from '@/collection-flow/dto/signup.dto';
-import { EndUserService } from '@/end-user/end-user.service';
-import { WorkflowService } from '@/workflow/workflow.service';
-import { SignupConfig } from '@/collection-flow/controllers/types';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { SignupConfig } from '@/collection-flow/controllers/types';
+import { SignupDto } from '@/collection-flow/dto/signup.dto';
 import { type ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
 import { UseTokenWithoutEnduserAuthGuard } from '@/common/guards/token-guard-without-enduser/token-without-enduser-auth.decorator';
+import { EndUserService } from '@/end-user/end-user.service';
 import { PrismaService } from '@/prisma/prisma.service';
+import { WorkflowService } from '@/workflow/workflow.service';
+import { CollectionFlowService } from '../collection-flow.service';
+import { GetFlowConfigurationInputDto } from '../dto/get-flow-configuration-input.dto';
+import { FlowConfigurationModel } from '../models/flow-configuration.model';
 
 @UseTokenWithoutEnduserAuthGuard()
 @ApiExcludeController()
@@ -19,9 +22,33 @@ export class CollectionFlowSignupController {
     protected readonly endUserService: EndUserService,
     protected readonly workflowService: WorkflowService,
     protected readonly workflowTokenService: WorkflowTokenService,
+    protected readonly collectionFlowService: CollectionFlowService,
   ) {}
 
-  @common.Post()
+  @common.Get('/configuration/:language')
+  async getFlowConfiguration(
+    @TokenScope() tokenScope: ITokenScope,
+    @common.Param() params: GetFlowConfigurationInputDto,
+  ): Promise<FlowConfigurationModel> {
+    const workflow = await this.collectionFlowService.getActiveFlow(
+      tokenScope.workflowRuntimeDataId,
+      [tokenScope.projectId],
+    );
+
+    if (!workflow) {
+      throw new common.InternalServerErrorException('Workflow not found.');
+    }
+
+    return this.collectionFlowService.getFlowConfiguration(
+      workflow.workflowDefinitionId,
+      workflow.context,
+      params.language,
+      [tokenScope.projectId],
+      workflow.uiDefinitionId ? { where: { id: workflow.uiDefinitionId } } : {},
+    );
+  }
+
+  @common.Post('')
   async signUp(@TokenScope() tokenScope: ITokenScope, @common.Body() payload: SignupDto) {
     try {
       await this.prismaService.$transaction(async transaction => {

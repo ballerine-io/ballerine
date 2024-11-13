@@ -8,7 +8,7 @@ export const useCustomerQuery = () => {
   const { accessToken } = useAccessToken();
   const { data: endUser } = useEndUserQuery();
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, isFetched } = useQuery({
     ...collectionFlowQuerykeys.getCustomer(endUser?.id ?? null),
     //@ts-ignore
     enabled: !!accessToken,
@@ -17,6 +17,7 @@ export const useCustomerQuery = () => {
   return {
     customer: data ? data : null,
     isLoading,
+    isLoaded: isFetched,
     error: error ? (error as HTTPError) : null,
   };
 };

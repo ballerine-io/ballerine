@@ -8,7 +8,7 @@ export const useFlowContextQuery = () => {
   const { accessToken } = useAccessToken();
   const { data: endUser } = useEndUserQuery();
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, isFetched, error, refetch } = useQuery({
     ...collectionFlowQuerykeys.getContext(endUser?.id ?? null),
     // @ts-ignore
     staleTime: Infinity,
@@ -18,6 +18,7 @@ export const useFlowContextQuery = () => {
   return {
     data,
     isLoading,
+    isLoaded: isFetched,
     error: error ? (error as HTTPError) : null,
     refetch,
   };

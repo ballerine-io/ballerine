@@ -109,9 +109,12 @@ const mockSignupDefinition = {
   },
 };
 
-export const fetchUISchema = async (language: string): Promise<UISchema> => {
+export const fetchUISchema = async (
+  language: string,
+  endUserId: string | null,
+): Promise<UISchema> => {
   return await request
-    .get(`collection-flow/configuration/${language}`, {
+    .get(`collection-flow/${!endUserId ? 'signup/' : ''}configuration/${language}`, {
       searchParams: {
         uiContext: 'collection_flow',
       },
