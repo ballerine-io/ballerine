@@ -4,6 +4,7 @@ import { FunctionComponent } from 'react';
 export const Search: FunctionComponent<{
   value: string;
   onChange: (search: string) => void;
+  isDisabled?: boolean;
 }> = ({ value, onChange }) => {
   return (
     <div className="relative flex flex-col gap-1">
@@ -17,6 +18,7 @@ export const Search: FunctionComponent<{
           placeholder={`Search`}
           value={value}
           onChange={e => onChange(e.target.value)}
+          disabled={isDisabled}
         />
       </div>
     </div>

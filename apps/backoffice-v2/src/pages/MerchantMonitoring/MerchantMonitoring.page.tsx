@@ -90,11 +90,13 @@ export const MerchantMonitoring: FunctionComponent = () => {
           </TooltipProvider>
         </div>
       </div>
-      {!!businessReports?.length && (
-        <div className={`flex`}>
-          <Search value={search} onChange={onSearch} />
-        </div>
-      )}
+      <div className={`flex`}>
+        <Search
+          value={search}
+          onChange={onSearch}
+          disabled={!isLoadingBusinessReports && !businessReports?.length}
+        />
+      </div>
       <div className="flex flex-1 flex-col gap-6 overflow-auto">
         {isNonEmptyArray(businessReports) && <MerchantMonitoringTable data={businessReports} />}
         {Array.isArray(businessReports) && !businessReports.length && !isLoadingBusinessReports && (
