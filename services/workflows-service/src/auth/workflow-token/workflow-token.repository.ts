@@ -23,6 +23,23 @@ export class WorkflowTokenRepository {
     });
   }
 
+  async findFirstByWorkflowruntimeDataIdUnscoped(workflowRuntimeDataId: string) {
+    return await this.prismaService.workflowRuntimeDataToken.findFirst({
+      select: {
+        token: true,
+      },
+      where: {
+        workflowRuntimeDataId,
+        deletedAt: null,
+        expiresAt: { gt: new Date() },
+      },
+      take: 1,
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+  }
+
   async findByTokenUnscoped(token: string) {
     return await this.prismaService.workflowRuntimeDataToken.findFirst({
       where: {
