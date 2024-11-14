@@ -49,9 +49,12 @@ export const fetchCollectionFlowSchema = async (): Promise<{
   };
 };
 
-export const fetchUISchema = async (language: string): Promise<UISchema> => {
+export const fetchUISchema = async (
+  language: string,
+  endUserId: string | null,
+): Promise<UISchema> => {
   return await request
-    .get(`collection-flow/configuration/${language}`, {
+    .get(`collection-flow/${!endUserId ? 'no-user/' : ''}configuration/${language}`, {
       searchParams: {
         uiContext: 'collection_flow',
       },
@@ -86,4 +89,24 @@ export const fetchFlowContext = async (): Promise<FlowContextResponse> => {
     console.error('Error fetching flow context:', error);
     throw error;
   }
+};
+
+export interface EndUser {
+  id: string;
+}
+
+export const fetchEndUser = async (): Promise<EndUser> => {
+  const result = await request.get('collection-flow/user');
+
+  return result.json<EndUser>();
+};
+
+export interface CreateEndUserDto {
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+
+export const createEndUserRequest = async ({ email, firstName, lastName }: CreateEndUserDto) => {
+  await request.post('collection-flow/no-user', { json: { email, firstName, lastName } });
 };

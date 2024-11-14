@@ -724,7 +724,8 @@ model TransactionRecord {
 
   @@unique([projectId, transactionCorrelationId])
   @@index([transactionType])
-  @@index([transactionDate]) // Manually created additional indexes for Desc
+  @@index([transactionDate])
+  @@index([transactionDirection])
   @@index([transactionStatus])
   @@index([reviewStatus])
   @@index([projectId])

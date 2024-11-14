@@ -1,8 +1,6 @@
-import { withTokenProtected } from '@/hocs/withTokenProtected';
 import { CollectionFlow } from '@/pages/CollectionFlow';
-import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
-import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
-import { SignIn } from '@/pages/SignIn';
+import * as Sentry from '@sentry/react';
+import React from 'react';
 import {
   createBrowserRouter,
   createRoutesFromChildren,
@@ -10,8 +8,11 @@ import {
   useLocation,
   useNavigationType,
 } from 'react-router-dom';
-import * as Sentry from '@sentry/react';
-import React from 'react';
+import { ErrorScreen } from './common/components/organisms/ErrorScreen/ErrorScreen';
+import { withCustomer } from './hocs/withCustomer';
+import { GlobalProviders } from './pages/GlobalProviders';
+import { Root } from './pages/Root';
+import { SignUpPage } from './pages/SignUpPage';
 
 export const sentryRouterInstrumentation = Sentry.reactRouterV6Instrumentation(
   React.useEffect,
@@ -25,19 +26,29 @@ const sentryCreateBrowserRouter = Sentry.wrapCreateBrowserRouter(createBrowserRo
 
 export const router = sentryCreateBrowserRouter([
   {
-    path: '/',
-    Component: withTokenProtected(SignIn),
-  },
-  {
-    path: '/collection-flow',
-    Component: withTokenProtected(CollectionFlow),
-  },
-  {
-    path: 'rejected',
-    Component: withTokenProtected(Rejected),
-  },
-  {
-    path: 'approved',
-    Component: withTokenProtected(Approved),
+    path: '',
+    Component: GlobalProviders,
+    errorElement: <ErrorScreen />,
+    children: [
+      {
+        path: '/',
+        Component: Root,
+        children: [
+          {
+            path: '',
+            Component: withCustomer(CollectionFlow),
+          },
+          {
+            path: 'collection-flow',
+            Component: withCustomer(CollectionFlow),
+          },
+          {
+            path: 'signup',
+            Component: SignUpPage,
+          },
+          // TODO: 404 Page?
+        ],
+      },
+    ],
   },
 ]);
