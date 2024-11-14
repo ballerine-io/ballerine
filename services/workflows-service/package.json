@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflows-service",
   "private": false,
-  "version": "0.7.67",
+  "version": "0.7.68",
   "description": "workflow-service",
   "scripts": {
     "spellcheck": "cspell \"*\"",
@@ -40,16 +40,17 @@
     "db:data-migration:generate": "plop --plopfile ./prisma/data-migrations/plopfile.js --dest ./",
     "db:data-migration:migrate": "rimraf ./dist && npm run build && nest start --entryFile ./src/data-migration/scripts/migrate",
     "db:data-sync": "nest start --entryFile ./src/data-migration/scripts/sync/run",
-    "db:data-migration:import": "tsx ./src/data-migration/scripts/import"
+    "db:data-migration:import": "tsx ./src/data-migration/scripts/import",
+    "run-validation": "tsx ./scripts/run-validation.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.347.1",
     "@aws-sdk/client-secrets-manager": "^3.620.1",
     "@aws-sdk/lib-storage": "3.347.1",
     "@aws-sdk/s3-request-presigner": "3.347.1",
-    "@ballerine/common": "0.9.50",
-    "@ballerine/workflow-core": "0.6.63",
-    "@ballerine/workflow-node-sdk": "0.6.63",
+    "@ballerine/common": "0.9.51",
+    "@ballerine/workflow-core": "0.6.64",
+    "@ballerine/workflow-node-sdk": "0.6.64",
     "@faker-js/faker": "^7.6.0",
     "@nestjs/axios": "^2.0.0",
     "@nestjs/common": "^9.3.12",
