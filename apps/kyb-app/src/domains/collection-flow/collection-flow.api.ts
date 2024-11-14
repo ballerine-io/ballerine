@@ -108,5 +108,5 @@ export interface CreateEndUserDto {
 }
 
 export const createEndUserRequest = async ({ email, firstName, lastName }: CreateEndUserDto) => {
-  await request.post('collection-flow/signup', { json: { email, firstName, lastName } });
+  await request.post('collection-flow/no-user', { json: { email, firstName, lastName } });
 };
