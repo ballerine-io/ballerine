@@ -6,7 +6,6 @@ import { HttpStatus, NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { ApiOkResponse, ApiResponse } from '@nestjs/swagger';
 import type { WorkflowRuntimeData } from '@prisma/client';
-// import * as nestAccessControl from 'nest-access-control';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { putPluginsExampleResponse } from '@/workflow/workflow-controller-examples';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
@@ -54,8 +53,6 @@ export class WorkflowControllerExternal {
   constructor(
     protected readonly service: WorkflowService,
     protected readonly normalizeService: HookCallbackHandlerService,
-    // @nestAccessControl.InjectRolesBuilder()
-    // protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     private readonly workflowTokenService: WorkflowTokenService,
     private readonly workflowDefinitionService: WorkflowDefinitionService,
     private readonly prismaService: PrismaService,
@@ -380,6 +377,30 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createCollectionFlowUrl(
+    @common.Body()
+    { workflowRuntimeDataId }: Pick<CreateCollectionFlowUrlDto, 'workflowRuntimeDataId'>,
+  ) {
+    const result = await this.workflowTokenService.findFirstByWorkflowruntimeDataIdUnscoped(
+      workflowRuntimeDataId,
+    );
+
+    if (!result) {
+      throw new NotFoundException(
+        `No WorkflowRuntimeDataId was found for ${JSON.stringify(workflowRuntimeDataId)}`,
+      );
+    }
+
+    return {
+      collectionFlowUrl: `${env.COLLECTION_FLOW_URL}?token=${result.token}`,
+    };
+  }
+
+  @common.Post('/create-token')
+  @swagger.ApiOkResponse()
+  @UseCustomerAuthGuard()
+  @common.HttpCode(200)
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async createToken(
     @common.Body() { expiry, workflowRuntimeDataId, endUserId }: CreateCollectionFlowUrlDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
@@ -390,23 +411,6 @@ export class WorkflowControllerExternal {
       expiresAt,
       endUserId,
     });
-
-    return {
-      token,
-      collectionFlowUrl: `${env.COLLECTION_FLOW_URL}?token=${token}`,
-    };
-  }
-
-  @common.Post('/create-token')
-  @swagger.ApiOkResponse()
-  @UseCustomerAuthGuard()
-  @common.HttpCode(200)
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async createToken(
-    @common.Body() body: CreateCollectionFlowUrlDto,
-    @CurrentProject() currentProjectId: TProjectId,
-  ) {
-    const { token } = await this.createCollectionFlowUrl(body, currentProjectId);
 
     return {
       token,
