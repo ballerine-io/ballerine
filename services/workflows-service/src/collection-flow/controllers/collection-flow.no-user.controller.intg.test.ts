@@ -31,7 +31,7 @@ import { CollectionFlowService } from '@/collection-flow/collection-flow.service
 import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
 import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
-import { CollectionFlowSignupController } from './collection-flow.signup.controller';
+import { CollectionFlowNoUserController } from './collection-flow.no-user.controller';
 import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
@@ -52,7 +52,7 @@ describe('CollectionFlowSignupController', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [CollectionFlowSignupController],
+      controllers: [CollectionFlowNoUserController],
       providers: [
         { provide: AppLoggerService, useValue: noop },
         { provide: BusinessService, useValue: noop },
@@ -147,7 +147,7 @@ describe('CollectionFlowSignupController', () => {
     await app.close();
   });
 
-  describe('POST /collection-flow/signup', () => {
+  describe('POST /collection-flow/no-user', () => {
     it('should create a new EndUser and attach it to the WorkflowRuntimeDataToken', async () => {
       const signupDto = {
         firstName: 'John',
@@ -158,7 +158,7 @@ describe('CollectionFlowSignupController', () => {
       expect(workflowRuntimeDataToken.endUserId).toBeNull();
 
       const response = await request(app.getHttpServer())
-        .post('/collection-flow/signup')
+        .post('/collection-flow/no-user')
         .send(signupDto)
         .set('authorization', `Bearer ${workflowRuntimeDataToken.token}`);
 

@@ -16,7 +16,7 @@ import { FlowConfigurationModel } from '../models/flow-configuration.model';
 @UseTokenWithoutEnduserAuthGuard()
 @ApiExcludeController()
 @common.Controller('collection-flow/no-user')
-export class CollectionFlowSignupController {
+export class CollectionFlowNoUserController {
   constructor(
     protected readonly prismaService: PrismaService,
     protected readonly endUserService: EndUserService,

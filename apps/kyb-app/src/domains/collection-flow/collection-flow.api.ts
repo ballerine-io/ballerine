@@ -54,7 +54,7 @@ export const fetchUISchema = async (
   endUserId: string | null,
 ): Promise<UISchema> => {
   return await request
-    .get(`collection-flow/${!endUserId ? 'signup/' : ''}configuration/${language}`, {
+    .get(`collection-flow/${!endUserId ? 'no-user/' : ''}configuration/${language}`, {
       searchParams: {
         uiContext: 'collection_flow',
       },
