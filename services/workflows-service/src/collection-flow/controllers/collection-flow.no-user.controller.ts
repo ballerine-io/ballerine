@@ -9,6 +9,7 @@ import { UseTokenWithoutEnduserAuthGuard } from '@/common/guards/token-guard-wit
 import { EndUserService } from '@/end-user/end-user.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { WorkflowService } from '@/workflow/workflow.service';
+import set from 'lodash/set';
 import { CollectionFlowService } from '../collection-flow.service';
 import { GetFlowConfigurationInputDto } from '../dto/get-flow-configuration-input.dto';
 import { FlowConfigurationModel } from '../models/flow-configuration.model';
@@ -51,11 +52,12 @@ export class CollectionFlowNoUserController {
   @common.Post()
   async signUp(@TokenScope() tokenScope: ITokenScope, @common.Body() payload: SignupDto) {
     try {
-      const { workflowDefinitionId } = await this.workflowService.getWorkflowRuntimeDataById(
-        tokenScope.workflowRuntimeDataId,
-        { select: { workflowDefinitionId: true } },
-        [tokenScope.projectId],
-      );
+      const { workflowDefinitionId, context } =
+        await this.workflowService.getWorkflowRuntimeDataById(
+          tokenScope.workflowRuntimeDataId,
+          { select: { workflowDefinitionId: true, context: true } },
+          [tokenScope.projectId],
+        );
 
       const { config } = await this.workflowService.getWorkflowDefinitionById(
         workflowDefinitionId,
@@ -78,8 +80,26 @@ export class CollectionFlowNoUserController {
           { endUser: { connect: { id: endUser.id } } },
           transaction,
         );
+
+        const contextClone = structuredClone(context);
+
+        const mainRepresentative = {
+          id: endUser.id,
+          email: payload.email,
+          firstName: payload.firstName,
+          lastName: payload.lastName,
+        };
+
+        set(contextClone, 'entity.data.additionalInfo.mainRepresentative', mainRepresentative);
+        set(contextClone, 'data.additionalInfo.mainRepresentative', mainRepresentative);
+
+        await this.workflowService.updateWorkflowRuntimeData(
+          tokenScope.workflowRuntimeDataId,
+          { context: contextClone },
+          tokenScope.projectId,
+        );
       });
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof common.BadRequestException) {
         throw error;
       }
