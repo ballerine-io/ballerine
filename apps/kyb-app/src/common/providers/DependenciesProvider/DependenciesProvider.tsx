@@ -15,7 +15,13 @@ export const DependenciesProvider: FunctionComponent<IDependenciesProviderProps>
 }: IDependenciesProviderProps) => {
   const [error, setError] = useState<Error | null>(null);
 
-  const dependancyQueries = [useCustomerQuery(), useFlowContextQuery()] as const;
+  const dependancyQueries = [
+    useCustomerQuery(),
+    useFlowContextQuery(),
+  ] as const satisfies readonly [
+    ReturnType<typeof useCustomerQuery>,
+    ReturnType<typeof useFlowContextQuery>,
+  ];
 
   const isLoading = useMemo(() => {
     return dependancyQueries.length
