@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.51
+
+### Patch Changes
+
+- Updated aml schema
+
 ## 0.9.50
 
 ### Patch Changes
