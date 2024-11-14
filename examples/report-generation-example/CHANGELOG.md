@@ -1,5 +1,13 @@
 # @ballerine/report-generation-example
 
+## 0.2.23
+
+### Patch Changes
+
+- Cump
+- Updated dependencies
+  - @ballerine/react-pdf-toolkit@1.2.44
+
 ## 0.2.22
 
 ### Patch Changes
