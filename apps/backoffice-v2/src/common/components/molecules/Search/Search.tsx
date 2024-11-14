@@ -5,7 +5,7 @@ export const Search: FunctionComponent<{
   value: string;
   onChange: (search: string) => void;
   isDisabled?: boolean;
-}> = ({ value, onChange }) => {
+}> = ({ value, onChange, isDisabled }) => {
   return (
     <div className="relative flex flex-col gap-1">
       <div className="input-group flex h-[32px] items-center rounded-[44px] border border-[#E5E7EB] shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)]">

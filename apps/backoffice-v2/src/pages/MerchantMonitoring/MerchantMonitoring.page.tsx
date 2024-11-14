@@ -94,7 +94,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
         <Search
           value={search}
           onChange={onSearch}
-          disabled={!isLoadingBusinessReports && !businessReports?.length}
+          isDisabled={!isLoadingBusinessReports && !businessReports?.length}
         />
       </div>
       <div className="flex flex-1 flex-col gap-6 overflow-auto">
