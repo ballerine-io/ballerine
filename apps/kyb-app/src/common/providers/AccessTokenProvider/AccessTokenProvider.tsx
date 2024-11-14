@@ -1,6 +1,6 @@
 import { getAccessToken } from '@/helpers/get-access-token.helper';
 import { getDefaultLocalAccessToken } from '@/helpers/get-default-local-access-token';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AccessTokenIsMissingError } from '../../errors/access-token-is-missing';
 import { AccessTokenContext } from './context';
@@ -23,22 +23,15 @@ export const AccessTokenProvider = ({ children }: IAccessTokenProviderProps) => 
     [accessToken, setAccessToken],
   );
 
-  const applyAccessTokenToUrlIfNeeded = useCallback(
-    (newToken: string) => {
-      const previousToken = searchParams.get('token');
-
-      if (previousToken !== newToken) {
-        setSearchParams({ token: newToken });
-      }
-    },
-    [searchParams, setSearchParams],
-  );
-
   useEffect(() => {
     if (accessToken) {
-      applyAccessTokenToUrlIfNeeded(accessToken);
+      const previousToken = searchParams.get('token');
+
+      if (previousToken !== accessToken) {
+        setSearchParams({ token: accessToken });
+      }
     }
-  }, [accessToken, applyAccessTokenToUrlIfNeeded]);
+  }, [accessToken, searchParams, setSearchParams]);
 
   useEffect(() => {
     if (!accessToken) {
