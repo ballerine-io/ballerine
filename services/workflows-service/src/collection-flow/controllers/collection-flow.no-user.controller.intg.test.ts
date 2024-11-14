@@ -1,42 +1,42 @@
-import { noop } from 'lodash';
-import request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Project, WorkflowRuntimeDataToken } from '@prisma/client';
+import { noop } from 'lodash';
+import request from 'supertest';
 
-import { UserService } from '@/user/user.service';
-import { PrismaService } from '@/prisma/prisma.service';
-import { SentryService } from '@/sentry/sentry.service';
-import { UserRepository } from '@/user/user.repository';
-import { StorageService } from '@/storage/storage.service';
-import { FileService } from '@/providers/file/file.service';
-import { EndUserService } from '@/end-user/end-user.service';
-import { createProject } from '@/test/helpers/create-project';
-import { BusinessService } from '@/business/business.service';
-import { CustomerService } from '@/customer/customer.service';
-import { WorkflowService } from '@/workflow/workflow.service';
-import { RiskRuleService } from '@/rule-engine/risk-rule.service';
-import { EndUserRepository } from '@/end-user/end-user.repository';
-import { SalesforceService } from '@/salesforce/salesforce.service';
-import { BusinessRepository } from '@/business/business.repository';
-import { CustomerRepository } from '@/customer/customer.repository';
-import { EntityRepository } from '@/common/entity/entity.repository';
-import { RuleEngineService } from '@/rule-engine/rule-engine.service';
-import { ProjectScopeService } from '@/project/project-scope.service';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { BusinessReportService } from '@/business-report/business-report.service';
-import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
-import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
-import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
-import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
-import { CollectionFlowNoUserController } from './collection-flow.no-user.controller';
-import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
-import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
-import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { BusinessReportService } from '@/business-report/business-report.service';
+import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
+import { BusinessRepository } from '@/business/business.repository';
+import { BusinessService } from '@/business/business.service';
+import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { EntityRepository } from '@/common/entity/entity.repository';
+import { CustomerRepository } from '@/customer/customer.repository';
+import { CustomerService } from '@/customer/customer.service';
+import { EndUserRepository } from '@/end-user/end-user.repository';
+import { EndUserService } from '@/end-user/end-user.service';
+import { PrismaService } from '@/prisma/prisma.service';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { FileService } from '@/providers/file/file.service';
+import { RiskRuleService } from '@/rule-engine/risk-rule.service';
+import { RuleEngineService } from '@/rule-engine/rule-engine.service';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
+import { SentryService } from '@/sentry/sentry.service';
+import { StorageService } from '@/storage/storage.service';
+import { createProject } from '@/test/helpers/create-project';
+import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { UserRepository } from '@/user/user.repository';
+import { UserService } from '@/user/user.service';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
+import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
+import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
+import { WorkflowService } from '@/workflow/workflow.service';
+import { CollectionFlowNoUserController } from './collection-flow.no-user.controller';
 
 describe('CollectionFlowSignupController', () => {
   let app: INestApplication;
@@ -54,7 +54,6 @@ describe('CollectionFlowSignupController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CollectionFlowNoUserController],
       providers: [
-        { provide: AppLoggerService, useValue: noop },
         { provide: BusinessService, useValue: noop },
         { provide: UiDefinitionService, useValue: noop },
         { provide: CustomerService, useValue: noop },
@@ -69,6 +68,8 @@ describe('CollectionFlowSignupController', () => {
         { provide: UserRepository, useValue: noop },
         { provide: UserService, useValue: noop },
         { provide: EventEmitter2, useValue: noop },
+        { provide: AppLoggerService, useValue: { log: noop } },
+        { provide: WorkflowEventEmitterService, useValue: { emit: noop } },
         WorkflowService,
         EndUserService,
         BusinessReportService,
@@ -77,7 +78,6 @@ describe('CollectionFlowSignupController', () => {
         ProjectScopeService,
         PrismaService,
         WorkflowTokenRepository,
-        WorkflowEventEmitterService,
         CollectionFlowService,
         WorkflowTokenService,
         WorkflowDefinitionRepository,
@@ -172,5 +172,37 @@ describe('CollectionFlowSignupController', () => {
       ]);
       expect(endUser).toBeDefined();
     });
+
+    // TODO: Uncomment once DB cleanup issue will be fixed
+
+    // it('should create a new EndUser and set mainRepresentative in context', async () => {
+    //   const signupDto = {
+    //     firstName: 'John',
+    //     lastName: 'Doe',
+    //     email: 'email@email.com',
+    //   };
+
+    //   await request(app.getHttpServer())
+    //     .post('/collection-flow/no-user')
+    //     .send(signupDto)
+    //     .set('authorization', `Bearer ${workflowRuntimeDataToken.token}`);
+
+    //   const workflowToken = await workflowTokenService.findByToken(workflowRuntimeDataToken.token);
+    //   const endUser = await endUserRepository.findById(workflowToken?.endUserId ?? '', {}, [
+    //     project.id,
+    //   ]);
+
+    //   const { body } = await request(app.getHttpServer())
+    //     .get('/collection-flow/context')
+    //     .set('authorization', `Bearer ${workflowRuntimeDataToken.token}`);
+
+    //   const { context } = body;
+
+    //   expect(get(context, 'entity.data.additionalInfo.mainRepresentative')).toEqual({
+    //     ...signupDto,
+    //     ballerineEntityId: endUser?.id,
+    //   });
+    //   expect(get(context, 'data.additionalInfo.mainRepresentative')).toEqual(signupDto);
+    // });
   });
 });

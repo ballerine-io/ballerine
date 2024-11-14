@@ -84,20 +84,21 @@ export class CollectionFlowNoUserController {
         const contextClone = structuredClone(context);
 
         const mainRepresentative = {
-          id: endUser.id,
           email: payload.email,
           firstName: payload.firstName,
           lastName: payload.lastName,
         };
 
-        set(contextClone, 'entity.data.additionalInfo.mainRepresentative', mainRepresentative);
+        set(contextClone, 'entity.data.additionalInfo.mainRepresentative', {
+          ...mainRepresentative,
+          ballerineEntityId: endUser.id,
+        });
         set(contextClone, 'data.additionalInfo.mainRepresentative', mainRepresentative);
 
-        await this.workflowService.updateWorkflowRuntimeData(
-          tokenScope.workflowRuntimeDataId,
-          { context: contextClone },
-          tokenScope.projectId,
-        );
+        await transaction.workflowRuntimeData.updateMany({
+          where: { id: tokenScope.workflowRuntimeDataId, projectId: tokenScope.projectId },
+          data: { context: contextClone },
+        });
       });
     } catch (error: unknown) {
       if (error instanceof common.BadRequestException) {
