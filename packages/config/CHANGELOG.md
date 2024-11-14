@@ -1,5 +1,11 @@
 # @ballerine/config
 
+## 1.1.24
+
+### Patch Changes
+
+- Cump
+
 ## 1.1.23
 
 ### Patch Changes
