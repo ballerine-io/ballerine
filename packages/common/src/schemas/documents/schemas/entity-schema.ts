@@ -8,8 +8,8 @@ export const EntitySchema = Type.Object(
         isContactPerson: Type.Optional(Type.Boolean()),
         correlationId: Type.Optional(Type.Union([Type.String(), Type.Null()])),
         endUserType: Type.Optional(Type.Union([Type.String(), Type.Null()])),
-        firstName: Type.String(),
-        lastName: Type.String(),
+        firstName: Type.Optional(Type.String()),
+        lastName: Type.Optional(Type.String()),
         email: Type.Optional(Type.Union([Type.String(), Type.Null()])),
         phone: Type.Optional(Type.Union([Type.String(), Type.Null()])),
         country: Type.Optional(
