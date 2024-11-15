@@ -50,7 +50,12 @@ describe('useUIOptionsRedirect', () => {
       config: {} as CollectionFlowConfig,
     });
     vi.mocked(useLanguage).mockReturnValue('en');
-    vi.mocked(useUISchemasQuery).mockReturnValue({ data: null, isLoading: false, error: null });
+    vi.mocked(useUISchemasQuery).mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: null,
+      isLoaded: true,
+    });
 
     // Mock window.location
     const locationMock = {
@@ -73,6 +78,7 @@ describe('useUIOptionsRedirect', () => {
       data: mockData as UISchema,
       isLoading: false,
       error: null,
+      isLoaded: true,
     });
 
     renderHook(() => useUIOptionsRedirect('success'));
@@ -88,6 +94,7 @@ describe('useUIOptionsRedirect', () => {
       data: mockData as UISchema,
       isLoading: false,
       error: null,
+      isLoaded: true,
     });
 
     renderHook(() => useUIOptionsRedirect('success'));
@@ -99,7 +106,12 @@ describe('useUIOptionsRedirect', () => {
     vi.mocked(useStateManagerContext).mockReturnValue({
       config: null,
     } as unknown as StateManagerContext);
-    vi.mocked(useUISchemasQuery).mockReturnValue({ data: null, isLoading: false, error: null });
+    vi.mocked(useUISchemasQuery).mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: null,
+      isLoaded: true,
+    });
 
     const originalHref = window.location.href;
     renderHook(() => useUIOptionsRedirect('success'));

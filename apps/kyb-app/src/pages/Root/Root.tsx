@@ -1,10 +1,12 @@
 import { useAccessToken } from '@/common/providers/AccessTokenProvider';
+import { AnimatePresence } from 'motion/react';
 import { useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useIsSignupRequired } from './hooks/useIsSignupRequired';
 
 export const Root = () => {
   const { isLoading, isSignupRequired } = useIsSignupRequired();
+  const location = useLocation();
   const navigate = useNavigate();
   const { accessToken } = useAccessToken();
 
@@ -21,8 +23,13 @@ export const Root = () => {
 
     if (isSignupRequired) {
       void navigate(`/signup?token=${accessToken}`);
+      console.log('navigate');
     }
   }, [isSignupRequired, isLoading]);
 
-  return <Outlet />;
+  return (
+    <AnimatePresence mode="wait">
+      <Outlet />
+    </AnimatePresence>
+  );
 };

@@ -1,3 +1,4 @@
+import { motion } from 'motion/react';
 import { CSSProperties, FunctionComponent } from 'react';
 import { useSignupLayout } from './hooks/useSignupLayout';
 
@@ -16,8 +17,22 @@ export const Header: FunctionComponent<IHeaderProps> = props => {
 
   return (
     <div className="flex flex-col gap-6 pb-6" style={containerStyles}>
-      <h1 className="text-2xl font-bold">{headingText}</h1>
-      <p className="text-base">{subheadingText}</p>
+      <motion.h1
+        className="text-2xl font-bold"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        {headingText}
+      </motion.h1>
+      <motion.p
+        className="text-base"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        {subheadingText}
+      </motion.p>
     </div>
   );
 };

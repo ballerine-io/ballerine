@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { useCustomer } from '@/components/providers/CustomerProvider';
 import { useAppExit } from '@/hooks/useAppExit/useAppExit';
+import { useCustomerQuery } from '@/hooks/useCustomerQuery';
 import { ctw } from '@ballerine/ui';
 
 export const Navigation = () => {
@@ -14,7 +14,7 @@ export const Navigation = () => {
   const { t } = useTranslation();
   const { stateApi, payload } = useStateManagerContext();
   const { currentPage } = usePageResolverContext();
-  const { customer } = useCustomer();
+  const { customer } = useCustomerQuery();
   const { exit, isExitAvailable } = useAppExit();
 
   const currentPageNumber =

@@ -19,12 +19,11 @@ import { JSONForm } from '@/components/organisms/UIRenderer/elements/JSONForm/JS
 import { StepperUI } from '@/components/organisms/UIRenderer/elements/StepperUI';
 import { SubmitButton } from '@/components/organisms/UIRenderer/elements/SubmitButton';
 import { Title } from '@/components/organisms/UIRenderer/elements/Title';
-import { useCustomer } from '@/components/providers/CustomerProvider';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { prepareInitialUIState } from '@/helpers/prepareInitialUIState';
+import { useCustomerQuery } from '@/hooks/useCustomerQuery';
 import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
-import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { LoadingScreen } from '@/pages/CollectionFlow/components/atoms/LoadingScreen';
 import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
@@ -37,6 +36,7 @@ import {
   setStepCompletionState,
 } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
+import { AnimatePresence, motion } from 'motion/react';
 import { FailedScreen } from './components/pages/FailedScreen';
 
 const elems = {
@@ -66,11 +66,11 @@ const getRevisionStateName = (pageErrors: PageError[]) => {
   return pageErrors?.filter(pageError => !!pageError.errors.length)?.[0]?.stateName;
 };
 
-export const CollectionFlow = withSessionProtected(() => {
+export const CollectionFlow = () => {
   const { language } = useLanguageParam();
   const { data: schema } = useUISchemasQuery(language);
   const { data: collectionFlowData } = useFlowContextQuery();
-  const { customer } = useCustomer();
+  const { customer } = useCustomerQuery();
   const { t } = useTranslation();
   const { themeDefinition } = useTheme();
 
@@ -83,7 +83,8 @@ export const CollectionFlow = withSessionProtected(() => {
   );
   const isRevision = useMemo(
     () =>
-      getCollectionFlowState(collectionFlowData)?.status === CollectionFlowStatusesEnum.revision,
+      getCollectionFlowState(collectionFlowData || {})?.status ===
+      CollectionFlowStatusesEnum.revision,
     [collectionFlowData],
   );
 
@@ -132,7 +133,13 @@ export const CollectionFlow = withSessionProtected(() => {
   if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.failed)
     return <FailedScreen />;
 
-  return definition && collectionFlowData ? (
+  if (!schema || !collectionFlowData) {
+    console.error('Schema is missing.');
+
+    return;
+  }
+
+  return (
     <DynamicUI initialState={initialUIState}>
       <DynamicUI.StateManager
         initialContext={initialContext}
@@ -195,15 +202,35 @@ export const CollectionFlow = withSessionProtected(() => {
                           >
                             <AppShell>
                               <AppShell.Sidebar>
-                                <div className="flex h-full flex-col">
-                                  <div className="flex h-full flex-1 flex-col">
-                                    <div className="flex flex-col gap-8 pb-10">
+                                <motion.div
+                                  className="flex h-full flex-col"
+                                  initial={{ opacity: 0, x: -20 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ duration: 0.5 }}
+                                >
+                                  <motion.div
+                                    className="flex h-full flex-1 flex-col"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.5, delay: 0.2 }}
+                                  >
+                                    <motion.div
+                                      className="flex flex-col gap-8 pb-10"
+                                      initial={{ opacity: 0 }}
+                                      animate={{ opacity: 1 }}
+                                      transition={{ duration: 0.5, delay: 0.3 }}
+                                    >
                                       <div className="flex justify-start">
                                         <AppShell.LanguagePicker />
                                       </div>
                                       <AppShell.Navigation />
-                                    </div>
-                                    <div className="pb-10">
+                                    </motion.div>
+                                    <motion.div
+                                      className="pb-10"
+                                      initial={{ opacity: 0 }}
+                                      animate={{ opacity: 1 }}
+                                      transition={{ duration: 0.5, delay: 0.4 }}
+                                    >
                                       {customer?.logoImageUri && (
                                         <AppShell.Logo
                                           // @ts-ignore
@@ -213,11 +240,20 @@ export const CollectionFlow = withSessionProtected(() => {
                                           onLoad={() => setLogoLoaded(true)}
                                         />
                                       )}
-                                    </div>
-                                    <div className="min-h-0 flex-1 pb-10">
+                                    </motion.div>
+                                    <motion.div
+                                      className="min-h-0 flex-1 pb-10"
+                                      initial={{ opacity: 0 }}
+                                      animate={{ opacity: 1 }}
+                                      transition={{ duration: 0.5, delay: 0.5 }}
+                                    >
                                       {isLogoLoaded ? <StepperUI /> : null}
-                                    </div>
-                                    <div>
+                                    </motion.div>
+                                    <motion.div
+                                      initial={{ opacity: 0 }}
+                                      animate={{ opacity: 1 }}
+                                      transition={{ duration: 0.5, delay: 0.6 }}
+                                    >
                                       {customer?.displayName && (
                                         <div>
                                           {
@@ -233,9 +269,9 @@ export const CollectionFlow = withSessionProtected(() => {
                                           <PoweredByLogo className="mt-8" sidebarRootId="sidebar" />
                                         </div>
                                       )}
-                                    </div>
-                                  </div>
-                                </div>
+                                    </motion.div>
+                                  </motion.div>
+                                </motion.div>
                               </AppShell.Sidebar>
                               <AppShell.Content>
                                 <AppShell.FormContainer>
@@ -268,9 +304,9 @@ export const CollectionFlow = withSessionProtected(() => {
                                       />
                                       <ProgressBar />
                                     </div>
-                                    <div>
+                                    <AnimatePresence mode="wait">
                                       <UIRenderer elements={elems} schema={currentPage.elements} />
-                                    </div>
+                                    </AnimatePresence>
                                   </div>
                                 </AppShell.FormContainer>
                               </AppShell.Content>
@@ -287,7 +323,5 @@ export const CollectionFlow = withSessionProtected(() => {
         }}
       </DynamicUI.StateManager>
     </DynamicUI>
-  ) : (
-    <LoadingScreen />
   );
-});
+};

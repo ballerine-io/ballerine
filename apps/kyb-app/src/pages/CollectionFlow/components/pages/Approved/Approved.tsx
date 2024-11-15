@@ -1,14 +1,13 @@
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 
-import { useCustomer } from '@/components/providers/CustomerProvider';
 import { useAppExit } from '@/hooks/useAppExit/useAppExit';
-import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
+import { useCustomerQuery } from '@/hooks/useCustomerQuery';
 import { Button, Card } from '@ballerine/ui';
 
-export const Approved = withSessionProtected(() => {
+export const Approved = () => {
   const { t } = useTranslation();
-  const { customer } = useCustomer();
+  const { customer } = useCustomerQuery();
   const { exit, isExitAvailable } = useAppExit();
 
   return (
@@ -39,4 +38,4 @@ export const Approved = withSessionProtected(() => {
       </Card>
     </div>
   );
-});
+};

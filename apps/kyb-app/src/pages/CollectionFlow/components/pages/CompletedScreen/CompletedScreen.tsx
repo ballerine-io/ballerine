@@ -1,18 +1,17 @@
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 
-import { useCustomer } from '@/components/providers/CustomerProvider';
 import { useAppExit } from '@/hooks/useAppExit/useAppExit';
+import { useCustomerQuery } from '@/hooks/useCustomerQuery';
 import { useFlowTracking } from '@/hooks/useFlowTracking';
 import { CollectionFlowEvents } from '@/hooks/useFlowTracking/enums';
-import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { useUIOptionsRedirect } from '@/hooks/useUIOptionsRedirect';
 import { Button, Card } from '@ballerine/ui';
 import { useEffect } from 'react';
 
-export const CompletedScreen = withSessionProtected(() => {
+export const CompletedScreen = () => {
   const { t } = useTranslation();
-  const { customer } = useCustomer();
+  const { customer } = useCustomerQuery();
   const { trackEvent } = useFlowTracking();
 
   const { exit, isExitAvailable } = useAppExit();
@@ -50,4 +49,4 @@ export const CompletedScreen = withSessionProtected(() => {
       </Card>
     </div>
   );
-});
+};

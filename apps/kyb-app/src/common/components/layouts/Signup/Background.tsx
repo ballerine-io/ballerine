@@ -1,4 +1,5 @@
-import { FunctionComponent } from 'react';
+import { motion } from 'motion/react';
+import { FunctionComponent, useState } from 'react';
 import { useSignupLayout } from './hooks/useSignupLayout';
 
 interface IBackgroundProps {
@@ -9,19 +10,24 @@ interface IBackgroundProps {
 export const Background: FunctionComponent<IBackgroundProps> = props => {
   const { themeParams } = useSignupLayout();
   const { imageSrc, styles } = { ...props, ...themeParams?.background };
+  const [isLoaded, setIsLoaded] = useState(false);
 
   if (!imageSrc) return null;
 
   return (
-    <div
-      className="h-full min-w-[62%] flex-1"
-      style={{
-        ...styles,
-        backgroundImage: `url(${imageSrc})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      }}
-    ></div>
+    <motion.div className="h-screen min-w-[62%] flex-1 overflow-hidden">
+      <motion.img
+        src={imageSrc}
+        className="h-full w-full object-cover"
+        style={styles}
+        initial={{ opacity: 0, scale: 1.2 }}
+        animate={isLoaded ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 1.2 }}
+        transition={{
+          duration: 0.8,
+          ease: 'easeOut',
+        }}
+        onLoad={() => setIsLoaded(true)}
+      />
+    </motion.div>
   );
 };

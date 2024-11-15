@@ -1,4 +1,5 @@
 import { AnyChildren } from '@ballerine/ui';
+import { motion } from 'motion/react';
 
 interface Props {
   children: AnyChildren;
@@ -6,13 +7,16 @@ interface Props {
 
 export const Content = ({ children }: Props) => {
   return (
-    <div
+    <motion.div
       className="text-secondary-foreground h-full w-[100%] overflow-auto p-4"
       style={{
         background: 'var(--secondary)',
       }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, delay: 0.5 }}
     >
       {children}
-    </div>
+    </motion.div>
   );
 };

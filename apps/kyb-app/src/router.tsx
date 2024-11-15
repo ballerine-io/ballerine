@@ -9,7 +9,6 @@ import {
   useNavigationType,
 } from 'react-router-dom';
 import { ErrorScreen } from './common/components/organisms/ErrorScreen/ErrorScreen';
-import { withCustomer } from './hocs/withCustomer';
 import { GlobalProviders } from './pages/GlobalProviders';
 import { Root } from './pages/Root';
 import { SignUpPage } from './pages/SignUpPage';
@@ -36,11 +35,11 @@ export const router = sentryCreateBrowserRouter([
         children: [
           {
             path: '',
-            Component: withCustomer(CollectionFlow),
+            Component: CollectionFlow,
           },
           {
             path: 'collection-flow',
-            Component: withCustomer(CollectionFlow),
+            Component: CollectionFlow,
           },
           {
             path: 'signup',

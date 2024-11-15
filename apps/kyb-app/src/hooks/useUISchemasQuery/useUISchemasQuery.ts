@@ -6,7 +6,7 @@ import { useEndUserQuery } from '../useEndUserQuery';
 export const useUISchemasQuery = (language: string) => {
   const { data: endUser, isLoading: isEndUserLoading } = useEndUserQuery();
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, isFetched } = useQuery({
     ...collectionFlowQuerykeys.getUISchema({ language, endUserId: endUser?.id ?? null }),
     // @ts-ignore
     staleTime: Infinity as const,
@@ -15,6 +15,7 @@ export const useUISchemasQuery = (language: string) => {
 
   return {
     isLoading,
+    isLoaded: isFetched,
     data: data ?? null,
     error: error ? (error as HTTPError) : null,
   };

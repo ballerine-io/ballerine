@@ -1,12 +1,11 @@
 import { useTranslation } from 'react-i18next';
 
-import { useCustomer } from '@/components/providers/CustomerProvider';
-import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
+import { useCustomerQuery } from '@/hooks/useCustomerQuery';
 import { Card } from '@ballerine/ui';
 
-export const Rejected = withSessionProtected(() => {
+export const Rejected = () => {
   const { t } = useTranslation();
-  const { customer } = useCustomer();
+  const { customer } = useCustomerQuery();
 
   return (
     <div className="flex h-full items-center justify-center">
@@ -26,4 +25,4 @@ export const Rejected = withSessionProtected(() => {
       </Card>
     </div>
   );
-});
+};

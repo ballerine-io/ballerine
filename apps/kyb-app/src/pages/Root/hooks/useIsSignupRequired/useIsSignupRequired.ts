@@ -7,7 +7,7 @@ export const useIsSignupRequired = () => {
   const isSignupRequired = useMemo(() => {
     if (endUser) return false;
 
-    return error || isLoading;
+    return Boolean(error || isLoading);
   }, [error, isLoading, endUser]);
 
   return {

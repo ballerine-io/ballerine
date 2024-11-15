@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@ballerine/blocks": "0.2.26",
-    "@ballerine/ui": "0.5.44",
     "@ballerine/common": "^0.9.51",
+    "@ballerine/ui": "0.5.44",
     "@ballerine/workflow-browser-sdk": "0.6.64",
     "@lukemorales/query-key-factory": "^1.0.3",
     "@radix-ui/react-icons": "^1.3.0",
@@ -48,6 +48,7 @@
     "ky": "^0.33.3",
     "lodash": "^4.17.21",
     "lucide-react": "^0.144.0",
+    "motion": "^11.11.17",
     "p-queue": "^7.4.1",
     "posthog-js": "^1.154.2",
     "qs": "^6.11.2",

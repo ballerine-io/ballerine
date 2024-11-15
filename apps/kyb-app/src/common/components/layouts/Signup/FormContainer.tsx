@@ -1,3 +1,4 @@
+import { motion } from 'motion/react';
 import { CSSProperties, FunctionComponent } from 'react';
 import { useSignupLayout } from './hooks/useSignupLayout';
 
@@ -17,8 +18,14 @@ export const FormContainer: FunctionComponent<IFormContainerProps> = ({
   };
 
   return (
-    <div className="my-6 flex flex-col gap-4 pr-10" style={containerStyles}>
+    <motion.div
+      className="my-6 flex flex-col gap-4 pr-10"
+      style={containerStyles}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.5 }}
+    >
       {children}
-    </div>
+    </motion.div>
   );
 };

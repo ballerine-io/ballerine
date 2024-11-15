@@ -1,6 +1,8 @@
 import { InvalidAccessTokenError } from '@/common/errors/invalid-access-token';
 import { useCustomerQuery } from '@/hooks/useCustomerQuery';
 import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
+import { useLanguage } from '@/hooks/useLanguage';
+import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { LoadingScreen } from '@/pages/CollectionFlow/components/atoms/LoadingScreen';
 import { HTTPError } from 'ky';
 import { FunctionComponent, useEffect, useMemo, useState } from 'react';
@@ -14,13 +16,18 @@ export const DependenciesProvider: FunctionComponent<IDependenciesProviderProps>
   children,
 }: IDependenciesProviderProps) => {
   const [error, setError] = useState<Error | null>(null);
+  const [showContent, setShowContent] = useState(false);
+
+  const language = useLanguage();
 
   const dependancyQueries = [
     useCustomerQuery(),
     useFlowContextQuery(),
+    useUISchemasQuery(language),
   ] as const satisfies readonly [
     ReturnType<typeof useCustomerQuery>,
     ReturnType<typeof useFlowContextQuery>,
+    ReturnType<typeof useUISchemasQuery>,
   ];
 
   const isLoading = useMemo(() => {
@@ -55,13 +62,23 @@ export const DependenciesProvider: FunctionComponent<IDependenciesProviderProps>
     void handleErrors(errors.map(error => error.error) as HTTPError[]);
   }, [errors]);
 
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
-
   if (error) {
     throw error;
   }
 
-  return <>{children}</>;
+  if (!isLoading) {
+    return children;
+  }
+
+  return (
+    <>
+      {showContent && children}
+      <LoadingScreen
+        onExitComplete={() => {
+          setShowContent(true);
+        }}
+        isLoading={isLoading}
+      />
+    </>
+  );
 };
