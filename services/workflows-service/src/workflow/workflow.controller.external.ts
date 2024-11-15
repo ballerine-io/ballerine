@@ -18,7 +18,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import type { AnyRecord, InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import { WORKFLOW_DEFINITION_TAG } from '@/workflow-defintion/workflow-definition.controller';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
-import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url';
+import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url.dto';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
 import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
 import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
@@ -44,6 +44,7 @@ import { defaultContextSchema } from '@ballerine/common';
 import { WorkflowRunSchema } from './schemas/workflow-run';
 import { ValidationError } from '@/errors';
 import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
+import { CreateTokenDto } from '@/workflow/dtos/create-token.dto';
 
 export const WORKFLOW_TAG = 'Workflows';
 @swagger.ApiBearerAuth()
@@ -378,7 +379,7 @@ export class WorkflowControllerExternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createCollectionFlowUrl(
     @common.Body()
-    { workflowRuntimeDataId }: Pick<CreateCollectionFlowUrlDto, 'workflowRuntimeDataId'>,
+    { workflowRuntimeDataId }: CreateCollectionFlowUrlDto,
   ) {
     const result = await this.workflowTokenService.findFirstByWorkflowruntimeDataIdUnscoped(
       workflowRuntimeDataId,
@@ -401,7 +402,7 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createToken(
-    @common.Body() { expiry, workflowRuntimeDataId, endUserId }: CreateCollectionFlowUrlDto,
+    @common.Body() { expiry, workflowRuntimeDataId, endUserId }: CreateTokenDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
     const expiresAt = new Date(Date.now() + (expiry || 30) * 24 * 60 * 60 * 1000);
