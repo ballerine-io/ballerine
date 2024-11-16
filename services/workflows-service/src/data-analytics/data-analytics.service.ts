@@ -963,8 +963,7 @@ AND a.activeDaysTransactions > ((a.lastTransactionsCount - a.activeDaysTransacti
     }
 
     return {
-      counterpartyBeneficiaryId: subject.counterpartyBeneficiaryId,
-      counterpartyOriginatorId: subject.counterpartyOriginatorId,
+      ...subject,
       ...investigationFilter,
       ...this.buildTransactionsFiltersByAlert(inlineRule),
       projectId,
@@ -975,7 +974,7 @@ AND a.activeDaysTransactions > ((a.lastTransactionsCount - a.activeDaysTransacti
     const {
       amountBetween,
       direction,
-      transactionType: _transactionType,
+      transactionType,
       paymentMethods = [],
       excludePaymentMethods = false,
       projectId,
@@ -983,14 +982,22 @@ AND a.activeDaysTransactions > ((a.lastTransactionsCount - a.activeDaysTransacti
 
     return {
       projectId,
-      transactionAmount: {
-        gte: amountBetween?.min,
-        lte: amountBetween?.max,
-      },
-      transactionDirection: direction,
-      transactionType: {
-        in: _transactionType as TransactionRecordType[],
-      },
+      ...(amountBetween
+        ? {
+            transactionAmount: {
+              gte: amountBetween?.min,
+              lte: amountBetween?.max,
+            },
+          }
+        : {}),
+      ...(direction ? { transactionDirection: direction } : {}),
+      ...(transactionType
+        ? {
+            transactionType: {
+              in: transactionType as TransactionRecordType[],
+            },
+          }
+        : {}),
       paymentMethod: {
         ...(excludePaymentMethods
           ? { notIn: paymentMethods as PaymentMethod[] }
