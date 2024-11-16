@@ -1,9 +1,6 @@
-import { logger } from '@ballerine/workflow-core';
 import { Prisma } from '@prisma/client';
 import type { TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { SentryService } from '@/sentry/sentry.service';
 
 export interface PrismaGeneralQueryArgs {
   select?: Record<string, unknown> | null;
@@ -28,39 +25,19 @@ export interface PrismaGeneralUpsertArgs extends PrismaGeneralQueryArgs {
 
 @Injectable()
 export class ProjectScopeService {
-  constructor(
-    protected readonly logger: AppLoggerService,
-    protected readonly sentry: SentryService,
-  ) {}
-
   scopeFindMany<T>(
     args?: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,
     projectIds?: TProjectIds,
   ): T {
     // @ts-expect-error - dynamically typed for all queries
     args ||= {};
-
-    if (!projectIds) {
-      logger.error('Project IDs are required to scope the query', { data: args });
-      const error = new Error('Project ID is null, projectId required to scope the query');
-
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore: TODO create related error type
-      error.data = args;
-
-      this.sentry.captureException(error);
-
-      throw error;
-    }
-
     // @ts-expect-error - dynamically typed for all queries
     args!.where = {
       // @ts-expect-error - dynamically typed for all queries
       ...args?.where,
-      project:
-        typeof projectIds === 'string'
-          ? { id: projectIds } // Single ID
-          : { id: { in: projectIds } }, // Array of IDs,
+      project: {
+        id: { in: projectIds },
+      },
     };
 
     return args!;
