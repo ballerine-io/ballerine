@@ -352,7 +352,7 @@ export class TransactionControllerExternal {
       return this.getTransactionsByAlertV1({ filters, projectId });
     }
 
-    return this.getTransactionsByAlertV2({ filters, projectId, alert });
+    return this.getTransactionsByAlertV2({ projectId, alert });
   }
 
   private getTransactionsByAlertV1({
@@ -408,11 +408,9 @@ export class TransactionControllerExternal {
   }
 
   private getTransactionsByAlertV2({
-    filters,
     projectId,
     alert,
   }: {
-    filters: GetTransactionsByAlertDto;
     projectId: string;
     alert: Awaited<ReturnType<AlertService['getAlertWithDefinition']>>;
   }) {
