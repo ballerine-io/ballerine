@@ -834,8 +834,14 @@ model Alert {
   workflowRuntimeDataId String?
   workflowRuntimeData   WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
+  // TODO: Remove this field after data migration
   counterpartyId String?
   counterparty   Counterparty? @relation(fields: [counterpartyId], references: [id])
+
+  counterpartyOriginatorId String?
+  counterpartyBeneficiaryId String?
+  counterpartyOriginator   Counterparty? @relation(name: "counterpartyAlertOriginator", fields: [counterpartyOriginatorId], references: [id])
+  counterpartyBeneficiary   Counterparty? @relation(name: "counterpartyAlertBeneficiary", fields: [counterpartyBeneficiaryId], references: [id])
 
   businessId String?
   business   Business? @relation(fields: [businessId], references: [id])
@@ -845,6 +851,9 @@ model Alert {
   @@index([alertDefinitionId])
   @@index([counterpartyId])
   @@index([createdAt(sort: Desc)])
+
+  @@index([counterpartyOriginatorId])
+  @@index([counterpartyBeneficiaryId])
 }
 
 enum RiskCategory {
@@ -888,6 +897,9 @@ model Counterparty {
   benefitingTransactions  TransactionRecord[] @relation("BenefitingCounterparty")
   alerts                  Alert[]
 
+  alertsBenefiting                  Alert[] @relation("counterpartyAlertBeneficiary")
+  alertsOriginating                 Alert[] @relation("counterpartyAlertOriginator")
+  
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
 

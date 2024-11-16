@@ -14,12 +14,13 @@ import {
   TMerchantGroupAverage,
   DailySingleTransactionAmountType,
 } from './types';
-import { AggregateType } from './consts';
+import { AggregateType, TIME_UNITS } from './consts';
 import { calculateStartDate } from './utils';
-import { AlertSeverity, Prisma } from '@prisma/client';
+import { Alert, AlertSeverity, PaymentMethod, Prisma, TransactionRecordType } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isEmpty } from 'lodash';
 import { MERCHANT_REPORT_TYPES_MAP, MerchantReportType } from '@/business-report/constants';
+import { SubjectRecord } from '@/alert/types';
 
 const COUNTERPARTY_ORIGINATOR_JOIN_CLAUSE = Prisma.sql`JOIN "Counterparty" AS "cpOriginator" ON "tr"."counterpartyOriginatorId" = "cpOriginator"."id"`;
 const COUNTERPARTY_BENEFICIARY_JOIN_CLAUSE = Prisma.sql`JOIN "Counterparty" AS "cpBeneficiary" ON "tr"."counterpartyBeneficiaryId" = "cpBeneficiary"."id"`;
@@ -429,7 +430,7 @@ export class DataAnalyticsService {
     const query: Prisma.Sql = Prisma.sql`
   WITH transactions AS (
     SELECT
-      "tr"."counterpartyBeneficiaryId" AS "counterpartyId",
+      "tr"."counterpartyBeneficiaryId",
       count(
         CASE WHEN "tr"."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
           `${timeAmount} ${timeUnit}`,
@@ -575,7 +576,7 @@ export class DataAnalyticsService {
       HAVING COUNT(*) > ${minimumCount}
     )
     SELECT
-      "tr"."counterpartyBeneficiaryId" AS "counterpartyId"
+      "tr"."counterpartyBeneficiaryId" as "counterpartyBeneficiaryId"
     FROM
       "TransactionRecord" tr
       JOIN "transactionsData" td ON "tr"."counterpartyBeneficiaryId" = td."counterpartyBeneficiaryId"
@@ -789,6 +790,8 @@ AND a.activeDaysTransactions > ((a.lastTransactionsCount - a.activeDaysTransacti
     excludePaymentMethods,
 
     transactionType = [],
+
+    subjectColumn,
   }: DailySingleTransactionAmountType) {
     if (!projectId) {
       throw new Error('projectId is required');
@@ -828,16 +831,18 @@ AND a.activeDaysTransactions > ((a.lastTransactionsCount - a.activeDaysTransacti
     if (ruleType === 'amount') {
       conditions.push(Prisma.sql`"transactionBaseAmount" > ${amountThreshold}`);
 
-      query = Prisma.sql`SELECT "counterpartyBeneficiaryId" AS "counterpartyId" FROM "TransactionRecord" "tr" WHERE ${Prisma.join(
+      query = Prisma.sql`SELECT ${Prisma.raw(
+        subjectColumn,
+      )} FROM "TransactionRecord" "tr" WHERE ${Prisma.join(
         conditions,
         ' AND ',
-      )} GROUP BY "counterpartyBeneficiaryId"`;
+      )} GROUP BY "${Prisma.raw(subjectColumn)}"`;
     } else if (ruleType === 'count') {
-      query = Prisma.sql`SELECT "counterpartyBeneficiaryId" as "counterpartyId",
+      query = Prisma.sql`SELECT ${Prisma.raw(subjectColumn)}
          COUNT(id) AS "transactionCount" FROM "TransactionRecord" "tr" WHERE ${Prisma.join(
            conditions,
            ' AND ',
-         )} GROUP BY "counterpartyBeneficiaryId" HAVING ${Prisma.raw(
+         )} GROUP BY ${Prisma.raw(subjectColumn)} HAVING ${Prisma.raw(
         `${AggregateType.COUNT}(id)`,
       )} > ${amountThreshold}`;
     } else {
@@ -854,5 +859,143 @@ AND a.activeDaysTransactions > ((a.lastTransactionsCount - a.activeDaysTransacti
     });
 
     return await this.prisma.$queryRaw<T>(query);
+  }
+  private buildTransactionsFiltersByAlert(inlineRule: InlineRule, alert?: Alert) {
+    const whereClause: Prisma.TransactionRecordWhereInput = {};
+
+    const filters: {
+      endDate: Date | undefined;
+      startDate: Date | undefined;
+    } = {
+      endDate: undefined,
+      startDate: undefined,
+    };
+
+    if (alert) {
+      const endDate = alert.updatedAt || alert.createdAt;
+      endDate.setHours(23, 59, 59, 999);
+      filters.endDate = endDate;
+    }
+
+    // @ts-ignore - TODO: Replace logic with proper implementation for each rule
+    // eslint-disable-next-line
+    let { timeAmount, timeUnit } = inlineRule.options;
+
+    if (!timeAmount || !timeUnit) {
+      if (
+        inlineRule.fnName === 'evaluateHighVelocityHistoricAverage' &&
+        inlineRule.options.lastDaysPeriod &&
+        timeUnit
+      ) {
+        timeAmount = inlineRule.options.lastDaysPeriod.timeAmount;
+      } else {
+        return filters;
+      }
+    }
+
+    let startDate = new Date();
+
+    let subtractValue = 0;
+
+    const baseSubstractByMin = timeAmount * 60 * 1000;
+
+    switch (timeUnit) {
+      case TIME_UNITS.minutes:
+        subtractValue = baseSubstractByMin;
+        break;
+      case TIME_UNITS.hours:
+        subtractValue = 60 * baseSubstractByMin;
+        break;
+      case TIME_UNITS.days:
+        subtractValue = 24 * 60 * baseSubstractByMin;
+        break;
+      case TIME_UNITS.months:
+        startDate.setMonth(startDate.getMonth() - timeAmount);
+        break;
+      case TIME_UNITS.years:
+        startDate.setFullYear(startDate.getFullYear() - timeAmount);
+        break;
+    }
+
+    startDate.setHours(0, 0, 0, 0);
+    startDate = new Date(startDate.getTime() - subtractValue);
+
+    if (filters.endDate) {
+      startDate = new Date(Math.min(startDate.getTime(), filters.endDate.getTime()));
+    }
+
+    filters.startDate = startDate;
+
+    if (filters.startDate) {
+      whereClause.transactionDate = {
+        gte: filters.startDate,
+      };
+    }
+
+    if (filters.endDate) {
+      whereClause.transactionDate = {
+        lte: filters.endDate,
+      };
+    }
+
+    return whereClause;
+  }
+
+  getInvestigationFilter(projectId: string, inlineRule: InlineRule, subject: SubjectRecord) {
+    let investigationFilter;
+
+    switch (inlineRule.fnInvestigationName) {
+      case 'investigateTransactionsAgainstDynamicRules':
+        investigationFilter = this[inlineRule.fnInvestigationName]({
+          ...inlineRule.options,
+          projectId,
+        });
+    }
+
+    if (!investigationFilter) {
+      this.logger.error(`No evaluation function found`, {
+        inlineRule,
+      });
+
+      throw new Error(
+        `No evaluation function found for rule name: ${(inlineRule as InlineRule).id}`,
+      );
+    }
+
+    return {
+      counterpartyBeneficiaryId: subject.counterpartyBeneficiaryId,
+      counterpartyOriginatorId: subject.counterpartyOriginatorId,
+      ...investigationFilter,
+      ...this.buildTransactionsFiltersByAlert(inlineRule),
+      projectId,
+    } satisfies Prisma.TransactionRecordWhereInput;
+  }
+
+  investigateTransactionsAgainstDynamicRules(options: TransactionsAgainstDynamicRulesType) {
+    const {
+      amountBetween,
+      direction,
+      transactionType: _transactionType,
+      paymentMethods = [],
+      excludePaymentMethods = false,
+      projectId,
+    } = options;
+
+    return {
+      projectId,
+      transactionAmount: {
+        gte: amountBetween?.min,
+        lte: amountBetween?.max,
+      },
+      transactionDirection: direction,
+      transactionType: {
+        in: _transactionType as TransactionRecordType[],
+      },
+      paymentMethod: {
+        ...(excludePaymentMethods
+          ? { notIn: paymentMethods as PaymentMethod[] }
+          : { in: paymentMethods as PaymentMethod[] }),
+      },
+    } as const satisfies Prisma.TransactionRecordWhereInput;
   }
 }

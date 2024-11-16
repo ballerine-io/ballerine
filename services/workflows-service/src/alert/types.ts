@@ -1,10 +1,18 @@
-import { Alert, AlertDefinition, Business, EndUser, User } from '@prisma/client';
+import { Alert, AlertDefinition, Business, EndUser, Prisma, User } from '@prisma/client';
+
+// TODO: Remove counterpartyId from SubjectRecord
+export type Subject = 'counterpartyOriginatorId' | 'counterpartyBeneficiaryId' | 'counterpartyId';
+
+export type SubjectRecord = {
+  [key in Subject]?: string;
+} & ({ counterpartyOriginatorId: string } | { counterpartyBeneficiaryId: string });
 
 export type TExecutionDetails = {
   checkpoint: {
     hash: string;
   };
-  subject: Array<Record<string, unknown>>;
+  subject: SubjectRecord;
+  filters: Prisma.TransactionRecordWhereInput;
   executionRow: unknown;
 };
 

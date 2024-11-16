@@ -44,21 +44,25 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'PAY_HCA_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
         havingAggregate: AggregateType.SUM,
+        groupBy: ['counterpartyBeneficiaryId'],
+
         direction: TransactionDirection.inbound,
+
         excludedCounterparty: {
           counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
           counterpartyOriginatorIds: [],
         },
+
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
 
         timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
         amountThreshold: 1000,
-        groupBy: ['counterpartyBeneficiaryId'],
       },
     },
   },
@@ -70,9 +74,11 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'PAY_HCA_APM',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
         havingAggregate: AggregateType.SUM,
+        groupBy: ['counterpartyBeneficiaryId'],
 
         direction: TransactionDirection.inbound,
 
@@ -88,8 +94,6 @@ export const ALERT_DEFINITIONS = {
         timeUnit: TIME_UNITS.days,
 
         amountThreshold: 1000,
-
-        groupBy: ['counterpartyBeneficiaryId'],
       },
     },
   },
@@ -101,12 +105,14 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'STRUC_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
         havingAggregate: AggregateType.COUNT,
         groupBy: ['counterpartyBeneficiaryId'],
 
         direction: TransactionDirection.inbound,
+
         excludedCounterparty: {
           counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
           counterpartyOriginatorIds: [],
@@ -131,7 +137,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'STRUC_APM',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
         havingAggregate: AggregateType.COUNT,
         groupBy: ['counterpartyBeneficiaryId'],
@@ -159,12 +166,14 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'HCAI_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId', 'counterpartyOriginatorId'],
+      fnInvestigationName: 'investigateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
       options: {
         havingAggregate: AggregateType.SUM,
         groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
 
         direction: TransactionDirection.inbound,
+
         excludedCounterparty: {
           counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
           counterpartyOriginatorIds: [],
@@ -188,7 +197,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'HACI_APM',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId', 'counterpartyOriginatorId'],
+      fnInvestigationName: 'investigateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
       options: {
         havingAggregate: AggregateType.SUM,
         groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
@@ -217,7 +227,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'HVIC_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId', 'counterpartyOriginatorId'],
+      fnInvestigationName: 'investigateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
       options: {
         havingAggregate: AggregateType.COUNT,
         groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
@@ -246,7 +257,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'HVIC_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId', 'counterpartyOriginatorId'],
+      fnInvestigationName: 'investigateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
       options: {
         havingAggregate: AggregateType.COUNT,
         groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
@@ -275,7 +287,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'CHVC_C',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyOriginatorId'],
       options: {
         transactionType: [TransactionRecordType.chargeback],
         paymentMethods: [PaymentMethod.credit_card],
@@ -297,7 +310,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'SHCAC_C',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyOriginatorId'],
       options: {
         transactionType: [TransactionRecordType.chargeback],
         paymentMethods: [PaymentMethod.credit_card],
@@ -319,7 +333,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'CHCR_C',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyOriginatorId'],
       options: {
         transactionType: [TransactionRecordType.refund],
         paymentMethods: [PaymentMethod.credit_card],
@@ -341,7 +356,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'SHCAR_C',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyOriginatorId'],
       options: {
         transactionType: [TransactionRecordType.refund],
         paymentMethods: [PaymentMethod.credit_card],
@@ -366,7 +382,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'HPC',
       fnName: 'evaluateHighTransactionTypePercentage',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: undefined,
+      subjects: ['counterpartyOriginatorId'],
       options: {
         transactionType: TransactionRecordType.chargeback,
         subjectColumn: 'counterpartyOriginatorId',
@@ -384,7 +401,7 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'TLHAICC',
       fnName: 'evaluateTransactionAvg',
-      subjects: ['counterpartyId'],
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
         transactionDirection: TransactionDirection.inbound,
         minimumCount: 2,
@@ -407,7 +424,7 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'TLHAIAPM',
       fnName: 'evaluateTransactionAvg',
-      subjects: ['counterpartyId'],
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
         transactionDirection: TransactionDirection.inbound,
         minimumCount: 2,
@@ -430,7 +447,7 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'PGAICT',
       fnName: 'evaluateTransactionAvg',
-      subjects: ['counterpartyId'],
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
         transactionDirection: TransactionDirection.inbound,
         minimumCount: 2,
@@ -454,7 +471,7 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'PGAIAPM',
       fnName: 'evaluateTransactionAvg',
-      subjects: ['counterpartyId'],
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
         transactionDirection: TransactionDirection.inbound,
         minimumCount: 2,
@@ -518,11 +535,11 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'HVHAI_APM',
       fnName: 'evaluateHighVelocityHistoricAverage',
-      subjects: ['counterpartyId'],
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
-        transactionDirection: TransactionDirection.inbound,
         minimumCount: 3,
         transactionFactor: 2,
+        transactionDirection: TransactionDirection.inbound,
         paymentMethod: {
           value: PaymentMethod.credit_card,
           operator: '!=',
@@ -622,7 +639,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'DSTA_CC',
       fnName: 'evaluateDailySingleTransactionAmount',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateDailySingleTransactionAmount',
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
         ruleType: 'amount',
 
@@ -635,6 +653,8 @@ export const ALERT_DEFINITIONS = {
 
         timeAmount: 1,
         timeUnit: TIME_UNITS.days,
+
+        subjectColumn: 'counterpartyBeneficiaryId',
       },
     },
   },
@@ -645,7 +665,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'DSTA_APM',
       fnName: 'evaluateDailySingleTransactionAmount',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateDailySingleTransactionAmount',
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
         ruleType: 'amount',
 
@@ -658,6 +679,8 @@ export const ALERT_DEFINITIONS = {
 
         timeAmount: 1,
         timeUnit: TIME_UNITS.days,
+
+        subjectColumn: 'counterpartyBeneficiaryId',
       },
     },
   },
@@ -668,7 +691,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'DMT_CC',
       fnName: 'evaluateDailySingleTransactionAmount',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateDailySingleTransactionAmount',
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
         ruleType: 'count',
 
@@ -681,6 +705,8 @@ export const ALERT_DEFINITIONS = {
 
         timeAmount: 1,
         timeUnit: TIME_UNITS.days,
+
+        subjectColumn: 'counterpartyBeneficiaryId',
       },
     },
   },
@@ -691,7 +717,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'DMT_APM',
       fnName: 'evaluateDailySingleTransactionAmount',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateDailySingleTransactionAmount',
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
         ruleType: 'count',
 
@@ -704,6 +731,8 @@ export const ALERT_DEFINITIONS = {
 
         timeAmount: 1,
         timeUnit: TIME_UNITS.days,
+
+        subjectColumn: 'counterpartyBeneficiaryId',
       },
     },
   },

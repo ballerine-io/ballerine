@@ -1,18 +1,17 @@
-import * as swagger from '@nestjs/swagger';
-import { TransactionService } from '@/transaction/transaction.service';
+import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import {
   TransactionCreateAltDto,
   TransactionCreateAltDtoWrapper,
   TransactionCreateDto,
 } from '@/transaction/dtos/transaction-create.dto';
-import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
+import { TransactionService } from '@/transaction/transaction.service';
+import * as swagger from '@nestjs/swagger';
 
-import * as types from '@/types';
 import { PrismaService } from '@/prisma/prisma.service';
+import * as types from '@/types';
 
-import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import express from 'express';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import {
   Body,
   Controller,
@@ -23,21 +22,25 @@ import {
   Res,
   ValidationPipe,
 } from '@nestjs/common';
+import express from 'express';
 
+import { AlertService } from '@/alert/alert.service';
+import { BulkStatus, TExecutionDetails } from '@/alert/types';
+import { TIME_UNITS } from '@/data-analytics/consts';
+import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
+import { InlineRule } from '@/data-analytics/types';
+import * as errors from '@/errors';
+import { exceptionValidationFactory } from '@/errors';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { BulkTransactionsCreatedDto } from '@/transaction/dtos/bulk-transactions-created.dto';
 import {
   GetTransactionsByAlertDto,
   GetTransactionsDto,
 } from '@/transaction/dtos/get-transactions.dto';
-import { PaymentMethod } from '@prisma/client';
-import { BulkTransactionsCreatedDto } from '@/transaction/dtos/bulk-transactions-created.dto';
 import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
-import { BulkStatus } from '@/alert/types';
-import * as errors from '@/errors';
-import { exceptionValidationFactory } from '@/errors';
-import { TIME_UNITS } from '@/data-analytics/consts';
+import { PaymentMethod } from '@prisma/client';
+import { isEmpty } from 'lodash';
 import { TransactionEntityMapper } from './transaction.mapper';
-import { ProjectScopeService } from '@/project/project-scope.service';
-import { AlertService } from '@/alert/alert.service';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('Transactions')
@@ -49,6 +52,7 @@ export class TransactionControllerExternal {
     protected readonly prisma: PrismaService,
     protected readonly logger: AppLoggerService,
     protected readonly alertService: AlertService,
+    protected readonly dataAnalyticsService: DataAnalyticsService,
   ) {}
 
   @Post()
@@ -239,7 +243,7 @@ export class TransactionControllerExternal {
     @Query() getTransactionsParameters: GetTransactionsDto,
     @CurrentProject() projectId: types.TProjectId,
   ) {
-    return this.service.getTransactions(getTransactionsParameters, projectId, {
+    return this.service.getTransactionsV1(getTransactionsParameters, projectId, {
       include: {
         counterpartyBeneficiary: {
           select: {
@@ -330,32 +334,35 @@ export class TransactionControllerExternal {
     required: true,
   })
   async getTransactionsByAlert(
-    @Query() getTransactionsByAlertParameters: GetTransactionsByAlertDto,
+    @Query() filters: GetTransactionsByAlertDto,
     @CurrentProject() projectId: types.TProjectId,
   ) {
-    const alert = await this.alertService.getAlertWithDefinition(
-      getTransactionsByAlertParameters.alertId,
-      projectId,
-    );
+    const alert = await this.alertService.getAlertWithDefinition(filters.alertId, projectId);
 
     if (!alert) {
-      throw new errors.NotFoundException(
-        `Alert with id ${getTransactionsByAlertParameters.alertId} not found`,
-      );
+      throw new errors.NotFoundException(`Alert with id ${filters.alertId} not found`);
     }
 
     if (!alert.alertDefinition) {
       throw new errors.NotFoundException(`Alert definition not found for alert ${alert.id}`);
     }
 
-    const filters: GetTransactionsByAlertDto = {
-      ...getTransactionsByAlertParameters,
-      ...(!getTransactionsByAlertParameters.startDate && !getTransactionsByAlertParameters.endDate
-        ? this.alertService.buildTransactionsFiltersByAlert(alert)
-        : {}),
-    };
+    // Backward compatability will be remove soon,
+    if (isEmpty((alert.executionDetails as TExecutionDetails).filters)) {
+      return this.getTransactionsByAlertV1({ filters, projectId });
+    }
 
-    return this.service.getTransactions(filters, projectId, {
+    return this.getTransactionsByAlertV2({ filters, projectId, alert });
+  }
+
+  private getTransactionsByAlertV1({
+    filters,
+    projectId,
+  }: {
+    filters: GetTransactionsByAlertDto;
+    projectId: string;
+  }) {
+    return this.service.getTransactionsV1(filters, projectId, {
       include: {
         counterpartyBeneficiary: {
           select: {
@@ -398,5 +405,70 @@ export class TransactionControllerExternal {
         createdAt: 'desc',
       },
     });
+  }
+
+  private getTransactionsByAlertV2({
+    filters,
+    projectId,
+    alert,
+  }: {
+    filters: GetTransactionsByAlertDto;
+    projectId: string;
+    alert: Awaited<ReturnType<AlertService['getAlertWithDefinition']>>;
+  }) {
+    if (alert) {
+      return this.service.getTransactions(projectId, {
+        where:
+          alert.executionDetails.filters ||
+          this.dataAnalyticsService.getInvestigationFilter(
+            projectId,
+            alert.alertDefinition.inlineRule as InlineRule,
+            alert.executionDetails.subjects,
+          ),
+        include: {
+          counterpartyBeneficiary: {
+            select: {
+              correlationId: true,
+              business: {
+                select: {
+                  correlationId: true,
+                  companyName: true,
+                },
+              },
+              endUser: {
+                select: {
+                  correlationId: true,
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
+          },
+          counterpartyOriginator: {
+            select: {
+              correlationId: true,
+              business: {
+                select: {
+                  correlationId: true,
+                  companyName: true,
+                },
+              },
+              endUser: {
+                select: {
+                  correlationId: true,
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+    }
+
+    return [];
   }
 }

@@ -1,53 +1,66 @@
 import { TProjectId } from '@/types';
 import { TransactionDirection, PaymentMethod, TransactionRecordType } from '@prisma/client';
 import { AggregateType, TIME_UNITS } from './consts';
+import { Subject } from '@/alert/types';
 
 export type InlineRule = {
   id: string;
-  subjects: string[] | readonly string[];
+  // TODO: Keep only Subject type
+  subjects: ((Subject[] | readonly Subject[]) & string[]) | readonly string[];
 } & (
   | {
       fnName: 'evaluateHighTransactionTypePercentage';
+      fnInvestigationName?: 'investigateHighTransactionTypePercentage';
       options: Omit<HighTransactionTypePercentage, 'projectId'>;
     }
   | {
       fnName: 'evaluateTransactionsAgainstDynamicRules';
+      fnInvestigationName: 'investigateTransactionsAgainstDynamicRules';
       options: Omit<TransactionsAgainstDynamicRulesType, 'projectId'>;
     }
   | {
       fnName: 'evaluateCustomersTransactionType';
+      fnInvestigationName?: 'investigateCustomersTransactionType';
       options: Omit<TCustomersTransactionTypeOptions, 'projectId'>;
     }
   | {
       fnName: 'evaluateTransactionAvg';
+      fnInvestigationName?: 'investigateTransactionAvg';
       options: Omit<TransactionLimitHistoricAverageOptions, 'projectId'>;
     }
   | {
       fnName: 'evaluateTransactionAvg';
+      fnInvestigationName?: 'investigateTransactionAvg';
       options: Omit<TPeerGroupTransactionAverageOptions, 'projectId'>;
     }
   | {
       fnName: 'evaluateDormantAccount';
+      fnInvestigationName?: 'investigateDormantAccount';
       options: Omit<TDormantAccountOptions, 'projectId'>;
     }
   | {
       fnName: 'checkMerchantOngoingAlert';
+      fnInvestigationName?: 'investigateMerchantOngoingAlert';
       options: CheckRiskScoreOptions;
     }
   | {
       fnName: 'evaluateHighVelocityHistoricAverage';
+      fnInvestigationName?: 'investigateHighVelocityHistoricAverage';
       options: Omit<HighVelocityHistoricAverageOptions, 'projectId'>;
     }
   | {
       fnName: 'evaluateMultipleMerchantsOneCounterparty';
+      fnInvestigationName?: 'investigateMultipleMerchantsOneCounterparty';
       options: Omit<TMultipleMerchantsOneCounterparty, 'projectId'>;
     }
   | {
       fnName: 'evaluateMerchantGroupAverage';
+      fnInvestigationName?: 'investigateMerchantGroupAverage';
       options: Omit<TMerchantGroupAverage, 'projectId'>;
     }
   | {
       fnName: 'evaluateDailySingleTransactionAmount';
+      fnInvestigationName?: 'investigateDailySingleTransactionAmount';
       options: Omit<DailySingleTransactionAmountType, 'projectId'>;
     }
 );
@@ -80,7 +93,7 @@ export type TransactionsAgainstDynamicRulesType = {
 export type HighTransactionTypePercentage = {
   projectId: TProjectId;
   transactionType: TransactionRecordType;
-  subjectColumn: 'counterpartyOriginatorId' | 'counterpartyBeneficiaryId';
+  subjectColumn: Subject;
   minimumCount: number;
   minimumPercentage: number;
   timeAmount: number;
@@ -184,5 +197,5 @@ export type DailySingleTransactionAmountType = {
   paymentMethods: PaymentMethod[] | readonly PaymentMethod[];
   excludePaymentMethods: boolean;
 
-  // subjectColumn: 'counterpartyOriginatorId' | 'counterpartyBeneficiaryId';
+  subjectColumn: Subject;
 };

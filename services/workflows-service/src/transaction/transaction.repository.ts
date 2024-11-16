@@ -6,6 +6,11 @@ import { TProjectId } from '@/types';
 import { GetTransactionsDto } from './dtos/get-transactions.dto';
 import { DateTimeFilter } from '@/common/query-filters/date-time-filter';
 import { toPrismaOrderByGeneric } from '@/workflow/utils/toPrismaOrderBy';
+import deepmerge from 'deepmerge';
+
+const DEFAULT_TRANSACTION_ORDER = {
+  transactionDate: Prisma.SortOrder.desc,
+};
 
 @Injectable()
 export class TransactionRepository {
@@ -21,20 +26,36 @@ export class TransactionRepository {
   }
 
   async findMany<T extends Prisma.TransactionRecordFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.TransactionRecordFindManyArgs>,
     projectId: TProjectId,
+    args?: Prisma.SelectSubset<T, Prisma.TransactionRecordFindManyArgs>,
   ) {
     return await this.prisma.transactionRecord.findMany(
-      this.scopeService.scopeFindMany(args, [projectId]),
+      deepmerge(args || {}, this.scopeService.scopeFindMany(args, [projectId])),
     );
   }
 
-  async findManyWithFilters(
-    getTransactionsParameters: GetTransactionsDto,
-    projectId: string,
-    options?: Prisma.TransactionRecordFindManyArgs,
-  ): Promise<TransactionRecord[]> {
-    const args: Prisma.TransactionRecordFindManyArgs = {};
+  // eslint-disable-next-line ballerine/verify-repository-project-scoped
+  static buildTransactionOrderByArgs(getTransactionsParameters: GetTransactionsDto) {
+    const args: {
+      orderBy: Prisma.TransactionRecordFindManyArgs['orderBy'];
+    } = {
+      orderBy: getTransactionsParameters.orderBy
+        ? toPrismaOrderByGeneric(getTransactionsParameters.orderBy)
+        : DEFAULT_TRANSACTION_ORDER,
+    };
+
+    return args;
+  }
+
+  // eslint-disable-next-line ballerine/verify-repository-project-scoped
+  static buildTransactionPaginationArgs(getTransactionsParameters: GetTransactionsDto) {
+    const args: {
+      skip: Prisma.TransactionRecordFindManyArgs['skip'];
+      take?: Prisma.TransactionRecordFindManyArgs['take'];
+    } = {
+      take: 20,
+      skip: 0,
+    };
 
     if (getTransactionsParameters.page?.number && getTransactionsParameters.page?.size) {
       // Temporary fix for pagination (class transformer issue)
@@ -45,16 +66,25 @@ export class TransactionRepository {
       args.skip = size * (number - 1);
     }
 
-    if (getTransactionsParameters.orderBy) {
-      args.orderBy = toPrismaOrderByGeneric(getTransactionsParameters.orderBy);
-    }
+    return args;
+  }
+
+  async findManyWithFilters(
+    getTransactionsParameters: GetTransactionsDto,
+    projectId: string,
+    options?: Prisma.TransactionRecordFindManyArgs,
+  ): Promise<TransactionRecord[]> {
+    const args: Prisma.TransactionRecordFindManyArgs = {
+      ...TransactionRepository.buildTransactionPaginationArgs(getTransactionsParameters),
+      ...TransactionRepository.buildTransactionOrderByArgs(getTransactionsParameters),
+    };
 
     return this.prisma.transactionRecord.findMany(
       this.scopeService.scopeFindMany(
         {
           ...options,
           where: {
-            ...this.buildFilters(getTransactionsParameters),
+            ...this.buildFiltersV1(getTransactionsParameters),
           },
           ...args,
         },
@@ -64,7 +94,7 @@ export class TransactionRepository {
   }
 
   // eslint-disable-next-line ballerine/verify-repository-project-scoped
-  private buildFilters(
+  buildFiltersV1(
     getTransactionsParameters: GetTransactionsDto,
   ): Prisma.TransactionRecordWhereInput {
     const whereClause: Prisma.TransactionRecordWhereInput = {};
@@ -93,6 +123,26 @@ export class TransactionRepository {
     if (getTransactionsParameters.paymentMethod) {
       whereClause.paymentMethod = getTransactionsParameters.paymentMethod;
     }
+
+    return whereClause;
+  }
+
+  // eslint-disable-next-line ballerine/verify-repository-project-scoped
+  buildFiltersV2(
+    projectId: TProjectId,
+    getTransactionsParameters: GetTransactionsDto,
+    args: Prisma.TransactionRecordWhereInput,
+  ): Prisma.TransactionRecordWhereInput {
+    const whereClause: Prisma.TransactionRecordWhereInput = {
+      productId: projectId,
+      transactionDate: {
+        gte: getTransactionsParameters.startDate,
+        lte: getTransactionsParameters.endDate,
+      },
+      paymentMethod: getTransactionsParameters.paymentMethod,
+    };
+
+    deepmerge(args, whereClause);
 
     return whereClause;
   }

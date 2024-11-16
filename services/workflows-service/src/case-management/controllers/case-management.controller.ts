@@ -71,7 +71,7 @@ export class CaseManagementController {
 
   @Get('transactions')
   async getTransactions(@CurrentProject() projectId: TProjectId) {
-    return this.transactionService.getAll({}, projectId);
+    return this.transactionService.getTransactions(projectId);
   }
 
   @Get('profiles/individuals')
