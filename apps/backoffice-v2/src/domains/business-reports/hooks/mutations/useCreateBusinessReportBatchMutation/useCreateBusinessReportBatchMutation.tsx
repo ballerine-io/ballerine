@@ -29,9 +29,6 @@ export const useCreateBusinessReportBatchMutation = ({
         merchantSheet,
         isExample: customer?.config?.isExample ?? false,
       });
-
-      // Artificial delay to ensure report is created in Unified API's DB
-      await new Promise(resolve => setTimeout(resolve, 3000));
     },
     onSuccess: data => {
       void queryClient.invalidateQueries();
