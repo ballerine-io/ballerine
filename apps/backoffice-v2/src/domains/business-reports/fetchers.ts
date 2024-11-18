@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { t } from 'i18next';
 import {
   MERCHANT_REPORT_STATUSES,
+  MERCHANT_REPORT_STATUSES_MAP,
   MERCHANT_REPORT_TYPES,
   MERCHANT_REPORT_VERSIONS,
   MerchantReportType,
@@ -43,6 +44,10 @@ export const BusinessReportSchema = z
   })
   .transform(data => ({
     ...data,
+    status:
+      data.status === MERCHANT_REPORT_STATUSES_MAP.failed
+        ? MERCHANT_REPORT_STATUSES_MAP['quality-control']
+        : data.status,
     companyName:
       data?.companyName ??
       (data?.data?.websiteCompanyAnalysis as UnknownRecord | undefined)?.companyName ??
