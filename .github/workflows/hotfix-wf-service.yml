@@ -272,13 +272,13 @@ jobs:
           ref: main
           fetch-depth: 1
           sparse-checkout: |
-            kubernetes/helm/wf-service
+            kubernetes/helm/wf-service-migration
           sparse-checkout-cone-mode: true
       - name: Check if values yaml file exists 
         id: update_helm_check
         shell: bash
         run: |
-          if [ -f "kubernetes/helm/wf-service/${{ inputs.environment }}-custom-values.yaml" ]; then
+          if [ -f "kubernetes/helm/wf-service-migration/${{ inputs.environment }}-custom-values.yaml" ]; then
             echo "file_name=${{ inputs.environment }}-custom-values.yaml" >> "$GITHUB_OUTPUT"
             echo ${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}
           else
@@ -292,11 +292,11 @@ jobs:
           repository: ballerine-io/cloud-infra-config
           branch: main
           commitChange: true
-          message: "Performed HotFix to ${{ inputs.environment }} wf-service image Version to ${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})"
+          message: "Performed HotFix to ${{ inputs.environment }} Sample wf-service application image Version to ${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})"
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
-              "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
+              "kubernetes/helm/wf-service-migration/${{steps.update_helm_check.outputs.file_name}}": {
                 "image.tag": "${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}",
                 "prismaMigrate.image.tag": "${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}",
                 "dbMigrate.image.tag": "${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}",
@@ -317,61 +317,61 @@ jobs:
         uses: slackapi/slack-github-action@v1.26.0
         with:
           channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
-          slack-message: "Hotfix on Wf-service Deployment in ${{ inputs.environment }} with tag ${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }} build result: ${{ job.status }}. successfully updated the hotfix on wf-service helm values for ${{ inputs.environment }}."
+          slack-message: "Hotfix tested on Wf-service Sample app Deployment in ${{ inputs.environment }} with tag ${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }} build result: ${{ job.status }}. successfully updated the hotfix on wf-service helm values for ${{ inputs.environment }}."
         env:
           SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}
 
-  release:
-    runs-on: ubuntu-latest
-    needs: [build-and-push-image,update-helm-chart]
-    if: ${{ needs.update-helm-chart.result=='success' }} && (startsWith(github.ref, 'refs/heads/prod') || startsWith(github.ref, 'refs/heads/dev') || startsWith(github.ref, 'refs/heads/sb') || github.event.inputs.environment == 'dev')
-    env:
-      GH_TOKEN: ${{ github.token }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  # release:
+  #   runs-on: ubuntu-latest
+  #   needs: [build-and-push-image,update-helm-chart]
+  #   if: ${{ needs.update-helm-chart.result=='success' }} && (startsWith(github.ref, 'refs/heads/prod') || startsWith(github.ref, 'refs/heads/dev') || startsWith(github.ref, 'refs/heads/sb') || github.event.inputs.environment == 'dev')
+  #   env:
+  #     GH_TOKEN: ${{ github.token }}
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-      - name: Release
-        run: |
-          if [ "${{ inputs.environment }}" == "dev" ]; then
-            suffix="-dev-${{ needs.build-and-push-image.outputs.sha_short }}"
-          else
-            suffix=""
-          fi
-          prefix="hotfix-"
-          gh release create ${prefix}${{ needs.build-and-push-image.outputs.version }}${suffix} --notes-start-tag ${{ needs.build-and-push-image.outputs.bumped_tag }}
+  #     - name: Release
+  #       run: |
+  #         if [ "${{ inputs.environment }}" == "dev" ]; then
+  #           suffix="-dev-${{ needs.build-and-push-image.outputs.sha_short }}"
+  #         else
+  #           suffix=""
+  #         fi
+  #         prefix="hotfix-"
+  #         gh release create ${prefix}${{ needs.build-and-push-image.outputs.version }}${suffix} --notes-start-tag ${{ needs.build-and-push-image.outputs.bumped_tag }}
             
-  sentry:
-    runs-on: ubuntu-latest
-    needs: [release,build-and-push-image]
-    env:
-      GH_TOKEN: ${{ github.token }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  # sentry:
+  #   runs-on: ubuntu-latest
+  #   needs: [release,build-and-push-image]
+  #   env:
+  #     GH_TOKEN: ${{ github.token }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      # TODO: add caching for docker_full_image which build previously
+  #     # TODO: add caching for docker_full_image which build previously
 
-      - name: Run Container and Copy File
-        run: |
-          id=$(docker run --rm --name tmp -d ${{ needs.build-and-push-image.outputs.docker_full_image }} tail -f /dev/null)
+  #     - name: Run Container and Copy File
+  #       run: |
+  #         id=$(docker run --rm --name tmp -d ${{ needs.build-and-push-image.outputs.docker_full_image }} tail -f /dev/null)
 
-          mkdir -p ./dist
+  #         mkdir -p ./dist
 
-          docker cp $id:/app/dist/ ./dist
+  #         docker cp $id:/app/dist/ ./dist
 
-          curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.31.0" bash
+  #         curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.31.0" bash
 
-          sentry-cli releases new "${{needs.build-and-push-image.outputs.version}}"
-          echo "sentry-cli releases new ${{needs.build-and-push-image.outputs.version}}"
+  #         sentry-cli releases new "${{needs.build-and-push-image.outputs.version}}"
+  #         echo "sentry-cli releases new ${{needs.build-and-push-image.outputs.version}}"
 
-          sentry-cli releases set-commits "${{needs.build-and-push-image.outputs.version}}" --auto --ignore-missing
-          echo "sentry-cli releases set-commits ${{needs.build-and-push-image.outputs.version}} --auto --ignore-missing"
+  #         sentry-cli releases set-commits "${{needs.build-and-push-image.outputs.version}}" --auto --ignore-missing
+  #         echo "sentry-cli releases set-commits ${{needs.build-and-push-image.outputs.version}} --auto --ignore-missing"
 
-          sentry-cli sourcemaps upload --dist="${{needs.build-and-push-image.outputs.sha_short}}" --release="${{needs.build-and-push-image.outputs.version}}" ./dist
-          echo "sentry-cli sourcemaps upload --dist=${{needs.build-and-push-image.outputs.sha_short}} --release=${{needs.build-and-push-image.outputs.version}} ./dist"
+  #         sentry-cli sourcemaps upload --dist="${{needs.build-and-push-image.outputs.sha_short}}" --release="${{needs.build-and-push-image.outputs.version}}" ./dist
+  #         echo "sentry-cli sourcemaps upload --dist=${{needs.build-and-push-image.outputs.sha_short}} --release=${{needs.build-and-push-image.outputs.version}} ./dist"
 
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ secrets.WF_SENTRY_PROJECT }}
+  #       env:
+  #         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+  #         SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+  #         SENTRY_PROJECT: ${{ secrets.WF_SENTRY_PROJECT }}
