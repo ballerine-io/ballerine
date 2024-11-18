@@ -1,9 +1,9 @@
 import { AnyRecord } from '@ballerine/common';
 import { logger } from '../../logger';
-import { IApiPluginParams } from './types';
-import { ApiPlugin } from './api-plugin';
-import { ApiEmailTemplates } from './vendor-consts';
+import { ApiPlugin } from './api-plugin/api-plugin';
 import { BallerineApiPlugin, IBallerineApiPluginParams } from './ballerine-plugin';
+import { IApiPluginParams } from './types';
+import { ApiEmailTemplates } from './vendor-consts';
 
 export interface IBallerineEmailPluginParams {
   pluginKind: 'template-email';

@@ -1,7 +1,8 @@
 import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
-import { logger } from '../../logger';
-import { TContext, Transformer, Transformers, Validator } from '../../utils';
-import { IApiPluginParams } from './types';
+import { logger } from '../../../logger';
+import { TContext, Transformer, Transformers, Validator } from '../../../utils';
+import { IApiPluginParams } from '../types';
+import { getGlobalQueryParams } from './helpers';
 
 export class ApiPlugin {
   public static pluginType = 'http';
@@ -116,6 +117,7 @@ export class ApiPlugin {
   }
 
   protected async _getPluginUrl(context: AnyRecord) {
+    const queryParams = getGlobalQueryParams();
     let _url: string;
 
     if (typeof this.url === 'string') {
@@ -138,6 +140,8 @@ export class ApiPlugin {
         throw new Error('Url options should be an object');
       }
     }
+
+    _url = await this.replaceVariablesFromContext(_url, { query: queryParams });
 
     return await this.replaceAllVariables(_url, context);
   }
@@ -251,7 +255,12 @@ export class ApiPlugin {
     return { [returnArgKey]: isValid, errorMessage };
   }
 
-  async composeRequestHeaders(headers: HeadersInit, context: TContext) {
+  async composeRequestHeaders(headers: HeadersInit, _context: TContext) {
+    const context = {
+      query: getGlobalQueryParams(),
+      ..._context,
+    };
+
     const headersEntries = await Promise.all(
       Object.entries(headers).map(async header => [
         header[0],

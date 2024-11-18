@@ -1,7 +1,7 @@
 import { AnyRecord } from '@ballerine/common';
-import { ApiPlugin } from './api-plugin';
-import { JsonSchemaValidator } from '../../utils/context-validator/json-schema-validator';
 import { Validator } from '../../utils';
+import { JsonSchemaValidator } from '../../utils/context-validator/json-schema-validator';
+import { ApiPlugin } from './api-plugin/api-plugin';
 import { BallerineApiPlugin } from './ballerine-plugin';
 
 const kycSessionRequestSchema = {

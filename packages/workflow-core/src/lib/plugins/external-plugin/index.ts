@@ -1,10 +1,10 @@
-export { ApiPlugin } from './api-plugin';
-export { WebhookPlugin } from './webhook-plugin';
+export { ApiPlugin } from './api-plugin/api-plugin';
 export { DispatchEventPlugin } from './dispatch-event-plugin';
 export type {
-  WebhookPluginParams,
   IApiPluginParams,
-  ValidatableTransformer,
   IterativePluginParams,
   SerializableValidatableTransformer,
+  ValidatableTransformer,
+  WebhookPluginParams,
 } from './types';
+export { WebhookPlugin } from './webhook-plugin';

@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.6.65
+
+### Patch Changes
+
+- Added query to apiPlugin url & headers
+
 ## 0.6.64
 
 ### Patch Changes

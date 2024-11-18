@@ -1,10 +1,10 @@
 import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
+import { State } from 'country-state-city';
 import { alpha2ToAlpha3 } from 'i18n-iso-countries';
 import { logger } from '../../logger';
 import { TContext } from '../../utils/types';
-import { ApiPlugin } from './api-plugin';
+import { ApiPlugin } from './api-plugin/api-plugin';
 import { IApiPluginParams } from './types';
-import { State } from 'country-state-city';
 
 export class MastercardMerchantScreeningPlugin extends ApiPlugin {
   public static pluginType = 'http';

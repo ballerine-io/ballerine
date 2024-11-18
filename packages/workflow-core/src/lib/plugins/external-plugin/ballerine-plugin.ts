@@ -1,6 +1,7 @@
-import { ApiPlugin, IApiPluginParams } from '.';
-import { ApiBallerinePlugins, BALLERINE_API_PLUGIN_FACTORY } from './vendor-consts';
 import { reqResTransformersObj } from '../../workflow-runner-utils';
+import { ApiPlugin } from './api-plugin';
+import { IApiPluginParams } from './types';
+import { ApiBallerinePlugins, BALLERINE_API_PLUGIN_FACTORY } from './vendor-consts';
 
 export interface IBallerineApiPluginParams {
   pluginKind: ApiBallerinePlugins;

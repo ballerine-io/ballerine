@@ -1,6 +1,6 @@
-import { ApiPlugin } from './api-plugin';
 import { AnyRecord } from '@ballerine/common';
 import * as countries from 'i18n-iso-countries';
+import { ApiPlugin } from './api-plugin/api-plugin';
 
 // This is currently only uses only open corp.
 
