@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatStringValues, getGlobalQueryParams, isBrowser } from './helpers';
+import { getGlobalQueryParams, isBrowser, sanitizeQueryParam } from './helpers';
 
 describe('helpers', () => {
   describe('isBrowser', () => {
@@ -9,11 +9,18 @@ describe('helpers', () => {
 
       expect(isBrowser()).toBe(true);
 
-      delete global.window;
+      delete (global as any).window;
     });
 
     it('should return false when window is undefined', () => {
       expect(isBrowser()).toBe(false);
+    });
+  });
+
+  describe('sanitizeQueryParam', () => {
+    it('should trim and escape special characters', () => {
+      expect(sanitizeQueryParam(' test<script> ')).toBe('test&lt;script&gt;');
+      expect(sanitizeQueryParam('  hello&world  ')).toBe('hello&amp;world');
     });
   });
 
@@ -23,55 +30,36 @@ describe('helpers', () => {
       expect(result).toEqual({});
     });
 
-    it('should parse URL search params into object', () => {
-      // Mock window with location
+    it('should parse and sanitize URL search params into object', () => {
+      // Mock window with location and URLSearchParams
       global.window = {
         location: {
-          search: '?key1=value1&key2=value2',
+          search: '?key1=<script>&key2= value2 ',
         },
       } as Window & typeof globalThis;
 
       expect(getGlobalQueryParams()).toEqual({
-        key1: 'value1',
+        key1: '&lt;script&gt;',
         key2: 'value2',
       });
 
-      delete global.window;
-    });
-  });
-
-  describe('formatStringValues', () => {
-    it('should return original string if no placeholders found', () => {
-      const str = 'Hello World';
-      const data = { name: 'John' };
-
-      expect(formatStringValues(str, data)).toBe(str);
+      delete (global as any).window;
     });
 
-    it('should replace single placeholder with value', () => {
-      const str = 'Hello {name}';
-      const data = { name: 'John' };
-
-      expect(formatStringValues(str, data)).toBe('Hello John');
-    });
-
-    it('should replace multiple placeholders with values', () => {
-      const str = 'Hello {user.firstName} {user.lastName}';
-      const data = {
-        user: {
-          firstName: 'John',
-          lastName: 'Doe',
+    it('should handle multiple sanitized values for same parameter', () => {
+      // Mock window with location and URLSearchParams
+      global.window = {
+        location: {
+          search: '?key1=value1<>&key1=value2&key2= value3 ',
         },
-      };
+      } as Window & typeof globalThis;
 
-      expect(formatStringValues(str, data)).toBe('Hello John Doe');
-    });
+      expect(getGlobalQueryParams()).toEqual({
+        key1: ['value1&lt;&gt;', 'value2'],
+        key2: 'value3',
+      });
 
-    it('should keep placeholder if value not found in data', () => {
-      const str = 'Hello {name} {unknown}';
-      const data = { name: 'John' };
-
-      expect(formatStringValues(str, data)).toBe('Hello John {unknown}');
+      delete (global as any).window;
     });
   });
 });

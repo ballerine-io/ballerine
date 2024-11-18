@@ -1,41 +1,34 @@
-import get from 'lodash.get';
+import validator from 'validator';
 
 export const isBrowser = () => typeof window !== 'undefined';
 
-export const getGlobalQueryParams = () => {
+/**
+ * Sanitizes query parameter values to prevent XSS and injection attacks
+ */
+export const sanitizeQueryParam = (param: string): string => {
+  return validator.escape(param.trim());
+};
+
+export const getGlobalQueryParams = (): Record<string, string | string[]> => {
   if (!isBrowser()) return {};
 
   const searchParams = new URLSearchParams(window.location.search);
-  const paramsObject: Record<string, string> = {};
+  const paramsObject: Record<string, string | string[]> = {};
 
-  searchParams.forEach((value, key) => {
-    paramsObject[key] = value;
-  });
+  // Handle multiple values for the same parameter
+  for (const [key, value] of searchParams.entries()) {
+    const sanitizedValue = sanitizeQueryParam(value);
+    const sanitizedKey = sanitizeQueryParam(key);
 
-  return paramsObject;
-};
-
-export const formatStringValues = (
-  str: string,
-  data: Record<string, string | Record<string, string>>,
-) => {
-  // Find all placeholders in curly braces
-  const placeholders = str.match(/{(.*?)}/g);
-
-  if (!placeholders) return str;
-
-  let formattedString = str;
-
-  // Replace each placeholder with its value from data
-  for (const placeholder of placeholders) {
-    const path = placeholder.replace(/{|}/g, ''); // Remove curly braces
-    const value = get(data, path);
-
-    // Replace placeholder with value if found
-    if (value !== undefined) {
-      formattedString = formattedString.replace(placeholder, String(value));
+    if (sanitizedKey in paramsObject) {
+      const existing = paramsObject[sanitizedKey];
+      paramsObject[sanitizedKey] = Array.isArray(existing)
+        ? [...existing, sanitizedValue]
+        : [existing as string, sanitizedValue];
+    } else {
+      paramsObject[sanitizedKey] = sanitizedValue;
     }
   }
 
-  return formattedString;
+  return paramsObject;
 };
