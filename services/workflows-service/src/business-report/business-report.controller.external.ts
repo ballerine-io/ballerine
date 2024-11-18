@@ -111,21 +111,6 @@ export class BusinessReportControllerExternal {
     let business: Pick<Business, 'id' | 'correlationId'> | undefined;
     const merchantNameWithDefault = merchantName || 'Not detected';
 
-    if (!businessCorrelationId) {
-      business = await this.businessService.create({
-        data: {
-          companyName: merchantNameWithDefault,
-          country: countryCode,
-          website: websiteUrl,
-          projectId: currentProjectId,
-        },
-        select: {
-          id: true,
-          correlationId: true,
-        },
-      });
-    }
-
     if (businessCorrelationId) {
       business =
         (await this.businessService.getByCorrelationId(businessCorrelationId, [currentProjectId], {
@@ -134,6 +119,22 @@ export class BusinessReportControllerExternal {
             correlationId: true,
           },
         })) ?? undefined;
+    }
+
+    if (!business) {
+      business = await this.businessService.create({
+        data: {
+          companyName: merchantNameWithDefault,
+          country: countryCode,
+          website: websiteUrl,
+          projectId: currentProjectId,
+          correlationId: businessCorrelationId,
+        },
+        select: {
+          id: true,
+          correlationId: true,
+        },
+      });
     }
 
     if (!business) {
