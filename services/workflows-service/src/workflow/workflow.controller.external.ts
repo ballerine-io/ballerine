@@ -368,7 +368,6 @@ export class WorkflowControllerExternal {
       workflowDefinitionId: actionResult[0]?.workflowDefinition.id,
       workflowRuntimeId: actionResult[0]?.workflowRuntimeData.id,
       ballerineEntityId: actionResult[0]?.ballerineEntityId,
-      entities: actionResult[0]?.entities,
     });
   }
 
