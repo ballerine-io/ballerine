@@ -3,6 +3,7 @@ import {
   CollectionFlowConfig,
   CollectionFlowContext,
 } from '@/domains/collection-flow/types/flow-context.types';
+import { AnyRecord } from '@ballerine/common';
 import { AnyChildren, AnyObject } from '@ballerine/ui';
 import { MachineConfig } from 'xstate';
 
@@ -26,4 +27,5 @@ export interface StateManagerProps {
   children: AnyChildren | StateManagerChildCallback;
   initialContext: CollectionFlowContext | null;
   config?: CollectionFlowConfig;
+  additionalContext?: AnyRecord;
 }

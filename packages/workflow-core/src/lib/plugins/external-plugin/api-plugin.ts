@@ -41,7 +41,7 @@ export class ApiPlugin {
     this.displayName = pluginParams.displayName;
   }
 
-  async invoke(context: TContext) {
+  async invoke(context: TContext, additionalContext?: AnyRecord) {
     let requestPayload;
 
     try {
@@ -59,7 +59,10 @@ export class ApiPlugin {
         }
       }
 
-      const _url = await this._getPluginUrl(context);
+      const _url = await this._getPluginUrl({
+        ...context,
+        ...additionalContext,
+      });
 
       logger.log('API Plugin - Sending API request', {
         url: _url,
@@ -70,7 +73,10 @@ export class ApiPlugin {
         _url,
         this.method,
         requestPayload,
-        await this.composeRequestHeaders(this.headers!, context),
+        await this.composeRequestHeaders(this.headers!, {
+          ...context,
+          ...additionalContext,
+        }),
       );
 
       logger.log('API Plugin - Received response', {
