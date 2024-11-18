@@ -347,7 +347,7 @@ export class TransactionControllerExternal {
       throw new errors.NotFoundException(`Alert definition not found for alert ${alert.id}`);
     }
 
-    // Backward compatability will be remove soon,
+    // Backward compatibility will be remove soon,
     if (isEmpty((alert.executionDetails as TExecutionDetails).filters)) {
       return this.getTransactionsByAlertV1({ filters, projectId });
     }
@@ -416,13 +416,12 @@ export class TransactionControllerExternal {
   }) {
     if (alert) {
       return this.service.getTransactions(projectId, {
-        where:
-          alert.executionDetails.filters ||
-          this.dataAnalyticsService.getInvestigationFilter(
-            projectId,
-            alert.alertDefinition.inlineRule as InlineRule,
-            alert.executionDetails.subjects,
-          ),
+        where: alert.executionDetails.filters,
+        // || this.dataAnalyticsService.getInvestigationFilter(
+        //   projectId,
+        //   alert.alertDefinition.inlineRule as InlineRule,
+        //   alert.executionDetails.subjects,
+        // ),
         include: {
           counterpartyBeneficiary: {
             select: {

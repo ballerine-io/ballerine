@@ -22,7 +22,7 @@ export const useTransactionsQuery = ({
       page,
       pageSize,
     }),
-    enabled: isAuthenticated && !!counterpartyId,
+    enabled: isAuthenticated,
     staleTime: 100_000,
   });
 };

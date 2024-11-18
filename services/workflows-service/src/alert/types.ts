@@ -38,6 +38,14 @@ export type TAlertTransactionResponse = TAlertResponse & {
     business: Pick<Business, 'id' | 'companyName' | 'correlationId'>;
     endUser: Pick<EndUser, 'id' | 'firstName' | 'lastName' | 'correlationId'>;
   };
+  counterpartyBeneficiary: {
+    business: Pick<Business, 'id' | 'companyName' | 'correlationId'>;
+    endUser: Pick<EndUser, 'id' | 'firstName' | 'lastName' | 'correlationId'>;
+  };
+  counterpartyOriginator: {
+    business: Pick<Business, 'id' | 'companyName' | 'correlationId'>;
+    endUser: Pick<EndUser, 'id' | 'firstName' | 'lastName' | 'correlationId'>;
+  };
 };
 
 export type TAlertMerchantResponse = TAlertResponse & {
