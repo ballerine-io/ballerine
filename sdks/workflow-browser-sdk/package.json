@@ -60,7 +60,6 @@
     "cross-fetch": "^3.1.5",
     "cspell": "^6.31.2",
     "cz-conventional-changelog": "^3.3.0",
-    "dompurify": "^3.0.6",
     "eslint": "^8.32.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-eslint-comments": "^3.2.0",
