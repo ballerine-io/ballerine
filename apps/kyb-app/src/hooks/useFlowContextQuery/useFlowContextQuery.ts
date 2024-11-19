@@ -17,7 +17,7 @@ export const useFlowContextQuery = () => {
 
   return {
     data,
-    isLoading,
+    isLoading: isLoading && !isFetched,
     isLoaded: isFetched,
     error: error ? (error as HTTPError) : null,
     refetch,

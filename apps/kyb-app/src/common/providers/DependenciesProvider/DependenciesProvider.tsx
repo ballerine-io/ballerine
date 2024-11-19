@@ -1,11 +1,13 @@
 import { InvalidAccessTokenError } from '@/common/errors/invalid-access-token';
 import { useCustomerQuery } from '@/hooks/useCustomerQuery';
+import { useEndUserQuery } from '@/hooks/useEndUserQuery';
 import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { LoadingScreen } from '@/pages/CollectionFlow/components/atoms/LoadingScreen';
 import { HTTPError } from 'ky';
-import { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { DependenciesContext } from './dependencies-context';
 import { getJsonErrors, isShouldIgnoreErrors } from './helpers';
 
 interface IDependenciesProviderProps {
@@ -16,7 +18,8 @@ export const DependenciesProvider: FunctionComponent<IDependenciesProviderProps>
   children,
 }: IDependenciesProviderProps) => {
   const [error, setError] = useState<Error | null>(null);
-  const [showContent, setShowContent] = useState(false);
+  const { refetch: refetchEndUser } = useEndUserQuery();
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const language = useLanguage();
 
@@ -36,9 +39,21 @@ export const DependenciesProvider: FunctionComponent<IDependenciesProviderProps>
       : false;
   }, [dependancyQueries]);
 
+  useEffect(() => {
+    if (isLoading) return;
+
+    setIsInitialLoading(false);
+  }, [isLoading]);
+
   const errors = useMemo(() => {
     return dependancyQueries.filter(dependency => dependency.error);
   }, [dependancyQueries]);
+
+  const refetchAll = useCallback(async () => {
+    await refetchEndUser(); // It will trigger refetch of all dependencies
+  }, [refetchEndUser]);
+
+  const context = useMemo(() => ({ refetchAll, isLoading }), [refetchAll, isLoading]);
 
   useEffect(() => {
     if (!Array.isArray(errors) || !errors?.length) return;
@@ -66,19 +81,9 @@ export const DependenciesProvider: FunctionComponent<IDependenciesProviderProps>
     throw error;
   }
 
-  if (!isLoading) {
-    return children;
+  if (isInitialLoading) {
+    return <LoadingScreen isLoading={isInitialLoading} />;
   }
 
-  return (
-    <>
-      {showContent && children}
-      <LoadingScreen
-        onExitComplete={() => {
-          setShowContent(true);
-        }}
-        isLoading={isLoading}
-      />
-    </>
-  );
+  return <DependenciesContext.Provider value={context}>{children}</DependenciesContext.Provider>;
 };

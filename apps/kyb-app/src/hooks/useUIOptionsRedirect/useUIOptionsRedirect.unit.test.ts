@@ -55,6 +55,7 @@ describe('useUIOptionsRedirect', () => {
       isLoading: false,
       error: null,
       isLoaded: true,
+      refetch: vi.fn(),
     });
 
     // Mock window.location
@@ -79,6 +80,7 @@ describe('useUIOptionsRedirect', () => {
       isLoading: false,
       error: null,
       isLoaded: true,
+      refetch: vi.fn(),
     });
 
     renderHook(() => useUIOptionsRedirect('success'));
@@ -95,6 +97,7 @@ describe('useUIOptionsRedirect', () => {
       isLoading: false,
       error: null,
       isLoaded: true,
+      refetch: vi.fn(),
     });
 
     renderHook(() => useUIOptionsRedirect('success'));
@@ -111,6 +114,7 @@ describe('useUIOptionsRedirect', () => {
       isLoading: false,
       error: null,
       isLoaded: true,
+      refetch: vi.fn(),
     });
 
     const originalHref = window.location.href;

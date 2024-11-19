@@ -22,8 +22,9 @@ export const Background: FunctionComponent<IBackgroundProps> = props => {
         style={styles}
         initial={{ opacity: 0, scale: 1.2 }}
         animate={isLoaded ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 1.2 }}
+        exit={{ opacity: 0 }}
         transition={{
-          duration: 0.8,
+          duration: 0.6,
           ease: 'easeOut',
         }}
         onLoad={() => setIsLoaded(true)}

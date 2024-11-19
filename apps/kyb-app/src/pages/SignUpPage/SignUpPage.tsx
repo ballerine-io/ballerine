@@ -9,14 +9,23 @@ import {
 } from '@/common/components/layouts/Signup';
 import { useTheme } from '@/common/providers/ThemeProvider';
 import { motion } from 'motion/react';
+import { useEffect, useRef } from 'react';
 import { SignUpForm } from './components/SignUpForm';
 
 export const SignUpPage = () => {
   const { themeDefinition } = useTheme();
 
+  const themeRef = useRef(themeDefinition);
+
+  useEffect(() => {
+    if (!themeDefinition) return;
+
+    themeRef.current = themeDefinition;
+  }, [themeDefinition]);
+
   return (
-    <motion.div>
-      <Signup themeParams={themeDefinition?.signup}>
+    <motion.div className="w-full" exit={{ x: '-100%', opacity: 0 }} transition={{ duration: 0.7 }}>
+      <Signup themeParams={themeRef.current?.signup}>
         <Content>
           <Logo />
           <Header />

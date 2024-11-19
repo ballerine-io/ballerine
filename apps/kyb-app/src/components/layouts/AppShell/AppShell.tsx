@@ -4,18 +4,13 @@ import { LanguagePicker } from '@/components/layouts/AppShell/LanguagePicker';
 import { Logo } from '@/components/layouts/AppShell/Logo';
 import { Navigation } from '@/components/layouts/AppShell/Navigation';
 import { Sidebar } from '@/components/layouts/AppShell/Sidebar';
-import { motion } from 'motion/react';
 
 interface Props {
   children: React.ReactNode | React.ReactNode[];
 }
 
 export const AppShell = ({ children }: Props) => {
-  return (
-    <motion.div className="w-full flex h-screen flex-nowrap overflow-y-hidden">
-      {children}
-    </motion.div>
-  );
+  return <div className="w-full flex h-screen flex-nowrap overflow-y-hidden">{children}</div>;
 };
 
 AppShell.FormContainer = FormContainer;

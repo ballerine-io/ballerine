@@ -1,5 +1,6 @@
 import { CollectionFlow } from '@/pages/CollectionFlow';
 import * as Sentry from '@sentry/react';
+import { motion } from 'motion/react';
 import React from 'react';
 import {
   createBrowserRouter,
@@ -44,6 +45,19 @@ export const router = sentryCreateBrowserRouter([
           {
             path: 'signup',
             Component: SignUpPage,
+          },
+          {
+            path: 'test',
+            Component: () => (
+              <motion.div
+                initial={{ x: '100%', opacity: 1 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.7 }}
+                style={{ width: '100%', height: '100vh', backgroundColor: 'lightblue' }}
+              >
+                c60c740a-34ac-4b39-b67b-4e3868497a74
+              </motion.div>
+            ),
           },
           // TODO: 404 Page?
         ],

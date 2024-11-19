@@ -12,7 +12,6 @@ import {
   PageError,
   usePageErrors,
 } from '@/components/organisms/DynamicUI/Page/hooks/usePageErrors';
-import { UIRenderer } from '@/components/organisms/UIRenderer';
 import { Cell } from '@/components/organisms/UIRenderer/elements/Cell';
 import { Divider } from '@/components/organisms/UIRenderer/elements/Divider';
 import { JSONForm } from '@/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
@@ -37,6 +36,7 @@ import {
 } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 import { AnimatePresence, motion } from 'motion/react';
+import { AnimatedUIRenderer } from './components/organisms/AnimatedUIRenderer';
 import { FailedScreen } from './components/pages/FailedScreen';
 
 const elems = {
@@ -136,192 +136,221 @@ export const CollectionFlow = () => {
   if (!schema || !collectionFlowData) {
     console.error('Schema is missing.');
 
-    return;
+    return <div>123</div>;
   }
 
   return (
-    <DynamicUI initialState={initialUIState}>
-      <DynamicUI.StateManager
-        initialContext={initialContext}
-        workflowId="1"
-        definitionType={schema?.definition.definitionType}
-        extensions={schema?.definition.extensions}
-        definition={definition as State}
-        config={collectionFlowData?.config}
-      >
-        {({ state, stateApi }) => {
-          return (
-            <DynamicUI.TransitionListener
-              pages={elements ?? []}
-              onNext={async (tools, prevState, currentState) => {
-                tools.setElementCompleted(prevState, true);
+    <motion.div
+      initial={{ x: '100%', opacity: 1 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ duration: 0.7 }}
+    >
+      <DynamicUI initialState={initialUIState}>
+        <DynamicUI.StateManager
+          initialContext={initialContext}
+          workflowId="1"
+          definitionType={schema?.definition.definitionType}
+          extensions={schema?.definition.extensions}
+          definition={definition as State}
+          config={collectionFlowData?.config}
+        >
+          {({ state, stateApi }) => {
+            return (
+              <DynamicUI.TransitionListener
+                pages={elements ?? []}
+                onNext={async (tools, prevState, currentState) => {
+                  tools.setElementCompleted(prevState, true);
 
-                const context = stateApi.getContext();
+                  const context = stateApi.getContext();
 
-                const collectionFlow = getCollectionFlowState(context);
+                  const collectionFlow = getCollectionFlowState(context);
+                  console.log({ collectionFlow });
 
-                if (collectionFlow) {
-                  const steps = collectionFlow?.steps || [];
+                  if (collectionFlow) {
+                    const steps = collectionFlow?.steps || [];
 
-                  const isAnyStepCompleted = steps.some(step => step.isCompleted);
+                    const isAnyStepCompleted = steps.some(step => step.isCompleted);
 
-                  setStepCompletionState(context, {
-                    stepName: prevState,
-                    completed: true,
-                  });
+                    setStepCompletionState(context, {
+                      stepName: prevState,
+                      completed: true,
+                    });
 
-                  collectionFlow.currentStep = currentState;
+                    collectionFlow.currentStep = currentState;
 
-                  if (!isAnyStepCompleted) {
-                    console.log('Collection flow touched, changing state to inprogress');
-                    setCollectionFlowStatus(context, CollectionFlowStatusesEnum.inprogress);
+                    if (!isAnyStepCompleted) {
+                      console.log('Collection flow touched, changing state to inprogress');
+                      setCollectionFlowStatus(context, CollectionFlowStatusesEnum.inprogress);
+                    }
+
+                    stateApi.setContext(context);
+
+                    await stateApi.invokePlugin('sync_workflow_runtime');
                   }
+                }}
+                onPrevious={async (tools, prevState, currentState) => {
+                  tools.setElementCompleted(prevState, false);
 
-                  stateApi.setContext(context);
+                  const context = stateApi.getContext();
 
-                  await stateApi.invokePlugin('sync_workflow_runtime');
-                }
-              }}
-            >
-              {() => {
-                // Temp state, has to be resolved to success or failure by plugins
-                if (state === 'done') return <LoadingScreen />;
+                  const collectionFlow = getCollectionFlowState(context);
 
-                if (isCompleted(state)) return <CompletedScreen />;
+                  if (collectionFlow) {
+                    collectionFlow.currentStep = currentState;
+                    stateApi.setContext(context);
 
-                if (isFailed(state)) return <FailedScreen />;
+                    await stateApi.invokePlugin('sync_workflow_runtime');
+                  }
+                }}
+              >
+                {() => {
+                  // Temp state, has to be resolved to success or failure by plugins
+                  if (state === 'done') return <LoadingScreen />;
 
-                return (
-                  <DynamicUI.PageResolver state={state} pages={elements ?? []}>
-                    {({ currentPage }) => {
-                      return currentPage ? (
-                        <DynamicUI.Page page={currentPage}>
-                          <DynamicUI.ActionsHandler
-                            actions={currentPage.actions}
-                            stateApi={stateApi}
-                          >
-                            <AppShell>
-                              <AppShell.Sidebar>
-                                <motion.div
-                                  className="flex h-full flex-col"
-                                  initial={{ opacity: 0, x: -20 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ duration: 0.5 }}
-                                >
+                  if (isCompleted(state)) return <CompletedScreen />;
+
+                  if (isFailed(state)) return <FailedScreen />;
+
+                  return (
+                    <DynamicUI.PageResolver state={state} pages={elements ?? []}>
+                      {({ currentPage }) => {
+                        return currentPage ? (
+                          <DynamicUI.Page page={currentPage}>
+                            <DynamicUI.ActionsHandler
+                              actions={currentPage.actions}
+                              stateApi={stateApi}
+                            >
+                              <AppShell>
+                                <AppShell.Sidebar>
                                   <motion.div
-                                    className="flex h-full flex-1 flex-col"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ duration: 0.5, delay: 0.2 }}
+                                    className="flex h-full flex-col"
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 0.5 }}
                                   >
                                     <motion.div
-                                      className="flex flex-col gap-8 pb-10"
+                                      className="flex h-full flex-1 flex-col"
                                       initial={{ opacity: 0 }}
                                       animate={{ opacity: 1 }}
-                                      transition={{ duration: 0.5, delay: 0.3 }}
+                                      transition={{ duration: 0.5, delay: 0.2 }}
                                     >
-                                      <div className="flex justify-start">
-                                        <AppShell.LanguagePicker />
-                                      </div>
-                                      <AppShell.Navigation />
-                                    </motion.div>
-                                    <motion.div
-                                      className="pb-10"
-                                      initial={{ opacity: 0 }}
-                                      animate={{ opacity: 1 }}
-                                      transition={{ duration: 0.5, delay: 0.4 }}
-                                    >
-                                      {customer?.logoImageUri && (
-                                        <AppShell.Logo
-                                          // @ts-ignore
-                                          logoSrc={themeDefinition.logo || customer?.logoImageUri}
-                                          // @ts-ignore
-                                          appName={customer?.displayName}
-                                          onLoad={() => setLogoLoaded(true)}
-                                        />
-                                      )}
-                                    </motion.div>
-                                    <motion.div
-                                      className="min-h-0 flex-1 pb-10"
-                                      initial={{ opacity: 0 }}
-                                      animate={{ opacity: 1 }}
-                                      transition={{ duration: 0.5, delay: 0.5 }}
-                                    >
-                                      {isLogoLoaded ? <StepperUI /> : null}
-                                    </motion.div>
-                                    <motion.div
-                                      initial={{ opacity: 0 }}
-                                      animate={{ opacity: 1 }}
-                                      transition={{ duration: 0.5, delay: 0.6 }}
-                                    >
-                                      {customer?.displayName && (
-                                        <div>
-                                          {
-                                            t('contact', {
-                                              companyName: customer.displayName,
-                                            }) as string
-                                          }
+                                      <motion.div
+                                        className="flex flex-col gap-8 pb-10"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 0.5, delay: 0.3 }}
+                                      >
+                                        <div className="flex justify-start">
+                                          <AppShell.LanguagePicker />
                                         </div>
-                                      )}
-                                      {themeDefinition.ui?.poweredBy !== false && (
-                                        <div className="flex flex-col">
-                                          <div className="border-b pb-12" />
-                                          <PoweredByLogo className="mt-8" sidebarRootId="sidebar" />
-                                        </div>
-                                      )}
+                                        <AppShell.Navigation />
+                                      </motion.div>
+                                      <motion.div
+                                        className="pb-10"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 0.5, delay: 0.4 }}
+                                      >
+                                        {customer?.logoImageUri && (
+                                          <AppShell.Logo
+                                            // @ts-ignore
+                                            logoSrc={themeDefinition.logo || customer?.logoImageUri}
+                                            // @ts-ignore
+                                            appName={customer?.displayName}
+                                            onLoad={() => setLogoLoaded(true)}
+                                          />
+                                        )}
+                                      </motion.div>
+                                      <motion.div
+                                        className="min-h-0 flex-1 pb-10"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 0.5, delay: 0.5 }}
+                                      >
+                                        {isLogoLoaded ? <StepperUI /> : null}
+                                      </motion.div>
+                                      <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 0.5, delay: 0.6 }}
+                                      >
+                                        {customer?.displayName && (
+                                          <div>
+                                            {
+                                              t('contact', {
+                                                companyName: customer.displayName,
+                                              }) as string
+                                            }
+                                          </div>
+                                        )}
+                                        {themeDefinition.ui?.poweredBy !== false && (
+                                          <div className="flex flex-col">
+                                            <div className="border-b pb-12" />
+                                            <PoweredByLogo
+                                              className="mt-8"
+                                              sidebarRootId="sidebar"
+                                            />
+                                          </div>
+                                        )}
+                                      </motion.div>
                                     </motion.div>
                                   </motion.div>
-                                </motion.div>
-                              </AppShell.Sidebar>
-                              <AppShell.Content>
-                                <AppShell.FormContainer>
-                                  {localStorage.getItem('devmode') ? (
-                                    <div className="flex flex-col gap-4">
-                                      DEBUG
-                                      <div>
-                                        {currentPage
-                                          ? currentPage.stateName
-                                          : 'Page not found and state ' + state}
+                                </AppShell.Sidebar>
+                                <AppShell.Content>
+                                  <AppShell.FormContainer>
+                                    {localStorage.getItem('devmode') ? (
+                                      <div className="flex flex-col gap-4">
+                                        DEBUG
+                                        <div>
+                                          {currentPage
+                                            ? currentPage.stateName
+                                            : 'Page not found and state ' + state}
+                                        </div>
+                                        <div className="flex gap-4">
+                                          <button onClick={() => stateApi.sendEvent('PREVIOUS')}>
+                                            prev
+                                          </button>
+                                          <button onClick={() => stateApi.sendEvent('NEXT')}>
+                                            next
+                                          </button>
+                                        </div>
                                       </div>
-                                      <div className="flex gap-4">
-                                        <button onClick={() => stateApi.sendEvent('PREVIOUS')}>
-                                          prev
-                                        </button>
-                                        <button onClick={() => stateApi.sendEvent('NEXT')}>
-                                          next
-                                        </button>
+                                    ) : null}
+                                    <div className="flex flex-col">
+                                      <div className="flex items-center gap-3 pb-3">
+                                        <StepperProgress
+                                          currentStep={
+                                            (elements?.findIndex(
+                                              page => page?.stateName === state,
+                                            ) ?? 0) + 1
+                                          }
+                                          totalSteps={elements?.length ?? 0}
+                                        />
+                                        <ProgressBar />
                                       </div>
+                                      <AnimatePresence mode="wait" initial={false}>
+                                        <AnimatedUIRenderer
+                                          elements={elems}
+                                          currentPage={currentPage}
+                                          schema={currentPage.elements}
+                                        />
+                                      </AnimatePresence>
                                     </div>
-                                  ) : null}
-                                  <div className="flex flex-col">
-                                    <div className="flex items-center gap-3 pb-3">
-                                      <StepperProgress
-                                        currentStep={
-                                          (elements?.findIndex(page => page?.stateName === state) ??
-                                            0) + 1
-                                        }
-                                        totalSteps={elements?.length ?? 0}
-                                      />
-                                      <ProgressBar />
-                                    </div>
-                                    <AnimatePresence mode="wait">
-                                      <UIRenderer elements={elems} schema={currentPage.elements} />
-                                    </AnimatePresence>
-                                  </div>
-                                </AppShell.FormContainer>
-                              </AppShell.Content>
-                            </AppShell>
-                          </DynamicUI.ActionsHandler>
-                        </DynamicUI.Page>
-                      ) : null;
-                    }}
-                  </DynamicUI.PageResolver>
-                );
-              }}
-            </DynamicUI.TransitionListener>
-          );
-        }}
-      </DynamicUI.StateManager>
-    </DynamicUI>
+                                  </AppShell.FormContainer>
+                                </AppShell.Content>
+                              </AppShell>
+                            </DynamicUI.ActionsHandler>
+                          </DynamicUI.Page>
+                        ) : null;
+                      }}
+                    </DynamicUI.PageResolver>
+                  );
+                }}
+              </DynamicUI.TransitionListener>
+            );
+          }}
+        </DynamicUI.StateManager>
+      </DynamicUI>
+    </motion.div>
   );
 };
