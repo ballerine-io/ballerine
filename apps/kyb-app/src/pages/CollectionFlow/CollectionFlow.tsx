@@ -222,79 +222,83 @@ export const CollectionFlow = () => {
                             >
                               <AppShell>
                                 <AppShell.Sidebar>
-                                  <motion.div
-                                    className="flex h-full flex-col"
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.5 }}
-                                  >
+                                  <AnimatePresence mode="wait" initial={true}>
                                     <motion.div
-                                      className="flex h-full flex-1 flex-col"
-                                      initial={{ opacity: 0 }}
-                                      animate={{ opacity: 1 }}
-                                      transition={{ duration: 0.5, delay: 0.2 }}
+                                      className="flex h-full flex-col"
+                                      initial={{ opacity: 0, x: -20 }}
+                                      animate={{ opacity: 1, x: 0 }}
+                                      transition={{ duration: 0.5 }}
                                     >
                                       <motion.div
-                                        className="flex flex-col gap-8 pb-10"
+                                        className="flex h-full flex-1 flex-col"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
-                                        transition={{ duration: 0.5, delay: 0.3 }}
+                                        transition={{ duration: 0.5, delay: 0.2 }}
                                       >
-                                        <div className="flex justify-start">
-                                          <AppShell.LanguagePicker />
-                                        </div>
-                                        <AppShell.Navigation />
-                                      </motion.div>
-                                      <motion.div
-                                        className="pb-10"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ duration: 0.5, delay: 0.4 }}
-                                      >
-                                        {customer?.logoImageUri && (
-                                          <AppShell.Logo
-                                            // @ts-ignore
-                                            logoSrc={themeDefinition.logo || customer?.logoImageUri}
-                                            // @ts-ignore
-                                            appName={customer?.displayName}
-                                            onLoad={() => setLogoLoaded(true)}
-                                          />
-                                        )}
-                                      </motion.div>
-                                      <motion.div
-                                        className="min-h-0 flex-1 pb-10"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ duration: 0.5, delay: 0.5 }}
-                                      >
-                                        {isLogoLoaded ? <StepperUI /> : null}
-                                      </motion.div>
-                                      <motion.div
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ duration: 0.5, delay: 0.6 }}
-                                      >
-                                        {customer?.displayName && (
-                                          <div>
-                                            {
-                                              t('contact', {
-                                                companyName: customer.displayName,
-                                              }) as string
-                                            }
+                                        <motion.div
+                                          className="flex flex-col gap-8 pb-10"
+                                          initial={{ opacity: 0 }}
+                                          animate={{ opacity: 1 }}
+                                          transition={{ duration: 0.5, delay: 0.5 }}
+                                        >
+                                          <div className="flex justify-start">
+                                            <AppShell.LanguagePicker />
                                           </div>
-                                        )}
-                                        {themeDefinition.ui?.poweredBy !== false && (
-                                          <div className="flex flex-col">
-                                            <div className="border-b pb-12" />
-                                            <PoweredByLogo
-                                              className="mt-8"
-                                              sidebarRootId="sidebar"
+                                          <AppShell.Navigation />
+                                        </motion.div>
+                                        <motion.div
+                                          className="pb-10"
+                                          initial={{ opacity: 0 }}
+                                          animate={{ opacity: 1 }}
+                                          transition={{ duration: 0.5, delay: 0.7 }}
+                                        >
+                                          {customer?.logoImageUri && (
+                                            <AppShell.Logo
+                                              // @ts-ignore
+                                              logoSrc={
+                                                themeDefinition.logo || customer?.logoImageUri
+                                              }
+                                              // @ts-ignore
+                                              appName={customer?.displayName}
+                                              onLoad={() => setLogoLoaded(true)}
                                             />
-                                          </div>
-                                        )}
+                                          )}
+                                        </motion.div>
+                                        <motion.div
+                                          className="min-h-0 flex-1 pb-10"
+                                          initial={{ opacity: 0 }}
+                                          animate={{ opacity: 1 }}
+                                          transition={{ duration: 0.5, delay: 0.9 }}
+                                        >
+                                          {isLogoLoaded ? <StepperUI /> : null}
+                                        </motion.div>
+                                        <motion.div
+                                          initial={{ opacity: 0 }}
+                                          animate={{ opacity: 1 }}
+                                          transition={{ duration: 0.5, delay: 1.1 }}
+                                        >
+                                          {customer?.displayName && (
+                                            <div>
+                                              {
+                                                t('contact', {
+                                                  companyName: customer.displayName,
+                                                }) as string
+                                              }
+                                            </div>
+                                          )}
+                                          {themeDefinition.ui?.poweredBy !== false && (
+                                            <div className="flex flex-col">
+                                              <div className="border-b pb-12" />
+                                              <PoweredByLogo
+                                                className="mt-8"
+                                                sidebarRootId="sidebar"
+                                              />
+                                            </div>
+                                          )}
+                                        </motion.div>
                                       </motion.div>
                                     </motion.div>
-                                  </motion.div>
+                                  </AnimatePresence>
                                 </AppShell.Sidebar>
                                 <AppShell.Content>
                                   <AppShell.FormContainer>
