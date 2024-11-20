@@ -24,12 +24,6 @@ const uniqueArrayByKey = (array: AnyArray, key: PropertyKey) => {
   return [...new Map(array.map(item => [item[key], item])).values()] as TDropdownOption[];
 };
 
-const NON_EDITABLE_FIELDS = ['category'] as const;
-
-export const checkIsEditable = ({ isEditable, field }: { isEditable: boolean; field: string }) => {
-  return !NON_EDITABLE_FIELDS.includes(field) && isEditable;
-};
-
 export const composePickableCategoryType = (
   categoryValue: string,
   typeValue: string,
