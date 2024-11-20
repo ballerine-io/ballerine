@@ -12,7 +12,12 @@ export const AnimatedUIRenderer: FunctionComponent<UIRendererProps & { currentPa
     <motion.div
       initial={{ x: '50%', opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.3 }}
+      transition={{
+        duration: 0.3,
+        ease: 'easeOut',
+        opacity: { duration: 0.2 },
+        x: { type: 'spring', stiffness: 100, damping: 15 },
+      }}
       key={currentPage.stateName}
     >
       <UIRenderer schema={schema} elements={elements} />
