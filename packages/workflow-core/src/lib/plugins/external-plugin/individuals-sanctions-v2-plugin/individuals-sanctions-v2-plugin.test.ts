@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { IndividualsScreeningV2Plugin } from './individuals-screening-v2-plugin';
+import { IndividualsSanctionsV2Plugin } from './individuals-sanctions-v2-plugin';
 import nock from 'nock';
 import { ProcessStatus, UnifiedApiReason } from '@ballerine/common';
 
-describe('IndividualsScreeningV2Plugin', () => {
+describe('IndividualsSanctionsV2Plugin', () => {
   beforeEach(() => {
     nock.disableNetConnect();
     vi.unstubAllEnvs();
@@ -23,6 +23,10 @@ describe('IndividualsScreeningV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
+          clientId: {
+            type: 'literal',
+            value: 'clientId',
+          },
           vendor: {
             type: 'literal',
             value: 'dow-jones',
@@ -58,13 +62,13 @@ describe('IndividualsScreeningV2Plugin', () => {
             },
           ],
         },
-      } satisfies ConstructorParameters<typeof IndividualsScreeningV2Plugin>[0];
+      } satisfies ConstructorParameters<typeof IndividualsSanctionsV2Plugin>[0];
 
       // Act
 
       // Assert
-      expect(() => new IndividualsScreeningV2Plugin(pluginParams)).toThrowError(
-        'Individuals Screening V2 Plugin - JMESPath request transformers are not supported',
+      expect(() => new IndividualsSanctionsV2Plugin(pluginParams)).toThrowError(
+        'Individuals Sanctions V2 Plugin - JMESPath request transformers are not supported',
       );
     });
   });
@@ -82,6 +86,10 @@ describe('IndividualsScreeningV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
+          clientId: {
+            type: 'literal',
+            value: 'clientId',
+          },
           vendor: {
             type: 'literal',
             value: 'dow-jones',
@@ -117,13 +125,13 @@ describe('IndividualsScreeningV2Plugin', () => {
             },
           ],
         },
-      } satisfies ConstructorParameters<typeof IndividualsScreeningV2Plugin>[0];
+      } satisfies ConstructorParameters<typeof IndividualsSanctionsV2Plugin>[0];
 
       // Act
 
       // Assert
-      expect(() => new IndividualsScreeningV2Plugin(pluginParams)).toThrowError(
-        'Individuals Screening V2 Plugin - JMESPath response transformers are not supported',
+      expect(() => new IndividualsSanctionsV2Plugin(pluginParams)).toThrowError(
+        'Individuals Sanctions V2 Plugin - JMESPath response transformers are not supported',
       );
     });
   });
@@ -141,6 +149,10 @@ describe('IndividualsScreeningV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
+          clientId: {
+            type: 'literal',
+            value: 'clientId',
+          },
           vendor: {
             type: 'literal',
             value: 'dow-jones',
@@ -176,13 +188,13 @@ describe('IndividualsScreeningV2Plugin', () => {
             },
           ],
         },
-      } satisfies ConstructorParameters<typeof IndividualsScreeningV2Plugin>[0];
+      } satisfies ConstructorParameters<typeof IndividualsSanctionsV2Plugin>[0];
 
       // Act
 
       // Assert
-      expect(() => new IndividualsScreeningV2Plugin(pluginParams)).not.toThrowError(
-        'Individuals Screening V2 Plugin - JMESPath response transformers are not supported',
+      expect(() => new IndividualsSanctionsV2Plugin(pluginParams)).not.toThrowError(
+        'Individuals Sanctions V2 Plugin - JMESPath response transformers are not supported',
       );
     });
   });
@@ -200,6 +212,10 @@ describe('IndividualsScreeningV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
+          clientId: {
+            type: 'literal',
+            value: 'clientId',
+          },
           vendor: {
             type: 'literal',
             value: 'dow-jones',
@@ -235,13 +251,13 @@ describe('IndividualsScreeningV2Plugin', () => {
             },
           ],
         },
-      } satisfies ConstructorParameters<typeof IndividualsScreeningV2Plugin>[0];
+      } satisfies ConstructorParameters<typeof IndividualsSanctionsV2Plugin>[0];
 
       // Act
 
       // Assert
-      expect(() => new IndividualsScreeningV2Plugin(pluginParams)).not.toThrowError(
-        'Individuals Screening V2 Plugin - JMESPath response transformers are not supported',
+      expect(() => new IndividualsSanctionsV2Plugin(pluginParams)).not.toThrowError(
+        'Individuals Sanctions V2 Plugin - JMESPath response transformers are not supported',
       );
     });
   });
@@ -262,6 +278,10 @@ describe('IndividualsScreeningV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
+          clientId: {
+            type: 'literal',
+            value: 'clientId',
+          },
           vendor: {
             type: 'literal',
             value: 'dow-jones',
@@ -287,8 +307,8 @@ describe('IndividualsScreeningV2Plugin', () => {
             value: 'childWorkflows.kyc_email_session_example',
           },
         },
-      } satisfies ConstructorParameters<typeof IndividualsScreeningV2Plugin>[0];
-      const plugin = new IndividualsScreeningV2Plugin(pluginParams);
+      } satisfies ConstructorParameters<typeof IndividualsSanctionsV2Plugin>[0];
+      const plugin = new IndividualsSanctionsV2Plugin(pluginParams);
       const invokePromise = plugin.invoke({});
 
       // Act
@@ -328,14 +348,12 @@ describe('IndividualsScreeningV2Plugin', () => {
             value: 'childWorkflows.kyc_email_session_example',
           },
         },
-      } satisfies ConstructorParameters<typeof IndividualsScreeningV2Plugin>[0];
-      const plugin = new IndividualsScreeningV2Plugin(
+      } satisfies ConstructorParameters<typeof IndividualsSanctionsV2Plugin>[0];
+      const plugin = new IndividualsSanctionsV2Plugin(
         // @ts-expect-error -- testing invalid payload
         pluginParams,
       );
-
-      // Act
-      const invokeResponse = await plugin.invoke({
+      const invokePayload = {
         workflowRuntimeId: 'workflowRuntimeId',
         entity: {
           data: {
@@ -363,7 +381,10 @@ describe('IndividualsScreeningV2Plugin', () => {
             },
           },
         },
-      });
+      };
+
+      // Act
+      const invokeResponse = await plugin.invoke(invokePayload);
 
       // Assert
       expect(invokeResponse).toMatchObject({
@@ -390,6 +411,10 @@ describe('IndividualsScreeningV2Plugin', () => {
         successAction: 'ONGOING_AML_SUCCESS',
         // @ts-expect-error -- testing invalid payload
         payload: {
+          clientId: {
+            type: 'literal',
+            value: 'clientId',
+          },
           vendor: {
             type: 'literal',
             value: 'dow-jones',
@@ -403,14 +428,12 @@ describe('IndividualsScreeningV2Plugin', () => {
             value: false,
           },
         },
-      } satisfies ConstructorParameters<typeof IndividualsScreeningV2Plugin>[0];
-      const plugin = new IndividualsScreeningV2Plugin(
+      } satisfies ConstructorParameters<typeof IndividualsSanctionsV2Plugin>[0];
+      const plugin = new IndividualsSanctionsV2Plugin(
         // @ts-expect-error -- testing invalid payload
         pluginParams,
       );
-
-      // Act
-      const invokeResponse = await plugin.invoke({
+      const invokePayload = {
         workflowRuntimeId: 'workflowRuntimeId',
         entity: {
           data: {
@@ -438,7 +461,10 @@ describe('IndividualsScreeningV2Plugin', () => {
             },
           },
         },
-      });
+      };
+
+      // Act
+      const invokeResponse = await plugin.invoke(invokePayload);
 
       // Assert
       expect(invokeResponse).toMatchObject({
@@ -479,6 +505,10 @@ describe('IndividualsScreeningV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
+          clientId: {
+            type: 'literal',
+            value: 'clientId',
+          },
           vendor: {
             type: 'literal',
             value: 'dow-jones',
@@ -504,11 +534,9 @@ describe('IndividualsScreeningV2Plugin', () => {
             value: 'entity.data.additionalInfo.ubos',
           },
         },
-      } satisfies ConstructorParameters<typeof IndividualsScreeningV2Plugin>[0];
-      const plugin = new IndividualsScreeningV2Plugin(pluginParams);
-
-      // Act
-      const invokeResponse = await plugin.invoke({
+      } satisfies ConstructorParameters<typeof IndividualsSanctionsV2Plugin>[0];
+      const plugin = new IndividualsSanctionsV2Plugin(pluginParams);
+      const invokePayload = {
         workflowRuntimeId: 'workflowRuntimeId',
         entity: {
           data: {
@@ -528,7 +556,10 @@ describe('IndividualsScreeningV2Plugin', () => {
             },
           },
         },
-      });
+      };
+
+      // Act
+      const invokeResponse = await plugin.invoke(invokePayload);
 
       // Assert
       expect(invokeResponse).toHaveProperty('callbackAction', 'ONGOING_AML_SUCCESS');
@@ -574,6 +605,10 @@ describe('IndividualsScreeningV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
+          clientId: {
+            type: 'literal',
+            value: 'clientId',
+          },
           vendor: {
             type: 'literal',
             value: 'dow-jones',
@@ -599,11 +634,9 @@ describe('IndividualsScreeningV2Plugin', () => {
             value: 'entity.data',
           },
         },
-      } satisfies ConstructorParameters<typeof IndividualsScreeningV2Plugin>[0];
-      const plugin = new IndividualsScreeningV2Plugin(pluginParams);
-
-      // Act
-      const invokeResponse = await plugin.invoke({
+      } satisfies ConstructorParameters<typeof IndividualsSanctionsV2Plugin>[0];
+      const plugin = new IndividualsSanctionsV2Plugin(pluginParams);
+      const invokePayload = {
         workflowRuntimeId: 'workflowRuntimeId',
         entity: {
           data: {
@@ -617,7 +650,10 @@ describe('IndividualsScreeningV2Plugin', () => {
             },
           },
         },
-      });
+      };
+
+      // Act
+      const invokeResponse = await plugin.invoke(invokePayload);
 
       // Assert
       expect(invokeResponse).toHaveProperty('callbackAction', 'ONGOING_AML_SUCCESS');
@@ -663,6 +699,10 @@ describe('IndividualsScreeningV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
+          clientId: {
+            type: 'literal',
+            value: 'clientId',
+          },
           vendor: {
             type: 'literal',
             value: 'dow-jones',
@@ -688,11 +728,9 @@ describe('IndividualsScreeningV2Plugin', () => {
             value: 'childWorkflows.kyc_email_session_example',
           },
         },
-      } satisfies ConstructorParameters<typeof IndividualsScreeningV2Plugin>[0];
-      const plugin = new IndividualsScreeningV2Plugin(pluginParams);
-
-      // Act
-      const invokeResponse = await plugin.invoke({
+      } satisfies ConstructorParameters<typeof IndividualsSanctionsV2Plugin>[0];
+      const plugin = new IndividualsSanctionsV2Plugin(pluginParams);
+      const invokePayload = {
         workflowRuntimeId: 'workflowRuntimeId',
         entity: {
           data: {
@@ -720,7 +758,10 @@ describe('IndividualsScreeningV2Plugin', () => {
             },
           },
         },
-      });
+      };
+
+      // Act
+      const invokeResponse = await plugin.invoke(invokePayload);
 
       // Assert
       expect(invokeResponse).toHaveProperty('callbackAction', 'ONGOING_AML_SUCCESS');
@@ -761,6 +802,10 @@ describe('IndividualsScreeningV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
+          clientId: {
+            type: 'literal',
+            value: 'clientId',
+          },
           vendor: {
             type: 'literal',
             value: 'dow-jones',
@@ -786,11 +831,9 @@ describe('IndividualsScreeningV2Plugin', () => {
             value: 'childWorkflows.kyc_email_session_example',
           },
         },
-      } satisfies ConstructorParameters<typeof IndividualsScreeningV2Plugin>[0];
-      const plugin = new IndividualsScreeningV2Plugin(pluginParams);
-
-      // Act
-      const invokeResponse = await plugin.invoke({
+      } satisfies ConstructorParameters<typeof IndividualsSanctionsV2Plugin>[0];
+      const plugin = new IndividualsSanctionsV2Plugin(pluginParams);
+      const invokePayload = {
         workflowRuntimeId: 'workflowRuntimeId',
         entity: {
           data: {
@@ -818,7 +861,10 @@ describe('IndividualsScreeningV2Plugin', () => {
             },
           },
         },
-      });
+      };
+
+      // Act
+      const invokeResponse = await plugin.invoke(invokePayload);
 
       // Assert
       expect(invokeResponse).toMatchObject({
@@ -863,6 +909,10 @@ describe('IndividualsScreeningV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
+          clientId: {
+            type: 'literal',
+            value: 'clientId',
+          },
           vendor: {
             type: 'literal',
             value: 'dow-jones',
@@ -888,11 +938,9 @@ describe('IndividualsScreeningV2Plugin', () => {
             value: 'childWorkflows.kyc_email_session_example',
           },
         },
-      } satisfies ConstructorParameters<typeof IndividualsScreeningV2Plugin>[0];
-      const plugin = new IndividualsScreeningV2Plugin(pluginParams);
-
-      // Act
-      const invokeResponse = await plugin.invoke({
+      } satisfies ConstructorParameters<typeof IndividualsSanctionsV2Plugin>[0];
+      const plugin = new IndividualsSanctionsV2Plugin(pluginParams);
+      const invokePayload = {
         workflowRuntimeId: 'workflowRuntimeId',
         entity: {
           data: {
@@ -920,7 +968,10 @@ describe('IndividualsScreeningV2Plugin', () => {
             },
           },
         },
-      });
+      };
+
+      // Act
+      const invokeResponse = await plugin.invoke(invokePayload);
 
       // Assert
       expect(invokeResponse).toMatchObject({
@@ -959,6 +1010,10 @@ describe('IndividualsScreeningV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
+          clientId: {
+            type: 'literal',
+            value: 'clientId',
+          },
           vendor: {
             type: 'literal',
             value: 'dow-jones',
@@ -984,11 +1039,9 @@ describe('IndividualsScreeningV2Plugin', () => {
             value: 'childWorkflows.kyc_email_session_example',
           },
         },
-      } satisfies ConstructorParameters<typeof IndividualsScreeningV2Plugin>[0];
-      const plugin = new IndividualsScreeningV2Plugin(pluginParams);
-
-      // Act
-      const invokeResponse = await plugin.invoke({
+      } satisfies ConstructorParameters<typeof IndividualsSanctionsV2Plugin>[0];
+      const plugin = new IndividualsSanctionsV2Plugin(pluginParams);
+      const invokePayload = {
         workflowRuntimeId: 'workflowRuntimeId',
         entity: {
           data: {
@@ -1016,7 +1069,10 @@ describe('IndividualsScreeningV2Plugin', () => {
             },
           },
         },
-      });
+      };
+
+      // Act
+      const invokeResponse = await plugin.invoke(invokePayload);
 
       // Assert
       expect(invokeResponse).toMatchObject({

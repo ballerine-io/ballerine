@@ -2707,7 +2707,7 @@ importers:
         version: 0.32.15
       '@t3-oss/env-core':
         specifier: ^0.6.1
-        version: 0.6.1(typescript@4.9.3)(zod@3.22.4)
+        version: 0.6.1(typescript@4.9.3)(zod@3.23.4)
       ajv:
         specifier: ^8.12.0
         version: 8.12.0
@@ -2820,8 +2820,8 @@ importers:
         specifier: ^2.3.4
         version: 2.3.4
       zod:
-        specifier: ^3.22.3
-        version: 3.22.4
+        specifier: ^3.23.4
+        version: 3.23.4
     devDependencies:
       '@ballerine/config':
         specifier: ^1.1.24
@@ -18738,14 +18738,14 @@ packages:
       zod: 3.22.4
     dev: false
 
-  /@t3-oss/env-core@0.6.1(typescript@4.9.3)(zod@3.22.4):
+  /@t3-oss/env-core@0.6.1(typescript@4.9.3)(zod@3.23.4):
     resolution: {integrity: sha512-KQD7qEDJtkWIWWmTVjNvk0wnHpkvAQ6CRbUxbWMFNG/fiosBQDQvtRpBNu6USxBscJCoC4z6y7P9MN52/mLOzw==}
     peerDependencies:
       typescript: '>=4.7.2'
       zod: ^3.0.0
     dependencies:
       typescript: 4.9.3
-      zod: 3.22.4
+      zod: 3.23.4
     dev: false
 
   /@tanstack/match-sorter-utils@8.8.4:
@@ -26838,7 +26838,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.5)
+      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.3)
       debug: 3.2.7
       eslint: 8.54.0
       eslint-import-resolver-node: 0.3.9
@@ -27032,7 +27032,7 @@ packages:
       '@typescript-eslint/parser':
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.5)
+      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.3)
       array-includes: 3.1.7
       array.prototype.findlastindex: 1.2.3
       array.prototype.flat: 1.3.2
@@ -27458,7 +27458,7 @@ packages:
       '@typescript-eslint/eslint-plugin':
         optional: true
     dependencies:
-      '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.54.0)(typescript@5.1.6)
+      '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.54.0)(typescript@4.9.3)
       eslint: 8.54.0
       eslint-rule-composer: 0.3.0
     dev: true

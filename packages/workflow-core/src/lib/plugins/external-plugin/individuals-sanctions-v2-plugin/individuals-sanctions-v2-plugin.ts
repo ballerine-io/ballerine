@@ -73,7 +73,7 @@ const KycInformationSchema = z.object({
   lastName: z.string().min(1),
   dateOfBirth: z.string().date(),
 });
-const IndividualsScreeningV2PluginPayloadSchema = z.object({
+const IndividualsSanctionsV2PluginPayloadSchema = z.object({
   vendor: z.enum(['veriff', 'test', 'dow-jones']),
   ongoingMonitoring: z.boolean(),
   immediateResults: z.boolean(),
@@ -104,6 +104,7 @@ const IndividualsScreeningV2PluginPayloadSchema = z.object({
     ),
   ]),
   endUserId: z.string().min(1),
+  clientId: z.string().min(1),
 });
 
 const validateEnv = () => {
@@ -119,7 +120,7 @@ const validateEnv = () => {
     }, {} as Record<PropertyKey, string>);
 
     logger.error(
-      '❌ Individuals Screening V2 Plugin - Invalid environment variables:\n',
+      '❌ Individuals Sanctions V2 Plugin - Invalid environment variables:\n',
       formattedErrors,
     );
 
@@ -129,7 +130,7 @@ const validateEnv = () => {
   return result.data;
 };
 
-export class IndividualsScreeningV2Plugin extends ApiPlugin {
+export class IndividualsSanctionsV2Plugin extends ApiPlugin {
   public static pluginType = 'http';
   public payload: {
     vendor: PluginPayloadProperty<string>;
@@ -145,12 +146,13 @@ export class IndividualsScreeningV2Plugin extends ApiPlugin {
       { type: 'path' }
     >;
     endUserId: PluginPayloadProperty<string>;
+    clientId: PluginPayloadProperty<string>;
   };
 
   constructor({
     payload,
     ...pluginParams
-  }: IApiPluginParams & { payload: IndividualsScreeningV2Plugin['payload'] }) {
+  }: IApiPluginParams & { payload: IndividualsSanctionsV2Plugin['payload'] }) {
     super({
       ...pluginParams,
       response: {
@@ -178,13 +180,13 @@ export class IndividualsScreeningV2Plugin extends ApiPlugin {
       (this.request?.transformers ?? []).every(
         transformer => transformer.name !== 'jmespath-transformer',
       ),
-      'Individuals Screening V2 Plugin - JMESPath request transformers are not supported',
+      'Individuals Sanctions V2 Plugin - JMESPath request transformers are not supported',
     );
     invariant(
       (this.response?.transformers ?? []).every(
         transformer => transformer.name !== 'jmespath-transformer',
       ),
-      'Individuals Screening V2 Plugin - JMESPath response transformers are not supported',
+      'Individuals Sanctions V2 Plugin - JMESPath response transformers are not supported',
     );
   }
 
@@ -213,11 +215,11 @@ export class IndividualsScreeningV2Plugin extends ApiPlugin {
         context,
       });
       const { workflowRuntimeId, kycInformation, ...validatedPayload } =
-        IndividualsScreeningV2PluginPayloadSchema.parse(payload);
+        IndividualsSanctionsV2PluginPayloadSchema.parse(payload);
       const callbackUrl = `${env.APP_API_URL}/api/v1/external/workflows/${workflowRuntimeId}/hook/${this.successAction}?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result.aml&processName=aml-unified-api`;
       const getKycInformationByDataType = (
         kycInformation: z.output<
-          typeof IndividualsScreeningV2PluginPayloadSchema
+          typeof IndividualsSanctionsV2PluginPayloadSchema
         >['kycInformation'],
       ) => {
         if (Array.isArray(kycInformation)) {
@@ -225,7 +227,7 @@ export class IndividualsScreeningV2Plugin extends ApiPlugin {
 
           invariant(
             firstKycInformation,
-            `Individuals Screening V2 Plugin - no KYC information found at ${this.payload.kycInformation.value}`,
+            `Individuals Sanctions V2 Plugin - no KYC information found at ${this.payload.kycInformation.value}`,
           );
 
           const { firstName, lastName, additionalInfo } = firstKycInformation;
@@ -253,7 +255,7 @@ export class IndividualsScreeningV2Plugin extends ApiPlugin {
 
           invariant(
             firstKey && kycInformation[firstKey],
-            `Individuals Screening V2 Plugin - no KYC information found at ${this.payload.kycInformation.value}`,
+            `Individuals Sanctions V2 Plugin - no KYC information found at ${this.payload.kycInformation.value}`,
           );
 
           return kycInformation[firstKey].result.vendorResult.entity.data;
@@ -261,7 +263,7 @@ export class IndividualsScreeningV2Plugin extends ApiPlugin {
 
         // Should never reach this point. Will reach here if error handling or validation changes.
         throw new Error(
-          `Individuals Screening V2 Plugin - unexpected KYC information found at ${this.payload.kycInformation.value}`,
+          `Individuals Sanctions V2 Plugin - unexpected KYC information found at ${this.payload.kycInformation.value}`,
         );
       };
       const kycInformationByDataType = getKycInformationByDataType(kycInformation);
@@ -272,7 +274,7 @@ export class IndividualsScreeningV2Plugin extends ApiPlugin {
         callbackUrl,
       };
 
-      logger.log('Individuals Screening V2 Plugin - Sending API request', {
+      logger.log('Individuals Sanctions V2 Plugin - Sending API request', {
         url,
         method: this.method,
       });
@@ -282,7 +284,7 @@ export class IndividualsScreeningV2Plugin extends ApiPlugin {
         Authorization: `Bearer ${process.env.UNIFIED_API_TOKEN}`,
       });
 
-      logger.log('Individuals Screening V2 Plugin - Received response', {
+      logger.log('Individuals Sanctions V2 Plugin - Received response', {
         status: apiResponse.statusText,
         url,
       });
@@ -317,7 +319,7 @@ export class IndividualsScreeningV2Plugin extends ApiPlugin {
 
       responseBody = {
         ...responseBody,
-        name: 'sanctionsScreening',
+        name: this.name,
         status: getPluginStatus(responseBody),
       };
 
