@@ -36,8 +36,14 @@ export default defineConfig(configEnv => {
       environment: 'jsdom',
       setupFiles: ['./src/tests-setup.ts'],
     },
+    optimizeDeps: {
+      esbuildOptions: {
+        target: 'esnext',
+      },
+    },
     build: {
       sourcemap: true,
+      target: 'esnext',
     },
   };
 });
