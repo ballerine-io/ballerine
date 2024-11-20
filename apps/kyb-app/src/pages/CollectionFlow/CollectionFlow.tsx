@@ -264,11 +264,9 @@ export const CollectionFlow = () => {
                                         >
                                           {customer?.logoImageUri && (
                                             <AppShell.Logo
-                                              // @ts-ignore
                                               logoSrc={
                                                 themeDefinition.logo || customer?.logoImageUri
                                               }
-                                              // @ts-ignore
                                               appName={customer?.displayName}
                                               onLoad={() => setLogoLoaded(true)}
                                             />

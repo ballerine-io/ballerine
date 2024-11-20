@@ -7,7 +7,7 @@ export const request = ky.create({
   prefixUrl: import.meta.env.VITE_API_URL || `${window.location.origin}/api/v1/`,
   retry: {
     limit: 1,
-    statusCodes: [500, 408, 404, 404, 403, 401, 0],
+    statusCodes: [500, 408, 404, 404, 403, 401],
     methods: ['get'],
   },
   timeout: 30_000,
