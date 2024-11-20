@@ -17,16 +17,16 @@ export const collectionFlowQuerykeys = createQueryKeys('collectionFlow', {
     queryFn: () => getFlowSession(),
     queryKey: [{}],
   }),
-  getUISchema: ({ language, endUserId }: { language: string; endUserId: string | null }) => ({
+  getUISchema: ({ language, endUserId }: { language: string; endUserId?: string }) => ({
     queryKey: [{ language, endUserId }],
     queryFn: () => fetchUISchema(language, endUserId),
   }),
-  getCustomer: (endUserId: string | null) => ({
-    queryKey: [{ endUserId }],
+  getCustomer: () => ({
+    queryKey: [{}],
     queryFn: () => fetchCustomer(),
   }),
-  getContext: (endUserId: string | null) => ({
-    queryKey: [{ endUserId }],
+  getContext: () => ({
+    queryKey: [{}],
     queryFn: () => fetchFlowContext(),
   }),
   getEndUser: () => ({

@@ -7,7 +7,7 @@ import { CollectionFlowEvents } from '../useFlowTracking/enums';
 
 export const useAppExit = () => {
   const appLanguage = useLanguage();
-  const { data: uiSchema } = useUISchemasQuery(appLanguage);
+  const { data: uiSchema } = useUISchemasQuery({ language: appLanguage });
   const { customer } = useCustomerQuery();
   const { trackEvent } = useFlowTracking();
 

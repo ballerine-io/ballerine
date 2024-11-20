@@ -49,10 +49,7 @@ export const fetchCollectionFlowSchema = async (): Promise<{
   };
 };
 
-export const fetchUISchema = async (
-  language: string,
-  endUserId: string | null,
-): Promise<UISchema> => {
+export const fetchUISchema = async (language: string, endUserId?: string): Promise<UISchema> => {
   return await request
     .get(`collection-flow/${!endUserId ? 'no-user/' : ''}configuration/${language}`, {
       searchParams: {

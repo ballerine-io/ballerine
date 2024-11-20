@@ -20,7 +20,7 @@ export const Logo: FunctionComponent<ILogoProps> = props => {
       style={styles}
       initial={{ opacity: 0, scale: 0.8 }}
       animate={isLoaded ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.25 }}
       onLoad={() => setIsLoaded(true)}
     />
   );

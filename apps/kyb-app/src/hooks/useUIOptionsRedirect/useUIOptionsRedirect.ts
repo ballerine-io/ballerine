@@ -5,7 +5,7 @@ import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { useEffect, useMemo } from 'react';
 
 export const useUIOptionsRedirect = (state: 'success' | 'failure') => {
-  const { data } = useUISchemasQuery(useLanguage());
+  const { data } = useUISchemasQuery({ language: useLanguage() });
   const { config } = useStateManagerContext();
 
   const uiOptions: UIOptions | null = useMemo(() => {

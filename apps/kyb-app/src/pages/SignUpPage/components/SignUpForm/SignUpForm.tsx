@@ -4,9 +4,8 @@ import { JsonSchemaRuleEngine } from '@/components/organisms/DynamicUI/rule-engi
 import { CreateEndUserDto } from '@/domains/collection-flow';
 import { transformRJSFErrors } from '@/helpers/transform-errors';
 import { useRefValue } from '@/hooks/useRefValue';
-import { useIsSignupRequired } from '@/pages/Root/hooks/useIsSignupRequired';
 import { baseLayouts, DynamicForm } from '@ballerine/ui';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { SignUpFormProvider } from './components/SignUpFormProvider';
@@ -25,31 +24,9 @@ const layouts = {
 export const SignUpForm = () => {
   const { accessToken } = useAccessToken();
   const navigate = useNavigate();
-  const { refetchAll, isLoading } = useDependencies();
-  const { isSignupRequired } = useIsSignupRequired();
+  const { refetchAll } = useDependencies();
 
-  const prevIsLoadingRef = useRef(isLoading);
   const accessTokenRef = useRefValue(accessToken);
-
-  useEffect(() => {
-    if (prevIsLoadingRef.current !== isLoading && !isSignupRequired) {
-      setTimeout(() => {
-        setSignupState({ isLoading: false, isSuccess: true });
-      }, 1500);
-
-      setTimeout(() => {
-        navigate(`/collection-flow?token=${accessTokenRef.current}`);
-      }, 3000);
-
-      return;
-    }
-
-    if (!isSignupRequired) {
-      navigate(`/collection-flow?token=${accessTokenRef.current}`);
-    }
-
-    prevIsLoadingRef.current = isLoading;
-  }, [isLoading, isSignupRequired, accessTokenRef, navigate]);
 
   const [signupState, setSignupState] = useState({
     isLoading: false,
@@ -74,6 +51,12 @@ export const SignUpForm = () => {
 
         try {
           await createEndUserRequest(values);
+
+          await refetchAll();
+
+          setTimeout(() => {
+            navigate(`/collection-flow?token=${accessTokenRef.current}`);
+          }, 100);
         } catch (error) {
           setSignupState({ isLoading: false, isSuccess: false });
           toast.error('Failed to create user. Please try again.');
@@ -82,7 +65,7 @@ export const SignUpForm = () => {
         toast.error('Invalid form values. Something went wrong.');
       }
     },
-    [createEndUserRequest, refetchAll],
+    [createEndUserRequest, refetchAll, accessTokenRef, navigate],
   );
 
   return (

@@ -16,7 +16,7 @@ const countryCodeToLanguage = {
 export const LanguagePicker = () => {
   const { mutate: updateLanguage } = useLanguageQuery();
   const { language, setLanguage } = useLanguageParam();
-  const { data, isLoading } = useUISchemasQuery(language);
+  const { data, isLoading } = useUISchemasQuery({ language });
 
   const { config } = data || {};
 

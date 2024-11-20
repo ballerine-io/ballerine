@@ -16,12 +16,12 @@ export const Header: FunctionComponent<IHeaderProps> = props => {
   };
 
   return (
-    <div className="flex flex-col gap-6 pb-6" style={containerStyles}>
+    <motion.div className="flex flex-col gap-6 pb-6" style={containerStyles}>
       <motion.h1
         className="text-2xl font-bold"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.25 }}
       >
         {headingText}
       </motion.h1>
@@ -29,10 +29,10 @@ export const Header: FunctionComponent<IHeaderProps> = props => {
         className="text-base"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
+        transition={{ duration: 0.25, delay: 0.3 }}
       >
         {subheadingText}
       </motion.p>
-    </div>
+    </motion.div>
   );
 };

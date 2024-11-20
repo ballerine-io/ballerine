@@ -10,9 +10,9 @@ export const AnimatedUIRenderer: FunctionComponent<UIRendererProps & { currentPa
 }) => {
   return (
     <motion.div
-      initial={{ x: '100%', opacity: 0 }}
+      initial={{ x: '50%', opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.3 }}
       key={currentPage.stateName}
     >
       <UIRenderer schema={schema} elements={elements} />

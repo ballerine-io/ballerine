@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { StepperProgress } from '@/common/components/atoms/StepperProgress';
 import { AppErrorScreen } from '@/common/components/molecules/AppErrorScreen';
 import { ProgressBar } from '@/common/components/molecules/ProgressBar';
+import { useDependencies } from '@/common/providers/DependenciesProvider';
 import { useTheme } from '@/common/providers/ThemeProvider';
 import { AppShell } from '@/components/layouts/AppShell';
 import { PoweredByLogo } from '@/components/molecules/PoweredByLogo';
@@ -39,7 +40,6 @@ import { AnyObject } from '@ballerine/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AnimatedUIRenderer } from './components/organisms/AnimatedUIRenderer';
 import { FailedScreen } from './components/pages/FailedScreen';
-import { useSignupGuard } from './hooks/useSignupGuard';
 
 const elems = {
   h1: Title,
@@ -69,10 +69,9 @@ const getRevisionStateName = (pageErrors: PageError[]) => {
 };
 
 export const CollectionFlow = () => {
-  useSignupGuard();
-
   const { language } = useLanguageParam();
-  const { data: schema } = useUISchemasQuery(language);
+  const { isLoading } = useDependencies();
+  const { data: schema } = useUISchemasQuery({ language });
   const { data: collectionFlowData } = useFlowContextQuery();
   const { customer } = useCustomerQuery();
   const { t } = useTranslation();
@@ -137,6 +136,8 @@ export const CollectionFlow = () => {
   if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.failed)
     return <FailedScreen />;
 
+  if (isLoading) return <LoadingScreen />;
+
   // Edge case, normally should never happen
   if (!schema || !collectionFlowData) {
     console.error('Schema is missing.');
@@ -151,9 +152,9 @@ export const CollectionFlow = () => {
 
   return (
     <motion.div
-      initial={{ x: '100%', opacity: 1 }}
+      initial={{ opacity: 1 }}
       animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.7 }}
+      transition={{ duration: 0.3 }}
     >
       <DynamicUI initialState={initialUIState}>
         <DynamicUI.StateManager
@@ -174,7 +175,6 @@ export const CollectionFlow = () => {
                   const context = stateApi.getContext();
 
                   const collectionFlow = getCollectionFlowState(context);
-                  console.log({ collectionFlow });
 
                   if (collectionFlow) {
                     const steps = collectionFlow?.steps || [];
@@ -237,19 +237,19 @@ export const CollectionFlow = () => {
                                       className="flex h-full flex-col"
                                       initial={{ opacity: 0, x: -20 }}
                                       animate={{ opacity: 1, x: 0 }}
-                                      transition={{ duration: 0.5 }}
+                                      transition={{ duration: 0.25 }}
                                     >
                                       <motion.div
                                         className="flex h-full flex-1 flex-col"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
-                                        transition={{ duration: 0.5, delay: 0.2 }}
+                                        transition={{ duration: 0.25, delay: 0.2 }}
                                       >
                                         <motion.div
                                           className="flex flex-col gap-8 pb-10"
                                           initial={{ opacity: 0 }}
                                           animate={{ opacity: 1 }}
-                                          transition={{ duration: 0.5, delay: 0.5 }}
+                                          transition={{ duration: 0.25 }}
                                         >
                                           <div className="flex justify-start">
                                             <AppShell.LanguagePicker />
@@ -260,12 +260,12 @@ export const CollectionFlow = () => {
                                           className="pb-10"
                                           initial={{ opacity: 0 }}
                                           animate={{ opacity: 1 }}
-                                          transition={{ duration: 0.5, delay: 0.7 }}
+                                          transition={{ duration: 0.25, delay: 0.3 }}
                                         >
                                           {customer?.logoImageUri && (
                                             <AppShell.Logo
                                               logoSrc={
-                                                themeDefinition.logo || customer?.logoImageUri
+                                                themeDefinition?.logo || customer?.logoImageUri
                                               }
                                               appName={customer?.displayName}
                                               onLoad={() => setLogoLoaded(true)}
@@ -276,14 +276,14 @@ export const CollectionFlow = () => {
                                           className="min-h-0 flex-1 pb-10"
                                           initial={{ opacity: 0 }}
                                           animate={{ opacity: 1 }}
-                                          transition={{ duration: 0.5, delay: 0.9 }}
+                                          transition={{ duration: 0.25, delay: 0.5 }}
                                         >
                                           {isLogoLoaded ? <StepperUI /> : null}
                                         </motion.div>
                                         <motion.div
                                           initial={{ opacity: 0 }}
                                           animate={{ opacity: 1 }}
-                                          transition={{ duration: 0.5, delay: 1.1 }}
+                                          transition={{ duration: 0.25, delay: 0.6 }}
                                         >
                                           {customer?.displayName && (
                                             <div>
@@ -294,7 +294,7 @@ export const CollectionFlow = () => {
                                               }
                                             </div>
                                           )}
-                                          {themeDefinition.ui?.poweredBy !== false && (
+                                          {themeDefinition?.ui?.poweredBy !== false && (
                                             <div className="flex flex-col">
                                               <div className="border-b pb-12" />
                                               <PoweredByLogo
@@ -340,12 +340,18 @@ export const CollectionFlow = () => {
                                         />
                                         <ProgressBar />
                                       </div>
-                                      <AnimatePresence mode="wait" initial={false}>
-                                        <AnimatedUIRenderer
-                                          elements={elems}
-                                          currentPage={currentPage}
-                                          schema={currentPage.elements}
-                                        />
+                                      <AnimatePresence mode="wait" initial={true}>
+                                        <motion.div
+                                          initial={{ opacity: 0 }}
+                                          animate={{ opacity: 1 }}
+                                          transition={{ duration: 0.25, delay: 0.35 }}
+                                        >
+                                          <AnimatedUIRenderer
+                                            elements={elems}
+                                            currentPage={currentPage}
+                                            schema={currentPage.elements}
+                                          />
+                                        </motion.div>
                                       </AnimatePresence>
                                     </div>
                                   </AppShell.FormContainer>

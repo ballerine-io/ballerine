@@ -14,7 +14,7 @@ interface Props {
 
 export const ThemeProvider = ({ children }: Props) => {
   const language = new URLSearchParams(window.location.search).get(APP_LANGUAGE_QUERY_KEY) || 'en';
-  const { data: uiSchema, isLoading, error } = useUISchemasQuery(language);
+  const { data: uiSchema, isLoading, error } = useUISchemasQuery({ language });
 
   const theme = useMemo(() => {
     if (isLoading) return null;
