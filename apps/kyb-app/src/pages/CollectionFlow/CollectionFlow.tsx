@@ -136,10 +136,11 @@ export const CollectionFlow = () => {
   if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.failed)
     return <FailedScreen />;
 
+  // Edge case, normally should never happen
   if (!schema || !collectionFlowData) {
     console.error('Schema is missing.');
 
-    return <div>123</div>;
+    return null;
   }
 
   return (

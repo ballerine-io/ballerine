@@ -1,9 +1,11 @@
 import { AccessTokenIsMissingError } from '@/common/errors/access-token-is-missing';
 import { InvalidAccessTokenError } from '@/common/errors/invalid-access-token';
+import { ServerNotAvailableError } from '@/common/errors/server-not-available';
 import { useRouteError } from 'react-router-dom';
 import { AppErrorScreen } from '../../molecules/AppErrorScreen';
 import { InvalidAccessTokenErrorScreen } from './InvalidAccessToken';
 import { MissingTokenErrorScreen } from './MissingTokenErrorScreen';
+import { ServerNotAvailableErrorScreen } from './ServerNotAvailable';
 
 export const ErrorScreen = () => {
   const error = useRouteError();
@@ -14,6 +16,10 @@ export const ErrorScreen = () => {
 
   if (error instanceof InvalidAccessTokenError) {
     return <InvalidAccessTokenErrorScreen />;
+  }
+
+  if (error instanceof ServerNotAvailableError) {
+    return <ServerNotAvailableErrorScreen />;
   }
 
   return (

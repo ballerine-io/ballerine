@@ -1,3 +1,4 @@
+import { ServerNotAvailableError } from '@/common/errors/server-not-available';
 import { getAccessToken } from '@/helpers/get-access-token.helper';
 import * as Sentry from '@sentry/react';
 import ky, { HTTPError } from 'ky';
@@ -6,13 +7,26 @@ export const request = ky.create({
   prefixUrl: import.meta.env.VITE_API_URL || `${window.location.origin}/api/v1/`,
   retry: {
     limit: 1,
-    statusCodes: [500, 408, 404, 404, 403, 401],
+    statusCodes: [500, 408, 404, 404, 403, 401, 0],
     methods: ['get'],
   },
   timeout: 30_000,
+  fetch: (input, init) => {
+    return fetch(input, init).catch(error => {
+      if (!error?.response?.statusCode) {
+        throw new ServerNotAvailableError();
+      }
+
+      throw error;
+    });
+  },
   hooks: {
     beforeRequest: [
       request => {
+        if (!navigator.onLine) {
+          throw new ServerNotAvailableError();
+        }
+
         request.headers.set('Authorization', `Bearer ${getAccessToken()}`);
       },
     ],
@@ -20,6 +34,11 @@ export const request = ky.create({
       // TODO: catch Workflowsdk API Plugin errors as well
       async (error: HTTPError) => {
         const { request, response } = error;
+
+        // Check if server is not available
+        if (!response || error.name === 'TimeoutError') {
+          throw new ServerNotAvailableError();
+        }
 
         let responseBody = '';
 
@@ -29,7 +48,7 @@ export const request = ky.create({
           /* empty */
         }
 
-        Sentry.withScope(function (scope) {
+        Sentry.withScope(scope => {
           // group errors together based on their request and response
           scope.setFingerprint([
             request.method,

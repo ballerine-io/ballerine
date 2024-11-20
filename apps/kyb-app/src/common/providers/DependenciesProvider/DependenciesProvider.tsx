@@ -1,4 +1,5 @@
 import { InvalidAccessTokenError } from '@/common/errors/invalid-access-token';
+import { ServerNotAvailableError } from '@/common/errors/server-not-available';
 import { useCustomerQuery } from '@/hooks/useCustomerQuery';
 import { useEndUserQuery } from '@/hooks/useEndUserQuery';
 import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
@@ -59,6 +60,13 @@ export const DependenciesProvider: FunctionComponent<IDependenciesProviderProps>
     if (!Array.isArray(errors) || !errors?.length) return;
 
     const handleErrors = async (errors: HTTPError[]) => {
+      // If there is no response, it means that the server is not available
+      if (errors.every(error => !error.response)) {
+        setError(new ServerNotAvailableError());
+
+        return;
+      }
+
       const isShouldIgnore = await isShouldIgnoreErrors(errors);
 
       if (isShouldIgnore) return;
