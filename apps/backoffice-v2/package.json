@@ -195,6 +195,7 @@
     "typescript": "^5.5.4",
     "vite": "^5.3.5",
     "vite-plugin-mkcert": "^1.16.0",
+    "vite-plugin-top-level-await": "^1.4.4",
     "vite-tsconfig-paths": "^5.0.1",
     "vitest": "^0.29.8"
   },
