@@ -749,6 +749,9 @@ importers:
       vite-plugin-checker:
         specifier: ^0.6.1
         version: 0.6.2(eslint@8.54.0)(typescript@5.1.6)(vite@4.5.3)
+      vite-plugin-top-level-await:
+        specifier: ^1.4.4
+        version: 1.4.4(vite@4.5.3)
       vite-tsconfig-paths:
         specifier: ^4.0.7
         version: 4.2.1(typescript@5.1.6)(vite@4.5.3)
@@ -38553,6 +38556,20 @@ packages:
       - rollup
       - supports-color
     dev: false
+
+  /vite-plugin-top-level-await@1.4.4(vite@4.5.3):
+    resolution: {integrity: sha512-QyxQbvcMkgt+kDb12m2P8Ed35Sp6nXP+l8ptGrnHV9zgYDUpraO0CPdlqLSeBqvY2DToR52nutDG7mIHuysdiw==}
+    peerDependencies:
+      vite: '>=2.8'
+    dependencies:
+      '@rollup/plugin-virtual': 3.0.2
+      '@swc/core': 1.9.2
+      uuid: 10.0.0
+      vite: 4.5.3(@types/node@18.17.19)
+    transitivePeerDependencies:
+      - '@swc/helpers'
+      - rollup
+    dev: true
 
   /vite-plugin-top-level-await@1.4.4(vite@5.3.5):
     resolution: {integrity: sha512-QyxQbvcMkgt+kDb12m2P8Ed35Sp6nXP+l8ptGrnHV9zgYDUpraO0CPdlqLSeBqvY2DToR52nutDG7mIHuysdiw==}
