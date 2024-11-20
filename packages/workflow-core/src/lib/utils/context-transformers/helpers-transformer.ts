@@ -11,7 +11,9 @@ export type THelperMethod =
   | 'remove'
   | 'mergeArrayEachItemWithValue'
   | 'omit'
+  | 'noop'
   | 'setTimeToRecordUTC';
+
 export class HelpersTransformer extends BaseContextTransformer {
   name = 'helpers-transformer';
   mapping: THelperFormatingLogic;
@@ -137,5 +139,9 @@ export class HelpersTransformer extends BaseContextTransformer {
     }
 
     return result;
+  }
+
+  noop(_context: TContext, attribute: AnyRecord, value: string[]) {
+    return attribute;
   }
 }
