@@ -11,6 +11,7 @@ import qs from 'qs';
 import { deepCamelKeys } from 'string-ts';
 import { z } from 'zod';
 import { IWorkflowId } from './interfaces';
+import { zPropertyKey } from '@/lib/zod/utils/z-property-key/z-property-key';
 
 export const fetchWorkflows = async (params: {
   filterId: string;
@@ -67,7 +68,7 @@ export const BaseWorkflowByIdSchema = z.object({
     aml: AmlSchema.extend({
       vendor: z.string().optional(),
     }).optional(),
-    documents: z.array(z.any()).default([]),
+    documents: z.array(z.record(zPropertyKey, z.any())).default([]),
     entity: z.record(z.any(), z.any()),
     parentMachine: ObjectWithIdSchema.extend({
       status: z.union([z.literal('active'), z.literal('failed'), z.literal('completed')]),
