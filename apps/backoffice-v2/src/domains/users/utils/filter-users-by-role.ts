@@ -6,6 +6,8 @@ export const filterUsersByRole = (
   users: Array<Partial<TAuthenticatedUser>>,
   excludedRoles: TUserRole[],
 ) => {
+  if (!Array.isArray(users)) return [];
+
   return users.filter(user => {
     if (!user) return false;
 
