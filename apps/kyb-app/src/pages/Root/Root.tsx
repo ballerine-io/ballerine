@@ -1,13 +1,8 @@
-import { useAccessToken } from '@/common/providers/AccessTokenProvider';
 import { AnimatePresence } from 'motion/react';
 import { cloneElement, useRef } from 'react';
-import { useLocation, useNavigate, useOutlet } from 'react-router-dom';
-import { useIsSignupRequired } from './hooks/useIsSignupRequired';
+import { useLocation, useOutlet } from 'react-router-dom';
 
 export const Root = () => {
-  const { isLoading, isSignupRequired } = useIsSignupRequired();
-  const navigate = useNavigate();
-  const { accessToken } = useAccessToken();
   const { pathname } = useLocation();
   const element = useOutlet();
   const prevPathRef = useRef(pathname);

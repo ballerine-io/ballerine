@@ -38,6 +38,7 @@ import { AnyObject } from '@ballerine/ui';
 import { AnimatePresence, motion } from 'motion/react';
 import { AnimatedUIRenderer } from './components/organisms/AnimatedUIRenderer';
 import { FailedScreen } from './components/pages/FailedScreen';
+import { useSignupGuard } from './hooks/useSignupGuard';
 
 const elems = {
   h1: Title,
@@ -67,6 +68,8 @@ const getRevisionStateName = (pageErrors: PageError[]) => {
 };
 
 export const CollectionFlow = () => {
+  useSignupGuard();
+
   const { language } = useLanguageParam();
   const { data: schema } = useUISchemasQuery(language);
   const { data: collectionFlowData } = useFlowContextQuery();

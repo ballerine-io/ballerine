@@ -40,6 +40,12 @@ export const SignUpForm = () => {
       setTimeout(() => {
         navigate(`/collection-flow?token=${accessTokenRef.current}`);
       }, 3000);
+
+      return;
+    }
+
+    if (!isSignupRequired) {
+      navigate(`/collection-flow?token=${accessTokenRef.current}`);
     }
 
     prevIsLoadingRef.current = isLoading;
