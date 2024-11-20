@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { StepperProgress } from '@/common/components/atoms/StepperProgress';
+import { AppErrorScreen } from '@/common/components/molecules/AppErrorScreen';
 import { ProgressBar } from '@/common/components/molecules/ProgressBar';
 import { useTheme } from '@/common/providers/ThemeProvider';
 import { AppShell } from '@/components/layouts/AppShell';
@@ -140,7 +141,12 @@ export const CollectionFlow = () => {
   if (!schema || !collectionFlowData) {
     console.error('Schema is missing.');
 
-    return null;
+    return (
+      <AppErrorScreen
+        title="An unexpected error occurred. Please try again later."
+        description="Please contact support if the issue persists."
+      />
+    );
   }
 
   return (
