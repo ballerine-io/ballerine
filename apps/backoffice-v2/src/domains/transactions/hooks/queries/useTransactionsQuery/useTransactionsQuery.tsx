@@ -9,7 +9,7 @@ export const useTransactionsQuery = ({
   pageSize,
 }: {
   alertId: string;
-  counterpartyId: string;
+  counterpartyId?: string;
   page: number;
   pageSize: number;
 }) => {

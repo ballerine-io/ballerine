@@ -1,3 +1,4 @@
+import { TIME_UNITS } from '@/data-analytics/consts';
 import { Alert, AlertDefinition, Business, EndUser, Prisma, User } from '@prisma/client';
 
 // TODO: Remove counterpartyId from SubjectRecord
@@ -19,6 +20,12 @@ export type TExecutionDetails = {
 export type TDedupeStrategy = {
   mute: boolean;
   cooldownTimeframeInMinutes: number;
+  dedupeWindow: DedupeWindow;
+};
+
+export type DedupeWindow = {
+  timeAmount: number;
+  timeUnit: (typeof TIME_UNITS)[keyof typeof TIME_UNITS];
 };
 
 export const BulkStatus = {

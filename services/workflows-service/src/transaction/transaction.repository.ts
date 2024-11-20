@@ -7,6 +7,7 @@ import { GetTransactionsDto } from './dtos/get-transactions.dto';
 import { DateTimeFilter } from '@/common/query-filters/date-time-filter';
 import { toPrismaOrderByGeneric } from '@/workflow/utils/toPrismaOrderBy';
 import deepmerge from 'deepmerge';
+import { PageDto } from '@/common/dto';
 
 const DEFAULT_TRANSACTION_ORDER = {
   transactionDate: Prisma.SortOrder.desc,
@@ -35,11 +36,13 @@ export class TransactionRepository {
   }
 
   // eslint-disable-next-line ballerine/verify-repository-project-scoped
-  static buildTransactionOrderByArgs(getTransactionsParameters: GetTransactionsDto) {
+  static buildTransactionOrderByArgs(
+    getTransactionsParameters?: Pick<GetTransactionsDto, 'orderBy'>,
+  ) {
     const args: {
       orderBy: Prisma.TransactionRecordFindManyArgs['orderBy'];
     } = {
-      orderBy: getTransactionsParameters.orderBy
+      orderBy: getTransactionsParameters?.orderBy
         ? toPrismaOrderByGeneric(getTransactionsParameters.orderBy)
         : DEFAULT_TRANSACTION_ORDER,
     };
@@ -48,7 +51,9 @@ export class TransactionRepository {
   }
 
   // eslint-disable-next-line ballerine/verify-repository-project-scoped
-  static buildTransactionPaginationArgs(getTransactionsParameters: GetTransactionsDto) {
+  static buildTransactionPaginationArgs(
+    getTransactionsParameters?: Pick<GetTransactionsDto, 'page'>,
+  ) {
     const args: {
       skip: Prisma.TransactionRecordFindManyArgs['skip'];
       take?: Prisma.TransactionRecordFindManyArgs['take'];
@@ -57,7 +62,7 @@ export class TransactionRepository {
       skip: 0,
     };
 
-    if (getTransactionsParameters.page?.number && getTransactionsParameters.page?.size) {
+    if (getTransactionsParameters?.page?.number && getTransactionsParameters.page?.size) {
       // Temporary fix for pagination (class transformer issue)
       const size = parseInt(getTransactionsParameters.page.size as unknown as string, 10);
       const number = parseInt(getTransactionsParameters.page.number as unknown as string, 10);
@@ -69,7 +74,7 @@ export class TransactionRepository {
     return args;
   }
 
-  async findManyWithFilters(
+  async findManyWithFiltersV1(
     getTransactionsParameters: GetTransactionsDto,
     projectId: string,
     options?: Prisma.TransactionRecordFindManyArgs,
@@ -90,6 +95,20 @@ export class TransactionRepository {
         },
         [projectId],
       ),
+    );
+  }
+
+  async findManyWithFiltersV2(
+    getTransactionsParameters: GetTransactionsDto,
+    projectId: string,
+    options?: Prisma.TransactionRecordFindManyArgs,
+  ): Promise<TransactionRecord[]> {
+    const args = deepmerge(options || {}, {
+      where: this.buildFiltersV2(getTransactionsParameters),
+    });
+
+    return this.prisma.transactionRecord.findMany(
+      this.scopeService.scopeFindMany(args, [projectId]),
     );
   }
 
@@ -129,12 +148,14 @@ export class TransactionRepository {
 
   // eslint-disable-next-line ballerine/verify-repository-project-scoped
   buildFiltersV2(
-    projectId: TProjectId,
     getTransactionsParameters: GetTransactionsDto,
-    args: Prisma.TransactionRecordWhereInput,
   ): Prisma.TransactionRecordWhereInput {
+    const args: Prisma.TransactionRecordFindManyArgs = {
+      ...TransactionRepository.buildTransactionPaginationArgs(getTransactionsParameters),
+      ...TransactionRepository.buildTransactionOrderByArgs(getTransactionsParameters),
+    };
+
     const whereClause: Prisma.TransactionRecordWhereInput = {
-      productId: projectId,
       transactionDate: {
         gte: getTransactionsParameters.startDate,
         lte: getTransactionsParameters.endDate,
@@ -142,8 +163,6 @@ export class TransactionRepository {
       paymentMethod: getTransactionsParameters.paymentMethod,
     };
 
-    deepmerge(args, whereClause);
-
-    return whereClause;
+    return deepmerge(args, whereClause);
   }
 }

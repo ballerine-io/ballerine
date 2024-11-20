@@ -9,6 +9,8 @@ import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dt
 import { SentryService } from '@/sentry/sentry.service';
 import { isPrismaClientKnownRequestError } from '@/prisma/prisma.util';
 import { getErrorMessageFromPrismaError } from '@/common/filters/HttpExceptions.filter';
+import { PageDto } from '@/common/dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class TransactionService {
@@ -71,12 +73,24 @@ export class TransactionService {
   async getTransactionsV1(
     filters: GetTransactionsDto,
     projectId: string,
-    args?: Parameters<typeof this.repository.findManyWithFilters>[2],
+    args?: Parameters<typeof this.repository.findManyWithFiltersV1>[2],
   ) {
-    return this.repository.findManyWithFilters(filters, projectId, args);
+    return this.repository.findManyWithFiltersV1(filters, projectId, args);
   }
 
-  async getTransactions(projectId: string, args?: Parameters<typeof this.repository.findMany>[1]) {
-    return this.repository.findMany(projectId, args);
+  async getTransactions(
+    projectId: string,
+    sortAndPageParams?: {
+      orderBy?: `${string}:asc` | `${string}:desc`;
+      page: PageDto;
+    },
+    args?: Parameters<typeof this.repository.findMany>[1],
+  ) {
+    const sortAndPageArgs: Prisma.TransactionRecordFindManyArgs = {
+      ...TransactionRepository.buildTransactionPaginationArgs(sortAndPageParams),
+      ...TransactionRepository.buildTransactionOrderByArgs(sortAndPageParams),
+    };
+
+    return this.repository.findMany(projectId, { ...args, ...sortAndPageArgs });
   }
 }

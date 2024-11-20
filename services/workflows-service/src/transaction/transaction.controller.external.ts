@@ -28,7 +28,6 @@ import { AlertService } from '@/alert/alert.service';
 import { BulkStatus, TExecutionDetails } from '@/alert/types';
 import { TIME_UNITS } from '@/data-analytics/consts';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
-import { InlineRule } from '@/data-analytics/types';
 import * as errors from '@/errors';
 import { exceptionValidationFactory } from '@/errors';
 import { ProjectScopeService } from '@/project/project-scope.service';
@@ -352,7 +351,7 @@ export class TransactionControllerExternal {
       return this.getTransactionsByAlertV1({ filters, projectId });
     }
 
-    return this.getTransactionsByAlertV2({ projectId, alert });
+    return this.getTransactionsByAlertV2({ projectId, alert, filters });
   }
 
   private getTransactionsByAlertV1({
@@ -401,27 +400,21 @@ export class TransactionControllerExternal {
           },
         },
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
     });
   }
 
   private getTransactionsByAlertV2({
     projectId,
     alert,
+    filters,
   }: {
     projectId: string;
     alert: Awaited<ReturnType<AlertService['getAlertWithDefinition']>>;
+    filters: Pick<GetTransactionsByAlertDto, 'startDate' | 'endDate' | 'page' | 'orderBy'>;
   }) {
     if (alert) {
-      return this.service.getTransactions(projectId, {
+      return this.service.getTransactions(projectId, filters, {
         where: alert.executionDetails.filters,
-        // || this.dataAnalyticsService.getInvestigationFilter(
-        //   projectId,
-        //   alert.alertDefinition.inlineRule as InlineRule,
-        //   alert.executionDetails.subjects,
-        // ),
         include: {
           counterpartyBeneficiary: {
             select: {
@@ -459,9 +452,6 @@ export class TransactionControllerExternal {
               },
             },
           },
-        },
-        orderBy: {
-          createdAt: 'desc',
         },
       });
     }

@@ -16,16 +16,20 @@ import {
   AlertState,
   AlertStatus,
   MonitoringType,
-  Prisma,
 } from '@prisma/client';
 import _ from 'lodash';
 import { AlertExecutionStatus } from './consts';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
-import { TDedupeStrategy, TExecutionDetails } from './types';
+import { DedupeWindow, TDedupeStrategy, TExecutionDetails } from './types';
 import { computeHash } from '@ballerine/common';
+import { convertTimeUnitToMilliseconds } from '@/data-analytics/utils';
 
 const DEFAULT_DEDUPE_STRATEGIES = {
   cooldownTimeframeInMinutes: 60 * 24,
+  dedupeWindow: {
+    timeAmount: 7,
+    timeUnit: TIME_UNITS.days,
+  },
 };
 
 @Injectable()
@@ -383,12 +387,16 @@ export class AlertService {
       return true;
     }
 
-    const { cooldownTimeframeInMinutes } = dedupeStrategy || DEFAULT_DEDUPE_STRATEGIES;
+    const { cooldownTimeframeInMinutes, dedupeWindow } =
+      dedupeStrategy || DEFAULT_DEDUPE_STRATEGIES;
 
     const existingAlert = await this.alertRepository.findFirst(
       {
         where: {
           AND: [{ alertDefinitionId: alertDefinition.id }, ...subjectPayload],
+        },
+        orderBy: {
+          createdAt: 'desc', // Ensure we're getting the most recent alert
         },
       },
       [alertDefinition.projectId],
@@ -396,6 +404,10 @@ export class AlertService {
 
     if (!existingAlert) {
       return false;
+    }
+
+    if (this._isTriggeredSinceLastDedupe(existingAlert, dedupeWindow)) {
+      return true;
     }
 
     const cooldownDurationInMs = cooldownTimeframeInMinutes * 60 * 1000;
@@ -416,6 +428,18 @@ export class AlertService {
     }
 
     return false;
+  }
+
+  private _isTriggeredSinceLastDedupe(existingAlert: Alert, dedupeWindow: DedupeWindow): boolean {
+    if (!existingAlert.dedupedAt || !dedupeWindow) {
+      return false;
+    }
+
+    const dedupeWindowDurationInMs = convertTimeUnitToMilliseconds(dedupeWindow);
+
+    const dedupeWindowEndTime = existingAlert.dedupedAt.getTime() + dedupeWindowDurationInMs;
+
+    return Date.now() > dedupeWindowEndTime;
   }
 
   private getStatusFromState(newState: AlertState): ObjectValues<typeof AlertStatus> {
