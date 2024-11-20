@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.6.65
+
+### Patch Changes
+
+- version bump
+
 ## 0.6.64
 
 ### Patch Changes
