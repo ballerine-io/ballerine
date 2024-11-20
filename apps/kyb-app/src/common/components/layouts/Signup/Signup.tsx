@@ -1,5 +1,5 @@
 import { ITheme } from '@/common/types/settings';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { FunctionComponent } from 'react';
 import { SignupLayoutProvider } from './context/SignupLayoutProvider';
 

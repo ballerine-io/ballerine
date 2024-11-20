@@ -1,5 +1,5 @@
 import DOMPurify from 'dompurify';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { CSSProperties, FunctionComponent } from 'react';
 import { useSignupLayout } from './hooks/useSignupLayout';
 

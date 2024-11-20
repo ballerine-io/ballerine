@@ -3,8 +3,8 @@ import { LoadingSpinner } from '@/common/components/atoms/LoadingSpinner';
 import { useSignupLayout } from '@/common/components/layouts/Signup';
 import { Button, ctw } from '@ballerine/ui';
 import { getSubmitButtonOptions, SubmitButtonProps } from '@rjsf/utils';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Check } from 'lucide-react';
-import { AnimatePresence, motion } from 'motion/react';
 import { FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSignupForm } from '../SignUpFormProvider';
@@ -18,7 +18,7 @@ export const Submit: FunctionComponent<SubmitButtonProps> = ({ uiSchema }) => {
   if (norender) return null;
 
   return (
-    <div className={ctw('flex justify-end items-center', props?.layoutClassName)}>
+    <div className={ctw('flex items-center justify-end', props?.layoutClassName)}>
       <AnimatePresence mode="wait">
         {!isSignupLoading && !isSignupSuccess && (
           <motion.div

@@ -1,4 +1,4 @@
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { FunctionComponent, useState } from 'react';
 import { useSignupLayout } from './hooks/useSignupLayout';
 

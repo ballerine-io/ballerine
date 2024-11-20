@@ -35,7 +35,7 @@ import {
   setStepCompletionState,
 } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { AnimatedUIRenderer } from './components/organisms/AnimatedUIRenderer';
 import { FailedScreen } from './components/pages/FailedScreen';
 import { useSignupGuard } from './hooks/useSignupGuard';

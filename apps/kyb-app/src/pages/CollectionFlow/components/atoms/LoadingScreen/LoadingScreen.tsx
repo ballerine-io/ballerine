@@ -1,5 +1,5 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
-import { AnimatePresence, motion } from 'motion/react';
 
 interface LoadingScreenProps {
   onAnimationComplete?: () => void;
@@ -29,7 +29,7 @@ export const LoadingScreen = ({
           className="fixed inset-0 flex h-screen w-screen items-center justify-center bg-white/80 backdrop-blur-sm"
           onAnimationComplete={onAnimationComplete}
         >
-          <Loader2 className="text-black animate-spin" size={72} />
+          <Loader2 className="animate-spin text-black" size={72} />
         </motion.div>
       )}
     </AnimatePresence>

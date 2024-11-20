@@ -1,5 +1,5 @@
 import { AnyChildren } from '@ballerine/ui';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 
 interface Props {
   children: AnyChildren;

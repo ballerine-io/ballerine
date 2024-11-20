@@ -8,7 +8,7 @@ import {
   Signup,
 } from '@/common/components/layouts/Signup';
 import { useTheme } from '@/common/providers/ThemeProvider';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import { SignUpForm } from './components/SignUpForm';
 

@@ -1,6 +1,6 @@
 import { UIRenderer, UIRendererProps } from '@/components/organisms/UIRenderer';
 import { UIPage } from '@/domains/collection-flow';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { FunctionComponent } from 'react';
 
 export const AnimatedUIRenderer: FunctionComponent<UIRendererProps & { currentPage: UIPage }> = ({

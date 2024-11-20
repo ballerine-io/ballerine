@@ -1,4 +1,4 @@
-import { AnimatePresence } from 'motion/react';
+import { AnimatePresence } from 'framer-motion';
 import { cloneElement, useRef } from 'react';
 import { useLocation, useOutlet } from 'react-router-dom';
 
