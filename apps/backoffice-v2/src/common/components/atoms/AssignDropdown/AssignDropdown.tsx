@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo } from 'react';
+import { FunctionComponent, useMemo } from 'react';
 
 import { CheckSvg, DoubleCaretSvg, UnassignedAvatarSvg } from '../icons';
 import { DropdownMenu } from '../../molecules/DropdownMenu/DropdownMenu';
@@ -12,7 +12,7 @@ import { filterUsersByRole, TUserRole } from '@/domains/users/utils/filter-users
 export type TAssignee = Pick<TAuthenticatedUser, 'id' | 'fullName' | 'avatarUrl'>;
 
 interface IAssignDropdownProps {
-  assignees: TAssignee[];
+  assignees: TAuthenticatedUser[];
   assignedUser?: TAssignee;
   authenticatedUserId: string;
   onAssigneeSelect: (id: string) => void;
@@ -29,7 +29,7 @@ export const AssignDropdown: FunctionComponent<IAssignDropdownProps> = ({
   excludedRoles = [],
 }) => {
   const filteredAssignees = useMemo(
-    () => filterUsersByRole(assignees as Array<Partial<TAuthenticatedUser>>, excludedRoles),
+    () => filterUsersByRole(assignees, excludedRoles),
     [assignees, excludedRoles],
   );
 
