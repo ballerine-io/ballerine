@@ -778,6 +778,7 @@ export class WorkflowRunner {
     });
 
     if (error) {
+      console.error(error);
       logger.error('WORKFLOW CORE:: Error invoking plugin', {
         error,
         stack: error instanceof Error ? error.stack : undefined,

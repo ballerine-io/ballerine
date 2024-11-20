@@ -18,6 +18,10 @@ export class WorkflowTokenService {
     return await this.workflowTokenRepository.findByTokenUnscoped(token);
   }
 
+  async findFirstByWorkflowruntimeDataIdUnscoped(token: string) {
+    return await this.workflowTokenRepository.findFirstByWorkflowruntimeDataIdUnscoped(token);
+  }
+
   async findByTokenWithExpiredUnscoped(token: string) {
     return await this.workflowTokenRepository.findByTokenWithExpiredUnscoped(token);
   }

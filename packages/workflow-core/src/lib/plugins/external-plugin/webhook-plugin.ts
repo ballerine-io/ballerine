@@ -1,10 +1,11 @@
 import { AnyRecord, isErrorWithMessage, sign } from '@ballerine/common';
 import { logger } from '../../logger';
 import { TContext } from '../../utils/types';
-import { BallerineApiPlugin, IBallerineApiPluginParams } from './ballerine-plugin';
+import { IBallerineApiPluginParams } from './ballerine-plugin';
 import { IApiPluginParams } from './types';
+import { ApiPlugin } from '.';
 
-export class WebhookPlugin extends BallerineApiPlugin {
+export class WebhookPlugin extends ApiPlugin {
   public static pluginType = 'http';
   constructor(pluginParams: IBallerineApiPluginParams & IApiPluginParams) {
     super(pluginParams);

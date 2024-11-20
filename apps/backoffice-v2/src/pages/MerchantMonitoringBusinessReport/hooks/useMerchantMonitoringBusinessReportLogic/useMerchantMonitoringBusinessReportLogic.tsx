@@ -62,6 +62,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
       variant: 'violet',
       text: 'Quality Control',
     },
+    [MERCHANT_REPORT_STATUSES_MAP['failed']]: { variant: 'destructive', text: 'Failed' },
   } as const;
 
   const websiteWithNoProtocol = safeUrl(businessReport?.website)?.hostname;

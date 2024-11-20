@@ -287,5 +287,7 @@ export const CollectionFlow = withSessionProtected(() => {
         }}
       </DynamicUI.StateManager>
     </DynamicUI>
-  ) : null;
+  ) : (
+    <LoadingScreen />
+  );
 });
