@@ -12,6 +12,7 @@ export const UsersListSchema = z
       avatarUrl: z.string().nullable().optional(),
       createdAt: z.string(),
       updatedAt: z.string(),
+      roles: z.array(z.union([z.enum(['viewer', 'admin']), z.string()])).optional(),
     }).transform(({ firstName, lastName, ...rest }) => ({
       ...rest,
       firstName,
