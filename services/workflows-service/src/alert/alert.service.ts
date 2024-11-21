@@ -23,6 +23,7 @@ import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { DedupeWindow, TDedupeStrategy, TExecutionDetails } from './types';
 import { computeHash } from '@ballerine/common';
 import { convertTimeUnitToMilliseconds } from '@/data-analytics/utils';
+import { DataInvestigationService } from '@/data-analytics/data-investigation.service';
 
 const DEFAULT_DEDUPE_STRATEGIES = {
   cooldownTimeframeInMinutes: 60 * 24,
@@ -38,6 +39,7 @@ export class AlertService {
     private readonly prisma: PrismaService,
     private readonly logger: AppLoggerService,
     private readonly dataAnalyticsService: DataAnalyticsService,
+    private readonly dataInvestigationService: DataInvestigationService,
     private readonly alertRepository: AlertRepository,
     private readonly alertDefinitionRepository: AlertDefinitionRepository,
   ) {}
@@ -358,7 +360,7 @@ export class AlertService {
           },
           subject: mergedSubject,
           executionRow,
-          filters: this.dataAnalyticsService.getInvestigationFilter(
+          filters: this.dataInvestigationService.getInvestigationFilter(
             projectId,
             alertDef.inlineRule as InlineRule,
             mergedSubject,
@@ -407,7 +409,7 @@ export class AlertService {
     }
 
     if (this._isTriggeredSinceLastDedupe(existingAlert, dedupeWindow)) {
-      return true;
+      return false;
     }
 
     const cooldownDurationInMs = cooldownTimeframeInMinutes * 60 * 1000;

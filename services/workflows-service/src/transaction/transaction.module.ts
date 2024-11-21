@@ -8,12 +8,12 @@ import { PrismaModule } from '@/prisma/prisma.module';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { SentryService } from '@/sentry/sentry.service';
 import { AlertService } from '@/alert/alert.service';
-import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { AlertRepository } from '@/alert/alert.repository';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
+import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
 
 @Module({
-  imports: [ACLModule, PrismaModule],
+  imports: [ACLModule, PrismaModule, DataAnalyticsModule],
   controllers: [TransactionControllerInternal, TransactionControllerExternal],
   providers: [
     TransactionService,
@@ -21,7 +21,6 @@ import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.r
     ProjectScopeService,
     SentryService,
     AlertService,
-    DataAnalyticsService,
     AlertRepository,
     AlertDefinitionRepository,
   ],

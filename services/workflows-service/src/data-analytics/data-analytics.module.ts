@@ -9,6 +9,7 @@ import { ProjectScopeService } from '@/project/project-scope.service';
 import { BusinessReportModule } from '@/business-report/business-report.module';
 // eslint-disable-next-line import/no-cycle
 import { AlertModule } from '@/alert/alert.module';
+import { DataInvestigationService } from './data-investigation.service';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { AlertModule } from '@/alert/alert.module';
     forwardRef(() => AlertModule),
   ],
   controllers: [DataAnalyticsControllerInternal, DataAnalyticsControllerExternal],
-  providers: [DataAnalyticsService, ProjectScopeService],
-  exports: [ACLModule, DataAnalyticsService],
+  providers: [DataAnalyticsService, ProjectScopeService, DataInvestigationService],
+  exports: [ACLModule, DataAnalyticsService, DataInvestigationService],
 })
 export class DataAnalyticsModule {}
