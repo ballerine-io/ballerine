@@ -11,8 +11,10 @@ export const filterUsersByRole = (
   return users.filter(user => {
     if (!user) return false;
 
-    if (!('roles' in user)) return true;
+    if (!('roles' in user) || !Array.isArray(user.roles)) {
+      return true;
+    }
 
-    return !excludedRoles.some(role => Array.isArray(user.roles) && user.roles.includes(role));
+    return !excludedRoles.some(role => user.roles.includes(role));
   });
 };
