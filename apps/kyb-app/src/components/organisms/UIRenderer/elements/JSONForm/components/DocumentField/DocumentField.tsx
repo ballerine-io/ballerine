@@ -18,7 +18,7 @@ import { AnyObject, ErrorsList, RJSFInputProps } from '@ballerine/ui';
 import { HTTPError } from 'ky';
 import get from 'lodash/get';
 import set from 'lodash/set';
-import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 export interface DocumentFieldParams {
   documentData: Partial<Document>;
@@ -62,6 +62,8 @@ export const DocumentField = (
     [documentDefinition],
   );
   const { validationErrors, warnings } = useUIElementErrors(documentDefinition, getErrorKey);
+  const warningsRef = useRef(warnings);
+
   const { isTouched } = elementState;
 
   const fileId = useMemo(() => {
@@ -139,6 +141,7 @@ export const DocumentField = (
             message: response.message as string,
             type: 'warning',
           });
+
           return;
         }
 
@@ -159,7 +162,7 @@ export const DocumentField = (
   );
 
   const handleChange = useCallback(
-    (fileId: string) => {
+    (fileId: string, clear?: boolean) => {
       //@ts-ignore
       const destinationParser = new DocumentValueDestinationParser(definition.valueDestination);
       const pathToDocumentsList = destinationParser.extractRootPath();
@@ -202,8 +205,13 @@ export const DocumentField = (
         ({} as Document['pages'][number]);
 
       // Assigning file properties
+      if (clear) {
+        set(documentPage, pathToFileId!, undefined);
+      } else {
+        set(documentPage, pathToFileId!, fileId);
+      }
+
       //@ts-ignore
-      set(documentPage, pathToFileId, fileId);
       set(documentPage, 'fileName', file?.name);
       set(documentPage, 'type', file?.type);
 
@@ -223,8 +231,12 @@ export const DocumentField = (
       <FileUploaderField
         uploadFile={fileUploader}
         disabled={
-          //@ts-ignore
-          state.isRevision && warnings.length ? false : elementState.isLoading || restProps.disabled
+          elementState.isLoading ||
+          (state.isRevision && warnings.length
+            ? false
+            : warningsRef.current?.length
+            ? false
+            : restProps.disabled)
         }
         fileId={fileId}
         fileRepository={collectionFlowFileStorage}

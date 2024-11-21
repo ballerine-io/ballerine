@@ -1,21 +1,28 @@
 import { useCallback } from 'react';
+import { TCollectionFlowEvents } from './enums';
 
-export const useFlowTracking = () => {
-  const trackExit = useCallback(() => {
-    const event = 'ballerine.collection-flow.back-button-pressed';
-    console.log(`Sending event: ${event}`);
-    window.parent.postMessage(event, '*');
-  }, []);
+const DEFAULT_PREFIX = 'ballerine.collection-flow';
 
-  const trackFinish = useCallback(() => {
-    const event = 'ballerine.collection-flow.finish-button-pressed';
-    console.log(`Sending event: ${event}`);
+interface IUseFlowTracking {
+  prefix?: string;
+}
 
-    window.parent.postMessage('ballerine.collection-flow.finish-button-pressed', '*');
-  }, []);
+const formatEventName = (prefix: string, event: string) => `${prefix}.${event}`;
+
+export const useFlowTracking = (
+  { prefix = DEFAULT_PREFIX }: IUseFlowTracking = { prefix: DEFAULT_PREFIX },
+) => {
+  const trackEvent = useCallback(
+    (event: TCollectionFlowEvents) => {
+      const formattedEvent = formatEventName(prefix, event);
+
+      console.log(`Sending event: ${formattedEvent}`);
+      window.parent.postMessage(formattedEvent, '*');
+    },
+    [prefix],
+  );
 
   return {
-    trackExit,
-    trackFinish,
+    trackEvent,
   };
 };

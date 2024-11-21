@@ -2,19 +2,21 @@ import { describe, expect, it } from 'vitest';
 import { WorkflowRunner } from '../../workflow-runner';
 import { WorkflowRunnerArgs } from '../../types';
 import { ISerializableHttpPluginParams } from './types';
+import { ProcessStatus } from '@ballerine/common';
 
-function createWorkflowRunner(
+const createWorkflowRunner = (
   definition: WorkflowRunnerArgs['definition'],
   apiPluginsSchemas: ISerializableHttpPluginParams[],
-) {
+) => {
   return new WorkflowRunner({
+    runtimeId: '',
     definition,
     extensions: {
       apiPlugins: apiPluginsSchemas,
     },
     workflowContext: { machineContext: { entity: { id: 'some_id' } } },
   });
-}
+};
 
 describe('workflow-runner', () => {
   describe('api plugins', () => {
@@ -46,6 +48,7 @@ describe('workflow-runner', () => {
     const apiPluginsSchemas = [
       {
         name: 'ballerineEnrichment',
+        displayName: 'Ballerine Enrichment',
         url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.json',
         method: 'GET' as const,
         stateNames: ['checkBusinessScore'],
@@ -115,6 +118,8 @@ describe('workflow-runner', () => {
           ballerineEnrichment: {
             error:
               'Error transforming data: Unexpected token type: Colon, value: : for transformer mapping: "dsa: .unknwonvalue.id}"',
+            name: 'ballerineEnrichment',
+            status: ProcessStatus.ERROR,
           },
         });
       });
@@ -153,6 +158,8 @@ describe('workflow-runner', () => {
             ballerineEnrichment: {
               error:
                 " - must have required property 'business_name' |  - must have required property 'registration_number'",
+              name: 'ballerineEnrichment',
+              status: ProcessStatus.ERROR,
             },
           });
         });

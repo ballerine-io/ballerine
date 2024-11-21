@@ -5,7 +5,7 @@ type UnknownRecord = Record<PropertyKey, unknown>;
 const mergeObjects = (obj1: UnknownRecord, obj2: UnknownRecord) => {
   const result = { ...obj1 };
 
-  for (let key in obj2) {
+  for (const key in obj2) {
     if (isObject(obj2[key]) && !Array.isArray(obj2[key]) && key in result) {
       result[key] = mergeObjects(result[key] as UnknownRecord, obj2[key] as UnknownRecord);
     } else {
@@ -16,7 +16,7 @@ const mergeObjects = (obj1: UnknownRecord, obj2: UnknownRecord) => {
   return result;
 };
 
-type ArrayOfObjectsWithId = (UnknownRecord & { id: unknown })[];
+type ArrayOfObjectsWithId = Array<UnknownRecord & { id: unknown }>;
 
 const mergeArraysById = (arr1: ArrayOfObjectsWithId, arr2: ArrayOfObjectsWithId) => {
   const combined = [...arr1, ...arr2];
@@ -24,6 +24,7 @@ const mergeArraysById = (arr1: ArrayOfObjectsWithId, arr2: ArrayOfObjectsWithId)
 
   return ids.map(id => {
     const sameIdItems = combined.filter(item => item.id === id);
+
     return sameIdItems.reduce(mergeObjects, {});
   });
 };
@@ -70,13 +71,14 @@ export const deepMergeWithOptions = (
       switch (arrayMergeOption) {
         case ARRAY_MERGE_OPTION.BY_ID: {
           // Merge by_id could not be performed on primite or falsy (null, undefined) values.
-          // Checking of some of value within array doesnt include id or falsy and forcing merge by_index strategy
+          // Checking if some value in the array doesn't include id or falsy and forcing merge by_index strategy
           if (
-            val1.some((val: unknown) => !isObject(val) || !Boolean(val?.id)) ||
-            val2.some((val: unknown) => !isObject(val) || !Boolean(val?.id))
+            val1.some((val: unknown) => !isObject(val) || !val?.id) ||
+            val2.some((val: unknown) => !isObject(val) || !val?.id)
           ) {
             return mergeArraysByIndex(val1, val2);
           }
+
           return mergeArraysById(val1 as ArrayOfObjectsWithId, val2 as ArrayOfObjectsWithId);
         }
         case ARRAY_MERGE_OPTION.BY_INDEX:
@@ -94,6 +96,7 @@ export const deepMergeWithOptions = (
     for (const key in val2) {
       const val1Child = val1[key];
       const val2Child = val2[key];
+
       if (Array.isArray(val1Child) && Array.isArray(val2Child)) {
         if (arrayMergeOption === ARRAY_MERGE_OPTION.REPLACE) {
           result[key] = val2[key];
@@ -102,12 +105,13 @@ export const deepMergeWithOptions = (
             case ARRAY_MERGE_OPTION.BY_ID: {
               // Merging arrays of primitives using by_index strategy
               if (
-                val1Child.some((val: unknown) => !isObject(val) || !Boolean(val?.id)) ||
-                val2Child.some((val: unknown) => !isObject(val) || !Boolean(val?.id))
+                val1Child.some((val: unknown) => !isObject(val) || !val?.id) ||
+                val2Child.some((val: unknown) => !isObject(val) || !val?.id)
               ) {
                 result[key] = mergeArraysByIndex(val1Child, val2Child);
                 break;
               }
+
               result[key] = mergeArraysById(val1Child || [], val2Child);
               break;
             }

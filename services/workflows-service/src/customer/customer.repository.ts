@@ -1,7 +1,7 @@
 import { PrismaService } from '@/prisma/prisma.service';
-import { Customer, Prisma } from '@prisma/client';
+import { Customer, Prisma, PrismaClient } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
-import { CustomerWithProjects } from '@/types';
+import { CustomerWithProjects, PrismaTransaction } from '@/types';
 
 @Injectable()
 export class CustomerRepository {
@@ -9,8 +9,9 @@ export class CustomerRepository {
 
   async create<T extends Prisma.CustomerCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerCreateArgs>,
+    transaction: PrismaTransaction | PrismaClient = this.prisma,
   ): Promise<Customer> {
-    return this.prisma.customer.create<T>(args);
+    return transaction.customer.create<T>(args);
   }
 
   async validateApiKey(apiKey?: string) {
@@ -57,6 +58,8 @@ export class CustomerRepository {
           websiteUrl: true,
           projects: true,
           subscriptions: true,
+          config: true,
+          features: true,
         },
       }),
     });
@@ -100,11 +103,12 @@ export class CustomerRepository {
   async updateById<T extends Omit<Prisma.CustomerUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.CustomerUpdateArgs, 'where'>>,
+    transaction: PrismaTransaction | PrismaClient = this.prisma,
   ): Promise<Customer> {
     // @ts-expect-error - prisma json not updated
     await this.validateApiKey(args.data?.authenticationConfiguration?.authValue);
 
-    return this.prisma.customer.update<T & { where: { id: string } }>({
+    return transaction.customer.update<T & { where: { id: string } }>({
       where: { id },
       ...args,
       data: {
@@ -116,8 +120,9 @@ export class CustomerRepository {
   async deleteById<T extends Omit<Prisma.CustomerDeleteArgs, 'where'>>(
     id: string,
     args?: Prisma.SelectSubset<T, Omit<Prisma.CustomerDeleteArgs, 'where'>>,
+    transaction: PrismaTransaction | PrismaClient = this.prisma,
   ): Promise<Customer> {
-    return this.prisma.customer.delete({
+    return transaction.customer.delete({
       where: { id },
       ...args,
     });

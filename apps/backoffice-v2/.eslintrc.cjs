@@ -7,7 +7,7 @@ module.exports = {
     },
   },
   parserOptions: {
-    project: './tsconfig.json',
+    project: './tsconfig.eslint.json',
   },
   rules: {
     'tailwindcss/no-custom-classname': 'off',

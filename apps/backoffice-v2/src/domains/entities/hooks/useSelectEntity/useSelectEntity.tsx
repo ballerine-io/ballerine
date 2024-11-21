@@ -1,9 +1,10 @@
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useCallback } from 'react';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
 export const useSelectEntity = () => {
   const navigate = useNavigate();
-  const { locale = 'en' } = useParams();
+  const locale = useLocale();
   const { search, state } = useLocation();
 
   return useCallback(

@@ -27,7 +27,6 @@ console.log('🍎 preparing environment');
 
 const directories = [
   'services/workflows-service',
-  'services/websocket-service',
   'apps/backoffice-v2',
   'apps/kyb-app',
   'apps/workflows-dashboard',
@@ -36,5 +35,7 @@ const directories = [
 directories.forEach(directory => {
   ensureEnvFileIsPresent(path.join(rootDir, directory));
 });
+
+run('./generate-salt.sh', path.join(rootDir, 'scripts'));
 
 console.log('✅ All done!');

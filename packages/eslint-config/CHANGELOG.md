@@ -1,5 +1,143 @@
 # @ballerine/eslint-config
 
+## 1.1.25
+
+### Patch Changes
+
+- version bump
+
+## 1.1.24
+
+### Patch Changes
+
+- Cump
+
+## 1.1.23
+
+### Patch Changes
+
+- Change
+
+## 1.1.22
+
+### Patch Changes
+
+- bump
+
+## 1.1.21
+
+### Patch Changes
+
+- bump
+
+## 1.1.20
+
+### Patch Changes
+
+- bump
+
+## 1.1.19
+
+### Patch Changes
+
+- version bump
+
+## 1.1.18
+
+### Patch Changes
+
+- Bump
+
+## 1.1.17
+
+### Patch Changes
+
+- Bump
+
+## 1.1.16
+
+### Patch Changes
+
+- d
+
+## 1.1.15
+
+### Patch Changes
+
+- version bump
+
+## 1.1.14
+
+### Patch Changes
+
+- Bump
+
+## 1.1.13
+
+### Patch Changes
+
+- Version bump
+
+## 1.1.12
+
+### Patch Changes
+
+- bump
+
+## 1.1.11
+
+### Patch Changes
+
+- version bump
+
+## 1.1.10
+
+### Patch Changes
+
+- Bump
+
+## 1.1.9
+
+### Patch Changes
+
+- Bump
+
+## 1.1.8
+
+### Patch Changes
+
+- Bump
+
+## 1.1.7
+
+### Patch Changes
+
+- bump
+
+## 1.1.6
+
+### Patch Changes
+
+- Bump
+
+## 1.1.5
+
+### Patch Changes
+
+- Bump
+
+## 1.1.4
+
+### Patch Changes
+
+- Bump
+
+## 1.1.3
+
+### Patch Changes
+
+- document changes
+
 ## 1.1.2
 
 ### Patch Changes

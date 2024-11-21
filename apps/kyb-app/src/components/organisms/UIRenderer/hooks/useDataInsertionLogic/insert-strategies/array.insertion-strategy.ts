@@ -22,7 +22,15 @@ export class ArrayInsertionStrategy implements InsertionStrategy {
     set(insertionValue, bindingAnchorDestination, true);
 
     Object.entries(schema).forEach(([insertAt, pickFrom]) => {
-      set(insertionValue, insertAt, get(context, pickFrom) as unknown);
+      if (Array.isArray(pickFrom)) {
+        // TODO: Implement formatting mechanism with templates support.
+        const pickedValues = pickFrom.map(
+          pickFromItem => get(context, pickFromItem, pickFromItem) as unknown,
+        );
+        set(insertionValue, insertAt, pickedValues.join('') as unknown);
+      } else {
+        set(insertionValue, insertAt, get(context, pickFrom) as unknown);
+      }
     });
 
     value.unshift(insertionValue);

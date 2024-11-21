@@ -4,5 +4,9 @@ import { BreadcrumbsOuterProps } from '@/components/atoms/Stepper/components/ato
 export const Outer = ({ className, children }: BreadcrumbsOuterProps) => {
   const { props } = useBreadcrumbElementLogic<BreadcrumbsOuterProps>('outer');
 
-  return <div className={className || props.className}>{children}</div>;
+  return (
+    <div className={className || props.className} style={props.style}>
+      {children}
+    </div>
+  );
 };

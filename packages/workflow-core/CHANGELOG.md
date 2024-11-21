@@ -1,5 +1,415 @@
 # @ballerine/workflow-core
 
+## 0.6.66
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.52
+
+## 0.6.65
+
+### Patch Changes
+
+- version bump
+
+## 0.6.64
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.51
+
+## 0.6.63
+
+### Patch Changes
+
+- Cump
+- Updated dependencies
+  - @ballerine/common@0.9.50
+
+## 0.6.62
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.49
+
+## 0.6.61
+
+### Patch Changes
+
+- updated MATCH plugin
+
+## 0.6.60
+
+### Patch Changes
+
+- Change
+- Updated dependencies
+  - @ballerine/common@0.9.48
+
+## 0.6.59
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.47
+
+## 0.6.58
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.46
+
+## 0.6.57
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.45
+
+## 0.6.56
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.44
+
+## 0.6.55
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.43
+
+## 0.6.54
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.42
+
+## 0.6.53
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.41
+
+## 0.6.52
+
+### Patch Changes
+
+- update plugin schema and ballerine plugins
+- Updated dependencies
+  - @ballerine/common@0.9.40
+
+## 0.6.51
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.39
+
+## 0.6.50
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.38
+
+## 0.6.49
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.37
+
+## 0.6.48
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.36
+
+## 0.6.47
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.35
+
+## 0.6.46
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.34
+
+## 0.6.45
+
+### Patch Changes
+
+- Added webhook signin
+
+## 0.6.44
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.33
+
+## 0.6.43
+
+### Patch Changes
+
+- d
+- Updated dependencies
+  - @ballerine/common@0.9.32
+
+## 0.6.42
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.31
+
+## 0.6.41
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.30
+
+## 0.6.40
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.29
+
+## 0.6.39
+
+### Patch Changes
+
+- Version bump
+- Updated dependencies
+  - @ballerine/common@0.9.28
+
+## 0.6.38
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.27
+
+## 0.6.37
+
+### Patch Changes
+
+- pushing fixes
+- Updated dependencies
+  - @ballerine/common@0.9.26
+
+## 0.6.36
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.25
+
+## 0.6.35
+
+### Patch Changes
+
+- fixed handling of child workflows
+
+## 0.6.34
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.23
+
+## 0.6.33
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.22
+
+## 0.6.32
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.21
+
+## 0.6.31
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.20
+
+## 0.6.30
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.19
+
+## 0.6.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.18
+
+## 0.6.28
+
+### Patch Changes
+
+- bump version
+
+## 0.6.27
+
+### Patch Changes
+
+- Support secrets manager
+
+## 0.6.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.17
+
+## 0.6.25
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.16
+
+## 0.6.24
+
+### Patch Changes
+
+- Fixed error handling for api plugins
+
+## 0.6.23
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.15
+
+## 0.6.22
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.14
+
+## 0.6.21
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.13
+
+## 0.6.20
+
+### Patch Changes
+
+- added errored plugins persist to destination logic
+
+## 0.6.19
+
+### Patch Changes
+
+- Fix rules
+
+## 0.6.18
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.12
+
+## 0.6.17
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+- Updated dependencies
+  - @ballerine/common@0.9.11
+
+## 0.6.16
+
+### Patch Changes
+
+- document changes
+- Updated dependencies
+  - @ballerine/common@0.9.10
+
+## 0.6.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.9
+
+## 0.6.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.8
+
+## 0.6.13
+
+### Patch Changes
+
+- version bump
+
+  s Please enter a summary for your changes.
+
+## 0.6.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.7
+
+## 0.6.11
+
+### Patch Changes
+
+- Version bump
+
 ## 0.6.10
 
 ### Patch Changes

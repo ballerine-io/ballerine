@@ -7,24 +7,66 @@ import { CustomerService } from '@/customer/customer.service';
 import type { InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { AnyRecord, ProcessStatus, TDocument } from '@ballerine/common';
+import {
+  AnyRecord,
+  ProcessStatus,
+  TDocument,
+  EndUserActiveMonitoringsSchema,
+} from '@ballerine/common';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { BusinessReportType, Customer, WorkflowRuntimeData } from '@prisma/client';
+import { Customer, WorkflowRuntimeData } from '@prisma/client';
 import fs from 'fs';
 import { get, isObject, set } from 'lodash';
 import * as tmp from 'tmp';
 import { AlertService } from '@/alert/alert.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { z } from 'zod';
-import { EndUserActiveMonitoringsSchema } from '@/end-user/end-user.schema';
 
-const ReportWithRiskScoreSchema = z
+export const ReportWithRiskScoreSchema = z
   .object({
-    summary: z.object({
-      riskScore: z.number(),
-    }),
+    summary: z
+      .object({
+        riskScore: z.number(),
+      })
+      .passthrough(),
   })
   .passthrough();
+
+const removeLastKeyFromPath = (path: string) => {
+  return path?.split('.')?.slice(0, -1)?.join('.');
+};
+
+export const setPluginStatus = ({
+  data,
+  status,
+  context,
+  resultDestinationPath,
+  ignoreLastKey = true,
+}: {
+  status: keyof typeof ProcessStatus;
+  resultDestinationPath: string;
+  context: Record<string, unknown>;
+  data: Record<string, unknown>;
+  ignoreLastKey?: boolean;
+}) => {
+  const resultDestinationPathWithoutLastKey = removeLastKeyFromPath(resultDestinationPath);
+  const result = get(
+    context,
+    ignoreLastKey ? resultDestinationPathWithoutLastKey : resultDestinationPath,
+  );
+
+  const resultWithData = set({}, resultDestinationPath, ignoreLastKey ? data : { data });
+
+  if (isObject(result) && 'status' in result && result.status) {
+    return set(
+      resultWithData,
+      `${ignoreLastKey ? resultDestinationPathWithoutLastKey : resultDestinationPath}.status`,
+      status,
+    );
+  }
+
+  return resultWithData;
+};
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -60,7 +102,9 @@ export class HookCallbackHandlerService {
         currentProjectId,
       );
 
-      const aml = data.aml as { endUserId: string; hits: unknown[] } | undefined;
+      const aml = data.aml as
+        | { endUserId: string; hits: Array<Record<string, unknown>> }
+        | undefined;
 
       if (aml) {
         await this.updateEndUserWithAmlData({
@@ -69,10 +113,39 @@ export class HookCallbackHandlerService {
           withActiveMonitoring: workflowRuntime.config.hasUboOngoingMonitoring ?? false,
           endUserId: aml.endUserId,
           projectId: currentProjectId,
+          vendor: data.vendor as string,
         });
       }
 
       return context;
+    }
+
+    if (processName === 'aml-unified-api') {
+      const aml = {
+        ...(data.data as {
+          id: string;
+          endUserId: string;
+          hits: Array<Record<string, unknown>>;
+        }),
+        vendor: data.vendor,
+      };
+
+      const attributePath = resultDestinationPath.split('.');
+
+      const newContext = structuredClone(workflowRuntime.context);
+
+      this.setNestedProperty(newContext, attributePath, aml);
+
+      await this.updateEndUserWithAmlData({
+        sessionId: aml.id,
+        amlHits: aml.hits,
+        withActiveMonitoring: workflowRuntime.context.ongoingMonitoring ?? false,
+        endUserId: aml.endUserId,
+        projectId: currentProjectId,
+        vendor: data.vendor as string,
+      });
+
+      return newContext;
     }
 
     if (processName === 'website-monitoring') {
@@ -85,39 +158,26 @@ export class HookCallbackHandlerService {
     }
 
     if (processName === 'merchant-audit-report') {
-      return await this.prepareMerchantAuditReportContext(
-        data as {
-          reportData: Record<string, unknown>;
-          base64Pdf: string;
-          reportId: string;
-          reportType: string;
-          comparedToReportId?: string;
-        },
-        workflowRuntime,
-        resultDestinationPath,
-        currentProjectId,
-      );
+      // return await this.prepareMerchantAuditReportContext(
+      //   data as {
+      //     reportData: Record<string, unknown>;
+      //     base64Pdf: string;
+      //     reportId: string;
+      //     reportType: string;
+      //     comparedToReportId?: string;
+      //   },
+      //   workflowRuntime,
+      //   resultDestinationPath,
+      //   currentProjectId,
+      // );
     }
 
-    const removeLastKeyFromPath = (path: string) => {
-      return path?.split('.')?.slice(0, -1)?.join('.');
-    };
-
-    const resultDestinationPathWithoutLastKey = removeLastKeyFromPath(resultDestinationPath);
-    const result = get(workflowRuntime.context, resultDestinationPathWithoutLastKey);
-
-    const resultWithData = set({}, resultDestinationPath, data);
-
-    //@ts-ignore
-    if (isObject(result) && result.status) {
-      return set(
-        resultWithData,
-        `${resultDestinationPathWithoutLastKey}.status`,
-        ProcessStatus.SUCCESS,
-      );
-    }
-
-    return resultWithData;
+    return setPluginStatus({
+      data,
+      resultDestinationPath,
+      status: ProcessStatus.SUCCESS,
+      context: workflowRuntime.context,
+    });
   }
 
   async prepareWebsiteMonitoringContext(
@@ -132,150 +192,83 @@ export class HookCallbackHandlerService {
     const { reportData: unvalidatedReportData, base64Pdf, reportId, reportType } = data;
     const reportData = ReportWithRiskScoreSchema.parse(unvalidatedReportData);
 
-    const { documents, pdfReportBallerineFileId } =
-      await this.__peristPDFReportDocumentWithWorkflowDocuments({
-        context,
-        customer,
-        projectId: currentProjectId,
-        base64PDFString: base64Pdf as string,
-      });
-
-    const reportRiskScore = reportData?.summary?.riskScore;
-
     const business = await this.businessService.getByCorrelationId(context.entity.id, [
       currentProjectId,
     ]);
 
     if (!business) throw new BadRequestException('Business not found.');
 
-    const currentReportId = reportId as string;
-    const existantBusinessReport = await this.businessReportService.findFirstOrThrow(
-      {
-        where: {
-          businessId: business.id,
-          reportId: currentReportId,
-        },
-      },
-      [currentProjectId],
-    );
+    // const currentReportId = reportId as string;
+    //
+    // this.alertService
+    //   .checkOngoingMonitoringAlert({
+    //     businessReport: businessReport,
+    //     businessCompanyName: business.companyName,
+    //   })
+    //   .then(() => {
+    //     this.logger.debug(`Alert Tested for ${currentReportId}}`);
+    //   })
+    //   .catch(error => {
+    //     this.logger.error(error);
+    //   });
 
-    const businessReport = await this.businessReportService.upsert(
-      {
-        create: {
-          type: reportType as BusinessReportType,
-          riskScore: reportRiskScore as number,
-          report: {
-            reportFileId: pdfReportBallerineFileId,
-            data: reportData as InputJsonValue,
-          },
-          reportId: currentReportId,
-          businessId: business.id,
-          projectId: currentProjectId,
-        },
-        update: {
-          type: reportType as BusinessReportType,
-          riskScore: reportRiskScore,
-          report: {
-            reportFileId: pdfReportBallerineFileId,
-            data: reportData as InputJsonValue,
-          },
-        },
-        where: {
-          id: existantBusinessReport?.id,
-        },
-      },
-      [currentProjectId],
-    );
-
-    set(workflowRuntime.context, resultDestinationPath, { reportData });
-    workflowRuntime.context.documents = documents;
-
-    this.alertService
-      .checkOngoingMonitoringAlert(businessReport, business.companyName)
-      .then(() => {
-        this.logger.debug(`Alert Tested for ${currentReportId}}`);
-      })
-      .catch(error => {
-        this.logger.error(error);
-      });
-
-    return context;
-  }
-
-  async prepareMerchantAuditReportContext(
-    data: Record<string, unknown>,
-    workflowRuntime: WorkflowRuntimeData,
-    resultDestinationPath: string,
-    currentProjectId: TProjectId,
-  ) {
-    const { reportData, base64Pdf, reportId, reportType, comparedToReportId } = z
-      .object({
-        reportData: ReportWithRiskScoreSchema,
-        base64Pdf: z.string(),
-        reportId: z.string(),
-        reportType: z.string(),
-        comparedToReportId: z.string().optional(),
-      })
-      .parse(data);
-
-    const { context } = workflowRuntime;
-
-    const businessId = context.entity.id as string;
-
-    const customer = await this.customerService.getByProjectId(currentProjectId);
-
-    if (comparedToReportId) {
-      const comparedToReport = await this.businessReportService.findFirstOrThrow(
-        {
-          where: {
-            businessId,
-            reportId: comparedToReportId,
-          },
-        },
-        [currentProjectId],
-      );
-
-      if (!comparedToReport) {
-        throw new BadRequestException('Compared to report not found.');
-      }
-
-      reportData.previousReport = {
-        summary: (comparedToReport.report as { data: { summary: { summary: unknown } } }).data
-          .summary,
-        reportType: comparedToReport.type,
-      };
-    }
-
-    const { pdfReportBallerineFileId } = await this.__peristPDFReportDocumentWithWorkflowDocuments({
-      context,
-      customer,
-      projectId: currentProjectId,
-      base64PDFString: base64Pdf as string,
-    });
-
-    const reportContent = {
+    return setPluginStatus({
+      resultDestinationPath,
+      context: workflowRuntime.context,
       data: reportData,
-      reportFileId: pdfReportBallerineFileId,
-      reportId,
-    } as Record<string, object | string>;
-
-    const reportRiskScore = reportData.summary.riskScore;
-
-    await this.businessReportService.create({
-      data: {
-        type: reportType as BusinessReportType,
-        report: reportContent,
-        businessId: businessId,
-        reportId: reportId as string,
-        projectId: currentProjectId,
-        riskScore: reportRiskScore,
-      },
+      ignoreLastKey: false,
+      status: ProcessStatus.SUCCESS,
     });
-
-    return context;
   }
 
-  private async __peristPDFReportDocumentWithWorkflowDocuments({
+  // async prepareMerchantAuditReportContext(
+  //   data: Record<string, unknown>,
+  //   workflowRuntime: WorkflowRuntimeData,
+  //   resultDestinationPath: string,
+  //   currentProjectId: TProjectId,
+  // ) {
+  //   const { reportData, base64Pdf, reportId, reportType, comparedToReportId } = z
+  //     .object({
+  //       reportData: ReportWithRiskScoreSchema,
+  //       base64Pdf: z.string(),
+  //       reportId: z.string(),
+  //       reportType: z.string(),
+  //       comparedToReportId: z.string().optional(),
+  //     })
+  //     .parse(data);
+  //
+  //   const { context } = workflowRuntime;
+  //
+  //   const businessId = context.entity.id as string;
+  //
+  //   const customer = await this.customerService.getByProjectId(currentProjectId);
+  //
+  //   if (comparedToReportId) {
+  //     const comparedToReport = await this.businessReportService.findFirstOrThrow(
+  //       {
+  //         where: {
+  //           businessId,
+  //           reportId: comparedToReportId,
+  //         },
+  //       },
+  //       [currentProjectId],
+  //     );
+  //
+  //     if (!comparedToReport) {
+  //       throw new BadRequestException('Compared to report not found.');
+  //     }
+  //
+  //     reportData.previousReport = {
+  //       summary: (comparedToReport.report as { data: { summary: { summary: unknown } } }).data
+  //         .summary,
+  //       reportType: comparedToReport.type,
+  //     };
+  //   }
+  //
+  //   return context;
+  // }
+
+  async persistPDFReportDocumentWithWorkflowDocuments({
     context,
     base64PDFString,
     projectId,
@@ -305,48 +298,27 @@ export class HookCallbackHandlerService {
       properties: {},
     };
 
-    contextClone.documents = [...contextClone.documents, pdfDocument];
-
-    let persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
+    const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
       [pdfDocument] as unknown as TDocumentsWithoutPageType,
       contextClone.entity.id || context.entity.ballerineEntityId,
       projectId,
       customer.name,
     );
 
-    let pdfReportBallerineFileId = '';
+    let pdfReportBallerineFileId: string | undefined;
 
-    //@ts-ignore
-    persistedDocuments = persistedDocuments.map(document => {
-      const isPDFReportDocument = document.pages.find(
+    persistedDocuments.forEach(document => {
+      const pdfReportDocument = document.pages.find(
         //@ts-ignore
         documentPage => documentPage.uri === base64PDFString,
       );
 
-      if (isPDFReportDocument) {
-        return {
-          ...document,
-          pages: document.pages.map(documentPage => {
-            pdfReportBallerineFileId = documentPage.ballerineFileId as string;
+      if (!pdfReportDocument?.ballerineFileId) return;
 
-            //@ts-ignore
-            if (documentPage.uri === base64PDFString) {
-              return {
-                //@ts-ignore
-                type: documentPage.type,
-                ballerineFileId: documentPage.ballerineFileId,
-                fileName: documentPage.fileName,
-              };
-            }
-          }),
-        };
-      }
-
-      return document;
+      pdfReportBallerineFileId = pdfReportDocument.ballerineFileId;
     });
 
     return {
-      documents: persistedDocuments,
       pdfReportBallerineFileId,
     };
   }
@@ -545,25 +517,31 @@ export class HookCallbackHandlerService {
     amlHits,
     withActiveMonitoring,
     projectId,
+    vendor,
   }: {
     sessionId: string;
     endUserId: string;
-    amlHits: unknown[];
+    amlHits: Array<Record<string, unknown>>;
     withActiveMonitoring: boolean;
     projectId: TProjectId;
+    vendor: string;
   }) {
-    const endUser = await this.endUserService.getById(endUserId, {}, [projectId]);
+    const endUser = await this.endUserService.find(endUserId, [projectId]);
+
+    if (!endUser) {
+      return;
+    }
 
     return await this.endUserService.updateById(endUserId, {
       data: {
-        amlHits: amlHits as InputJsonValue,
+        amlHits: amlHits.map(hit => ({ ...hit, vendor })) as InputJsonValue,
         ...(withActiveMonitoring
           ? {
               activeMonitorings: [
                 ...(endUser.activeMonitorings as z.infer<typeof EndUserActiveMonitoringsSchema>),
                 {
                   type: 'aml',
-                  vendor: 'veriff',
+                  vendor,
                   monitoredUntil: new Date(
                     new Date().setFullYear(new Date().getFullYear() + 3),
                   ).toISOString(),

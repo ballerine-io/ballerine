@@ -2,6 +2,7 @@ import { env } from '@/env';
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerCustomOptions, SwaggerModule } from '@nestjs/swagger';
 import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+import { defaultContextSchema } from '@ballerine/common';
 
 export const swaggerPath = 'api';
 
@@ -35,7 +36,6 @@ class SwaggerSingleton {
       .setVersion('1.3.10')
       .setTermsOfService('https://www.ballerine.com/terms-of-service')
       .setContact('Ballerine', 'https://ballerine.com', 'support@ballerine.com')
-      .addServer('https://api-sb.eu.ballerine.com', 'Sandbox Server')
       .setBasePath('api/v1')
       .setExternalDoc('Ballerine Website', 'https://ballerine.com')
       .setExternalDoc('Ballerine API Documentation', 'https://docs.ballerine.com')
@@ -44,7 +44,20 @@ class SwaggerSingleton {
 
     if (env.ENVIRONMENT_NAME === 'local') {
       swaggerDocBuilder.addServer(`http://localhost:${env.PORT}`, 'Local Server');
+      swaggerDocBuilder.addServer(`https://api-dev.ballerine.io`, 'Development Server');
     }
+
+    if (env.ENVIRONMENT_NAME === 'development') {
+      swaggerDocBuilder.addServer(`https://api-dev.ballerine.io`, 'Development Server');
+    }
+
+    if (env.ENVIRONMENT_NAME === 'production') {
+      swaggerDocBuilder.addServer(`https://api.ballerine.app`, 'Production Server');
+    }
+
+    swaggerDocBuilder.addServer(`https://api-sb.ballerine.app`, 'Sandbox Server');
+
+    swaggerDocBuilder.addServer('https://api-sb.eu.ballerine.com', 'Sandbox Server');
 
     const swaggerDocumentOptions = swaggerDocBuilder.build();
 
@@ -67,7 +80,7 @@ class SwaggerSingleton {
         }
       });
     });
-    document.openapi = SWAGGER_VERSION.V3;
+    document.openapi = SWAGGER_VERSION.V3_1;
 
     // @ts-ignore
     document.webhooks = {
@@ -135,6 +148,7 @@ class SwaggerSingleton {
                     workflowFinalState: {
                       type: 'string',
                       description: 'Final state of the workflow.',
+                      oneOf: [{ enum: ['approved', 'rejected', 'failed'] }, { type: 'string' }],
                     },
                     ballerineEntityId: {
                       type: 'string',
@@ -148,555 +162,7 @@ class SwaggerSingleton {
                       type: 'string',
                       description: 'Environment in which the workflow event occurred.',
                     },
-                    data: {
-                      type: 'object',
-                      description:
-                        'Additional data specific to the workflow event. The structure of this object may vary depending on the workflow type.',
-                      properties: {
-                        'web-presence': {
-                          type: 'object',
-                          description: 'Web presence analysis data.',
-                          properties: {
-                            ecosystem: {
-                              type: 'object',
-                              description: 'Ecosystem analysis data.',
-                              properties: {
-                                website: {
-                                  type: 'object',
-                                  properties: {
-                                    url: {
-                                      type: 'string',
-                                      format: 'uri',
-                                    },
-                                  },
-                                },
-                                riskScore: {
-                                  type: 'number',
-                                },
-                                riskIndicators: {
-                                  type: 'array',
-                                  items: {
-                                    type: 'object',
-                                    properties: {
-                                      riskLevel: {
-                                        type: 'string',
-                                      },
-                                      name: {
-                                        type: 'string',
-                                      },
-                                    },
-                                  },
-                                },
-                                riskSummary: {
-                                  type: 'string',
-                                },
-                                domains: {
-                                  type: 'array',
-                                  items: {
-                                    type: 'object',
-                                    properties: {
-                                      domain: {
-                                        type: 'string',
-                                      },
-                                      relatedNodeType: {
-                                        type: 'string',
-                                      },
-                                      relatedNode: {
-                                        type: 'string',
-                                      },
-                                      indicator: {
-                                        type: 'object',
-                                        nullable: true,
-                                        properties: {
-                                          riskLevel: {
-                                            type: 'string',
-                                          },
-                                          name: {
-                                            type: 'string',
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                            lineOfBusiness: {
-                              type: 'object',
-                              description: 'Line of business analysis data.',
-                              properties: {
-                                website: {
-                                  type: 'object',
-                                  properties: {
-                                    url: {
-                                      type: 'string',
-                                      format: 'uri',
-                                    },
-                                  },
-                                },
-                                riskScore: {
-                                  type: 'number',
-                                },
-                                riskIndicators: {
-                                  type: 'array',
-                                  items: {
-                                    type: 'object',
-                                    properties: {
-                                      riskLevel: {
-                                        type: 'string',
-                                      },
-                                      name: {
-                                        type: 'string',
-                                      },
-                                    },
-                                  },
-                                },
-                                riskSummary: {
-                                  type: 'string',
-                                },
-                                lobDescription: {
-                                  type: 'string',
-                                },
-                                mccProvided: {
-                                  type: 'string',
-                                },
-                                mccMatching: {
-                                  type: 'string',
-                                },
-                              },
-                            },
-                            socialMediaReport: {
-                              type: 'object',
-                              description: 'Social media report data.',
-                              properties: {
-                                riskRank: {
-                                  type: 'number',
-                                },
-                                riskIndicators: {
-                                  type: 'array',
-                                  items: {
-                                    type: 'object',
-                                    properties: {
-                                      riskLevel: {
-                                        type: 'string',
-                                      },
-                                      name: {
-                                        type: 'string',
-                                      },
-                                    },
-                                  },
-                                },
-                                summary: {
-                                  type: 'string',
-                                },
-                                ads: {
-                                  type: 'object',
-                                  properties: {
-                                    facebook: {
-                                      type: 'object',
-                                      nullable: true,
-                                      properties: {
-                                        adsInformation: {
-                                          type: 'object',
-                                          properties: {
-                                            adCount: {
-                                              type: 'integer',
-                                            },
-                                            adSpend: {
-                                              type: 'integer',
-                                            },
-                                          },
-                                        },
-                                        imageUrl: {
-                                          type: 'string',
-                                          format: 'uri',
-                                        },
-                                        link: {
-                                          type: 'string',
-                                          format: 'uri',
-                                        },
-                                        pickedAd: {
-                                          type: 'object',
-                                          properties: {
-                                            imageUrl: {
-                                              type: 'string',
-                                              format: 'uri',
-                                            },
-                                            link: {
-                                              type: 'string',
-                                              format: 'uri',
-                                            },
-                                          },
-                                        },
-                                      },
-                                    },
-                                    instagram: {
-                                      type: 'null',
-                                    },
-                                  },
-                                },
-                                website: {
-                                  type: 'object',
-                                  properties: {
-                                    url: {
-                                      type: 'string',
-                                      format: 'uri',
-                                    },
-                                  },
-                                },
-                                relatedAds: {
-                                  type: 'object',
-                                  properties: {
-                                    summary: {
-                                      type: 'string',
-                                    },
-                                    violations: {
-                                      type: 'array',
-                                      items: {
-                                        type: 'object',
-                                        properties: {
-                                          riskLevel: {
-                                            type: 'string',
-                                          },
-                                          name: {
-                                            type: 'string',
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                            summary: {
-                              type: 'object',
-                              description: 'Summary of web presence analysis.',
-                              properties: {
-                                website: {
-                                  type: 'object',
-                                  properties: {
-                                    url: {
-                                      type: 'string',
-                                      format: 'uri',
-                                    },
-                                  },
-                                },
-                                riskScore: {
-                                  type: 'number',
-                                },
-                                summary: {
-                                  type: 'string',
-                                },
-                                recommendations: {
-                                  type: 'array',
-                                  items: {
-                                    type: 'string',
-                                  },
-                                },
-                                riskIndicatorsByDomain: {
-                                  type: 'object',
-                                  properties: {
-                                    tldViolations: {
-                                      type: 'array',
-                                      nullable: true,
-                                      items: {
-                                        type: 'object',
-                                        properties: {
-                                          riskLevel: {
-                                            type: 'string',
-                                          },
-                                          name: {
-                                            type: 'string',
-                                          },
-                                        },
-                                      },
-                                    },
-                                    ecosystemViolations: {
-                                      type: 'array',
-                                      nullable: true,
-                                      items: {
-                                        type: 'object',
-                                        properties: {
-                                          riskLevel: {
-                                            type: 'string',
-                                          },
-                                          name: {
-                                            type: 'string',
-                                          },
-                                        },
-                                      },
-                                    },
-                                    companyNameViolations: {
-                                      type: 'null',
-                                    },
-                                    lineOfBusinessViolations: {
-                                      type: 'array',
-                                      nullable: true,
-                                      items: {
-                                        type: 'object',
-                                        properties: {
-                                          riskLevel: {
-                                            type: 'string',
-                                          },
-                                          name: {
-                                            type: 'string',
-                                          },
-                                        },
-                                      },
-                                    },
-                                    adsAndSocialViolations: {
-                                      type: 'array',
-                                      nullable: true,
-                                      items: {
-                                        type: 'object',
-                                        properties: {
-                                          riskLevel: {
-                                            type: 'string',
-                                          },
-                                          name: {
-                                            type: 'string',
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                                creationDate: {
-                                  type: 'integer',
-                                },
-                              },
-                            },
-                            transactionLaundering: {
-                              type: 'object',
-                              description: 'Transaction laundering analysis data.',
-                              properties: {
-                                riskScore: {
-                                  type: 'number',
-                                },
-                                riskSummary: {
-                                  type: 'string',
-                                },
-                                website: {
-                                  type: 'object',
-                                  properties: {
-                                    url: {
-                                      type: 'string',
-                                      format: 'uri',
-                                    },
-                                  },
-                                },
-                                riskIndicators: {
-                                  type: 'array',
-                                  nullable: true,
-                                  items: {
-                                    type: 'object',
-                                    properties: {
-                                      riskLevel: {
-                                        type: 'string',
-                                      },
-                                      name: {
-                                        type: 'string',
-                                      },
-                                    },
-                                  },
-                                },
-                                businessConsitency: {
-                                  type: 'object',
-                                  nullable: true,
-                                  properties: {
-                                    summary: {
-                                      type: 'string',
-                                    },
-                                    indicators: {
-                                      type: 'array',
-                                      nullable: true,
-                                      items: {
-                                        type: 'string',
-                                      },
-                                    },
-                                  },
-                                },
-                                scamOrFraud: {
-                                  type: 'object',
-                                  nullable: true,
-                                  properties: {
-                                    summary: {
-                                      type: 'string',
-                                    },
-                                    blacklist: {
-                                      type: 'boolean',
-                                    },
-                                    indicators: {
-                                      type: 'array',
-                                      nullable: true,
-                                      items: {
-                                        type: 'object',
-                                        properties: {
-                                          violation: {
-                                            type: 'string',
-                                          },
-                                          sourceUrl: {
-                                            type: 'string',
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                                pricingAnalysis: {
-                                  type: 'object',
-                                  nullable: true,
-                                  properties: {
-                                    summary: {
-                                      type: 'string',
-                                    },
-                                    indicators: {
-                                      type: 'array',
-                                      nullable: true,
-                                      items: {
-                                        type: 'string',
-                                      },
-                                    },
-                                  },
-                                },
-                                websiteStructureEvaluation: {
-                                  type: 'null',
-                                },
-                                trafficAnalysis: {
-                                  type: 'object',
-                                  nullable: true,
-                                  properties: {
-                                    summary: {
-                                      type: 'string',
-                                    },
-                                    trafficSources: {
-                                      type: 'array',
-                                      nullable: true,
-                                      items: {
-                                        type: 'string',
-                                      },
-                                    },
-                                    engagements: {
-                                      type: 'array',
-                                      nullable: true,
-                                      items: {
-                                        type: 'string',
-                                      },
-                                    },
-                                    montlyVisitsIndicators: {
-                                      type: 'array',
-                                      nullable: true,
-                                      items: {
-                                        type: 'string',
-                                      },
-                                    },
-                                  },
-                                },
-                                reputation: {
-                                  type: 'object',
-                                  nullable: true,
-                                  properties: {
-                                    summary: {
-                                      type: 'string',
-                                    },
-                                    negativeSignals: {
-                                      type: 'string',
-                                    },
-                                  },
-                                },
-                                transactionAnalysis: {
-                                  type: 'null',
-                                },
-                              },
-                            },
-                            websiteCompanyAnalysis: {
-                              type: 'object',
-                              description: 'Website company analysis data.',
-                              properties: {
-                                companyName: {
-                                  type: 'string',
-                                },
-                                riskScore: {
-                                  type: 'number',
-                                },
-                                website: {
-                                  type: 'object',
-                                  properties: {
-                                    url: {
-                                      type: 'string',
-                                      format: 'uri',
-                                    },
-                                  },
-                                },
-                                companyAnalysis: {
-                                  type: 'object',
-                                  properties: {
-                                    summary: {
-                                      type: 'string',
-                                    },
-                                    indicators: {
-                                      type: 'array',
-                                      items: {
-                                        type: 'object',
-                                        properties: {
-                                          name: {
-                                            type: 'string',
-                                          },
-                                          riskLevel: {
-                                            type: 'string',
-                                          },
-                                          sourceUrl: {
-                                            type: 'string',
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                                businessConsistency: {
-                                  type: 'object',
-                                  nullable: true,
-                                  properties: {
-                                    summary: {
-                                      type: 'string',
-                                    },
-                                    indicators: {
-                                      type: 'array',
-                                      items: {
-                                        type: 'string',
-                                      },
-                                    },
-                                  },
-                                },
-                                scamOrFraud: {
-                                  type: 'object',
-                                  nullable: true,
-                                  properties: {
-                                    summary: {
-                                      type: 'string',
-                                    },
-                                    indicators: {
-                                      type: 'array',
-                                      items: {
-                                        type: 'object',
-                                        properties: {
-                                          violation: {
-                                            type: 'string',
-                                          },
-                                          sourceUrl: {
-                                            type: 'string',
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
+                    data: defaultContextSchema,
                   },
                   required: [
                     'id',
@@ -760,7 +226,7 @@ class SwaggerSingleton {
     SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
   }
 
-  initialize(app: INestApplication, version: string = SWAGGER_VERSION.V3) {
+  initialize(app: INestApplication, version: string = SWAGGER_VERSION.V3_1) {
     this._setup(app);
     this.document.openapi = version;
 

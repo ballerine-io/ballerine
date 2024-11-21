@@ -1,16 +1,47 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
-import { fetchBusinessReports } from '@/domains/business-reports/fetchers';
+import {
+  fetchBusinessReportById,
+  fetchBusinessReports,
+  fetchLatestBusinessReport,
+} from '@/domains/business-reports/fetchers';
+import { MerchantReportType } from '@/domains/business-reports/constants';
 
 export const businessReportsQueryKey = createQueryKeys('business-reports', {
-  latest: ({
-    businessId,
-    reportType,
+  list: ({
+    page,
+    pageSize,
+    sortBy,
+    sortDir,
+    ...params
   }: {
-    businessId: string;
-    reportType: 'MERCHANT_REPORT_T1' & (string & {});
+    reportType: MerchantReportType;
+    search: string;
+    page: number;
+    pageSize: number;
+    sortBy: string;
+    sortDir: string;
   }) => ({
+    queryKey: [{ page, pageSize, sortBy, sortDir, ...params }],
+    queryFn: () => {
+      const data = {
+        ...params,
+        page: {
+          number: Number(page),
+          size: Number(pageSize),
+        },
+        orderBy: `${sortBy}:${sortDir}`,
+      };
+
+      return fetchBusinessReports(data);
+    },
+  }),
+  latest: ({ businessId, reportType }: { businessId: string; reportType: MerchantReportType }) => ({
     queryKey: [{ businessId, reportType }],
-    queryFn: () => fetchBusinessReports({ businessId, reportType }),
+    queryFn: () => fetchLatestBusinessReport({ businessId, reportType }),
+  }),
+  byId: ({ id }: { id: string }) => ({
+    queryKey: [{ id }],
+    queryFn: () => fetchBusinessReportById({ id }),
   }),
 });

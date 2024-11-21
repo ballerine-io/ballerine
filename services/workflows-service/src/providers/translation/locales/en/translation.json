@@ -210,6 +210,10 @@
       "label": "DBA (Descriptor)",
       "hint": "Barclays"
     },
+    "mcc": {
+      "label": "Merchant Category Code(MCC)",
+      "hint": "Choose MCC"
+    },
     "products": {
       "label": "Products (divide with comma if more than one)",
       "hint": "Smart Watches, Wireless Earbuds, Portable Chargers."
@@ -514,6 +518,14 @@
       "firstName": "John",
       "lastName": "Doe",
       "email": "email@gmail.com"
+    },
+    "estimatedAnnualSales": {
+      "label": "Estimated Annual Sales($)",
+      "hint": "100000"
+    },
+    "cardPresentPercentage": {
+      "label": "Card Present Percentage(%)",
+      "hint": "25"
     }
   },
   "errorMessage": {
@@ -598,7 +610,9 @@
       "companyWebsite": "Company Website is required.",
       "bankCountry": "Bank Country is required.",
       "companyRegistrationNumber": "Company registration number is required.",
-      "role": "Title is required."
+      "role": "Title is required.",
+      "estimatedAnnualSales": "Estimated annual sales is required.",
+      "cardPresentPercentage": "Card present percentage is required."
     },
     "minLength": {
       "firstName": "First name must be at least 2 characters long.",
@@ -688,11 +702,15 @@
     "minimum": {
       "registeredCapitalInUsd": "Registered capital must be non-negative.",
       "numberOfEmployees": "Number of employees must be at least 1.",
-      "percentageOfOwnership": "Percentage of ownership must be 25 or greater."
+      "percentageOfOwnership": "Percentage of ownership must be 25 or greater.",
+      "estimatedAnnualSales": "Minimum value is 1.",
+      "cardPresentPercentage": "Minimum value is 1."
     },
     "maximum": {
       "numberOfEmployees": "Number of employees cannot exceed 100,000.",
-      "percentageOfOwnership": "Percentage of ownership must not exceed 100."
+      "percentageOfOwnership": "Percentage of ownership must not exceed 100.",
+      "estimatedAnnualSales": "Maximum value is 10 000 000 000",
+      "cardPresentPercentage": "Maximum value is 100."
     }
   }
 }

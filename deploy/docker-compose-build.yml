@@ -28,7 +28,8 @@ services:
   ballerine-workflow-service:
     container_name: workflow-service
     platform: linux/amd64
-    image: ghcr.io/ballerine-io/workflows-service:latest
+    build:
+      context: ../services/workflows-service/
     command:
       - /bin/sh
       - -c
@@ -61,6 +62,8 @@ services:
       UNIFIED_API_SHARED_SECRET: ''
       ENVIRONMENT_NAME: 'development'
       HASHING_KEY_SECRET: ${HASHING_KEY_SECRET}
+      HASHING_KEY_SECRET_BASE64: ${HASHING_KEY_SECRET_BASE64}
+      NOTION_API_KEY: ${NOTION_API_KEY}
     depends_on:
       ballerine-postgres:
         condition: service_healthy

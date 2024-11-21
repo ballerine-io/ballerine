@@ -1,29 +1,30 @@
 import { createColumnHelper } from '@tanstack/react-table';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import dayjs from 'dayjs';
 import React from 'react';
 import { titleCase } from 'string-ts';
-import { TObjectValues } from '@/common/types';
 import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provider';
 import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
 import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
-import { CopyToClipboard } from '@/common/components/atoms/CopyToClipboard/CopyToClipboard';
-import { CheckCircle } from '@/common/components/atoms/CheckCircle/CheckCircle';
 import { XCircle } from '@/common/components/atoms/XCircle/XCircle';
 import { TIndividualProfile } from '@/domains/profiles/fetchers';
+import { ObjectValues } from '@ballerine/common';
+import { CheckCircle, TextWithNAFallback } from '@ballerine/ui';
+import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
 
 export const Role = {
-  UBO: 'UBO',
-  DIRECTOR: 'DIRECTOR',
-  AUTHORIZED_SIGNATORY: 'AUTHORIZED_SIGNATORY',
+  UBO: 'ubo',
+  DIRECTOR: 'director',
+  REPRESENTATIVE: 'representative',
+  AUTHORIZED_SIGNATORY: 'authorized_signatory',
 } as const;
 
 export const Roles = [
   Role.UBO,
   Role.DIRECTOR,
+  Role.REPRESENTATIVE,
   Role.AUTHORIZED_SIGNATORY,
-] as const satisfies ReadonlyArray<TObjectValues<typeof Role>>;
+] as const satisfies ReadonlyArray<ObjectValues<typeof Role>>;
 
 export const KYC = {
   PENDING: 'PENDING',
@@ -39,7 +40,7 @@ export const KYCs = [
   KYC.APPROVED,
   KYC.REJECTED,
   KYC.REVISIONS,
-] as const satisfies ReadonlyArray<TObjectValues<typeof KYC>>;
+] as const satisfies ReadonlyArray<ObjectValues<typeof KYC>>;
 
 export const Sanction = {
   MONITORED: 'MONITORED',
@@ -49,7 +50,14 @@ export const Sanction = {
 export const Sanctions = [
   Sanction.MONITORED,
   Sanction.NOT_MONITORED,
-] as const satisfies ReadonlyArray<TObjectValues<typeof Sanction>>;
+] as const satisfies ReadonlyArray<ObjectValues<typeof Sanction>>;
+
+const roleNameToDisplayName = {
+  [Role.UBO]: 'UBO',
+  [Role.DIRECTOR]: 'Director',
+  [Role.REPRESENTATIVE]: 'Representative',
+  [Role.AUTHORIZED_SIGNATORY]: 'Authorized Signatory',
+} as const;
 
 const columnHelper = createColumnHelper<TIndividualProfile>();
 
@@ -94,7 +102,7 @@ export const columns = [
                 <TextWithNAFallback className={`w-[11.8ch] truncate`}>
                   {correlationId}
                 </TextWithNAFallback>
-                <CopyToClipboard textToCopy={correlationId ?? ''} disabled={!correlationId} />
+                <CopyToClipboardButton textToCopy={correlationId ?? ''} disabled={!correlationId} />
               </div>
             </TooltipTrigger>
             {correlationId && <TooltipContent>{correlationId}</TooltipContent>}
@@ -114,14 +122,20 @@ export const columns = [
     },
     header: 'Businesses',
   }),
-  // columnHelper.accessor('role', {
-  //   cell: info => {
-  //     const role = info.getValue();
-  //
-  //     return <TextWithNAFallback>{titleCase(role ?? '')}</TextWithNAFallback>;
-  //   },
-  //   header: 'Role',
-  // }),
+  columnHelper.accessor('roles', {
+    cell: info => {
+      const roles = info.getValue();
+
+      return (
+        <TextWithNAFallback>
+          {roles
+            ?.map(role => roleNameToDisplayName[role as keyof typeof roleNameToDisplayName])
+            .join(', ') ?? ''}
+        </TextWithNAFallback>
+      );
+    },
+    header: 'Roles',
+  }),
   columnHelper.accessor('kyc', {
     cell: info => {
       const kyc = info.getValue();

@@ -4,6 +4,7 @@ import { useCallback, useMemo } from 'react';
 
 export const isValidDate = (dateString: string): boolean => {
   const date = new Date(dateString);
+
   if (date.getFullYear() < 1000) return false;
 
   return true;
@@ -26,6 +27,7 @@ export const DateInputAdapter: RJSFInputAdapter<string | null> = ({
   const handleChange = useCallback(
     (event: DatePickerChangeEvent) => {
       const dateValue = event.target.value;
+
       if (dateValue === null) return onChange(null);
 
       // every onChange call in context of DateInput forces re-render of component which eventually dicsonnects user focus from input
@@ -42,8 +44,15 @@ export const DateInputAdapter: RJSFInputAdapter<string | null> = ({
     () => ({
       disableFuture: uiSchema?.disableFutureDate,
       disablePast: uiSchema?.disablePastDate,
+      outputValueFormat: uiSchema?.outputFormat,
+      inputDateFormat: uiSchema?.inputDateFormat,
     }),
-    [uiSchema?.disableFutureDate, uiSchema?.disablePastDate],
+    [
+      uiSchema?.disableFutureDate,
+      uiSchema?.disablePastDate,
+      uiSchema?.outputFormat,
+      uiSchema?.inputDateFormat,
+    ],
   );
 
   return (
@@ -54,6 +63,7 @@ export const DateInputAdapter: RJSFInputAdapter<string | null> = ({
       disabled={disabled}
       onBlur={handleBlur}
       testId={testId}
+      textInputClassName={'placeholder:text-gray-400'}
     />
   );
 };

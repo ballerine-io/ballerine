@@ -4,6 +4,7 @@ export interface TCompanyInformation {
   jurisdictionCode: string;
   incorporationDate: string;
   companyType: string;
+  currentStatus: string;
 }
 
 export interface FetchCompanyInformationParams {

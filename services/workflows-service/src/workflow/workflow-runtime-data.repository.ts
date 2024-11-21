@@ -149,8 +149,9 @@ export class WorkflowRuntimeDataRepository {
     args: {
       data: Omit<Prisma.WorkflowRuntimeDataUncheckedUpdateInput, StateRelatedColumns>;
     },
+    transaction: PrismaTransaction | PrismaService = this.prisma,
   ): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.update({
+    return await transaction.workflowRuntimeData.update({
       where: { id },
       ...args,
     });
@@ -290,6 +291,45 @@ export class WorkflowRuntimeDataRepository {
     );
   }
 
+  async findMainBusinessWorkflowRepresentative(
+    {
+      workflowRuntimeId,
+      transaction,
+    }: {
+      workflowRuntimeId: string;
+      transaction?: PrismaTransaction;
+    },
+    projectIds: TProjectIds,
+  ) {
+    const workflowSelectEndUserRepresentative = (await this.findById(
+      workflowRuntimeId,
+      {
+        select: {
+          business: {
+            select: {
+              id: true,
+              endUsersOnBusinesses: {
+                select: {
+                  endUserId: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      projectIds,
+      transaction,
+    )) as unknown as {
+      business: {
+        endUsersOnBusinesses: Array<{
+          endUserId: string;
+        }>;
+      };
+    };
+
+    return workflowSelectEndUserRepresentative.business?.endUsersOnBusinesses?.[0]?.endUserId;
+  }
+
   async search(
     {
       query: { search, take, skip, entityType, workflowDefinitionIds, statuses, orderBy },
@@ -357,31 +397,5 @@ export class WorkflowRuntimeDataRepository {
     `;
 
     return (await this.prisma.$queryRaw(sql)) as WorkflowRuntimeData[];
-  }
-
-  async findFirstByEntityId<T extends Prisma.WorkflowRuntimeDataFindFirstArgs>(
-    entityId: string,
-    projectIds: TProjectIds,
-    args?: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindFirstArgs>,
-  ) {
-    return await this.prisma.workflowRuntimeData.findFirst(
-      this.scopeService.scopeFindFirst(
-        {
-          ...args,
-          where: {
-            ...args?.where,
-            OR: [
-              {
-                endUserId: entityId,
-              },
-              {
-                businessId: entityId,
-              },
-            ],
-          },
-        },
-        projectIds,
-      ),
-    );
   }
 }

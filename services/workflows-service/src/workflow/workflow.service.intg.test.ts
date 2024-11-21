@@ -32,6 +32,13 @@ import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository
 import { faker } from '@faker-js/faker';
 import { ARRAY_MERGE_OPTION, ArrayMergeOption, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { BusinessService } from '@/business/business.service';
+import { BusinessReportService } from '@/business-report/business-report.service';
+import { RiskRuleService } from '@/rule-engine/risk-rule.service';
+import { RuleEngineService } from '@/rule-engine/rule-engine.service';
+import { NotionService } from '@/notion/notion.service';
+import { SentryService } from '@/sentry/sentry.service';
+import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
+import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
 
 describe('WorkflowService', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
@@ -71,6 +78,13 @@ describe('WorkflowService', () => {
       WorkflowRuntimeDataRepository,
       UiDefinitionService,
       UiDefinitionRepository,
+      BusinessReportService,
+      RiskRuleService,
+      RuleEngineService,
+      NotionService,
+      SentryService,
+      SecretsManagerFactory,
+      MerchantMonitoringClient,
     ];
 
     workflowRuntimeService = (await fetchServiceFromModule(WorkflowService, servicesProviders, [

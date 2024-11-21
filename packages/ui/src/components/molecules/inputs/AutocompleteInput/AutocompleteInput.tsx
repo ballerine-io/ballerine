@@ -1,3 +1,4 @@
+import { ctw } from '@/common';
 import { muiTheme } from '@/common/mui-theme';
 import { Paper } from '@/components/atoms/Paper';
 import { ThemeProvider } from '@mui/material';
@@ -21,6 +22,7 @@ export interface AutocompleteInputProps {
   name?: string;
   disabled?: boolean;
   testId?: string;
+  textInputClassName?: string;
   onChange: (event: AutocompleteChangeEvent) => void;
   onBlur?: (event: FocusEvent<any>) => void;
 }
@@ -32,9 +34,21 @@ export const AutocompleteInput = ({
   name,
   disabled,
   testId,
+  textInputClassName,
   onChange,
   onBlur,
 }: AutocompleteInputProps) => {
+  const safeValue = useMemo(() => {
+    if (typeof value !== 'string') {
+      console.warn('AutocompleteInput: value is not a string', value);
+      console.warn('Empty string will be used');
+
+      return '';
+    }
+
+    return value;
+  }, [value]);
+
   const optionLabels = useMemo(() => options.map(option => option.value), [options]);
 
   const handleChange: NonNullable<ComponentProps<typeof Autocomplete>['onChange']> = useCallback(
@@ -63,7 +77,7 @@ export const AutocompleteInput = ({
         options={optionLabels}
         getOptionLabel={label => label}
         freeSolo
-        inputValue={value}
+        inputValue={safeValue}
         PaperComponent={Paper as ComponentProps<typeof Autocomplete>['PaperComponent']}
         onChange={handleChange}
         disabled={disabled}
@@ -93,7 +107,10 @@ export const AutocompleteInput = ({
             InputProps={{
               ...params.InputProps,
               classes: {
-                root: 'border-input bg-background placeholder:text-muted-foreground rounded-md border text-sm transition-colors px-3 py-0 shadow-none',
+                root: ctw(
+                  'border-input bg-background placeholder:text-muted-foreground rounded-md border text-sm transition-colors px-3 py-0 shadow-none',
+                  textInputClassName,
+                ),
                 focused: 'border-input ring-ring ring-1',
                 disabled: 'opacity-50 cursor-not-allowed',
               },

@@ -33,7 +33,10 @@ export const JSONFormArrayFieldLayout = (props: ArrayFieldsLayoutProps) => {
       : true;
   }, [payload, definition]);
 
-  const addText = useMemo(() => t('addLabel'), [t]);
+  const addText = useMemo(
+    () => props.uiSchema?.addText || t('addLabel'),
+    [t, props.uiSchema?.addText],
+  );
 
   const removeElementOnDelete = useCallback(
     (index: number) => {
@@ -55,14 +58,15 @@ export const JSONFormArrayFieldLayout = (props: ArrayFieldsLayoutProps) => {
   // To make validation properly handle addition of items we have to push empty object to array at destination.
   const addEmptyElementToDestinationArray = useCallback(() => {
     let value: undefined | any[] = get(payload, definition.valueDestination as string);
+    const { defaultValue = {} } = definition?.options || {};
 
     if (Array.isArray(value)) {
-      value.push({});
+      value.push(defaultValue);
     } else {
-      value = [{}];
+      value = [defaultValue];
     }
 
-    set(payload, definition.valueDestination as string, value);
+    set(payload, definition.valueDestination as string, [...value]);
 
     stateApi.setContext(payload);
   }, [definition, payload, stateApi]);

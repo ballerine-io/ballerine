@@ -4,20 +4,27 @@ import { createAssociatedCompanyDocumentBlocks } from '@/lib/blocks/variants/Def
 import { createKycBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/create-kyc-blocks';
 import { Blocks } from '@ballerine/blocks';
 import { WorkflowDefinitionConfigThemeEnum } from '@ballerine/common';
+import { Tab } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/get-variant-tabs';
 
 export type TCaseBlocksCreationProps = {
   workflow: TWorkflowById;
-  onReuploadNeeded: any;
+  onReuploadNeeded: (params: {
+    workflowId: string;
+    documentId: string;
+    reason?: string;
+  }) => () => void;
   isLoadingReuploadNeeded: boolean;
 };
 
-export const getTabsToBlocksMap = (
-  blocks: Blocks[],
-  blocksCreationParams: TCaseBlocksCreationProps,
-  theme?: WorkflowDefinitionConfigTheme,
-) => {
-  const { workflow } = blocksCreationParams;
-
+export const getTabsToBlocksMap = ({
+  blocks,
+  blocksCreationParams,
+  theme,
+}: {
+  blocks: Blocks;
+  blocksCreationParams: TCaseBlocksCreationProps;
+  theme?: WorkflowDefinitionConfigTheme;
+}) => {
   const [
     websiteMonitoringBlock,
     entityInfoBlock,
@@ -36,46 +43,63 @@ export const getTabsToBlocksMap = (
     mainContactBlock,
     mainRepresentativeBlock,
     mapBlock,
+    addressWithContainerBlock,
     parentDocumentBlocks,
     associatedCompaniesBlock,
     associatedCompaniesInformationBlock,
-    processTrackerBlock,
     websiteMonitoringBlocks,
     documentReviewBlocks,
     businessInformationBlocks,
+    caseOverviewBlock,
+    customDataBlock,
+    amlWithContainerBlock,
+    merchantScreeningBlock,
   ] = blocks;
 
   const defaultTabsMap = {
-    summary: [
-      ...(workflow?.workflowDefinition?.config?.isCaseOverviewEnabled ? processTrackerBlock : []),
+    [Tab.SUMMARY]: [
+      ...(blocksCreationParams?.workflow?.workflowDefinition?.config?.isCaseOverviewEnabled
+        ? caseOverviewBlock
+        : []),
       ...websiteMonitoringBlock,
       ...entityInfoBlock,
+      ...(blocksCreationParams?.workflow?.context?.pluginsOutput?.merchantScreening
+        ? merchantScreeningBlock
+        : []),
     ],
-    company_information: [
+    [Tab.COMPANY_INFORMATION]: [
       ...entityInfoBlock,
+      // ...mapBlock,
+      ...addressWithContainerBlock,
       ...registryInfoBlock,
       ...kybRegistryInfoBlock,
       ...companySanctionsBlock,
       ...bankingDetailsBlock,
     ],
-    store_info: [...storeInfoBlock, ...processingDetailsBlock, ...websiteBasicRequirementBlock],
-    documents: [...parentDocumentBlocks, ...directorsDocumentsBlocks],
-    ubos: [
+    [Tab.STORE_INFO]: [
+      ...storeInfoBlock,
+      ...processingDetailsBlock,
+      ...websiteBasicRequirementBlock,
+    ],
+    [Tab.DOCUMENTS]: [...parentDocumentBlocks],
+    [Tab.UBOS]: [
       ...ubosUserProvidedBlock,
       ...ubosRegistryProvidedBlock,
-      ...(createKycBlocks(workflow as TWorkflowById) || []),
+      ...amlWithContainerBlock,
+      ...(createKycBlocks(blocksCreationParams?.workflow as TWorkflowById) || []),
     ],
-    associated_companies: [
+    [Tab.ASSOCIATED_COMPANIES]: [
       ...associatedCompaniesBlock,
       ...associatedCompaniesInformationBlock,
-      ...createAssociatedCompanyDocumentBlocks(workflow, blocksCreationParams),
+      ...createAssociatedCompanyDocumentBlocks(blocksCreationParams),
     ],
-    directors: [
+    [Tab.DIRECTORS]: [
       ...directorsUserProvidedBlock,
       ...directorsRegistryProvidedBlock,
       ...directorsDocumentsBlocks,
     ],
-    website_monitoring: [...websiteMonitoringBlocks],
+    [Tab.MONITORING_REPORTS]: [...websiteMonitoringBlocks],
+    [Tab.CUSTOM_DATA]: [...customDataBlock],
   } as const;
 
   if (theme?.type === WorkflowDefinitionConfigThemeEnum.KYB) {
@@ -84,13 +108,17 @@ export const getTabsToBlocksMap = (
 
   if (theme?.type === WorkflowDefinitionConfigThemeEnum.DOCUMENTS_REVIEW) {
     return {
-      documents: [...documentReviewBlocks],
+      [Tab.DOCUMENTS]: [...documentReviewBlocks],
     } as const;
   }
 
   if (theme?.type === WorkflowDefinitionConfigThemeEnum.KYC) {
     return {
-      kyc: [...businessInformationBlocks, ...createKycBlocks(workflow)],
+      [Tab.KYC]: [
+        ...businessInformationBlocks,
+        ...amlWithContainerBlock,
+        ...createKycBlocks(blocksCreationParams?.workflow),
+      ],
     } as const;
   }
 

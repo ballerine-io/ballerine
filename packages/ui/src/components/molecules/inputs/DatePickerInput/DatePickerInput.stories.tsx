@@ -50,3 +50,13 @@ export const WithTestId = {
     />
   ),
 };
+
+export const WithCustomTimeFormat = {
+  render: () => (
+    <DatePickerInput onChange={() => {}} params={{ inputDateFormat: 'YYYY-MM-DD:mm-ss' }} />
+  ),
+};
+
+export const WithCustomDateFormat = {
+  render: () => <DatePickerInput onChange={() => {}} params={{ inputDateFormat: 'YYYY-MM-DD' }} />,
+};

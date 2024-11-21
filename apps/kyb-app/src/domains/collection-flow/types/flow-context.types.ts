@@ -1,11 +1,12 @@
-export interface FlowConfig {
-  apiUrl: string;
-  tokenId: string;
-  appState: string;
-  customerCompany: string;
-  stepsProgress?: Record<string, { isCompleted: boolean }>;
-}
+import { UIOptions } from '@/domains/collection-flow/types';
+import { DefaultContextSchema } from '@ballerine/common';
 
-export type CollectionFlowContext = Record<string, unknown> & {
-  flowConfig?: FlowConfig;
-};
+export type CollectionFlowContext = DefaultContextSchema;
+
+export interface CollectionFlowConfig {
+  uiOptions?: UIOptions;
+}
+export interface CollectionFlowContextData {
+  context: CollectionFlowContext;
+  config: CollectionFlowConfig;
+}

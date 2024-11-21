@@ -41,8 +41,8 @@ export const dynamicUiWorkflowDefinition = {
       },
       collection_invite: {
         on: {
-          INVIATION_SENT: 'collection_flow',
-          INVIATION_FAILURE: 'failed',
+          INVITATION_SENT: 'collection_flow',
+          INVITATION_FAILURE: 'failed',
         },
       },
       collection_flow: {
@@ -145,165 +145,47 @@ export const dynamicUiWorkflowDefinition = {
   extensions: {
     apiPlugins: [
       {
-        name: 'collection_invite_email',
-        pluginKind: 'email',
-        url: `{secret.EMAIL_API_URL}`,
-        successAction: 'INVIATION_SENT',
-        errorAction: 'INVIATION_FAILURE',
-        method: 'POST',
-        stateNames: ['collection_invite'],
-        headers: {
-          Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
-          'Content-Type': 'application/json',
-        },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-                customerName: metadata.customerName,
-                collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
-                from: 'no-reply@ballerine.com',
-                receivers: [entity.data.additionalInfo.mainRepresentative.email],
-                language: workflowRuntimeConfig.language,
-                templateId: 'd-8949519316074e03909042cfc5eb4f02',
-                adapter: '{secret.MAIL_ADAPTER}'
-              }`, // jmespath
-            },
-          ],
-        },
-        response: {
-          transform: [],
-        },
+        name: 'invitation-email',
+        pluginKind: 'template-email',
+        template: 'invitation',
+        successAction: 'INVITATION_SENT',
+        errorAction: 'INVITATION_FAILURE',
+        stateNames: ['idle', 'collection_invite'],
       },
       {
-        name: 'kyb',
-        pluginKind: 'api',
-        url: `{secret.UNIFIED_API_URL}/companies-v2/{entity.data.country}/{entity.data.registrationNumber}`,
-        method: 'GET',
+        name: 'businessInformation',
+        vendor: 'asia-verify',
+        pluginKind: 'registry-information',
+        displayName: 'Registry Information',
         stateNames: ['run_vendor_data'],
         successAction: 'VENDOR_DONE',
         errorAction: 'VENDOR_FAILED',
-        persistResponseDestination: 'pluginsOutput.businessInformation',
-        headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `merge(
-                { vendor: 'asia-verify' },
-                entity.data.country == 'HK' && {
-                  callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.businessInformation.data&processName=kyb-unified-api'])
-                }
-              )`, // jmespath
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '@', // jmespath
-            },
-          ],
-        },
       },
       {
-        name: 'company_sanctions',
-        pluginKind: 'api',
-        url: `{secret.UNIFIED_API_URL}/companies/{entity.data.country}/{entity.data.companyName}/sanctions`,
-        method: 'GET',
+        name: 'companySanctions',
+        vendor: 'asia-verify',
+        pluginKind: 'company-sanctions',
         stateNames: ['run_vendor_data'],
-        successAction: 'VENDOR_DONE',
-        errorAction: 'VENDOR_FAILED',
-        persistResponseDestination: 'pluginsOutput.companySanctions',
-        headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-                vendor: 'asia-verify'
-              }`, // jmespath
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '@', // jmespath
-            },
-          ],
-        },
+        displayName: 'Company Sanctions',
+        errorAction: 'VENDOR_DONE',
+        successAction: 'VENDOR_FAILED',
       },
       {
         name: 'ubo',
-        pluginKind: 'api',
-        url: `{secret.UNIFIED_API_URL}/companies/{entity.data.country}/{entity.data.registrationNumber}/ubo`,
-        method: 'GET',
+        vendor: 'asia-verify',
+        pluginKind: 'ubo',
         stateNames: ['run_vendor_data'],
+        displayName: 'UBO Check',
+        errorAction: 'VENDOR_DONE',
         successAction: 'VENDOR_DONE',
-        errorAction: 'VENDOR_FAILED',
-        persistResponseDestination: 'pluginsOutput.ubo.request',
-        headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-                vendor: 'asia-verify',
-                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.ubo.data&processName=ubo-unified-api'])
-              }`, // jmespath
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '{request: @}', // jmespath
-            },
-          ],
-        },
       },
       {
-        name: 'resubmission_email',
-        pluginKind: 'email',
-        url: `{secret.EMAIL_API_URL}`,
-        method: 'POST',
+        name: 'resubmission-email',
+        pluginKind: 'template-email',
+        template: 'resubmission',
         successAction: 'EMAIL_SENT',
         errorAction: 'EMAIL_FAILURE',
         stateNames: ['pending_resubmission'],
-        headers: {
-          Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
-          'Content-Type': 'application/json',
-        },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              // #TODO: create new token (new using old one)
-              mapping: `{
-                kybCompanyName: entity.data.companyName,
-                customerCompanyName: metadata.customerName,
-                firstName: entity.data.additionalInfo.mainRepresentative.firstName,
-                resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
-                supportEmail: join('',['support@',metadata.customerName,'.com']),
-                from: 'no-reply@ballerine.com',
-                name: join(' ',[metadata.customerName,'Team']),
-                receivers: [entity.data.additionalInfo.mainRepresentative.email],
-                templateId: 'd-7305991b3e5840f9a14feec767ea7301',
-                revisionReason: documents[].decision[].revisionReason | [0],
-                language: workflowRuntimeConfig.language,
-                adapter: '${env.MAIL_ADAPTER}'
-              }`, // jmespath
-            },
-          ],
-        },
-        response: {
-          transform: [],
-        },
       },
     ],
     childWorkflowPlugins: [

@@ -8,7 +8,8 @@ import { PluginOption } from 'vite';
 import { defineConfig } from 'vitest/config';
 import checker from 'vite-plugin-checker';
 import tsconfigPaths from 'vite-tsconfig-paths';
-
+import terminal from 'vite-plugin-terminal';
+import topLevelAwait from 'vite-plugin-top-level-await';
 interface PackageJson {
   name: string;
   version: string;
@@ -20,10 +21,18 @@ const packageJson: PackageJson = JSON.parse(
 );
 
 const plugins: PluginOption[] = [
+  topLevelAwait({
+    promiseExportName: '__tla',
+    promiseImportName: i => `__tla_${i}`,
+  }),
   react(),
   tailwindcss(),
   checker({ typescript: true, overlay: false }),
   tsconfigPaths(),
+  terminal({
+    output: ['console', 'terminal'],
+    strip: false,
+  }),
 ];
 
 if (process.env.VITE_SENTRY_AUTH_TOKEN) {

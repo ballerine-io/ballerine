@@ -26,7 +26,8 @@ import { AlertService } from '@/alert/alert.service';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { ListIndividualsProfilesSchema } from '@/case-management/dtos/list-individuals-profiles.dto';
 import { z } from 'zod';
-import { EndUserAmlHitsSchema } from '@/end-user/end-user.schema';
+import { EndUserAmlHitsSchema } from '@ballerine/common';
+import { Business, EndUsersOnBusinesses } from '@prisma/client';
 
 @Controller('case-management')
 @ApiExcludeController()
@@ -79,35 +80,6 @@ export class CaseManagementController {
     @CurrentProject() projectId: TProjectId,
     @Query() searchQueryParams: z.infer<typeof ListIndividualsProfilesSchema>,
   ) {
-    const endUsers = await this.endUserService.list(
-      {
-        select: {
-          id: true,
-          correlationId: true,
-          createdAt: true,
-          firstName: true,
-          lastName: true,
-          businesses: {
-            select: {
-              companyName: true,
-            },
-          },
-          amlHits: true,
-          activeMonitorings: true,
-          updatedAt: true,
-        },
-        take: searchQueryParams.page.size,
-        skip: (searchQueryParams.page.number - 1) * searchQueryParams.page.size,
-      },
-      [projectId],
-    );
-    const typedEndUsers = endUsers as Array<
-      (typeof endUsers)[number] & {
-        businesses: Array<{
-          companyName: string;
-        }>;
-      }
-    >;
     const tagToKyc = {
       [StateTag.COLLECTION_FLOW]: 'PENDING',
       [StateTag.APPROVED]: 'APPROVED',
@@ -120,39 +92,119 @@ export class CaseManagementController {
       Exclude<TStateTag, 'failure' | 'flagged' | 'resolved' | 'dismissed'>,
       'APPROVED' | 'REJECTED' | 'REVISIONS' | 'PROCESSED' | 'PENDING'
     >;
-    const formattedEndUsers = await Promise.all(
-      typedEndUsers.map(async endUser => {
-        const workflowRuntimeData = await this.workflowService.getByEntityId(endUser.id, projectId);
-        const tag = (workflowRuntimeData?.tags as string[])?.find(
-          tag => !!tagToKyc[tag as keyof typeof tagToKyc],
-        );
-        const alerts = await this.alertsService.getAlertsByEntityId(endUser.id, projectId);
-        const checkIsMonitored = () =>
-          Array.isArray(endUser.activeMonitorings) && !!endUser.activeMonitorings?.length;
-        const getMatches = () => {
-          const amlHits = (endUser.amlHits as z.infer<typeof EndUserAmlHitsSchema>)?.length ?? 0;
-          const isPlural = amlHits > 1 || amlHits === 0;
 
-          return `${amlHits} ${isPlural ? 'matches' : 'match'}`;
-        };
-        const isMonitored = checkIsMonitored();
-        const matches = getMatches();
-
-        return {
-          correlationId: endUser.correlationId,
-          createdAt: endUser.createdAt,
-          name: `${endUser.firstName} ${endUser.lastName}`,
-          businesses: endUser.businesses?.map(business => business.companyName).join(', '),
-          role: 'UBO',
-          kyc: tagToKyc[tag as keyof typeof tagToKyc],
-          isMonitored,
-          matches,
-          alerts: alerts?.length ?? 0,
-          updatedAt: endUser.updatedAt,
-        };
-      }),
+    const endUsers = await this.endUserService.list(
+      {
+        select: {
+          id: true,
+          correlationId: true,
+          createdAt: true,
+          firstName: true,
+          lastName: true,
+          endUsersOnBusinesses: {
+            select: {
+              position: true,
+              business: {
+                select: {
+                  companyName: true,
+                },
+              },
+            },
+          },
+          businesses: {
+            select: {
+              companyName: true,
+            },
+          },
+          Counterparty: {
+            select: {
+              alerts: true,
+            },
+          },
+          workflowRuntimeData: {
+            select: {
+              tags: true,
+            },
+            where: {
+              OR: Object.keys(tagToKyc).map(key => ({
+                tags: {
+                  array_contains: key,
+                },
+              })),
+            },
+            take: 1,
+          },
+          amlHits: true,
+          activeMonitorings: true,
+          updatedAt: true,
+        },
+        where: {
+          Counterparty: {
+            every: {
+              endUserId: null,
+            },
+          },
+        },
+        take: searchQueryParams.page.size,
+        skip: (searchQueryParams.page.number - 1) * searchQueryParams.page.size,
+      },
+      [projectId],
     );
 
-    return formattedEndUsers;
+    const typedEndUsers = endUsers as Array<
+      (typeof endUsers)[number] & {
+        endUsersOnBusinesses: Array<{
+          position: EndUsersOnBusinesses['position'];
+          business: Pick<Business, 'companyName'>;
+        }>;
+        workflowRuntimeData: Array<{
+          tags: string[];
+        }>;
+        businesses: Array<Pick<Business, 'companyName'>>;
+        Counterparty: {
+          alerts: Array<{
+            id: string;
+          }>;
+        };
+      }
+    >;
+
+    return typedEndUsers.map(endUser => {
+      const tag = endUser.workflowRuntimeData?.[0]?.tags?.find(
+        tag => !!tagToKyc[tag as keyof typeof tagToKyc],
+      );
+      const alerts = endUser.Counterparty?.alerts;
+      const checkIsMonitored = () =>
+        Array.isArray(endUser.activeMonitorings) && !!endUser.activeMonitorings?.length;
+      const getMatches = () => {
+        const amlHits = (endUser.amlHits as z.infer<typeof EndUserAmlHitsSchema>)?.length ?? 0;
+        const isPlural = amlHits > 1 || amlHits === 0;
+
+        return `${amlHits} ${isPlural ? 'matches' : 'match'}`;
+      };
+      const isMonitored = checkIsMonitored();
+      const matches = getMatches();
+
+      const businesses = endUser.businesses?.length
+        ? endUser.businesses.map(business => business.companyName).join(', ')
+        : endUser.endUsersOnBusinesses
+            ?.map(endUserOnBusiness => endUserOnBusiness.business.companyName)
+            .join(', ');
+
+      return {
+        correlationId: endUser.correlationId,
+        createdAt: endUser.createdAt,
+        name: `${endUser.firstName} ${endUser.lastName}`,
+        businesses,
+        roles: endUser.endUsersOnBusinesses?.flatMap(
+          endUserOnBusiness => endUserOnBusiness.position,
+        ),
+        kyc: tagToKyc[tag as keyof typeof tagToKyc],
+        isMonitored,
+        matches,
+        alerts: alerts?.length ?? 0,
+        updatedAt: endUser.updatedAt,
+      };
+    });
   }
 }

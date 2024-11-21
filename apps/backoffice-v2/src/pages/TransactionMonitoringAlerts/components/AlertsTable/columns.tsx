@@ -1,8 +1,7 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import { TAlertsList, TAlertState } from '@/domains/alerts/fetchers';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import dayjs from 'dayjs';
-import { Badge } from '@ballerine/ui';
+import { Badge, severityToClassName, TextWithNAFallback } from '@ballerine/ui';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { UserCircle2 } from 'lucide-react';
 import { Avatar } from '@/common/components/atoms/Avatar_/Avatar_';
@@ -10,7 +9,6 @@ import { AvatarImage } from '@/common/components/atoms/Avatar_/Avatar.Image';
 import { AvatarFallback } from '@/common/components/atoms/Avatar_/Avatar.Fallback';
 import { createInitials } from '@/common/utils/create-initials/create-initials';
 import React, { ComponentProps } from 'react';
-import { severityToClassName } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/severity-to-class-name';
 import { IndeterminateCheckbox } from '@/common/components/atoms/IndeterminateCheckbox/IndeterminateCheckbox';
 import { SnakeCase, titleCase } from 'string-ts';
 import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-screaming-snake-case';

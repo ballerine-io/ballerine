@@ -31,6 +31,13 @@ import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { faker } from '@faker-js/faker';
 import { BusinessService } from '@/business/business.service';
+import { BusinessReportService } from '@/business-report/business-report.service';
+import { RiskRuleService } from '@/rule-engine/risk-rule.service';
+import { RuleEngineService } from '@/rule-engine/rule-engine.service';
+import { NotionService } from '@/notion/notion.service';
+import { SentryService } from '@/sentry/sentry.service';
+import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
+import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
 
 describe('#Workflow Runtime Repository Integration Tests', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
@@ -52,6 +59,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       StorageService,
       WorkflowEventEmitterService,
       BusinessRepository,
+      BusinessReportService,
       BusinessService,
       WorkflowDefinitionRepository,
       WorkflowService,
@@ -68,6 +76,12 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       WorkflowRuntimeDataRepository,
       UiDefinitionService,
       UiDefinitionRepository,
+      RiskRuleService,
+      RuleEngineService,
+      NotionService,
+      SentryService,
+      SecretsManagerFactory,
+      MerchantMonitoringClient,
     ];
 
     workflowRuntimeRepository = (await fetchServiceFromModule(

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { valueOrNA } from '@ballerine/common';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 
 export const useAssociatedCompaniesInformationBlock = (workflows: TWorkflowById[]) => {
@@ -40,7 +40,7 @@ export const useAssociatedCompaniesInformationBlock = (workflows: TWorkflowById[
               type: 'details',
               hideSeparator: true,
               value: {
-                title: 'Company Information',
+                title: 'Company',
                 data: Object.entries(entityData)?.map(([title, value]) => ({
                   title,
                   value,

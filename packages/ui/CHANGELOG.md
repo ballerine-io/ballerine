@@ -1,5 +1,318 @@
 # @ballerine/ui
 
+## 0.5.45
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.52
+
+## 0.5.44
+
+### Patch Changes
+
+- Cump
+- Updated dependencies
+  - @ballerine/common@0.9.50
+
+## 0.5.43
+
+### Patch Changes
+
+- bump
+
+## 0.5.42
+
+### Patch Changes
+
+- Change
+- Updated dependencies
+  - @ballerine/common@0.9.48
+
+## 0.5.41
+
+### Patch Changes
+
+- Added safeValue to autocomplete
+
+## 0.5.40
+
+### Patch Changes
+
+- Added defaultCountry code for phone input
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.45
+
+## 0.5.39
+
+### Patch Changes
+
+- Fixed styles in dynamic form
+
+## 0.5.38
+
+### Patch Changes
+
+- Fixed textarea placeholder
+
+## 0.5.37
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.39
+
+## 0.5.36
+
+### Patch Changes
+
+- Fixed text field placeholder color
+
+## 0.5.35
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.37
+
+## 0.5.34
+
+### Patch Changes
+
+- Added fallback date format to date input
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.34
+
+## 0.5.33
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.33
+
+## 0.5.32
+
+### Patch Changes
+
+- Fixed report content violation explanation
+
+## 0.5.31
+
+### Patch Changes
+
+- d
+- Updated dependencies
+  - @ballerine/common@0.9.32
+
+## 0.5.30
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.31
+
+## 0.5.29
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.30
+
+## 0.5.28
+
+### Patch Changes
+
+- Added customization to date input & output formats on DateInput
+
+## 0.5.27
+
+### Patch Changes
+
+- version bump
+
+## 0.5.26
+
+### Patch Changes
+
+- version update
+
+## 0.5.25
+
+### Patch Changes
+
+- update ui pakcages
+
+## 0.5.24
+
+### Patch Changes
+
+- Version bump
+- Updated dependencies
+  - @ballerine/common@0.9.28
+
+## 0.5.23
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.27
+
+## 0.5.22
+
+### Patch Changes
+
+- readded content explanations and screenshots
+
+## 0.5.21
+
+### Patch Changes
+
+- changed tsconfig settings for ui package
+
+## 0.5.20
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.25
+
+## 0.5.19
+
+### Patch Changes
+
+- Updated exports
+
+## 0.5.18
+
+### Patch Changes
+
+- fix boolean fields
+
+## 0.5.17
+
+### Patch Changes
+
+- fixed social data
+
+## 0.5.16
+
+### Patch Changes
+
+- fixed filtering of boolean fields
+
+## 0.5.15
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.22
+
+## 0.5.14
+
+### Patch Changes
+
+- update version
+- Updated dependencies
+  - @ballerine/common@0.9.21
+
+## 0.5.13
+
+### Patch Changes
+
+- Moved components from the backoffice to common and ui
+- Updated dependencies
+  - @ballerine/common@0.9.20
+
+## 0.5.12
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.19
+
+## 0.5.11
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.16
+
+## 0.5.10
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.15
+
+## 0.5.9
+
+### Patch Changes
+
+- Fixed dropdown input text overflow
+
+## 0.5.8
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.14
+
+## 0.5.7
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.13
+
+## 0.5.6
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.12
+
+## 0.5.5
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+- Updated dependencies
+  - @ballerine/common@0.9.11
+
+## 0.5.4
+
+### Patch Changes
+
+- document changes
+- Updated dependencies
+  - @ballerine/common@0.9.10
+
+## 0.5.3
+
+### Patch Changes
+
+- update for sanctions screening
+- Updated dependencies
+  - @ballerine/common@0.9.7
+
 ## 0.5.2
 
 ### Patch Changes

@@ -96,11 +96,19 @@ model EndUser {
   @@index([projectId])
 }
 
+enum BusinessPosition {
+  ubo
+  director
+  representative
+  authorized_signatory
+}
+
 model EndUsersOnBusinesses {
-  endUser    EndUser  @relation(fields: [endUserId], references: [id])
+  endUser    EndUser            @relation(fields: [endUserId], references: [id])
   endUserId  String
-  business   Business @relation(fields: [businessId], references: [id])
+  business   Business           @relation(fields: [businessId], references: [id])
   businessId String
+  position   BusinessPosition[]
 
   @@id([endUserId, businessId])
   @@index([businessId])
@@ -156,6 +164,40 @@ model Business {
   @@index([businessType])
 }
 
+enum EntityType {
+  Business
+  EndUser
+}
+
+enum Noteable {
+  Report
+  Alert
+  Workflow
+}
+
+model Note {
+  id            String     @id @default(cuid())
+  entityId      String
+  entityType    EntityType
+  noteableId    String
+  noteableType  Noteable
+  content       String
+  parentNoteId  String?
+  parentNote    Note?      @relation("ReplyToNote", fields: [parentNoteId], references: [id])
+  childrenNotes Note[]     @relation("ReplyToNote")
+  fileIds       String[]
+  createdAt     DateTime   @default(now())
+  createdBy     String     @default("SYSTEM")
+  updatedAt     DateTime   @updatedAt
+  deletedAt     DateTime?
+  projectId     String
+  project       Project    @relation(fields: [projectId], references: [id])
+
+  @@index([entityId, entityType, projectId])
+  @@index([noteableId, noteableType, projectId])
+  @@index([projectId])
+}
+
 model WorkflowDefinition {
   id String @id @default(cuid())
 
@@ -168,16 +210,14 @@ model WorkflowDefinition {
   projectId String?
   isPublic  Boolean @default(false)
 
-  definitionType     String
-  definition         Json
-  contextSchema      Json?
-  documentsSchema    Json?
-  config             Json?
-  supportedPlatforms Json?
-  extensions         Json?
-  variant            String @default("DEFAULT")
+  definitionType  String
+  definition      Json
+  contextSchema   Json?
+  documentsSchema Json?
+  config          Json?
+  extensions      Json?
+  variant         String @default("DEFAULT")
 
-  backend       Json?
   persistStates Json?
   submitStates  Json?
 
@@ -210,6 +250,8 @@ model WorkflowRuntimeData {
   assigneeId                String?
   workflowDefinition        WorkflowDefinition        @relation(fields: [workflowDefinitionId], references: [id])
   workflowDefinitionId      String
+  uiDefinitionId            String?
+  uiDefinition              UiDefinition?             @relation(fields: [uiDefinitionId], references: [id])
   workflowDefinitionVersion Int
   context                   Json
   config                    Json?
@@ -241,6 +283,7 @@ model WorkflowRuntimeData {
   @@index([state])
   @@index([parentRuntimeDataId])
   @@index([projectId])
+  @@index([uiDefinitionId])
   @@index([tags(ops: JsonbPathOps)], type: Gin)
 }
 
@@ -296,9 +339,8 @@ enum CustomerStatuses {
 
 enum BusinessReportType {
   ONGOING_MERCHANT_REPORT_T1
-  ONGOING_MERCHANT_REPORT_T2
   MERCHANT_REPORT_T1
-  MERCHANT_REPORT_T2
+  MERCHANT_REPORT_T1_LITE
 }
 
 model Customer {
@@ -369,6 +411,7 @@ model Project {
   Alert                    Alert[]
   Counterparty             Counterparty[]
   BusinessReport           BusinessReport[]
+  Note                     Note[]
 
   @@unique([name, customerId])
   @@index(name)
@@ -408,22 +451,31 @@ enum UiDefinitionContext {
 
 model UiDefinition {
   id                   String              @id @default(cuid())
+  crossEnvKey          String?             @unique
   workflowDefinitionId String
   uiContext            UiDefinitionContext
+
+  name        String?
+  displayName String?
 
   page  Int?
   state String?
 
   definition    Json? // Frontend UI xstate definition
   uiSchema      Json // JSON schmea of how to render UI
+  theme         Json? // Theme for the UI
   schemaOptions Json? // Document Schemas, rejectionReasons: {}, documenTypes: {}, documenCateogries: {}
   uiOptions     Json? // how the view will look, overall
+  locales       Json? // Locales for the UI
   createdAt     DateTime  @default(now())
   updatedAt     DateTime? @updatedAt
 
-  projectId          String
-  project            Project            @relation(fields: [projectId], references: [id])
-  workflowDefinition WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
+  projectId            String
+  project              Project               @relation(fields: [projectId], references: [id])
+  workflowDefinition   WorkflowDefinition    @relation(fields: [workflowDefinitionId], references: [id])
+  workflowRuntimeDatas WorkflowRuntimeData[]
+
+  @@index([name, projectId])
 }
 
 model WorkflowRuntimeDataToken {
@@ -431,8 +483,8 @@ model WorkflowRuntimeDataToken {
   token                 String              @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   workflowRuntimeDataId String
   workflowRuntimeData   WorkflowRuntimeData @relation(fields: [workflowRuntimeDataId], references: [id])
-  endUserId             String
-  endUser               EndUser             @relation(fields: [endUserId], references: [id])
+  endUserId             String?
+  endUser               EndUser?            @relation(fields: [endUserId], references: [id])
   projectId             String
   project               Project             @relation(fields: [projectId], references: [id])
   createdAt             DateTime            @default(now())
@@ -450,6 +502,7 @@ enum DataVersionStatus {
 model DataMigrationVersion {
   id            String            @id @default(cuid())
   version       String
+  fileName      String?
   migratedAt    DateTime          @default(now())
   status        DataVersionStatus @default(completed)
   failureReason String?
@@ -673,6 +726,7 @@ model TransactionRecord {
   @@unique([projectId, transactionCorrelationId])
   @@index([transactionType])
   @@index([transactionDate])
+  @@index([transactionDirection])
   @@index([transactionStatus])
   @@index([reviewStatus])
   @@index([projectId])
@@ -760,10 +814,12 @@ model Alert {
   project   Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
   dataTimestamp DateTime
-  state         AlertState
   status        AlertStatus
   tags          String[]
   severity      AlertSeverity?
+
+  state         AlertState
+  decisionAt    DateTime?
 
   executionDetails Json
   additionalInfo   Json?
@@ -772,6 +828,7 @@ model Alert {
   assigneeId String?
   assignedAt DateTime?
 
+  dedupedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -837,17 +894,26 @@ model Counterparty {
 
   @@unique([projectId, correlationId])
   @@index([correlationId])
+  @@index([endUserId])
+}
+
+enum BusinessReportStatus {
+  new
+  in_progress
+  completed
 }
 
 model BusinessReport {
   id       String             @id @default(cuid())
   type     BusinessReportType
-  reportId String             @unique
+  reportId String?            @unique
   report   Json
 
-  riskScore  Int
+  riskScore  Int?
+  status     BusinessReportStatus
   businessId String
-  business   Business @relation(fields: [businessId], references: [id])
+  business   Business             @relation(fields: [businessId], references: [id])
+  batchId    String?
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
@@ -860,4 +926,5 @@ model BusinessReport {
   @@index([projectId])
   @@index([riskScore])
   @@index([type])
+  @@index([batchId])
 }

@@ -12,7 +12,6 @@ import {
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { PrismaService } from '@/prisma/prisma.service';
-import _ from 'lodash';
 
 const getNestedCounterpartyBusinessData = ({
   projectId,
@@ -198,24 +197,29 @@ export class TransactionFactory {
 
   projectId: string;
 
+  _fakeDateByFn: (() => Date) | undefined;
+
   constructor({
     prisma,
     number = 1,
     data = {},
     runBeforeCreate = [],
     projectId,
+    fakeDateByFn,
   }: {
     prisma: PrismaService;
     projectId: string;
     number?: number;
     data?: Partial<TransactionCreateData>;
     runBeforeCreate?: Array<() => Promise<void>>;
+    fakeDateByFn?: () => Date;
   }) {
     this.prisma = prisma;
     this.number = number;
     this.data = data;
     this.runBeforeCreate = runBeforeCreate;
     this.projectId = projectId;
+    this._fakeDateByFn = fakeDateByFn;
   }
 
   public clone() {
@@ -225,6 +229,7 @@ export class TransactionFactory {
       data: this.data,
       runBeforeCreate: [...this.runBeforeCreate],
       projectId: this.projectId,
+      fakeDateByFn: this._fakeDateByFn,
     });
   }
 
@@ -370,6 +375,14 @@ export class TransactionFactory {
     return factory;
   }
 
+  public date(dateFunction: (...args: any[]) => Date, ...args: any[]) {
+    const factory = this.clone();
+
+    factory._fakeDateByFn = () => dateFunction(...args);
+
+    return factory;
+  }
+
   public amount(amount: number) {
     const factory = this.clone();
 
@@ -383,11 +396,13 @@ export class TransactionFactory {
     for (const runBeforeCreate of this.runBeforeCreate) {
       await runBeforeCreate();
     }
+
     const promiseArray = new Array(this.number).fill(null).map(async () => {
       return this.prisma.transactionRecord.create({
         data: {
           ...getTransactionCreateData({ projectId: this.projectId }),
           ...this.data,
+          ...(this._fakeDateByFn ? { transactionDate: this._fakeDateByFn() } : {}),
           ...overrideData,
         } as TransactionCreateData,
       });

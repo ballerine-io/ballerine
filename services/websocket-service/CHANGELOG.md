@@ -1,5 +1,143 @@
 # @ballerine/websocket-service
 
+## 0.1.25
+
+### Patch Changes
+
+- version bump
+
+## 0.1.24
+
+### Patch Changes
+
+- Cump
+
+## 0.1.23
+
+### Patch Changes
+
+- Change
+
+## 0.1.22
+
+### Patch Changes
+
+- bump
+
+## 0.1.21
+
+### Patch Changes
+
+- bump
+
+## 0.1.20
+
+### Patch Changes
+
+- bump
+
+## 0.1.19
+
+### Patch Changes
+
+- version bump
+
+## 0.1.18
+
+### Patch Changes
+
+- Bump
+
+## 0.1.17
+
+### Patch Changes
+
+- Bump
+
+## 0.1.16
+
+### Patch Changes
+
+- d
+
+## 0.1.15
+
+### Patch Changes
+
+- version bump
+
+## 0.1.14
+
+### Patch Changes
+
+- Bump
+
+## 0.1.13
+
+### Patch Changes
+
+- Version bump
+
+## 0.1.12
+
+### Patch Changes
+
+- bump
+
+## 0.1.11
+
+### Patch Changes
+
+- version bump
+
+## 0.1.10
+
+### Patch Changes
+
+- Bump
+
+## 0.1.9
+
+### Patch Changes
+
+- Bump
+
+## 0.1.8
+
+### Patch Changes
+
+- Bump
+
+## 0.1.7
+
+### Patch Changes
+
+- bump
+
+## 0.1.6
+
+### Patch Changes
+
+- Bump
+
+## 0.1.5
+
+### Patch Changes
+
+- Bump
+
+## 0.1.4
+
+### Patch Changes
+
+- Bump
+
+## 0.1.3
+
+### Patch Changes
+
+- document changes
+
 ## 0.1.2
 
 ### Patch Changes

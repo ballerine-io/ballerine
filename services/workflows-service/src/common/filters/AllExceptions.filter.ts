@@ -3,9 +3,9 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { ArgumentsHost, Catch, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
 import type { Request, Response } from 'express';
-import { HttpStatusCode } from 'axios';
 import { ValidationError } from '@/errors';
 import { inspect } from 'node:util';
+import { getReqMetadataObj } from '../utils/request-response/request';
 
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
@@ -34,7 +34,6 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
       .status(serverError.getStatus())
       .setHeader('Content-Type', 'application/json')
       .json({
-        errorCode: String(HttpStatusCode[serverError.getStatus()]),
         message:
           typeof serverError.getResponse() === 'string'
             ? serverError.getResponse()
@@ -77,6 +76,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
       error: inspect(errorRes),
       message: error.message,
       responseTime: Date.now() - request.startTime,
+      ...getReqMetadataObj(request),
     });
   }
 

@@ -1,5 +1,282 @@
 # @ballerine/common
 
+## 0.9.52
+
+### Patch Changes
+
+- version bump
+
+## 0.9.51
+
+### Patch Changes
+
+- Updated aml schema
+
+## 0.9.50
+
+### Patch Changes
+
+- Cump
+
+## 0.9.49
+
+### Patch Changes
+
+- version bump
+
+## 0.9.48
+
+### Patch Changes
+
+- Change
+
+## 0.9.47
+
+### Patch Changes
+
+- Refactored collection flow utils
+
+## 0.9.46
+
+### Patch Changes
+
+- Bump
+
+## 0.9.45
+
+### Patch Changes
+
+- bump
+
+## 0.9.44
+
+### Patch Changes
+
+- Added collection flow manager & updated schema
+
+## 0.9.43
+
+### Patch Changes
+
+- updated schema
+
+## 0.9.42
+
+### Patch Changes
+
+- fix match schema
+
+## 0.9.41
+
+### Patch Changes
+
+- schema fix
+
+## 0.9.40
+
+### Patch Changes
+
+- update plugin schema and ballerine plugins
+
+## 0.9.39
+
+### Patch Changes
+
+- bump
+
+## 0.9.38
+
+### Patch Changes
+
+- bump
+
+## 0.9.37
+
+### Patch Changes
+
+- version bump
+
+## 0.9.36
+
+### Patch Changes
+
+- version bump
+
+## 0.9.35
+
+### Patch Changes
+
+- bump
+
+## 0.9.34
+
+### Patch Changes
+
+- Bump
+
+## 0.9.33
+
+### Patch Changes
+
+- Bump
+
+## 0.9.32
+
+### Patch Changes
+
+- d
+
+## 0.9.31
+
+### Patch Changes
+
+- version bump
+
+## 0.9.30
+
+### Patch Changes
+
+- Bump
+
+## 0.9.29
+
+### Patch Changes
+
+- version bump fix
+
+## 0.9.28
+
+### Patch Changes
+
+- Version bump
+
+## 0.9.27
+
+### Patch Changes
+
+- bump
+
+## 0.9.26
+
+### Patch Changes
+
+- pushing fixes
+
+## 0.9.25
+
+### Patch Changes
+
+- version bump
+
+## 0.9.24
+
+### Patch Changes
+
+- merchant screening changes
+
+## 0.9.23
+
+### Patch Changes
+
+- added merchant screening to swagger
+
+## 0.9.22
+
+### Patch Changes
+
+- version bump
+
+## 0.9.21
+
+### Patch Changes
+
+- update version
+
+## 0.9.20
+
+### Patch Changes
+
+- Moved components from the backoffice to common and ui
+
+## 0.9.19
+
+### Patch Changes
+
+- Bump
+
+## 0.9.18
+
+### Patch Changes
+
+- Common version bump
+
+## 0.9.17
+
+### Patch Changes
+
+- Added "ZZ" to document issuer country
+
+## 0.9.16
+
+### Patch Changes
+
+- Bump
+
+## 0.9.15
+
+### Patch Changes
+
+- Bump
+
+## 0.9.14
+
+### Patch Changes
+
+- bump
+
+## 0.9.13
+
+### Patch Changes
+
+- Bump
+
+## 0.9.12
+
+### Patch Changes
+
+- Bump
+
+## 0.9.11
+
+### Patch Changes
+
+- Bump
+- Bump
+
+## 0.9.10
+
+### Patch Changes
+
+- document changes
+
+## 0.9.9
+
+### Patch Changes
+
+- Added a sort direction type
+
+## 0.9.8
+
+### Patch Changes
+
+- Now exporting country codes
+
+## 0.9.7
+
+### Patch Changes
+
+- update for sanctions screening
+
 ## 0.9.6
 
 ### Patch Changes

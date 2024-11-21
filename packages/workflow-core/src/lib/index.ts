@@ -1,4 +1,4 @@
-export { Error, Errors } from './types';
+export { Error, Errors, WorkflowEvents } from './types';
 export type {
   WorkflowEvent,
   WorkflowEventWithoutState,
@@ -12,6 +12,7 @@ export type {
   SerializableTransformer,
   WorkflowExtensions,
   Workflow,
+  TWorkflowTokenPluginCallback,
   ObjectValues,
 } from './types';
 export type {

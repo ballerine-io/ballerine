@@ -27,22 +27,28 @@ import { WorkflowEventDecisionInput } from '@/workflow/dtos/workflow-event-decis
 import * as common from '@nestjs/common';
 import { UseGuards, UsePipes } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
+import { ApiExcludeController, ApiResponse } from '@nestjs/swagger';
 import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 // import * as nestAccessControl from 'nest-access-control';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
+import { WorkflowEventInputSchema } from '@/workflow/dtos/workflow-event-input';
 import { FilterQuery } from '@/workflow/types';
+import { type Static, Type } from '@sinclair/typebox';
+import { Validate } from 'ballerine-nestjs-typebox';
 import * as errors from '../errors';
 import { DocumentUpdateParamsInput } from './dtos/document-update-params-input';
 import { DocumentUpdateInput } from './dtos/document-update-update-input';
 import { EmitSystemBodyInput, EmitSystemParamInput } from './dtos/emit-system-event-input';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
-import { WorkflowEventInput } from './dtos/workflow-event-input';
-import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
+import {
+  WorkflowDefinitionWhereUniqueInput,
+  WorkflowDefinitionWhereUniqueInputSchema,
+} from './dtos/workflow-where-unique-input';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
 
-@swagger.ApiExcludeController()
+@ApiExcludeController()
 @common.Controller('internal/workflows')
 export class WorkflowControllerInternal {
   constructor(
@@ -133,19 +139,43 @@ export class WorkflowControllerInternal {
   }
 
   @common.Post('/:id/event')
-  @swagger.ApiOkResponse()
-  @common.HttpCode(200)
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation error',
+    schema: Type.Object({
+      message: Type.String(),
+      statusCode: Type.Literal(400),
+      timestamp: Type.String({
+        format: 'date-time',
+      }),
+      path: Type.String(),
+      errors: Type.Array(Type.Object({ message: Type.String(), path: Type.String() })),
+    }),
+  })
+  @Validate({
+    request: [
+      {
+        type: 'param',
+        name: 'id',
+        schema: WorkflowDefinitionWhereUniqueInputSchema,
+      },
+      {
+        type: 'body',
+        schema: WorkflowEventInputSchema,
+      },
+    ],
+    response: Type.Any(),
+  })
   async event(
-    @common.Param() params: WorkflowDefinitionWhereUniqueInput,
-    @common.Body() data: WorkflowEventInput,
+    @common.Param('id') id: Static<typeof WorkflowDefinitionWhereUniqueInputSchema>,
+    @common.Body() data: Static<typeof WorkflowEventInputSchema>,
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
-  ): Promise<void> {
+  ) {
     await this.service.event(
       {
         ...data,
-        id: params.id,
+        id,
       },
       projectIds,
       currentProjectId,
@@ -258,7 +288,7 @@ export class WorkflowControllerInternal {
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     try {
-      return await this.service.updateDocumentDecisionById(
+      const workflowData = await this.service.updateDocumentDecisionById(
         {
           workflowId: params?.id,
           documentId: params?.documentId,
@@ -272,6 +302,8 @@ export class WorkflowControllerInternal {
         projectIds,
         currentProjectId,
       );
+
+      return workflowData;
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
@@ -307,6 +339,24 @@ export class WorkflowControllerInternal {
     }
   }
 
+  @common.Get(':id/documents/:documentId/run-ocr')
+  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseGuards(WorkflowAssigneeGuard)
+  async runDocumentOcr(
+    @common.Param() params: DocumentUpdateParamsInput,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    const ocrResult = await this.service.runOCROnDocument({
+      workflowRuntimeId: params?.id,
+      documentId: params?.documentId,
+      projectId: currentProjectId,
+    });
+
+    return ocrResult;
+  }
+
   // @nestAccessControl.UseRoles({
   //   resource: 'Workflow',
   //   action: 'delete',
@@ -331,7 +381,6 @@ export class WorkflowControllerInternal {
 
             definition: true,
             definitionType: true,
-            backend: true,
 
             extensions: true,
             persistStates: true,

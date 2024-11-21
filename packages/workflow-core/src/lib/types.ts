@@ -1,24 +1,28 @@
 import type { MachineConfig, MachineOptions } from 'xstate';
-import { HttpPlugins, CommonPlugins, StatePlugins } from './plugins/types';
-import {
-  ISerializableChildPluginParams,
+import type { CommonPlugins, HttpPlugins, StatePlugins } from './plugins/types';
+import type {
+  IDispatchEventPluginParams,
   ISerializableHttpPluginParams,
 } from './plugins/external-plugin/types';
-import {
+import type {
   ChildWorkflowPluginParams,
+  ISerializableChildPluginParams,
   ISerializableCommonPluginParams,
   ISerializableMappingPluginParams,
+  ISerializableRiskRulesPlugin,
+  WorkflowTokenPluginParams,
 } from './plugins/common-plugin/types';
-import { TContext } from './utils';
-import { ChildCallabackable } from './workflow-runner';
-import { THelperFormatingLogic } from './utils/context-transformers/types';
-import { AnyRecord } from '@ballerine/common';
+import type { TContext } from './utils';
+import type { THelperFormatingLogic } from './utils/context-transformers/types';
+import type { AnyRecord } from '@ballerine/common';
+import type { DispatchEventPlugin } from './plugins/external-plugin/dispatch-event-plugin';
+import { RiskRulePlugin } from '@/lib/plugins/common-plugin/risk-rules-plugin';
 
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
 
 export interface Workflow {
-  subscribe: (callback: (event: WorkflowEvent) => void) => void;
-  sendEvent: (event: Omit<WorkflowEvent, 'state'>) => Promise<void>;
+  subscribe: (eventName: string, callback: (event: WorkflowEvent) => Promise<void>) => void;
+  sendEvent: (event: WorkflowEventWithoutState) => Promise<void>;
   getSnapshot: () => Record<PropertyKey, any>;
   invokePlugin: (pluginName: string) => Promise<void>;
   overrideContext: (context: any) => any;
@@ -27,24 +31,26 @@ export interface Workflow {
 export interface WorkflowEvent {
   type: string;
   state: string;
-  payload?: Record<PropertyKey, any>;
   error?: unknown;
+  payload?: Record<PropertyKey, unknown>;
 }
 
 export interface WorkflowExtensions {
   statePlugins?: StatePlugins;
-  apiPlugins?: HttpPlugins | Array<ISerializableHttpPluginParams>;
+  dispatchEventPlugins?: DispatchEventPlugin[] | IDispatchEventPluginParams[];
+  apiPlugins?: HttpPlugins | ISerializableHttpPluginParams[];
   commonPlugins?:
     | CommonPlugins
-    | Array<ISerializableCommonPluginParams>
-    | Array<ISerializableMappingPluginParams>;
-  childWorkflowPlugins?: Array<ISerializableChildPluginParams>;
+    | ISerializableCommonPluginParams[]
+    | ISerializableMappingPluginParams[]
+    | ISerializableRiskRulesPlugin[];
+  childWorkflowPlugins?: ISerializableChildPluginParams[];
 }
 
 export interface ChildWorkflowCallback {
-  transformers?: Array<SerializableTransformer>;
+  transformers?: SerializableTransformer[];
   action: 'append';
-  persistenceStates?: Array<string>;
+  persistenceStates?: string[];
   deliverEvent?: string;
 }
 
@@ -52,12 +58,18 @@ export interface ChildToParentCallback {
   childCallbackResults?: Array<ChildWorkflowCallback & { definitionId: string }>;
 }
 
+export type TWorkflowTokenPluginCallback = WorkflowTokenCallbackInput;
+
 export interface WorkflowContext {
   id?: string;
   state?: any;
   machineContext?: any;
   sessionData?: any;
   lockKey?: string;
+}
+
+export interface ChildCallbackable {
+  invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
 }
 
 export interface WorkflowOptions {
@@ -68,11 +80,10 @@ export interface WorkflowOptions {
   workflowActions?: MachineOptions<any, any>['actions'];
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
-  invokeChildWorkflowAction?: ChildCallabackable['invokeChildWorkflowAction'];
-}
-
-export interface CallbackInfo {
-  event: string;
+  invokeRiskRulesAction?: RiskRulePlugin['action'];
+  invokeChildWorkflowAction?: ChildCallbackable['invokeChildWorkflowAction'];
+  invokeWorkflowTokenAction?: WorkflowTokenPluginParams['action'];
+  secretsManager?: SecretsManager;
 }
 
 export interface WorkflowRunnerArgs {
@@ -82,7 +93,10 @@ export interface WorkflowRunnerArgs {
   workflowActions?: MachineOptions<any, any>['actions'];
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
+  invokeRiskRulesAction?: RiskRulePlugin['action'];
   invokeChildWorkflowAction?: ChildWorkflowPluginParams['action'];
+  invokeWorkflowTokenAction?: WorkflowTokenPluginParams['action'];
+  secretsManager?: SecretsManager;
 }
 
 export type WorkflowEventWithoutState = Omit<WorkflowEvent, 'state'>;
@@ -106,8 +120,24 @@ export type ChildPluginCallbackOutput = {
   };
 };
 
+export type WorkflowTokenCallbackInput = {
+  uiDefinitionId: string;
+  workflowRuntimeId: string;
+  expiresInMinutes?: number;
+};
+
 export type SerializableTransformer = {
   transformer: string;
   mapping: string | THelperFormatingLogic;
   options: any;
+};
+
+export const WorkflowEvents = {
+  STATE_UPDATE: 'STATE_UPDATE',
+  STATUS_UPDATE: 'STATUS_UPDATE',
+  EVALUATION_ERROR: 'EVALUATION_ERROR',
+} as const;
+
+export type SecretsManager = {
+  getAll: () => Promise<Record<string, string>>;
 };

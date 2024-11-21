@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { EndUserRepository } from './end-user.repository';
 import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
-import type { TProjectId, TProjectIds } from '@/types';
+import type { PrismaTransaction, TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { Business, EndUser, Prisma } from '@prisma/client';
-import { EndUserActiveMonitoringsSchema, EndUserAmlHitsSchema } from '@/end-user/end-user.schema';
+import { Business, BusinessPosition, EndUser, Prisma } from '@prisma/client';
+import { EndUserActiveMonitoringsSchema, EndUserAmlHitsSchema } from '@ballerine/common';
 
 @Injectable()
 export class EndUserService {
@@ -13,12 +13,16 @@ export class EndUserService {
     protected readonly scopeService: ProjectScopeService,
   ) {}
 
-  async create(args: Parameters<EndUserRepository['create']>[0]) {
-    return await this.repository.create(args);
+  async create(args: Parameters<EndUserRepository['create']>[0], transaction?: PrismaTransaction) {
+    return await this.repository.create(args, transaction);
   }
 
   async list(args: Parameters<EndUserRepository['findMany']>[0], projectIds: TProjectIds) {
     return await this.repository.findMany(args, projectIds);
+  }
+
+  async find(id: string, projectIds: TProjectIds) {
+    return await this.repository.find({ where: { id } }, projectIds);
   }
 
   async getById(
@@ -33,9 +37,11 @@ export class EndUserService {
     {
       endUser,
       business,
+      position,
     }: {
       endUser: Omit<EndUserCreateDto, 'companyName' | 'correlationId'>;
       business: Prisma.BusinessUncheckedCreateWithoutEndUsersInput;
+      position?: BusinessPosition;
     },
     projectId: TProjectId,
     businessId?: string,
@@ -51,6 +57,16 @@ export class EndUserService {
             create: business,
           },
         },
+        ...(position
+          ? {
+              endUsersOnBusinesses: {
+                create: {
+                  businessId: businessId ?? '',
+                  position,
+                },
+              },
+            }
+          : {}),
         projectId,
       },
       include: {

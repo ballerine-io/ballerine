@@ -7,6 +7,7 @@ import { AnyObject } from '@ballerine/ui';
 import ajvErrors from 'ajv-errors';
 import addFormats, { FormatName } from 'ajv-formats';
 import Ajv, { ErrorObject } from 'ajv/dist/2019';
+import uniqBy from 'lodash/uniqBy';
 
 export class JsonSchemaRuleEngine implements RuleEngine {
   static ALLOWED_FORMATS: FormatName[] = ['email', 'uri', 'date', 'date-time'];
@@ -24,6 +25,7 @@ export class JsonSchemaRuleEngine implements RuleEngine {
     ajvErrors(validator, { singleError: true });
 
     const validationResult = validator.validate(rule.value, context);
+
     if (!validationResult) {
       const validationErrorMessage = this.extractErrorsWithFields(validator, definition);
 
@@ -34,7 +36,7 @@ export class JsonSchemaRuleEngine implements RuleEngine {
   }
 
   test(context: unknown, rule: Rule) {
-    const validator = new Ajv({ allErrors: true, useDefaults: true });
+    const validator = new Ajv({ allErrors: true, useDefaults: true, $data: true });
     addFormats(validator, {
       formats: ['email', 'uri', 'date', 'date-time'],
       keywords: true,
@@ -58,10 +60,15 @@ export class JsonSchemaRuleEngine implements RuleEngine {
         const messages = error.message?.split(';');
 
         messages?.forEach(messageText => {
-          const sanitizedFieldId = fieldDestination.replaceAll(/\.(\d+)\./g, '[$1].');
+          let formattedFieldId = fieldDestination.replaceAll(/\.(\d+)\.?/g, '[$1].');
+
+          if (formattedFieldId.at(-1) === '.') {
+            formattedFieldId = formattedFieldId.slice(0, -1);
+          }
+
           fieldErrors.push(
             this.createFieldError(
-              sanitizedFieldId,
+              formattedFieldId,
               messageText,
               definition.name,
               // @ts-ignore
@@ -74,7 +81,10 @@ export class JsonSchemaRuleEngine implements RuleEngine {
       return fieldErrors;
     });
 
-    return result?.flat()?.filter(result => Boolean(result.message));
+    return uniqBy(
+      result?.flat()?.filter(result => Boolean(result.message)),
+      'message',
+    );
   }
 
   private buildFieldDestination(
@@ -86,18 +96,18 @@ export class JsonSchemaRuleEngine implements RuleEngine {
     if (error.params?.missingProperty) {
       fieldDestination.push(
         (error.params.missingProperty as string) ||
-          (((error.params.errors as Array<AnyObject>)[0]?.params as AnyObject)
+          (((error.params.errors as AnyObject[])[0]?.params as AnyObject)
             .missingProperty as string),
       );
     }
 
     if (
       Array.isArray(error.params.errors) &&
-      ((error.params.errors as Array<AnyObject>)[0]?.params as AnyObject)?.missingProperty
+      ((error.params.errors as AnyObject[])[0]?.params as AnyObject)?.missingProperty
     ) {
       fieldDestination.push(
         (error.params.missingProperty as string) ||
-          (((error.params.errors as Array<AnyObject>)[0]?.params as AnyObject)
+          (((error.params.errors as AnyObject[])[0]?.params as AnyObject)
             .missingProperty as string),
       );
     }

@@ -9,7 +9,6 @@ import { StorageService } from '@/storage/storage.service';
 import {
   Controller,
   Get,
-  Logger,
   Param,
   ParseFilePipeBuilder,
   Post,
@@ -23,14 +22,10 @@ import { ApiExcludeController } from '@nestjs/swagger';
 import type { Response } from 'express';
 import * as errors from '../../errors';
 
-export const COLLECTION_FLOW_FILES_API_PATH = 'collection-flow/files';
-
 @UseTokenAuthGuard()
 @ApiExcludeController()
 @Controller('collection-flow/files')
 export class CollectionFlowFilesController {
-  private readonly logger = new Logger(CollectionFlowFilesController.name);
-
   constructor(
     protected readonly storageService: StorageService,
     protected readonly collectionFlowService: CollectionFlowService,

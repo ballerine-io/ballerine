@@ -1,14 +1,19 @@
-import { StateMachine } from 'xstate';
-import {
-  ISerializableChildPluginParams,
+import type { StateMachine } from 'xstate';
+import type {
+  IDispatchEventPluginParams,
   ISerializableHttpPluginParams,
   SerializableIterativePluginParams,
   SerializableValidatableTransformer,
   SerializableWebhookPluginParams,
 } from '../../plugins/external-plugin/types';
-import { WorkflowExtensions } from '../../types';
-import { ruleValidator } from './rule-validator';
+import { BALLERINE_API_PLUGINS_KINDS } from './../../plugins/external-plugin/vendor-consts';
+
+import type { ISerializableChildPluginParams } from '../../plugins/common-plugin/types';
+
+import type { DispatchEventPlugin } from '@/lib/plugins';
 import { isErrorWithMessage } from '@ballerine/common';
+import { WorkflowEvents, WorkflowExtensions } from '../../types';
+import { ruleValidator } from './rule-validator';
 
 export const extensionsValidator = (
   extensions: WorkflowExtensions,
@@ -16,12 +21,15 @@ export const extensionsValidator = (
 ) => {
   extensions.apiPlugins?.forEach(plugin => {
     const pluginKind = (plugin as ISerializableHttpPluginParams).pluginKind;
+
     if (
       pluginKind === 'api' ||
       pluginKind === 'kyb' ||
-      pluginKind === 'kyc-session' ||
       pluginKind === 'email' ||
-      pluginKind === 'kyc'
+      pluginKind === 'kyc' ||
+      BALLERINE_API_PLUGINS_KINDS.includes(
+        pluginKind as (typeof BALLERINE_API_PLUGINS_KINDS)[number],
+      )
     ) {
       validateApiPlugin(plugin as unknown as ISerializableHttpPluginParams, states);
     }
@@ -31,8 +39,13 @@ export const extensionsValidator = (
     }
   });
 
+  extensions.dispatchEventPlugins?.forEach(plugin => {
+    validateDispatchEventPlugin(plugin);
+  });
+
   extensions.commonPlugins?.forEach(plugin => {
     const pluginKind = (plugin as unknown as ISerializableChildPluginParams).pluginKind;
+
     if (pluginKind === 'iterative') {
       validateIterativePlugin(plugin as unknown as SerializableIterativePluginParams, states);
     }
@@ -40,11 +53,13 @@ export const extensionsValidator = (
 
   extensions.childWorkflowPlugins?.forEach(plugin => {
     const pluginKind = (plugin as unknown as ISerializableChildPluginParams).pluginKind;
+
     if (pluginKind === 'child') {
       validateChildPlugin(plugin as unknown as ISerializableChildPluginParams);
     }
   });
 };
+
 const validateApiPlugin = (
   plugin: ISerializableHttpPluginParams,
   states: StateMachine<any, any, any>['states'],
@@ -54,9 +69,27 @@ const validateApiPlugin = (
 
   validatePluginStateAction(plugin.stateNames, states, plugin.successAction, plugin.errorAction);
 };
+
 const validateWebhookPlugin = (plugin: SerializableWebhookPluginParams): void => {
   validateTransformers(plugin.name, plugin.request.transform);
 };
+
+const validateDispatchEventPlugin = (
+  plugin: IDispatchEventPluginParams | DispatchEventPlugin,
+): void => {
+  if (!plugin.stateNames) {
+    throw new Error('stateNames is required for DispatchEventPlugin');
+  }
+
+  if (!plugin.eventName) {
+    throw new Error('eventName is required for DispatchEventPlugin');
+  }
+
+  if (!(plugin.eventName in WorkflowEvents)) {
+    throw new Error(`Invalid event name "${plugin.eventName}" for DispatchEventPlugin`);
+  }
+};
+
 const validateIterativePlugin = (
   plugin: SerializableIterativePluginParams,
   states: StateMachine<any, any, any>['states'],
@@ -64,6 +97,7 @@ const validateIterativePlugin = (
   validateMapping('jmespath', plugin.iterateOn);
   validatePluginStateAction(plugin.stateNames, states, plugin.successAction, plugin.errorAction);
 };
+
 const validateChildPlugin = (plugin: ISerializableChildPluginParams): void => {
   plugin.transformers?.forEach(transform => {
     validateMapping(
@@ -81,6 +115,7 @@ const validateTransformers = (
     try {
       if (transform.transformer === 'jmespath')
         validateMapping('jmespath', transform.mapping as string);
+
       if (transform.transformer === 'json-logic')
         validateMapping('json-logic', transform.mapping as unknown as Record<string, unknown>);
     } catch (ex) {
@@ -94,7 +129,7 @@ const validateTransformers = (
 };
 
 const validatePluginStateAction = (
-  pluginStateNames: Array<string>,
+  pluginStateNames: string[],
   states: Parameters<typeof extensionsValidator>[1],
   successAction?: string,
   errorAction?: string,
@@ -119,6 +154,7 @@ const validateCallbackTransition = (
   actionName: 'successAction' | 'errorAction',
 ) => {
   const transitions = states[currentState]!.on;
+
   if (!Object.keys(transitions).includes(callbackEvent)) {
     throw new Error(`Invalid ${actionName} ${callbackEvent} for state ${currentState}`);
   }

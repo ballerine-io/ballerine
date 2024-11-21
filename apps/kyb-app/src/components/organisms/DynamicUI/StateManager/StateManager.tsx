@@ -15,11 +15,12 @@ export const StateManager = ({
   children,
   workflowId,
   initialContext,
+  config,
 }: StateManagerProps) => {
   const machine = useMemo(() => {
     const initialMachineState = {
       ...initialContext,
-      state: initialContext?.flowConfig?.appState,
+      state: initialContext?.collectionFlow?.state?.currentStep,
     };
 
     const machine = createStateMachine(
@@ -31,16 +32,25 @@ export const StateManager = ({
     );
 
     machine.overrideContext(initialMachineState);
+
     return machine;
   }, []);
 
   const { machineApi } = useMachineLogic(machine);
-  const { contextPayload, state, sendEvent, invokePlugin, setContext, getContext, getState } =
-    useStateLogic(
-      machineApi,
-      // @ts-ignore
-      initialContext,
-    );
+  const {
+    contextPayload,
+    isPluginLoading,
+    state,
+    sendEvent,
+    invokePlugin,
+    setContext,
+    getContext,
+    getState,
+  } = useStateLogic(
+    machineApi,
+    // @ts-ignore
+    initialContext,
+  );
   const context: StateManagerContext = useMemo(() => {
     const ctx: StateManagerContext = {
       stateApi: {
@@ -52,9 +62,22 @@ export const StateManager = ({
       },
       state,
       payload: contextPayload,
+      config,
+      isPluginLoading: isPluginLoading,
     };
+
     return ctx;
-  }, [state, contextPayload, getState, sendEvent, invokePlugin, setContext, getContext]);
+  }, [
+    state,
+    contextPayload,
+    isPluginLoading,
+    config,
+    getState,
+    sendEvent,
+    invokePlugin,
+    setContext,
+    getContext,
+  ]);
 
   const child = useMemo(
     () => (typeof children === 'function' ? children(context) : children),

@@ -1,63 +1,92 @@
 import { Injectable } from '@nestjs/common';
 import { CustomerRepository } from '@/customer/customer.repository';
 import { Prisma } from '@prisma/client';
-import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
+import { TCustomerWithFeatures } from '@/customer/types';
 import { ApiKeyService } from '@/customer/api-key/api-key.service';
 import { generateHashedKey } from '@/customer/api-key/utils';
+import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
+import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
 export class CustomerService {
   constructor(
     protected readonly repository: CustomerRepository,
     protected readonly apiKeyService: ApiKeyService,
+    private readonly prisma: PrismaService,
   ) {}
   async create(args: Parameters<CustomerRepository['create']>[0]) {
     // @ts-expect-error - prisma json not updated
     const authValue = args.data?.authenticationConfiguration?.authValue;
     const { hashedKey, validUntil } = await generateHashedKey({ key: authValue });
 
-    const dbCustomer = await this.repository.create({
-      ...args,
-      data: {
-        ...args.data,
-        apiKeys: {
-          create: {
-            hashedKey,
-            validUntil,
+    return await this.prisma.$transaction(async transaction => {
+      const customer = await this.repository.create(
+        {
+          ...args,
+          data: {
+            ...args.data,
+            apiKeys: {
+              create: {
+                hashedKey,
+                validUntil,
+              },
+            },
           },
         },
-      },
-    });
+        transaction,
+      );
 
-    return dbCustomer;
+      await retry(() => new UnifiedApiClient().createCustomer(customer));
+
+      return customer;
+    });
   }
 
   async list(args?: Parameters<CustomerRepository['findMany']>[0]) {
-    return (await this.repository.findMany(args)) as unknown as TCustomerWithDefinitionsFeatures[];
+    return (await this.repository.findMany(args)) as unknown as TCustomerWithFeatures[];
   }
 
   async getById(id: string, args?: Parameters<CustomerRepository['findById']>[1]) {
-    return (await this.repository.findById(
-      id,
-      args,
-    )) as unknown as TCustomerWithDefinitionsFeatures;
+    return (await this.repository.findById(id, args)) as unknown as TCustomerWithFeatures;
   }
 
   async getByProjectId(projectId: string, args?: Omit<Prisma.CustomerFindFirstArgsBase, 'where'>) {
     return (await this.repository.findByProjectId(
       projectId,
       args,
-    )) as unknown as TCustomerWithDefinitionsFeatures;
+    )) as unknown as TCustomerWithFeatures;
   }
 
   async updateById(id: string, args: Parameters<CustomerRepository['updateById']>[1]) {
-    return (await this.repository.updateById(
-      id,
-      args,
-    )) as unknown as TCustomerWithDefinitionsFeatures;
+    return await this.prisma.$transaction(async transaction => {
+      const customer = (await this.repository.updateById(
+        id,
+        args,
+        transaction,
+      )) as unknown as TCustomerWithFeatures;
+
+      await retry(() => new UnifiedApiClient().updateCustomer(id, customer));
+
+      return customer;
+    });
   }
 
   async deleteById(id: string, args?: Parameters<CustomerRepository['deleteById']>[1]) {
-    return this.repository.deleteById(id, args);
+    return await this.prisma.$transaction(async transaction => {
+      await this.repository.deleteById(id, args, transaction);
+
+      await retry(() => new UnifiedApiClient().deleteCustomer(id));
+    });
   }
 }
+
+const retry = async (fn: () => Promise<unknown>) => {
+  const { default: pRetry } = await import('p-retry');
+
+  return await pRetry(fn, {
+    retries: 5,
+    randomize: true,
+    minTimeout: 100,
+    maxTimeout: 10_000,
+  });
+};

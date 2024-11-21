@@ -1,10 +1,10 @@
 import { AlertsTable } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable';
-import { AlertsHeader } from 'src/pages/TransactionMonitoringAlerts/components/AlertsHeader';
-import { AlertsPagination } from '@/pages/TransactionMonitoringAlerts/components/AlertsPagination/AlertsPagination';
+import { AlertsHeader } from '@/pages/TransactionMonitoringAlerts/components/AlertsHeader';
 import { useTransactionMonitoringAlertsLogic } from '@/pages/TransactionMonitoringAlerts/hooks/useTransactionMonitoringAlertsLogic/useTransactionMonitoringAlertsLogic';
 import { Outlet } from 'react-router-dom';
 import { isNonEmptyArray } from '@ballerine/common';
 import { NoAlerts } from '@/pages/TransactionMonitoringAlerts/components/NoAlerts/NoAlerts';
+import { UrlPagination } from '@/common/components/molecules/UrlPagination/UrlPagination';
 
 export const TransactionMonitoringAlerts = () => {
   const {
@@ -16,6 +16,7 @@ export const TransactionMonitoringAlerts = () => {
     page,
     onPrevPage,
     onNextPage,
+    onLastPage,
     onPaginate,
     isLastPage,
     search,
@@ -35,13 +36,15 @@ export const TransactionMonitoringAlerts = () => {
         />
         {isNonEmptyArray(alerts) && <AlertsTable data={alerts ?? []} />}
         {Array.isArray(alerts) && !alerts.length && !isLoadingAlerts && <NoAlerts />}
-        <div className={`flex items-center gap-x-2`}>
-          <AlertsPagination
+        <div className={`mt-auto flex items-center gap-x-2`}>
+          <UrlPagination
             page={page}
             onPrevPage={onPrevPage}
             onNextPage={onNextPage}
+            onLastPage={onLastPage}
             onPaginate={onPaginate}
             isLastPage={isLastPage}
+            isLastPageEnabled={false}
           />
         </div>
       </div>

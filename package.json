@@ -29,9 +29,10 @@
   "scripts": {
     "spellcheck": "nx run-many --target=spellcheck",
     "monorepo:init": "node ./scripts/init.js",
-    "kyc-manual-review-example": "nx run @ballerine/common:build && nx run @ballerine/workflows-service:setup && cross-env ENV_FILE_NAME=.env.example VITE_POLLING_INTERVAL=3 VITE_EXAMPLE_TYPE=kyc VITE_API_KEY=secret concurrently \"nx run @ballerine/workflows-service:dev\" \"wait-on http://localhost:3000/api/v1/_health/ready && nx run-many --target=dev --projects=@ballerine/web-ui-sdk,@ballerine/backoffice-v2\"",
-    "kyb-manual-review-example": "nx run @ballerine/common:build && nx run @ballerine/workflows-service:setup && cross-env ENV_FILE_NAME=.env.example VITE_POLLING_INTERVAL=3 VITE_EXAMPLE_TYPE=kyb VITE_API_KEY=secret concurrently \"nx run @ballerine/workflows-service:dev\" \"wait-on http://localhost:3000/api/v1/_health/ready && nx run-many --target=dev --projects=@ballerine/kyb-app,@ballerine/backoffice-v2\"",
-    "api-flow-example": "nx run @ballerine/common:build && nx run @ballerine/workflows-service:setup && cross-env ENV_FILE_NAME=.env.example VITE_POLLING_INTERVAL=false VITE_EXAMPLE_TYPE=kyb VITE_API_KEY=secret concurrently \"nx run @ballerine/workflows-service:dev\" \"wait-on http://localhost:3000/api/v1/_health/ready && nx run-many --target=dev --projects=@ballerine/backoffice-v2,@ballerine/workflows-dashboard\"",
+    "kyc-manual-review-example": "nx run @ballerine/common:build && nx run @ballerine/workflows-service:setup && cross-env VITE_POLLING_INTERVAL=3 VITE_EXAMPLE_TYPE=kyc VITE_API_KEY=secret concurrently \"nx run @ballerine/workflows-service:dev\" \"wait-on http://localhost:3000/api/v1/_health/ready && nx run-many --target=dev --projects=@ballerine/web-ui-sdk,@ballerine/backoffice-v2\"",
+    "run-kyb-web-apps": "cross-env VITE_POLLING_INTERVAL=3 VITE_EXAMPLE_TYPE=kyb VITE_API_KEY=secret concurrently \"nx run-many --target=dev --projects=@ballerine/kyb-app,@ballerine/backoffice-v2\"",
+    "kyb-manual-review-example": "nx run @ballerine/common:build && nx run @ballerine/workflows-service:setup && cross-env VITE_POLLING_INTERVAL=3 VITE_EXAMPLE_TYPE=kyb VITE_API_KEY=secret concurrently \"nx run @ballerine/workflows-service:dev\" \"wait-on http://localhost:3000/api/v1/_health/ready && nx run-many --target=dev --projects=@ballerine/kyb-app,@ballerine/backoffice-v2\"",
+    "api-flow-example": "nx run @ballerine/common:build && nx run @ballerine/workflows-service:setup && cross-env VITE_POLLING_INTERVAL=false VITE_EXAMPLE_TYPE=kyb VITE_API_KEY=secret concurrently \"nx run @ballerine/workflows-service:dev\" \"wait-on http://localhost:3000/api/v1/_health/ready && nx run-many --target=dev --projects=@ballerine/backoffice-v2,@ballerine/workflows-dashboard\"",
     "branchlint": "branchlint -u -c",
     "format": "nx run-many --target=format",
     "format:check": "nx run-many --target=format:check --exclude=@ballerine/backoffice-v2",
@@ -43,7 +44,7 @@
     "playwright:install": "nx run-many --target=playwright:install",
     "dev": "nx run-many --target=dev --projects=@ballerine/workflows-service,@ballerine/backoffice-v2",
     "start": "nx run-many --target=start --projects=@ballerine/web-ui-sdk",
-    "build": "nx run-many --target=build --projects=@ballerine/workflow-browser-sdk,@ballerine/workflow-core,@ballerine/workflow-node-sdk,@ballerine/rules-engine-lib,@ballerine/common,@ballerine/workflows-service,@ballerine/websocket-service,@ballerine/ui,@ballerine/blocks,@ballerine/react-pdf-toolkit",
+    "build": "nx run-many --target=build --projects=@ballerine/workflow-browser-sdk,@ballerine/workflow-core,@ballerine/workflow-node-sdk,@ballerine/rules-engine-lib,@ballerine/common,@ballerine/workflows-service,@ballerine/ui,@ballerine/blocks,@ballerine/react-pdf-toolkit",
     "web-ui-sdk:dev": "nx run @ballerine/web-ui-sdk:dev",
     "web-ui-sdk:start": "nx run @ballerine/web-ui-sdk:start",
     "workflows-service:start": "nx run @ballerine/workflows-service:start",
@@ -60,13 +61,15 @@
     "workflow-builder:dev": "echo \"Error: no test specified\" && exit 1",
     "web-ui:dev": "echo \"Error: no test specified\" && exit 1",
     "commit": "git add . && git-cz",
+    "commit:auto": "git add . && node ./scripts/auto-commit.js",
     "prepare": "husky install",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "update-packages": "pnpm run changeset && pnpm run version-packages && pnpm install",
     "release": "pnpm build && changeset publish",
     "upload-sourcemaps": "nx run-many --target=upload-sourcemaps --all",
-    "docker-compose:up": "docker-compose -f deploy/docker-compose.yml up -d "
+    "cli": "node ./scripts/cli.js",
+    "docker-compose:up": "docker-compose -f deploy/docker-compose-build.yml up -d "
   },
   "devDependencies": {
     "@branchlint/cli": "^1.0.5",
@@ -79,9 +82,13 @@
     "cz-conventional-changelog": "^3.3.0",
     "editorconfig": "^1.0.2",
     "husky": "^8.0.3",
+    "inquirer": "^10.2.0",
     "lint-staged": "^11.2.6",
+    "ngrok": "5.0.0-beta.2",
     "nx": "15.0.2",
-    "prettier": "^2.8.7"
+    "prettier": "^2.8.7",
+    "dotenv": "^16.4.5",
+    "openai": "^4.70.3"
   },
   "dependencies": {
     "concurrently": "^7.6.0",

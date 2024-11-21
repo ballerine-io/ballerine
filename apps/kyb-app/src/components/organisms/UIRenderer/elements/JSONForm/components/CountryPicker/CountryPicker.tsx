@@ -4,6 +4,7 @@ import { TextInputAdapter } from '@ballerine/ui';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 import { getCountries } from '@/helpers/countries-data';
 
+// @ts-ignore
 export const CountryPicker = (props: (typeof TextInputAdapter)['props']) => {
   const { language } = useLanguageParam();
 

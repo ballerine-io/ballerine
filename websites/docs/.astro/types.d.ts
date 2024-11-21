@@ -234,9 +234,79 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.md'] };
+      'en/collection-flow/collection-flow-observability.mdx': {
+        id: 'en/collection-flow/collection-flow-observability.mdx';
+        slug: 'en/collection-flow/collection-flow-observability';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/collection-flow/iframe.mdx': {
+        id: 'en/collection-flow/iframe.mdx';
+        slug: 'en/collection-flow/iframe';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/collection-flow/introduction.mdx': {
+        id: 'en/collection-flow/introduction.mdx';
+        slug: 'en/collection-flow/introduction';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/collection-flow/json-form.mdx': {
+        id: 'en/collection-flow/json-form.mdx';
+        slug: 'en/collection-flow/json-form';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/collection-flow/schema-breakdown.mdx': {
+        id: 'en/collection-flow/schema-breakdown.mdx';
+        slug: 'en/collection-flow/schema-breakdown';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/collection-flow/theming.mdx': {
+        id: 'en/collection-flow/theming.mdx';
+        slug: 'en/collection-flow/theming';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/collection-flow/ui-definition-updating.mdx': {
+        id: 'en/collection-flow/ui-definition-updating.mdx';
+        slug: 'en/collection-flow/ui-definition-updating';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/collection-flow/ui-elements.mdx': {
+        id: 'en/collection-flow/ui-elements.mdx';
+        slug: 'en/collection-flow/ui-elements';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
       'en/contributing.mdx': {
         id: 'en/contributing.mdx';
         slug: 'en/contributing';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/deployment/ansible_deployment.mdx': {
+        id: 'en/deployment/ansible_deployment.mdx';
+        slug: 'en/deployment/ansible_deployment';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/deployment/docker_compose.mdx': {
+        id: 'en/deployment/docker_compose.mdx';
+        slug: 'en/deployment/docker_compose';
         body: string;
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
@@ -276,13 +346,6 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.md'] };
-      'en/getting_started/deployment.mdx': {
-        id: 'en/getting_started/deployment.mdx';
-        slug: 'en/getting_started/deployment';
-        body: string;
-        collection: 'docs';
-        data: InferEntrySchema<'docs'>;
-      } & { render(): Render['.mdx'] };
       'en/getting_started/glossary.md': {
         id: 'en/getting_started/glossary.md';
         slug: 'en/getting_started/glossary';
@@ -304,6 +367,62 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.md'] };
+      'en/getting_started/system_overview.md': {
+        id: 'en/getting_started/system_overview.md';
+        slug: 'en/getting_started/system_overview';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.md'] };
+      'en/learn/add_and_customize_workflows_in_the_case_management.md': {
+        id: 'en/learn/add_and_customize_workflows_in_the_case_management.md';
+        slug: 'en/learn/add_and_customize_workflows_in_the_case_management';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.md'] };
+      'en/learn/adding_a_3rd_party_check_to_a_workflow.md': {
+        id: 'en/learn/adding_a_3rd_party_check_to_a_workflow.md';
+        slug: 'en/learn/adding_a_3rd_party_check_to_a_workflow';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.md'] };
+      'en/learn/adding_a_child_workflow_to_your_workflow.md': {
+        id: 'en/learn/adding_a_child_workflow_to_your_workflow.md';
+        slug: 'en/learn/adding_a_child_workflow_to_your_workflow';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.md'] };
+      'en/learn/adding_a_plugin_to_your_workflow.md': {
+        id: 'en/learn/adding_a_plugin_to_your_workflow.md';
+        slug: 'en/learn/adding_a_plugin_to_your_workflow';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.md'] };
+      'en/learn/adding_or_configuring_a_rule.md': {
+        id: 'en/learn/adding_or_configuring_a_rule.md';
+        slug: 'en/learn/adding_or_configuring_a_rule';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.md'] };
+      'en/learn/adding_rules_and_affect_workflows.md': {
+        id: 'en/learn/adding_rules_and_affect_workflows.md';
+        slug: 'en/learn/adding_rules_and_affect_workflows';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.md'] };
+      'en/learn/adding_rules_step_to_the_workflow.md': {
+        id: 'en/learn/adding_rules_step_to_the_workflow.md';
+        slug: 'en/learn/adding_rules_step_to_the_workflow';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.md'] };
       'en/learn/back_office.mdx': {
         id: 'en/learn/back_office.mdx';
         slug: 'en/learn/back_office';
@@ -311,9 +430,37 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.mdx'] };
+      'en/learn/calculating_risk_scores.md': {
+        id: 'en/learn/calculating_risk_scores.md';
+        slug: 'en/learn/calculating_risk_scores';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.md'] };
       'en/learn/case_management_overview.md': {
         id: 'en/learn/case_management_overview.md';
         slug: 'en/learn/case_management_overview';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.md'] };
+      'en/learn/changing_the_collection_flow_design.md': {
+        id: 'en/learn/changing_the_collection_flow_design.md';
+        slug: 'en/learn/changing_the_collection_flow_design';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.md'] };
+      'en/learn/configuring_a_collection_flow.md': {
+        id: 'en/learn/configuring_a_collection_flow.md';
+        slug: 'en/learn/configuring_a_collection_flow';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.md'] };
+      'en/learn/configuring_a_workflow.md': {
+        id: 'en/learn/configuring_a_workflow.md';
+        slug: 'en/learn/configuring_a_workflow';
         body: string;
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
@@ -325,6 +472,13 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.mdx'] };
+      'en/learn/creating_a_workflow.md': {
+        id: 'en/learn/creating_a_workflow.md';
+        slug: 'en/learn/creating_a_workflow';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.md'] };
       'en/learn/embedded_sdk_api.mdx': {
         id: 'en/learn/embedded_sdk_api.mdx';
         slug: 'en/learn/embedded_sdk_api';
@@ -339,9 +493,30 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.mdx'] };
+      'en/learn/how_to_use_webhooks.md': {
+        id: 'en/learn/how_to_use_webhooks.md';
+        slug: 'en/learn/how_to_use_webhooks';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.md'] };
       'en/learn/interacting_with_workflows.md': {
         id: 'en/learn/interacting_with_workflows.md';
         slug: 'en/learn/interacting_with_workflows';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.md'] };
+      'en/learn/introduction.mdx': {
+        id: 'en/learn/introduction.mdx';
+        slug: 'en/learn/introduction';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
+      'en/learn/invoking_a_workflow.md': {
+        id: 'en/learn/invoking_a_workflow.md';
+        slug: 'en/learn/invoking_a_workflow';
         body: string;
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
@@ -377,6 +552,13 @@ declare module 'astro:content' {
       'en/learn/native_mobile_apps.md': {
         id: 'en/learn/native_mobile_apps.md';
         slug: 'en/learn/native_mobile_apps';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.md'] };
+      'en/learn/overview_of_case_management.md': {
+        id: 'en/learn/overview_of_case_management.md';
+        slug: 'en/learn/overview_of_case_management';
         body: string;
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
@@ -444,6 +626,20 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.md'] };
+      'en/learn/using_the_case_management_dashboard.md': {
+        id: 'en/learn/using_the_case_management_dashboard.md';
+        slug: 'en/learn/using_the_case_management_dashboard';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.md'] };
+      'en/learn/webhooks_security.mdx': {
+        id: 'en/learn/webhooks_security.mdx';
+        slug: 'en/learn/webhooks_security';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
       'en/learn/workflow_builder_and_rule_engine_overview.md': {
         id: 'en/learn/workflow_builder_and_rule_engine_overview.md';
         slug: 'en/learn/workflow_builder_and_rule_engine_overview';
@@ -454,6 +650,13 @@ declare module 'astro:content' {
       'en/learn/workflow_definitions.md': {
         id: 'en/learn/workflow_definitions.md';
         slug: 'en/learn/workflow_definitions';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.md'] };
+      'en/learn/workflows_technology.md': {
+        id: 'en/learn/workflows_technology.md';
+        slug: 'en/learn/workflows_technology';
         body: string;
         collection: 'docs';
         data: InferEntrySchema<'docs'>;

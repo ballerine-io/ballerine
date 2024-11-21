@@ -1,5 +1,351 @@
 # web-ui-sdk
 
+## 1.5.53
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.52
+
+## 1.5.52
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.51
+
+## 1.5.51
+
+### Patch Changes
+
+- Cump
+- Updated dependencies
+  - @ballerine/common@0.9.50
+
+## 1.5.50
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.49
+
+## 1.5.49
+
+### Patch Changes
+
+- Change
+- Updated dependencies
+  - @ballerine/common@0.9.48
+
+## 1.5.48
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.47
+
+## 1.5.47
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.46
+
+## 1.5.46
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.45
+
+## 1.5.45
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.44
+
+## 1.5.44
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.43
+
+## 1.5.43
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.42
+
+## 1.5.42
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.41
+
+## 1.5.41
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.40
+
+## 1.5.40
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.39
+
+## 1.5.39
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.38
+
+## 1.5.38
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.37
+
+## 1.5.37
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.36
+
+## 1.5.36
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.35
+
+## 1.5.35
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.34
+
+## 1.5.34
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.33
+
+## 1.5.33
+
+### Patch Changes
+
+- d
+- Updated dependencies
+  - @ballerine/common@0.9.32
+
+## 1.5.32
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.31
+
+## 1.5.31
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.30
+
+## 1.5.30
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.29
+
+## 1.5.29
+
+### Patch Changes
+
+- Version bump
+- Updated dependencies
+  - @ballerine/common@0.9.28
+
+## 1.5.28
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.27
+
+## 1.5.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.26
+
+## 1.5.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.25
+
+## 1.5.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.24
+
+## 1.5.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.23
+
+## 1.5.23
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.22
+
+## 1.5.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.21
+
+## 1.5.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.20
+
+## 1.5.20
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.19
+
+## 1.5.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.18
+
+## 1.5.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.17
+
+## 1.5.17
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.16
+
+## 1.5.16
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.15
+
+## 1.5.15
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.14
+
+## 1.5.14
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.13
+
+## 1.5.13
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.12
+
+## 1.5.12
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+- Updated dependencies
+  - @ballerine/common@0.9.11
+
+## 1.5.11
+
+### Patch Changes
+
+- document changes
+- Updated dependencies
+  - @ballerine/common@0.9.10
+
+## 1.5.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.9
+
+## 1.5.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.8
+
+## 1.5.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.7
+
 ## 1.5.7
 
 ### Patch Changes

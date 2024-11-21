@@ -5,6 +5,7 @@ import {
   Error as ErrorEnum,
   Errors,
   StatePlugin,
+  WorkflowEvents,
   WorkflowEventWithoutState,
 } from '@ballerine/workflow-core';
 import type { BaseActionObject, StatesConfig } from 'xstate';
@@ -21,17 +22,13 @@ import type {
   IFileToUpload,
   IUserStepEvent,
   ObjectValues,
-  TSubscribers,
-  TWorkflowErrorEvent,
-  TWorkflowEvent,
-  TWorkflowHttpErrorEvent,
-  TWorkflowStateActionStatusEvent,
+  TSubscriptions,
   WorkflowEventWithBrowserType,
   WorkflowOptionsBrowser,
 } from './types';
 
 export class WorkflowBrowserSDK {
-  #__subscribers: TSubscribers = [];
+  #__subscriptions: Partial<TSubscriptions> = {};
   #__service: ReturnType<typeof createWorkflow>;
   #__backendOptions!: BackendOptions;
 
@@ -71,8 +68,10 @@ export class WorkflowBrowserSDK {
       },
     });
 
-    this.#__service.subscribe(event => {
-      this.#__notify(event as WorkflowEventWithBrowserType);
+    this.#__service.subscribe(WorkflowEvents.STATE_UPDATE, async event => {
+      const workflowBrowserSdkEvent = event as WorkflowEventWithBrowserType;
+
+      await this.notify(workflowBrowserSdkEvent.type, workflowBrowserSdkEvent);
     });
   }
 
@@ -182,14 +181,13 @@ export class WorkflowBrowserSDK {
     };
   }
 
-  #__notify(event: WorkflowEventWithBrowserType) {
-    this.#__subscribers.forEach(sub => {
+  notify(eventName: BrowserWorkflowEvent, event: WorkflowEventWithBrowserType) {
+    this.#__subscriptions[eventName]?.forEach(async callback => {
       if (
-        sub.event !== Event.WILD_CARD &&
+        ![Event.WILD_CARD, event.type].includes(eventName) &&
         !(
-          sub.event === Event.ERROR && Errors.includes(event.type as ObjectValues<typeof ErrorEnum>)
-        ) &&
-        sub.event !== event.type
+          eventName === Event.ERROR && Errors.includes(event.type as ObjectValues<typeof ErrorEnum>)
+        )
       ) {
         return;
       }
@@ -198,35 +196,20 @@ export class WorkflowBrowserSDK {
       let eventType: string | undefined;
 
       if (
-        sub.event === Event.WILD_CARD ||
-        sub.event === Event.ERROR ||
-        sub.event === Event.STATE_ACTION_STATUS
+        (
+          [Event.WILD_CARD, Event.ERROR, Event.STATE_ACTION_STATUS] as BrowserWorkflowEvent[]
+        ).includes(eventName)
       ) {
-        eventType = sub.event === Event.STATE_ACTION_STATUS ? (action as string) : event.type;
+        eventType = eventName === Event.STATE_ACTION_STATUS ? (action as string) : event.type;
       }
 
-      sub.cb({
+      await callback({
         ...(eventType ? { type: eventType } : {}),
         payload,
         state: event.state,
         ...(event.error ? { error: event.error } : {}),
       });
     });
-  }
-
-  subscribe<TEvent extends BrowserWorkflowEvent>(
-    event: TEvent,
-    cb: TEvent extends typeof Event.WILD_CARD
-      ? (event: WorkflowEventWithBrowserType) => void
-      : TEvent extends typeof Event.STATE_ACTION_STATUS
-      ? (event: TWorkflowStateActionStatusEvent) => void
-      : TEvent extends typeof ErrorEnum.ERROR
-      ? (event: TWorkflowErrorEvent) => void
-      : TEvent extends typeof ErrorEnum.HTTP_ERROR
-      ? (event: TWorkflowHttpErrorEvent) => void
-      : (event: TWorkflowEvent) => void,
-  ) {
-    this.#__subscribers.push({ event, cb });
   }
 
   overrideContext<TContext extends Record<string, any>>(context: any): TContext {

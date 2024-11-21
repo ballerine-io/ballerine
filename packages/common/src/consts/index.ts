@@ -1,3 +1,5 @@
+import { ObjectValues } from '@/types';
+
 export const StateTag = {
   APPROVED: 'approved',
   REJECTED: 'rejected',
@@ -60,6 +62,7 @@ export const WorkflowDefinitionVariant = {
   KYC: 'KYC',
   DEFAULT: 'DEFAULT',
   ONGOING: 'ONGOING',
+  AML: 'AML',
 } as const;
 
 export type TStateTags = typeof StateTags;
@@ -87,10 +90,12 @@ export type TProcessStatuses = typeof ProcessStatuses;
 
 export const UnifiedApiReason = {
   NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
+  NOT_AVAILABLE: 'NOT_AVAILABLE',
 } as const;
 
 export const UnifiedApiReasons = [
   UnifiedApiReason.NOT_IMPLEMENTED,
+  UnifiedApiReason.NOT_AVAILABLE,
 ] as const satisfies ReadonlyArray<(typeof UnifiedApiReason)[keyof typeof UnifiedApiReason]>;
 
 export type TUnifiedApiReason = (typeof UnifiedApiReasons)[number];
@@ -112,3 +117,56 @@ export const WorkflowDefinitionConfigThemes = [
 >;
 
 export type TWorkflowDefinitionConfigTheme = (typeof WorkflowDefinitionConfigThemes)[number];
+
+export const Severity = {
+  CRITICAL: 'critical',
+  HIGH: 'high',
+  MEDIUM: 'medium',
+  LOW: 'low',
+} as const;
+
+export const Severities = [
+  Severity.CRITICAL,
+  Severity.HIGH,
+  Severity.MEDIUM,
+  Severity.LOW,
+] as const satisfies ReadonlyArray<ObjectValues<typeof Severity>>;
+
+export type SeverityType = (typeof Severities)[number];
+
+export type SeveritiesType = typeof Severities;
+
+export const MatchResponseCode = {
+  M00: 'M00',
+  M01: 'M01',
+  M02: 'M02',
+} as const;
+
+export const MatchResponseCodes = [
+  MatchResponseCode.M00,
+  MatchResponseCode.M01,
+  MatchResponseCode.M02,
+] as const satisfies ReadonlyArray<ObjectValues<typeof MatchResponseCode>>;
+
+export const MatchReasonCode = {
+  '00': 'Questionable Merchant/Under Investigation',
+  '01': 'Account Data Compromise',
+  '02': 'Common Point of Purchase (CPP)',
+  '03': 'Laundering',
+  '04': 'Excessive Chargebacks',
+  '05': 'Excessive Fraud',
+  '06': 'Reserved for Future Use',
+  '08': 'Mastercard Questionable Merchant Audit Program',
+  '09': 'Bankruptcy/Liquidation/Insolvency',
+  '10': 'Violation of Standards',
+  '11': 'Merchant Collusion',
+  '12': 'PCI Data Security Standard Noncompliance',
+  '13': 'Illegal Transactions',
+  '14': 'Identity Theft',
+  '20': 'Mastercard Questionable Merchant Audit Program',
+  '21': 'Listing under Privacy Review',
+  '24': 'Illegal Transactions',
+} as const;
+
+export const URL_PATTERN =
+  /^((https?):\/\/)?([\dA-Za-z][\w-]*\.)+[\dA-Za-z]+(\.[a-z]{2})?(\/[\w#.-]+)*(\/)?(\?[\w.-]+=[\w.-]+(&[\w.-]+=[\w.-]+)*)?(#[\w-]+)?$/;

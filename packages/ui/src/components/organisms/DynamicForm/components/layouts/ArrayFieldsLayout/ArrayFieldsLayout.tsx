@@ -19,6 +19,7 @@ export const ArrayFieldsLayout = ({
   children,
 }: ArrayFieldsLayoutProps) => {
   const { addText = 'Add' } = uiSchema as AnyObject;
+
   return (
     <div>
       <p className="pb-1 text-xl font-semibold">{title}</p>
@@ -43,7 +44,7 @@ export const ArrayFieldsLayout = ({
       <Button
         type="button"
         variant="outline"
-        className="flex gap-2"
+        className="flex gap-2 !bg-white"
         onClick={onAddClick}
         disabled={!canAdd}
       >

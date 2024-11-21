@@ -6,11 +6,12 @@ import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error
 import { WorkflowDefinitionByIdSchema } from '@/domains/workflow-definitions/fetchers';
 import { AmlSchema } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
 import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
-import { zPropertyKey } from '@/lib/zod/utils/z-property-key/z-property-key';
+import { CollectionFlowStatusesEnum } from '@ballerine/common';
 import qs from 'qs';
 import { deepCamelKeys } from 'string-ts';
 import { z } from 'zod';
 import { IWorkflowId } from './interfaces';
+import { zPropertyKey } from '@/lib/zod/utils/z-property-key/z-property-key';
 
 export const fetchWorkflows = async (params: {
   filterId: string;
@@ -55,8 +56,6 @@ export const fetchWorkflows = async (params: {
   return handleZodError(error, workflows);
 };
 
-export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
-
 export const BaseWorkflowByIdSchema = z.object({
   id: z.string(),
   status: z.string(),
@@ -66,13 +65,57 @@ export const BaseWorkflowByIdSchema = z.object({
   workflowDefinition: WorkflowDefinitionByIdSchema,
   createdAt: z.string().datetime(),
   context: z.object({
-    aml: AmlSchema.optional(),
-    documents: z.array(z.any()).default([]),
+    aml: AmlSchema.extend({
+      vendor: z.string().optional(),
+    }).optional(),
+    documents: z.array(z.record(zPropertyKey, z.any())).default([]),
     entity: z.record(z.any(), z.any()),
     parentMachine: ObjectWithIdSchema.extend({
       status: z.union([z.literal('active'), z.literal('failed'), z.literal('completed')]),
     }).optional(),
-    pluginsOutput: z.record(zPropertyKey, z.any()).optional(),
+    pluginsOutput: z
+      .object({
+        ubo: z
+          .object({
+            data: z
+              .object({
+                // nodes: z.array(
+                //   z.object({
+                //     id: z.string(),
+                //     data: z.object({
+                //       name: z.string(),
+                //       type: z.string(),
+                //       sharePercentage: z.number().optional(),
+                //     }),
+                //   }),
+                // ),
+                // edges: z.array(
+                //   z.object({
+                //     id: z.string(),
+                //     source: z.string(),
+                //     target: z.string(),
+                //     data: z.object({
+                //       sharePercentage: z.number().optional(),
+                //     }),
+                //   }),
+                // ),
+              })
+              .passthrough()
+              .optional(),
+            message: z.string().optional(),
+            isRequestTimedOut: z.boolean().optional(),
+          })
+          .passthrough()
+          .optional(),
+        merchantMonitoring: z
+          .object({
+            reportId: z.string().nullish(),
+          })
+          .passthrough()
+          .nullish(),
+      })
+      .passthrough()
+      .optional(),
     metadata: z
       .object({
         collectionFlowUrl: z.string().url().optional(),
@@ -80,20 +123,20 @@ export const BaseWorkflowByIdSchema = z.object({
       })
       .passthrough()
       .optional(),
-    flowConfig: z
+    collectionFlow: z
       .object({
-        stepsProgress: z
-          .record(
-            z.string(),
-            z.object({
-              // TODO Until backwards compatibility is handled
-              number: z.number().default(0),
-              isCompleted: z.boolean(),
-            }),
-          )
-          .or(z.undefined()),
+        config: z.object({
+          apiUrl: z.string().url(),
+        }),
+        state: z.object({
+          currentStep: z.string(),
+          status: z.enum(Object.values(CollectionFlowStatusesEnum) as [string, ...string[]]),
+          steps: z.array(z.object({ stepName: z.string(), isCompleted: z.boolean() })),
+        }),
+        additionalInformation: z.record(z.string(), z.unknown()).optional(),
       })
       .optional(),
+    customData: z.record(z.string(), z.unknown()).optional(),
   }),
   entity: ObjectWithIdSchema.extend({
     name: z.string(),
@@ -114,12 +157,14 @@ export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
         context: true,
       }).extend({
         context: BaseWorkflowByIdSchema.shape.context.omit({
-          flowConfig: true,
+          collectionFlow: true,
         }),
       }),
     )
     .optional(),
 });
+
+export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
 
 export const fetchWorkflowById = async ({
   workflowId,
@@ -291,6 +336,25 @@ export const createWorkflowRequest = async ({
       context,
     },
     schema: z.any(),
+  });
+
+  return handleZodError(error, workflow);
+};
+
+export const fetchWorkflowDocumentOCRResult = async ({
+  workflowRuntimeId,
+  documentId,
+}: {
+  workflowRuntimeId: string;
+  documentId: string;
+}) => {
+  const [workflow, error] = await apiClient({
+    method: Method.GET,
+    url: `${getOriginUrl(
+      env.VITE_API_URL,
+    )}/api/v1/internal/workflows/${workflowRuntimeId}/documents/${documentId}/run-ocr`,
+    schema: z.any(),
+    timeout: 40_000,
   });
 
   return handleZodError(error, workflow);

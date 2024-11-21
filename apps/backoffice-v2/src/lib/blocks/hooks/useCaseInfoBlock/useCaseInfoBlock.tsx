@@ -1,4 +1,4 @@
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { valueOrNA } from '@ballerine/common';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
@@ -14,8 +14,23 @@ export const useCaseInfoBlock = ({
   workflow: TWorkflowById;
   entityDataAdditionalInfo: TWorkflowById['context']['entity']['data']['additionalInfo'];
 }) => {
+  const predefinedOrder = useMemo(
+    () =>
+      workflow.workflowDefinition.config?.uiOptions?.backoffice?.blocks?.businessInformation
+        ?.predefinedOrder ?? [],
+    [
+      workflow.workflowDefinition.config?.uiOptions?.backoffice?.blocks?.businessInformation
+        ?.predefinedOrder,
+    ],
+  );
+
   return useMemo(() => {
-    if (Object.keys(entity?.data ?? {}).length === 0) {
+    const entityDetails = [
+      ...Object.entries(omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {}),
+      ...Object.entries(omitPropsFromObject(entityDataAdditionalInfo ?? {}, 'ubos')),
+    ];
+
+    if (Object.keys(entityDetails ?? {}).length === 0) {
       return [];
     }
 
@@ -47,12 +62,7 @@ export const useCaseInfoBlock = ({
             value: {
               id: 'entity-details-value',
               title: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Information`,
-              data: [
-                ...Object.entries(
-                  omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {},
-                ),
-                ...Object.entries(omitPropsFromObject(entityDataAdditionalInfo ?? {}, 'ubos')),
-              ]
+              data: entityDetails
                 ?.map(([title, value]) => ({
                   title,
                   value,
@@ -65,6 +75,7 @@ export const useCaseInfoBlock = ({
                 // TO DO: Remove this as soon as BE updated
                 .filter(elem => !elem.title.startsWith('__')),
             },
+            props: { config: { sort: { predefinedOrder } } },
             workflowId: workflow?.id,
             documents: workflow?.context?.documents,
           })

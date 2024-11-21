@@ -25,9 +25,28 @@ export const WorkflowDefinitionConfigSchema = z
     enableManualCreation: z.boolean().default(false),
     isManualCreation: z.boolean().default(false),
     isAssociatedCompanyKybEnabled: z.boolean().default(false),
+    isCaseOverviewEnabled: z.boolean().default(false),
+    isCaseRiskOverviewEnabled: z.boolean().default(false),
     theme: WorkflowDefinitionConfigThemeSchema.default({
       type: WorkflowDefinitionConfigThemeEnum.KYB,
     }),
+    uiOptions: z
+      .object({
+        backoffice: z
+          .object({
+            blocks: z
+              .object({
+                businessInformation: z
+                  .object({
+                    predefinedOrder: z.array(z.string()).default([]),
+                  })
+                  .optional(),
+              })
+              .optional(),
+          })
+          .optional(),
+      })
+      .optional(),
   })
   .passthrough()
   .nullable();

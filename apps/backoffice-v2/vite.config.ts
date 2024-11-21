@@ -2,6 +2,7 @@ import react from '@vitejs/plugin-react-swc';
 import { defineConfig } from 'vitest/config';
 import terminal from 'vite-plugin-terminal';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import topLevelAwait from 'vite-plugin-top-level-await';
 
 export default defineConfig(configEnv => {
   const isDevelopment = configEnv.mode === 'development';
@@ -18,6 +19,10 @@ export default defineConfig(configEnv => {
       port: 5137,
     },
     plugins: [
+      topLevelAwait({
+        promiseExportName: '__tla',
+        promiseImportName: i => `__tla_${i}`,
+      }),
       terminal({
         output: ['console', 'terminal'],
         strip: false,

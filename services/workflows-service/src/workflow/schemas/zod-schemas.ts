@@ -1,11 +1,12 @@
 import { SubscriptionSchema } from '@/common/types';
-import { z } from 'zod';
 import { WorkflowDefinitionConfigThemeSchema } from '@ballerine/common';
+import { z } from 'zod';
 
 export const ConfigSchema = z
   .object({
     isAssociatedCompanyKybEnabled: z.boolean().optional(),
     isCaseOverviewEnabled: z.boolean().optional(),
+    isCaseRiskOverviewEnabled: z.boolean().optional(),
     isLegacyReject: z.boolean().optional(),
     isLockedDocumentCategoryAndType: z.boolean().optional(),
     isManualCreation: z.boolean().optional(),
@@ -59,8 +60,32 @@ export const ConfigSchema = z
     reportConfig: z.record(z.string(), z.unknown()).optional(),
     theme: WorkflowDefinitionConfigThemeSchema.optional(),
     hasUboOngoingMonitoring: z.boolean().optional(),
+    maxBusinessReports: z.number().nonnegative().optional(),
+    isMerchantMonitoringEnabled: z.boolean().optional(),
+    isChatbotEnabled: z.boolean().optional(),
+    uiOptions: z
+      .object({
+        redirectUrls: z
+          .object({
+            success: z.string().url().optional(),
+            failure: z.string().url().optional(),
+          })
+          .optional(),
+      })
+      .optional(),
   })
   .strict()
   .optional();
 
 export type WorkflowConfig = z.infer<typeof ConfigSchema>;
+
+export const CustomerConfigSchema = z.object({
+  ongoingWorkflowDefinitionId: z.string().optional(),
+  hideCreateMerchantMonitoringButton: z.boolean().optional(),
+  isExample: z.boolean().optional(),
+  isMerchantMonitoringEnabled: z.boolean().optional(),
+  isDemo: z.boolean().optional(),
+  maxBusinessReports: z.number().optional(),
+});
+
+export type TCustomerConfig = z.infer<typeof CustomerConfigSchema>;

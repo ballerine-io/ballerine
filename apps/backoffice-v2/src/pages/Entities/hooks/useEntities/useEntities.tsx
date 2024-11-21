@@ -6,6 +6,7 @@ import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParam
 import { createArrayOfNumbers } from '../../../../common/utils/create-array-of-numbers/create-array-of-numbers';
 import { useSelectEntityOnMount } from '../../../../domains/entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
 import { useWorkflowsQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
+import { usePagination } from '@/common/hooks/usePagination/usePagination';
 
 export const useEntities = () => {
   const [{ filterId, filter, sortBy, sortDir, page, pageSize, search }, setSearchParams] =
@@ -20,11 +21,8 @@ export const useEntities = () => {
     pageSize,
     search,
   });
-
-  const {
-    meta: { totalPages },
-    data: workflows,
-  } = data || { meta: { totalPages: 0 }, data: [] };
+  const cases = data?.data;
+  const totalPages = data?.meta?.totalPages ?? 0;
   const entity = useEntityType();
   const { onSearch, search: searchValue } = useSearch();
 
@@ -58,15 +56,9 @@ export const useEntities = () => {
     [filter, setSearchParams],
   );
 
-  const onPaginate = useCallback(
-    (page: number) => () => {
-      setSearchParams({
-        page,
-        pageSize,
-      });
-    },
-    [pageSize, setSearchParams],
-  );
+  const { onPaginate, onPrevPage, onNextPage, onLastPage, isLastPage } = usePagination({
+    totalPages: data?.meta?.totalPages ?? 0,
+  });
 
   const onSearchChange: ChangeEventHandler<HTMLInputElement> = useCallback(
     event => {
@@ -86,14 +78,20 @@ export const useEntities = () => {
 
   const { workflowDefinition } = useCaseCreationWorkflowDefinition();
 
+  const isNoCases = !isLoading && Array.isArray(cases) && !cases.length;
+
   return {
     onPaginate,
+    onPrevPage,
+    onNextPage,
+    onLastPage,
+    isLastPage,
     onSearch: onSearchChange,
     onFilter: onFilterChange,
     onSortBy: onSortByChange,
     onSortDirToggle,
     search: searchValue,
-    cases: data?.data,
+    cases,
     caseCount: data?.meta?.totalItems || 0,
     isLoading,
     page,
@@ -101,5 +99,6 @@ export const useEntities = () => {
     skeletonEntities,
     entity,
     isManualCaseCreationEnabled: workflowDefinition?.config?.enableManualCreation,
+    isNoCases,
   };
 };

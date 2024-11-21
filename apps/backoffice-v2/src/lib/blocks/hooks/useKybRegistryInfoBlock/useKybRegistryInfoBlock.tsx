@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 
-import { WarningFilledSvg } from '@/common/components/atoms/icons';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { WarningFilledSvg } from '@ballerine/ui';
 
 export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
   const getCell = useCallback(() => {
@@ -28,17 +28,21 @@ export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
       >;
     }
 
-    if (pluginsOutput?.businessInformation?.message) {
+    const message =
+      pluginsOutput?.businessInformation?.message ??
+      pluginsOutput?.businessInformation?.data?.message;
+
+    if (message) {
       return {
         type: 'paragraph',
         value: (
           <span className="flex text-sm text-black/60">
             <WarningFilledSvg
-              className={'mr-[8px] mt-px text-black/20'}
+              className={'me-2 mt-px text-black/20 [&>:not(:first-child)]:stroke-background'}
               width={'20'}
               height={'20'}
             />
-            <span>{pluginsOutput?.businessInformation?.message}</span>
+            <span>{message}</span>
           </span>
         ),
       } satisfies Extract<
@@ -55,7 +59,7 @@ export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
         value: (
           <span className="flex text-sm text-black/60">
             <WarningFilledSvg
-              className={'mr-[8px] mt-px text-black/20'}
+              className={'me-2 mt-px text-black/20 [&>:not(:first-child)]:stroke-background'}
               width={'20'}
               height={'20'}
             />

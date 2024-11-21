@@ -1,48 +1,74 @@
-import { useCallback, useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { WarningFilledSvg } from '@/common/components/atoms/icons';
+import React, { useCallback, useMemo } from 'react';
+import { WarningFilledSvg } from '@ballerine/ui';
+import { Background, Controls, MiniMap, ReactFlow } from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
+import { buildTree } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/build-tree';
+import { CustomNode } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/CustomNode';
 
-type Ubo = {
-  name?: string;
-  type?: string;
-  level?: number;
-  percentage?: number;
+const nodeTypes = {
+  customNode: CustomNode,
 };
 
-export const useUbosRegistryProvidedBlock = (
-  ubos: Ubo[] | undefined,
-  message: string | undefined,
-  isRequestTimedOut: string | undefined,
-) => {
+export const useUbosRegistryProvidedBlock = ({
+  nodes,
+  edges,
+  message,
+  isRequestTimedOut,
+}: {
+  nodes: Array<{
+    id: string;
+    data: {
+      name: string;
+      type: string;
+      sharePercentage?: number;
+    };
+  }>;
+  edges: Array<{
+    id: string;
+    source: string;
+    target: string;
+    data: {
+      sharePercentage?: number;
+    };
+  }>;
+  message: string | undefined;
+  isRequestTimedOut: boolean | undefined;
+}) => {
+  const { nodes: uiNodes, edges: uiEdges } = buildTree({
+    nodes,
+    edges,
+  });
+
   const getCell = useCallback(() => {
-    if (Array.isArray(ubos) && ubos?.length) {
+    if (Array.isArray(uiNodes) && uiNodes?.length && Array.isArray(uiEdges) && uiEdges?.length) {
+      // TODO create a graph cell
       return {
-        type: 'table',
-        value: {
-          columns: [
-            {
-              accessorKey: 'name',
-              header: 'Name',
-            },
-            {
-              accessorKey: 'percentage',
-              header: 'Percentage (25% or higher)',
-            },
-            {
-              accessorKey: 'type',
-              header: 'Type',
-            },
-            {
-              accessorKey: 'level',
-              header: 'Level',
-            },
-          ],
-          data: ubos,
-        },
+        type: 'node',
+        value: (
+          <div className="min-h-[27rem] p-4">
+            <div className={'d-full rounded-sm border border-slate-200'}>
+              <ReactFlow
+                nodeTypes={nodeTypes}
+                nodes={uiNodes}
+                edges={uiEdges}
+                defaultViewport={{
+                  x: 500,
+                  y: 50,
+                  zoom: 0.8,
+                }}
+              >
+                <MiniMap />
+                <Controls />
+                <Background />
+              </ReactFlow>
+            </div>
+          </div>
+        ),
       } satisfies Extract<
         Parameters<ReturnType<typeof createBlocksTyped>['addCell']>[0],
         {
-          type: 'table';
+          type: 'node';
         }
       >;
     }
@@ -53,7 +79,7 @@ export const useUbosRegistryProvidedBlock = (
         value: (
           <span className="flex text-sm text-black/60">
             <WarningFilledSvg
-              className={'mr-[8px] mt-px text-black/20'}
+              className={'me-2 mt-px text-black/20 [&>:not(:first-child)]:stroke-background'}
               width={'20'}
               height={'20'}
             />
@@ -74,7 +100,7 @@ export const useUbosRegistryProvidedBlock = (
         value: (
           <span className="flex text-sm text-black/60">
             <WarningFilledSvg
-              className={'mr-[8px] mt-px text-black/20'}
+              className={'me-2 mt-px text-black/20 [&>:not(:first-child)]:stroke-background'}
               width={'20'}
               height={'20'}
             />
@@ -91,7 +117,7 @@ export const useUbosRegistryProvidedBlock = (
         }
       >;
     }
-  }, [message, ubos]);
+  }, [message, isRequestTimedOut, uiNodes, uiEdges]);
 
   return useMemo(() => {
     const cell = getCell();

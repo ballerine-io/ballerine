@@ -11,12 +11,13 @@ import { ValidationError } from '@/errors';
 @Injectable()
 export class BusinessRepository {
   constructor(
-    protected readonly prisma: PrismaService,
+    protected readonly prismaService: PrismaService,
     protected readonly scopeService: ProjectScopeService,
   ) {}
 
   async create<T extends Prisma.BusinessCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessCreateArgs>,
+    transaction: PrismaClient | PrismaTransaction = this.prismaService,
   ) {
     const result = BusinessCreateInputSchema.safeParse(args.data);
 
@@ -24,7 +25,7 @@ export class BusinessRepository {
       throw ValidationError.fromZodError(result.error);
     }
 
-    return await this.prisma.business.create({
+    return await transaction.business.create({
       ...args,
       data: result.data,
     });
@@ -34,7 +35,9 @@ export class BusinessRepository {
     args: Prisma.SelectSubset<T, Prisma.BusinessFindManyArgs>,
     projectIds: TProjectIds,
   ) {
-    return await this.prisma.business.findMany(this.scopeService.scopeFindMany(args, projectIds));
+    return await this.prismaService.business.findMany(
+      this.scopeService.scopeFindMany(args, projectIds),
+    );
   }
 
   async findById<T extends Omit<Prisma.BusinessFindFirstOrThrowArgs, 'where'>>(
@@ -42,7 +45,7 @@ export class BusinessRepository {
     args: Prisma.SelectSubset<T, Omit<Prisma.BusinessFindFirstOrThrowArgs, 'where'>>,
     projectIds: TProjectIds,
   ) {
-    return await this.prisma.business.findFirstOrThrow(
+    return await this.prismaService.business.findFirstOrThrow(
       this.scopeService.scopeFindFirst(
         {
           where: { id },
@@ -53,12 +56,22 @@ export class BusinessRepository {
     );
   }
 
+  async findByIdUnscoped<T extends Omit<Prisma.BusinessFindUniqueOrThrowArgs, 'where'>>(
+    id: string,
+    args: Prisma.SelectSubset<T, Omit<Prisma.BusinessFindUniqueOrThrowArgs, 'where'>>,
+  ) {
+    return await this.prismaService.business.findUniqueOrThrow({
+      where: { id },
+      ...args,
+    });
+  }
+
   async findByCorrelationId<T extends Omit<Prisma.BusinessFindFirstArgs, 'where'>>(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.BusinessFindFirstArgs, 'where'>>,
     projectIds: TProjectIds,
+    args?: Prisma.SelectSubset<T, Omit<Prisma.BusinessFindFirstArgs, 'where'>>,
   ) {
-    return await this.prisma.business.findFirst(
+    return await this.prismaService.business.findFirst(
       this.scopeService.scopeFindFirst(
         {
           where: { correlationId: id },
@@ -71,7 +84,7 @@ export class BusinessRepository {
 
   async getCorrelationIdById(id: string, projectIds: TProjectIds): Promise<string | null> {
     return (
-      await this.prisma.business.findFirstOrThrow(
+      await this.prismaService.business.findFirstOrThrow(
         this.scopeService.scopeFindFirst(
           {
             where: { id },
@@ -86,7 +99,7 @@ export class BusinessRepository {
   async updateById<T extends Omit<Prisma.BusinessUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.BusinessUpdateArgs, 'where'>>,
-    transaction: PrismaClient | PrismaTransaction = this.prisma,
+    transaction: PrismaClient | PrismaTransaction = this.prismaService,
   ): Promise<BusinessModel> {
     return await transaction.business.update({
       where: { id },

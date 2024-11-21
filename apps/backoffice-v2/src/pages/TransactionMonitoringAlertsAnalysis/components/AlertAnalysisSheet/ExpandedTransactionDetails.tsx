@@ -3,11 +3,10 @@ import dayjs from 'dayjs';
 import { titleCase } from 'string-ts';
 import { FileJson2 } from 'lucide-react';
 
-import { JsonDialog } from '@ballerine/ui';
+import { JsonDialog, TextWithNAFallback } from '@ballerine/ui';
 import { TTransactionsList } from '@/domains/transactions/fetchers';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
-import { CopyToClipboard } from '@/common/components/atoms/CopyToClipboard/CopyToClipboard';
+import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
 
 interface IExpandedTransactionDetailsProps {
   transaction: TTransactionsList[number];
@@ -55,7 +54,7 @@ export const ExpandedTransactionDetails = ({ transaction }: IExpandedTransaction
             <TextWithNAFallback style={styles} ref={ref}>
               {transaction.transactionCorrelationId}
             </TextWithNAFallback>
-            <CopyToClipboard textToCopy={transaction.transactionCorrelationId} />
+            <CopyToClipboardButton textToCopy={transaction.transactionCorrelationId} />
           </div>
           <TextWithNAFallback>{`${dayjs(transaction.transactionDate).format(
             'MMM DD, YYYY',

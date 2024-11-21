@@ -2,6 +2,7 @@ import { AnyRecord } from '@ballerine/common';
 import { ApiPlugin } from './api-plugin';
 import { JsonSchemaValidator } from '../../utils/context-validator/json-schema-validator';
 import { Validator } from '../../utils';
+import { BallerineApiPlugin } from './ballerine-plugin';
 
 const kycSessionRequestSchema = {
   $schema: 'http://json-schema.org/draft-07/schema#',
@@ -23,9 +24,8 @@ const kycSessionRequestSchema = {
   required: ['firstName', 'lastName', 'callbackUrl', 'vendor'],
 };
 
-export class KycSessionPlugin extends ApiPlugin {
+export class KycSessionPlugin extends BallerineApiPlugin {
   public static pluginType = 'http';
-  public static pluginKind = 'kyc-session';
 
   async validateContent<TValidationContext extends 'Request' | 'Response'>(
     schemaValidator: Validator | undefined,
@@ -39,6 +39,7 @@ export class KycSessionPlugin extends ApiPlugin {
         validationContext,
       );
     }
+
     return super.validateContent(schemaValidator, transformedRequest, validationContext);
   }
 
@@ -48,10 +49,11 @@ export class KycSessionPlugin extends ApiPlugin {
     payload: AnyRecord,
     headers: HeadersInit,
   ) {
-    const callbackUrlWithPlaceholder = this.replaceValuePlaceholders(
+    const callbackUrlWithPlaceholder = await this.replaceAllVariables(
       payload['callbackUrl'] as string,
       payload,
     );
+
     const callbackUrl = new URL(callbackUrlWithPlaceholder);
     callbackUrl.searchParams.set('processName', 'kyc-unified-api');
     payload['callbackUrl'] = callbackUrl.toString();

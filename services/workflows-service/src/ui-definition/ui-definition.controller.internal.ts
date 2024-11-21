@@ -1,26 +1,22 @@
-import { ProjectScopeService } from '@/project/project-scope.service';
-import * as common from '@nestjs/common';
-import { Injectable } from '@nestjs/common';
-import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import * as swagger from '@nestjs/swagger';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import type { InputJsonValue, TProjectId, TProjectIds } from '@/types';
-import { UiDefinitionModel } from '@/ui-definition/ui-definition.model';
 import { WhereIdInput } from '@/common/where-id-input';
+import * as errors from '@/errors';
+import type { InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionByRuntimeIdDto } from '@/ui-definition/dtos/ui-definition-by-runtime-id.dto';
 import { UiDefinitionByWorkflowDefinitionIdDto } from '@/ui-definition/dtos/ui-definition-by-workflow-definition-id.dto';
-import * as errors from '@/errors';
 import { UiDefinitionCreateDto } from '@/ui-definition/dtos/ui-definition-create.dto';
-import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { UiDefinitionModel } from '@/ui-definition/ui-definition.model';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import * as common from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import * as swagger from '@nestjs/swagger';
 
 @swagger.ApiExcludeController()
 @common.Controller('internal/ui-definition')
 @Injectable()
-export class UiDefinitionController {
-  constructor(
-    protected readonly service: UiDefinitionService,
-    protected readonly projectScopeService: ProjectScopeService,
-  ) {}
+export class UiDefinitionControllerInternal {
+  constructor(protected readonly service: UiDefinitionService) {}
 
   @common.Post()
   @swagger.ApiCreatedResponse({ type: UiDefinitionCreateDto })
@@ -32,6 +28,7 @@ export class UiDefinitionController {
     return await this.service.create({
       data: {
         ...data,
+        crossEnvKey: data.workflowDefinitionId,
         definition: data.definition as InputJsonValue,
         uiSchema: data.uiSchema as InputJsonValue,
         projectId: currentProjectId,
@@ -46,9 +43,7 @@ export class UiDefinitionController {
     @common.Param() params: WhereIdInput,
     @ProjectIds() projectIds: TProjectIds,
   ): Promise<UiDefinitionModel> {
-    const uiDefinition = await this.service.getById(params.id, {}, projectIds);
-
-    return uiDefinition;
+    return await this.service.getById(params.id, {}, projectIds);
   }
 
   @common.Get('/workflow-definition/:workflowDefinitionId')
@@ -58,14 +53,11 @@ export class UiDefinitionController {
     @common.Param() params: UiDefinitionByWorkflowDefinitionIdDto,
     @ProjectIds() projectIds: TProjectIds,
   ): Promise<UiDefinitionModel> {
-    const uiDefinition = await this.service.getByWorkflowDefinitionId(
+    return await this.service.getByWorkflowDefinitionId(
       params.workflowDefinitionId,
       params.uiContext,
       projectIds,
-      {},
     );
-
-    return uiDefinition;
   }
 
   @common.Get('/workflow-runtime/:workflowRuntimeId')
@@ -76,13 +68,6 @@ export class UiDefinitionController {
     @common.Query() query: UiDefinitionByRuntimeIdDto,
     @ProjectIds() projectIds: TProjectIds,
   ): Promise<UiDefinitionModel> {
-    const uiDefinition = await this.service.getByRuntimeId(
-      workflowRuntimeId,
-      query.uiContext,
-      projectIds,
-      {},
-    );
-
-    return uiDefinition;
+    return await this.service.getByRuntimeId(workflowRuntimeId, query.uiContext, projectIds, {});
   }
 }

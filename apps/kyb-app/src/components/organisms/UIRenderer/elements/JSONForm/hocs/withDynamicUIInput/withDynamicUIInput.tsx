@@ -19,13 +19,14 @@ const findLastDigit = (str: string) => {
   if (matches && matches.length > 0) {
     // @ts-ignore
     const result = parseInt(matches[matches.length - 1]);
+
     return result;
   }
 
   return null;
 };
 
-const getInputIndex = (inputId: string) => findLastDigit(inputId);
+export const getInputIndex = (inputId: string) => findLastDigit(inputId);
 
 const injectIndexToDestinationIfNeeded = (destination: string, index: number | null): string => {
   if (index === null) return destination;
@@ -42,7 +43,7 @@ export type DynamicUIComponent<TProps, TParams = AnyObject> = React.ComponentTyp
 export const withDynamicUIInput = (
   Component: RJSFInputAdapter<any, any> & { inputIndex?: number | null; testId?: string },
 ) => {
-  function Wrapper(props: RJSFInputProps) {
+  const Wrapper = (props: RJSFInputProps) => {
     const inputId = (props.idSchema as AnyObject)?.$id as string;
     const { name, onChange } = props;
     const { payload } = useStateManagerContext();
@@ -103,6 +104,7 @@ export const withDynamicUIInput = (
             value: !value && value !== 0 && value !== false ? undefined : value,
           },
         };
+
         onChangeHandler(evt as React.ChangeEvent<any>);
         onChange(value);
       },
@@ -141,7 +143,7 @@ export const withDynamicUIInput = (
         )}
       </div>
     );
-  }
+  };
 
   return Wrapper;
 };

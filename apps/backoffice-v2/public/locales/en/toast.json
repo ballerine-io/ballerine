@@ -77,5 +77,28 @@
   "revert_decision_alerts": {
     "success": "The alerts decision have been reverted successfully.",
     "error": "Error occurred while reverting the alerts decision."
+  },
+  "pdf_certificate": {
+    "error": "Failed to open PDF certificate."
+  },
+  "document_ocr": {
+    "success": "OCR performed successfully.",
+    "empty_extraction": "Unable to extract the document's relevant fields.",
+    "error": "Failed to perform OCR on the document."
+  },
+  "business_report_creation": {
+    "success": "Merchant check created successfully.",
+    "error": "Error occurred while creating a merchant check.",
+    "is_example": "Please contact Ballerine at oss@ballerine.com for access to this feature."
+  },
+  "batch_business_report_creation": {
+    "no_file": "No file selected.",
+    "success": "Merchant checks created successfully.",
+    "error": "Error occurred while creating merchant checks.",
+    "is_example": "Please contact Ballerine at oss@ballerine.com for access to this feature."
+  },
+  "note_created": {
+    "success": "Note added successfully.",
+    "error": "Error occurred while adding note."
   }
 }

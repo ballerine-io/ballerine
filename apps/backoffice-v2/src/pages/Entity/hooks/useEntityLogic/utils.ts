@@ -24,17 +24,11 @@ const uniqueArrayByKey = (array: AnyArray, key: PropertyKey) => {
   return [...new Map(array.map(item => [item[key], item])).values()] as TDropdownOption[];
 };
 
-const NON_EDITABLE_FIELDS = ['category'] as const;
-
-export const checkIsEditable = ({ isEditable, field }: { isEditable: boolean; field: string }) => {
-  return !NON_EDITABLE_FIELDS.includes(field) && isEditable;
-};
-
 export const composePickableCategoryType = (
   categoryValue: string,
   typeValue: string,
   documentsSchemas: TDocument[],
-  config?: Record<any, any> | null,
+  config?: Record<PropertyKey, any> | null,
 ) => {
   const documentCategoryDropdownOptions: TDropdownOption[] = [];
   const documentTypesDropdownOptions: TDropdownOption[] = [];
@@ -62,7 +56,7 @@ export const composePickableCategoryType = (
 
   const categoryDropdownOptions = uniqueArrayByKey(documentCategoryDropdownOptions, 'value');
   const typeDropdownOptions = documentTypesDropdownOptions;
-  const isEditable = !(config?.isLockedDocumentCategoryAndType === true);
+  const isEditable = !config?.isLockedDocumentCategoryAndType;
 
   return {
     ...composeDataFormCell('category', categoryDropdownOptions, categoryValue, isEditable),

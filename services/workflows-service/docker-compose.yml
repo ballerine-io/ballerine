@@ -17,6 +17,7 @@ services:
       DB_PORT: ${DB_PORT}
       SESSION_SECRET: ${SESSION_SECRET}
       HASHING_KEY_SECRET: ${HASHING_KEY_SECRET}
+      HASHING_KEY_SECRET_BASE64: ${HASHING_KEY_SECRET_BASE64}
       WORKFLOW_DASHBOARD_CORS_ORIGIN: ${WORKFLOW_DASHBOARD_CORS_ORIGIN}
       BACKOFFICE_CORS_ORIGIN: ${BACKOFFICE_CORS_ORIGIN}
       COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
@@ -24,7 +25,8 @@ services:
       NODE_ENV: ${NODE_ENV}
       ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
     depends_on:
-      - migrate
+      migrate:
+        condition: service_completed_successfully
   migrate:
     build:
       context: .
@@ -39,7 +41,7 @@ services:
       db:
         condition: service_healthy
   db:
-    image: docker pull sibedge/postgres-plv8:15.3-3.1.7
+    image: sibedge/postgres-plv8:15.3-3.1.7
     ports:
       - ${DB_PORT}:5432
     environment:

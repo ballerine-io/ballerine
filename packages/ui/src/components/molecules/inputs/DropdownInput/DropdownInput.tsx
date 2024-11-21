@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { CheckIcon } from 'lucide-react';
 import React, { FocusEvent, FunctionComponent, useCallback, useMemo, useState } from 'react';
 
+import { ctw } from '@/common';
 import {
   Button,
   Command,
@@ -53,6 +54,7 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
   onChange,
   onBlur,
   props,
+  textInputClassName,
 }) => {
   const { placeholder = '', searchPlaceholder = '' } = placeholdersParams;
   const [open, setOpen] = useState(false);
@@ -100,7 +102,7 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
           disabled={disabled}
           data-testid={testId ? `${testId}-trigger` : undefined}
         >
-          <span className="flex-1 text-left">
+          <span className="flex-1 truncate text-left">
             {selectedOption ? selectedOption.label : placeholder}
           </span>
           {props?.trigger?.icon ?? <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />}
@@ -115,7 +117,11 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
       >
         <Command className="w-full">
           {searchable ? (
-            <CommandInput onBlur={onBlur} placeholder={searchPlaceholder} className="h-9" />
+            <CommandInput
+              onBlur={onBlur}
+              placeholder={searchPlaceholder}
+              className={ctw('placeholder:text-muted-foreground h-9', textInputClassName)}
+            />
           ) : null}
           <CommandEmpty>{notFoundText || ''}</CommandEmpty>
           <ScrollArea orientation="both" className={clsx({ 'h-[200px]': options.length > 6 })}>

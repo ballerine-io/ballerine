@@ -2,13 +2,14 @@ import { useIsAuthenticated } from '@/domains/auth/context/AuthProvider/hooks/us
 import { useQuery } from '@tanstack/react-query';
 import { isString } from '@/common/utils/is-string/is-string';
 import { businessReportsQueryKey } from '@/domains/business-reports/query-keys';
+import { MerchantReportType } from '@/domains/business-reports/constants';
 
 export const useLatestBusinessReportQuery = ({
   businessId,
   reportType,
 }: {
   businessId: string;
-  reportType: 'MERCHANT_REPORT_T1' & (string & {});
+  reportType: MerchantReportType;
 }) => {
   const isAuthenticated = useIsAuthenticated();
 

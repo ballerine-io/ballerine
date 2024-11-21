@@ -1,6 +1,6 @@
+import { ctw } from '@/common/utils/ctw';
 import { Checkbox } from '@/components/atoms';
 import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/types';
-import { ctw } from '@/utils/ctw';
 import { useCallback } from 'react';
 
 export const BooleanFieldAdapter: RJSFInputAdapter<boolean> = ({
@@ -24,7 +24,7 @@ export const BooleanFieldAdapter: RJSFInputAdapter<boolean> = ({
       })}
     >
       <Checkbox
-        className="border-secondary data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground bg-white"
+        className="border bg-white data-[state=checked]:bg-white data-[state=checked]:text-black"
         color="primary"
         checked={formData}
         disabled={disabled}

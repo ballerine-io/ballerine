@@ -7,13 +7,18 @@ import { BusinessService } from '@/business/business.service';
 import { Business, Project } from '@prisma/client';
 import {
   FEATURE_LIST,
-  TCustomerFeatures,
-  TCustomerWithDefinitionsFeatures,
-  TOngoingAuditReportDefinitionConfig,
+  TCustomerWithFeatures,
+  TOngoingMerchantReportOptions,
 } from '@/customer/types';
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { WorkflowService } from '@/workflow/workflow.service';
+import {
+  MERCHANT_REPORT_STATUSES_MAP,
+  MERCHANT_REPORT_TYPES_MAP,
+  MERCHANT_REPORT_VERSIONS_MAP,
+} from '@/business-report/constants';
+import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
 
 describe('OngoingMonitoringCron', () => {
   let service: OngoingMonitoringCron;
@@ -21,12 +26,13 @@ describe('OngoingMonitoringCron', () => {
   let customerService: CustomerService;
   let businessService: BusinessService;
   let loggerService: AppLoggerService;
-  // Add other services as needed
+  let businessReportService: BusinessReportService;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [
         OngoingMonitoringCron,
+        MerchantMonitoringClient,
         { provide: PrismaService, useValue: mockPrismaService() },
         { provide: AppLoggerService, useValue: mockLoggerService() },
         { provide: CustomerService, useValue: mockCustomerService() },
@@ -41,6 +47,7 @@ describe('OngoingMonitoringCron', () => {
     prismaService = module.get<PrismaService>(PrismaService);
     customerService = module.get<CustomerService>(CustomerService);
     businessService = module.get<BusinessService>(BusinessService);
+    businessReportService = module.get<BusinessReportService>(BusinessReportService);
     loggerService = module.get<AppLoggerService>(AppLoggerService);
   });
 
@@ -49,12 +56,10 @@ describe('OngoingMonitoringCron', () => {
       jest.spyOn(prismaService, 'acquireLock').mockResolvedValue(true);
       jest.spyOn(customerService, 'list').mockResolvedValue(mockCustomers());
       jest.spyOn(businessService, 'list').mockResolvedValue(mockBusinesses());
-      // Mock additional service methods as needed
 
       await service.handleCron();
 
       expect(businessService.list).toHaveBeenCalledTimes(1);
-      expect(mockWorkflowService.createOrUpdateWorkflowRuntime).toHaveBeenCalledTimes(4);
     });
 
     it('should handle errors correctly', async () => {
@@ -67,6 +72,43 @@ describe('OngoingMonitoringCron', () => {
       await service.handleCron();
 
       expect(errorLogSpy).toHaveBeenCalledWith(expect.stringContaining('An error occurred'));
+    });
+
+    it('should not create an ongoing report when the last business report is incomplete', async () => {
+      jest.spyOn(prismaService, 'acquireLock').mockResolvedValue(true);
+      jest.spyOn(customerService, 'list').mockResolvedValue(mockCustomers());
+      jest
+        .spyOn(businessService, 'list')
+        .mockResolvedValue(mockBusinesses().filter(business => business.id === 'business3'));
+      jest.spyOn(businessReportService, 'createBusinessReportAndTriggerReportCreation');
+      jest.spyOn(businessReportService, 'findLatest').mockResolvedValue({
+        id: 'business1',
+        data: {},
+        riskScore: 0,
+        merchantId: 'business3',
+        status: MERCHANT_REPORT_STATUSES_MAP['in-progress'],
+        reportType: MERCHANT_REPORT_TYPES_MAP.ONGOING_MERCHANT_REPORT_T1,
+        createdAt: new Date(new Date().setDate(new Date().getDate() - 31)),
+        updatedAt: new Date(new Date().setDate(new Date().getDate() - 30)),
+        isAlert: false,
+        website: {
+          id: 'business1',
+          url: 'http://example.com',
+          createdAt: new Date(new Date().setDate(new Date().getDate() - 31)),
+          updatedAt: new Date(new Date().setDate(new Date().getDate() - 30)),
+        },
+        workflowVersion: MERCHANT_REPORT_VERSIONS_MAP['2'],
+        metadata: {},
+        websiteId: 'business1',
+        parentCompanyName: 'Test Business 3',
+      });
+
+      await service.handleCron();
+
+      expect(businessReportService.findLatest).toHaveBeenCalled();
+      expect(
+        businessReportService.createBusinessReportAndTriggerReportCreation,
+      ).not.toHaveBeenCalled();
     });
 
     it('should always release the lock after processing', async () => {
@@ -82,10 +124,11 @@ describe('OngoingMonitoringCron', () => {
   const mockPrismaService = () => ({
     acquireLock: jest.fn(),
     releaseLock: jest.fn(),
+    $transaction: jest.fn().mockImplementation(operations => operations()),
   });
 
   const mockWorkflowService = {
-    createOrUpdateWorkflowRuntime: jest.fn().mockImplementation(params => {
+    createOrUpdateWorkflowRuntime: jest.fn().mockImplementation(() => {
       return Promise.resolve(true);
     }),
   };
@@ -110,24 +153,23 @@ describe('OngoingMonitoringCron', () => {
   };
 
   const mockBusinessReportService = {
-    findMany: jest.fn().mockImplementation(criteria => {
-      // Return an array of mock reports or a Promise of such an array
-      return Promise.resolve([
+    findLatest: jest.fn().mockImplementation(() =>
+      Promise.resolve([
         {
           id: 'mockReport1',
+          reportId: 'mockReport1',
           createdAt: new Date(new Date().setDate(new Date().getDate() - 30)),
           report: { reportId: 'mockReport1' },
         },
         { id: 'mockReport2', createdAt: new Date(), report: { reportId: 'mockReport2' } },
-      ]); // Example, adjust as needed
-    }),
-    // Simulate other needed service methods
+      ]),
+    ),
+    createBusinessReportAndTriggerReportCreation: jest.fn(),
     createReport: jest.fn().mockImplementation(reportDetails => {
       return Promise.resolve({ id: 'newMockReport', ...reportDetails });
     }),
   };
 
-  // Mock data generators
   const mockCustomers = async () => {
     return [
       {
@@ -135,148 +177,86 @@ describe('OngoingMonitoringCron', () => {
         name: 'Test Customer 1',
         displayName: 'Test Customer Display 1',
         logoImageUri: 'http://example.com/logo1.png',
+        config: {},
+        subscriptions: {},
         features: {
-          [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
-            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
+          [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
+            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT,
             enabled: true,
             options: {
-              definitionVariation: 'ongoing_merchant_audit_t1',
               intervalInDays: 7,
-              active: true,
-              checkTypes: ['lob', 'content', 'reputation'],
+              workflowVersion: '2',
               proxyViaCountry: 'GB',
+              scheduleType: 'interval',
+              reportType: 'ONGOING_MERCHANT_REPORT_T1',
             },
           },
         },
-        projects: [{ id: 1 } as unknown as Project],
+        projects: [{ id: '1' } as unknown as Project],
       },
-      {
-        id: 'customer2',
-        name: 'Test Customer 2',
-        displayName: 'Test Customer Display 2',
-        logoImageUri: 'http://example.com/logo2.png',
-        features: {
-          [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2]: {
-            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2,
-            enabled: true,
-            options: {
-              definitionVariation: 'ongoing_merchant_audit_t2',
-              intervalInDays: 0,
-              active: true,
-              checkTypes: ['lob', 'content', 'reputation'],
-              proxyViaCountry: 'GB',
-            },
-          },
-        },
-        projects: [{ id: 2 } as unknown as Project],
-      },
-      {
-        id: 'customer3',
-        name: 'Test Customer 3',
-        displayName: 'Test Customer Display 3',
-        logoImageUri: 'http://example.com/logo3.png',
-        features: {
-          [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2]: {
-            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2,
-            enabled: false,
-            options: {
-              definitionVariation: 'ongoing_merchant_audit_t2',
-              intervalInDays: 0,
-              active: true,
-              checkTypes: ['lob', 'content', 'reputation'],
-              proxyViaCountry: 'GB',
-            },
-          },
-        },
-        projects: [{ id: 3 } as unknown as Project],
-      },
-      {
-        id: 'customer4',
-        name: 'Test Customer 4',
-        displayName: 'Test Customer Display 4',
-        logoImageUri: 'http://example.com/logo4.png',
-        features: {
-          [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2]: {
-            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2,
-            enabled: true,
-            options: {
-              definitionVariation: 'ongoing_merchant_audit_t2',
-              intervalInDays: 0,
-              active: false,
-              checkTypes: ['lob', 'content', 'reputation'],
-              proxyViaCountry: 'GB',
-            },
-          },
-        },
-        projects: [{ id: 4 } as unknown as Project],
-      },
-    ] as unknown as TCustomerWithDefinitionsFeatures[];
+    ] satisfies TCustomerWithFeatures[];
   };
 
   const mockBusinesses = () => {
     return [
       {
         id: 'business1',
+        companyName: 'Test Business 1',
         metadata: {
           featureConfig: {
-            [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
-              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
+            [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
               enabled: false,
-              options: {
-                definitionVariation: 'variation1',
-                intervalInDays: 30,
-                active: true, // active false
-                checkTypes: ['type1', 'type2'],
-                proxyViaCountry: 'US',
-              } as TOngoingAuditReportDefinitionConfig,
             },
-          } as Record<string, TCustomerFeatures>,
+          },
         },
       },
       {
         id: 'business2',
+        companyName: 'Test Business 2',
       },
       {
         id: 'business3',
+        companyName: 'Test Business 3',
         metadata: {
           featureConfig: {
-            [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
-              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
+            [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
+              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT,
               enabled: true,
               options: {
-                definitionVariation: 'variation2',
                 intervalInDays: 1,
-                active: true,
-                checkTypes: ['lob', 'content', 'reputation', 'businessConfig'],
+                workflowVersion: '2',
                 proxyViaCountry: 'GB',
-              } as TOngoingAuditReportDefinitionConfig,
+                scheduleType: 'interval',
+                reportType: 'ONGOING_MERCHANT_REPORT_T1',
+              } satisfies TOngoingMerchantReportOptions,
             },
-          } as Record<string, TCustomerFeatures>,
+          },
         },
       },
       {
         id: 'business4',
+        companyName: 'Test Business 4',
         metadata: {
           featureConfig: {
-            [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
-              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
+            [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
+              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT,
               enabled: true,
               options: {
-                definitionVariation: 'variation3',
                 intervalInDays: 14,
-                active: false,
-                checkTypes: ['type5', 'type6'],
+                workflowVersion: '2',
                 proxyViaCountry: 'CA',
-              } as TOngoingAuditReportDefinitionConfig,
+                scheduleType: 'interval',
+                reportType: 'ONGOING_MERCHANT_REPORT_T1',
+              } satisfies TOngoingMerchantReportOptions,
             },
-          } as Record<string, TCustomerFeatures>,
+          },
         },
       },
     ] as unknown as Array<
       Business & {
         metadata?: {
-          featureConfig?: TCustomerWithDefinitionsFeatures['features'];
-          lastOngoingAuditReportInvokedAt?: number;
+          lastOngoingReportInvokedAt?: number;
+          featureConfig?: TCustomerWithFeatures['features'];
         };
       }
     >;

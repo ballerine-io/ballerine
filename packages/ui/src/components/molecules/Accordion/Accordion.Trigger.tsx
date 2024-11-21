@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
-import { ctw } from '@/utils';
+import { ctw } from '@/common';
 import { ChevronDownIcon } from 'lucide-react';
 
 export const AccordionTrigger = React.forwardRef<
@@ -21,4 +21,5 @@ export const AccordionTrigger = React.forwardRef<
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ));
+
 AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName;

@@ -73,11 +73,11 @@ export class WebhooksService {
       [projectId],
     );
 
-    const hits = (data as { hits: Array<Record<PropertyKey, unknown>> })?.hits ?? [];
+    const hits = data?.hits ?? [];
 
     const amlHits = hits.map(hit => ({
       ...hit,
-      vendor: 'veriff',
+      vendor: data?.vendor,
     }));
 
     await this.endUserService.updateById(endUserId, {
@@ -97,6 +97,7 @@ export class WebhooksService {
       context: {
         aml: data,
         entity: {
+          // @ts-expect-error -- prisma date not compatible with typebox
           data: {
             ...rest,
             additionalInfo: rest.additionalInfo ?? {},

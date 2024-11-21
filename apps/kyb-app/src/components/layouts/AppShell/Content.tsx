@@ -5,5 +5,14 @@ interface Props {
 }
 
 export const Content = ({ children }: Props) => {
-  return <div className="h-full w-[100%] overflow-auto bg-[#F2F5FF] p-4">{children}</div>;
+  return (
+    <div
+      className="text-secondary-foreground h-full w-[100%] overflow-auto p-4"
+      style={{
+        background: 'var(--secondary)',
+      }}
+    >
+      {children}
+    </div>
+  );
 };

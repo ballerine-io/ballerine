@@ -7,10 +7,24 @@ import '@ballerine/ui/dist/style.css';
 import '@fontsource/inter';
 
 import { Toaster } from '@/common/components/organisms/Toaster/Toaster';
+// Uncomment once react-pdf is back in use
+// import { Font } from '@react-pdf/renderer';
 import { Router } from './Router/Router';
 import { env } from './common/env/env';
 import './i18n';
 import './index.css';
+import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import { initializeMonitoring } from '@/initialize-monitoring/initialize-monitoring';
+import { initializeSessionRecording } from '@/initialize-session-recording/initialize-session-recording';
+
+initializeMonitoring();
+
+initializeSessionRecording();
+
+dayjs.extend(advancedFormat);
+
+// registerFont(Font);
 
 export const TOAST_DURATION_IN_MS = 1000 * 3;
 
@@ -28,7 +42,7 @@ const prepare = async () => {
 };
 
 void prepare().then(() => {
-  if (!rootElement.innerHTML) {
+  if (rootElement && !rootElement?.innerHTML) {
     const root = createRoot(rootElement);
 
     root.render(

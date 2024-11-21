@@ -3,6 +3,7 @@ import { StateTag, WorkflowDefinitionVariant } from '@ballerine/common';
 
 export const websiteMonitoringDefinition = {
   id: 'merchant_website_monitoring',
+  // In other places this is "merchant_monitoring"
   name: 'merchant_website_monitoring',
   version: 1,
   definitionType: 'statechart-json',

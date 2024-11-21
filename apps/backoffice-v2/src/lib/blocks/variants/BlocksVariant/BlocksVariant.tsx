@@ -5,6 +5,7 @@ import { ManualReviewBlocks } from '@/lib/blocks/variants/ManualReviewBlocks/Man
 import { OngoingBlocks } from '@/lib/blocks/variants/OngoingBlocks/OngoingBlocks';
 import { WebsiteMonitoringBlocks } from '@/lib/blocks/variants/WebsiteMonitoringBlocks';
 import {
+  checkIsAmlVariant,
   checkIsKybExampleVariant,
   checkIsManualReviewVariant,
   checkIsOngoingVariant,
@@ -21,7 +22,8 @@ export const BlocksVariant: FunctionComponent<{
   const isKybExampleVariant = checkIsKybExampleVariant(workflowDefinition);
   const isManualReviewVariant = checkIsManualReviewVariant(workflowDefinition);
   const isWebsiteMonitoringVariant = checkIsWebsiteMonitoringVariant(workflowDefinition);
-  const isOngoingVariant = checkIsOngoingVariant(workflowDefinition);
+  const isOngoingVariant =
+    checkIsOngoingVariant(workflowDefinition) || checkIsAmlVariant(workflowDefinition);
 
   if (isWebsiteMonitoringVariant) {
     return <WebsiteMonitoringBlocks />;

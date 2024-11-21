@@ -1,3 +1,4 @@
+import { ctw } from '@/common';
 import { muiTheme } from '@/common/mui-theme';
 import { Paper } from '@/components/atoms';
 import { TextField, TextFieldProps, ThemeProvider } from '@mui/material';
@@ -20,6 +21,10 @@ export type DatePickerValue = number | string | Date | null;
 export interface DatePickerParams {
   disableFuture?: boolean;
   disablePast?: boolean;
+  // dayjs format string or iso
+  outputValueFormat?: string;
+  // MUI date picker date format
+  inputDateFormat?: string;
 }
 
 export interface DatePickerProps {
@@ -28,6 +33,7 @@ export interface DatePickerProps {
   disabled?: boolean;
   params?: DatePickerParams;
   testId?: string;
+  textInputClassName?: string;
   onChange: (event: DatePickerChangeEvent) => void;
   onBlur?: (event: FocusEvent<any>) => void;
 }
@@ -38,14 +44,38 @@ export const DatePickerInput = ({
   disabled = false,
   params,
   testId,
+  textInputClassName,
   onChange,
   onBlur,
 }: DatePickerProps) => {
+  const {
+    outputValueFormat = 'iso',
+    inputDateFormat = 'MM/DD/YYYY',
+    disableFuture = false,
+    disablePast = false,
+  } = params || {};
   const [isFocused, setFocused] = useState(false);
 
-  const serializeValue = useCallback((value: Dayjs): string => {
-    return value.toISOString();
-  }, []);
+  const serializeValue = useCallback(
+    (value: Dayjs): string => {
+      if (outputValueFormat.toLowerCase() === 'iso') {
+        return value.toISOString();
+      }
+
+      const date = value.format(outputValueFormat);
+
+      if (!dayjs(date).isValid()) {
+        console.warn(
+          `Invalid outputValueFormat: "${outputValueFormat}" provided. iso will be used.`,
+        );
+
+        return value.toISOString();
+      }
+
+      return date;
+    },
+    [outputValueFormat],
+  );
 
   const deserializeValue = useCallback((value: DatePickerValue) => {
     return dayjs(value);
@@ -104,7 +134,10 @@ export const DatePickerInput = ({
           InputProps={{
             ...props.InputProps,
             classes: {
-              root: 'shadow-none bg-background border-input rounded-md border text-sm shadow-sm transition-colors px-3 py-0',
+              root: ctw(
+                'bg-background border-input rounded-md border text-sm shadow-sm transition-colors px-3 py-0',
+                textInputClassName,
+              ),
               focused: 'border-input ring-ring ring-1',
               disabled: 'opacity-50 cursor-not-allowed',
             },
@@ -120,17 +153,19 @@ export const DatePickerInput = ({
     };
 
     return Component;
-  }, [isFocused]);
+  }, [isFocused, onBlur, testId]);
 
   return (
     <ThemeProvider theme={muiTheme}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
-          {...params}
+          disablePast={disablePast}
+          disableFuture={disableFuture}
           disabled={disabled}
           value={value}
           onChange={handleChange}
           reduceAnimations
+          format={inputDateFormat}
           slots={{
             textField: Field,
             openPickerIcon: () => <CalendarDays size="16" color="#64748B" className="opacity-50" />,
@@ -154,6 +189,12 @@ export const DatePickerInput = ({
               //@ts-ignore
               component: Paper,
               className: 'mt-2 mb-2',
+            },
+            dialog: {
+              className: 'pointer-events-auto',
+            },
+            popper: {
+              className: 'pointer-events-auto',
             },
           }}
         />

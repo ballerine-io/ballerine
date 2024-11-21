@@ -15,7 +15,14 @@ export class CustomerAuthGuard implements CanActivate {
         user,
         ip: req.ip,
         userAgent: req.headers['user-agent'],
+        url: req.url,
+        method: req.method,
+        body: req.body,
+        headers: req.headers,
+        query: req.query,
+        params: req.params,
       });
+
       throw new UnauthorizedException('Unauthorized');
     }
 
