@@ -1,3 +1,4 @@
+import { isExceptionWillBeHandled } from '@/common/utils/helpers';
 import { HTTPError } from 'ky';
 
 interface IErrorBody {
@@ -22,6 +23,5 @@ export const getJsonErrors = async (errors: HTTPError[]) => {
 export const isShouldIgnoreErrors = async (errors: HTTPError[]) => {
   const errorResponses = await getJsonErrors(errors);
 
-  // TODO: We should have different error status for this to avoid strict comparison to error message
-  return errorResponses.every(({ message }) => message === 'No EndUser is set for this token');
+  return errorResponses.every(error => isExceptionWillBeHandled(error as unknown as HTTPError));
 };
