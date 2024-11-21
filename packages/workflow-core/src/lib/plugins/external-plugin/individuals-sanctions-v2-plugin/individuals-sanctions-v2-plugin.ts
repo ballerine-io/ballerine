@@ -281,13 +281,20 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
 
       const apiResponse = await this.makeApiRequest(url, this.method, requestPayload, {
         ...this.headers,
-        Authorization: `Bearer ${process.env.UNIFIED_API_TOKEN}`,
+        Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
       });
 
       logger.log('Individuals Sanctions V2 Plugin - Received response', {
         status: apiResponse.statusText,
         url,
       });
+
+      const contentLength = apiResponse.headers.get('content-length');
+
+      invariant(
+        !contentLength || Number(contentLength) > 0,
+        'Individuals Sanctions V2 Plugin - Received an empty response',
+      );
 
       if (!apiResponse.ok) {
         const errorResponse = await apiResponse.json();
