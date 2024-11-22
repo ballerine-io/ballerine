@@ -3,7 +3,7 @@ import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSear
 import { getMerchantMonitoringSearchSchema } from '@/pages/MerchantMonitoring/get-merchant-monitoring-search-schema';
 import { usePagination } from '@/common/hooks/usePagination/usePagination';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
-import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { useSearch } from '@/common/hooks/useSearch/useSearch';
 
 export const useMerchantMonitoringLogic = () => {
@@ -22,10 +22,7 @@ export const useMerchantMonitoringLogic = () => {
 
   const search = searchTerm as string;
 
-  const {
-    data = { businessReports: [], meta: { totalItems: 0, totalPages: 0 } },
-    isLoading: isLoadingBusinessReports,
-  } = useBusinessReportsQuery({
+  const { data, isLoading: isLoadingBusinessReports } = useBusinessReportsQuery({
     reportType: 'MERCHANT_REPORT_T1',
     search,
     page,
@@ -35,15 +32,15 @@ export const useMerchantMonitoringLogic = () => {
   });
 
   const { onPaginate, onPrevPage, onNextPage, onLastPage, isLastPage } = usePagination({
-    totalPages: data?.meta.totalPages ?? 0,
+    totalPages: data?.totalPages ?? 0,
   });
 
   return {
-    totalPages: data?.meta.totalPages || 0,
-    totalItems: data?.meta.totalItems || 0,
+    totalPages: data?.totalPages || 0,
+    totalItems: data?.totalItems || 0,
     createBusinessReport: customer?.features?.createBusinessReport,
     createBusinessReportBatch: customer?.features?.createBusinessReportBatch,
-    businessReports: data?.businessReports || [],
+    businessReports: data?.data || [],
     isLoadingBusinessReports,
     search,
     onSearch,

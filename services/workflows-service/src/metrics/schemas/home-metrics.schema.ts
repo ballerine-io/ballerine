@@ -19,4 +19,24 @@ export const HomeMetricsSchema = Type.Object({
     inProgress: ReportsByRiskLevelSchema,
     approved: ReportsByRiskLevelSchema,
   }),
+  cases: Type.Object({
+    all: Type.Object({
+      low: Type.Number(),
+      medium: Type.Number(),
+      high: Type.Number(),
+      critical: Type.Number(),
+    }),
+    inProgress: Type.Object({
+      low: Type.Number(),
+      medium: Type.Number(),
+      high: Type.Number(),
+      critical: Type.Number(),
+    }),
+    approved: Type.Object({
+      low: Type.Number(),
+      medium: Type.Number(),
+      high: Type.Number(),
+      critical: Type.Number(),
+    }),
+  }),
 });

@@ -1,7 +1,7 @@
 import { PageDto } from '@/common/dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { BusinessReportType } from '@prisma/client';
 import { IsIn, IsOptional, IsString } from 'class-validator';
+import { MERCHANT_REPORT_TYPES, type MerchantReportType } from '@/business-report/constants';
 
 export class GetBusinessReportDto {
   @IsOptional()
@@ -11,8 +11,8 @@ export class GetBusinessReportDto {
   @ApiProperty({
     required: true,
   })
-  @IsIn(Object.values(BusinessReportType))
-  type!: BusinessReportType;
+  @IsIn(MERCHANT_REPORT_TYPES)
+  type!: MerchantReportType;
 
   @IsOptional()
   @ApiProperty({

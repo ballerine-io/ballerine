@@ -1,8 +1,8 @@
-import posthog from 'posthog-js';
-import * as Sentry from '@sentry/react';
-import { sentryRouterInstrumentation } from '@/router';
-import { getApiOrigin } from '@/get-api-origin/get-api-origin';
+import { getApiOrigin } from '@/common/utils/get-api-origin/get-api-origin';
 import { env } from '@/env/env';
+import { sentryRouterInstrumentation } from '@/router';
+import * as Sentry from '@sentry/react';
+import posthog from 'posthog-js';
 
 export const initializeMonitoring = () => {
   if (window.location.host.includes('127.0.0.1') || window.location.host.includes('localhost')) {

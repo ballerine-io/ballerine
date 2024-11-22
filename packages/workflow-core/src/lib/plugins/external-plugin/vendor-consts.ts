@@ -7,6 +7,7 @@ export const INDIVIDUAL_SCREENING_VENDORS = {
 
 export const COMPANY_SCREENING_VENDORS = {
   'asia-verify': 'asia-verify',
+  test: 'test',
 } as const;
 
 export const KYC_VENDORS = {
@@ -20,11 +21,13 @@ export const MERCHANT_MONITORING_VENDORS = {
 export const UBO_VENDORS = {
   'asia-verify': 'asia-verify',
   kyckr: 'kyckr',
+  test: 'test',
 } as const;
 
 export const REGISTRY_INFORMATION_VENDORS = {
   'asia-verify': 'asia-verify',
   kyckr: 'kyckr',
+  test: 'test',
 } as const;
 
 export const EMAIL_TEMPLATES = {
@@ -174,7 +177,7 @@ type UboKyckrOptions = {
 
 type RegistryInformationAsiaVerifyOptions = {
   pluginKind: 'registry-information';
-  vendor: 'asia-verify';
+  vendor: 'asia-verify' | 'test';
   defaultCountry?: string;
 };
 
@@ -257,6 +260,53 @@ const getKycEntityMapping = (takeEntityDetailFromKyc: boolean) => {
 
 export const BALLERINE_API_PLUGIN_FACTORY = {
   [BALLERINE_API_PLUGINS['registry-information']]: {
+    [REGISTRY_INFORMATION_VENDORS['test']]: (options: RegistryInformationAsiaVerifyOptions) => ({
+      name: 'businessInformation',
+      displayName: 'Registry Information',
+      pluginKind: 'registry-information',
+      vendor: 'test',
+      url: {
+        url: `{secret.UNIFIED_API_URL}/companies-v2/{country}/{entity.data.registrationNumber}`,
+        options: {
+          country: options.defaultCountry ?? '{entity.data.country}',
+        },
+      },
+      method: 'GET',
+      persistResponseDestination: 'pluginsOutput.businessInformation',
+      headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+      request: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: `merge(
+            { vendor: 'test' },
+            entity.data.country == 'HK' && {
+              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.businessInformation.data&processName=kyb-unified-api'])
+            }
+          )`, // jmespath
+          },
+        ],
+      },
+      response: {
+        transform: [
+          {
+            mapping:
+              "merge({ name: 'businessInformation', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || jurisdictionCode == 'HK' && 'IN_PROGRESS' || 'SUCCESS' }, @)",
+            transformer: 'jmespath',
+          },
+          {
+            mapping: [
+              {
+                method: 'setTimeToRecordUTC',
+                source: 'invokedAt',
+                target: 'invokedAt',
+              },
+            ],
+            transformer: 'helper',
+          },
+        ],
+      },
+    }),
     [REGISTRY_INFORMATION_VENDORS['asia-verify']]: (
       options: RegistryInformationAsiaVerifyOptions,
     ) => ({
@@ -481,6 +531,48 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
         ],
       },
     }),
+    [COMPANY_SCREENING_VENDORS['test']]: (options: CompanySanctionsAsiaVerifyOptions) => ({
+      name: 'companySanctions',
+      pluginKind: 'company-sanctions',
+      vendor: 'test',
+      url: {
+        url: `{secret.UNIFIED_API_URL}/companies/{country}/{entity.data.companyName}/sanctions`,
+        options: {
+          country: options.defaultCountry ?? '{entity.data.country}',
+        },
+      },
+      headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+      method: 'GET' as const,
+      displayName: 'Company Sanctions',
+      persistResponseDestination: 'pluginsOutput.companySanctions',
+      request: {
+        transform: [
+          {
+            mapping: "{ vendor: 'test' }",
+            transformer: 'jmespath',
+          },
+        ],
+      },
+      response: {
+        transform: [
+          {
+            mapping:
+              "merge({ name: 'companySanctions', status: contains(['NOT_IMPLEMENTED', 'NOT_AVAILABLE'], reason) && 'CANCELED' || error != `null` && 'ERROR' || 'SUCCESS'  }, @)",
+            transformer: 'jmespath',
+          },
+          {
+            mapping: [
+              {
+                method: 'setTimeToRecordUTC',
+                source: 'invokedAt',
+                target: 'invokedAt',
+              },
+            ],
+            transformer: 'helper',
+          },
+        ],
+      },
+    }),
   },
   [BALLERINE_API_PLUGINS['merchant-monitoring']]: {
     [MERCHANT_MONITORING_VENDORS['ballerine']]: (options: MerchantMonirotingOptions) => ({
@@ -548,6 +640,51 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             transformer: 'jmespath',
             mapping: `{
               vendor: 'asia-verify',
+              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.ubo.data&processName=ubo-unified-api'])
+            }`, // jmespath
+          },
+        ],
+      },
+      response: {
+        transform: [
+          {
+            mapping:
+              "merge({ name: 'ubo', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
+            transformer: 'jmespath',
+          },
+          {
+            mapping: [
+              {
+                method: 'setTimeToRecordUTC',
+                source: 'invokedAt',
+                target: 'invokedAt',
+              },
+            ],
+            transformer: 'helper',
+          },
+        ],
+      },
+    }),
+    [UBO_VENDORS['test']]: (options: UboAsiaVerifyOptions) => ({
+      name: 'ubo',
+      pluginKind: 'ubo',
+      vendor: 'test',
+      displayName: 'UBO Check',
+      url: {
+        url: `{secret.UNIFIED_API_URL}/companies/{country}/{entity.data.registrationNumber}/ubo`,
+        options: {
+          country: options.defaultCountry ?? '{entity.data.country}',
+        },
+      },
+      method: 'GET',
+      persistResponseDestination: 'pluginsOutput.ubo',
+      headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+      request: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: `{
+              vendor: 'test',
               callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.ubo.data&processName=ubo-unified-api'])
             }`, // jmespath
           },

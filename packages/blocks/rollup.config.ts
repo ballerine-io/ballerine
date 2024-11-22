@@ -13,6 +13,7 @@ import path from 'path';
 import dts from 'rollup-plugin-dts';
 import { readJsonSync } from 'fs-extra';
 import { typescriptPaths } from 'rollup-plugin-typescript-paths';
+import json from '@rollup/plugin-json';
 
 type Options = {
   input: string;
@@ -107,6 +108,7 @@ function esm({ input, packageDir, external, banner }: Options): RollupOptions {
       babelPlugin,
       nodeResolve({ extensions: ['.ts', '.tsx'] }),
       typescriptPaths({ preserveExtensions: true }),
+      json(),
     ],
   };
 }
@@ -129,6 +131,7 @@ function cjs({ input, external, packageDir, banner }: Options): RollupOptions {
       typescriptPaths({ preserveExtensions: true }),
       commonjs(),
       nodeResolve({ extensions: ['.ts', '.tsx'] }),
+      json(),
     ],
   };
 }
@@ -151,6 +154,7 @@ function umdDev({ input, umdExternal, packageDir, banner, jsName }: Options): Ro
       commonjs(),
       nodeResolve({ extensions: ['.ts', '.tsx'] }),
       umdDevPlugin('development'),
+      json(),
     ],
   };
 }
@@ -179,6 +183,7 @@ function umdProd({ input, umdExternal, packageDir, banner, jsName }: Options): R
         filename: `${packageDir}/dist/stats-html.html`,
         gzipSize: true,
       }),
+      json(),
     ],
   };
 }

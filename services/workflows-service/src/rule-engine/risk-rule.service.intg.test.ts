@@ -1,5 +1,5 @@
 import { fetchServiceFromModule } from '@/test/helpers/nest-app-helper';
-import { NotionService } from './../notion/notion.service';
+import { NotionService } from '../notion/notion.service';
 import { RiskRuleService } from './risk-rule.service';
 
 // We should inject notion api key in order to run it during CI pipeline

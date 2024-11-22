@@ -195,6 +195,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
         name: 'finish_webhook',
         url: 'https://webhook.site/3c48b14f-1a70-4f73-9385-fab2d0db0db8',
         method: 'POST',
+        pluginKind: 'webhook',
         stateNames: ['auto_approve', 'approve', 'reject'],
         headers: {
           authorization: 'Bearer {secret.BUSINESS_DATA__VENDOR_API_KEY}',
@@ -212,6 +213,7 @@ export const kybWithDynamicExternalRequestWorkflowExample = {
         name: 'fail_webhook',
         url: 'https://webhook.site/3c48b14f-1a70-4f73-9385-fab2d0db0db8',
         method: 'POST',
+        pluginKind: 'webhook',
         stateNames: ['auto_reject'],
         request: {
           transform: [

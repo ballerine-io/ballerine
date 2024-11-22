@@ -50,6 +50,7 @@ import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
 import { BullMqModule } from '@/bull-mq/bull-mq.module';
 import { IncomingWebhooksModule } from '@/webhooks/incoming/incoming-webhooks.module';
 import { OutgoingWebhooksModule } from '@/webhooks/outgoing-webhooks/outgoing-webhooks.module';
+import { NoteModule } from '@/note/note.module';
 
 export const validate = async (config: Record<string, unknown>) => {
   const zodEnvSchema = z
@@ -89,6 +90,7 @@ export const validate = async (config: Record<string, unknown>) => {
     WorkflowModule,
     IncomingWebhooksModule,
     OutgoingWebhooksModule,
+    NoteModule,
     UiDefinitionModule,
     StorageModule,
     DataMigrationModule,

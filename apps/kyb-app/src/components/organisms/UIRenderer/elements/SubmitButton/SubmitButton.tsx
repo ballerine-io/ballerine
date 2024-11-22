@@ -11,9 +11,8 @@ import { useUIElementHandlers } from '@/components/organisms/UIRenderer/hooks/us
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
 import { UIElementComponent } from '@/components/organisms/UIRenderer/types';
 import { UIPage } from '@/domains/collection-flow';
-import { useFlowTracking } from '@/hooks/useFlowTracking';
+import { getCollectionFlowState, setStepCompletionState } from '@ballerine/common';
 import { Button } from '@ballerine/ui';
-import set from 'lodash/set';
 import { useCallback, useMemo } from 'react';
 
 export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition }) => {
@@ -59,8 +58,6 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
     [helpers, errors],
   );
 
-  const { trackFinish } = useFlowTracking();
-
   const handleClick = useCallback(() => {
     setPageElementsTouched(
       // @ts-ignore
@@ -70,27 +67,22 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
     const isFinishPage = currentPage?.name === pages.at(-1)?.name;
 
     if (isFinishPage && isValid) {
-      set(payload, `flowConfig.stepsProgress.${currentPage?.stateName}.isCompleted`, true);
+      const context = stateApi.getContext();
 
-      stateApi.setContext(payload);
+      const collectionFlow = getCollectionFlowState(context);
+
+      if (collectionFlow) {
+        setStepCompletionState(context, {
+          stepName: currentPage?.stateName as string,
+          completed: true,
+        });
+      }
+
+      stateApi.setContext(context);
     }
 
     onClickHandler();
-
-    if (isFinishPage && isValid) {
-      trackFinish();
-    }
-  }, [
-    payload,
-    currentPage,
-    pages,
-    state,
-    isValid,
-    stateApi,
-    setPageElementsTouched,
-    onClickHandler,
-    trackFinish,
-  ]);
+  }, [currentPage, pages, state, isValid, stateApi, setPageElementsTouched, onClickHandler]);
 
   return (
     <Button

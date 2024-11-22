@@ -10,7 +10,6 @@ import {
 import {
   CollectionFlowConfig,
   CollectionFlowContext,
-  CollectionFlowContextData,
 } from '@/domains/collection-flow/types/flow-context.types';
 import posthog from 'posthog-js';
 
@@ -50,9 +49,12 @@ export const fetchCollectionFlowSchema = async (): Promise<{
   };
 };
 
-export const fetchUISchema = async (language: string): Promise<UISchema> => {
+export const fetchUISchema = async (
+  language: string,
+  endUserId: string | null,
+): Promise<UISchema> => {
   return await request
-    .get(`collection-flow/configuration/${language}`, {
+    .get(`collection-flow/${!endUserId ? 'no-user/' : ''}configuration/${language}`, {
       searchParams: {
         uiContext: 'collection_flow',
       },
@@ -68,12 +70,43 @@ export const fetchCustomer = async (): Promise<TCustomer> => {
   return await request.get('collection-flow/customer').json<TCustomer>();
 };
 
-export const fetchFlowContext = async (): Promise<CollectionFlowContextData> => {
-  const result = await request.get('collection-flow/context');
-  const resultJson = await result.json<{
-    context: CollectionFlowContext;
-    config: CollectionFlowConfig;
-  }>();
+export interface FlowContextResponse {
+  context: CollectionFlowContext;
+  config: CollectionFlowConfig;
+}
 
-  return resultJson;
+export const fetchFlowContext = async (): Promise<FlowContextResponse> => {
+  try {
+    const result = await request.get('collection-flow/context');
+    const resultJson = await result.json<FlowContextResponse>();
+
+    if (!resultJson || typeof resultJson !== 'object') {
+      throw new Error('Invalid flow context');
+    }
+
+    return resultJson;
+  } catch (error) {
+    console.error('Error fetching flow context:', error);
+    throw error;
+  }
+};
+
+export interface EndUser {
+  id: string;
+}
+
+export const fetchEndUser = async (): Promise<EndUser> => {
+  const result = await request.get('collection-flow/user');
+
+  return result.json<EndUser>();
+};
+
+export interface CreateEndUserDto {
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+
+export const createEndUserRequest = async ({ email, firstName, lastName }: CreateEndUserDto) => {
+  await request.post('collection-flow/no-user', { json: { email, firstName, lastName } });
 };

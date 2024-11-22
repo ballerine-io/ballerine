@@ -1,15 +1,16 @@
 import { Static, Type } from '@sinclair/typebox';
 
-import { AmlSchema } from './schemas/aml-schema';
-import { EntitySchema } from './schemas/entity-schema';
-import { DocumentsSchema } from './schemas/documents-schema';
-import { KycSessionPluginSchema } from './schemas/kyc-session-plugin-schema';
-import { UboPluginSchema } from '@/schemas/documents/schemas/ubo-plugin-schema';
 import { MerchantScreeningPluginSchema } from '@/schemas/documents/merchant-screening-plugin-schema';
+import { BusinessInformationPluginSchema } from '@/schemas/documents/schemas/business-information-plugin-schema';
 import { CompanySanctionsPluginSchema } from '@/schemas/documents/schemas/company-sanctions-plugin-schema';
 import { MerchantMonitoringPluginSchema } from '@/schemas/documents/schemas/merchant-monitoring-plugin-schema';
-import { BusinessInformationPluginSchema } from '@/schemas/documents/schemas/business-information-plugin-schema';
+import { CollectionFlowStatusesEnum } from '@/utils/collection-flow';
+import { AmlSchema } from './schemas/aml-schema';
+import { DocumentsSchema } from './schemas/documents-schema';
+import { EntitySchema } from './schemas/entity-schema';
+import { KycSessionPluginSchema } from './schemas/kyc-session-plugin-schema';
 import { RiskEvaluationPluginSchema } from './schemas/risk-evaluation-plugin-schema';
+import { UboPluginSchema } from './schemas/ubo-plugin-schema';
 
 export const defaultInputContextSchema = Type.Object({
   customData: Type.Optional(Type.Object({}, { additionalProperties: true })),
@@ -37,6 +38,36 @@ export const defaultContextSchema = Type.Composite([
         },
         { additionalProperties: true },
       ),
+    ),
+  }),
+  Type.Object({
+    collectionFlow: Type.Optional(
+      Type.Object({
+        config: Type.Optional(
+          Type.Object({
+            apiUrl: Type.String(),
+          }),
+        ),
+        state: Type.Optional(
+          Type.Object({
+            currentStep: Type.String(),
+            status: Type.Enum(CollectionFlowStatusesEnum),
+            steps: Type.Optional(
+              Type.Array(
+                Type.Object({
+                  stepName: Type.String(),
+                  isCompleted: Type.Boolean(),
+                }),
+              ),
+            ),
+          }),
+        ),
+        additionalInformation: Type.Optional(
+          Type.Object({
+            customerCompany: Type.Optional(Type.String()),
+          }),
+        ),
+      }),
     ),
   }),
 ]);

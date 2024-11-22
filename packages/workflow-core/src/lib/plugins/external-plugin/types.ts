@@ -10,6 +10,7 @@ export interface ValidatableTransformer {
   transformers?: Transformers;
   schemaValidator?: Validator;
 }
+
 export interface IApiPluginParams {
   name: string;
   pluginKind?: string;

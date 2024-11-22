@@ -29,12 +29,12 @@ export const getVariantTabs = (
       },
       {
         name: Tab.COMPANY_INFORMATION,
-        displayName: 'Company Information',
+        displayName: 'Company',
         disabled: !tabBlocks[Tab.COMPANY_INFORMATION]?.length,
       },
       {
         name: Tab.STORE_INFO,
-        displayName: 'Store Info',
+        displayName: 'Store',
         disabled: !tabBlocks[Tab.STORE_INFO]?.length,
       },
       {

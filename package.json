@@ -61,6 +61,7 @@
     "workflow-builder:dev": "echo \"Error: no test specified\" && exit 1",
     "web-ui:dev": "echo \"Error: no test specified\" && exit 1",
     "commit": "git add . && git-cz",
+    "commit:auto": "git add . && node ./scripts/auto-commit.js",
     "prepare": "husky install",
     "changeset": "changeset",
     "version-packages": "changeset version",
@@ -85,7 +86,9 @@
     "lint-staged": "^11.2.6",
     "ngrok": "5.0.0-beta.2",
     "nx": "15.0.2",
-    "prettier": "^2.8.7"
+    "prettier": "^2.8.7",
+    "dotenv": "^16.4.5",
+    "openai": "^4.70.3"
   },
   "dependencies": {
     "concurrently": "^7.6.0",

@@ -40,7 +40,7 @@ export const useAssociatedCompaniesInformationBlock = (workflows: TWorkflowById[
               type: 'details',
               hideSeparator: true,
               value: {
-                title: 'Company Information',
+                title: 'Company',
                 data: Object.entries(entityData)?.map(([title, value]) => ({
                   title,
                   value,

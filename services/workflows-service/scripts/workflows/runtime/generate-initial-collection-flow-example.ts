@@ -1,6 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import { buildCollectionFlowState, getOrderedSteps } from '@ballerine/common';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { env } from '../../../src/env';
-
+import { WORKFLOW_FINAL_STATES } from '../../../src/workflow/consts';
 export const generateInitialCollectionFlowExample = async (
   prismaClient: PrismaClient,
   {
@@ -17,34 +18,53 @@ export const generateInitialCollectionFlowExample = async (
     token: string;
   },
 ) => {
+  const uiDefinition = await prismaClient.uiDefinition.findFirst({
+    where: {
+      workflowDefinitionId,
+    },
+  });
+
+  const collectionFlow = buildCollectionFlowState({
+    apiUrl: env.APP_API_URL,
+    steps: getOrderedSteps(
+      (uiDefinition?.definition as Prisma.JsonObject)?.definition as Record<string, unknown>,
+      { finalStates: [...WORKFLOW_FINAL_STATES] },
+    ).map(stepName => ({
+      stateName: stepName,
+    })),
+  });
+
+  const context = {
+    workflowId: workflowDefinitionId,
+    entity: {
+      ballerineEntityId: businessId,
+      type: 'business',
+      data: {
+        additionalInfo: {
+          mainRepresentative: {
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'test@gmail.com',
+          },
+        },
+      },
+    },
+    documents: [],
+    collectionFlow,
+    metadata: {
+      collectionFlowUrl: env.COLLECTION_FLOW_URL,
+      webUiSDKUrl: env.WEB_UI_SDK_URL,
+      token,
+    },
+  };
+
   const creationArgs = {
     data: {
       endUserId: endUserId,
       workflowDefinitionId: workflowDefinitionId,
       projectId: projectId,
       state: 'collection_flow',
-      context: {
-        workflowId: workflowDefinitionId,
-        entity: {
-          ballerineEntityId: businessId,
-          type: 'business',
-          data: {
-            additionalInfo: {
-              mainRepresentative: {
-                firstName: 'John',
-                lastName: 'Doe',
-                email: 'test@gmail.com',
-              },
-            },
-          },
-        },
-        documents: [],
-        metadata: {
-          collectionFlowUrl: env.COLLECTION_FLOW_URL,
-          webUiSDKUrl: env.WEB_UI_SDK_URL,
-          token,
-        },
-      },
+      context,
       businessId: businessId,
       workflowDefinitionVersion: 1,
     },

@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import { env } from '@/env';
 import { Logger } from '@nestjs/common';
-import { BusinessReportType, Customer } from '@prisma/client';
+import { Customer } from '@prisma/client';
 import { TSchema } from '@sinclair/typebox';
 
 export type TReportRequest = Array<{
@@ -11,9 +11,10 @@ export type TReportRequest = Array<{
   parentCompanyName?: string;
   lineOfBusiness?: string;
   merchantName?: string;
-  websiteName?: string;
   businessReportId?: string;
   withQualityControl?: boolean;
+  customerId: string;
+  merchantId: string;
 }>;
 export type TOcrImages = Array<
   | {
@@ -38,53 +39,6 @@ export class UnifiedApiClient {
         Authorization: `Bearer ${env.UNIFIED_API_TOKEN as string}`,
       },
     });
-  }
-
-  public async postBatchBusinessReport(
-    {
-      reportRequests,
-      clientName,
-      metadata,
-      withQualityControl,
-      reportType = BusinessReportType.MERCHANT_REPORT_T1,
-      workflowVersion = '2',
-    }: {
-      reportRequests: TReportRequest;
-      clientName?: string;
-      reportType?: BusinessReportType;
-      workflowVersion?: '1' | '2' | '3';
-      metadata?: Record<string, unknown>;
-      withQualityControl?: boolean;
-    },
-    endpoint = '/merchants/analysis/batch',
-  ) {
-    try {
-      const response = await this.axiosInstance.post<
-        Array<{
-          reportId: string;
-          businessReportId: string;
-        }>
-      >(
-        endpoint,
-        {
-          reportRequests,
-          clientName,
-          metadata,
-          reportType,
-          withQualityControl,
-          workflowVersion,
-        },
-        {
-          timeout: 30_000,
-        },
-      );
-
-      return response.data;
-    } catch (error) {
-      this.logger.error('Error creating batch report', error);
-
-      throw error;
-    }
   }
 
   async runOcr({ images, schema }: { images: TOcrImages; schema: TSchema }) {

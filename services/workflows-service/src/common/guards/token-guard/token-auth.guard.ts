@@ -1,7 +1,8 @@
-import { ClsService } from 'nestjs-cls';
-import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import type { Request } from 'express';
+import { ClsService } from 'nestjs-cls';
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 
 @Injectable()
 export class TokenAuthGuard implements CanActivate {
@@ -18,10 +19,18 @@ export class TokenAuthGuard implements CanActivate {
       throw new UnauthorizedException('Unauthorized');
     }
 
-    const tokenEntity = await this.tokenService.findByToken(token);
+    const tokenEntity = await this.tokenService.findByTokenWithExpiredUnscoped(token);
 
     if (!tokenEntity) {
       throw new UnauthorizedException('Unauthorized');
+    }
+
+    if (!tokenEntity.endUserId) {
+      throw new UnauthorizedException('No EndUser is set for this token');
+    }
+
+    if (tokenEntity.expiresAt < new Date()) {
+      throw new UnauthorizedException('Token has expired');
     }
 
     this.cls.set('entity', {

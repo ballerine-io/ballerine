@@ -9,7 +9,7 @@ import { useLocale } from '@/common/hooks/useLocale/useLocale';
 export const useSelectEntityFilterOnMount = () => {
   const { data: filters } = useFiltersQuery();
   const locale = useLocale();
-  const [{ filterId }, setSearchParams] = useSearchParamsByEntity();
+  const [{ filterId }] = useSearchParamsByEntity();
   const entity = useEntityType();
   const navigate = useNavigate();
   const [firstFilter] = filters ?? [];

@@ -18,7 +18,7 @@ const SourceSchema = z.object({
 
 const AmlHitSchema = z.object({
   vendor: z.enum(['veriff', 'test', 'dow-jones']),
-  matchedName: z.string(),
+  matchedName: z.string().nullable(),
   countries: z.array(z.string()),
   matchTypes: z.array(z.string()),
   warnings: z.array(SourceSchema),

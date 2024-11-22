@@ -1,5 +1,84 @@
 # @ballerine/workflow-core
 
+## 0.6.66
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.52
+
+## 0.6.65
+
+### Patch Changes
+
+- version bump
+
+## 0.6.64
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.51
+
+## 0.6.63
+
+### Patch Changes
+
+- Cump
+- Updated dependencies
+  - @ballerine/common@0.9.50
+
+## 0.6.62
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.49
+
+## 0.6.61
+
+### Patch Changes
+
+- updated MATCH plugin
+
+## 0.6.60
+
+### Patch Changes
+
+- Change
+- Updated dependencies
+  - @ballerine/common@0.9.48
+
+## 0.6.59
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.47
+
+## 0.6.58
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.46
+
+## 0.6.57
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.45
+
+## 0.6.56
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.44
+
 ## 0.6.55
 
 ### Patch Changes

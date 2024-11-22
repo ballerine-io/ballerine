@@ -1,5 +1,8 @@
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
-import { TokenScope, type ITokenScope } from '@/common/decorators/token-scope.decorator';
+import {
+  TokenScope,
+  type ITokenScopeWithEndUserId,
+} from '@/common/decorators/token-scope.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { EndUserUpdateDto } from '@/end-user/dtos/end-user-update';
 import { EndUserModel } from '@/end-user/end-user.model';
@@ -19,7 +22,10 @@ export class CollectionFlowEndUserController {
 
   @common.Post()
   @swagger.ApiCreatedResponse({ type: [EndUserModel] })
-  getCompanyInfo(@TokenScope() tokenScope: ITokenScope, @common.Body() data: EndUserUpdateDto) {
+  getCompanyInfo(
+    @TokenScope() tokenScope: ITokenScopeWithEndUserId,
+    @common.Body() data: EndUserUpdateDto,
+  ) {
     return this.endUserService.updateById(tokenScope.endUserId, { data: data });
   }
 }

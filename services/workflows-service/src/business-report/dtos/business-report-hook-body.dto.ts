@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsString, MinLength } from 'class-validator';
-import { BusinessReportType } from '@prisma/client';
-import type { ObjectValues } from '@/types';
+import { MERCHANT_REPORT_TYPES, type MerchantReportType } from '@/business-report/constants';
 
 export class BusinessReportHookBodyDto {
   @ApiProperty({
@@ -16,8 +15,8 @@ export class BusinessReportHookBodyDto {
     required: true,
     type: String,
   })
-  @IsIn(Object.values(BusinessReportType))
-  reportType!: ObjectValues<typeof BusinessReportType>;
+  @IsIn(MERCHANT_REPORT_TYPES)
+  reportType!: MerchantReportType;
 
   @ApiProperty({
     required: true,

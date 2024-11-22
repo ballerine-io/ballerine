@@ -104,24 +104,37 @@ To set up a local environment, follow these steps:
    pnpm kyc-manual-review-example
    ```
 Once the process is complete,  _2 tabs_   will open in your browser:
-1. http://localhost:5201/ - for the _KYB document collection flow_
-   OR http://localhost:5202 - for the _KYC document collection flow_
-2. http://localhost:5137/ - for the  _backoffice_
-   (See username/password below, It's recommended to have them positioned side-by-side).
+1. Document Collection Flow:
+   - KYB: [http://localhost:5201/](http://localhost:5201/)
+   - KYC: [http://localhost:5202](http://localhost:5202)
+2. Back Office: [http://localhost:5137/](http://localhost:5137/)
+   _(It's recommended to position both tabs side-by-side)_
 
-   <sub>If the required tabs have not opened automatically, please use the links we have provided above.</sub>
+> **Note:** If the tabs don't open automatically, use the links above.
 
-   **Steps to go over the flow:**
+### Flow Instructions
 
-1.  Go to the Backoffice tab to review the new user that was created
-   1.1. Sign-in with the following credentials:
-      - **Email:** `admin@admin.com`
-      - **Password:** `admin`
-   1.2. Under the business menu, choose "KYB with UBOs" to view the list of cases currently undergoing.
-2.  On the Collection flow, fill in the required fields on each step.
-3.  Go through and complete the flow. As you go through the collection flow, you should see the progress in the Backoffice case.
-4.  Once the collection flow is finished, you can see the new state is "manual review," Assign the case to yourself, and then you will be able to choose to Approve, Reject, or Ask to Resubmit.
-5.  Ask to resubmit a document, go back to the collection flow to re-upload, then go back to the Backoffice to see the updated information.
+1. **Access the Back Office**
+   - Sign in using:
+     ```
+     Email: admin@admin.com
+     Password: admin
+     ```
+   - Navigate to "KYB with UBOs" under the business menu to view ongoing cases
+
+2. **Complete the Collection Flow**
+   - Fill out all required fields in each step
+   - The Back Office case will update as you progress
+
+3. **Review & Process**
+   - Once complete, the case status changes to "manual review" 
+   - Assign the case to yourself
+   - Choose to: Approve, Reject, or Request Resubmission
+
+4. **Document Resubmission**
+   - Request a document resubmission
+   - Return to collection flow to upload new document
+   - Check Back Office for updated information
 
 * Note: some components are currently in beta, if you run into an issue please ping us on Slack
 

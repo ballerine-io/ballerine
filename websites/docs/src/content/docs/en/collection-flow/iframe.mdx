@@ -25,21 +25,26 @@ To handle exit events from the Collection Flow app, you can use the following Ja
 
 ```javascript
 window.addEventListener('message', function(event) {
-    if (event.data.type === 'ballerine.collection-flow.back-button-pressed') {
-        // Handle "Back to Portal" button press from side menu
-        console.log('Back button pressed');
-        // Add your custom handling logic here
-    } else if (event.data.type === 'ballerine.collection-flow.finish-button-pressed') {
-        // Handle "Finish" button press from flow complete page
-        console.log('Finish button pressed');
-        // Add your custom handling logic here
-    }
+  if (event.data === 'ballerine.collection-flow.user-exited') {
+    // Handle "Back to Portal" button press from side menu
+    console.log('Back button pressed');
+    // Add your custom handling logic here
+  } else if (event.data === 'ballerine.collection-flow.flow-failed') {
+    // Handle flow failure
+    console.log('Flow failed');
+    // Add your custom handling logic here
+  } else if (event.data === 'ballerine.collection-flow.flow-completed') {
+    // Handle flow completion
+    console.log('Flow completed successfully');
+    // Add your custom handling logic here
+  }
 });
 ```
 
 ## Event Types
-- **ballerine.collection-flow.back-button-pressed**: Triggered when the user presses the "Back to Portal" button from the side menu.
-- **ballerine.collection-flow.finish-button-pressed**: Triggered when the user presses the "Finish" button from the flow completion page.
+- **ballerine.collection-flow.user-exited**: Triggered when the user presses the "Back to Portal" button from the side menu.
+- **ballerine.collection-flow.flow-completed**: Triggered when the user presses the "Finish" button from the flow completion page.
+- **ballerine.collection-flow.flow-failed**: Triggered when an unexpected error occured after the final submission of the flow.
 
 By handling these events, you can implement custom logic to navigate users back to your main application or perform other actions based on their interactions within the Collection Flow iframe.
 
@@ -50,26 +55,33 @@ Here is an example of how you might integrate the Collection Flow app as an ifra
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Collection Flow Iframe Integration</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Collection Flow Iframe Integration</title>
 </head>
 <body>
-    <iframe src="https://your-collection-flow-url.com" style="width: 100%; height: 500px;" id="collection-flow-iframe"></iframe>
+  <iframe
+    src="https://your-collection-flow-url.com"
+    style="width: 100%; height: 500px;" id="collection-flow-iframe">
+  </iframe>
 
-    <script>
-        window.addEventListener('message', function(event) {
-            if (event.data.type === 'ballerine.collection-flow.back-button-pressed') {
-                // Handle "Back to Portal" button press from side menu
-                console.log('Back button pressed');
-                // Add your custom handling logic here
-            } else if (event.data.type === 'ballerine.collection-flow.finish-button-pressed') {
-                // Handle "Finish" button press from flow complete page
-                console.log('Finish button pressed');
-                // Add your custom handling logic here
-            }
-        });
-    </script>
+  <script>
+    window.addEventListener('message', function(event) {
+      if (event.data === 'ballerine.collection-flow.user-exited') {
+        // Handle "Back to Portal" button press from side menu
+        console.log('Back button pressed');
+        // Add your custom handling logic here
+      } else if (event.data === 'ballerine.collection-flow.flow-failed') {
+        // Handle flow failure
+        console.log('Flow completed successfully');
+        // Add your custom handling logic here
+      } else if (event.data === 'ballerine.collection-flow.flow-completed') {
+        // Handle flow completion
+        console.log('Flow completed successfully');
+        // Add your custom handling logic here
+      }
+    });
+  </script>
 </body>
 </html>
 ```

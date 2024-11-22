@@ -1,7 +1,7 @@
 import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 import { z } from 'zod';
 import { TBusinessReport } from '@/domains/business-reports/fetchers';
-import { BooleanishSchema } from '@ballerine/ui';
+import { BooleanishRecordSchema } from '@ballerine/ui';
 
 export const getMerchantMonitoringSearchSchema = () =>
   BaseSearchSchema.extend({
@@ -24,5 +24,5 @@ export const getMerchantMonitoringSearchSchema = () =>
         | 'business.country'
       >)
       .catch('createdAt'),
-    selected: BooleanishSchema.optional(),
+    selected: BooleanishRecordSchema.optional(),
   });

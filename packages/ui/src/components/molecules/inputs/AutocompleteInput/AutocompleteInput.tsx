@@ -38,6 +38,17 @@ export const AutocompleteInput = ({
   onChange,
   onBlur,
 }: AutocompleteInputProps) => {
+  const safeValue = useMemo(() => {
+    if (typeof value !== 'string') {
+      console.warn('AutocompleteInput: value is not a string', value);
+      console.warn('Empty string will be used');
+
+      return '';
+    }
+
+    return value;
+  }, [value]);
+
   const optionLabels = useMemo(() => options.map(option => option.value), [options]);
 
   const handleChange: NonNullable<ComponentProps<typeof Autocomplete>['onChange']> = useCallback(
@@ -66,7 +77,7 @@ export const AutocompleteInput = ({
         options={optionLabels}
         getOptionLabel={label => label}
         freeSolo
-        inputValue={value}
+        inputValue={safeValue}
         PaperComponent={Paper as ComponentProps<typeof Autocomplete>['PaperComponent']}
         onChange={handleChange}
         disabled={disabled}

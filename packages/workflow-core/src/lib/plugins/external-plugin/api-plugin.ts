@@ -215,7 +215,10 @@ export class ApiPlugin {
     }
 
     for (const transformer of transformers) {
-      mutatedRecord = await this.transformByTransformer(transformer, mutatedRecord);
+      const transformed = await this.transformByTransformer(transformer, mutatedRecord);
+      mutatedRecord = Object.fromEntries(
+        Object.entries(transformed).filter(([_, value]) => value !== null && value !== undefined),
+      );
     }
 
     return mutatedRecord;

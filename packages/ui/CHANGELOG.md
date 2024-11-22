@@ -1,5 +1,50 @@
 # @ballerine/ui
 
+## 0.5.45
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.52
+
+## 0.5.44
+
+### Patch Changes
+
+- Cump
+- Updated dependencies
+  - @ballerine/common@0.9.50
+
+## 0.5.43
+
+### Patch Changes
+
+- bump
+
+## 0.5.42
+
+### Patch Changes
+
+- Change
+- Updated dependencies
+  - @ballerine/common@0.9.48
+
+## 0.5.41
+
+### Patch Changes
+
+- Added safeValue to autocomplete
+
+## 0.5.40
+
+### Patch Changes
+
+- Added defaultCountry code for phone input
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.45
+
 ## 0.5.39
 
 ### Patch Changes

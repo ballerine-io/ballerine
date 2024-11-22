@@ -32,7 +32,10 @@ import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 // import * as nestAccessControl from 'nest-access-control';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
+import { WorkflowEventInputSchema } from '@/workflow/dtos/workflow-event-input';
 import { FilterQuery } from '@/workflow/types';
+import { type Static, Type } from '@sinclair/typebox';
+import { Validate } from 'ballerine-nestjs-typebox';
 import * as errors from '../errors';
 import { DocumentUpdateParamsInput } from './dtos/document-update-params-input';
 import { DocumentUpdateInput } from './dtos/document-update-update-input';
@@ -44,9 +47,6 @@ import {
 } from './dtos/workflow-where-unique-input';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
-import { Validate } from 'ballerine-nestjs-typebox';
-import { type Static, Type } from '@sinclair/typebox';
-import { WorkflowEventInputSchema } from '@/workflow/dtos/workflow-event-input';
 
 @ApiExcludeController()
 @common.Controller('internal/workflows')
@@ -288,7 +288,7 @@ export class WorkflowControllerInternal {
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     try {
-      return await this.service.updateDocumentDecisionById(
+      const workflowData = await this.service.updateDocumentDecisionById(
         {
           workflowId: params?.id,
           documentId: params?.documentId,
@@ -302,6 +302,8 @@ export class WorkflowControllerInternal {
         projectIds,
         currentProjectId,
       );
+
+      return workflowData;
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);

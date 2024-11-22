@@ -57,6 +57,17 @@
       "internalConsoleOptions": "neverOpen",
       "disableOptimisticBPs": true,
       "program": "${workspaceFolder}/node_modules/.bin/npx"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Workflow Service",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start:debug"],
+      "cwd": "${workspaceFolder}/services/workflows-service",
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal",
+      "sourceMaps": true
     }
   ]
 }
