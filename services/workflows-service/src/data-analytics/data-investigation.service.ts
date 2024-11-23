@@ -6,6 +6,7 @@ import { TIME_UNITS } from './consts';
 import {
   DailySingleTransactionAmountType,
   HighTransactionTypePercentage,
+  HighVelocityHistoricAverageOptions,
   InlineRule,
   TCustomersTransactionTypeOptions,
   TDormantAccountOptions,
@@ -71,15 +72,21 @@ export class DataInvestigationService {
           projectId,
         });
         break;
+      case 'investigateHighVelocityHistoricAverage':
+        investigationFilter = this[inlineRule.fnInvestigationName]({
+          ...inlineRule.options,
+          projectId,
+        });
+        break;
     }
 
     if (!investigationFilter) {
-      this.logger.error(`No evaluation function found`, {
+      this.logger.error(`No investigation function found`, {
         inlineRule,
       });
 
       throw new Error(
-        `No evaluation function found for rule name: ${(inlineRule as InlineRule).id}`,
+        `No investigation function found for rule name: ${(inlineRule as InlineRule).id}`,
       );
     }
 
@@ -248,6 +255,26 @@ export class DataInvestigationService {
           : { in: paymentMethods as PaymentMethod[] }),
       },
       ...(ruleType === 'amount' ? { transactionBaseAmount: amountThreshold } : {}),
+    } as const satisfies Prisma.TransactionRecordWhereInput;
+  }
+
+  async investigateHighVelocityHistoricAverage(options: HighVelocityHistoricAverageOptions) {
+    const {
+      projectId,
+      transactionDirection,
+      paymentMethod,
+      activeUserPeriod,
+      lastDaysPeriod,
+      timeUnit,
+    } = options;
+
+    return {
+      projectId,
+      ...(transactionDirection ? { transactionDirection: transactionDirection } : {}),
+      paymentMethod:
+        paymentMethod.operator === '='
+          ? { equals: paymentMethod.value }
+          : { not: paymentMethod.value },
     } as const satisfies Prisma.TransactionRecordWhereInput;
   }
 

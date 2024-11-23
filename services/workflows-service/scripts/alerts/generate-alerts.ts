@@ -382,7 +382,7 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'HPC',
       fnName: 'evaluateHighTransactionTypePercentage',
-      fnInvestigationName: undefined,
+      fnInvestigationName: 'investigateHighTransactionTypePercentage',
       subjects: ['counterpartyOriginatorId'],
       options: {
         transactionType: TransactionRecordType.chargeback,
@@ -401,6 +401,7 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'TLHAICC',
       fnName: 'evaluateTransactionAvg',
+      fnInvestigationName: 'investigateTransactionAvg',
       subjects: ['counterpartyBeneficiaryId'],
       options: {
         transactionDirection: TransactionDirection.inbound,
@@ -424,6 +425,7 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'TLHAIAPM',
       fnName: 'evaluateTransactionAvg',
+      fnInvestigationName: 'investigateTransactionAvg',
       subjects: ['counterpartyBeneficiaryId'],
       options: {
         transactionDirection: TransactionDirection.inbound,
@@ -447,6 +449,7 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'PGAICT',
       fnName: 'evaluateTransactionAvg',
+      fnInvestigationName: 'investigateTransactionAvg',
       subjects: ['counterpartyBeneficiaryId'],
       options: {
         transactionDirection: TransactionDirection.inbound,
@@ -471,6 +474,7 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'PGAIAPM',
       fnName: 'evaluateTransactionAvg',
+      fnInvestigationName: 'investigateTransactionAvg',
       subjects: ['counterpartyBeneficiaryId'],
       options: {
         transactionDirection: TransactionDirection.inbound,
@@ -495,7 +499,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'DORMANT',
       fnName: 'evaluateDormantAccount',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateDormantAccount',
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
         timeAmount: 180,
         timeUnit: TIME_UNITS.days,
@@ -509,7 +514,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'HVHAI_CC',
       fnName: 'evaluateHighVelocityHistoricAverage',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateHighVelocityHistoricAverage',
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
         transactionDirection: TransactionDirection.inbound,
         minimumCount: 3,
@@ -535,6 +541,7 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'HVHAI_APM',
       fnName: 'evaluateHighVelocityHistoricAverage',
+      fnInvestigationName: 'investigateHighVelocityHistoricAverage',
       subjects: ['counterpartyBeneficiaryId'],
       options: {
         minimumCount: 3,
@@ -561,7 +568,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'MMOC_CC',
       fnName: 'evaluateMultipleMerchantsOneCounterparty',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateMultipleMerchantsOneCounterparty',
+      subjects: ['counterpartyOriginatorId'],
       options: {
         excludedCounterparty: {
           counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
@@ -580,7 +588,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'MMOC_APM',
       fnName: 'evaluateMultipleMerchantsOneCounterparty',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateMultipleMerchantsOneCounterparty',
+      subjects: ['counterpartyOriginatorId'],
       options: {
         excludedCounterparty: {
           counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
@@ -599,7 +608,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'MGAV_CC',
       fnName: 'evaluateMerchantGroupAverage',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateMerchantGroupAverage',
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
         paymentMethod: {
           value: PaymentMethod.credit_card,
@@ -619,7 +629,8 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'MGAV_APM',
       fnName: 'evaluateMerchantGroupAverage',
-      subjects: ['counterpartyId'],
+      fnInvestigationName: 'investigateMerchantGroupAverage',
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
         paymentMethod: {
           value: PaymentMethod.credit_card,
@@ -653,8 +664,6 @@ export const ALERT_DEFINITIONS = {
 
         timeAmount: 1,
         timeUnit: TIME_UNITS.days,
-
-        subjectColumn: 'counterpartyBeneficiaryId',
       },
     },
   },
@@ -679,8 +688,6 @@ export const ALERT_DEFINITIONS = {
 
         timeAmount: 1,
         timeUnit: TIME_UNITS.days,
-
-        subjectColumn: 'counterpartyBeneficiaryId',
       },
     },
   },
@@ -705,8 +712,6 @@ export const ALERT_DEFINITIONS = {
 
         timeAmount: 1,
         timeUnit: TIME_UNITS.days,
-
-        subjectColumn: 'counterpartyBeneficiaryId',
       },
     },
   },
@@ -731,8 +736,6 @@ export const ALERT_DEFINITIONS = {
 
         timeAmount: 1,
         timeUnit: TIME_UNITS.days,
-
-        subjectColumn: 'counterpartyBeneficiaryId',
       },
     },
   },

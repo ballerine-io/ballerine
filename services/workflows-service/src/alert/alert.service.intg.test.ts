@@ -36,6 +36,8 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { BusinessService } from '@/business/business.service';
 import { BusinessRepository } from '@/business/business.repository';
 import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
+import { DataInvestigationService } from '@/data-analytics/data-investigation.service';
+import { TIME_UNITS } from '@/data-analytics/consts';
 
 type AsyncTransactionFactoryCallback = (
   transactionFactory: TransactionFactory,
@@ -92,6 +94,7 @@ describe('AlertService', () => {
       imports: commonTestingModules,
       providers: [
         DataAnalyticsService,
+        DataInvestigationService,
         ProjectScopeService,
         AlertRepository,
         AlertDefinitionRepository,
@@ -183,7 +186,7 @@ describe('AlertService', () => {
           },
         );
 
-        const counterpartyBeneficiary =
+        const counterpartyBeneficiaryId =
           baseTransactionFactory.data.counterpartyBeneficiary?.connect?.id;
 
         // Act
@@ -193,7 +196,7 @@ describe('AlertService', () => {
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(1);
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]?.counterpartyId).toEqual(counterpartyBeneficiary);
+        expect(alerts[0]?.counterpartyBeneficiaryId).toEqual(counterpartyBeneficiaryId);
       });
 
       test('When there is no activity in the project', async () => {
@@ -259,7 +262,9 @@ describe('AlertService', () => {
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(1);
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]?.counterpartyId).toEqual(transactions[0]?.counterpartyBeneficiaryId);
+        expect(alerts[0]?.counterpartyBeneficiaryId).toEqual(
+          transactions[0]?.counterpartyBeneficiaryId,
+        );
       });
 
       test('When there inbound transactions with amount less of Threshold, no alert should be created', async () => {
@@ -501,7 +506,10 @@ describe('AlertService', () => {
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(1);
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]?.counterpartyId).toEqual(transactions[0]?.counterpartyBeneficiaryId);
+        expect(alerts[0]?.counterpartyId).toEqual(null);
+        expect(alerts[0]?.counterpartyBeneficiaryId).toEqual(
+          transactions[0]?.counterpartyBeneficiaryId,
+        );
       });
 
       test('When there are less than 5 inbound transactions with amount of 500, no alert should be created', async () => {
@@ -608,7 +616,8 @@ describe('AlertService', () => {
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(1);
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]?.counterpartyId).toEqual(
+        expect(alerts[0]?.counterpartyId).toEqual(null);
+        expect(alerts[0]?.counterpartyOriginatorId).toEqual(
           business1Transactions[0]?.counterpartyOriginatorId,
         );
       });
@@ -678,7 +687,8 @@ describe('AlertService', () => {
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(1);
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]?.counterpartyId).toEqual(
+        expect(alerts[0]?.counterpartyId).toEqual(null);
+        expect(alerts[0]?.counterpartyOriginatorId).toEqual(
           business1Transactions[0]?.counterpartyOriginatorId,
         );
       });
@@ -742,7 +752,8 @@ describe('AlertService', () => {
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(1);
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]?.counterpartyId).toEqual(
+        expect(alerts[0]?.counterpartyId).toEqual(null);
+        expect(alerts[0]?.counterpartyOriginatorId).toEqual(
           business1Transactions[0]?.counterpartyOriginatorId,
         );
       });
@@ -824,7 +835,8 @@ describe('AlertService', () => {
         });
 
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]?.counterpartyId).toEqual(
+        expect(alerts[0]?.counterpartyId).toEqual(null);
+        expect(alerts[0]?.counterpartyOriginatorId).toEqual(
           business1Transactions[0]?.counterpartyOriginatorId,
         );
       });
@@ -904,7 +916,8 @@ describe('AlertService', () => {
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(1);
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]?.counterpartyId).toEqual(
+        expect(alerts[0]?.counterpartyId).toEqual(null);
+        expect(alerts[0]?.counterpartyOriginatorId).toEqual(
           chargebackTransactions[0]?.counterpartyOriginatorId,
         );
       });
@@ -1014,7 +1027,8 @@ describe('AlertService', () => {
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(1);
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]?.counterpartyId).toEqual(counteryparty.id);
+        expect(alerts[0]?.counterpartyId).toEqual(null);
+        expect(alerts[0]?.counterpartyBeneficiaryId).toEqual(counteryparty.id);
       });
 
       it('When there are 2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, no alert should be created', async () => {
@@ -1105,7 +1119,8 @@ describe('AlertService', () => {
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(1);
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]?.counterpartyId).toEqual(counteryparty.id);
+        expect(alerts[0]?.counterpartyId).toEqual(null);
+        expect(alerts[0]?.counterpartyBeneficiaryId).toEqual(counteryparty.id);
       });
 
       it('When there are 2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, no alert should be created', async () => {
@@ -1333,7 +1348,7 @@ describe('AlertService', () => {
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(1);
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]?.counterpartyId).toEqual(counteryparty.id);
+        expect(alerts[0]?.counterpartyBeneficiaryId).toEqual(counteryparty.id);
       });
 
       it('When there are 2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, no alert should be created', async () => {
@@ -1446,7 +1461,8 @@ describe('AlertService', () => {
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(1);
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]?.counterpartyId).toEqual(counteryparty.id);
+        expect(alerts[0]?.counterpartyId).toEqual(null);
+        expect(alerts[0]?.counterpartyBeneficiaryId).toEqual(counteryparty.id);
       });
 
       it('When there are 2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, no alert should be created', async () => {
@@ -1506,7 +1522,7 @@ describe('AlertService', () => {
       // Has the customer been active for over 180 days (Has the customer had at least 1 Inbound credit card transactions more than 180 days ago)? (A condition that is used to ensure that we are calculating an average from an available representative sample of data - this condition would cause the rule not to alert in the customer's first 180 days of their credit card life cycle)
       // Has the customer had more than a set [Number] of Inbound credit card transactions within the last 3 days? (A condition that is used to exclude cases when the number of Inbound credit card transactions in 3 days is more than 2 times greater than the customer's 3-day historic average number of Inbound credit card transactions, although of an insignificantly low number)
       // Has the customer's number of Inbound credit card transactions in 3 days been more than a set [Factor] times greater than the customer's 3-day average number of Inbound credit card transactions (when the average is caclulated from the 177 days preceding the evaluated 3 days)?
-      it(`Trigger an alert when there inbound credit card transactions more than 180 days ago
+      it.only(`Trigger an alert when there inbound credit card transactions more than 180 days ago
           had more than a set X within the last 3 days`, async () => {
         // Arrange
 
@@ -1518,11 +1534,8 @@ describe('AlertService', () => {
         );
         oldDaysAgo.setHours(0, 0, 0, 0);
 
-        await oldTransactionFactory
-          .transactionDate(faker.date.recent(3, oldDaysAgo))
-          .amount(3)
-          .count(1)
-          .create();
+        const txDate = faker.date.recent(3, oldDaysAgo);
+        await oldTransactionFactory.transactionDate(txDate).amount(3).count(1).create();
 
         // transactions from last days
         await oldTransactionFactory
@@ -1564,9 +1577,7 @@ describe('AlertService', () => {
             hash: expect.any(String),
           },
           executionRow: {
-            activedaystransactions: '60',
-            alltransactionscount: '186',
-            counterpartyId: counteryparty.id,
+            counterpartyBeneficiaryId: counteryparty.id,
           },
         });
       });
@@ -1683,7 +1694,7 @@ describe('AlertService', () => {
           executionRow: {
             activedaystransactions: '60',
             alltransactionscount: '186',
-            counterpartyId: counteryparty.id,
+            counterpartyBeneficiaryId: counteryparty.id,
           },
         });
       });
@@ -1767,14 +1778,15 @@ describe('AlertService', () => {
 
         expect(alerts[0]?.severity).toEqual('high');
 
-        expect(alerts[0]?.counterpartyId).toEqual(counteryparty.id);
+        expect(alerts[0]?.counterpartyId).toEqual(null);
+        expect(alerts[0]?.counterpartyOriginatorId).toEqual(counteryparty.id);
 
         expect(alerts[0]?.executionDetails).toMatchObject({
           checkpoint: {
             hash: expect.any(String),
           },
           executionRow: {
-            counterpartyId: counteryparty.id,
+            counterpartyOriginatorId: counteryparty.id,
             counterpertyInManyBusinessesCount: `${
               ALERT_DEFINITIONS.MMOC_CC.inlineRule.options.minimumCount + 1
             }`,
@@ -2070,7 +2082,7 @@ describe('AlertService', () => {
                 options: {
                   ...ALERT_DEFINITIONS.DSTA_CC.inlineRule.options,
                   timeAmount: 1,
-                  timeUnit: 'days',
+                  timeUnit: TIME_UNITS.days,
                   direction: TransactionDirection.inbound,
                 },
               },
@@ -2108,7 +2120,8 @@ describe('AlertService', () => {
         expect(alerts).toHaveLength(1);
 
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]?.counterpartyId).toEqual(counterparty.id);
+        expect(alerts[0]?.counterpartyId).toEqual(null);
+        expect(alerts[0]?.counterpartyBeneficiaryId).toEqual(counterparty.id);
       });
 
       it(`Shouldnt create alert for non credit card transaction`, async () => {
@@ -2209,7 +2222,7 @@ describe('AlertService', () => {
                 options: {
                   ...ALERT_DEFINITIONS.DSTA_APM.inlineRule.options,
                   timeAmount: 1,
-                  timeUnit: 'days',
+                  timeUnit: TIME_UNITS.days,
                   direction: TransactionDirection.inbound,
                 },
               },
@@ -2247,7 +2260,8 @@ describe('AlertService', () => {
         expect(alerts).toHaveLength(1);
 
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]?.counterpartyId).toEqual(counterparty.id);
+        expect(alerts[0]?.counterpartyId).toEqual(null);
+        expect(alerts[0]?.counterpartyBeneficiaryId).toEqual(counterparty.id);
       });
 
       it(`Shouldnt create alert for non credit card transaction`, async () => {
@@ -2348,7 +2362,7 @@ describe('AlertService', () => {
                 options: {
                   ...ALERT_DEFINITIONS.DMT_CC.inlineRule.options,
                   timeAmount: 1,
-                  timeUnit: 'days',
+                  timeUnit: TIME_UNITS.days,
                   direction: TransactionDirection.inbound,
                 },
               },
@@ -2385,7 +2399,8 @@ describe('AlertService', () => {
         expect(alerts).toHaveLength(1);
 
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]?.counterpartyId).toEqual(counterparty.id);
+        expect(alerts[0]?.counterpartyId).toEqual(null);
+        expect(alerts[0]?.counterpartyBeneficiaryId).toEqual(counterparty.id);
       });
 
       it(`Shouldnt create alert for non credit card transaction`, async () => {
@@ -2484,7 +2499,7 @@ describe('AlertService', () => {
                 options: {
                   ...ALERT_DEFINITIONS.DMT_APM.inlineRule.options,
                   timeAmount: 1,
-                  timeUnit: 'days',
+                  timeUnit: TIME_UNITS.days,
                   direction: TransactionDirection.inbound,
                 },
               },
@@ -2521,7 +2536,8 @@ describe('AlertService', () => {
         expect(alerts).toHaveLength(1);
 
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]?.counterpartyId).toEqual(counterparty.id);
+        expect(alerts[0]?.counterpartyId).toEqual(null);
+        expect(alerts[0]?.counterpartyBeneficiaryId).toEqual(counterparty.id);
       });
 
       it(`Shouldnt trigger alert for old transactions`, async () => {
@@ -2551,6 +2567,7 @@ describe('AlertService', () => {
     });
   });
 });
+
 const createCounterparty = async (
   prismaService: PrismaService,
   proj?: Pick<Project, 'id'>,

@@ -429,7 +429,7 @@ export class DataAnalyticsService {
     const query: Prisma.Sql = Prisma.sql`
   WITH transactions AS (
     SELECT
-      "tr"."counterpartyBeneficiaryId",
+      "tr"."counterpartyBeneficiaryId" as "counterpartyBeneficiaryId",
       count(
         CASE WHEN "tr"."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
           `${timeAmount} ${timeUnit}`,
@@ -642,7 +642,7 @@ export class DataAnalyticsService {
 		AND count(id) FILTER (WHERE "transactionDate" < ${historicalTransactionClause}) >= 1
 )
 SELECT
-	a."counterpartyBeneficiaryId" as "counterpartyId",
+	a."counterpartyBeneficiaryId" as "counterpartyBeneficiaryId",
 	a.allTransactionsCount,
 	a.activeDaysTransactions,
 	a.lastTransactionsCount,
@@ -689,7 +689,7 @@ AND a.activeDaysTransactions > ((a.lastTransactionsCount - a.activeDaysTransacti
     return await this._executeQuery<Array<{ counterpartyId: string }>>(
       Prisma.sql`
       SELECT
-        "tr"."counterpartyOriginatorId" as "counterpartyId",
+        "tr"."counterpartyOriginatorId" as "counterpartyOriginatorId",
         COUNT(distinct "tr"."counterpartyBeneficiaryId") as "counterpertyInManyBusinessesCount"
       FROM
         "TransactionRecord" as "tr" ${Prisma.join(uniqueJoinClause, '\n ')}
@@ -736,7 +736,7 @@ AND a.activeDaysTransactions > ((a.lastTransactionsCount - a.activeDaysTransacti
     ].filter(Boolean);
 
     const sqlQuery = Prisma.sql`WITH tx_by_business AS
-    (SELECT "tr"."counterpartyBeneficiaryId" AS "counterpartyId",
+    (SELECT "tr"."counterpartyBeneficiaryId" as "counterpartyBeneficiaryId",
             "b"."businessType",
             COUNT("tr".id) FILTER (
                                    WHERE ${transactionsOverAllTimeClause}) AS "transactionCount",
@@ -755,13 +755,13 @@ AND a.activeDaysTransactions > ((a.lastTransactionsCount - a.activeDaysTransacti
        avg_business AS
     (SELECT "businessType",
             SUM("recentDaysTransactionCount") AS "totalTransactionsCount",
-            COUNT(DISTINCT "counterpartyId") AS "merchantCount"
+            COUNT(DISTINCT "counterpartyBeneficiaryId") AS "merchantCount"
      FROM tx_by_business
      WHERE "recentDaysTransactionCount" > ${minimumCount}
      GROUP BY "businessType"
      HAVING COUNT(*) > 1
      AND SUM("recentDaysTransactionCount") > 1)
-  SELECT t."counterpartyId",
+  SELECT t."counterpartyBeneficiaryId",
          t."businessType",
          t."transactionCount",
          t."recentDaysTransactionCount",
@@ -789,8 +789,6 @@ AND a.activeDaysTransactions > ((a.lastTransactionsCount - a.activeDaysTransacti
     excludePaymentMethods,
 
     transactionType = [],
-
-    subjectColumn,
   }: DailySingleTransactionAmountType) {
     if (!projectId) {
       throw new Error('projectId is required');
@@ -830,18 +828,16 @@ AND a.activeDaysTransactions > ((a.lastTransactionsCount - a.activeDaysTransacti
     if (ruleType === 'amount') {
       conditions.push(Prisma.sql`"transactionBaseAmount" > ${amountThreshold}`);
 
-      query = Prisma.sql`SELECT ${Prisma.raw(
-        subjectColumn,
-      )} FROM "TransactionRecord" "tr" WHERE ${Prisma.join(
+      query = Prisma.sql`SELECT "counterpartyBeneficiaryId" FROM "TransactionRecord" "tr" WHERE ${Prisma.join(
         conditions,
         ' AND ',
-      )} GROUP BY "${Prisma.raw(subjectColumn)}"`;
+      )} GROUP BY "counterpartyBeneficiaryId"`;
     } else if (ruleType === 'count') {
-      query = Prisma.sql`SELECT ${Prisma.raw(subjectColumn)}
+      query = Prisma.sql`SELECT "counterpartyBeneficiaryId",
          COUNT(id) AS "transactionCount" FROM "TransactionRecord" "tr" WHERE ${Prisma.join(
            conditions,
            ' AND ',
-         )} GROUP BY ${Prisma.raw(subjectColumn)} HAVING ${Prisma.raw(
+         )} GROUP BY "counterpartyBeneficiaryId" HAVING ${Prisma.raw(
         `${AggregateType.COUNT}(id)`,
       )} > ${amountThreshold}`;
     } else {

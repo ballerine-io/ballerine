@@ -10,7 +10,7 @@ export type InlineRule = {
 } & (
   | {
       fnName: 'evaluateHighTransactionTypePercentage';
-      fnInvestigationName?: 'investigateHighTransactionTypePercentage';
+      fnInvestigationName: 'investigateHighTransactionTypePercentage';
       options: Omit<HighTransactionTypePercentage, 'projectId'>;
     }
   | {
@@ -20,22 +20,22 @@ export type InlineRule = {
     }
   | {
       fnName: 'evaluateCustomersTransactionType';
-      fnInvestigationName?: 'investigateCustomersTransactionType';
+      fnInvestigationName: 'investigateCustomersTransactionType';
       options: Omit<TCustomersTransactionTypeOptions, 'projectId'>;
     }
   | {
       fnName: 'evaluateTransactionAvg';
-      fnInvestigationName?: 'investigateTransactionAvg';
+      fnInvestigationName: 'investigateTransactionAvg';
       options: Omit<TransactionLimitHistoricAverageOptions, 'projectId'>;
     }
   | {
       fnName: 'evaluateTransactionAvg';
-      fnInvestigationName?: 'investigateTransactionAvg';
+      fnInvestigationName: 'investigateTransactionAvg';
       options: Omit<TPeerGroupTransactionAverageOptions, 'projectId'>;
     }
   | {
       fnName: 'evaluateDormantAccount';
-      fnInvestigationName?: 'investigateDormantAccount';
+      fnInvestigationName: 'investigateDormantAccount';
       options: Omit<TDormantAccountOptions, 'projectId'>;
     }
   | {
@@ -45,22 +45,22 @@ export type InlineRule = {
     }
   | {
       fnName: 'evaluateHighVelocityHistoricAverage';
-      fnInvestigationName?: 'investigateHighVelocityHistoricAverage';
+      fnInvestigationName: 'investigateHighVelocityHistoricAverage';
       options: Omit<HighVelocityHistoricAverageOptions, 'projectId'>;
     }
   | {
       fnName: 'evaluateMultipleMerchantsOneCounterparty';
-      fnInvestigationName?: 'investigateMultipleMerchantsOneCounterparty';
+      fnInvestigationName: 'investigateMultipleMerchantsOneCounterparty';
       options: Omit<TMultipleMerchantsOneCounterparty, 'projectId'>;
     }
   | {
       fnName: 'evaluateMerchantGroupAverage';
-      fnInvestigationName?: 'investigateMerchantGroupAverage';
+      fnInvestigationName: 'investigateMerchantGroupAverage';
       options: Omit<TMerchantGroupAverage, 'projectId'>;
     }
   | {
       fnName: 'evaluateDailySingleTransactionAmount';
-      fnInvestigationName?: 'investigateDailySingleTransactionAmount';
+      fnInvestigationName: 'investigateDailySingleTransactionAmount';
       options: Omit<DailySingleTransactionAmountType, 'projectId'>;
     }
 );
@@ -196,6 +196,4 @@ export type DailySingleTransactionAmountType = {
 
   paymentMethods: PaymentMethod[] | readonly PaymentMethod[];
   excludePaymentMethods: boolean;
-
-  subjectColumn: Subject;
 };
