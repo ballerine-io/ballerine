@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/kyb-app",
   "private": true,
-  "version": "0.3.79",
+  "version": "0.3.81",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -15,10 +15,10 @@
     "test:dev": "vitest"
   },
   "dependencies": {
-    "@ballerine/blocks": "0.2.26",
-    "@ballerine/ui": "0.5.44",
-    "@ballerine/common": "^0.9.51",
-    "@ballerine/workflow-browser-sdk": "0.6.64",
+    "@ballerine/blocks": "0.2.27",
+    "@ballerine/common": "^0.9.52",
+    "@ballerine/ui": "0.5.45",
+    "@ballerine/workflow-browser-sdk": "0.6.66",
     "@lukemorales/query-key-factory": "^1.0.3",
     "@radix-ui/react-icons": "^1.3.0",
     "@rjsf/core": "^5.9.0",
@@ -64,8 +64,8 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.1.24",
-    "@ballerine/eslint-config-react": "^2.0.24",
+    "@ballerine/config": "^1.1.25",
+    "@ballerine/eslint-config-react": "^2.0.25",
     "@jest/globals": "^29.7.0",
     "@sentry/vite-plugin": "^2.9.0",
     "@testing-library/jest-dom": "^6.1.4",
@@ -96,6 +96,7 @@
     "typescript": "^5.0.2",
     "vite": "^4.5.3",
     "vite-plugin-checker": "^0.6.1",
+    "vite-plugin-top-level-await": "^1.4.4",
     "vite-tsconfig-paths": "^4.0.7",
     "vitest": "^0.34.6"
   }

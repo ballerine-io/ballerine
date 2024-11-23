@@ -1,5 +1,3 @@
-import { AnyObject } from '@ballerine/ui';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 
-export const selectWorkflowDocuments = (workflow: unknown): AnyObject[] =>
-  //@ts-ignore
-  (workflow?.context?.documents as AnyObject[]) || ([] as AnyObject[]);
+export const selectWorkflowDocuments = (workflow: TWorkflowById) => workflow?.context?.documents;

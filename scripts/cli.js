@@ -53,7 +53,7 @@ async function main() {
       type: 'checkbox',
       name: 'selectedItems',
       message: 'Select projects and apps to run:',
-      choices: projectsAndApps,
+      choices: [{ name: 'All', value: 'all' }, new inquirer.Separator(), ...projectsAndApps],
       default: projectsAndApps.map(item => item.value),
     },
     {
@@ -70,6 +70,11 @@ async function main() {
   let envFiles = {};
   let useNgrok = false;
   let resetDatabase = false;
+
+  // Convert 'all' selection to all projects
+  const finalSelectedItems = selectedItems.includes('all')
+    ? projectsAndApps.map(item => item.value)
+    : selectedItems;
 
   if (mode === 'advanced') {
     const advancedOptions = await inquirer.prompt([
@@ -90,9 +95,9 @@ async function main() {
     useNgrok = advancedOptions.useNgrok;
 
     if (advancedOptions.useCommonEnv) {
-      envFiles = Object.fromEntries(selectedItems.map(item => [item, '.env']));
+      envFiles = Object.fromEntries(finalSelectedItems.map(item => [item, '.env']));
     } else {
-      for (const item of selectedItems) {
+      for (const item of finalSelectedItems) {
         const projectEnvFiles = getEnvFiles(item);
         const { envFile } = await inquirer.prompt([
           {
@@ -107,11 +112,11 @@ async function main() {
       }
     }
   } else {
-    envFiles = Object.fromEntries(selectedItems.map(item => [item, '.env']));
+    envFiles = Object.fromEntries(finalSelectedItems.map(item => [item, '.env']));
   }
 
   // Check if workflows-service is selected
-  if (selectedItems.some(item => item.includes('workflows-service'))) {
+  if (finalSelectedItems.some(item => item.includes('workflows-service'))) {
     const { resetDatabaseConfirm } = await inquirer.prompt([
       {
         type: 'confirm',
@@ -123,9 +128,11 @@ async function main() {
     resetDatabase = resetDatabaseConfirm;
   }
 
-  const projectFilter = selectedItems.map(item => item.split('/')[1]).join(',');
-  const workflowsServiceIncluded = selectedItems.some(item => item.includes('workflows-service'));
-  const appsIncluded = selectedItems.some(item => item.includes('apps/'));
+  const projectFilter = finalSelectedItems.map(item => item.split('/')[1]).join(',');
+  const workflowsServiceIncluded = finalSelectedItems.some(item =>
+    item.includes('workflows-service'),
+  );
+  const appsIncluded = finalSelectedItems.some(item => item.includes('apps/'));
 
   let command = `nx run-many --target=${runMode} --projects=${projectFilter
     .split(',')
@@ -137,14 +144,21 @@ async function main() {
   }
 
   if (workflowsServiceIncluded && appsIncluded) {
-    command = `nx run @ballerine/workflows-service:${runMode} & wait-on http://localhost:3000/api/v1/_health/ready && ${command}`;
+    // Remove workflows-service from the command since we'll run it separately
+    const filteredProjects = projectFilter
+      .split(',')
+      .filter(project => project !== 'workflows-service')
+      .map(project => `@ballerine/${project}`)
+      .join(',');
+
+    const filteredCommand = `nx run-many --target=${runMode} --projects=${filteredProjects}`;
+    command = `nx run @ballerine/workflows-service:${runMode} & wait-on http://localhost:3000/api/v1/_health/ready && ${filteredCommand}`;
   }
 
   const timestamp = new Date().toISOString().replace(/:/g, '-');
   const logFile = path.join(logsDir, `nx_run_${timestamp}.log`);
   const logStream = fs.createWriteStream(logFile, { flags: 'a' });
 
-  console.log(`Running command: ${command}`);
   console.log('Using .env files:');
   Object.entries(envFiles).forEach(([project, envFile]) => {
     console.log(`  ${project}: ${envFile}`);
@@ -152,10 +166,12 @@ async function main() {
   console.log(`Logs: ${logFile}`);
 
   if (useNgrok) {
+    console.log('Establishing ngrok tunnel...');
     const url = await ngrok.connect(3000);
     console.log(`ngrok tunnel established: ${url}`);
   }
 
+  console.log(`Executing command: ${command}`);
   const child = spawn(command, {
     shell: true,
     cwd: path.join(__dirname, '..'),

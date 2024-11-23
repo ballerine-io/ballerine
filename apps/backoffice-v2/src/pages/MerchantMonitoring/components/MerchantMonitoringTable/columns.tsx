@@ -166,6 +166,7 @@ export const columns = [
         <TextWithNAFallback
           className={ctw('font-semibold', {
             'text-slate-400': status === MERCHANT_REPORT_STATUSES_MAP.completed,
+            'text-destructive': status === MERCHANT_REPORT_STATUSES_MAP['failed'],
           })}
         >
           {titleCase(statusToDisplayStatus[status as keyof typeof statusToDisplayStatus] ?? status)}
