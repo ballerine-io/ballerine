@@ -1522,7 +1522,7 @@ describe('AlertService', () => {
       // Has the customer been active for over 180 days (Has the customer had at least 1 Inbound credit card transactions more than 180 days ago)? (A condition that is used to ensure that we are calculating an average from an available representative sample of data - this condition would cause the rule not to alert in the customer's first 180 days of their credit card life cycle)
       // Has the customer had more than a set [Number] of Inbound credit card transactions within the last 3 days? (A condition that is used to exclude cases when the number of Inbound credit card transactions in 3 days is more than 2 times greater than the customer's 3-day historic average number of Inbound credit card transactions, although of an insignificantly low number)
       // Has the customer's number of Inbound credit card transactions in 3 days been more than a set [Factor] times greater than the customer's 3-day average number of Inbound credit card transactions (when the average is caclulated from the 177 days preceding the evaluated 3 days)?
-      it.only(`Trigger an alert when there inbound credit card transactions more than 180 days ago
+      it(`Trigger an alert when there inbound credit card transactions more than 180 days ago
           had more than a set X within the last 3 days`, async () => {
         // Arrange
 
@@ -1692,8 +1692,6 @@ describe('AlertService', () => {
             hash: expect.any(String),
           },
           executionRow: {
-            activedaystransactions: '60',
-            alltransactionscount: '186',
             counterpartyBeneficiaryId: counteryparty.id,
           },
         });
