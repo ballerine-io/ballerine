@@ -2,7 +2,6 @@ import { trace, context } from '@opentelemetry/api';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { NextFunction, Request, Response } from 'express';
-import { randomUUID } from 'crypto';
 import { ClsService } from 'nestjs-cls';
 import { env } from '@/env';
 import { getReqMetadataObj, isRelevantRequest } from '../utils/request-response/request';
@@ -72,12 +71,9 @@ export class RequestIdMiddleware implements NestMiddleware {
     try {
       const traceId = activeSpan?.spanContext().traceId;
 
-      this.cls.set('traceId', traceId);
-
       if (traceId) {
+        this.cls.set('traceId', traceId);
         res.setHeader('X-Request-ID', traceId);
-      } else {
-        this.logger.error('traceId is undefined');
       }
     } catch (e) {
       // Mainly for debugging purposes. See https://github.com/Papooch/nestjs-cls/issues/67

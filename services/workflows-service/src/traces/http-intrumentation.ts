@@ -2,12 +2,12 @@ import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 import { IncomingMessage } from 'node:http';
 
 const createFilter = (filters: RegExp[] | string[]) => {
-  let f: RegExp[];
-  const regexExpressions = filters.map(r => {
-    if (typeof r === 'string') {
-      return new RegExp(r);
+  const regexExpressions = filters.map(regex => {
+    if (typeof regex === 'string') {
+      return new RegExp(regex);
     }
-    return r;
+
+    return regex;
   });
 
   return (url: string) => {
