@@ -19,7 +19,7 @@ export const getTransformer = (transformer: Transformer) => {
     return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
   }
 
-  throw new Error(`Transformer ${transformer} is not supported`);
+  throw new Error(`Transformer ${transformer.transformer} is not supported`);
 };
 
 export const fetchTransformers = (transformers: Transformer[]) => {
