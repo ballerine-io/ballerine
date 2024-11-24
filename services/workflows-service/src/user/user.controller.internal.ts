@@ -36,6 +36,7 @@ export class UserControllerInternal {
           avatarUrl: true,
           updatedAt: true,
           createdAt: true,
+          roles: true,
         },
       },
       projectId ? [projectId] : projectIds,
