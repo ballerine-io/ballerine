@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflow-core",
   "author": "Ballerine <dev@ballerine.com>",
-  "version": "0.6.66",
+  "version": "0.6.67",
   "description": "workflow-core",
   "module": "./dist/esm/index.js",
   "main": "./dist/cjs/index.js",
@@ -31,15 +31,18 @@
     "node": ">=12"
   },
   "dependencies": {
-    "@ballerine/common": "0.9.52",
+    "@ballerine/common": "0.9.53",
     "ajv": "^8.12.0",
     "country-state-city": "^3.1.4",
     "i18n-iso-countries": "^7.6.0",
     "jmespath": "^0.16.0",
     "json-logic-js": "^2.0.2",
+    "lodash.get": "^4.4.2",
     "lodash.groupby": "^4.6.0",
     "lodash.maxby": "^4.6.0",
-    "xstate": "^4.35.2"
+    "outvariant": "^1.4.3",
+    "xstate": "^4.35.2",
+    "zod": "3.23.4"
   },
   "devDependencies": {
     "@babel/core": "7.17.9",
@@ -58,6 +61,7 @@
     "@types/fs-extra": "^11.0.1",
     "@types/jmespath": "^0.15.0",
     "@types/json-logic-js": "^2.0.1",
+    "@types/lodash.get": "^4.4.9",
     "@types/lodash.groupby": "^4.6.9",
     "@types/lodash.maxby": "^4.6.9",
     "@types/lodash.merge": "^4.6.9",

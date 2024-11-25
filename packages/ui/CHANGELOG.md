@@ -1,5 +1,13 @@
 # @ballerine/ui
 
+## 0.5.46
+
+### Patch Changes
+
+- Created a non JMESPath sanctions plugin using JS
+- Updated dependencies
+  - @ballerine/common@0.9.53
+
 ## 0.5.45
 
 ### Patch Changes
