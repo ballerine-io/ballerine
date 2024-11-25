@@ -7,21 +7,23 @@ import { HelpersTransformer, THelperFormatingLogic, Validator } from './utils';
 import { JmespathTransformer } from './utils/context-transformers/jmespath-transformer';
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
 
-export const fetchTransformers = (
-  transformers: SerializableValidatableTransformer['transform'] & {
-    name?: string;
-  },
-) => {
-  return (Array.isArray(transformers) ? transformers : []).map(transformer => {
-    if (transformer.transformer === 'jmespath')
-      return new JmespathTransformer((transformer.mapping as string).replace(/\s+/g, ' '));
+type Transformer = SerializableValidatableTransformer['transform'][number] & {
+  name?: string;
+};
 
-    if (transformer.transformer === 'helper') {
-      return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
-    }
+export const getTransformer = (transformer: Transformer) => {
+  if (transformer.transformer === 'jmespath')
+    return new JmespathTransformer((transformer.mapping as string).replace(/\s+/g, ' '));
 
-    throw new Error(`Transformer ${transformer} is not supported`);
-  });
+  if (transformer.transformer === 'helper') {
+    return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
+  }
+
+  throw new Error(`Transformer ${transformer.transformer} is not supported`);
+};
+
+export const fetchTransformers = (transformers: Transformer[]) => {
+  return (Array.isArray(transformers) ? transformers : []).map(getTransformer);
 };
 
 export const fetchValidator = (
