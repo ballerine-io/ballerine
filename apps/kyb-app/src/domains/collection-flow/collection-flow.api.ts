@@ -93,6 +93,9 @@ export const fetchFlowContext = async (): Promise<FlowContextResponse> => {
 
 export interface EndUser {
   id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
 }
 
 export const fetchEndUser = async (): Promise<EndUser> => {

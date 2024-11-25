@@ -49,3 +49,33 @@ export const initializeMonitoring = () => {
     });
   }
 };
+
+export const updateSentryUser = (userMetadata: {
+  id?: string;
+  email?: string;
+  fullName?: string;
+}) => {
+  Sentry.setUser({
+    id: userMetadata.id,
+    email: userMetadata.email,
+    username: userMetadata.fullName,
+  });
+};
+
+export const updatePostHogUser = (userMetadata: {
+  id?: string;
+  email?: string;
+  fullName?: string;
+}) => {
+  if (userMetadata.email) {
+    posthog.identify(userMetadata.email, userMetadata);
+  }
+};
+
+export const clearSentryUser = () => {
+  Sentry.setUser(null);
+};
+
+export const clearPostHogUser = () => {
+  posthog.reset();
+};
