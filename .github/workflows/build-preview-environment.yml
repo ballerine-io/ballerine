@@ -1,0 +1,77 @@
+# Deploys a temporary environment for testing a version of the code when a pull request is created / updated with a 'deploy-pr' label
+name: Deploy PR Environment
+concurrency:
+  group: "deploy-${{ github.event.pull_request.head.ref }}"
+  cancel-in-progress: false
+
+on:
+  pull_request:
+    types: [ labeled, synchronize ]
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+
+jobs:
+  deploy-dev-pr-environment:
+    if: contains(github.event.pull_request.labels.*.name, 'deploy-pr')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the Tool and actions
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+  
+  build-wf-service:
+    uses: ./.github/workflows/build-push-docker-images.yml
+    with:
+      registry: ghcr.io/${{ github.repository_owner }}
+      context: services/workflows-service
+      image_name: workflows-service
+      ref: ${{ github.event.pull_request.head.sha }}
+
+  build-backoffice:
+    uses: ./.github/workflows/build-push-docker-images.yml
+    with:
+      registry: ghcr.io/${{ github.repository_owner }}
+      context: apps/backoffice-v2
+      image_name: backoffice
+      ref: ${{ github.event.pull_request.head.sha }}
+
+  build-kyb:
+    uses: ./.github/workflows/build-push-docker-images.yml
+    with:
+      registry: ghcr.io/${{ github.repository_owner }}
+      context: apps/kyb-app
+      image_name: kyb-app
+      ref: ${{ github.event.pull_request.head.sha }}
+
+  build-dashboard:
+    uses: ./.github/workflows/build-push-docker-images.yml
+    with:
+      registry: ghcr.io/${{ github.repository_owner }}
+      context: apps/workflows-dashboard
+      image_name: workflows-dashboard
+      ref: ${{ github.event.pull_request.head.sha }}
+
+  deploy-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger workflow in another repo
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          script: |
+            const refValue = ('${{ github.event_name }}' === 'workflow_dispatch') 
+            ? '${{ github.ref_name }}' 
+            : '${{ github.event.pull_request.head.sha }}';
+            await github.rest.repos.createDispatchEvent({
+              owner: 'ballerine-io',
+              repo: 'ballerine',
+              event_type: 'deploy-preview',
+              client_payload: {
+                'ref': refValue
+              }
+            });
