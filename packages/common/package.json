@@ -2,7 +2,7 @@
   "private": false,
   "name": "@ballerine/common",
   "author": "Ballerine <dev@ballerine.com>",
-  "version": "0.9.52",
+  "version": "0.9.53",
   "description": "common",
   "module": "./dist/esm/index.js",
   "main": "./dist/cjs/index.js",
@@ -89,6 +89,6 @@
     "lodash.get": "^4.4.2",
     "lodash.isempty": "^4.4.0",
     "xstate": "^5.18.2",
-    "zod": "^3.22.4"
+    "zod": "^3.23.4"
   }
 }
