@@ -27,7 +27,7 @@ import { BusinessReportControllerExternal } from '@/business-report/business-rep
     HttpModule,
     forwardRef(() => DataAnalyticsModule),
     forwardRef(() => AlertModule),
-    BusinessModule,
+    forwardRef(() => BusinessModule),
     CustomerModule,
   ],
   providers: [BusinessReportService, MerchantMonitoringClient],

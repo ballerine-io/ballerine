@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, forwardRef } from '@nestjs/common';
 import { initiateNestApp } from '@/test/helpers/nest-app-helper';
 import { faker } from '@faker-js/faker';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -37,6 +37,16 @@ import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { ConfigService } from '@nestjs/config';
 import { AlertService } from '@/alert/alert.service';
 import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
+import { BusinessReportModule } from '@/business-report/business-report.module';
+import { WorkflowModule } from '@/workflow/workflow.module';
+import { EndUserModule } from '@/end-user/end-user.module';
+import { WorkflowService } from '@/workflow/workflow.service';
+import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
+import { EndUserService } from '@/end-user/end-user.service';
+import { BusinessService } from '@/business/business.service';
+import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
+import { BusinessModule } from '@/business/business.module';
+import { PrismaModule } from '@/prisma/prisma.module';
 
 const getBusinessCounterpartyData = (business?: Business) => {
   if (business) {
@@ -158,9 +168,21 @@ describe('#TransactionControllerExternal', () => {
         DataAnalyticsService,
         ConfigService,
         MerchantMonitoringClient,
+        WorkflowService,
+        WorkflowDefinitionService,
+        EndUserService,
+        BusinessService,
       ],
       [TransactionControllerExternal],
-      [TransactionModule],
+      [
+        forwardRef(() => TransactionModule),
+        forwardRef(() => BusinessReportModule),
+        forwardRef(() => WorkflowModule),
+        // forwardRef(() => EndUserModule),
+        // forwardRef(() => DataAnalyticsModule),
+        forwardRef(() => BusinessModule),
+        // forwardRef(() => PrismaModule),
+      ],
     );
   });
   beforeEach(async () => {

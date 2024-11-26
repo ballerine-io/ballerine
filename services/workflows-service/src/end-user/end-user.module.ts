@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { EndUserControllerExternal } from './end-user.controller.external';
 import { EndUserControllerInternal } from './end-user.controller.internal';
 import { EndUserRepository } from './end-user.repository';
@@ -38,9 +38,9 @@ import { WorkflowModule } from '@/workflow/workflow.module';
     ProjectModule,
     CustomerModule,
     HttpModule,
-    BusinessReportModule,
+    forwardRef(() => BusinessReportModule),
     RuleEngineModule,
-    WorkflowModule,
+    forwardRef(() => WorkflowModule),
   ],
   controllers: [EndUserControllerInternal, EndUserControllerExternal],
   providers: [

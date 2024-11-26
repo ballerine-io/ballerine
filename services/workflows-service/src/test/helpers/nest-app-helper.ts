@@ -43,7 +43,7 @@ export const initiateNestApp = async (
   app: INestApplication,
   providers: Provider[] = [],
   controllers: Type[],
-  modules: Type[],
+  modules: Array<DynamicModule | Promise<DynamicModule> | ForwardReference | Type<unknown>> = [],
   middlewares: Array<NestMiddleware['use']> = [],
 ) => {
   const moduleRef = await Test.createTestingModule({
