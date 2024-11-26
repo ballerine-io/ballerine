@@ -14,6 +14,6 @@ import { ProjectModule } from '@/project/project.module';
   imports: [ACLModule, PrismaModule, DataAnalyticsModule, SentryModule, AlertModule, ProjectModule],
   controllers: [TransactionControllerInternal, TransactionControllerExternal],
   providers: [TransactionService, TransactionRepository],
-  exports: [TransactionService],
+  exports: [ACLModule, TransactionService],
 })
 export class TransactionModule {}
