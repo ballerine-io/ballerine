@@ -19,6 +19,10 @@ on:
         required: true
         description: "Branch name of the Preview"
         type: string
+      tag:
+        required: true
+        description: "Tag name of the Preview Image"
+        type: string
 
 jobs:
   build-and-push:
@@ -86,7 +90,7 @@ jobs:
         with:
           images: ${{ inputs.registry }}/${{ inputs.image_name }}
           tags: |
-            type=raw,value=${{ steps.version.outputs.sha_short }}-${{ github.ref_name }}
+            type=raw,value=${{ inputs.tag }}
             type=sha,format=short
       
       - name: Print docker version outputs
