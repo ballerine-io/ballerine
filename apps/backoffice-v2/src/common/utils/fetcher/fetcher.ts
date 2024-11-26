@@ -69,7 +69,7 @@ export const fetcher: IFetcher = async ({
       return await handlePromise(res.blob());
     }
 
-    if (!res.headers.get('content-length') || res.headers.get('content-length') > '0') {
+    if (!res.headers.get('content-length') || Number(res.headers.get('content-length')) > 0) {
       // TODO: make sure its json by checking the content-type in order to safe access to json method
       return await handlePromise(res.json());
     }

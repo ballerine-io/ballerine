@@ -27,9 +27,15 @@ export class AppLoggerService implements LoggerService, OnModuleDestroy {
 
   error(error: unknown, logData: LogPayload = {}) {
     const payload: any = { ...this.getLogMetadata(), logData };
+    const STACK_FRAMES_TO_REMOVE = 1;
 
     if (typeof error === 'string') {
-      payload.stack = new Error().stack;
+      const stack = new Error().stack;
+      const stackFrames = stack?.split('\n');
+
+      stackFrames?.splice(1, STACK_FRAMES_TO_REMOVE);
+
+      payload.stack = stackFrames ? stackFrames.join('\n') : stack;
     }
 
     this.logger.error(error, payload);

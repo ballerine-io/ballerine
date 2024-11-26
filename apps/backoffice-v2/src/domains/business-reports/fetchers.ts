@@ -78,6 +78,7 @@ export const fetchLatestBusinessReport = async ({
     endpoint: `../external/business-reports/latest?businessId=${businessId}&type=${reportType}`,
     method: Method.GET,
     schema: BusinessReportSchema,
+    timeout: 30_000,
   });
 
   return handleZodError(error, data);
@@ -106,6 +107,7 @@ export const fetchBusinessReports = async ({
     endpoint: `../external/business-reports/?${queryParams}`,
     method: Method.GET,
     schema: BusinessReportsSchema,
+    timeout: 30_000,
   });
 
   return handleZodError(error, data);
@@ -116,6 +118,7 @@ export const fetchBusinessReportById = async ({ id }: { id: string }) => {
     endpoint: `../external/business-reports/${id}`,
     method: Method.GET,
     schema: BusinessReportSchema,
+    timeout: 30_000,
   });
 
   return handleZodError(error, businessReport);
@@ -164,6 +167,7 @@ export const createBusinessReport = async ({
       reportType,
       workflowVersion,
     },
+    timeout: 30_000,
   });
 
   return handleZodError(error, businessReport);
@@ -197,6 +201,7 @@ export const createBusinessReportBatch = async ({
     schema: z.object({ batchId: z.string() }),
     body: formData,
     isFormData: true,
+    timeout: 30_000,
   });
 
   return handleZodError(error, batchId);
