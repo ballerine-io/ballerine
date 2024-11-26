@@ -1,5 +1,4 @@
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
-import { BusinessReportService } from '@/business-report/business-report.service';
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
 import { ajv } from '@/common/ajv/ajv.validator';
@@ -87,7 +86,6 @@ import {
   EndUser,
   Prisma,
   PrismaClient,
-  UiDefinitionContext,
   User,
   WorkflowDefinition,
   WorkflowRuntimeData,
@@ -137,7 +135,6 @@ export class WorkflowService {
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly endUserRepository: EndUserRepository,
     protected readonly endUserService: EndUserService,
-    protected readonly businessReportService: BusinessReportService,
     protected readonly businessRepository: BusinessRepository,
     protected readonly businessService: BusinessService,
     protected readonly entityRepository: EntityRepository,
@@ -1457,19 +1454,6 @@ export class WorkflowService {
           currentProjectId,
           customer.name,
         );
-        let uiDefinition;
-
-        try {
-          uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
-            workflowDefinitionId,
-            UiDefinitionContext.collection_flow,
-            projectIds,
-          );
-        } catch (err) {
-          if (isErrorWithMessage(err)) {
-            this.logger.warn(err.message);
-          }
-        }
 
         workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
           {

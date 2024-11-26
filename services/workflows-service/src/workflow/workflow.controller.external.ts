@@ -386,7 +386,7 @@ export class WorkflowControllerExternal {
 
     if (!result) {
       throw new NotFoundException(
-        `No WorkflowRuntimeDataId was found for ${JSON.stringify(workflowRuntimeDataId)}`,
+        `No WorkflowRuntimeData was found for ${JSON.stringify(workflowRuntimeDataId)}`,
       );
     }
 
