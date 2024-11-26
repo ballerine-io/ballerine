@@ -165,6 +165,7 @@ export class ApiPlugin {
     ok: boolean;
     json: () => Promise<unknown>;
     statusText: string;
+    headers: Headers;
   }> {
     let _url: string = url;
 
@@ -195,6 +196,7 @@ export class ApiPlugin {
         ok: true,
         json: () => Promise.resolve({ statusCode: res.status }),
         statusText: 'OK',
+        headers: res.headers,
       };
     }
 

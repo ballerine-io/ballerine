@@ -58,6 +58,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           }}
           authenticatedUserId={authenticatedUser?.id}
           isDisabled={isWorkflowCompleted}
+          excludedRoles={['viewer']}
         />
         <CaseOptions />
       </div>
