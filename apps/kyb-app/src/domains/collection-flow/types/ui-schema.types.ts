@@ -15,12 +15,12 @@ export interface JSONLogicRule extends BaseRule {
   value: AnyObject;
 }
 export interface DocumentsValidatorRule extends BaseRule {
-  value: {
+  value: Array<{
     documentId: string;
     destination: string;
     required: boolean | Rule;
     errorMessage: string;
-  }[];
+  }>;
 }
 
 export interface JMESPathRule extends BaseRule {
@@ -43,7 +43,7 @@ export interface BaseActionParams {
 export interface Action<TParams = BaseActionParams> {
   type: string;
   dispatchOn: {
-    uiEvents: { event: string; uiElementName: string }[];
+    uiEvents: Array<{ event: string; uiElementName: string }>;
     rules: Rule[];
   };
   params: TParams;
@@ -62,5 +62,5 @@ export interface UIElement<TElementParams = AnyObject> {
   required?: boolean;
   options: TElementParams;
   valueDestination?: UIElementDestination;
-  elements?: UIElement<AnyObject>[];
+  elements?: Array<UIElement<AnyObject>>;
 }
