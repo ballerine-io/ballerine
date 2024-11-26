@@ -1,5 +1,12 @@
 # @ballerine/ui
 
+## 0.5.47
+
+### Patch Changes
+
+- version bump
+  : Please enter a summary for your changes.
+
 ## 0.5.46
 
 ### Patch Changes
