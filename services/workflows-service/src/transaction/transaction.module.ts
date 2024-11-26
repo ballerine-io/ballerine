@@ -5,25 +5,15 @@ import { TransactionRepository } from '@/transaction/transaction.repository';
 import { TransactionService } from '@/transaction/transaction.service';
 import { TransactionControllerExternal } from '@/transaction/transaction.controller.external';
 import { PrismaModule } from '@/prisma/prisma.module';
-import { ProjectScopeService } from '@/project/project-scope.service';
-import { SentryService } from '@/sentry/sentry.service';
-import { AlertService } from '@/alert/alert.service';
-import { AlertRepository } from '@/alert/alert.repository';
-import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
+import { SentryModule } from '@/sentry/sentry.module';
+import { AlertModule } from '@/alert/alert.module';
+import { ProjectModule } from '@/project/project.module';
 
 @Module({
-  imports: [ACLModule, PrismaModule, DataAnalyticsModule],
+  imports: [ACLModule, PrismaModule, DataAnalyticsModule, SentryModule, AlertModule, ProjectModule],
   controllers: [TransactionControllerInternal, TransactionControllerExternal],
-  providers: [
-    TransactionService,
-    TransactionRepository,
-    ProjectScopeService,
-    SentryService,
-    AlertService,
-    AlertRepository,
-    AlertDefinitionRepository,
-  ],
-  exports: [ACLModule, TransactionService],
+  providers: [TransactionService, TransactionRepository],
+  exports: [TransactionService],
 })
 export class TransactionModule {}

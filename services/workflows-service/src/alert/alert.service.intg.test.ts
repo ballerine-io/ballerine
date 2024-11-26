@@ -99,7 +99,6 @@ describe('AlertService', () => {
         AlertRepository,
         AlertDefinitionRepository,
         BusinessReportService,
-        BusinessReportService,
         AlertService,
         BusinessService,
         BusinessRepository,
