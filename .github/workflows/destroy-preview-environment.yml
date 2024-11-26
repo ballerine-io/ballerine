@@ -1,5 +1,5 @@
-# Deploys a temporary environment for testing a version of the code when a pull request is created / updated with a 'deploy-pr' label
-name: Deploy PR Environment
+# Destroys a temporary environment that was created forwhen a pull request is created / updated with a 'deploy-pr' label or triggerred manually
+name: Destroy PR Environment
 concurrency:
   group: "deploy-${{ github.event.pull_request.head.ref }}"
   cancel-in-progress: false
@@ -7,7 +7,7 @@ concurrency:
 on:
   workflow_dispatch:
   pull_request:
-    types: [ labeled, synchronize ]
+    types: [ closed, unlabeled ]
 
 permissions:
   id-token: write
@@ -15,7 +15,7 @@ permissions:
   pull-requests: write
 
 env:
-  REF: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || github.event_name == 'pull_request' && github.event.pull_request.head.ref }}
+  REF: ${{ github.event_name == 'workflow_dispatch' && github.ref || github.event_name == 'pull_request' && github.event.pull_request.head.ref }}
 
 jobs:
   deploy-dev-pr-environment:
@@ -23,7 +23,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       env_name: ${{ steps.env-name.outputs.PR_ENV_NAME }}
-      ref: ${{ steps.clean-ref.outputs.ref }}
     steps:
       - name: Clean Ref
         id: clean-ref
@@ -55,49 +54,13 @@ jobs:
           echo "deploying environment"
           echo "PR_ENV_NAME=${{ steps.sanitize_env.outputs.trimmed_env_name }}" >> $GITHUB_ENV
           echo "PR_ENV_NAME=${{ steps.sanitize_env.outputs.trimmed_env_name }}" >> $GITHUB_OUTPUT
-  
-  build-wf-service:
-    needs: deploy-dev-pr-environment
-    uses: ./.github/workflows/build-push-docker-images.yml
-    with:
-      registry: ghcr.io/${{ github.repository_owner }}
-      context: services/workflows-service
-      image_name: workflows-service
-      ref: ${{ needs.deploy-dev-pr-environment.outputs.ref }}
-      tag: ${{ needs.deploy-dev-pr-environment.outputs.env_name }}
 
-  build-backoffice:
+  destroy-preview:
     needs: deploy-dev-pr-environment
-    uses: ./.github/workflows/build-push-docker-images.yml
-    with:
-      registry: ghcr.io/${{ github.repository_owner }}
-      context: apps/backoffice-v2
-      image_name: backoffice
-      ref: ${{ needs.deploy-dev-pr-environment.outputs.ref }}
-      tag: ${{ needs.deploy-dev-pr-environment.outputs.env_name }}
-
-  build-kyb:
-    needs: deploy-dev-pr-environment
-    uses: ./.github/workflows/build-push-docker-images.yml
-    with:
-      registry: ghcr.io/${{ github.repository_owner }}
-      context: apps/kyb-app
-      image_name: kyb-app
-      ref: ${{ needs.deploy-dev-pr-environment.outputs.ref }}
-      tag: ${{ needs.deploy-dev-pr-environment.outputs.env_name }}
-
-  build-dashboard:
-    needs: deploy-dev-pr-environment
-    uses: ./.github/workflows/build-push-docker-images.yml
-    with:
-      registry: ghcr.io/${{ github.repository_owner }}
-      context: apps/workflows-dashboard
-      image_name: workflows-dashboard
-      ref: ${{ needs.deploy-dev-pr-environment.outputs.ref }}
-      tag: ${{ needs.deploy-dev-pr-environment.outputs.env_name }}
-
-  deploy-preview:
-    needs: [deploy-dev-pr-environment,build-wf-service,build-backoffice,build-kyb,build-dashboard]
+    if: |
+      (github.event_name == 'pull_request' && github.event.action == 'unlabeled' && github.event.label.name == 'deploy-pr') 
+      ||
+      (github.event_name == 'pull_request' && github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'deploy-pr'))
     runs-on: ubuntu-latest
     steps:
       - name: Trigger workflow in another repo
@@ -108,7 +71,7 @@ jobs:
             await github.rest.repos.createDispatchEvent({
               owner: 'ballerine-io',
               repo: 'ballerine',
-              event_type: 'deploy-preview',
+              event_type: 'destroy-preview',
               client_payload: {
                 'ref': '${{ needs.deploy-dev-pr-environment.outputs.env_name }}'
               }
