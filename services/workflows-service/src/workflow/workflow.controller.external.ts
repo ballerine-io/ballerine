@@ -377,21 +377,18 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createCollectionFlowUrl(
-    @common.Body()
-    { workflowRuntimeDataId }: CreateCollectionFlowUrlDto,
+    @common.Body() { workflowRuntimeDataId }: CreateCollectionFlowUrlDto,
   ) {
-    const result = await this.workflowTokenService.findFirstByWorkflowruntimeDataIdUnscoped(
+    const token = await this.workflowTokenService.findFirstByWorkflowruntimeDataIdUnscoped(
       workflowRuntimeDataId,
     );
 
-    if (!result) {
-      throw new NotFoundException(
-        `No WorkflowRuntimeData was found for ${JSON.stringify(workflowRuntimeDataId)}`,
-      );
+    if (!token) {
+      throw new NotFoundException(`No token was found for ${workflowRuntimeDataId}`);
     }
 
     return {
-      collectionFlowUrl: `${env.COLLECTION_FLOW_URL}?token=${result.token}`,
+      collectionFlowUrl: `${env.COLLECTION_FLOW_URL}?token=${token.token}`,
     };
   }
 
