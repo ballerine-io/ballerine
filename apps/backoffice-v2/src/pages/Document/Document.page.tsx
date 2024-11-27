@@ -2,15 +2,21 @@ import { useDocumentLogic } from '@/pages/Document/hooks/useDocumentLogic/useDoc
 import { Case } from '../Entity/components/Case/Case';
 
 interface IDocumentProps {
-  isPage?: boolean;
+  wrapperClassName?: string;
 }
 
-export const Document = ({ isPage }: IDocumentProps) => {
+export const Document = ({ wrapperClassName }: IDocumentProps) => {
   const { documents, isLoading } = useDocumentLogic();
 
   if (isLoading) {
     return null;
   }
 
-  return <Case.Documents hideOpenExternalButton documents={documents} isPage={isPage} />;
+  return (
+    <Case.Documents
+      hideOpenExternalButton
+      documents={documents}
+      wrapperClassName={wrapperClassName}
+    />
+  );
 };

@@ -51,7 +51,7 @@ export interface IDocumentsProps {
   isLoadingOCR?: boolean;
   isDocumentEditable?: boolean;
   hideOpenExternalButton?: boolean;
-  isPage?: boolean;
+  wrapperClassName?: string;
 }
 
 export interface IFaceMatchProps extends ComponentProps<'div'> {

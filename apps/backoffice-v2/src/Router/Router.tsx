@@ -176,7 +176,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        element: <Document isPage />,
+        element: <Document wrapperClassName="justify-center max-w-[600px]" />,
         loader: authenticatedLayoutLoader,
         errorElement: <RouteError />,
         path: '/:locale/case-management/entities/:entityId/document/:documentId',

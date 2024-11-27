@@ -1,6 +1,5 @@
 import { FunctionComponent } from 'react';
 import 'react-image-crop/dist/ReactCrop.css';
-import './Case.Documents.module.css';
 
 import { DownloadFile } from '@/common/components/molecules/DownloadFile/DownloadFile';
 import { ImageEditor } from '@/common/components/molecules/ImageEditor/ImageEditor';
@@ -30,7 +29,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
   isDocumentEditable,
   isLoadingOCR,
   hideOpenExternalButton,
-  isPage,
+  wrapperClassName,
 }) => {
   const {
     crop,
@@ -55,13 +54,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
   return (
     <ImageViewer selectedImage={selectedImage} onSelectImage={onSelectImage}>
       <div className={`flex w-full flex-col items-center`}>
-        <div
-          className={ctw(
-            `d-full relative flex rounded-md`,
-            { 'justify-center': isPage },
-            { 'justify-end': !isPage },
-          )}
-        >
+        <div className={ctw(`d-full relative flex rounded-md`, wrapperClassName)}>
           {!shouldDownload && (
             <ImageEditor
               image={selectedImage}
