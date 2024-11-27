@@ -126,8 +126,8 @@ jobs:
 
           echo "sha_short: ${{ steps.version.outputs.sha_short }}"
           echo "docker_meta-tags: ${{ steps.docker_meta.outputs.tags }}"
-          echo "bump-version-version: ${{ steps.bump-version.outputs.version }}"
-          echo "bump-version-tag: ${{ steps.bump-version.outputs.tag }}"
+          echo "bump-version-version: ${{ steps.bump-version.outputs.version }}-hotfix"
+          echo "bump-version-tag: ${{ steps.bump-version.outputs.tag }}-hotfix"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -139,7 +139,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache
           tags: ${{ steps.docker_meta.outputs.tags }}
           build-args: |
-            "RELEASE=${{ steps.bump-version.outputs.tag }}"
+            "RELEASE=${{ steps.bump-version.outputs.tag }}-hotfix"
             "SHORT_SHA=${{ steps.version.outputs.sha_short }}"
             
       - name: Scan Docker Image
