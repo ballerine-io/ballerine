@@ -48,6 +48,21 @@ export const getUniversalDocuments = (): TDocument[] => {
       }),
     },
     {
+      category: 'financial_information',
+      type: 'bank_statement',
+      issuer: { country: 'ZZ' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        accountHolderName: Type.Optional(Type.String()),
+        accountNumber: Type.Optional(Type.String()),
+        bankName: Type.Optional(Type.String()),
+        statementPeriod: Type.Optional(Type.String()),
+        issueDate: OptionalTypePastDate,
+        physicalAddress: Type.Optional(Type.String()),
+      }),
+    },
+    {
       category: 'proof_of_good_standing',
       type: 'certificate_of_good_standing',
       issuer: { country: 'ZZ' },
@@ -233,6 +248,19 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: {},
+    },
+    {
+      category: 'proof_of_ownership',
+      type: 'company_structure',
+      issuer: { country: 'ZZ' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        companyName: Type.Optional(Type.String()),
+        ownershipStructure: Type.Optional(Type.String()),
+        parentCompanyName: Type.Optional(Type.String()),
+        documentDate: Type.Optional(Type.String({ format: 'date' })),
+      }),
     },
   ];
 };
