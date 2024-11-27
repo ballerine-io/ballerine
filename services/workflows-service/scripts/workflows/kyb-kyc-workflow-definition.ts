@@ -229,7 +229,6 @@ export const kybKycWorkflowDefinition = {
         deliverEvent: 'KYC_RESPONDED',
       },
     ],
-    createCollectionFlowToken: true,
   },
   contextSchema: {
     type: 'json-schema',
