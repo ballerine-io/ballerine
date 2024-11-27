@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.54
+
+### Patch Changes
+
+- Reworked getOrderedSteps & fixed tests
+
 ## 0.9.53
 
 ### Patch Changes
