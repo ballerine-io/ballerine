@@ -416,7 +416,9 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
                 vendor: 'dow-jones',
                 ${getKycEntityMapping(options.takeEntityDetailFromKyc)}
                 ${options.dataMapping || ''}
-                dateOfBirth: ${options.dateOfBirth ? `'${options.dateOfBirth}'` : `'1990-01-01'`},
+                dateOfBirth: ${
+                  options.dateOfBirth ? `'${options.dateOfBirth.split('T')[0]}'` : `'1990-01-01'`
+                },
                 ongoingMonitoring: ${options.ongoingMonitoring || false ? 'true' : 'false'},
                 endUserId: join('__', [entity.ballerineEntityId, '']),
                 clientId: clientId,
