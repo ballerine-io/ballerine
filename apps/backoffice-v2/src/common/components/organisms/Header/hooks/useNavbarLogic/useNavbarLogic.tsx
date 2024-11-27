@@ -1,7 +1,7 @@
 import { useFiltersQuery } from '@/domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useCallback, useMemo } from 'react';
-import { Building, Goal, Home, Users } from 'lucide-react';
+import { Building, Goal, Home, MonitorDot, Users } from 'lucide-react';
 import { TRoutes, TRouteWithChildren } from '@/Router/types';
 import { useLocation } from 'react-router-dom';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
@@ -28,26 +28,26 @@ export const useNavbarLogic = () => {
       href: `/${locale}/home`,
       key: 'nav-item-Home',
     },
+    ...(customer?.config?.isMerchantMonitoringEnabled
+      ? [
+          {
+            text: 'Merchant Monitoring',
+            icon: <MonitorDot size={20} />,
+            href: `/en/merchant-monitoring`,
+            key: 'nav-item-merchant-monitoring',
+          },
+        ]
+      : []),
     {
       text: 'Businesses',
       icon: <Building size={20} />,
-      children: [
-        ...(customer?.config?.isMerchantMonitoringEnabled
-          ? [
-              {
-                text: 'Merchant Monitoring',
-                href: `/en/merchant-monitoring`,
-                key: 'nav-item-merchant-monitoring',
-              },
-            ]
-          : []),
-        ...(businessesFilters?.map(({ id, name }) => ({
+      children:
+        businessesFilters?.map(({ id, name }) => ({
           filterId: id,
           text: name,
           href: `/${locale}/case-management/entities?filterId=${id}`,
           key: `nav-item-${id}`,
-        })) ?? []),
-      ],
+        })) ?? [],
       key: 'nav-item-businesses',
     },
     {

@@ -159,6 +159,7 @@ export class ApiPlugin {
     ok: boolean;
     json: () => Promise<unknown>;
     statusText: string;
+    headers: Headers;
   }> {
     let _url: string = url;
 
@@ -189,6 +190,7 @@ export class ApiPlugin {
         ok: true,
         json: () => Promise.resolve({ statusCode: res.status }),
         statusText: 'OK',
+        headers: res.headers,
       };
     }
 
@@ -215,7 +217,10 @@ export class ApiPlugin {
     }
 
     for (const transformer of transformers) {
-      mutatedRecord = await this.transformByTransformer(transformer, mutatedRecord);
+      const transformed = await this.transformByTransformer(transformer, mutatedRecord);
+      mutatedRecord = Object.fromEntries(
+        Object.entries(transformed).filter(([_, value]) => value !== null && value !== undefined),
+      );
     }
 
     return mutatedRecord;

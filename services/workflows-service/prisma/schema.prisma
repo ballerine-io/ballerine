@@ -482,8 +482,8 @@ model WorkflowRuntimeDataToken {
   token                 String              @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   workflowRuntimeDataId String
   workflowRuntimeData   WorkflowRuntimeData @relation(fields: [workflowRuntimeDataId], references: [id])
-  endUserId             String
-  endUser               EndUser             @relation(fields: [endUserId], references: [id])
+  endUserId             String?
+  endUser               EndUser?            @relation(fields: [endUserId], references: [id])
   projectId             String
   project               Project             @relation(fields: [projectId], references: [id])
   createdAt             DateTime            @default(now())
@@ -725,6 +725,7 @@ model TransactionRecord {
   @@unique([projectId, transactionCorrelationId])
   @@index([transactionType])
   @@index([transactionDate])
+  @@index([transactionDirection])
   @@index([transactionStatus])
   @@index([reviewStatus])
   @@index([projectId])
@@ -815,7 +816,7 @@ model Alert {
   status        AlertStatus
   tags          String[]
   severity      AlertSeverity?
-  
+
   state         AlertState
   decisionAt    DateTime?
 

@@ -39,6 +39,7 @@ import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.
 import { WorkflowModule } from '@/workflow/workflow.module';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+import { CollectionFlowNoUserController } from '@/collection-flow/controllers/collection-flow.no-user.controller';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { Module } from '@nestjs/common';
   controllers: [
     CollectionFlowController,
     CollectionFlowFilesController,
+    CollectionFlowNoUserController,
     CollectionFlowBusinessController,
     CollectionFlowEndUserController,
   ],

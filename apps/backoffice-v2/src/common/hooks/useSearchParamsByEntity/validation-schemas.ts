@@ -49,6 +49,18 @@ export const CaseTabs = [
   'customData',
 ] as const;
 
+export const TabToLabel = {
+  summary: 'Summary',
+  companyInformation: 'Company',
+  storeInformation: 'Store',
+  documents: 'Documents',
+  ubos: 'UBOs',
+  associatedCompanies: 'Associated Companies',
+  directors: 'Directors',
+  monitoringReports: 'Monitoring Reports',
+  customData: 'Custom Data',
+} as const;
+
 export const CaseTabsSchema = z.enum(CaseTabs);
 
 export const IndividualsSearchSchema = (authenticatedUserId: string) =>

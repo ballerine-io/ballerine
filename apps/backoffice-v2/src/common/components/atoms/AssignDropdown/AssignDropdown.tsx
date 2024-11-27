@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo } from 'react';
+import { FunctionComponent, useMemo } from 'react';
 
 import { CheckSvg, DoubleCaretSvg, UnassignedAvatarSvg } from '../icons';
 import { DropdownMenu } from '../../molecules/DropdownMenu/DropdownMenu';
@@ -7,15 +7,17 @@ import { DropdownMenuTrigger } from '../../molecules/DropdownMenu/DropdownMenu.T
 import { DropdownMenuContent } from '../../molecules/DropdownMenu/DropdownMenu.Content';
 import { UserAvatar } from '../UserAvatar/UserAvatar';
 import { TAuthenticatedUser } from '../../../../domains/auth/types';
+import { filterUsersByRole, TUserRole } from '@/domains/users/utils/filter-users-by-role';
 
 export type TAssignee = Pick<TAuthenticatedUser, 'id' | 'fullName' | 'avatarUrl'>;
 
 interface IAssignDropdownProps {
-  assignees: TAssignee[];
+  assignees: TAuthenticatedUser[];
   assignedUser?: TAssignee;
   authenticatedUserId: string;
   onAssigneeSelect: (id: string) => void;
   isDisabled?: boolean;
+  excludedRoles?: TUserRole[];
 }
 
 export const AssignDropdown: FunctionComponent<IAssignDropdownProps> = ({
@@ -24,16 +26,21 @@ export const AssignDropdown: FunctionComponent<IAssignDropdownProps> = ({
   onAssigneeSelect,
   authenticatedUserId,
   isDisabled,
+  excludedRoles = [],
 }) => {
+  const filteredAssignees = useMemo(
+    () => filterUsersByRole(assignees, excludedRoles),
+    [assignees, excludedRoles],
+  );
+
   const sortedAssignees = useMemo(
     () =>
-      // Sort assignees so that the authenticated user is always first
-      assignees
+      filteredAssignees
         ?.slice()
         ?.sort((a, b) =>
           a?.id === authenticatedUserId ? -1 : b?.id === authenticatedUserId ? 1 : 0,
         ),
-    [assignees, authenticatedUserId],
+    [filteredAssignees, authenticatedUserId],
   );
 
   return (
