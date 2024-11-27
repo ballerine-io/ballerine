@@ -50,6 +50,7 @@
 
 ### Patch Changes
 
+- Added additionalContext
 - version bump
 - Updated dependencies
   - @ballerine/workflow-core@0.6.65

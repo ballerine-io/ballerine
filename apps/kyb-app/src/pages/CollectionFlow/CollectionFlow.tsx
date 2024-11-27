@@ -38,6 +38,7 @@ import {
 } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 import { FailedScreen } from './components/pages/FailedScreen';
+import { useAdditionalWorkflowContext } from './hooks/useAdditionalWorkflowContext';
 
 const elems = {
   h1: Title,
@@ -73,6 +74,7 @@ export const CollectionFlow = withSessionProtected(() => {
   const { customer } = useCustomer();
   const { t } = useTranslation();
   const { themeDefinition } = useTheme();
+  const additionalContext = useAdditionalWorkflowContext();
 
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;
@@ -141,6 +143,7 @@ export const CollectionFlow = withSessionProtected(() => {
         extensions={schema?.definition.extensions}
         definition={definition as State}
         config={collectionFlowData?.config}
+        additionalContext={additionalContext}
       >
         {({ state, stateApi }) => {
           return (

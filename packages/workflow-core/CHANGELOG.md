@@ -46,6 +46,7 @@
 
 ### Patch Changes
 
+- Added additionalContext
 - version bump
 
 ## 0.6.64
