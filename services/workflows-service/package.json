@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflows-service",
   "private": false,
-  "version": "0.7.72",
+  "version": "0.7.73",
   "description": "workflow-service",
   "scripts": {
     "spellcheck": "cspell \"*\"",
@@ -49,8 +49,8 @@
     "@aws-sdk/lib-storage": "3.347.1",
     "@aws-sdk/s3-request-presigner": "3.347.1",
     "@ballerine/common": "0.9.53",
-    "@ballerine/workflow-core": "0.6.68",
-    "@ballerine/workflow-node-sdk": "0.6.68",
+    "@ballerine/workflow-core": "0.6.69",
+    "@ballerine/workflow-node-sdk": "0.6.69",
     "@faker-js/faker": "^7.6.0",
     "@nestjs/axios": "^2.0.0",
     "@nestjs/common": "^9.3.12",

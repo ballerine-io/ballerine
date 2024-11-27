@@ -415,7 +415,8 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             mapping: `{
                 vendor: 'dow-jones',
                 ${getKycEntityMapping(options.takeEntityDetailFromKyc)}
-                dateOfBirth: ${options.dateOfBirth ? `'${options.dateOfBirth}'` : '1990-01-01'}
+                ${options.dataMapping || ''}
+                dateOfBirth: ${options.dateOfBirth ? `'${options.dateOfBirth}'` : `'1990-01-01'`},
                 ongoingMonitoring: ${options.ongoingMonitoring || false ? 'true' : 'false'},
                 endUserId: join('__', [entity.ballerineEntityId, '']),
                 clientId: clientId,
@@ -978,7 +979,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/KYC_RESPONSE_RECEIVED','?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result']),
               vendor: 'veriff',
               withAml: ${options.withAml ?? false ? 'true' : 'false'}
-              }`, // jmespath
+            }`, // jmespath
           },
         ],
       },
