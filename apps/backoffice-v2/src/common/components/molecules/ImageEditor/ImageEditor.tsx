@@ -28,7 +28,7 @@ export const ImageEditor: FunctionComponentWithChildren<IImageEditorProps> = ({
   return (
     <TransformWrapper onTransformed={onTransformed}>
       <TransformComponent
-        wrapperClass={`max-w-[600px] max-h-[600px] h-full`}
+        wrapperClass={`d-full max-w-[600px] max-h-[600px] h-full`}
         contentClass={ctw({
           'hover:cursor-move': !isPdf(image),
         })}

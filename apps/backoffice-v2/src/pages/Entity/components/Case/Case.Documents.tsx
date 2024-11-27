@@ -54,11 +54,10 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
 
   return (
     <ImageViewer selectedImage={selectedImage} onSelectImage={onSelectImage}>
-      <div className={`flex min-h-[600px] w-full flex-col items-center`}>
+      <div className={`flex w-full flex-col items-center`}>
         <div
           className={ctw(
-            `
-            d-full relative flex rounded-md`,
+            `d-full relative flex rounded-md`,
             { 'justify-center': isPage },
             { 'justify-end': !isPage },
           )}
