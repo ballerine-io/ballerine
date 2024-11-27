@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { BasicStrategy } from './basic/basic.strategy';
 import { PasswordService } from './password/password.service';
 // eslint-disable-next-line import/no-cycle
-import { UserModule } from '../user/user.module';
+import { UserModule } from '@/user/user.module';
 import { LocalStrategy } from '@/auth/local/local.strategy';
 import { SessionSerializer } from '@/auth/session-serializer';
 import { UserService } from '@/user/user.service';
