@@ -24,7 +24,7 @@ export const SignUpPage = () => {
   }
 
   return (
-    <Signup themeParams={themeDefinition.signup}>
+    <Signup themeParams={themeDefinition?.signup}>
       <Content>
         <Logo />
         <Header />

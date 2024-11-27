@@ -1,26 +1,18 @@
 import { logger } from '../../logger';
 import { ISerializableMappingPluginParams } from '../../plugins/common-plugin/types';
-import { SerializableValidatableTransformer } from '../../plugins/external-plugin';
 import { HelpersTransformer, TContext, THelperFormatingLogic } from '../../utils';
-
-export interface HelpersTransformerParams {
-  mapping: THelperFormatingLogic;
-}
-
-export type TransformerPluginTransformersType = 'helpers-transformer';
-export type TransformerPluginTransformersParams = SerializableValidatableTransformer;
 
 export interface TransformerPluginParams {
   name: string;
   stateNames: string[];
-  transformers: { transformer: string; mapping: string | THelperFormatingLogic }[];
+  transformers: Array<{ transformer: string; mapping: string | THelperFormatingLogic }>;
 }
 
 export class TransformerPlugin implements ISerializableMappingPluginParams {
   public static pluginType = 'transformer';
   public name: string;
   stateNames: string[];
-  transformers: { transformer: string; mapping: string | THelperFormatingLogic }[];
+  transformers: Array<{ transformer: string; mapping: string | THelperFormatingLogic }>;
 
   constructor(params: TransformerPluginParams) {
     this.name = params.name;
@@ -41,6 +33,7 @@ export class TransformerPlugin implements ISerializableMappingPluginParams {
     }
 
     logger.log('Transform performed successfully.');
+
     return {};
   }
 

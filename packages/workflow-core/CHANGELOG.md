@@ -1,5 +1,20 @@
 # @ballerine/workflow-core
 
+## 0.6.68
+
+### Patch Changes
+
+- version bump
+  : Please enter a summary for your changes.
+
+## 0.6.67
+
+### Patch Changes
+
+- Created a non JMESPath sanctions plugin using JS
+- Updated dependencies
+  - @ballerine/common@0.9.53
+
 ## 0.6.66
 
 ### Patch Changes

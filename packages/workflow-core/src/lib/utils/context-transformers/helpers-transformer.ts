@@ -5,13 +5,28 @@ import { AnyRecord } from '@ballerine/common';
 import merge from 'lodash.merge';
 import { logger } from '../../logger';
 
-export type THelperMethod =
+export type GetClassMethods<
+  // Any typeof class
+  TClass extends new (...args: any[]) => any,
+> = {
+  // Check if value is a function
+  [TKey in keyof InstanceType<TClass>]: InstanceType<TClass>[TKey] extends (...args: any[]) => any
+    ? TKey
+    : never;
+  // Get all keys that are functions
+}[keyof InstanceType<TClass>];
+
+export type THelperMethod = Extract<
+  GetClassMethods<typeof HelpersTransformer>,
   | 'regex'
   | 'imageUrlToBase64'
   | 'remove'
   | 'mergeArrayEachItemWithValue'
   | 'omit'
-  | 'setTimeToRecordUTC';
+  | 'setTimeToRecordUTC'
+  | 'copy'
+>;
+
 export class HelpersTransformer extends BaseContextTransformer {
   name = 'helpers-transformer';
   mapping: THelperFormatingLogic;
@@ -137,5 +152,9 @@ export class HelpersTransformer extends BaseContextTransformer {
     }
 
     return result;
+  }
+
+  copy(_context: TContext, attribute: AnyRecord, value: string[]) {
+    return attribute;
   }
 }

@@ -10,7 +10,9 @@ import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUI
 import { UIElement } from '@/domains/collection-flow';
 import { AnyObject, ErrorsList, RJSFInputAdapter, RJSFInputProps } from '@ballerine/ui';
 import get from 'lodash/get';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
+import { useEventEmitterLogic } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler';
+import { useRefValue } from '@/hooks/useRefValue';
 
 const findLastDigit = (str: string) => {
   const digitRegex = /_(\d+)_/g;
@@ -121,6 +123,13 @@ export const withDynamicUIInput = (
     );
 
     const { validationErrors, warnings } = useUIElementErrors(definition);
+
+    const emitEvent = useEventEmitterLogic(definition);
+    const emitEventRef = useRefValue(emitEvent);
+
+    useEffect(() => {
+      emitEventRef.current('onMount');
+    }, [emitEventRef]);
 
     return (
       <div className="flex flex-col gap-2">
