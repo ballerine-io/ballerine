@@ -25,11 +25,11 @@ export const Multiselect = ({
     (params, option) => {
       return (
         <Chip
-          key={option.value}
+          key={option?.value}
           className="h-6"
           variant={definition?.options.variants?.chip?.wrapper}
         >
-          <Chip.Label text={option.title} variant={definition?.options.variants?.chip?.label} />
+          <Chip.Label text={option?.title} variant={definition?.options.variants?.chip?.label} />
           <Chip.UnselectButton
             {...params.unselectButtonProps}
             icon={<X className="hover:text-muted-foreground h-3 w-3 text-white" />}
