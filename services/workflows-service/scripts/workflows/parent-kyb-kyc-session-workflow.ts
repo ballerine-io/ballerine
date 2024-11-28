@@ -117,10 +117,10 @@ export const parentKybWithSessionWorkflowDefinition = {
             {
               transformer: 'jmespath',
               mapping: `{
-              countryOfIncorporation: entity.data.countryOfIncorporation,
-              companyNumber: entity.data.registrationNumber,
-              state: entity.data.dynamicInfo.companyInformation.state
-              vendor: 'open-corporates'
+                countryOfIncorporation: entity.data.countryOfIncorporation,
+                companyNumber: entity.data.registrationNumber,
+                state: entity.data.dynamicInfo.companyInformation.state
+                vendor: 'open-corporates'
               }`, // jmespath
             },
           ],
