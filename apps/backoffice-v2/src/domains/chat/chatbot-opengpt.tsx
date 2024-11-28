@@ -1,7 +1,9 @@
-import { getClient, Webchat, WebchatProvider } from '@botpress/webchat';
+import { getClient, Webchat, WebchatProvider, WebchatClient } from '@botpress/webchat';
 import { buildTheme } from '@botpress/webchat-generator';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useAuthenticatedUserQuery } from '../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useCurrentCaseQuery } from '../../pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
+import { useLocation } from 'react-router-dom';
 
 // declare const themeNames: readonly ["prism", "galaxy", "dusk", "eggplant", "dawn", "midnight"];
 const { theme, style } = buildTheme({
@@ -9,30 +11,84 @@ const { theme, style } = buildTheme({
   themeColor: 'blue',
 });
 
-const clientId = '8f29c89d-ec0e-494d-b18d-6c3590b28be6';
+// const clientId = '8f29c89d-ec0e-494d-b18d-6c3590b28be6';
+const clientId = import.meta.env.VITE_BOTPRESS_CLIENT_ID;
 
 const Chatbot = ({
   isWebchatOpen,
   toggleIsWebchatOpen,
+  client,
+  setClient,
 }: {
   isWebchatOpen: boolean;
   toggleIsWebchatOpen: () => void;
+  client: WebchatClient | null;
+  setClient: (client: WebchatClient) => void;
 }) => {
-  const client = getClient({ clientId });
   const { data: session } = useAuthenticatedUserQuery();
+  const { data: currentCase } = useCurrentCaseQuery();
+  const { pathname } = useLocation();
+
+  const sendCaseData = useCallback(
+    async (caseId: string, newClient?: WebchatClient) => {
+      if (!currentCase) return;
+
+      const clientToUse = newClient || client;
+
+      try {
+        const currentCaseData = {
+          ...currentCase.context,
+          caseId,
+        };
+        await clientToUse?.sendEvent({
+          type: 'case-data',
+          data: currentCaseData,
+        });
+      } catch (error) {
+        console.error('Failed to send case data:', error);
+      }
+    },
+    [currentCase, client],
+  );
 
   useEffect(() => {
-    if (session?.user) {
-      const { firstName, lastName, email } = session.user;
-      void client.updateUser({
+    if (client || !clientId || !session?.user) return;
+
+    const { firstName, lastName, email } = session.user;
+    const newClient = getClient({ clientId });
+    setClient(newClient);
+
+    // newClient.on('*', (ev: any) => {
+    //   console.log('Event: ', ev);
+    // });
+
+    newClient.on('conversation', (ev: any) => {
+      // new conversation created
+      void newClient.updateUser({
         data: {
           firstName,
           lastName,
           email,
         },
       });
-    }
-  }, [session, client]);
+      const caseId = pathname.split('/')[pathname.split('/').length - 1];
+      setTimeout(() => {
+        void sendCaseData(caseId || '', newClient);
+      }, 500);
+    });
+  }, [session, client, setClient, sendCaseData, pathname]);
+
+  useEffect(() => {
+    console.log('pathname changed to: ', pathname);
+
+    const caseId = pathname.split('/')[pathname.split('/').length - 1];
+
+    if (caseId) void sendCaseData(caseId);
+  }, [pathname, sendCaseData]);
+
+  if (!client) {
+    return null;
+  }
 
   return (
     <div>
