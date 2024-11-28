@@ -1,3 +1,9 @@
+/**
+ * Determines if the current window is running within an iframe.
+ * Handles both same-origin and cross-origin iframe scenarios.
+ *
+ * @returns {boolean} True if running in an iframe (including cross-origin), false otherwise
+ */
 export const isIframe = (): boolean => {
   try {
     // Check if window.self and window.top are the same reference
@@ -10,7 +16,7 @@ export const isIframe = (): boolean => {
     }
 
     return isFramed;
-  } catch (e) {
+  } catch (e: unknown) {
     // If we get a security error, we're definitely in a cross-origin iframe
     return true;
   }
