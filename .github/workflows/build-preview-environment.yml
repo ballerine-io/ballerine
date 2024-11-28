@@ -103,11 +103,11 @@ jobs:
       - name: Trigger workflow in another repo
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GH_TOKEN }}
+          github-token: ${{ secrets.GIT_TOKEN }}
           script: |
             await github.rest.repos.createDispatchEvent({
               owner: 'ballerine-io',
-              repo: 'ballerine',
+              repo: 'cloud-infra-config',
               event_type: 'deploy-preview',
               client_payload: {
                 'ref': '${{ needs.deploy-dev-pr-environment.outputs.env_name }}'
