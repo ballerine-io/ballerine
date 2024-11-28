@@ -6,6 +6,8 @@ import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQu
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
 import Chatbot from '@/domains/chat/chatbot-opengpt';
 import { WebchatClient } from '@botpress/webchat';
+import { RenderChildrenInIFrame } from '@/common/components/organisms/RenderChildrenInIFrame/RenderChildrenInIFrame';
+import { ctw } from '@/common/utils/ctw/ctw';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
@@ -32,12 +34,19 @@ const ChatbotLayout: FunctionComponent = () => {
   }
 
   return (
-    <Chatbot
-      isWebchatOpen={isWebchatOpen}
-      toggleIsWebchatOpen={toggleIsWebchatOpen}
-      client={client}
-      setClient={setClient}
-    />
+    <RenderChildrenInIFrame
+      className={ctw('fixed bottom-right-0', {
+        'h-[700px] w-[400px]': isWebchatOpen,
+        'd-[80px]': !isWebchatOpen,
+      })}
+    >
+      <Chatbot
+        isWebchatOpen={isWebchatOpen}
+        toggleIsWebchatOpen={toggleIsWebchatOpen}
+        client={client}
+        setClient={setClient}
+      />
+    </RenderChildrenInIFrame>
   );
 };
 
