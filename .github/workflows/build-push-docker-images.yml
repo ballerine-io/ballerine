@@ -24,15 +24,22 @@ on:
         description: "Tag name of the Preview Image"
         type: string
 
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ inputs.ref }}
+          fetch-depth: 1
+          persist-credentials: false
           sparse-checkout: |
             ${{ inputs.context }}
           sparse-checkout-cone-mode: true
@@ -60,16 +67,16 @@ jobs:
           tag: ${{ steps.version.outputs.tag }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
         with:
           platforms: 'arm64,arm'
 
       - name: Cache Docker layers
         id: cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
@@ -96,14 +103,13 @@ jobs:
       - name: Print docker version outputs
         run: |
           echo "Metadata: ${{ steps.docker_meta.outputs.tags }}"
-
-          echo "sha_short: ${{ steps.version.outputs.sha_short }}"
-          echo "docker_meta-tags: ${{ steps.docker_meta.outputs.tags }}"
-          echo "bump-version-version: ${{ steps.bump-version.outputs.version }}"
-          echo "bump-version-tag: ${{ steps.bump-version.outputs.tag }}"
+          if [[ "${{ inputs.image_name }}" == "workflows-service" ]]; then
+            echo "sha_short: ${{ steps.version.outputs.sha_short }}"
+            echo "bump-version-version: ${{ steps.bump-version.outputs.version }}"
+            echo "bump-version-tag: ${{ steps.bump-version.outputs.tag }}"
+          fi
 
       - name: Build and push Docker image
-        if: ${{ inputs.image_name }} == 'workflows-service'
         uses: docker/build-push-action@v5
         with:
           context: ${{ inputs.context }}
@@ -113,20 +119,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache
           tags: ${{ steps.docker_meta.outputs.tags }}
           build-args: |
-            "RELEASE=${{ steps.version.outputs.tag }}"
-            "SHORT_SHA=${{ steps.version.outputs.sha_short }}"
-      
-
-      - name: Build and push Docker image
-        if: ${{ inputs.image_name }} != 'workflows-service'
-        uses: docker/build-push-action@v5
-        with:
-          context: ${{ inputs.context }}
-          platforms: linux/amd64
-          push: true
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-          tags: ${{ steps.docker_meta.outputs.tags }}
+            ${{ inputs.image_name == 'workflows-service' && format('"RELEASE={0}"\n"SHORT_SHA={1}"', steps.version.outputs.tag, steps.version.outputs.sha_short) || '' }}
 
       - name: Scan Docker Image
         uses: aquasecurity/trivy-action@master
@@ -137,4 +130,5 @@ jobs:
           ignore-unfixed: true
           exit-code: 1
           vuln-type: 'os,library'
-          severity: 'CRITICAL'
+          severity: 'CRITICAL,HIGH'
+          timeout: '5m'
