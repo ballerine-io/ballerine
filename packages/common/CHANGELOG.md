@@ -1,5 +1,23 @@
 # @ballerine/common
 
+## 0.9.54
+
+### Patch Changes
+
+- bump
+
+## 0.9.53
+
+### Patch Changes
+
+- Created a non JMESPath sanctions plugin using JS
+
+## 0.9.52
+
+### Patch Changes
+
+- version bump
+
 ## 0.9.51
 
 ### Patch Changes

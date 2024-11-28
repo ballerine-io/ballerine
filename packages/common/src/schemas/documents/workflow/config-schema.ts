@@ -72,7 +72,6 @@ export const WorkflowConfigSchema = Type.Object({
   availableDocuments: Type.Optional(Type.Array(AvailableDocumentSchema)),
   callbackResult: Type.Optional(CallbackResultSchema),
   childCallbackResults: Type.Optional(Type.Array(ChildCallbackResultSchema)),
-  createCollectionFlowToken: Type.Optional(Type.Boolean()),
   mainRepresentative: Type.Optional(MainRepresentativeSchema),
   customerName: Type.Optional(Type.String()),
   enableManualCreation: Type.Optional(Type.Boolean()),

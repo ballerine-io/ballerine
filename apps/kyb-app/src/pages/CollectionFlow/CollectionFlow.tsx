@@ -40,6 +40,7 @@ import { AnyObject } from '@ballerine/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AnimatedUIRenderer } from './components/organisms/AnimatedUIRenderer';
 import { FailedScreen } from './components/pages/FailedScreen';
+import { useAdditionalWorkflowContext } from './hooks/useAdditionalWorkflowContext';
 
 const elems = {
   h1: Title,
@@ -76,6 +77,7 @@ export const CollectionFlow = () => {
   const { customer } = useCustomerQuery();
   const { t } = useTranslation();
   const { themeDefinition } = useTheme();
+  const additionalContext = useAdditionalWorkflowContext();
 
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;

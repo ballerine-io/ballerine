@@ -1,5 +1,4 @@
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
-import { BusinessReportService } from '@/business-report/business-report.service';
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
 import { ajv } from '@/common/ajv/ajv.validator';
@@ -52,11 +51,9 @@ import {
 } from '@/workflow/workflow-runtime-list-item.model';
 import {
   AnyRecord,
-  buildCollectionFlowState,
   CollectionFlowStatusesEnum,
   DefaultContextSchema,
   getDocumentId,
-  getOrderedSteps,
   isErrorWithMessage,
   isObject,
   ProcessStatus,
@@ -89,7 +86,6 @@ import {
   EndUser,
   Prisma,
   PrismaClient,
-  UiDefinitionContext,
   User,
   WorkflowDefinition,
   WorkflowRuntimeData,
@@ -100,7 +96,6 @@ import { plainToClass } from 'class-transformer';
 import dayjs from 'dayjs';
 import { isEqual, merge } from 'lodash';
 import mime from 'mime';
-import { WORKFLOW_FINAL_STATES } from './consts';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
@@ -140,7 +135,6 @@ export class WorkflowService {
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly endUserRepository: EndUserRepository,
     protected readonly endUserService: EndUserService,
-    protected readonly businessReportService: BusinessReportService,
     protected readonly businessRepository: BusinessRepository,
     protected readonly businessService: BusinessService,
     protected readonly entityRepository: EntityRepository,
@@ -1444,12 +1438,6 @@ export class WorkflowService {
         validatedConfig || {},
       ) as InputJsonValue;
 
-      const entities: Array<{
-        id: string;
-        type: 'individual' | 'business';
-        tags?: Array<'mainRepresentative' | 'UBO'>;
-      }> = [];
-
       // Creating new workflow
       if (
         !existingWorkflowRuntimeData ||
@@ -1466,19 +1454,6 @@ export class WorkflowService {
           currentProjectId,
           customer.name,
         );
-        let uiDefinition;
-
-        try {
-          uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
-            workflowDefinitionId,
-            UiDefinitionContext.collection_flow,
-            projectIds,
-          );
-        } catch (err) {
-          if (isErrorWithMessage(err)) {
-            this.logger.warn(err.message);
-          }
-        }
 
         workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
           {
@@ -1518,87 +1493,6 @@ export class WorkflowService {
           logger: this.logger,
           workflowRuntimeData,
         });
-
-        let endUserId: string | null = null;
-        const entityData =
-          workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative;
-
-        if (mergedConfig.createCollectionFlowToken) {
-          if (entityType === 'endUser') {
-            endUserId = entityId;
-            entities.push({ type: 'individual', id: entityId });
-          } else if (entityData) {
-            endUserId = await this.__generateEndUserWithBusiness({
-              entityType,
-              workflowRuntimeData,
-              entityData: entityData,
-              currentProjectId,
-              entityId,
-              position: BusinessPosition.representative,
-            });
-
-            entities.push({
-              type: 'individual',
-              id: endUserId,
-            });
-
-            entities.push({ type: 'business', id: entityId });
-
-            if (entityData) {
-              workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.ballerineEntityId =
-                endUserId;
-            }
-          }
-
-          const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-          const workflowToken = await this.workflowTokenService.create(
-            currentProjectId,
-            {
-              workflowRuntimeDataId: workflowRuntimeData.id,
-              endUserId: endUserId ?? null,
-              expiresAt: nowPlus30Days,
-            },
-            transaction,
-          );
-
-          const collectionFlow = buildCollectionFlowState({
-            apiUrl: env.APP_API_URL,
-            steps: uiDefinition?.definition
-              ? getOrderedSteps(
-                  (uiDefinition?.definition as Prisma.JsonObject)?.definition as Record<
-                    string,
-                    Record<string, unknown>
-                  >,
-                  { finalStates: [...WORKFLOW_FINAL_STATES] },
-                ).map(stepName => ({
-                  stateName: stepName,
-                }))
-              : [],
-            additionalInformation: {
-              customerCompany: customer.displayName,
-            },
-          });
-
-          workflowRuntimeData = await this.workflowRuntimeDataRepository.updateStateById(
-            workflowRuntimeData.id,
-            {
-              data: {
-                context: {
-                  ...workflowRuntimeData.context,
-                  collectionFlow,
-                  metadata: {
-                    ...(workflowRuntimeData.context.metadata ?? {}),
-                    token: workflowToken.token,
-                    collectionFlowUrl: env.COLLECTION_FLOW_URL,
-                    webUiSDKUrl: env.WEB_UI_SDK_URL,
-                  },
-                } as InputJsonValue,
-                projectId: currentProjectId,
-              },
-            },
-            transaction,
-          );
-        }
 
         if (mergedConfig?.initialEvent) {
           workflowRuntimeData = await this.event(
@@ -1680,7 +1574,6 @@ export class WorkflowService {
           workflowDefinition,
           workflowRuntimeData,
           ballerineEntityId: entityId,
-          entities,
         },
       ] as const;
     });

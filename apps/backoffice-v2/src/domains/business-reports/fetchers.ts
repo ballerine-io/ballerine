@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { t } from 'i18next';
 import {
   MERCHANT_REPORT_STATUSES,
+  MERCHANT_REPORT_STATUSES_MAP,
   MERCHANT_REPORT_TYPES,
   MERCHANT_REPORT_VERSIONS,
   MerchantReportType,
@@ -43,6 +44,10 @@ export const BusinessReportSchema = z
   })
   .transform(data => ({
     ...data,
+    status:
+      data.status === MERCHANT_REPORT_STATUSES_MAP.failed
+        ? MERCHANT_REPORT_STATUSES_MAP['quality-control']
+        : data.status,
     companyName:
       data?.companyName ??
       (data?.data?.websiteCompanyAnalysis as UnknownRecord | undefined)?.companyName ??
@@ -73,6 +78,7 @@ export const fetchLatestBusinessReport = async ({
     endpoint: `../external/business-reports/latest?businessId=${businessId}&type=${reportType}`,
     method: Method.GET,
     schema: BusinessReportSchema,
+    timeout: 30_000,
   });
 
   return handleZodError(error, data);
@@ -101,6 +107,7 @@ export const fetchBusinessReports = async ({
     endpoint: `../external/business-reports/?${queryParams}`,
     method: Method.GET,
     schema: BusinessReportsSchema,
+    timeout: 30_000,
   });
 
   return handleZodError(error, data);
@@ -111,6 +118,7 @@ export const fetchBusinessReportById = async ({ id }: { id: string }) => {
     endpoint: `../external/business-reports/${id}`,
     method: Method.GET,
     schema: BusinessReportSchema,
+    timeout: 30_000,
   });
 
   return handleZodError(error, businessReport);
@@ -159,6 +167,7 @@ export const createBusinessReport = async ({
       reportType,
       workflowVersion,
     },
+    timeout: 30_000,
   });
 
   return handleZodError(error, businessReport);
@@ -192,6 +201,7 @@ export const createBusinessReportBatch = async ({
     schema: z.object({ batchId: z.string() }),
     body: formData,
     isFormData: true,
+    timeout: 30_000,
   });
 
   return handleZodError(error, batchId);

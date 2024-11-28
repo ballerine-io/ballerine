@@ -50,6 +50,10 @@ export class CustomerService {
     return (await this.repository.findById(id, args)) as unknown as TCustomerWithFeatures;
   }
 
+  async getByName(name: string, args?: Parameters<CustomerRepository['findById']>[1]) {
+    return (await this.repository.findByName(name, args)) as unknown as TCustomerWithFeatures;
+  }
+
   async getByProjectId(projectId: string, args?: Omit<Prisma.CustomerFindFirstArgsBase, 'where'>) {
     return (await this.repository.findByProjectId(
       projectId,

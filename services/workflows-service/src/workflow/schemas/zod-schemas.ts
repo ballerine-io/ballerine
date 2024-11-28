@@ -40,10 +40,6 @@ export const ConfigSchema = z
           .optional(),
       )
       .optional(),
-    createCollectionFlowToken: z
-      .boolean()
-      .optional()
-      .describe('Whether to create a collection flow token as part of the workflow'),
     mainRepresentative: z
       .object({
         fullName: z.string(),

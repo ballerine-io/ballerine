@@ -2,6 +2,7 @@ import { ServerNotAvailableError } from '@/common/errors/server-not-available';
 import { getAccessToken } from '@/helpers/get-access-token.helper';
 import * as Sentry from '@sentry/react';
 import ky, { HTTPError } from 'ky';
+import { isExceptionWillBeHandled } from './helpers';
 
 export const request = ky.create({
   prefixUrl: import.meta.env.VITE_API_URL || `${window.location.origin}/api/v1/`,
@@ -44,33 +45,40 @@ export const request = ky.create({
 
         try {
           responseBody = await error.response.clone().text();
-        } catch (_) {
-          /* empty */
+          const responseJson = await error.response.clone().json();
+
+          const isShouldIgnore = isExceptionWillBeHandled({
+            message: (responseJson as { message: string }).message,
+          } as HTTPError);
+
+          if (isShouldIgnore) return error as HTTPError;
+
+          throw error;
+        } catch (error) {
+          Sentry.withScope(scope => {
+            // group errors together based on their request and response
+            scope.setFingerprint([
+              request.method,
+              request.url,
+              String((error as HTTPError).response.status),
+              getAccessToken() || 'anonymous',
+            ]);
+            Sentry.setUser({
+              id: getAccessToken() || 'anonymous',
+            });
+
+            Sentry.captureException(error, {
+              extra: {
+                ErrorMessage: `StatusCode: ${response?.status}, URL:${response?.url}`,
+                // @ts-ignore
+                reqId: response?.headers?.['X-Request-ID'],
+                bodyRaw: responseBody,
+              },
+            });
+          });
+
+          return error as HTTPError;
         }
-
-        Sentry.withScope(scope => {
-          // group errors together based on their request and response
-          scope.setFingerprint([
-            request.method,
-            request.url,
-            String(error.response.status),
-            getAccessToken() || 'anonymous',
-          ]);
-          Sentry.setUser({
-            id: getAccessToken() || 'anonymous',
-          });
-
-          Sentry.captureException(error, {
-            extra: {
-              ErrorMessage: `StatusCode: ${response?.status}, URL:${response?.url}`,
-              // @ts-ignore
-              reqId: response?.headers?.['X-Request-ID'],
-              bodyRaw: responseBody,
-            },
-          });
-        });
-
-        return error;
       },
     ],
   },
