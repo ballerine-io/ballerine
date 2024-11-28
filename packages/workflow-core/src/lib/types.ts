@@ -1,9 +1,6 @@
+import { RiskRulePlugin } from '@/lib/plugins/common-plugin/risk-rules-plugin';
+import type { AnyRecord } from '@ballerine/common';
 import type { MachineConfig, MachineOptions } from 'xstate';
-import type { CommonPlugins, HttpPlugins, StatePlugins } from './plugins/types';
-import type {
-  IDispatchEventPluginParams,
-  ISerializableHttpPluginParams,
-} from './plugins/external-plugin/types';
 import type {
   ChildWorkflowPluginParams,
   ISerializableChildPluginParams,
@@ -12,19 +9,22 @@ import type {
   ISerializableRiskRulesPlugin,
   WorkflowTokenPluginParams,
 } from './plugins/common-plugin/types';
+import type { DispatchEventPlugin } from './plugins/external-plugin/dispatch-event-plugin';
+import type {
+  IDispatchEventPluginParams,
+  ISerializableHttpPluginParams,
+} from './plugins/external-plugin/types';
+import type { CommonPlugins, HttpPlugins, StatePlugins } from './plugins/types';
 import type { TContext } from './utils';
 import type { THelperFormatingLogic } from './utils/context-transformers/types';
-import type { AnyRecord } from '@ballerine/common';
-import type { DispatchEventPlugin } from './plugins/external-plugin/dispatch-event-plugin';
-import { RiskRulePlugin } from '@/lib/plugins/common-plugin/risk-rules-plugin';
 
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
 
 export interface Workflow {
   subscribe: (eventName: string, callback: (event: WorkflowEvent) => Promise<void>) => void;
-  sendEvent: (event: WorkflowEventWithoutState) => Promise<void>;
+  sendEvent: (event: WorkflowEventWithoutState, additionalContext?: AnyRecord) => Promise<void>;
   getSnapshot: () => Record<PropertyKey, any>;
-  invokePlugin: (pluginName: string) => Promise<void>;
+  invokePlugin: (pluginName: string, additionalContext?: AnyRecord) => Promise<void>;
   overrideContext: (context: any) => any;
 }
 

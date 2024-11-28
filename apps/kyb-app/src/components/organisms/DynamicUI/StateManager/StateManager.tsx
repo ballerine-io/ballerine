@@ -16,6 +16,7 @@ export const StateManager = ({
   workflowId,
   initialContext,
   config,
+  additionalContext,
 }: StateManagerProps) => {
   const machine = useMemo(() => {
     const initialMachineState = {
@@ -29,14 +30,15 @@ export const StateManager = ({
       definitionType,
       extensions,
       initialMachineState,
+      additionalContext,
     );
 
     machine.overrideContext(initialMachineState);
 
     return machine;
-  }, []);
+  }, [additionalContext]);
 
-  const { machineApi } = useMachineLogic(machine);
+  const { machineApi } = useMachineLogic(machine, additionalContext);
   const {
     contextPayload,
     isPluginLoading,

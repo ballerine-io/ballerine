@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { uniqueArray } from '@ballerine/common';
+import { AnyRecord, uniqueArray } from '@ballerine/common';
 import {
   createWorkflow,
   Error as ErrorEnum,
@@ -31,8 +31,9 @@ export class WorkflowBrowserSDK {
   #__subscriptions: Partial<TSubscriptions> = {};
   #__service: ReturnType<typeof createWorkflow>;
   #__backendOptions!: BackendOptions;
+  #__additionalContext?: AnyRecord | undefined;
 
-  constructor({ backend, ...options }: WorkflowOptionsBrowser) {
+  constructor({ backend, additionalContext, ...options }: WorkflowOptionsBrowser) {
     this.#__mergeBackendOptions(backend);
 
     // Actions defined within the machine's `states` object.
@@ -67,6 +68,8 @@ export class WorkflowBrowserSDK {
         [Action.USER_NEXT_STEP]: assignContext,
       },
     });
+
+    this.#__additionalContext = additionalContext;
 
     this.#__service.subscribe(WorkflowEvents.STATE_UPDATE, async event => {
       const workflowBrowserSdkEvent = event as WorkflowEventWithBrowserType;
@@ -215,12 +218,18 @@ export class WorkflowBrowserSDK {
   overrideContext<TContext extends Record<string, any>>(context: any): TContext {
     return this.#__service.overrideContext(context);
   }
-  async invokePlugin(pluginName: string) {
-    return await this.#__service.invokePlugin(pluginName);
+  async invokePlugin(
+    pluginName: string,
+    additionalContext: AnyRecord | undefined = this.#__additionalContext,
+  ) {
+    return await this.#__service.invokePlugin(pluginName, additionalContext);
   }
 
-  async sendEvent(event: WorkflowEventWithoutState) {
-    return this.#__service.sendEvent(event);
+  async sendEvent(
+    event: WorkflowEventWithoutState,
+    additionalContext: AnyRecord | undefined = this.#__additionalContext,
+  ) {
+    return this.#__service.sendEvent(event, additionalContext);
   }
 
   getSnapshot() {
