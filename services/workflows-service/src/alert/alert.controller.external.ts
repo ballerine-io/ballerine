@@ -124,14 +124,17 @@ export class AlertControllerExternal {
       const {
         alertDefinition,
         assignee,
+        counterparty,
         counterpartyBeneficiary,
         counterpartyOriginator,
         state,
         ...alertWithoutDefinition
       } = alert as TAlertTransactionResponse;
 
-      const counterpartyDetails = (counterparty: TAlertTransactionResponse['counterparty']) =>
-        counterparty.business
+      const counterpartyDetails = (counterparty: TAlertTransactionResponse['counterparty']) => {
+        if (!counterparty) return;
+
+        return counterparty?.business
           ? {
               type: 'business',
               id: counterparty.business.id,
@@ -144,7 +147,7 @@ export class AlertControllerExternal {
               correlationId: counterparty.endUser.correlationId,
               name: `${counterparty.endUser.firstName} ${counterparty.endUser.lastName}`,
             };
-
+      };
       return {
         ...alertWithoutDefinition,
         correlationId: alertDefinition.correlationId,
@@ -157,6 +160,7 @@ export class AlertControllerExternal {
           : null,
         alertDetails: alertDefinition.description,
         subject:
+          counterpartyDetails(counterparty) ||
           counterpartyDetails(counterpartyBeneficiary) ||
           counterpartyDetails(counterpartyOriginator),
         decision: state,
