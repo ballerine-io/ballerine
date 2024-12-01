@@ -98,5 +98,6 @@ services:
       timeout: 45s
       interval: 10s
       retries: 10
+    restart: on-failure
 volumes:
   postgres15: ~
