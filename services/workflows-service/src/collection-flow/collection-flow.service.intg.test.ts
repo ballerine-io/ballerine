@@ -37,7 +37,6 @@ import { Customer, EndUser, PrismaClient, Project } from '@prisma/client';
 import { noop } from 'lodash';
 import { CollectionFlowService } from './collection-flow.service';
 import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
-import { env } from '@/env';
 
 const deps: Provider[] = [
   {
@@ -122,7 +121,6 @@ describe('CollectionFlowService', () => {
   let workflowRuntimeDataRepository: WorkflowRuntimeDataRepository;
   let customerRepository: CustomerRepository;
   let endUserRepository: EndUserRepository;
-  let uiDefinitionRepository: UiDefinitionRepository;
 
   let customer: Customer;
   let project: Project;
@@ -161,7 +159,6 @@ describe('CollectionFlowService', () => {
     );
     customerRepository = module.get<CustomerRepository>(CustomerRepository);
     endUserRepository = module.get<EndUserRepository>(EndUserRepository);
-    uiDefinitionRepository = module.get<UiDefinitionRepository>(UiDefinitionRepository);
   });
 
   beforeEach(async () => {
@@ -205,16 +202,6 @@ describe('CollectionFlowService', () => {
         },
       });
 
-      await uiDefinitionRepository.create({
-        data: {
-          uiSchema: {},
-          projectId: project.id,
-          name: 'test-ui-definition',
-          uiContext: 'collection_flow',
-          workflowDefinitionId: workflowDefinition.id,
-        },
-      });
-
       const workflowRuntimeData = await workflowRuntimeDataRepository.create({
         data: {
           workflowDefinitionId: workflowDefinition.id,
@@ -233,28 +220,7 @@ describe('CollectionFlowService', () => {
 
       const context = await collectionFlowService.getCollectionFlowContext(token);
 
-      const expectedContext = {
-        metadata: {
-          token: token.token,
-          webUiSDKUrl: env.WEB_UI_SDK_URL,
-          collectionFlowUrl: env.COLLECTION_FLOW_URL,
-        },
-        collectionFlow: {
-          state: {
-            steps: [],
-            status: 'pending',
-            currentStep: '',
-          },
-          config: {
-            apiUrl: env.APP_API_URL,
-          },
-          additionalInformation: {
-            customerCompany: customer.displayName,
-          },
-        },
-      };
-
-      expect(context.context).toEqual(expectedContext);
+      expect(context.context).toEqual(workflowContext);
       expect(context.config).toEqual(workflowConfig);
     });
   });

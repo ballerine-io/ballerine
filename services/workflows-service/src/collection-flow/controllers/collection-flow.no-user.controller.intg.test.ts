@@ -37,16 +37,12 @@ import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.s
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { CollectionFlowNoUserController } from './collection-flow.no-user.controller';
-import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
-import { ApiKeyService } from '@/customer/api-key/api-key.service';
-import { ApiKeyRepository } from '@/customer/api-key/api-key.repository';
 
 describe('CollectionFlowSignupController', () => {
   let app: INestApplication;
   let prismaClient: PrismaService;
   let workflowTokenService: WorkflowTokenService;
   let workflowDefinitionRepository: WorkflowDefinitionRepository;
-  let uiDefinitionRepository: UiDefinitionRepository;
   let workflowRuntimeDataRepository: WorkflowRuntimeDataRepository;
   let customerRepository: CustomerRepository;
   let endUserRepository: EndUserRepository;
@@ -59,6 +55,8 @@ describe('CollectionFlowSignupController', () => {
       controllers: [CollectionFlowNoUserController],
       providers: [
         { provide: BusinessService, useValue: noop },
+        { provide: UiDefinitionService, useValue: noop },
+        { provide: CustomerService, useValue: noop },
         { provide: FileService, useValue: noop },
         { provide: SalesforceService, useValue: noop },
         { provide: RiskRuleService, useValue: noop },
@@ -74,11 +72,6 @@ describe('CollectionFlowSignupController', () => {
         { provide: WorkflowEventEmitterService, useValue: { emit: noop } },
         WorkflowService,
         EndUserService,
-        UiDefinitionService,
-        UiDefinitionRepository,
-        CustomerService,
-        ApiKeyService,
-        ApiKeyRepository,
         BusinessReportService,
         BusinessRepository,
         EntityRepository,
@@ -102,7 +95,6 @@ describe('CollectionFlowSignupController', () => {
     workflowDefinitionRepository = module.get<WorkflowDefinitionRepository>(
       WorkflowDefinitionRepository,
     );
-    uiDefinitionRepository = module.get<UiDefinitionRepository>(UiDefinitionRepository);
     workflowRuntimeDataRepository = module.get<WorkflowRuntimeDataRepository>(
       WorkflowRuntimeDataRepository,
     );
@@ -129,16 +121,6 @@ describe('CollectionFlowSignupController', () => {
         projectId: project.id,
         definitionType: 'collectionFlow',
         definition: {},
-      },
-    });
-
-    await uiDefinitionRepository.create({
-      data: {
-        uiSchema: {},
-        projectId: project.id,
-        uiContext: 'collection_flow',
-        name: 'signup-test-ui-definition',
-        workflowDefinitionId: workflowDefinition.id,
       },
     });
 

@@ -1,8 +1,7 @@
-import { Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
-
-import { PrismaService } from '@/prisma/prisma.service';
+import { Injectable } from '@nestjs/common';
 import type { PrismaTransaction, TProjectId } from '@/types';
+import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
 export class WorkflowTokenRepository {
@@ -21,13 +20,6 @@ export class WorkflowTokenRepository {
         ...data,
         projectId,
       },
-    });
-  }
-
-  async count(args: Prisma.WorkflowRuntimeDataTokenCountArgs, projectId: TProjectId) {
-    return await this.prismaService.workflowRuntimeDataToken.count({
-      ...args,
-      where: { ...args.where, projectId },
     });
   }
 
