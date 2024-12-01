@@ -21,6 +21,7 @@ const CustomerSchema = z.object({
   language: z.union([z.string(), z.null()]).optional(),
   features: z
     .object({
+      chatbot: z.object({ isEnabled: z.boolean().default(false), clientId: z.string().optional() }),
       createBusinessReport: z
         .object({ enabled: z.boolean().default(false), options: createBusinessReportOptions })
         .optional(),

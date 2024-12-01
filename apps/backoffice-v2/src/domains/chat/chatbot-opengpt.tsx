@@ -11,19 +11,18 @@ const { theme, style } = buildTheme({
   themeColor: 'blue',
 });
 
-// const clientId = '8f29c89d-ec0e-494d-b18d-6c3590b28be6';
-const clientId = import.meta.env.VITE_BOTPRESS_CLIENT_ID;
-
 const Chatbot = ({
   isWebchatOpen,
   toggleIsWebchatOpen,
   client,
   setClient,
+  chatbotClientId,
 }: {
   isWebchatOpen: boolean;
   toggleIsWebchatOpen: () => void;
   client: WebchatClient | null;
   setClient: (client: WebchatClient) => void;
+  chatbotClientId: string;
 }) => {
   const { data: session } = useAuthenticatedUserQuery();
   const { data: currentCase } = useCurrentCaseQuery();
@@ -52,10 +51,10 @@ const Chatbot = ({
   );
 
   useEffect(() => {
-    if (client || !clientId || !session?.user) return;
+    if (client || !chatbotClientId || !session?.user) return;
 
     const { firstName, lastName, email } = session.user;
-    const newClient = getClient({ clientId });
+    const newClient = getClient({ clientId: chatbotClientId });
     setClient(newClient);
 
     // newClient.on('*', (ev: any) => {
@@ -76,7 +75,7 @@ const Chatbot = ({
         void sendCaseData(caseId || '', newClient);
       }, 500);
     });
-  }, [session, client, setClient, sendCaseData, pathname]);
+  }, [session, client, setClient, sendCaseData, pathname, chatbotClientId]);
 
   useEffect(() => {
     console.log('pathname changed to: ', pathname);

@@ -8,6 +8,7 @@ import Chatbot from '@/domains/chat/chatbot-opengpt';
 import { WebchatClient } from '@botpress/webchat';
 import { RenderChildrenInIFrame } from '@/common/components/organisms/RenderChildrenInIFrame/RenderChildrenInIFrame';
 import { ctw } from '@/common/utils/ctw/ctw';
+import { env } from '@/common/env/env';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
@@ -29,9 +30,11 @@ const ChatbotLayout: FunctionComponent = () => {
     return <FullScreenLoader />;
   }
 
-  if (!customer?.config?.isChatbotEnabled) {
+  if (!customer?.features?.chatbot?.isEnabled) {
     return null;
   }
+
+  const chatbotClientId = customer?.features?.chatbot?.clientId || env.VITE_BOTPRESS_CLIENT_ID;
 
   return (
     <RenderChildrenInIFrame
@@ -45,6 +48,7 @@ const ChatbotLayout: FunctionComponent = () => {
         toggleIsWebchatOpen={toggleIsWebchatOpen}
         client={client}
         setClient={setClient}
+        chatbotClientId={chatbotClientId}
       />
     </RenderChildrenInIFrame>
   );
