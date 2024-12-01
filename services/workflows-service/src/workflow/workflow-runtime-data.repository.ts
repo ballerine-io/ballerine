@@ -23,14 +23,13 @@ type StateRelatedColumns = 'state' | 'status' | 'context' | 'tags';
 @Injectable()
 export class WorkflowRuntimeDataRepository {
   constructor(
-    protected readonly prisma: PrismaService,
-    protected readonly projectScopeService: ProjectScopeService,
+    protected readonly prismaService: PrismaService,
     protected readonly scopeService: ProjectScopeService,
   ) {}
 
   async create<T extends Prisma.WorkflowRuntimeDataCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataCreateArgs>,
-    transaction: PrismaTransaction | PrismaClient = this.prisma,
+    transaction: PrismaTransaction | PrismaClient = this.prismaService,
   ): Promise<WorkflowRuntimeData> {
     return await transaction.workflowRuntimeData.create<T>({
       ...args,
@@ -48,7 +47,7 @@ export class WorkflowRuntimeDataRepository {
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindManyArgs>,
     projectIds: TProjectIds,
   ) {
-    return await this.prisma.workflowRuntimeData.findMany(
+    return await this.prismaService.workflowRuntimeData.findMany(
       this.scopeService.scopeFindMany(args, projectIds),
     );
   }
@@ -56,13 +55,13 @@ export class WorkflowRuntimeDataRepository {
   async findManyUnscoped<T extends Prisma.WorkflowRuntimeDataFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindManyArgs>,
   ) {
-    return await this.prisma.workflowRuntimeData.findMany(args);
+    return await this.prismaService.workflowRuntimeData.findMany(args);
   }
 
   async findOne<T extends Prisma.WorkflowRuntimeDataFindFirstArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindFirstArgs>,
     projectIds: TProjectIds,
-    transaction: PrismaTransaction | PrismaClient = this.prisma,
+    transaction: PrismaTransaction | PrismaClient = this.prismaService,
   ): Promise<WorkflowRuntimeData | null> {
     return await transaction.workflowRuntimeData.findFirst(
       this.scopeService.scopeFindOne(args, projectIds),
@@ -86,7 +85,7 @@ export class WorkflowRuntimeDataRepository {
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataFindFirstOrThrowArgs, 'where'>>,
     projectIds: TProjectIds,
-    transaction: PrismaTransaction | PrismaClient = this.prisma,
+    transaction: PrismaTransaction | PrismaClient = this.prismaService,
   ): Promise<WorkflowRuntimeData> {
     return await transaction.workflowRuntimeData.findFirstOrThrow(
       this.scopeService.scopeFindOne(merge(args, { where: { id } }), projectIds),
@@ -134,7 +133,7 @@ export class WorkflowRuntimeDataRepository {
 
   async findByIdAndLockUnscoped({
     id,
-    transaction = this.prisma,
+    transaction = this.prismaService,
   }: {
     id: string;
     transaction: PrismaTransaction | PrismaClient;
@@ -149,7 +148,7 @@ export class WorkflowRuntimeDataRepository {
     args: {
       data: Omit<Prisma.WorkflowRuntimeDataUncheckedUpdateInput, StateRelatedColumns>;
     },
-    transaction: PrismaTransaction | PrismaService = this.prisma,
+    transaction: PrismaTransaction | PrismaService = this.prismaService,
   ): Promise<WorkflowRuntimeData> {
     return await transaction.workflowRuntimeData.update({
       where: { id },
@@ -166,7 +165,7 @@ export class WorkflowRuntimeDataRepository {
       data: Prisma.WorkflowRuntimeDataUncheckedUpdateInput;
       include?: Prisma.WorkflowRuntimeDataInclude;
     },
-    transaction: PrismaTransaction,
+    transaction: PrismaTransaction = this.prismaService,
   ) {
     return await transaction.workflowRuntimeData.update({
       where: { id },
@@ -182,7 +181,7 @@ export class WorkflowRuntimeDataRepository {
     projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeData> {
     const stringifiedConfig = JSON.stringify(newConfig);
-    const affectedRows = await this.prisma
+    const affectedRows = await this.prismaService
       .$executeRaw`UPDATE "WorkflowRuntimeData" SET "config" = jsonb_deep_merge_with_options("config", ${stringifiedConfig}::jsonb, ${arrayMergeOption}) WHERE "id" = ${id} AND "projectId" in (${projectIds?.join(
       ',',
     )})`;
@@ -200,7 +199,7 @@ export class WorkflowRuntimeDataRepository {
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataDeleteArgs, 'where'>>,
     projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.delete(
+    return await this.prismaService.workflowRuntimeData.delete(
       this.scopeService.scopeDelete(
         {
           where: { id },
@@ -259,7 +258,7 @@ export class WorkflowRuntimeDataRepository {
 
   async findContext(id: string, projectIds: TProjectIds) {
     return (
-      await this.prisma.workflowRuntimeData.findFirstOrThrow(
+      await this.prismaService.workflowRuntimeData.findFirstOrThrow(
         this.scopeService.scopeFindOne(
           {
             where: { id },
@@ -277,7 +276,7 @@ export class WorkflowRuntimeDataRepository {
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindManyArgs>,
     projectIds: TProjectIds,
   ): Promise<number> {
-    return await this.prisma.workflowRuntimeData.count(
+    return await this.prismaService.workflowRuntimeData.count(
       this.scopeService.scopeFindMany(args, projectIds) as any,
     );
   }
@@ -286,7 +285,7 @@ export class WorkflowRuntimeDataRepository {
     args: Prisma.SubsetIntersection<T, Prisma.WorkflowRuntimeDataGroupByArgs, any>,
     projectIds: TProjectIds,
   ) {
-    return await this.prisma.workflowRuntimeData.groupBy(
+    return await this.prismaService.workflowRuntimeData.groupBy(
       this.scopeService.scopeGroupBy(args, projectIds),
     );
   }
@@ -396,6 +395,6 @@ export class WorkflowRuntimeDataRepository {
         LIMIT ${take} OFFSET ${skip}
     `;
 
-    return (await this.prisma.$queryRaw(sql)) as WorkflowRuntimeData[];
+    return (await this.prismaService.$queryRaw(sql)) as WorkflowRuntimeData[];
   }
 }
