@@ -70,8 +70,8 @@ const Chatbot = ({
           email,
         },
       });
-      const caseId = pathname.split('/')[pathname.split('/').length - 1];
       setTimeout(() => {
+        const caseId = pathname.split('/')[pathname.split('/').length - 1];
         void sendCaseData(caseId || '', newClient);
       }, 500);
     });
