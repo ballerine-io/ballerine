@@ -128,6 +128,8 @@
 
 - bump
 - Updated dependencies
+  - @ballerine/workflow-browser-sdk@0.6.56
+  - @ballerine/common@0.9.44
   - @ballerine/workflow-browser-sdk@0.6.57
   - @ballerine/common@0.9.45
 

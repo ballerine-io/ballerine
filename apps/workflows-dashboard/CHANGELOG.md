@@ -42,6 +42,7 @@
 
 - bump
 - Updated dependencies
+  - @ballerine/common@0.9.44
   - @ballerine/common@0.9.45
   - @ballerine/ui@0.5.40
 

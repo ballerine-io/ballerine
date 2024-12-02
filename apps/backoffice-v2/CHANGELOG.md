@@ -124,6 +124,12 @@
 
 - bump
 - Updated dependencies
+  - @ballerine/react-pdf-toolkit@1.2.40
+  - @ballerine/workflow-browser-sdk@0.6.56
+  - @ballerine/workflow-node-sdk@0.6.56
+  - @ballerine/common@0.9.44
+  - @ballerine/ui@0.5.40
+  - @ballerine/blocks@0.2.24
   - @ballerine/ui@0.5.43
   - @ballerine/react-pdf-toolkit@1.2.43
 
