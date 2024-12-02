@@ -43,9 +43,9 @@ export const definition = {
       {
         name: 'update_end_user',
         pluginKind: 'api',
-        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/end-user?token={metadata.token}`,
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/end-user}`,
         method: 'POST',
-        headers: { Authorization: 'Bearer {metadata.token}' },
+        headers: { Authorization: 'Bearer {query.token}' },
         stateNames: [],
         request: {
           transform: [
@@ -65,7 +65,7 @@ export const definition = {
       {
         name: 'sync_workflow_runtime',
         pluginKind: 'api',
-        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/sync/?token={metadata.token}`,
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/sync}`,
         method: 'PUT',
         stateNames: [
           'personal_details',
@@ -74,7 +74,7 @@ export const definition = {
           'company_ownership',
           'company_documents',
         ],
-        headers: { Authorization: 'Bearer {metadata.token}' },
+        headers: { Authorization: 'Bearer {query.token}' },
         request: {
           transform: [
             {
@@ -94,10 +94,10 @@ export const definition = {
       {
         name: 'finish_workflow',
         pluginKind: 'api',
-        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/?token={metadata.token}`,
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow}`,
         method: 'PUT',
         stateNames: ['finish'],
-        headers: { Authorization: 'Bearer {metadata.token}' },
+        headers: { Authorization: 'Bearer {query.token}' },
         request: {
           transform: [
             {
@@ -117,10 +117,10 @@ export const definition = {
       {
         name: 'send_collection_flow_finished',
         pluginKind: 'api',
-        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/send-event/?token={metadata.token}`,
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/send-event}`,
         method: 'POST',
         stateNames: ['finish'],
-        headers: { Authorization: 'Bearer {metadata.token}' },
+        headers: { Authorization: 'Bearer {query.token}' },
         request: {
           transform: [
             {

@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
+
 import type { InputJsonValue, PrismaTransaction, TProjectId } from '@/types';
-import { Prisma, UiDefinitionContext } from '@prisma/client';
+import { CustomerService } from '@/customer/customer.service';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
+import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { buildCollectionFlowState, getOrderedSteps } from '@ballerine/common';
 import { env } from '@/env';
 import { WORKFLOW_FINAL_STATES } from '@/workflow/consts';
-import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
-import { CustomerService } from '@/customer/customer.service';
+import { Prisma, UiDefinitionContext } from '@prisma/client';
 
 @Injectable()
 export class WorkflowTokenService {
@@ -30,11 +31,14 @@ export class WorkflowTokenService {
       projectId,
     );
 
+    const workflowToken = await this.workflowTokenRepository.create(projectId, data, transaction);
+
     if (existingTokensForWorkflowRuntime === 0) {
       const { workflowDefinitionId, context } = await this.workflowRuntimeDataRepository.findById(
         workflowRuntimeDataId,
         { select: { workflowDefinitionId: true, context: true } },
         [projectId],
+        transaction,
       );
 
       const [uiDefinition, customer] = await Promise.all([
@@ -64,8 +68,6 @@ export class WorkflowTokenService {
         },
       });
 
-      const workflowToken = await this.workflowTokenRepository.create(projectId, data, transaction);
-
       await this.workflowRuntimeDataRepository.updateStateById(
         workflowRuntimeDataId,
         {
@@ -85,11 +87,9 @@ export class WorkflowTokenService {
         },
         transaction,
       );
-
-      return workflowToken;
     }
 
-    return await this.workflowTokenRepository.create(projectId, data, transaction);
+    return workflowToken;
   }
 
   async findByToken(token: string) {
