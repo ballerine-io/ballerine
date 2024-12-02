@@ -41,7 +41,7 @@ export class ApiPlugin {
     this.displayName = pluginParams.displayName;
   }
 
-  async invoke(context: TContext) {
+  async invoke(context: TContext, additionalContext?: AnyRecord) {
     let requestPayload;
 
     try {
@@ -59,7 +59,10 @@ export class ApiPlugin {
         }
       }
 
-      const _url = await this._getPluginUrl(context);
+      const _url = await this._getPluginUrl({
+        ...context,
+        ...additionalContext,
+      });
 
       logger.log('API Plugin - Sending API request', {
         url: _url,
@@ -70,7 +73,10 @@ export class ApiPlugin {
         _url,
         this.method,
         requestPayload,
-        await this.composeRequestHeaders(this.headers!, context),
+        await this.composeRequestHeaders(this.headers!, {
+          ...context,
+          ...additionalContext,
+        }),
       );
 
       logger.log('API Plugin - Received response', {
@@ -159,6 +165,7 @@ export class ApiPlugin {
     ok: boolean;
     json: () => Promise<unknown>;
     statusText: string;
+    headers: Headers;
   }> {
     let _url: string = url;
 
@@ -189,6 +196,7 @@ export class ApiPlugin {
         ok: true,
         json: () => Promise.resolve({ statusCode: res.status }),
         statusText: 'OK',
+        headers: res.headers,
       };
     }
 
@@ -215,7 +223,10 @@ export class ApiPlugin {
     }
 
     for (const transformer of transformers) {
-      mutatedRecord = await this.transformByTransformer(transformer, mutatedRecord);
+      const transformed = await this.transformByTransformer(transformer, mutatedRecord);
+      mutatedRecord = Object.fromEntries(
+        Object.entries(transformed).filter(([_, value]) => value !== null && value !== undefined),
+      );
     }
 
     return mutatedRecord;

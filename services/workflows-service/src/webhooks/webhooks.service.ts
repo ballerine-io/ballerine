@@ -77,7 +77,7 @@ export class WebhooksService {
 
     const amlHits = hits.map(hit => ({
       ...hit,
-      vendor: 'veriff',
+      vendor: data?.vendor,
     }));
 
     await this.endUserService.updateById(endUserId, {

@@ -1,39 +1,20 @@
 /* eslint-disable */
 import { AnyRecord, isObject, ProcessStatus, uniqueArray } from '@ballerine/common';
+import { search } from 'jmespath';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
+import { pluginsRegistry } from './constants';
 import { HttpError } from './errors';
+import { BUILT_IN_EVENT } from './index';
+import { logger } from './logger';
+import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plugin';
+import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
+import { RiskRulePlugin } from './plugins/common-plugin/risk-rules-plugin';
 import {
-  Error as ErrorEnum,
-  ObjectValues,
-  SecretsManager,
-  WorkflowEvent,
-  WorkflowEvents,
-  WorkflowEventWithoutState,
-  WorkflowExtensions,
-  WorkflowRunnerArgs,
-} from './types';
-import {
-  ActionablePlugins,
-  ChildPlugins,
-  CommonPlugin,
-  CommonPlugins,
-  HttpPlugin,
-  HttpPlugins,
-  StatePlugin,
-} from './plugins/types';
-import { ApiPlugin } from './plugins/external-plugin/api-plugin';
-import { WebhookPlugin } from './plugins/external-plugin/webhook-plugin';
-import {
-  IApiPluginParams,
-  IDispatchEventPluginParams,
-  ISerializableHttpPluginParams,
-  SerializableValidatableTransformer,
-  ValidatableTransformer,
-} from './plugins/external-plugin/types';
-import { KycPlugin } from './plugins/external-plugin/kyc-plugin';
-import { DispatchEventPlugin } from './plugins/external-plugin/dispatch-event-plugin';
+  TransformerPlugin,
+  TransformerPluginParams,
+} from './plugins/common-plugin/transformer-plugin';
 import {
   ChildWorkflowPluginParams,
   ISerializableChildPluginParams,
@@ -44,36 +25,46 @@ import {
   RiskRulesPluginParams,
   WorkflowTokenPluginParams,
 } from './plugins/common-plugin/types';
-import {
-  ArrayMergeOption,
-  deepMergeWithOptions,
-  HelpersTransformer,
-  TContext,
-  THelperFormatingLogic,
-  Validator,
-} from './utils';
-import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
-import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plugin';
-import { search } from 'jmespath';
 import { WorkflowTokenPlugin } from './plugins/common-plugin/workflow-token-plugin';
-import { RiskRulePlugin } from './plugins/common-plugin/risk-rules-plugin';
-import { BallerineApiPlugin } from './plugins/external-plugin/ballerine-plugin';
+import { ApiPlugin } from './plugins/external-plugin/api-plugin';
 import { BallerineEmailPlugin } from './plugins/external-plugin/ballerine-email-plugin';
+import { BallerineApiPlugin } from './plugins/external-plugin/ballerine-plugin';
+import { DispatchEventPlugin } from './plugins/external-plugin/dispatch-event-plugin';
+import { KycPlugin } from './plugins/external-plugin/kyc-plugin';
+import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
+import {
+  IApiPluginParams,
+  IDispatchEventPluginParams,
+  ISerializableHttpPluginParams,
+} from './plugins/external-plugin/types';
 import {
   ApiBallerinePlugins,
   BALLERINE_API_PLUGINS,
   BALLERINE_API_PLUGINS_KINDS,
 } from './plugins/external-plugin/vendor-consts';
+import { WebhookPlugin } from './plugins/external-plugin/webhook-plugin';
 import {
-  TransformerPlugin,
-  TransformerPluginParams,
-} from './plugins/common-plugin/transformer-plugin';
-import { BUILT_IN_EVENT } from './index';
-import { logger } from './logger';
+  ActionablePlugins,
+  ChildPlugins,
+  CommonPlugin,
+  CommonPlugins,
+  HttpPlugin,
+  HttpPlugins,
+  StatePlugin,
+} from './plugins/types';
+import {
+  Error as ErrorEnum,
+  ObjectValues,
+  SecretsManager,
+  WorkflowEvent,
+  WorkflowEvents,
+  WorkflowEventWithoutState,
+  WorkflowExtensions,
+  WorkflowRunnerArgs,
+} from './types';
+import { ArrayMergeOption, deepMergeWithOptions, TContext } from './utils';
 import { hasPersistResponseDestination } from './utils/has-persistence-response-destination';
-import { pluginsRegistry } from './constants';
 import { fetchTransformers, reqResTransformersObj } from './workflow-runner-utils';
-import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
 
 export class WorkflowRunner {
   #__subscriptions: Partial<Record<string, Array<(event: WorkflowEvent) => Promise<void>>>>;
@@ -567,7 +558,7 @@ export class WorkflowRunner {
     );
   }
 
-  async sendEvent(event: WorkflowEventWithoutState) {
+  async sendEvent(event: WorkflowEventWithoutState, additionalContext?: AnyRecord) {
     const workflow = this.#__workflow.withContext(this.context);
 
     logger.log('WORKFLOW CORE:: Received event', {
@@ -693,7 +684,7 @@ export class WorkflowRunner {
 
     if (stateApiPlugins) {
       for (const apiPlugin of stateApiPlugins) {
-        await this.__invokeApiPlugin(apiPlugin);
+        await this.__invokeApiPlugin(apiPlugin, additionalContext);
       }
     }
 
@@ -769,15 +760,19 @@ export class WorkflowRunner {
     }
   }
 
-  private async __invokeApiPlugin(apiPlugin: HttpPlugin) {
+  private async __invokeApiPlugin(apiPlugin: HttpPlugin, additionalContext?: AnyRecord) {
     // @ts-expect-error - multiple types of plugins return different responses
-    const { callbackAction, responseBody, error } = await apiPlugin.invoke?.({
-      ...this.context,
-      workflowRuntimeConfig: this.#__config,
-      workflowRuntimeId: this.#__runtimeId,
-    });
+    const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(
+      {
+        ...this.context,
+        workflowRuntimeConfig: this.#__config,
+        workflowRuntimeId: this.#__runtimeId,
+      },
+      additionalContext,
+    );
 
     if (error) {
+      console.error(error);
       logger.error('WORKFLOW CORE:: Error invoking plugin', {
         error,
         stack: error instanceof Error ? error.stack : undefined,
@@ -869,7 +864,7 @@ export class WorkflowRunner {
     return (this.context = context);
   }
 
-  async invokePlugin(pluginName: string) {
+  async invokePlugin(pluginName: string, additionalContext?: AnyRecord) {
     const { apiPlugins, commonPlugins, childWorkflowPlugins, dispatchEventPlugins } =
       this.__extensions;
 
@@ -887,7 +882,7 @@ export class WorkflowRunner {
     }
 
     if (this.isHttpPlugin(pluginToInvoke)) {
-      return await this.__invokeApiPlugin(pluginToInvoke);
+      return await this.__invokeApiPlugin(pluginToInvoke, additionalContext);
     }
 
     if (this.isCommonPlugin(pluginToInvoke)) {

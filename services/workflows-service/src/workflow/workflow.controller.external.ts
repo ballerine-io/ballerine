@@ -6,7 +6,6 @@ import { HttpStatus, NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { ApiOkResponse, ApiResponse } from '@nestjs/swagger';
 import type { WorkflowRuntimeData } from '@prisma/client';
-// import * as nestAccessControl from 'nest-access-control';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { putPluginsExampleResponse } from '@/workflow/workflow-controller-examples';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
@@ -19,7 +18,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import type { AnyRecord, InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import { WORKFLOW_DEFINITION_TAG } from '@/workflow-defintion/workflow-definition.controller';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
-import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url';
+import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url.dto';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
 import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
 import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
@@ -45,6 +44,7 @@ import { defaultContextSchema } from '@ballerine/common';
 import { WorkflowRunSchema } from './schemas/workflow-run';
 import { ValidationError } from '@/errors';
 import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
+import { CreateTokenDto } from '@/workflow/dtos/create-token.dto';
 
 export const WORKFLOW_TAG = 'Workflows';
 @swagger.ApiBearerAuth()
@@ -52,10 +52,8 @@ export const WORKFLOW_TAG = 'Workflows';
 @common.Controller('external/workflows')
 export class WorkflowControllerExternal {
   constructor(
-    protected readonly service: WorkflowService,
+    protected readonly workflowService: WorkflowService,
     protected readonly normalizeService: HookCallbackHandlerService,
-    // @nestAccessControl.InjectRolesBuilder()
-    // protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     private readonly workflowTokenService: WorkflowTokenService,
     private readonly workflowDefinitionService: WorkflowDefinitionService,
     private readonly prismaService: PrismaService,
@@ -70,7 +68,7 @@ export class WorkflowControllerExternal {
     @Query() query: GetWorkflowsRuntimeInputDto,
     @ProjectIds() projectIds: TProjectIds,
   ): Promise<GetWorkflowsRuntimeOutputDto> {
-    const results = await this.service.listRuntimeData(
+    const results = await this.workflowService.listRuntimeData(
       {
         page: query.page,
         size: query.limit,
@@ -91,7 +89,7 @@ export class WorkflowControllerExternal {
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @ProjectIds() projectIds: TProjectIds,
   ) {
-    return await this.service.getWorkflowDefinitionById(
+    return await this.workflowService.getWorkflowDefinitionById(
       params.id,
       {
         include: {
@@ -146,7 +144,6 @@ export class WorkflowControllerExternal {
       },
       {
         type: 'body',
-
         schema: WorkflowExtensionSchema,
       },
     ],
@@ -189,7 +186,7 @@ export class WorkflowControllerExternal {
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @ProjectIds() projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeData> {
-    const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(
+    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
       params.id,
       {},
       projectIds,
@@ -213,7 +210,11 @@ export class WorkflowControllerExternal {
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     try {
-      return await this.service.updateWorkflowRuntimeData(params.id, data, currentProjectId);
+      return await this.workflowService.updateWorkflowRuntimeData(
+        params.id,
+        data,
+        currentProjectId,
+      );
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
@@ -355,7 +356,7 @@ export class WorkflowControllerExternal {
       projectIds,
     );
 
-    const actionResult = await this.service.createOrUpdateWorkflowRuntime({
+    const actionResult = await this.workflowService.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: latestDefinitionVersion.id,
       context,
       config,
@@ -381,20 +382,21 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createCollectionFlowUrl(
-    @common.Body() { expiry, workflowRuntimeDataId, endUserId }: CreateCollectionFlowUrlDto,
-    @CurrentProject() currentProjectId: TProjectId,
+    @common.Body()
+    { workflowRuntimeDataId }: CreateCollectionFlowUrlDto,
   ) {
-    const expiresAt = new Date(Date.now() + (expiry || 30) * 24 * 60 * 60 * 1000);
+    const result = await this.workflowTokenService.findFirstByWorkflowruntimeDataIdUnscoped(
+      workflowRuntimeDataId,
+    );
 
-    const { token } = await this.workflowTokenService.create(currentProjectId, {
-      workflowRuntimeDataId: workflowRuntimeDataId,
-      expiresAt,
-      endUserId,
-    });
+    if (!result) {
+      throw new NotFoundException(
+        `No WorkflowRuntimeDataId was found for ${JSON.stringify(workflowRuntimeDataId)}`,
+      );
+    }
 
     return {
-      token,
-      collectionFlowUrl: `${env.COLLECTION_FLOW_URL}?token=${token}`,
+      collectionFlowUrl: `${env.COLLECTION_FLOW_URL}?token=${result.token}`,
     };
   }
 
@@ -404,10 +406,16 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createToken(
-    @common.Body() body: CreateCollectionFlowUrlDto,
+    @common.Body() { expiry, workflowRuntimeDataId, endUserId }: CreateTokenDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const { token } = await this.createCollectionFlowUrl(body, currentProjectId);
+    const expiresAt = new Date(Date.now() + (expiry || 30) * 24 * 60 * 60 * 1000);
+
+    const { token } = await this.workflowTokenService.create(currentProjectId, {
+      workflowRuntimeDataId: workflowRuntimeDataId,
+      expiresAt,
+      endUserId,
+    });
 
     return {
       token,
@@ -425,7 +433,7 @@ export class WorkflowControllerExternal {
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
-    return await this.service.event(
+    return await this.workflowService.event(
       {
         ...data,
         id,
@@ -447,7 +455,7 @@ export class WorkflowControllerExternal {
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    return await this.service.event(
+    return await this.workflowService.event(
       {
         ...data,
         id,
@@ -475,7 +483,7 @@ export class WorkflowControllerExternal {
     @ProjectIds() projectIds: TProjectIds,
   ) {
     try {
-      const context = await this.service.getWorkflowRuntimeDataContext(id, projectIds);
+      const context = await this.workflowService.getWorkflowRuntimeDataContext(id, projectIds);
 
       return { context };
     } catch (err) {
@@ -500,10 +508,11 @@ export class WorkflowControllerExternal {
   ): Promise<void> {
     try {
       await this.prismaService.$transaction(async transaction => {
-        const workflowRuntime = await this.service.getWorkflowRuntimeDataByIdAndLockUnscoped({
-          id: params.id,
-          transaction,
-        });
+        const workflowRuntime =
+          await this.workflowService.getWorkflowRuntimeDataByIdAndLockUnscoped({
+            id: params.id,
+            transaction,
+          });
 
         const context = await this.normalizeService.handleHookResponse({
           workflowRuntime,
@@ -514,7 +523,7 @@ export class WorkflowControllerExternal {
           currentProjectId: workflowRuntime.projectId,
         });
 
-        await this.service.event(
+        await this.workflowService.event(
           {
             id: params.id,
             name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
@@ -528,7 +537,7 @@ export class WorkflowControllerExternal {
           transaction,
         );
 
-        await this.service.event(
+        await this.workflowService.event(
           {
             id: params.id,
             name: params.event,

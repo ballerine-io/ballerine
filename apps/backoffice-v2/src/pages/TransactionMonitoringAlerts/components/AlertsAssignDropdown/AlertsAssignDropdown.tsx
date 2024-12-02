@@ -1,24 +1,30 @@
-import React, { FunctionComponent, useMemo } from 'react';
+import { FunctionComponent, useMemo } from 'react';
 import { TUsers } from '@/domains/users/types';
 import { DoubleCaretSvg, UnassignedAvatarSvg } from '@/common/components/atoms/icons';
 import { UserAvatar } from '@/common/components/atoms/UserAvatar/UserAvatar';
 import { Dropdown } from '@/common/components/molecules/Dropdown/Dropdown';
+import { filterUsersByRole, TUserRole } from '@/domains/users/utils/filter-users-by-role';
 
 export const AlertsAssignDropdown: FunctionComponent<{
   assignees: TUsers;
   authenticatedUserId: string;
   isDisabled: boolean;
   onAssigneeSelect: (id: string | null, isAssignedToMe: boolean) => () => void;
-}> = ({ assignees, authenticatedUserId, isDisabled, onAssigneeSelect }) => {
+  excludedRoles?: TUserRole[];
+}> = ({ assignees, authenticatedUserId, isDisabled, onAssigneeSelect, excludedRoles = [] }) => {
+  const filteredAssignees = useMemo(
+    () => filterUsersByRole(assignees, excludedRoles),
+    [assignees, excludedRoles],
+  );
+
   const sortedAssignees = useMemo(
     () =>
-      // Sort assignees so that the authenticated user is always first
-      assignees
+      filteredAssignees
         ?.slice()
         ?.sort((a, b) =>
           a?.id === authenticatedUserId ? -1 : b?.id === authenticatedUserId ? 1 : 0,
         ),
-    [assignees, authenticatedUserId],
+    [filteredAssignees, authenticatedUserId],
   );
 
   const options = useMemo(() => {

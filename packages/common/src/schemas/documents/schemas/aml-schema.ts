@@ -1,4 +1,5 @@
 import { Type } from '@sinclair/typebox';
+import { TypeStringEnum } from '@/schemas/documents/workflow/documents/schemas/utils';
 
 const HitDataSchema = Type.Object({
   date: Type.Union([Type.Null(), Type.String()]),
@@ -28,5 +29,6 @@ export const AmlSchema = Type.Optional(
     endUserId: Type.String(),
     matchStatus: Type.String(),
     checkType: Type.String({ enum: ['initial_result', 'updated_result'] }),
+    vendor: TypeStringEnum(['veriff', 'dow-jones']),
   }),
 );

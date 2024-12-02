@@ -1,5 +1,84 @@
 # @ballerine/workflow-node-sdk
 
+## 0.6.73
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.73
+
+## 0.6.72
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.72
+
+## 0.6.71
+
+### Patch Changes
+
+- @ballerine/workflow-core@0.6.71
+
+## 0.6.70
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.70
+
+## 0.6.69
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.69
+
+## 0.6.68
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.68
+
+## 0.6.67
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.67
+
+## 0.6.66
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.66
+
+## 0.6.65
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.65
+
+## 0.6.64
+
+### Patch Changes
+
+- @ballerine/workflow-core@0.6.64
+
+## 0.6.63
+
+### Patch Changes
+
+- Cump
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.63
+
 ## 0.6.62
 
 ### Patch Changes

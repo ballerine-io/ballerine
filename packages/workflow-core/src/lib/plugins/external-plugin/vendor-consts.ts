@@ -7,6 +7,7 @@ export const INDIVIDUAL_SCREENING_VENDORS = {
 
 export const COMPANY_SCREENING_VENDORS = {
   'asia-verify': 'asia-verify',
+  test: 'test',
 } as const;
 
 export const KYC_VENDORS = {
@@ -20,11 +21,13 @@ export const MERCHANT_MONITORING_VENDORS = {
 export const UBO_VENDORS = {
   'asia-verify': 'asia-verify',
   kyckr: 'kyckr',
+  test: 'test',
 } as const;
 
 export const REGISTRY_INFORMATION_VENDORS = {
   'asia-verify': 'asia-verify',
   kyckr: 'kyckr',
+  test: 'test',
 } as const;
 
 export const EMAIL_TEMPLATES = {
@@ -32,6 +35,7 @@ export const EMAIL_TEMPLATES = {
   session: 'session',
   invitation: 'invitation',
   'associated-company-email': 'associated-company-email',
+  'assisted-invitation': 'assisted-invitation',
 } as const;
 
 export type ApiIndividualScreeningVendors =
@@ -174,7 +178,7 @@ type UboKyckrOptions = {
 
 type RegistryInformationAsiaVerifyOptions = {
   pluginKind: 'registry-information';
-  vendor: 'asia-verify';
+  vendor: 'asia-verify' | 'test';
   defaultCountry?: string;
 };
 
@@ -257,6 +261,53 @@ const getKycEntityMapping = (takeEntityDetailFromKyc: boolean) => {
 
 export const BALLERINE_API_PLUGIN_FACTORY = {
   [BALLERINE_API_PLUGINS['registry-information']]: {
+    [REGISTRY_INFORMATION_VENDORS['test']]: (options: RegistryInformationAsiaVerifyOptions) => ({
+      name: 'businessInformation',
+      displayName: 'Registry Information',
+      pluginKind: 'registry-information',
+      vendor: 'test',
+      url: {
+        url: `{secret.UNIFIED_API_URL}/companies-v2/{country}/{entity.data.registrationNumber}`,
+        options: {
+          country: options.defaultCountry ?? '{entity.data.country}',
+        },
+      },
+      method: 'GET',
+      persistResponseDestination: 'pluginsOutput.businessInformation',
+      headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+      request: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: `merge(
+            { vendor: 'test' },
+            entity.data.country == 'HK' && {
+              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.businessInformation.data&processName=kyb-unified-api'])
+            }
+          )`, // jmespath
+          },
+        ],
+      },
+      response: {
+        transform: [
+          {
+            mapping:
+              "merge({ name: 'businessInformation', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || jurisdictionCode == 'HK' && 'IN_PROGRESS' || 'SUCCESS' }, @)",
+            transformer: 'jmespath',
+          },
+          {
+            mapping: [
+              {
+                method: 'setTimeToRecordUTC',
+                source: 'invokedAt',
+                target: 'invokedAt',
+              },
+            ],
+            transformer: 'helper',
+          },
+        ],
+      },
+    }),
     [REGISTRY_INFORMATION_VENDORS['asia-verify']]: (
       options: RegistryInformationAsiaVerifyOptions,
     ) => ({
@@ -364,7 +415,10 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             mapping: `{
                 vendor: 'dow-jones',
                 ${getKycEntityMapping(options.takeEntityDetailFromKyc)}
-                dateOfBirth: ${options.dateOfBirth ? `'${options.dateOfBirth}'` : '1990-01-01'}
+                ${options.dataMapping || ''}
+                dateOfBirth: ${
+                  options.dateOfBirth ? `'${options.dateOfBirth.split('T')[0]}'` : `'1990-01-01'`
+                },
                 ongoingMonitoring: ${options.ongoingMonitoring || false ? 'true' : 'false'},
                 endUserId: join('__', [entity.ballerineEntityId, '']),
                 clientId: clientId,
@@ -481,6 +535,48 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
         ],
       },
     }),
+    [COMPANY_SCREENING_VENDORS['test']]: (options: CompanySanctionsAsiaVerifyOptions) => ({
+      name: 'companySanctions',
+      pluginKind: 'company-sanctions',
+      vendor: 'test',
+      url: {
+        url: `{secret.UNIFIED_API_URL}/companies/{country}/{entity.data.companyName}/sanctions`,
+        options: {
+          country: options.defaultCountry ?? '{entity.data.country}',
+        },
+      },
+      headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+      method: 'GET' as const,
+      displayName: 'Company Sanctions',
+      persistResponseDestination: 'pluginsOutput.companySanctions',
+      request: {
+        transform: [
+          {
+            mapping: "{ vendor: 'test' }",
+            transformer: 'jmespath',
+          },
+        ],
+      },
+      response: {
+        transform: [
+          {
+            mapping:
+              "merge({ name: 'companySanctions', status: contains(['NOT_IMPLEMENTED', 'NOT_AVAILABLE'], reason) && 'CANCELED' || error != `null` && 'ERROR' || 'SUCCESS'  }, @)",
+            transformer: 'jmespath',
+          },
+          {
+            mapping: [
+              {
+                method: 'setTimeToRecordUTC',
+                source: 'invokedAt',
+                target: 'invokedAt',
+              },
+            ],
+            transformer: 'helper',
+          },
+        ],
+      },
+    }),
   },
   [BALLERINE_API_PLUGINS['merchant-monitoring']]: {
     [MERCHANT_MONITORING_VENDORS['ballerine']]: (options: MerchantMonirotingOptions) => ({
@@ -548,6 +644,51 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             transformer: 'jmespath',
             mapping: `{
               vendor: 'asia-verify',
+              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.ubo.data&processName=ubo-unified-api'])
+            }`, // jmespath
+          },
+        ],
+      },
+      response: {
+        transform: [
+          {
+            mapping:
+              "merge({ name: 'ubo', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
+            transformer: 'jmespath',
+          },
+          {
+            mapping: [
+              {
+                method: 'setTimeToRecordUTC',
+                source: 'invokedAt',
+                target: 'invokedAt',
+              },
+            ],
+            transformer: 'helper',
+          },
+        ],
+      },
+    }),
+    [UBO_VENDORS['test']]: (options: UboAsiaVerifyOptions) => ({
+      name: 'ubo',
+      pluginKind: 'ubo',
+      vendor: 'test',
+      displayName: 'UBO Check',
+      url: {
+        url: `{secret.UNIFIED_API_URL}/companies/{country}/{entity.data.registrationNumber}/ubo`,
+        options: {
+          country: options.defaultCountry ?? '{entity.data.country}',
+        },
+      },
+      method: 'GET',
+      persistResponseDestination: 'pluginsOutput.ubo',
+      headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+      request: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: `{
+              vendor: 'test',
               callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.ubo.data&processName=ubo-unified-api'])
             }`, // jmespath
           },
@@ -720,25 +861,25 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
           {
             transformer: 'jmespath',
             mapping: `{
-          ${options.dataMapping || ''}
-          kybCompanyName: entity.data.additionalInfo.companyName,
-          customerCompanyName: entity.data.additionalInfo.customerCompany,
-          firstName: entity.data.firstName,
-          kycLink: pluginsOutput.kyc_session.kyc_session_1.result.metadata.url,
-          from: 'no-reply@ballerine.com',
-          name: join(' ',[entity.data.additionalInfo.customerCompany,'Team']),
-          receivers: [entity.data.email],
-          subject: '{customerCompanyName} activation, Action needed.',
-          templateId: ${
-            options.templateId
-              ? `'${options.templateId}'`
-              : `(documents[].decision[].revisionReason | [0] != null) && 'd-2c6ae291d9df4f4a8770d6a4e272d803' || 'd-61c568cfa5b145b5916ff89790fe2065'`
-          },
-          revisionReason: documents[].decision[].revisionReason | [0],
-          language: workflowRuntimeConfig.language,
-          supportEmail: join('',['support@',entity.data.additionalInfo.customerCompany,'.com']),
-          adapter: '{secret.MAIL_ADAPTER}'
-          }`, // jmespath
+              ${options.dataMapping || ''}
+              kybCompanyName: entity.data.additionalInfo.companyName,
+              customerCompanyName: entity.data.additionalInfo.customerCompany,
+              firstName: entity.data.firstName,
+              kycLink: pluginsOutput.kyc_session.kyc_session_1.result.metadata.url,
+              from: 'no-reply@ballerine.com',
+              name: join(' ',[entity.data.additionalInfo.customerCompany,'Team']),
+              receivers: [entity.data.email],
+              subject: '{customerCompanyName} activation, Action needed.',
+              templateId: ${
+                options.templateId
+                  ? `'${options.templateId}'`
+                  : `(documents[].decision[].revisionReason | [0] != null) && 'd-2c6ae291d9df4f4a8770d6a4e272d803' || 'd-61c568cfa5b145b5916ff89790fe2065'`
+              },
+              revisionReason: documents[].decision[].revisionReason | [0],
+              language: workflowRuntimeConfig.language,
+              supportEmail: join('',['support@',entity.data.additionalInfo.customerCompany,'.com']),
+              adapter: '{secret.MAIL_ADAPTER}'
+            }`, // jmespath
           },
         ],
       },
@@ -749,7 +890,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
     [EMAIL_TEMPLATES['invitation']]: (options: EmailOptions) => ({
       name: 'invitation',
       template: EMAIL_TEMPLATES['invitation'],
-      pluginKind: 'invitation',
+      pluginKind: 'template-email',
       url: `{secret.EMAIL_API_URL}`,
       method: 'POST',
       headers: {
@@ -761,18 +902,55 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
           {
             transformer: 'jmespath',
             mapping: `{
-                    ${options.dataMapping || ''}
-                    customerName: metadata.customerName,
-                    collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
-                    from: 'no-reply@ballerine.com',
-                    receivers: [entity.data.additionalInfo.mainRepresentative.email],
-                    language: workflowRuntimeConfig.language,
-                    templateId: ${
-                      options.templateId
-                        ? `'${options.templateId}'`
-                        : `'d-8949519316074e03909042cfc5eb4f02'`
-                    },
-                    adapter: '{secret.MAIL_ADAPTER}'
+              ${options.dataMapping || ''}
+              customerName: metadata.customerName,
+              collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
+              from: 'no-reply@ballerine.com',
+              receivers: [entity.data.additionalInfo.mainRepresentative.email],
+              language: workflowRuntimeConfig.language,
+              templateId: ${
+                options.templateId
+                  ? `'${options.templateId}'`
+                  : `'d-8949519316074e03909042cfc5eb4f02'`
+              },
+              adapter: '{secret.MAIL_ADAPTER}'
+            }`, // jmespath
+          },
+        ],
+      },
+      response: {
+        transform: [],
+      },
+    }),
+    [EMAIL_TEMPLATES['assisted-invitation']]: (options: EmailOptions) => ({
+      name: 'assisted_invitation',
+      template: EMAIL_TEMPLATES['assisted-invitation'],
+      pluginKind: 'template-email',
+      url: `{secret.EMAIL_API_URL}`,
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
+        'Content-Type': 'application/json',
+      },
+      request: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: `{
+              ${options.dataMapping || ''}
+              companyName: data.companyName,
+              customerName: metadata.customerName,
+              collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
+              from: 'no-reply@ballerine.com',
+              name: join(' ',[metadata.customerName,'Onboarding']),
+              receivers: [data.additionalInfo.bdEmail],
+              language: workflowRuntimeConfig.language,
+              templateId: ${
+                options.templateId
+                  ? `'${options.templateId}'`
+                  : `'d-1719b22f44ca42d589435f553ae02961'`
+              },
+              adapter: '{secret.MAIL_ADAPTER}'
             }`, // jmespath
           },
         ],
@@ -803,7 +981,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/KYC_RESPONSE_RECEIVED','?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result']),
               vendor: 'veriff',
               withAml: ${options.withAml ?? false ? 'true' : 'false'}
-              }`, // jmespath
+            }`, // jmespath
           },
         ],
       },

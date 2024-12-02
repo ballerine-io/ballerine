@@ -8,6 +8,7 @@ import { ObjectValues } from './types';
 import { BALLERINE_API_PLUGINS } from './plugins/external-plugin/vendor-consts';
 import { BallerineApiPlugin } from './plugins/external-plugin/ballerine-plugin';
 import { BallerineEmailPlugin } from './plugins/external-plugin/ballerine-email-plugin';
+import { IndividualsSanctionsV2Plugin } from './plugins/external-plugin/individuals-sanctions-v2-plugin/individuals-sanctions-v2-plugin';
 
 export const PluginKind = {
   KYC: 'kyc',
@@ -16,6 +17,7 @@ export const PluginKind = {
   API: 'api',
   EMAIL: 'email',
   MASTERCARD_MERCHANT_SCREENING: 'mastercard-merchant-screening',
+  INDIVIDUAL_SANCTIONS_V2: 'individual-sanctions-v2',
 } as const;
 
 export const pluginsRegistry = {
@@ -25,6 +27,7 @@ export const pluginsRegistry = {
   [PluginKind.API]: ApiPlugin,
   [PluginKind.EMAIL]: EmailPlugin,
   [PluginKind.MASTERCARD_MERCHANT_SCREENING]: MastercardMerchantScreeningPlugin,
+  [PluginKind.INDIVIDUAL_SANCTIONS_V2]: IndividualsSanctionsV2Plugin,
   [BALLERINE_API_PLUGINS['individual-sanctions']]: BallerineApiPlugin,
   [BALLERINE_API_PLUGINS['company-sanctions']]: BallerineApiPlugin,
   [BALLERINE_API_PLUGINS['ubo']]: BallerineApiPlugin,

@@ -12,6 +12,7 @@ export class PluginRunnerHandler implements ActionHandler {
 
   async run(_: CollectionFlowContext, action: Action<PluginRunnerParams>, api: StateMachineAPI) {
     await api.invokePlugin(action.params.pluginName);
+
     return api.getContext();
   }
 }

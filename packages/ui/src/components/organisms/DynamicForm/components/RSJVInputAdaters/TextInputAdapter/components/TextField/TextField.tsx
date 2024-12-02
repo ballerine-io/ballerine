@@ -39,7 +39,7 @@ export const TextField = ({
     name,
     value: formData || '',
     placeholder: uiSchema?.['ui:placeholder'],
-    disabled,
+    disabled: disabled || uiSchema?.disabled,
     onChange: handleChange,
     onBlur: handleBlur,
   };

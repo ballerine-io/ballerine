@@ -6,6 +6,7 @@ import {
   Query,
   Res,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
@@ -34,6 +35,7 @@ import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-fil
 import { CreateBusinessReportBatchBodyDto } from '@/business-report/dto/create-business-report-batch-body.dto';
 import type { Response } from 'express';
 import { PrismaService } from '@/prisma/prisma.service';
+import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Business Reports')
@@ -109,21 +111,6 @@ export class BusinessReportControllerExternal {
     let business: Pick<Business, 'id' | 'correlationId'> | undefined;
     const merchantNameWithDefault = merchantName || 'Not detected';
 
-    if (!businessCorrelationId) {
-      business = await this.businessService.create({
-        data: {
-          companyName: merchantNameWithDefault,
-          country: countryCode,
-          website: websiteUrl,
-          projectId: currentProjectId,
-        },
-        select: {
-          id: true,
-          correlationId: true,
-        },
-      });
-    }
-
     if (businessCorrelationId) {
       business =
         (await this.businessService.getByCorrelationId(businessCorrelationId, [currentProjectId], {
@@ -132,6 +119,22 @@ export class BusinessReportControllerExternal {
             correlationId: true,
           },
         })) ?? undefined;
+    }
+
+    if (!business) {
+      business = await this.businessService.create({
+        data: {
+          companyName: merchantNameWithDefault,
+          country: countryCode,
+          website: websiteUrl,
+          projectId: currentProjectId,
+          correlationId: businessCorrelationId,
+        },
+        select: {
+          id: true,
+          correlationId: true,
+        },
+      });
     }
 
     if (!business) {
@@ -149,6 +152,23 @@ export class BusinessReportControllerExternal {
       workflowVersion,
       withQualityControl,
       customerId,
+    });
+  }
+
+  @common.Get('/sync')
+  @UseGuards(AdminAuthGuard)
+  @swagger.ApiOkResponse({ type: [String] })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiExcludeEndpoint()
+  async list() {
+    return await this.prisma.businessReport.findMany({
+      include: {
+        project: {
+          include: {
+            customer: true,
+          },
+        },
+      },
     });
   }
 
@@ -201,21 +221,4 @@ export class BusinessReportControllerExternal {
     res.setHeader('content-type', 'application/json');
     res.send(result);
   }
-
-  // @common.Get()
-  // @UseGuards(AdminAuthGuard)
-  // @swagger.ApiOkResponse({ type: [String] })
-  // @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  // @swagger.ApiExcludeEndpoint()
-  // async list() {
-  //   return await this.prisma.businessReport.findMany({
-  //     include: {
-  //       project: {
-  //         include: {
-  //           customer: true,
-  //         },
-  //       },
-  //     },
-  //   });
-  // }
 }
