@@ -15,6 +15,7 @@
 - version bump
 
 ## 0.6.71
+## 0.6.69
 
 ### Patch Changes
 

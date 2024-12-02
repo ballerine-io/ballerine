@@ -10,6 +10,7 @@
 
 ### Patch Changes
 
+- Reworked getOrderedSteps & fixed tests
 - bump
 
 ## 0.9.53
