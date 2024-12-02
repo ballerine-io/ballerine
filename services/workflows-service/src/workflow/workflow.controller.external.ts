@@ -372,6 +372,7 @@ export class WorkflowControllerExternal {
       workflowDefinitionId: actionResult[0]?.workflowDefinition.id,
       workflowRuntimeId: actionResult[0]?.workflowRuntimeData.id,
       ballerineEntityId: actionResult[0]?.ballerineEntityId,
+      entities: actionResult[0]?.entities,
     });
   }
 
@@ -381,18 +382,21 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createCollectionFlowUrl(
-    @common.Body() { workflowRuntimeDataId }: CreateCollectionFlowUrlDto,
+    @common.Body()
+    { workflowRuntimeDataId }: CreateCollectionFlowUrlDto,
   ) {
-    const token = await this.workflowTokenService.findFirstByWorkflowruntimeDataIdUnscoped(
+    const result = await this.workflowTokenService.findFirstByWorkflowruntimeDataIdUnscoped(
       workflowRuntimeDataId,
     );
 
-    if (!token) {
-      throw new NotFoundException(`No token was found for ${workflowRuntimeDataId}`);
+    if (!result) {
+      throw new NotFoundException(
+        `No WorkflowRuntimeDataId was found for ${JSON.stringify(workflowRuntimeDataId)}`,
+      );
     }
 
     return {
-      collectionFlowUrl: `${env.COLLECTION_FLOW_URL}?token=${token.token}`,
+      collectionFlowUrl: `${env.COLLECTION_FLOW_URL}?token=${result.token}`,
     };
   }
 
@@ -405,16 +409,6 @@ export class WorkflowControllerExternal {
     @common.Body() { expiry, workflowRuntimeDataId, endUserId }: CreateTokenDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    try {
-      await this.workflowService.getWorkflowRuntimeDataById(workflowRuntimeDataId, {}, [
-        currentProjectId,
-      ]);
-    } catch (e) {
-      throw new common.BadRequestException(
-        `No WorkflowRuntimeData was found for ${workflowRuntimeDataId}`,
-      );
-    }
-
     const expiresAt = new Date(Date.now() + (expiry || 30) * 24 * 60 * 60 * 1000);
 
     const { token } = await this.workflowTokenService.create(currentProjectId, {

@@ -188,6 +188,7 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
     },
     config: {
       isExample: true,
+      createCollectionFlowToken: true,
       workflowLevelResolution: true,
       childCallbackResults: [
         {
