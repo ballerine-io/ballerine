@@ -5,7 +5,6 @@ import { ServerDownLayout } from './ServerDown.layout';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
 import Chatbot from '@/domains/chat/chatbot-opengpt';
-import { WebchatClient } from '@botpress/webchat';
 import { RenderChildrenInIFrame } from '@/common/components/organisms/RenderChildrenInIFrame/RenderChildrenInIFrame';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { env } from '@/common/env/env';
@@ -20,7 +19,6 @@ const ReactQueryDevtools = lazy(() =>
 
 const ChatbotLayout: FunctionComponent = () => {
   const { data: customer, isLoading: isLoadingCustomer } = useCustomerQuery();
-  const [client, setClient] = useState<WebchatClient | null>(null);
   const [isWebchatOpen, setIsWebchatOpen] = useState(false);
   const toggleIsWebchatOpen = () => {
     setIsWebchatOpen(prevState => !prevState);
@@ -34,7 +32,7 @@ const ChatbotLayout: FunctionComponent = () => {
     return null;
   }
 
-  const chatbotClientId = customer?.features?.chatbot?.clientId || env.VITE_BOTPRESS_CLIENT_ID;
+  const botpressClientId = customer?.features?.chatbot?.clientId || env.VITE_BOTPRESS_CLIENT_ID;
 
   return (
     <RenderChildrenInIFrame
@@ -46,9 +44,7 @@ const ChatbotLayout: FunctionComponent = () => {
       <Chatbot
         isWebchatOpen={isWebchatOpen}
         toggleIsWebchatOpen={toggleIsWebchatOpen}
-        client={client}
-        setClient={setClient}
-        chatbotClientId={chatbotClientId}
+        botpressClientId={botpressClientId}
       />
     </RenderChildrenInIFrame>
   );

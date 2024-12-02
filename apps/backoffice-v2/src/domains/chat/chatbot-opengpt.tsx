@@ -1,9 +1,9 @@
 import { getClient, Webchat, WebchatProvider, WebchatClient } from '@botpress/webchat';
 import { buildTheme } from '@botpress/webchat-generator';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuthenticatedUserQuery } from '../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCurrentCaseQuery } from '../../pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
-import { useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 // declare const themeNames: readonly ["prism", "galaxy", "dusk", "eggplant", "dawn", "midnight"];
 const { theme, style } = buildTheme({
@@ -14,34 +14,27 @@ const { theme, style } = buildTheme({
 const Chatbot = ({
   isWebchatOpen,
   toggleIsWebchatOpen,
-  client,
-  setClient,
-  chatbotClientId,
+  botpressClientId,
 }: {
   isWebchatOpen: boolean;
   toggleIsWebchatOpen: () => void;
-  client: WebchatClient | null;
-  setClient: (client: WebchatClient) => void;
-  chatbotClientId: string;
+  botpressClientId: string;
 }) => {
+  const [client, setClient] = useState<WebchatClient | null>(null);
   const { data: session } = useAuthenticatedUserQuery();
   const { data: currentCase } = useCurrentCaseQuery();
-  const { pathname } = useLocation();
+  const { entityId: caseId } = useParams();
 
-  const sendCaseData = useCallback(
-    async (caseId: string, newClient?: WebchatClient) => {
-      if (!currentCase) return;
-
-      const clientToUse = newClient || client;
+  const sendCurrentCaseData = useCallback(
+    async (botpressClient: WebchatClient | null = client) => {
+      if (!currentCase || !botpressClient) {
+        return;
+      }
 
       try {
-        const currentCaseData = {
-          ...currentCase.context,
-          caseId,
-        };
-        await clientToUse?.sendEvent({
+        await botpressClient.sendEvent({
           type: 'case-data',
-          data: currentCaseData,
+          data: currentCase.context,
         });
       } catch (error) {
         console.error('Failed to send case data:', error);
@@ -51,19 +44,16 @@ const Chatbot = ({
   );
 
   useEffect(() => {
-    if (client || !chatbotClientId || !session?.user) return;
+    if (client || !botpressClientId || !session?.user) {
+      return;
+    }
 
     const { firstName, lastName, email } = session.user;
-    const newClient = getClient({ clientId: chatbotClientId });
-    setClient(newClient);
+    const botpressClientInstance = getClient({ clientId: botpressClientId });
+    setClient(botpressClientInstance);
 
-    // newClient.on('*', (ev: any) => {
-    //   console.log('Event: ', ev);
-    // });
-
-    newClient.on('conversation', (ev: any) => {
-      // new conversation created
-      void newClient.updateUser({
+    botpressClientInstance.on('conversation', (ev: any) => {
+      void botpressClientInstance.updateUser({
         data: {
           firstName,
           lastName,
@@ -71,19 +61,16 @@ const Chatbot = ({
         },
       });
       setTimeout(() => {
-        const caseId = pathname.split('/')[pathname.split('/').length - 1];
-        void sendCaseData(caseId || '', newClient);
-      }, 500);
+        void sendCurrentCaseData(botpressClientInstance);
+      }, 0);
     });
-  }, [session, client, setClient, sendCaseData, pathname, chatbotClientId]);
+  }, [session, client, sendCurrentCaseData, botpressClientId]);
 
   useEffect(() => {
-    console.log('pathname changed to: ', pathname);
-
-    const caseId = pathname.split('/')[pathname.split('/').length - 1];
-
-    if (caseId) void sendCaseData(caseId);
-  }, [pathname, sendCaseData]);
+    if (caseId) {
+      void sendCurrentCaseData();
+    }
+  }, [caseId, sendCurrentCaseData]);
 
   if (!client) {
     return null;
