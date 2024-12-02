@@ -110,7 +110,7 @@ export const WebsiteCredibility: FunctionComponent<{
                 </ul>
               </ul>
             ))}
-          {isEmptyTrafficAnalysis && <>No Indications Detected.</>}
+          {isEmptyTrafficAnalysis && <>No traffic data detected.</>}
         </CardContent>
       </Card>
     </div>
