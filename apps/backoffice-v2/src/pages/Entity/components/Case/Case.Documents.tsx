@@ -29,6 +29,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
   isDocumentEditable,
   isLoadingOCR,
   hideOpenExternalButton,
+  wrapperClassName,
 }) => {
   const {
     crop,
@@ -52,13 +53,8 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
 
   return (
     <ImageViewer selectedImage={selectedImage} onSelectImage={onSelectImage}>
-      <div className={`flex min-h-[600px] w-full flex-col items-center`}>
-        <div
-          className={ctw(
-            `
-            d-full relative flex justify-center rounded-md`,
-          )}
-        >
+      <div className={`flex w-full flex-col items-center`}>
+        <div className={ctw(`d-full relative flex rounded-md`, wrapperClassName)}>
           {!shouldDownload && (
             <ImageEditor
               image={selectedImage}
