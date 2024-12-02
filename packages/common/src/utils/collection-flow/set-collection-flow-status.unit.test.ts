@@ -1,5 +1,5 @@
 import { DefaultContextSchema } from '@/schemas';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { setCollectionFlowStatus } from './set-collection-flow-status';
 
 describe('setCollectionFlowStatus', () => {
@@ -19,17 +19,25 @@ describe('setCollectionFlowStatus', () => {
     expect(updatedContext).toBe(context);
   });
 
-  it('will throw an error if the status is invalid', () => {
-    const context = {};
+  it('will log a warning if the status is invalid', () => {
+    const context = {
+      collectionFlow: { state: {} },
+    };
+    const consoleSpy = vi.spyOn(console, 'warn');
 
-    expect(() =>
-      setCollectionFlowStatus(context as DefaultContextSchema, 'invalid' as any),
-    ).toThrow();
+    const result = setCollectionFlowStatus(context as DefaultContextSchema, 'invalid' as any);
+
+    expect(consoleSpy).toHaveBeenCalledWith('Invalid status: invalid');
+    expect(result).toBe(context);
   });
 
-  it('will throw an error if the collection flow state is not present', () => {
+  it('will log a warning if the collection flow state is not present', () => {
     const context = {};
+    const consoleSpy = vi.spyOn(console, 'warn');
 
-    expect(() => setCollectionFlowStatus(context as DefaultContextSchema, 'completed')).toThrow();
+    const result = setCollectionFlowStatus(context as DefaultContextSchema, 'completed');
+
+    expect(consoleSpy).toHaveBeenCalledWith('Collection flow state is not present.');
+    expect(result).toBe(context);
   });
 });
