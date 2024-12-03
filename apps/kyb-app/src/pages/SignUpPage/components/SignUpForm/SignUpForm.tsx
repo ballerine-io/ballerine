@@ -2,11 +2,12 @@ import { JsonSchemaRuleEngine } from '@/components/organisms/DynamicUI/rule-engi
 import { CreateEndUserDto } from '@/domains/collection-flow';
 import { transformRJSFErrors } from '@/helpers/transform-errors';
 import { baseLayouts, DynamicForm } from '@ballerine/ui';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 import { Submit } from './components/Submit';
 import { useCreateEndUserMutation } from './hooks/useCreateEndUserMutation';
 import { signupFormSchema, signupFormUiSchema } from './signup-form-schema';
+import { useSignupLayout } from '@/common/components/layouts/Signup';
 
 const layouts = {
   ...baseLayouts,
@@ -18,6 +19,12 @@ const layouts = {
 
 export const SignUpForm = () => {
   const { createEndUserRequest, isLoading } = useCreateEndUserMutation();
+  const { themeParams } = useSignupLayout();
+
+  const signupSchema = useMemo(
+    () => signupFormSchema({ jobTitle: themeParams?.showJobTitle }),
+    [themeParams?.showJobTitle],
+  );
 
   const handleSubmit = useCallback(
     (values: Record<string, any>) => {
@@ -26,7 +33,7 @@ export const SignUpForm = () => {
       const isValid = (values: unknown): values is CreateEndUserDto => {
         return jsonValidator.test(values, {
           type: 'json-schema',
-          value: signupFormSchema,
+          value: signupSchema,
         });
       };
 
@@ -36,12 +43,12 @@ export const SignUpForm = () => {
         toast.error('Invalid form values. Something went wrong.');
       }
     },
-    [createEndUserRequest],
+    [createEndUserRequest, signupSchema],
   );
 
   return (
     <DynamicForm
-      schema={signupFormSchema}
+      schema={signupSchema}
       uiSchema={signupFormUiSchema}
       onSubmit={handleSubmit}
       transformErrors={transformRJSFErrors}
