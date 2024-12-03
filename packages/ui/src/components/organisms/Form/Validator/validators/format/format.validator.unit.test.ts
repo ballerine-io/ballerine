@@ -30,10 +30,8 @@ describe('formatValidator', () => {
       );
     });
 
-    it('should throw error for non-string value', () => {
-      expect(() => formatValidator(123, params as ICommonValidator<any>)).toThrow(
-        'Invalid email format.',
-      );
+    it('should return true for non-string value', () => {
+      expect(formatValidator(123, params as ICommonValidator<any>)).toBe(true);
     });
   });
 

@@ -22,6 +22,7 @@ export interface ICommonValidator<T = object, TValidatorType = TBaseValidators> 
 
 export interface IValidationSchema {
   id: string;
+  valueDestination?: string;
   validators: ICommonValidator[];
   children?: IValidationSchema[];
 }
@@ -39,3 +40,5 @@ export type TValidator<T, TValidatorParams = unknown> = (
   value: T,
   validator: ICommonValidator<TValidatorParams>,
 ) => void;
+
+export type TDeepthLevelStack = number[];

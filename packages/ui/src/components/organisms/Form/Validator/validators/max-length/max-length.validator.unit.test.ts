@@ -7,6 +7,10 @@ describe('maxLengthValidator', () => {
     value: { maxLength: 5 },
   };
 
+  it('should return true for non-string and non-array value', () => {
+    expect(maxLengthValidator(123 as any, params as ICommonValidator<any>)).toBe(true);
+  });
+
   it('should not throw error when string length is equal to maxLength', () => {
     expect(() => maxLengthValidator('12345', params as ICommonValidator<any>)).not.toThrow();
   });
@@ -32,13 +36,7 @@ describe('maxLengthValidator', () => {
     );
   });
 
-  it('should handle empty string', () => {
-    expect(() => maxLengthValidator('', params as ICommonValidator<any>)).not.toThrow();
-  });
-
-  it('should handle undefined value', () => {
-    expect(() =>
-      maxLengthValidator(undefined as any, params as ICommonValidator<any>),
-    ).not.toThrow();
+  it('should return true for undefined value', () => {
+    expect(maxLengthValidator(undefined as any, params as ICommonValidator<any>)).toBe(true);
   });
 });

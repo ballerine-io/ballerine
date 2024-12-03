@@ -8,6 +8,8 @@ export const maximumValueValidator: TValidator<number, IMaximumValueValidatorPar
 ) => {
   const { message = 'Maximum value is {maximum}.' } = params;
 
+  if (typeof value !== 'number') return true;
+
   if (value > params.value.maximum) {
     throw new Error(formatErrorMessage(message, 'maximum', params.value.maximum.toString()));
   }

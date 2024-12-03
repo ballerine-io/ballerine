@@ -38,9 +38,7 @@ describe('minLengthValidator', () => {
     );
   });
 
-  it('should handle undefined value', () => {
-    expect(() => minLengthValidator(undefined as any, params as ICommonValidator<any>)).toThrow(
-      'Minimum length is 4.',
-    );
+  it('should return true for undefined value', () => {
+    expect(minLengthValidator(undefined as any, params as ICommonValidator<any>)).toBe(true);
   });
 });

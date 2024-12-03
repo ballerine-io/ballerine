@@ -8,7 +8,11 @@ export const maxLengthValidator: TValidator<string, IMaxLengthValueValidatorPara
 ) => {
   const { message = 'Maximum length is {maxLength}.' } = params;
 
+  if (value?.length === undefined) return true;
+
   if (value?.length > params.value.maxLength) {
     throw new Error(formatErrorMessage(message, 'maxLength', params.value.maxLength.toString()));
   }
+
+  return true;
 };

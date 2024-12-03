@@ -8,7 +8,9 @@ export const minLengthValidator: TValidator<string, IMinLengthValueValidatorPara
 ) => {
   const { message = 'Minimum length is {minLength}.' } = params;
 
-  if (value === undefined || value?.length < params.value.minLength) {
+  if (value?.length === undefined) return true;
+
+  if (value?.length < params.value.minLength) {
     throw new Error(formatErrorMessage(message, 'minLength', params.value.minLength.toString()));
   }
 };

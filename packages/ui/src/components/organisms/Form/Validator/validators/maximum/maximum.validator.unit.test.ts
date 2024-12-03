@@ -38,4 +38,10 @@ describe('maximumValueValidator', () => {
     );
     expect(() => maximumValueValidator(9.9, params as ICommonValidator<any>)).not.toThrow();
   });
+
+  it('should return true for non-number values', () => {
+    expect(maximumValueValidator('test' as any, params as ICommonValidator<any>)).toBe(true);
+    expect(maximumValueValidator(undefined as any, params as ICommonValidator<any>)).toBe(true);
+    expect(maximumValueValidator(null as any, params as ICommonValidator<any>)).toBe(true);
+  });
 });

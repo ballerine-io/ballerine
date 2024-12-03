@@ -7,6 +7,8 @@ export const formatValidator: TValidator<unknown, IFormatValueValidatorParams> =
   value,
   params,
 ) => {
+  if (typeof value !== 'string') return true;
+
   const { message = 'Invalid {format} format.' } = params;
 
   if (params.value.format === 'email') {

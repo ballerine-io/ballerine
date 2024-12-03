@@ -34,9 +34,9 @@ describe('patternValueValidator', () => {
     );
   });
 
-  it('should handle undefined value', () => {
-    expect(() => patternValueValidator(undefined as any, params as ICommonValidator<any>)).toThrow(
-      'Value must match ^[A-Z]+$.',
-    );
+  it('should return true for non-string values', () => {
+    expect(patternValueValidator(undefined as any, params as ICommonValidator<any>)).toBe(true);
+    expect(patternValueValidator(null as any, params as ICommonValidator<any>)).toBe(true);
+    expect(patternValueValidator(123 as any, params as ICommonValidator<any>)).toBe(true);
   });
 });

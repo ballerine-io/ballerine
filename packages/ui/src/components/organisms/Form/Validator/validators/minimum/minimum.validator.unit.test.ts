@@ -31,4 +31,17 @@ describe('minimumValueValidator', () => {
       'Custom message: min 5',
     );
   });
+
+  it('should handle decimal values', () => {
+    expect(() => minimumValueValidator(4.9, params as ICommonValidator<any>)).toThrow(
+      'Minimum value is 5.',
+    );
+    expect(() => minimumValueValidator(5.1, params as ICommonValidator<any>)).not.toThrow();
+  });
+
+  it('should return true for non-number values', () => {
+    expect(minimumValueValidator('test' as any, params as ICommonValidator<any>)).toBe(true);
+    expect(minimumValueValidator(undefined as any, params as ICommonValidator<any>)).toBe(true);
+    expect(minimumValueValidator(null as any, params as ICommonValidator<any>)).toBe(true);
+  });
 });
