@@ -31,7 +31,7 @@ describe('createValidationError', () => {
     const result = createValidationError(params);
 
     expect(result).toEqual({
-      id: 'test-',
+      id: 'test',
       originId: 'test',
       invalidValue: 123,
       message: ['error message'],
