@@ -29,6 +29,7 @@ export const EditableDetailV2: FunctionComponent<{
   }>;
   form: UseFormReturn<FieldValues>;
   field: Parameters<ComponentProps<typeof FormField>['render']>[0]['field'];
+  valueAlias?: string;
   originalValue: ExtendedJson;
   type: string | undefined;
   format: string | undefined;
@@ -50,6 +51,7 @@ export const EditableDetailV2: FunctionComponent<{
   originalValue,
   form,
   field,
+  valueAlias,
   type,
   format,
   minimum,
@@ -147,7 +149,7 @@ export const EditableDetailV2: FunctionComponent<{
   if (parse?.url && checkIsUrl(field.value)) {
     return (
       <BallerineLink href={field.value} className={className}>
-        {field.value}
+        {valueAlias ?? field.value}
       </BallerineLink>
     );
   }

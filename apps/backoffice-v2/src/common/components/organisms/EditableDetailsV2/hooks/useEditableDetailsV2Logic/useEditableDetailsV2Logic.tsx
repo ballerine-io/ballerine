@@ -4,28 +4,35 @@ import { EditableDetailsV2 } from '../../EditableDetailsV2';
 import { isPathMatch } from '../../utils/is-path-match';
 import { isObject } from '@ballerine/common';
 import { set, get } from 'lodash-es';
+import { sortData } from '@/lib/blocks/utils/sort-data';
 
 export const useNewEditableDetailsLogic = ({
   fields,
-  blacklist,
-  whitelist,
   onSubmit,
+  config,
 }: Pick<
   ComponentProps<typeof EditableDetailsV2>,
-  'fields' | 'blacklist' | 'whitelist' | 'onSubmit'
+  'fields' | 'onSubmit' | 'config'
 >) => {
+  const sortedFields = useMemo(() => sortData({
+    data: fields,
+    direction: config?.sort?.direction,
+      predefinedOrder: config?.sort?.predefinedOrder,
+    }),
+    [fields, config?.sort?.direction, config?.sort?.predefinedOrder],
+  );
   // Should support multiple levels of nesting, arrays, objects, and multiple path syntaxes
   const filterValue = useCallback(
     ({ path, root }: { path: string; root: string }) =>
       (value: any): any => {
-        if (!blacklist && !whitelist) {
+        if (!config.blacklist && !config.whitelist) {
           return value;
         }
 
         if (isObject(value)) {
           return Object.entries(value).reduce((acc, [key, value]) => {
             const fullPath = `${path}.${key}`;
-            const isBlacklisted = blacklist?.some(pattern =>
+            const isBlacklisted = config.blacklist?.some(pattern =>
               isPathMatch({
                 pattern,
                 path: fullPath,
@@ -33,8 +40,8 @@ export const useNewEditableDetailsLogic = ({
               }),
             );
             const isWhitelisted =
-              !whitelist ||
-              whitelist?.some(pattern =>
+              !config.whitelist ||
+              config.whitelist?.some(pattern =>
                 isPathMatch({
                   pattern,
                   path: fullPath,
@@ -60,13 +67,13 @@ export const useNewEditableDetailsLogic = ({
 
         return value;
       },
-    [blacklist, whitelist],
+    [config.blacklist, config.whitelist],
   );
 
   const filteredFields = useMemo(() => {
-    return fields.filter(field => {
-      if (blacklist) {
-        return !blacklist.some(pattern =>
+    return sortedFields.filter(field => {
+      if (config.blacklist) {
+        return !config.blacklist.some(pattern =>
           isPathMatch({
             pattern,
             path: field.path,
@@ -75,8 +82,8 @@ export const useNewEditableDetailsLogic = ({
         );
       }
 
-      if (whitelist) {
-        return whitelist.some(pattern =>
+      if (config.whitelist) {
+        return config.whitelist.some(pattern =>
           isPathMatch({
             pattern,
             path: field.path,
@@ -87,7 +94,7 @@ export const useNewEditableDetailsLogic = ({
 
       return true;
     });
-  }, [fields, blacklist, whitelist]);
+  }, [sortedFields, config.blacklist, config.whitelist]);
   const defaultValues = useMemo(
     () =>
       filteredFields.reduce((acc, curr) => {

@@ -1,11 +1,59 @@
-export interface IBaseEditableDetailsV2Props {
+import { SortDirection } from "@ballerine/common";
+
+export interface IBaseEditableDetailsV2Config {
+    parse?: {
+      date?: boolean;
+      isoDate?: boolean;
+      datetime?: boolean;
+      boolean?: boolean;
+      url?: boolean;
+      nullish?: boolean;
+    };
+    sort?: {
+      direction?: SortDirection;
+      predefinedOrder?: string[];
+    };
+    actions: {
+      editing: {
+        disabled: boolean;
+      };
+      options: {
+        disabled: boolean;
+      };
+      enableEditing: {
+        disabled: boolean;
+      };
+      cancel: {
+        disabled: boolean;
+      };
+      save: {
+        disabled: boolean;
+      };
+    };
+}
+
+export interface IEditableDetailsV2ConfigWithBlacklist extends IBaseEditableDetailsV2Config {
+  blacklist: string[];
+  whitelist?: never;
+}
+
+export interface IEditableDetailsV2ConfigWithWhitelist extends IBaseEditableDetailsV2Config {
+  blacklist?: never;
+  whitelist: string[];
+}
+
+export type TEditableDetailsV2Config =
+  | IEditableDetailsV2ConfigWithBlacklist
+  | IEditableDetailsV2ConfigWithWhitelist;
+
+export interface IEditableDetailsV2Props {
   title: string;
   fields: Array<{
     id?: string;
     title: string;
     value: any;
     props: {
-      valueAlias?: any;
+      valueAlias?: string;
       type: string | undefined;
       format: string | undefined;
       isEditable: boolean;
@@ -20,31 +68,8 @@ export interface IBaseEditableDetailsV2Props {
     path: string;
     root: string;
   }>;
-  parse?: {
-    date?: boolean;
-    isoDate?: boolean;
-    datetime?: boolean;
-    boolean?: boolean;
-    url?: boolean;
-    nullish?: boolean;
-  };
   onSubmit: (values: Record<string, any>) => void;
   onEnableIsEditable: () => void;
   onCancel: () => void;
-  isEditable: boolean;
-  isSaveDisabled: boolean;
+  config: TEditableDetailsV2Config;
 }
-
-export interface IEditableDetailsV2PropsWithBlacklist extends IBaseEditableDetailsV2Props {
-  blacklist: string[];
-  whitelist?: never;
-}
-
-export interface IEditableDetailsV2PropsWithWhitelist extends IBaseEditableDetailsV2Props {
-  blacklist?: never;
-  whitelist: string[];
-}
-
-export type TEditableDetailsV2Props =
-  | IEditableDetailsV2PropsWithBlacklist
-  | IEditableDetailsV2PropsWithWhitelist;

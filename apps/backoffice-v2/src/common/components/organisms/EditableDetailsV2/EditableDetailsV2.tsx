@@ -7,39 +7,44 @@ import { FunctionComponent } from 'react';
 import { FormItem } from '../Form/Form.Item';
 import { FormLabel } from '../Form/Form.Label';
 import { FormMessage } from '../Form/Form.Message';
-import { TEditableDetailsV2Props } from './types';
 import { useNewEditableDetailsLogic } from './hooks/useEditableDetailsV2Logic/useEditableDetailsV2Logic';
 import { EditableDetailsV2Options } from './components/EditableDetailsV2Options';
 import { EditableDetailV2 } from './components/EditableDetailV2';
+import { IEditableDetailsV2Props } from './types';
 
-export const EditableDetailsV2: FunctionComponent<TEditableDetailsV2Props> = ({
+export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
   title,
   fields,
   onSubmit,
   onEnableIsEditable,
   onCancel,
-  blacklist,
-  whitelist,
-  isEditable,
-  isSaveDisabled,
-  parse,
+  config,
 }) => {
-  if (blacklist && whitelist) {
+  if (config.blacklist && config.whitelist) {
     throw new Error('Cannot provide both blacklist and whitelist');
   }
 
   const { form, handleSubmit, filteredFields } = useNewEditableDetailsLogic({
     fields,
-    blacklist,
-    whitelist,
     onSubmit,
+    config,
   });
 
   return (
     <div className={'px-3.5'}>
       <div className={'my-4 flex justify-between'}>
         <h2 className={'text-xl font-bold'}>{title}</h2>
-        <EditableDetailsV2Options onEnableIsEditable={onEnableIsEditable} />
+        <EditableDetailsV2Options
+          actions={{
+            options: {
+              disabled: config.actions.options.disabled,
+            },
+            enableEditing: {
+              disabled: config.actions.enableEditing.disabled,
+            },
+          }}
+          onEnableIsEditable={onEnableIsEditable}
+        />
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)}>
@@ -65,11 +70,12 @@ export const EditableDetailsV2: FunctionComponent<TEditableDetailsV2Props> = ({
                         maximum={props.maximum}
                         pattern={props.pattern}
                         options={props.options}
-                        isEditable={isEditable && props.isEditable}
+                        isEditable={!config.actions.editing.disabled && props.isEditable}
+                        valueAlias={props.valueAlias}
                         originalValue={originalValue}
                         form={form}
                         field={field}
-                        parse={parse}
+                        parse={config.parse}
                       />
                       <FormMessage />
                     </FormItem>
@@ -79,20 +85,27 @@ export const EditableDetailsV2: FunctionComponent<TEditableDetailsV2Props> = ({
             })}
           </div>
           <div className={'min-h-12 mt-3 flex justify-end gap-x-3'}>
-            {isEditable && filteredFields?.some(({ props }) => props.isEditable) && (
-              <Button type="button" onClick={onCancel}>
-                Cancel
-              </Button>
-            )}
-            {isEditable && filteredFields?.some(({ props }) => props.isEditable) && (
-              <Button
-                type="submit"
-                className={`aria-disabled:pointer-events-none aria-disabled:opacity-50`}
-                aria-disabled={isSaveDisabled}
-              >
-                Save
-              </Button>
-            )}
+            {!config.actions.editing.disabled &&
+              filteredFields?.some(({ props }) => props.isEditable) && (
+                <Button
+                  type="button"
+                  className={`aria-disabled:pointer-events-none aria-disabled:opacity-50`}
+                  aria-disabled={config.actions.cancel.disabled}
+                  onClick={onCancel}
+                >
+                  Cancel
+                </Button>
+              )}
+            {!config.actions.editing.disabled &&
+              filteredFields?.some(({ props }) => props.isEditable) && (
+                <Button
+                  type="submit"
+                  className={`aria-disabled:pointer-events-none aria-disabled:opacity-50`}
+                  aria-disabled={config.actions.save.disabled}
+                >
+                  Save
+                </Button>
+              )}
           </div>
         </form>
       </Form>
