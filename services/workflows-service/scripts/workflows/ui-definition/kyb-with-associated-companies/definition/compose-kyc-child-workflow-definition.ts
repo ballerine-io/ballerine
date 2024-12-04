@@ -57,6 +57,7 @@ export const composeKycChildWorkflowDefinition = ({
       apiPlugins: [],
     },
     config: {
+      createCollectionFlowToken: true,
       workflowLevelResolution: true,
       isCaseOverviewEnabled: true,
     },

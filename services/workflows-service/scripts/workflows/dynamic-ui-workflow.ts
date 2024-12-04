@@ -229,6 +229,7 @@ export const dynamicUiWorkflowDefinition = {
     language: 'en',
     supportedLanguages: ['en', 'cn'],
     initialEvent: 'START',
+    createCollectionFlowToken: true,
     childCallbackResults: [
       {
         definitionId: kycEmailSessionDefinition.name,
