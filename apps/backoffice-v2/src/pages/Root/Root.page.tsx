@@ -5,6 +5,9 @@ import { ServerDownLayout } from './ServerDown.layout';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
 import Chatbot from '@/domains/chat/chatbot-opengpt';
+import { RenderChildrenInIFrame } from '@/common/components/organisms/RenderChildrenInIFrame/RenderChildrenInIFrame';
+import { ctw } from '@/common/utils/ctw/ctw';
+import { env } from '@/common/env/env';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
@@ -25,11 +28,26 @@ const ChatbotLayout: FunctionComponent = () => {
     return <FullScreenLoader />;
   }
 
-  if (!customer?.config?.isChatbotEnabled) {
+  if (!customer?.features?.chatbot?.enabled) {
     return null;
   }
 
-  return <Chatbot isWebchatOpen={isWebchatOpen} toggleIsWebchatOpen={toggleIsWebchatOpen} />;
+  const botpressClientId = customer?.features?.chatbot?.clientId || env.VITE_BOTPRESS_CLIENT_ID;
+
+  return (
+    <RenderChildrenInIFrame
+      className={ctw('fixed bottom-right-0', {
+        'h-[700px] w-[400px]': isWebchatOpen,
+        'd-[80px]': !isWebchatOpen,
+      })}
+    >
+      <Chatbot
+        isWebchatOpen={isWebchatOpen}
+        toggleIsWebchatOpen={toggleIsWebchatOpen}
+        botpressClientId={botpressClientId}
+      />
+    </RenderChildrenInIFrame>
+  );
 };
 
 export const Root: FunctionComponent = () => {

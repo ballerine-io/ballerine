@@ -62,7 +62,6 @@ export const ConfigSchema = z
     hasUboOngoingMonitoring: z.boolean().optional(),
     maxBusinessReports: z.number().nonnegative().optional(),
     isMerchantMonitoringEnabled: z.boolean().optional(),
-    isChatbotEnabled: z.boolean().optional(),
     uiOptions: z
       .object({
         redirectUrls: z
