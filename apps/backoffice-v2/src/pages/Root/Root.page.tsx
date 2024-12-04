@@ -28,7 +28,7 @@ const ChatbotLayout: FunctionComponent = () => {
     return <FullScreenLoader />;
   }
 
-  if (!customer?.features?.chatbot?.isEnabled) {
+  if (!customer?.features?.chatbot?.enabled) {
     return null;
   }
 
