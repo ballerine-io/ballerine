@@ -9,6 +9,7 @@ export interface IValidatorProviderProps<TValue> {
 
   ref?: React.RefObject<IValidatorRef>;
   validateOnChange?: boolean;
+  validateSync?: boolean;
 }
 
 export const ValidatorProvider = <TValue,>({
