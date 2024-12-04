@@ -22,6 +22,7 @@ import { CellsMap, createBlocks } from '@ballerine/blocks';
 import { DataTableCell } from '@/lib/blocks/components/DataTableCell/DataTableCell';
 import { ReadOnlyDetailsCell } from '@/lib/blocks/components/ReadOnlyDetailsCell/ReadOnlyDetailsCell';
 import { ImageCell } from '@/lib/blocks/components/ImageCell/ImageCell';
+import { EditableDetailsV2Cell } from '../components/EditableDetailsV2Cell/EditableDetailsV2Cell';
 
 export const createBlocksTyped = () => createBlocks<TCell>();
 
@@ -56,4 +57,5 @@ export const cells: CellsMap = {
   pdfViewer: PDFViewerCell,
   readOnlyDetails: ReadOnlyDetailsCell,
   image: ImageCell,
+  editableDetails: EditableDetailsV2Cell,
 };

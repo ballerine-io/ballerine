@@ -100,5 +100,9 @@
   "note_created": {
     "success": "Note added successfully.",
     "error": "Error occurred while adding note."
+  },
+  "update_details": {
+    "success": "Details updated successfully.",
+    "error": "Error occurred while updating details."
   }
 }

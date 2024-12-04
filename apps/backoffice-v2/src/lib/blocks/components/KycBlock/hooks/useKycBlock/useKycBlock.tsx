@@ -20,7 +20,16 @@ import { toTitleCase } from 'string-ts';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
 import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
+import { TWorkflowById, WorkflowByIdSchema } from '../../../../../../domains/workflows/fetchers';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
+import { apiClient } from '@/common/api-client/api-client';
+import { Method } from '@/common/enums';
+import { workflowsQueryKeys } from '@/domains/workflows/query-keys';
+import { toast } from 'sonner';
+import { t } from 'i18next';
+import { useToggle } from '@/common/hooks/useToggle/useToggle';
+import { generateEditableDetailsV2Fields } from '@/common/components/organisms/EditableDetailsV2/utils/generate-editable-details-v2-fields';
 
 const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -362,6 +371,22 @@ export const useKycBlock = ({
     })
     .cellAt(0, 0);
 
+  const fields = generateEditableDetailsV2Fields(childWorkflow?.context)({
+    path: 'entity.data',
+  });
+
+  const { mutate: mutateUpdateContextAndSyncEntity } = useUpdateContextAndSyncEntityMutation({
+    workflowId: childWorkflow?.id,
+  });
+  const [isEditable, _toggleIsEditable, toggleOnIsEditable, toggleOffIsEditable] = useToggle();
+
+  const onSubmit = useCallback(
+    (values: Record<PropertyKey, any>) => {
+      mutateUpdateContextAndSyncEntity(values);
+    },
+    [mutateUpdateContextAndSyncEntity],
+  );
+
   return createBlocksTyped()
     .addBlock()
     .addCell({
@@ -412,20 +437,24 @@ export const useKycBlock = ({
                   value: createBlocksTyped()
                     .addBlock()
                     .addCell({
-                      id: 'header',
-                      type: 'heading',
-                      value: 'Details',
-                    })
-                    .addCell({
-                      id: 'decision',
-                      type: 'details',
-                      value: {
-                        id: 1,
+                      type: 'editableDetails',
+                      value: fields,
+                      props: {
                         title: 'Details',
-                        data: details,
+                        onSubmit,
+                        isEditable: isEditable,
+                        onEnableIsEditable: toggleOnIsEditable,
+                        onCancel: toggleOffIsEditable,
+                        isSaveDisabled: false,
+                        parse: {
+                          date: true,
+                          isoDate: true,
+                          datetime: true,
+                          boolean: true,
+                          url: true,
+                          nullish: true,
+                        },
                       },
-                      workflowId: childWorkflow?.id,
-                      documents: childWorkflow?.context?.documents,
                     })
                     .build()
                     .flat(1),
