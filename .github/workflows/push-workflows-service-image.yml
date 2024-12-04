@@ -131,7 +131,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: services/workflows-service
+          # context: services/workflows-service
+          file: Dockerfile.wf-service
           platforms: linux/amd64
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache

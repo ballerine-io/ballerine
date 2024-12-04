@@ -16,7 +16,7 @@ ENV SHORT_SHA=${SHORT_SHA}
 
 COPY ./ .
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --filter @ballerine/workflows-service
 
 RUN pnpm run workflows-service:prisma-generate
 RUN NODE_OPTIONS=--max-old-space-size=8192 pnpm nx run-many --target=build --projects=@ballerine/workflows-service
@@ -34,9 +34,16 @@ WORKDIR /app
 
 COPY --from=dev /usr/bin/dumb-init /usr/bin/dumb-init
 COPY --from=dev /app/services/workflows-service/node_modules/ ./node_modules
+COPY --from=dev /app/packages/common/dist /packages/common/dist
+COPY --from=dev /app/packages/config/dist /packages/config/dist
+COPY --from=dev /app/packages/eslint-config/dist /packages/eslint-config/dist
+COPY --from=dev /app/packages/workflow-core/dist /packages/workflow-core/dist
+COPY --from=dev /app/sdks/workflow-node-sdk/dist /sdks/workflow-node-sdk/dist
+COPY --from=dev /app/node_modules /node_modules
 COPY --from=dev /app/services/workflows-service/package.json ./package.json
 COPY --from=dev /app/services/workflows-service/dist ./dist
 COPY --from=dev /app/services/workflows-service/prisma ./prisma
+COPY --from=dev /app/services/workflows-service/plugins ./plugins
 COPY --from=dev /app/services/workflows-service/scripts ./scripts
 COPY --from=dev /app/services/workflows-service/src ./src
 COPY --from=dev /app/services/workflows-service/tsconfig.build.json ./tsconfig.build.json
