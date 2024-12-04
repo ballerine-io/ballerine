@@ -1,23 +1,29 @@
 import get from 'lodash/get';
-import { IValidationError, IValidationSchema } from '../../types';
+import {
+  ICommonValidator,
+  IValidationError,
+  IValidationSchema,
+  TBaseValidators,
+} from '../../types';
 import { createValidationError } from '../create-validation-error';
 import { formatValueDestination } from '../format-value-destination';
 import { getValidator } from '../get-validator';
+import { isShouldApplyValidation } from './helpers';
 import { IValidateParams } from './types';
 
-// TODO: Codnitional Apply
-// TODO: Test coverage ror custom validators
-
-export const validate = <TValues extends object>(
+export const validate = <
+  TValues extends object,
+  TValidatorTypeExtends extends string = TBaseValidators,
+>(
   context: TValues,
-  schema: IValidationSchema[],
+  schema: Array<IValidationSchema<TValidatorTypeExtends>>,
   params: IValidateParams = {},
 ): IValidationError[] => {
   const { abortEarly = false } = params;
 
   const validationErrors: IValidationError[] = [];
 
-  const run = (schema: IValidationSchema[], stack: number[] = []) => {
+  const run = (schema: Array<IValidationSchema<TValidatorTypeExtends>>, stack: number[] = []) => {
     schema.forEach(schema => {
       const { validators = [], children, valueDestination, id } = schema;
       const formattedValueDestination = valueDestination
@@ -27,10 +33,14 @@ export const validate = <TValues extends object>(
       const value = formattedValueDestination ? get(context, formattedValueDestination) : context;
 
       for (const validator of validators) {
+        if (validator.applyWhen && !isShouldApplyValidation(validator.applyWhen, context)) {
+          continue;
+        }
+
         const validate = getValidator(validator);
 
         try {
-          validate(value, validator);
+          validate(value, validator as unknown as ICommonValidator);
         } catch (exception) {
           const error = createValidationError({
             id,
@@ -49,7 +59,7 @@ export const validate = <TValues extends object>(
 
       if (children?.length && Array.isArray(value)) {
         value.forEach((_, index) => {
-          run(children, [...stack, index]);
+          run(children as Array<IValidationSchema<TValidatorTypeExtends>>, [...stack, index]);
         });
       }
     });

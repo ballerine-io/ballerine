@@ -1802,6 +1802,9 @@ importers:
       i18n-iso-countries:
         specifier: ^7.6.0
         version: 7.7.0
+      json-logic-js:
+        specifier: ^2.0.2
+        version: 2.0.2
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -1875,6 +1878,9 @@ importers:
       '@testing-library/react':
         specifier: ^13.3.0
         version: 13.4.0(react-dom@18.2.0)(react@18.2.0)
+      '@types/json-logic-js':
+        specifier: ^2.0.1
+        version: 2.0.5
       '@types/lodash':
         specifier: ^4.14.191
         version: 4.14.201

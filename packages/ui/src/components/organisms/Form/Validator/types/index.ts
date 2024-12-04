@@ -13,17 +13,20 @@ export type TBaseValidators =
   | 'minimum'
   | 'maximum';
 
-export interface ICommonValidator<T = object, TValidatorType = TBaseValidators> {
+export interface ICommonValidator<T = object, TValidatorType extends string = TBaseValidators> {
   type: TValidatorType;
   value: T;
   message?: string;
   applyWhen?: IValidationRule;
 }
 
-export interface IValidationSchema {
+export interface IValidationSchema<
+  TValidatorTypeExtends extends string = TBaseValidators,
+  TValue = object,
+> {
   id: string;
   valueDestination?: string;
-  validators: ICommonValidator[];
+  validators: Array<ICommonValidator<TValue, TValidatorTypeExtends>>;
   children?: IValidationSchema[];
 }
 

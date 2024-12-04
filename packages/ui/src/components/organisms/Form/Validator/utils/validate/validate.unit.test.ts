@@ -1,5 +1,6 @@
-import { describe, expect, it, test } from 'vitest';
-import { IValidationError, IValidationSchema } from '../../types';
+import { beforeEach, describe, expect, it, test, vi } from 'vitest';
+import { ICommonValidator, IValidationError, IValidationSchema } from '../../types';
+import { registerValidator } from '../register-validator';
 import { validate } from './validate';
 
 describe('validate', () => {
@@ -724,6 +725,135 @@ describe('validate', () => {
             },
           ]);
         });
+      });
+    });
+
+    describe('conditional validation', () => {
+      const case1 = [
+        {
+          firstName: 'John',
+          lastName: undefined,
+        },
+        [
+          {
+            id: 'name',
+            valueDestination: 'firstName',
+            validators: [{ type: 'required', message: 'Field is required.', value: {} }],
+          },
+          {
+            id: 'lastName',
+            valueDestination: 'lastName',
+            validators: [
+              {
+                type: 'required',
+                message: 'Field is required.',
+                value: {},
+                applyWhen: {
+                  type: 'json-logic',
+                  value: {
+                    var: 'firstName',
+                  },
+                },
+              },
+            ],
+          },
+        ] as IValidationSchema[],
+        {
+          id: 'lastName',
+          originId: 'lastName',
+          invalidValue: undefined,
+          message: ['Field is required.'],
+        } as IValidationError,
+      ] as const;
+
+      const case2 = [
+        {
+          firstName: 'Banana',
+          lastName: undefined,
+        },
+        [
+          {
+            id: 'lastName',
+            valueDestination: 'lastName',
+            validators: [
+              {
+                type: 'required',
+                message: 'Field is required.',
+                value: {},
+                applyWhen: {
+                  type: 'json-logic',
+                  value: {
+                    '==': [{ var: 'firstName' }, 'Banana'],
+                  },
+                },
+              },
+            ],
+          },
+        ] as IValidationSchema[],
+        {
+          id: 'lastName',
+          originId: 'lastName',
+          invalidValue: undefined,
+          message: ['Field is required.'],
+        } as IValidationError,
+      ] as const;
+
+      const cases = [case1, case2];
+
+      test.each(cases)(
+        'should be applied when the condition is truthy',
+        (testData, schema, expectedErrors) => {
+          const errors = validate(testData, schema);
+
+          expect(errors).toEqual([expectedErrors]);
+        },
+      );
+    });
+
+    describe('custom validators', () => {
+      beforeEach(() => {
+        vi.clearAllMocks();
+      });
+
+      it('even number validator', () => {
+        const evenNumberValidator = (value: number, _: ICommonValidator) => {
+          if (typeof value !== 'number') return true;
+
+          if (value % 2 !== 0) {
+            throw new Error('Number is not even');
+          }
+        };
+
+        registerValidator('evenNumber', evenNumberValidator);
+
+        const data = {
+          odd: 19,
+          even: 20,
+        };
+
+        const schema = [
+          {
+            id: 'odd',
+            valueDestination: 'odd',
+            validators: [{ type: 'evenNumber', value: {} }],
+          },
+          {
+            id: 'even',
+            valueDestination: 'even',
+            validators: [{ type: 'evenNumber', value: {} }],
+          },
+        ] as Array<IValidationSchema<'evenNumber'>>;
+
+        const errors = validate(data, schema);
+
+        expect(errors).toEqual([
+          {
+            id: 'odd',
+            originId: 'odd',
+            invalidValue: 19,
+            message: ['Number is not even'],
+          },
+        ]);
       });
     });
   });
