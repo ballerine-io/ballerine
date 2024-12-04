@@ -4,6 +4,7 @@ import {
   IValidationError,
   IValidationSchema,
   TBaseValidators,
+  TDeepthLevelStack,
 } from '../../types';
 import { createValidationError } from '../create-validation-error';
 import { formatValueDestination } from '../format-value-destination';
@@ -23,7 +24,10 @@ export const validate = <
 
   const validationErrors: IValidationError[] = [];
 
-  const run = (schema: Array<IValidationSchema<TValidatorTypeExtends>>, stack: number[] = []) => {
+  const run = (
+    schema: Array<IValidationSchema<TValidatorTypeExtends>>,
+    stack: TDeepthLevelStack = [],
+  ) => {
     schema.forEach(schema => {
       const { validators = [], children, valueDestination, id } = schema;
       const formattedValueDestination = valueDestination
