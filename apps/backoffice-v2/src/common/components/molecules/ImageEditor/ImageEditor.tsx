@@ -1,9 +1,9 @@
 import { FunctionComponentWithChildren } from '@/common/types';
-import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { isPdf } from '@/common/utils/is-pdf/is-pdf';
 import { ComponentProps } from 'react';
 import ReactCrop, { Crop } from 'react-image-crop';
+import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 
 export interface IImageEditorProps {
   onTransformed: NonNullable<ComponentProps<typeof TransformWrapper>['onTransformed']>;
@@ -28,31 +28,39 @@ export const ImageEditor: FunctionComponentWithChildren<IImageEditorProps> = ({
   return (
     <TransformWrapper onTransformed={onTransformed}>
       <TransformComponent
-        wrapperClass={`max-w-[441px]`}
-        contentClass={ctw(`overflow-x-auto`, {
+        wrapperClass={`d-full max-w-[600px] max-h-[600px] h-full`}
+        contentClass={ctw({
           'hover:cursor-move': !isPdf(image),
         })}
         wrapperStyle={{
           width: '100%',
+          maxHeight: '600px',
           height: '100%',
+          overflow: 'hidden',
         }}
         contentStyle={{
           width: '100%',
           height: '100%',
+          display: !isPdf(image) ? 'block' : 'flex',
         }}
       >
         <ReactCrop
           crop={crop}
           onChange={onCrop}
           disabled={!isCropping || isPdf(image) || isRotatedOrTransformed}
-          className={ctw({
-            'd-full [&>div]:d-full': isPdf(image),
-            'rotate-90': imageRotation === 90,
-            'rotate-180': imageRotation === 180,
-            'rotate-[270deg]': imageRotation === 270,
+          className={ctw('h-full w-full overflow-hidden [&>div]:!w-full', {
+            'flex flex-row [&>div]:min-h-[600px]': isPdf(image),
           })}
         >
-          {children}
+          <div
+            className={ctw('flex h-full', {
+              'rotate-90': imageRotation === 90,
+              'rotate-180': imageRotation === 180,
+              'rotate-[270deg]': imageRotation === 270,
+            })}
+          >
+            {children}
+          </div>
         </ReactCrop>
       </TransformComponent>
     </TransformWrapper>
