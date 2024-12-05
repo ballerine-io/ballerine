@@ -124,6 +124,7 @@ model Business {
   companyName             String // Official registered name of the business entity
   registrationNumber      String? // Unique registration number assigned by the relevant authorities
   legalForm               String? // Legal structure of the business entity, e.g., LLC, corporation, partnership
+  dba                     String? // Doing Business As (DBA) name of the business entity
   country                 String?
   countryOfIncorporation  String? // Country where the business entity is incorporated
   dateOfIncorporation     DateTime? // Date when the business entity was incorporated

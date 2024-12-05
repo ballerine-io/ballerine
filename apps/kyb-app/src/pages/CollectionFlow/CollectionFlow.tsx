@@ -200,11 +200,11 @@ export const CollectionFlow = withSessionProtected(() => {
                               <AppShell.Sidebar>
                                 <div className="flex h-full flex-col">
                                   <div className="flex h-full flex-1 flex-col">
-                                    <div className="flex flex-col gap-8 pb-10">
-                                      <div className="flex justify-start">
+                                    <div className="flex justify-between gap-8 pb-10">
+                                      <AppShell.Navigation />
+                                      <div className="flex w-full justify-end">
                                         <AppShell.LanguagePicker />
                                       </div>
-                                      <AppShell.Navigation />
                                     </div>
                                     <div className="pb-10">
                                       {customer?.logoImageUri && (
@@ -233,7 +233,10 @@ export const CollectionFlow = withSessionProtected(() => {
                                       {themeDefinition.ui?.poweredBy !== false && (
                                         <div className="flex flex-col">
                                           <div className="border-b pb-12" />
-                                          <PoweredByLogo className="mt-8" sidebarRootId="sidebar" />
+                                          <PoweredByLogo
+                                            className="mt-8 max-w-[10rem]"
+                                            sidebarRootId="sidebar"
+                                          />
                                         </div>
                                       )}
                                     </div>

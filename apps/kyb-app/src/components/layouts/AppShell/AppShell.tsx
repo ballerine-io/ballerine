@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const AppShell = ({ children }: Props) => {
-  return <div className="w-ful flex h-screen flex-nowrap">{children}</div>;
+  return <div className="flex h-screen w-full flex-nowrap">{children}</div>;
 };
 
 AppShell.FormContainer = FormContainer;

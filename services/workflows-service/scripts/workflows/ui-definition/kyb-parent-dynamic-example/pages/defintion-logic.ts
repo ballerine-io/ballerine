@@ -117,7 +117,7 @@ export const definition = {
       {
         name: 'send_collection_flow_finished',
         pluginKind: 'api',
-        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/send-event}`,
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/send-event`,
         method: 'POST',
         stateNames: ['finish'],
         headers: { Authorization: 'Bearer {query.token}' },

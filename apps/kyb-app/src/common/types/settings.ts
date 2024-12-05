@@ -8,6 +8,7 @@ export interface ITheme {
     poweredBy?: boolean;
   };
   signup?: {
+    showJobTitle?: boolean;
     companyLogo: {
       imageSrc?: string;
       styles?: CSSProperties;
