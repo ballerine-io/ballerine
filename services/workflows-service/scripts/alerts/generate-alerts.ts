@@ -255,7 +255,7 @@ export const ALERT_DEFINITIONS = {
     description:
       'High Velocity - High number of inbound non-traditional payment transactions received from a Counterparty over a set period of time',
     inlineRule: {
-      id: 'HVIC_CC',
+      id: 'HVIC_APM',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
       fnInvestigationName: 'investigateTransactionsAgainstDynamicRules',
       subjects: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
