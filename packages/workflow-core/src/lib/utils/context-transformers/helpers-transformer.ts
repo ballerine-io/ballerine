@@ -24,6 +24,7 @@ export type THelperMethod = Extract<
   | 'mergeArrayEachItemWithValue'
   | 'omit'
   | 'setTimeToRecordUTC'
+  | 'copy'
 >;
 
 export class HelpersTransformer extends BaseContextTransformer {
@@ -151,5 +152,9 @@ export class HelpersTransformer extends BaseContextTransformer {
     }
 
     return result;
+  }
+
+  copy(_context: TContext, attribute: AnyRecord, value: string[]) {
+    return attribute;
   }
 }

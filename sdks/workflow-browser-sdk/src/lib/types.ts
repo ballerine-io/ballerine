@@ -62,6 +62,7 @@ export interface WorkflowOptionsBrowser extends Omit<WorkflowOptions, 'workflowA
   backend?: DeepPartial<BackendOptions>;
   persistStates?: IPersistState[];
   submitStates?: Array<Omit<IPersistState, 'persistence'>>;
+  additionalContext?: AnyRecord;
 }
 
 export type BrowserWorkflowEvent =

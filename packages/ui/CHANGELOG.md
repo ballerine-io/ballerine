@@ -1,5 +1,26 @@
 # @ballerine/ui
 
+## 0.5.49
+
+### Patch Changes
+
+- MM: Better indicator that traffic data was not detected
+
+## 0.5.48
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.55
+
+## 0.5.47
+
+### Patch Changes
+
+- version bump
+  : Please enter a summary for your changes.
+
 ## 0.5.46
 
 ### Patch Changes

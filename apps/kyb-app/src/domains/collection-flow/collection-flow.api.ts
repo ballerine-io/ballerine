@@ -108,8 +108,16 @@ export interface CreateEndUserDto {
   email: string;
   firstName: string;
   lastName: string;
+  additionalInfo?: Record<string, unknown>;
 }
 
-export const createEndUserRequest = async ({ email, firstName, lastName }: CreateEndUserDto) => {
-  await request.post('collection-flow/no-user', { json: { email, firstName, lastName } });
+export const createEndUserRequest = async ({
+  email,
+  firstName,
+  lastName,
+  additionalInfo,
+}: CreateEndUserDto) => {
+  await request.post('collection-flow/no-user', {
+    json: { email, firstName, lastName, additionalInfo },
+  });
 };

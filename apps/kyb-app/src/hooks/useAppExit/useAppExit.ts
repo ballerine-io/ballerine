@@ -1,3 +1,4 @@
+import { isIframe } from '@/common/utils/is-iframe';
 import { useCustomerQuery } from '@/hooks/useCustomerQuery';
 import { useFlowTracking } from '@/hooks/useFlowTracking';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -11,10 +12,10 @@ export const useAppExit = () => {
   const { customer } = useCustomerQuery();
   const { trackEvent } = useFlowTracking();
 
-  const kybOnExitAction = uiSchema?.config?.kybOnExitAction || 'send-event';
+  const kybOnExitAction = uiSchema?.config?.kybOnExitAction;
 
   const exit = useCallback(() => {
-    if (kybOnExitAction === 'send-event') {
+    if (kybOnExitAction === 'send-event' || isIframe()) {
       trackEvent(CollectionFlowEvents.USER_EXITED);
 
       return;
@@ -25,10 +26,10 @@ export const useAppExit = () => {
         location.href = customer?.websiteUrl;
       }
     }
-  }, [trackEvent, customer]);
+  }, [trackEvent, customer, kybOnExitAction]);
 
   return {
     exit,
-    isExitAvailable: kybOnExitAction === 'send-event' ? true : !!customer?.websiteUrl,
+    isExitAvailable: kybOnExitAction === 'send-event' || isIframe() ? true : !!customer?.websiteUrl,
   };
 };
