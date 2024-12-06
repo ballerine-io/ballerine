@@ -23,6 +23,13 @@ export class WorkflowTokenRepository {
     });
   }
 
+  async count(args: Prisma.WorkflowRuntimeDataTokenCountArgs, projectId: TProjectId) {
+    return await this.prismaService.workflowRuntimeDataToken.count({
+      ...args,
+      where: { ...args.where, projectId },
+    });
+  }
+
   async findFirstByWorkflowruntimeDataIdUnscoped(workflowRuntimeDataId: string) {
     return await this.prismaService.workflowRuntimeDataToken.findFirst({
       select: {

@@ -1,11 +1,11 @@
 import { Download, ExternalLinkIcon, FileText } from 'lucide-react';
 import { FunctionComponent } from 'react';
 
+import { ImageOCR } from '@/common/components/molecules/ImageOCR/ImageOCR';
 import { ImageViewer } from '@/common/components/organisms/ImageViewer/ImageViewer';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { isPdf } from '@/common/utils/is-pdf/is-pdf';
 import { useDocumentsToolbarLogic } from '@/pages/Entity/components/Case/hooks/useDocumentsToolbarLogic/useDocumentsToolbarLogic';
-import { ImageOCR } from '@/common/components/molecules/ImageOCR/ImageOCR';
 
 export const DocumentsToolbar: FunctionComponent<{
   image: { id: string; imageUrl: string; fileType: string; fileName: string };
@@ -37,7 +37,7 @@ export const DocumentsToolbar: FunctionComponent<{
   });
 
   return (
-    <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
+    <div className={`absolute bottom-4 right-4 z-50 flex space-x-2`}>
       <ImageOCR
         isOcrDisabled={!isOCREnabled}
         onOcrPressed={onOcrPressed}

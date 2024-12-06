@@ -1,7 +1,9 @@
-import { getClient, Webchat, WebchatProvider } from '@botpress/webchat';
+import { getClient, Webchat, WebchatProvider, WebchatClient } from '@botpress/webchat';
 import { buildTheme } from '@botpress/webchat-generator';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuthenticatedUserQuery } from '../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useCurrentCaseQuery } from '../../pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
+import { useParams } from 'react-router-dom';
 
 // declare const themeNames: readonly ["prism", "galaxy", "dusk", "eggplant", "dawn", "midnight"];
 const { theme, style } = buildTheme({
@@ -9,30 +11,70 @@ const { theme, style } = buildTheme({
   themeColor: 'blue',
 });
 
-const clientId = '8f29c89d-ec0e-494d-b18d-6c3590b28be6';
-
 const Chatbot = ({
   isWebchatOpen,
   toggleIsWebchatOpen,
+  botpressClientId,
 }: {
   isWebchatOpen: boolean;
   toggleIsWebchatOpen: () => void;
+  botpressClientId: string;
 }) => {
-  const client = getClient({ clientId });
+  const [client, setClient] = useState<WebchatClient | null>(null);
   const { data: session } = useAuthenticatedUserQuery();
+  const { data: currentCase } = useCurrentCaseQuery();
+  const { entityId: caseId } = useParams();
+
+  const sendCurrentCaseData = useCallback(
+    async (botpressClient: WebchatClient | null = client) => {
+      if (!currentCase || !botpressClient) {
+        return;
+      }
+
+      try {
+        await botpressClient.sendEvent({
+          type: 'case-data',
+          data: currentCase.context,
+        });
+      } catch (error) {
+        console.error('Failed to send case data:', error);
+      }
+    },
+    [currentCase, client],
+  );
 
   useEffect(() => {
-    if (session?.user) {
-      const { firstName, lastName, email } = session.user;
-      void client.updateUser({
+    if (client || !botpressClientId || !session?.user) {
+      return;
+    }
+
+    const { firstName, lastName, email } = session.user;
+    const botpressClientInstance = getClient({ clientId: botpressClientId });
+    setClient(botpressClientInstance);
+
+    botpressClientInstance.on('conversation', (ev: any) => {
+      void botpressClientInstance.updateUser({
         data: {
           firstName,
           lastName,
           email,
         },
       });
+      setTimeout(() => {
+        void sendCurrentCaseData(botpressClientInstance);
+      }, 0);
+    });
+  }, [session, client, sendCurrentCaseData, botpressClientId]);
+
+  useEffect(() => {
+    if (caseId) {
+      void sendCurrentCaseData();
     }
-  }, [session, client]);
+  }, [caseId, sendCurrentCaseData]);
+
+  if (!client) {
+    return null;
+  }
 
   return (
     <div>

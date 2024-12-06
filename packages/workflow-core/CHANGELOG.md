@@ -1,5 +1,47 @@
 # @ballerine/workflow-core
 
+## 0.6.74
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.56
+
+## 0.6.73
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.55
+
+## 0.6.72
+
+### Patch Changes
+
+- version bump
+
+## 0.6.71
+
+## 0.6.69
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.54
+
+## 0.6.70
+
+### Patch Changes
+
+- version bump
+
+## 0.6.69
+
+### Patch Changes
+
+- version bump
+
 ## 0.6.68
 
 ### Patch Changes
@@ -27,6 +69,7 @@
 
 ### Patch Changes
 
+- Added additionalContext
 - version bump
 
 ## 0.6.64
