@@ -76,6 +76,26 @@ export class AlertControllerExternal {
               avatarUrl: true,
             },
           },
+          counterparty: {
+            select: {
+              id: true,
+              business: {
+                select: {
+                  id: true,
+                  correlationId: true,
+                  companyName: true,
+                },
+              },
+              endUser: {
+                select: {
+                  id: true,
+                  correlationId: true,
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
+          },
           counterpartyOriginator: {
             select: {
               id: true,
