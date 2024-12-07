@@ -78,16 +78,16 @@ export class DataInvestigationService {
           projectId,
         });
         break;
-    }
+      default:
+        this.logger.error(`No investigation filter obtained`, {
+          inlineRule,
+        });
 
-    if (!investigationFilter) {
-      this.logger.error(`No investigation function found`, {
-        inlineRule,
-      });
-
-      throw new Error(
-        `No investigation function found for rule name: ${(inlineRule as InlineRule).id}`,
-      );
+        throw new Error(
+          `Investigation filter could not be obtained for rule id: ${
+            (inlineRule as InlineRule).id
+          }`,
+        );
     }
 
     return {
@@ -290,7 +290,7 @@ export class DataInvestigationService {
     };
 
     if (alert) {
-      const endDate = alert.updatedAt || alert.createdAt;
+      const endDate = alert.dedupedAt || alert.createdAt;
       endDate.setHours(23, 59, 59, 999);
       filters.endDate = endDate;
     }
@@ -336,7 +336,10 @@ export class DataInvestigationService {
     }
 
     startDate.setHours(0, 0, 0, 0);
-    startDate = new Date(startDate.getTime() - subtractValue);
+
+    if (subtractValue > 0) {
+      startDate = new Date(startDate.getTime() - subtractValue);
+    }
 
     if (filters.endDate) {
       startDate = new Date(Math.min(startDate.getTime(), filters.endDate.getTime()));

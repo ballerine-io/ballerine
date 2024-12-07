@@ -186,7 +186,7 @@ describe('AlertService', () => {
         );
 
         const counterpartyBeneficiaryId =
-          baseTransactionFactory.data.counterpartyBeneficiary?.connect?.id;
+          baseTransactionFactory?.data?.counterpartyBeneficiary?.connect?.id;
 
         // Act
         await alertService.checkAllAlerts();

@@ -168,6 +168,7 @@ export class AlertControllerExternal {
               name: `${counterparty.endUser.firstName} ${counterparty.endUser.lastName}`,
             };
       };
+
       return {
         ...alertWithoutDefinition,
         correlationId: alertDefinition.correlationId,

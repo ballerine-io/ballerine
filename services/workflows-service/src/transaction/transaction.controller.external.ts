@@ -40,6 +40,8 @@ import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dt
 import { PaymentMethod } from '@prisma/client';
 import { isEmpty } from 'lodash';
 import { TransactionEntityMapper } from './transaction.mapper';
+import { DataInvestigationService } from '@/data-analytics/data-investigation.service';
+import { InlineRule } from '@/data-analytics/types';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('Transactions')
@@ -52,6 +54,7 @@ export class TransactionControllerExternal {
     protected readonly logger: AppLoggerService,
     protected readonly alertService: AlertService,
     protected readonly dataAnalyticsService: DataAnalyticsService,
+    protected readonly dataInvestigationService: DataInvestigationService,
   ) {}
 
   @Post()
@@ -348,20 +351,28 @@ export class TransactionControllerExternal {
 
     // Backward compatibility will be remove soon,
     if (isEmpty((alert.executionDetails as TExecutionDetails).filters)) {
-      return this.getTransactionsByAlertV1({ filters, projectId });
+      return this.getTransactionsByAlertV1({ projectId, alert, filters });
     }
 
     return this.getTransactionsByAlertV2({ projectId, alert, filters });
   }
 
   private getTransactionsByAlertV1({
-    filters,
     projectId,
+    alert,
+    filters,
   }: {
-    filters: GetTransactionsByAlertDto;
     projectId: string;
+    alert: NonNullable<Awaited<ReturnType<AlertService['getAlertWithDefinition']>>>;
+    filters: Pick<GetTransactionsByAlertDto, 'startDate' | 'endDate' | 'page' | 'orderBy'>;
   }) {
     return this.service.getTransactionsV1(filters, projectId, {
+      // TODO: Better investigation for each rule
+      where: this.dataInvestigationService.getInvestigationFilter(
+        projectId,
+        alert.alertDefinition.inlineRule as InlineRule,
+        alert.executionDetails.subject,
+      ),
       include: {
         counterpartyBeneficiary: {
           select: {
@@ -409,52 +420,50 @@ export class TransactionControllerExternal {
     filters,
   }: {
     projectId: string;
-    alert: Awaited<ReturnType<AlertService['getAlertWithDefinition']>>;
+    alert: NonNullable<Awaited<ReturnType<AlertService['getAlertWithDefinition']>>>;
     filters: Pick<GetTransactionsByAlertDto, 'startDate' | 'endDate' | 'page' | 'orderBy'>;
   }) {
-    if (alert) {
-      return this.service.getTransactions(projectId, filters, {
-        where: alert.executionDetails.filters,
-        include: {
-          counterpartyBeneficiary: {
-            select: {
-              correlationId: true,
-              business: {
-                select: {
-                  correlationId: true,
-                  companyName: true,
-                },
-              },
-              endUser: {
-                select: {
-                  correlationId: true,
-                  firstName: true,
-                  lastName: true,
-                },
+    return this.service.getTransactions(projectId, filters, {
+      where: alert.executionDetails.filters,
+      include: {
+        counterpartyBeneficiary: {
+          select: {
+            correlationId: true,
+            business: {
+              select: {
+                correlationId: true,
+                companyName: true,
               },
             },
-          },
-          counterpartyOriginator: {
-            select: {
-              correlationId: true,
-              business: {
-                select: {
-                  correlationId: true,
-                  companyName: true,
-                },
-              },
-              endUser: {
-                select: {
-                  correlationId: true,
-                  firstName: true,
-                  lastName: true,
-                },
+            endUser: {
+              select: {
+                correlationId: true,
+                firstName: true,
+                lastName: true,
               },
             },
           },
         },
-      });
-    }
+        counterpartyOriginator: {
+          select: {
+            correlationId: true,
+            business: {
+              select: {
+                correlationId: true,
+                companyName: true,
+              },
+            },
+            endUser: {
+              select: {
+                correlationId: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
+      },
+    });
 
     return [];
   }

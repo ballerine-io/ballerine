@@ -103,9 +103,9 @@ export class TransactionRepository {
     projectId: string,
     options?: Prisma.TransactionRecordFindManyArgs,
   ): Promise<TransactionRecord[]> {
-    const args = deepmerge(options || {}, {
-      where: this.buildFiltersV2(getTransactionsParameters),
-    });
+    const _options = this.buildFindManyOptionsByFilter(getTransactionsParameters);
+
+    const args = deepmerge(options || {}, _options);
 
     return this.prisma.transactionRecord.findMany(
       this.scopeService.scopeFindMany(args, [projectId]),
@@ -147,22 +147,21 @@ export class TransactionRepository {
   }
 
   // eslint-disable-next-line ballerine/verify-repository-project-scoped
-  buildFiltersV2(
-    getTransactionsParameters: GetTransactionsDto,
-  ): Prisma.TransactionRecordWhereInput {
-    const args: Prisma.TransactionRecordFindManyArgs = {
+  buildFindManyOptionsByFilter(getTransactionsParameters: GetTransactionsDto) {
+    const transactionDate = {
+      ...(getTransactionsParameters.startDate && { gte: getTransactionsParameters.startDate }),
+      ...(getTransactionsParameters.endDate && { lte: getTransactionsParameters.endDate }),
+    };
+
+    return {
       ...TransactionRepository.buildTransactionPaginationArgs(getTransactionsParameters),
       ...TransactionRepository.buildTransactionOrderByArgs(getTransactionsParameters),
+      where: {
+        ...(Object.keys(transactionDate).length === 0 && transactionDate),
+        ...(getTransactionsParameters.paymentMethod && {
+          paymentMethod: getTransactionsParameters.paymentMethod,
+        }),
+      } as Prisma.TransactionRecordWhereInput satisfies Prisma.TransactionRecordWhereInput,
     };
-
-    const whereClause: Prisma.TransactionRecordWhereInput = {
-      transactionDate: {
-        gte: getTransactionsParameters.startDate,
-        lte: getTransactionsParameters.endDate,
-      },
-      paymentMethod: getTransactionsParameters.paymentMethod,
-    };
-
-    return deepmerge(args, whereClause);
   }
 }
