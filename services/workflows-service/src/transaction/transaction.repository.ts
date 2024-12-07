@@ -157,7 +157,7 @@ export class TransactionRepository {
       ...TransactionRepository.buildTransactionPaginationArgs(getTransactionsParameters),
       ...TransactionRepository.buildTransactionOrderByArgs(getTransactionsParameters),
       where: {
-        ...(Object.keys(transactionDate).length === 0 && transactionDate),
+        ...(Object.keys(transactionDate).length > 0 && transactionDate),
         ...(getTransactionsParameters.paymentMethod && {
           paymentMethod: getTransactionsParameters.paymentMethod,
         }),

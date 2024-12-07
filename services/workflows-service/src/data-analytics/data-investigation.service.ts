@@ -258,7 +258,7 @@ export class DataInvestigationService {
     } as const satisfies Prisma.TransactionRecordWhereInput;
   }
 
-  async investigateHighVelocityHistoricAverage(options: HighVelocityHistoricAverageOptions) {
+  investigateHighVelocityHistoricAverage(options: HighVelocityHistoricAverageOptions) {
     const {
       projectId,
       transactionDirection,
