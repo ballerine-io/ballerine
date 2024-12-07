@@ -1,35 +1,35 @@
-import React, { FunctionComponent } from 'react';
+import { RouteError } from '@/common/components/atoms/RouteError/RouteError';
+import { RouteErrorWithProviders } from '@/common/components/atoms/RouteError/RouteErrorWithProviders';
 import { env } from '@/common/env/env';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { AuthenticatedLayout } from '@/domains/auth/components/AuthenticatedLayout';
+import { authenticatedLayoutLoader } from '@/domains/auth/components/AuthenticatedLayout/AuthenticatedLayout.loader';
+import { UnauthenticatedLayout } from '@/domains/auth/components/UnauthenticatedLayout';
+import { unauthenticatedLayoutLoader } from '@/domains/auth/components/UnauthenticatedLayout/UnauthenticatedLayout.loader';
+import { MerchantMonitoringLayout } from '@/domains/business-reports/components/MerchantMonitoringLayout/MerchantMonitoringLayout';
+import { CaseManagement } from '@/pages/CaseManagement/CaseManagement.page';
+import { Document } from '@/pages/Document/Document.page';
+import { entitiesLoader } from '@/pages/Entities/Entities.loader';
+import { Entities } from '@/pages/Entities/Entities.page';
+import { entityLoader } from '@/pages/Entity/Entity.loader';
+import { Entity } from '@/pages/Entity/Entity.page';
+import { Home } from '@/pages/Home/Home.page';
+import { Locale } from '@/pages/Locale/Locale.page';
+import { MerchantMonitoring } from '@/pages/MerchantMonitoring/MerchantMonitoring.page';
+import { MerchantMonitoringBusinessReport } from '@/pages/MerchantMonitoringBusinessReport/MerchantMonitoringBusinessReport.page';
+import { MerchantMonitoringCreateCheckPage } from '@/pages/MerchantMonitoringCreateCheck/MerchantMonitoringCreateCheck.page';
+import { MerchantMonitoringUploadMultiplePage } from '@/pages/MerchantMonitoringUploadMultiple/MerchantMonitoringUploadMultiple.page';
+import { NotFoundRedirectWithProviders } from '@/pages/NotFound/NotFoundRedirectWithProviders';
 import { RootError } from '@/pages/Root/Root.error';
+import { rootLoader } from '@/pages/Root/Root.loader';
 import { Root } from '@/pages/Root/Root.page';
 import { SignIn } from '@/pages/SignIn/SignIn.page';
-import { Entity } from '@/pages/Entity/Entity.page';
-import { Entities } from '@/pages/Entities/Entities.page';
-import { RouteError } from '@/common/components/atoms/RouteError/RouteError';
-import { CaseManagement } from '@/pages/CaseManagement/CaseManagement.page';
-import { rootLoader } from '@/pages/Root/Root.loader';
-import { entitiesLoader } from '@/pages/Entities/Entities.loader';
-import { authenticatedLayoutLoader } from '@/domains/auth/components/AuthenticatedLayout/AuthenticatedLayout.loader';
-import { entityLoader } from '@/pages/Entity/Entity.loader';
-import { AuthenticatedLayout } from '@/domains/auth/components/AuthenticatedLayout';
-import { UnauthenticatedLayout } from '@/domains/auth/components/UnauthenticatedLayout';
-import { Locale } from '@/pages/Locale/Locale.page';
-import { unauthenticatedLayoutLoader } from '@/domains/auth/components/UnauthenticatedLayout/UnauthenticatedLayout.loader';
-import { Document } from '@/pages/Document/Document.page';
-import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
-import { TransactionMonitoring } from '@/pages/TransactionMonitoring/TransactionMonitoring';
-import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
-import { Home } from '@/pages/Home/Home.page';
 import { Statistics } from '@/pages/Statistics/Statistics.page';
+import { TransactionMonitoring } from '@/pages/TransactionMonitoring/TransactionMonitoring';
+import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
+import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
 import { Workflows } from '@/pages/Workflows/Workflows.page';
-import { MerchantMonitoring } from '@/pages/MerchantMonitoring/MerchantMonitoring.page';
-import { MerchantMonitoringCreateCheckPage } from '@/pages/MerchantMonitoringCreateCheck/MerchantMonitoringCreateCheck.page';
-import { MerchantMonitoringBusinessReport } from '@/pages/MerchantMonitoringBusinessReport/MerchantMonitoringBusinessReport.page';
-import { MerchantMonitoringLayout } from '@/domains/business-reports/components/MerchantMonitoringLayout/MerchantMonitoringLayout';
-import { NotFoundRedirectWithProviders } from '@/pages/NotFound/NotFoundRedirectWithProviders';
-import { RouteErrorWithProviders } from '@/common/components/atoms/RouteError/RouteErrorWithProviders';
-import { MerchantMonitoringUploadMultiplePage } from '@/pages/MerchantMonitoringUploadMultiple/MerchantMonitoringUploadMultiple.page';
+import { FunctionComponent } from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 const router = createBrowserRouter([
   {
@@ -176,7 +176,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        element: <Document />,
+        element: <Document wrapperClassName="justify-center max-w-[600px]" />,
         loader: authenticatedLayoutLoader,
         errorElement: <RouteError />,
         path: '/:locale/case-management/entities/:entityId/document/:documentId',

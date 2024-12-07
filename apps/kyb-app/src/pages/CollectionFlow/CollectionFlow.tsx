@@ -38,6 +38,7 @@ import {
 } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 import { FailedScreen } from './components/pages/FailedScreen';
+import { useAdditionalWorkflowContext } from './hooks/useAdditionalWorkflowContext';
 
 const elems = {
   h1: Title,
@@ -73,6 +74,7 @@ export const CollectionFlow = withSessionProtected(() => {
   const { customer } = useCustomer();
   const { t } = useTranslation();
   const { themeDefinition } = useTheme();
+  const additionalContext = useAdditionalWorkflowContext();
 
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;
@@ -141,6 +143,7 @@ export const CollectionFlow = withSessionProtected(() => {
         extensions={schema?.definition.extensions}
         definition={definition as State}
         config={collectionFlowData?.config}
+        additionalContext={additionalContext}
       >
         {({ state, stateApi }) => {
           return (
@@ -197,11 +200,11 @@ export const CollectionFlow = withSessionProtected(() => {
                               <AppShell.Sidebar>
                                 <div className="flex h-full flex-col">
                                   <div className="flex h-full flex-1 flex-col">
-                                    <div className="flex flex-col gap-8 pb-10">
-                                      <div className="flex justify-start">
+                                    <div className="flex justify-between gap-8 pb-10">
+                                      <AppShell.Navigation />
+                                      <div className="flex w-full justify-end">
                                         <AppShell.LanguagePicker />
                                       </div>
-                                      <AppShell.Navigation />
                                     </div>
                                     <div className="pb-10">
                                       {customer?.logoImageUri && (
@@ -230,7 +233,10 @@ export const CollectionFlow = withSessionProtected(() => {
                                       {themeDefinition.ui?.poweredBy !== false && (
                                         <div className="flex flex-col">
                                           <div className="border-b pb-12" />
-                                          <PoweredByLogo className="mt-8" sidebarRootId="sidebar" />
+                                          <PoweredByLogo
+                                            className="mt-8 max-w-[10rem]"
+                                            sidebarRootId="sidebar"
+                                          />
                                         </div>
                                       )}
                                     </div>

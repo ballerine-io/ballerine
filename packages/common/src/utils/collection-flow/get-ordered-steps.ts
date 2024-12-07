@@ -1,5 +1,3 @@
-import { createMachine, interpret } from 'xstate';
-
 export interface IGetOrderedStepsParams {
   // The event to send to the machine to move to the next step
   eventName?: string;
@@ -14,25 +12,36 @@ export const getOrderedSteps = (
 ) => {
   const { eventName = 'NEXT', finalStates = [] } = params;
 
+  if (!definition?.states || !definition?.initial) {
+    throw new Error('Invalid state machine definition');
+  }
+
   const steps: string[] = [definition.initial];
+  let currentState = definition.initial;
 
-  const machine = createMachine({
-    initial: definition.initial,
-    context: {},
-    states: definition.states,
-  });
+  while (currentState) {
+    const stateConfig = definition.states[currentState];
 
-  const service = interpret(machine).start();
+    if (!stateConfig) {
+      throw new Error(`Invalid state: ${currentState}`);
+    }
 
-  while (service.getSnapshot().can({ type: eventName })) {
-    service.send({ type: eventName });
-    const stateValue = service.getSnapshot().value as string;
+    // Check if state has transition for the event
+    const transition = stateConfig?.on?.[eventName];
 
-    if (finalStates.includes(stateValue)) {
+    if (!transition) {
       break;
     }
 
-    steps.push(stateValue);
+    // Get next state from transition
+    const nextState = typeof transition === 'string' ? transition : transition.target;
+
+    if (!nextState || stateConfig.type === 'final' || finalStates.includes(nextState)) {
+      break;
+    }
+
+    steps.push(nextState);
+    currentState = nextState;
   }
 
   return steps;

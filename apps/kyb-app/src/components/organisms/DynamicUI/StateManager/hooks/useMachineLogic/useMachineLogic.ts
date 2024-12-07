@@ -1,11 +1,11 @@
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
-import { isErrorWithMessage } from '@ballerine/common';
+import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 import { WorkflowBrowserSDK } from '@ballerine/workflow-browser-sdk';
 import { useCallback, useMemo, useState } from 'react';
 
 export interface StateMachineAPI {
-  invokePlugin: (pluginName: string) => Promise<void>;
+  invokePlugin: (pluginName: string, additionalContext?: AnyRecord) => Promise<void>;
   sendEvent: (eventName: string) => Promise<void>;
   setContext: (newContext: CollectionFlowContext) => CollectionFlowContext;
   getContext: () => CollectionFlowContext;
@@ -14,6 +14,7 @@ export interface StateMachineAPI {
 
 export const useMachineLogic = (
   machine: WorkflowBrowserSDK,
+  additionalContext?: AnyRecord,
 ): { isInvokingPlugin: boolean; machineApi: StateMachineAPI } => {
   const [isInvokingPlugin, setInvokingPlugin] = useState(false);
 
@@ -21,14 +22,14 @@ export const useMachineLogic = (
     async (pluginName: string) => {
       setInvokingPlugin(true);
       try {
-        await machine.invokePlugin(pluginName);
+        await machine.invokePlugin(pluginName, additionalContext);
       } catch (error) {
         console.log('Failed to invoke plugin', isErrorWithMessage(error) ? error.message : error);
       } finally {
         setInvokingPlugin(false);
       }
     },
-    [machine],
+    [machine, additionalContext],
   );
 
   const sendEvent = useCallback(

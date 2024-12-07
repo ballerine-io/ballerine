@@ -1,4 +1,4 @@
-name: Under Testing - Hotfix on workflows-service
+name: Hotfix on workflows-service
 
 on:
   workflow_dispatch:
@@ -34,6 +34,7 @@ jobs:
       docker_image: ${{ steps.docker-version.outputs.image }} # ghcr.io/ballerine-io/workflows-service
       docker_tag: ${{ steps.docker-version.outputs.tag }} # <short_sha>-<branch_name>
       docker_full_image: ${{ steps.docker-version.outputs.full_image }} # ghcr.io/ballerine-io/workflows-service:<short_sha>-<branch_name>
+      sanitized-branch: ${{ steps.sanitized-branch.outputs.sanitized-branch-name }}
 
     steps:
       - name: Checkout repository
@@ -61,6 +62,10 @@ jobs:
         uses: ./.github/actions/bump-version
         with:
           tag: ${{ steps.version.outputs.tag }}
+      
+      - name: "Determine Branch"
+        id: sanitized-branch
+        uses: transferwise/sanitize-branch-name@v1
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -94,8 +99,9 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ github.ref_name }}
-            type=raw,value=dev
-            type=raw,value=${{ steps.version.outputs.sha_short }}-${{ github.ref_name }}
+            type=raw,value=${{ inputs.environment }}
+            type=raw,value=${{ steps.version.outputs.sha_short }}-${{ inputs.environment }}
+            type=raw,value=${{ steps.version.outputs.sha_short }}-${{ steps.sanitized-branch.outputs.sanitized-branch-name }}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'prod') }}
             type=sha,format=short
 
@@ -104,7 +110,7 @@ jobs:
         run: |
           DOCKER_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           DOCKER_TAG=${{ steps.version.outputs.sha_short }}-${{ github.ref_name }}
-          DOCKER_FULL_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.sha_short }}-${{ github.ref_name }}
+          DOCKER_FULL_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.sha_short }}-${{ steps.sanitized-branch.outputs.sanitized-branch-name }}
 
           echo "DOCKER_IMAGE=$DOCKER_IMAGE"
           echo "DOCKER_TAG=$DOCKER_TAG"
@@ -120,8 +126,8 @@ jobs:
 
           echo "sha_short: ${{ steps.version.outputs.sha_short }}"
           echo "docker_meta-tags: ${{ steps.docker_meta.outputs.tags }}"
-          echo "bump-version-version: ${{ steps.bump-version.outputs.version }}"
-          echo "bump-version-tag: ${{ steps.bump-version.outputs.tag }}"
+          echo "bump-version-version: ${{ steps.bump-version.outputs.version }}-hotfix"
+          echo "bump-version-tag: ${{ steps.bump-version.outputs.tag }}-hotfix"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -133,7 +139,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache
           tags: ${{ steps.docker_meta.outputs.tags }}
           build-args: |
-            "RELEASE=${{ steps.bump-version.outputs.tag }}"
+            "RELEASE=${{ steps.bump-version.outputs.tag }}-hotfix"
             "SHORT_SHA=${{ steps.version.outputs.sha_short }}"
             
       - name: Scan Docker Image
@@ -148,6 +154,23 @@ jobs:
           trivyignores: ./.trivyignore
           vuln-type: 'os,library'
           severity: 'CRITICAL'
+      
+      - name: Update Service version in Environment
+        run: |
+          if [ "${{ inputs.environment }}" == "prod" ]; then
+            ENV="PROD"
+          elif [ "${{ inputs.environment }}" == "sb" ]; then
+            ENV="SB"
+          else
+            ENV="DEV"
+          fi
+          echo "$ENV"
+          curl -X PATCH \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GH_CI_ENV_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/ballerine-io/ballerine/actions/variables/${ENV^^}_WF_SHORT_SHA" \
+            -d "{\"name\":\"${ENV}_WF_SHORT_SHA\",\"value\":\"${{ steps.version.outputs.sha_short }}\"}"
 
   build-and-push-ee-image:
     runs-on: ubuntu-latest
@@ -221,14 +244,14 @@ jobs:
           images: ${{needs.build-and-push-image.outputs.docker_image}}-ee
           tags: |
             type=raw,value=${{ inputs.environment }}
-            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.lastcommit.outputs.shorthash }}-${{ inputs.environment }}
+            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.lastcommit.outputs.shorthash }}-${{ needs.build-and-push-image.outputs.sanitized-branch }}
             type=sha,format=short
 
       - name: Docker metadata version
         id: docker-version
         run: |
           DOCKER_IMAGE=${{needs.build-and-push-image.outputs.docker_image}}-ee
-          DOCKER_TAG=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.lastcommit.outputs.shorthash }}-${{ inputs.environment }}
+          DOCKER_TAG=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.lastcommit.outputs.shorthash }}-${{ needs.build-and-push-image.outputs.sanitized-branch }}
           DOCKER_FULL_IMAGE=$DOCKER_IMAGE:$DOCKER_TAG
 
           echo "DOCKER_IMAGE=$DOCKER_IMAGE"
@@ -292,15 +315,15 @@ jobs:
           repository: ballerine-io/cloud-infra-config
           branch: main
           commitChange: true
-          message: "Performed HotFix to ${{ inputs.environment }} wf-service image Version to ${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})"
+          message: "Performed HotFix to ${{ inputs.environment }} wf-service application image Version to ${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ needs.build-and-push-image.outputs.sanitized-branch }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})"
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
               "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
-                "image.tag": "${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}",
-                "prismaMigrate.image.tag": "${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}",
-                "dbMigrate.image.tag": "${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}",
-                "dataSync.image.tag": "${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}"
+                "image.tag": "${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ needs.build-and-push-image.outputs.sanitized-branch }}",
+                "prismaMigrate.image.tag": "${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ needs.build-and-push-image.outputs.sanitized-branch }}",
+                "dbMigrate.image.tag": "${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ needs.build-and-push-image.outputs.sanitized-branch }}",
+                "dataSync.image.tag": "${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ needs.build-and-push-image.outputs.sanitized-branch }}"
               }
             }
   send-to-slack:
@@ -317,7 +340,7 @@ jobs:
         uses: slackapi/slack-github-action@v1.26.0
         with:
           channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
-          slack-message: "Hotfix on Wf-service Deployment in ${{ inputs.environment }} with tag ${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }} build result: ${{ job.status }}. successfully updated the hotfix on wf-service helm values for ${{ inputs.environment }}."
+          slack-message: "Hotfix on Wf-service app Deployment in ${{ inputs.environment }} with tag ${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ needs.build-and-push-image.outputs.sanitized-branch }} build result: ${{ job.status }}. successfully updated the hotfix on wf-service helm values for ${{ inputs.environment }}."
         env:
           SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}
 
