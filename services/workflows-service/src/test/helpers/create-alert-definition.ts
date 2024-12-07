@@ -1,47 +1,18 @@
-import { Prisma } from '@prisma/client';
-import { faker } from '@faker-js/faker';
-import { AppLoggerService } from '../../common/app-logger/app-logger.service';
-import { PrismaService } from '../../prisma/prisma.service';
-import { Test } from '@nestjs/testing';
 import { AlertService } from '@/alert/alert.service';
-import { AlertRepository } from '@/alert/alert.repository';
-import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
-import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
-import { ProjectScopeService } from '@/project/project-scope.service';
-import { ClsService } from 'nestjs-cls';
+import { faker } from '@faker-js/faker';
+import { Prisma } from '@prisma/client';
 import { merge } from 'lodash';
 
 export const createAlertDefinition = async (
   projectId: string,
   overrides: Prisma.AlertDefinitionCreateArgs = {} as Prisma.AlertDefinitionCreateArgs,
+  alertService: AlertService,
 ) => {
-  const moduleRef = await Test.createTestingModule({
-    providers: [
-      AlertService,
-      ClsService,
-      PrismaService,
-      DataAnalyticsService,
-      AlertDefinitionRepository,
-      ProjectScopeService,
-      AppLoggerService,
-      {
-        provide: AlertRepository,
-        useClass: AlertRepository,
-      },
-      {
-        provide: 'LOGGER',
-        useValue: {
-          setContext: jest.fn(),
-          log: jest.fn(),
-          error: jest.fn(),
-          warn: jest.fn(),
-          debug: jest.fn(),
-        },
-      },
-    ],
-  }).compile();
-
-  const alertService = moduleRef.get<AlertService>(AlertService);
+  const fnName = faker.helpers.arrayElement([
+    'evaluateTransactionsAgainstDynamicRules',
+    'evaluateDormantAccount',
+    'evaluateMultipleMerchantsOneCounterparty',
+  ]);
   const definition = {
     crossEnvKey: faker.datatype.uuid(),
     name: faker.lorem.slug(),
@@ -65,11 +36,8 @@ export const createAlertDefinition = async (
 
     inlineRule: {
       id: faker.datatype.uuid(),
-      fnName: faker.helpers.arrayElement([
-        'evaluateTransactionsAgainstDynamicRules',
-        'evaluateRiskScore',
-        'evaluateCustomRule',
-      ]),
+      fnName,
+      fnInvestigationName: fnName.replace('evaluate', 'investigate'),
       options: {
         groupBy: [
           faker.helpers.arrayElement([

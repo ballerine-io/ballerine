@@ -8,7 +8,7 @@ export const transactionsQueryKeys = createQueryKeys('transactions', {
     ...params
   }: {
     alertId: string;
-    counterpartyId: string;
+    counterpartyId?: string;
     page: number;
     pageSize: number;
   }) => {

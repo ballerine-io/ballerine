@@ -96,13 +96,78 @@ export class AlertControllerExternal {
               },
             },
           },
+          counterpartyOriginator: {
+            select: {
+              id: true,
+              business: {
+                select: {
+                  id: true,
+                  correlationId: true,
+                  companyName: true,
+                },
+              },
+              endUser: {
+                select: {
+                  id: true,
+                  correlationId: true,
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
+          },
+          counterpartyBeneficiary: {
+            select: {
+              id: true,
+              business: {
+                select: {
+                  id: true,
+                  correlationId: true,
+                  companyName: true,
+                },
+              },
+              endUser: {
+                select: {
+                  id: true,
+                  correlationId: true,
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
+          },
         },
       },
     );
 
     return alerts.map(alert => {
-      const { alertDefinition, assignee, counterparty, state, ...alertWithoutDefinition } =
-        alert as TAlertTransactionResponse;
+      const {
+        alertDefinition,
+        assignee,
+        counterparty,
+        counterpartyBeneficiary,
+        counterpartyOriginator,
+        state,
+        ...alertWithoutDefinition
+      } = alert as TAlertTransactionResponse;
+
+      const counterpartyDetails = (counterparty: TAlertTransactionResponse['counterparty']) => {
+        if (!counterparty) return;
+
+        return counterparty?.business
+          ? {
+              type: 'business',
+              id: counterparty.business.id,
+              name: counterparty.business.companyName,
+              correlationId: counterparty.business.correlationId,
+            }
+          : {
+              type: 'counterparty',
+              id: counterparty.endUser.id,
+              correlationId: counterparty.endUser.correlationId,
+              name: `${counterparty.endUser.firstName} ${counterparty.endUser.lastName}`,
+            };
+      };
 
       return {
         ...alertWithoutDefinition,
@@ -115,19 +180,10 @@ export class AlertControllerExternal {
             }
           : null,
         alertDetails: alertDefinition.description,
-        subject: counterparty.business
-          ? {
-              type: 'business',
-              id: counterparty.business.id,
-              name: counterparty.business.companyName,
-              correlationId: counterparty.business.correlationId,
-            }
-          : {
-              type: 'counterparty',
-              id: counterparty.endUser.id,
-              correlationId: counterparty.endUser.correlationId,
-              name: `${counterparty.endUser.firstName} ${counterparty.endUser.lastName}`,
-            },
+        subject:
+          counterpartyDetails(counterparty) ||
+          counterpartyDetails(counterpartyBeneficiary) ||
+          counterpartyDetails(counterpartyOriginator),
         decision: state,
       };
     });
