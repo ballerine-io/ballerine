@@ -355,6 +355,7 @@ export class DataInvestigationService {
 
     if (filters.endDate) {
       whereClause.transactionDate = {
+        ...(typeof whereClause.transactionDate === 'object' ? whereClause.transactionDate : {}),
         lte: filters.endDate,
       };
     }

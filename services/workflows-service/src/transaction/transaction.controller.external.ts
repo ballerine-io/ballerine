@@ -464,7 +464,5 @@ export class TransactionControllerExternal {
         },
       },
     });
-
-    return [];
   }
 }
