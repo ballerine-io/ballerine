@@ -35,7 +35,11 @@ export const DefaultActions = () => {
             size="md"
             variant="warning"
             disabled={isLoadingActions || !canRevision}
-            className={ctw({ loading: debouncedIsLoadingRejectCase }, 'whitespace-nowrap')}
+            className={ctw(
+              { loading: debouncedIsLoadingRejectCase },
+              'whitespace-nowrap',
+              'enabled:bg-warning enabled:hover:bg-warning/90',
+            )}
           >
             Ask for all re-uploads {canRevision && `(${documentsToReviseCount})`}
           </Button>
@@ -59,6 +63,8 @@ export const DefaultActions = () => {
               <Button
                 className={ctw(`gap-x-2`, {
                   loading: debouncedIsLoadingRevisionCase,
+                  'enabled:bg-slate-800 enabled:hover:bg-slate-800/90':
+                    !debouncedIsLoadingRevisionCase,
                 })}
                 disabled={isLoadingActions || !canRevision}
                 onClick={onMutateRevisionCase}

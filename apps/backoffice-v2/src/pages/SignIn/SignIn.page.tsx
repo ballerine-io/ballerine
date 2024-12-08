@@ -101,7 +101,10 @@ export const SignIn: FunctionComponent = () => {
                 )}
               />
               <div className={`flex justify-end`}>
-                <Button type="submit" className={`ms-auto mt-3`}>
+                <Button
+                  type="submit"
+                  className={'ms-auto mt-3 enabled:bg-slate-800 enabled:hover:bg-slate-800/90'}
+                >
                   Sign In
                 </Button>
               </div>

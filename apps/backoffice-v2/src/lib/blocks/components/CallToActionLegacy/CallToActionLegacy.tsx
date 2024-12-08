@@ -189,7 +189,10 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
             size="wide"
             variant="warning"
             disabled={disabled}
-            className={ctw({ 'flex gap-2': isReuploadResetable })}
+            className={ctw({
+              'flex gap-2': isReuploadResetable,
+              'enabled:bg-warning enabled:hover:bg-warning/90': !isReuploadResetable,
+            })}
           >
             {value.text}
             {isReuploadResetable && (
@@ -255,6 +258,7 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
           <Button
             className={ctw(`gap-x-2`, {
               loading: isLoadingReuploadNeeded,
+              'enabled:bg-slate-800 enabled:hover:bg-slate-800/90': !isLoadingReuploadNeeded,
             })}
             onClick={onReuploadNeeded({
               workflowId: workflow?.id,

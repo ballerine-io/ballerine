@@ -431,7 +431,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
           {data?.some(({ isEditable }) => isEditable) && (
             <Button
               type="submit"
-              className={`ms-auto mt-3 aria-disabled:pointer-events-none aria-disabled:opacity-50`}
+              className={`ms-auto mt-3 enabled:bg-slate-800 enabled:hover:bg-slate-800/90 aria-disabled:pointer-events-none aria-disabled:opacity-50`}
               aria-disabled={isSaveDisabled}
             >
               Save
