@@ -2683,10 +2683,18 @@ export class WorkflowService {
         transaction,
       );
 
-      const endUserContextToEntityAdapter = (data: Static<typeof IndividualDataSchema>) =>
+      const endUserContextToEntityAdapter = ({firstName, lastName, dateOfBirth, country, phone, email, additionalInfo, ...rest}: Static<typeof IndividualDataSchema>) =>
         ({
-          firstName: data.firstName,
-          lastName: data.lastName,
+          firstName,
+          lastName,
+          dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
+          country,
+          phone,
+          email,
+          additionalInfo: {
+            ...rest,
+            ...additionalInfo
+          }
         } satisfies Parameters<typeof this.entityRepository.endUser.updateById>[1]['data']);
 
       const businessContextToEntityAdapter = (data: Static<typeof BusinessDataSchema>) =>

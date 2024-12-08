@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { t } from 'i18next';
 import { workflowsQueryKeys } from '../../../query-keys';
 
-export const useUpdateContextAndSyncEntityMutation = ({ workflowId }: { workflowId: string }) => {
+export const useUpdateContextAndSyncEntityMutation = ({ workflowId, onSuccess }: { workflowId: string; onSuccess: (data: null, variables: Partial<TWorkflowById['context']>, context: unknown) => void }) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -14,10 +14,12 @@ export const useUpdateContextAndSyncEntityMutation = ({ workflowId }: { workflow
         workflowId,
         data,
       }),
-    onSuccess: () => {
+    onSuccess: (...args) => {
       void queryClient.invalidateQueries(workflowsQueryKeys._def);
 
       toast.success(t('toast:update_details.success'));
+
+      onSuccess(...args)
     },
     onError: () => {
       toast.error(t('toast:update_details.error'));

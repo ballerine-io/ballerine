@@ -597,7 +597,7 @@ export class WorkflowControllerExternal {
     @common.Body() body: PartialDeep<DefaultContextSchema>,
     @CurrentProject() projectId: TProjectId,
   ) {
-    return await this.service.updateContextAndSyncEntity({
+    return await this.workflowService.updateContextAndSyncEntity({
       workflowRuntimeDataId,
       context: body,
       projectId,

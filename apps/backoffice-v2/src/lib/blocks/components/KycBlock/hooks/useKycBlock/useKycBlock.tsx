@@ -360,10 +360,13 @@ export const useKycBlock = ({
     path: 'entity.data',
   });
 
+  const [isEditable, _toggleIsEditable, toggleOnIsEditable, toggleOffIsEditable] = useToggle();
   const { mutate: mutateUpdateContextAndSyncEntity } = useUpdateContextAndSyncEntityMutation({
     workflowId: childWorkflow?.id,
+    onSuccess: () => {
+      toggleOffIsEditable();
+    },
   });
-  const [isEditable, _toggleIsEditable, toggleOnIsEditable, toggleOffIsEditable] = useToggle();
 
   const onSubmit = useCallback(
     (values: Record<PropertyKey, any>) => {

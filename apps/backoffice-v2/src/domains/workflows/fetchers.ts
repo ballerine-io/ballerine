@@ -24,7 +24,7 @@ export const updateContextAndSyncEntity = async ({
     endpoint: `../external/workflows/${workflowId}/sync-entity`,
     method: Method.PATCH,
     body: data,
-    schema: WorkflowByIdSchema,
+    schema: z.undefined(),
   });
 
   return handleZodError(error, workflow);
