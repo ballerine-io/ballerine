@@ -23,56 +23,76 @@ export class DataInvestigationService {
   getInvestigationFilter(projectId: string, inlineRule: InlineRule, subject: SubjectRecord) {
     let investigationFilter;
 
-    switch (inlineRule.fnInvestigationName) {
+    const fnInvestigationName = inlineRule.fnInvestigationName || inlineRule.fnName.replace('evaluate', 'investigate');
+
+    switch (fnInvestigationName) {
       case 'investigateTransactionsAgainstDynamicRules':
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - TODO: Rmove later
         investigationFilter = this[inlineRule.fnInvestigationName]({
           ...inlineRule.options,
           projectId,
         });
         break;
       case 'investigateHighTransactionTypePercentage':
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - TODO: Rmove later
         investigationFilter = this[inlineRule.fnInvestigationName]({
           ...inlineRule.options,
           projectId,
         });
         break;
       case 'investigateDormantAccount':
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - TODO: Rmove later
         investigationFilter = this[inlineRule.fnInvestigationName]({
           ...inlineRule.options,
           projectId,
         });
         break;
       case 'investigateCustomersTransactionType':
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - TODO: Rmove later
         investigationFilter = this[inlineRule.fnInvestigationName]({
           ...inlineRule.options,
           projectId,
         });
         break;
       case 'investigateTransactionAvg':
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - TODO: Rmove later
         investigationFilter = this[inlineRule.fnInvestigationName]({
           ...inlineRule.options,
           projectId,
         });
         break;
       case 'investigateMultipleMerchantsOneCounterparty':
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - TODO: Rmove later
         investigationFilter = this[inlineRule.fnInvestigationName]({
           ...inlineRule.options,
           projectId,
         });
         break;
       case 'investigateMerchantGroupAverage':
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - TODO: Rmove later
         investigationFilter = this[inlineRule.fnInvestigationName]({
           ...inlineRule.options,
           projectId,
         });
         break;
       case 'investigateDailySingleTransactionAmount':
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - TODO: Rmove later
         investigationFilter = this[inlineRule.fnInvestigationName]({
           ...inlineRule.options,
           projectId,
         });
         break;
       case 'investigateHighVelocityHistoricAverage':
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - TODO: Rmove later
         investigationFilter = this[inlineRule.fnInvestigationName]({
           ...inlineRule.options,
           projectId,
