@@ -13,6 +13,23 @@ import { z } from 'zod';
 import { IWorkflowId } from './interfaces';
 import { zPropertyKey } from '@/lib/zod/utils/z-property-key/z-property-key';
 
+export const updateContextAndSyncEntity = async ({
+  workflowId,
+  data,
+}: {
+  workflowId: string;
+  data: Partial<TWorkflowById['context']>;
+}) => {
+  const [workflow, error] = await apiClient({
+    endpoint: `../external/workflows/${workflowId}/sync-entity`,
+    method: Method.PATCH,
+    body: data,
+    schema: z.undefined(),
+  });
+
+  return handleZodError(error, workflow);
+};
+
 export const fetchWorkflows = async (params: {
   filterId: string;
   orderBy: string;

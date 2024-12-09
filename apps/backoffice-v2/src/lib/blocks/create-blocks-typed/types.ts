@@ -24,6 +24,7 @@ import { ComponentProps, ReactNode } from 'react';
 
 import { ReadOnlyDetail } from '@/common/components/atoms/ReadOnlyDetail/ReadOnlyDetail';
 import { DataTable } from '@ballerine/ui/dist/components/organisms/DataTable/DataTable';
+import { EditableDetailsV2 } from '@/common/components/organisms/EditableDetailsV2/EditableDetailsV2';
 
 export type TBlockCell = {
   type: 'block';
@@ -248,6 +249,12 @@ export type TImageCell = {
   props: Omit<ComponentProps<typeof Image>, 'src'>;
 };
 
+export type TEditableDetailsV2Cell = {
+  type: 'editableDetails';
+  value: ComponentProps<typeof EditableDetailsV2>['fields'];
+  props: Omit<ComponentProps<typeof EditableDetailsV2>, 'fields'>;
+};
+
 export type TCell =
   | TBlockCell
   | TContainerCell
@@ -271,4 +278,5 @@ export type TCell =
   | TNodeCell
   | TPDFViewerCell
   | TReadOnlyDetailsCell
-  | TImageCell;
+  | TImageCell
+  | TEditableDetailsV2Cell;

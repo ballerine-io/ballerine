@@ -1,11 +1,11 @@
-import React, { FunctionComponent, lazy, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { FunctionComponent, lazy, useState } from 'react';
 import { Providers } from '../../common/components/templates/Providers/Providers';
-import { ServerDownLayout } from './ServerDown.layout';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
 import Chatbot from '@/domains/chat/chatbot-opengpt';
 import { env } from '@/common/env/env';
+import { Outlet } from 'react-router-dom';
+import { ServerDownLayout } from './ServerDown.layout';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
