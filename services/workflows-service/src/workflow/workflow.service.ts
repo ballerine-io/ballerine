@@ -53,10 +53,12 @@ import {
 import {
   AnyRecord,
   buildCollectionFlowState,
+  BusinessDataSchema,
   CollectionFlowStatusesEnum,
   DefaultContextSchema,
   getDocumentId,
   getOrderedSteps,
+  IndividualDataSchema,
   isErrorWithMessage,
   isObject,
   ProcessStatus,
@@ -116,6 +118,7 @@ import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-
 import { entitiesUpdate } from './utils/entities-update';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
+import { PartialDeep } from 'type-fest';
 
 type TEntityId = string;
 
@@ -2647,5 +2650,80 @@ export class WorkflowService {
         timeout: 180_000,
       },
     );
+  }
+
+  async updateContextAndSyncEntity({
+    workflowRuntimeDataId,
+    context,
+    projectId,
+  }: {
+    workflowRuntimeDataId: string;
+    context: PartialDeep<DefaultContextSchema>;
+    projectId: string;
+  }) {
+    await this.prismaService.$transaction(async transaction => {
+      await this.event(
+        {
+          id: workflowRuntimeDataId,
+          name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+          payload: {
+            newContext: context,
+            arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
+          },
+        },
+        [projectId],
+        projectId,
+        transaction,
+      );
+
+      const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
+        workflowRuntimeDataId,
+        {},
+        [projectId],
+        transaction,
+      );
+
+      const endUserContextToEntityAdapter = ({
+        firstName,
+        lastName,
+        dateOfBirth,
+        country,
+        phone,
+        email,
+        additionalInfo,
+        ...rest
+      }: Static<typeof IndividualDataSchema>) =>
+        ({
+          firstName,
+          lastName,
+          dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
+          country,
+          phone,
+          email,
+          additionalInfo: {
+            ...rest,
+            ...additionalInfo,
+          },
+        } satisfies Parameters<typeof this.entityRepository.endUser.updateById>[1]['data']);
+
+      const businessContextToEntityAdapter = (data: Static<typeof BusinessDataSchema>) =>
+        ({
+          companyName: data.companyName,
+        } satisfies Parameters<typeof this.entityRepository.business.updateById>[1]['data']);
+
+      if (workflowRuntimeData.businessId && context.entity?.data) {
+        await this.entityRepository.business.updateById(workflowRuntimeData.businessId, {
+          data: businessContextToEntityAdapter(
+            context.entity.data as Static<typeof BusinessDataSchema>,
+          ),
+        });
+      }
+
+      if (workflowRuntimeData.endUserId && context.entity?.data) {
+        await this.entityRepository.endUser.updateById(workflowRuntimeData.endUserId, {
+          data: endUserContextToEntityAdapter(context.entity.data),
+        });
+      }
+    });
   }
 }

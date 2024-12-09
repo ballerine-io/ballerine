@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.57
+
+### Patch Changes
+
+- Updated merchant screening schema
+
 ## 0.9.56
 
 ### Patch Changes

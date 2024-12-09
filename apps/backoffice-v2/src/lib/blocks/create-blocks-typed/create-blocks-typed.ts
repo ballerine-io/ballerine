@@ -22,6 +22,7 @@ import { Subheading } from '@/lib/blocks/components/Subheading/Subheading';
 import { TableCell } from '@/lib/blocks/components/TableCell/TableCell';
 import { TCell } from '@/lib/blocks/create-blocks-typed/types';
 import { CellsMap, createBlocks } from '@ballerine/blocks';
+import { EditableDetailsV2Cell } from '../components/EditableDetailsV2Cell/EditableDetailsV2Cell';
 
 export const createBlocksTyped = () => createBlocks<TCell>();
 
@@ -56,4 +57,5 @@ export const cells: CellsMap = {
   pdfViewer: PDFViewerCell,
   readOnlyDetails: ReadOnlyDetailsCell,
   image: ImageCell,
+  editableDetails: EditableDetailsV2Cell,
 };
