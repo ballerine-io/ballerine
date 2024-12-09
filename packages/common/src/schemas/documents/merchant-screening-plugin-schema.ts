@@ -118,7 +118,7 @@ const PrincipalSchema = Type.Object({
       description: "The principal owner's phone number, including the area code.",
       example: '3165557625',
       maxLength: 25,
-    })
+    }),
   ),
   AltPhoneNumber: Type.Optional(
     Type.String({
@@ -215,11 +215,13 @@ const MerchantSchema = Type.Object({
     }),
   ),
   Address: Type.Optional(AddressSchema),
-  PhoneNumber: Type.Optional(Type.String({
-    description: "The Business or Merchant's phone number, including the area code.",
-    example: '3165557625',
-    maxLength: 25,
-  })),
+  PhoneNumber: Type.Optional(
+    Type.String({
+      description: "The Business or Merchant's phone number, including the area code.",
+      example: '3165557625',
+      maxLength: 25,
+    }),
+  ),
   AltPhoneNumber: Type.Optional(
     Type.String({
       description: "The Business or Merchant's alternate phone number, including the area code.",

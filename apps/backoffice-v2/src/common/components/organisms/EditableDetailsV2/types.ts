@@ -1,35 +1,35 @@
-import { SortDirection } from "@ballerine/common";
+import { SortDirection } from '@ballerine/common';
 
 export interface IBaseEditableDetailsV2Config {
-    parse?: {
-      date?: boolean;
-      isoDate?: boolean;
-      datetime?: boolean;
-      boolean?: boolean;
-      url?: boolean;
-      nullish?: boolean;
+  parse?: {
+    date?: boolean;
+    isoDate?: boolean;
+    datetime?: boolean;
+    boolean?: boolean;
+    url?: boolean;
+    nullish?: boolean;
+  };
+  sort?: {
+    direction?: SortDirection;
+    predefinedOrder?: string[];
+  };
+  actions: {
+    editing: {
+      disabled: boolean;
     };
-    sort?: {
-      direction?: SortDirection;
-      predefinedOrder?: string[];
+    options: {
+      disabled: boolean;
     };
-    actions: {
-      editing: {
-        disabled: boolean;
-      };
-      options: {
-        disabled: boolean;
-      };
-      enableEditing: {
-        disabled: boolean;
-      };
-      cancel: {
-        disabled: boolean;
-      };
-      save: {
-        disabled: boolean;
-      };
+    enableEditing: {
+      disabled: boolean;
     };
+    cancel: {
+      disabled: boolean;
+    };
+    save: {
+      disabled: boolean;
+    };
+  };
 }
 
 export interface IEditableDetailsV2ConfigWithBlacklist extends IBaseEditableDetailsV2Config {

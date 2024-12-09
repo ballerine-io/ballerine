@@ -10,15 +10,14 @@ export const useNewEditableDetailsLogic = ({
   fields,
   onSubmit,
   config,
-}: Pick<
-  ComponentProps<typeof EditableDetailsV2>,
-  'fields' | 'onSubmit' | 'config'
->) => {
-  const sortedFields = useMemo(() => sortData({
-    data: fields,
-    direction: config?.sort?.direction,
-      predefinedOrder: config?.sort?.predefinedOrder,
-    }),
+}: Pick<ComponentProps<typeof EditableDetailsV2>, 'fields' | 'onSubmit' | 'config'>) => {
+  const sortedFields = useMemo(
+    () =>
+      sortData({
+        data: fields,
+        direction: config?.sort?.direction,
+        predefinedOrder: config?.sort?.predefinedOrder,
+      }),
     [fields, config?.sort?.direction, config?.sort?.predefinedOrder],
   );
   // Should support multiple levels of nesting, arrays, objects, and multiple path syntaxes
