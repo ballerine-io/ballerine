@@ -30,3 +30,26 @@ export const calculateStartDate = (timeUnit: TimeUnit, timeAmount: number): Date
 
   return startDate;
 };
+
+export const convertTimeUnitToMilliseconds = (dedupeWindow: {
+  timeAmount: number;
+  timeUnit: TimeUnit;
+}): number => {
+  let multiplier = 0;
+
+  switch (dedupeWindow.timeUnit) {
+    case 'days':
+      multiplier = 24 * 60 * 60 * 1000; // Convert days to milliseconds
+      break;
+    case 'hours':
+      multiplier = 60 * 60 * 1000; // Convert hours to milliseconds
+      break;
+    case 'minutes':
+      multiplier = 60 * 1000; // Convert minutes to milliseconds
+      break;
+    default:
+      throw new Error(`Unknown time unit: ${dedupeWindow.timeUnit}`);
+  }
+
+  return dedupeWindow.timeAmount * multiplier;
+};

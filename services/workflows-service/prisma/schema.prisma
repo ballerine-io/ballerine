@@ -124,6 +124,7 @@ model Business {
   companyName             String // Official registered name of the business entity
   registrationNumber      String? // Unique registration number assigned by the relevant authorities
   legalForm               String? // Legal structure of the business entity, e.g., LLC, corporation, partnership
+  dba                     String? // Doing Business As (DBA) name of the business entity
   country                 String?
   countryOfIncorporation  String? // Country where the business entity is incorporated
   dateOfIncorporation     DateTime? // Date when the business entity was incorporated
@@ -834,8 +835,14 @@ model Alert {
   workflowRuntimeDataId String?
   workflowRuntimeData   WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
+  // TODO: Remove this field after data migration
   counterpartyId String?
   counterparty   Counterparty? @relation(fields: [counterpartyId], references: [id])
+
+  counterpartyOriginatorId String?
+  counterpartyBeneficiaryId String?
+  counterpartyOriginator   Counterparty? @relation(name: "counterpartyAlertOriginator", fields: [counterpartyOriginatorId], references: [id])
+  counterpartyBeneficiary   Counterparty? @relation(name: "counterpartyAlertBeneficiary", fields: [counterpartyBeneficiaryId], references: [id])
 
   businessId String?
   business   Business? @relation(fields: [businessId], references: [id])
@@ -845,6 +852,9 @@ model Alert {
   @@index([alertDefinitionId])
   @@index([counterpartyId])
   @@index([createdAt(sort: Desc)])
+
+  @@index([counterpartyOriginatorId])
+  @@index([counterpartyBeneficiaryId])
 }
 
 enum RiskCategory {
@@ -888,6 +898,9 @@ model Counterparty {
   benefitingTransactions  TransactionRecord[] @relation("BenefitingCounterparty")
   alerts                  Alert[]
 
+  alertsBenefiting                  Alert[] @relation("counterpartyAlertBeneficiary")
+  alertsOriginating                 Alert[] @relation("counterpartyAlertOriginator")
+  
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
 

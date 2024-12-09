@@ -9,7 +9,7 @@ export const useTransactionsQuery = ({
   pageSize,
 }: {
   alertId: string;
-  counterpartyId: string;
+  counterpartyId?: string;
   page: number;
   pageSize: number;
 }) => {
@@ -22,7 +22,7 @@ export const useTransactionsQuery = ({
       page,
       pageSize,
     }),
-    enabled: isAuthenticated && !!counterpartyId,
+    enabled: isAuthenticated,
     staleTime: 100_000,
   });
 };

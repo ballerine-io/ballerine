@@ -20,11 +20,17 @@ import {
 import _ from 'lodash';
 import { AlertExecutionStatus } from './consts';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
-import { TDedupeStrategy, TExecutionDetails } from './types';
+import { DedupeWindow, TDedupeStrategy, TExecutionDetails } from './types';
 import { computeHash } from '@ballerine/common';
+import { convertTimeUnitToMilliseconds } from '@/data-analytics/utils';
+import { DataInvestigationService } from '@/data-analytics/data-investigation.service';
 
 const DEFAULT_DEDUPE_STRATEGIES = {
   cooldownTimeframeInMinutes: 60 * 24,
+  dedupeWindow: {
+    timeAmount: 7,
+    timeUnit: TIME_UNITS.days,
+  },
 };
 
 @Injectable()
@@ -33,6 +39,7 @@ export class AlertService {
     private readonly prisma: PrismaService,
     private readonly logger: AppLoggerService,
     private readonly dataAnalyticsService: DataAnalyticsService,
+    private readonly dataInvestigationService: DataInvestigationService,
     private readonly alertRepository: AlertRepository,
     private readonly alertDefinitionRepository: AlertDefinitionRepository,
   ) {}
@@ -329,17 +336,21 @@ export class AlertService {
   }
 
   createAlert(
-    alertDef: Partial<AlertDefinition>,
+    alertDef: Partial<AlertDefinition> & Required<{ projectId: AlertDefinition['projectId'] }>,
     subject: Array<{ [key: string]: unknown }>,
     executionRow: Record<string, unknown>,
     additionalInfo?: Record<string, unknown>,
   ) {
+    const mergedSubject = Object.assign({}, ...(subject || []));
+
+    const projectId = alertDef.projectId;
+    const now = new Date();
+
     return this.alertRepository.create({
       data: {
+        projectId,
         alertDefinitionId: alertDef.id,
-        projectId: alertDef.projectId,
         severity: alertDef.defaultSeverity,
-        dataTimestamp: new Date(),
         state: AlertState.triggered,
         status: AlertStatus.new,
         additionalInfo: additionalInfo,
@@ -347,10 +358,18 @@ export class AlertService {
           checkpoint: {
             hash: computeHash(executionRow),
           },
-          subject: Object.assign({}, ...(subject || [])),
+          subject: mergedSubject,
           executionRow,
+          filters: this.dataInvestigationService.getInvestigationFilter(
+            projectId,
+            alertDef.inlineRule as InlineRule,
+            mergedSubject,
+          ),
         } satisfies TExecutionDetails as InputJsonValue,
         ...Object.assign({}, ...(subject || [])),
+        updatedAt: now,
+        createdAt: now,
+        dataTimestamp: now,
       },
     });
   }
@@ -370,18 +389,26 @@ export class AlertService {
       return true;
     }
 
-    const { cooldownTimeframeInMinutes } = dedupeStrategy || DEFAULT_DEDUPE_STRATEGIES;
+    const { cooldownTimeframeInMinutes, dedupeWindow } =
+      dedupeStrategy || DEFAULT_DEDUPE_STRATEGIES;
 
     const existingAlert = await this.alertRepository.findFirst(
       {
         where: {
           AND: [{ alertDefinitionId: alertDefinition.id }, ...subjectPayload],
         },
+        orderBy: {
+          createdAt: 'desc', // Ensure we're getting the most recent alert
+        },
       },
       [alertDefinition.projectId],
     );
 
     if (!existingAlert) {
+      return false;
+    }
+
+    if (this._isTriggeredSinceLastDedupe(existingAlert, dedupeWindow)) {
       return false;
     }
 
@@ -403,6 +430,18 @@ export class AlertService {
     }
 
     return false;
+  }
+
+  private _isTriggeredSinceLastDedupe(existingAlert: Alert, dedupeWindow: DedupeWindow): boolean {
+    if (!existingAlert.dedupedAt || !dedupeWindow) {
+      return false;
+    }
+
+    const dedupeWindowDurationInMs = convertTimeUnitToMilliseconds(dedupeWindow);
+
+    const dedupeWindowEndTime = existingAlert.dedupedAt.getTime() + dedupeWindowDurationInMs;
+
+    return Date.now() > dedupeWindowEndTime;
   }
 
   private getStatusFromState(newState: AlertState): ObjectValues<typeof AlertStatus> {
@@ -471,71 +510,5 @@ export class AlertService {
     }
 
     return alertSeverityToNumber(a) < alertSeverityToNumber(b) ? 1 : -1;
-  }
-
-  buildTransactionsFiltersByAlert(alert: Alert & { alertDefinition: AlertDefinition }) {
-    const filters: {
-      endDate: Date | undefined;
-      startDate: Date | undefined;
-    } = {
-      endDate: undefined,
-      startDate: undefined,
-    };
-
-    const endDate = alert.dedupedAt || alert.createdAt;
-    endDate.setHours(23, 59, 59, 999);
-    filters.endDate = endDate;
-
-    const inlineRule = alert?.alertDefinition?.inlineRule as InlineRule;
-
-    // @ts-ignore - TODO: Replace logic with proper implementation for each rule
-    // eslint-disable-next-line
-    let { timeAmount, timeUnit } = inlineRule.options;
-
-    if (!timeAmount || !timeUnit) {
-      if (
-        inlineRule.fnName === 'evaluateHighVelocityHistoricAverage' &&
-        inlineRule.options.lastDaysPeriod &&
-        timeUnit
-      ) {
-        timeAmount = inlineRule.options.lastDaysPeriod.timeAmount;
-      } else {
-        return filters;
-      }
-    }
-
-    let startDate = new Date(endDate);
-
-    let subtractValue = 0;
-
-    const baseSubstractByMin = timeAmount * 60 * 1000;
-
-    switch (timeUnit) {
-      case TIME_UNITS.minutes:
-        subtractValue = baseSubstractByMin;
-        break;
-      case TIME_UNITS.hours:
-        subtractValue = 60 * baseSubstractByMin;
-        break;
-      case TIME_UNITS.days:
-        subtractValue = 24 * 60 * baseSubstractByMin;
-        break;
-      case TIME_UNITS.months:
-        startDate.setMonth(startDate.getMonth() - timeAmount);
-        break;
-      case TIME_UNITS.years:
-        startDate.setFullYear(startDate.getFullYear() - timeAmount);
-        break;
-    }
-
-    startDate.setHours(0, 0, 0, 0);
-    startDate = new Date(startDate.getTime() - subtractValue);
-
-    const oldestDate = new Date(Math.min(startDate.getTime(), new Date(alert.createdAt).getTime()));
-
-    oldestDate.setHours(0, 0, 0, 0);
-    filters.startDate = oldestDate;
-
-    return filters;
   }
 }
