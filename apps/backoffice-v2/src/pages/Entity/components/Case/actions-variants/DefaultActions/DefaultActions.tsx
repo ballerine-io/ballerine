@@ -61,11 +61,11 @@ export const DefaultActions = () => {
           <DialogFooter>
             <DialogClose asChild>
               <Button
-                className={ctw(`gap-x-2`, {
-                  loading: debouncedIsLoadingRevisionCase,
-                  'enabled:bg-slate-800 enabled:hover:bg-slate-800/90':
-                    !debouncedIsLoadingRevisionCase,
-                })}
+                className={ctw(
+                  'gap-x-2',
+                  { loading: debouncedIsLoadingRevisionCase },
+                  'enabled:bg-primary enabled:hover:bg-primary/90',
+                )}
                 disabled={isLoadingActions || !canRevision}
                 onClick={onMutateRevisionCase}
               >
