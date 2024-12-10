@@ -14,6 +14,7 @@ export interface IUIDefinition {
   locales?: object;
   createdAt: string;
   name: string;
+  theme?: object;
 }
 
 export interface UpdateUIDefinitionDto {

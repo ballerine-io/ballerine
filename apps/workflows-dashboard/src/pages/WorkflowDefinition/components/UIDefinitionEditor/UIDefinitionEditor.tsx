@@ -173,6 +173,8 @@ export const UIDefinitionEditor: FunctionComponent<UIDefinitionEditorProps> = ({
                 </TabsTrigger>
               );
             })}
+            <TabsTrigger value="theme">theme</TabsTrigger>
+            <TabsTrigger value="locales">locales</TabsTrigger>
           </TabsList>
           <TabsContent value="all" className="flex-1">
             <JSONEditorComponent value={uiDefinitionValue} onChange={handleUIDefinitionChange} />
@@ -184,6 +186,28 @@ export const UIDefinitionEditor: FunctionComponent<UIDefinitionEditorProps> = ({
               </TabsContent>
             );
           })}
+          <TabsContent value="theme" className="flex-1">
+            <JSONEditorComponent
+              value={uiDefinitionValue.theme || {}}
+              onChange={value =>
+                handleUIDefinitionChange({
+                  ...uiDefinitionValue,
+                  theme: value,
+                })
+              }
+            />
+          </TabsContent>
+          <TabsContent value="locales" className="flex-1">
+            <JSONEditorComponent
+              value={uiDefinitionValue.locales || {}}
+              onChange={value =>
+                handleUIDefinitionChange({
+                  ...uiDefinitionValue,
+                  locales: value,
+                })
+              }
+            />
+          </TabsContent>
           <div className="flex justify-end gap-2">
             <Button
               onClick={() =>

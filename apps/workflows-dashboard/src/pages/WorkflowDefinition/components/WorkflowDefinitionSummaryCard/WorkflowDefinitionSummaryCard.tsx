@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader } from '@/components/atoms/Card';
 import { IWorkflowDefinition } from '@/domains/workflow-definitions';
 import { valueOrNA } from '@/utils/value-or-na';
 import { FunctionComponent } from 'react';
-import { format } from 'date-fns';
+import dayjs from 'dayjs';
 
 interface IWorkflowDefinitionSummaryCardProps {
   workflowDefinition: IWorkflowDefinition;
@@ -25,7 +25,7 @@ export const WorkflowDefinitionSummaryCard: FunctionComponent<
           { label: 'Variant', value: valueOrNA(workflowDefinition.variant) },
           {
             label: 'Created At',
-            value: format(new Date(workflowDefinition.createdAt as string), 'PPpp'),
+            value: dayjs(workflowDefinition.createdAt).format('MMM D, YYYY h:mm A'),
           },
           {
             label: 'Is Public',
