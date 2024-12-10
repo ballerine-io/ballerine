@@ -1,6 +1,7 @@
 import { StateMachine } from 'xstate';
 import { ruleValidator, TDefintionRules } from './rule-validator';
-import { AnyRecord } from '@ballerine/common';
+import { AnyRecord, isObject } from '@ballerine/common';
+import { BUILT_IN_EVENT } from '../../built-in-event';
 
 type TTransitionEvent = string;
 
@@ -9,6 +10,9 @@ type TTransitionOption =
       target: string;
       cond?: TDefintionRules;
     }
+  | {
+    actions: string;
+  }
   | string;
 type TTransitionOptions = TTransitionOption[];
 export const statesValidator = (
@@ -63,7 +67,22 @@ export const validateTransitionOnEvent = ({
   currentState: string;
   transition: TTransitionOption;
 }) => {
-  const targetState = typeof transition === 'string' ? transition : transition.target;
+  const getTargetState = () => {
+    if (typeof transition === 'string') {
+      return transition;
+    }
+
+    if (isObject(transition) && 'target' in transition) {
+      return transition.target;
+    }
+
+    throw Error(`Unexpected transition object: ${JSON.stringify(transition)}`);
+  }
+  const targetState = getTargetState();
+
+  if (isObject(transition) && 'actions' in transition && transition.actions === BUILT_IN_EVENT.NO_OP) {
+    return;
+  }
 
   if (!stateNames.includes(targetState)) {
     throw new Error(`Invalid transition from ${currentState} to ${targetState}`);

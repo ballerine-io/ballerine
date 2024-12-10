@@ -541,6 +541,14 @@ export class WorkflowRunner {
       },
     );
 
+    const state = this.#__currentState;
+
+    const noOp = () => {
+      logger.log(`${BUILT_IN_EVENT.NO_OP} action fired`, {
+        state
+      })
+    }
+
     return createMachine(
       {
         predictableActionArguments: true,
@@ -551,6 +559,9 @@ export class WorkflowRunner {
           [BUILT_IN_EVENT.DEEP_MERGE_CONTEXT]: {
             actions: deepMergeContext,
           },
+          [BUILT_IN_EVENT.NO_OP]: {
+            actions: noOp
+          }
         },
         ...definition,
       },
