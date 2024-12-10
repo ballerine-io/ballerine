@@ -63,6 +63,7 @@ export const UIDefinitionEditor: FunctionComponent<UIDefinitionEditorProps> = ({
                             if (!element.type?.startsWith('json-form:')) return null;
 
                             const valueDestination = element.valueDestination?.split('.')?.pop();
+
                             return (
                               <div className="rounded-md bg-gray-50 p-3">
                                 <div className="text-sm font-medium text-gray-900">
@@ -90,6 +91,7 @@ export const UIDefinitionEditor: FunctionComponent<UIDefinitionEditorProps> = ({
                                   if (nestedEl.type?.startsWith('json-form:')) {
                                     return <div key={j}>{renderFormElement(nestedEl)}</div>;
                                   }
+
                                   // Recursively check deeper nested elements
                                   if (nestedEl.elements) {
                                     return nestedEl.elements.map((deepEl: any, k: number) => {
@@ -98,9 +100,11 @@ export const UIDefinitionEditor: FunctionComponent<UIDefinitionEditorProps> = ({
                                           <div key={`${j}-${k}`}>{renderFormElement(deepEl)}</div>
                                         );
                                       }
+
                                       return null;
                                     });
                                   }
+
                                   return null;
                                 })}
                               </div>
