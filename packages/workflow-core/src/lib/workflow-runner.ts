@@ -464,6 +464,7 @@ export class WorkflowRunner {
       }
     }
 
+    const state = this.#__currentState;
     const noOp = () => {
       logger.log(`${BUILT_IN_ACTION.NO_OP} action fired`, {
         state
@@ -547,8 +548,6 @@ export class WorkflowRunner {
         return mergedContext;
       },
     );
-
-    const state = this.#__currentState;
 
     return createMachine(
       {
