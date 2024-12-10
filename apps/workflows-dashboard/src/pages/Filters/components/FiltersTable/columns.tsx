@@ -4,6 +4,7 @@ import { formatDate } from '@/utils/format-date';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { valueOrNA } from '@/utils/value-or-na';
+import { toast } from 'sonner';
 
 const columnHelper = createColumnHelper<IFilter>();
 
@@ -13,7 +14,16 @@ export const filtersTableColumns = [
       <div className="flex items-center gap-2">
         <span className="font-mono text-sm text-gray-600">{info.getValue<string>()}</span>
         <button
-          onClick={() => navigator.clipboard.writeText(info.getValue<string>())}
+          onClick={() => {
+            navigator.clipboard
+              .writeText(info.getValue<string>())
+              .then(() => {
+                toast.success('ID copied to clipboard');
+              })
+              .catch(() => {
+                toast.error('Failed to copy ID to clipboard');
+              });
+          }}
           className="text-gray-400 hover:text-gray-600"
         >
           <svg
