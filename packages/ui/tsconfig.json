@@ -7,7 +7,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "module": "preserve",
+    "module": "ESNext",
     "moduleResolution": "bundler"
   },
   "include": ["src"]
