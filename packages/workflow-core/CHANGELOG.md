@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.6.76
+
+### Patch Changes
+
+- Added no op event to workflow runner
+
 ## 0.6.75
 
 ### Patch Changes
