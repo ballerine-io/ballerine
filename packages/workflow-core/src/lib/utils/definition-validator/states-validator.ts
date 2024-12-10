@@ -8,6 +8,7 @@ type TTransitionOption =
   | {
       target: string;
       cond?: TDefintionRules;
+      actions?: string;
     }
   | string;
 type TTransitionOptions = TTransitionOption[];
@@ -63,6 +64,10 @@ export const validateTransitionOnEvent = ({
   currentState: string;
   transition: TTransitionOption;
 }) => {
+  if (typeof transition === 'object' && transition.actions?.includes('NO_OP')) {
+    return;
+  }
+
   const targetState = typeof transition === 'string' ? transition : transition.target;
 
   if (!stateNames.includes(targetState)) {

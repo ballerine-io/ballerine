@@ -467,6 +467,9 @@ export class WorkflowRunner {
     const actions: MachineOptions<any, any>['actions'] = {
       ...workflowActions,
       ...stateActions,
+      NO_OP: () => {
+        logger.log('WORKFLOW CORE:: NO_OP action called', this.#__currentState);
+      },
     };
 
     const guards: MachineOptions<any, any>['guards'] = {
@@ -544,6 +547,7 @@ export class WorkflowRunner {
     return createMachine(
       {
         predictableActionArguments: true,
+        ...definition,
         on: {
           [BUILT_IN_EVENT.UPDATE_CONTEXT]: {
             actions: updateContext,
@@ -551,8 +555,8 @@ export class WorkflowRunner {
           [BUILT_IN_EVENT.DEEP_MERGE_CONTEXT]: {
             actions: deepMergeContext,
           },
+          ...definition.on,
         },
-        ...definition,
       },
       { actions, guards },
     );
@@ -912,8 +916,12 @@ export class WorkflowRunner {
   mergeToContext(
     sourceContext: Record<string, any>,
     informationToPersist: Record<string, any>,
-    pathToPersist: string,
+    pathToPersist?: string,
   ) {
+    if (!pathToPersist) {
+      return this.deepMerge(informationToPersist, sourceContext);
+    }
+
     const keys = pathToPersist.split('.') as Array<string>;
     let obj = sourceContext;
 

@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader } from '@/components/atoms/Card';
 import { IWorkflowDefinition } from '@/domains/workflow-definitions';
 import { valueOrNA } from '@/utils/value-or-na';
 import { FunctionComponent } from 'react';
+import { format } from 'date-fns';
 
 interface IWorkflowDefinitionSummaryCardProps {
   workflowDefinition: IWorkflowDefinition;
@@ -11,39 +12,42 @@ export const WorkflowDefinitionSummaryCard: FunctionComponent<
   IWorkflowDefinitionSummaryCardProps
 > = ({ workflowDefinition }) => {
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <span className="font-bold">Summary</span>
+    <Card className="h-full bg-gradient-to-br from-slate-50 to-white shadow-lg">
+      <CardHeader className="border-b border-slate-200 bg-white/50 ">
+        <h2 className="text-lg font-bold text-slate-800">Workflow Summary</h2>
       </CardHeader>
-      <CardContent className="flex flex-col gap-2">
-        <div className="flex flex-row justify-between">
-          <span className="font-bold">ID:</span>
-          <span>{workflowDefinition.id}</span>
-        </div>
-        <div className="flex flex-row justify-between">
-          <span className="font-bold">Name:</span>
-          <span>{workflowDefinition.name}</span>
-        </div>
-        <div className="flex flex-row justify-between">
-          <span className="font-bold">Display Name:</span>
-          <span>{valueOrNA(workflowDefinition.displayName)}</span>
-        </div>
-        <div className="flex flex-row justify-between">
-          <span className="font-bold">Version:</span>
-          <span>{valueOrNA(workflowDefinition.version)}</span>
-        </div>
-        <div className="flex flex-row justify-between">
-          <span className="font-bold">Variant:</span>
-          <span>{valueOrNA(workflowDefinition.variant)}</span>
-        </div>
-        <div className="flex flex-row justify-between">
-          <span className="font-bold">Created At:</span>
-          <span>{new Date(workflowDefinition.createdAt as string).toISOString()}</span>
-        </div>
-        <div className="flex flex-row justify-between">
-          <span className="font-bold">Is Public:</span>
-          <span>{workflowDefinition.isPublic ? 'Yes' : 'No'}</span>
-        </div>
+      <CardContent className="flex flex-col gap-3 p-6">
+        {[
+          { label: 'ID', value: workflowDefinition.id },
+          { label: 'Name', value: workflowDefinition.name },
+          { label: 'Display Name', value: valueOrNA(workflowDefinition.displayName) },
+          { label: 'Version', value: valueOrNA(workflowDefinition.version) },
+          { label: 'Variant', value: valueOrNA(workflowDefinition.variant) },
+          {
+            label: 'Created At',
+            value: format(new Date(workflowDefinition.createdAt as string), 'PPpp'),
+          },
+          {
+            label: 'Is Public',
+            value: workflowDefinition.isPublic ? (
+              <span className="rounded-full bg-red-100 px-2 py-1 text-sm font-medium text-red-800">
+                Yes
+              </span>
+            ) : (
+              <span className="rounded-full bg-green-100 px-2 py-1 text-sm font-medium text-green-800">
+                No
+              </span>
+            ),
+          },
+        ].map(({ label, value }, index) => (
+          <div
+            key={label}
+            className="flex flex-row items-center justify-between rounded-lg bg-white/40 p-3 shadow-sm transition-all hover:bg-white/60"
+          >
+            <span className="text-sm font-medium text-slate-600">{label}</span>
+            <span className="text-sm text-slate-800">{value}</span>
+          </div>
+        ))}
       </CardContent>
     </Card>
   );

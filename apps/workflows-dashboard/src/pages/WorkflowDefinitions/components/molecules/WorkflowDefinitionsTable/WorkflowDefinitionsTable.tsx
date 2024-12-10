@@ -117,3 +117,5 @@ export const WorkflowDefinitionsTable = memo(({ items, isFetching, sorting, onSo
     </div>
   );
 });
+
+WorkflowDefinitionsTable.displayName = 'WorkflowDefinitionsTable';
