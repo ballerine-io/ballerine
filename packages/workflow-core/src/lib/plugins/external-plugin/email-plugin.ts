@@ -57,6 +57,7 @@ export class EmailPlugin extends ApiPlugin {
         ok: true,
         json: () => Promise.resolve({}),
         statusText: 'OK',
+        headers: {} as Headers,
       };
     }
 
