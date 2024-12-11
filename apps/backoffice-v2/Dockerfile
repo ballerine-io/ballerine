@@ -1,4 +1,4 @@
-FROM node:18.17.1-bullseye-slim as dev
+FROM node:18.17.1-bullseye-slim
 
 WORKDIR /app
 
@@ -18,14 +18,10 @@ ENV PATH="$PATH:/app/node_modules/.bin"
 
 EXPOSE 5137
 
-CMD ["npm", "run", "dev", "--host"]
+# Always build the application during container startup
+RUN npm install -g serve
 
-FROM nginx:stable-alpine as prod
+ENTRYPOINT [ "sh" ]
 
-COPY --from=dev /app/dist /usr/share/nginx/html
-
-COPY example.nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+# Command to build and serve the application
+CMD ["-c", "npm run build && serve -s dist -l 5137"]
