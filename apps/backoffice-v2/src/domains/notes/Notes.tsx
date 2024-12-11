@@ -88,7 +88,7 @@ export const Notes = ({
                 size={`sm`}
                 aria-disabled={isLoading}
                 className={
-                  'mt-3 h-5 self-end p-4 text-sm font-medium aria-disabled:pointer-events-none aria-disabled:opacity-50'
+                  'mt-3 h-5 self-end p-4 text-sm font-medium enabled:bg-primary enabled:hover:bg-primary/90 aria-disabled:pointer-events-none aria-disabled:opacity-50'
                 }
               >
                 <Loader2 className={ctw('me-2 h-4 w-4 animate-spin', { hidden: !isLoading })} />

@@ -272,6 +272,7 @@ export const useDocumentBlocks = ({
                     disabled={!canApprove}
                     size={'wide'}
                     variant={'success'}
+                    className={'enabled:bg-success enabled:hover:bg-success/90'}
                   >
                     Approve
                   </MotionButton>
