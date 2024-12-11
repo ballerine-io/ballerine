@@ -19,7 +19,7 @@ export class WorkflowTokenPlugin {
     this.action = pluginParams.action;
     this.successAction = pluginParams.successAction;
     this.errorAction = pluginParams.errorAction;
-    this.persistResponseDestination = 'metadata';
+    this.persistResponseDestination = '';
   }
 
   async invoke(context: TContext) {

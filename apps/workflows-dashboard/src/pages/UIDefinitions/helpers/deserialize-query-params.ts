@@ -5,6 +5,7 @@ export const deserializeQueryParams = (query: FiltersPageFilterQuery) => {
   const filters: FiltersPageFilterValues = {
     page: query.page as number,
     limit: query.limit as number,
+    projectId: query.projectId as string,
   };
 
   return filters;

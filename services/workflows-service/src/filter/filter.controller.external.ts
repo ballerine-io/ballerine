@@ -90,7 +90,6 @@ export class FilterControllerExternal {
   }
 
   @common.Post()
-  @UseCustomerAuthGuard()
   @swagger.ApiCreatedResponse({ type: FilterModel })
   @swagger.ApiForbiddenResponse()
   @UsePipes(new ZodValidationPipe(FilterCreateSchema, 'body'))
