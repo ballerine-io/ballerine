@@ -83,16 +83,22 @@ export class UiDefinitionService {
     );
   }
 
-  async cloneUIDefinitionById(id: string, projectId: TProjectId) {
+  async cloneUIDefinitionById(id: string, projectId: TProjectId, newName: string) {
     const {
       createdAt,
       updatedAt,
       id: _,
+      crossEnvKey,
+      name,
       ...uiDefinition
     } = await this.repository.findById(id, {}, [projectId]);
 
-    //@ts-ignore
-    const uiDefinitionCopy = await this.create({ data: replaceNullsWithUndefined(uiDefinition) });
+    const uiDefinitionCopy = await this.create({
+      data: replaceNullsWithUndefined({
+        ...uiDefinition,
+        name: newName,
+      }),
+    });
 
     return uiDefinitionCopy;
   }

@@ -246,19 +246,43 @@ export const CollectionFlow = withSessionProtected(() => {
                               <AppShell.Content>
                                 <AppShell.FormContainer>
                                   {localStorage.getItem('devmode') ? (
-                                    <div className="flex flex-col gap-4">
-                                      DEBUG
-                                      <div>
-                                        {currentPage
-                                          ? currentPage.stateName
-                                          : 'Page not found and state ' + state}
+                                    <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
+                                      <div className="mb-4 flex items-center gap-2">
+                                        <div className="h-2 w-2 animate-pulse rounded-full bg-amber-500" />
+                                        <span
+                                          className="cursor-help font-medium text-amber-900 hover:underline"
+                                          data-tooltip-id="debug-mode-tooltip"
+                                          data-tooltip-content="In debug mode you can navigate between steps without validation. Be aware that if required data is missing, plugins may fail when processing data at the end of the flow."
+                                        >
+                                          Debug Mode Active
+                                        </span>
                                       </div>
-                                      <div className="flex gap-4">
-                                        <button onClick={() => stateApi.sendEvent('PREVIOUS')}>
-                                          prev
+
+                                      <div className="mb-3 text-sm text-amber-800">
+                                        Current State:{' '}
+                                        {currentPage ? (
+                                          <span className="font-medium">
+                                            {currentPage.stateName}
+                                          </span>
+                                        ) : (
+                                          <span className="italic">
+                                            Page not found - state: {state}
+                                          </span>
+                                        )}
+                                      </div>
+
+                                      <div className="flex gap-3">
+                                        <button
+                                          onClick={() => stateApi.sendEvent('PREVIOUS')}
+                                          className="rounded bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-200"
+                                        >
+                                          Previous
                                         </button>
-                                        <button onClick={() => stateApi.sendEvent('NEXT')}>
-                                          next
+                                        <button
+                                          onClick={() => stateApi.sendEvent('NEXT')}
+                                          className="rounded bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-200"
+                                        >
+                                          Next
                                         </button>
                                       </div>
                                     </div>

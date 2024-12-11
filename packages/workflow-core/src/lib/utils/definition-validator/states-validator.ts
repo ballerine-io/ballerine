@@ -9,10 +9,11 @@ type TTransitionOption =
   | {
       target: string;
       cond?: TDefintionRules;
+      actions?: string;
     }
   | {
-    actions: string;
-  }
+      actions: string;
+    }
   | string;
 type TTransitionOptions = TTransitionOption[];
 export const statesValidator = (
@@ -77,10 +78,14 @@ export const validateTransitionOnEvent = ({
     }
 
     throw Error(`Unexpected transition object: ${JSON.stringify(transition)}`);
-  }
+  };
   const targetState = getTargetState();
 
-  if (isObject(transition) && 'actions' in transition && transition.actions === BUILT_IN_EVENT.NO_OP) {
+  if (
+    isObject(transition) &&
+    'actions' in transition &&
+    transition.actions === BUILT_IN_EVENT.NO_OP
+  ) {
     return;
   }
 

@@ -1554,15 +1554,25 @@ export class WorkflowService {
           }
 
           const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-          const workflowToken = await this.workflowTokenService.create(
-            currentProjectId,
-            {
+          let workflowToken;
+          try {
+            workflowToken = await this.workflowTokenService.create(
+              currentProjectId,
+              {
+                workflowRuntimeDataId: workflowRuntimeData.id,
+                endUserId: endUserId ?? null,
+                expiresAt: nowPlus30Days,
+              },
+              transaction,
+            );
+          } catch (error) {
+            this.logger.error('Failed to create workflow token', {
+              error,
               workflowRuntimeDataId: workflowRuntimeData.id,
-              endUserId: endUserId ?? null,
-              expiresAt: nowPlus30Days,
-            },
-            transaction,
-          );
+              endUserId,
+            });
+            this.sentry.captureException(error as Error);
+          }
 
           const collectionFlow = buildCollectionFlowState({
             apiUrl: env.APP_API_URL,
@@ -1591,7 +1601,7 @@ export class WorkflowService {
                   collectionFlow,
                   metadata: {
                     ...(workflowRuntimeData.context.metadata ?? {}),
-                    token: workflowToken.token,
+                    token: workflowToken?.token,
                     collectionFlowUrl: env.COLLECTION_FLOW_URL,
                     webUiSDKUrl: env.WEB_UI_SDK_URL,
                   },
@@ -2099,6 +2109,24 @@ export class WorkflowService {
             transaction,
           );
 
+          const collectionFlow = buildCollectionFlowState({
+            apiUrl: env.APP_API_URL,
+            steps: uiDefinition?.definition
+              ? getOrderedSteps(
+                  (uiDefinition?.definition as Prisma.JsonObject)?.definition as Record<
+                    string,
+                    Record<string, unknown>
+                  >,
+                  { finalStates: [...WORKFLOW_FINAL_STATES] },
+                ).map(stepName => ({
+                  stateName: stepName,
+                }))
+              : [],
+            additionalInformation: {
+              customerCompany: customer.displayName,
+            },
+          });
+
           await this.workflowRuntimeDataRepository.updateById(
             workflowRuntimeId,
             {
@@ -2110,10 +2138,13 @@ export class WorkflowService {
           );
 
           return {
-            token: token,
-            customerName: customer.displayName,
-            collectionFlowUrl: env.COLLECTION_FLOW_URL!,
-            customerNormalizedName: customer.name,
+            collectionFlow,
+            metadata: {
+              token: token,
+              customerName: customer.displayName,
+              collectionFlowUrl: env.COLLECTION_FLOW_URL!,
+              customerNormalizedName: customer.name,
+            },
           };
         },
       });
