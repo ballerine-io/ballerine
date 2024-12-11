@@ -20,13 +20,18 @@ export interface ICommonValidator<T = object, TValidatorType extends string = TB
   applyWhen?: IValidationRule;
 }
 
+export type TValidators<
+  TValidatorTypeExtends extends string = TBaseValidators,
+  TValue = object,
+> = Array<ICommonValidator<TValue, TValidatorTypeExtends>>;
+
 export interface IValidationSchema<
   TValidatorTypeExtends extends string = TBaseValidators,
   TValue = object,
 > {
   id: string;
   valueDestination?: string;
-  validators: Array<ICommonValidator<TValue, TValidatorTypeExtends>>;
+  validators: TValidators<TValidatorTypeExtends, TValue>;
   children?: IValidationSchema[];
 }
 

@@ -8,11 +8,9 @@ export interface IRendererElement {
 export type IRendererComponent<
   TDefinition extends IRendererElement,
   TProps extends Record<string, unknown>,
-  TOptions extends Record<string, unknown> = Record<string, never>,
   TBaseProps = {
     stack?: number[];
     children?: React.ReactNode | React.ReactNode[];
-    options?: TOptions;
     definition: TDefinition;
   },
 > = React.FunctionComponent<TProps & TBaseProps>;

@@ -5,16 +5,19 @@ import { useValidate } from './hooks/internal/useValidate';
 import { IValidatorRef, useValidatorRef } from './hooks/internal/useValidatorRef';
 import { IValidationSchema } from './types';
 
-export interface IValidatorProviderProps<TValue extends object> {
+export interface IValidationParams {
+  validateOnChange?: boolean;
+  validateSync?: boolean;
+  validationDelay?: number;
+  abortEarly?: boolean;
+}
+
+export interface IValidatorProviderProps<TValue extends object> extends IValidationParams {
   children: React.ReactNode | React.ReactNode[];
   schema: IValidationSchema[];
   value: TValue;
 
   ref?: React.RefObject<IValidatorRef>;
-  validateOnChange?: boolean;
-  validateSync?: boolean;
-  validationDelay?: number;
-  abortEarly?: boolean;
 }
 
 export const ValidatorProvider = <TValue extends object>({

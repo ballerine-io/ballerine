@@ -1,12 +1,10 @@
-import { useFieldList } from '@/pages/CollectionFlowV2/components/ui/fields/FieldList/hooks/useFieldList';
-import {
-  StackProvider,
-  useStack,
-} from '@/pages/CollectionFlowV2/components/ui/fields/FieldList/providers/StackProvider';
-import { rendererSchema } from '@/pages/CollectionFlowV2/renderer-schema';
-import { IFieldComponentProps } from '@/pages/CollectionFlowV2/types';
-import { AnyObject, Button, Renderer } from '@ballerine/ui';
-import { FunctionComponent } from 'react';
+import { AnyObject } from '@/common';
+import { Button } from '@/components/atoms';
+import { Renderer, TRendererSchema } from '@/components/organisms/Renderer';
+import { useDynamicForm } from '../../context';
+import { TBaseFormElements, TDynamicFormElement } from '../../types';
+import { useFieldList } from './hooks/useFieldList';
+import { StackProvider, useStack } from './providers/StackProvider';
 
 export type TFieldListValueType<T extends { _id: string }> = T[];
 
@@ -16,12 +14,14 @@ export interface IFieldListOptions {
   removeButtonLabel?: string;
 }
 
-export const FieldList: FunctionComponent<
-  IFieldComponentProps<TFieldListValueType<{ _id: string }>, IFieldListOptions>
+export const FieldList: TDynamicFormElement<
+  TBaseFormElements,
+  { addButtonLabel: string; removeButtonLabel: string }
 > = props => {
+  const { elementsMap } = useDynamicForm();
   const { stack } = useStack();
-  const { definition, options } = props;
-  const { addButtonLabel = 'Add Item', removeButtonLabel = 'Remove' } = options || {};
+  const { element } = props;
+  const { addButtonLabel = 'Add Item', removeButtonLabel = 'Remove' } = element.params || {};
   const { items, addItem, removeItem } = useFieldList(props);
 
   return (
@@ -35,7 +35,10 @@ export const FieldList: FunctionComponent<
               </span>
             </div>
             <StackProvider stack={[...(stack || []), index]}>
-              <Renderer elements={definition.children || []} schema={rendererSchema} />
+              <Renderer
+                elements={element.children || []}
+                schema={elementsMap as unknown as TRendererSchema}
+              />
             </StackProvider>
           </div>
         );

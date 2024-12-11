@@ -10,5 +10,5 @@
     "module": "ESNext",
     "moduleResolution": "bundler"
   },
-  "include": ["src"]
+  "include": ["src", "vitest.setup.ts"]
 }
