@@ -79,7 +79,6 @@ export const validateTransitionOnEvent = ({
 
     throw Error(`Unexpected transition object: ${JSON.stringify(transition)}`);
   };
-  const targetState = getTargetState();
 
   if (
     isObject(transition) &&
@@ -88,6 +87,8 @@ export const validateTransitionOnEvent = ({
   ) {
     return;
   }
+
+  const targetState = getTargetState();
 
   if (!stateNames.includes(targetState)) {
     throw new Error(`Invalid transition from ${currentState} to ${targetState}`);
