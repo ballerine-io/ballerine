@@ -308,7 +308,12 @@ describe('/api/v1/external/workflows #api #integration', () => {
 
           // Assert
           expect(res.statusCode).toEqual(200);
-          expect(res.body.workflowDefinitionId).toEqual(WORKFLOW_ID);
+          expect(res.body).toMatchObject({
+            workflowDefinitionId: WORKFLOW_ID,
+            workflowRuntimeId: expect.any(String),
+            ballerineEntityId: business.id,
+            entities: [],
+          });
         });
       });
     });
