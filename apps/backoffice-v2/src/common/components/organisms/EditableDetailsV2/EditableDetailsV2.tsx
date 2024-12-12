@@ -65,6 +65,11 @@ export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
                       <EditableDetailV2
                         name={field.name}
                         type={props.type}
+                        inputType={
+                          config.inputTypes?.[
+                            path.split('.').at(-1) as keyof typeof config.inputTypes
+                          ]
+                        }
                         format={props.format}
                         minimum={props.minimum}
                         maximum={props.maximum}

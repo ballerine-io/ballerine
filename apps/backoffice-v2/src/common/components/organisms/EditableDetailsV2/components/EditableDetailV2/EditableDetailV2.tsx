@@ -33,6 +33,7 @@ export const EditableDetailV2 = ({
   minimum,
   maximum,
   pattern,
+  inputType,
   parse,
 }: {
   isEditable: boolean;
@@ -52,6 +53,7 @@ export const EditableDetailV2 = ({
   minimum?: number;
   maximum?: number;
   pattern?: string;
+  inputType?: string;
   parse?: {
     date?: boolean;
     isoDate?: boolean;
@@ -131,7 +133,10 @@ export const EditableDetailV2 = ({
     );
   }
 
-  if (parse?.boolean && (typeof value === 'boolean' || type === 'boolean')) {
+  if (
+    parse?.boolean &&
+    (typeof value === 'boolean' || type === 'boolean' || inputType === 'checkbox')
+  ) {
     return (
       <FormControl>
         <Checkbox_
@@ -145,7 +150,7 @@ export const EditableDetailV2 = ({
   }
 
   if (isEditable) {
-    const inputType = getInputType({ format, type, value });
+    const computedInputType = inputType ?? getInputType({ format, type, value });
 
     return (
       <FormControl>
@@ -153,8 +158,8 @@ export const EditableDetailV2 = ({
           {...(typeof minimum === 'number' && { min: minimum })}
           {...(typeof maximum === 'number' && { max: maximum })}
           {...(pattern && { pattern })}
-          {...(inputType === 'datetime-local' && { step: '1' })}
-          type={inputType}
+          {...(computedInputType === 'datetime-local' && { step: '1' })}
+          type={computedInputType}
           value={displayValue}
           onChange={handleInputChange}
           autoComplete={'off'}

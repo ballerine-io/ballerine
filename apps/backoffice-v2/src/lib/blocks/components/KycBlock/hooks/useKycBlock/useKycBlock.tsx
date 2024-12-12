@@ -414,6 +414,9 @@ export const useKycBlock = ({
                   disabled: !caseState.writeEnabled,
                 },
               },
+              inputTypes: {
+                dateOfBirth: 'date',
+              },
             },
           },
         })
