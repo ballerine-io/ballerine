@@ -264,7 +264,7 @@ describe('/api/v1/external/workflows #api #integration', () => {
 
           // Assert
           expect(res.statusCode).toEqual(400);
-          expect(res.body.message).toContain(`Workflow Defintion ${workflowId} was not found`);
+          expect(res.body.message).toContain(`Workflow Definition ${workflowId} was not found`);
         });
 
         it('should return 400 when there is no entity data in the payload', async () => {

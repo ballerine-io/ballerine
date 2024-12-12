@@ -370,7 +370,7 @@ export class WorkflowControllerExternal {
         projectIds,
       );
     } catch (e) {
-      throw new common.BadRequestException(`Workflow Defintion ${workflowId} was not found`);
+      throw new common.BadRequestException(`Workflow Definition ${workflowId} was not found`);
     }
 
     const actionResult = await this.workflowService.createOrUpdateWorkflowRuntime({
