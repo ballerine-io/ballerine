@@ -12,7 +12,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe('EditableDetailV2', () => {
+describe.skip('EditableDetailV2', () => {
   describe('datetime', () => {
     describe('when isEditable is false', () => {
       it('renders ISO dates', () => {

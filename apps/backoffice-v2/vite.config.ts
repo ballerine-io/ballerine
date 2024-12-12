@@ -39,7 +39,7 @@ export default defineConfig(configEnv => {
     test: {
       exclude: ['e2e', 'node_modules'],
       environment: 'jsdom',
-      setupFiles: ['src/tests-setup.ts'],
+      setupFiles: ['./src/tests-setup.ts'],
     },
     build: {
       sourcemap: true,
