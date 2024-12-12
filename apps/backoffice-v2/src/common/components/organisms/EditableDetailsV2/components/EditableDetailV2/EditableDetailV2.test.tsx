@@ -25,7 +25,6 @@ describe.skip('EditableDetailV2', () => {
               [fieldName]: fieldValue,
             },
           });
-          const originalValue = form.watch(fieldName);
 
           return (
             <Form {...form}>
@@ -39,7 +38,7 @@ describe.skip('EditableDetailV2', () => {
                       format={undefined}
                       isEditable={false}
                       value={fieldValue}
-                      originalValue={originalValue}
+                      formValue={field.value}
                       onInputChange={form.setValue}
                       onOptionChange={field.onChange}
                       parse={{
@@ -74,7 +73,6 @@ describe.skip('EditableDetailV2', () => {
               [fieldName]: fieldValue,
             },
           });
-          const originalValue = form.watch(fieldName);
 
           return (
             <Form {...form}>
@@ -88,7 +86,7 @@ describe.skip('EditableDetailV2', () => {
                       format={undefined}
                       isEditable={false}
                       value={fieldValue}
-                      originalValue={originalValue}
+                      formValue={field.value}
                       onInputChange={form.setValue}
                       onOptionChange={field.onChange}
                       parse={{
@@ -125,7 +123,6 @@ describe.skip('EditableDetailV2', () => {
               [fieldName]: fieldValue,
             },
           });
-          const originalValue = form.watch(fieldName);
 
           return (
             <Form {...form}>
@@ -139,7 +136,7 @@ describe.skip('EditableDetailV2', () => {
                       format={undefined}
                       isEditable={true}
                       value={fieldValue}
-                      originalValue={originalValue}
+                      formValue={field.value}
                       onInputChange={form.setValue}
                       onOptionChange={field.onChange}
                       parse={{
@@ -174,7 +171,6 @@ describe.skip('EditableDetailV2', () => {
               [fieldName]: fieldValue,
             },
           });
-          const originalValue = form.watch(fieldName);
 
           return (
             <Form {...form}>
@@ -188,7 +184,7 @@ describe.skip('EditableDetailV2', () => {
                       format={undefined}
                       isEditable={true}
                       value={fieldValue}
-                      originalValue={originalValue}
+                      formValue={field.value}
                       onInputChange={form.setValue}
                       onOptionChange={field.onChange}
                       parse={{
@@ -227,7 +223,6 @@ describe.skip('EditableDetailV2', () => {
               [fieldName]: fieldValue,
             },
           });
-          const originalValue = form.watch(fieldName);
 
           return (
             <Form {...form}>
@@ -241,7 +236,7 @@ describe.skip('EditableDetailV2', () => {
                       format={undefined}
                       isEditable={false}
                       value={fieldValue}
-                      originalValue={originalValue}
+                      formValue={field.value}
                       onInputChange={form.setValue}
                       onOptionChange={field.onChange}
                       parse={{
@@ -278,7 +273,6 @@ describe.skip('EditableDetailV2', () => {
               [fieldName]: fieldValue,
             },
           });
-          const originalValue = form.watch(fieldName);
 
           return (
             <Form {...form}>
@@ -292,7 +286,7 @@ describe.skip('EditableDetailV2', () => {
                       format={undefined}
                       isEditable={true}
                       value={fieldValue}
-                      originalValue={originalValue}
+                      formValue={field.value}
                       onInputChange={form.setValue}
                       onOptionChange={field.onChange}
                       parse={{
