@@ -7,7 +7,7 @@ import { FunctionComponent } from 'react';
 import { FormItem } from '../Form/Form.Item';
 import { FormLabel } from '../Form/Form.Label';
 import { FormMessage } from '../Form/Form.Message';
-import { useNewEditableDetailsLogic } from './hooks/useEditableDetailsV2Logic/useEditableDetailsV2Logic';
+import { useEditableDetailsV2Logic } from './hooks/useEditableDetailsV2Logic/useEditableDetailsV2Logic';
 import { EditableDetailsV2Options } from './components/EditableDetailsV2Options';
 import { EditableDetailV2 } from './components/EditableDetailV2/EditableDetailV2';
 import { IEditableDetailsV2Props } from './types';
@@ -24,7 +24,7 @@ export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
     throw new Error('Cannot provide both blacklist and whitelist');
   }
 
-  const { form, handleSubmit, handleCancel, filteredFields } = useNewEditableDetailsLogic({
+  const { form, handleSubmit, handleCancel, filteredFields } = useEditableDetailsV2Logic({
     fields,
     onSubmit,
     onCancel,

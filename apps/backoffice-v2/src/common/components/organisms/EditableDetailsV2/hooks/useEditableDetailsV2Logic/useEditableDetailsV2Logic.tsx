@@ -6,7 +6,7 @@ import { isObject } from '@ballerine/common';
 import { get, set } from 'lodash-es';
 import { sortData } from '@/lib/blocks/utils/sort-data';
 
-export const useNewEditableDetailsLogic = ({
+export const useEditableDetailsV2Logic = ({
   fields,
   onSubmit,
   onCancel,
