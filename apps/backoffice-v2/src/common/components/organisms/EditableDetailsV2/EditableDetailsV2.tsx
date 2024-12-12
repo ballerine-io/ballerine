@@ -51,9 +51,7 @@ export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
         <form onSubmit={form.handleSubmit(handleSubmit)}>
           <div className={'grid grid-cols-3 gap-x-4 gap-y-6'}>
             <legend className={'sr-only'}>{title}</legend>
-            {filteredFields.map(({ title, path, props }) => {
-              const originalValue = form.watch(path);
-
+            {filteredFields.map(({ title, value, path, props }) => {
               return (
                 <FormField
                   key={path}
@@ -73,9 +71,9 @@ export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
                         pattern={props.pattern}
                         options={props.options}
                         isEditable={!config.actions.editing.disabled && props.isEditable}
-                        value={field.value}
+                        value={value}
                         valueAlias={props.valueAlias}
-                        originalValue={originalValue}
+                        formValue={field.value}
                         onInputChange={form.setValue}
                         onOptionChange={field.onChange}
                         parse={config.parse}

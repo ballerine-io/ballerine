@@ -1,5 +1,4 @@
 import { ChangeEvent, useCallback } from 'react';
-import { ExtendedJson } from '@/common/types';
 import { checkIsFormattedDatetime } from '@/common/utils/check-is-formatted-datetime';
 import { FileJson2 } from 'lucide-react';
 import { BallerineLink, ctw, Input, JsonDialog } from '@ballerine/ui';
@@ -23,7 +22,7 @@ export const EditableDetailV2 = ({
   isEditable,
   className,
   options,
-  originalValue,
+  formValue,
   onInputChange,
   onOptionChange,
   name,
@@ -47,7 +46,7 @@ export const EditableDetailV2 = ({
   onInputChange: (name: string, value: unknown) => void;
   onOptionChange: (...event: any[]) => void;
   valueAlias?: string;
-  originalValue: ExtendedJson;
+  formValue: any;
   type: string | undefined;
   format: string | undefined;
   minimum?: number;
@@ -62,7 +61,7 @@ export const EditableDetailV2 = ({
     nullish?: boolean;
   };
 }) => {
-  const displayValue = getDisplayValue({ value, originalValue, isEditable });
+  const displayValue = getDisplayValue({ value, formValue, isEditable });
   const handleInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const getValue = () => {
@@ -113,7 +112,7 @@ export const EditableDetailV2 = ({
 
   if (isEditable && options) {
     return (
-      <Select disabled={!isEditable} onValueChange={onOptionChange} defaultValue={value}>
+      <Select disabled={!isEditable} onValueChange={onOptionChange} defaultValue={formValue}>
         <FormControl>
           <SelectTrigger className="h-9 w-full border-input p-1 shadow-sm">
             <SelectValue />
@@ -137,7 +136,7 @@ export const EditableDetailV2 = ({
       <FormControl>
         <Checkbox_
           disabled={!isEditable}
-          checked={value}
+          checked={isEditable ? formValue : value}
           onCheckedChange={onOptionChange}
           className={ctw('border-[#E5E7EB]', className)}
         />
@@ -146,7 +145,7 @@ export const EditableDetailV2 = ({
   }
 
   if (isEditable) {
-    const inputType = getInputType({ format, type, value: originalValue });
+    const inputType = getInputType({ format, type, value });
 
     return (
       <FormControl>
@@ -159,9 +158,7 @@ export const EditableDetailV2 = ({
           value={displayValue}
           onChange={handleInputChange}
           autoComplete={'off'}
-          className={ctw(`p-1`, {
-            'text-slate-400': isNullish(value) || value === '',
-          })}
+          className={`p-1`}
         />
       </FormControl>
     );

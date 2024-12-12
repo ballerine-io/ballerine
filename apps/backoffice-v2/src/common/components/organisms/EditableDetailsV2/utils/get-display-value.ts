@@ -5,21 +5,21 @@ import utc from 'dayjs/plugin/utc';
 
 dayjs.extend(utc);
 
-export const getDisplayValue = <TValue, TOriginalValue>({
+export const getDisplayValue = <TValue, TFormValue>({
   value,
-  originalValue,
+  formValue,
   isEditable,
 }: {
   value: TValue;
-  originalValue: TOriginalValue;
+  formValue: TFormValue;
   isEditable: boolean;
 }) => {
-  if (isEditable && checkIsDatetime(value)) {
-    return dayjs(value).local().format('YYYY-MM-DDTHH:mm:ss');
+  if (isEditable && checkIsDatetime(formValue)) {
+    return dayjs(formValue).local().format('YYYY-MM-DDTHH:mm:ss');
   }
 
   if (isEditable) {
-    return originalValue;
+    return formValue;
   }
 
   if (isNullish(value) || value === '') {
