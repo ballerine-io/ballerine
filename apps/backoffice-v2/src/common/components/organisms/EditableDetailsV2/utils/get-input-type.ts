@@ -1,6 +1,6 @@
-import { isValidDatetime } from '@/common/utils/is-valid-datetime';
-import { checkIsIsoDate } from '@ballerine/common';
-import { checkIsDate } from '@ballerine/ui';
+import { checkIsFormattedDatetime } from '@/common/utils/check-is-formatted-datetime';
+import { checkIsDate } from '@/common/components/organisms/EditableDetailsV2/utils/check-is-date';
+import { checkIsDatetime } from '@/common/components/organisms/EditableDetailsV2/utils/check-is-datetime';
 
 export const getInputType = ({
   format,
@@ -11,7 +11,7 @@ export const getInputType = ({
   type: string | undefined;
   value: unknown;
 }) => {
-  if (format === 'date-time' || isValidDatetime(value)) {
+  if (format === 'date-time' || checkIsDatetime(value) || checkIsFormattedDatetime(value)) {
     return 'datetime-local';
   }
 
@@ -27,7 +27,7 @@ export const getInputType = ({
     return 'number';
   }
 
-  if (checkIsDate(value, { isStrict: false }) || checkIsIsoDate(value) || type === 'date') {
+  if (checkIsDate(value) || type === 'date') {
     return 'date';
   }
 

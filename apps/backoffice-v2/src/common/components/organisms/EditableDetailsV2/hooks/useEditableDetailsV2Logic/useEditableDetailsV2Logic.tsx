@@ -1,16 +1,20 @@
 import { ComponentProps, useCallback, useMemo } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { EditableDetailsV2 } from '../../EditableDetailsV2';
 import { isPathMatch } from '../../utils/is-path-match';
 import { isObject } from '@ballerine/common';
-import { set, get } from 'lodash-es';
+import { get, set } from 'lodash-es';
 import { sortData } from '@/lib/blocks/utils/sort-data';
 
-export const useNewEditableDetailsLogic = ({
+export const useEditableDetailsV2Logic = ({
   fields,
   onSubmit,
+  onCancel,
   config,
-}: Pick<ComponentProps<typeof EditableDetailsV2>, 'fields' | 'onSubmit' | 'config'>) => {
+}: Pick<
+  ComponentProps<typeof EditableDetailsV2>,
+  'fields' | 'onSubmit' | 'onCancel' | 'config'
+>) => {
   const sortedFields = useMemo(
     () =>
       sortData({
@@ -133,9 +137,15 @@ export const useNewEditableDetailsLogic = ({
     [fields, defaultValues, onSubmit],
   );
 
+  const handleCancel = useCallback(() => {
+    form.reset(defaultValues);
+    onCancel();
+  }, [defaultValues, form.reset, onCancel]);
+
   return {
     form,
     handleSubmit,
+    handleCancel,
     filteredFields,
   };
 };

@@ -7,9 +7,9 @@ import { FunctionComponent } from 'react';
 import { FormItem } from '../Form/Form.Item';
 import { FormLabel } from '../Form/Form.Label';
 import { FormMessage } from '../Form/Form.Message';
-import { useNewEditableDetailsLogic } from './hooks/useEditableDetailsV2Logic/useEditableDetailsV2Logic';
+import { useEditableDetailsV2Logic } from './hooks/useEditableDetailsV2Logic/useEditableDetailsV2Logic';
 import { EditableDetailsV2Options } from './components/EditableDetailsV2Options';
-import { EditableDetailV2 } from './components/EditableDetailV2';
+import { EditableDetailV2 } from './components/EditableDetailV2/EditableDetailV2';
 import { IEditableDetailsV2Props } from './types';
 
 export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
@@ -24,9 +24,10 @@ export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
     throw new Error('Cannot provide both blacklist and whitelist');
   }
 
-  const { form, handleSubmit, filteredFields } = useNewEditableDetailsLogic({
+  const { form, handleSubmit, handleCancel, filteredFields } = useEditableDetailsV2Logic({
     fields,
     onSubmit,
+    onCancel,
     config,
   });
 
@@ -64,6 +65,7 @@ export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
                         {titleCase(title ?? '')}
                       </TextWithNAFallback>
                       <EditableDetailV2
+                        name={field.name}
                         type={props.type}
                         format={props.format}
                         minimum={props.minimum}
@@ -71,10 +73,11 @@ export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
                         pattern={props.pattern}
                         options={props.options}
                         isEditable={!config.actions.editing.disabled && props.isEditable}
+                        value={field.value}
                         valueAlias={props.valueAlias}
                         originalValue={originalValue}
-                        form={form}
-                        field={field}
+                        onInputChange={form.setValue}
+                        onOptionChange={field.onChange}
                         parse={config.parse}
                       />
                       <FormMessage />
@@ -91,7 +94,7 @@ export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
                   type="button"
                   className={`aria-disabled:pointer-events-none aria-disabled:opacity-50`}
                   aria-disabled={config.actions.cancel.disabled}
-                  onClick={onCancel}
+                  onClick={handleCancel}
                 >
                   Cancel
                 </Button>
