@@ -1,5 +1,4 @@
 import { ChangeEvent, useCallback } from 'react';
-import { ExtendedJson } from '@/common/types';
 import { checkIsFormattedDatetime } from '@/common/utils/check-is-formatted-datetime';
 import { FileJson2 } from 'lucide-react';
 import { BallerineLink, ctw, Input, JsonDialog } from '@ballerine/ui';
