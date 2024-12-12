@@ -30,6 +30,7 @@ export interface IBaseEditableDetailsV2Config {
       disabled: boolean;
     };
   };
+  inputTypes?: Record<string, HTMLInputElement['type']>;
 }
 
 export interface IEditableDetailsV2ConfigWithBlacklist extends IBaseEditableDetailsV2Config {
