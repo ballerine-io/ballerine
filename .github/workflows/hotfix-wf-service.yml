@@ -329,6 +329,7 @@ jobs:
   send-to-slack:
     runs-on: ubuntu-latest
     needs: [update-helm-chart,build-and-push-ee-image,build-and-push-image]
+    environment: ${{ inputs.environment }}
     if: ${{ needs.update-helm-chart.result == 'success' }}
     permissions:
       contents: read
