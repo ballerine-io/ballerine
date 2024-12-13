@@ -4,14 +4,7 @@ import { validate } from '../../../utils/validate';
 import { useManualValidate } from './useManualValidate';
 
 vi.mock('../../../utils/validate', () => ({
-  validate: vi.fn().mockReturnValue([
-    {
-      id: 'name',
-      originId: 'name',
-      message: ['error'],
-      invalidValue: 'John',
-    },
-  ]),
+  validate: vi.fn(),
 }));
 
 describe('useManualValidate', () => {
@@ -24,19 +17,32 @@ describe('useManualValidate', () => {
 
   it('should initialize with empty validation errors', () => {
     const { result } = renderHook(() => useManualValidate(mockContext, mockSchema));
+    const [validationErrors, validate] = result.current;
 
-    expect(result.current.validationErrors).toEqual([]);
+    expect(validationErrors).toEqual([]);
+    expect(validate).toBeInstanceOf(Function);
   });
 
   it('should validate and set errors when validate is called', () => {
     const { result } = renderHook(() => useManualValidate(mockContext, mockSchema));
 
+    vi.mocked(validate).mockReturnValue([
+      {
+        id: 'name',
+        originId: 'name',
+        message: ['error'],
+        invalidValue: 'John',
+      },
+    ]);
+
     act(() => {
-      result.current.validate();
+      result.current[1]();
     });
 
-    expect(validate).toHaveBeenCalledWith(mockContext, mockSchema, { abortEarly: false });
-    expect(result.current.validationErrors).toEqual([
+    expect(vi.mocked(validate)).toHaveBeenCalledWith(mockContext, mockSchema, {
+      abortEarly: false,
+    });
+    expect(result.current[0]).toEqual([
       {
         id: 'name',
         originId: 'name',
@@ -52,10 +58,12 @@ describe('useManualValidate', () => {
     );
 
     act(() => {
-      result.current.validate();
+      result.current[1]();
     });
 
-    expect(validate).toHaveBeenCalledWith(mockContext, mockSchema, { abortEarly: true });
+    expect(vi.mocked(validate)).toHaveBeenCalledWith(mockContext, mockSchema, {
+      abortEarly: true,
+    });
   });
 
   it('should memoize validate callback with correct dependencies', () => {
@@ -70,7 +78,9 @@ describe('useManualValidate', () => {
       },
     );
 
-    const firstValidate = result.current.validate;
+    const [_, validate] = result.current;
+
+    const firstValidate = validate;
 
     // Rerender with same props
     rerender({
@@ -79,7 +89,7 @@ describe('useManualValidate', () => {
       params: { abortEarly: false },
     });
 
-    expect(result.current.validate).toBe(firstValidate);
+    expect(validate).toBe(firstValidate);
 
     // Rerender with different context
     rerender({
@@ -88,6 +98,6 @@ describe('useManualValidate', () => {
       params: { abortEarly: false },
     });
 
-    expect(result.current.validate).not.toBe(firstValidate);
+    expect(result.current[1]).not.toBe(firstValidate);
   });
 });

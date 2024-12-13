@@ -1,10 +1,10 @@
 import { renderHook } from '@testing-library/react';
-import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { convertFormElementsToValidationSchema } from '../../../helpers/convert-form-emenents-to-validation-schema';
 import { IFormElement } from '../../../types';
 import { useValidationSchema } from './useValidationSchema';
 
-vi.mock('../../helpers/convert-form-emenents-to-validation-schema', () => ({
+vi.mock('../../../helpers/convert-form-emenents-to-validation-schema', () => ({
   convertFormElementsToValidationSchema: vi.fn(),
 }));
 
@@ -28,7 +28,7 @@ describe('useValidationSchema', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (convertFormElementsToValidationSchema as Mock).mockReturnValue(mockValidationSchema);
+    vi.mocked(convertFormElementsToValidationSchema).mockReturnValue(mockValidationSchema);
   });
 
   test('should return validation schema', () => {
@@ -75,7 +75,7 @@ describe('useValidationSchema', () => {
       },
     ];
 
-    (convertFormElementsToValidationSchema as Mock).mockReturnValue(newValidationSchema);
+    vi.mocked(convertFormElementsToValidationSchema).mockReturnValue(newValidationSchema);
 
     // Rerender with different props
     rerender(newElements);

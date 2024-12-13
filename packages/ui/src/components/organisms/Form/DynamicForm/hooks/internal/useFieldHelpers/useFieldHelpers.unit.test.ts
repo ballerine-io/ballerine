@@ -20,6 +20,9 @@ describe('useFieldHelpers', () => {
     values: {
       field1: 'value1',
       field2: 'value2',
+      nestedValue: {
+        nestedField1: 'nestedValue1',
+      },
     },
     setFieldValue: mockSetFieldValue,
   };
@@ -68,6 +71,12 @@ describe('useFieldHelpers', () => {
     expect(result.current.getValue<string>('field2')).toBe('value2');
   });
 
+  it('getValue should return correct nested value', () => {
+    const { result } = setup();
+
+    expect(result.current.getValue<string>('nestedValue.nestedField1')).toBe('nestedValue1');
+  });
+
   it('setTouched should call touchedApi.setFieldTouched', () => {
     const { result } = setup();
 
@@ -80,10 +89,10 @@ describe('useFieldHelpers', () => {
   it('setValue should call valuesApi.setFieldValue', () => {
     const { result } = setup();
 
-    result.current.setValue('field1', 'field1', 'newValue');
+    result.current.setValue('field1', 'path.to.field', 'newValue');
 
     expect(mockSetFieldValue).toHaveBeenCalledTimes(1);
-    expect(mockSetFieldValue).toHaveBeenCalledWith('field1', 'field1', 'newValue');
+    expect(mockSetFieldValue).toHaveBeenCalledWith('field1', 'path.to.field', 'newValue');
   });
 
   it('should memoize helper functions', () => {

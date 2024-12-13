@@ -4,7 +4,7 @@ import { IRule, IRuleExecutionResult, TRuleEngine } from './types';
 import { executeRules } from './utils/execute-rules';
 
 export interface IRuleEngineParams<TRuleEngines = TRuleEngine> {
-  rules: Array<IRule<TRuleEngines>> | IRule<TRuleEngines>;
+  rules?: Array<IRule<TRuleEngines>> | IRule<TRuleEngines>;
   executeRulesSync?: boolean;
   runOnInitialize?: boolean;
   executionDelay?: number;
@@ -20,11 +20,14 @@ export const useRuleEngine = <TRuleEngines = TRuleEngine>(
     IRuleExecutionResult[]
   >(() =>
     runOnInitialize && !executeRulesSync
-      ? executeRules(context, Array.isArray(_rules) ? _rules : [_rules])
+      ? executeRules(
+          context,
+          Array.isArray(_rules) ? _rules?.filter(Boolean) : _rules ? [_rules] : [],
+        )
       : [],
   );
 
-  const rules = useMemo(() => (Array.isArray(_rules) ? _rules : [_rules]), [_rules]);
+  const rules = useMemo(() => (Array.isArray(_rules) ? _rules : _rules ? [_rules] : []), [_rules]);
 
   const syncRuleEngineExecutionResults = useMemo(() => {
     if (!executeRulesSync) return [];

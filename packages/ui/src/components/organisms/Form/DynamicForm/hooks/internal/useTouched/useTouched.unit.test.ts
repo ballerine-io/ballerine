@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { IFormElement } from '../../../types';
 import { generateTouchedMapForAllElements } from './helpers/generate-touched-map-for-all-elements/generate-touched-map-for-all-elements';
 import { useTouched } from './useTouched';
@@ -57,7 +57,7 @@ describe('useTouched', () => {
 
   it('should touch all fields', () => {
     const mockTouchedMap = { '1': true, '2': true };
-    (generateTouchedMapForAllElements as Mock).mockReturnValue(mockTouchedMap);
+    vi.mocked(generateTouchedMapForAllElements).mockReturnValue(mockTouchedMap);
 
     const { result } = renderHook(() => useTouched(elements, context));
 
@@ -73,7 +73,7 @@ describe('useTouched', () => {
     const mockTouchedMap1 = { '1': true };
     const mockTouchedMap2 = { '1': true, '2': true };
 
-    (generateTouchedMapForAllElements as Mock)
+    vi.mocked(generateTouchedMapForAllElements)
       .mockReturnValueOnce(mockTouchedMap1)
       .mockReturnValueOnce(mockTouchedMap2);
 

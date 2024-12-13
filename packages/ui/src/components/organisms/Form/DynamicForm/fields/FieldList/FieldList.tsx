@@ -2,8 +2,9 @@ import { AnyObject } from '@/common';
 import { Button } from '@/components/atoms';
 import { Renderer, TRendererSchema } from '@/components/organisms/Renderer';
 import { useDynamicForm } from '../../context';
+import { useElement } from '../../hooks/external';
 import { TBaseFormElements, TDynamicFormElement } from '../../types';
-import { useFieldList } from './hooks/useFieldList';
+import { IUseFieldParams, useFieldList } from './hooks/useFieldList';
 import { StackProvider, useStack } from './providers/StackProvider';
 
 export type TFieldListValueType<T extends { _id: string }> = T[];
@@ -16,21 +17,30 @@ export interface IFieldListOptions {
 
 export const FieldList: TDynamicFormElement<
   TBaseFormElements,
-  { addButtonLabel: string; removeButtonLabel: string }
+  { addButtonLabel: string; removeButtonLabel: string } & IUseFieldParams<object>
 > = props => {
   const { elementsMap } = useDynamicForm();
   const { stack } = useStack();
   const { element } = props;
+  const { id: fieldId } = useElement(element, stack);
   const { addButtonLabel = 'Add Item', removeButtonLabel = 'Remove' } = element.params || {};
-  const { items, addItem, removeItem } = useFieldList(props);
+  const { items, addItem, removeItem } = useFieldList({ element });
 
   return (
-    <div className="flex flex-col gap-4">
-      {items.map((item, index) => {
+    <div className="flex flex-col gap-4" data-testid={`${fieldId}-fieldlist`}>
+      {items.map((_, index) => {
         return (
-          <div key={item._id} className="flex flex-col gap-2">
+          <div
+            key={`${fieldId}-${index}`}
+            className="flex flex-col gap-2"
+            data-testid={`${fieldId}-fieldlist-item-${index}`}
+          >
             <div className="flex flex-row justify-end">
-              <span className="cursor-pointer font-bold" onClick={() => removeItem(index)}>
+              <span
+                className="cursor-pointer font-bold"
+                onClick={() => removeItem(index)}
+                data-testid={`${fieldId}-fieldlist-item-remove-${index}`}
+              >
                 {removeButtonLabel}
               </span>
             </div>

@@ -1,41 +1,35 @@
-import { useUIElement } from '@/pages/CollectionFlowV2/hooks/useUIElement';
-import set from 'lodash/set';
-import { useCallback, useMemo } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { IFormElement } from '../../../../types';
+import { useCallback } from 'react';
+import { useField } from '../../../../hooks/external';
+import { IFormElement, TBaseFormElements } from '../../../../types';
+import { useStack } from '../../providers/StackProvider';
 
+export interface IUseFieldParams<T> {
+  defaultValue: T;
+}
 export interface IUseFieldListProps {
-  element: IFormElement;
+  element: IFormElement<TBaseFormElements, IUseFieldParams<object>>;
 }
 
-export const useFieldList = ({}) => {
-  const uiElement = useUIElement(definition, payload, stack);
-
-  const items = useMemo(() => (uiElement.getValue() as Array<{ _id: string }>) || [], [uiElement]);
+export const useFieldList = ({ element }: IUseFieldListProps) => {
+  const { stack } = useStack();
+  const { onChange, value = [] } = useField<unknown[]>(element, stack);
 
   const addItem = useCallback(() => {
-    const valueDestination = uiElement.getValueDestination();
-
-    const newValue = [...items, { _id: uuidv4(), ...options?.defaultValue }];
-    set(payload, valueDestination, newValue);
-
-    stateApi.setContext(payload);
-  }, [uiElement, items, stateApi]);
+    onChange([...value, element.params?.defaultValue]);
+  }, [value, element.params?.defaultValue, onChange]);
 
   const removeItem = useCallback(
     (index: number) => {
-      if (!Array.isArray(items)) return;
+      if (!Array.isArray(value)) return;
 
-      const newValue = items.filter((_, i) => i !== index);
-      set(payload, uiElement.getValueDestination(), newValue);
-
-      stateApi.setContext(payload);
+      const newValue = value.filter((_, i) => i !== index);
+      onChange(newValue);
     },
-    [uiElement, items, stateApi],
+    [value, onChange],
   );
 
   return {
-    items,
+    items: value,
     addItem,
     removeItem,
   };

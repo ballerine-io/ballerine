@@ -1,3 +1,4 @@
+import get from 'lodash/get';
 import { useCallback, useMemo } from 'react';
 import { useTouched } from '../useTouched';
 import { useValues } from '../useValues';
@@ -19,8 +20,8 @@ export const useFieldHelpers = ({ valuesApi, touchedApi }: IUseFieldHelpersParam
   );
 
   const getValue = useCallback(
-    <T>(fieldId: string) => {
-      return values[fieldId as keyof typeof values] as T;
+    <T>(valueDestination: string) => {
+      return get(values, valueDestination) as T;
     },
     [values],
   );
