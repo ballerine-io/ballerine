@@ -18,6 +18,7 @@ export interface ICommonValidator<T = object, TValidatorType extends string = TB
   value: T;
   message?: string;
   applyWhen?: IValidationRule;
+  considerRequred?: boolean;
 }
 
 export type TValidators<

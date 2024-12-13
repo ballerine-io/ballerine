@@ -1,10 +1,15 @@
+import { IRuleExecutionResult, useRuleEngine } from '@/components/organisms/Form/hooks';
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { IDynamicFormContext, useDynamicForm } from '../../../context';
-import { IFormElement } from '../../../types';
+import { IFormElement, TBaseFormElements } from '../../../types';
 import { useElementId } from '../useElementId';
 import { useValueDestination } from '../useValueDestination';
 import { useField } from './useField';
+
+vi.mock('@/components/organisms/Form/hooks', () => ({
+  useRuleEngine: vi.fn(),
+}));
 
 vi.mock('../../../context', () => ({
   useDynamicForm: vi.fn(),
@@ -22,7 +27,9 @@ describe('useField', () => {
   const mockElement = {
     id: 'test-field',
     valueDestination: 'test.path',
-  } as IFormElement;
+    disable: [],
+    element: {} as TBaseFormElements,
+  } as IFormElement<TBaseFormElements>;
 
   const mockStack = [1, 2];
 
@@ -43,8 +50,10 @@ describe('useField', () => {
 
     vi.mocked(useElementId).mockReturnValue('test-field-1-2');
     vi.mocked(useValueDestination).mockReturnValue('test.path[1][2]');
+    vi.mocked(useRuleEngine).mockReturnValue([]);
     vi.mocked(useDynamicForm).mockReturnValue({
       fieldHelpers: mockFieldHelpers,
+      values: {},
     } as unknown as IDynamicFormContext<object>);
     mockGetValue.mockReturnValue('test-value');
     mockGetTouched.mockReturnValue(false);
@@ -56,6 +65,7 @@ describe('useField', () => {
     expect(result.current).toEqual({
       value: 'test-value',
       touched: false,
+      disabled: false,
       onChange: expect.any(Function),
       onBlur: expect.any(Function),
     });
@@ -102,6 +112,38 @@ describe('useField', () => {
 
       expect(useElementId).toHaveBeenCalledWith(mockElement, []);
       expect(useValueDestination).toHaveBeenCalledWith(mockElement, []);
+    });
+  });
+
+  describe('disabled state', () => {
+    it('should be disabled when all rules return true', () => {
+      vi.mocked(useRuleEngine).mockReturnValue([
+        { result: true, rule: {} } as IRuleExecutionResult,
+        { result: true, rule: {} } as IRuleExecutionResult,
+      ]);
+
+      const { result } = renderHook(() => useField(mockElement, mockStack));
+
+      expect(result.current.disabled).toBe(true);
+    });
+
+    it('should not be disabled when any rule returns false', () => {
+      vi.mocked(useRuleEngine).mockReturnValue([
+        { result: true, rule: {} } as IRuleExecutionResult,
+        { result: false, rule: {} } as IRuleExecutionResult,
+      ]);
+
+      const { result } = renderHook(() => useField(mockElement, mockStack));
+
+      expect(result.current.disabled).toBe(false);
+    });
+
+    it('should not be disabled when no rules exist', () => {
+      vi.mocked(useRuleEngine).mockReturnValue([]);
+
+      const { result } = renderHook(() => useField(mockElement, mockStack));
+
+      expect(result.current.disabled).toBe(false);
     });
   });
 

@@ -4,7 +4,12 @@ import { IValidationError, IValidationParams, TValidators } from '../../Validato
 
 export type TBaseFormElements = 'textinput' | 'fieldlist';
 
-export interface IFormElement<TElements = TBaseFormElements, TParams = unknown> {
+export interface ICommonFieldParams {
+  label?: string;
+  placeholder?: string;
+}
+
+export interface IFormElement<TElements = TBaseFormElements, TParams = ICommonFieldParams> {
   id: string;
   valueDestination: string;
   element: TElements;
@@ -29,6 +34,14 @@ export type TDynamicFormElement<
   TParams = unknown,
 > = FunctionComponent<{
   element: IFormElement<TElements, TParams>;
+}>;
+
+export type TDynamicFormField<
+  TElements extends string = TBaseFormElements,
+  TParams = ICommonFieldParams,
+> = FunctionComponent<{
+  element: IFormElement<TElements, TParams>;
+  children?: React.ReactNode | React.ReactNode[];
 }>;
 
 export type TElementsMap<TElements extends string = TBaseFormElements> = Record<

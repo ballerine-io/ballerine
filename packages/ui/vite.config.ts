@@ -37,8 +37,10 @@ export default defineConfig({
   },
   plugins: [react(), dts({ copyDtsFiles: true }), tailwindcss(), tsconfigPaths()],
   test: {
+    globals: true,
     environment: 'jsdom',
-    exclude: ['node_modules', 'dist'],
+    setupFiles: ['./src/setupTests.ts'],
+    css: true,
   },
   build: {
     outDir: 'dist',
