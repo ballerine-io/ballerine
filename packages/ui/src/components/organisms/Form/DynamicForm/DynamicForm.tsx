@@ -10,7 +10,7 @@ import { useValidationSchema } from './hooks/internal/useValidationSchema';
 import { useValues } from './hooks/internal/useValues';
 import { IDynamicFormProps } from './types';
 
-export const DynamicForm: FunctionComponent<IDynamicFormProps> = ({
+export const DynamicFormV2: FunctionComponent<IDynamicFormProps> = ({
   elements,
   values: initialValues,
   validationParams,
