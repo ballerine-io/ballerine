@@ -91,7 +91,7 @@ describe('useField', () => {
 
       result.current.onChange('new-value');
 
-      expect(mockSetValue).toHaveBeenCalledWith('test.path[1][2]', 'new-value');
+      expect(mockSetValue).toHaveBeenCalledWith('test-field-1-2', 'test.path[1][2]', 'new-value');
       expect(mockSetTouched).toHaveBeenCalledWith('test-field-1-2', true);
     });
   });
