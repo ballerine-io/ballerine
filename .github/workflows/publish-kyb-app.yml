@@ -71,6 +71,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ github.head_ref || github.ref_name }}
+            type=raw,value=${{ github.sha}}
             type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}
             type=raw,value=${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}
 
@@ -93,6 +94,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=prod
+            type=raw,value=${{ github.sha}}
             type=raw,value=commit-${{ github.sha }}-prod
             type=raw,value=${{ steps.get_version.outputs.version }}-prod
             type=raw,value=latest
@@ -110,7 +112,7 @@ jobs:
       - name: Scan Docker Image
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
+          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha}}'
           format: 'table'
           ignore-unfixed: true
           exit-code: 1
