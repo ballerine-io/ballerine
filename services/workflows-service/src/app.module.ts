@@ -11,6 +11,7 @@ import { ServeStaticOptionsService } from './serve-static-options.service';
 import { EndUserModule } from './end-user/end-user.module';
 import { BusinessModule } from './business/business.module';
 import { StorageModule } from './storage/storage.module';
+import { SupabaseModule } from './supabase/supabase.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { FilterModule } from '@/filter/filter.module';
@@ -74,6 +75,7 @@ export const validate = async (config: Record<string, unknown>) => {
 
   return result.data;
 };
+
 @Module({
   controllers: [SwaggerController],
   imports: [
@@ -109,6 +111,7 @@ export const validate = async (config: Record<string, unknown>) => {
     AuthModule,
     HealthModule,
     PrismaModule,
+    SupabaseModule,
     ConfigModule.forRoot({
       validate,
       isGlobal: true,

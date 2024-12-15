@@ -1,5 +1,4 @@
 import '@total-typescript/ts-reset';
-
 import passport from 'passport';
 import dayjs from 'dayjs';
 import cookieSession from 'cookie-session';

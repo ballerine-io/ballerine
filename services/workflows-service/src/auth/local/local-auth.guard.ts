@@ -1,14 +1,21 @@
+import { CanActivate, Injectable, ExecutionContext } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ExecutionContext } from '@nestjs/common';
-import type { Request } from 'express';
+import { SupabaseService } from '../../supabase/supabase.service';
 
-export class LocalAuthGuard extends AuthGuard('local') {
-  async canActivate(context: ExecutionContext) {
-    const result = await super.canActivate(context);
-    const request = context.switchToHttp().getRequest<Request>();
+@Injectable()
+export class LocalAuthGuard extends AuthGuard('local') implements CanActivate {
+  constructor(private readonly supabaseService: SupabaseService) {
+    super();
+  }
 
-    await super.logIn(request);
-
-    return result as boolean;
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const result = super.canActivate(context) as boolean;
+    const request = context.switchToHttp().getRequest();
+    if (result && request.user) {
+      const fullUrl = request.protocol + '://' + request.get('host') + request.originalUrl;
+      this.supabaseService.logSignIn(fullUrl);
+    }
+    super.logIn(request);
+    return Promise.resolve(result);
   }
 }
