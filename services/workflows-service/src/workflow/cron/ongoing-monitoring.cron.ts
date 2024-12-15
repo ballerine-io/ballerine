@@ -93,7 +93,12 @@ export class OngoingMonitoringCron {
                 continue;
               }
 
-              if (lastReceivedReport.status !== MERCHANT_REPORT_STATUSES_MAP.completed) {
+              if (
+                ![
+                  MERCHANT_REPORT_STATUSES_MAP.completed,
+                  MERCHANT_REPORT_STATUSES_MAP['in-review'],
+                ].includes(lastReceivedReport.status)
+              ) {
                 this.logger.log(
                   `Last report for business ${business.companyName} (id: ${business.id}) was not completed`,
                 );

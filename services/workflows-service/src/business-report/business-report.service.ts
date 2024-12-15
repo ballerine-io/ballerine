@@ -190,4 +190,8 @@ export class BusinessReportService {
 
     return { batchId };
   }
+
+  async markAsReviewed(args: Parameters<MerchantMonitoringClient['markAsReviewed']>[0]) {
+    return await this.merchantMonitoringClient.markAsReviewed(args);
+  }
 }

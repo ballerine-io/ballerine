@@ -230,4 +230,16 @@ export class MerchantMonitoringClient {
 
     return response.totalItems;
   }
+
+  public async markAsReviewed({ id, customerId }: { id: string; customerId: string }) {
+    const response = await axios.post(
+      `${env.UNIFIED_API_URL}/merchants/analysis/${id}/mark-as-reviewed`,
+      { customerId },
+      {
+        headers: {
+          Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
+        },
+      },
+    );
+  }
 }

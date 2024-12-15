@@ -28,6 +28,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     activeTab,
     notes,
     isNotesOpen,
+    markAsReviewed,
   } = useMerchantMonitoringBusinessReportLogic();
 
   return (
@@ -52,33 +53,40 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
           <TextWithNAFallback as={'h2'} className="pb-4 text-2xl font-bold">
             {websiteWithNoProtocol}
           </TextWithNAFallback>
-          <div className={`flex items-center space-x-8 pb-4`}>
-            <div className={`flex items-center`}>
-              <span className={`me-4 text-sm leading-6 text-slate-400`}>Status</span>
-              <Badge
-                variant={
-                  statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]
-                    ?.variant
-                }
-                className={ctw(`text-sm font-bold`, {
-                  'bg-info/20 text-info':
-                    businessReport?.status === MERCHANT_REPORT_STATUSES_MAP.completed,
-                  'bg-violet-500/20 text-violet-500': [
-                    MERCHANT_REPORT_STATUSES_MAP['in-progress'],
-                    MERCHANT_REPORT_STATUSES_MAP['quality-control'],
-                  ].includes(businessReport?.status ?? ''),
-                })}
-              >
-                {statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]
-                  ?.text ?? titleCase(businessReport?.status ?? '')}
-              </Badge>
+          <div className="flex justify-between">
+            <div className={`flex items-center space-x-8 pb-4`}>
+              <div className={`flex items-center`}>
+                <span className={`me-4 text-sm leading-6 text-slate-400`}>Status</span>
+                <Badge
+                  variant={
+                    statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]
+                      ?.variant
+                  }
+                  className={ctw(`text-sm font-bold`, {
+                    'bg-info/20 text-info':
+                      businessReport?.status === MERCHANT_REPORT_STATUSES_MAP.completed,
+                    'bg-violet-500/20 text-violet-500': [
+                      MERCHANT_REPORT_STATUSES_MAP['in-progress'],
+                      MERCHANT_REPORT_STATUSES_MAP['quality-control'],
+                    ].includes(businessReport?.status ?? ''),
+                  })}
+                >
+                  {statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]
+                    ?.text ?? titleCase(businessReport?.status ?? '')}
+                </Badge>
+              </div>
+              <div>
+                <span className={`me-2 text-sm leading-6 text-slate-400`}>Created at</span>
+                {businessReport?.createdAt &&
+                  dayjs(new Date(businessReport?.createdAt)).format('HH:mm MMM Do, YYYY')}
+              </div>
+              <NotesButton numberOfNotes={notes?.length} />
             </div>
             <div>
-              <span className={`me-2 text-sm leading-6 text-slate-400`}>Created at</span>
-              {businessReport?.createdAt &&
-                dayjs(new Date(businessReport?.createdAt)).format('HH:mm MMM Do, YYYY')}
+              {businessReport?.status === MERCHANT_REPORT_STATUSES_MAP['in-review'] && (
+                <Button onClick={markAsReviewed}>Mark as reviewed</Button>
+              )}
             </div>
-            <NotesButton numberOfNotes={notes?.length} />
           </div>
           <Tabs defaultValue={activeTab} className="w-full" key={activeTab}>
             <TabsList className={'mb-4'}>

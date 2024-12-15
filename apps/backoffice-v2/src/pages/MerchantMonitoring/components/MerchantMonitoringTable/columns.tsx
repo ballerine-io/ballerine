@@ -158,7 +158,8 @@ export const columns = [
     cell: info => {
       const status = info.getValue();
       const statusToDisplayStatus = {
-        [MERCHANT_REPORT_STATUSES_MAP.completed]: 'Manual Review',
+        [MERCHANT_REPORT_STATUSES_MAP['in-review']]: 'Manual Review',
+        [MERCHANT_REPORT_STATUSES_MAP.completed]: 'Reviewed',
         [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: 'Quality Control',
       } as const;
 

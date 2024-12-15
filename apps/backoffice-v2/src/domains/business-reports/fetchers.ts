@@ -15,6 +15,11 @@ import {
 } from '@/domains/business-reports/constants';
 import { UnknownRecord } from 'type-fest';
 
+export const DISPLAYABLE_STATUSES = [
+  MERCHANT_REPORT_STATUSES_MAP.completed,
+  MERCHANT_REPORT_STATUSES_MAP['in-review'],
+];
+
 export const BusinessReportSchema = z
   .object({
     id: z.string(),
@@ -53,8 +58,8 @@ export const BusinessReportSchema = z
       (data?.data?.websiteCompanyAnalysis as UnknownRecord | undefined)?.companyName ??
       data?.parentCompanyName,
     website: data?.website.url,
-    data: data.status === 'completed' ? data?.data : null,
-    riskScore: data.status === 'completed' ? data?.riskScore : null,
+    data: DISPLAYABLE_STATUSES.includes(data.status) ? data?.data : null,
+    riskScore: DISPLAYABLE_STATUSES.includes(data.status) ? data?.riskScore : null,
   }));
 
 export const BusinessReportsSchema = z.object({
@@ -205,4 +210,14 @@ export const createBusinessReportBatch = async ({
   });
 
   return handleZodError(error, batchId);
+};
+
+export const markBusinessReportAsReviewed = async ({ id }: { id: string }) => {
+  const [businessReport, error] = await apiClient({
+    endpoint: `../external/business-reports/${id}/mark-as-reviewed`,
+    method: Method.POST,
+    schema: z.unknown(),
+  });
+
+  return handleZodError(error, businessReport);
 };

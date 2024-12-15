@@ -1,16 +1,7 @@
 import * as common from '@nestjs/common';
-import {
-  BadRequestException,
-  Body,
-  Param,
-  Query,
-  Res,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+import { BadRequestException, Body, Param, Query, UseGuards } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
-import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import * as errors from '@/errors';
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -28,12 +19,6 @@ import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { CreateBusinessReportDto } from '@/business-report/dto/create-business-report.dto';
 import { Business } from '@prisma/client';
 import { BusinessReportDto } from '@/business-report/business-report.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { getDiskStorage } from '@/storage/get-file-storage-manager';
-import { fileFilter } from '@/storage/file-filter';
-import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
-import { CreateBusinessReportBatchBodyDto } from '@/business-report/dto/create-business-report-batch-body.dto';
-import type { Response } from 'express';
 import { PrismaService } from '@/prisma/prisma.service';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 
@@ -186,39 +171,14 @@ export class BusinessReportControllerExternal {
   }
 
   @swagger.ApiExcludeEndpoint()
-  @common.Post('/upload-batch')
+  @common.Post('/:id/mark-as-reviewed')
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @ApiConsumes('multipart/form-data')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: getDiskStorage(),
-      fileFilter,
-    }),
-    RemoveTempFileInterceptor,
-  )
-  async createBusinessReportBatch(
-    @UploadedFile() file: Express.Multer.File,
-    @Body() { type, workflowVersion }: CreateBusinessReportBatchBodyDto,
-    @Res() res: Response,
-    @CurrentProject() currentProjectId: TProjectId,
-  ) {
-    const { id: customerId, config } = await this.customerService.getByProjectId(currentProjectId);
+  async markAsReviewed(@Param('id') id: string, @CurrentProject() currentProjectId: TProjectId) {
+    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
 
-    const { maxBusinessReports, withQualityControl } = config || {};
-    await this.businessReportService.checkBusinessReportsLimit(maxBusinessReports, customerId);
-
-    const result = await this.businessReportService.processBatchFile({
-      type,
-      workflowVersion,
+    await this.businessReportService.markAsReviewed({
+      id,
       customerId,
-      maxBusinessReports,
-      merchantSheet: file,
-      projectId: currentProjectId,
-      withQualityControl: typeof withQualityControl === 'boolean' ? withQualityControl : false,
     });
-
-    res.status(201);
-    res.setHeader('content-type', 'application/json');
-    res.send(result);
   }
 }

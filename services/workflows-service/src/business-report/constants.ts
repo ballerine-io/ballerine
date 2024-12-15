@@ -2,6 +2,7 @@ export const MERCHANT_REPORT_STATUSES_MAP = {
   draft: 'draft',
   'in-progress': 'in-progress',
   completed: 'completed',
+  'in-review': 'in-review',
   'quality-control': 'quality-control',
   failed: 'failed',
 } as const;

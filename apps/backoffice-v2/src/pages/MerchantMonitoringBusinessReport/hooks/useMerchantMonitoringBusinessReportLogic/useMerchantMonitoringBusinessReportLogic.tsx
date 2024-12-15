@@ -9,6 +9,7 @@ import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNote
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
 import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
 import { MERCHANT_REPORT_STATUSES_MAP } from '@/domains/business-reports/constants';
+import { useMarkBusinessReportAsReviewedMutation } from '@/domains/business-reports/hooks/mutations/useMarkBusinessReportAsReviewedMutation/useMarkBusinessReportAsReviewedMutation';
 
 export const useMerchantMonitoringBusinessReportLogic = () => {
   const { businessReportId } = useParams();
@@ -67,6 +68,16 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
 
   const websiteWithNoProtocol = safeUrl(businessReport?.website)?.hostname;
 
+  const { mutate: mutateMarkAsReviewed, isLoading: isMarkAdReviewedLoading } =
+    useMarkBusinessReportAsReviewedMutation();
+
+  const markAsReviewed = useCallback(async () => {
+    // @TODO: Add confirmation
+    if (confirm('Are you sure you want to mark this report as reviewed?')) {
+      await mutateMarkAsReviewed({ id: businessReportId ?? '' });
+    }
+  }, [mutateMarkAsReviewed, businessReportId]);
+
   return {
     onNavigateBack,
     websiteWithNoProtocol,
@@ -76,5 +87,6 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     notes,
     activeTab,
     isNotesOpen,
+    markAsReviewed,
   };
 };
