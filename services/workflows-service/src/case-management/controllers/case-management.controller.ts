@@ -21,12 +21,11 @@ import {
 } from '@nestjs/common';
 import { ApiExcludeController, ApiForbiddenResponse, ApiOkResponse } from '@nestjs/swagger';
 import { EndUserService } from '@/end-user/end-user.service';
-import { StateTag, TStateTag } from '@ballerine/common';
+import { StateTag, TStateTag, EndUserAmlHitsSchema } from '@ballerine/common';
 import { AlertService } from '@/alert/alert.service';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { ListIndividualsProfilesSchema } from '@/case-management/dtos/list-individuals-profiles.dto';
 import { z } from 'zod';
-import { EndUserAmlHitsSchema } from '@ballerine/common';
 import { Business, EndUsersOnBusinesses } from '@prisma/client';
 
 @Controller('case-management')

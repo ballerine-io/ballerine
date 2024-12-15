@@ -11,11 +11,14 @@ export class LocalAuthGuard extends AuthGuard('local') implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const result = super.canActivate(context) as boolean;
     const request = context.switchToHttp().getRequest();
+
     if (result && request.user) {
       const fullUrl = request.protocol + '://' + request.get('host') + request.originalUrl;
-      this.supabaseService.logSignIn(fullUrl);
+      void this.supabaseService.logSignIn(fullUrl);
     }
-    super.logIn(request);
-    return Promise.resolve(result);
+
+    await super.logIn(request);
+
+    return result;
   }
 }

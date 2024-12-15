@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { ISupabaseService } from './types';
-import { SentryService } from '../sentry/sentry.service';
+import { SentryService } from '@/sentry/sentry.service';
 
 @Injectable()
 export class SupabaseService implements ISupabaseService {
@@ -12,11 +12,12 @@ export class SupabaseService implements ISupabaseService {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly SentryService: SentryService,
+    private readonly sentry: SentryService,
   ) {
     const telemetryEnabled = this.configService.get('TELEMETRY_ENABLED');
     const supabaseUrl = this.configService.get<string>('TELEMETRY_SUPABASE_URL');
     const supabaseApiKey = this.configService.get<string>('TELEMETRY_SUPABASE_API_KEY');
+
     if (telemetryEnabled) {
       if (!supabaseUrl || !supabaseApiKey) {
         throw new Error('Supabase URL or API key is missing in configuration');
@@ -34,7 +35,7 @@ export class SupabaseService implements ISupabaseService {
         } catch (error: Error | any) {
           if (error.code === 'MODULE_NOT_FOUND') {
             this.logger.error(`file not present: ${error.message}`);
-            this.SentryService.captureException(error.message);
+            this.sentry.captureException(error.message);
           } else {
             this.logger.error(`Exception infra data not present: ${error.message}`);
           }
@@ -56,7 +57,7 @@ export class SupabaseService implements ISupabaseService {
       }
     } catch (error: Error | any) {
       this.logger.error(`Exception to log sign in data: ${error.message}`);
-      this.SentryService.captureException(error.message);
+      this.sentry.captureException(error.message);
     }
   }
 
@@ -71,7 +72,7 @@ export class SupabaseService implements ISupabaseService {
       }
     } catch (error: Error | any) {
       this.logger.error(`Exception to log infra data: ${error.message}`);
-      this.SentryService.captureException(error.message);
+      this.sentry.captureException(error.message);
     }
   }
 }

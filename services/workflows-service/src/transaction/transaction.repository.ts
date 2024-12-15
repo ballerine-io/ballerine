@@ -7,7 +7,6 @@ import { GetTransactionsDto } from './dtos/get-transactions.dto';
 import { DateTimeFilter } from '@/common/query-filters/date-time-filter';
 import { toPrismaOrderByGeneric } from '@/workflow/utils/toPrismaOrderBy';
 import deepmerge from 'deepmerge';
-import { PageDto } from '@/common/dto';
 
 const DEFAULT_TRANSACTION_ORDER = {
   transactionDate: Prisma.SortOrder.desc,

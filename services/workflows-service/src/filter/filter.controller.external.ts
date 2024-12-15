@@ -17,7 +17,6 @@ import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import type { InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
-import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('Filters')
