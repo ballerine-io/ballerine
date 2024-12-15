@@ -40,7 +40,7 @@ import { WorkflowService } from './workflow.service';
 import { Validate } from 'ballerine-nestjs-typebox';
 import { PutWorkflowExtensionSchema, WorkflowExtensionSchema } from './schemas/extensions.schemas';
 import { type Static, Type } from '@sinclair/typebox';
-import { DefaultContextSchema, defaultContextSchema } from '@ballerine/common';
+import { DefaultContextSchema, defaultContextSchema, isObject } from '@ballerine/common';
 import { WorkflowRunSchema } from './schemas/workflow-run';
 import { ValidationError } from '@/errors';
 import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
@@ -343,19 +343,35 @@ export class WorkflowControllerExternal {
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<unknown> {
     const { workflowId, context, config } = body;
-    const { entity } = context;
 
-    if (!('id' in entity) && !('ballerineEntityId' in entity)) {
+    if (!context || !isObject(context)) {
+      throw new common.BadRequestException('Context is required');
+    }
+
+    if (
+      !isObject(context.entity) ||
+      (!('id' in context.entity) && !('ballerineEntityId' in context.entity))
+    ) {
       throw new common.BadRequestException('Entity id is required');
+    }
+
+    if (!workflowId) {
+      throw new common.BadRequestException('Workflow id is required');
     }
 
     const hasSalesforceRecord =
       Boolean(body.salesforceObjectName) && Boolean(body.salesforceRecordId);
 
-    const latestDefinitionVersion = await this.workflowDefinitionService.getLatestVersion(
-      workflowId,
-      projectIds,
-    );
+    let latestDefinitionVersion;
+
+    try {
+      latestDefinitionVersion = await this.workflowDefinitionService.getLatestVersion(
+        workflowId,
+        projectIds,
+      );
+    } catch (e) {
+      throw new common.BadRequestException(`Workflow Definition ${workflowId} was not found`);
+    }
 
     const actionResult = await this.workflowService.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: latestDefinitionVersion.id,
