@@ -119,8 +119,8 @@ export const AutocompleteInput = ({
             //@ts-nocheck
             inputProps={{
               ...params.inputProps,
-              'data-testid': testId,
               className: 'py-0 px-0 h-9',
+              'data-testid': testId,
             }}
             onChange={handleInputChange}
           />

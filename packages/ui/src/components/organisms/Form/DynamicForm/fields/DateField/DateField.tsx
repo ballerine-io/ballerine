@@ -1,36 +1,34 @@
-import { FieldErrors } from '@/pages/CollectionFlowV2/components/ui/field-parts/FieldErrors';
-import { FieldLayout } from '@/pages/CollectionFlowV2/components/ui/field-parts/FieldLayout';
-import { IFieldComponentProps } from '@/pages/CollectionFlowV2/types';
+import { checkIfDateIsValid } from '@/common/utils/check-if-date-is-valid';
 import {
-  createTestId,
   DatePickerChangeEvent,
   DatePickerInput,
   DatePickerValue,
-  isValidDate,
-} from '@ballerine/ui';
-import { FunctionComponent, useCallback } from 'react';
+} from '@/components/molecules/inputs/DatePickerInput/DatePickerInput';
+import { createTestId } from '@/components/organisms/Renderer';
+import { useCallback } from 'react';
+import { useField } from '../../hooks/external/useField';
+import { FieldLayout } from '../../layouts/FieldLayout';
+import { TBaseFormElements, TDynamicFormField } from '../../types';
+import { useStack } from '../FieldList/providers/StackProvider';
 
-export interface IDateFieldOptions {
+export interface IDateFieldParams {
   disableFuture?: boolean;
   disablePast?: boolean;
   outputFormat?: 'date' | 'iso';
 }
 
-const defaultOptions: IDateFieldOptions = {
-  disableFuture: false,
-  disablePast: false,
-  outputFormat: undefined,
-};
-
-export const DateField: FunctionComponent<
-  IFieldComponentProps<DatePickerValue, IDateFieldOptions>
-> = ({ fieldProps, definition, options = defaultOptions, stack }) => {
-  const { onBlur, onChange, value, disabled } = fieldProps;
+export const DateField: TDynamicFormField<TBaseFormElements, IDateFieldParams> = ({ element }) => {
   const {
-    disableFuture = defaultOptions.disableFuture,
-    disablePast = defaultOptions.disablePast,
-    outputFormat = defaultOptions.outputFormat,
-  } = options;
+    disableFuture = false,
+    disablePast = false,
+    outputFormat = undefined,
+  } = element.params || {};
+
+  const { stack } = useStack();
+  const { value, onChange, onBlur, disabled } = useField<DatePickerValue | undefined>(
+    element,
+    stack,
+  );
 
   const handleChange = useCallback(
     (event: DatePickerChangeEvent) => {
@@ -38,7 +36,7 @@ export const DateField: FunctionComponent<
 
       if (dateValue === null) return onChange(null);
 
-      if (!isValidDate(dateValue)) return;
+      if (!checkIfDateIsValid(dateValue)) return;
 
       onChange(dateValue);
     },
@@ -46,7 +44,7 @@ export const DateField: FunctionComponent<
   );
 
   return (
-    <FieldLayout definition={definition}>
+    <FieldLayout element={element}>
       <DatePickerInput
         value={value}
         params={{
@@ -55,11 +53,10 @@ export const DateField: FunctionComponent<
           outputValueFormat: outputFormat,
         }}
         disabled={disabled}
-        testId={createTestId(definition, stack)}
+        testId={createTestId(element, stack)}
         onBlur={onBlur}
         onChange={handleChange}
       />
-      <FieldErrors definition={definition} />
     </FieldLayout>
   );
 };

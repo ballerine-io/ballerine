@@ -41,6 +41,17 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/setupTests.ts'],
     css: true,
+    environmentOptions: {
+      jsdom: {
+        resources: 'usable',
+        features: {
+          // Disable features you don't need
+          FetchExternalResources: false,
+          ProcessExternalResources: false,
+          SkipExternalResources: true,
+        },
+      },
+    },
   },
   build: {
     outDir: 'dist',

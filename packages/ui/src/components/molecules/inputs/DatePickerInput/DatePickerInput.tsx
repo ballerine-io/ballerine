@@ -116,6 +116,11 @@ export const DatePickerInput = ({
           variant="standard"
           fullWidth
           size="small"
+          inputProps={{
+            ...props.inputProps,
+            className: 'py-0 px-0 h-9',
+            'data-testid': testId,
+          }}
           onFocus={e => {
             setFocused(true);
             props.onFocus && props.onFocus(e);
@@ -142,11 +147,6 @@ export const DatePickerInput = ({
               disabled: 'opacity-50 cursor-not-allowed',
             },
             disableUnderline: true,
-          }}
-          inputProps={{
-            ...props.inputProps,
-            'data-testid': testId,
-            className: 'py-0 px-0 h-9',
           }}
         />
       );

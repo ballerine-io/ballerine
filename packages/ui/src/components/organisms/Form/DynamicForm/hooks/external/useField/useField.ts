@@ -6,7 +6,10 @@ import { IFormElement } from '../../../types';
 import { useElementId } from '../useElementId';
 import { useValueDestination } from '../useValueDestination';
 
-export const useField = <TValue>(element: IFormElement, stack: TDeepthLevelStack = []) => {
+export const useField = <TValue>(
+  element: IFormElement<any, any>,
+  stack: TDeepthLevelStack = [],
+) => {
   const fieldId = useElementId(element, stack);
   const valueDestination = useValueDestination(element, stack);
   const { fieldHelpers, values } = useDynamicForm();

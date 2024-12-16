@@ -1,37 +1,41 @@
-import { FieldLayout } from '@/pages/CollectionFlowV2/components/ui/field-parts/FieldLayout';
-import { IFieldComponentProps } from '@/pages/CollectionFlowV2/types';
-import { Checkbox, createTestId, ctw } from '@ballerine/ui';
-import { FunctionComponent } from 'react';
+import { ctw } from '@/common';
+import { Checkbox } from '@/components/atoms';
+import { createTestId } from '@/components/organisms/Renderer';
+import { useField } from '../../hooks/external';
+import { FieldLayout } from '../../layouts/FieldLayout';
+import { TBaseFormElements, TDynamicFormField } from '../../types';
+import { useStack } from '../FieldList/providers/StackProvider';
 
 export interface ICheckboxListOption {
   label: string;
   value: string;
 }
 
-export interface ICheckboxListFieldOptions {
+export interface ICheckboxListFieldParams {
   options: ICheckboxListOption[];
 }
 
-export const CheckboxListField: FunctionComponent<
-  IFieldComponentProps<string[], ICheckboxListFieldOptions>
-> = ({ fieldProps, definition, options: _options, stack }) => {
-  const { value = [], onChange, disabled } = fieldProps;
-  const { options = [] } = _options || {};
+export const CheckboxListField: TDynamicFormField<TBaseFormElements, ICheckboxListFieldParams> = ({
+  element,
+}) => {
+  const { options = [] } = element.params || {};
+  const { stack } = useStack();
+  const { value, onChange, disabled } = useField<string[]>(element, stack);
 
   return (
-    <FieldLayout definition={definition} stack={stack}>
+    <FieldLayout element={element}>
       <div
         className={ctw('flex flex-col gap-4', { 'pointer-events-none opacity-50': disabled })}
-        data-testid={createTestId(definition, stack)}
+        data-testid={createTestId(element, stack)}
       >
-        {options.map(option => (
+        {options.map((option, index) => (
           <label className="flex items-center gap-2" key={option.value}>
             <Checkbox
               className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground bg-white"
               color="primary"
               value={option.value}
               checked={Array.isArray(value) && value.includes(option.value)}
-              data-testid={`${createTestId(definition, stack)}-checkbox`}
+              data-testid={`${createTestId(element, stack)}-checkbox-${index}`}
               onCheckedChange={_ => {
                 let val = (value as string[]) || [];
 

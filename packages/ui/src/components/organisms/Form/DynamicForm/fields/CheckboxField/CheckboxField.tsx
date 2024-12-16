@@ -1,35 +1,11 @@
-import { FieldLayout } from '@/pages/CollectionFlowV2/components/ui/field-parts/FieldLayout';
-import { IFieldComponentProps } from '@/pages/CollectionFlowV2/types';
-import { Checkbox, createTestId } from '@ballerine/ui';
-import { FunctionComponent } from 'react';
+import { Checkbox } from '@/components/atoms';
+import { useField } from '../../hooks/external';
+import { TDynamicFormField } from '../../types';
+import { useStack } from '../FieldList/providers/StackProvider';
 
-export interface ICheckboxFieldOptions {
-  label: string;
-}
+export const CheckboxField: TDynamicFormField = ({ element }) => {
+  const { stack } = useStack();
+  const { value, onChange, disabled } = useField<boolean | undefined>(element, stack);
 
-export const CheckboxField: FunctionComponent<
-  IFieldComponentProps<boolean, ICheckboxFieldOptions>
-> = ({ fieldProps, definition, options, stack }) => {
-  const { value, onChange, onBlur, disabled } = fieldProps;
-  const { label } = options;
-
-  return (
-    <FieldLayout
-      definition={definition}
-      stack={stack}
-      className="flex-row flex-row-reverse items-center justify-end"
-    >
-      <Checkbox
-        className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground bg-white"
-        color="primary"
-        checked={value}
-        disabled={disabled}
-        data-testid={createTestId(definition, stack)}
-        onCheckedChange={e => {
-          onChange(Boolean(e));
-        }}
-        onBlur={onBlur}
-      />
-    </FieldLayout>
-  );
+  return <Checkbox checked={Boolean(value)} onChange={onChange} disabled={disabled} />;
 };

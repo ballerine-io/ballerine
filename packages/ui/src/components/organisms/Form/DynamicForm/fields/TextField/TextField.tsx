@@ -1,23 +1,27 @@
-import { FieldErrors } from '@/pages/CollectionFlowV2/components/ui/field-parts/FieldErrors';
-import { FieldLayout } from '@/pages/CollectionFlowV2/components/ui/field-parts/FieldLayout';
-import { serializeTextFieldValue } from '@/pages/CollectionFlowV2/components/ui/fields/TextField/helpers';
-import { IFieldComponentProps } from '@/pages/CollectionFlowV2/types';
-import { createTestId, Input, TextArea } from '@ballerine/ui';
-import { FunctionComponent, useCallback, useMemo } from 'react';
+import { TextArea } from '@/components/atoms';
+import { Input } from '@/components/atoms/Input';
+import { createTestId } from '@/components/organisms/Renderer';
+import { useCallback } from 'react';
+import { useField } from '../../hooks/external';
+import { FieldErrors } from '../../layouts/FieldErrors';
+import { FieldLayout } from '../../layouts/FieldLayout';
+import { TBaseFormElements, TDynamicFormField } from '../../types';
+import { useStack } from '../FieldList/providers/StackProvider';
+import { serializeTextFieldValue } from './helpers';
 
-export type TTextFieldValueType = string | number | undefined;
-export type TTextFieldOptions = {
+export interface ITextFieldParams {
   valueType: 'integer' | 'number' | 'string';
   style: 'text' | 'textarea';
   placeholder?: string;
-};
+}
 
-export const TextField: FunctionComponent<
-  IFieldComponentProps<TTextFieldValueType, TTextFieldOptions>
-> = ({ options = {} as TTextFieldOptions, definition, stack, fieldProps }) => {
-  const { valueType = 'string', style = 'text', placeholder } = options;
-  const { onChange, onBlur, value, disabled } = fieldProps;
-  const testId = useMemo(() => createTestId(definition, stack), [definition, stack]);
+export const TextField: TDynamicFormField<TBaseFormElements, ITextFieldParams> = ({ element }) => {
+  const { params } = element;
+  const { valueType = 'string', style = 'text', placeholder } = params || {};
+
+  const { stack } = useStack();
+
+  const { value, onChange, onBlur, disabled } = useField(element, stack);
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -37,17 +41,22 @@ export const TextField: FunctionComponent<
   };
 
   return (
-    <FieldLayout definition={definition} stack={stack}>
+    <FieldLayout element={element}>
       {style === 'textarea' ? (
-        <TextArea {...inputProps} data-testid={testId} />
+        <TextArea
+          {...inputProps}
+          value={value?.toString() || ''}
+          data-testid={createTestId(element, stack)}
+        />
       ) : (
         <Input
           {...inputProps}
           type={valueType !== 'string' ? 'number' : 'text'}
-          data-testid={testId}
+          data-testid={createTestId(element, stack)}
+          value={value?.toString() || ''} // Ensure value is string or number
         />
       )}
-      <FieldErrors definition={definition} />
+      <FieldErrors definition={element} />
     </FieldLayout>
   );
 };

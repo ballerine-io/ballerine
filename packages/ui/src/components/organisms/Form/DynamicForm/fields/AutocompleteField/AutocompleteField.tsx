@@ -1,31 +1,35 @@
-import { FieldLayout } from '@/pages/CollectionFlowV2/components/ui/field-parts/FieldLayout';
-import { IFieldComponentProps } from '@/pages/CollectionFlowV2/types';
-import { AutocompleteInput, createTestId } from '@ballerine/ui';
-import { FunctionComponent } from 'react';
+import { createTestId } from '@/components/organisms/Renderer';
+import { AutocompleteInput } from '@ballerine/ui';
+import { useField } from '../../hooks/external';
+import { FieldLayout } from '../../layouts/FieldLayout';
+import { TBaseFormElements, TDynamicFormField } from '../../types';
+import { useStack } from '../FieldList/providers/StackProvider';
 
 export interface IAutocompleteFieldOption {
   label: string;
   value: string;
 }
 
-export interface IAutocompleteFieldOptions {
+export interface IAutocompleteFieldParams {
   placeholder?: string;
   options: IAutocompleteFieldOption[];
 }
 
-export const AutocompleteField: FunctionComponent<
-  IFieldComponentProps<string, IAutocompleteFieldOptions>
-> = ({ fieldProps, definition, options: _options, stack }) => {
-  const { value, onChange, onBlur, disabled } = fieldProps;
-  const { options = [], placeholder = '' } = _options;
+export const AutocompleteField: TDynamicFormField<TBaseFormElements, IAutocompleteFieldParams> = ({
+  element,
+}) => {
+  const { params } = element;
+  const { stack } = useStack();
+  const { value, onChange, onBlur, disabled } = useField<string | undefined>(element, stack);
+  const { options = [], placeholder = '' } = params || {};
 
   return (
-    <FieldLayout definition={definition} stack={stack}>
+    <FieldLayout element={element}>
       <AutocompleteInput
         disabled={disabled}
         value={value}
         options={options}
-        testId={createTestId(definition, stack)}
+        data-testid={createTestId(element, stack)}
         placeholder={placeholder}
         onChange={event => onChange(event.target.value || '')}
         onBlur={onBlur}

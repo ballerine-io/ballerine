@@ -1,4 +1,5 @@
-import { ctw, Label } from '@ballerine/ui';
+import { ctw } from '@/common';
+import { Label } from '@/components/atoms';
 import { useDynamicForm } from '../../context';
 import { useStack } from '../../fields/FieldList/providers/StackProvider';
 import { useElement } from '../../hooks/external';
@@ -9,12 +10,14 @@ export interface IFieldLayoutBaseParams {
   label?: string;
 }
 
-export const FieldLayout: TDynamicFormField = ({ element, children }) => {
+export const FieldLayout: TDynamicFormField<any, any> = ({ element, children }) => {
   const { values } = useDynamicForm();
   const { stack } = useStack();
-  const { id } = useElement(element, stack);
+  const { id, hidden } = useElement(element, stack);
   const { label } = element.params || {};
   const isRequired = useRequired(element, values);
+
+  if (hidden) return null;
 
   return (
     <div
