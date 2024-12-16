@@ -1,0 +1,63 @@
+{{- if .Values.backoffice.ingress.enabled -}}
+{{- $fullName := .Values.backoffice.nameOverride -}}
+{{- $svcPort := .Values.backoffice.service.port -}}
+{{- $pathtype := .Values.backoffice.ingress.pathtype -}}
+{{- $ingressPath := .Values.backoffice.ingress.path }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: {{ .Values.backoffice.nameOverride }}
+{{- with .Values.backoffice.ingress.annotations }}
+  annotations:
+{{- toYaml . | nindent 4 }}
+{{ end }}
+spec:
+  {{- if .Values.backoffice.ingress.className }}
+  ingressClassName: {{ .Values.backoffice.ingress.className | quote }}
+  {{- end }}
+{{- if .Values.backoffice.ingress.tls }}
+  tls:
+  {{- if .ingressPath }}
+  {{- range .Values.backoffice.ingress.tls }}
+  - hosts:
+    {{- range .hosts }}
+      - {{ . }}
+    {{ end }}
+    secretName: {{ .secretName }}
+  {{ end }}
+{{- else }}
+{{ toYaml .Values.backoffice.ingress.tls | indent 4 }}
+  {{ end }}
+{{ end }}
+  rules:
+  {{- range .Values.backoffice.ingress.hosts }}
+    {{- if $ingressPath }}
+  - host: {{ . }}
+    http:
+      paths:
+      - path: {{ $ingressPath }}
+        pathType: {{ $pathtype }}
+        backend:
+          service:
+            name: {{ $fullName }}
+            port: 
+              number: {{ $svcPort }}
+  {{- else }}
+  - host: {{ .host }}
+    http:
+      paths:
+      {{- range .paths }}
+      - path: {{ .path }}
+        pathType: {{ $pathtype }}
+        backend:
+          service:
+            name: {{ $fullName }}
+            port:
+              number: {{ $svcPort }}
+  {{ end }}
+ {{ end }}
+{{ end }}
+{{ end }}

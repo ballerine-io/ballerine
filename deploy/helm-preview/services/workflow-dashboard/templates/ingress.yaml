@@ -1,0 +1,63 @@
+{{- if .Values.workflowsdashboard.ingress.enabled -}}
+{{- $fullName := .Values.workflowsdashboard.nameOverride -}}
+{{- $svcPort := .Values.workflowsdashboard.service.port -}}
+{{- $pathtype := .Values.workflowsdashboard.ingress.pathtype -}}
+{{- $ingressPath := .Values.workflowsdashboard.ingress.path }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: {{ .Values.workflowsdashboard.nameOverride }}
+{{- with .Values.workflowsdashboard.ingress.annotations }}
+  annotations:
+{{- toYaml . | nindent 4 }}
+{{ end }}
+spec:
+  {{- if .Values.workflowsdashboard.ingress.className }}
+  ingressClassName: {{ .Values.workflowsdashboard.ingress.className | quote }}
+  {{- end }}
+{{- if .Values.workflowsdashboard.ingress.tls }}
+  tls:
+  {{- if .ingressPath }}
+  {{- range .Values.workflowsdashboard.ingress.tls }}
+  - hosts:
+    {{- range .hosts }}
+      - {{ . }}
+    {{ end }}
+    secretName: {{ .secretName }}
+  {{ end }}
+{{- else }}
+{{ toYaml .Values.workflowsdashboard.ingress.tls | indent 4 }}
+  {{ end }}
+{{ end }}
+  rules:
+  {{- range .Values.workflowsdashboard.ingress.hosts }}
+    {{- if $ingressPath }}
+  - host: {{ . }}
+    http:
+      paths:
+      - path: {{ $ingressPath }}
+        pathType: {{ $pathtype }}
+        backend:
+          service:
+            name: {{ $fullName }}
+            port: 
+              number: {{ $svcPort }}
+  {{- else }}
+  - host: {{ .host }}
+    http:
+      paths:
+      {{- range .paths }}
+      - path: {{ .path }}
+        pathType: {{ $pathtype }}
+        backend:
+          service:
+            name: {{ $fullName }}
+            port:
+              number: {{ $svcPort }}
+  {{ end }}
+ {{ end }}
+{{ end }}
+{{ end }}

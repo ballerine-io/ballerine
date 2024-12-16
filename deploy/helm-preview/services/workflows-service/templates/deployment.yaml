@@ -1,0 +1,69 @@
+{{- if .Values.workflowService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: {{ .Values.workflowService.nameOverride }}
+    namespace: {{ .Release.Namespace | quote }}
+    labels:
+      app: {{ .Values.workflowService.nameOverride }}
+spec:
+    replicas: {{ .Values.workflowService.replicas }}
+    {{- if .Values.workflowService.strategyType }}
+    strategy:
+      type: {{ .Values.workflowService.strategyType }}
+    {{- end }}
+    {{- if .Values.workflowService.updateStrategy }}
+      rollingUpdate:
+        {{- if .Values.workflowService.updateStrategy.maxSurge }}
+        maxSurge: {{ .Values.workflowService.updateStrategy.maxSurge}}
+        {{- end }}
+        {{- if .Values.workflowService.updateStrategy.maxUnavailable }}
+        maxUnavailable: {{ .Values.workflowService.updateStrategy.maxUnavailable }}
+        {{- end }}
+    {{- end }}
+    selector:
+        matchLabels:
+            app: {{ .Values.workflowService.nameOverride }}
+    template:
+        metadata:
+            labels:
+                app: {{ .Values.workflowService.nameOverride }}
+        spec:
+            {{- with .Values.nodeSelector }}
+            nodeSelector:
+            {{- toYaml . | nindent 8 }}
+            {{- end }}
+            initContainers:
+            {{- if .Values.postgresql.enabled }}
+            - name: psql-init-container
+              image: alpine:latest
+              command: ['sh', '-c', "apk add postgresql-client; until pg_isready -h {{ .Release.Name }}-postgresql.{{.Release.Namespace}}.svc.cluster.local; do echo waiting for postgresql; sleep 2; done"]
+            {{- end }}
+            {{- if .Values.workflowService.migration }}
+            - name: migration-init-container
+              image: {{ .Values.workflowService.image.registry }}/{{ .Values.workflowService.image.repository }}:{{ .Values.workflowService.image.tag }}
+              command: ['npm','run','db:init']
+              envFrom:
+                - configMapRef:
+                    name: {{ .Values.workflowService.nameOverride }}
+            {{- end }}
+            containers:
+            - name: {{ .Values.workflowService.nameOverride }}
+              image: "{{ .Values.workflowService.image.registry }}/{{ .Values.workflowService.image.repository }}:{{ .Values.workflowService.image.tag }}"
+              imagePullPolicy: {{ .Values.workflowService.image.pullPolicy }}
+              command: {{ .Values.workflowService.image.command | toYaml | nindent 14 }}
+              {{- with .Values.workflowService.envFrom }}
+              envFrom:
+              {{- toYaml . | nindent 14 }}
+              {{- end }}
+              livenessProbe:
+                {{- toYaml .Values.workflowService.livenessProbe | nindent 16 }}
+              readinessProbe:
+                {{- toYaml .Values.workflowService.readinessProbe | nindent 16 }}
+              startupProbe:
+                {{- toYaml .Values.workflowService.startupProbe | nindent 16 }}
+            {{- if .Values.workflowService.image.pullSecrets}}
+            imagePullSecrets:
+              - name: {{ .Values.workflowService.image.pullSecrets }}
+            {{- end }}
+{{- end }}
