@@ -1,5 +1,5 @@
+import { AutocompleteInput } from '@/components/molecules';
 import { createTestId } from '@/components/organisms/Renderer';
-import { AutocompleteInput } from '@ballerine/ui';
 import { useField } from '../../hooks/external';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { TBaseFormElements, TDynamicFormField } from '../../types';

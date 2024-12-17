@@ -1,8 +1,9 @@
-import { Button, useElement } from '@ballerine/ui';
+import { Button } from '@/components/atoms';
 import { useMemo } from 'react';
 import { useValidator } from '../../../Validator';
 import { useDynamicForm } from '../../context';
-import { useField } from '../../hooks/external';
+import { useElement } from '../../hooks/external/useElement';
+import { useField } from '../../hooks/external/useField';
 import { TBaseFormElements, TDynamicFormElement } from '../../types';
 
 export interface ISubmitButtonParams {

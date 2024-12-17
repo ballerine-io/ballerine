@@ -1,17 +1,24 @@
-import { Button } from '@ballerine/ui';
+import { Button } from '@/components/atoms';
 import '@testing-library/jest-dom';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useValidator } from '../../../Validator';
 import { useDynamicForm } from '../../context';
-import { useField } from '../../hooks/external';
+import { useField } from '../../hooks/external/useField';
 import { IFormElement, TBaseFormElements } from '../../types';
 import { ISubmitButtonParams, SubmitButton } from './SubmitButton';
 
-vi.mock('@ballerine/ui', () => ({
+vi.mock('@/components/atoms', () => ({
   Button: vi.fn(),
+}));
+
+vi.mock('../../hooks/external/useElement', () => ({
   useElement: vi.fn().mockReturnValue({ id: 'test-id' }),
+}));
+
+vi.mock('../../hooks/external/useField', () => ({
+  useField: vi.fn().mockReturnValue({ disabled: false }),
 }));
 
 vi.mock('../../../Validator', () => ({
@@ -38,7 +45,7 @@ describe('SubmitButton', () => {
 
   beforeEach(() => {
     cleanup();
-    vi.clearAllMocks();
+    // vi.restoreAllMocks();
 
     vi.mocked(Button).mockImplementation(({ children, ...props }) => (
       <button {...props}>{children}</button>

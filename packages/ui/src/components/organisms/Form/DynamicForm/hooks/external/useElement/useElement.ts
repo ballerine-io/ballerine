@@ -5,7 +5,10 @@ import { useDynamicForm } from '../../../context';
 import { IFormElement } from '../../../types';
 import { useElementId } from '../useElementId';
 
-export const useElement = (element: IFormElement, stack: TDeepthLevelStack = []) => {
+export const useElement = <TElements, TParams>(
+  element: IFormElement<TElements, TParams>,
+  stack: TDeepthLevelStack = [],
+) => {
   const { values } = useDynamicForm();
   const hiddenRulesResult = useRuleEngine(values, {
     rules: element.hidden,

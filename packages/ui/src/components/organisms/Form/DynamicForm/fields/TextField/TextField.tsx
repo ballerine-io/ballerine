@@ -56,7 +56,7 @@ export const TextField: TDynamicFormField<TBaseFormElements, ITextFieldParams> =
           value={value?.toString() || ''} // Ensure value is string or number
         />
       )}
-      <FieldErrors definition={element} />
+      <FieldErrors element={element} />
     </FieldLayout>
   );
 };

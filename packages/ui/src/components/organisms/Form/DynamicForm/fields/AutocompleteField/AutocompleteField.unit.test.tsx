@@ -8,9 +8,9 @@ import { useStack } from '../FieldList/providers/StackProvider';
 import { AutocompleteField, IAutocompleteFieldParams } from './AutocompleteField';
 
 // Mock dependencies
-vi.mock('@ballerine/ui', () => ({
+vi.mock('@/components/molecules', () => ({
   AutocompleteInput: ({ children, options, ...props }: any) => (
-    <input {...props} options={JSON.stringify(options)} type="text" />
+    <input {...props} data-options={JSON.stringify(options)} type="text" />
   ),
 }));
 
@@ -127,6 +127,9 @@ describe('AutocompleteField', () => {
 
     render(<AutocompleteField element={elementWithOptions} />);
 
-    expect(screen.getByTestId('test-id')).toHaveAttribute('options', JSON.stringify(mockOptions));
+    expect(screen.getByTestId('test-id')).toHaveAttribute(
+      'data-options',
+      JSON.stringify(mockOptions),
+    );
   });
 });

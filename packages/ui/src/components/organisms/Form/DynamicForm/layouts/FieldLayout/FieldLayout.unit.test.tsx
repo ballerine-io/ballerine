@@ -6,8 +6,12 @@ import { IFormElement } from '../../types';
 import { FieldLayout } from './FieldLayout';
 
 // Mock dependencies
-vi.mock('@ballerine/ui', () => ({
+
+vi.mock('@/common', () => ({
   ctw: vi.fn((base, conditionals) => base),
+}));
+
+vi.mock('@/components/atoms', () => ({
   Label: ({ children, ...props }: any) => <label {...props}>{children}</label>,
 }));
 
