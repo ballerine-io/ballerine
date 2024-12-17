@@ -20,7 +20,7 @@ import {
 export class DataInvestigationService {
   constructor(protected readonly logger: AppLoggerService) {}
 
-  getInvestigationFilter(projectId: string, inlineRule: InlineRule, subject: SubjectRecord) {
+  getInvestigationFilter(projectId: string, inlineRule: InlineRule, subject?: SubjectRecord) {
     let investigationFilter;
 
     switch (inlineRule.fnInvestigationName) {
@@ -91,7 +91,19 @@ export class DataInvestigationService {
     }
 
     return {
-      ...subject,
+      // TODO: Backward compatibility, Remove this when all rules are updated, this is a temporary fix
+      ...(subject?.counterpartyId &&
+        (inlineRule.subjects[0] === 'counterpartyOriginatorId' ||
+          inlineRule.subjects[0] === 'counterpartyBeneficiaryId') && {
+          [inlineRule.subjects[0]]: subject.counterpartyId,
+        }),
+      ...(subject?.counterpartyOriginatorId && {
+        counterpartyOriginatorId: subject.counterpartyOriginatorId,
+      }),
+      ...(subject?.counterpartyBeneficiaryId && {
+        counterpartyBeneficiaryId: subject?.counterpartyBeneficiaryId,
+      }),
+
       ...investigationFilter,
       ...this._buildTransactionsFiltersByAlert(inlineRule),
       projectId,

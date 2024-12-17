@@ -18,7 +18,7 @@ export class AlertRepository {
   }
 
   async findFirst<T extends Pick<Prisma.AlertFindFirstArgs, 'where' | 'orderBy'>>(
-    args: Prisma.SelectSubset<T, Pick<Prisma.AlertFindFirstArgs, 'where' | 'orderBy'>>,
+    args: Prisma.SelectSubset<T, Pick<Prisma.AlertFindFirstArgs, 'where' | 'orderBy' | 'include'>>,
     projectIds: TProjectIds,
   ) {
     const queryArgs = this.scopeService.scopeFindFirst(args, projectIds);

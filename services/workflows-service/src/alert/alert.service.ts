@@ -24,6 +24,7 @@ import { DedupeWindow, TDedupeStrategy, TExecutionDetails } from './types';
 import { computeHash } from '@ballerine/common';
 import { convertTimeUnitToMilliseconds } from '@/data-analytics/utils';
 import { DataInvestigationService } from '@/data-analytics/data-investigation.service';
+import { equals } from 'class-validator';
 
 const DEFAULT_DEDUPE_STRATEGIES = {
   cooldownTimeframeInMinutes: 60 * 24,
@@ -63,12 +64,17 @@ export class AlertService {
   async getAlertWithDefinition(
     alertId: string,
     projectId: string,
+    monitoringType: MonitoringType,
   ): Promise<(Alert & { alertDefinition: AlertDefinition }) | null> {
-    const alert = await this.alertRepository.findById(
-      alertId,
+    const alert = await this.alertRepository.findFirst(
       {
         where: {
           id: alertId,
+          alertDefinition: {
+            monitoringType: {
+              equals: monitoringType,
+            },
+          },
         },
         include: {
           alertDefinition: true,
