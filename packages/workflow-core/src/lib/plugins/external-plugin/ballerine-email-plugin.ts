@@ -65,6 +65,7 @@ export class BallerineEmailPlugin extends BallerineApiPlugin {
         ok: true,
         json: () => Promise.resolve({}),
         statusText: 'OK',
+        headers: {} as Headers,
       };
     }
 

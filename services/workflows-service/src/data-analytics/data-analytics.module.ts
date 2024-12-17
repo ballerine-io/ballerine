@@ -6,19 +6,14 @@ import { DataAnalyticsControllerExternal } from '@/data-analytics/data-analytics
 import { PrismaModule } from '@/prisma/prisma.module';
 import { ProjectScopeService } from '@/project/project-scope.service';
 // eslint-disable-next-line import/no-cycle
-import { BusinessReportModule } from '@/business-report/business-report.module';
 // eslint-disable-next-line import/no-cycle
 import { AlertModule } from '@/alert/alert.module';
+import { DataInvestigationService } from './data-investigation.service';
 
 @Module({
-  imports: [
-    ACLModule,
-    PrismaModule,
-    forwardRef(() => BusinessReportModule),
-    forwardRef(() => AlertModule),
-  ],
+  imports: [ACLModule, PrismaModule, forwardRef(() => AlertModule)],
   controllers: [DataAnalyticsControllerInternal, DataAnalyticsControllerExternal],
-  providers: [DataAnalyticsService, ProjectScopeService],
-  exports: [ACLModule, DataAnalyticsService],
+  providers: [DataAnalyticsService, ProjectScopeService, DataInvestigationService],
+  exports: [DataAnalyticsService, DataInvestigationService],
 })
 export class DataAnalyticsModule {}

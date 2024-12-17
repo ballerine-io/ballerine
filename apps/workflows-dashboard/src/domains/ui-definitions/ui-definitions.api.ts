@@ -21,7 +21,11 @@ export const updateUIDefinition = async (dto: UpdateUIDefinitionDto) => {
 };
 
 export const copyUIDefinition = async (dto: CopyUIDefinitionDto) => {
-  const result = await request.post(`/ui-definition/${dto.uiDefinitionId}/copy`);
+  const result = await request.post(`/ui-definition/${dto.uiDefinitionId}/copy`, {
+    name: dto.name,
+  });
+
+  return result.data;
 };
 
 export const fetchUIDefinition = async (dto: GetUIDefinitionByIdDto) => {

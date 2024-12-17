@@ -1,9 +1,34 @@
 # @ballerine/common
 
+## 0.9.58
+
+### Patch Changes
+
+- Bump
+
+## 0.9.57
+
+### Patch Changes
+
+- Updated merchant screening schema
+
+## 0.9.56
+
+### Patch Changes
+
+- version bump
+
+## 0.9.55
+
+### Patch Changes
+
+- bump
+
 ## 0.9.54
 
 ### Patch Changes
 
+- Reworked getOrderedSteps & fixed tests
 - bump
 
 ## 0.9.53

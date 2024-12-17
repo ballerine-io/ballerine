@@ -1,7 +1,8 @@
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { checkIsIndividual } from '@/common/utils/check-is-individual/check-is-individual';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { CommonWorkflowStates, StateTag, valueOrNA } from '@ballerine/common';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
+import { useDocumentOcr } from '@/domains/entities/hooks/mutations/useDocumentOcr/useDocumentOcr';
 import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
 import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
@@ -22,13 +23,12 @@ import {
 } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { selectWorkflowDocuments } from '@/pages/Entity/selectors/selectWorkflowDocuments';
 import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
+import { CommonWorkflowStates, StateTag, valueOrNA } from '@ballerine/common';
 import { Button, TextArea } from '@ballerine/ui';
 import { X } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useCallback, useMemo } from 'react';
 import { toTitleCase } from 'string-ts';
-import { useDocumentOcr } from '@/domains/entities/hooks/mutations/useDocumentOcr/useDocumentOcr';
-import { checkIsIndividual } from '@/common/utils/check-is-individual/check-is-individual';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -272,6 +272,7 @@ export const useDocumentBlocks = ({
                     disabled={!canApprove}
                     size={'wide'}
                     variant={'success'}
+                    className={'enabled:bg-success enabled:hover:bg-success/90'}
                   >
                     Approve
                   </MotionButton>
@@ -439,14 +440,12 @@ export const useDocumentBlocks = ({
                       const fieldValue = getFieldValue();
                       const isEditableDecision = isDoneWithRevision || !decision?.status;
                       const isIndividual = checkIsIndividual(workflow);
-                      const isEditableType = (title === 'type' && isIndividual) || title !== 'type';
                       const isEditableCategory =
                         (title === 'category' && isIndividual) || title !== 'category';
                       const isEditableField = [
                         isEditableDecision,
                         isEditable,
                         caseState.writeEnabled,
-                        isEditableType,
                         isEditableCategory,
                       ].every(Boolean);
 
@@ -513,6 +512,10 @@ export const useDocumentBlocks = ({
                 isDocumentRevision,
               'bg-warning/10': isDocumentRevision && !workflow?.tags?.includes(StateTag.REVISION),
             }),
+            props: {
+              contentClassName:
+                'grid grid-cols-[1fr_minmax(240px,280px)] md:grid-cols-[1fr_minmax(240px,360px)] lg:grid-cols-[1fr_minmax(240px,441px)] 2xl:grid-cols-[1fr_minmax(240px,600px)] grid-rows-[auto_1fr] gap-4 [&>*:first-child]:col-span-2',
+            },
             value: createBlocksTyped()
               .addBlock()
               .addCell(headerCell)

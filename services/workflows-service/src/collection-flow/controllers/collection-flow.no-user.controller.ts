@@ -50,7 +50,10 @@ export class CollectionFlowNoUserController {
   }
 
   @common.Post()
-  async signUp(@TokenScope() tokenScope: ITokenScope, @common.Body() payload: SignupDto) {
+  async signUp(
+    @TokenScope() tokenScope: ITokenScope,
+    @common.Body() { additionalInfo, ...payload }: SignupDto,
+  ) {
     try {
       const { workflowDefinitionId, context } =
         await this.workflowService.getWorkflowRuntimeDataById(
@@ -70,7 +73,12 @@ export class CollectionFlowNoUserController {
       await this.prismaService.$transaction(async transaction => {
         const endUser = await this.endUserService.create(
           {
-            data: { ...payload, projectId: tokenScope.projectId },
+            data: {
+              ...payload,
+              // @ts-ignore -- known issue with Prisma's JSON type
+              additionalInfo,
+              projectId: tokenScope.projectId,
+            },
           },
           transaction,
         );

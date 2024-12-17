@@ -1,6 +1,8 @@
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 
-export const signupFormSchema: RJSFSchema = {
+export const signupFormSchema: (props: { jobTitle?: boolean }) => RJSFSchema = ({
+  jobTitle,
+} = {}) => ({
   type: 'object',
   required: ['firstName', 'lastName', 'email'],
   properties: {
@@ -20,7 +22,27 @@ export const signupFormSchema: RJSFSchema = {
       format: 'email',
       maxLength: 254,
     },
+    additionalInfo: {
+      type: 'object',
+      default: {},
+      required: [...[jobTitle ? 'jobTitle' : null]].filter(Boolean),
+      properties: {
+        ...(jobTitle
+          ? {
+              jobTitle: {
+                type: 'string',
+                title: 'Job Title',
+                maxLength: 50,
+              },
+            }
+          : {}),
+      },
+    },
+  },
+});
+
+export const signupFormUiSchema: UiSchema = {
+  additionalInfo: {
+    'ui:label': false,
   },
 };
-
-export const signupFormUiSchema: UiSchema = {};

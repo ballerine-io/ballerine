@@ -256,6 +256,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [update-helm-chart,build-and-push-ee-image]
     if: ${{ needs.update-helm-chart.result == 'success' }}
+    environment: ${{ inputs.environment }}
     permissions:
       contents: read
       packages: write

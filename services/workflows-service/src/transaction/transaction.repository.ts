@@ -6,6 +6,12 @@ import { TProjectId } from '@/types';
 import { GetTransactionsDto } from './dtos/get-transactions.dto';
 import { DateTimeFilter } from '@/common/query-filters/date-time-filter';
 import { toPrismaOrderByGeneric } from '@/workflow/utils/toPrismaOrderBy';
+import deepmerge from 'deepmerge';
+import { PageDto } from '@/common/dto';
+
+const DEFAULT_TRANSACTION_ORDER = {
+  transactionDate: Prisma.SortOrder.desc,
+};
 
 @Injectable()
 export class TransactionRepository {
@@ -21,22 +27,42 @@ export class TransactionRepository {
   }
 
   async findMany<T extends Prisma.TransactionRecordFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.TransactionRecordFindManyArgs>,
     projectId: TProjectId,
+    args?: Prisma.SelectSubset<T, Prisma.TransactionRecordFindManyArgs>,
   ) {
     return await this.prisma.transactionRecord.findMany(
-      this.scopeService.scopeFindMany(args, [projectId]),
+      deepmerge(args || {}, this.scopeService.scopeFindMany(args, [projectId])),
     );
   }
 
-  async findManyWithFilters(
-    getTransactionsParameters: GetTransactionsDto,
-    projectId: string,
-    options?: Prisma.TransactionRecordFindManyArgs,
-  ): Promise<TransactionRecord[]> {
-    const args: Prisma.TransactionRecordFindManyArgs = {};
+  // eslint-disable-next-line ballerine/verify-repository-project-scoped
+  static buildTransactionOrderByArgs(
+    getTransactionsParameters?: Pick<GetTransactionsDto, 'orderBy'>,
+  ) {
+    const args: {
+      orderBy: Prisma.TransactionRecordFindManyArgs['orderBy'];
+    } = {
+      orderBy: getTransactionsParameters?.orderBy
+        ? toPrismaOrderByGeneric(getTransactionsParameters.orderBy)
+        : DEFAULT_TRANSACTION_ORDER,
+    };
 
-    if (getTransactionsParameters.page?.number && getTransactionsParameters.page?.size) {
+    return args;
+  }
+
+  // eslint-disable-next-line ballerine/verify-repository-project-scoped
+  static buildTransactionPaginationArgs(
+    getTransactionsParameters?: Pick<GetTransactionsDto, 'page'>,
+  ) {
+    const args: {
+      skip: Prisma.TransactionRecordFindManyArgs['skip'];
+      take?: Prisma.TransactionRecordFindManyArgs['take'];
+    } = {
+      take: 20,
+      skip: 0,
+    };
+
+    if (getTransactionsParameters?.page?.number && getTransactionsParameters.page?.size) {
       // Temporary fix for pagination (class transformer issue)
       const size = parseInt(getTransactionsParameters.page.size as unknown as string, 10);
       const number = parseInt(getTransactionsParameters.page.number as unknown as string, 10);
@@ -45,16 +71,25 @@ export class TransactionRepository {
       args.skip = size * (number - 1);
     }
 
-    if (getTransactionsParameters.orderBy) {
-      args.orderBy = toPrismaOrderByGeneric(getTransactionsParameters.orderBy);
-    }
+    return args;
+  }
+
+  async findManyWithFiltersV1(
+    getTransactionsParameters: GetTransactionsDto,
+    projectId: string,
+    options?: Prisma.TransactionRecordFindManyArgs,
+  ): Promise<TransactionRecord[]> {
+    const args: Prisma.TransactionRecordFindManyArgs = {
+      ...TransactionRepository.buildTransactionPaginationArgs(getTransactionsParameters),
+      ...TransactionRepository.buildTransactionOrderByArgs(getTransactionsParameters),
+    };
 
     return this.prisma.transactionRecord.findMany(
       this.scopeService.scopeFindMany(
         {
           ...options,
           where: {
-            ...this.buildFilters(getTransactionsParameters),
+            ...this.buildFiltersV1(getTransactionsParameters),
           },
           ...args,
         },
@@ -63,8 +98,22 @@ export class TransactionRepository {
     );
   }
 
+  async findManyWithFiltersV2(
+    getTransactionsParameters: GetTransactionsDto,
+    projectId: string,
+    options?: Prisma.TransactionRecordFindManyArgs,
+  ): Promise<TransactionRecord[]> {
+    const _options = this.buildFindManyOptionsByFilter(getTransactionsParameters);
+
+    const args = deepmerge(options || {}, _options);
+
+    return this.prisma.transactionRecord.findMany(
+      this.scopeService.scopeFindMany(args, [projectId]),
+    );
+  }
+
   // eslint-disable-next-line ballerine/verify-repository-project-scoped
-  private buildFilters(
+  buildFiltersV1(
     getTransactionsParameters: GetTransactionsDto,
   ): Prisma.TransactionRecordWhereInput {
     const whereClause: Prisma.TransactionRecordWhereInput = {};
@@ -95,5 +144,24 @@ export class TransactionRepository {
     }
 
     return whereClause;
+  }
+
+  // eslint-disable-next-line ballerine/verify-repository-project-scoped
+  buildFindManyOptionsByFilter(getTransactionsParameters: GetTransactionsDto) {
+    const transactionDate = {
+      ...(getTransactionsParameters.startDate && { gte: getTransactionsParameters.startDate }),
+      ...(getTransactionsParameters.endDate && { lte: getTransactionsParameters.endDate }),
+    };
+
+    return {
+      ...TransactionRepository.buildTransactionPaginationArgs(getTransactionsParameters),
+      ...TransactionRepository.buildTransactionOrderByArgs(getTransactionsParameters),
+      where: {
+        ...(Object.keys(transactionDate).length > 0 && transactionDate),
+        ...(getTransactionsParameters.paymentMethod && {
+          paymentMethod: getTransactionsParameters.paymentMethod,
+        }),
+      } as Prisma.TransactionRecordWhereInput satisfies Prisma.TransactionRecordWhereInput,
+    };
   }
 }

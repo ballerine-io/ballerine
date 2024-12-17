@@ -21,6 +21,9 @@ import { MotionBadge } from '../../../../../../common/components/molecules/Motio
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
 import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
+import { useToggle } from '@/common/hooks/useToggle/useToggle';
+import { generateEditableDetailsV2Fields } from '@/common/components/organisms/EditableDetailsV2/utils/generate-editable-details-v2-fields';
+import { useUpdateContextAndSyncEntityMutation } from '@/domains/workflows/hooks/mutations/useUpdateContextAndSyncEntity/useUpdateContextAndSyncEntity';
 
 const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -175,15 +178,6 @@ export const useKycBlock = ({
       ) ?? []
     : [];
 
-  const details = Object.entries(childWorkflow?.context?.entity?.data ?? {}).map(
-    ([title, value]) => ({
-      title,
-      value,
-      pattern: '',
-      isEditable: false,
-      dropdownOptions: undefined,
-    }),
-  );
   const documents = childWorkflow?.context?.documents?.flatMap(
     (document, docIndex) =>
       document?.pages?.map(({ type, metadata, data }, pageIndex) => ({
@@ -362,6 +356,104 @@ export const useKycBlock = ({
     })
     .cellAt(0, 0);
 
+  const fields = generateEditableDetailsV2Fields(childWorkflow?.context)({
+    path: 'entity.data',
+  });
+
+  const [isEditable, _toggleIsEditable, toggleOnIsEditable, toggleOffIsEditable] = useToggle();
+  const { mutate: mutateUpdateContextAndSyncEntity } = useUpdateContextAndSyncEntityMutation({
+    workflowId: childWorkflow?.id,
+    onSuccess: () => {
+      toggleOffIsEditable();
+    },
+  });
+
+  const onSubmit = useCallback(
+    (values: Record<PropertyKey, any>) => {
+      mutateUpdateContextAndSyncEntity(values);
+    },
+    [mutateUpdateContextAndSyncEntity],
+  );
+
+  const getEntityDataBlock = () => {
+    if (parentWorkflow?.workflowDefinition?.config?.editableContext?.kyc?.entity) {
+      return createBlocksTyped()
+        .addBlock()
+        .addCell({
+          type: 'editableDetails',
+          value: fields,
+          props: {
+            title: 'Details',
+            onSubmit,
+            onEnableIsEditable: toggleOnIsEditable,
+            onCancel: toggleOffIsEditable,
+            config: {
+              parse: {
+                date: true,
+                isoDate: true,
+                datetime: true,
+                boolean: true,
+                url: true,
+                nullish: true,
+              },
+              blacklist: [],
+              actions: {
+                options: {
+                  disabled: !caseState.writeEnabled,
+                },
+                enableEditing: {
+                  disabled: isEditable,
+                },
+                editing: {
+                  disabled: !isEditable || !caseState.writeEnabled,
+                },
+                cancel: {
+                  disabled: false,
+                },
+                save: {
+                  disabled: !caseState.writeEnabled,
+                },
+              },
+              inputTypes: {
+                dateOfBirth: 'date',
+              },
+            },
+          },
+        })
+        .build()
+        .flat(1);
+    }
+
+    return createBlocksTyped()
+      .addBlock()
+      .addCell({
+        id: 'header',
+        type: 'heading',
+        value: 'Details',
+      })
+      .addCell({
+        id: 'decision',
+        type: 'details',
+        value: {
+          id: 1,
+          title: 'Details',
+          data: Object.entries(childWorkflow?.context?.entity?.data ?? {}).map(
+            ([title, value]) => ({
+              title,
+              value,
+              pattern: '',
+              isEditable: false,
+              dropdownOptions: undefined,
+            }),
+          ),
+        },
+        workflowId: childWorkflow?.id,
+        documents: childWorkflow?.context?.documents,
+      })
+      .build()
+      .flat(1);
+  };
+
   return createBlocksTyped()
     .addBlock()
     .addCell({
@@ -409,26 +501,7 @@ export const useKycBlock = ({
                 .addBlock()
                 .addCell({
                   type: 'container',
-                  value: createBlocksTyped()
-                    .addBlock()
-                    .addCell({
-                      id: 'header',
-                      type: 'heading',
-                      value: 'Details',
-                    })
-                    .addCell({
-                      id: 'decision',
-                      type: 'details',
-                      value: {
-                        id: 1,
-                        title: 'Details',
-                        data: details,
-                      },
-                      workflowId: childWorkflow?.id,
-                      documents: childWorkflow?.context?.documents,
-                    })
-                    .build()
-                    .flat(1),
+                  value: getEntityDataBlock(),
                 })
                 .addCell({
                   type: 'container',

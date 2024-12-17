@@ -19,3 +19,4 @@ export {
 export { type TAvailableDocuments, type TDocument } from './documents/workflow/documents/types';
 export * from './workflow/end-user.schema';
 export { WorkflowDefinitionConfigThemeSchema } from './workflow/workflow-config-theme';
+export { BusinessDataSchema, IndividualDataSchema } from './documents/schemas/entity-schema';

@@ -5,6 +5,7 @@ import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
 import { pluginsRegistry } from './constants';
+import { BUILT_IN_ACTION } from './built-in-action';
 import { HttpError } from './errors';
 import { BUILT_IN_EVENT } from './index';
 import { logger } from './logger';
@@ -464,9 +465,17 @@ export class WorkflowRunner {
       }
     }
 
+    const state = this.#__currentState;
+    const noOp = () => {
+      logger.log(`${BUILT_IN_ACTION.NO_OP} action fired`, {
+        state,
+      });
+    };
+
     const actions: MachineOptions<any, any>['actions'] = {
       ...workflowActions,
       ...stateActions,
+      [BUILT_IN_ACTION.NO_OP]: noOp,
     };
 
     const guards: MachineOptions<any, any>['guards'] = {
@@ -544,6 +553,7 @@ export class WorkflowRunner {
     return createMachine(
       {
         predictableActionArguments: true,
+        ...definition,
         on: {
           [BUILT_IN_EVENT.UPDATE_CONTEXT]: {
             actions: updateContext,
@@ -551,8 +561,8 @@ export class WorkflowRunner {
           [BUILT_IN_EVENT.DEEP_MERGE_CONTEXT]: {
             actions: deepMergeContext,
           },
+          ...definition.on,
         },
-        ...definition,
       },
       { actions, guards },
     );
@@ -912,8 +922,12 @@ export class WorkflowRunner {
   mergeToContext(
     sourceContext: Record<string, any>,
     informationToPersist: Record<string, any>,
-    pathToPersist: string,
+    pathToPersist?: string,
   ) {
+    if (!pathToPersist) {
+      return this.deepMerge(informationToPersist, sourceContext);
+    }
+
     const keys = pathToPersist.split('.') as Array<string>;
     let obj = sourceContext;
 

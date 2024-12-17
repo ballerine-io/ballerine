@@ -1,6 +1,50 @@
 # @ballerine/workflow-core
 
+## 0.6.77
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.58
+
+## 0.6.76
+
+### Patch Changes
+
+- Added no op event to workflow runner
+
+## 0.6.75
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.57
+
+## 0.6.74
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.56
+
+## 0.6.73
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.55
+
+## 0.6.72
+
+### Patch Changes
+
+- version bump
+
 ## 0.6.71
+
+## 0.6.69
 
 ### Patch Changes
 

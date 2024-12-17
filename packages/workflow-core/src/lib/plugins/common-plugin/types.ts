@@ -105,10 +105,13 @@ export interface WorkflowTokenPluginParams {
   expireInMinutes?: number;
   stateNames: string[];
   action: (workflowTokenCallbackInput: WorkflowTokenCallbackInput) => Promise<{
-    token: string;
-    customerName: string;
-    collectionFlowUrl: string;
-    customerNormalizedName: string;
+    collectionFlow: object;
+    metadata: {
+      token: string;
+      customerName: string;
+      collectionFlowUrl: string;
+      customerNormalizedName: string;
+    };
   }>;
   successAction?: string;
   errorAction?: string;

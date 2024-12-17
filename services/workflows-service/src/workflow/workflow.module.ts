@@ -41,7 +41,6 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
 import { forwardRef, Module } from '@nestjs/common';
 import { AlertModule } from '@/alert/alert.module';
-import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
 import { AlertDefinitionModule } from '@/alert-definition/alert-definition.module';
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
@@ -61,7 +60,6 @@ import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
     WorkflowDefinitionModule,
     AlertModule,
     BusinessModule,
-    DataAnalyticsModule,
     AlertDefinitionModule,
     RuleEngineModule,
     SecretsManagerModule,

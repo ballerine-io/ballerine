@@ -53,10 +53,12 @@ import {
 import {
   AnyRecord,
   buildCollectionFlowState,
+  BusinessDataSchema,
   CollectionFlowStatusesEnum,
   DefaultContextSchema,
   getDocumentId,
   getOrderedSteps,
+  IndividualDataSchema,
   isErrorWithMessage,
   isObject,
   ProcessStatus,
@@ -116,6 +118,7 @@ import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-
 import { entitiesUpdate } from './utils/entities-update';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
+import { PartialDeep } from 'type-fest';
 
 type TEntityId = string;
 
@@ -1551,15 +1554,25 @@ export class WorkflowService {
           }
 
           const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-          const workflowToken = await this.workflowTokenService.create(
-            currentProjectId,
-            {
+          let workflowToken;
+          try {
+            workflowToken = await this.workflowTokenService.create(
+              currentProjectId,
+              {
+                workflowRuntimeDataId: workflowRuntimeData.id,
+                endUserId: endUserId ?? null,
+                expiresAt: nowPlus30Days,
+              },
+              transaction,
+            );
+          } catch (error) {
+            this.logger.error('Failed to create workflow token', {
+              error,
               workflowRuntimeDataId: workflowRuntimeData.id,
-              endUserId: endUserId ?? null,
-              expiresAt: nowPlus30Days,
-            },
-            transaction,
-          );
+              endUserId,
+            });
+            this.sentry.captureException(error as Error);
+          }
 
           const collectionFlow = buildCollectionFlowState({
             apiUrl: env.APP_API_URL,
@@ -1588,7 +1601,7 @@ export class WorkflowService {
                   collectionFlow,
                   metadata: {
                     ...(workflowRuntimeData.context.metadata ?? {}),
-                    token: workflowToken.token,
+                    token: workflowToken?.token,
                     collectionFlowUrl: env.COLLECTION_FLOW_URL,
                     webUiSDKUrl: env.WEB_UI_SDK_URL,
                   },
@@ -1910,7 +1923,7 @@ export class WorkflowService {
     const isValid = validate({
       ...context,
       // Validation should not include the documents' 'propertiesSchema' prop.
-      documents: context?.documents?.map(
+      documents: (context?.documents || []).map(
         ({
           // @ts-ignore
           propertiesSchema: _propertiesSchema,
@@ -2096,6 +2109,24 @@ export class WorkflowService {
             transaction,
           );
 
+          const collectionFlow = buildCollectionFlowState({
+            apiUrl: env.APP_API_URL,
+            steps: uiDefinition?.definition
+              ? getOrderedSteps(
+                  (uiDefinition?.definition as Prisma.JsonObject)?.definition as Record<
+                    string,
+                    Record<string, unknown>
+                  >,
+                  { finalStates: [...WORKFLOW_FINAL_STATES] },
+                ).map(stepName => ({
+                  stateName: stepName,
+                }))
+              : [],
+            additionalInformation: {
+              customerCompany: customer.displayName,
+            },
+          });
+
           await this.workflowRuntimeDataRepository.updateById(
             workflowRuntimeId,
             {
@@ -2107,10 +2138,13 @@ export class WorkflowService {
           );
 
           return {
-            token: token,
-            customerName: customer.displayName,
-            collectionFlowUrl: env.COLLECTION_FLOW_URL!,
-            customerNormalizedName: customer.name,
+            collectionFlow,
+            metadata: {
+              token: token,
+              customerName: customer.displayName,
+              collectionFlowUrl: env.COLLECTION_FLOW_URL!,
+              customerNormalizedName: customer.name,
+            },
           };
         },
       });
@@ -2647,5 +2681,80 @@ export class WorkflowService {
         timeout: 180_000,
       },
     );
+  }
+
+  async updateContextAndSyncEntity({
+    workflowRuntimeDataId,
+    context,
+    projectId,
+  }: {
+    workflowRuntimeDataId: string;
+    context: PartialDeep<DefaultContextSchema>;
+    projectId: string;
+  }) {
+    await this.prismaService.$transaction(async transaction => {
+      await this.event(
+        {
+          id: workflowRuntimeDataId,
+          name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+          payload: {
+            newContext: context,
+            arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
+          },
+        },
+        [projectId],
+        projectId,
+        transaction,
+      );
+
+      const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
+        workflowRuntimeDataId,
+        {},
+        [projectId],
+        transaction,
+      );
+
+      const endUserContextToEntityAdapter = ({
+        firstName,
+        lastName,
+        dateOfBirth,
+        country,
+        phone,
+        email,
+        additionalInfo,
+        ...rest
+      }: Static<typeof IndividualDataSchema>) =>
+        ({
+          firstName,
+          lastName,
+          dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
+          country,
+          phone,
+          email,
+          additionalInfo: {
+            ...rest,
+            ...additionalInfo,
+          },
+        } satisfies Parameters<typeof this.entityRepository.endUser.updateById>[1]['data']);
+
+      const businessContextToEntityAdapter = (data: Static<typeof BusinessDataSchema>) =>
+        ({
+          companyName: data.companyName,
+        } satisfies Parameters<typeof this.entityRepository.business.updateById>[1]['data']);
+
+      if (workflowRuntimeData.businessId && context.entity?.data) {
+        await this.entityRepository.business.updateById(workflowRuntimeData.businessId, {
+          data: businessContextToEntityAdapter(
+            context.entity.data as Static<typeof BusinessDataSchema>,
+          ),
+        });
+      }
+
+      if (workflowRuntimeData.endUserId && context.entity?.data) {
+        await this.entityRepository.endUser.updateById(workflowRuntimeData.endUserId, {
+          data: endUserContextToEntityAdapter(context.entity.data),
+        });
+      }
+    });
   }
 }
