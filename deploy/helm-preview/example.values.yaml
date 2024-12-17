@@ -222,9 +222,6 @@ workflowService:
   envFrom: 
     - configMapRef:
         name: workflowservice # Change according to the corresponding nameOverride.
-  livenessProbe: {}
-  readinessProbe: {}
-  startupProbe: {}
   ingress:
     enabled: true
     className: "nginx"

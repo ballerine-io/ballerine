@@ -56,12 +56,6 @@ spec:
               envFrom:
               {{- toYaml . | nindent 14 }}
               {{- end }}
-              livenessProbe:
-                {{- toYaml .Values.workflowService.livenessProbe | nindent 16 }}
-              readinessProbe:
-                {{- toYaml .Values.workflowService.readinessProbe | nindent 16 }}
-              startupProbe:
-                {{- toYaml .Values.workflowService.startupProbe | nindent 16 }}
             {{- if .Values.workflowService.image.pullSecrets}}
             imagePullSecrets:
               - name: {{ .Values.workflowService.image.pullSecrets }}
