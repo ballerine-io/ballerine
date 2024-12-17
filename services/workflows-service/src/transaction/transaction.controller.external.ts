@@ -37,7 +37,7 @@ import {
   GetTransactionsDto,
 } from '@/transaction/dtos/get-transactions.dto';
 import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
-import { PaymentMethod } from '@prisma/client';
+import { MonitoringType, PaymentMethod } from '@prisma/client';
 import { isEmpty } from 'lodash';
 import { TransactionEntityMapper } from './transaction.mapper';
 import { DataInvestigationService } from '@/data-analytics/data-investigation.service';
@@ -339,7 +339,11 @@ export class TransactionControllerExternal {
     @Query() filters: GetTransactionsByAlertDto,
     @CurrentProject() projectId: types.TProjectId,
   ) {
-    const alert = await this.alertService.getAlertWithDefinition(filters.alertId, projectId);
+    const alert = await this.alertService.getAlertWithDefinition(
+      filters.alertId,
+      projectId,
+      MonitoringType.transaction_monitoring,
+    );
 
     if (!alert) {
       throw new errors.NotFoundException(`Alert with id ${filters.alertId} not found`);
