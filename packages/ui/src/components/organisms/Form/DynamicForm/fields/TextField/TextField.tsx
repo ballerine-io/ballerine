@@ -21,7 +21,7 @@ export const TextField: TDynamicFormField<TBaseFormElements, ITextFieldParams> =
 
   const { stack } = useStack();
 
-  const { value, onChange, onBlur, disabled } = useField(element, stack);
+  const { value, onChange, onBlur, onFocus, disabled } = useField(element, stack);
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -38,6 +38,7 @@ export const TextField: TDynamicFormField<TBaseFormElements, ITextFieldParams> =
     disabled,
     onChange: handleChange,
     onBlur,
+    onFocus,
   };
 
   return (

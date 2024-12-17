@@ -3,6 +3,7 @@ import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { IDynamicFormContext, useDynamicForm } from '../../../context';
 import { IFormElement, TBaseFormElements } from '../../../types';
+import { useEvents } from '../../internal/useEvents';
 import { useElementId } from '../useElementId';
 import { useValueDestination } from '../useValueDestination';
 import { useField } from './useField';
@@ -23,6 +24,10 @@ vi.mock('../useValueDestination', () => ({
   useValueDestination: vi.fn(),
 }));
 
+vi.mock('../../internal/useEvents', () => ({
+  useEvents: vi.fn(),
+}));
+
 describe('useField', () => {
   const mockElement = {
     id: 'test-field',
@@ -37,6 +42,8 @@ describe('useField', () => {
   const mockGetValue = vi.fn();
   const mockSetTouched = vi.fn();
   const mockGetTouched = vi.fn();
+  const mockSendEvent = vi.fn();
+  const mockSendEventAsync = vi.fn();
 
   const mockFieldHelpers = {
     setValue: mockSetValue,
@@ -51,6 +58,10 @@ describe('useField', () => {
     vi.mocked(useElementId).mockReturnValue('test-field-1-2');
     vi.mocked(useValueDestination).mockReturnValue('test.path[1][2]');
     vi.mocked(useRuleEngine).mockReturnValue([]);
+    vi.mocked(useEvents).mockReturnValue({
+      sendEvent: mockSendEvent,
+      sendEventAsync: mockSendEventAsync,
+    } as unknown as ReturnType<typeof useEvents>);
     vi.mocked(useDynamicForm).mockReturnValue({
       fieldHelpers: mockFieldHelpers,
       values: {},
@@ -68,6 +79,7 @@ describe('useField', () => {
       disabled: false,
       onChange: expect.any(Function),
       onBlur: expect.any(Function),
+      onFocus: expect.any(Function),
     });
   });
 
@@ -96,13 +108,34 @@ describe('useField', () => {
   });
 
   describe('onChange', () => {
-    it('should update value and touched state', () => {
+    it('should update value, touched state and trigger async event', () => {
       const { result } = renderHook(() => useField(mockElement, mockStack));
 
       result.current.onChange('new-value');
 
       expect(mockSetValue).toHaveBeenCalledWith('test-field-1-2', 'test.path[1][2]', 'new-value');
       expect(mockSetTouched).toHaveBeenCalledWith('test-field-1-2', true);
+      expect(mockSendEventAsync).toHaveBeenCalledWith('onChange');
+    });
+  });
+
+  describe('onBlur', () => {
+    it('should trigger blur event', () => {
+      const { result } = renderHook(() => useField(mockElement, mockStack));
+
+      result.current.onBlur();
+
+      expect(mockSendEvent).toHaveBeenCalledWith('onBlur');
+    });
+  });
+
+  describe('onFocus', () => {
+    it('should trigger focus event', () => {
+      const { result } = renderHook(() => useField(mockElement, mockStack));
+
+      result.current.onFocus();
+
+      expect(mockSendEvent).toHaveBeenCalledWith('onFocus');
     });
   });
 
@@ -145,6 +178,19 @@ describe('useField', () => {
 
       expect(result.current.disabled).toBe(false);
     });
+
+    it('should pass correct params to useRuleEngine', () => {
+      renderHook(() => useField(mockElement, mockStack));
+
+      expect(useRuleEngine).toHaveBeenCalledWith(
+        {},
+        {
+          rules: mockElement.disable,
+          runOnInitialize: true,
+          executionDelay: 500,
+        },
+      );
+    });
   });
 
   it('should memoize value', () => {
@@ -181,5 +227,14 @@ describe('useField', () => {
     rerender();
 
     expect(result.current.onBlur).toBe(initialOnBlur);
+  });
+
+  it('should memoize onFocus', () => {
+    const { result, rerender } = renderHook(() => useField(mockElement, mockStack));
+    const initialOnFocus = result.current.onFocus;
+
+    rerender();
+
+    expect(result.current.onFocus).toBe(initialOnFocus);
   });
 });

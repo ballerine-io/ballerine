@@ -18,6 +18,7 @@ export const DynamicFormV2: FunctionComponent<IDynamicFormProps> = ({
   onChange,
   onFieldChange,
   onSubmit,
+  onEvent,
 }) => {
   const validationSchema = useValidationSchema(elements);
   const valuesApi = useValues({
@@ -36,8 +37,11 @@ export const DynamicFormV2: FunctionComponent<IDynamicFormProps> = ({
       submit,
       fieldHelpers,
       elementsMap,
+      callbacks: {
+        onEvent,
+      },
     }),
-    [touchedApi.touched, valuesApi.values, submit, fieldHelpers, elementsMap],
+    [touchedApi.touched, valuesApi.values, submit, fieldHelpers, elementsMap, onEvent],
   );
 
   return (

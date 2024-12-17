@@ -2,9 +2,10 @@ import { Button } from '@/components/atoms';
 import '@testing-library/jest-dom';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useValidator } from '../../../Validator';
 import { useDynamicForm } from '../../context';
+import { useElement } from '../../hooks/external';
 import { useField } from '../../hooks/external/useField';
 import { IFormElement, TBaseFormElements } from '../../types';
 import { ISubmitButtonParams, SubmitButton } from './SubmitButton';
@@ -13,13 +14,7 @@ vi.mock('@/components/atoms', () => ({
   Button: vi.fn(),
 }));
 
-vi.mock('../../hooks/external/useElement', () => ({
-  useElement: vi.fn().mockReturnValue({ id: 'test-id' }),
-}));
-
-vi.mock('../../hooks/external/useField', () => ({
-  useField: vi.fn().mockReturnValue({ disabled: false }),
-}));
+vi.mock('../../hooks/external/useElement');
 
 vi.mock('../../../Validator', () => ({
   useValidator: vi.fn(),
@@ -29,9 +24,7 @@ vi.mock('../../context', () => ({
   useDynamicForm: vi.fn(),
 }));
 
-vi.mock('../../hooks/external', () => ({
-  useField: vi.fn(),
-}));
+vi.mock('../../hooks/external/useField');
 
 describe('SubmitButton', () => {
   const mockElement = {
@@ -54,6 +47,12 @@ describe('SubmitButton', () => {
     vi.mocked(useField).mockReturnValue({ disabled: false } as any);
     vi.mocked(useDynamicForm).mockReturnValue({ submit: mockSubmit } as any);
     vi.mocked(useValidator).mockReturnValue({ isValid: true } as any);
+    vi.mocked(useElement).mockReturnValue({ id: 'test-id' } as any);
+    vi.mocked(useField).mockReturnValue({ disabled: false } as any);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should render button with default text', () => {

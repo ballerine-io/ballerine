@@ -2,13 +2,11 @@ import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { IDynamicFormContext, useDynamicForm } from '../../../context';
 import { IFormElement } from '../../../types';
+import { useCallbacks } from '../../internal/useCallbacks';
 import { useElement } from './useElement';
 
-vi.mock('../../../context', () => ({
-  useDynamicForm: vi.fn().mockReturnValue({
-    values: {},
-  } as IDynamicFormContext<object>),
-}));
+vi.mock('../../../context');
+vi.mock('../../../hooks/internal/useCallbacks');
 
 describe('useElement', () => {
   beforeEach(() => {
@@ -17,7 +15,11 @@ describe('useElement', () => {
       values: {
         test: 1,
       },
-    } as IDynamicFormContext<object>);
+    } as unknown as IDynamicFormContext<object>);
+
+    vi.mocked(useCallbacks).mockReturnValue({
+      onEvent: vi.fn(),
+    });
 
     vi.useFakeTimers();
   });

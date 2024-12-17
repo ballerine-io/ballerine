@@ -1,6 +1,6 @@
 import { AutocompleteInput } from '@/components/molecules';
 import { createTestId } from '@/components/organisms/Renderer';
-import { useField } from '../../hooks/external';
+import { useField } from '../../hooks/external/useField';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { TBaseFormElements, TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
@@ -20,7 +20,10 @@ export const AutocompleteField: TDynamicFormField<TBaseFormElements, IAutocomple
 }) => {
   const { params } = element;
   const { stack } = useStack();
-  const { value, onChange, onBlur, disabled } = useField<string | undefined>(element, stack);
+  const { value, onChange, onBlur, onFocus, disabled } = useField<string | undefined>(
+    element,
+    stack,
+  );
   const { options = [], placeholder = '' } = params || {};
 
   return (
@@ -33,6 +36,7 @@ export const AutocompleteField: TDynamicFormField<TBaseFormElements, IAutocomple
         placeholder={placeholder}
         onChange={event => onChange(event.target.value || '')}
         onBlur={onBlur}
+        onFocus={onFocus}
       />
     </FieldLayout>
   );

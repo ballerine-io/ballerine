@@ -20,7 +20,7 @@ export const CheckboxListField: TDynamicFormField<TBaseFormElements, ICheckboxLi
 }) => {
   const { options = [] } = element.params || {};
   const { stack } = useStack();
-  const { value, onChange, disabled } = useField<string[]>(element, stack);
+  const { value, onChange, onFocus, onBlur, disabled } = useField<string[]>(element, stack);
 
   return (
     <FieldLayout element={element}>
@@ -36,6 +36,8 @@ export const CheckboxListField: TDynamicFormField<TBaseFormElements, ICheckboxLi
               value={option.value}
               checked={Array.isArray(value) && value.includes(option.value)}
               data-testid={`${createTestId(element, stack)}-checkbox-${index}`}
+              onFocus={onFocus}
+              onBlur={onBlur}
               onCheckedChange={_ => {
                 let val = (value as string[]) || [];
 

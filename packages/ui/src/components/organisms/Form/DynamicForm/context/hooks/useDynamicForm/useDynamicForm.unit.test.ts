@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { useContext } from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DynamicFormContext } from '../../dynamic-form.context';
 import { useDynamicForm } from './useDynamicForm';
 
@@ -19,6 +19,10 @@ describe('useDynamicForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useContext).mockReturnValue(mockContextValue);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should call useContext with DynamicFormContext', () => {

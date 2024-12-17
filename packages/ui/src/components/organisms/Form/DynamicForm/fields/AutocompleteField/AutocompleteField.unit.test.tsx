@@ -2,19 +2,28 @@ import { createTestId } from '@/components/organisms/Renderer';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useField } from '../../hooks/external';
+import { useField } from '../../hooks/external/useField';
 import { IFormElement, TBaseFormElements } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { AutocompleteField, IAutocompleteFieldParams } from './AutocompleteField';
 
 // Mock dependencies
 vi.mock('@/components/molecules', () => ({
-  AutocompleteInput: ({ children, options, ...props }: any) => (
-    <input {...props} data-options={JSON.stringify(options)} type="text" />
+  AutocompleteInput: ({ children, options, onFocus, ...props }: any) => (
+    <input
+      {...props}
+      onFocus={e => {
+        console.log('FOCUS');
+        onFocus?.(e);
+      }}
+      data-options={JSON.stringify(options)}
+      type="text"
+      tabIndex={0}
+    />
   ),
 }));
 
-vi.mock('../../hooks/external', () => ({
+vi.mock('../../hooks/external/useField', () => ({
   useField: vi.fn(),
 }));
 
@@ -49,6 +58,7 @@ describe('AutocompleteField', () => {
     value: '',
     onChange: vi.fn(),
     onBlur: vi.fn(),
+    onFocus: vi.fn(),
     disabled: false,
     touched: false,
   } as ReturnType<typeof useField>;
@@ -93,6 +103,19 @@ describe('AutocompleteField', () => {
     await user.tab();
 
     expect(mockFieldProps.onBlur).toHaveBeenCalled();
+  });
+
+  it('should handle focus events', async () => {
+    const user = userEvent.setup();
+
+    const { container } = render(<AutocompleteField element={mockElement} />);
+
+    const input = container.querySelector('input');
+
+    await user.click(input!);
+    console.log(input?.outerHTML);
+
+    expect(mockFieldProps.onFocus).toHaveBeenCalled();
   });
 
   it('should respect disabled state', () => {

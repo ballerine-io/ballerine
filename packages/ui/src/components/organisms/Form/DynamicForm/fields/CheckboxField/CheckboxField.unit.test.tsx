@@ -1,7 +1,9 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external';
 import { IFormElement, TBaseFormElements } from '../../types';
+import { useStack } from '../FieldList/providers/StackProvider';
 import { CheckboxField } from './CheckboxField';
 
 // Mock dependencies
@@ -12,15 +14,15 @@ vi.mock('@/components/atoms', () => ({
       checked={props.checked}
       onChange={e => props.onChange(e.target.checked)}
       disabled={props.disabled}
+      onFocus={props.onFocus}
+      onBlur={props.onBlur}
       data-testid="test-checkbox"
     />
   )),
 }));
 
 vi.mock('../FieldList/providers/StackProvider', () => ({
-  useStack: () => ({
-    stack: [],
-  }),
+  useStack: vi.fn(),
 }));
 
 vi.mock('../../hooks/external/useField', () => ({
@@ -28,20 +30,25 @@ vi.mock('../../hooks/external/useField', () => ({
 }));
 
 describe('CheckboxField', () => {
+  const mockStack = [0];
   const mockElement = {
     id: 'test-checkbox',
     type: '',
   } as unknown as IFormElement<TBaseFormElements>;
 
+  const mockFieldProps = {
+    value: false,
+    onChange: vi.fn(),
+    onFocus: vi.fn(),
+    onBlur: vi.fn(),
+    disabled: false,
+  } as unknown as ReturnType<typeof useField>;
+
   beforeEach(() => {
     cleanup();
     vi.clearAllMocks();
-
-    vi.mocked(useField).mockReturnValue({
-      value: false,
-      onChange: vi.fn(),
-      disabled: false,
-    } as unknown as ReturnType<typeof useField>);
+    vi.mocked(useStack).mockReturnValue({ stack: mockStack });
+    vi.mocked(useField).mockReturnValue(mockFieldProps);
   });
 
   it('renders checkbox with correct initial state', () => {
@@ -53,10 +60,9 @@ describe('CheckboxField', () => {
 
   it('renders checked checkbox when value is true', () => {
     vi.mocked(useField).mockReturnValue({
+      ...mockFieldProps,
       value: true,
-      onChange: vi.fn(),
-      disabled: false,
-    } as unknown as ReturnType<typeof useField>);
+    });
 
     render(<CheckboxField element={mockElement} />);
     expect(screen.getByTestId('test-checkbox')).toBeChecked();
@@ -65,10 +71,9 @@ describe('CheckboxField', () => {
   it('handles onChange events', () => {
     const mockOnChange = vi.fn();
     vi.mocked(useField).mockReturnValue({
-      value: false,
+      ...mockFieldProps,
       onChange: mockOnChange,
-      disabled: false,
-    } as unknown as ReturnType<typeof useField>);
+    });
 
     render(<CheckboxField element={mockElement} />);
 
@@ -78,12 +83,32 @@ describe('CheckboxField', () => {
     expect(mockOnChange).toHaveBeenCalledWith(true);
   });
 
+  it('handles focus events', async () => {
+    const user = userEvent.setup();
+    render(<CheckboxField element={mockElement} />);
+
+    const checkbox = screen.getByTestId('test-checkbox');
+    await user.click(checkbox);
+
+    expect(mockFieldProps.onFocus).toHaveBeenCalled();
+  });
+
+  it('handles blur events', async () => {
+    const user = userEvent.setup();
+    render(<CheckboxField element={mockElement} />);
+
+    const checkbox = screen.getByTestId('test-checkbox');
+    await user.click(checkbox);
+    await user.tab();
+
+    expect(mockFieldProps.onBlur).toHaveBeenCalled();
+  });
+
   it('disables checkbox when disabled prop is true', () => {
     vi.mocked(useField).mockReturnValue({
-      value: false,
-      onChange: vi.fn(),
+      ...mockFieldProps,
       disabled: true,
-    } as unknown as ReturnType<typeof useField>);
+    });
 
     render(<CheckboxField element={mockElement} />);
     expect(screen.getByTestId('test-checkbox')).toBeDisabled();
@@ -91,10 +116,9 @@ describe('CheckboxField', () => {
 
   it('handles undefined value as unchecked', () => {
     vi.mocked(useField).mockReturnValue({
+      ...mockFieldProps,
       value: undefined,
-      onChange: vi.fn(),
-      disabled: false,
-    } as unknown as ReturnType<typeof useField>);
+    });
 
     render(<CheckboxField element={mockElement} />);
     expect(screen.getByTestId('test-checkbox')).not.toBeChecked();

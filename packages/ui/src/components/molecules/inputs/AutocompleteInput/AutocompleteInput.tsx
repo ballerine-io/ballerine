@@ -25,6 +25,7 @@ export interface AutocompleteInputProps {
   textInputClassName?: string;
   onChange: (event: AutocompleteChangeEvent) => void;
   onBlur?: (event: FocusEvent<any>) => void;
+  onFocus?: (event: FocusEvent<any>) => void;
 }
 
 export const AutocompleteInput = ({
@@ -37,6 +38,7 @@ export const AutocompleteInput = ({
   textInputClassName,
   onChange,
   onBlur,
+  onFocus,
 }: AutocompleteInputProps) => {
   const safeValue = useMemo(() => {
     if (typeof value !== 'string') {
@@ -81,6 +83,7 @@ export const AutocompleteInput = ({
         PaperComponent={Paper as ComponentProps<typeof Autocomplete>['PaperComponent']}
         onChange={handleChange}
         disabled={disabled}
+        onFocus={onFocus}
         slotProps={{
           paper: {
             className: 'mt-2 mb-2 w-full',

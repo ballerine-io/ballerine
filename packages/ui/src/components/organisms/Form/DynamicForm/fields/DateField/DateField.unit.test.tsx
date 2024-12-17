@@ -1,5 +1,5 @@
 import { checkIfDateIsValid } from '@/common/utils/check-if-date-is-valid';
-import { DatePickerInput } from '@/components/molecules/inputs/DatePickerInput/DatePickerInput';
+import { DatePickerInput } from '@/components/molecules';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external/useField';
@@ -27,14 +27,19 @@ vi.mock('@/components/molecules/inputs/DatePickerInput/DatePickerInput', () => (
         data-testid="test-date"
         disabled={props.disabled}
         value={props.value || ''}
-        onInput={props.onChange}
+        onChange={e => {
+          props.onChange(e);
+        }}
+        onInput={e => {
+          props.onChange(e);
+        }}
+        onFocus={props.onFocus}
+        onBlur={props.onBlur}
       />
     );
   }),
 }));
-vi.mock('../../hooks/external/useField', () => ({
-  useField: vi.fn(),
-}));
+vi.mock('../../hooks/external/useField');
 vi.mock('@/common/utils/check-if-date-is-valid', () => ({
   checkIfDateIsValid: vi.fn(),
 }));
@@ -44,12 +49,12 @@ describe('DateField', () => {
     cleanup();
     vi.restoreAllMocks();
 
-    const mockOnChange = vi.fn();
     vi.mocked(useField).mockReturnValue({
       value: '2023-01-01',
       touched: false,
-      onChange: mockOnChange,
+      onChange: vi.fn(),
       onBlur: vi.fn(),
+      onFocus: vi.fn(),
       disabled: false,
     });
   });
@@ -71,13 +76,21 @@ describe('DateField', () => {
 
   it('handles null date value correctly', () => {
     const mockOnChange = vi.fn();
+    vi.mocked(useField).mockReturnValue({
+      value: '2023-01-01',
+      touched: false,
+      onChange: mockOnChange,
+      onBlur: vi.fn(),
+      onFocus: vi.fn(),
+      disabled: false,
+    });
 
     render(<DateField element={mockElement} />);
 
     const dateInput = screen.getByTestId('test-date');
     fireEvent.change(dateInput, { target: { value: null } });
 
-    expect(mockOnChange).not.toHaveBeenCalled();
+    expect(mockOnChange).toHaveBeenCalledWith(null);
   });
 
   it('validates date before calling onChange', async () => {
@@ -87,6 +100,7 @@ describe('DateField', () => {
       touched: false,
       onChange: mockOnChange,
       onBlur: vi.fn(),
+      onFocus: vi.fn(),
       disabled: false,
     });
 
@@ -94,7 +108,8 @@ describe('DateField', () => {
 
     render(<DateField element={mockElement} />);
 
-    fireEvent.input(screen.getByTestId('test-date'), { target: { value: '2023-01-01' } });
+    const dateInput = screen.getByTestId('test-date');
+    fireEvent.input(dateInput, { target: { value: '2023-01-01' } });
 
     expect(checkIfDateIsValid).toHaveBeenCalledWith('2023-01-01');
     expect(mockOnChange).toHaveBeenCalledWith('2023-01-01');
@@ -107,6 +122,7 @@ describe('DateField', () => {
       touched: false,
       onChange: mockOnChange,
       onBlur: vi.fn(),
+      onFocus: vi.fn(),
       disabled: false,
     });
     vi.mocked(checkIfDateIsValid).mockReturnValue(false);
@@ -150,6 +166,7 @@ describe('DateField', () => {
       touched: false,
       onChange: vi.fn(),
       onBlur: vi.fn(),
+      onFocus: vi.fn(),
       disabled: true,
     });
 

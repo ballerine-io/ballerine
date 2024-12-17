@@ -25,7 +25,7 @@ export const DateField: TDynamicFormField<TBaseFormElements, IDateFieldParams> =
   } = element.params || {};
 
   const { stack } = useStack();
-  const { value, onChange, onBlur, disabled } = useField<DatePickerValue | undefined>(
+  const { value, onChange, onBlur, onFocus, disabled } = useField<DatePickerValue | undefined>(
     element,
     stack,
   );
@@ -34,7 +34,7 @@ export const DateField: TDynamicFormField<TBaseFormElements, IDateFieldParams> =
     (event: DatePickerChangeEvent) => {
       const dateValue = event.target.value;
 
-      if (dateValue === null) return onChange(null);
+      if (dateValue === null || dateValue === '') return onChange(null);
 
       if (!checkIfDateIsValid(dateValue)) return;
 
@@ -56,6 +56,7 @@ export const DateField: TDynamicFormField<TBaseFormElements, IDateFieldParams> =
         testId={createTestId(element, stack)}
         onBlur={onBlur}
         onChange={handleChange}
+        onFocus={onFocus}
       />
     </FieldLayout>
   );

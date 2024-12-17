@@ -1,3 +1,4 @@
+import { createTestId } from '@/components/organisms/Renderer';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external/useField';
@@ -5,9 +6,7 @@ import { IFormElement, TBaseFormElements } from '../../types';
 import { CheckboxListField, ICheckboxListFieldParams } from './CheckboxList';
 
 // Mock dependencies
-vi.mock('@/components/organisms/Renderer', () => ({
-  createTestId: vi.fn().mockReturnValue('test-checkbox-list'),
-}));
+vi.mock('@/components/organisms/Renderer');
 
 vi.mock('../FieldList/providers/StackProvider', () => ({
   useStack: () => ({
@@ -27,6 +26,9 @@ vi.mock('@/components/atoms', () => ({
       onChange={e => props.onCheckedChange(e.target.checked)}
       data-testid={props['data-testid']}
       value={props.value}
+      onFocus={props.onFocus}
+      onBlur={props.onBlur}
+      className={props.className}
     />
   )),
 }));
@@ -54,9 +56,13 @@ describe('CheckboxListField', () => {
     cleanup();
     vi.clearAllMocks();
 
+    vi.mocked(createTestId).mockReturnValue('test-checkbox-list');
+
     vi.mocked(useField).mockReturnValue({
       value: ['opt1'],
       onChange: vi.fn(),
+      onFocus: vi.fn(),
+      onBlur: vi.fn(),
       disabled: false,
     } as unknown as ReturnType<typeof useField>);
   });
@@ -66,7 +72,12 @@ describe('CheckboxListField', () => {
 
     mockOptions.forEach((option, index) => {
       expect(screen.getByText(option.label)).toBeInTheDocument();
-      expect(screen.getByTestId(`test-checkbox-list-checkbox-${index}`)).toBeInTheDocument();
+      const checkbox = screen.getByTestId(`test-checkbox-list-checkbox-${index}`);
+      expect(checkbox).toBeInTheDocument();
+      expect(checkbox).toHaveClass('border-primary');
+      expect(checkbox).toHaveClass('data-[state=checked]:bg-primary');
+      expect(checkbox).toHaveClass('data-[state=checked]:text-primary-foreground');
+      expect(checkbox).toHaveClass('bg-white');
     });
   });
 
@@ -74,6 +85,8 @@ describe('CheckboxListField', () => {
     vi.mocked(useField).mockReturnValue({
       value: ['opt1', 'opt3'],
       onChange: vi.fn(),
+      onFocus: vi.fn(),
+      onBlur: vi.fn(),
       disabled: false,
     } as unknown as ReturnType<typeof useField>);
 
@@ -92,13 +105,15 @@ describe('CheckboxListField', () => {
     vi.mocked(useField).mockReturnValue({
       value: ['opt1'],
       onChange: mockOnChange,
+      onFocus: vi.fn(),
+      onBlur: vi.fn(),
       disabled: false,
     } as unknown as ReturnType<typeof useField>);
 
     render(<CheckboxListField element={mockElement} />);
 
     const checkbox1 = screen.getByTestId('test-checkbox-list-checkbox-1');
-    fireEvent.click(checkbox1); // Click second checkbox
+    fireEvent.click(checkbox1);
 
     expect(mockOnChange).toHaveBeenCalledWith(['opt1', 'opt2']);
   });
@@ -108,21 +123,47 @@ describe('CheckboxListField', () => {
     vi.mocked(useField).mockReturnValue({
       value: ['opt1', 'opt2'],
       onChange: mockOnChange,
+      onFocus: vi.fn(),
+      onBlur: vi.fn(),
       disabled: false,
     } as unknown as ReturnType<typeof useField>);
 
     render(<CheckboxListField element={mockElement} />);
 
-    const checkboxes = screen.getAllByTestId('test-checkbox-list-checkbox-0');
-    fireEvent.click(checkboxes[0]!); // Uncheck first checkbox
+    const checkbox0 = screen.getByTestId('test-checkbox-list-checkbox-0');
+    fireEvent.click(checkbox0);
 
     expect(mockOnChange).toHaveBeenCalledWith(['opt2']);
+  });
+
+  it('handles focus and blur events', async () => {
+    const mockOnFocus = vi.fn();
+    const mockOnBlur = vi.fn();
+
+    vi.mocked(useField).mockReturnValue({
+      value: ['opt1'],
+      onChange: vi.fn(),
+      onFocus: mockOnFocus,
+      onBlur: mockOnBlur,
+      disabled: false,
+    } as unknown as ReturnType<typeof useField>);
+
+    render(<CheckboxListField element={mockElement} />);
+
+    const checkbox = screen.getByTestId('test-checkbox-list-checkbox-0');
+    fireEvent.focus(checkbox);
+    expect(mockOnFocus).toHaveBeenCalled();
+
+    fireEvent.blur(checkbox);
+    expect(mockOnBlur).toHaveBeenCalled();
   });
 
   it('applies disabled styling when disabled', () => {
     vi.mocked(useField).mockReturnValue({
       value: [],
       onChange: vi.fn(),
+      onFocus: vi.fn(),
+      onBlur: vi.fn(),
       disabled: true,
     } as unknown as ReturnType<typeof useField>);
 

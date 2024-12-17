@@ -51,6 +51,7 @@ describe('TextField', () => {
     value: '',
     onChange: vi.fn(),
     onBlur: vi.fn(),
+    onFocus: vi.fn(),
     disabled: false,
     touched: false,
   } as ReturnType<typeof useField>;
@@ -112,6 +113,16 @@ describe('TextField', () => {
     expect(mockFieldProps.onBlur).toHaveBeenCalled();
   });
 
+  it('should handle focus events', async () => {
+    const user = userEvent.setup();
+    render(<TextField element={mockElement} />);
+
+    const input = screen.getByTestId('test-id');
+    await user.click(input);
+
+    expect(mockFieldProps.onFocus).toHaveBeenCalled();
+  });
+
   it('should respect disabled state', () => {
     vi.mocked(useField).mockReturnValue({
       ...mockFieldProps,
@@ -148,5 +159,22 @@ describe('TextField', () => {
 
     const input = screen.getByTestId('test-id');
     expect(input).toHaveAttribute('type', 'text');
+  });
+
+  it('should handle focus and blur events for textarea', async () => {
+    const user = userEvent.setup();
+    const textAreaElement = {
+      ...mockElement,
+      params: { ...mockElement.params, style: 'textarea' },
+    } as unknown as IFormElement<TBaseFormElements, ITextFieldParams>;
+
+    render(<TextField element={textAreaElement} />);
+
+    const textarea = screen.getByTestId('test-id');
+    await user.click(textarea);
+    expect(mockFieldProps.onFocus).toHaveBeenCalled();
+
+    await user.tab();
+    expect(mockFieldProps.onBlur).toHaveBeenCalled();
   });
 });

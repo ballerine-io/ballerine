@@ -1,23 +1,10 @@
 import { renderHook } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { validate } from '../../../utils/validate';
 import { useAsyncValidate } from './useAsyncValidate';
 
 // Mock dependencies
-vi.mock('../../../utils/validate', () => ({
-  validate: vi.fn().mockReturnValue([
-    {
-      id: 'name',
-      originId: 'name',
-      message: ['error'],
-      invalidValue: 'John',
-    },
-  ]),
-}));
-
-vi.mock('lodash/debounce', () => ({
-  default: (fn: any) => fn,
-}));
+vi.mock('../../../utils/validate');
 
 describe('useAsyncValidate', () => {
   const mockContext = { name: 'John' };
@@ -25,6 +12,21 @@ describe('useAsyncValidate', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    vi.mocked(validate).mockReturnValue([
+      {
+        id: 'name',
+        originId: 'name',
+        message: ['error'],
+        invalidValue: 'John',
+      },
+    ]);
+
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('should initialize with empty validation errors', () => {
@@ -50,6 +52,8 @@ describe('useAsyncValidate', () => {
       }),
     );
 
+    vi.advanceTimersByTime(500);
+
     expect(validate).toHaveBeenCalledWith(mockContext, mockSchema, { abortEarly: false });
     expect(result.current).toEqual([
       {
@@ -70,6 +74,8 @@ describe('useAsyncValidate', () => {
       }),
     );
 
+    vi.advanceTimersByTime(500);
+
     expect(validate).toHaveBeenCalledWith(mockContext, mockSchema, { abortEarly: true });
   });
 
@@ -88,6 +94,8 @@ describe('useAsyncValidate', () => {
     const newContext = { name: 'Jane' };
     rerender({ context: newContext });
 
+    vi.advanceTimersByTime(500);
+
     expect(validate).toHaveBeenCalledWith(newContext, mockSchema, { abortEarly: false });
   });
 
@@ -105,6 +113,8 @@ describe('useAsyncValidate', () => {
 
     const newSchema = [{ id: 'email', validators: [], rules: [] }];
     rerender({ schema: newSchema });
+
+    vi.advanceTimersByTime(500);
 
     expect(validate).toHaveBeenCalledWith(mockContext, newSchema, { abortEarly: false });
   });

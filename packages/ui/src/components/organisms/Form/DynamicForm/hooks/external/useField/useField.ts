@@ -3,6 +3,7 @@ import { TDeepthLevelStack } from '@/components/organisms/Form/Validator';
 import { useCallback, useMemo } from 'react';
 import { useDynamicForm } from '../../../context';
 import { IFormElement } from '../../../types';
+import { useEvents } from '../../internal/useEvents';
 import { useElementId } from '../useElementId';
 import { useValueDestination } from '../useValueDestination';
 
@@ -13,7 +14,7 @@ export const useField = <TValue>(
   const fieldId = useElementId(element, stack);
   const valueDestination = useValueDestination(element, stack);
   const { fieldHelpers, values } = useDynamicForm();
-
+  const { sendEvent, sendEventAsync } = useEvents(element);
   const { setValue, getValue, setTouched, getTouched } = fieldHelpers;
 
   const value = useMemo(() => getValue<TValue>(valueDestination), [valueDestination, getValue]);
@@ -36,14 +37,18 @@ export const useField = <TValue>(
       setValue(fieldId, valueDestination, value);
       setTouched(fieldId, true);
 
-      // TODO: Dispatch onChange event?
+      sendEventAsync('onChange');
     },
-    [fieldId, valueDestination, setValue, setTouched],
+    [fieldId, valueDestination, setValue, setTouched, sendEventAsync],
   );
 
   const onBlur = useCallback(() => {
-    // TODO: Dispatch onBlur event?
-  }, []);
+    sendEvent('onBlur');
+  }, [sendEvent]);
+
+  const onFocus = useCallback(() => {
+    sendEvent('onFocus');
+  }, [sendEvent]);
 
   return {
     value,
@@ -51,5 +56,6 @@ export const useField = <TValue>(
     disabled: isDisabled,
     onChange,
     onBlur,
+    onFocus,
   };
 };

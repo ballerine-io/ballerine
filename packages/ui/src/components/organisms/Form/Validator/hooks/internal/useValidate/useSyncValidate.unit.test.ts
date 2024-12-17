@@ -4,16 +4,7 @@ import { validate } from '../../../utils/validate';
 import { useSyncValidate } from './useSyncValidate';
 
 // Mock dependencies
-vi.mock('../../../utils/validate', () => ({
-  validate: vi.fn().mockReturnValue([
-    {
-      id: 'name',
-      originId: 'name',
-      message: ['error'],
-      invalidValue: 'John',
-    },
-  ]),
-}));
+vi.mock('../../../utils/validate');
 
 describe('useSyncValidate', () => {
   const mockContext = { name: 'John' };
@@ -21,6 +12,15 @@ describe('useSyncValidate', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    vi.mocked(validate).mockReturnValue([
+      {
+        id: 'name',
+        originId: 'name',
+        message: ['error'],
+        invalidValue: 'John',
+      },
+    ]);
   });
 
   it('should initialize with empty validation errors when validateSync is false', () => {

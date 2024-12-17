@@ -14,7 +14,10 @@ export const MultiselectField: TDynamicFormField<TBaseFormElements, IMultiselect
   element,
 }) => {
   const { stack } = useStack();
-  const { value, onChange, disabled } = useField<MultiSelectValue[] | undefined>(element, stack);
+  const { value, onChange, onBlur, onFocus, disabled } = useField<MultiSelectValue[] | undefined>(
+    element,
+    stack,
+  );
 
   const renderSelected = useCallback((params: SelectedElementParams, option: MultiSelectOption) => {
     return <MultiselectfieldSelectedItem option={option} params={params} />;
@@ -25,6 +28,8 @@ export const MultiselectField: TDynamicFormField<TBaseFormElements, IMultiselect
       value={value}
       disabled={disabled}
       onChange={onChange}
+      onBlur={onBlur}
+      onFocus={onFocus}
       options={element.params?.options || []}
       renderSelected={renderSelected}
     />

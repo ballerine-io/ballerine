@@ -13,7 +13,7 @@ vi.mock('./context/stack-provider-context', () => ({
 
 import { render } from '@testing-library/react';
 import { useMemo } from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { StackProvider } from './StackProvider';
 import { StackProviderContext } from './context/stack-provider-context';
 
@@ -21,6 +21,11 @@ describe('StackProvider', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should create context with provided stack', () => {
     const mockStack = [1, 2, 3];
 

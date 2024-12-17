@@ -1,5 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { IValidatorContext } from '../../../context';
 import { useValidator } from '../../external/useValidator/useValidator';
 import { useValidatorRef } from './useValidatorRef';
 
@@ -16,6 +17,10 @@ describe('useValidatorRef', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    vi.mocked(useValidator).mockReturnValue({
+      validate: mockValidate,
+    } as unknown as IValidatorContext<any>);
   });
 
   it('should return context from useValidator', () => {

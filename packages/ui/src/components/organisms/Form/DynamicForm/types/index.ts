@@ -1,6 +1,7 @@
 import { FunctionComponent } from 'react';
 import { IRule } from '../../hooks/useRuleEngine';
 import { IValidationError, IValidationParams, TValidators } from '../../Validator';
+import { IFormEventElement, TElementEvent } from '../hooks/internal/useEvents/types';
 
 export type TBaseFormElements = 'textinput' | 'fieldlist';
 
@@ -58,6 +59,7 @@ export interface IDynamicFormProps<TValues = object, TElements extends string = 
   onChange?: (newValues: TValues) => void;
   onFieldChange?: (fieldName: string, newValue: unknown, newValues: TValues) => void;
   onSubmit?: (values: TValues) => void;
+  onEvent?: (eventName: TElementEvent, element: IFormEventElement<TElements>) => void;
 
   ref?: React.RefObject<IFormRef<TValues>>;
 }

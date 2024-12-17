@@ -36,6 +36,7 @@ export interface DatePickerProps {
   textInputClassName?: string;
   onChange: (event: DatePickerChangeEvent) => void;
   onBlur?: (event: FocusEvent<any>) => void;
+  onFocus?: (event: FocusEvent<any>) => void;
 }
 
 export const DatePickerInput = ({
@@ -47,6 +48,7 @@ export const DatePickerInput = ({
   textInputClassName,
   onChange,
   onBlur,
+  onFocus,
 }: DatePickerProps) => {
   const {
     outputValueFormat = 'iso',
@@ -124,6 +126,7 @@ export const DatePickerInput = ({
           onFocus={e => {
             setFocused(true);
             props.onFocus && props.onFocus(e);
+            onFocus && onFocus(e);
           }}
           onBlur={e => {
             setFocused(false);
