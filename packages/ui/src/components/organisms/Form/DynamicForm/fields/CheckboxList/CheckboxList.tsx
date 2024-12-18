@@ -2,6 +2,7 @@ import { ctw } from '@/common';
 import { Checkbox } from '@/components/atoms';
 import { createTestId } from '@/components/organisms/Renderer';
 import { useField } from '../../hooks/external';
+import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
@@ -52,6 +53,7 @@ export const CheckboxListField: TDynamicFormField<ICheckboxListFieldParams> = ({
           </label>
         ))}
       </div>
+      <FieldErrors element={element} />
     </FieldLayout>
   );
 };

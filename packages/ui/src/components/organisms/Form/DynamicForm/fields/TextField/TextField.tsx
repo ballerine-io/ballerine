@@ -21,6 +21,10 @@ export const TextField: TDynamicFormField<ITextFieldParams> = ({ element }) => {
 
   const { stack } = useStack();
 
+  if (stack?.length) {
+    console.log('stack', stack, element);
+  }
+
   const { id } = useElement(element, stack);
   const { value, onChange, onBlur, onFocus, disabled } = useField(element, stack);
 

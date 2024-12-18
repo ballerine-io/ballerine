@@ -3,6 +3,7 @@ import { Button } from '@/components/atoms';
 import { Renderer, TRendererSchema } from '@/components/organisms/Renderer';
 import { useDynamicForm } from '../../context';
 import { useElement } from '../../hooks/external';
+import { FieldErrors } from '../../layouts/FieldErrors';
 import { TDynamicFormField } from '../../types';
 import { useFieldList } from './hooks/useFieldList';
 import { StackProvider, useStack } from './providers/StackProvider';
@@ -53,6 +54,7 @@ export const FieldList: TDynamicFormField<IFieldListParams> = props => {
       <div className="flex flex-row justify-end">
         <Button onClick={addItem}>{addButtonLabel}</Button>
       </div>
+      <FieldErrors element={element} />
     </div>
   );
 };

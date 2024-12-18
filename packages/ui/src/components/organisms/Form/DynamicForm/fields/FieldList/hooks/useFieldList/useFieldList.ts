@@ -23,6 +23,7 @@ export const useFieldList = ({ element }: IUseFieldListProps) => {
       if (!Array.isArray(value)) return;
 
       const newValue = value.filter((_, i) => i !== index);
+      console.log('newValue', newValue);
       onChange(newValue);
     },
     [value, onChange],

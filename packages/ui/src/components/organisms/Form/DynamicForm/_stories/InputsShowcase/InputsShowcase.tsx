@@ -13,13 +13,7 @@ const schema: Array<IFormElement<any, any>> = [
       label: 'Text Field',
       placeholder: 'Enter text',
     },
-    validate: [
-      {
-        type: 'required',
-        value: {},
-        message: 'Text field value is required',
-      },
-    ],
+    validate: [],
   },
   {
     id: 'AutocompleteField',
@@ -100,6 +94,15 @@ const schema: Array<IFormElement<any, any>> = [
     },
   },
   {
+    id: 'FileField',
+    element: 'filefield',
+    valueDestination: 'file',
+    params: {
+      label: 'File Field',
+      placeholder: 'Select File',
+    },
+  },
+  {
     id: 'FieldList',
     element: 'fieldlist',
     valueDestination: 'fieldlist',
@@ -110,12 +113,18 @@ const schema: Array<IFormElement<any, any>> = [
       {
         id: 'Nested-TextField',
         element: 'textfield',
-        valueDestination: 'textfield[$0]',
+        valueDestination: 'fieldlist[$0]',
         params: {
           label: 'Text Field',
           placeholder: 'Enter text',
         },
-        validate: [],
+        validate: [
+          {
+            type: 'required',
+            value: {},
+            message: 'List item is required',
+          },
+        ],
       },
     ],
   },

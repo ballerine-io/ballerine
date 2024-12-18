@@ -4,6 +4,7 @@ import { CheckboxField } from '../fields/CheckboxField';
 import { CheckboxListField } from '../fields/CheckboxList';
 import { DateField } from '../fields/DateField';
 import { FieldList } from '../fields/FieldList';
+import { FileField } from '../fields/FileField';
 import { MultiselectField } from '../fields/MultiselectField';
 import { PhoneField } from '../fields/PhoneField';
 import { SelectField } from '../fields/SelectField';
@@ -21,6 +22,7 @@ export const baseFields = {
   selectfield: SelectField,
   submitbutton: SubmitButton,
   phonefield: PhoneField,
+  filefield: FileField,
 } as const;
 
 export type TBaseFields = keyof typeof baseFields & string;

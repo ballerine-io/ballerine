@@ -13,6 +13,7 @@ export const useField = <TValue>(
 ) => {
   const fieldId = useElementId(element, stack);
   const valueDestination = useValueDestination(element, stack);
+
   const { fieldHelpers, values } = useDynamicForm();
   const { sendEvent, sendEventAsync } = useEvents(element);
   const { setValue, getValue, setTouched, getTouched } = fieldHelpers;
