@@ -9,7 +9,7 @@ import { useFieldHelpers } from './hooks/internal/useFieldHelpers';
 import { useTouched } from './hooks/internal/useTouched';
 import { useValidationSchema } from './hooks/internal/useValidationSchema';
 import { useValues } from './hooks/internal/useValues';
-import { ICommonFieldParams, IDynamicFormProps, IFormElement, TBaseFormElements } from './types';
+import { ICommonFieldParams, IDynamicFormProps, IFormElement } from './types';
 
 // Mock dependencies
 vi.mock('../../Renderer');
@@ -75,20 +75,19 @@ describe('DynamicFormV2', () => {
     elements: [],
     values: {},
     validationParams: {},
-    elementsMap: {},
     onChange: vi.fn(),
     onFieldChange: vi.fn(),
     onSubmit: vi.fn(),
     onEvent: vi.fn(),
-  } as unknown as IDynamicFormProps<object, TBaseFormElements>;
+  } as unknown as IDynamicFormProps;
 
   it('should render without crashing', () => {
     render(<DynamicFormV2 {...mockProps} />);
   });
 
   it('should pass elements to useValidationSchema', () => {
-    const elements = [{ id: 'test', element: 'text' }] as unknown as Array<
-      IFormElement<TBaseFormElements, ICommonFieldParams>
+    const elements = [{ id: 'test', element: 'textfield' }] as unknown as Array<
+      IFormElement<string, ICommonFieldParams>
     >;
     render(<DynamicFormV2 {...mockProps} elements={elements} />);
     expect(useValidationSchema).toHaveBeenCalledWith(elements);
@@ -127,6 +126,7 @@ describe('DynamicFormV2', () => {
       onSubmit: mockProps.onSubmit,
     });
   });
+
   it('should pass context to DynamicFormContext.Provider', () => {
     const touchedMock = {
       touched: { field1: true },
@@ -162,7 +162,7 @@ describe('DynamicFormV2', () => {
       values: valuesMock.values,
       submit: submitMock.submit,
       fieldHelpers: fieldHelpersMock,
-      elementsMap: mockProps.elementsMap,
+      elementsMap: mockProps.fieldExtends ? expect.any(Object) : expect.any(Object),
       callbacks: {
         onEvent: mockProps.onEvent,
       },

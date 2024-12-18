@@ -3,7 +3,7 @@ import { IFormElement } from '../../../types';
 import { generateTouchedMapForAllElements } from './helpers/generate-touched-map-for-all-elements/generate-touched-map-for-all-elements';
 import { ITouchedState } from './types';
 
-export const useTouched = (elements: IFormElement[], context: object) => {
+export const useTouched = (elements: Array<IFormElement<any, any>>, context: object) => {
   const [touched, setTouchedState] = useState<ITouchedState>({});
 
   const setFieldTouched = useCallback((fieldName: string, isTouched: boolean) => {

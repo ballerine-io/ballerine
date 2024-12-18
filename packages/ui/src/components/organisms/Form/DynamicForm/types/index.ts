@@ -3,14 +3,12 @@ import { IRule } from '../../hooks/useRuleEngine';
 import { IValidationError, IValidationParams, TValidators } from '../../Validator';
 import { IFormEventElement, TElementEvent } from '../hooks/internal/useEvents/types';
 
-export type TBaseFormElements = 'textinput' | 'fieldlist';
-
 export interface ICommonFieldParams {
   label?: string;
   placeholder?: string;
 }
 
-export interface IFormElement<TElements = TBaseFormElements, TParams = ICommonFieldParams> {
+export interface IFormElement<TElements = string, TParams = ICommonFieldParams> {
   id: string;
   valueDestination: string;
   element: TElements;
@@ -31,35 +29,33 @@ export interface IFormRef<TValues = object> {
 }
 
 export type TDynamicFormElement<
-  TElements extends string = TBaseFormElements,
+  TElements extends string = string,
   TParams = unknown,
 > = FunctionComponent<{
   element: IFormElement<TElements, TParams>;
 }>;
 
 export type TDynamicFormField<
-  TElements extends string = TBaseFormElements,
+  TElements extends string = string,
   TParams = ICommonFieldParams,
 > = FunctionComponent<{
   element: IFormElement<TElements, TParams>;
   children?: React.ReactNode | React.ReactNode[];
 }>;
 
-export type TElementsMap<TElements extends string = TBaseFormElements> = Record<
-  TElements,
-  TDynamicFormElement
->;
+export type TElementsMap = Record<string, TDynamicFormElement<any, any>>;
 
-export interface IDynamicFormProps<TValues = object, TElements extends string = TBaseFormElements> {
+export interface IDynamicFormProps<TValues = object> {
   values: TValues;
-  elements: Array<IFormElement<TElements>>;
-  elementsMap: TElementsMap<TElements>;
+  elements: Array<IFormElement<string, any>>;
+
+  fieldExtends?: Record<string, TDynamicFormField<string>>;
 
   validationParams?: IValidationParams;
   onChange?: (newValues: TValues) => void;
   onFieldChange?: (fieldName: string, newValue: unknown, newValues: TValues) => void;
   onSubmit?: (values: TValues) => void;
-  onEvent?: (eventName: TElementEvent, element: IFormEventElement<TElements>) => void;
+  onEvent?: (eventName: TElementEvent, element: IFormEventElement<string, any>) => void;
 
   ref?: React.RefObject<IFormRef<TValues>>;
 }

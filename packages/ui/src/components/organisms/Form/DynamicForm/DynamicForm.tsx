@@ -8,13 +8,14 @@ import { useFieldHelpers } from './hooks/internal/useFieldHelpers';
 import { useTouched } from './hooks/internal/useTouched';
 import { useValidationSchema } from './hooks/internal/useValidationSchema';
 import { useValues } from './hooks/internal/useValues';
+import { extendFieldsRepository, getFieldsRepository } from './repositories';
 import { IDynamicFormProps } from './types';
 
 export const DynamicFormV2: FunctionComponent<IDynamicFormProps> = ({
   elements,
   values: initialValues,
   validationParams,
-  elementsMap,
+  fieldExtends,
   onChange,
   onFieldChange,
   onSubmit,
@@ -36,18 +37,18 @@ export const DynamicFormV2: FunctionComponent<IDynamicFormProps> = ({
       values: valuesApi.values,
       submit,
       fieldHelpers,
-      elementsMap,
+      elementsMap: fieldExtends ? extendFieldsRepository(fieldExtends) : getFieldsRepository(),
       callbacks: {
         onEvent,
       },
     }),
-    [touchedApi.touched, valuesApi.values, submit, fieldHelpers, elementsMap, onEvent],
+    [touchedApi.touched, valuesApi.values, submit, fieldHelpers, fieldExtends, onEvent],
   );
 
   return (
     <DynamicFormContext.Provider value={context}>
       <ValidatorProvider schema={validationSchema} value={context.values} {...validationParams}>
-        <Renderer elements={elements} schema={elementsMap as unknown as TRendererSchema} />
+        <Renderer elements={elements} schema={context.elementsMap as unknown as TRendererSchema} />
       </ValidatorProvider>
     </DynamicFormContext.Provider>
   );
