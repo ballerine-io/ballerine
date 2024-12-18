@@ -91,6 +91,15 @@ const schema: Array<IFormElement<any, any>> = [
     },
   },
   {
+    id: 'PhoneField',
+    element: 'phonefield',
+    valueDestination: 'phone',
+    params: {
+      label: 'Phone Field',
+      defaultCountry: 'il',
+    },
+  },
+  {
     id: 'FieldList',
     element: 'fieldlist',
     valueDestination: 'fieldlist',

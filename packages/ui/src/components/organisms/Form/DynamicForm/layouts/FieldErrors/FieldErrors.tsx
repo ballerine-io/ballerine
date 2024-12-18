@@ -24,5 +24,5 @@ export const FieldErrors: FunctionComponent<IFieldErrorsProps> = ({ element }) =
       .flat();
   }, [_validationErrors, id, touched]);
 
-  return <ErrorsList errors={fieldErrors || []} />;
+  return <ErrorsList errors={fieldErrors || []} className="mt-2" />;
 };

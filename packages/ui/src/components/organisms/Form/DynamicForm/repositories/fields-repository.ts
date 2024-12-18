@@ -5,6 +5,7 @@ import { CheckboxListField } from '../fields/CheckboxList';
 import { DateField } from '../fields/DateField';
 import { FieldList } from '../fields/FieldList';
 import { MultiselectField } from '../fields/MultiselectField';
+import { PhoneField } from '../fields/PhoneField';
 import { SelectField } from '../fields/SelectField';
 import { TextField } from '../fields/TextField';
 import { TDynamicFormField } from '../types';
@@ -19,6 +20,7 @@ export const baseFields = {
   fieldlist: FieldList,
   selectfield: SelectField,
   submitbutton: SubmitButton,
+  phonefield: PhoneField,
 } as const;
 
 export type TBaseFields = keyof typeof baseFields & string;
