@@ -2,8 +2,9 @@ import { IRuleExecutionResult, useRuleEngine } from '@/components/organisms/Form
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { IDynamicFormContext, useDynamicForm } from '../../../context';
-import { IFormElement, TBaseFormElements } from '../../../types';
+import { ICommonFieldParams, IFormElement } from '../../../types';
 import { useEvents } from '../../internal/useEvents';
+import { IFormEventElement } from '../../internal/useEvents/types';
 import { useElementId } from '../useElementId';
 import { useValueDestination } from '../useValueDestination';
 import { useField } from './useField';
@@ -33,8 +34,8 @@ describe('useField', () => {
     id: 'test-field',
     valueDestination: 'test.path',
     disable: [],
-    element: {} as TBaseFormElements,
-  } as IFormElement<TBaseFormElements>;
+    element: {} as IFormEventElement<string>,
+  } as unknown as IFormElement<string, ICommonFieldParams>;
 
   const mockStack = [1, 2];
 

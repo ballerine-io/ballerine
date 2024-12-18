@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import { useField } from '../../hooks/external';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
-import { TBaseFormElements, TDynamicFormField } from '../../types';
+import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { serializeTextFieldValue } from './helpers';
 
@@ -15,7 +15,7 @@ export interface ITextFieldParams {
   placeholder?: string;
 }
 
-export const TextField: TDynamicFormField<TBaseFormElements, ITextFieldParams> = ({ element }) => {
+export const TextField: TDynamicFormField<ITextFieldParams> = ({ element }) => {
   const { params } = element;
   const { valueType = 'string', style = 'text', placeholder } = params || {};
 

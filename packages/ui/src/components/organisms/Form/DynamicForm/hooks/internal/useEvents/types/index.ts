@@ -1,5 +1,3 @@
-import { TBaseFormElements } from '../../../../types';
-
 import { ICommonFieldParams } from '../../../../types';
 
 import { IFormElement } from '../../../../types';
@@ -12,10 +10,8 @@ export type TElementEvent =
   | 'onSubmit'
   | 'onUnmount';
 
-export interface IFormEventElement<
-  TElements extends string = TBaseFormElements,
-  TParams = ICommonFieldParams,
-> extends IFormElement<TElements, TParams> {
+export interface IFormEventElement<TElements extends string, TParams = ICommonFieldParams>
+  extends IFormElement<TElements, TParams> {
   formattedValueDestination: string;
   formattedId: string;
 }

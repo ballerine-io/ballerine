@@ -2,7 +2,7 @@ import { createTestId } from '@/components/organisms/Renderer';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external/useField';
-import { IFormElement, TBaseFormElements } from '../../types';
+import { IFormElement } from '../../types';
 import { CheckboxListField, ICheckboxListFieldParams } from './CheckboxList';
 
 // Mock dependencies
@@ -50,7 +50,7 @@ describe('CheckboxListField', () => {
     params: {
       options: mockOptions,
     },
-  } as unknown as IFormElement<TBaseFormElements, ICheckboxListFieldParams>;
+  } as unknown as IFormElement<string, ICheckboxListFieldParams>;
 
   beforeEach(() => {
     cleanup();
@@ -178,7 +178,7 @@ describe('CheckboxListField', () => {
     const emptyElement = {
       ...mockElement,
       params: { options: [] },
-    } as unknown as IFormElement<TBaseFormElements, ICheckboxListFieldParams>;
+    } as unknown as IFormElement<string, ICheckboxListFieldParams>;
 
     render(<CheckboxListField element={emptyElement} />);
 

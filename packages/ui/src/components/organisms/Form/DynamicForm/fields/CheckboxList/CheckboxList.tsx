@@ -3,7 +3,7 @@ import { Checkbox } from '@/components/atoms';
 import { createTestId } from '@/components/organisms/Renderer';
 import { useField } from '../../hooks/external';
 import { FieldLayout } from '../../layouts/FieldLayout';
-import { TBaseFormElements, TDynamicFormField } from '../../types';
+import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 
 export interface ICheckboxListOption {
@@ -15,9 +15,7 @@ export interface ICheckboxListFieldParams {
   options: ICheckboxListOption[];
 }
 
-export const CheckboxListField: TDynamicFormField<TBaseFormElements, ICheckboxListFieldParams> = ({
-  element,
-}) => {
+export const CheckboxListField: TDynamicFormField<ICheckboxListFieldParams> = ({ element }) => {
   const { options = [] } = element.params || {};
   const { stack } = useStack();
   const { value, onChange, onFocus, onBlur, disabled } = useField<string[]>(element, stack);

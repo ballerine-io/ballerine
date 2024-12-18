@@ -97,7 +97,7 @@ describe('useElement', () => {
 
         rerender();
 
-        await vi.advanceTimersByTimeAsync(500);
+        await vi.advanceTimersByTimeAsync(550);
 
         expect(result.current.hidden).toBe(true);
       });

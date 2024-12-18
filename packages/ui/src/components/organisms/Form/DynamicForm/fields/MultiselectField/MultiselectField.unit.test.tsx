@@ -3,7 +3,7 @@ import { SelectedElementParams } from '@/components/molecules/inputs/MultiSelect
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external';
-import { IFormElement, TBaseFormElements } from '../../types';
+import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { IMultiselectFieldParams, MultiselectField } from './MultiselectField';
 import { MultiselectfieldSelectedItem } from './MultiselectFieldSelectedItem';
@@ -52,7 +52,7 @@ describe('MultiselectField', () => {
     params: {
       options: mockOptions,
     },
-  } as unknown as IFormElement<TBaseFormElements, IMultiselectFieldParams>;
+  } as unknown as IFormElement<string, IMultiselectFieldParams>;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -103,7 +103,7 @@ describe('MultiselectField', () => {
     const elementWithoutOptions = {
       ...mockElement,
       params: {},
-    } as unknown as IFormElement<TBaseFormElements, IMultiselectFieldParams>;
+    } as unknown as IFormElement<string, IMultiselectFieldParams>;
 
     render(<MultiselectField element={elementWithoutOptions} />);
 

@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external';
-import { IFormElement, TBaseFormElements } from '../../types';
+import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { CheckboxField } from './CheckboxField';
 
@@ -34,7 +34,7 @@ describe('CheckboxField', () => {
   const mockElement = {
     id: 'test-checkbox',
     type: '',
-  } as unknown as IFormElement<TBaseFormElements>;
+  } as unknown as IFormElement<string>;
 
   const mockFieldProps = {
     value: false,

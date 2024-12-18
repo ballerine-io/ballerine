@@ -4,16 +4,14 @@ import { useValidator } from '../../../Validator';
 import { useDynamicForm } from '../../context';
 import { useElement } from '../../hooks/external/useElement';
 import { useField } from '../../hooks/external/useField';
-import { TBaseFormElements, TDynamicFormElement } from '../../types';
+import { TDynamicFormElement } from '../../types';
 
 export interface ISubmitButtonParams {
   disableWhenFormIsInvalid?: boolean;
   text?: string;
 }
 
-export const SubmitButton: TDynamicFormElement<TBaseFormElements, ISubmitButtonParams> = ({
-  element,
-}) => {
+export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({ element }) => {
   const { id } = useElement(element);
   const { disabled: _disabled } = useField(element);
   const { submit } = useDynamicForm();

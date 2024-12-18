@@ -2,7 +2,7 @@ import { MultiSelect, MultiSelectOption, MultiSelectValue } from '@/components/m
 import { SelectedElementParams } from '@/components/molecules/inputs/MultiSelect/types';
 import { useCallback } from 'react';
 import { useField } from '../../hooks/external';
-import { TBaseFormElements, TDynamicFormField } from '../../types';
+import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { MultiselectfieldSelectedItem } from './MultiselectFieldSelectedItem';
 
@@ -10,9 +10,7 @@ export interface IMultiselectFieldParams {
   options: MultiSelectOption[];
 }
 
-export const MultiselectField: TDynamicFormField<TBaseFormElements, IMultiselectFieldParams> = ({
-  element,
-}) => {
+export const MultiselectField: TDynamicFormField<IMultiselectFieldParams> = ({ element }) => {
   const { stack } = useStack();
   const { value, onChange, onBlur, onFocus, disabled } = useField<MultiSelectValue[] | undefined>(
     element,

@@ -4,6 +4,7 @@ import { CheckboxListField } from '../fields/CheckboxList';
 import { DateField } from '../fields/DateField';
 import { FieldList } from '../fields/FieldList';
 import { MultiselectField } from '../fields/MultiselectField';
+import { SelectField } from '../fields/SelectField';
 import { TextField } from '../fields/TextField';
 import { TDynamicFormField } from '../types';
 
@@ -15,6 +16,7 @@ export const baseFields = {
   multiselectfield: MultiselectField,
   textfield: TextField,
   fieldlist: FieldList,
+  selectfield: SelectField,
 } as const;
 
 export type TBaseFields = keyof typeof baseFields & string;
@@ -28,7 +30,7 @@ export const getField = <T extends keyof typeof fieldsRepository>(fieldType: T) 
 };
 
 export const extendFieldsRepository = <TNewFields extends string, TParams = unknown>(
-  fields: Record<TNewFields, TDynamicFormField<TNewFields | TBaseFields, TParams>>,
+  fields: Record<TNewFields, TDynamicFormField<TParams>>,
 ) => {
   const updatedRepository = { ...fieldsRepository, ...fields };
   fieldsRepository = updatedRepository;
@@ -40,5 +42,5 @@ export const getFieldsRepository = <
   TElements extends string = TBaseFields,
   TParams = unknown,
 >() => {
-  return fieldsRepository as Record<TElements, TDynamicFormField<TElements, TParams>>;
+  return fieldsRepository as Record<TElements, TDynamicFormField<TParams>>;
 };

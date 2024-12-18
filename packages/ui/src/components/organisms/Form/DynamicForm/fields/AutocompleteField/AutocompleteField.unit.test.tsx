@@ -3,7 +3,7 @@ import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external/useField';
-import { IFormElement, TBaseFormElements } from '../../types';
+import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { AutocompleteField, IAutocompleteFieldParams } from './AutocompleteField';
 
@@ -52,7 +52,7 @@ describe('AutocompleteField', () => {
       placeholder: 'Select an option',
       options: mockOptions,
     },
-  } as IFormElement<TBaseFormElements, IAutocompleteFieldParams>;
+  } as unknown as IFormElement<string, IAutocompleteFieldParams>;
 
   const mockFieldProps = {
     value: '',
@@ -131,7 +131,7 @@ describe('AutocompleteField', () => {
   it('should use default params when none provided', () => {
     const elementWithoutParams = {
       id: 'test-autocomplete',
-    } as unknown as IFormElement<TBaseFormElements, IAutocompleteFieldParams>;
+    } as unknown as IFormElement<string, IAutocompleteFieldParams>;
 
     render(<AutocompleteField element={elementWithoutParams} />);
 

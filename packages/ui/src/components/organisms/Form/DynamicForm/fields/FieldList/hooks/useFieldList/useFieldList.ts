@@ -1,13 +1,13 @@
 import { useCallback } from 'react';
 import { useField } from '../../../../hooks/external';
-import { IFormElement, TBaseFormElements } from '../../../../types';
+import { IFormElement } from '../../../../types';
 import { useStack } from '../../providers/StackProvider';
 
 export interface IUseFieldParams<T> {
   defaultValue: T;
 }
 export interface IUseFieldListProps {
-  element: IFormElement<TBaseFormElements, IUseFieldParams<object>>;
+  element: IFormElement<string, IUseFieldParams<object>>;
 }
 
 export const useFieldList = ({ element }: IUseFieldListProps) => {

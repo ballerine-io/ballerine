@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../../../hooks/external';
-import { IFormElement, TBaseFormElements } from '../../../../types';
+import { IFormElement } from '../../../../types';
 import { useStack } from '../../providers/StackProvider';
 import { IUseFieldParams, useFieldList } from './useFieldList';
 
@@ -16,7 +16,7 @@ describe('useFieldList', () => {
     params: {
       defaultValue: { test: 'value' },
     },
-  } as unknown as IFormElement<TBaseFormElements, IUseFieldParams<object>>;
+  } as unknown as IFormElement<string, IUseFieldParams<object>>;
 
   const mockOnChange = vi.fn();
   const mockStack = [0];

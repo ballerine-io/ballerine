@@ -10,7 +10,7 @@ export interface IFieldLayoutBaseParams {
   label?: string;
 }
 
-export const FieldLayout: TDynamicFormField<any, any> = ({ element, children }) => {
+export const FieldLayout: TDynamicFormField<any> = ({ element, children }) => {
   const { values } = useDynamicForm();
   const { stack } = useStack();
   const { id, hidden } = useElement(element, stack);

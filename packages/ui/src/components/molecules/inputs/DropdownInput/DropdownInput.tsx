@@ -53,6 +53,7 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
   testId,
   onChange,
   onBlur,
+  onFocus,
   props,
   textInputClassName,
 }) => {
@@ -119,6 +120,7 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
           {searchable ? (
             <CommandInput
               onBlur={onBlur}
+              onFocus={onFocus}
               placeholder={searchPlaceholder}
               className={ctw('placeholder:text-muted-foreground h-9', textInputClassName)}
             />

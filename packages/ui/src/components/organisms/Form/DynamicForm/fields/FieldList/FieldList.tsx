@@ -3,22 +3,19 @@ import { Button } from '@/components/atoms';
 import { Renderer, TRendererSchema } from '@/components/organisms/Renderer';
 import { useDynamicForm } from '../../context';
 import { useElement } from '../../hooks/external';
-import { TBaseFormElements, TDynamicFormElement } from '../../types';
-import { IUseFieldParams, useFieldList } from './hooks/useFieldList';
+import { TDynamicFormField } from '../../types';
+import { useFieldList } from './hooks/useFieldList';
 import { StackProvider, useStack } from './providers/StackProvider';
 
 export type TFieldListValueType<T extends { _id: string }> = T[];
 
-export interface IFieldListOptions {
+export interface IFieldListParams {
   defaultValue: AnyObject;
   addButtonLabel?: string;
   removeButtonLabel?: string;
 }
 
-export const FieldList: TDynamicFormElement<
-  TBaseFormElements,
-  { addButtonLabel: string; removeButtonLabel: string } & IUseFieldParams<object>
-> = props => {
+export const FieldList: TDynamicFormField<IFieldListParams> = props => {
   const { elementsMap } = useDynamicForm();
   const { stack } = useStack();
   const { element } = props;

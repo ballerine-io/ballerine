@@ -7,7 +7,7 @@ import { useValidator } from '../../../Validator';
 import { useDynamicForm } from '../../context';
 import { useElement } from '../../hooks/external';
 import { useField } from '../../hooks/external/useField';
-import { IFormElement, TBaseFormElements } from '../../types';
+import { IFormElement } from '../../types';
 import { ISubmitButtonParams, SubmitButton } from './SubmitButton';
 
 vi.mock('@/components/atoms', () => ({
@@ -31,8 +31,8 @@ describe('SubmitButton', () => {
     id: 'test-button',
     params: {},
     valueDestination: 'test.path',
-    element: '' as TBaseFormElements,
-  } as IFormElement<TBaseFormElements, ISubmitButtonParams>;
+    element: '',
+  } as unknown as IFormElement<string, ISubmitButtonParams>;
 
   const mockSubmit = vi.fn();
 

@@ -3,7 +3,7 @@ import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external';
-import { IFormElement, TBaseFormElements } from '../../types';
+import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { ITextFieldParams, TextField } from './TextField';
 
@@ -45,7 +45,7 @@ describe('TextField', () => {
       style: 'text',
       placeholder: 'Enter text',
     },
-  } as IFormElement<TBaseFormElements, ITextFieldParams>;
+  } as unknown as IFormElement<string, ITextFieldParams>;
 
   const mockFieldProps = {
     value: '',
@@ -74,7 +74,7 @@ describe('TextField', () => {
     const textAreaElement = {
       ...mockElement,
       params: { ...mockElement.params, style: 'textarea' },
-    } as unknown as IFormElement<TBaseFormElements, ITextFieldParams>;
+    } as unknown as IFormElement<string, ITextFieldParams>;
 
     render(<TextField element={textAreaElement} />);
 
@@ -85,7 +85,7 @@ describe('TextField', () => {
     const numberElement = {
       ...mockElement,
       params: { ...mockElement.params, valueType: 'number' },
-    } as unknown as IFormElement<TBaseFormElements, ITextFieldParams>;
+    } as unknown as IFormElement<string, ITextFieldParams>;
 
     render(<TextField element={numberElement} />);
 
@@ -153,7 +153,7 @@ describe('TextField', () => {
   it('should use default params when none provided', () => {
     const elementWithoutParams = {
       id: 'test-field',
-    } as unknown as IFormElement<TBaseFormElements, ITextFieldParams>;
+    } as unknown as IFormElement<string, ITextFieldParams>;
 
     render(<TextField element={elementWithoutParams} />);
 
@@ -166,7 +166,7 @@ describe('TextField', () => {
     const textAreaElement = {
       ...mockElement,
       params: { ...mockElement.params, style: 'textarea' },
-    } as unknown as IFormElement<TBaseFormElements, ITextFieldParams>;
+    } as unknown as IFormElement<string, ITextFieldParams>;
 
     render(<TextField element={textAreaElement} />);
 

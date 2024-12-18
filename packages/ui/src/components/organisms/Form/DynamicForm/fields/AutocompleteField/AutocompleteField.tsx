@@ -2,7 +2,7 @@ import { AutocompleteInput } from '@/components/molecules';
 import { createTestId } from '@/components/organisms/Renderer';
 import { useField } from '../../hooks/external/useField';
 import { FieldLayout } from '../../layouts/FieldLayout';
-import { TBaseFormElements, TDynamicFormField } from '../../types';
+import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 
 export interface IAutocompleteFieldOption {
@@ -15,9 +15,7 @@ export interface IAutocompleteFieldParams {
   options: IAutocompleteFieldOption[];
 }
 
-export const AutocompleteField: TDynamicFormField<TBaseFormElements, IAutocompleteFieldParams> = ({
-  element,
-}) => {
+export const AutocompleteField: TDynamicFormField<IAutocompleteFieldParams> = ({ element }) => {
   const { params } = element;
   const { stack } = useStack();
   const { value, onChange, onBlur, onFocus, disabled } = useField<string | undefined>(

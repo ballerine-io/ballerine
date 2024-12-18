@@ -3,7 +3,7 @@ import { DatePickerInput } from '@/components/molecules';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external/useField';
-import { IFormElement, TBaseFormElements } from '../../types';
+import { IFormElement } from '../../types';
 import { DateField, IDateFieldParams } from './DateField';
 
 // Mock dependencies
@@ -67,7 +67,7 @@ describe('DateField', () => {
       disablePast: false,
       outputFormat: 'iso',
     },
-  } as unknown as IFormElement<TBaseFormElements, IDateFieldParams>;
+  } as unknown as IFormElement<string, IDateFieldParams>;
 
   it('renders DatePickerInput with correct props', () => {
     render(<DateField element={mockElement} />);
@@ -137,7 +137,7 @@ describe('DateField', () => {
   });
 
   it('passes correct params to DatePickerInput', () => {
-    const elementWithParams: IFormElement<TBaseFormElements, IDateFieldParams> = {
+    const elementWithParams: IFormElement<string, IDateFieldParams> = {
       ...mockElement,
       params: {
         disableFuture: true,

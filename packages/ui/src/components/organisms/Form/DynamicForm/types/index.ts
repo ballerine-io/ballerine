@@ -35,11 +35,8 @@ export type TDynamicFormElement<
   element: IFormElement<TElements, TParams>;
 }>;
 
-export type TDynamicFormField<
-  TElements extends string = string,
-  TParams = ICommonFieldParams,
-> = FunctionComponent<{
-  element: IFormElement<TElements, TParams>;
+export type TDynamicFormField<TParams = ICommonFieldParams> = FunctionComponent<{
+  element: IFormElement<string, TParams>;
   children?: React.ReactNode | React.ReactNode[];
 }>;
 
