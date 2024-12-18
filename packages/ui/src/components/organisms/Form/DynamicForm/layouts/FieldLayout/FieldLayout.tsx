@@ -1,16 +1,23 @@
 import { ctw } from '@/common';
 import { Label } from '@/components/atoms';
+import { FunctionComponent } from 'react';
 import { useDynamicForm } from '../../context';
 import { useStack } from '../../fields/FieldList/providers/StackProvider';
 import { useElement } from '../../hooks/external';
 import { useRequired } from '../../hooks/external/useRequired';
-import { TDynamicFormField } from '../../types';
+import { IFormElement } from '../../types';
 
-export interface IFieldLayoutBaseParams {
-  label?: string;
+interface IFieldLayoutProps {
+  element: IFormElement<string, any>;
+  children: React.ReactNode;
+  layout?: 'vertical' | 'horizontal';
 }
 
-export const FieldLayout: TDynamicFormField<any> = ({ element, children }) => {
+export const FieldLayout: FunctionComponent<IFieldLayoutProps> = ({
+  element,
+  children,
+  layout = 'vertical',
+}: IFieldLayoutProps) => {
   const { values } = useDynamicForm();
   const { stack } = useStack();
   const { id, hidden } = useElement(element, stack);
@@ -20,18 +27,29 @@ export const FieldLayout: TDynamicFormField<any> = ({ element, children }) => {
   if (hidden) return null;
 
   return (
-    <div
-      className={ctw('flex flex-col', { 'gap-2': Boolean(label) })}
-      data-testid={`${id}-field-layout`}
-    >
-      <div>
-        {label && (
-          <Label id={`${id}-label`} htmlFor={`${id}-label`}>
-            {`${isRequired ? `${label}` : `${label} (optional)`} `}
-          </Label>
-        )}
+    <div data-testid={`${id}-field-layout`}>
+      <div
+        className={ctw('flex py-2', {
+          'gap-2': Boolean(label),
+          'flex-col': layout === 'vertical',
+          'flex-row flex-row-reverse items-center justify-end': layout === 'horizontal',
+        })}
+      >
+        <div className="flex items-center">
+          {label && (
+            <Label id={`${id}-label`} htmlFor={`${id}`}>
+              {`${isRequired ? `${label}` : `${label} (optional)`} `}
+            </Label>
+          )}
+        </div>
+        <div
+          className={ctw('flex flex-col', {
+            'justify-center': layout === 'horizontal',
+          })}
+        >
+          {children}
+        </div>
       </div>
-      <div className="flex flex-col gap-2">{children}</div>
     </div>
   );
 };

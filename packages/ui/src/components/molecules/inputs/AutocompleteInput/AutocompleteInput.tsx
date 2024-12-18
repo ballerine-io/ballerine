@@ -16,6 +16,7 @@ export type AutocompleteChangeEvent = React.ChangeEvent<{
 }>;
 
 export interface AutocompleteInputProps {
+  id?: string;
   value?: string;
   options: AutocompleteOption[];
   placeholder?: string;
@@ -29,6 +30,7 @@ export interface AutocompleteInputProps {
 }
 
 export const AutocompleteInput = ({
+  id,
   options,
   value = '',
   placeholder,
@@ -75,6 +77,7 @@ export const AutocompleteInput = ({
   return (
     <ThemeProvider theme={muiTheme}>
       <Autocomplete
+        id={id}
         disablePortal
         options={optionLabels}
         getOptionLabel={label => label}

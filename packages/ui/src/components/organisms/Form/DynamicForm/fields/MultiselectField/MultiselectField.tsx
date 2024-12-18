@@ -2,6 +2,8 @@ import { MultiSelect, MultiSelectOption, MultiSelectValue } from '@/components/m
 import { SelectedElementParams } from '@/components/molecules/inputs/MultiSelect/types';
 import { useCallback } from 'react';
 import { useField } from '../../hooks/external';
+import { FieldErrors } from '../../layouts/FieldErrors';
+import { FieldLayout } from '../../layouts/FieldLayout';
 import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { MultiselectfieldSelectedItem } from './MultiselectFieldSelectedItem';
@@ -22,14 +24,17 @@ export const MultiselectField: TDynamicFormField<IMultiselectFieldParams> = ({ e
   }, []);
 
   return (
-    <MultiSelect
-      value={value}
-      disabled={disabled}
-      onChange={onChange}
-      onBlur={onBlur}
-      onFocus={onFocus}
-      options={element.params?.options || []}
-      renderSelected={renderSelected}
-    />
+    <FieldLayout element={element}>
+      <MultiSelect
+        value={value}
+        disabled={disabled}
+        onChange={onChange}
+        onBlur={onBlur}
+        onFocus={onFocus}
+        options={element.params?.options || []}
+        renderSelected={renderSelected}
+      />
+      <FieldErrors element={element} />
+    </FieldLayout>
   );
 };

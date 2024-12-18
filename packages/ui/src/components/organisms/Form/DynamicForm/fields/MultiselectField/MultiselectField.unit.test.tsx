@@ -3,6 +3,7 @@ import { SelectedElementParams } from '@/components/molecules/inputs/MultiSelect
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external';
+import { useEvents } from '../../hooks/internal/useEvents';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { IMultiselectFieldParams, MultiselectField } from './MultiselectField';
@@ -39,6 +40,8 @@ vi.mock('../FieldList/providers/StackProvider', () => ({
   useStack: vi.fn(),
 }));
 
+vi.mock('../../hooks/internal/useEvents');
+
 describe('MultiselectField', () => {
   const mockOptions: MultiSelectOption[] = [
     { title: 'Option 1', value: 'opt1' },
@@ -68,6 +71,11 @@ describe('MultiselectField', () => {
       onFocus: vi.fn(),
       disabled: false,
     } as unknown as ReturnType<typeof useField>);
+
+    vi.mocked(useEvents).mockReturnValue({
+      sendEvent: vi.fn(),
+      sendEventAsync: vi.fn(),
+    } as unknown as ReturnType<typeof useEvents>);
   });
 
   it('renders MultiSelect component', () => {

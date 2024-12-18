@@ -1,12 +1,11 @@
 import { render } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { Renderer } from './Renderer';
 import { IRendererComponent, IRendererElement } from './types';
-import { createTestId } from './utils';
 
 describe('Renderer', () => {
-  const MockComponent: IRendererComponent<any, any> = ({ children, stack, definition }) => (
-    <div data-testid={createTestId(definition, stack)}>{children}</div>
+  const MockComponent: IRendererComponent<any, any> = ({ children, element, stack }) => (
+    <div data-testid={`${element.id}${stack ? `-${stack.join('-')}` : ''}`}>{children}</div>
   );
 
   const baseSchema = {
@@ -42,21 +41,24 @@ describe('Renderer', () => {
 
     expect(() => {
       render(<Renderer schema={baseSchema} elements={elements} />);
-    }).toThrow('Element name is missing');
+    }).toThrow('Element name is missing in definition');
   });
 
   it('should return null when component is not found in schema', () => {
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const elements = [{ id: '1', element: 'nonexistent' }];
 
     const { container } = render(<Renderer schema={baseSchema} elements={elements} />);
     expect(container.querySelectorAll('div')).toHaveLength(0);
+    expect(consoleSpy).toHaveBeenCalledWith('Component nonexistent not found in schema.');
+    consoleSpy.mockRestore();
   });
 
   it('should pass correct props to components', () => {
-    const TestComponent = ({ definition, stack, options }: any) => (
+    const TestComponent = ({ element, stack, options }: any) => (
       <div
         data-testid="test"
-        data-definition={definition.id}
+        data-element-id={element.id}
         data-stack={stack}
         data-options={options?.test}
       />
@@ -69,7 +71,7 @@ describe('Renderer', () => {
     const { getByTestId } = render(<Renderer schema={schema} elements={elements} stack={stack} />);
 
     const element = getByTestId('test');
-    expect(element.dataset.definition).toBe('1');
+    expect(element.dataset.elementId).toBe('1');
     expect(element.dataset.stack).toBe('0,1');
     expect(element.dataset.options).toBe('value');
   });

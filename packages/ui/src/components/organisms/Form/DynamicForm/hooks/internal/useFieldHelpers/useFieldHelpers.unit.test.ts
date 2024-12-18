@@ -15,6 +15,7 @@ vi.mock('../useValues', () => ({
 describe('useFieldHelpers', () => {
   const mockSetFieldValue = vi.fn();
   const mockSetFieldTouched = vi.fn();
+  const mockTouchAllFields = vi.fn();
 
   const mockValuesApi = {
     values: {
@@ -33,6 +34,7 @@ describe('useFieldHelpers', () => {
       field2: false,
     },
     setFieldTouched: mockSetFieldTouched,
+    touchAllFields: mockTouchAllFields,
   };
 
   const setup = () => {
@@ -55,6 +57,7 @@ describe('useFieldHelpers', () => {
     expect(result.current).toHaveProperty('getValue');
     expect(result.current).toHaveProperty('setTouched');
     expect(result.current).toHaveProperty('setValue');
+    expect(result.current).toHaveProperty('touchAllFields');
   });
 
   it('getTouched should return correct touched state', () => {
@@ -93,6 +96,14 @@ describe('useFieldHelpers', () => {
 
     expect(mockSetFieldValue).toHaveBeenCalledTimes(1);
     expect(mockSetFieldValue).toHaveBeenCalledWith('field1', 'path.to.field', 'newValue');
+  });
+
+  it('touchAllFields should call touchedApi.touchAllFields', () => {
+    const { result } = setup();
+
+    result.current.touchAllFields();
+
+    expect(mockTouchAllFields).toHaveBeenCalledTimes(1);
   });
 
   it('should memoize helper functions', () => {

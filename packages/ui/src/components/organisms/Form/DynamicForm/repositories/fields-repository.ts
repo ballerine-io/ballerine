@@ -1,3 +1,4 @@
+import { SubmitButton } from '../controls/SubmitButton';
 import { AutocompleteField } from '../fields/AutocompleteField';
 import { CheckboxField } from '../fields/CheckboxField';
 import { CheckboxListField } from '../fields/CheckboxList';
@@ -17,6 +18,7 @@ export const baseFields = {
   textfield: TextField,
   fieldlist: FieldList,
   selectfield: SelectField,
+  submitbutton: SubmitButton,
 } as const;
 
 export type TBaseFields = keyof typeof baseFields & string;

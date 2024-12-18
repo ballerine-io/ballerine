@@ -8,7 +8,7 @@ export interface ICommonFieldParams {
   placeholder?: string;
 }
 
-export interface IFormElement<TElements = string, TParams = ICommonFieldParams> {
+export interface IFormElement<TElements = string, TParams = object> {
   id: string;
   valueDestination: string;
   element: TElements;
@@ -30,12 +30,12 @@ export interface IFormRef<TValues = object> {
 
 export type TDynamicFormElement<
   TElements extends string = string,
-  TParams = unknown,
+  TParams = object,
 > = FunctionComponent<{
   element: IFormElement<TElements, TParams>;
 }>;
 
-export type TDynamicFormField<TParams = ICommonFieldParams> = FunctionComponent<{
+export type TDynamicFormField<TParams = object> = FunctionComponent<{
   element: IFormElement<string, TParams>;
   children?: React.ReactNode | React.ReactNode[];
 }>;
@@ -46,7 +46,7 @@ export interface IDynamicFormProps<TValues = object> {
   values: TValues;
   elements: Array<IFormElement<string, any>>;
 
-  fieldExtends?: Record<string, TDynamicFormField<string>>;
+  fieldExtends?: Record<string, TDynamicFormField<any>>;
 
   validationParams?: IValidationParams;
   onChange?: (newValues: TValues) => void;

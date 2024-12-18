@@ -1,7 +1,8 @@
 import { DropdownInput } from '@/components/molecules';
 import { createTestId } from '@/components/organisms/Renderer';
 import { useElement, useField } from '../../hooks/external';
-import { IFieldLayoutBaseParams } from '../../layouts/FieldLayout';
+import { FieldErrors } from '../../layouts/FieldErrors';
+import { FieldLayout } from '../../layouts/FieldLayout';
 import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 
@@ -10,7 +11,7 @@ export interface ISelectOption {
   label: string;
 }
 
-export interface ISelectFieldParams extends IFieldLayoutBaseParams {
+export interface ISelectFieldParams {
   placeholder?: string;
   options: ISelectOption[];
 }
@@ -26,18 +27,21 @@ export const SelectField: TDynamicFormField<ISelectFieldParams> = ({ element }) 
   const { placeholder, options = [] } = element.params || {};
 
   return (
-    <DropdownInput
-      name={id}
-      options={options}
-      value={value}
-      testId={createTestId(element, stack)}
-      placeholdersParams={{
-        placeholder: placeholder || '',
-      }}
-      disabled={disabled}
-      onChange={onChange}
-      onBlur={onBlur}
-      onFocus={onFocus}
-    />
+    <FieldLayout element={element}>
+      <DropdownInput
+        name={id}
+        options={options}
+        value={value}
+        testId={createTestId(element, stack)}
+        placeholdersParams={{
+          placeholder: placeholder || '',
+        }}
+        disabled={disabled}
+        onChange={onChange}
+        onBlur={onBlur}
+        onFocus={onFocus}
+      />
+      <FieldErrors element={element} />
+    </FieldLayout>
   );
 };

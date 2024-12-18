@@ -1,7 +1,8 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useField } from '../../hooks/external';
+import { useElement, useField } from '../../hooks/external';
+import { FieldLayout } from '../../layouts/FieldLayout';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { CheckboxField } from './CheckboxField';
@@ -12,11 +13,12 @@ vi.mock('@/components/atoms', () => ({
     <input
       type="checkbox"
       checked={props.checked}
-      onChange={e => props.onChange(e.target.checked)}
+      onChange={e => props.onCheckedChange(e.target.checked)}
       disabled={props.disabled}
       onFocus={props.onFocus}
       onBlur={props.onBlur}
       data-testid="test-checkbox"
+      id={props.id}
     />
   )),
 }));
@@ -29,12 +31,24 @@ vi.mock('../../hooks/external/useField', () => ({
   useField: vi.fn(),
 }));
 
+vi.mock('../../hooks/external/useElement', () => ({
+  useElement: vi.fn(),
+}));
+
+vi.mock('../../layouts/FieldLayout', () => ({
+  FieldLayout: vi.fn(({ children }) => <div data-testid="field-layout">{children}</div>),
+}));
+
+vi.mock('../../layouts/FieldErrors', () => ({
+  FieldErrors: vi.fn(() => <div data-testid="field-errors" />),
+}));
+
 describe('CheckboxField', () => {
   const mockStack = [0];
   const mockElement = {
     id: 'test-checkbox',
     type: '',
-  } as unknown as IFormElement<string>;
+  } as unknown as IFormElement<string, object>;
 
   const mockFieldProps = {
     value: false,
@@ -49,6 +63,9 @@ describe('CheckboxField', () => {
     vi.clearAllMocks();
     vi.mocked(useStack).mockReturnValue({ stack: mockStack });
     vi.mocked(useField).mockReturnValue(mockFieldProps);
+    vi.mocked(useElement).mockReturnValue({ id: 'test-checkbox-id' } as unknown as ReturnType<
+      typeof useElement
+    >);
   });
 
   it('renders checkbox with correct initial state', () => {
@@ -56,6 +73,20 @@ describe('CheckboxField', () => {
     const checkbox = screen.getByTestId('test-checkbox');
     expect(checkbox).toBeInTheDocument();
     expect(checkbox).not.toBeChecked();
+    expect(checkbox).toHaveAttribute('id', 'test-checkbox-id');
+  });
+
+  it('renders field layout and errors', () => {
+    render(<CheckboxField element={mockElement} />);
+    expect(screen.getByTestId('field-layout')).toBeInTheDocument();
+    expect(screen.getByTestId('field-errors')).toBeInTheDocument();
+    expect(vi.mocked(FieldLayout)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        element: mockElement,
+        layout: 'horizontal',
+      }),
+      expect.any(Object),
+    );
   });
 
   it('renders checked checkbox when value is true', () => {
@@ -68,7 +99,7 @@ describe('CheckboxField', () => {
     expect(screen.getByTestId('test-checkbox')).toBeChecked();
   });
 
-  it('handles onChange events', () => {
+  it('handles onChange events', async () => {
     const mockOnChange = vi.fn();
     vi.mocked(useField).mockReturnValue({
       ...mockFieldProps,
@@ -78,7 +109,7 @@ describe('CheckboxField', () => {
     render(<CheckboxField element={mockElement} />);
 
     const checkbox = screen.getByTestId('test-checkbox');
-    fireEvent.click(checkbox);
+    await userEvent.click(checkbox);
 
     expect(mockOnChange).toHaveBeenCalledWith(true);
   });

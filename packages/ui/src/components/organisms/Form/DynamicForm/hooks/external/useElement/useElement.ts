@@ -8,7 +8,7 @@ import { useMount } from '../../internal/useMount';
 import { useUnmount } from '../../internal/useUnmount';
 import { useElementId } from '../useElementId';
 
-export const useElement = <TElements, TParams>(
+export const useElement = <TElements extends string, TParams>(
   element: IFormElement<TElements, TParams>,
   stack: TDeepthLevelStack = [],
 ) => {

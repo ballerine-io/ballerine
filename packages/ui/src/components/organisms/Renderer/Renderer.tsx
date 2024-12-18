@@ -24,7 +24,7 @@ export const Renderer: React.FunctionComponent<IRendererProps & { stack?: number
           return (
             <Component
               key={createRenderedElementKey(element, stack)}
-              definition={element}
+              element={element}
               stack={stack}
               options={element.options as unknown as any}
             >
@@ -39,7 +39,7 @@ export const Renderer: React.FunctionComponent<IRendererProps & { stack?: number
 
         return (
           <Component
-            definition={element}
+            element={element}
             key={createRenderedElementKey(element, stack)}
             stack={stack}
             options={element.options as unknown as any}

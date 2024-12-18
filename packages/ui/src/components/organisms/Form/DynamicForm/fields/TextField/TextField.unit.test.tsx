@@ -1,11 +1,12 @@
 import { createTestId } from '@/components/organisms/Renderer';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useField } from '../../hooks/external';
+import { useElement, useField } from '../../hooks/external';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { ITextFieldParams, TextField } from './TextField';
+import { serializeTextFieldValue } from './helpers';
 
 // Mock dependencies
 vi.mock('@/components/atoms', () => ({
@@ -18,6 +19,7 @@ vi.mock('@/components/atoms/Input', () => ({
 
 vi.mock('../../hooks/external', () => ({
   useField: vi.fn(),
+  useElement: vi.fn(),
 }));
 
 vi.mock('../FieldList/providers/StackProvider', () => ({
@@ -34,6 +36,10 @@ vi.mock('../../layouts/FieldLayout', () => ({
 
 vi.mock('../../layouts/FieldErrors', () => ({
   FieldErrors: () => null,
+}));
+
+vi.mock('./helpers', () => ({
+  serializeTextFieldValue: vi.fn(),
 }));
 
 describe('TextField', () => {
@@ -61,7 +67,9 @@ describe('TextField', () => {
     vi.clearAllMocks();
     vi.mocked(useStack).mockReturnValue({ stack: mockStack });
     vi.mocked(useField).mockReturnValue(mockFieldProps);
+    vi.mocked(useElement).mockReturnValue({ id: 'test-field' });
     vi.mocked(createTestId).mockReturnValue('test-id');
+    vi.mocked(serializeTextFieldValue).mockImplementation(value => value);
   });
 
   it('should render Input component when style is text', () => {
@@ -81,25 +89,31 @@ describe('TextField', () => {
     expect(screen.getByTestId('test-id')).toHaveProperty('tagName', 'TEXTAREA');
   });
 
-  it('should set number input type when valueType is number', () => {
-    const numberElement = {
-      ...mockElement,
-      params: { ...mockElement.params, valueType: 'number' },
-    } as unknown as IFormElement<string, ITextFieldParams>;
+  it('should set number input type when valueType is number or integer', () => {
+    ['number', 'integer'].forEach(valueType => {
+      const numberElement = {
+        ...mockElement,
+        params: { ...mockElement.params, valueType },
+      } as unknown as IFormElement<string, ITextFieldParams>;
 
-    render(<TextField element={numberElement} />);
+      render(<TextField element={numberElement} />);
 
-    expect(screen.getByTestId('test-id')).toHaveAttribute('type', 'number');
+      expect(screen.getByTestId('test-id')).toHaveAttribute('type', 'number');
+      cleanup();
+    });
   });
 
-  it('should handle value changes', async () => {
-    const user = userEvent.setup();
+  it('should handle value changes and serialize value', async () => {
+    const testValue = 'test value';
+    vi.mocked(serializeTextFieldValue).mockReturnValue(testValue);
+
     render(<TextField element={mockElement} />);
 
     const input = screen.getByTestId('test-id');
-    await user.type(input, 'test value');
+    fireEvent.change(input, { target: { value: testValue } });
 
-    expect(mockFieldProps.onChange).toHaveBeenCalled();
+    expect(serializeTextFieldValue).toHaveBeenCalledWith(testValue, 'string');
+    expect(mockFieldProps.onChange).toHaveBeenCalledWith(testValue);
   });
 
   it('should handle blur events', async () => {
@@ -140,14 +154,24 @@ describe('TextField', () => {
     expect(screen.getByTestId('test-id')).toHaveAttribute('placeholder', 'Enter text');
   });
 
-  it('should convert empty string to empty string for string type', async () => {
-    const user = userEvent.setup();
+  it('should handle empty or null values', () => {
+    vi.mocked(useField).mockReturnValue({
+      ...mockFieldProps,
+      value: null,
+    });
+
     render(<TextField element={mockElement} />);
+    expect(screen.getByTestId('test-id')).toHaveValue('');
 
-    const input = screen.getByTestId('test-id');
-    await user.clear(input);
+    cleanup();
 
-    expect(input).toHaveValue('');
+    vi.mocked(useField).mockReturnValue({
+      ...mockFieldProps,
+      value: undefined,
+    });
+
+    render(<TextField element={mockElement} />);
+    expect(screen.getByTestId('test-id')).toHaveValue('');
   });
 
   it('should use default params when none provided', () => {

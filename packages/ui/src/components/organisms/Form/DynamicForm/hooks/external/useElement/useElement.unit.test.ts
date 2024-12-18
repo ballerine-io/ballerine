@@ -1,27 +1,44 @@
+import { IRuleExecutionResult, useRuleEngine } from '@/components/organisms/Form/hooks';
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { IDynamicFormContext, useDynamicForm } from '../../../context';
+import { useDynamicForm } from '../../../context';
 import { IFormElement } from '../../../types';
-import { useCallbacks } from '../../internal/useCallbacks';
+import { useEvents } from '../../internal/useEvents';
+import { useMount } from '../../internal/useMount';
+import { useUnmount } from '../../internal/useUnmount';
+import { useElementId } from '../useElementId';
 import { useElement } from './useElement';
 
+vi.mock('@/components/organisms/Form/hooks/useRuleEngine');
 vi.mock('../../../context');
-vi.mock('../../../hooks/internal/useCallbacks');
+vi.mock('../../internal/useEvents');
+vi.mock('../../internal/useMount');
+vi.mock('../../internal/useUnmount');
+vi.mock('../useElementId');
 
 describe('useElement', () => {
+  const mockSendEvent = vi.fn();
+
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useDynamicForm).mockReturnValue({
       values: {
         test: 1,
       },
-    } as unknown as IDynamicFormContext<object>);
+    } as any);
 
-    vi.mocked(useCallbacks).mockReturnValue({
-      onEvent: vi.fn(),
+    vi.mocked(useEvents).mockReturnValue({
+      sendEvent: mockSendEvent,
+      sendEventAsync: vi.fn(),
+    } as any);
+
+    vi.mocked(useElementId).mockImplementation((element, stack) => {
+      if (!stack?.length) return element.id;
+
+      return `${element.id}-${stack.join('-')}`;
     });
 
-    vi.useFakeTimers();
+    vi.mocked(useRuleEngine).mockReturnValue([]);
   });
 
   describe('when stack not provided', () => {
@@ -49,11 +66,10 @@ describe('useElement', () => {
 
   describe('when hidden rules provided', () => {
     it('should return hidden true when all hidden rules return true', () => {
-      vi.mocked(useDynamicForm).mockReturnValue({
-        values: {
-          test: 1,
-        },
-      } as IDynamicFormContext<object>);
+      vi.mocked(useRuleEngine).mockReturnValue([
+        { result: true },
+        { result: true },
+      ] as IRuleExecutionResult[]);
 
       const element = {
         id: 'test-id',
@@ -66,6 +82,11 @@ describe('useElement', () => {
     });
 
     it('should return hidden false when any hidden rule returns false', () => {
+      vi.mocked(useRuleEngine).mockReturnValue([
+        { result: true },
+        { result: false },
+      ] as IRuleExecutionResult[]);
+
       const element = {
         id: 'test-id',
         hidden: [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 5] } }],
@@ -76,116 +97,48 @@ describe('useElement', () => {
       expect(result.current.hidden).toBe(false);
     });
 
-    describe('when rules change', () => {
-      it('should move from hidden false to hidden true when rules change', async () => {
-        vi.mocked(useDynamicForm).mockReturnValue({
-          values: {
-            test: 1,
-          },
-        } as IDynamicFormContext<object>);
+    it('should return hidden false when no rules exist', () => {
+      vi.mocked(useRuleEngine).mockReturnValue([]);
 
-        const element = {
-          id: 'test-id',
-          hidden: [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 5] } }],
-        } as IFormElement;
+      const element = {
+        id: 'test-id',
+      } as IFormElement;
 
-        const { result, rerender } = renderHook(() => useElement(element));
+      const { result } = renderHook(() => useElement(element));
 
-        expect(result.current.hidden).toBe(false);
+      expect(result.current.hidden).toBe(false);
+    });
+  });
 
-        element.hidden = [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 1] } }];
+  describe('lifecycle events', () => {
+    it('should call sendEvent with onMount on mount', () => {
+      const element = { id: 'test-id' } as IFormElement;
 
-        rerender();
+      renderHook(() => useElement(element));
 
-        await vi.advanceTimersByTimeAsync(550);
+      expect(useMount).toHaveBeenCalledWith(expect.any(Function));
+      const mountCallback = vi.mocked(useMount).mock.calls[0]?.[0];
 
-        expect(result.current.hidden).toBe(true);
-      });
+      if (mountCallback) {
+        mountCallback();
+      }
 
-      it('should move from hidden true to hidden false when rules change', async () => {
-        vi.mocked(useDynamicForm).mockReturnValue({
-          values: {
-            test: 1,
-          },
-        } as IDynamicFormContext<object>);
-
-        const element = {
-          id: 'test-id',
-          hidden: [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 1] } }],
-        } as IFormElement;
-
-        const { result, rerender } = renderHook(() => useElement(element));
-
-        expect(result.current.hidden).toBe(true);
-
-        element.hidden = [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 5] } }];
-
-        rerender();
-
-        await vi.advanceTimersByTimeAsync(500);
-
-        expect(result.current.hidden).toBe(false);
-      });
+      expect(mockSendEvent).toHaveBeenCalledWith('onMount');
     });
 
-    describe('when values change', () => {
-      it('should move from hidden true to hidden false when values change', async () => {
-        vi.mocked(useDynamicForm).mockReturnValue({
-          values: {
-            test: 1,
-          },
-        } as IDynamicFormContext<object>);
+    it('should call sendEvent with onUnmount on unmount', () => {
+      const element = { id: 'test-id' } as IFormElement;
 
-        const element = {
-          id: 'test-id',
-          hidden: [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 1] } }],
-        } as IFormElement;
+      renderHook(() => useElement(element));
 
-        const { result, rerender } = renderHook(() => useElement(element));
+      expect(useUnmount).toHaveBeenCalledWith(expect.any(Function));
+      const unmountCallback = vi.mocked(useUnmount).mock.calls[0]?.[0];
 
-        expect(result.current.hidden).toBe(true);
+      if (unmountCallback) {
+        unmountCallback();
+      }
 
-        vi.mocked(useDynamicForm).mockReturnValue({
-          values: {
-            test: 5,
-          },
-        } as IDynamicFormContext<object>);
-
-        rerender();
-
-        await vi.advanceTimersByTimeAsync(500);
-
-        expect(result.current.hidden).toBe(false);
-      });
-
-      it('should move from hidden false to hidden true when values change', async () => {
-        vi.mocked(useDynamicForm).mockReturnValue({
-          values: {
-            test: 1,
-          },
-        } as IDynamicFormContext<object>);
-
-        const element = {
-          id: 'test-id',
-          hidden: [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 5] } }],
-        } as IFormElement;
-
-        const { result, rerender } = renderHook(() => useElement(element));
-
-        expect(result.current.hidden).toBe(false);
-
-        vi.mocked(useDynamicForm).mockReturnValue({
-          values: {
-            test: 5,
-          },
-        } as IDynamicFormContext<object>);
-
-        rerender();
-
-        await vi.advanceTimersByTimeAsync(500);
-
-        expect(result.current.hidden).toBe(true);
-      });
+      expect(mockSendEvent).toHaveBeenCalledWith('onUnmount');
     });
   });
 });

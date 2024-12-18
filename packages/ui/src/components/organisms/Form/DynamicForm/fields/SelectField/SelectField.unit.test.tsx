@@ -14,7 +14,6 @@ vi.mock('@/components/molecules', () => ({
     <select
       data-testid="test-select-field"
       onChange={e => {
-        console.log('onChange', e.target.value);
         onChange(e.target.value);
       }}
       onFocus={onFocus}

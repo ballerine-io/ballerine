@@ -2,6 +2,7 @@ import { createTestId } from '@/components/organisms/Renderer';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external/useField';
+import { useEvents } from '../../hooks/internal/useEvents';
 import { IFormElement } from '../../types';
 import { CheckboxListField, ICheckboxListFieldParams } from './CheckboxList';
 
@@ -36,6 +37,7 @@ vi.mock('@/components/atoms', () => ({
 vi.mock('../../hooks/external/useField', () => ({
   useField: vi.fn(),
 }));
+vi.mock('../../hooks/internal/useEvents');
 
 describe('CheckboxListField', () => {
   const mockOptions = [
@@ -65,6 +67,11 @@ describe('CheckboxListField', () => {
       onBlur: vi.fn(),
       disabled: false,
     } as unknown as ReturnType<typeof useField>);
+
+    vi.mocked(useEvents).mockReturnValue({
+      sendEvent: vi.fn(),
+      sendEventAsync: vi.fn(),
+    } as unknown as ReturnType<typeof useEvents>);
   });
 
   it('renders all checkbox options', () => {

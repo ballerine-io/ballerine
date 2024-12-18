@@ -1,5 +1,5 @@
 import { Button } from '@/components/atoms';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useValidator } from '../../../Validator';
 import { useDynamicForm } from '../../context';
 import { useElement } from '../../hooks/external/useElement';
@@ -14,7 +14,10 @@ export interface ISubmitButtonParams {
 export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({ element }) => {
   const { id } = useElement(element);
   const { disabled: _disabled } = useField(element);
-  const { submit } = useDynamicForm();
+  const { fieldHelpers, submit } = useDynamicForm();
+
+  const { touchAllFields } = fieldHelpers;
+
   const { isValid } = useValidator();
 
   const { disableWhenFormIsInvalid = false, text = 'Submit' } = element.params || {};
@@ -25,12 +28,20 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
     return _disabled;
   }, [disableWhenFormIsInvalid, isValid, _disabled]);
 
+  const handleSubmit = useCallback(() => {
+    touchAllFields();
+
+    if (!isValid) return;
+
+    submit();
+  }, [submit, isValid, touchAllFields]);
+
   return (
     <Button
       data-testid={`${id}-submit-button`}
       variant="secondary"
       disabled={disabled}
-      onClick={() => submit()}
+      onClick={handleSubmit}
     >
       {text}
     </Button>

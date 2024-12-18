@@ -2,7 +2,7 @@ import { TextArea } from '@/components/atoms';
 import { Input } from '@/components/atoms/Input';
 import { createTestId } from '@/components/organisms/Renderer';
 import { useCallback } from 'react';
-import { useField } from '../../hooks/external';
+import { useElement, useField } from '../../hooks/external';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { TDynamicFormField } from '../../types';
@@ -21,6 +21,7 @@ export const TextField: TDynamicFormField<ITextFieldParams> = ({ element }) => {
 
   const { stack } = useStack();
 
+  const { id } = useElement(element, stack);
   const { value, onChange, onBlur, onFocus, disabled } = useField(element, stack);
 
   const handleChange = useCallback(
@@ -33,6 +34,7 @@ export const TextField: TDynamicFormField<ITextFieldParams> = ({ element }) => {
   );
 
   const inputProps = {
+    id,
     value: value || '',
     placeholder,
     disabled,

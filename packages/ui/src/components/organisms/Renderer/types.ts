@@ -6,12 +6,12 @@ export interface IRendererElement {
 }
 
 export type IRendererComponent<
-  TDefinition extends IRendererElement,
+  TElement extends IRendererElement,
   TProps extends Record<string, unknown>,
   TBaseProps = {
     stack?: number[];
     children?: React.ReactNode | React.ReactNode[];
-    definition: TDefinition;
+    element: TElement;
   },
 > = React.FunctionComponent<TProps & TBaseProps>;
 

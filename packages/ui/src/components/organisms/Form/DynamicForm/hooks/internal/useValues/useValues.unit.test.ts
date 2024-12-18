@@ -35,11 +35,13 @@ describe('useValues', () => {
     expect(onChange).toHaveBeenCalledWith(newValues);
   });
 
-  it('should update field value and call onFieldChange when setFieldValue is called', () => {
+  it('should update field value and call onChange and onFieldChange when setFieldValue is called', () => {
+    const onChange = vi.fn();
     const onFieldChange = vi.fn();
     const { result } = renderHook(() =>
       useValues({
         values: initialValues,
+        onChange,
         onFieldChange,
       }),
     );
@@ -55,6 +57,7 @@ describe('useValues', () => {
 
     expect(result.current.values).toEqual(expectedValues);
     expect(onFieldChange).toHaveBeenCalledWith('name', 'Jane', expectedValues);
+    expect(onChange).toHaveBeenCalledWith(expectedValues);
   });
 
   it('should update nested field value correctly', () => {

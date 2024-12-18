@@ -3,6 +3,7 @@ import { DatePickerInput } from '@/components/molecules';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external/useField';
+import { useEvents } from '../../hooks/internal/useEvents';
 import { IFormElement } from '../../types';
 import { DateField, IDateFieldParams } from './DateField';
 
@@ -43,6 +44,7 @@ vi.mock('../../hooks/external/useField');
 vi.mock('@/common/utils/check-if-date-is-valid', () => ({
   checkIfDateIsValid: vi.fn(),
 }));
+vi.mock('../../hooks/internal/useEvents');
 
 describe('DateField', () => {
   beforeEach(() => {
@@ -57,6 +59,11 @@ describe('DateField', () => {
       onFocus: vi.fn(),
       disabled: false,
     });
+
+    vi.mocked(useEvents).mockReturnValue({
+      sendEvent: vi.fn(),
+      sendEventAsync: vi.fn(),
+    } as unknown as ReturnType<typeof useEvents>);
   });
 
   const mockElement = {

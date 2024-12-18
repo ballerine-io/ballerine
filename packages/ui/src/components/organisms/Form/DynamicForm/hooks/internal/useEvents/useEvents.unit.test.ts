@@ -1,7 +1,7 @@
 import { formatId } from '@/components/organisms/Form/Validator/utils/format-id';
 import { formatValueDestination } from '@/components/organisms/Form/Validator/utils/format-value-destination';
 import { renderHook } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useStack } from '../../../fields/FieldList/providers/StackProvider';
 import { useCallbacks } from '../useCallbacks';
 import { IFormEventElement } from './types';
@@ -35,10 +35,6 @@ describe('useEvents', () => {
     mockFormatValueDestination.mockReturnValue('formatted.destination');
     mockUseCallbacks.mockReturnValue({ onEvent: mockOnEvent });
     vi.mocked(useCallbacks).mockReturnValue({ onEvent: mockOnEvent });
-  });
-
-  afterEach(() => {
-    vi.resetAllMocks();
   });
 
   it('should return sendEvent and sendEventAsync functions', () => {

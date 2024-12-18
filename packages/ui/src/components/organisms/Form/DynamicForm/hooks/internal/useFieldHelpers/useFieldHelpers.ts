@@ -10,7 +10,7 @@ export interface IUseFieldHelpersParams {
 
 export const useFieldHelpers = ({ valuesApi, touchedApi }: IUseFieldHelpersParams) => {
   const { values, setFieldValue } = valuesApi;
-  const { touched, setFieldTouched } = touchedApi;
+  const { touched, setFieldTouched, touchAllFields } = touchedApi;
 
   const getTouched = useCallback(
     (fieldId: string) => {
@@ -32,8 +32,9 @@ export const useFieldHelpers = ({ valuesApi, touchedApi }: IUseFieldHelpersParam
       getValue,
       setTouched: setFieldTouched,
       setValue: setFieldValue,
+      touchAllFields: touchAllFields,
     }),
-    [getTouched, getValue, setFieldTouched, setFieldValue],
+    [getTouched, getValue, setFieldTouched, setFieldValue, touchAllFields],
   );
 
   return helpers;

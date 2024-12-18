@@ -29,11 +29,12 @@ export const useValues = <TValues extends object>({
         set(newValues, valueDestination, newValue);
 
         onFieldChange?.(fieldName, newValue, newValues);
+        onChange?.(newValues);
 
         return newValues;
       });
     },
-    [onFieldChange],
+    [onFieldChange, onChange],
   );
 
   return { values, setValues, setFieldValue };

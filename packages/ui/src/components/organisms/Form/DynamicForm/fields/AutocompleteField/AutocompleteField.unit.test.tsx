@@ -3,6 +3,7 @@ import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external/useField';
+import { useEvents } from '../../hooks/internal/useEvents';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { AutocompleteField, IAutocompleteFieldParams } from './AutocompleteField';
@@ -13,7 +14,6 @@ vi.mock('@/components/molecules', () => ({
     <input
       {...props}
       onFocus={e => {
-        console.log('FOCUS');
         onFocus?.(e);
       }}
       data-options={JSON.stringify(options)}
@@ -38,6 +38,8 @@ vi.mock('@/components/organisms/Renderer', () => ({
 vi.mock('../../layouts/FieldLayout', () => ({
   FieldLayout: ({ children }: any) => <div>{children}</div>,
 }));
+
+vi.mock('../../hooks/internal/useEvents');
 
 describe('AutocompleteField', () => {
   const mockStack = [0];
@@ -69,6 +71,10 @@ describe('AutocompleteField', () => {
     vi.mocked(useStack).mockReturnValue({ stack: mockStack });
     vi.mocked(useField).mockReturnValue(mockFieldProps);
     vi.mocked(createTestId).mockReturnValue('test-id');
+    vi.mocked(useEvents).mockReturnValue({
+      sendEvent: vi.fn(),
+      sendEventAsync: vi.fn(),
+    } as unknown as ReturnType<typeof useEvents>);
   });
 
   it('should render AutocompleteInput component', () => {

@@ -42,7 +42,9 @@ export const useRuleEngine = <TRuleEngines = TRuleEngine>(
     debounce((context: object, rules: Array<IRule<any, any>>) => {
       const results = executeRules(context, rules);
 
-      console.log('Executed rules asynchronously', results);
+      if (results?.length) {
+        console.log('Executed rules asynchronously', results);
+      }
 
       setAsyncRuleEngineExecutionResults(results);
     }, executionDelay),

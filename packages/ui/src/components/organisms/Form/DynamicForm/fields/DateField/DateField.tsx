@@ -7,6 +7,7 @@ import {
 import { createTestId } from '@/components/organisms/Renderer';
 import { useCallback } from 'react';
 import { useField } from '../../hooks/external/useField';
+import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
@@ -58,6 +59,7 @@ export const DateField: TDynamicFormField<IDateFieldParams> = ({ element }) => {
         onChange={handleChange}
         onFocus={onFocus}
       />
+      <FieldErrors element={element} />
     </FieldLayout>
   );
 };
