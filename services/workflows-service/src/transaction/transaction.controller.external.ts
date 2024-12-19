@@ -349,7 +349,10 @@ export class TransactionControllerExternal {
       throw new errors.NotFoundException(`Alert with id ${filters.alertId} not found`);
     }
 
-    if (!alert.alertDefinition) {
+    if (
+      !alert.alertDefinition ||
+      alert.alertDefinition.monitoringType !== MonitoringType.transaction_monitoring
+    ) {
       throw new errors.NotFoundException(`Alert definition not found for alert ${alert.id}`);
     }
 
