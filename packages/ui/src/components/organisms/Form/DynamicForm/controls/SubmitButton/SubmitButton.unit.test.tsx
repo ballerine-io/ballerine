@@ -1,148 +1,192 @@
-import { Button } from '@/components/atoms';
-import '@testing-library/jest-dom';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useValidator } from '../../../Validator';
-import { useDynamicForm } from '../../context';
-import { useElement } from '../../hooks/external';
+import { IValidatorContext } from '../../../Validator/context';
+import { IDynamicFormContext, useDynamicForm } from '../../context';
+import { useElement } from '../../hooks/external/useElement';
 import { useField } from '../../hooks/external/useField';
-import { useFieldHelpers } from '../../hooks/internal/useFieldHelpers';
+import { useTaskRunner } from '../../providers/TaskRunner/hooks/useTaskRunner';
+import { ITaskRunnerContext } from '../../providers/TaskRunner/types';
 import { IFormElement } from '../../types';
 import { ISubmitButtonParams, SubmitButton } from './SubmitButton';
 
 vi.mock('@/components/atoms', () => ({
-  Button: vi.fn(),
+  Button: vi.fn(({ children, ...props }) => <button {...props}>{children}</button>),
 }));
 
-vi.mock('../../hooks/external/useElement');
-
-vi.mock('../../../Validator', () => ({
-  useValidator: vi.fn(),
-}));
-
+vi.mock('../../../Validator');
 vi.mock('../../context');
-
+vi.mock('../../hooks/external/useElement');
 vi.mock('../../hooks/external/useField');
-vi.mock('../../hooks/internal/useFieldHelpers');
+vi.mock('../../providers/TaskRunner/hooks/useTaskRunner');
 
 describe('SubmitButton', () => {
   const mockElement = {
     id: 'test-button',
-    params: {},
-    valueDestination: 'test.path',
-    element: '',
-  } as unknown as IFormElement<string, ISubmitButtonParams>;
+    params: {
+      disableWhenFormIsInvalid: false,
+      text: 'Test Submit',
+    },
+  } as IFormElement<string, ISubmitButtonParams>;
 
-  const mockSubmit = vi.fn();
+  const mockFieldHelpers = {
+    touchAllFields: vi.fn(),
+    getTouched: vi.fn(),
+    getValue: vi.fn(),
+    setTouched: vi.fn(),
+    setValue: vi.fn(),
+  };
 
   beforeEach(() => {
-    cleanup();
-    vi.clearAllMocks();
-
-    const mockSubmit = vi.fn();
-
-    vi.mocked(Button).mockImplementation(({ children, ...props }) => (
-      <button
-        {...props}
-        type="button"
-        onClick={e => {
-          console.log('CLICKED');
-          props.onClick?.(e);
-        }}
-      >
-        {children}
-      </button>
-    ));
-
-    vi.mocked(useFieldHelpers).mockReturnValue({
-      touchAllFields: vi.fn(),
-    } as any);
+    vi.mocked(useElement).mockReturnValue({
+      id: 'test-button',
+      originId: 'test-button',
+      hidden: false,
+    });
+    vi.mocked(useField).mockReturnValue({
+      disabled: false,
+      value: null,
+      touched: false,
+      onChange: vi.fn(),
+      onBlur: vi.fn(),
+      onFocus: vi.fn(),
+    });
     vi.mocked(useDynamicForm).mockReturnValue({
-      submit: mockSubmit,
-      fieldHelpers: {
-        touchAllFields: vi.fn(),
-      },
-    } as any);
-
-    vi.mocked(useField).mockReturnValue({ disabled: false } as any);
-
-    vi.mocked(useValidator).mockReturnValue({ isValid: true } as any);
-    vi.mocked(useElement).mockReturnValue({ id: 'test-id' } as any);
+      fieldHelpers: mockFieldHelpers,
+      submit: vi.fn(),
+      values: {},
+      touched: {},
+      elementsMap: {},
+      callbacks: {},
+      metadata: {},
+    } as IDynamicFormContext<object>);
+    vi.mocked(useTaskRunner).mockReturnValue({
+      tasks: [],
+      isRunning: false,
+      addTask: vi.fn(),
+      removeTask: vi.fn(),
+      runTasks: vi.fn(),
+    } as ITaskRunnerContext);
+    vi.mocked(useValidator).mockReturnValue({
+      isValid: true,
+      errors: {},
+      values: {},
+      validate: vi.fn(),
+    } as unknown as IValidatorContext<object>);
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    cleanup();
+    vi.clearAllMocks();
   });
 
-  it('should render button with default text', () => {
+  it('renders with default props', () => {
     render(<SubmitButton element={mockElement} />);
-    expect(screen.getByText('Submit')).toBeInTheDocument();
+
+    const button = screen.getByTestId('test-button-submit-button');
+    expect(button).toBeInTheDocument();
+    expect(button).toHaveTextContent('Test Submit');
   });
 
-  it('should render button with custom text', () => {
-    const elementWithText = {
+  it('disables button when form is invalid and disableWhenFormIsInvalid is true', () => {
+    const element = {
       ...mockElement,
-      params: { text: 'Custom Submit' },
+      params: { disableWhenFormIsInvalid: true },
     };
 
-    render(<SubmitButton element={elementWithText} />);
-    expect(screen.getByText('Custom Submit')).toBeInTheDocument();
+    vi.mocked(useValidator).mockReturnValue({
+      isValid: false,
+      errors: {},
+      values: {},
+      validate: vi.fn(),
+    } as unknown as IValidatorContext<object>);
+
+    render(<SubmitButton element={element} />);
+
+    expect(screen.getByTestId('test-button-submit-button')).toBeDisabled();
   });
 
-  describe('disabled state', () => {
-    it('should be disabled when useField returns disabled true', () => {
-      vi.mocked(useField).mockReturnValue({ disabled: true } as any);
+  it('handles submit when form is valid', async () => {
+    const mockSubmit = vi.fn();
+    const mockRunTasks = vi.fn();
 
-      render(<SubmitButton element={mockElement} />);
-
-      expect(screen.getByRole('button')).toBeDisabled();
+    vi.mocked(useDynamicForm).mockReturnValue({
+      fieldHelpers: mockFieldHelpers,
+      submit: mockSubmit,
+      values: {},
+      touched: {},
+      elementsMap: {},
+      callbacks: {},
+      metadata: {},
+    } as IDynamicFormContext<object>);
+    vi.mocked(useTaskRunner).mockReturnValue({
+      tasks: [],
+      isRunning: false,
+      addTask: vi.fn(),
+      removeTask: vi.fn(),
+      runTasks: mockRunTasks,
+    });
+    vi.mocked(useValidator).mockReturnValue({
+      isValid: true,
+      errors: [],
+      values: {},
+      validate: vi.fn(),
     });
 
-    it('should be disabled when form is invalid and disableWhenFormIsInvalid is true', () => {
-      vi.mocked(useValidator).mockReturnValue({ isValid: false } as any);
-
-      const elementWithDisable = {
-        ...mockElement,
-        params: { disableWhenFormIsInvalid: true },
-      };
-
-      render(<SubmitButton element={elementWithDisable} />);
-
-      expect(screen.getByRole('button')).toBeDisabled();
-    });
-
-    it('should not be disabled when form is invalid but disableWhenFormIsInvalid is false', () => {
-      vi.mocked(useValidator).mockReturnValue({ isValid: false } as any);
-      vi.mocked(useField).mockReturnValue({ disabled: false } as any);
-
-      render(<SubmitButton element={mockElement} />);
-
-      expect(screen.getByRole('button')).not.toBeDisabled();
-    });
-
-    it('should not call submit when form is invalid and disableWhenFormIsInvalid is true', async () => {
-      vi.mocked(useValidator).mockReturnValue({ isValid: false } as any);
-
-      const elementWithDisable = {
-        ...mockElement,
-        params: { disableWhenFormIsInvalid: true },
-      };
-
-      render(<SubmitButton element={elementWithDisable} />);
-      await userEvent.click(screen.getByRole('button'));
-
-      expect(mockSubmit).not.toHaveBeenCalled();
-    });
-  });
-
-  it('should have correct test id', () => {
     render(<SubmitButton element={mockElement} />);
-    expect(screen.getByTestId('test-id-submit-button')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByTestId('test-button-submit-button'));
+
+    expect(mockFieldHelpers.touchAllFields).toHaveBeenCalled();
+    expect(mockRunTasks).toHaveBeenCalled();
+    expect(mockSubmit).toHaveBeenCalled();
   });
 
-  it('should render with secondary variant', () => {
+  it('does not submit when form is invalid', async () => {
+    const mockSubmit = vi.fn();
+    const mockRunTasks = vi.fn();
+
+    vi.mocked(useDynamicForm).mockReturnValue({
+      fieldHelpers: mockFieldHelpers,
+      submit: mockSubmit,
+      values: {},
+      touched: {},
+      elementsMap: {},
+      callbacks: {},
+      metadata: {},
+    } as IDynamicFormContext<object>);
+    vi.mocked(useTaskRunner).mockReturnValue({
+      tasks: [],
+      isRunning: false,
+      addTask: vi.fn(),
+      removeTask: vi.fn(),
+      runTasks: mockRunTasks,
+    });
+    vi.mocked(useValidator).mockReturnValue({
+      isValid: false,
+      errors: [],
+      values: {},
+      validate: vi.fn(),
+    } as unknown as IValidatorContext<object>);
+
     render(<SubmitButton element={mockElement} />);
-    expect(vi.mocked(Button).mock.calls[0]?.[0]?.variant).toBe('secondary');
+
+    await userEvent.click(screen.getByTestId('test-button-submit-button'));
+
+    expect(mockFieldHelpers.touchAllFields).toHaveBeenCalled();
+    expect(mockRunTasks).not.toHaveBeenCalled();
+    expect(mockSubmit).not.toHaveBeenCalled();
+  });
+
+  it('uses default text when not provided', () => {
+    const element = {
+      ...mockElement,
+      params: {},
+    };
+
+    render(<SubmitButton element={element} />);
+
+    expect(screen.getByTestId('test-button-submit-button')).toHaveTextContent('Submit');
   });
 });

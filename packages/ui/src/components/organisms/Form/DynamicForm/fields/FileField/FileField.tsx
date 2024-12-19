@@ -29,7 +29,10 @@ export const FileField: TDynamicFormField<IFileFieldParams> = ({ element }) => {
   useUnmountEvent(element);
 
   const { placeholder = 'Choose file', acceptFileFormats = undefined } = element.params || {};
-  const { handleChange } = useFileUpload(element, element.params);
+  const { handleChange, isUploading: disabledWhileUploading } = useFileUpload(
+    element,
+    element.params,
+  );
 
   const { stack } = useStack();
   const { value, disabled, onChange, onBlur, onFocus } = useField<File | string | undefined>(
@@ -50,12 +53,20 @@ export const FileField: TDynamicFormField<IFileFieldParams> = ({ element }) => {
     return undefined;
   }, [value]);
 
+  const clearFileAndInput = useCallback(() => {
+    onChange(undefined);
+
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
+  }, [onChange]);
+
   return (
     <FieldLayout element={element}>
       <div
         className={ctw(
           'relative flex h-[56px] flex-row items-center gap-3 rounded-[16px] border bg-white px-4',
-          { 'pointer-events-none opacity-50': disabled },
+          { 'pointer-events-none opacity-50': disabled || disabledWhileUploading },
         )}
         onClick={focusInputOnContainerClick}
         data-testid={createTestId(element, stack)}
@@ -72,7 +83,7 @@ export const FileField: TDynamicFormField<IFileFieldParams> = ({ element }) => {
             className="h-[28px] w-[28px] rounded-full"
             onClick={e => {
               e.stopPropagation();
-              onChange(undefined);
+              clearFileAndInput();
             }}
           >
             <div className="rounded-full bg-white">
@@ -85,7 +96,7 @@ export const FileField: TDynamicFormField<IFileFieldParams> = ({ element }) => {
           type="file"
           placeholder={placeholder}
           accept={acceptFileFormats}
-          disabled={disabled}
+          disabled={disabled || disabledWhileUploading}
           onChange={handleChange}
           onBlur={onBlur}
           onFocus={onFocus}

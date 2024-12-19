@@ -23,7 +23,7 @@ const schema: Array<IFormElement<any, any>> = [
     element: 'filefield',
     valueDestination: 'file-protected',
     params: {
-      label: 'Upload on Submit',
+      label: 'Upload to protected endpoint',
       placeholder: 'Select File',
       uploadSettings: {
         url: 'http://localhost:3000/upload-protected',
@@ -31,6 +31,20 @@ const schema: Array<IFormElement<any, any>> = [
         headers: {
           Authorization: '{token}',
         },
+      },
+    },
+  },
+  {
+    id: 'FileField:SubmitUpload',
+    element: 'filefield',
+    valueDestination: 'file-submit-upload',
+    params: {
+      label: 'Upload on Submit',
+      placeholder: 'Select File',
+      uploadOn: 'submit',
+      uploadSettings: {
+        url: 'http://localhost:3000/upload',
+        resultPath: 'filename',
       },
     },
   },

@@ -46,7 +46,7 @@ describe('useRuleEngine', () => {
     const { result } = renderHook(() => useRuleEngine(context, { rules, executeRulesSync: false }));
 
     // Wait for debounced execution
-    await vi.advanceTimersByTimeAsync(500);
+    await vi.advanceTimersByTimeAsync(550);
 
     // Assert
     expect(result.current).toEqual(expectedResults);

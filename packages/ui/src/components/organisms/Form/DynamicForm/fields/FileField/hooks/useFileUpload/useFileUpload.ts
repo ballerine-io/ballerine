@@ -1,7 +1,10 @@
 import { useCallback, useState } from 'react';
 import { useDynamicForm } from '../../../../context';
-import { useField } from '../../../../hooks/external';
+import { useElement, useField } from '../../../../hooks/external';
+import { useTaskRunner } from '../../../../providers/TaskRunner/hooks/useTaskRunner';
+import { ITask } from '../../../../providers/TaskRunner/types';
 import { IFormElement } from '../../../../types';
+import { useStack } from '../../../FieldList/providers/StackProvider';
 import { IFileFieldParams } from '../../FileField';
 import { formatHeaders, uploadFile } from './helpers';
 
@@ -10,6 +13,9 @@ export const useFileUpload = (
   params: IFileFieldParams = {},
 ) => {
   const { uploadOn = 'change' } = params;
+  const { stack } = useStack();
+  const { id } = useElement(element, stack);
+  const { addTask, removeTask } = useTaskRunner();
   const [isUploading, setIsUploading] = useState(false);
   const { metadata } = useDynamicForm();
 
@@ -17,6 +23,8 @@ export const useFileUpload = (
 
   const handleChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
+      removeTask(id);
+
       const { uploadSettings } = params;
 
       const uploadParams = {
@@ -24,8 +32,6 @@ export const useFileUpload = (
         method: uploadSettings?.method || 'POST',
         headers: formatHeaders(uploadSettings?.headers || {}, metadata),
       };
-
-      console.log('uploadParams', uploadParams);
 
       if (uploadOn === 'change') {
         try {
@@ -42,8 +48,34 @@ export const useFileUpload = (
           setIsUploading(false);
         }
       }
+
+      if (uploadOn === 'submit') {
+        onChange(e.target?.files?.[0] as File);
+
+        const taskRun = async () => {
+          try {
+            setIsUploading(true);
+            const result = await uploadFile(
+              e.target?.files?.[0] as File,
+              uploadParams as IFileFieldParams['uploadSettings'],
+            );
+            onChange(result);
+          } catch (error) {
+            console.error('Failed to upload file.', error);
+          } finally {
+            setIsUploading(false);
+          }
+        };
+
+        const task: ITask = {
+          id,
+          element,
+          run: taskRun,
+        };
+        addTask(task);
+      }
     },
-    [uploadOn, params, metadata, onChange],
+    [uploadOn, params, metadata, addTask, removeTask, onChange, id, element],
   );
 
   return {
