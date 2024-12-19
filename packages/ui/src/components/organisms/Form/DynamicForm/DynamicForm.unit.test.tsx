@@ -9,6 +9,7 @@ import { useFieldHelpers } from './hooks/internal/useFieldHelpers';
 import { useTouched } from './hooks/internal/useTouched';
 import { useValidationSchema } from './hooks/internal/useValidationSchema';
 import { useValues } from './hooks/internal/useValues';
+import { TaskRunner } from './providers/TaskRunner';
 import { ICommonFieldParams, IDynamicFormProps, IFormElement } from './types';
 
 // Mock dependencies
@@ -25,6 +26,8 @@ vi.mock('./hooks/internal/useTouched');
 vi.mock('./hooks/internal/useValidationSchema');
 
 vi.mock('./hooks/internal/useValues');
+
+vi.mock('./providers/TaskRunner');
 
 vi.mock('./context', () => ({
   DynamicFormContext: {
@@ -44,6 +47,9 @@ describe('DynamicFormV2', () => {
     });
     vi.mocked(ValidatorProvider).mockImplementation(({ children }: any) => {
       return <div data-testid="validator">{children}</div>;
+    });
+    vi.mocked(TaskRunner).mockImplementation(({ children }: any) => {
+      return <div data-testid="task-runner">{children}</div>;
     });
 
     vi.mocked(useTouched).mockReturnValue({
@@ -84,6 +90,11 @@ describe('DynamicFormV2', () => {
 
   it('should render without crashing', () => {
     render(<DynamicFormV2 {...mockProps} />);
+  });
+
+  it('should render TaskRunner component', () => {
+    const { getByTestId } = render(<DynamicFormV2 {...mockProps} />);
+    expect(getByTestId('task-runner')).toBeInTheDocument();
   });
 
   it('should pass elements to useValidationSchema', () => {
