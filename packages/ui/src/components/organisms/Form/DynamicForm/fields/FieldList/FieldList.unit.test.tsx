@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDynamicForm } from '../../context';
 import { useElement } from '../../hooks/external';
+import { useEvents } from '../../hooks/internal/useEvents';
 import { IFormElement } from '../../types';
 import { FieldList } from './FieldList';
 import { IUseFieldParams, useFieldList } from './hooks/useFieldList';
@@ -20,6 +21,7 @@ vi.mock('@/components/organisms/Renderer', () => ({
   Renderer: () => <div data-testid="mock-renderer">Renderer</div>,
 }));
 
+vi.mock('@/components/organisms/Form/DynamicForm/hooks/internal/useEvents/useEvents');
 describe('FieldList', () => {
   const mockElement = {
     id: 'test-field',
@@ -45,6 +47,12 @@ describe('FieldList', () => {
 
     vi.mocked(useDynamicForm).mockReturnValue({
       elementsMap: {},
+      fieldHelpers: {
+        getValue: vi.fn(),
+        setValue: vi.fn(),
+        clearValue: vi.fn(),
+        getTouched: vi.fn(),
+      },
     } as any);
 
     vi.mocked(useStack).mockReturnValue({
@@ -58,6 +66,11 @@ describe('FieldList', () => {
       addItem: mockAddItem,
       removeItem: mockRemoveItem,
     });
+
+    vi.mocked(useEvents).mockReturnValue({
+      sendEvent: vi.fn(),
+      sendEventAsync: vi.fn(),
+    } as unknown as ReturnType<typeof useEvents>);
   });
 
   describe('test ids', () => {

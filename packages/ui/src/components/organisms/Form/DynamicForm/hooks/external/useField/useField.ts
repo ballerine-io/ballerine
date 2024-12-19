@@ -34,11 +34,13 @@ export const useField = <TValue>(
   }, [disabledRulesResult]);
 
   const onChange = useCallback(
-    <TValue>(value: TValue) => {
+    <TValue>(value: TValue, ignoreEvent = false) => {
       setValue(fieldId, valueDestination, value);
       setTouched(fieldId, true);
 
-      sendEventAsync('onChange');
+      if (!ignoreEvent) {
+        sendEventAsync('onChange');
+      }
     },
     [fieldId, valueDestination, setValue, setTouched, sendEventAsync],
   );

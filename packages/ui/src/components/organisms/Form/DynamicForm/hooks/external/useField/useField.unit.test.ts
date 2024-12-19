@@ -1,6 +1,6 @@
 import { IRuleExecutionResult, useRuleEngine } from '@/components/organisms/Form/hooks';
 import { renderHook } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { IDynamicFormContext, useDynamicForm } from '../../../context';
 import { ICommonFieldParams, IFormElement } from '../../../types';
 import { useEvents } from '../../internal/useEvents';
@@ -69,6 +69,12 @@ describe('useField', () => {
     } as unknown as IDynamicFormContext<object>);
     mockGetValue.mockReturnValue('test-value');
     mockGetTouched.mockReturnValue(false);
+
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('should return field state and handlers', () => {
@@ -117,6 +123,16 @@ describe('useField', () => {
       expect(mockSetValue).toHaveBeenCalledWith('test-field-1-2', 'test.path[1][2]', 'new-value');
       expect(mockSetTouched).toHaveBeenCalledWith('test-field-1-2', true);
       expect(mockSendEventAsync).toHaveBeenCalledWith('onChange');
+    });
+
+    it('should not trigger async event when ignoreEvent is true', () => {
+      const { result } = renderHook(() => useField(mockElement, mockStack));
+
+      result.current.onChange('new-value', true);
+
+      vi.advanceTimersByTime(550);
+
+      expect(mockSendEventAsync).not.toHaveBeenCalled();
     });
   });
 

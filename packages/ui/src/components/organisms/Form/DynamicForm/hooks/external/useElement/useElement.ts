@@ -7,6 +7,7 @@ import { useEvents } from '../../internal/useEvents';
 import { useMount } from '../../internal/useMount';
 import { useUnmount } from '../../internal/useUnmount';
 import { useElementId } from '../useElementId';
+import { useClearValueOnUnmount } from './hooks/useClearValueOnUnmount';
 
 export const useElement = <TElements extends string, TParams>(
   element: IFormElement<TElements, TParams>,
@@ -28,6 +29,7 @@ export const useElement = <TElements extends string, TParams>(
 
   useMount(() => sendEvent('onMount'));
   useUnmount(() => sendEvent('onUnmount'));
+  useClearValueOnUnmount(element, isHidden);
 
   return {
     id: useElementId(element, stack),

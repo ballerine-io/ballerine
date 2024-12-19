@@ -1,4 +1,7 @@
-import { IRuleExecutionResult, useRuleEngine } from '@/components/organisms/Form/hooks';
+import {
+  IRuleExecutionResult,
+  useRuleEngine,
+} from '@/components/organisms/Form/hooks/useRuleEngine';
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDynamicForm } from '../../../context';
@@ -7,6 +10,7 @@ import { useEvents } from '../../internal/useEvents';
 import { useMount } from '../../internal/useMount';
 import { useUnmount } from '../../internal/useUnmount';
 import { useElementId } from '../useElementId';
+import { useClearValueOnUnmount } from './hooks/useClearValueOnUnmount';
 import { useElement } from './useElement';
 
 vi.mock('@/components/organisms/Form/hooks/useRuleEngine');
@@ -15,6 +19,7 @@ vi.mock('../../internal/useEvents');
 vi.mock('../../internal/useMount');
 vi.mock('../../internal/useUnmount');
 vi.mock('../useElementId');
+vi.mock('./hooks/useClearValueOnUnmount');
 
 describe('useElement', () => {
   const mockSendEvent = vi.fn();
@@ -39,11 +44,12 @@ describe('useElement', () => {
     });
 
     vi.mocked(useRuleEngine).mockReturnValue([]);
+    vi.mocked(useClearValueOnUnmount).mockImplementation(() => undefined);
   });
 
   describe('when stack not provided', () => {
     it('should return unmodified id and origin id', () => {
-      const element = { id: 'test-id' } as IFormElement;
+      const element = { id: 'test-id' } as IFormElement<string, any>;
 
       const { result } = renderHook(() => useElement(element));
 
@@ -54,7 +60,7 @@ describe('useElement', () => {
 
   describe('when stack provided', () => {
     it('should format id with stack', () => {
-      const element = { id: 'test-id' } as IFormElement;
+      const element = { id: 'test-id' } as IFormElement<string, any>;
       const stack = [1, 2];
 
       const { result } = renderHook(() => useElement(element, stack));
@@ -67,30 +73,38 @@ describe('useElement', () => {
   describe('when hidden rules provided', () => {
     it('should return hidden true when all hidden rules return true', () => {
       vi.mocked(useRuleEngine).mockReturnValue([
-        { result: true },
-        { result: true },
+        { result: true, rule: {} },
+        { result: true, rule: {} },
       ] as IRuleExecutionResult[]);
 
       const element = {
         id: 'test-id',
         hidden: [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 1] } }],
-      } as IFormElement;
+      } as IFormElement<string, any>;
 
       const { result } = renderHook(() => useElement(element));
 
       expect(result.current.hidden).toBe(true);
+      expect(useRuleEngine).toHaveBeenCalledWith(
+        { test: 1 },
+        {
+          rules: element.hidden,
+          runOnInitialize: true,
+          executionDelay: 500,
+        },
+      );
     });
 
     it('should return hidden false when any hidden rule returns false', () => {
       vi.mocked(useRuleEngine).mockReturnValue([
-        { result: true },
-        { result: false },
+        { result: true, rule: {} },
+        { result: false, rule: {} },
       ] as IRuleExecutionResult[]);
 
       const element = {
         id: 'test-id',
         hidden: [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 5] } }],
-      } as IFormElement;
+      } as IFormElement<string, any>;
 
       const { result } = renderHook(() => useElement(element));
 
@@ -102,7 +116,7 @@ describe('useElement', () => {
 
       const element = {
         id: 'test-id',
-      } as IFormElement;
+      } as IFormElement<string, any>;
 
       const { result } = renderHook(() => useElement(element));
 
@@ -112,7 +126,7 @@ describe('useElement', () => {
 
   describe('lifecycle events', () => {
     it('should call sendEvent with onMount on mount', () => {
-      const element = { id: 'test-id' } as IFormElement;
+      const element = { id: 'test-id' } as IFormElement<string, any>;
 
       renderHook(() => useElement(element));
 
@@ -127,7 +141,7 @@ describe('useElement', () => {
     });
 
     it('should call sendEvent with onUnmount on unmount', () => {
-      const element = { id: 'test-id' } as IFormElement;
+      const element = { id: 'test-id' } as IFormElement<string, any>;
 
       renderHook(() => useElement(element));
 
@@ -139,6 +153,17 @@ describe('useElement', () => {
       }
 
       expect(mockSendEvent).toHaveBeenCalledWith('onUnmount');
+    });
+
+    it('should call useClearValueOnUnmount with element and hidden state', () => {
+      const element = { id: 'test-id' } as IFormElement<string, any>;
+      vi.mocked(useRuleEngine).mockReturnValue([
+        { result: true, rule: {} },
+      ] as IRuleExecutionResult[]);
+
+      renderHook(() => useElement(element));
+
+      expect(useClearValueOnUnmount).toHaveBeenCalledWith(element, true);
     });
   });
 });
