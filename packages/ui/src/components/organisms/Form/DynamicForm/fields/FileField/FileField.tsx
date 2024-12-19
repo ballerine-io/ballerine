@@ -5,6 +5,8 @@ import { createTestId } from '@/components/organisms/Renderer';
 import { Upload, XCircle } from 'lucide-react';
 import { useCallback, useMemo, useRef } from 'react';
 import { useElement, useField } from '../../hooks/external';
+import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { ICommonFieldParams, TDynamicFormField } from '../../types';
@@ -21,6 +23,9 @@ export interface IFileFieldParams extends ICommonFieldParams {
 }
 
 export const FileField: TDynamicFormField<IFileFieldParams> = ({ element }) => {
+  useMountEvent(element);
+  useUnmountEvent(element);
+
   const {
     uploadOn = 'change',
     uploadSettings = {},

@@ -4,6 +4,8 @@ import '@testing-library/jest-dom';
 import { render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external';
+import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { IFormElement } from '../../types';
@@ -16,6 +18,14 @@ vi.mock('@/components/atoms', () => ({
 
 vi.mock('../../hooks/external', () => ({
   useField: vi.fn(),
+}));
+
+vi.mock('../../hooks/internal/useMountEvent', () => ({
+  useMountEvent: vi.fn(),
+}));
+
+vi.mock('../../hooks/internal/useUnmountEvent', () => ({
+  useUnmountEvent: vi.fn(),
 }));
 
 vi.mock('../../layouts/FieldErrors', () => ({
@@ -40,7 +50,7 @@ describe('PhoneField', () => {
     params: {},
     valueDestination: 'test.path',
     element: 'phonefield',
-  } as IFormElement<string, IPhoneFieldParams>;
+  } as unknown as IFormElement<string, IPhoneFieldParams>;
 
   const mockFieldValues = {
     value: '+1234567890',
@@ -54,6 +64,8 @@ describe('PhoneField', () => {
     vi.mocked(useStack).mockReturnValue({ stack: [] });
     vi.mocked(useField).mockReturnValue(mockFieldValues as any);
     vi.mocked(createTestId).mockReturnValue('test-id');
+    vi.mocked(useMountEvent).mockReturnValue(undefined);
+    vi.mocked(useUnmountEvent).mockReturnValue(undefined);
   });
 
   it('should render PhoneNumberInput with default country "us"', () => {
@@ -64,7 +76,7 @@ describe('PhoneField', () => {
         country: 'us',
         testId: 'test-id',
         value: '+1234567890',
-        onChange: mockFieldValues.onChange,
+        onChange: expect.any(Function),
         onBlur: mockFieldValues.onBlur,
         onFocus: mockFieldValues.onFocus,
       }),
@@ -117,5 +129,17 @@ describe('PhoneField', () => {
     render(<PhoneField element={mockElement} />);
 
     expect(createTestId).toHaveBeenCalledWith(mockElement, mockStack);
+  });
+
+  it('should call useMountEvent with element', () => {
+    const mockUseMountEvent = vi.mocked(useMountEvent);
+    render(<PhoneField element={mockElement} />);
+    expect(mockUseMountEvent).toHaveBeenCalledWith(mockElement);
+  });
+
+  it('should call useUnmountEvent with element', () => {
+    const mockUseUnmountEvent = vi.mocked(useUnmountEvent);
+    render(<PhoneField element={mockElement} />);
+    expect(mockUseUnmountEvent).toHaveBeenCalledWith(mockElement);
   });
 });

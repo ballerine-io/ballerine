@@ -1,6 +1,9 @@
 import { DropdownInput } from '@/components/molecules';
 import { createTestId } from '@/components/organisms/Renderer';
+import { useCallback } from 'react';
 import { useElement, useField } from '../../hooks/external';
+import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { TDynamicFormField } from '../../types';
@@ -17,6 +20,9 @@ export interface ISelectFieldParams {
 }
 
 export const SelectField: TDynamicFormField<ISelectFieldParams> = ({ element }) => {
+  useMountEvent(element);
+  useUnmountEvent(element);
+
   const { stack } = useStack();
   const { id } = useElement(element, stack);
   const { value, disabled, onChange, onBlur, onFocus } = useField<string | undefined>(
@@ -25,6 +31,13 @@ export const SelectField: TDynamicFormField<ISelectFieldParams> = ({ element }) 
   );
 
   const { placeholder, options = [] } = element.params || {};
+
+  const handleChange = useCallback(
+    (value: string) => {
+      onChange(value);
+    },
+    [onChange],
+  );
 
   return (
     <FieldLayout element={element}>
@@ -37,7 +50,7 @@ export const SelectField: TDynamicFormField<ISelectFieldParams> = ({ element }) 
           placeholder: placeholder || '',
         }}
         disabled={disabled}
-        onChange={onChange}
+        onChange={handleChange}
         onBlur={onBlur}
         onFocus={onFocus}
       />

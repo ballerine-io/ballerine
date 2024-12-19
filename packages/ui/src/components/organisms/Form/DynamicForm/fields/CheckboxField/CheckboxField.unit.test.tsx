@@ -2,6 +2,9 @@ import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useElement, useField } from '../../hooks/external';
+import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
+import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
@@ -41,6 +44,14 @@ vi.mock('../../layouts/FieldLayout', () => ({
 
 vi.mock('../../layouts/FieldErrors', () => ({
   FieldErrors: vi.fn(() => <div data-testid="field-errors" />),
+}));
+
+vi.mock('../../hooks/internal/useMountEvent', () => ({
+  useMountEvent: vi.fn(),
+}));
+
+vi.mock('../../hooks/internal/useUnmountEvent', () => ({
+  useUnmountEvent: vi.fn(),
 }));
 
 describe('CheckboxField', () => {
@@ -153,5 +164,26 @@ describe('CheckboxField', () => {
 
     render(<CheckboxField element={mockElement} />);
     expect(screen.getByTestId('test-checkbox')).not.toBeChecked();
+  });
+
+  it('should call useMountEvent with element', () => {
+    const mockUseMountEvent = vi.mocked(useMountEvent);
+    render(<CheckboxField element={mockElement} />);
+    expect(mockUseMountEvent).toHaveBeenCalledWith(mockElement);
+  });
+
+  it('should call useUnmountEvent with element', () => {
+    const mockUseUnmountEvent = vi.mocked(useUnmountEvent);
+    const { unmount } = render(<CheckboxField element={mockElement} />);
+    unmount();
+    expect(mockUseUnmountEvent).toHaveBeenCalledWith(mockElement);
+  });
+
+  it('should render FieldErrors with element prop', () => {
+    render(<CheckboxField element={mockElement} />);
+    expect(FieldErrors).toHaveBeenCalledWith(
+      expect.objectContaining({ element: mockElement }),
+      expect.anything(),
+    );
   });
 });

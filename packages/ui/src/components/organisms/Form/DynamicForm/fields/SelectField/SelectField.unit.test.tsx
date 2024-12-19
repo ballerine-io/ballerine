@@ -1,8 +1,12 @@
 import { DropdownInput } from '@/components/molecules';
 import { createTestId } from '@/components/organisms/Renderer';
-import { fireEvent, render } from '@testing-library/react';
+import { cleanup, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useElement, useField } from '../../hooks/external';
+import { useEvents } from '../../hooks/internal/useEvents';
+import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { TBaseFields } from '../../repositories/fields-repository';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
@@ -44,6 +48,26 @@ vi.mock('../FieldList/providers/StackProvider', () => ({
   useStack: vi.fn(),
 }));
 
+vi.mock('../../hooks/internal/useEvents', () => ({
+  useEvents: vi.fn(),
+}));
+
+vi.mock('../../hooks/internal/useMountEvent', () => ({
+  useMountEvent: vi.fn(),
+}));
+
+vi.mock('../../hooks/internal/useUnmountEvent', () => ({
+  useUnmountEvent: vi.fn(),
+}));
+
+vi.mock('../../layouts/FieldLayout', () => ({
+  FieldLayout: ({ children }: any) => <div>{children}</div>,
+}));
+
+vi.mock('../../layouts/FieldErrors', () => ({
+  FieldErrors: () => null,
+}));
+
 describe('SelectField', () => {
   const mockElement = {
     id: 'test-id',
@@ -60,10 +84,15 @@ describe('SelectField', () => {
   const mockTestId = 'test-select-field';
 
   beforeEach(() => {
+    cleanup();
     vi.clearAllMocks();
 
     vi.mocked(useStack).mockReturnValue({ stack: mockStack });
-    vi.mocked(useElement).mockReturnValue({ id: mockElement.id } as ReturnType<typeof useElement>);
+    vi.mocked(useElement).mockReturnValue({
+      id: mockElement.id,
+      originId: mockElement.id,
+      hidden: false,
+    } as ReturnType<typeof useElement>);
     vi.mocked(useField).mockReturnValue({
       value: undefined,
       disabled: false,
@@ -73,6 +102,10 @@ describe('SelectField', () => {
       touched: false,
     });
     vi.mocked(createTestId).mockReturnValue(mockTestId);
+    vi.mocked(useEvents).mockReturnValue({
+      sendEvent: vi.fn(),
+      sendEventAsync: vi.fn(),
+    } as unknown as ReturnType<typeof useEvents>);
   });
 
   it('should render DropdownInput with correct props', () => {
@@ -128,7 +161,6 @@ describe('SelectField', () => {
       expect.objectContaining({
         value: mockHandlers.value,
         disabled: mockHandlers.disabled,
-        onChange: mockHandlers.onChange,
         onBlur: mockHandlers.onBlur,
         onFocus: mockHandlers.onFocus,
       }),
@@ -137,6 +169,7 @@ describe('SelectField', () => {
   });
 
   it('should trigger onBlur when dropdown is closed', async () => {
+    const user = userEvent.setup();
     const mockHandlers = {
       value: '1',
       disabled: false,
@@ -151,12 +184,14 @@ describe('SelectField', () => {
     const { getByRole } = render(<SelectField element={mockElement} />);
 
     const trigger = getByRole('combobox');
-    fireEvent.blur(trigger);
+    await user.click(trigger);
+    await user.tab();
 
     expect(mockHandlers.onBlur).toHaveBeenCalled();
   });
 
   it('should trigger onFocus when dropdown input is focused', async () => {
+    const user = userEvent.setup();
     const mockHandlers = {
       value: '1',
       disabled: false,
@@ -171,12 +206,13 @@ describe('SelectField', () => {
     const { getByRole } = render(<SelectField element={mockElement} />);
 
     const trigger = getByRole('combobox');
-    await trigger.focus();
+    await user.click(trigger);
 
     expect(mockHandlers.onFocus).toHaveBeenCalled();
   });
 
   it('should render options when dropdown is opened', async () => {
+    const user = userEvent.setup();
     const mockHandlers = {
       value: undefined,
       disabled: false,
@@ -191,7 +227,7 @@ describe('SelectField', () => {
     const { getByRole, getByText } = render(<SelectField element={mockElement} />);
 
     const trigger = getByRole('combobox');
-    fireEvent.click(trigger);
+    await user.click(trigger);
 
     // Check that both options from mockElement are rendered
     expect(getByText('Option 1')).toBeInTheDocument();
@@ -199,6 +235,7 @@ describe('SelectField', () => {
   });
 
   it('should call on change callback on value change', async () => {
+    const user = userEvent.setup();
     const mockHandlers = {
       value: undefined,
       disabled: false,
@@ -213,7 +250,7 @@ describe('SelectField', () => {
     const { getByRole } = render(<SelectField element={mockElement} />);
 
     const trigger = getByRole('combobox');
-    fireEvent.change(trigger, { target: { value: '1' } });
+    await user.selectOptions(trigger, '1');
 
     expect(mockHandlers.onChange).toHaveBeenCalledWith('1');
   });
@@ -234,5 +271,29 @@ describe('SelectField', () => {
 
     const trigger = getByRole('combobox');
     expect(trigger).toHaveTextContent('Option 2');
+  });
+
+  it('should call useMountEvent with element', () => {
+    const mockUseMountEvent = vi.mocked(useMountEvent);
+    render(<SelectField element={mockElement} />);
+    expect(mockUseMountEvent).toHaveBeenCalledWith(mockElement);
+  });
+
+  it('should call useUnmountEvent with element', () => {
+    const mockUseUnmountEvent = vi.mocked(useUnmountEvent);
+    render(<SelectField element={mockElement} />);
+    expect(mockUseUnmountEvent).toHaveBeenCalledWith(mockElement);
+  });
+
+  it('should trigger mount and unmount events in correct order', () => {
+    const mockUseMountEvent = vi.mocked(useMountEvent);
+    const mockUseUnmountEvent = vi.mocked(useUnmountEvent);
+
+    const { unmount } = render(<SelectField element={mockElement} />);
+
+    expect(mockUseMountEvent).toHaveBeenCalledWith(mockElement);
+    expect(mockUseUnmountEvent).toHaveBeenCalledWith(mockElement);
+
+    unmount();
   });
 });

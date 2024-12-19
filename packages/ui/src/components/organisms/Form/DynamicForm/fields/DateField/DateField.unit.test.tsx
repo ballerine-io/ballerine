@@ -4,6 +4,9 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external/useField';
 import { useEvents } from '../../hooks/internal/useEvents';
+import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
+import { FieldErrors } from '../../layouts/FieldErrors';
 import { IFormElement } from '../../types';
 import { DateField, IDateFieldParams } from './DateField';
 
@@ -45,6 +48,11 @@ vi.mock('@/common/utils/check-if-date-is-valid', () => ({
   checkIfDateIsValid: vi.fn(),
 }));
 vi.mock('../../hooks/internal/useEvents');
+vi.mock('../../hooks/internal/useMountEvent');
+vi.mock('../../hooks/internal/useUnmountEvent');
+vi.mock('../../layouts/FieldErrors', () => ({
+  FieldErrors: vi.fn(),
+}));
 
 describe('DateField', () => {
   beforeEach(() => {
@@ -64,6 +72,9 @@ describe('DateField', () => {
       sendEvent: vi.fn(),
       sendEventAsync: vi.fn(),
     } as unknown as ReturnType<typeof useEvents>);
+
+    vi.mocked(useMountEvent).mockReturnValue(undefined);
+    vi.mocked(useUnmountEvent).mockReturnValue(undefined);
   });
 
   const mockElement = {
@@ -181,5 +192,25 @@ describe('DateField', () => {
     const dateInput = screen.getByTestId('test-date');
 
     expect(dateInput).toBeDisabled();
+  });
+
+  it('should call useMountEvent with element', () => {
+    const mockUseMountEvent = vi.mocked(useMountEvent);
+    render(<DateField element={mockElement} />);
+    expect(mockUseMountEvent).toHaveBeenCalledWith(mockElement);
+  });
+
+  it('should call useUnmountEvent with element', () => {
+    const mockUseUnmountEvent = vi.mocked(useUnmountEvent);
+    render(<DateField element={mockElement} />);
+    expect(mockUseUnmountEvent).toHaveBeenCalledWith(mockElement);
+  });
+
+  it('should render FieldErrors with element prop', () => {
+    render(<DateField element={mockElement} />);
+    expect(FieldErrors).toHaveBeenCalledWith(
+      expect.objectContaining({ element: mockElement }),
+      expect.anything(),
+    );
   });
 });

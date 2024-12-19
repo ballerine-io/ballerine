@@ -3,6 +3,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDynamicForm } from '../../context';
 import { useElement } from '../../hooks/external';
 import { useEvents } from '../../hooks/internal/useEvents';
+import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
+import { FieldErrors } from '../../layouts/FieldErrors';
 import { IFormElement } from '../../types';
 import { FieldList } from './FieldList';
 import { IUseFieldParams, useFieldList } from './hooks/useFieldList';
@@ -12,6 +15,11 @@ vi.mock('../../context');
 vi.mock('../../hooks/external/useElement');
 vi.mock('./providers/StackProvider');
 vi.mock('./hooks/useFieldList');
+vi.mock('../../hooks/internal/useMountEvent');
+vi.mock('../../hooks/internal/useUnmountEvent');
+vi.mock('../../layouts/FieldErrors', () => ({
+  FieldErrors: vi.fn(),
+}));
 vi.mock('@/components/atoms', () => ({
   Button: ({ children, onClick }: { children: React.ReactNode; onClick: () => void }) => (
     <button onClick={onClick}>{children}</button>
@@ -71,6 +79,9 @@ describe('FieldList', () => {
       sendEvent: vi.fn(),
       sendEventAsync: vi.fn(),
     } as unknown as ReturnType<typeof useEvents>);
+
+    vi.mocked(useMountEvent).mockReturnValue(undefined);
+    vi.mocked(useUnmountEvent).mockReturnValue(undefined);
   });
 
   describe('test ids', () => {
@@ -136,5 +147,25 @@ describe('FieldList', () => {
     fireEvent.click(removeButtons[1]!);
 
     expect(mockRemoveItem).toHaveBeenCalledWith(1);
+  });
+
+  it('should call useMountEvent with element', () => {
+    const mockUseMountEvent = vi.mocked(useMountEvent);
+    render(<FieldList element={mockElement} />);
+    expect(mockUseMountEvent).toHaveBeenCalledWith(mockElement);
+  });
+
+  it('should call useUnmountEvent with element', () => {
+    const mockUseUnmountEvent = vi.mocked(useUnmountEvent);
+    render(<FieldList element={mockElement} />);
+    expect(mockUseUnmountEvent).toHaveBeenCalledWith(mockElement);
+  });
+
+  it('should render FieldErrors with element prop', () => {
+    render(<FieldList element={mockElement} />);
+    expect(FieldErrors).toHaveBeenCalledWith(
+      expect.objectContaining({ element: mockElement }),
+      expect.anything(),
+    );
   });
 });

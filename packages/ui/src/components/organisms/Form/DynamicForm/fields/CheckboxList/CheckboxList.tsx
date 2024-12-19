@@ -2,6 +2,8 @@ import { ctw } from '@/common';
 import { Checkbox } from '@/components/atoms';
 import { createTestId } from '@/components/organisms/Renderer';
 import { useField } from '../../hooks/external';
+import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { TDynamicFormField } from '../../types';
@@ -17,6 +19,9 @@ export interface ICheckboxListFieldParams {
 }
 
 export const CheckboxListField: TDynamicFormField<ICheckboxListFieldParams> = ({ element }) => {
+  useMountEvent(element);
+  useUnmountEvent(element);
+
   const { options = [] } = element.params || {};
   const { stack } = useStack();
   const { value, onChange, onFocus, onBlur, disabled } = useField<string[]>(element, stack);

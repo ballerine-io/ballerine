@@ -7,6 +7,8 @@ import {
 import { createTestId } from '@/components/organisms/Renderer';
 import { useCallback } from 'react';
 import { useField } from '../../hooks/external/useField';
+import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { TDynamicFormField } from '../../types';
@@ -19,6 +21,9 @@ export interface IDateFieldParams {
 }
 
 export const DateField: TDynamicFormField<IDateFieldParams> = ({ element }) => {
+  useMountEvent(element);
+  useUnmountEvent(element);
+
   const {
     disableFuture = false,
     disablePast = false,

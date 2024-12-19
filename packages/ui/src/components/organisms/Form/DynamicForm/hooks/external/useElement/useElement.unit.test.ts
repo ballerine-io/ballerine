@@ -7,8 +7,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDynamicForm } from '../../../context';
 import { IFormElement } from '../../../types';
 import { useEvents } from '../../internal/useEvents';
-import { useMount } from '../../internal/useMount';
-import { useUnmount } from '../../internal/useUnmount';
 import { useElementId } from '../useElementId';
 import { useClearValueOnUnmount } from './hooks/useClearValueOnUnmount';
 import { useElement } from './useElement';
@@ -16,8 +14,6 @@ import { useElement } from './useElement';
 vi.mock('@/components/organisms/Form/hooks/useRuleEngine');
 vi.mock('../../../context');
 vi.mock('../../internal/useEvents');
-vi.mock('../../internal/useMount');
-vi.mock('../../internal/useUnmount');
 vi.mock('../useElementId');
 vi.mock('./hooks/useClearValueOnUnmount');
 
@@ -125,36 +121,6 @@ describe('useElement', () => {
   });
 
   describe('lifecycle events', () => {
-    it('should call sendEvent with onMount on mount', () => {
-      const element = { id: 'test-id' } as IFormElement<string, any>;
-
-      renderHook(() => useElement(element));
-
-      expect(useMount).toHaveBeenCalledWith(expect.any(Function));
-      const mountCallback = vi.mocked(useMount).mock.calls[0]?.[0];
-
-      if (mountCallback) {
-        mountCallback();
-      }
-
-      expect(mockSendEvent).toHaveBeenCalledWith('onMount');
-    });
-
-    it('should call sendEvent with onUnmount on unmount', () => {
-      const element = { id: 'test-id' } as IFormElement<string, any>;
-
-      renderHook(() => useElement(element));
-
-      expect(useUnmount).toHaveBeenCalledWith(expect.any(Function));
-      const unmountCallback = vi.mocked(useUnmount).mock.calls[0]?.[0];
-
-      if (unmountCallback) {
-        unmountCallback();
-      }
-
-      expect(mockSendEvent).toHaveBeenCalledWith('onUnmount');
-    });
-
     it('should call useClearValueOnUnmount with element and hidden state', () => {
       const element = { id: 'test-id' } as IFormElement<string, any>;
       vi.mocked(useRuleEngine).mockReturnValue([

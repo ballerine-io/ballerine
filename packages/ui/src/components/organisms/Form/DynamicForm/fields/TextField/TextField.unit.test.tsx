@@ -3,6 +3,9 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useElement, useField } from '../../hooks/external';
+import { useEvents } from '../../hooks/internal/useEvents';
+import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { ITextFieldParams, TextField } from './TextField';
@@ -42,6 +45,26 @@ vi.mock('./helpers', () => ({
   serializeTextFieldValue: vi.fn(),
 }));
 
+vi.mock('../../hooks/internal/useEvents', () => ({
+  useEvents: vi.fn(),
+}));
+
+vi.mock('../../hooks/internal/useMount', () => ({
+  useMount: vi.fn(),
+}));
+
+vi.mock('../../hooks/internal/useUnmount', () => ({
+  useUnmount: vi.fn(),
+}));
+
+vi.mock('../../hooks/internal/useMountEvent', () => ({
+  useMountEvent: vi.fn(),
+}));
+
+vi.mock('../../hooks/internal/useUnmountEvent', () => ({
+  useUnmountEvent: vi.fn(),
+}));
+
 describe('TextField', () => {
   const mockStack = [0];
   const mockElement = {
@@ -67,9 +90,17 @@ describe('TextField', () => {
     vi.clearAllMocks();
     vi.mocked(useStack).mockReturnValue({ stack: mockStack });
     vi.mocked(useField).mockReturnValue(mockFieldProps);
-    vi.mocked(useElement).mockReturnValue({ id: 'test-field' });
+    vi.mocked(useElement).mockReturnValue({
+      id: 'test-field',
+      originId: 'test-field',
+      hidden: false,
+    } as any);
     vi.mocked(createTestId).mockReturnValue('test-id');
     vi.mocked(serializeTextFieldValue).mockImplementation(value => value);
+    vi.mocked(useEvents).mockReturnValue({
+      sendEvent: vi.fn(),
+      sendEventAsync: vi.fn(),
+    } as unknown as ReturnType<typeof useEvents>);
   });
 
   it('should render Input component when style is text', () => {
@@ -200,5 +231,29 @@ describe('TextField', () => {
 
     await user.tab();
     expect(mockFieldProps.onBlur).toHaveBeenCalled();
+  });
+
+  it('should call useMountEvent with element', () => {
+    const mockUseMountEvent = vi.mocked(useMountEvent);
+    render(<TextField element={mockElement} />);
+    expect(mockUseMountEvent).toHaveBeenCalledWith(mockElement);
+  });
+
+  it('should call useUnmountEvent with element', () => {
+    const mockUseUnmountEvent = vi.mocked(useUnmountEvent);
+    render(<TextField element={mockElement} />);
+    expect(mockUseUnmountEvent).toHaveBeenCalledWith(mockElement);
+  });
+
+  it('should trigger mount and unmount events in correct order', () => {
+    const mockUseMountEvent = vi.mocked(useMountEvent);
+    const mockUseUnmountEvent = vi.mocked(useUnmountEvent);
+
+    const { unmount } = render(<TextField element={mockElement} />);
+
+    expect(mockUseMountEvent).toHaveBeenCalledWith(mockElement);
+    expect(mockUseUnmountEvent).toHaveBeenCalledWith(mockElement);
+
+    unmount();
   });
 });

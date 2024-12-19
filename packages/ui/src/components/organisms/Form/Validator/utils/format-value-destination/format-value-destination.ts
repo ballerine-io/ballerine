@@ -4,7 +4,7 @@ export const formatValueDestination = (valueDestination: string, stack: TDeepthL
   let _valueDestination = valueDestination;
 
   stack.forEach((stack, index) => {
-    _valueDestination = _valueDestination.replace(`$${index}`, stack.toString());
+    _valueDestination = _valueDestination?.replace(`$${index}`, stack.toString());
   });
 
   return _valueDestination;

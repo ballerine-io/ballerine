@@ -1,6 +1,9 @@
 import { PhoneNumberInput } from '@/components/atoms';
 import { createTestId } from '@/components/organisms/Renderer';
+import { useCallback } from 'react';
 import { useField } from '../../hooks/external';
+import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { TDynamicFormElement } from '../../types';
@@ -11,9 +14,19 @@ export interface IPhoneFieldParams {
 }
 
 export const PhoneField: TDynamicFormElement<string, IPhoneFieldParams> = ({ element }) => {
+  useMountEvent(element);
+  useUnmountEvent(element);
+
   const { defaultCountry = 'us' } = element.params || {};
   const { stack } = useStack();
   const { value, onChange, onBlur, onFocus } = useField<string | undefined>(element, stack);
+
+  const handleChange = useCallback(
+    (value: string) => {
+      onChange(value);
+    },
+    [onChange],
+  );
 
   return (
     <FieldLayout element={element}>
@@ -21,7 +34,7 @@ export const PhoneField: TDynamicFormElement<string, IPhoneFieldParams> = ({ ele
         country={defaultCountry}
         testId={createTestId(element, stack)}
         value={value}
-        onChange={onChange}
+        onChange={handleChange}
         onBlur={onBlur}
         onFocus={onFocus}
       />

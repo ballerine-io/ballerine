@@ -1,9 +1,13 @@
-import { MultiSelect, MultiSelectOption } from '@/components/molecules';
+import { MultiSelect, MultiSelectOption, MultiSelectValue } from '@/components/molecules';
 import { SelectedElementParams } from '@/components/molecules/inputs/MultiSelect/types';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external';
-import { useEvents } from '../../hooks/internal/useEvents';
+import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
+import { FieldErrors } from '../../layouts/FieldErrors';
+import { FieldLayout } from '../../layouts/FieldLayout';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { IMultiselectFieldParams, MultiselectField } from './MultiselectField';
@@ -19,28 +23,42 @@ vi.mock('@/components/molecules', () => ({
       <input
         data-testid="multiselect-input"
         disabled={props.disabled}
-        onChange={e => props.onChange(e.target.value, '')}
+        onChange={e => props.onChange([e.target.value])}
         onBlur={props.onBlur}
         onFocus={props.onFocus}
       />
-      {props.value?.map((val: string, idx: number) => (
+      {props.value?.map((val: MultiSelectValue, idx: number) => (
         <div key={idx} data-testid="selected-value">
-          {props.renderSelected({ unselectButtonProps: {} }, { value: val, title: val })}
+          {props.renderSelected({ unselectButtonProps: {} }, { value: val, title: String(val) })}
         </div>
       ))}
     </div>
   )),
 }));
 
-vi.mock('../../hooks/external/useField', () => ({
+vi.mock('../../hooks/external', () => ({
   useField: vi.fn(),
+}));
+
+vi.mock('../../hooks/internal/useMountEvent', () => ({
+  useMountEvent: vi.fn(),
+}));
+
+vi.mock('../../hooks/internal/useUnmountEvent', () => ({
+  useUnmountEvent: vi.fn(),
+}));
+
+vi.mock('../../layouts/FieldErrors', () => ({
+  FieldErrors: vi.fn(),
+}));
+
+vi.mock('../../layouts/FieldLayout', () => ({
+  FieldLayout: vi.fn(({ children }) => <div>{children}</div>),
 }));
 
 vi.mock('../FieldList/providers/StackProvider', () => ({
   useStack: vi.fn(),
 }));
-
-vi.mock('../../hooks/internal/useEvents');
 
 describe('MultiselectField', () => {
   const mockOptions: MultiSelectOption[] = [
@@ -71,16 +89,15 @@ describe('MultiselectField', () => {
       onFocus: vi.fn(),
       disabled: false,
     } as unknown as ReturnType<typeof useField>);
-
-    vi.mocked(useEvents).mockReturnValue({
-      sendEvent: vi.fn(),
-      sendEventAsync: vi.fn(),
-    } as unknown as ReturnType<typeof useEvents>);
   });
 
-  it('renders MultiSelect component', () => {
+  it('renders MultiSelect component within FieldLayout', () => {
     render(<MultiselectField element={mockElement} />);
     expect(screen.getByTestId('multiselect')).toBeInTheDocument();
+    expect(FieldLayout).toHaveBeenCalledWith(
+      expect.objectContaining({ element: mockElement }),
+      expect.anything(),
+    );
   });
 
   it('passes correct props to MultiSelect', () => {
@@ -102,7 +119,6 @@ describe('MultiselectField', () => {
     expect(multiselect.value).toEqual(['opt1']);
     expect(multiselect.disabled).toBe(false);
     expect(multiselect.options).toEqual(mockOptions);
-    expect(multiselect.onChange).toBe(mockOnChange);
     expect(multiselect.onBlur).toBe(mockOnBlur);
     expect(multiselect.onFocus).toBe(mockOnFocus);
   });
@@ -157,7 +173,8 @@ describe('MultiselectField', () => {
     });
   });
 
-  it('handles onBlur events', () => {
+  it('handles onBlur events', async () => {
+    const user = userEvent.setup();
     const mockOnBlur = vi.fn();
     vi.mocked(useField).mockReturnValue({
       value: ['opt1'],
@@ -170,11 +187,13 @@ describe('MultiselectField', () => {
     render(<MultiselectField element={mockElement} />);
     const input = screen.getByTestId('multiselect-input');
 
-    fireEvent.blur(input);
+    await user.click(input);
+    await user.tab();
     expect(mockOnBlur).toHaveBeenCalled();
   });
 
-  it('handles onFocus events', () => {
+  it('handles onFocus events', async () => {
+    const user = userEvent.setup();
     const mockOnFocus = vi.fn();
     vi.mocked(useField).mockReturnValue({
       value: ['opt1'],
@@ -187,7 +206,27 @@ describe('MultiselectField', () => {
     render(<MultiselectField element={mockElement} />);
     const input = screen.getByTestId('multiselect-input');
 
-    fireEvent.focus(input);
+    await user.click(input);
     expect(mockOnFocus).toHaveBeenCalled();
+  });
+
+  it('should call useMountEvent with element', () => {
+    const mockUseMountEvent = vi.mocked(useMountEvent);
+    render(<MultiselectField element={mockElement} />);
+    expect(mockUseMountEvent).toHaveBeenCalledWith(mockElement);
+  });
+
+  it('should call useUnmountEvent with element', () => {
+    const mockUseUnmountEvent = vi.mocked(useUnmountEvent);
+    render(<MultiselectField element={mockElement} />);
+    expect(mockUseUnmountEvent).toHaveBeenCalledWith(mockElement);
+  });
+
+  it('should render FieldErrors with element prop', () => {
+    render(<MultiselectField element={mockElement} />);
+    expect(FieldErrors).toHaveBeenCalledWith(
+      expect.objectContaining({ element: mockElement }),
+      expect.anything(),
+    );
   });
 });

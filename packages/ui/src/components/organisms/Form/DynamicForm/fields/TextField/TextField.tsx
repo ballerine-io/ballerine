@@ -3,6 +3,8 @@ import { Input } from '@/components/atoms/Input';
 import { createTestId } from '@/components/organisms/Renderer';
 import { useCallback } from 'react';
 import { useElement, useField } from '../../hooks/external';
+import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { TDynamicFormField } from '../../types';
@@ -16,14 +18,13 @@ export interface ITextFieldParams {
 }
 
 export const TextField: TDynamicFormField<ITextFieldParams> = ({ element }) => {
+  useMountEvent(element);
+  useUnmountEvent(element);
+
   const { params } = element;
   const { valueType = 'string', style = 'text', placeholder } = params || {};
 
   const { stack } = useStack();
-
-  if (stack?.length) {
-    console.log('stack', stack, element);
-  }
 
   const { id } = useElement(element, stack);
   const { value, onChange, onBlur, onFocus, disabled } = useField(element, stack);

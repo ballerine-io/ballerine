@@ -7,6 +7,9 @@ import { FieldLayout } from '../../layouts/FieldLayout';
 import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 
+import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
+
 export interface IAutocompleteFieldOption {
   label: string;
   value: string;
@@ -18,6 +21,9 @@ export interface IAutocompleteFieldParams {
 }
 
 export const AutocompleteField: TDynamicFormField<IAutocompleteFieldParams> = ({ element }) => {
+  useMountEvent(element);
+  useUnmountEvent(element);
+
   const { params } = element;
   const { stack } = useStack();
   const { id } = useElement(element, stack);

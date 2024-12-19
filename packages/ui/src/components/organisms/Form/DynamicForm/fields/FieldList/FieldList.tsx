@@ -3,6 +3,8 @@ import { Button } from '@/components/atoms';
 import { Renderer, TRendererSchema } from '@/components/organisms/Renderer';
 import { useDynamicForm } from '../../context';
 import { useElement } from '../../hooks/external';
+import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { TDynamicFormField } from '../../types';
 import { useFieldList } from './hooks/useFieldList';
@@ -17,6 +19,9 @@ export interface IFieldListParams {
 }
 
 export const FieldList: TDynamicFormField<IFieldListParams> = props => {
+  useMountEvent(props.element);
+  useUnmountEvent(props.element);
+
   const { elementsMap } = useDynamicForm();
   const { stack } = useStack();
   const { element } = props;
