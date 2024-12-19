@@ -3,7 +3,6 @@
   "sourceRoot": "/", // Shortens file paths on Sentry
   "exclude": [
     "node_modules",
-    "prisma/migrations",
     "prisma/schema.prisma",
     "test",
     "dist",

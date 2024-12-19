@@ -427,8 +427,10 @@ export class TransactionControllerExternal {
     alert: NonNullable<Awaited<ReturnType<AlertService['getAlertWithDefinition']>>>;
     filters: Pick<GetTransactionsByAlertDto, 'startDate' | 'endDate' | 'page' | 'orderBy'>;
   }) {
+    const subject = this.dataInvestigationService.buildSubjectFilterCompetabilityByAlert(alert);
+
     return this.service.getTransactions(projectId, filters, {
-      where: alert.executionDetails.filters,
+      where: { ...alert.executionDetails.filters, ...subject },
       include: {
         counterpartyBeneficiary: {
           select: {

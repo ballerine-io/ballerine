@@ -1,4 +1,5 @@
-import { SubjectRecord } from '@/alert/types';
+import { ALERT_DEFINITIONS } from './../../scripts/alerts/generate-alerts';
+import { SubjectRecord, TExecutionDetails } from '@/alert/types';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { Injectable } from '@nestjs/common';
 import { Alert, PaymentMethod, Prisma, TransactionRecordType } from '@prisma/client';
@@ -15,6 +16,7 @@ import {
   TPeerGroupTransactionAverageOptions,
   TransactionsAgainstDynamicRulesType,
 } from './types';
+import type { AlertService } from '@/alert/alert.service';
 
 @Injectable()
 export class DataInvestigationService {
@@ -92,6 +94,36 @@ export class DataInvestigationService {
 
     return {
       // TODO: Backward compatibility, Remove this when all rules are updated, this is a temporary fix
+      ...investigationFilter,
+      ...this.buildSubjectFilterCompetability(inlineRule, subject),
+      ...this._buildTransactionsFiltersByAlert(inlineRule),
+      projectId,
+    } satisfies Prisma.TransactionRecordWhereInput;
+  }
+
+  // TODO: can be removed after all rules are updated, support for subjects in the alert
+  buildSubjectFilterCompetabilityByAlert(
+    alert: NonNullable<Awaited<ReturnType<AlertService['getAlertWithDefinition']>>>,
+  ) {
+    const inlineRule =
+      ALERT_DEFINITIONS[alert.alertDefinition.ruleId as keyof typeof ALERT_DEFINITIONS]?.inlineRule;
+
+    if (!inlineRule) {
+      this.logger.error(`Couldnt find related alert definition by ruleId`, {
+        alert,
+      });
+
+      return {};
+    }
+
+    const subject = (alert.executionDetails as TExecutionDetails).subject;
+
+    return this.buildSubjectFilterCompetability(inlineRule, subject);
+  }
+
+  // TODO: can be removed after all rules are updated
+  buildSubjectFilterCompetability(inlineRule: InlineRule, subject?: SubjectRecord) {
+    return {
       ...(subject?.counterpartyId &&
         (inlineRule.subjects[0] === 'counterpartyOriginatorId' ||
           inlineRule.subjects[0] === 'counterpartyBeneficiaryId') && {
@@ -103,11 +135,7 @@ export class DataInvestigationService {
       ...(subject?.counterpartyBeneficiaryId && {
         counterpartyBeneficiaryId: subject?.counterpartyBeneficiaryId,
       }),
-
-      ...investigationFilter,
-      ...this._buildTransactionsFiltersByAlert(inlineRule),
-      projectId,
-    } satisfies Prisma.TransactionRecordWhereInput;
+    };
   }
 
   investigateTransactionsAgainstDynamicRules(options: TransactionsAgainstDynamicRulesType) {
