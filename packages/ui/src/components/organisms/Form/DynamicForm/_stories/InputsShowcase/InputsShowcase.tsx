@@ -151,7 +151,7 @@ export const InputsShowcaseComponent = () => {
             console.log('onSubmit');
           }}
           onChange={setContext}
-          onEvent={console.log}
+          // onEvent={console.log}
         />
       </div>
       <div className="w-1/2">

@@ -79,6 +79,7 @@ describe('DynamicFormV2', () => {
     onFieldChange: vi.fn(),
     onSubmit: vi.fn(),
     onEvent: vi.fn(),
+    metadata: {},
   } as unknown as IDynamicFormProps;
 
   it('should render without crashing', () => {
@@ -145,6 +146,7 @@ describe('DynamicFormV2', () => {
       getValue: vi.fn(),
       setTouched: vi.fn(),
       setValue: vi.fn(),
+      touchAllFields: vi.fn(),
     };
 
     vi.mocked(useTouched).mockReturnValue(touchedMock);
@@ -166,6 +168,7 @@ describe('DynamicFormV2', () => {
       callbacks: {
         onEvent: mockProps.onEvent,
       },
+      metadata: mockProps.metadata,
     });
   });
 });

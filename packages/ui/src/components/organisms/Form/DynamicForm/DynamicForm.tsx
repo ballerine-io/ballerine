@@ -16,6 +16,7 @@ export const DynamicFormV2: FunctionComponent<IDynamicFormProps> = ({
   values: initialValues,
   validationParams,
   fieldExtends,
+  metadata,
   onChange,
   onFieldChange,
   onSubmit,
@@ -41,8 +42,9 @@ export const DynamicFormV2: FunctionComponent<IDynamicFormProps> = ({
       callbacks: {
         onEvent,
       },
+      metadata,
     }),
-    [touchedApi.touched, valuesApi.values, submit, fieldHelpers, fieldExtends, onEvent],
+    [touchedApi.touched, valuesApi.values, submit, fieldHelpers, fieldExtends, onEvent, metadata],
   );
 
   return (

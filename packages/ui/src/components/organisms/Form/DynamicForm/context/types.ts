@@ -14,4 +14,5 @@ export interface IDynamicFormContext<TValues extends object> {
   fieldHelpers: IFieldHelpers;
   submit: () => void;
   callbacks: IDynamicFormCallbacks;
+  metadata: Record<string, string>;
 }

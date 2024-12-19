@@ -4,20 +4,22 @@ import { Input } from '@/components/atoms/Input';
 import { createTestId } from '@/components/organisms/Renderer';
 import { Upload, XCircle } from 'lucide-react';
 import { useCallback, useMemo, useRef } from 'react';
-import { useElement, useField } from '../../hooks/external';
+import { useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { ICommonFieldParams, TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
+import { useFileUpload } from './hooks/useFileUpload';
 
 export interface IFileFieldParams extends ICommonFieldParams {
   uploadOn?: 'change' | 'submit';
   uploadSettings?: {
     url: string;
-    method: 'POST' | 'PUT';
-    headers: Record<string, string>;
+    resultPath: string;
+    headers?: Record<string, string>;
+    method?: 'POST' | 'PUT';
   };
   acceptFileFormats?: string;
 }
@@ -26,15 +28,10 @@ export const FileField: TDynamicFormField<IFileFieldParams> = ({ element }) => {
   useMountEvent(element);
   useUnmountEvent(element);
 
-  const {
-    uploadOn = 'change',
-    uploadSettings = {},
-    placeholder = 'Choose file',
-    acceptFileFormats = undefined,
-  } = element.params || {};
+  const { placeholder = 'Choose file', acceptFileFormats = undefined } = element.params || {};
+  const { handleChange } = useFileUpload(element, element.params);
 
   const { stack } = useStack();
-  const { id } = useElement(element, stack);
   const { value, disabled, onChange, onBlur, onFocus } = useField<File | string | undefined>(
     element,
     stack,
@@ -89,13 +86,7 @@ export const FileField: TDynamicFormField<IFileFieldParams> = ({ element }) => {
           placeholder={placeholder}
           accept={acceptFileFormats}
           disabled={disabled}
-          onChange={e => {
-            const file = e.target.files?.[0];
-
-            if (file) {
-              onChange(file);
-            }
-          }}
+          onChange={handleChange}
           onBlur={onBlur}
           onFocus={onFocus}
           ref={inputRef}

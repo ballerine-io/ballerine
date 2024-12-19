@@ -55,4 +55,5 @@ export interface IDynamicFormProps<TValues = object> {
   onEvent?: (eventName: TElementEvent, element: IFormEventElement<string, any>) => void;
 
   ref?: React.RefObject<IFormRef<TValues>>;
+  metadata?: Record<string, any>;
 }
