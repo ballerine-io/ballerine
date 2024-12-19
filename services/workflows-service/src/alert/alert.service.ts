@@ -352,7 +352,7 @@ export class AlertService {
     const projectId = alertDef.projectId;
     const now = new Date();
 
-    return this.alertRepository.create({
+    const alertData = {
       data: {
         projectId,
         alertDefinitionId: alertDef.id,
@@ -377,7 +377,9 @@ export class AlertService {
         createdAt: now,
         dataTimestamp: now,
       },
-    });
+    };
+
+    return this.alertRepository.create(alertData);
   }
 
   private async isDuplicateAlert(

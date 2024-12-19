@@ -292,13 +292,6 @@ export class TransactionControllerExternal {
 
   @Get('/by-alert')
   // @UseCustomerAuthGuard()
-  @swagger.ApiOkResponse({ description: 'Returns an array of transactions.' })
-  @swagger.ApiQuery({ name: 'businessId', description: 'Filter by business ID.', required: false })
-  @swagger.ApiQuery({
-    name: 'counterpartyId',
-    description: 'Filter by counterparty ID.',
-    required: false,
-  })
   @swagger.ApiQuery({
     name: 'startDate',
     type: Date,

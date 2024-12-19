@@ -24,6 +24,7 @@ export class AlertRepository {
     const queryArgs = this.scopeService.scopeFindFirst(args, projectIds);
 
     return await this.prisma.extendedClient.alert.findFirst({
+      ...queryArgs,
       where: queryArgs.where,
       orderBy: {
         createdAt: 'desc',
