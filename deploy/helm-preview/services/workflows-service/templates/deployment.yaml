@@ -43,9 +43,10 @@ spec:
             - name: migration-init-container
               image: {{ .Values.workflowService.image.registry }}/{{ .Values.workflowService.image.repository }}:{{ .Values.workflowService.image.tag }}
               command: ['npm','run','db:init']
+              {{- with .Values.workflowService.envFrom }}
               envFrom:
-                - configMapRef:
-                    name: {{ .Values.workflowService.nameOverride }}
+              {{- toYaml . | nindent 14 }}
+              {{- end }}
             {{- end }}
             containers:
             - name: {{ .Values.workflowService.nameOverride }}
