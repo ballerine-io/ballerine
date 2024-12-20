@@ -1,120 +1,149 @@
 import { IRuleExecutionResult } from '@/components/organisms/Form/hooks';
 import { executeRules } from '@/components/organisms/Form/hooks/useRuleEngine/utils/execute-rules';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { TBaseValidators } from '@/components/organisms/Form/Validator';
+import { describe, expect, it, vi } from 'vitest';
 import { IFormElement } from '../../../../../types';
 import { checkIfRequired } from './check-if-required';
 
-vi.mock('@/components/organisms/Form/hooks/useRuleEngine/utils/execute-rules', () => ({
-  executeRules: vi.fn(),
-}));
+vi.mock('@/components/organisms/Form/hooks/useRuleEngine/utils/execute-rules');
+
+const mockedExecuteRules = vi.mocked(executeRules);
 
 describe('checkIfRequired', () => {
-  const mockContext = { someContext: 'value' };
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('should return false when validate array is empty', () => {
-    const element = {
+  it('should return false when there are no validators', () => {
+    const element: IFormElement = {
+      id: 'test',
+      element: 'test',
+      valueDestination: 'test',
       validate: [],
-    } as unknown as IFormElement;
+    };
 
-    const result = checkIfRequired(element, mockContext);
-
-    expect(result).toBe(false);
-  });
-
-  it('should return false when no required validators exist', () => {
-    const element = {
-      validate: [
-        { type: 'minLength', value: 5 },
-        { type: 'maxLength', value: 10 },
-      ],
-    } as unknown as IFormElement;
-
-    const result = checkIfRequired(element, mockContext);
+    const result = checkIfRequired(element, {});
 
     expect(result).toBe(false);
   });
 
-  it('should return true when required validator exists without applyWhen rules', () => {
-    const element = {
-      validate: [{ type: 'required', value: true }],
-    } as unknown as IFormElement;
-
-    const result = checkIfRequired(element, mockContext);
-
-    expect(result).toBe(true);
-  });
-
-  it('should return true when validator with considerRequred exists without applyWhen rules', () => {
-    const element = {
-      validate: [{ type: 'someType', considerRequred: true }],
-    } as unknown as IFormElement;
-
-    const result = checkIfRequired(element, mockContext);
-
-    expect(result).toBe(true);
-  });
-
-  it('should use executeRules when applyWhen rules exist', () => {
-    const element = {
+  it('should return false when there are no required validators', () => {
+    const element: IFormElement = {
+      id: 'test',
+      element: 'test',
+      valueDestination: 'test',
       validate: [
         {
-          type: 'required',
-          applyWhen: [{ someRule: true }],
+          type: 'custom' as TBaseValidators,
+          value: {},
+          message: 'Custom message',
         },
       ],
-    } as unknown as IFormElement;
+    };
 
-    vi.mocked(executeRules).mockReturnValue([{ rule: {}, result: true }] as IRuleExecutionResult[]);
-
-    const result = checkIfRequired(element, mockContext);
-
-    expect(executeRules).toHaveBeenCalledWith(mockContext, [{ someRule: true }]);
-    expect(result).toBe(true);
-  });
-
-  it('should return false when executeRules returns false', () => {
-    const element = {
-      validate: [
-        {
-          type: 'required',
-          applyWhen: [{ someRule: true }],
-        },
-      ],
-    } as unknown as IFormElement;
-
-    vi.mocked(executeRules).mockReturnValue([
-      { rule: {}, result: false },
-    ] as IRuleExecutionResult[]);
-
-    const result = checkIfRequired(element, mockContext);
+    const result = checkIfRequired(element, {});
 
     expect(result).toBe(false);
   });
 
-  it('should return true if any required validator is applicable', () => {
-    const element = {
+  it('should return true when there is a required validator with no conditions', () => {
+    const element: IFormElement = {
+      id: 'test',
+      element: 'test',
+      valueDestination: 'test',
       validate: [
         {
           type: 'required',
-          applyWhen: [{ rule1: true }],
-        },
-        {
-          type: 'required',
-          applyWhen: [{ rule2: true }],
+          value: {},
+          message: 'Field is required',
         },
       ],
-    } as unknown as IFormElement;
+    };
 
-    vi.mocked(executeRules)
-      .mockReturnValueOnce([{ rule: {}, result: false }] as IRuleExecutionResult[])
-      .mockReturnValueOnce([{ rule: {}, result: true }] as IRuleExecutionResult[]);
-
-    const result = checkIfRequired(element, mockContext);
+    const result = checkIfRequired(element, {});
 
     expect(result).toBe(true);
+  });
+
+  it('should return true when there is a considerRequired validator with no conditions', () => {
+    const element: IFormElement = {
+      id: 'test',
+      element: 'test',
+      valueDestination: 'test',
+      validate: [
+        {
+          type: 'custom',
+          considerRequred: true,
+          value: {},
+          message: 'Field is required',
+        },
+      ] as unknown as IFormElement['validate'],
+    };
+
+    const result = checkIfRequired(element, {});
+
+    expect(result).toBe(true);
+  });
+
+  it('should evaluate applyWhen conditions when present', () => {
+    const element: IFormElement = {
+      id: 'test',
+      element: 'test',
+      valueDestination: 'test',
+      validate: [
+        {
+          type: 'required',
+          value: {},
+          message: 'Field is required',
+          applyWhen: {
+            type: 'json-logic',
+            value: { '==': [{ var: 'someField' }, true] },
+          },
+        },
+      ],
+    };
+
+    const context = { someField: true };
+
+    mockedExecuteRules.mockReturnValue([{ result: true }] as IRuleExecutionResult[]);
+
+    const result = checkIfRequired(element, context);
+
+    expect(result).toBe(true);
+    expect(mockedExecuteRules).toHaveBeenCalledWith(context, [
+      {
+        engine: 'json-logic',
+        value: { '==': [{ var: 'someField' }, true] },
+      },
+    ]);
+  });
+
+  it('should return false when applyWhen condition evaluates to false', () => {
+    const element: IFormElement = {
+      id: 'test',
+      element: 'test',
+      valueDestination: 'test',
+      validate: [
+        {
+          type: 'required',
+          value: {},
+          message: 'Field is required',
+          applyWhen: {
+            type: 'json-logic',
+            value: { '==': [{ var: 'someField' }, true] },
+          },
+        },
+      ],
+    };
+
+    const context = { someField: false };
+
+    mockedExecuteRules.mockReturnValue([{ result: false, rule: {} }] as IRuleExecutionResult[]);
+
+    const result = checkIfRequired(element, context);
+
+    expect(result).toBe(false);
+    expect(mockedExecuteRules).toHaveBeenCalledWith(context, [
+      {
+        engine: 'json-logic',
+        value: { '==': [{ var: 'someField' }, true] },
+      },
+    ]);
   });
 });

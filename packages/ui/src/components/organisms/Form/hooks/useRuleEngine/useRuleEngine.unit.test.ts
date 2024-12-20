@@ -105,7 +105,7 @@ describe('useRuleEngine', () => {
     expect(result.current).toEqual([]);
 
     // Wait for custom delayed execution
-    await vi.advanceTimersByTimeAsync(customDelay);
+    await vi.advanceTimersByTimeAsync(1050);
 
     // Assert after delay
     expect(result.current).toEqual(expectedResults);

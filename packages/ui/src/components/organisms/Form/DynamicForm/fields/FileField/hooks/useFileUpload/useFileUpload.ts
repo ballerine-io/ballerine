@@ -27,6 +27,13 @@ export const useFileUpload = (
 
       const { uploadSettings } = params;
 
+      if (!uploadSettings) {
+        onChange(e.target?.files?.[0] as File);
+        console.log('Failed to upload, no upload settings provided');
+
+        return;
+      }
+
       const uploadParams = {
         ...uploadSettings,
         method: uploadSettings?.method || 'POST',
