@@ -5,12 +5,14 @@ import { TDocument } from '../types';
 import { getCanadaDocuments } from './CA';
 import { getGhanaDocuments } from './GH';
 import { getUniversalDocuments } from './ZZ';
+import { getSierraLeoneDocuments } from './SL';
 
 const documentIdsByCountry: Partial<Record<(typeof countryCodes)[number], () => TDocument[]>> = {
   GH: getGhanaDocuments,
   CA: getCanadaDocuments,
   UG: getUgandaDocuments,
   ZZ: getUniversalDocuments,
+  SL: getSierraLeoneDocuments,
 } as Partial<Record<(typeof countryCodes)[number] | 'ZZ', () => TDocument[]>>;
 
 export const getDocumentsByCountry = (countryCode: (typeof countryCodes)[number]): TDocument[] => {
