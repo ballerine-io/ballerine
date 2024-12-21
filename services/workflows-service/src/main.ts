@@ -99,9 +99,8 @@ const main = async () => {
       name: 'session',
       keys: [env.SESSION_SECRET],
       httpOnly: env.ENVIRONMENT_NAME !== 'local',
-      secure: env.ENVIRONMENT_NAME !== 'local',
-      // lax - Cookies are sent with same-site requests and some cross-site GET requests.
-      sameSite: env.ENVIRONMENT_NAME !== 'local' ? 'strict' : 'lax',
+      secure: false,
+      sameSite: env.ENVIRONMENT_NAME !== 'local' ? 'strict' : 'none',
       maxAge: 1000 * 60 * env.SESSION_EXPIRATION_IN_MINUTES,
     }),
   );

@@ -47,8 +47,8 @@ export class SessionSerializer extends PassportSerializer {
           lastName: true,
           avatarUrl: true,
           lastActiveAt: true,
-          userToProjects: { select: { projectId: true } },
         },
+        include: { userToProjects: { select: { projectId: true } } },
       });
 
       const { userToProjects, ...userData } = userResult;
