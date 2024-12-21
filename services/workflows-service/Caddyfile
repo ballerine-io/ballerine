@@ -1,0 +1,27 @@
+myapp.local {
+
+    reverse_proxy http://host.docker.internal:3000
+    tls internal
+}
+
+backoffice.local {
+    reverse_proxy http://host.docker.internal:5137
+    tls internal
+}
+
+workflow.local {
+
+
+    reverse_proxy http://host.docker.internal:5200
+    tls internal
+}
+
+kyb.local {
+    reverse_proxy http://host.docker.internal:5201
+    tls internal
+}
+
+kyc.local {
+    reverse_proxy http://host.docker.internal:5202
+    tls internal
+}

@@ -1,5 +1,20 @@
 version: '3'
 services:
+  caddy:
+    image: caddy:latest
+    container_name: caddy_server
+    ports:
+      - "443:443"  # Expose HTTPS
+      - "80:80"    # Expose HTTP (optional, redirects to HTTPS)
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro  # Mount the Caddyfile
+      - caddy_data:/data                    # Persist Caddy data
+      - caddy_config:/config
+    extra_hosts:
+      - myapp.local:host-gateway
+      - backoffice.local:host-gateway
+      - host.docker.internal:host-gateway
+
   server:
     build:
       context: .
@@ -63,3 +78,9 @@ services:
       retries: 10
 volumes:
   postgres15: ~
+  caddy_config:
+  caddy_data:
+networks:
+  mynetwork:
+    external: true
+    name: host
