@@ -37,7 +37,7 @@ import {
   GetTransactionsDto,
 } from '@/transaction/dtos/get-transactions.dto';
 import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
-import { PaymentMethod } from '@prisma/client';
+import { MonitoringType, PaymentMethod } from '@prisma/client';
 import { isEmpty } from 'lodash';
 import { TransactionEntityMapper } from './transaction.mapper';
 import { DataInvestigationService } from '@/data-analytics/data-investigation.service';
@@ -292,13 +292,6 @@ export class TransactionControllerExternal {
 
   @Get('/by-alert')
   // @UseCustomerAuthGuard()
-  @swagger.ApiOkResponse({ description: 'Returns an array of transactions.' })
-  @swagger.ApiQuery({ name: 'businessId', description: 'Filter by business ID.', required: false })
-  @swagger.ApiQuery({
-    name: 'counterpartyId',
-    description: 'Filter by counterparty ID.',
-    required: false,
-  })
   @swagger.ApiQuery({
     name: 'startDate',
     type: Date,
@@ -339,13 +332,20 @@ export class TransactionControllerExternal {
     @Query() filters: GetTransactionsByAlertDto,
     @CurrentProject() projectId: types.TProjectId,
   ) {
-    const alert = await this.alertService.getAlertWithDefinition(filters.alertId, projectId);
+    const alert = await this.alertService.getAlertWithDefinition(
+      filters.alertId,
+      projectId,
+      MonitoringType.transaction_monitoring,
+    );
 
     if (!alert) {
       throw new errors.NotFoundException(`Alert with id ${filters.alertId} not found`);
     }
 
-    if (!alert.alertDefinition) {
+    if (
+      !alert.alertDefinition ||
+      alert.alertDefinition.monitoringType !== MonitoringType.transaction_monitoring
+    ) {
       throw new errors.NotFoundException(`Alert definition not found for alert ${alert.id}`);
     }
 
@@ -423,8 +423,10 @@ export class TransactionControllerExternal {
     alert: NonNullable<Awaited<ReturnType<AlertService['getAlertWithDefinition']>>>;
     filters: Pick<GetTransactionsByAlertDto, 'startDate' | 'endDate' | 'page' | 'orderBy'>;
   }) {
+    const subject = this.dataInvestigationService.buildSubjectFilterCompetabilityByAlert(alert);
+
     return this.service.getTransactions(projectId, filters, {
-      where: alert.executionDetails.filters,
+      where: { ...alert.executionDetails.filters, ...subject },
       include: {
         counterpartyBeneficiary: {
           select: {
