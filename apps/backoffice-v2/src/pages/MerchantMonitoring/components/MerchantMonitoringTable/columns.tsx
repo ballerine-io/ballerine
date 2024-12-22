@@ -26,7 +26,12 @@ const columnHelper = createColumnHelper<TBusinessReport>();
 const SCAN_TYPES = {
   ONBOARDING: 'Onboarding',
   MONITORING: 'Monitoring',
-};
+} as const;
+
+const REPORT_STATUS_TO_DISPLAY_STATUS = {
+  [MERCHANT_REPORT_STATUSES_MAP.completed]: 'Manual Review',
+  [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: 'Quality Control',
+} as const;
 
 const REPORT_TYPE_TO_SCAN_TYPE = {
   [MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1]: SCAN_TYPES.ONBOARDING,
@@ -152,24 +157,24 @@ export const columns = [
         </div>
       );
     },
-    header: 'Risk Score',
+    header: 'Risk Level',
   }),
   columnHelper.accessor('status', {
     cell: info => {
       const status = info.getValue();
-      const statusToDisplayStatus = {
-        [MERCHANT_REPORT_STATUSES_MAP.completed]: 'Manual Review',
-        [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: 'Quality Control',
-      } as const;
 
       return (
         <TextWithNAFallback
           className={ctw('font-semibold', {
             'text-slate-400': status === MERCHANT_REPORT_STATUSES_MAP.completed,
-            'text-destructive': status === MERCHANT_REPORT_STATUSES_MAP['failed'],
+            'text-destructive': status === MERCHANT_REPORT_STATUSES_MAP.failed,
           })}
         >
-          {titleCase(statusToDisplayStatus[status as keyof typeof statusToDisplayStatus] ?? status)}
+          {titleCase(
+            REPORT_STATUS_TO_DISPLAY_STATUS[
+              status as keyof typeof REPORT_STATUS_TO_DISPLAY_STATUS
+            ] ?? status,
+          )}
         </TextWithNAFallback>
       );
     },

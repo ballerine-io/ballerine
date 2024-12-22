@@ -14,6 +14,10 @@ import {
   MerchantReportVersion,
 } from '@/domains/business-reports/constants';
 import { UnknownRecord } from 'type-fest';
+import {
+  RISK_LEVELS,
+  STATUS_OPTIONS,
+} from '@/pages/MerchantMonitoring/hooks/useMerchantMonitoringLogic/useMerchantMonitoringLogic';
 
 export const BusinessReportSchema = z
   .object({
@@ -86,9 +90,13 @@ export const fetchLatestBusinessReport = async ({
 
 export const fetchBusinessReports = async ({
   reportType,
+  riskLevel,
+  status,
   ...params
 }: {
-  reportType: MerchantReportType;
+  reportType: MerchantReportType | 'All';
+  riskLevel: Array<(typeof RISK_LEVELS)[number]>;
+  status: Array<(typeof STATUS_OPTIONS)[number]>;
   page: {
     number: number;
     size: number;
@@ -98,7 +106,9 @@ export const fetchBusinessReports = async ({
   const queryParams = qs.stringify(
     {
       ...params,
-      type: reportType,
+      ...(reportType !== 'All' && { type: reportType }),
+      riskLevel,
+      status,
     },
     { encode: false },
   );

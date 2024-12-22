@@ -5,15 +5,23 @@ import { useMerchantMonitoringLogic } from '@/pages/MerchantMonitoring/hooks/use
 import { NoBusinessReports } from '@/pages/MerchantMonitoring/components/NoBusinessReports/NoBusinessReports';
 import { MerchantMonitoringTable } from '@/pages/MerchantMonitoring/components/MerchantMonitoringTable/MerchantMonitoringTable';
 import { buttonVariants } from '@/common/components/atoms/Button/Button';
-import { Plus, Table2 } from 'lucide-react';
+import { Plus, SlidersHorizontal, Table2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Search } from '@/common/components/molecules/Search';
-import { Skeleton } from '@ballerine/ui';
+import {
+  Button,
+  DropdownMenuTrigger,
+  DropdownMenu,
+  Skeleton,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+} from '@ballerine/ui';
 import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provider';
 import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
 import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
 import { t } from 'i18next';
+import { MultiSelect } from '@/common/components/atoms/MultiSelect/MultiSelect';
 import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
 
 export const MerchantMonitoring: FunctionComponent = () => {
@@ -34,6 +42,16 @@ export const MerchantMonitoring: FunctionComponent = () => {
     locale,
     createBusinessReport,
     createBusinessReportBatch,
+    reportType,
+    onReportTypeChange,
+    REPORT_TYPE_TO_DISPLAY_TEXT,
+    RISK_LEVEL_FILTERS,
+    STATUS_LEVEL_FILTERS,
+    handleFilterChange,
+    handleFilterClear,
+    riskLevel,
+    status,
+    multiselectProps,
   } = useMerchantMonitoringLogic();
 
   return (
@@ -102,6 +120,49 @@ export const MerchantMonitoring: FunctionComponent = () => {
           }}
           onChange={onDatesChange}
         />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className={`h-8 space-x-2.5 p-2 font-normal`}>
+              <SlidersHorizontal className="mr-2 d-4" />
+              Type
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {Object.entries(REPORT_TYPE_TO_DISPLAY_TEXT).map(([type, displayText]) => (
+              <DropdownMenuCheckboxItem
+                key={displayText}
+                checked={reportType === displayText}
+                onCheckedChange={() =>
+                  onReportTypeChange(type as keyof typeof REPORT_TYPE_TO_DISPLAY_TEXT)
+                }
+              >
+                {displayText}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        {RISK_LEVEL_FILTERS.map(({ title, accessor, options }) => (
+          <MultiSelect
+            key={title}
+            title={title}
+            options={options}
+            props={multiselectProps}
+            selectedValues={riskLevel ?? []}
+            onSelect={handleFilterChange(accessor)}
+            onClearSelect={handleFilterClear(accessor)}
+          />
+        ))}
+        {STATUS_LEVEL_FILTERS.map(({ title, accessor, options }) => (
+          <MultiSelect
+            key={title}
+            title={title}
+            options={options}
+            props={multiselectProps}
+            selectedValues={status ?? []}
+            onSelect={handleFilterChange(accessor)}
+            onClearSelect={handleFilterClear(accessor)}
+          />
+        ))}
       </div>
       <div className="flex flex-1 flex-col gap-6 overflow-auto">
         {isNonEmptyArray(businessReports) && <MerchantMonitoringTable data={businessReports} />}
