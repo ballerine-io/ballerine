@@ -1,10 +1,13 @@
-import { z } from 'zod';
-import { apiClient } from '@/common/api-client/api-client';
-import { Method } from '@/common/enums';
-import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import qs from 'qs';
-import { toast } from 'sonner';
+import { z } from 'zod';
 import { t } from 'i18next';
+import { toast } from 'sonner';
+import { UnknownRecord } from 'type-fest';
+
+import { Method } from '@/common/enums';
+import { apiClient } from '@/common/api-client/api-client';
+import { TReportStatus, TRiskLevel } from '@/pages/MerchantMonitoring/schemas';
+import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import {
   MERCHANT_REPORT_STATUSES,
   MERCHANT_REPORT_STATUSES_MAP,
@@ -13,11 +16,6 @@ import {
   MerchantReportType,
   MerchantReportVersion,
 } from '@/domains/business-reports/constants';
-import { UnknownRecord } from 'type-fest';
-import {
-  RISK_LEVELS,
-  STATUS_OPTIONS,
-} from '@/pages/MerchantMonitoring/hooks/useMerchantMonitoringLogic/useMerchantMonitoringLogic';
 
 export const BusinessReportSchema = z
   .object({
@@ -91,12 +89,14 @@ export const fetchLatestBusinessReport = async ({
 export const fetchBusinessReports = async ({
   reportType,
   riskLevel,
-  status,
+  statuses,
   ...params
 }: {
   reportType: MerchantReportType | 'All';
-  riskLevel: Array<(typeof RISK_LEVELS)[number]>;
-  status: Array<(typeof STATUS_OPTIONS)[number]>;
+  riskLevel: TRiskLevel[];
+  statuses: TReportStatus[];
+  from?: string;
+  to?: string;
   page: {
     number: number;
     size: number;
@@ -106,9 +106,9 @@ export const fetchBusinessReports = async ({
   const queryParams = qs.stringify(
     {
       ...params,
-      ...(reportType !== 'All' && { type: reportType }),
+      ...(reportType !== 'All' && { reportType }),
       riskLevel,
-      status,
+      statuses,
     },
     { encode: false },
   );

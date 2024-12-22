@@ -50,7 +50,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
     handleFilterChange,
     handleFilterClear,
     riskLevel,
-    status,
+    statuses,
     multiselectProps,
   } = useMerchantMonitoringLogic();
 
@@ -141,6 +141,17 @@ export const MerchantMonitoring: FunctionComponent = () => {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+        {STATUS_LEVEL_FILTERS.map(({ title, accessor, options }) => (
+          <MultiSelect
+            key={title}
+            title={title}
+            options={options}
+            props={multiselectProps}
+            selectedValues={statuses ?? []}
+            onSelect={handleFilterChange(accessor)}
+            onClearSelect={handleFilterClear(accessor)}
+          />
+        ))}
         {RISK_LEVEL_FILTERS.map(({ title, accessor, options }) => (
           <MultiSelect
             key={title}
@@ -148,17 +159,6 @@ export const MerchantMonitoring: FunctionComponent = () => {
             options={options}
             props={multiselectProps}
             selectedValues={riskLevel ?? []}
-            onSelect={handleFilterChange(accessor)}
-            onClearSelect={handleFilterClear(accessor)}
-          />
-        ))}
-        {STATUS_LEVEL_FILTERS.map(({ title, accessor, options }) => (
-          <MultiSelect
-            key={title}
-            title={title}
-            options={options}
-            props={multiselectProps}
-            selectedValues={status ?? []}
             onSelect={handleFilterChange(accessor)}
             onClearSelect={handleFilterClear(accessor)}
           />

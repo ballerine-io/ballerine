@@ -11,11 +11,13 @@ export const REPORT_TYPE_TO_DISPLAY_TEXT = {
 
 export const DISPLAY_TEXT_TO_MERCHANT_REPORT_TYPE = {
   All: 'All',
-  MERCHANT_REPORT_T1: 'MERCHANT_REPORT_T1',
-  ONGOING_MERCHANT_REPORT_T1: 'ONGOING_MERCHANT_REPORT_T1',
+  Onboarding: 'MERCHANT_REPORT_T1',
+  Monitoring: 'ONGOING_MERCHANT_REPORT_T1',
 } as const;
 
 export const RISK_LEVELS = ['Critical', 'High', 'Medium', 'Low'] as const;
+
+export type TRiskLevel = (typeof RISK_LEVELS)[number];
 
 export const RISK_LEVEL_FILTERS = [
   {
@@ -28,13 +30,15 @@ export const RISK_LEVEL_FILTERS = [
   },
 ];
 
-export const STATUS_OPTIONS = ['In Progress', 'Quality Control', 'Manual Review'] as const;
+export const REPORT_STATUS = ['In Progress', 'Quality Control', 'Manual Review'] as const;
+
+export type TReportStatus = (typeof REPORT_STATUS)[number];
 
 export const STATUS_LEVEL_FILTERS = [
   {
     title: 'Status',
     accessor: 'status',
-    options: STATUS_OPTIONS.map(status => ({
+    options: REPORT_STATUS.map(status => ({
       label: status,
       value: status.toLowerCase(),
     })),
@@ -76,20 +80,14 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
   riskLevel: z
     .array(
       z.enum(
-        RISK_LEVELS.map(riskLevel => riskLevel.toLowerCase()) as [
-          (typeof RISK_LEVELS)[number],
-          ...Array<(typeof RISK_LEVELS)[number]>,
-        ],
+        RISK_LEVELS.map(riskLevel => riskLevel.toLowerCase()) as [TRiskLevel, ...TRiskLevel[]],
       ),
     )
     .catch([]),
-  status: z
+  statuses: z
     .array(
       z.enum(
-        STATUS_OPTIONS.map(status => status.toLowerCase()) as [
-          (typeof STATUS_OPTIONS)[number],
-          ...Array<(typeof STATUS_OPTIONS)[number]>,
-        ],
+        REPORT_STATUS.map(status => status.toLowerCase()) as [TReportStatus, ...TReportStatus[]],
       ),
     )
     .catch([]),

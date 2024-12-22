@@ -25,7 +25,7 @@ export const useMerchantMonitoringLogic = () => {
   const { search, debouncedSearch, onSearch } = useSearch();
 
   const [
-    { page, pageSize, sortBy, sortDir, reportType, riskLevel, status, from, to },
+    { page, pageSize, sortBy, sortDir, reportType, riskLevel, statuses, from, to },
     setSearchParams,
   ] = useZodSearchParams(MerchantMonitoringSearchSchema);
 
@@ -42,7 +42,7 @@ export const useMerchantMonitoringLogic = () => {
     sortBy,
     sortDir,
     riskLevel: riskLevel ?? [],
-    status: status ?? [],
+    statuses: statuses ?? [],
     from,
     to,
   });
@@ -119,7 +119,7 @@ export const useMerchantMonitoringLogic = () => {
     handleFilterChange,
     handleFilterClear,
     riskLevel,
-    status,
+    statuses,
     dates: { from, to },
     onDatesChange,
   };

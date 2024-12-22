@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { isString } from '@/common/utils/is-string/is-string';
 import { MerchantReportType } from '@/domains/business-reports/constants';
 import { businessReportsQueryKey } from '@/domains/business-reports/query-keys';
-import { RISK_LEVELS, STATUS_OPTIONS } from '@/pages/MerchantMonitoring/schemas';
+import { TReportStatus, TRiskLevel } from '@/pages/MerchantMonitoring/schemas';
 import { useIsAuthenticated } from '@/domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 
 export const useBusinessReportsQuery = ({
@@ -15,7 +15,7 @@ export const useBusinessReportsQuery = ({
   sortBy,
   sortDir,
   riskLevel,
-  status,
+  statuses,
   from,
   to,
 }: {
@@ -25,8 +25,8 @@ export const useBusinessReportsQuery = ({
   pageSize: number;
   sortBy: string;
   sortDir: string;
-  riskLevel: Array<(typeof RISK_LEVELS)[number]>;
-  status: Array<(typeof STATUS_OPTIONS)[number]>;
+  riskLevel: TRiskLevel[];
+  statuses: TReportStatus[];
   from?: string;
   to?: string;
 }) => {
@@ -41,7 +41,7 @@ export const useBusinessReportsQuery = ({
       sortBy,
       sortDir,
       riskLevel,
-      status,
+      statuses,
       from,
       to: to ? dayjs(to).add(1, 'day').format('YYYY-MM-DD') : undefined,
     }),

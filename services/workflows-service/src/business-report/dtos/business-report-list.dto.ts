@@ -1,7 +1,9 @@
+import { z } from 'zod';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
+
 import { PageDto } from '@/common/dto';
-import { z } from 'zod';
+import { MERCHANT_REPORT_TYPES_MAP, type MerchantReportType } from '@/business-report/constants';
 import { BusinessReportDto } from '@/business-report/dtos/business-report.dto';
 
 export class BusinessReportListRequestParamDto {
@@ -25,11 +27,22 @@ export class BusinessReportListRequestParamDto {
   @IsString()
   @ApiProperty({ type: String, required: false })
   to?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ type: String, required: false })
+  reportType?: MerchantReportType;
 }
 
 export const ListBusinessReportsSchema = z.object({
   from: z.string().optional(),
   to: z.string().optional(),
+  reportType: z
+    .enum([
+      MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1,
+      MERCHANT_REPORT_TYPES_MAP.ONGOING_MERCHANT_REPORT_T1,
+    ])
+    .optional(),
   search: z.string().optional(),
   page: z.object({
     number: z.coerce.number().int().positive(),
