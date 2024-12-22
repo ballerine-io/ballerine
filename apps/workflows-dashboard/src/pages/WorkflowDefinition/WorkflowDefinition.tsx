@@ -18,35 +18,162 @@ import { useState } from 'react';
 import { Button } from '@/components/atoms/Button';
 
 export const VENDOR_DETAILS = {
-  'dow-jones': {
-    logoUrl: 'https://cdn.ballerine.io/logos/Dow_Jones_Logo.png',
-    description: 'Dow Jones provides sanctions screening and risk data for individuals',
+  'api-plugins': {
+    'registry-information': {
+      title: 'Registry Information',
+      description: 'Company registry and business information services',
+      vendors: {
+        'asia-verify': {
+          logoUrl: 'https://cdn.ballerine.io/logos/AsiaVerify_Logo.png',
+          description:
+            'Company screening, UBO verification and registry information services focused on APAC region',
+        },
+        kyckr: {
+          logoUrl: 'https://cdn.ballerine.io/logos/kyckr-logo.png',
+          description: 'UBO verification and company registry information services',
+        },
+        test: {
+          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          description: 'Test vendor for development purposes',
+        },
+      },
+    },
+    'individual-sanctions': {
+      title: 'Individual Sanctions',
+      description: 'Individual sanctions screening and risk assessment',
+      vendors: {
+        'dow-jones': {
+          logoUrl: 'https://cdn.ballerine.io/logos/Dow_Jones_Logo.png',
+          description: 'Sanctions screening and risk data for individuals',
+        },
+        'comply-advantage': {
+          logoUrl: 'https://cdn.ballerine.io/logos/comply-advantage-logo.png',
+          description: 'AI-driven sanctions screening and monitoring for individuals',
+        },
+      },
+    },
+    'company-sanctions': {
+      title: 'Company Sanctions',
+      description: 'Company sanctions screening and monitoring',
+      vendors: {
+        test: {
+          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          description: 'Test vendor for company sanctions screening',
+        },
+      },
+    },
+    ubo: {
+      title: 'UBO Verification',
+      description: 'Ultimate Beneficial Owner verification services',
+      vendors: {
+        test: {
+          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          description: 'Test vendor for UBO verification',
+        },
+      },
+    },
+    'merchant-monitoring': {
+      title: 'Merchant Monitoring',
+      description: 'Ongoing merchant monitoring and risk assessment',
+      vendors: {
+        ballerine: {
+          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          description: 'Merchant monitoring and risk assessment service',
+        },
+      },
+    },
+    'mastercard-merchant-screening': {
+      title: 'Mastercard Merchant Screening',
+      description: 'Merchant screening via Mastercard services',
+      vendors: {
+        mastercard: {
+          logoUrl: 'https://cdn.ballerine.io/logos/Mastercard%20logo.svg',
+          description: 'Mastercard merchant screening service',
+        },
+      },
+    },
+    'kyc-session': {
+      title: 'KYC Session',
+      description: 'Identity verification and KYC services',
+      vendors: {
+        veriff: {
+          logoUrl: 'https://cdn.ballerine.io/logos/Veriff_logo.svg.png',
+          description: 'KYC verification and identity proofing services',
+        },
+      },
+    },
   },
-  'comply-advantage': {
-    logoUrl: 'https://cdn.ballerine.io/logos/comply-advantage-logo.png',
-    description:
-      'ComplyAdvantage offers AI-driven sanctions screening and monitoring for individuals',
-  },
-  'asia-verify': {
-    logoUrl: 'https://cdn.ballerine.io/logos/AsiaVerify_Logo.png',
-    description:
-      'AsiaVerify provides company screening, UBO verification and registry information services focused on APAC region',
-  },
-  veriff: {
-    logoUrl: 'https://cdn.ballerine.io/logos/Veriff_logo.svg.png',
-    description: 'Veriff provides KYC verification and identity proofing services',
-  },
-  ballerine: {
-    logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
-    description: 'Ballerine provides merchant monitoring services',
-  },
-  kyckr: {
-    logoUrl: 'https://cdn.ballerine.io/logos/kyckr-logo.png',
-    description: 'Kyckr provides UBO verification and company registry information services',
-  },
-  test: {
-    logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
-    description: 'Test vendor for development purposes',
+  'common-plugins': {
+    'template-email': {
+      title: 'Email Templates',
+      description: 'Email template services',
+      vendors: {
+        ballerine: {
+          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          description: 'Email template service',
+        },
+      },
+    },
+    'risk-rules': {
+      title: 'Risk Rules',
+      description: 'Risk assessment rules engine',
+      vendors: {
+        ballerine: {
+          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          description: 'Risk rules engine service',
+        },
+      },
+    },
+    'child-workflow': {
+      title: 'Child Workflows',
+      description: 'Child workflow management',
+      vendors: {
+        ballerine: {
+          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          description: 'Child workflow service',
+        },
+      },
+    },
+    'dispatch-event': {
+      title: 'Event Dispatch',
+      description: 'Event dispatch service',
+      vendors: {
+        ballerine: {
+          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          description: 'Event dispatch service',
+        },
+      },
+    },
+    iterative: {
+      title: 'Iterative',
+      description: 'Iterative plugin service',
+      vendors: {
+        ballerine: {
+          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          description: 'Iterative plugin service',
+        },
+      },
+    },
+    transformer: {
+      title: 'Transformer',
+      description: 'Data transformation service',
+      vendors: {
+        ballerine: {
+          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          description: 'Data transformation service',
+        },
+      },
+    },
+    'attach-ui-definition': {
+      title: 'UI Definition',
+      description: 'UI definition attachment service',
+      vendors: {
+        ballerine: {
+          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          description: 'UI definition attachment service',
+        },
+      },
+    },
   },
 } as const;
 
@@ -63,7 +190,7 @@ export const WorkflowDefinition = () => {
   const [isIntegrationCatalogOpen, setIsIntegrationCatalogOpen] = useState(false);
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
+    void navigator.clipboard.writeText(text);
   };
 
   if (isLoading) {
@@ -157,7 +284,7 @@ export const WorkflowDefinition = () => {
                   <div className="flex flex-col gap-8 bg-slate-50 p-6">
                     <div className="flex justify-end">
                       <Button onClick={() => setIsIntegrationCatalogOpen(true)}>
-                        View Integration Catalog
+                        View Integrations Catalog
                       </Button>
                     </div>
                     {isIntegrationCatalogOpen && (
@@ -169,7 +296,7 @@ export const WorkflowDefinition = () => {
                           <div className="max-h-[90vh] w-[90vw] overflow-y-auto rounded-xl bg-white p-8 shadow-2xl">
                             <div className="flex flex-col gap-4">
                               <div className="flex items-center justify-between">
-                                <h2 className="text-2xl font-semibold">Integration Catalog</h2>
+                                <h2 className="text-2xl font-semibold">Integrations Catalog</h2>
                                 <Button
                                   variant="ghost"
                                   onClick={() => setIsIntegrationCatalogOpen(false)}
@@ -191,69 +318,93 @@ export const WorkflowDefinition = () => {
                                   </svg>
                                 </Button>
                               </div>
-                              <div className="grid grid-cols-2 gap-6 p-6">
-                                {Object.entries(VENDOR_DETAILS).map(([vendorKey, vendorInfo]) => (
-                                  <div
-                                    key={vendorKey}
-                                    className="flex flex-col gap-4 rounded-xl border border-slate-200 p-6 shadow-sm"
-                                  >
-                                    <div className="flex items-center gap-4">
-                                      <div className="h-16 w-16 overflow-hidden rounded-lg border border-slate-100 bg-white p-2">
-                                        <img
-                                          src={vendorInfo.logoUrl}
-                                          alt={vendorKey}
-                                          className="h-full w-full object-contain"
-                                          onError={e => {
-                                            e.currentTarget.src =
-                                              'https://cdn.ballerine.io/logos/ballerine-logo.png';
-                                          }}
-                                        />
-                                      </div>
-                                      <div className="flex flex-col gap-2">
-                                        <div className="flex items-center gap-2">
-                                          <h4 className="font-semibold text-slate-800">
-                                            {vendorKey
-                                              .split('-')
-                                              .map(
-                                                word =>
-                                                  word.charAt(0).toUpperCase() + word.slice(1),
-                                              )
-                                              .join(' ')}
-                                          </h4>
-                                          <button
-                                            onClick={() => copyToClipboard(vendorKey)}
-                                            className="rounded-md p-1 hover:bg-slate-100"
-                                            title="Copy vendor key"
-                                          >
-                                            <svg
-                                              xmlns="http://www.w3.org/2000/svg"
-                                              className="h-4 w-4"
-                                              viewBox="0 0 24 24"
-                                              fill="none"
-                                              stroke="currentColor"
-                                              strokeWidth="2"
-                                              strokeLinecap="round"
-                                              strokeLinejoin="round"
-                                            >
-                                              <rect
-                                                x="9"
-                                                y="9"
-                                                width="13"
-                                                height="13"
-                                                rx="2"
-                                                ry="2"
-                                              ></rect>
-                                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                            </svg>
-                                          </button>
+                              <div className="flex flex-col gap-8 p-6">
+                                {Object.entries(VENDOR_DETAILS['api-plugins']).map(
+                                  ([pluginKind, pluginInfo]) => {
+                                    return (
+                                      <div key={pluginKind} className="flex flex-col gap-4">
+                                        <div className="flex items-center gap-3">
+                                          <div className="h-10 w-1 rounded-full bg-blue-500" />
+                                          <div>
+                                            <h3 className="text-2xl font-bold text-slate-800">
+                                              {pluginInfo.title}
+                                            </h3>
+                                            <p className="text-slate-600">
+                                              {pluginInfo.description}
+                                            </p>
+                                          </div>
                                         </div>
-                                        <p className="text-sm text-slate-600">
-                                          {vendorInfo.description}
-                                        </p>
+                                        <div className="grid grid-cols-2 gap-6">
+                                          {Object.entries(pluginInfo.vendors).map(
+                                            ([vendorKey, vendorInfo]) => (
+                                              <div
+                                                key={vendorKey}
+                                                className="flex flex-col gap-4 rounded-xl border border-slate-200 p-6 shadow-sm"
+                                              >
+                                                <div className="flex items-center gap-4">
+                                                  <div className="h-16 w-16 overflow-hidden rounded-lg border border-slate-100 bg-white p-2">
+                                                    <img
+                                                      src={vendorInfo.logoUrl}
+                                                      alt={vendorKey}
+                                                      className="h-full w-full object-contain"
+                                                      onError={e => {
+                                                        e.currentTarget.src =
+                                                          'https://cdn.ballerine.io/logos/ballerine-logo.png';
+                                                      }}
+                                                    />
+                                                  </div>
+                                                  <div className="flex flex-col gap-2">
+                                                    <div className="flex items-center gap-2">
+                                                      <h4 className="font-semibold text-slate-800">
+                                                        {vendorKey
+                                                          .split('-')
+                                                          .map(
+                                                            word =>
+                                                              word.charAt(0).toUpperCase() +
+                                                              word.slice(1),
+                                                          )
+                                                          .join(' ')}
+                                                      </h4>
+                                                      <button
+                                                        onClick={() => copyToClipboard(vendorKey)}
+                                                        className="rounded-md p-1 hover:bg-slate-100"
+                                                        title="Copy vendor key"
+                                                      >
+                                                        <svg
+                                                          xmlns="http://www.w3.org/2000/svg"
+                                                          className="h-4 w-4"
+                                                          viewBox="0 0 24 24"
+                                                          fill="none"
+                                                          stroke="currentColor"
+                                                          strokeWidth="2"
+                                                          strokeLinecap="round"
+                                                          strokeLinejoin="round"
+                                                        >
+                                                          <rect
+                                                            x="9"
+                                                            y="9"
+                                                            width="13"
+                                                            height="13"
+                                                            rx="2"
+                                                            ry="2"
+                                                          ></rect>
+                                                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                        </svg>
+                                                      </button>
+                                                    </div>
+                                                    <p className="text-sm text-slate-600">
+                                                      {vendorInfo.description}
+                                                    </p>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            ),
+                                          )}
+                                        </div>
                                       </div>
-                                    </div>
-                                  </div>
-                                ))}
+                                    );
+                                  },
+                                )}
                               </div>
                             </div>
                           </div>
@@ -292,7 +443,11 @@ export const WorkflowDefinition = () => {
                                     ) : plugin.vendor ? (
                                       <img
                                         src={
-                                          VENDOR_DETAILS[plugin.vendor as VendorId]?.logoUrl ||
+                                          // (VENDOR_DETAILS?.['api-plugins']?.[
+                                          //   plugin.pluginKind as keyof typeof VENDOR_DETAILS['api-plugins']
+                                          // ]?.vendors?.[
+                                          //   plugin.vendor
+                                          // ]?.logoUrl) ||
                                           `https://cdn.ballerine.io/logos/${plugin.vendor.toLowerCase()}-logo.png`
                                         }
                                         alt={plugin.vendor}
