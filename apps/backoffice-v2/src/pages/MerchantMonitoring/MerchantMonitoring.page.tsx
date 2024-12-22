@@ -51,6 +51,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
     handleFilterClear,
     riskLevel,
     status,
+    multiselectProps,
   } = useMerchantMonitoringLogic();
 
   return (
@@ -121,8 +122,9 @@ export const MerchantMonitoring: FunctionComponent = () => {
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              <SlidersHorizontal size={18} className="mr-2" /> Type
+            <Button variant="outline" className={`h-8 space-x-2.5 p-2 font-normal`}>
+              <SlidersHorizontal className="mr-2 d-4" />
+              Type
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
@@ -143,20 +145,22 @@ export const MerchantMonitoring: FunctionComponent = () => {
           <MultiSelect
             key={title}
             title={title}
+            options={options}
+            props={multiselectProps}
             selectedValues={riskLevel ?? []}
             onSelect={handleFilterChange(accessor)}
             onClearSelect={handleFilterClear(accessor)}
-            options={options}
           />
         ))}
         {STATUS_LEVEL_FILTERS.map(({ title, accessor, options }) => (
           <MultiSelect
             key={title}
             title={title}
+            options={options}
+            props={multiselectProps}
             selectedValues={status ?? []}
             onSelect={handleFilterChange(accessor)}
             onClearSelect={handleFilterClear(accessor)}
-            options={options}
           />
         ))}
       </div>

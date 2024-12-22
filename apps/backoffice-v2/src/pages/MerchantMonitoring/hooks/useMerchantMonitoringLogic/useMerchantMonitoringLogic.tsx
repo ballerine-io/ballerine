@@ -1,9 +1,15 @@
 import dayjs from 'dayjs';
-import { useCallback, ComponentProps } from 'react';
+import { SlidersHorizontal } from 'lucide-react';
+import React, { useCallback, ComponentProps, useMemo } from 'react';
 
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { useSearch } from '@/common/hooks/useSearch/useSearch';
 import { usePagination } from '@/common/hooks/usePagination/usePagination';
+import { useFindings } from '@/pages/MerchantMonitoring/hooks/useFindings/useFindings';
+import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
+import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
+import { useBusinessReportsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportsQuery/useBusinessReportsQuery';
 import {
   DISPLAY_TEXT_TO_MERCHANT_REPORT_TYPE,
   MerchantMonitoringSearchSchema,
@@ -11,11 +17,6 @@ import {
   RISK_LEVEL_FILTERS,
   STATUS_LEVEL_FILTERS,
 } from '@/pages/MerchantMonitoring/schemas';
-import { useFindings } from '@/pages/MerchantMonitoring/hooks/useFindings/useFindings';
-import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
-import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
-import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
-import { useBusinessReportsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportsQuery/useBusinessReportsQuery';
 
 export const useMerchantMonitoringLogic = () => {
   const locale = useLocale();
@@ -81,6 +82,18 @@ export const useMerchantMonitoringLogic = () => {
     setSearchParams({ from, to });
   };
 
+  const multiselectProps = useMemo(
+    () => ({
+      trigger: {
+        leftIcon: <SlidersHorizontal className="mr-2 h-4 w-4" />,
+        title: {
+          className: `font-normal text-sm`,
+        },
+      },
+    }),
+    [],
+  );
+
   return {
     totalPages: data?.totalPages || 0,
     totalItems: data?.totalItems || 0,
@@ -99,6 +112,7 @@ export const useMerchantMonitoringLogic = () => {
     locale,
     reportType,
     onReportTypeChange,
+    multiselectProps,
     REPORT_TYPE_TO_DISPLAY_TEXT,
     RISK_LEVEL_FILTERS,
     STATUS_LEVEL_FILTERS,
