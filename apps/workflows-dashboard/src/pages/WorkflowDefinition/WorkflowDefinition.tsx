@@ -27,14 +27,41 @@ export const VENDOR_DETAILS = {
           logoUrl: 'https://cdn.ballerine.io/logos/AsiaVerify_Logo.png',
           description:
             'Company screening, UBO verification and registry information services focused on APAC region',
+          configExample: {
+            name: 'asiaVerifyRegistryInfo',
+            vendor: 'asia-verify',
+            pluginKind: 'registry-information',
+            stateNames: ['run_vendor_data'],
+            displayName: 'Asia Verify Registry Information',
+            errorAction: 'VENDOR_DONE',
+            successAction: 'VENDOR_DONE',
+          },
         },
         kyckr: {
           logoUrl: 'https://cdn.ballerine.io/logos/kyckr-logo.png',
           description: 'UBO verification and company registry information services',
+          configExample: {
+            name: 'kyckrRegistryInfo',
+            vendor: 'kyckr',
+            pluginKind: 'registry-information',
+            stateNames: ['run_vendor_data'],
+            displayName: 'Kyckr Registry Information',
+            errorAction: 'VENDOR_DONE',
+            successAction: 'VENDOR_DONE',
+          },
         },
         test: {
           logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
           description: 'Test vendor for development purposes',
+          configExample: {
+            name: 'testRegistryInfo',
+            vendor: 'test',
+            pluginKind: 'registry-information',
+            stateNames: ['run_vendor_data'],
+            displayName: 'Test Registry Information',
+            errorAction: 'VENDOR_DONE',
+            successAction: 'VENDOR_DONE',
+          },
         },
       },
     },
@@ -45,10 +72,28 @@ export const VENDOR_DETAILS = {
         'dow-jones': {
           logoUrl: 'https://cdn.ballerine.io/logos/Dow_Jones_Logo.png',
           description: 'Sanctions screening and risk data for individuals',
+          configExample: {
+            name: 'dowJonesSanctions',
+            vendor: 'dow-jones',
+            pluginKind: 'individual-sanctions',
+            stateNames: ['run_vendor_data'],
+            displayName: 'Dow Jones Individual Sanctions',
+            errorAction: 'VENDOR_DONE',
+            successAction: 'VENDOR_DONE',
+          },
         },
         'comply-advantage': {
           logoUrl: 'https://cdn.ballerine.io/logos/comply-advantage-logo.png',
           description: 'AI-driven sanctions screening and monitoring for individuals',
+          configExample: {
+            name: 'complyAdvantageSanctions',
+            vendor: 'comply-advantage',
+            pluginKind: 'individual-sanctions',
+            stateNames: ['run_vendor_data'],
+            displayName: 'ComplyAdvantage Individual Sanctions',
+            errorAction: 'VENDOR_DONE',
+            successAction: 'VENDOR_DONE',
+          },
         },
       },
     },
@@ -59,6 +104,15 @@ export const VENDOR_DETAILS = {
         test: {
           logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
           description: 'Test vendor for company sanctions screening',
+          configExample: {
+            name: 'companySanctions',
+            vendor: 'test',
+            pluginKind: 'company-sanctions',
+            stateNames: ['run_vendor_data'],
+            displayName: 'Company Sanctions',
+            errorAction: 'VENDOR_DONE',
+            successAction: 'VENDOR_DONE',
+          },
         },
       },
     },
@@ -69,6 +123,15 @@ export const VENDOR_DETAILS = {
         test: {
           logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
           description: 'Test vendor for UBO verification',
+          configExample: {
+            name: 'uboVerification',
+            vendor: 'test',
+            pluginKind: 'ubo',
+            stateNames: ['run_vendor_data'],
+            displayName: 'UBO Check',
+            errorAction: 'VENDOR_DONE',
+            successAction: 'VENDOR_DONE',
+          },
         },
       },
     },
@@ -79,6 +142,16 @@ export const VENDOR_DETAILS = {
         ballerine: {
           logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
           description: 'Merchant monitoring and risk assessment service',
+          configExample: {
+            name: 'merchantMonitoring',
+            vendor: 'ballerine',
+            pluginKind: 'merchant-monitoring',
+            stateNames: ['run_merchant_monitoring'],
+            displayName: 'Merchant Monitoring',
+            errorAction: 'MERCHANT_MONITORING_FAILED',
+            successAction: 'MERCHANT_MONITORING_SUCCESS',
+            merchantMonitoringQualityControl: false,
+          },
         },
       },
     },
@@ -89,6 +162,15 @@ export const VENDOR_DETAILS = {
         mastercard: {
           logoUrl: 'https://cdn.ballerine.io/logos/Mastercard%20logo.svg',
           description: 'Mastercard merchant screening service',
+          configExample: {
+            name: 'merchantScreening',
+            vendor: 'mastercard',
+            pluginKind: 'mastercard-merchant-screening',
+            stateNames: ['run_vendor_data'],
+            displayName: 'Merchant Screening',
+            errorAction: 'VENDOR_DONE',
+            successAction: 'VENDOR_DONE',
+          },
         },
       },
     },
@@ -99,6 +181,15 @@ export const VENDOR_DETAILS = {
         veriff: {
           logoUrl: 'https://cdn.ballerine.io/logos/Veriff_logo.svg.png',
           description: 'KYC verification and identity proofing services',
+          configExample: {
+            name: 'veriffKyc',
+            vendor: 'veriff',
+            pluginKind: 'kyc-session',
+            stateNames: ['run_kyc'],
+            displayName: 'Veriff KYC Session',
+            errorAction: 'KYC_FAILED',
+            successAction: 'KYC_SUCCESS',
+          },
         },
       },
     },
@@ -111,6 +202,14 @@ export const VENDOR_DETAILS = {
         ballerine: {
           logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
           description: 'Email template service',
+          configExample: {
+            name: 'invitation-email',
+            template: 'invitation',
+            pluginKind: 'template-email',
+            stateNames: ['collection_invite'],
+            errorAction: 'INVITATION_FAILURE',
+            successAction: 'INVITATION_SENT',
+          },
         },
       },
     },
@@ -121,6 +220,15 @@ export const VENDOR_DETAILS = {
         ballerine: {
           logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
           description: 'Risk rules engine service',
+          configExample: {
+            name: 'riskEvaluation',
+            pluginKind: 'riskRules',
+            stateNames: ['manual_review', 'run_vendor_data'],
+            rulesSource: {
+              source: 'notion',
+              databaseId: 'd29390ac964b45b1a79ef45eed735a77',
+            },
+          },
         },
       },
     },
@@ -131,6 +239,12 @@ export const VENDOR_DETAILS = {
         ballerine: {
           logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
           description: 'Child workflow service',
+          configExample: {
+            name: 'veriff_kyc_child_plugin',
+            initEvent: 'start',
+            pluginKind: 'child',
+            definitionId: 'kyc_email_session_example',
+          },
         },
       },
     },
@@ -141,6 +255,12 @@ export const VENDOR_DETAILS = {
         ballerine: {
           logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
           description: 'Event dispatch service',
+          configExample: {
+            name: 'dispatchEvent',
+            pluginKind: 'dispatch-event',
+            stateNames: ['dispatch_event'],
+            eventName: 'CUSTOM_EVENT',
+          },
         },
       },
     },
@@ -151,6 +271,19 @@ export const VENDOR_DETAILS = {
         ballerine: {
           logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
           description: 'Iterative plugin service',
+          configExample: {
+            name: 'ubos_iterative',
+            pluginKind: 'iterative',
+            stateNames: ['run_ubos'],
+            iterateOn: [
+              {
+                mapping: 'entity.data.additionalInfo.contacts',
+                transformer: 'jmespath',
+              },
+            ],
+            errorAction: 'FAILED_EMAIL_SENT_TO_UBOS',
+            successAction: 'EMAIL_SENT_TO_UBOS',
+          },
         },
       },
     },
@@ -161,6 +294,17 @@ export const VENDOR_DETAILS = {
         ballerine: {
           logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
           description: 'Data transformation service',
+          configExample: {
+            name: 'transformData',
+            pluginKind: 'transformer',
+            stateNames: ['transform_data'],
+            transformers: [
+              {
+                mapping: '{transformed: @}',
+                transformer: 'jmespath',
+              },
+            ],
+          },
         },
       },
     },
@@ -171,6 +315,14 @@ export const VENDOR_DETAILS = {
         ballerine: {
           logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
           description: 'UI definition attachment service',
+          configExample: {
+            name: 'Attach APAC Flow UI',
+            pluginKind: 'attach-ui-definition',
+            stateNames: ['collection_flow'],
+            errorAction: 'INVITATION_FAILURE',
+            uiDefinitionId: 'cm500fmsi000grukeo31qdigh',
+            expireInMinutes: 21600,
+          },
         },
       },
     },
@@ -339,7 +491,7 @@ export const WorkflowDefinition = () => {
                                             ([vendorKey, vendorInfo]) => (
                                               <div
                                                 key={vendorKey}
-                                                className="flex flex-col gap-4 rounded-xl border border-slate-200 p-6 shadow-sm"
+                                                className="flex flex-col gap-4 rounded-xl border border-slate-200 p-6 shadow-sm transition-all hover:border-blue-200 hover:shadow-lg"
                                               >
                                                 <div className="flex items-center gap-4">
                                                   <div className="h-16 w-16 overflow-hidden rounded-lg border border-slate-100 bg-white p-2">
@@ -397,6 +549,93 @@ export const WorkflowDefinition = () => {
                                                     </p>
                                                   </div>
                                                 </div>
+
+                                                <div className="flex flex-col gap-4">
+                                                  <div className="flex items-center justify-between">
+                                                    <span className="text-sm font-medium text-slate-700">
+                                                      Configuration Example
+                                                    </span>
+                                                    <Button
+                                                      variant="ghost"
+                                                      size="sm"
+                                                      onClick={() =>
+                                                        copyToClipboard(
+                                                          JSON.stringify(
+                                                            vendorInfo.configExample,
+                                                            null,
+                                                            2,
+                                                          ),
+                                                        )
+                                                      }
+                                                      className="flex items-center gap-2 text-blue-600 hover:text-blue-700"
+                                                    >
+                                                      <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        className="h-4 w-4"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke="currentColor"
+                                                      >
+                                                        <path
+                                                          strokeLinecap="round"
+                                                          strokeLinejoin="round"
+                                                          strokeWidth={2}
+                                                          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                                                        />
+                                                      </svg>
+                                                      Copy Config
+                                                    </Button>
+                                                  </div>
+                                                  <pre className="overflow-x-auto rounded-lg bg-slate-50 p-4 text-sm text-slate-800">
+                                                    <code>
+                                                      {JSON.stringify(
+                                                        vendorInfo.configExample,
+                                                        null,
+                                                        2,
+                                                      )}
+                                                    </code>
+                                                  </pre>
+                                                </div>
+
+                                                {vendorInfo.configExample.stateNames?.length >
+                                                  0 && (
+                                                  <div className="flex flex-wrap gap-2">
+                                                    {vendorInfo.configExample.stateNames?.map(
+                                                      (state: string) => (
+                                                        <span
+                                                          key={state}
+                                                          className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600 shadow-sm"
+                                                        >
+                                                          {state}
+                                                        </span>
+                                                      ),
+                                                    )}
+                                                  </div>
+                                                )}
+
+                                                <div className="mt-auto flex flex-col gap-2 border-t border-slate-100 pt-4">
+                                                  {vendorInfo.configExample.successAction && (
+                                                    <div className="flex items-center gap-2 text-sm">
+                                                      <span className="font-medium text-slate-600">
+                                                        Success:
+                                                      </span>
+                                                      <span className="rounded-md bg-emerald-50 px-2 py-0.5 font-medium text-emerald-600">
+                                                        {vendorInfo.configExample.successAction}
+                                                      </span>
+                                                    </div>
+                                                  )}
+
+                                                  {vendorInfo.configExample.errorAction && (
+                                                    <div className="flex items-center gap-2 text-sm">
+                                                      <span className="font-medium text-slate-600">
+                                                        Error:
+                                                      </span>
+                                                      <span className="rounded-md bg-red-50 px-2 py-0.5 font-medium text-red-600">
+                                                        {vendorInfo.configExample.errorAction}
+                                                      </span>
+                                                    </div>
+                                                  )}
+                                                </div>
                                               </div>
                                             ),
                                           )}
@@ -443,11 +682,9 @@ export const WorkflowDefinition = () => {
                                     ) : plugin.vendor ? (
                                       <img
                                         src={
-                                          // (VENDOR_DETAILS?.['api-plugins']?.[
-                                          //   plugin.pluginKind as keyof typeof VENDOR_DETAILS['api-plugins']
-                                          // ]?.vendors?.[
-                                          //   plugin.vendor
-                                          // ]?.logoUrl) ||
+                                          // @ts-expect-error -- TODO: fix this
+                                          (VENDOR_DETAILS?.['api-plugins']?.[plugin.pluginKind]
+                                            ?.vendors?.[plugin.vendor]?.logoUrl as string) ||
                                           `https://cdn.ballerine.io/logos/${plugin.vendor.toLowerCase()}-logo.png`
                                         }
                                         alt={plugin.vendor}
