@@ -194,6 +194,8 @@ export class MerchantMonitoringClient {
     customerId,
     businessId,
     limit,
+    from,
+    to,
     page,
     reportType,
     withoutUnpublishedOngoingReports,
@@ -201,6 +203,8 @@ export class MerchantMonitoringClient {
   }: {
     customerId: string;
     businessId?: string;
+    from?: string;
+    to?: string;
     limit: number;
     page: number;
     reportType?: MerchantReportType;
@@ -212,6 +216,8 @@ export class MerchantMonitoringClient {
         customerId,
         ...(businessId && { merchantId: businessId }),
         limit,
+        from,
+        to,
         page,
         withoutUnpublishedOngoingReports,
         ...(searchQuery && { searchQuery }),
@@ -229,5 +235,15 @@ export class MerchantMonitoringClient {
     const response = await this.findMany({ customerId, limit: 1, page: 1 });
 
     return response.totalItems;
+  }
+
+  public async listFindings() {
+    const response = await this.axios.get('external/findings', {
+      headers: {
+        Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
+      },
+    });
+
+    return response.data ?? [];
   }
 }

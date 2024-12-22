@@ -21,6 +21,8 @@ export const businessReportsQueryKey = createQueryKeys('business-reports', {
     pageSize: number;
     sortBy: string;
     sortDir: string;
+    from?: string;
+    to?: string;
   }) => ({
     queryKey: [{ page, pageSize, sortBy, sortDir, ...params }],
     queryFn: () => {

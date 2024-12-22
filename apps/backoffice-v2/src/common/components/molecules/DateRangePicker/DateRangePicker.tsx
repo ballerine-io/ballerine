@@ -19,7 +19,7 @@ export const DateRangePicker = ({ onChange, value, className }: TDateRangePicker
           <Button
             id="date"
             variant={'outline'}
-            className={ctw('w-[300px] justify-start text-left font-normal', {
+            className={ctw('h-8 w-[300px] justify-start text-left font-normal', {
               'text-muted-foreground': !value,
             })}
           >

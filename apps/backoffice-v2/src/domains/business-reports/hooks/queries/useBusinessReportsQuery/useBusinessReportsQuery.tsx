@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { businessReportsQueryKey } from '@/domains/business-reports/query-keys';
 import { isString } from '@/common/utils/is-string/is-string';
 import { MerchantReportType } from '@/domains/business-reports/constants';
+import dayjs from 'dayjs';
 
 export const useBusinessReportsQuery = ({
   reportType,
@@ -11,6 +12,8 @@ export const useBusinessReportsQuery = ({
   pageSize,
   sortBy,
   sortDir,
+  from,
+  to,
 }: {
   reportType: MerchantReportType;
   search: string;
@@ -18,11 +21,22 @@ export const useBusinessReportsQuery = ({
   pageSize: number;
   sortBy: string;
   sortDir: string;
+  from?: string;
+  to?: string;
 }) => {
   const isAuthenticated = useIsAuthenticated();
 
   return useQuery({
-    ...businessReportsQueryKey.list({ reportType, search, page, pageSize, sortBy, sortDir }),
+    ...businessReportsQueryKey.list({
+      reportType,
+      search,
+      page,
+      pageSize,
+      sortBy,
+      sortDir,
+      from,
+      to: to ? dayjs(to).add(1, 'day').format('YYYY-MM-DD') : undefined,
+    }),
     enabled:
       isAuthenticated &&
       isString(reportType) &&

@@ -14,6 +14,7 @@ import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
 import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
 import { t } from 'i18next';
+import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
 
 export const MerchantMonitoring: FunctionComponent = () => {
   const {
@@ -28,6 +29,8 @@ export const MerchantMonitoring: FunctionComponent = () => {
     onLastPage,
     onPaginate,
     isLastPage,
+    dates,
+    onDatesChange,
     locale,
     createBusinessReport,
     createBusinessReportBatch,
@@ -90,8 +93,15 @@ export const MerchantMonitoring: FunctionComponent = () => {
           </TooltipProvider>
         </div>
       </div>
-      <div className={`flex`}>
+      <div className={`flex items-center space-x-4`}>
         <Search value={search} onChange={onSearch} />
+        <DateRangePicker
+          value={{
+            from: dates.from ? new Date(dates.from) : undefined,
+            to: dates.to ? new Date(dates.to) : undefined,
+          }}
+          onChange={onDatesChange}
+        />
       </div>
       <div className="flex flex-1 flex-col gap-6 overflow-auto">
         {isNonEmptyArray(businessReports) && <MerchantMonitoringTable data={businessReports} />}

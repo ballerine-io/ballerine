@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 import { PageDto } from '@/common/dto';
 import { z } from 'zod';
-import { BusinessReportDto } from '@/business-report/business-report.dto';
+import { BusinessReportDto } from '@/business-report/dtos/business-report.dto';
 
 export class BusinessReportListRequestParamDto {
   @IsOptional()
@@ -15,9 +15,21 @@ export class BusinessReportListRequestParamDto {
 
   @ApiProperty({ type: PageDto })
   page!: PageDto;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ type: String, required: false })
+  from?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ type: String, required: false })
+  to?: string;
 }
 
 export const ListBusinessReportsSchema = z.object({
+  from: z.string().optional(),
+  to: z.string().optional(),
   search: z.string().optional(),
   page: z.object({
     number: z.coerce.number().int().positive(),
