@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 
 import { PageDto } from '@/common/dto';
 import { MERCHANT_REPORT_TYPES_MAP, type MerchantReportType } from '@/business-report/constants';
@@ -32,6 +32,12 @@ export class BusinessReportListRequestParamDto {
   @IsString()
   @ApiProperty({ type: String, required: false })
   reportType?: MerchantReportType;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @ApiProperty({ type: [String], required: false })
+  riskLevel?: Array<'low' | 'medium' | 'high' | 'critical'>;
 }
 
 export const ListBusinessReportsSchema = z.object({
@@ -43,6 +49,7 @@ export const ListBusinessReportsSchema = z.object({
       MERCHANT_REPORT_TYPES_MAP.ONGOING_MERCHANT_REPORT_T1,
     ])
     .optional(),
+  riskLevel: z.array(z.enum(['low', 'medium', 'high', 'critical'])).optional(),
   search: z.string().optional(),
   page: z.object({
     number: z.coerce.number().int().positive(),

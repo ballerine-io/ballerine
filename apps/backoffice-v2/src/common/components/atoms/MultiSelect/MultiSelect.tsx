@@ -120,7 +120,11 @@ export const MultiSelect = <
                 const isSelected = selected.some(value => value === option.value);
 
                 return (
-                  <CommandItem key={option.value} onSelect={() => onSelectChange(option.value)}>
+                  <CommandItem
+                    key={option.value}
+                    onSelect={() => onSelectChange(option.value)}
+                    className={`cursor-pointer`}
+                  >
                     <div
                       className={ctw(
                         'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',

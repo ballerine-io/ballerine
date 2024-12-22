@@ -127,7 +127,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
               Type
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent align={`start`}>
             {Object.entries(REPORT_TYPE_TO_DISPLAY_TEXT).map(([type, displayText]) => (
               <DropdownMenuCheckboxItem
                 key={displayText}

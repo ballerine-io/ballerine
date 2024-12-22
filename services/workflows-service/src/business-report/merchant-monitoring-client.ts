@@ -198,16 +198,18 @@ export class MerchantMonitoringClient {
     to,
     page,
     reportType,
+    riskLevel,
     withoutUnpublishedOngoingReports,
     searchQuery,
   }: {
     customerId: string;
     businessId?: string;
-    from?: string;
-    to?: string;
     limit: number;
     page: number;
+    from?: string;
+    to?: string;
     reportType?: MerchantReportType;
+    riskLevel?: Array<'low' | 'medium' | 'high' | 'critical'>;
     withoutUnpublishedOngoingReports?: boolean;
     searchQuery?: string;
   }) {
@@ -218,6 +220,7 @@ export class MerchantMonitoringClient {
         limit,
         from,
         to,
+        riskLevel,
         page,
         withoutUnpublishedOngoingReports,
         ...(searchQuery && { searchQuery }),

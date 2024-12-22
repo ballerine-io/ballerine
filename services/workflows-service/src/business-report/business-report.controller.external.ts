@@ -77,7 +77,16 @@ export class BusinessReportControllerExternal {
   @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
   async listBusinessReports(
     @CurrentProject() currentProjectId: TProjectId,
-    @Query() { businessId, page, search, from, to, reportType }: BusinessReportListRequestParamDto,
+    @Query()
+    {
+      businessId,
+      page,
+      search,
+      from,
+      to,
+      reportType,
+      riskLevel,
+    }: BusinessReportListRequestParamDto,
   ) {
     const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
 
@@ -88,6 +97,7 @@ export class BusinessReportControllerExternal {
       customerId,
       from,
       to,
+      riskLevel,
       ...(reportType ? { reportType } : {}),
       ...(businessId ? { businessId } : {}),
       ...(search ? { searchQuery: search } : {}),
