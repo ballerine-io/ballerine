@@ -1,12 +1,11 @@
-import { useIsAuthenticated } from '@/domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
+import dayjs from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
-import { businessReportsQueryKey } from '@/domains/business-reports/query-keys';
+
 import { isString } from '@/common/utils/is-string/is-string';
 import { MerchantReportType } from '@/domains/business-reports/constants';
-import {
-  RISK_LEVELS,
-  STATUS_OPTIONS,
-} from '@/pages/MerchantMonitoring/hooks/useMerchantMonitoringLogic/useMerchantMonitoringLogic';
+import { businessReportsQueryKey } from '@/domains/business-reports/query-keys';
+import { RISK_LEVELS, STATUS_OPTIONS } from '@/pages/MerchantMonitoring/schemas';
+import { useIsAuthenticated } from '@/domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 
 export const useBusinessReportsQuery = ({
   reportType,
@@ -17,6 +16,8 @@ export const useBusinessReportsQuery = ({
   sortDir,
   riskLevel,
   status,
+  from,
+  to,
 }: {
   reportType: MerchantReportType | 'All';
   search: string;
@@ -26,6 +27,8 @@ export const useBusinessReportsQuery = ({
   sortDir: string;
   riskLevel: Array<(typeof RISK_LEVELS)[number]>;
   status: Array<(typeof STATUS_OPTIONS)[number]>;
+  from?: string;
+  to?: string;
 }) => {
   const isAuthenticated = useIsAuthenticated();
 
@@ -39,6 +42,8 @@ export const useBusinessReportsQuery = ({
       sortDir,
       riskLevel,
       status,
+      from,
+      to: to ? dayjs(to).add(1, 'day').format('YYYY-MM-DD') : undefined,
     }),
     enabled:
       isAuthenticated &&

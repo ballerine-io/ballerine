@@ -22,6 +22,7 @@ import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigge
 import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
 import { t } from 'i18next';
 import { MultiSelect } from '@/common/components/atoms/MultiSelect/MultiSelect';
+import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
 
 export const MerchantMonitoring: FunctionComponent = () => {
   const {
@@ -36,6 +37,8 @@ export const MerchantMonitoring: FunctionComponent = () => {
     onLastPage,
     onPaginate,
     isLastPage,
+    dates,
+    onDatesChange,
     locale,
     createBusinessReport,
     createBusinessReportBatch,
@@ -107,8 +110,15 @@ export const MerchantMonitoring: FunctionComponent = () => {
           </TooltipProvider>
         </div>
       </div>
-      <div className={`flex gap-2`}>
+      <div className={`flex items-center space-x-4`}>
         <Search value={search} onChange={onSearch} />
+        <DateRangePicker
+          value={{
+            from: dates.from ? new Date(dates.from) : undefined,
+            to: dates.to ? new Date(dates.to) : undefined,
+          }}
+          onChange={onDatesChange}
+        />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">
@@ -129,7 +139,6 @@ export const MerchantMonitoring: FunctionComponent = () => {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-
         {RISK_LEVEL_FILTERS.map(({ title, accessor, options }) => (
           <MultiSelect
             key={title}

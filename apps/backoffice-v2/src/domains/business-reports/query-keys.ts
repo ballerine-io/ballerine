@@ -27,6 +27,8 @@ export const businessReportsQueryKey = createQueryKeys('business-reports', {
     sortDir: string;
     riskLevel: Array<(typeof RISK_LEVELS)[number]>;
     status: Array<(typeof STATUS_OPTIONS)[number]>;
+    from?: string;
+    to?: string;
   }) => ({
     queryKey: [{ page, pageSize, sortBy, sortDir, ...params }],
     queryFn: () => {
