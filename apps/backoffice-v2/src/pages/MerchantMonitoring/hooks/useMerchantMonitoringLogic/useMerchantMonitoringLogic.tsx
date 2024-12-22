@@ -71,6 +71,19 @@ export const useMerchantMonitoringLogic = () => {
     [setSearchParams],
   );
 
+  const onClearAllFilters = useCallback(() => {
+    setSearchParams({
+      reportType: 'All',
+      riskLevel: [],
+      statuses: [],
+      from: undefined,
+      to: undefined,
+      page: '1',
+    });
+
+    onSearch('');
+  }, [onSearch, setSearchParams]);
+
   const { onPaginate, onPrevPage, onNextPage, onLastPage, isLastPage } = usePagination({
     totalPages: data?.totalPages ?? 0,
   });
@@ -122,5 +135,6 @@ export const useMerchantMonitoringLogic = () => {
     statuses,
     dates: { from, to },
     onDatesChange,
+    onClearAllFilters,
   };
 };

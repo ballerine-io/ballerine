@@ -44,6 +44,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
     createBusinessReportBatch,
     reportType,
     onReportTypeChange,
+    onClearAllFilters,
     REPORT_TYPE_TO_DISPLAY_TEXT,
     RISK_LEVEL_FILTERS,
     STATUS_LEVEL_FILTERS,
@@ -163,6 +164,9 @@ export const MerchantMonitoring: FunctionComponent = () => {
             onClearSelect={handleFilterClear(accessor)}
           />
         ))}
+        <Button variant={`ghost`} className={`text-[#007AFF]`} onClick={onClearAllFilters}>
+          Clear All
+        </Button>
       </div>
       <div className="flex flex-1 flex-col gap-6 overflow-auto">
         {isNonEmptyArray(businessReports) && <MerchantMonitoringTable data={businessReports} />}

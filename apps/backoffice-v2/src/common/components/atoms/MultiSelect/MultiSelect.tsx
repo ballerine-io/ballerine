@@ -145,7 +145,10 @@ export const MultiSelect = <
               <>
                 <CommandSeparator />
                 <CommandGroup>
-                  <CommandItem onSelect={onClearSelect} className="justify-center text-center">
+                  <CommandItem
+                    onSelect={onClearSelect}
+                    className="cursor-pointer justify-center text-center"
+                  >
                     Clear filters
                   </CommandItem>
                 </CommandGroup>
