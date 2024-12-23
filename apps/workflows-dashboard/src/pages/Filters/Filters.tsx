@@ -129,20 +129,20 @@ export const Filters = withFilters<FiltersProps<FiltersPageFilterValues>, Filter
     };
 
     return (
-      <DashboardLayout pageName="Filters">
+      <DashboardLayout pageName="Case Lists">
         <WorkflowsLayout>
           <div className="mb-4 flex justify-end">
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
               <DialogTrigger asChild>
-                <Button variant="default">Create Filter</Button>
+                <Button variant="default">Create Case List</Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Create New Filter</DialogTitle>
+                  <DialogTitle>Create New Case List</DialogTitle>
                 </DialogHeader>
                 <div className="flex flex-col gap-4 py-4">
                   <Input
-                    placeholder="Filter name"
+                    placeholder="Case List Name"
                     value={filterName}
                     onChange={e => setFilterName(e.target.value)}
                   />

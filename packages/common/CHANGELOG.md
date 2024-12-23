@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.59
+
+### Patch Changes
+
+- core
+
 ## 0.9.58
 
 ### Patch Changes

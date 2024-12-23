@@ -109,7 +109,6 @@ export class BusinessReportControllerExternal {
     await this.businessReportService.checkBusinessReportsLimit(maxBusinessReports, customerId);
 
     let business: Pick<Business, 'id' | 'correlationId'> | undefined;
-    const merchantNameWithDefault = merchantName || 'Not detected';
 
     if (businessCorrelationId) {
       business =
@@ -124,7 +123,7 @@ export class BusinessReportControllerExternal {
     if (!business) {
       business = await this.businessService.create({
         data: {
-          companyName: merchantNameWithDefault,
+          companyName: merchantName || 'Not detected',
           country: countryCode,
           website: websiteUrl,
           projectId: currentProjectId,
@@ -148,7 +147,7 @@ export class BusinessReportControllerExternal {
       business,
       websiteUrl,
       countryCode,
-      merchantName: merchantNameWithDefault,
+      merchantName,
       workflowVersion,
       withQualityControl,
       customerId,

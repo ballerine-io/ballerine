@@ -201,7 +201,7 @@ export const createBusinessReportBatch = async ({
     schema: z.object({ batchId: z.string() }),
     body: formData,
     isFormData: true,
-    timeout: 30_000,
+    timeout: 300_000,
   });
 
   return handleZodError(error, batchId);

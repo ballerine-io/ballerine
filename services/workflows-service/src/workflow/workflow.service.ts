@@ -1927,7 +1927,7 @@ export class WorkflowService {
     const isValid = validate({
       ...context,
       // Validation should not include the documents' 'propertiesSchema' prop.
-      documents: context?.documents?.map(
+      documents: (context?.documents || []).map(
         ({
           // @ts-ignore
           propertiesSchema: _propertiesSchema,

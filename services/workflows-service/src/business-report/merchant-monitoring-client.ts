@@ -108,7 +108,7 @@ export class MerchantMonitoringClient {
       reportType,
       workflowVersion,
       ...(compareToReportId && { compareToReportId }),
-      ...(withQualityControl && { withQualityControl }),
+      withQualityControl,
       merchantId: businessId,
       callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${businessId}`,
       metadata: {
