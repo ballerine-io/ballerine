@@ -16,6 +16,7 @@ import {
   REPORT_TYPE_TO_DISPLAY_TEXT,
   RISK_LEVEL_FILTER,
   STATUS_LEVEL_FILTER,
+  REPORT_STATUS_TRANSLATIONS,
 } from '@/pages/MerchantMonitoring/schemas';
 
 export const useMerchantMonitoringLogic = () => {
@@ -42,9 +43,11 @@ export const useMerchantMonitoringLogic = () => {
     sortBy,
     sortDir,
     riskLevel: riskLevel ?? [],
-    statuses: statuses ?? [],
+    statuses: statuses
+      ?.map(status => REPORT_STATUS_TRANSLATIONS[status])
+      .flatMap(status => (status === 'quality-control' ? ['quality-control', 'failed'] : [status])),
     from,
-    to,
+    to: to ? dayjs(to).add(1, 'day').format('YYYY-MM-DD') : undefined,
   });
 
   const onReportTypeChange = (reportType: keyof typeof REPORT_TYPE_TO_DISPLAY_TEXT) => {

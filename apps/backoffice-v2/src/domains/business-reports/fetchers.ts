@@ -6,7 +6,7 @@ import { UnknownRecord } from 'type-fest';
 
 import { Method } from '@/common/enums';
 import { apiClient } from '@/common/api-client/api-client';
-import { TReportStatus, TRiskLevel } from '@/pages/MerchantMonitoring/schemas';
+import { TReportStatusTranslations, TRiskLevel } from '@/pages/MerchantMonitoring/schemas';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import {
   MERCHANT_REPORT_STATUSES,
@@ -88,13 +88,11 @@ export const fetchLatestBusinessReport = async ({
 
 export const fetchBusinessReports = async ({
   reportType,
-  riskLevel,
-  statuses,
   ...params
 }: {
   reportType: MerchantReportType | 'All';
   riskLevel: TRiskLevel[];
-  statuses: TReportStatus[];
+  statuses: TReportStatusTranslations[];
   from?: string;
   to?: string;
   page: {
@@ -103,12 +101,11 @@ export const fetchBusinessReports = async ({
   };
   orderBy: string;
 }) => {
+  console.log(params.statuses);
   const queryParams = qs.stringify(
     {
       ...params,
       ...(reportType !== 'All' && { reportType }),
-      riskLevel,
-      statuses,
     },
     { encode: false },
   );

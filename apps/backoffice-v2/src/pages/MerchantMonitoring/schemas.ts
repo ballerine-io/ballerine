@@ -15,7 +15,7 @@ export const DISPLAY_TEXT_TO_MERCHANT_REPORT_TYPE = {
   Monitoring: 'ONGOING_MERCHANT_REPORT_T1',
 } as const;
 
-export const RISK_LEVELS = ['Critical', 'High', 'Medium', 'Low'] as const;
+export const RISK_LEVELS = ['critical', 'high', 'medium', 'low'] as const;
 
 export type TRiskLevel = (typeof RISK_LEVELS)[number];
 
@@ -23,21 +23,35 @@ export const RISK_LEVEL_FILTER = {
   title: 'Risk Level',
   accessor: 'riskLevel',
   options: RISK_LEVELS.map(riskLevel => ({
-    label: riskLevel,
-    value: riskLevel.toLowerCase(),
+    label: riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1),
+    value: riskLevel,
   })),
 };
 
-export const REPORT_STATUS = ['In Progress', 'Quality Control', 'Manual Review'] as const;
+export const REPORT_STATUS_OPTIONS = [
+  'In Progress',
+  'Quality Control',
+  'Ready for Review',
+] as const;
+export const REPORT_STATUS_OPTIONS_WITH_FAILED = [...REPORT_STATUS_OPTIONS, 'Failed'] as const;
+export const REPORT_STATUS_TRANSLATIONS = {
+  'In Progress': 'in-progress',
+  'Quality Control': 'quality-control',
+  'Ready for Review': 'completed',
+  Failed: 'failed',
+} as const;
 
-export type TReportStatus = (typeof REPORT_STATUS)[number];
+export type TReportStatusOptions = (typeof REPORT_STATUS_OPTIONS)[number];
+export type TReportStatusOptionsWithFailed = (typeof REPORT_STATUS_OPTIONS_WITH_FAILED)[number];
+export type TReportStatusTranslations =
+  (typeof REPORT_STATUS_TRANSLATIONS)[keyof typeof REPORT_STATUS_TRANSLATIONS];
 
 export const STATUS_LEVEL_FILTER = {
   title: 'Status',
-  accessor: 'status',
-  options: REPORT_STATUS.map(status => ({
+  accessor: 'statuses',
+  options: REPORT_STATUS_OPTIONS.map(status => ({
     label: status,
-    value: status.toLowerCase(),
+    value: status,
   })),
 };
 
@@ -74,16 +88,15 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
     ])
     .catch('All'),
   riskLevel: z
-    .array(
-      z.enum(
-        RISK_LEVELS.map(riskLevel => riskLevel.toLowerCase()) as [TRiskLevel, ...TRiskLevel[]],
-      ),
-    )
+    .array(z.enum(RISK_LEVELS.map(riskLevel => riskLevel) as [TRiskLevel, ...TRiskLevel[]]))
     .catch([]),
   statuses: z
     .array(
       z.enum(
-        REPORT_STATUS.map(status => status.toLowerCase()) as [TReportStatus, ...TReportStatus[]],
+        REPORT_STATUS_OPTIONS.map(status => status) as [
+          TReportStatusOptions,
+          ...TReportStatusOptions[],
+        ],
       ),
     )
     .catch([]),

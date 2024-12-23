@@ -6,7 +6,7 @@ import {
   fetchLatestBusinessReport,
 } from '@/domains/business-reports/fetchers';
 import { MerchantReportType } from '@/domains/business-reports/constants';
-import { TReportStatus, TRiskLevel } from '@/pages/MerchantMonitoring/schemas';
+import { TReportStatusTranslations, TRiskLevel } from '@/pages/MerchantMonitoring/schemas';
 
 export const businessReportsQueryKey = createQueryKeys('business-reports', {
   list: ({
@@ -23,7 +23,7 @@ export const businessReportsQueryKey = createQueryKeys('business-reports', {
     sortBy: string;
     sortDir: string;
     riskLevel: TRiskLevel[];
-    statuses: TReportStatus[];
+    statuses: TReportStatusTranslations[];
     from?: string;
     to?: string;
   }) => ({

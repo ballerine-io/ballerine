@@ -29,7 +29,7 @@ const SCAN_TYPES = {
 } as const;
 
 const REPORT_STATUS_TO_DISPLAY_STATUS = {
-  [MERCHANT_REPORT_STATUSES_MAP.completed]: 'Manual Review',
+  [MERCHANT_REPORT_STATUSES_MAP.completed]: 'Ready for Review',
   [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: 'Quality Control',
 } as const;
 
