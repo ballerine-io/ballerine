@@ -10,8 +10,8 @@ export const fetchFindings = async () => {
     endpoint: `../external/business-reports/findings`,
     method: Method.GET,
     schema: z.object({ data: FindingsSchema }),
-    timeout: 30_000,
+    timeout: 300_000,
   });
 
-  return handleZodError(error, data);
+  return handleZodError(error, data?.data);
 };

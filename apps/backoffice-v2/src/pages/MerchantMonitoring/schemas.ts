@@ -28,34 +28,30 @@ export const RISK_LEVEL_FILTER = {
   })),
 };
 
-export const REPORT_STATUS_OPTIONS = [
-  'In Progress',
-  'Quality Control',
-  'Ready for Review',
-] as const;
-export const REPORT_STATUS_OPTIONS_WITH_FAILED = [...REPORT_STATUS_OPTIONS, 'Failed'] as const;
-export const REPORT_STATUS_TRANSLATIONS = {
+export const REPORT_STATUS_LABELS = ['In Progress', 'Quality Control', 'Ready for Review'] as const;
+
+export const REPORT_STATUS_LABEL_TO_VALUE_MAP = {
   'In Progress': 'in-progress',
   'Quality Control': 'quality-control',
   'Ready for Review': 'completed',
   Failed: 'failed',
 } as const;
 
-export type TReportStatusOptions = (typeof REPORT_STATUS_OPTIONS)[number];
-export type TReportStatusOptionsWithFailed = (typeof REPORT_STATUS_OPTIONS_WITH_FAILED)[number];
-export type TReportStatusTranslations =
-  (typeof REPORT_STATUS_TRANSLATIONS)[keyof typeof REPORT_STATUS_TRANSLATIONS];
+export type TReportStatusLabel = (typeof REPORT_STATUS_LABELS)[number];
+
+export type TReportStatusValue =
+  (typeof REPORT_STATUS_LABEL_TO_VALUE_MAP)[keyof typeof REPORT_STATUS_LABEL_TO_VALUE_MAP];
 
 export const STATUS_LEVEL_FILTER = {
   title: 'Status',
   accessor: 'statuses',
-  options: REPORT_STATUS_OPTIONS.map(status => ({
+  options: REPORT_STATUS_LABELS.map(status => ({
     label: status,
     value: status,
   })),
 };
 
-export const FindingsSchema = z.array(z.object({ value: z.string(), title: z.string() }));
+export const FindingsSchema = z.array(z.object({ value: z.string(), label: z.string() }));
 
 export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
   sortBy: z
@@ -93,13 +89,11 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
   statuses: z
     .array(
       z.enum(
-        REPORT_STATUS_OPTIONS.map(status => status) as [
-          TReportStatusOptions,
-          ...TReportStatusOptions[],
-        ],
+        REPORT_STATUS_LABELS.map(status => status) as [TReportStatusLabel, ...TReportStatusLabel[]],
       ),
     )
     .catch([]),
+  findings: z.array(z.string()).catch([]),
   from: z.string().date().optional(),
   to: z.string().date().optional(),
 });

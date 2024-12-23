@@ -86,6 +86,8 @@ export class BusinessReportControllerExternal {
       to,
       reportType,
       riskLevel,
+      statuses,
+      findings,
     }: BusinessReportListRequestParamDto,
   ) {
     const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
@@ -98,6 +100,8 @@ export class BusinessReportControllerExternal {
       from,
       to,
       riskLevel,
+      statuses,
+      findings,
       ...(reportType ? { reportType } : {}),
       ...(businessId ? { businessId } : {}),
       ...(search ? { searchQuery: search } : {}),

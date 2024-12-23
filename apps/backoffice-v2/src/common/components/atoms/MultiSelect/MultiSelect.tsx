@@ -111,7 +111,7 @@ export const MultiSelect = <
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0" align="start">
-        <Command>
+        <Command filter={(value, search) => (value.includes(search) ? 1 : 0)}>
           <CommandInput placeholder={title} />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>

@@ -74,7 +74,7 @@ export class MerchantMonitoringClient {
       headers: {
         Authorization: `Bearer ${env.UNIFIED_API_TOKEN ?? ''}`,
       },
-      timeout: 30_000,
+      timeout: 300_000,
     });
   }
 
@@ -199,6 +199,8 @@ export class MerchantMonitoringClient {
     page,
     reportType,
     riskLevel,
+    statuses,
+    findings,
     withoutUnpublishedOngoingReports,
     searchQuery,
   }: {
@@ -210,6 +212,8 @@ export class MerchantMonitoringClient {
     to?: string;
     reportType?: MerchantReportType;
     riskLevel?: Array<'low' | 'medium' | 'high' | 'critical'>;
+    statuses?: Array<'failed' | 'quality-control' | 'completed' | 'in-progress'>;
+    findings?: string[];
     withoutUnpublishedOngoingReports?: boolean;
     searchQuery?: string;
   }) {
@@ -222,6 +226,8 @@ export class MerchantMonitoringClient {
         to,
         riskLevel,
         page,
+        statuses,
+        findings,
         withoutUnpublishedOngoingReports,
         ...(searchQuery && { searchQuery }),
         ...(reportType && { reportType }),

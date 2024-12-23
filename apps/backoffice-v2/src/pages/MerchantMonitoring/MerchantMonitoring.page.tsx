@@ -48,12 +48,14 @@ export const MerchantMonitoring: FunctionComponent = () => {
     onReportTypeChange,
     onClearAllFilters,
     REPORT_TYPE_TO_DISPLAY_TEXT,
+    FINDINGS_FILTER,
     RISK_LEVEL_FILTER,
     STATUS_LEVEL_FILTER,
     handleFilterChange,
     handleFilterClear,
     riskLevel,
     statuses,
+    findings,
     multiselectProps,
   } = useMerchantMonitoringLogic();
 
@@ -121,7 +123,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
             from: dates.from ? new Date(dates.from) : undefined,
             to: dates.to ? new Date(dates.to) : undefined,
           }}
-          placeholder="Select date range"
+          placeholder="Select a date range"
           onChange={onDatesChange}
         />
         <DropdownMenu>
@@ -177,7 +179,16 @@ export const MerchantMonitoring: FunctionComponent = () => {
           onSelect={handleFilterChange(RISK_LEVEL_FILTER.accessor)}
           onClearSelect={handleFilterClear(RISK_LEVEL_FILTER.accessor)}
         />
-        <Button variant={`ghost`} className={`text-[#007AFF]`} onClick={onClearAllFilters}>
+        <MultiSelect
+          props={multiselectProps}
+          key={FINDINGS_FILTER.title}
+          title={FINDINGS_FILTER.title}
+          selectedValues={findings ?? []}
+          options={FINDINGS_FILTER.options}
+          onSelect={handleFilterChange(FINDINGS_FILTER.accessor)}
+          onClearSelect={handleFilterClear(FINDINGS_FILTER.accessor)}
+        />
+        <Button variant={`ghost`} className={`h-8 text-[#007AFF]`} onClick={onClearAllFilters}>
           Clear All
         </Button>
       </div>

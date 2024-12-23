@@ -17,7 +17,7 @@ export const useFindings = () => {
     localStorage.setItem('findings', JSON.stringify(data));
   }
 
-  let findings: Array<{ value: string; title: string }> = [];
+  let findings: Array<{ value: string; label: string }> = [];
   const findingsString = localStorage.getItem('findings');
 
   try {
@@ -33,7 +33,7 @@ export const useFindings = () => {
   }
 
   return {
-    findings: data ?? findings,
+    findings,
     isLoading: false,
   };
 };

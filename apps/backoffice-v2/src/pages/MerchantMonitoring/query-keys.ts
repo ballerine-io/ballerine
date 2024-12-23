@@ -4,6 +4,6 @@ import { fetchFindings } from '@/pages/MerchantMonitoring/fetchers';
 export const findingsQueryKey = createQueryKeys('findings', {
   list: () => ({
     queryKey: [{}],
-    queryFn: () => fetchFindings(),
+    queryFn: fetchFindings,
   }),
 });

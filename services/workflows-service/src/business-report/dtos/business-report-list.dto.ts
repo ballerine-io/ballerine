@@ -38,6 +38,18 @@ export class BusinessReportListRequestParamDto {
   @IsString({ each: true })
   @ApiProperty({ type: [String], required: false })
   riskLevel?: Array<'low' | 'medium' | 'high' | 'critical'>;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @ApiProperty({ type: [String], required: false })
+  statuses?: Array<'failed' | 'quality-control' | 'completed' | 'in-progress'>;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @ApiProperty({ type: [String], required: false })
+  findings?: string[];
 }
 
 export const ListBusinessReportsSchema = z.object({
@@ -50,6 +62,8 @@ export const ListBusinessReportsSchema = z.object({
     ])
     .optional(),
   riskLevel: z.array(z.enum(['low', 'medium', 'high', 'critical'])).optional(),
+  statuses: z.array(z.enum(['failed', 'quality-control', 'completed', 'in-progress'])).optional(),
+  findings: z.array(z.string()).optional(),
   search: z.string().optional(),
   page: z.object({
     number: z.coerce.number().int().positive(),

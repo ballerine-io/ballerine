@@ -16,7 +16,7 @@ import {
   REPORT_TYPE_TO_DISPLAY_TEXT,
   RISK_LEVEL_FILTER,
   STATUS_LEVEL_FILTER,
-  REPORT_STATUS_TRANSLATIONS,
+  REPORT_STATUS_LABEL_TO_VALUE_MAP,
 } from '@/pages/MerchantMonitoring/schemas';
 
 export const useMerchantMonitoringLogic = () => {
@@ -26,11 +26,11 @@ export const useMerchantMonitoringLogic = () => {
   const { search, debouncedSearch, onSearch } = useSearch();
 
   const [
-    { page, pageSize, sortBy, sortDir, reportType, riskLevel, statuses, from, to },
+    { page, pageSize, sortBy, sortDir, reportType, riskLevel, statuses, from, to, findings },
     setSearchParams,
   ] = useZodSearchParams(MerchantMonitoringSearchSchema);
 
-  const { findings } = useFindings();
+  const { findings: findingsOptions } = useFindings();
 
   const { data, isLoading: isLoadingBusinessReports } = useBusinessReportsQuery({
     reportType:
@@ -42,9 +42,10 @@ export const useMerchantMonitoringLogic = () => {
     pageSize,
     sortBy,
     sortDir,
+    findings,
     riskLevel: riskLevel ?? [],
     statuses: statuses
-      ?.map(status => REPORT_STATUS_TRANSLATIONS[status])
+      ?.map(status => REPORT_STATUS_LABEL_TO_VALUE_MAP[status])
       .flatMap(status => (status === 'quality-control' ? ['quality-control', 'failed'] : [status])),
     from,
     to: to ? dayjs(to).add(1, 'day').format('YYYY-MM-DD') : undefined,
@@ -79,6 +80,7 @@ export const useMerchantMonitoringLogic = () => {
       reportType: 'All',
       riskLevel: [],
       statuses: [],
+      findings: [],
       from: undefined,
       to: undefined,
       page: '1',
@@ -110,6 +112,15 @@ export const useMerchantMonitoringLogic = () => {
     [],
   );
 
+  const FINDINGS_FILTER = useMemo(
+    () => ({
+      title: 'Findings',
+      accessor: 'findings',
+      options: findingsOptions,
+    }),
+    [findingsOptions],
+  );
+
   return {
     totalPages: data?.totalPages || 0,
     totalItems: data?.totalItems || 0,
@@ -132,10 +143,12 @@ export const useMerchantMonitoringLogic = () => {
     REPORT_TYPE_TO_DISPLAY_TEXT,
     RISK_LEVEL_FILTER,
     STATUS_LEVEL_FILTER,
+    FINDINGS_FILTER,
     handleFilterChange,
     handleFilterClear,
     riskLevel,
     statuses,
+    findings,
     dates: { from, to },
     onDatesChange,
     onClearAllFilters,
