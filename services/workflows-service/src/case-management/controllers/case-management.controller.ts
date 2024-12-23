@@ -253,8 +253,6 @@ export class CaseManagementController {
       ubo: body,
       projectId,
     });
-
-    return;
   }
 
   @common.Delete('/workflows/:workflowId/ubos')
@@ -277,7 +275,5 @@ export class CaseManagementController {
       projectId,
       deletedBy: authenticatedEntity?.user?.id,
     });
-
-    return;
   }
 }

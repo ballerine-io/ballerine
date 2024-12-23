@@ -335,7 +335,7 @@ export const useKycBlock = ({
       .flat(1);
   };
 
-  const { mutate: mutateRunCheck } = useEventMutation();
+  const { mutate: mutateInitiateKyc } = useEventMutation();
 
   const getEvent = () => {
     if (childWorkflow?.nextEvents?.includes('start')) {
@@ -343,6 +343,16 @@ export const useKycBlock = ({
     }
   };
   const event = getEvent();
+  const onInitiateKyc = useCallback(() => {
+    if (!event) {
+      return;
+    }
+
+    mutateInitiateKyc({
+      workflowId: childWorkflow?.id,
+      event,
+    });
+  }, [mutateInitiateKyc, event, childWorkflow?.id]);
 
   const headerCell = createBlocksTyped()
     .addBlock()
@@ -367,16 +377,7 @@ export const useKycBlock = ({
           type: 'callToAction',
           value: {
             text: 'Initiate KYC',
-            onClick: () => {
-              if (!event) {
-                return;
-              }
-
-              mutateRunCheck({
-                workflowId: childWorkflow?.id,
-                event,
-              });
-            },
+            onClick: onInitiateKyc,
             props: {
               className:
                 'justify-self-end px-2 py-0 text-xs aria-disabled:pointer-events-none aria-disabled:opacity-50',

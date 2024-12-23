@@ -27,7 +27,6 @@ export const useCreateUboMutation = ({
         method: Method.POST,
         body: ubo,
         schema: z.undefined(),
-        timeout: 30000,
       });
 
       return handleZodError(error, data);

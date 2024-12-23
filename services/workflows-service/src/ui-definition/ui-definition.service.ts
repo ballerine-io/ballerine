@@ -1,5 +1,7 @@
-import { TranslationService } from '@/providers/translation/translation.service';
-import { ITranslationServiceResource } from '@/providers/translation/translation.service';
+import {
+  TranslationService,
+  ITranslationServiceResource,
+} from '@/providers/translation/translation.service';
 import type { AnyRecord, TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
