@@ -119,7 +119,7 @@ export class CollectionFlowService {
     };
   }
 
-  private getTranslationServiceResources(
+  getTranslationServiceResources(
     uiDefinition: UiDefinition & { locales?: unknown },
   ): ITranslationServiceResource[] | undefined {
     if (!uiDefinition.locales) return undefined;

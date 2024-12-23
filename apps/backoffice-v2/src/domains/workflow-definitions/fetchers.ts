@@ -77,6 +77,10 @@ export const WorkflowDefinitionByIdSchema = ObjectWithIdSchema.extend({
     })
     .optional()
     .nullable(),
+  uiDefinitions: z
+    .array(z.object({ id: z.string(), uiContext: z.string() }))
+    .optional()
+    .nullable(),
 });
 
 export type TWorkflowDefinitionById = z.infer<typeof WorkflowDefinitionByIdSchema>;
