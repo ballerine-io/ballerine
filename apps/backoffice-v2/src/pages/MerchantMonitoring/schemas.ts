@@ -19,31 +19,27 @@ export const RISK_LEVELS = ['Critical', 'High', 'Medium', 'Low'] as const;
 
 export type TRiskLevel = (typeof RISK_LEVELS)[number];
 
-export const RISK_LEVEL_FILTERS = [
-  {
-    title: 'Risk Level',
-    accessor: 'riskLevel',
-    options: RISK_LEVELS.map(riskLevel => ({
-      label: riskLevel,
-      value: riskLevel.toLowerCase(),
-    })),
-  },
-];
+export const RISK_LEVEL_FILTER = {
+  title: 'Risk Level',
+  accessor: 'riskLevel',
+  options: RISK_LEVELS.map(riskLevel => ({
+    label: riskLevel,
+    value: riskLevel.toLowerCase(),
+  })),
+};
 
 export const REPORT_STATUS = ['In Progress', 'Quality Control', 'Manual Review'] as const;
 
 export type TReportStatus = (typeof REPORT_STATUS)[number];
 
-export const STATUS_LEVEL_FILTERS = [
-  {
-    title: 'Status',
-    accessor: 'status',
-    options: REPORT_STATUS.map(status => ({
-      label: status,
-      value: status.toLowerCase(),
-    })),
-  },
-];
+export const STATUS_LEVEL_FILTER = {
+  title: 'Status',
+  accessor: 'status',
+  options: REPORT_STATUS.map(status => ({
+    label: status,
+    value: status.toLowerCase(),
+  })),
+};
 
 export const FindingsSchema = z.array(z.object({ value: z.string(), title: z.string() }));
 

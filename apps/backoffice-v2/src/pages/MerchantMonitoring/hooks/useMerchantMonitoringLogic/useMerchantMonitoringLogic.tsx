@@ -14,8 +14,8 @@ import {
   DISPLAY_TEXT_TO_MERCHANT_REPORT_TYPE,
   MerchantMonitoringSearchSchema,
   REPORT_TYPE_TO_DISPLAY_TEXT,
-  RISK_LEVEL_FILTERS,
-  STATUS_LEVEL_FILTERS,
+  RISK_LEVEL_FILTER,
+  STATUS_LEVEL_FILTER,
 } from '@/pages/MerchantMonitoring/schemas';
 
 export const useMerchantMonitoringLogic = () => {
@@ -127,8 +127,8 @@ export const useMerchantMonitoringLogic = () => {
     onReportTypeChange,
     multiselectProps,
     REPORT_TYPE_TO_DISPLAY_TEXT,
-    RISK_LEVEL_FILTERS,
-    STATUS_LEVEL_FILTERS,
+    RISK_LEVEL_FILTER,
+    STATUS_LEVEL_FILTER,
     handleFilterChange,
     handleFilterClear,
     riskLevel,

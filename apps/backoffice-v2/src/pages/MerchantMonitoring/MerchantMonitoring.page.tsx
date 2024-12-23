@@ -15,6 +15,7 @@ import {
   Skeleton,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
+  Badge,
 } from '@ballerine/ui';
 import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provider';
 import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
@@ -23,6 +24,7 @@ import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Conten
 import { t } from 'i18next';
 import { MultiSelect } from '@/common/components/atoms/MultiSelect/MultiSelect';
 import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
+import { Separator } from '@/common/components/atoms/Separator/Separator';
 
 export const MerchantMonitoring: FunctionComponent = () => {
   const {
@@ -46,8 +48,8 @@ export const MerchantMonitoring: FunctionComponent = () => {
     onReportTypeChange,
     onClearAllFilters,
     REPORT_TYPE_TO_DISPLAY_TEXT,
-    RISK_LEVEL_FILTERS,
-    STATUS_LEVEL_FILTERS,
+    RISK_LEVEL_FILTER,
+    STATUS_LEVEL_FILTER,
     handleFilterChange,
     handleFilterClear,
     riskLevel,
@@ -126,7 +128,21 @@ export const MerchantMonitoring: FunctionComponent = () => {
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className={`h-8 space-x-2.5 p-2 font-normal`}>
               <SlidersHorizontal className="mr-2 d-4" />
-              Type
+              <span>Type</span>
+              {reportType !== 'All' && (
+                <>
+                  <Separator orientation="vertical" className="mx-2 h-4" />
+                  <div className="hidden space-x-1 lg:flex">
+                    <Badge
+                      key={`${reportType}-badge`}
+                      variant="secondary"
+                      className="rounded-sm px-1 text-xs font-normal"
+                    >
+                      {reportType}
+                    </Badge>
+                  </div>
+                </>
+              )}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align={`start`}>
@@ -143,28 +159,24 @@ export const MerchantMonitoring: FunctionComponent = () => {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        {STATUS_LEVEL_FILTERS.map(({ title, accessor, options }) => (
-          <MultiSelect
-            key={title}
-            title={title}
-            options={options}
-            props={multiselectProps}
-            selectedValues={statuses ?? []}
-            onSelect={handleFilterChange(accessor)}
-            onClearSelect={handleFilterClear(accessor)}
-          />
-        ))}
-        {RISK_LEVEL_FILTERS.map(({ title, accessor, options }) => (
-          <MultiSelect
-            key={title}
-            title={title}
-            options={options}
-            props={multiselectProps}
-            selectedValues={riskLevel ?? []}
-            onSelect={handleFilterChange(accessor)}
-            onClearSelect={handleFilterClear(accessor)}
-          />
-        ))}
+        <MultiSelect
+          props={multiselectProps}
+          key={STATUS_LEVEL_FILTER.title}
+          selectedValues={statuses ?? []}
+          title={STATUS_LEVEL_FILTER.title}
+          options={STATUS_LEVEL_FILTER.options}
+          onSelect={handleFilterChange(STATUS_LEVEL_FILTER.accessor)}
+          onClearSelect={handleFilterClear(STATUS_LEVEL_FILTER.accessor)}
+        />
+        <MultiSelect
+          props={multiselectProps}
+          key={RISK_LEVEL_FILTER.title}
+          title={RISK_LEVEL_FILTER.title}
+          selectedValues={riskLevel ?? []}
+          options={RISK_LEVEL_FILTER.options}
+          onSelect={handleFilterChange(RISK_LEVEL_FILTER.accessor)}
+          onClearSelect={handleFilterClear(RISK_LEVEL_FILTER.accessor)}
+        />
         <Button variant={`ghost`} className={`text-[#007AFF]`} onClick={onClearAllFilters}>
           Clear All
         </Button>
