@@ -119,6 +119,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
             from: dates.from ? new Date(dates.from) : undefined,
             to: dates.to ? new Date(dates.to) : undefined,
           }}
+          placeholder="Select date range"
           onChange={onDatesChange}
         />
         <DropdownMenu>
