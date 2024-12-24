@@ -1,0 +1,61 @@
+{{- if and .Values.workflowService.prismaMigrate.enabled (not .Values.workflowService.migration) -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.workflowService.nameOverride }}-prisma-migrate
+  labels:
+    app: {{ .Values.workflowService.nameOverride }}-prisma-migrate
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    helm.sh/hook: post-install,post-upgrade
+    argocd.argoproj.io/sync-wave: "-100"
+    helm.sh/hook-weight: "-100"
+spec:
+  template:
+    spec:
+      {{- with .Values.workflowService.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Values.workflowService.nameOverride }}
+      restartPolicy: Never
+      containers:
+      - name: {{ .Chart.Name }}
+        securityContext:
+          {{- toYaml .Values.workflowService.securityContext | nindent 12 }}
+        image: "{{ .Values.workflowService.prismaMigrate.image.repository }}:{{ .Values.workflowService.prismaMigrate.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.workflowService.image.pullPolicy }}
+        command: {{ .Values.workflowService.prismaMigrate.image.command | toYaml | nindent 12 }}
+        args: {{ .Values.workflowService.prismaMigrate.image.args | toYaml | nindent 12 }}
+        {{- with .Values.workflowService.image.env }}
+        env:
+        {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- with .Values.workflowService.prismaMigrate.envFrom }}
+        envFrom:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.workflowService.resources | nindent 12 }}
+        {{- with .Values.workflowService.volumeMounts }}
+        volumeMounts:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+      {{- with .Values.workflowService.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.workflowService.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.workflowService.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.workflowService.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  backoffLimit: {{ .Values.workflowService.backoffLimit }}
+{{- end }}

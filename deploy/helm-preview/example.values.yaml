@@ -208,6 +208,69 @@ workflowService:
     maxUnavailable: '0'
   nameOverride: workflowservice
   migration: true
+  prismaMigrate:
+    envFrom: []
+    enabled: false
+    image:
+      repository: ""
+      args: []
+      pullPolicy: ""
+      tag: ""
+      command: []
+  dbMigrate:
+    envFrom: []
+    enabled: false
+    image:
+      tag: ""
+      command: []
+  dataSync:
+    envFrom: []
+    enabled: false
+    image:
+      tag: ""
+      command: []
+  # prismaMigrate:
+  #   enabled: true
+  #   image:
+  #     command:
+  #       - dumb-init
+  #       - npm
+  #       - run
+  #       - db:migrate-up
+  #     tag: dev
+  #   envFrom:
+  #     - secretRef:
+  #         name: wf-dev-secret-manager
+  # dbMigrate:
+  #   enabled: true
+  #   image:
+  #     command:
+  #       - dumb-init
+  #       - npm
+  #       - run
+  #       - db:data-migration:migrate
+  #     tag: dev
+  #   envFrom:
+  #     - secretRef:
+  #         name: wf-dev-secret-manager
+  # dataSync:
+  #   enabled: true
+  #   image:
+  #     command:
+  #       - dumb-init
+  #       - npm
+  #       - run
+  #       - db:data-sync
+  #     tag: dev
+  #   envFrom:
+  #     - secretRef:
+  #         name: wf-dev-secret-manager
+  serviceAccount:
+    create: true
+    automount: true
+    annotations:
+      eks.amazonaws.com/role-arn: ""
+    name: "workflowservice"
   service:
     port: 3000
     type: ClusterIP

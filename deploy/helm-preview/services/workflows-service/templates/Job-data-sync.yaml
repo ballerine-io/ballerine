@@ -1,0 +1,70 @@
+{{- if and .Values.workflowService.dataSync.enabled (not .Values.workflowService.migration) -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.workflowService.nameOverride }}-db-data-sync
+  labels:
+    app: {{ .Values.workflowService.nameOverride }}-db-data-sync
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    helm.sh/hook: post-install,post-upgrade
+    argocd.argoproj.io/sync-wave: "200"
+    helm.sh/hook-weight: "200"
+spec:
+  template:
+    spec:
+      {{- with .Values.workflowService.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Values.workflowService.serviceAccount.name }}
+      restartPolicy: Never
+      {{- if .Values.workflowService.dbMigrate.enabled }}
+      initContainers:
+        - name: wait-for-migration
+          image: pegasystems/k8s-wait-for:latest
+          imagePullPolicy: IfNotPresent
+          args: 
+          - "job"
+          - "{{ .Values.workflowService.nameOverride }}-db-data-migrations"
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}
+        securityContext:
+          {{- toYaml .Values.workflowService.securityContext | nindent 12 }}
+        image: "{{ .Values.workflowService.dataSync.image.repository }}:{{ .Values.workflowService.dataSync.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.workflowService.image.pullPolicy }}
+        command: {{ .Values.workflowService.dataSync.image.command | toYaml | nindent 12 }}
+        args: {{ .Values.workflowService.image.args | toYaml | nindent 12 }}
+        {{- with .Values.workflowService.image.env }}
+        env:
+        {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- with .Values.workflowService.dataSync.envFrom }}
+        envFrom:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.workflowService.resources | nindent 12 }}
+        {{- with .Values.workflowService.volumeMounts }}
+        volumeMounts:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+      {{- with .Values.workflowService.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.workflowService.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.workflowService.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.workflowService.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  backoffLimit: {{ .Values.workflowService.backoffLimit }}
+{{- end }}

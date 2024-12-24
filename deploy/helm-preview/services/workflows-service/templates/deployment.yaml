@@ -39,7 +39,7 @@ spec:
               image: alpine:latest
               command: ['sh', '-c', "apk add postgresql-client; until pg_isready -h {{ .Release.Name }}-postgresql.{{.Release.Namespace}}.svc.cluster.local; do echo waiting for postgresql; sleep 2; done"]
             {{- end }}
-            {{- if .Values.workflowService.migration }}
+            {{- if and .Values.workflowService.migration (not .Values.workflowService.dbMigrate.enabled) }}
             - name: migration-init-container
               image: {{ .Values.workflowService.image.registry }}/{{ .Values.workflowService.image.repository }}:{{ .Values.workflowService.image.tag }}
               command: ['npm','run','db:init']
@@ -47,6 +47,15 @@ spec:
               envFrom:
               {{- toYaml . | nindent 14 }}
               {{- end }}
+            {{- end }}
+            {{- if .Values.workflowService.prismaMigrate.enabled }}
+            initContainers:
+              - name: wait-for-migration
+                image: pegasystems/k8s-wait-for:latest
+                imagePullPolicy: IfNotPresent
+                args: 
+                - "job"
+                - "{{ .Values.workflowService.nameOverride }}-prisma-migrate"
             {{- end }}
             containers:
             - name: {{ .Values.workflowService.nameOverride }}
