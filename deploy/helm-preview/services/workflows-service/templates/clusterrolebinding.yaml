@@ -3,6 +3,11 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: {{ .Values.workflowService.nameOverride }}
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    helm.sh/hook: post-install,post-upgrade
+    argocd.argoproj.io/sync-wave: "-150"
+    helm.sh/hook-weight: "-150"
 subjects:
   - kind: ServiceAccount
     name: {{ .Values.workflowService.serviceAccount.name }}
