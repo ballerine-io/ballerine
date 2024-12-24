@@ -1,5 +1,14 @@
 # @ballerine/react-pdf-toolkit
 
+## 1.2.51
+
+### Patch Changes
+
+- core
+- Updated dependencies
+  - @ballerine/config@1.1.28
+  - @ballerine/ui@0.5.51
+
 ## 1.2.50
 
 ### Patch Changes
