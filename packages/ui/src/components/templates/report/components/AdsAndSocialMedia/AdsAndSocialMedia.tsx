@@ -2,7 +2,6 @@ import React, { FunctionComponent } from 'react';
 import { Card, CardContent, CardHeader } from '@/components';
 import { TextWithNAFallback } from '@/components/atoms/TextWithNAFallback';
 import { ctw } from '@/common';
-import { AdExample } from '../AdExample';
 import { AdImageWithLink } from '../AdImageWithLink';
 import { toTitleCase } from 'string-ts';
 import { AnchorIfUrl } from '@/components/atoms/AnchorIfUrl';
@@ -87,18 +86,19 @@ export const AdsAndSocialMedia: FunctionComponent<{
           </div>
         </CardContent>
       </Card>
-      <Card>
-        <CardHeader className={'pt-4 font-bold'}>Related Ads</CardHeader>
-        <CardContent className={'flex flex-col space-y-4'}>
-          <div className={'grid grid-cols-[400px_400px] gap-8'}>
-            {!!relatedAdsImages?.length &&
-              relatedAdsImages.map(({ src, link }, index) => (
-                <AdExample key={src} src={src} link={link} alt={`Ad Example ${index + 1}`} />
-              ))}
-            {!relatedAdsImages?.length && <>No ads detected.</>}
-          </div>
-        </CardContent>
-      </Card>
+      {/*Hiding this for now, will be added back in later*/}
+      {/*<Card>*/}
+      {/*  <CardHeader className={'pt-4 font-bold'}>Related Ads</CardHeader>*/}
+      {/*  <CardContent className={'flex flex-col space-y-4'}>*/}
+      {/*    <div className={'grid grid-cols-[400px_400px] gap-8'}>*/}
+      {/*      {!!relatedAdsImages?.length &&*/}
+      {/*        relatedAdsImages.map(({ src, link }, index) => (*/}
+      {/*          <AdExample key={src} src={src} link={link} alt={`Ad Example ${index + 1}`} />*/}
+      {/*        ))}*/}
+      {/*      {!relatedAdsImages?.length && <>No ads detected.</>}*/}
+      {/*    </div>*/}
+      {/*  </CardContent>*/}
+      {/*</Card>*/}
     </div>
   );
 };
