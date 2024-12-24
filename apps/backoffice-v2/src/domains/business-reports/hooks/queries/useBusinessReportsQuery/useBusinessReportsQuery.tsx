@@ -13,19 +13,19 @@ export const useBusinessReportsQuery = ({
   pageSize,
   sortBy,
   sortDir,
-  riskLevel,
+  riskLevels,
   statuses,
   findings,
   from,
   to,
 }: {
-  reportType: MerchantReportType | 'All';
+  reportType?: MerchantReportType;
   search: string;
   page: number;
   pageSize: number;
   sortBy: string;
   sortDir: string;
-  riskLevel: TRiskLevel[];
+  riskLevels: TRiskLevel[];
   statuses: TReportStatusValue[];
   findings: string[];
   from?: string;
@@ -41,7 +41,7 @@ export const useBusinessReportsQuery = ({
       pageSize,
       sortBy,
       sortDir,
-      riskLevel,
+      riskLevels,
       statuses,
       findings,
       from,

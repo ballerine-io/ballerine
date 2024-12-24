@@ -26,30 +26,46 @@ export const useMerchantMonitoringLogic = () => {
   const { search, debouncedSearch, onSearch } = useSearch();
 
   const [
-    { page, pageSize, sortBy, sortDir, reportType, riskLevel, statuses, from, to, findings },
+    { page, pageSize, sortBy, sortDir, reportType, riskLevels, statuses, from, to, findings },
     setSearchParams,
   ] = useZodSearchParams(MerchantMonitoringSearchSchema);
 
-  const { findings: findingsOptions } = useFindings();
+  const { findings: findingsOptions, isLoading: isLoadingFindings } = useFindings();
 
   const { data, isLoading: isLoadingBusinessReports } = useBusinessReportsQuery({
-    reportType:
-      DISPLAY_TEXT_TO_MERCHANT_REPORT_TYPE[
-        reportType as keyof typeof DISPLAY_TEXT_TO_MERCHANT_REPORT_TYPE
-      ],
+    ...(reportType !== 'All' && {
+      reportType:
+        DISPLAY_TEXT_TO_MERCHANT_REPORT_TYPE[
+          reportType as keyof typeof DISPLAY_TEXT_TO_MERCHANT_REPORT_TYPE
+        ],
+    }),
     search: debouncedSearch,
     page,
     pageSize,
     sortBy,
     sortDir,
     findings,
-    riskLevel: riskLevel ?? [],
+    riskLevels: riskLevels ?? [],
     statuses: statuses
       ?.map(status => REPORT_STATUS_LABEL_TO_VALUE_MAP[status])
       .flatMap(status => (status === 'quality-control' ? ['quality-control', 'failed'] : [status])),
     from,
     to: to ? dayjs(to).add(1, 'day').format('YYYY-MM-DD') : undefined,
   });
+
+  const isClearAllButtonVisible = useMemo(
+    () =>
+      !!(
+        search !== '' ||
+        from ||
+        to ||
+        reportType !== 'All' ||
+        statuses.length ||
+        riskLevels.length ||
+        findings.length
+      ),
+    [findings.length, from, reportType, riskLevels.length, search, statuses.length, to],
+  );
 
   const onReportTypeChange = (reportType: keyof typeof REPORT_TYPE_TO_DISPLAY_TEXT) => {
     setSearchParams({ reportType: REPORT_TYPE_TO_DISPLAY_TEXT[reportType] });
@@ -78,7 +94,7 @@ export const useMerchantMonitoringLogic = () => {
   const onClearAllFilters = useCallback(() => {
     setSearchParams({
       reportType: 'All',
-      riskLevel: [],
+      riskLevels: [],
       statuses: [],
       findings: [],
       from: undefined,
@@ -128,6 +144,8 @@ export const useMerchantMonitoringLogic = () => {
     createBusinessReportBatch: customer?.features?.createBusinessReportBatch,
     businessReports: data?.data || [],
     isLoadingBusinessReports,
+    isLoadingFindings,
+    isClearAllButtonVisible,
     search,
     onSearch,
     page,
@@ -146,7 +164,7 @@ export const useMerchantMonitoringLogic = () => {
     FINDINGS_FILTER,
     handleFilterChange,
     handleFilterClear,
-    riskLevel,
+    riskLevels,
     statuses,
     findings,
     dates: { from, to },

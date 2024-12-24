@@ -6,7 +6,7 @@ import { FindingsSchema } from '@/pages/MerchantMonitoring/schemas';
 export const useFindings = () => {
   const isAuthenticated = useIsAuthenticated();
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     ...findingsQueryKey.list(),
     enabled: isAuthenticated,
     staleTime: 100_000,
@@ -34,6 +34,6 @@ export const useFindings = () => {
 
   return {
     findings,
-    isLoading: false,
+    isLoading,
   };
 };

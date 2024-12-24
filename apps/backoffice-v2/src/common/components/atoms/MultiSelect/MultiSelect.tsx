@@ -31,6 +31,9 @@ interface IMultiSelectProps<
   onClearSelect: () => void;
   options: TOption[];
   props?: {
+    content?: {
+      className?: string;
+    };
     trigger?: {
       leftIcon?: JSX.Element;
       rightIcon?: JSX.Element;
@@ -110,7 +113,7 @@ export const MultiSelect = <
           {props?.trigger?.rightIcon}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0" align="start">
+      <PopoverContent className={ctw(`w-[200px] p-0`, props?.content?.className)} align="start">
         <Command filter={(value, search) => (value.includes(search) ? 1 : 0)}>
           <CommandInput placeholder={title} />
           <CommandList>

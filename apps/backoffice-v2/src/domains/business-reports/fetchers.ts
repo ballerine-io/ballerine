@@ -86,12 +86,9 @@ export const fetchLatestBusinessReport = async ({
   return handleZodError(error, data);
 };
 
-export const fetchBusinessReports = async ({
-  reportType,
-  ...params
-}: {
-  reportType: MerchantReportType | 'All';
-  riskLevel: TRiskLevel[];
+export const fetchBusinessReports = async (params: {
+  reportType?: MerchantReportType;
+  riskLevels: TRiskLevel[];
   statuses: TReportStatusValue[];
   findings: string[];
   from?: string;
@@ -102,13 +99,7 @@ export const fetchBusinessReports = async ({
   };
   orderBy: string;
 }) => {
-  const queryParams = qs.stringify(
-    {
-      ...params,
-      ...(reportType !== 'All' && { reportType }),
-    },
-    { encode: false },
-  );
+  const queryParams = qs.stringify(params, { encode: false });
 
   const [data, error] = await apiClient({
     endpoint: `../external/business-reports/?${queryParams}`,

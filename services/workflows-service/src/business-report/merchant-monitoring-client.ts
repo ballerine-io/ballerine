@@ -198,7 +198,7 @@ export class MerchantMonitoringClient {
     to,
     page,
     reportType,
-    riskLevel,
+    riskLevels,
     statuses,
     findings,
     withoutUnpublishedOngoingReports,
@@ -211,7 +211,7 @@ export class MerchantMonitoringClient {
     from?: string;
     to?: string;
     reportType?: MerchantReportType;
-    riskLevel?: Array<'low' | 'medium' | 'high' | 'critical'>;
+    riskLevels?: Array<'low' | 'medium' | 'high' | 'critical'>;
     statuses?: Array<'failed' | 'quality-control' | 'completed' | 'in-progress'>;
     findings?: string[];
     withoutUnpublishedOngoingReports?: boolean;
@@ -224,7 +224,7 @@ export class MerchantMonitoringClient {
         limit,
         from,
         to,
-        riskLevel,
+        riskLevels,
         page,
         statuses,
         findings,

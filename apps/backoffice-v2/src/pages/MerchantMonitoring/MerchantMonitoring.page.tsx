@@ -5,7 +5,7 @@ import { useMerchantMonitoringLogic } from '@/pages/MerchantMonitoring/hooks/use
 import { NoBusinessReports } from '@/pages/MerchantMonitoring/components/NoBusinessReports/NoBusinessReports';
 import { MerchantMonitoringTable } from '@/pages/MerchantMonitoring/components/MerchantMonitoringTable/MerchantMonitoringTable';
 import { buttonVariants } from '@/common/components/atoms/Button/Button';
-import { Plus, SlidersHorizontal, Table2 } from 'lucide-react';
+import { Loader2, Plus, SlidersHorizontal, Table2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Search } from '@/common/components/molecules/Search';
 import {
@@ -30,6 +30,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
   const {
     businessReports,
     isLoadingBusinessReports,
+    isLoadingFindings,
     search,
     onSearch,
     totalPages,
@@ -53,10 +54,11 @@ export const MerchantMonitoring: FunctionComponent = () => {
     STATUS_LEVEL_FILTER,
     handleFilterChange,
     handleFilterClear,
-    riskLevel,
+    riskLevels,
     statuses,
     findings,
     multiselectProps,
+    isClearAllButtonVisible,
   } = useMerchantMonitoringLogic();
 
   return (
@@ -174,13 +176,13 @@ export const MerchantMonitoring: FunctionComponent = () => {
           props={multiselectProps}
           key={RISK_LEVEL_FILTER.title}
           title={RISK_LEVEL_FILTER.title}
-          selectedValues={riskLevel ?? []}
+          selectedValues={riskLevels ?? []}
           options={RISK_LEVEL_FILTER.options}
           onSelect={handleFilterChange(RISK_LEVEL_FILTER.accessor)}
           onClearSelect={handleFilterClear(RISK_LEVEL_FILTER.accessor)}
         />
         <MultiSelect
-          props={multiselectProps}
+          props={{ ...multiselectProps, content: { className: 'w-[400px]' } }}
           key={FINDINGS_FILTER.title}
           title={FINDINGS_FILTER.title}
           selectedValues={findings ?? []}
@@ -188,13 +190,26 @@ export const MerchantMonitoring: FunctionComponent = () => {
           onSelect={handleFilterChange(FINDINGS_FILTER.accessor)}
           onClearSelect={handleFilterClear(FINDINGS_FILTER.accessor)}
         />
-        <Button variant={`ghost`} className={`h-8 text-[#007AFF]`} onClick={onClearAllFilters}>
-          Clear All
-        </Button>
+        {isClearAllButtonVisible && (
+          <Button
+            variant={`ghost`}
+            className={`h-8 select-none p-0 text-[#007AFF] hover:bg-transparent hover:text-[#005BB2]`}
+            onClick={onClearAllFilters}
+          >
+            Clear All
+          </Button>
+        )}
       </div>
-      <div className="flex flex-1 flex-col gap-6 overflow-auto">
-        {isNonEmptyArray(businessReports) && <MerchantMonitoringTable data={businessReports} />}
-        {Array.isArray(businessReports) && !businessReports.length && !isLoadingBusinessReports && (
+      <div className="flex w-full flex-1 flex-col gap-6 overflow-auto pt-4">
+        {isLoadingBusinessReports && (
+          <div className={`flex h-full w-full items-center justify-center`}>
+            <Loader2 className={`animate-spin d-[60px]`} />
+          </div>
+        )}
+        {!isLoadingBusinessReports && isNonEmptyArray(businessReports) && (
+          <MerchantMonitoringTable data={businessReports} />
+        )}
+        {!isLoadingBusinessReports && Array.isArray(businessReports) && !businessReports.length && (
           <NoBusinessReports />
         )}
         <div className={`mt-auto flex items-center gap-x-2`}>

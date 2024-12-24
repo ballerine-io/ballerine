@@ -3,7 +3,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsOptional, IsString } from 'class-validator';
 
 import { PageDto } from '@/common/dto';
-import { MERCHANT_REPORT_TYPES_MAP, type MerchantReportType } from '@/business-report/constants';
+import {
+  MERCHANT_REPORT_RISK_LEVELS,
+  MERCHANT_REPORT_STATUSES_MAP,
+  MERCHANT_REPORT_TYPES_MAP,
+  type MerchantReportType,
+} from '@/business-report/constants';
 import { BusinessReportDto } from '@/business-report/dtos/business-report.dto';
 
 export class BusinessReportListRequestParamDto {
@@ -37,7 +42,7 @@ export class BusinessReportListRequestParamDto {
   @IsArray()
   @IsString({ each: true })
   @ApiProperty({ type: [String], required: false })
-  riskLevel?: Array<'low' | 'medium' | 'high' | 'critical'>;
+  riskLevels?: Array<'low' | 'medium' | 'high' | 'critical'>;
 
   @IsOptional()
   @IsArray()
@@ -61,8 +66,26 @@ export const ListBusinessReportsSchema = z.object({
       MERCHANT_REPORT_TYPES_MAP.ONGOING_MERCHANT_REPORT_T1,
     ])
     .optional(),
-  riskLevel: z.array(z.enum(['low', 'medium', 'high', 'critical'])).optional(),
-  statuses: z.array(z.enum(['failed', 'quality-control', 'completed', 'in-progress'])).optional(),
+  riskLevels: z
+    .array(
+      z.enum([
+        MERCHANT_REPORT_RISK_LEVELS.low,
+        MERCHANT_REPORT_RISK_LEVELS.medium,
+        MERCHANT_REPORT_RISK_LEVELS.high,
+        MERCHANT_REPORT_RISK_LEVELS.critical,
+      ]),
+    )
+    .optional(),
+  statuses: z
+    .array(
+      z.enum([
+        MERCHANT_REPORT_STATUSES_MAP.failed,
+        MERCHANT_REPORT_STATUSES_MAP.completed,
+        MERCHANT_REPORT_STATUSES_MAP['in-progress'],
+        MERCHANT_REPORT_STATUSES_MAP['quality-control'],
+      ]),
+    )
+    .optional(),
   findings: z.array(z.string()).optional(),
   search: z.string().optional(),
   page: z.object({

@@ -10,18 +10,29 @@ export const REPORT_TYPE_TO_DISPLAY_TEXT = {
 } as const;
 
 export const DISPLAY_TEXT_TO_MERCHANT_REPORT_TYPE = {
-  All: 'All',
   Onboarding: 'MERCHANT_REPORT_T1',
   Monitoring: 'ONGOING_MERCHANT_REPORT_T1',
 } as const;
 
-export const RISK_LEVELS = ['critical', 'high', 'medium', 'low'] as const;
+export const RISK_LEVELS_MAP = {
+  low: 'low',
+  medium: 'medium',
+  high: 'high',
+  critical: 'critical',
+};
+
+export const RISK_LEVELS = [
+  RISK_LEVELS_MAP.low,
+  RISK_LEVELS_MAP.medium,
+  RISK_LEVELS_MAP.high,
+  RISK_LEVELS_MAP.critical,
+] as const;
 
 export type TRiskLevel = (typeof RISK_LEVELS)[number];
 
 export const RISK_LEVEL_FILTER = {
   title: 'Risk Level',
-  accessor: 'riskLevel',
+  accessor: 'riskLevels',
   options: RISK_LEVELS.map(riskLevel => ({
     label: riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1),
     value: riskLevel,
@@ -83,7 +94,7 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
       ]),
     ])
     .catch('All'),
-  riskLevel: z
+  riskLevels: z
     .array(z.enum(RISK_LEVELS.map(riskLevel => riskLevel) as [TRiskLevel, ...TRiskLevel[]]))
     .catch([]),
   statuses: z
