@@ -17,7 +17,7 @@ export const useMerchantMonitoringTableLogic = () => {
     return (
       <Link
         to={`/${locale}/merchant-monitoring/${cell.row.id}`}
-        className={`d-full flex p-4`}
+        className={`d-full flex p-1`}
         onClick={onClick}
       >
         {children}

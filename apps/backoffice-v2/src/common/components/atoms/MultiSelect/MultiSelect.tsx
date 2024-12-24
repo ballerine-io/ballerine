@@ -1,4 +1,5 @@
-import { ReactNode, useCallback, useState } from 'react';
+import { CheckIcon, PlusCircledIcon } from '@radix-ui/react-icons';
+import { ReactNode, useCallback } from 'react';
 import {
   Badge,
   Button,
@@ -14,7 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@ballerine/ui';
-import { CheckIcon, PlusCircledIcon } from '@radix-ui/react-icons';
+
 import { Separator } from '@/common/components/atoms/Separator/Separator';
 
 interface IMultiSelectProps<
@@ -29,6 +30,19 @@ interface IMultiSelectProps<
   onSelect: (value: Array<TOption['value']>) => void;
   onClearSelect: () => void;
   options: TOption[];
+  props?: {
+    content?: {
+      className?: string;
+    };
+    trigger?: {
+      leftIcon?: JSX.Element;
+      rightIcon?: JSX.Element;
+      className?: string;
+      title?: {
+        className?: string;
+      };
+    };
+  };
 }
 
 export const MultiSelect = <
@@ -39,13 +53,12 @@ export const MultiSelect = <
   },
 >({
   title,
-  selectedValues,
+  selectedValues: selected,
   onSelect,
   onClearSelect,
   options,
+  props,
 }: IMultiSelectProps<TOption>) => {
-  const [selected, setSelected] = useState(selectedValues);
-
   const onSelectChange = useCallback(
     (value: TOption['value']) => {
       const isSelected = selected.some(selectedValue => selectedValue === value);
@@ -53,18 +66,23 @@ export const MultiSelect = <
         ? selected.filter(selectedValue => selectedValue !== value)
         : [...selected, value];
 
-      setSelected(nextSelected);
       onSelect(nextSelected);
     },
     [onSelect, selected],
   );
 
+  const TriggerLeftIcon = props?.trigger?.leftIcon ?? <PlusCircledIcon className="mr-2 h-4 w-4" />;
+
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 border">
-          <PlusCircledIcon className="mr-2 h-4 w-4" />
-          {title}
+        <Button
+          variant="outline"
+          size="sm"
+          className={ctw(`h-8 border`, props?.trigger?.className)}
+        >
+          {TriggerLeftIcon}
+          <span className={ctw(props?.trigger?.title?.className)}>{title}</span>
           {selected?.length > 0 && (
             <>
               <Separator orientation="vertical" className="mx-2 h-4" />
@@ -81,8 +99,8 @@ export const MultiSelect = <
                     .filter(option => selected.some(value => value === option.value))
                     .map(option => (
                       <Badge
-                        variant="secondary"
                         key={option.value}
+                        variant="secondary"
                         className="rounded-sm px-1 font-normal"
                       >
                         {option.label}
@@ -92,10 +110,11 @@ export const MultiSelect = <
               </div>
             </>
           )}
+          {props?.trigger?.rightIcon}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0" align="start">
-        <Command>
+      <PopoverContent className={ctw(`w-[200px] p-0`, props?.content?.className)} align="start">
+        <Command filter={(value, search) => (value.includes(search) ? 1 : 0)}>
           <CommandInput placeholder={title} />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
@@ -104,7 +123,11 @@ export const MultiSelect = <
                 const isSelected = selected.some(value => value === option.value);
 
                 return (
-                  <CommandItem key={option.value} onSelect={() => onSelectChange(option.value)}>
+                  <CommandItem
+                    key={option.value}
+                    onSelect={() => onSelectChange(option.value)}
+                    className={`cursor-pointer`}
+                  >
                     <div
                       className={ctw(
                         'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
@@ -126,11 +149,8 @@ export const MultiSelect = <
                 <CommandSeparator />
                 <CommandGroup>
                   <CommandItem
-                    onSelect={() => {
-                      onClearSelect();
-                      setSelected([]);
-                    }}
-                    className="justify-center text-center"
+                    onSelect={onClearSelect}
+                    className="cursor-pointer justify-center text-center"
                   >
                     Clear filters
                   </CommandItem>

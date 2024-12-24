@@ -23,19 +23,21 @@ import {
   BusinessReportListRequestParamDto,
   BusinessReportListResponseDto,
   ListBusinessReportsSchema,
-} from '@/business-report/business-report-list.dto';
+} from '@/business-report/dtos/business-report-list.dto';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
-import { CreateBusinessReportDto } from '@/business-report/dto/create-business-report.dto';
+import { CreateBusinessReportDto } from '@/business-report/dtos/create-business-report.dto';
 import { Business } from '@prisma/client';
-import { BusinessReportDto } from '@/business-report/business-report.dto';
+import { BusinessReportDto } from '@/business-report/dtos/business-report.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { fileFilter } from '@/storage/file-filter';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
-import { CreateBusinessReportBatchBodyDto } from '@/business-report/dto/create-business-report-batch-body.dto';
+import { CreateBusinessReportBatchBodyDto } from '@/business-report/dtos/create-business-report-batch-body.dto';
 import type { Response } from 'express';
 import { PrismaService } from '@/prisma/prisma.service';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
+import { BusinessReportFindingsListResponseDto } from '@/business-report/dtos/business-report-findings.dto';
+import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Business Reports')
@@ -46,7 +48,8 @@ export class BusinessReportControllerExternal {
     protected readonly logger: AppLoggerService,
     protected readonly customerService: CustomerService,
     protected readonly businessService: BusinessService,
-    private readonly prisma: PrismaService,
+    private readonly prismaService: PrismaService,
+    private readonly merchantMonitoringClient: MerchantMonitoringClient,
   ) {}
 
   @common.Get('/latest')
@@ -74,7 +77,18 @@ export class BusinessReportControllerExternal {
   @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
   async listBusinessReports(
     @CurrentProject() currentProjectId: TProjectId,
-    @Query() { businessId, page, search }: BusinessReportListRequestParamDto,
+    @Query()
+    {
+      businessId,
+      page,
+      search,
+      from,
+      to,
+      reportType,
+      riskLevels,
+      statuses,
+      findings,
+    }: BusinessReportListRequestParamDto,
   ) {
     const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
 
@@ -82,10 +96,23 @@ export class BusinessReportControllerExternal {
       withoutUnpublishedOngoingReports: true,
       limit: page.size,
       page: page.number,
-      customerId: customerId,
+      customerId,
+      from,
+      to,
+      riskLevels,
+      statuses,
+      findings,
+      ...(reportType ? { reportType } : {}),
       ...(businessId ? { businessId } : {}),
       ...(search ? { searchQuery: search } : {}),
     });
+  }
+
+  @common.Get('/findings')
+  @swagger.ApiOkResponse({ type: BusinessReportFindingsListResponseDto })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async listFindings() {
+    return await this.merchantMonitoringClient.listFindings();
   }
 
   @common.Post()
@@ -160,7 +187,7 @@ export class BusinessReportControllerExternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiExcludeEndpoint()
   async list() {
-    return await this.prisma.businessReport.findMany({
+    return await this.prismaService.businessReport.findMany({
       include: {
         project: {
           include: {
