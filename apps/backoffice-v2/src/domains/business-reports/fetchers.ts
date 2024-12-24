@@ -1,10 +1,13 @@
-import { z } from 'zod';
-import { apiClient } from '@/common/api-client/api-client';
-import { Method } from '@/common/enums';
-import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import qs from 'qs';
-import { toast } from 'sonner';
+import { z } from 'zod';
 import { t } from 'i18next';
+import { toast } from 'sonner';
+import { UnknownRecord } from 'type-fest';
+
+import { Method } from '@/common/enums';
+import { apiClient } from '@/common/api-client/api-client';
+import { TReportStatusValue, TRiskLevel } from '@/pages/MerchantMonitoring/schemas';
+import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import {
   MERCHANT_REPORT_STATUSES,
   MERCHANT_REPORT_STATUSES_MAP,
@@ -13,7 +16,6 @@ import {
   MerchantReportType,
   MerchantReportVersion,
 } from '@/domains/business-reports/constants';
-import { UnknownRecord } from 'type-fest';
 
 export const BusinessReportSchema = z
   .object({
@@ -84,24 +86,20 @@ export const fetchLatestBusinessReport = async ({
   return handleZodError(error, data);
 };
 
-export const fetchBusinessReports = async ({
-  reportType,
-  ...params
-}: {
-  reportType: MerchantReportType;
+export const fetchBusinessReports = async (params: {
+  reportType?: MerchantReportType;
+  riskLevels: TRiskLevel[];
+  statuses: TReportStatusValue[];
+  findings: string[];
+  from?: string;
+  to?: string;
   page: {
     number: number;
     size: number;
   };
   orderBy: string;
 }) => {
-  const queryParams = qs.stringify(
-    {
-      ...params,
-      type: reportType,
-    },
-    { encode: false },
-  );
+  const queryParams = qs.stringify(params, { encode: false });
 
   const [data, error] = await apiClient({
     endpoint: `../external/business-reports/?${queryParams}`,
