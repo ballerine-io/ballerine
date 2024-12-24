@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.52
+
+### Patch Changes
+
+- add href attribute to anchor-if-url component
+
 ## 0.5.51
 
 ### Patch Changes

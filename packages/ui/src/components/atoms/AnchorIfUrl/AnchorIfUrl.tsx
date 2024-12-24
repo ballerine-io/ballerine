@@ -21,7 +21,7 @@ export const AnchorIfUrl: TAnchorIfUrl = forwardRef(
 
     if (checkIsUrl(children)) {
       return (
-        <BallerineLink ref={ref} {...props}>
+        <BallerineLink ref={ref} href={children} {...props}>
           {children}
         </BallerineLink>
       );

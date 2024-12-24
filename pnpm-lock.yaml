@@ -524,7 +524,7 @@ importers:
         specifier: ^0.9.59
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.5.51
+        specifier: 0.5.52
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.6.78
@@ -1504,7 +1504,7 @@ importers:
         specifier: ^1.1.28
         version: link:../config
       '@ballerine/ui':
-        specifier: 0.5.51
+        specifier: 0.5.52
         version: link:../ui
       '@react-pdf/renderer':
         specifier: ^3.1.14
@@ -24597,7 +24597,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-easy-sort: 1.6.0(react-dom@18.2.0)(react@18.2.0)
-      tailwind-merge: 2.5.5
+      tailwind-merge: 2.6.0
       tsup: 6.7.0(postcss@8.4.41)(ts-node@10.9.1)(typescript@5.1.6)
     transitivePeerDependencies:
       - '@swc/core'
@@ -36367,8 +36367,8 @@ packages:
     resolution: {integrity: sha512-3mFKyCo/MBcgyOTlrY8T7odzZFx+w+qKSMAmdFzRvqBfLlSigU6TZnlFHK0lkMwj9Bj8OYU+9yW9lmGuS0QEnQ==}
     dev: false
 
-  /tailwind-merge@2.5.5:
-    resolution: {integrity: sha512-0LXunzzAZzo0tEPxV3I297ffKZPlKDrjj7NXphC8V5ak9yHC5zRmxnOe2m/Rd/7ivsOMJe3JZ2JVocoDdQTRBA==}
+  /tailwind-merge@2.6.0:
+    resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
     dev: false
 
   /tailwindcss-animate@1.0.5(tailwindcss@3.3.5):
