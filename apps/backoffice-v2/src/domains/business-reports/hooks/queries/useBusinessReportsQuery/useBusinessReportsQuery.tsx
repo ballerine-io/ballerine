@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { isString } from '@/common/utils/is-string/is-string';
 import { MerchantReportType } from '@/domains/business-reports/constants';
 import { businessReportsQueryKey } from '@/domains/business-reports/query-keys';
 import { TReportStatusValue, TRiskLevel } from '@/pages/MerchantMonitoring/schemas';
@@ -47,14 +46,7 @@ export const useBusinessReportsQuery = ({
       from,
       to,
     }),
-    enabled:
-      isAuthenticated &&
-      isString(reportType) &&
-      !!reportType &&
-      !!sortBy &&
-      !!sortDir &&
-      !!page &&
-      !!pageSize,
+    enabled: isAuthenticated && !!sortBy && !!sortDir && !!page && !!pageSize,
     staleTime: 100_000,
     refetchInterval: 1_000_000,
   });
