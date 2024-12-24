@@ -45,6 +45,26 @@ jobs:
           ref: ${{ inputs.ref }}
           fetch-depth: 1
           persist-credentials: false
+      
+      - name: Checkout wf-data-migration
+        if: inputs.image_name == 'workflows-service-ee'
+        uses: actions/checkout@v4
+        with:
+          repository: ballerine-io/wf-data-migration
+          token: ${{ secrets.SUBMODULES_TOKEN }}
+          ref: dev
+          fetch-depth: 1
+          path: services/workflows-service/prisma/data-migrations
+
+      - name: Get Latest Commit ID
+        if: inputs.image_name == 'workflows-service-ee'
+        id: lastcommit
+        uses: nmbgeek/github-action-get-latest-commit@main
+        with:
+          owner: ${{ github.repository_owner }}
+          token: ${{ secrets.SUBMODULES_TOKEN }}
+          repo: wf-data-migration
+          branch: ${{ inputs.ref }}
 
       - name: Get tags
         run: git fetch --tags origin
@@ -122,7 +142,7 @@ jobs:
           tags: ${{ steps.docker_meta.outputs.tags }}
           file: ${{ inputs.file }}
           build-args: |
-            ${{ inputs.image_name == 'workflows-service' && format('"RELEASE={0}"\n"SHORT_SHA={1}"', steps.version.outputs.tag, steps.version.outputs.sha_short) || '' }}
+            ${{ (inputs.image_name == 'workflows-service' && format('"RELEASE={0}"\n"SHORT_SHA={1}"', steps.version.outputs.tag, steps.version.outputs.sha_short)) || (inputs.image_name == 'workflows-service-ee' && format('"BASE_IMAGE=ghcr.io/ballerine-io/workflows-service:{0}"', inputs.tag)) || '' }}
 
       - name: Scan Docker Image
         uses: aquasecurity/trivy-action@master

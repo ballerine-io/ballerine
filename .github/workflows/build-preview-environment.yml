@@ -68,6 +68,17 @@ jobs:
       tag: ${{ needs.deploy-dev-pr-environment.outputs.env_name }}
       file: 'services/workflows-service/Dockerfile'
 
+  build-wf-service-ee:
+    needs: deploy-dev-pr-environment
+    uses: ./.github/workflows/build-push-docker-images.yml
+    with:
+      registry: ghcr.io/${{ github.repository_owner }}
+      context: services/workflows-service
+      image_name: workflows-service-ee
+      ref: ${{ needs.deploy-dev-pr-environment.outputs.ref }}
+      tag: ${{ needs.deploy-dev-pr-environment.outputs.env_name }}
+      file: 'services/workflows-service/Dockerfile.ee'
+
   build-backoffice:
     needs: [deploy-dev-pr-environment,build-wf-service]
     uses: ./.github/workflows/build-push-docker-images.yml
