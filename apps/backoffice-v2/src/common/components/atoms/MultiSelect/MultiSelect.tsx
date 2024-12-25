@@ -9,6 +9,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  CommandLoading,
   CommandSeparator,
   ctw,
   Popover,
@@ -26,6 +27,7 @@ interface IMultiSelectProps<
   },
 > {
   title: string;
+  isLoading?: boolean;
   selectedValues: Array<TOption['value']>;
   onSelect: (value: Array<TOption['value']>) => void;
   onClearSelect: () => void;
@@ -53,6 +55,7 @@ export const MultiSelect = <
   },
 >({
   title,
+  isLoading,
   selectedValues: selected,
   onSelect,
   onClearSelect,
@@ -99,9 +102,9 @@ export const MultiSelect = <
                     .filter(option => selected.some(value => value === option.value))
                     .map(option => (
                       <Badge
-                        key={option.value}
+                        key={`${option.value}`}
                         variant="secondary"
-                        className="rounded-sm px-1 font-normal"
+                        className="max-w-[20ch] truncate rounded-sm px-1 font-normal"
                       >
                         {option.label}
                       </Badge>
@@ -117,47 +120,56 @@ export const MultiSelect = <
         <Command filter={(value, search) => (value.includes(search) ? 1 : 0)}>
           <CommandInput placeholder={title} />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
-            <CommandGroup>
-              {options.map(option => {
-                const isSelected = selected.some(value => value === option.value);
+            {isLoading && (
+              <CommandLoading className={`flex items-center justify-center pb-3 text-sm`}>
+                Loading...
+              </CommandLoading>
+            )}
+            {!isLoading && options.length === 0 && <CommandEmpty>No results found.</CommandEmpty>}
+            {!isLoading && options.length > 0 && (
+              <CommandGroup>
+                <div className={`max-h-[250px] overflow-y-auto`}>
+                  {options.map(option => {
+                    const isSelected = selected.some(value => value === option.value);
 
-                return (
-                  <CommandItem
-                    key={option.value}
-                    onSelect={() => onSelectChange(option.value)}
-                    className={`cursor-pointer`}
-                  >
-                    <div
-                      className={ctw(
-                        'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
-                        isSelected
-                          ? 'bg-primary text-primary-foreground'
-                          : 'opacity-50 [&_svg]:invisible',
-                      )}
-                    >
-                      <CheckIcon className={ctw('h-4 w-4')} />
-                    </div>
-                    {option.icon}
-                    <span>{option.label}</span>
-                  </CommandItem>
-                );
-              })}
-            </CommandGroup>
-            {selected?.length > 0 && (
-              <>
-                <CommandSeparator />
-                <CommandGroup>
-                  <CommandItem
-                    onSelect={onClearSelect}
-                    className="cursor-pointer justify-center text-center"
-                  >
-                    Clear filters
-                  </CommandItem>
-                </CommandGroup>
-              </>
+                    return (
+                      <CommandItem
+                        value={option.label}
+                        key={`${option.value}`}
+                        className={`cursor-pointer`}
+                        onSelect={() => onSelectChange(option.value)}
+                      >
+                        <div
+                          className={ctw(
+                            'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                            isSelected
+                              ? 'bg-primary text-primary-foreground'
+                              : 'opacity-50 [&_svg]:invisible',
+                          )}
+                        >
+                          <CheckIcon className={ctw('h-4 w-4')} />
+                        </div>
+                        {option.icon}
+                        <span>{option.label}</span>
+                      </CommandItem>
+                    );
+                  })}
+                </div>
+              </CommandGroup>
             )}
           </CommandList>
+          <CommandSeparator />
+          <CommandGroup>
+            <CommandItem
+              onSelect={onClearSelect}
+              className={ctw(
+                `cursor-pointer justify-center text-center`,
+                selected.length === 0 && 'pointer-events-none opacity-50',
+              )}
+            >
+              Clear filters
+            </CommandItem>
+          </CommandGroup>
         </Command>
       </PopoverContent>
     </Popover>

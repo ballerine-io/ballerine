@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.53
+
+### Patch Changes
+
+- added command.loading
+
 ## 0.5.52
 
 ### Patch Changes

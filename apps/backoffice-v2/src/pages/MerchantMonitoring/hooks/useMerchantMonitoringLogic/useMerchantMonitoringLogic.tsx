@@ -110,8 +110,8 @@ export const useMerchantMonitoringLogic = () => {
   });
 
   const onDatesChange: ComponentProps<typeof DateRangePicker>['onChange'] = range => {
-    const from = dayjs(range?.from).format('YYYY-MM-DD');
-    const to = dayjs(range?.to).format('YYYY-MM-DD');
+    const from = range?.from ? dayjs(range.from).format('YYYY-MM-DD') : undefined;
+    const to = range?.to ? dayjs(range?.to).format('YYYY-MM-DD') : undefined;
 
     setSearchParams({ from, to });
   };
