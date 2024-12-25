@@ -185,6 +185,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
           props={{ ...multiselectProps, content: { className: 'w-[400px]' } }}
           key={FINDINGS_FILTER.title}
           title={FINDINGS_FILTER.title}
+          isLoading={isLoadingFindings}
           selectedValues={findings ?? []}
           options={FINDINGS_FILTER.options}
           onSelect={handleFilterChange(FINDINGS_FILTER.accessor)}
