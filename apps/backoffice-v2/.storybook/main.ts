@@ -18,5 +18,13 @@ const config: StorybookConfig = {
   docs: {
     autodocs: true,
   },
+  viteFinal: config => {
+    config.optimizeDeps = {
+      ...config.optimizeDeps,
+      include: ['@ballerine/ui'],
+    };
+
+    return config;
+  },
 };
 export default config;

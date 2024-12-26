@@ -18,16 +18,18 @@ import {
   Param,
   Post,
   Query,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiExcludeController, ApiForbiddenResponse, ApiOkResponse } from '@nestjs/swagger';
 import { EndUserService } from '@/end-user/end-user.service';
-import { StateTag, TStateTag } from '@ballerine/common';
+import { StateTag, TStateTag, EndUserAmlHitsSchema } from '@ballerine/common';
 import { AlertService } from '@/alert/alert.service';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { ListIndividualsProfilesSchema } from '@/case-management/dtos/list-individuals-profiles.dto';
 import { z } from 'zod';
-import { EndUserAmlHitsSchema } from '@ballerine/common';
-import { Business, EndUsersOnBusinesses } from '@prisma/client';
+import type { Business, EndUsersOnBusinesses, UiDefinition } from '@prisma/client';
+import { TranslationService } from '@/providers/translation/translation.service';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 
 @Controller('case-management')
 @ApiExcludeController()
@@ -40,6 +42,7 @@ export class CaseManagementController {
     protected readonly transactionService: TransactionService,
     protected readonly endUserService: EndUserService,
     protected readonly alertsService: AlertService,
+    protected readonly uiDefinitionService: UiDefinitionService,
   ) {}
 
   @Get('workflow-definition/:workflowDefinitionId')
@@ -205,6 +208,72 @@ export class CaseManagementController {
         alerts: alerts?.length ?? 0,
         updatedAt: endUser.updatedAt,
       };
+    });
+  }
+
+  @common.Post('/ui-definition/:id/translate/:language')
+  async translateUiDefinition(
+    @common.Param('id') id: string,
+    @common.Param('language') language: string,
+    @common.Body()
+    body: {
+      partialUiDefinition: Partial<UiDefinition>;
+    },
+    @CurrentProject() projectId: TProjectId,
+  ) {
+    const uiDefinition = await this.uiDefinitionService.getById(id, {}, [projectId]);
+    const translationService = new TranslationService(
+      this.uiDefinitionService.getTranslationServiceResources(uiDefinition),
+    );
+
+    await translationService.init();
+
+    const elements = this.uiDefinitionService.traverseUiSchema(
+      // @ts-expect-error - error from Prisma types fix
+      body.partialUiDefinition.elements,
+      {},
+      language,
+      translationService,
+    );
+
+    return {
+      ...body.partialUiDefinition,
+      elements,
+    };
+  }
+
+  @common.Post('/workflows/:workflowId/ubos')
+  async createUbo(
+    @common.Param('workflowId') workflowId: string,
+    @common.Body() body: Record<string, unknown>,
+    @CurrentProject() projectId: TProjectId,
+  ) {
+    await this.caseManagementService.createUbo({
+      workflowId,
+      ubo: body,
+      projectId,
+    });
+  }
+
+  @common.Delete('/workflows/:workflowId/ubos')
+  async deleteUbosByIds(
+    @common.Param('workflowId') workflowId: string,
+    @common.Body()
+    body: {
+      ids: string[];
+    },
+    @CurrentProject() projectId: TProjectId,
+    @UserData() authenticatedEntity: AuthenticatedEntity,
+  ) {
+    if (!authenticatedEntity?.user?.id) {
+      throw new UnauthorizedException();
+    }
+
+    await this.caseManagementService.deleteUbosByIds({
+      workflowId,
+      ids: body.ids,
+      projectId,
+      deletedBy: authenticatedEntity?.user?.id,
     });
   }
 }

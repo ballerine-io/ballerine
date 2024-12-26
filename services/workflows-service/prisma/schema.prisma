@@ -276,6 +276,9 @@ model WorkflowRuntimeData {
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
 
+  deletedAt DateTime?
+  deletedBy String?
+
   @@index([assigneeId, status])
   @@index([endUserId, status])
   @@index([businessId, status])
@@ -285,6 +288,7 @@ model WorkflowRuntimeData {
   @@index([projectId])
   @@index([uiDefinitionId])
   @@index([tags(ops: JsonbPathOps)], type: Gin)
+  @@index([deletedAt])
 }
 
 model File {
