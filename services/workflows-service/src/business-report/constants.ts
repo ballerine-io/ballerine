@@ -10,6 +10,13 @@ export type MerchantReportStatus = keyof typeof MERCHANT_REPORT_STATUSES_MAP;
 
 export const MERCHANT_REPORT_STATUSES = Object.values(MERCHANT_REPORT_STATUSES_MAP);
 
+export const MERCHANT_REPORT_RISK_LEVELS = {
+  low: 'low',
+  medium: 'medium',
+  high: 'high',
+  critical: 'critical',
+} as const;
+
 export const MERCHANT_REPORT_TYPES_MAP = {
   MERCHANT_REPORT_T1: 'MERCHANT_REPORT_T1',
   ONGOING_MERCHANT_REPORT_T1: 'ONGOING_MERCHANT_REPORT_T1',

@@ -70,13 +70,6 @@ export class UiDefinitionService {
     args: Omit<Prisma.UiDefinitionUpdateArgs, 'where'>,
     projectIds: TProjectIds,
   ) {
-    console.log({
-      ...args,
-      where: {
-        id,
-      },
-    });
-
     return await this.repository.update(
       {
         ...args,

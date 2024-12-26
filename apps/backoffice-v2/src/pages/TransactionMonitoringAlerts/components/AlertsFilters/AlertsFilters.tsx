@@ -4,7 +4,6 @@ import { MultiSelect } from '@/common/components/atoms/MultiSelect/MultiSelect';
 import { useFilter } from '@/common/hooks/useFilter/useFilter';
 import { AlertStatuses } from '@/domains/alerts/fetchers';
 import { titleCase } from 'string-ts';
-import { keyFactory } from '@/common/utils/key-factory/key-factory';
 
 export const AlertsFilters: FunctionComponent<{
   assignees: TUsers;
@@ -79,7 +78,7 @@ export const AlertsFilters: FunctionComponent<{
       <div className={`flex gap-x-2`}>
         {filters.map(({ title, accessor, options }) => (
           <MultiSelect
-            key={keyFactory(title, filter?.[accessor])}
+            key={title}
             title={title}
             selectedValues={filter?.[accessor] ?? []}
             onSelect={onFilter(accessor)}

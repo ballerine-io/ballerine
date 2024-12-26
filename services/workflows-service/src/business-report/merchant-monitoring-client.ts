@@ -74,7 +74,7 @@ export class MerchantMonitoringClient {
       headers: {
         Authorization: `Bearer ${env.UNIFIED_API_TOKEN ?? ''}`,
       },
-      timeout: 30_000,
+      timeout: 300_000,
     });
   }
 
@@ -194,8 +194,13 @@ export class MerchantMonitoringClient {
     customerId,
     businessId,
     limit,
+    from,
+    to,
     page,
     reportType,
+    riskLevels,
+    statuses,
+    findings,
     withoutUnpublishedOngoingReports,
     searchQuery,
   }: {
@@ -203,7 +208,12 @@ export class MerchantMonitoringClient {
     businessId?: string;
     limit: number;
     page: number;
+    from?: string;
+    to?: string;
     reportType?: MerchantReportType;
+    riskLevels?: Array<'low' | 'medium' | 'high' | 'critical'>;
+    statuses?: Array<'failed' | 'quality-control' | 'completed' | 'in-progress'>;
+    findings?: string[];
     withoutUnpublishedOngoingReports?: boolean;
     searchQuery?: string;
   }) {
@@ -212,7 +222,12 @@ export class MerchantMonitoringClient {
         customerId,
         ...(businessId && { merchantId: businessId }),
         limit,
+        from,
+        to,
+        riskLevels,
         page,
+        statuses,
+        findings,
         withoutUnpublishedOngoingReports,
         ...(searchQuery && { searchQuery }),
         ...(reportType && { reportType }),
@@ -229,5 +244,15 @@ export class MerchantMonitoringClient {
     const response = await this.findMany({ customerId, limit: 1, page: 1 });
 
     return response.totalItems;
+  }
+
+  public async listFindings() {
+    const response = await this.axios.get('external/findings', {
+      headers: {
+        Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
+      },
+    });
+
+    return response.data ?? [];
   }
 }
