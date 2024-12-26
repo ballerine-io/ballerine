@@ -43,7 +43,7 @@ function install_docker(){
 }
 
 
-install_docker
+# install_docker
 
 if [[ ! -z "${WORKFLOW_SERVICE_DOMAIN_NAME}" ]]; then
   ### Update frontend build variables only if domain_name is given
