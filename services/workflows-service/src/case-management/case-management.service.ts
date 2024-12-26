@@ -119,7 +119,7 @@ export class CaseManagementService {
 
       const [{ ballerineEntityId }] = await this.workflowService.createOrUpdateWorkflowRuntime(
         {
-          workflowDefinitionId: kycEmailSessionDefinition().id,
+          workflowDefinitionId: 'kyc_email_session_example',
           parentWorkflowId: workflowId,
           currentProjectId: projectId,
           projectIds: [projectId],
