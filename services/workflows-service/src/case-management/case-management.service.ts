@@ -8,7 +8,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { TWorkflowDefinitionWithTransitionSchema } from '@/workflow-defintion/types';
 import { PrismaService } from '@/prisma/prisma.service';
 import { EndUserService } from '@/end-user/end-user.service';
-import { kycEmailSessionDefinition } from '../../prisma/data-migrations/templates/creation/common/generate-kyc-email-process';
 import { randomUUID } from 'crypto';
 import { BusinessPosition } from '@prisma/client';
 import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
