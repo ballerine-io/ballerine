@@ -1,4 +1,3 @@
-import { Button } from '@/common/components/atoms/Button/Button';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
@@ -37,9 +36,7 @@ import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDec
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 import { Send } from 'lucide-react';
-import React, { useCallback, useMemo } from 'react';
-import { toast } from 'sonner';
-import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
+import { useMemo } from 'react';
 import { useWebsiteMonitoringReportBlock } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/useWebsiteMonitoringReportBlock';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { useAddressBlock } from '@/lib/blocks/hooks/useAddressBlock/useAddressBlock';
@@ -52,8 +49,15 @@ import { useObjectEntriesBlock } from '@/lib/blocks/hooks/useObjectEntriesBlock/
 import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';
 import { associatedCompanyToWorkflowAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-to-workflow-adapter';
 import { useMerchantScreeningBlock } from '@/lib/blocks/hooks/useMerchantScreeningBlock/useMerchantScreeningBlock';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
+
+import { Button } from '@ballerine/ui';
+import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
+import { toast } from 'sonner';
+import { useCallback } from 'react';
+import { useManageUbosBlock } from '@/lib/blocks/hooks/useManageUbosBlock/useManageUbosBlock';
 
 export const useDefaultBlocksLogic = () => {
   const [{ activeTab }] = useSearchParamsByEntity();
@@ -120,7 +124,7 @@ export const useDefaultBlocksLogic = () => {
   const {
     store,
     bank: bankDetails,
-    ubos: ubosUserProvided = [],
+    ubos: _ubosUserProvided,
     directors: directorsUserProvided = [],
     mainRepresentative,
     mainContact,
@@ -297,6 +301,33 @@ export const useDefaultBlocksLogic = () => {
 
   const companySanctionsBlock = useCompanySanctionsBlock(companySanctions);
 
+  const childWorkflowToUboAdapter = (childWorkflow: TWorkflowById) => {
+    return {
+      name: [
+        childWorkflow?.context?.entity?.data?.firstName,
+        childWorkflow?.context?.entity?.data?.lastName,
+      ]
+        .filter(Boolean)
+        .join(' '),
+      nationality: childWorkflow?.context?.entity?.data?.additionalInfo?.nationality,
+      email: childWorkflow?.context?.entity?.data?.email,
+      identityNumber: childWorkflow?.context?.entity?.data?.nationalId,
+      percentageOfOwnership:
+        childWorkflow?.context?.entity?.data?.percentageOfOwnership ??
+        childWorkflow?.context?.entity?.data?.ownershipPercentage ??
+        childWorkflow?.context?.entity?.data?.additionalInfo?.percentageOfOwnership ??
+        childWorkflow?.context?.entity?.data?.additionalInfo?.ownershipPercentage,
+      address: childWorkflow?.context?.entity?.data?.additionalInfo?.fullAddress,
+    } satisfies Parameters<typeof useUbosUserProvidedBlock>[0][number];
+  };
+
+  const ubosUserProvided = useMemo(() => {
+    return (
+      workflow?.childWorkflows
+        ?.filter(childWorkflow => childWorkflow?.context?.entity?.variant === 'ubo')
+        ?.map(childWorkflowToUboAdapter) ?? []
+    );
+  }, [workflow?.childWorkflows]);
   const ubosUserProvidedBlock = useUbosUserProvidedBlock(ubosUserProvided);
 
   const ubosRegistryProvidedBlock = useUbosRegistryProvidedBlock({
@@ -307,6 +338,8 @@ export const useDefaultBlocksLogic = () => {
       workflow?.context?.pluginsOutput?.ubo?.data?.message,
     isRequestTimedOut: workflow?.context?.pluginsOutput?.ubo?.isRequestTimedOut,
   });
+
+  const manageUbosBlock = useManageUbosBlock();
 
   const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
 
@@ -470,6 +503,7 @@ export const useDefaultBlocksLogic = () => {
       customDataBlock,
       amlWithContainerBlock,
       merchantScreeningBlock,
+      manageUbosBlock,
     ];
   }, [
     associatedCompaniesBlock,
@@ -501,6 +535,7 @@ export const useDefaultBlocksLogic = () => {
     amlWithContainerBlock,
     merchantScreeningBlock,
     workflow?.context?.entity,
+    manageUbosBlock,
   ]);
 
   const { blocks, tabs } = useCaseBlocks({
