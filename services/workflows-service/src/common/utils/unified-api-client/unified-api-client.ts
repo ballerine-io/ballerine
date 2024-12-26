@@ -4,18 +4,6 @@ import { Logger } from '@nestjs/common';
 import { Customer } from '@prisma/client';
 import { TSchema } from '@sinclair/typebox';
 
-export type TReportRequest = Array<{
-  websiteUrl: string;
-  callbackUrl?: string;
-  countryCode?: string;
-  parentCompanyName?: string;
-  lineOfBusiness?: string;
-  merchantName?: string;
-  businessReportId?: string;
-  withQualityControl?: boolean;
-  customerId: string;
-  merchantId: string;
-}>;
 export type TOcrImages = Array<
   | {
       remote: {

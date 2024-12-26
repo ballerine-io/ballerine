@@ -8,6 +8,7 @@ import {
   type MerchantReportType,
   type MerchantReportVersion,
 } from '@/business-report/constants';
+import { Transform } from 'class-transformer';
 
 export class CreateBusinessReportDto {
   @ApiProperty({
@@ -26,6 +27,7 @@ export class CreateBusinessReportDto {
   })
   @MinLength(1)
   @IsString()
+  @Transform(({ value }) => (typeof value === 'string' ? value.toLowerCase() : value))
   websiteUrl!: string;
 
   @ApiProperty({
