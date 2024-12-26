@@ -12,6 +12,7 @@ export default defineConfig(configEnv => {
       open: true,
       host: true,
       port: 5137,
+      cors: true,
       // port: 443,
       // https: true,
     },
