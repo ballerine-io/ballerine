@@ -1,5 +1,13 @@
 # @ballerine/ui
 
+## 0.5.54
+
+### Patch Changes
+
+- Updated button with disabled state
+- Updated dependencies
+  - @ballerine/common@0.9.60
+
 ## 0.5.53
 
 ### Patch Changes

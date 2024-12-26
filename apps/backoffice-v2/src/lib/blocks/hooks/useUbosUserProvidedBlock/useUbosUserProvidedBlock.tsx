@@ -1,8 +1,47 @@
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
+import { TextWithNAFallback } from '@ballerine/ui';
+import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo } from 'react';
 
-export const useUbosUserProvidedBlock = ubosUserProvided => {
+export const useUbosUserProvidedBlock = (
+  ubosUserProvided: Array<{
+    name: string;
+    nationality: string;
+    identityNumber: string;
+    percentageOfOwnership: number;
+    email: string;
+    address: string;
+  }>,
+) => {
+  const columnHelper = createColumnHelper<(typeof ubosUserProvided)[number]>();
+  const columns = [
+    columnHelper.accessor('name', {
+      header: 'Name',
+    }),
+    columnHelper.accessor('nationality', {
+      header: 'Nationality',
+    }),
+    columnHelper.accessor('identityNumber', {
+      header: 'Identity number',
+    }),
+    columnHelper.accessor('percentageOfOwnership', {
+      header: '% of Ownership',
+      cell: ({ getValue }) => {
+        const value = getValue();
+
+        return (
+          <TextWithNAFallback>{value || value === 0 ? `${value}%` : value}</TextWithNAFallback>
+        );
+      },
+    }),
+    columnHelper.accessor('email', {
+      header: 'Email',
+    }),
+    columnHelper.accessor('address', {
+      header: 'Address',
+    }),
+  ];
+
   return useMemo(() => {
     if (Object.keys(ubosUserProvided ?? {}).length === 0) {
       return [];
@@ -28,50 +67,8 @@ export const useUbosUserProvidedBlock = ubosUserProvided => {
           .addCell({
             type: 'table',
             value: {
-              columns: [
-                {
-                  accessorKey: 'name',
-                  header: 'Name',
-                },
-                {
-                  accessorKey: 'nationality',
-                  header: 'Nationality',
-                },
-                {
-                  accessorKey: 'identityNumber',
-                  header: 'Identity number',
-                },
-                {
-                  accessorKey: 'percentageOfOwnership',
-                  header: '% of Ownership',
-                },
-                {
-                  accessorKey: 'email',
-                  header: 'Email',
-                },
-                {
-                  accessorKey: 'address',
-                  header: 'Address',
-                },
-              ],
-              data: ubosUserProvided?.map(
-                ({
-                  firstName,
-                  lastName,
-                  nationalId: identityNumber,
-                  additionalInfo,
-                  percentageOfOwnership,
-                  ...rest
-                }) => ({
-                  ...rest,
-                  name: [firstName, lastName].filter(Boolean).join(' '),
-                  address: additionalInfo?.fullAddress,
-                  nationality: additionalInfo?.nationality,
-                  percentageOfOwnership: additionalInfo?.percentageOfOwnership,
-                  identityNumber,
-                  ...omitPropsFromObject(additionalInfo, 'fullAddress', 'nationality'),
-                }),
-              ),
+              columns,
+              data: ubosUserProvided,
             },
           })
           .build()
