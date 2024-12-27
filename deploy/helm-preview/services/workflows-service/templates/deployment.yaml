@@ -33,6 +33,7 @@ spec:
             nodeSelector:
             {{- toYaml . | nindent 8 }}
             {{- end }}
+            serviceAccountName: {{ .Values.workflowService.nameOverride }}
             initContainers:
             {{- if .Values.postgresql.enabled }}
             - name: psql-init-container
