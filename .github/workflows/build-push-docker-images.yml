@@ -47,11 +47,12 @@ jobs:
           persist-credentials: false
       
       - name: Checkout wf-data-migration
+        id: wf-migration-code
         if: inputs.image_name == 'workflows-service-ee'
         uses: actions/checkout@v4
         with:
           repository: ballerine-io/wf-data-migration
-          token: ${{ secrets.SUBMODULES_TOKEN }}
+          token: ${{ secrets.GH_CI_ENV_TOKEN }}
           ref: dev
           fetch-depth: 1
           path: services/workflows-service/prisma/data-migrations
