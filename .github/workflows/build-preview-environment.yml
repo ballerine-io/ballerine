@@ -91,7 +91,7 @@ jobs:
       file: 'apps/backoffice-v2/Dockerfile.preview'
 
   build-kyb:
-    needs: [deploy-dev-pr-environment,build-backoffice]
+    needs: [deploy-dev-pr-environment]
     uses: ./.github/workflows/build-push-docker-images.yml
     with:
       registry: ghcr.io/${{ github.repository_owner }}
@@ -102,7 +102,7 @@ jobs:
       file: 'apps/kyb-app/Dockerfile.preview'
 
   build-dashboard:
-    needs: [deploy-dev-pr-environment,build-kyb]
+    needs: [deploy-dev-pr-environment]
     uses: ./.github/workflows/build-push-docker-images.yml
     with:
       registry: ghcr.io/${{ github.repository_owner }}

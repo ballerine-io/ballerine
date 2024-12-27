@@ -45,6 +45,20 @@ jobs:
           ref: ${{ inputs.ref }}
           fetch-depth: 1
           persist-credentials: false
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ vars.PREVIEW_OIDC_ROLE }}
+          aws-region: ${{ vars.PREVIEW_AWS_REGION }}
+
+      # Access the secret
+      - name: Retrieve secret from Secrets Manager
+        id: get-secret
+        run: |
+          secret_value=$(aws secretsmanager get-secret-value --secret-id ${{ vars.PREVIEW_SECRET }} --query 'SecretString' --output text | jq -r '.SUBMODULE_SECRET')
+          echo "SUBMODULE_SECRET=$secret_value" >> $GITHUB_ENV
+          echo "SUBMODULE_SECRET=$secret_value" >> $GITHUB_OUTPUT
       
       - name: Checkout wf-data-migration
         id: wf-migration-code
@@ -52,7 +66,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ballerine-io/wf-data-migration
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.get-secret.outputs.SUBMODULE_SECRET }}
           ref: dev
           fetch-depth: 1
           path: services/workflows-service/prisma/data-migrations
@@ -63,7 +77,7 @@ jobs:
         uses: nmbgeek/github-action-get-latest-commit@main
         with:
           owner: ${{ github.repository_owner }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.get-secret.outputs.SUBMODULE_SECRET }}
           repo: wf-data-migration
           branch: ${{ inputs.ref }}
 
