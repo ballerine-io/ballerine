@@ -58,6 +58,7 @@ jobs:
         if: inputs.image_name == 'workflows-service-ee'
         id: get-secret
         run: |
+          echo ${{ inputs.image_name }}
           secret_value=$(aws secretsmanager get-secret-value --secret-id ${{ vars.PREVIEW_SECRET }} --query 'SecretString' --output text | jq -r '.SUBMODULE_SECRET')
           echo "SUBMODULE_SECRET=$secret_value" >> $GITHUB_ENV
           echo "SUBMODULE_SECRET=$secret_value" >> $GITHUB_OUTPUT
@@ -88,21 +89,22 @@ jobs:
       #   run: git fetch --tags origin
 
       - name: Get version
-        if: (${{ inputs.image_name }} == 'workflows-service' && ${{inputs.image_name}} != 'workflows-service-ee')
+        if: ${{ inputs.image_name }} == 'workflows-service'
         id: version
         run: |
-          git fetch --tags origin
-          TAG=$(git tag -l "$(echo workflow-service@)*" | sort -V -r | head -n 1)
-          echo "tag=$TAG"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "TAG=$TAG" >> "$GITHUB_ENV"
-          SHORT_SHA=$(git rev-parse --short HEAD)
-          echo "sha_short=$SHORT_SHA" >> "$GITHUB_OUTPUT"
-          echo "SHORT_SHA=$SHORT_SHA" >> "$GITHUB_ENV"
+          echo ${{ inputs.image_name }}
+          # git fetch --tags origin
+          # TAG=$(git tag -l "$(echo workflow-service@)*" | sort -V -r | head -n 1)
+          # echo "tag=$TAG"
+          # echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          # echo "TAG=$TAG" >> "$GITHUB_ENV"
+          # SHORT_SHA=$(git rev-parse --short HEAD)
+          # echo "sha_short=$SHORT_SHA" >> "$GITHUB_OUTPUT"
+          # echo "SHORT_SHA=$SHORT_SHA" >> "$GITHUB_ENV"
       
       - name: Bump version
         id: bump-version
-        if: (${{ inputs.image_name }} == 'workflows-service' && ${{inputs.image_name}} != 'workflows-service-ee')
+        if: ${{ inputs.image_name }} == 'workflows-service'
         uses: ./.github/actions/bump-version
         with:
           tag: ${{ steps.version.outputs.tag }}
