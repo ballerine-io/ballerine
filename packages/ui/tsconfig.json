@@ -9,7 +9,8 @@
       "@/*": ["./src/*"]
     },
     "module": "ESNext",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "esModuleInterop": true
   },
   "include": ["src", "vitest.setup.ts"]
 }

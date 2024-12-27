@@ -107,6 +107,14 @@ const schema: Array<IFormElement<any, any>> = [
     },
   },
   {
+    id: 'TagsField',
+    element: 'tagsfield',
+    valueDestination: 'tags',
+    params: {
+      label: 'Tags Field',
+    },
+  },
+  {
     id: 'FileField',
     element: 'filefield',
     valueDestination: 'file',

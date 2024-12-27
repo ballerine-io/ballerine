@@ -52,6 +52,10 @@ export default defineConfig({
         },
       },
     },
+    // This needed for emblor and react-easy-sort to work during testing.
+    deps: {
+      inline: [/react-easy-sort/, /emblor/],
+    },
   },
   build: {
     outDir: 'dist',
