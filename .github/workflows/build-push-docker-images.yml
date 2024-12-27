@@ -88,7 +88,7 @@ jobs:
       #   run: git fetch --tags origin
 
       - name: Get version
-        if: ${{ inputs.image_name }} == 'workflows-service' && ${{inputs.image_name}} != 'workflows-service-ee'
+        if: (${{ inputs.image_name }} == 'workflows-service' && ${{inputs.image_name}} != 'workflows-service-ee')
         id: version
         run: |
           git fetch --tags origin
@@ -102,7 +102,7 @@ jobs:
       
       - name: Bump version
         id: bump-version
-        if: ${{ inputs.image_name }} == 'workflows-service' && ${{inputs.image_name}} != 'workflows-service-ee'
+        if: (${{ inputs.image_name }} == 'workflows-service' && ${{inputs.image_name}} != 'workflows-service-ee')
         uses: ./.github/actions/bump-version
         with:
           tag: ${{ steps.version.outputs.tag }}
