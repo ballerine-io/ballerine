@@ -113,7 +113,7 @@ jobs:
       file: 'apps/workflows-dashboard/Dockerfile.preview'
 
   deploy-preview:
-    needs: [deploy-dev-pr-environment,build-wf-service,build-backoffice,build-kyb,build-dashboard]
+    needs: [deploy-dev-pr-environment,build-wf-service,build-wf-service-ee,build-backoffice,build-kyb,build-dashboard]
     runs-on: ubuntu-latest
     steps:
       - name: Trigger workflow in another repo
