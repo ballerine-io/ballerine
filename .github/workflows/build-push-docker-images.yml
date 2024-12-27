@@ -81,7 +81,7 @@ jobs:
           owner: ${{ github.repository_owner }}
           token: ${{ steps.get-secret.outputs.SUBMODULE_SECRET }}
           repo: wf-data-migration
-          branch: ${{ inputs.ref }}
+          branch: dev
 
       - name: Get tags
         run: git fetch --tags origin
