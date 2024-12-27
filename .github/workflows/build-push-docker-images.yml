@@ -84,6 +84,7 @@ jobs:
           branch: dev
 
       - name: Get tags
+        if: inputs.image_name != 'workflows-service-ee'
         run: git fetch --tags origin
 
       - name: Get version
