@@ -52,9 +52,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ballerine-io/wf-data-migration
+          token: ${{ secrets.SUBMODULES_TOKEN }}
           ref: dev
           fetch-depth: 1
-          token: ${{ secrets.SUBMODULES_TOKEN }}
           path: services/workflows-service/prisma/data-migrations
 
       - name: Get Latest Commit ID
