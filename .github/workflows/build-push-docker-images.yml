@@ -84,11 +84,11 @@ jobs:
           branch: dev
 
       - name: Get tags
-        if: inputs.image_name != 'workflows-service-ee'
+        if: ${{inputs.image_name}} != 'workflows-service-ee'
         run: git fetch --tags origin
 
       - name: Get version
-        if: ${{ inputs.image_name }} == 'workflows-service'
+        if: ${{ inputs.image_name }} == 'workflows-service' && ${{inputs.image_name}} != 'workflows-service-ee'
         id: version
         run: |
           TAG=$(git tag -l "$(echo workflow-service@)*" | sort -V -r | head -n 1)
@@ -101,7 +101,7 @@ jobs:
       
       - name: Bump version
         id: bump-version
-        if: ${{ inputs.image_name }} == 'workflows-service'
+        if: ${{ inputs.image_name }} == 'workflows-service' && ${{inputs.image_name}} != 'workflows-service-ee'
         uses: ./.github/actions/bump-version
         with:
           tag: ${{ steps.version.outputs.tag }}
@@ -143,7 +143,7 @@ jobs:
       - name: Print docker version outputs
         run: |
           echo "Metadata: ${{ steps.docker_meta.outputs.tags }}"
-          if [[ "${{ inputs.image_name }}" == "workflows-service" ]]; then
+          if [[ "${{ inputs.image_name }}" == "workflows-service" && ${{ inputs.image_name }} != 'workflows-service-ee' ]]; then
             echo "sha_short: ${{ steps.version.outputs.sha_short }}"
             echo "bump-version-version: ${{ steps.bump-version.outputs.version }}"
             echo "bump-version-tag: ${{ steps.bump-version.outputs.tag }}"
