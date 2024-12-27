@@ -2,6 +2,7 @@ import { Label, RadioGroup } from '@/components/atoms';
 import { RadioGroupItem } from '@/components/atoms/RadioGroup/RadioGroup.Item';
 import { createTestId } from '@/components/organisms/Renderer';
 import { useField } from '../../hooks/external';
+import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { ICommonFieldParams, TDynamicFormField } from '../../types';
@@ -46,6 +47,7 @@ export const RadioField: TDynamicFormField<IRadioFieldParams> = ({ element }) =>
           </div>
         ))}
       </RadioGroup>
+      <FieldDescription element={element} />
       <FieldErrors element={element} />
     </FieldLayout>
   );

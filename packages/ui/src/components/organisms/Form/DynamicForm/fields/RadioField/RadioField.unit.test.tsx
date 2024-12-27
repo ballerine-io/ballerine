@@ -3,6 +3,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useElement, useField } from '../../hooks/external';
+import { FieldDescription } from '../../layouts/FieldDescription';
+import { FieldErrors } from '../../layouts/FieldErrors';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { IRadioFieldParams, RadioField } from './RadioField';
@@ -18,6 +20,14 @@ vi.mock('../FieldList/providers/StackProvider', () => ({
 
 vi.mock('@/components/organisms/Renderer', () => ({
   createTestId: vi.fn(),
+}));
+
+vi.mock('../../layouts/FieldDescription', () => ({
+  FieldDescription: vi.fn(),
+}));
+
+vi.mock('../../layouts/FieldErrors', () => ({
+  FieldErrors: vi.fn(),
 }));
 
 describe('RadioField', () => {
@@ -113,5 +123,27 @@ describe('RadioField', () => {
 
     expect(screen.getByTestId('test-radio-radio-group')).toBeInTheDocument();
     expect(screen.getAllByTestId('test-radio-radio-group-item')).toHaveLength(2);
+  });
+
+  it('renders FieldDescription with element prop', () => {
+    render(<RadioField element={mockElement} />);
+
+    expect(FieldDescription).toHaveBeenCalledWith(
+      expect.objectContaining({
+        element: mockElement,
+      }),
+      expect.anything(),
+    );
+  });
+
+  it('renders FieldErrors with element prop', () => {
+    render(<RadioField element={mockElement} />);
+
+    expect(FieldErrors).toHaveBeenCalledWith(
+      expect.objectContaining({
+        element: mockElement,
+      }),
+      expect.anything(),
+    );
   });
 });

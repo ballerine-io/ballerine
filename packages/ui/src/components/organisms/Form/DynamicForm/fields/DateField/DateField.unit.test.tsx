@@ -6,6 +6,7 @@ import { useField } from '../../hooks/external/useField';
 import { useEvents } from '../../hooks/internal/useEvents';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
+import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { IFormElement } from '../../types';
 import { DateField, IDateFieldParams } from './DateField';
@@ -52,6 +53,9 @@ vi.mock('../../hooks/internal/useMountEvent');
 vi.mock('../../hooks/internal/useUnmountEvent');
 vi.mock('../../layouts/FieldErrors', () => ({
   FieldErrors: vi.fn(),
+}));
+vi.mock('../../layouts/FieldDescription', () => ({
+  FieldDescription: vi.fn(),
 }));
 
 describe('DateField', () => {
@@ -209,6 +213,14 @@ describe('DateField', () => {
   it('should render FieldErrors with element prop', () => {
     render(<DateField element={mockElement} />);
     expect(FieldErrors).toHaveBeenCalledWith(
+      expect.objectContaining({ element: mockElement }),
+      expect.anything(),
+    );
+  });
+
+  it('should render FieldDescription with element prop', () => {
+    render(<DateField element={mockElement} />);
+    expect(FieldDescription).toHaveBeenCalledWith(
       expect.objectContaining({ element: mockElement }),
       expect.anything(),
     );

@@ -6,6 +6,7 @@ import { useElement, useField } from '../../hooks/external';
 import { useEvents } from '../../hooks/internal/useEvents';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
+import { FieldDescription } from '../../layouts/FieldDescription';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { ITextFieldParams, TextField } from './TextField';
@@ -63,6 +64,10 @@ vi.mock('../../hooks/internal/useMountEvent', () => ({
 
 vi.mock('../../hooks/internal/useUnmountEvent', () => ({
   useUnmountEvent: vi.fn(),
+}));
+
+vi.mock('../../layouts/FieldDescription', () => ({
+  FieldDescription: vi.fn(),
 }));
 
 describe('TextField', () => {
@@ -255,5 +260,16 @@ describe('TextField', () => {
     expect(mockUseUnmountEvent).toHaveBeenCalledWith(mockElement);
 
     unmount();
+  });
+
+  it('renders FieldDescription with element prop', () => {
+    render(<TextField element={mockElement} />);
+
+    expect(FieldDescription).toHaveBeenCalledWith(
+      expect.objectContaining({
+        element: mockElement,
+      }),
+      expect.any(Object),
+    );
   });
 });

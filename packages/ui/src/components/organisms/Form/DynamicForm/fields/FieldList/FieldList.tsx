@@ -5,6 +5,7 @@ import { useDynamicForm } from '../../context';
 import { useElement } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
+import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { TDynamicFormField } from '../../types';
 import { useFieldList } from './hooks/useFieldList';
@@ -59,6 +60,7 @@ export const FieldList: TDynamicFormField<IFieldListParams> = props => {
       <div className="flex flex-row justify-end">
         <Button onClick={addItem}>{addButtonLabel}</Button>
       </div>
+      <FieldDescription element={element} />
       <FieldErrors element={element} />
     </div>
   );

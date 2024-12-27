@@ -3,6 +3,7 @@ import { render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TDeepthLevelStack } from '../../../Validator';
 import { useElement, useField } from '../../hooks/external';
+import { FieldDescription } from '../../layouts/FieldDescription';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { TagsField } from './TagsField';
@@ -28,6 +29,10 @@ vi.mock('../../hooks/external', () => ({
 
 vi.mock('../FieldList/providers/StackProvider', () => ({
   useStack: vi.fn(),
+}));
+
+vi.mock('../../layouts/FieldDescription', () => ({
+  FieldDescription: vi.fn(),
 }));
 
 describe('TagsField', () => {
@@ -109,6 +114,17 @@ describe('TagsField', () => {
         disabled: true,
       }),
       expect.anything(),
+    );
+  });
+
+  it('renders FieldDescription with element prop', () => {
+    render(<TagsField element={mockElement} />);
+
+    expect(FieldDescription).toHaveBeenCalledWith(
+      expect.objectContaining({
+        element: mockElement,
+      }),
+      expect.any(Object),
     );
   });
 });

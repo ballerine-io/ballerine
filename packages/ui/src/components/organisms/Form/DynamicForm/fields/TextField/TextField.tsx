@@ -5,6 +5,7 @@ import { useCallback } from 'react';
 import { useElement, useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
+import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { TDynamicFormField } from '../../types';
@@ -64,6 +65,7 @@ export const TextField: TDynamicFormField<ITextFieldParams> = ({ element }) => {
           value={value?.toString() || ''} // Ensure value is string or number
         />
       )}
+      <FieldDescription element={element} />
       <FieldErrors element={element} />
     </FieldLayout>
   );

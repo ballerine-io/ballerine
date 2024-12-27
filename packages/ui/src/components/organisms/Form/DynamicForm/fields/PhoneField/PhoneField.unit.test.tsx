@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
+import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { IFormElement } from '../../types';
@@ -30,6 +31,10 @@ vi.mock('../../hooks/internal/useUnmountEvent', () => ({
 
 vi.mock('../../layouts/FieldErrors', () => ({
   FieldErrors: vi.fn(),
+}));
+
+vi.mock('../../layouts/FieldDescription', () => ({
+  FieldDescription: vi.fn(),
 }));
 
 vi.mock('../../layouts/FieldLayout', () => ({
@@ -115,6 +120,17 @@ describe('PhoneField', () => {
     render(<PhoneField element={mockElement} />);
 
     expect(FieldErrors).toHaveBeenCalledWith(
+      expect.objectContaining({
+        element: mockElement,
+      }),
+      expect.anything(),
+    );
+  });
+
+  it('should render FieldDescription with element prop', () => {
+    render(<PhoneField element={mockElement} />);
+
+    expect(FieldDescription).toHaveBeenCalledWith(
       expect.objectContaining({
         element: mockElement,
       }),

@@ -28,6 +28,9 @@ vi.mock('../../layouts/FieldLayout', () => ({
 vi.mock('../../layouts/FieldErrors', () => ({
   FieldErrors: vi.fn(({ element }) => <div data-testid="field-errors">{element.id}</div>),
 }));
+vi.mock('../../layouts/FieldDescription', () => ({
+  FieldDescription: vi.fn(({ element }) => <div data-testid="field-description">{element.id}</div>),
+}));
 
 describe('FileField', () => {
   const mockElement = {
@@ -156,5 +159,12 @@ describe('FileField', () => {
 
     expect(useMountEvent).toHaveBeenCalledWith(mockElement);
     expect(useUnmountEvent).toHaveBeenCalledWith(mockElement);
+  });
+
+  it('renders field description with element prop', () => {
+    render(<FileField element={mockElement} />);
+    const description = screen.getByTestId('field-description');
+    expect(description).toBeInTheDocument();
+    expect(description).toHaveTextContent(mockElement.id);
   });
 });

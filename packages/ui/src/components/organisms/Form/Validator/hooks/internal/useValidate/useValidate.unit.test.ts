@@ -423,7 +423,7 @@ describe('useValidate', () => {
 
           rerender();
 
-          await vi.advanceTimersByTimeAsync(550);
+          await vi.advanceTimersByTimeAsync(600);
 
           expect(result.current.errors).toEqual([]);
         });

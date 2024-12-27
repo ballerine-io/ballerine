@@ -6,6 +6,7 @@ import { IFormEventElement, TElementEvent } from '../hooks/internal/useEvents/ty
 export interface ICommonFieldParams {
   label?: string;
   placeholder?: string;
+  description?: string;
 }
 
 export interface IFormElement<TElements = string, TParams = object> {

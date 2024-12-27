@@ -1,19 +1,14 @@
-import { ctw } from '@/common';
 import { createTestId } from '@/components/organisms/Renderer';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
+import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { CheckboxListField, ICheckboxListFieldParams } from './CheckboxList';
-
-// Mock dependencies
-vi.mock('@/common', () => ({
-  ctw: vi.fn(),
-}));
 
 vi.mock('@/components/organisms/Renderer', () => ({
   createTestId: vi.fn(),
@@ -31,6 +26,10 @@ vi.mock('../../layouts/FieldErrors', () => ({
   FieldErrors: vi.fn(),
 }));
 
+vi.mock('../../layouts/FieldDescription', () => ({
+  FieldDescription: vi.fn(),
+}));
+
 vi.mock('@/components/atoms', () => ({
   Checkbox: vi.fn((props: any) => (
     <input
@@ -42,6 +41,7 @@ vi.mock('@/components/atoms', () => ({
       onFocus={props.onFocus}
       onBlur={props.onBlur}
       className={props.className}
+      disabled={props.disabled}
     />
   )),
 }));
@@ -78,7 +78,6 @@ describe('CheckboxListField', () => {
     vi.clearAllMocks();
 
     vi.mocked(createTestId).mockReturnValue('test-checkbox-list');
-    vi.mocked(ctw).mockImplementation((...args: any[]) => args.filter(Boolean).join(' '));
     vi.mocked(useStack).mockReturnValue({ stack: [] });
 
     vi.mocked(useField).mockReturnValue({
@@ -192,6 +191,21 @@ describe('CheckboxListField', () => {
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
   });
 
+  it('disables all checkboxes when disabled is true', () => {
+    vi.mocked(useField).mockReturnValue({
+      value: ['opt1'],
+      onChange: vi.fn(),
+      onFocus: vi.fn(),
+      onBlur: vi.fn(),
+      disabled: true,
+    } as unknown as ReturnType<typeof useField>);
+
+    render(<CheckboxListField element={mockElement} />);
+
+    const container = screen.getByTestId('test-checkbox-list');
+    expect(container).toHaveClass('pointer-events-none opacity-50');
+  });
+
   it('should call useMountEvent with element', () => {
     const mockUseMountEvent = vi.mocked(useMountEvent);
     render(<CheckboxListField element={mockElement} />);
@@ -202,6 +216,14 @@ describe('CheckboxListField', () => {
     const mockUseUnmountEvent = vi.mocked(useUnmountEvent);
     render(<CheckboxListField element={mockElement} />);
     expect(mockUseUnmountEvent).toHaveBeenCalledWith(mockElement);
+  });
+
+  it('should render FieldDescription with element prop', () => {
+    render(<CheckboxListField element={mockElement} />);
+    expect(FieldDescription).toHaveBeenCalledWith(
+      expect.objectContaining({ element: mockElement }),
+      expect.anything(),
+    );
   });
 
   it('should render FieldErrors with element prop', () => {
