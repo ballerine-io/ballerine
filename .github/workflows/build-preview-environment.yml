@@ -147,7 +147,8 @@ jobs:
       - name: Checkout repository
         run: |
           docker pull ghcr.io/${{ github.repository_owner }}/${{ vars.UNIFIED_IMAGE_NAME }}:latest
-          docker tag ghcr.io/${{ github.repository_owner }}/${{ vars.UNIFIED_IMAGE_NAME }}:latest ghcr.io/${{ github.repository_owner }}/${{ vars.UNIFIED_IMAGE_NAME }}:${{ needs.deploy-dev-pr-environment.outputs.env_name }} 
+          docker tag ghcr.io/${{ github.repository_owner }}/${{ vars.UNIFIED_IMAGE_NAME }}:latest ghcr.io/${{ github.repository_owner }}/${{ vars.UNIFIED_IMAGE_NAME }}:${{ needs.deploy-dev-pr-environment.outputs.env_name }}
+          docker push ghcr.io/${{ github.repository_owner }}/${{ vars.UNIFIED_IMAGE_NAME }}:${{ needs.deploy-dev-pr-environment.outputs.env_name }} 
 
   deploy-preview:
     needs: [deploy-dev-pr-environment,build-wf-service,build-wf-service-ee,build-backoffice,build-kyb,build-dashboard,build-unified-api]
