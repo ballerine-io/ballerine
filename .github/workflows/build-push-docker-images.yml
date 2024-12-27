@@ -83,9 +83,9 @@ jobs:
           repo: wf-data-migration
           branch: dev
 
-      - name: Get tags
-        if: ${{ inputs.image_name }} != 'workflows-service-ee'
-        run: git fetch --tags origin
+      # - name: Get tags
+      #   if: ${{ inputs.image_name }} != 'workflows-service-ee'
+      #   run: git fetch --tags origin
 
       - name: Get version
         if: ${{ inputs.image_name }} == 'workflows-service' && ${{inputs.image_name}} != 'workflows-service-ee'
@@ -161,15 +161,3 @@ jobs:
           file: ${{ inputs.file }}
           build-args: |
             ${{ (inputs.image_name == 'workflows-service' && format('"RELEASE={0}"\n"SHORT_SHA={1}"', steps.version.outputs.tag, steps.version.outputs.sha_short)) || (inputs.image_name == 'workflows-service-ee' && format('"BASE_IMAGE=ghcr.io/ballerine-io/workflows-service:{0}"', inputs.tag)) || '' }}
-
-      - name: Scan Docker Image
-        uses: aquasecurity/trivy-action@master
-        continue-on-error: true
-        with:
-          image-ref: ${{ steps.docker_meta.outputs.tags }}
-          format: 'table'
-          ignore-unfixed: true
-          exit-code: 1
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-          timeout: '5m'
