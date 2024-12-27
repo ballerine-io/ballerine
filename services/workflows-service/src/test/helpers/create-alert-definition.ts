@@ -58,7 +58,9 @@ export const createAlertDefinition = async (
         },
         excludePaymentMethods: faker.datatype.boolean(),
       },
-      subjects: [faker.helpers.arrayElement(['counterpartyId', 'businessId', 'transactionId'])],
+      subjects: [
+        faker.helpers.arrayElement(['counterpartyBeneficiaryId', 'counterpartyOriginatorId']),
+      ],
     },
   };
 

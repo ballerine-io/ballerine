@@ -6,6 +6,7 @@ import { WorkflowModule } from '@/workflow/workflow.module';
 import { Module } from '@nestjs/common';
 import { AlertModule } from '@/alert/alert.module';
 import { EndUserModule } from '@/end-user/end-user.module';
+import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { EndUserModule } from '@/end-user/end-user.module';
     TransactionModule,
     EndUserModule,
     AlertModule,
+    UiDefinitionModule,
   ],
   providers: [CaseManagementService],
   controllers: [CaseManagementController],

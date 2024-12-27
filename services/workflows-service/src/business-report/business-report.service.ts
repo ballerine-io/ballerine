@@ -122,8 +122,8 @@ export class BusinessReportService {
       );
     }
 
-    if (businessReportsRequests.length > 100) {
-      throw new UnprocessableEntityException('Batch size is too large');
+    if (businessReportsRequests.length > 10000) {
+      throw new UnprocessableEntityException('Batch size is too large, the maximum is 10000');
     }
 
     const batchId = randomUUID();

@@ -9,5 +9,6 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres15:/var/lib/postgresql/data
+    restart: unless-stopped
 volumes:
   postgres15: ~
