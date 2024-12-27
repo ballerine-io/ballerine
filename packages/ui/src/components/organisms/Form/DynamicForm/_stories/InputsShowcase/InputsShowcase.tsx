@@ -94,6 +94,19 @@ const schema: Array<IFormElement<any, any>> = [
     },
   },
   {
+    id: 'RadioField',
+    element: 'radiofield',
+    valueDestination: 'radio',
+    params: {
+      label: 'Radio Field',
+      options: [
+        { value: 'option1', label: 'Option 1' },
+        { value: 'option2', label: 'Option 2' },
+        { value: 'option3', label: 'Option 3' },
+      ],
+    },
+  },
+  {
     id: 'FileField',
     element: 'filefield',
     valueDestination: 'file',

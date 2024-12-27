@@ -7,6 +7,7 @@ import { FieldList } from '../fields/FieldList';
 import { FileField } from '../fields/FileField';
 import { MultiselectField } from '../fields/MultiselectField';
 import { PhoneField } from '../fields/PhoneField';
+import { RadioField } from '../fields/RadioField';
 import { SelectField } from '../fields/SelectField';
 import { TextField } from '../fields/TextField';
 import { TDynamicFormField } from '../types';
@@ -23,6 +24,7 @@ export const baseFields = {
   submitbutton: SubmitButton,
   phonefield: PhoneField,
   filefield: FileField,
+  radiofield: RadioField,
 } as const;
 
 export type TBaseFields = keyof typeof baseFields & string;
