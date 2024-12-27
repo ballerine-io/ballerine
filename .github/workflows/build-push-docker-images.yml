@@ -47,6 +47,7 @@ jobs:
           persist-credentials: false
 
       - name: Configure AWS credentials
+        if: inputs.image_name == 'workflows-service-ee'
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ vars.PREVIEW_OIDC_ROLE }}
@@ -54,6 +55,7 @@ jobs:
 
       # Access the secret
       - name: Retrieve secret from Secrets Manager
+        if: inputs.image_name == 'workflows-service-ee'
         id: get-secret
         run: |
           secret_value=$(aws secretsmanager get-secret-value --secret-id ${{ vars.PREVIEW_SECRET }} --query 'SecretString' --output text | jq -r '.SUBMODULE_SECRET')
