@@ -80,7 +80,7 @@ type AdsAndSocialDataFieldProps = {
 };
 const AdsAndSocialDataField = ({ label, icon, value }: AdsAndSocialDataFieldProps) => (
   <div className={ctw('flex justify-between', label !== 'Biography' && 'items-center')}>
-    <div className={'flex basis-1/3 items-center gap-4 whitespace-nowrap'}>
+    <div className="flex basis-1/3 items-center gap-4 whitespace-nowrap">
       {icon}
       <span className="font-semibold">{label}</span>
     </div>
