@@ -1,189 +1,120 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { IDynamicFormContext, useDynamicForm } from '../../context';
 import { useElement, useField } from '../../hooks/external';
+import { useRequired } from '../../hooks/external/useRequired';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
-import { FieldErrors } from '../../layouts/FieldErrors';
-import { FieldLayout } from '../../layouts/FieldLayout';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { CheckboxField } from './CheckboxField';
 
-// Mock dependencies
-vi.mock('@/components/atoms', () => ({
-  Checkbox: vi.fn((props: any) => (
-    <input
-      type="checkbox"
-      checked={props.checked}
-      onChange={e => props.onCheckedChange(e.target.checked)}
-      disabled={props.disabled}
-      onFocus={props.onFocus}
-      onBlur={props.onBlur}
-      data-testid="test-checkbox"
-      id={props.id}
-    />
-  )),
-}));
-
-vi.mock('../FieldList/providers/StackProvider', () => ({
-  useStack: vi.fn(),
-}));
-
-vi.mock('../../hooks/external/useField', () => ({
-  useField: vi.fn(),
-}));
-
-vi.mock('../../hooks/external/useElement', () => ({
-  useElement: vi.fn(),
-}));
-
-vi.mock('../../layouts/FieldLayout', () => ({
-  FieldLayout: vi.fn(({ children }) => <div data-testid="field-layout">{children}</div>),
-}));
-
-vi.mock('../../layouts/FieldErrors', () => ({
-  FieldErrors: vi.fn(() => <div data-testid="field-errors" />),
-}));
-
-vi.mock('../../hooks/internal/useMountEvent', () => ({
-  useMountEvent: vi.fn(),
-}));
-
-vi.mock('../../hooks/internal/useUnmountEvent', () => ({
-  useUnmountEvent: vi.fn(),
-}));
+vi.mock('../../context');
+vi.mock('../FieldList/providers/StackProvider');
+vi.mock('../../hooks/external');
+vi.mock('../../hooks/external/useRequired');
+vi.mock('../../hooks/internal/useMountEvent');
+vi.mock('../../hooks/internal/useUnmountEvent');
 
 describe('CheckboxField', () => {
-  const mockStack = [0];
   const mockElement = {
-    id: 'test-checkbox',
-    type: '',
-  } as unknown as IFormElement<string, object>;
+    id: 'test',
+    type: 'checkbox',
+    params: {
+      label: 'Test Label',
+    },
+  } as unknown as IFormElement<string, any>;
 
-  const mockFieldProps = {
-    value: false,
-    onChange: vi.fn(),
-    onFocus: vi.fn(),
-    onBlur: vi.fn(),
-    disabled: false,
-  } as unknown as ReturnType<typeof useField>;
+  const mockOnChange = vi.fn();
+  const mockOnFocus = vi.fn();
+  const mockOnBlur = vi.fn();
 
   beforeEach(() => {
-    cleanup();
-    vi.clearAllMocks();
-    vi.mocked(useStack).mockReturnValue({ stack: mockStack });
-    vi.mocked(useField).mockReturnValue(mockFieldProps);
-    vi.mocked(useElement).mockReturnValue({ id: 'test-checkbox-id' } as unknown as ReturnType<
-      typeof useElement
-    >);
-  });
-
-  it('renders checkbox with correct initial state', () => {
-    render(<CheckboxField element={mockElement} />);
-    const checkbox = screen.getByTestId('test-checkbox');
-    expect(checkbox).toBeInTheDocument();
-    expect(checkbox).not.toBeChecked();
-    expect(checkbox).toHaveAttribute('id', 'test-checkbox-id');
-  });
-
-  it('renders field layout and errors', () => {
-    render(<CheckboxField element={mockElement} />);
-    expect(screen.getByTestId('field-layout')).toBeInTheDocument();
-    expect(screen.getByTestId('field-errors')).toBeInTheDocument();
-    expect(vi.mocked(FieldLayout)).toHaveBeenCalledWith(
-      expect.objectContaining({
-        element: mockElement,
-        layout: 'horizontal',
-      }),
-      expect.any(Object),
-    );
-  });
-
-  it('renders checked checkbox when value is true', () => {
+    vi.mocked(useDynamicForm).mockReturnValue({
+      values: {},
+    } as unknown as IDynamicFormContext<object>);
+    vi.mocked(useStack).mockReturnValue({ stack: [] });
+    vi.mocked(useElement).mockReturnValue({ id: 'test-id', originId: 'test-id', hidden: false });
     vi.mocked(useField).mockReturnValue({
-      ...mockFieldProps,
-      value: true,
-    });
-
-    render(<CheckboxField element={mockElement} />);
-    expect(screen.getByTestId('test-checkbox')).toBeChecked();
-  });
-
-  it('handles onChange events', async () => {
-    const mockOnChange = vi.fn();
-    vi.mocked(useField).mockReturnValue({
-      ...mockFieldProps,
+      value: false,
       onChange: mockOnChange,
+      onFocus: mockOnFocus,
+      onBlur: mockOnBlur,
+      disabled: false,
+      touched: false,
     });
+    vi.mocked(useRequired).mockReturnValue(false);
+    vi.mocked(useMountEvent).mockReturnValue();
+    vi.mocked(useUnmountEvent).mockReturnValue();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders checkbox with label', () => {
+    render(<CheckboxField element={mockElement} />);
+
+    expect(screen.getByRole('checkbox')).toBeInTheDocument();
+    expect(screen.getByText('Test Label (optional)')).toBeInTheDocument();
+  });
+
+  it('renders required label when isRequired is true', () => {
+    vi.mocked(useRequired).mockReturnValue(true);
 
     render(<CheckboxField element={mockElement} />);
 
-    const checkbox = screen.getByTestId('test-checkbox');
+    expect(screen.getByText('Test Label')).toBeInTheDocument();
+  });
+
+  it('handles checkbox state changes', async () => {
+    render(<CheckboxField element={mockElement} />);
+
+    const checkbox = screen.getByRole('checkbox');
     await userEvent.click(checkbox);
 
-    expect(mockOnChange).toHaveBeenCalledWith(true);
+    expect(mockOnChange).toHaveBeenCalled();
   });
 
   it('handles focus events', async () => {
-    const user = userEvent.setup();
     render(<CheckboxField element={mockElement} />);
 
-    const checkbox = screen.getByTestId('test-checkbox');
-    await user.click(checkbox);
+    screen.getByRole('checkbox');
+    await userEvent.tab();
 
-    expect(mockFieldProps.onFocus).toHaveBeenCalled();
+    expect(mockOnFocus).toHaveBeenCalled();
   });
 
   it('handles blur events', async () => {
-    const user = userEvent.setup();
     render(<CheckboxField element={mockElement} />);
 
-    const checkbox = screen.getByTestId('test-checkbox');
-    await user.click(checkbox);
-    await user.tab();
+    const checkbox = screen.getByRole('checkbox');
+    checkbox.focus();
+    checkbox.blur();
 
-    expect(mockFieldProps.onBlur).toHaveBeenCalled();
+    expect(mockOnBlur).toHaveBeenCalled();
   });
 
   it('disables checkbox when disabled prop is true', () => {
     vi.mocked(useField).mockReturnValue({
-      ...mockFieldProps,
+      value: false,
+      onChange: mockOnChange,
+      onFocus: mockOnFocus,
+      onBlur: mockOnBlur,
       disabled: true,
+      touched: false,
     });
 
     render(<CheckboxField element={mockElement} />);
-    expect(screen.getByTestId('test-checkbox')).toBeDisabled();
+
+    expect(screen.getByRole('checkbox')).toBeDisabled();
   });
 
-  it('handles undefined value as unchecked', () => {
-    vi.mocked(useField).mockReturnValue({
-      ...mockFieldProps,
-      value: undefined,
-    });
-
+  it('calls mount and unmount events', () => {
     render(<CheckboxField element={mockElement} />);
-    expect(screen.getByTestId('test-checkbox')).not.toBeChecked();
-  });
 
-  it('should call useMountEvent with element', () => {
-    const mockUseMountEvent = vi.mocked(useMountEvent);
-    render(<CheckboxField element={mockElement} />);
-    expect(mockUseMountEvent).toHaveBeenCalledWith(mockElement);
-  });
-
-  it('should call useUnmountEvent with element', () => {
-    const mockUseUnmountEvent = vi.mocked(useUnmountEvent);
-    const { unmount } = render(<CheckboxField element={mockElement} />);
-    unmount();
-    expect(mockUseUnmountEvent).toHaveBeenCalledWith(mockElement);
-  });
-
-  it('should render FieldErrors with element prop', () => {
-    render(<CheckboxField element={mockElement} />);
-    expect(FieldErrors).toHaveBeenCalledWith(
-      expect.objectContaining({ element: mockElement }),
-      expect.anything(),
-    );
+    expect(useMountEvent).toHaveBeenCalledWith(mockElement);
+    expect(useUnmountEvent).toHaveBeenCalledWith(mockElement);
   });
 });

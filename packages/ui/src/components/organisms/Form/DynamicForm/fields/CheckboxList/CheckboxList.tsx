@@ -4,6 +4,7 @@ import { createTestId } from '@/components/organisms/Renderer';
 import { useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
+import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { TDynamicFormField } from '../../types';
@@ -58,6 +59,7 @@ export const CheckboxListField: TDynamicFormField<ICheckboxListFieldParams> = ({
           </label>
         ))}
       </div>
+      <FieldDescription element={element} />
       <FieldErrors element={element} />
     </FieldLayout>
   );

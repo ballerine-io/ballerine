@@ -9,6 +9,7 @@ import { useStack } from '../FieldList/providers/StackProvider';
 
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
+import { FieldDescription } from '../../layouts/FieldDescription';
 
 export interface IAutocompleteFieldOption {
   label: string;
@@ -46,6 +47,7 @@ export const AutocompleteField: TDynamicFormField<IAutocompleteFieldParams> = ({
         onBlur={onBlur}
         onFocus={onFocus}
       />
+      <FieldDescription element={element} />
       <FieldErrors element={element} />
     </FieldLayout>
   );

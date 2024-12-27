@@ -12,6 +12,7 @@ const schema: Array<IFormElement<any, any>> = [
     params: {
       label: 'Text Field',
       placeholder: 'Enter text',
+      description: 'This is a text field for entering any text value',
     },
     validate: [],
   },
@@ -22,6 +23,7 @@ const schema: Array<IFormElement<any, any>> = [
     params: {
       label: 'Autocomplete Field',
       placeholder: 'Select an option',
+      description: 'This is an autocomplete field that provides suggestions as you type',
       options: [
         { value: 'option1', label: 'Option 1' },
         { value: 'option2', label: 'Option 2' },
@@ -35,6 +37,7 @@ const schema: Array<IFormElement<any, any>> = [
     valueDestination: 'checkboxlist',
     params: {
       label: 'Checkbox List Field',
+      description: 'Select multiple options from this list of checkboxes',
       options: [
         { value: 'option1', label: 'Option 1' },
         { value: 'option2', label: 'Option 2' },
@@ -48,6 +51,7 @@ const schema: Array<IFormElement<any, any>> = [
     valueDestination: 'date',
     params: {
       label: 'Date Field',
+      description: 'Select a date from the calendar',
     },
   },
   {
@@ -56,6 +60,7 @@ const schema: Array<IFormElement<any, any>> = [
     valueDestination: 'multiselect',
     params: {
       label: 'Multiselect Field',
+      description: 'Select multiple options from the dropdown list',
       options: [
         { value: 'option1', label: 'Option 1' },
         { value: 'option2', label: 'Option 2' },
@@ -69,6 +74,7 @@ const schema: Array<IFormElement<any, any>> = [
     valueDestination: 'select',
     params: {
       label: 'Select Field',
+      description: 'Choose a single option from the dropdown list',
       options: [
         { value: 'option1', label: 'Option 1' },
         { value: 'option2', label: 'Option 2' },
@@ -82,6 +88,7 @@ const schema: Array<IFormElement<any, any>> = [
     valueDestination: 'checkbox',
     params: {
       label: 'Checkbox Field',
+      description: 'Toggle this checkbox for a yes/no selection',
     },
   },
   {
@@ -90,6 +97,7 @@ const schema: Array<IFormElement<any, any>> = [
     valueDestination: 'phone',
     params: {
       label: 'Phone Field',
+      description: 'Enter a phone number with country code selection',
       defaultCountry: 'il',
     },
   },
@@ -99,6 +107,7 @@ const schema: Array<IFormElement<any, any>> = [
     valueDestination: 'radio',
     params: {
       label: 'Radio Field',
+      description: 'Select one option from these radio buttons',
       options: [
         { value: 'option1', label: 'Option 1' },
         { value: 'option2', label: 'Option 2' },
@@ -112,6 +121,7 @@ const schema: Array<IFormElement<any, any>> = [
     valueDestination: 'tags',
     params: {
       label: 'Tags Field',
+      description: 'Add multiple tags by typing and pressing enter',
     },
   },
   {
@@ -121,6 +131,7 @@ const schema: Array<IFormElement<any, any>> = [
     params: {
       label: 'File Field',
       placeholder: 'Select File',
+      description: 'Upload a file from your device',
     },
   },
   {
@@ -129,6 +140,7 @@ const schema: Array<IFormElement<any, any>> = [
     valueDestination: 'fieldlist',
     params: {
       label: 'Field List',
+      description: 'A list of repeatable form fields that can be added or removed',
     },
     children: [
       {
@@ -138,6 +150,7 @@ const schema: Array<IFormElement<any, any>> = [
         params: {
           label: 'Text Field',
           placeholder: 'Enter text',
+          description: 'Enter text for this list item',
         },
         validate: [
           {

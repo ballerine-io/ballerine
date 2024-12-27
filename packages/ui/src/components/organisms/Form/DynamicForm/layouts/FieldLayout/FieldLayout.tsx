@@ -32,7 +32,6 @@ export const FieldLayout: FunctionComponent<IFieldLayoutProps> = ({
         className={ctw('flex py-2', {
           'gap-2': Boolean(label),
           'flex-col': layout === 'vertical',
-          'flex-row flex-row-reverse items-center justify-end': layout === 'horizontal',
         })}
       >
         <div className="flex items-center">
@@ -42,13 +41,7 @@ export const FieldLayout: FunctionComponent<IFieldLayoutProps> = ({
             </Label>
           )}
         </div>
-        <div
-          className={ctw('flex flex-col', {
-            'justify-center': layout === 'horizontal',
-          })}
-        >
-          {children}
-        </div>
+        <div className={ctw('flex flex-col')}>{children}</div>
       </div>
     </div>
   );

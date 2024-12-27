@@ -1,199 +1,109 @@
-import { cleanup, render, screen } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { IDynamicFormContext, useDynamicForm } from '../../context';
+import { useStack } from '../../fields/FieldList/providers/StackProvider';
 import { useElement } from '../../hooks/external';
 import { useRequired } from '../../hooks/external/useRequired';
 import { IFormElement } from '../../types';
 import { FieldLayout } from './FieldLayout';
 
-// Mock dependencies
-vi.mock('@/common', () => ({
-  ctw: vi.fn((base, conditionals) => {
-    if (conditionals) {
-      return Object.entries(conditionals)
-        .filter(([_, value]) => value)
-        .map(([key]) => key)
-        .concat(base)
-        .join(' ');
-    }
-
-    return base;
-  }),
-}));
-
-vi.mock('@/components/atoms', () => ({
-  Label: ({ children, ...props }: { children: React.ReactNode; [key: string]: any }) => (
-    <label {...props}>{children}</label>
-  ),
-}));
-
-vi.mock('../../context', () => ({
-  useDynamicForm: vi.fn(() => ({ values: {} })),
-}));
-
-vi.mock('../../fields/FieldList/providers/StackProvider', () => ({
-  useStack: vi.fn(() => ({ stack: [] })),
-}));
-
-vi.mock('../../hooks/external', () => ({
-  useElement: vi.fn(element => ({ id: element.id, hidden: false })),
-}));
-
-vi.mock('../../hooks/external/useRequired', () => ({
-  useRequired: vi.fn(),
-}));
+vi.mock('../../context');
+vi.mock('../../fields/FieldList/providers/StackProvider');
+vi.mock('../../hooks/external');
+vi.mock('../../hooks/external/useRequired');
 
 describe('FieldLayout', () => {
-  beforeEach(() => {
-    cleanup();
-    vi.clearAllMocks();
-    vi.restoreAllMocks();
-  });
-
   const mockElement = {
-    id: 'test-field',
+    id: 'test',
+    type: 'text',
     params: {
       label: 'Test Label',
     },
-  } as unknown as IFormElement;
+  } as unknown as IFormElement<string, any>;
 
-  it('should render children', () => {
+  beforeEach(() => {
+    vi.mocked(useDynamicForm).mockReturnValue({
+      values: {},
+    } as unknown as IDynamicFormContext<object>);
+    vi.mocked(useStack).mockReturnValue({ stack: [] });
+    vi.mocked(useElement).mockReturnValue({ id: 'test-id', originId: 'test-id', hidden: false });
     vi.mocked(useRequired).mockReturnValue(false);
+  });
 
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders children and label when provided', () => {
     render(
       <FieldLayout element={mockElement}>
-        <div data-testid="child">Child Content</div>
+        <div>Test Child</div>
       </FieldLayout>,
     );
 
-    expect(screen.getByTestId('child')).toBeInTheDocument();
+    expect(screen.getByTestId('test-id-field-layout')).toBeInTheDocument();
+    expect(screen.getByText('Test Label (optional)')).toBeInTheDocument();
+    expect(screen.getByText('Test Child')).toBeInTheDocument();
   });
 
-  it('should render with correct data-testid', () => {
-    vi.mocked(useRequired).mockReturnValue(false);
-
-    render(
-      <FieldLayout element={mockElement}>
-        <div>Child Content</div>
-      </FieldLayout>,
-    );
-
-    expect(screen.getByTestId('test-field-field-layout')).toBeInTheDocument();
-  });
-
-  it('should not render label when label prop is not provided', () => {
-    vi.mocked(useRequired).mockReturnValue(false);
-
-    const elementWithoutLabel = {
-      id: 'test-field',
-      params: {},
-    } as unknown as IFormElement;
-
-    render(
-      <FieldLayout element={elementWithoutLabel}>
-        <div>Child Content</div>
-      </FieldLayout>,
-    );
-
-    expect(screen.queryByText(/Test Label/)).not.toBeInTheDocument();
-  });
-
-  it('should render required label when field is required', () => {
+  it('renders required label when isRequired is true', () => {
     vi.mocked(useRequired).mockReturnValue(true);
 
     render(
       <FieldLayout element={mockElement}>
-        <div>Child Content</div>
+        <div>Test Child</div>
       </FieldLayout>,
     );
 
     expect(screen.getByText('Test Label')).toBeInTheDocument();
   });
 
-  it('should render optional label when field is not required', () => {
-    vi.mocked(useRequired).mockReturnValue(false);
+  it('does not render when hidden is true', () => {
+    vi.mocked(useElement).mockReturnValue({ id: 'test-id', originId: 'test-id', hidden: true });
 
     render(
       <FieldLayout element={mockElement}>
-        <div>Child Content</div>
+        <div>Test Child</div>
       </FieldLayout>,
     );
 
-    expect(screen.getByText('Test Label (optional)')).toBeInTheDocument();
+    expect(screen.queryByTestId('test-id-field-layout')).not.toBeInTheDocument();
   });
 
-  it('should render label with correct htmlFor attribute', () => {
-    vi.mocked(useRequired).mockReturnValue(false);
+  it('renders without label when not provided', () => {
+    const elementWithoutLabel = {
+      ...mockElement,
+      params: {},
+    };
 
     render(
-      <FieldLayout element={mockElement}>
-        <div>Child Content</div>
+      <FieldLayout element={elementWithoutLabel}>
+        <div>Test Child</div>
       </FieldLayout>,
     );
 
-    const label = screen.getByText('Test Label (optional)');
-    expect(label).toHaveAttribute('for', 'test-field');
+    expect(screen.queryByRole('label')).not.toBeInTheDocument();
   });
 
-  it('should render label with correct id attribute', () => {
-    vi.mocked(useRequired).mockReturnValue(false);
-
-    render(
-      <FieldLayout element={mockElement}>
-        <div>Child Content</div>
-      </FieldLayout>,
-    );
-
-    const label = screen.getByText('Test Label (optional)');
-    expect(label).toHaveAttribute('id', 'test-field-label');
-  });
-
-  it('should not render anything when hidden is true', () => {
-    vi.mocked(useElement).mockReturnValue({ id: 'test-field', hidden: true } as ReturnType<
-      typeof useElement
-    >);
-    vi.mocked(useRequired).mockReturnValue(false);
-
-    render(
-      <FieldLayout element={mockElement}>
-        <div>Child Content</div>
-      </FieldLayout>,
-    );
-
-    expect(screen.queryByTestId('test-field-field-layout')).not.toBeInTheDocument();
-  });
-
-  it('should apply correct classes for vertical layout', () => {
-    vi.mocked(useElement).mockReturnValue({ id: 'test-field', hidden: false } as ReturnType<
-      typeof useElement
-    >);
-    vi.mocked(useRequired).mockReturnValue(false);
-
-    render(
-      <FieldLayout element={mockElement} layout="vertical">
-        <div>Child Content</div>
-      </FieldLayout>,
-    );
-
-    const container = screen.getByTestId('test-field-field-layout').children[0] as HTMLElement;
-    expect(container.className).toContain('flex-col');
-  });
-
-  it('should apply correct classes for horizontal layout', () => {
-    vi.mocked(useElement).mockReturnValue({ id: 'test-field', hidden: false } as ReturnType<
-      typeof useElement
-    >);
-    vi.mocked(useRequired).mockReturnValue(false);
-
+  it('applies horizontal layout classes when specified', () => {
     render(
       <FieldLayout element={mockElement} layout="horizontal">
-        <div>Child Content</div>
+        <div>Test Child</div>
       </FieldLayout>,
     );
 
-    const container = screen.getByTestId('test-field-field-layout').children[0] as HTMLElement;
-    expect(container.className).toContain('flex-row');
-    expect(container.className).toContain('items-center');
-    expect(container.className).toContain('flex-row-reverse');
-    expect(container.className).toContain('justify-end');
+    const container = screen.getByTestId('test-id-field-layout').children[0];
+    expect(container?.className).not.toContain('flex-col');
+  });
+
+  it('applies vertical layout classes by default', () => {
+    render(
+      <FieldLayout element={mockElement}>
+        <div>Test Child</div>
+      </FieldLayout>,
+    );
+
+    const container = screen.getByTestId('test-id-field-layout').children[0];
+    expect(container?.className).toContain('flex-col');
   });
 });

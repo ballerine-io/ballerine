@@ -7,6 +7,7 @@ import { useElement, useField } from '../../hooks/external';
 import { useEvents } from '../../hooks/internal/useEvents';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
+import { FieldDescription } from '../../layouts/FieldDescription';
 import { TBaseFields } from '../../repositories/fields-repository';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
@@ -66,6 +67,10 @@ vi.mock('../../layouts/FieldLayout', () => ({
 
 vi.mock('../../layouts/FieldErrors', () => ({
   FieldErrors: () => null,
+}));
+
+vi.mock('../../layouts/FieldDescription', () => ({
+  FieldDescription: vi.fn(),
 }));
 
 describe('SelectField', () => {
@@ -295,5 +300,16 @@ describe('SelectField', () => {
     expect(mockUseUnmountEvent).toHaveBeenCalledWith(mockElement);
 
     unmount();
+  });
+
+  it('should render FieldDescription with element prop', () => {
+    render(<SelectField element={mockElement} />);
+
+    expect(FieldDescription).toHaveBeenCalledWith(
+      expect.objectContaining({
+        element: mockElement,
+      }),
+      expect.any(Object),
+    );
   });
 });
