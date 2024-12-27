@@ -65,7 +65,7 @@ const socialMediaMapper: {
       isVerified: { icon: <CheckIcon className="h-5 w-5 text-gray-500" />, label: 'Verified' },
       followers: { icon: <UsersIcon className="h-5 w-5 text-gray-500" />, label: 'Followers' },
       categories: {
-        icon: <BriefcaseIcon className="h-5 w-5 text-gray-500" />,
+        icon: <TagIcon className="h-5 w-5 text-gray-500" />,
         label: 'Categories',
       },
       biography: { icon: <InfoIcon className="h-5 w-5 text-gray-500" />, label: 'Biography' },
@@ -141,7 +141,7 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
           const idValue = ('id' in rest ? rest.id : rest.userName) || null;
 
           return (
-            <Card className={ctw('w-full p-4 shadow-l', !page && 'opacity-60')}>
+            <Card key={provider} className={ctw('shadow-l w-full p-4', !page && 'opacity-60')}>
               <div className="flex flex-row items-center gap-2 font-semibold">
                 {socialMediaMapper[provider].icon}
                 <h4 className="text-xl">{capitalize(provider)}</h4>
@@ -200,7 +200,7 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
                   </a>
                 </div>
               ) : (
-                <div className="flex items-center gap-2 text-gray-400 my-4">
+                <div className="my-4 flex items-center gap-2 text-gray-400">
                   <BanIcon className="h-5 w-5" />
                   <span className="text-sm">No {capitalize(provider)} profile detected.</span>
                 </div>
