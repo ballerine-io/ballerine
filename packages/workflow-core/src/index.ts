@@ -33,5 +33,6 @@ export {
   logger,
   setLogger,
   BUILT_IN_EVENT,
+  BUILT_IN_ACTION,
   ARRAY_MERGE_OPTION,
 } from './lib';

@@ -74,11 +74,13 @@ const AddressSchema = Type.Object({
 });
 
 const DriversLicenseSchema = Type.Object({
-  Number: Type.String({
-    description: 'The drivers license number of a principal owner.',
-    example: 'M15698025',
-    maxLength: 25,
-  }),
+  Number: Type.Optional(
+    Type.String({
+      description: 'The drivers license number of a principal owner.',
+      example: 'M15698025',
+      maxLength: 25,
+    }),
+  ),
   CountrySubdivision: Type.String({
     description:
       'The abbreviated state or province code for a merchant location (only supported for US and Canada merchants).',
@@ -113,11 +115,13 @@ const PrincipalSchema = Type.Object({
     maxLength: 40,
   }),
   Address: AddressSchema,
-  PhoneNumber: Type.String({
-    description: "The principal owner's phone number, including the area code.",
-    example: '3165557625',
-    maxLength: 25,
-  }),
+  PhoneNumber: Type.Optional(
+    Type.String({
+      description: "The principal owner's phone number, including the area code.",
+      example: '3165557625',
+      maxLength: 25,
+    }),
+  ),
   AltPhoneNumber: Type.Optional(
     Type.String({
       description: "The principal owner's alternate phone number, including the area code.",
@@ -213,11 +217,13 @@ const MerchantSchema = Type.Object({
     }),
   ),
   Address: Type.Optional(AddressSchema),
-  PhoneNumber: Type.String({
-    description: "The Business or Merchant's phone number, including the area code.",
-    example: '3165557625',
-    maxLength: 25,
-  }),
+  PhoneNumber: Type.Optional(
+    Type.String({
+      description: "The Business or Merchant's phone number, including the area code.",
+      example: '3165557625',
+      maxLength: 25,
+    }),
+  ),
   AltPhoneNumber: Type.Optional(
     Type.String({
       description: "The Business or Merchant's alternate phone number, including the area code.",

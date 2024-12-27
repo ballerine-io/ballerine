@@ -51,11 +51,11 @@ export class UiDefinitionRepository {
           ...args,
           where: {
             OR: [
+              ...(args?.where ? [args.where] : []),
               {
                 workflowDefinitionId,
                 uiContext: uiContext,
               },
-              ...(args?.where ? [args.where] : []),
             ],
           },
         },

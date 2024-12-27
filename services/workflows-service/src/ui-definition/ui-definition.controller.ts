@@ -35,14 +35,21 @@ export class UIDefinitionController {
         name: 'id',
         schema: UIDefinitionWhereUniqueInputSchema,
       },
+      {
+        type: 'body',
+        schema: Type.Object({
+          name: Type.String(),
+        }),
+      },
     ],
     response: Type.Any(),
   })
   @common.Post(':id/copy')
   async copyUIDefinition(
     @common.Param('id') id: string,
+    @common.Body() body: { name: string },
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    return this.uiDefinitionService.cloneUIDefinitionById(id, currentProjectId);
+    return this.uiDefinitionService.cloneUIDefinitionById(id, currentProjectId, body.name);
   }
 }

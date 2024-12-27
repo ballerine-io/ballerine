@@ -111,6 +111,8 @@ export class WorkflowDefinitionService {
       merge(restArgs, {
         name,
         displayName,
+        projectId,
+        isPublic: false,
         version: 1,
       }),
     ) as Prisma.WorkflowDefinitionCreateArgs['data'];

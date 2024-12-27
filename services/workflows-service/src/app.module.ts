@@ -77,6 +77,11 @@ export const validate = async (config: Record<string, unknown>) => {
 @Module({
   controllers: [SwaggerController],
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [`.env.${process.env.ENVIRONMENT_NAME}`, '.env'],
+      cache: true,
+    }),
     SentryModule,
     MulterModule.registerAsync({
       imports: [ConfigModule],

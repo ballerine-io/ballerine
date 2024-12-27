@@ -62,13 +62,21 @@ export const ConfigSchema = z
     hasUboOngoingMonitoring: z.boolean().optional(),
     maxBusinessReports: z.number().nonnegative().optional(),
     isMerchantMonitoringEnabled: z.boolean().optional(),
-    isChatbotEnabled: z.boolean().optional(),
     uiOptions: z
       .object({
         redirectUrls: z
           .object({
             success: z.string().url().optional(),
             failure: z.string().url().optional(),
+          })
+          .optional(),
+      })
+      .optional(),
+    editableContext: z
+      .object({
+        kyc: z
+          .object({
+            entity: z.boolean().optional(),
           })
           .optional(),
       })

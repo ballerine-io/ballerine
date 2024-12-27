@@ -9,7 +9,8 @@ import { useWorkflowsQuery } from '../../../../domains/workflows/hooks/queries/u
 import { usePagination } from '@/common/hooks/usePagination/usePagination';
 
 export const useEntities = () => {
-  const [{ filterId, filter, sortBy, sortDir, page, pageSize, search }, setSearchParams] =
+  const { search, onSearch } = useSearch();
+  const [{ filterId, filter, sortBy, sortDir, page, pageSize }, setSearchParams] =
     useSearchParamsByEntity();
 
   const { data, isLoading } = useWorkflowsQuery({
@@ -24,7 +25,6 @@ export const useEntities = () => {
   const cases = data?.data;
   const totalPages = data?.meta?.totalPages ?? 0;
   const entity = useEntityType();
-  const { onSearch, search: searchValue } = useSearch();
 
   const onSortDirToggle = useCallback(() => {
     setSearchParams({
@@ -90,7 +90,7 @@ export const useEntities = () => {
     onFilter: onFilterChange,
     onSortBy: onSortByChange,
     onSortDirToggle,
-    search: searchValue,
+    search,
     cases,
     caseCount: data?.meta?.totalItems || 0,
     isLoading,

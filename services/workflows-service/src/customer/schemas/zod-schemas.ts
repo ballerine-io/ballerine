@@ -11,6 +11,7 @@ const CustomerConfigSchema = z.object({
   hideCreateMerchantMonitoringButton: z.boolean().default(true).optional(),
   isMerchantMonitoringEnabled: z.boolean().default(false).optional(),
   maxBusinessReports: z.number().default(10).optional(),
+  withQualityControl: z.boolean().default(true).optional(),
 });
 
 export type TCustomerConfig = z.infer<typeof CustomerConfigSchema>;

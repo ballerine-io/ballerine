@@ -54,6 +54,7 @@ export const getTabsToBlocksMap = ({
     customDataBlock,
     amlWithContainerBlock,
     merchantScreeningBlock,
+    manageUbosBlock,
   ] = blocks;
 
   const defaultTabsMap = {
@@ -86,6 +87,7 @@ export const getTabsToBlocksMap = ({
       ...ubosUserProvidedBlock,
       ...ubosRegistryProvidedBlock,
       ...amlWithContainerBlock,
+      ...manageUbosBlock,
       ...(createKycBlocks(blocksCreationParams?.workflow as TWorkflowById) || []),
     ],
     [Tab.ASSOCIATED_COMPANIES]: [

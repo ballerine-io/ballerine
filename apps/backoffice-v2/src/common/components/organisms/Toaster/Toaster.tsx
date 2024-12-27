@@ -16,12 +16,14 @@ export const Toaster = ({ className, toastOptions, ...props }: ToasterProps) => 
         error: <AlertCircle size="medium" />,
         warning: <AlertTriangle size="medium" />,
       }}
+      closeButton
       toastOptions={{
         ...toastOptions,
         classNames: {
           toast: 'group toast group-[.toaster]:shadow-lg font-inter',
           actionButton: 'group-[.toast]:bg-primary group-[.toast]:text-primary-foreground',
           cancelButton: 'group-[.toast]:bg-muted group-[.toast]:text-muted-foreground',
+          closeButton: 'group-[.toast]:opacity-70 group-[.toast]:hover:opacity-100',
         },
       }}
       {...props}

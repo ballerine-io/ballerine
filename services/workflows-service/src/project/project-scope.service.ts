@@ -35,9 +35,10 @@ export class ProjectScopeService {
     args!.where = {
       // @ts-expect-error - dynamically typed for all queries
       ...args?.where,
-      project: {
-        id: { in: projectIds },
-      },
+      project:
+        typeof projectIds === 'string'
+          ? { id: projectIds } // Single ID
+          : { id: { in: projectIds } }, // Array of IDs
     };
 
     return args!;

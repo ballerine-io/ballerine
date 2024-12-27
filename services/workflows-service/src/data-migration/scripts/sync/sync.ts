@@ -173,7 +173,7 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
           appLoggerService.log(`Starting object sync for ${crossEnvKey} in ${tableName}`);
           let existingRecord: DataSyncPayload['scalars'] | null = null;
           try {
-            const columnsHash = objectMd5(stableStringify(columns));
+            const columnsHash = objectMd5(stableStringify(columns) || '');
             existingRecord = (await transaction.dataSync.findUnique({
               where: { table_crossEnvKey: { table: tableName as DataSyncTables, crossEnvKey } },
             })) as DataSyncPayload['scalars'] | null;
@@ -416,7 +416,8 @@ function createDiff(
     }
     if (
       !hasDiff &&
-      objectMd5(stableStringify(dbRecordJson)) !== objectMd5(stableStringify(columnsJson))
+      objectMd5(stableStringify(dbRecordJson) || '') !==
+        objectMd5(stableStringify(columnsJson) || '')
     ) {
       appLoggerService.warn(
         `Data integrity error for ${crossEnvKey} in ${tableName}: MD5 mismatch`,

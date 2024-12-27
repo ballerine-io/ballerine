@@ -272,6 +272,7 @@ export const useDocumentBlocks = ({
                     disabled={!canApprove}
                     size={'wide'}
                     variant={'success'}
+                    className={'enabled:bg-success enabled:hover:bg-success/90'}
                   >
                     Approve
                   </MotionButton>
@@ -439,14 +440,12 @@ export const useDocumentBlocks = ({
                       const fieldValue = getFieldValue();
                       const isEditableDecision = isDoneWithRevision || !decision?.status;
                       const isIndividual = checkIsIndividual(workflow);
-                      const isEditableType = (title === 'type' && isIndividual) || title !== 'type';
                       const isEditableCategory =
                         (title === 'category' && isIndividual) || title !== 'category';
                       const isEditableField = [
                         isEditableDecision,
                         isEditable,
                         caseState.writeEnabled,
-                        isEditableType,
                         isEditableCategory,
                       ].every(Boolean);
 

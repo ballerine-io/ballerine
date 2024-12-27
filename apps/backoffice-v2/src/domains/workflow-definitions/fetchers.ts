@@ -47,6 +47,15 @@ export const WorkflowDefinitionConfigSchema = z
           .optional(),
       })
       .optional(),
+    editableContext: z
+      .object({
+        kyc: z
+          .object({
+            entity: z.boolean().optional(),
+          })
+          .optional(),
+      })
+      .optional(),
   })
   .passthrough()
   .nullable();
@@ -66,6 +75,10 @@ export const WorkflowDefinitionByIdSchema = ObjectWithIdSchema.extend({
       commonPlugins: z.array(PluginSchema).optional(),
       childWorkflowPlugins: z.array(PluginSchema).optional(),
     })
+    .optional()
+    .nullable(),
+  uiDefinitions: z
+    .array(z.object({ id: z.string(), uiContext: z.string() }))
     .optional()
     .nullable(),
 });
