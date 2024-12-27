@@ -89,22 +89,22 @@ jobs:
       #   run: git fetch --tags origin
 
       - name: Get version
-        if: ${{ inputs.image_name }} == 'workflows-service'
+        if: ${{ inputs.image_name == 'workflows-service' }}
         id: version
         run: |
           echo ${{ inputs.image_name }}
-          # git fetch --tags origin
-          # TAG=$(git tag -l "$(echo workflow-service@)*" | sort -V -r | head -n 1)
-          # echo "tag=$TAG"
-          # echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          # echo "TAG=$TAG" >> "$GITHUB_ENV"
-          # SHORT_SHA=$(git rev-parse --short HEAD)
-          # echo "sha_short=$SHORT_SHA" >> "$GITHUB_OUTPUT"
-          # echo "SHORT_SHA=$SHORT_SHA" >> "$GITHUB_ENV"
+          git fetch --tags origin
+          TAG=$(git tag -l "$(echo workflow-service@)*" | sort -V -r | head -n 1)
+          echo "tag=$TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          echo "sha_short=$SHORT_SHA" >> "$GITHUB_OUTPUT"
+          echo "SHORT_SHA=$SHORT_SHA" >> "$GITHUB_ENV"
       
       - name: Bump version
         id: bump-version
-        if: ${{ inputs.image_name }} == 'workflows-service'
+        if: ${{ inputs.image_name == 'workflows-service' }}
         uses: ./.github/actions/bump-version
         with:
           tag: ${{ steps.version.outputs.tag }}
@@ -146,7 +146,7 @@ jobs:
       - name: Print docker version outputs
         run: |
           echo "Metadata: ${{ steps.docker_meta.outputs.tags }}"
-          if [[ "${{ inputs.image_name }}" == "workflows-service" && ${{ inputs.image_name }} != 'workflows-service-ee' ]]; then
+          if [[ "${{ inputs.image_name }}" == "workflows-service" && "${{ inputs.image_name }}" != "workflows-service-ee" ]]; then
             echo "sha_short: ${{ steps.version.outputs.sha_short }}"
             echo "bump-version-version: ${{ steps.bump-version.outputs.version }}"
             echo "bump-version-tag: ${{ steps.bump-version.outputs.tag }}"
