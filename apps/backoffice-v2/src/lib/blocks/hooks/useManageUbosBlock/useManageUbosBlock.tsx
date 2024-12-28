@@ -213,36 +213,35 @@ export const useManageUbosBlock = ({
           }
           content={
             <div className={'flex flex-col justify-between space-y-4'}>
-              {!create.enabled ||
-                (!isAddingUbo && (
-                  <div className={'flex flex-col gap-4'}>
-                    <h2 className={'text-lg font-semibold'}>Manage UBOs</h2>
-                    <UrlDataTable
-                      data={ubos}
-                      columns={columns}
-                      options={{
-                        enableSorting: false,
-                        getRowId: row => row.id,
-                      }}
-                      props={{
-                        scroll: {
-                          className: '[&>div]:max-h-[73vh]',
-                        },
-                      }}
-                    />
-                    {create.enabled && (
-                      <Button
-                        className={
-                          'ms-auto aria-disabled:pointer-events-none aria-disabled:opacity-50'
-                        }
-                        onClick={toggleOnIsAddingUbo}
-                        aria-disabled={!caseState.writeEnabled}
-                      >
-                        Add UBO
-                      </Button>
-                    )}
-                  </div>
-                ))}
+              {(!create.enabled || !isAddingUbo) && (
+                <div className={'flex flex-col gap-4'}>
+                  <h2 className={'text-lg font-semibold'}>Manage UBOs</h2>
+                  <UrlDataTable
+                    data={ubos}
+                    columns={columns}
+                    options={{
+                      enableSorting: false,
+                      getRowId: row => row.id,
+                    }}
+                    props={{
+                      scroll: {
+                        className: '[&>div]:max-h-[73vh]',
+                      },
+                    }}
+                  />
+                  {create.enabled && (
+                    <Button
+                      className={
+                        'ms-auto aria-disabled:pointer-events-none aria-disabled:opacity-50'
+                      }
+                      onClick={toggleOnIsAddingUbo}
+                      aria-disabled={!caseState.writeEnabled}
+                    >
+                      Add UBO
+                    </Button>
+                  )}
+                </div>
+              )}
               {create.enabled && isAddingUbo && (
                 <>
                   <Button
