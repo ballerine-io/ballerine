@@ -49,9 +49,16 @@ export const useManageUbosBlock = ({
   });
   const { formSchema, uiSchema } = createFormSchemaFromUIElements(translatedUbos ?? {});
   const [isAddingUbo, _toggleIsAddingUbo, toggleOnIsAddingUbo, toggleOffIsAddingUbo] = useToggle();
+  const [isManageUbosOpen, toggleIsManageUbosOpen] = useToggle();
   const { mutate: mutateCreateUbo } = useCreateUboMutation({
     workflowId: workflow?.id,
-    onSuccess: toggleOffIsAddingUbo,
+    onSuccess: () => {
+      if (!isAddingUbo) {
+        return;
+      }
+
+      toggleOffIsAddingUbo();
+    },
   });
   const { mutate: mutateDeleteUbosByIds } = useDeleteUbosByIdsMutation({
     workflowId: workflow?.id,
@@ -116,6 +123,7 @@ export const useManageUbosBlock = ({
             <Dialog
               trigger={
                 <Button
+                  type={'button'}
                   variant={'ghost'}
                   size={'icon'}
                   className={'aria-disabled:pointer-events-none aria-disabled:opacity-50'}
@@ -200,8 +208,11 @@ export const useManageUbosBlock = ({
       type: 'node',
       value: (
         <Dialog
+          open={isManageUbosOpen}
+          onOpenChange={toggleIsManageUbosOpen}
           trigger={
             <Button
+              type={'button'}
               variant="outline"
               className={
                 'ms-auto px-2 py-0 text-xs aria-disabled:pointer-events-none aria-disabled:opacity-50'
@@ -231,6 +242,7 @@ export const useManageUbosBlock = ({
                   />
                   {create.enabled && (
                     <Button
+                      type={'button'}
                       className={
                         'ms-auto aria-disabled:pointer-events-none aria-disabled:opacity-50'
                       }
@@ -245,6 +257,7 @@ export const useManageUbosBlock = ({
               {create.enabled && isAddingUbo && (
                 <>
                   <Button
+                    type={'button'}
                     variant={'ghost'}
                     onClick={toggleOffIsAddingUbo}
                     className={
