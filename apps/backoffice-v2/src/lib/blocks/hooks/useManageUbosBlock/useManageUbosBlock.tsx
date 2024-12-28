@@ -25,8 +25,15 @@ import { transformErrors } from '@/pages/Entities/components/CaseCreation/compon
 import { useTranslateUiDefinitionQuery } from '@/domains/ui-definition/hooks/queries/useTranslateUiDefinitionQuery/useTranslateUiDefinitionQuery';
 import { useDeleteUbosByIdsMutation } from '@/domains/workflows/hooks/mutations/useDeleteUbosByIdsMutation/useDeleteUbosByIdsMutation';
 import { useCreateUboMutation } from '@/domains/workflows/hooks/mutations/useCreateUboMutation/useCreateUboMutation';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
-export const useManageUbosBlock = () => {
+export const useManageUbosBlock = ({
+  create,
+}: {
+  create: {
+    enabled: boolean;
+  };
+}) => {
   const { data: workflow } = useCurrentCaseQuery();
   const { data: workflowDefinition } = useWorkflowDefinitionByIdQuery({
     workflowDefinitionId: workflow?.workflowDefinition?.id ?? '',
@@ -34,9 +41,11 @@ export const useManageUbosBlock = () => {
   const uiDefinition = workflowDefinition?.uiDefinitions?.find(
     uiDefinition => uiDefinition.uiContext === 'collection_flow',
   );
+  const locale = useLocale();
   const { data: translatedUbos } = useTranslateUiDefinitionQuery({
     id: uiDefinition?.id ?? '',
     partialUiDefinition: ubosFormJsonDefinition,
+    locale,
   });
   const { formSchema, uiSchema } = createFormSchemaFromUIElements(translatedUbos ?? {});
   const [isAddingUbo, _toggleIsAddingUbo, toggleOnIsAddingUbo, toggleOffIsAddingUbo] = useToggle();
@@ -119,7 +128,7 @@ export const useManageUbosBlock = () => {
               description={
                 <p className={`text-sm`}>
                   Are you sure you want to remove this UBO? This action will be logged, and the
-                  UBO&apos;s data will be removed from the case and webhooks.
+                  UBO&apos;s data will be removed from the case.
                 </p>
               }
               content={null}
@@ -204,46 +213,62 @@ export const useManageUbosBlock = () => {
           }
           content={
             <div className={'flex flex-col justify-between space-y-4'}>
-              {!isAddingUbo && (
-                <div className={'flex flex-col gap-4'}>
-                  <h2 className={'text-lg font-semibold'}>Manage UBOs</h2>
-                  <UrlDataTable
-                    data={ubos}
-                    columns={columns}
-                    options={{
-                      enableSorting: false,
-                      getRowId: row => row.id,
-                    }}
-                    props={{
-                      scroll: {
-                        className: 'h-[73vh]',
-                      },
-                    }}
-                  />
-                  <Button
-                    className={'ms-auto aria-disabled:pointer-events-none aria-disabled:opacity-50'}
-                    onClick={toggleOnIsAddingUbo}
-                    aria-disabled={!caseState.writeEnabled}
-                  >
-                    Add
-                  </Button>
-                </div>
-              )}
-              {isAddingUbo && (
-                <div className={'flex flex-col gap-4'}>
-                  <Button variant={'ghost'} onClick={toggleOffIsAddingUbo} className={'me-auto'}>
-                    <ArrowLeft className={'text-muted-foreground'} size={14} />
-                  </Button>
-                  <ScrollArea orientation={'vertical'} className={'h-[73vh]'}>
-                    <DynamicForm
-                      schema={formSchema}
-                      uiSchema={uiSchema}
-                      onSubmit={onSubmit}
-                      layouts={layouts as typeof baseLayouts}
-                      transformErrors={transformErrors}
+              {!create.enabled ||
+                (!isAddingUbo && (
+                  <div className={'flex flex-col gap-4'}>
+                    <h2 className={'text-lg font-semibold'}>Manage UBOs</h2>
+                    <UrlDataTable
+                      data={ubos}
+                      columns={columns}
+                      options={{
+                        enableSorting: false,
+                        getRowId: row => row.id,
+                      }}
+                      props={{
+                        scroll: {
+                          className: '[&>div]:max-h-[73vh]',
+                        },
+                      }}
                     />
-                  </ScrollArea>
-                </div>
+                    {create.enabled && (
+                      <Button
+                        className={
+                          'ms-auto aria-disabled:pointer-events-none aria-disabled:opacity-50'
+                        }
+                        onClick={toggleOnIsAddingUbo}
+                        aria-disabled={!caseState.writeEnabled}
+                      >
+                        Add UBO
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              {create.enabled && isAddingUbo && (
+                <>
+                  <Button
+                    variant={'ghost'}
+                    onClick={toggleOffIsAddingUbo}
+                    className={
+                      'absolute left-4 top-4 rounded-sm p-0 opacity-70 transition-opacity d-4 hover:bg-transparent hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 data-[state=open]:bg-slate-100 dark:focus:ring-slate-400 dark:focus:ring-offset-slate-900 dark:data-[state=open]:bg-slate-800'
+                    }
+                  >
+                    <ArrowLeft className={'d-4'} />
+                  </Button>
+
+                  <div className={'flex flex-col gap-4'}>
+                    <h2 className={'text-lg font-semibold'}>Add UBO</h2>
+                    <ScrollArea orientation={'vertical'} className={'h-[73vh]'}>
+                      <DynamicForm
+                        schema={formSchema}
+                        uiSchema={uiSchema}
+                        onSubmit={onSubmit}
+                        layouts={layouts as typeof baseLayouts}
+                        transformErrors={transformErrors}
+                        className={'[&>div>fieldset>div:first-of-type]:py-0 [&>div]:py-0'}
+                      />
+                    </ScrollArea>
+                  </div>
+                </>
               )}
             </div>
           }
