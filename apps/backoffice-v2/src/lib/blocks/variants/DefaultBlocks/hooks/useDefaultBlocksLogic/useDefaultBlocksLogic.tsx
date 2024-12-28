@@ -339,7 +339,12 @@ export const useDefaultBlocksLogic = () => {
     isRequestTimedOut: workflow?.context?.pluginsOutput?.ubo?.isRequestTimedOut,
   });
 
-  const manageUbosBlock = useManageUbosBlock();
+  const manageUbosBlock = useManageUbosBlock({
+    create: {
+      ...workflow?.workflowDefinition?.config?.ubos?.create,
+      enabled: workflow?.workflowDefinition?.config?.ubos?.create?.enabled ?? false,
+    },
+  });
 
   const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
 

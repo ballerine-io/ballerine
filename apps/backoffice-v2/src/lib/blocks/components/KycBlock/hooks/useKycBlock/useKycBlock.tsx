@@ -373,19 +373,6 @@ export const useKycBlock = ({
             className: 'mt-0',
           },
         })
-        .addCell({
-          type: 'callToAction',
-          value: {
-            text: 'Initiate KYC',
-            onClick: onInitiateKyc,
-            props: {
-              className:
-                'justify-self-end px-2 py-0 text-xs aria-disabled:pointer-events-none aria-disabled:opacity-50',
-              variant: 'outline',
-              disabled: !event,
-            },
-          },
-        })
         .build()
         .flat(1),
     })
@@ -562,6 +549,19 @@ export const useKycBlock = ({
                           value: 'Initiate KYC for document extracted data to appear',
                           props: {
                             className: 'py-4 text-slate-500',
+                          },
+                        })
+                        .addCell({
+                          type: 'callToAction',
+                          value: {
+                            text: 'Initiate KYC',
+                            onClick: onInitiateKyc,
+                            props: {
+                              className:
+                                'px-2 py-0 text-xs aria-disabled:pointer-events-none aria-disabled:opacity-50 ms-3',
+                              variant: 'outline',
+                              disabled: !event,
+                            },
                           },
                         })
                         .buildFlat(),

@@ -81,6 +81,15 @@ export const ConfigSchema = z
           .optional(),
       })
       .optional(),
+    ubos: z
+      .object({
+        create: z
+          .object({
+            enabled: z.boolean().optional(),
+          })
+          .optional(),
+      })
+      .optional(),
   })
   .strict()
   .optional();
