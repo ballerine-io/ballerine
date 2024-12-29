@@ -5,6 +5,8 @@ import { createKycBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCa
 import { Blocks } from '@ballerine/blocks';
 import { WorkflowDefinitionConfigThemeEnum } from '@ballerine/common';
 import { Tab } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/get-variant-tabs';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { NoBlocks } from '@/lib/blocks/components/NoBlocks/NoBlocks';
 
 export type TCaseBlocksCreationProps = {
   workflow: TWorkflowById;
