@@ -6,20 +6,13 @@ import { CountryCode } from '@/common/countries';
 import {
   MERCHANT_REPORT_STATUSES,
   MERCHANT_REPORT_TYPES,
-  MERCHANT_REPORT_TYPES_MAP,
   MERCHANT_REPORT_VERSIONS,
   MerchantReportType,
   MerchantReportVersion,
 } from '@/business-report/constants';
-import { TReportRequest } from '@/common/utils/unified-api-client/unified-api-client';
 import * as errors from '@/errors';
 
 const CreateReportResponseSchema = z.object({});
-const CreateReportBatchResponseSchema = z.array(
-  z.object({
-    reportId: z.string(),
-  }),
-);
 const ReportSchema = z.object({
   id: z.string(),
   websiteId: z.string(),
@@ -121,30 +114,38 @@ export class MerchantMonitoringClient {
   }
 
   public async createBatch({
-    reportRequests,
-    clientName,
-    metadata,
+    customerId,
+    workflowVersion,
     withQualityControl,
-    reportType = MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1,
-    workflowVersion = '2',
+    reportType,
+    reports,
   }: {
-    reportRequests: TReportRequest;
-    clientName?: string;
-    reportType?: MerchantReportType;
+    customerId: string;
     workflowVersion?: MerchantReportVersion;
-    metadata?: Record<string, unknown>;
     withQualityControl?: boolean;
+    reportType: MerchantReportType;
+    reports: Array<{
+      businessId: string;
+      websiteUrl: string;
+      countryCode?: string;
+      parentCompanyName?: string;
+      callbackUrl?: string;
+    }>;
   }) {
-    const response = await this.axios.post('merchants/analysis/batch', {
-      reportRequests,
-      clientName,
-      metadata,
-      reportType,
-      withQualityControl,
-      workflowVersion,
-    });
-
-    return CreateReportBatchResponseSchema.parse(response.data);
+    await this.axios.post(
+      'merchants/analysis/batch/next',
+      reports.map(report => ({
+        customerId,
+        merchantId: report.businessId,
+        websiteUrl: report.websiteUrl,
+        countryCode: report.countryCode,
+        parentCompanyName: report.parentCompanyName,
+        callbackUrl: report.callbackUrl,
+        reportType,
+        workflowVersion,
+        withQualityControl,
+      })),
+    );
   }
 
   public async findById({ id, customerId }: { id: string; customerId: string }) {
