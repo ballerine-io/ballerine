@@ -210,6 +210,11 @@ export const useManageUbosBlock = ({
         <Dialog
           open={isManageUbosOpen}
           onOpenChange={toggleIsManageUbosOpen}
+          props={{
+            content: {
+              className: 'px-0',
+            },
+          }}
           trigger={
             <Button
               type={'button'}
@@ -225,7 +230,7 @@ export const useManageUbosBlock = ({
           content={
             <div className={'flex flex-col justify-between space-y-4'}>
               {(!create.enabled || !isAddingUbo) && (
-                <div className={'flex flex-col gap-4'}>
+                <div className={'flex flex-col gap-4 px-4'}>
                   <h2 className={'text-lg font-semibold'}>Manage UBOs</h2>
                   <UrlDataTable
                     data={ubos}
@@ -267,8 +272,8 @@ export const useManageUbosBlock = ({
                     <ArrowLeft className={'d-4'} />
                   </Button>
 
-                  <div className={'flex flex-col gap-4'}>
-                    <h2 className={'text-lg font-semibold'}>Add UBO</h2>
+                  <div className={'flex flex-col gap-4 px-2'}>
+                    <h2 className={'ps-2 text-lg font-semibold'}>Add UBO</h2>
                     <ScrollArea orientation={'vertical'} className={'h-[73vh]'}>
                       <DynamicForm
                         schema={formSchema}
@@ -276,7 +281,7 @@ export const useManageUbosBlock = ({
                         onSubmit={onSubmit}
                         layouts={layouts as typeof baseLayouts}
                         transformErrors={transformErrors}
-                        className={'[&>div>fieldset>div:first-of-type]:py-0 [&>div]:py-0'}
+                        className={'pe-4 ps-2 [&>div>fieldset>div:first-of-type]:py-0 [&>div]:py-0'}
                       />
                     </ScrollArea>
                   </div>
