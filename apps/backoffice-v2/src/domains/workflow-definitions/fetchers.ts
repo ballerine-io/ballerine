@@ -56,6 +56,15 @@ export const WorkflowDefinitionConfigSchema = z
           .optional(),
       })
       .optional(),
+    ubos: z
+      .object({
+        create: z
+          .object({
+            enabled: z.boolean().optional(),
+          })
+          .optional(),
+      })
+      .optional(),
   })
   .passthrough()
   .nullable();
