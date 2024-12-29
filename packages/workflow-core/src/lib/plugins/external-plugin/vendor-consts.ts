@@ -594,10 +594,12 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             mapping: `{
               ${options.dataMapping || ''}
               reportType: '${options.reportType || 'MERCHANT_REPORT_T1'}',
-              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.merchantMonitoring&processName=website-monitoring'])
-              withQualityControl: ${
-                options.merchantMonitoringQualityControl ?? true ? 'true' : 'false'
-              }
+              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.merchantMonitoring&processName=website-monitoring']),
+              withQualityControl: \`${
+                typeof options.merchantMonitoringQualityControl === 'boolean'
+                  ? options.merchantMonitoringQualityControl
+                  : true
+              }\`
             }`, // jmespath
           },
         ],

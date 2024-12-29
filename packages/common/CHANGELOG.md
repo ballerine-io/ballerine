@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.61
+
+### Patch Changes
+
+- Fixed withQualityControl in plugins
+
 ## 0.9.60
 
 ### Patch Changes
