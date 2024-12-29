@@ -255,6 +255,10 @@ export class WorkflowService {
     const childWorkflowSelectArgs = {
       select: { ...args?.select, ...allEntities },
       include: args?.include,
+      where: {
+        // @ts-expect-error - dynamically typed for all queries
+        deletedAt: args?.where?.deletedAt ?? null,
+      },
     };
     const workflow = (await this.workflowRuntimeDataRepository.findById(
       id,

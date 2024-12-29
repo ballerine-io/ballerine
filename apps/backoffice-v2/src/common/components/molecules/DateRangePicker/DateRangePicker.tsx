@@ -8,10 +8,16 @@ import { Calendar } from '../../organisms/Calendar/Calendar';
 type TDateRangePickerProps = {
   onChange: NonNullable<ComponentProps<typeof Calendar>['onSelect']>;
   value: NonNullable<ComponentProps<typeof Calendar>['selected']>;
+  placeholder?: string;
   className?: ComponentProps<'div'>['className'];
 };
 
-export const DateRangePicker = ({ onChange, value, className }: TDateRangePickerProps) => {
+export const DateRangePicker = ({
+  onChange,
+  value,
+  placeholder,
+  className,
+}: TDateRangePickerProps) => {
   return (
     <div className={ctw('grid gap-2', className)}>
       <Popover>
@@ -19,18 +25,18 @@ export const DateRangePicker = ({ onChange, value, className }: TDateRangePicker
           <Button
             id="date"
             variant={'outline'}
-            className={ctw('w-[300px] justify-start text-left font-normal', {
+            className={ctw('h-8 w-[250px] justify-start text-left font-normal', {
               'text-muted-foreground': !value,
             })}
           >
-            <CalendarIcon className="size-4 mr-2" />
+            <CalendarIcon className="mr-2 d-4" />
             {value?.from && value?.to && (
               <>
                 {formatDate(value.from, 'LLL dd, y')} - {formatDate(value.to, 'LLL dd, y')}
               </>
             )}
             {value?.from && !value?.to && formatDate(value.from, 'LLL dd, y')}
-            {!value?.from && !value?.to && <span>Pick a date</span>}
+            {!value?.from && !value?.to && <span>{placeholder ?? 'Pick a date'}</span>}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">

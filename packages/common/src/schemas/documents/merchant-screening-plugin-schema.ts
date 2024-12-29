@@ -74,11 +74,13 @@ const AddressSchema = Type.Object({
 });
 
 const DriversLicenseSchema = Type.Object({
-  Number: Type.String({
-    description: 'The drivers license number of a principal owner.',
-    example: 'M15698025',
-    maxLength: 25,
-  }),
+  Number: Type.Optional(
+    Type.String({
+      description: 'The drivers license number of a principal owner.',
+      example: 'M15698025',
+      maxLength: 25,
+    }),
+  ),
   CountrySubdivision: Type.String({
     description:
       'The abbreviated state or province code for a merchant location (only supported for US and Canada merchants).',

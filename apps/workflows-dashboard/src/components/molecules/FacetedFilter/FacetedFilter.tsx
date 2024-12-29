@@ -105,7 +105,7 @@ export function FacetedFilter({ title, options, value, onChange }: Props) {
                 <CommandSeparator />
                 <CommandGroup>
                   <CommandItem className="justify-center text-center" onSelect={() => onChange([])}>
-                    Clear filters
+                    Clear Case List
                   </CommandItem>
                 </CommandGroup>
               </>

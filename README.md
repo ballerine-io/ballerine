@@ -143,7 +143,7 @@ Once the process is complete,  _2 tabs_   will open in your browser:
 We appreciate all types of contributions and believe that an active community is the secret to a rich and stable product.
 Here are some of the ways you can contribute:
 
--   Give us feedback in our  [Slack community](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw)
+-   Give us feedback in our  [Slack community](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1il7txerq-K0YrXtlzMttGgD3XXYxlfw)
 -   Help with bugs and features on [our Issues page](https://github.com/ballerine-io/ballerine/issues)
 -   Submit a  [feature request](https://github.com/ballerine-io/ballerine/issues/new?assignees=&labels=enhancement%2C+feature&template=feature_request.md)  or  [bug report](https://github.com/ballerine-io/ballerine/issues/new?assignees=&labels=bug&template=bug_report.md)
 

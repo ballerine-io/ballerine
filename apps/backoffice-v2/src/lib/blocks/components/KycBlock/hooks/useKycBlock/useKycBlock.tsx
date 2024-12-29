@@ -24,6 +24,7 @@ import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { generateEditableDetailsV2Fields } from '@/common/components/organisms/EditableDetailsV2/utils/generate-editable-details-v2-fields';
 import { useUpdateContextAndSyncEntityMutation } from '@/domains/workflows/hooks/mutations/useUpdateContextAndSyncEntity/useUpdateContextAndSyncEntity';
+import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 
 const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -302,9 +303,8 @@ export const useKycBlock = ({
               }}
               disabled={isDisabled}
               size={'wide'}
-              className={ctw({
-                '!bg-success': !isDisabled,
-              })}
+              variant={'success'}
+              className={'enabled:bg-success enabled:hover:bg-success/90'}
             >
               Approve
             </MotionButton>
@@ -335,13 +335,32 @@ export const useKycBlock = ({
       .flat(1);
   };
 
+  const { mutate: mutateInitiateKyc } = useEventMutation();
+
+  const getEvent = () => {
+    if (childWorkflow?.nextEvents?.includes('start')) {
+      return 'start';
+    }
+  };
+  const event = getEvent();
+  const onInitiateKyc = useCallback(() => {
+    if (!event) {
+      return;
+    }
+
+    mutateInitiateKyc({
+      workflowId: childWorkflow?.id,
+      event,
+    });
+  }, [mutateInitiateKyc, event, childWorkflow?.id]);
+
   const headerCell = createBlocksTyped()
     .addBlock()
     .addCell({
       id: 'header',
       type: 'container',
       props: {
-        className: 'items-start',
+        className: 'justify-between items-center pt-6',
       },
       value: createBlocksTyped()
         .addBlock()
@@ -350,6 +369,9 @@ export const useKycBlock = ({
           value: `${valueOrNA(childWorkflow?.context?.entity?.data?.firstName)} ${valueOrNA(
             childWorkflow?.context?.entity?.data?.lastName,
           )}`,
+          props: {
+            className: 'mt-0',
+          },
         })
         .build()
         .flat(1),
@@ -505,40 +527,83 @@ export const useKycBlock = ({
                 })
                 .addCell({
                   type: 'container',
-                  value: createBlocksTyped()
-                    .addBlock()
-                    .addCell({
-                      id: 'header',
-                      type: 'heading',
-                      value: 'Document Extracted Data',
-                    })
-                    .build()
-                    .concat(documentExtractedData)
-                    .flat(1),
+                  value: documentExtractedData.length
+                    ? createBlocksTyped()
+                        .addBlock()
+                        .addCell({
+                          id: 'header',
+                          type: 'heading',
+                          value: 'Document Extracted Data',
+                        })
+                        .build()
+                        .concat(documentExtractedData)
+                        .flat(1)
+                    : createBlocksTyped()
+                        .addBlock()
+                        .addCell({
+                          type: 'heading',
+                          value: 'Document Extracted Data',
+                        })
+                        .addCell({
+                          type: 'paragraph',
+                          value: 'Initiate KYC for document extracted data to appear',
+                          props: {
+                            className: 'py-4 text-slate-500',
+                          },
+                        })
+                        .addCell({
+                          type: 'callToAction',
+                          value: {
+                            text: 'Initiate KYC',
+                            onClick: onInitiateKyc,
+                            props: {
+                              className:
+                                'px-2 py-0 text-xs aria-disabled:pointer-events-none aria-disabled:opacity-50 ms-3',
+                              variant: 'outline',
+                              disabled: !event,
+                            },
+                          },
+                        })
+                        .buildFlat(),
                 })
                 .addCell({
                   type: 'container',
-                  value: createBlocksTyped()
-                    .addBlock()
-                    .addCell({
-                      id: 'header',
-                      type: 'heading',
-                      value: 'Document Verification Results',
-                    })
-                    .addCell({
-                      id: 'decision',
-                      type: 'details',
-                      hideSeparator: true,
-                      value: {
-                        id: 1,
-                        title: 'Decision',
-                        data: decision,
-                      },
-                      workflowId: childWorkflow?.id,
-                      documents: childWorkflow?.context?.documents,
-                    })
-                    .build()
-                    .flat(1),
+                  value: decision.length
+                    ? createBlocksTyped()
+                        .addBlock()
+                        .addCell({
+                          id: 'header',
+                          type: 'heading',
+                          value: 'Document Verification Results',
+                        })
+                        .addCell({
+                          id: 'decision',
+                          type: 'details',
+                          hideSeparator: true,
+                          value: {
+                            id: 1,
+                            title: 'Decision',
+                            data: decision,
+                          },
+                          workflowId: childWorkflow?.id,
+                          documents: childWorkflow?.context?.documents,
+                        })
+                        .build()
+                        .flat(1)
+                    : createBlocksTyped()
+                        .addBlock()
+                        .addCell({
+                          type: 'heading',
+                          value: 'Document Verification Results',
+                        })
+                        .addCell({
+                          type: 'paragraph',
+                          value: 'Initiate KYC for document verification results to appear',
+                          props: {
+                            className: 'py-4 text-slate-500',
+                          },
+                        })
+                        .buildFlat(),
                 })
                 .build()
                 .flat(1),

@@ -9,15 +9,15 @@ import { useSearch } from '@/common/hooks/useSearch/useSearch';
 import { useAlertCorrelationIdsQuery } from '@/domains/alerts/hooks/queries/useAlertLabelsQuery/useAlertLabelsQuery';
 
 export const useTransactionMonitoringAlertsLogic = () => {
+  const { search, onSearch } = useSearch();
   const { data: session } = useAuthenticatedUserQuery();
   const AlertsSearchSchema = getAlertsSearchSchema();
-  const [{ filter, sortBy, sortDir, page, pageSize, search: searchValue }] =
-    useZodSearchParams(AlertsSearchSchema);
+  const [{ filter, sortBy, sortDir, page, pageSize }] = useZodSearchParams(AlertsSearchSchema);
   const { data: alerts, isLoading: isLoadingAlerts } = useAlertsQuery({
     filter,
     page,
     pageSize,
-    search: searchValue,
+    search,
     sortDir,
     sortBy,
   });
@@ -36,9 +36,6 @@ export const useTransactionMonitoringAlertsLogic = () => {
     totalPages: 0,
   });
   const isLastPage = (alerts?.length ?? 0) < pageSize || alerts?.length === 0;
-  const { search, onSearch } = useSearch({
-    initialSearch: searchValue,
-  });
 
   return {
     alerts,
