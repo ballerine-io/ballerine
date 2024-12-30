@@ -5,7 +5,6 @@ import { parseCsv } from '@/common/utils/parse-csv/parse-csv';
 import { BusinessReportRequestSchema } from '@/common/schemas';
 import { PrismaService } from '@/prisma/prisma.service';
 import { BusinessService } from '@/business/business.service';
-import { TReportRequest } from '@/common/utils/unified-api-client/unified-api-client';
 import { env } from '@/env';
 import { randomUUID } from 'crypto';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -122,8 +121,8 @@ export class BusinessReportService {
       );
     }
 
-    if (businessReportsRequests.length > 10000) {
-      throw new UnprocessableEntityException('Batch size is too large, the maximum is 10000');
+    if (businessReportsRequests.length > 1_000) {
+      throw new UnprocessableEntityException('Batch size is too large, the maximum is 1,000');
     }
 
     const batchId = randomUUID();
@@ -160,26 +159,18 @@ export class BusinessReportService {
 
         const businessWithRequests = await Promise.all(businessCreatePromises);
 
-        const businessReportRequests = businessWithRequests.map(
-          ({ businessReportRequest, businessId }) => {
-            return {
-              withQualityControl,
-              websiteUrl: businessReportRequest.websiteUrl,
-              lineOfBusiness: businessReportRequest.lineOfBusiness,
-              parentCompanyName: businessReportRequest.parentCompanyName,
-              callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${businessId}`,
-              merchantId: businessId,
-              customerId,
-            };
-          },
-        ) satisfies TReportRequest;
-
         await this.merchantMonitoringClient.createBatch({
-          reportRequests: businessReportRequests,
-          clientName: 'merchant',
-          reportType: type,
-          withQualityControl,
+          customerId,
           workflowVersion,
+          withQualityControl,
+          reportType: type,
+          reports: businessWithRequests.map(({ businessReportRequest, businessId }) => ({
+            businessId,
+            websiteUrl: businessReportRequest.websiteUrl,
+            countryCode: businessReportRequest.countryCode,
+            parentCompanyName: businessReportRequest.parentCompanyName,
+            callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${businessId}`,
+          })),
         });
       },
       {

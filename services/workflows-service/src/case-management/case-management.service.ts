@@ -94,6 +94,12 @@ export class CaseManagementService {
           transaction,
         });
 
+      if (!workflowRuntimeData.businessId) {
+        throw new BadRequestException(
+          `Attempted to create a UBO to a parent workflow without a business`,
+        );
+      }
+
       const uboToEntityAdapter = (ubo => {
         return {
           id: randomUUID(),
@@ -130,12 +136,6 @@ export class CaseManagementService {
         },
         transaction,
       );
-
-      if (!workflowRuntimeData.businessId) {
-        throw new BadRequestException(
-          `Attempted to create a UBO to a parent workflow without a business`,
-        );
-      }
 
       await transaction.endUsersOnBusinesses.create({
         data: {

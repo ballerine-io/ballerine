@@ -1,5 +1,13 @@
 # @ballerine/workflow-core
 
+## 0.6.80
+
+### Patch Changes
+
+- Fixed withQualityControl in plugins
+- Updated dependencies
+  - @ballerine/common@0.9.61
+
 ## 0.6.79
 
 ### Patch Changes
