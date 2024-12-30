@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.56
+
+### Patch Changes
+
+- Updated user-facing social media view
+
 ## 0.5.55
 
 ### Patch Changes
