@@ -211,18 +211,15 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
       </div>
     </div>
 
-    {/* TODO: Shows failing state by default for now */}
-    <div>
+    {/* <div>
       <h3 className="mb-2 text-base font-bold">Ads</h3>
       <Card
         className={ctw(
           'flex w-full justify-between p-4 shadow-lg',
-          // relatedAdsImages && relatedAdsImages.length > 0 ? 'opacity-100' : 'opacity-60',
-          false ? 'opacity-100' : 'opacity-60',
+          relatedAdsImages && relatedAdsImages.length > 0 ? 'opacity-100' : 'opacity-60',
         )}
       >
-        {/* relatedAdsImages */}
-        {false ? (
+        {relatedAdsImages ? (
           <>The ads should be displayed here</>
         ) : (
           <div className="flex items-center gap-2 text-gray-400">
@@ -231,6 +228,6 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
           </div>
         )}
       </Card>
-    </div>
+    </div> */}
   </div>
 );
