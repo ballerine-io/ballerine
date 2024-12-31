@@ -1,7 +1,6 @@
 import { severityToDisplaySeverity } from '@/components/templates/report/constants';
 import { TAdsProvider } from '@/components/templates/report/types';
 import { booleanToYesOrNo, SeverityType } from '@ballerine/common';
-import dayjs from 'dayjs';
 
 const getLabel = ({ label, provider }: { label: string; provider: string }) => {
   if (label === 'page') {

@@ -1,5 +1,14 @@
 # @ballerine/backoffice-v2
 
+## 0.7.88
+
+### Patch Changes
+
+- Updated traffic-related stats in the "Website credibility" tab.
+- Updated dependencies
+  - @ballerine/react-pdf-toolkit@1.2.57
+  - @ballerine/ui@0.5.57
+
 ## 0.7.87
 
 ### Patch Changes
