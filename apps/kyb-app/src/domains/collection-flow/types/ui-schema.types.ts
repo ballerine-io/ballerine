@@ -64,6 +64,7 @@ export interface UIElement<TElementParams = AnyObject> {
   valueDestination?: UIElementDestination;
   elements?: Array<UIElement<AnyObject>>;
   clearValueOnHide?: {
-    valueDestination: string;
+    valueDestination?: string;
+    byId?: string;
   };
 }

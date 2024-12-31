@@ -1,6 +1,7 @@
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useUIElementProps } from '@/components/organisms/UIRenderer/hooks/useUIElementProps';
 import { UIElement } from '@/domains/collection-flow';
+import { AnyObject } from '@ballerine/ui';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import { useEffect, useRef } from 'react';
@@ -23,17 +24,44 @@ export const useClearValueOnHide = (definition: UIElement, inputIndex: number | 
   useEffect(() => {
     if (!definition.clearValueOnHide) return;
 
-    const destination = definition.clearValueOnHide.valueDestination || definition.valueDestination;
+    // Removing by id and valueDestination
+    if (definition.clearValueOnHide.byId && definition.clearValueOnHide.valueDestination) {
+      const id = definition.clearValueOnHide.byId;
+      const destination = definition.clearValueOnHide.valueDestination;
 
-    if (!destination) return;
+      const formattedDestination = injectIndexToDestinationIfNeeded(destination, inputIndex);
 
-    const formattedDestination = injectIndexToDestinationIfNeeded(destination, inputIndex);
+      const items = get(ref.current.payload, formattedDestination) as AnyObject[];
 
-    if (hidden && get(ref.current.payload, formattedDestination)) {
-      set(ref.current.payload, formattedDestination, undefined);
-      ref.current.setContext(ref.current.payload);
+      const filteredItems = items?.filter(item => item.id !== id);
 
-      console.log('Removed value of hidden element', formattedDestination, ref.current.payload);
+      if (hidden && get(ref.current.payload, formattedDestination)) {
+        set(ref.current.payload, formattedDestination, filteredItems);
+        ref.current.setContext(ref.current.payload);
+
+        console.log(
+          `Removed value of hidden element by id: ${id} from ${formattedDestination}`,
+          ref.current.payload,
+        );
+      }
+
+      return;
+    }
+
+    // Removing by valueDestination
+    if (definition.clearValueOnHide.valueDestination) {
+      const destination = definition.clearValueOnHide.valueDestination;
+
+      const formattedDestination = injectIndexToDestinationIfNeeded(destination, inputIndex);
+
+      if (hidden && get(ref.current.payload, formattedDestination)) {
+        set(ref.current.payload, formattedDestination, undefined);
+        ref.current.setContext(ref.current.payload);
+
+        console.log('Removed value of hidden element', formattedDestination, ref.current.payload);
+      }
+
+      return;
     }
   }, [hidden, ref, definition.valueDestination, definition.clearValueOnHide, inputIndex]);
 };
