@@ -1,6 +1,7 @@
 import { severityToDisplaySeverity } from '@/components/templates/report/constants';
 import { TAdsProvider } from '@/components/templates/report/types';
 import { booleanToYesOrNo, SeverityType } from '@ballerine/common';
+import dayjs from 'dayjs';
 
 const getLabel = ({ label, provider }: { label: string; provider: string }) => {
   if (label === 'page') {
@@ -179,26 +180,6 @@ export const reportAdapter = {
       pricingAnalysis: report?.transactionLaundering?.pricingAnalysis?.indicators,
       websiteStructureAndContentEvaluation:
         report?.transactionLaundering?.websiteStructureEvaluation?.indicators,
-      // Example data:
-      //   {
-      //     "trafficSources": [
-      //         "search / organic - 46.31%",
-      //         "direct - 42.68%"
-      //     ],
-      //     "engagements": [
-      //         "Time on site - 117.09 seconds",
-      //         "Page per visit - 2.71",
-      //         "Bounce rate - 44.76%"
-      //     ],
-      //     "montlyVisitsIndicators": [
-      //         "May 2024 - 1987263",
-      //         "June 2024 - 3500503",
-      //         "July 2024 - 1671071",
-      //         "August 2024 - 1793033",
-      //         "September 2024 - 2520118",
-      //         "October 2024 - 3384101"
-      //     ]
-      // }
       trafficAnalysis: {
         montlyVisitsIndicators: (
           report?.transactionLaundering?.trafficAnalysis?.montlyVisitsIndicators ?? []
