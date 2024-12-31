@@ -1,10 +1,12 @@
+import { ctw } from '@/common';
+import { Card, CardContent, CardHeader } from '@/components';
+import { BallerineLink } from '@/components/atoms/BallerineLink/BallerineLink';
 import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
+import { FunctionComponent } from 'react';
 import {
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
-  Legend,
   Pie,
   PieChart,
   ResponsiveContainer,
@@ -12,10 +14,6 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import React, { FunctionComponent } from 'react';
-import { Card, CardContent, CardHeader } from '@/components';
-import { ctw } from '@/common';
-import { BallerineLink } from '@/components/atoms/BallerineLink/BallerineLink';
 
 export const WebsiteCredibility: FunctionComponent<{
   violations: Array<{
@@ -119,7 +117,7 @@ export const WebsiteCredibility: FunctionComponent<{
               barSize={46}
             >
               <CartesianGrid vertical={false} strokeDasharray="0" />
-              <XAxis dataKey="label" />
+              <XAxis dataKey="label" fill="rgb(144, 144, 144)" />
               <YAxis />
               <Tooltip />
               {/* <Legend verticalAlign="top" align={'right'} content={<CustomLegend />} /> */}
@@ -131,7 +129,7 @@ export const WebsiteCredibility: FunctionComponent<{
         <div className="flex flex-col gap-8 h-full w-2/5">
           <ResponsiveContainer width="100%" height="50%">
             <PieChart>
-              <text
+              {/* <text
                 x={35}
                 y={37}
                 textAnchor="middle"
@@ -141,7 +139,7 @@ export const WebsiteCredibility: FunctionComponent<{
                 // })}
               >
                 Hello world
-              </text>
+              </text> */}
               <Pie
                 data={trafficAnalysis.trafficSources}
                 cx={30}
