@@ -57,6 +57,16 @@ const FindManyReportsResponseSchema = z.object({
   data: z.array(ReportSchema),
 });
 
+const MetricsResponseSchema = z.object({
+  riskLevelCounts: z.object({
+    low: z.number(),
+    medium: z.number(),
+    high: z.number(),
+    critical: z.number(),
+  }),
+  violationCounts: z.record(z.string(), z.number()),
+});
+
 @Injectable()
 export class MerchantMonitoringClient {
   private axios: AxiosInstance;
@@ -255,5 +265,18 @@ export class MerchantMonitoringClient {
     });
 
     return response.data ?? [];
+  }
+
+  public async getMetrics({ customerId }: { customerId: string }) {
+    const response = await this.axios.get('merchants/analysis/metrics', {
+      params: {
+        customerId,
+      },
+      headers: {
+        Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
+      },
+    });
+
+    return MetricsResponseSchema.parse(response.data);
   }
 }
