@@ -17,25 +17,24 @@ import {
 import { titleCase } from 'string-ts';
 import { usePortfolioRiskStatisticsLogic } from '@/pages/Statistics/components/PortfolioRiskStatistics/hooks/usePortfolioRiskStatisticsLogic/usePortfolioRiskStatisticsLogic';
 import { z } from 'zod';
-import { HomeMetricsOutputSchema } from '@/domains/metrics/hooks/queries/useHomeMetricsQuery/useHomeMetricsQuery';
+import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
 
-export const PortfolioRiskStatistics: FunctionComponent<
-  z.infer<typeof HomeMetricsOutputSchema>
-> = ({ riskIndicators, reports, cases }) => {
+export const PortfolioRiskStatistics: FunctionComponent<z.infer<typeof MetricsResponseSchema>> = ({
+  riskLevelCounts,
+  violationCounts,
+}) => {
   const {
     riskLevelToFillColor,
     parent,
     widths,
     riskLevelToBackgroundColor,
-    filters,
     totalRiskIndicators,
     riskIndicatorsSorting,
     onSortRiskIndicators,
     filteredRiskIndicators,
   } = usePortfolioRiskStatisticsLogic({
-    riskIndicators,
-    reports,
-    cases,
+    riskLevelCounts,
+    violationCounts,
   });
 
   return (
@@ -44,10 +43,10 @@ export const PortfolioRiskStatistics: FunctionComponent<
       <div className={'grid grid-cols-3 gap-6'}>
         <div className={'min-h-[27.5rem] rounded-xl bg-[#F6F6F6] p-2'}>
           <Card className={'flex h-full flex-col px-3'}>
-            <CardHeader className={'pb-1'}>Portfolio Risk</CardHeader>
+            <CardHeader className={'pb-1'}>Merchant Monitoring Risk</CardHeader>
             <CardContent>
               <p className={'mb-8 text-slate-400'}>
-                Risk levels of approved merchants from completed onboarding flows.
+                Risk levels of all merchant monitoring reports.
               </p>
               <div className={'flex flex-col items-center space-y-4 pt-3'}>
                 <PieChart width={184} height={184}>
@@ -58,13 +57,13 @@ export const PortfolioRiskStatistics: FunctionComponent<
                     dominantBaseline="middle"
                     className={'text-lg font-bold'}
                   >
-                    {Object.values(cases.approved).reduce((acc, curr) => acc + curr, 0)}
+                    {Object.values(riskLevelCounts).reduce((acc, curr) => acc + curr, 0)}
                   </text>
                   <text x={92} y={102} textAnchor="middle" dominantBaseline="middle">
-                    Merchants
+                    Reports
                   </text>
                   <Pie
-                    data={Object.entries(cases.approved).map(([riskLevel, value]) => ({
+                    data={Object.entries(riskLevelCounts).map(([riskLevel, value]) => ({
                       name: `${titleCase(riskLevel)} Risk`,
                       value,
                     }))}
@@ -89,122 +88,31 @@ export const PortfolioRiskStatistics: FunctionComponent<
                   </Pie>
                 </PieChart>
                 <ul className={'flex w-full max-w-sm flex-col space-y-2'}>
-                  {Object.entries(cases.approved).map(([riskLevel, value]) => (
-                    <li
-                      key={riskLevel}
-                      className={'flex items-center space-x-4 border-b py-1 text-xs'}
-                    >
-                      <span
-                        className={ctw(
-                          'flex h-2 w-2 rounded-full',
-                          riskLevelToBackgroundColor[
-                            riskLevel as keyof typeof riskLevelToBackgroundColor
-                          ],
-                        )}
-                      />
-                      <div className={'flex w-full justify-between'}>
-                        <span className={'text-slate-500'}>{titleCase(riskLevel)} Risk</span>
-                        <span>{value}</span>
-                      </div>
-                    </li>
-                  ))}
+                  {Object.entries(riskLevelCounts)
+                    .reverse()
+                    .map(([riskLevel, value]) => (
+                      <li
+                        key={riskLevel}
+                        className={'flex items-center space-x-4 border-b py-1 text-xs'}
+                      >
+                        <span
+                          className={ctw(
+                            'flex h-2 w-2 rounded-full',
+                            riskLevelToBackgroundColor[
+                              riskLevel as keyof typeof riskLevelToBackgroundColor
+                            ],
+                          )}
+                        />
+                        <div className={'flex w-full justify-between'}>
+                          <span className={'text-slate-500'}>{titleCase(riskLevel)} Risk</span>
+                          <span>{value}</span>
+                        </div>
+                      </li>
+                    ))}
                 </ul>
               </div>
             </CardContent>
           </Card>
-        </div>
-        <div className={'grid grid-cols-2 gap-3'}>
-          {filters?.map(filter => {
-            const totalRisk = Object.values(filter.riskLevels).reduce((acc, curr) => acc + curr, 0);
-
-            return (
-              <div
-                key={filter.name}
-                className={'col-span-full min-h-[13.125rem] rounded-xl bg-[#F6F6F6] p-2'}
-              >
-                <Card className={'flex h-full flex-col px-3'}>
-                  <CardHeader className={'pb-1'}>{filter.name} Risk</CardHeader>
-                  <CardContent>
-                    <p className={'mb-8 text-slate-400'}>{filter.description}</p>
-                    <div className={'flex items-center space-x-5 pt-3'}>
-                      <PieChart width={104} height={104}>
-                        <text
-                          x={52}
-                          y={44}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          className={ctw('font-bold', {
-                            'text-sm': totalRisk?.toString().length >= 5,
-                          })}
-                        >
-                          {totalRisk}
-                        </text>
-                        <text
-                          x={52}
-                          y={60}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          className={'text-xs'}
-                        >
-                          {filter.entityPlural}
-                        </text>
-                        <Pie
-                          data={Object.entries(filter?.riskLevels ?? {}).map(
-                            ([riskLevel, value]) => ({
-                              name: `${titleCase(riskLevel)} Risk`,
-                              value,
-                            }),
-                          )}
-                          cx={47}
-                          cy={47}
-                          innerRadius={43}
-                          outerRadius={52}
-                          fill="#8884d8"
-                          paddingAngle={5}
-                          dataKey="value"
-                          cornerRadius={9999}
-                        >
-                          {Object.keys(riskLevelToFillColor).map(riskLevel => (
-                            <Cell
-                              key={riskLevel}
-                              className={ctw(
-                                riskLevelToFillColor[
-                                  riskLevel as keyof typeof riskLevelToFillColor
-                                ],
-                                'outline-none',
-                              )}
-                            />
-                          ))}
-                        </Pie>
-                      </PieChart>
-                      <ul className={'w-full max-w-sm'}>
-                        {Object.entries(filter?.riskLevels ?? {}).map(([riskLevel, value]) => {
-                          return (
-                            <li key={riskLevel} className={'flex items-center space-x-4  text-xs'}>
-                              <span
-                                className={ctw(
-                                  'flex h-2 w-2 rounded-full',
-                                  riskLevelToBackgroundColor[
-                                    riskLevel as keyof typeof riskLevelToBackgroundColor
-                                  ],
-                                )}
-                              />
-                              <div className={'flex w-full justify-between'}>
-                                <span className={'text-slate-500'}>
-                                  {titleCase(riskLevel)} Risk
-                                </span>
-                                {value}
-                              </div>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            );
-          })}
         </div>
         <div className={'min-h-[10.125rem] rounded-xl bg-[#F6F6F6] p-2'}>
           <Card className={'flex h-full flex-col px-3'}>
