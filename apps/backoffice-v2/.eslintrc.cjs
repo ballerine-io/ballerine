@@ -6,11 +6,12 @@ module.exports = {
       callees: ['ctw'],
     },
   },
-  parserOptions: {
-    project: './tsconfig.eslint.json',
-  },
   rules: {
     'tailwindcss/no-custom-classname': 'off',
     'tailwindcss/classnames-order': 'off',
+  },
+  parserOptions: {
+    tsconfigRootDir: __dirname,
+    project: 'tsconfig.eslint.json',
   },
 };
