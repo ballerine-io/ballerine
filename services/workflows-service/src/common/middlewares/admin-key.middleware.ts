@@ -17,7 +17,7 @@ export class AdminKeyMiddleware implements NestMiddleware {
         type: 'admin',
       };
 
-      this.cls.set('entity', entity);
+      // this.cls.set('entity', entity);
 
       // @ts-expect-error
       req.user = entity;

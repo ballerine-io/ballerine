@@ -33,14 +33,14 @@ export class TokenAuthGuard implements CanActivate {
       throw new UnauthorizedException('Token has expired');
     }
 
-    this.cls.set('entity', {
-      endUser: {
-        workflowRuntimeDataId: tokenEntity.workflowRuntimeDataId,
-        endUserId: tokenEntity.endUserId,
-        id: tokenEntity.id,
-      },
-      type: 'endUser',
-    });
+    // this.cls.set('entity', {
+    //   endUser: {
+    //     workflowRuntimeDataId: tokenEntity.workflowRuntimeDataId,
+    //     endUserId: tokenEntity.endUserId,
+    //     id: tokenEntity.id,
+    //   },
+    //   type: 'endUser',
+    // });
 
     (req as any).tokenScope = tokenEntity;
 

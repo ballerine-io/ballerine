@@ -1,3 +1,5 @@
+import { z } from 'zod';
+import { invariant } from 'outvariant';
 import {
   isErrorWithMessage,
   isObject,
@@ -5,74 +7,25 @@ import {
   ProcessStatus,
   UnifiedApiReason,
 } from '@ballerine/common';
+
 import { logger } from '../../../logger';
-import { TContext } from '../../../utils/types';
 import { ApiPlugin } from '../api-plugin';
-import { IApiPluginParams } from '../types';
-import get from 'lodash.get';
-import { z } from 'zod';
-import { invariant } from 'outvariant';
+import { TContext } from '../../../utils/types';
+import { validateEnv } from '../shared/validate-env';
 import { getTransformer } from '../../../workflow-runner-utils';
-
-export type PluginPayloadProperty<TValue> =
-  | {
-      type: 'literal';
-      /** @example 10 */
-      value: TValue;
-    }
-  | {
-      type: 'path';
-      /** @example entity.data.address.country */
-      value: string;
-    };
-
-/**
- * Get the value of the properties in the payload depending on the type of the property i.e. 'literal' or 'path'
- * @param properties
- * @param context
- */
-export const getPayloadPropertiesValue = ({
-  properties,
-  context,
-}: {
-  properties: Record<PropertyKey, PluginPayloadProperty<unknown>>;
-  context: TContext;
-}) => {
-  return Object.entries(properties).reduce((acc, [key, property]) => {
-    if (property.type === 'literal') {
-      acc[key] = property.value;
-
-      return acc;
-    }
-
-    if (property.type === 'path') {
-      acc[key] = get(context, property.value);
-
-      return acc;
-    }
-
-    property['type'] satisfies never;
-    throw new Error(`Unknown property type: "${property['type']}"`);
-  }, {} as Record<PropertyKey, unknown>);
-};
+import { IApiPluginParams, PluginPayloadProperty } from '../types';
+import { getPayloadPropertiesValue } from '../shared/get-payload-properties-value';
 
 const isObjectWithKycInformation = (obj: unknown) => {
   return isType(KycInformationSchema)(obj);
 };
-const removeTrailSlash = (url: string) => {
-  return url.replace(/\/$/, '');
-};
 
-const EnvSchema = z.object({
-  UNIFIED_API_URL: z.string().url().transform(removeTrailSlash),
-  UNIFIED_API_TOKEN: z.string().min(1),
-  APP_API_URL: z.string().url().transform(removeTrailSlash),
-});
 const KycInformationSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   dateOfBirth: z.string().date(),
 });
+
 const IndividualsSanctionsV2PluginPayloadSchema = z.object({
   vendor: z.enum(['veriff', 'test', 'dow-jones']),
   ongoingMonitoring: z.boolean(),
@@ -107,29 +60,6 @@ const IndividualsSanctionsV2PluginPayloadSchema = z.object({
   clientId: z.string().min(1),
 });
 
-const validateEnv = () => {
-  const result = EnvSchema.safeParse(process.env);
-
-  if (!result.success) {
-    const formattedErrors = Object.entries(result.error.format()).reduce((acc, [name, value]) => {
-      if (value && '_errors' in value) {
-        acc[name] = value._errors.join(', ');
-      }
-
-      return acc;
-    }, {} as Record<PropertyKey, string>);
-
-    logger.error(
-      '❌ Individuals Sanctions V2 Plugin - Invalid environment variables:\n',
-      formattedErrors,
-    );
-
-    throw new Error('Invalid environment variables');
-  }
-
-  return result.data;
-};
-
 export class IndividualsSanctionsV2Plugin extends ApiPlugin {
   public static pluginType = 'http';
   public payload: {
@@ -143,7 +73,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
         lastName: PluginPayloadProperty<string>;
         dateOfBirth: PluginPayloadProperty<string>;
       }>,
-      { type: 'path' }
+      { __type: 'path' }
     >;
     endUserId: PluginPayloadProperty<string>;
     clientId: PluginPayloadProperty<string>;
@@ -191,7 +121,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
   }
 
   async invoke(context: TContext) {
-    const env = validateEnv();
+    const env = validateEnv('Individuals Sanctions V2');
     let requestPayload;
 
     if (this.request?.transformers) {
@@ -269,6 +199,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
       const kycInformationByDataType = getKycInformationByDataType(kycInformation);
 
       requestPayload = {
+        ...requestPayload,
         ...validatedPayload,
         ...kycInformationByDataType,
         callbackUrl,
