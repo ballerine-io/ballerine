@@ -117,7 +117,6 @@ export class CaseManagementService {
             passportNumber: ubo.passportNumber,
             dateOfBirth: ubo.dateOfBirth,
             placeOfBirth: ubo.placeOfBirth,
-            gender: ubo.gender,
             country: ubo.country,
             city: ubo.city,
             street: ubo.street,
