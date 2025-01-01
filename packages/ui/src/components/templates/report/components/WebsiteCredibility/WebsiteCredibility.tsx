@@ -42,20 +42,6 @@ const engagementMetricsMapper = {
 
 const PIE_COLORS = ['#007aff', '#65afff', '#98cafe', '#cde4ff', '#f0f9ff'];
 
-const longDateFormatter = (value: string) => dayjs(value, 'MMMM YYYY').format('MMM YYYY');
-
-const longNumberFormatter = (value: number) => {
-  if (value >= 1_000_000) {
-    return (value / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'mil';
-  }
-
-  if (value >= 1_000) {
-    return (value / 1_000).toFixed(1).replace(/\.0$/, '') + 'k';
-  }
-
-  return value.toString();
-};
-
 export const WebsiteCredibility: FunctionComponent<{
   violations: Array<{
     label: string;
@@ -157,16 +143,19 @@ export const WebsiteCredibility: FunctionComponent<{
               barSize={46}
             >
               <CartesianGrid vertical={false} strokeDasharray="0" />
-              <XAxis dataKey="label" tickFormatter={longDateFormatter} />
-              <YAxis tickFormatter={longNumberFormatter} />
+              <XAxis
+                dataKey="label"
+                tickFormatter={value => dayjs(value, 'MMMM YYYY').format('MMM YYYY')}
+              />
+              <YAxis tickFormatter={Intl.NumberFormat('en', { notation: 'compact' }).format} />
               <RechartsTooltip
                 content={({ active, payload, label }) => {
                   if (active && payload && payload.length) {
                     return (
                       <div className="bg-white border border-gray-400 rounded-md px-4 py-2 text-gray-600">
-                        <p className="max-w-xs">{`On ${label} the company's website had approx. ${
-                          payload.at(0)?.value
-                        } visitors`}</p>
+                        <p className="max-w-xs">{`On ${label} the company's website had approx. ${Intl.NumberFormat(
+                          'en',
+                        ).format(parseInt(String(payload.at(0)?.value)))} visitors`}</p>
                       </div>
                     );
                   }
