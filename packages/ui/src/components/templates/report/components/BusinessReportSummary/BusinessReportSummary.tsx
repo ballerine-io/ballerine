@@ -2,14 +2,7 @@ import React, { ComponentProps, FunctionComponent } from 'react';
 import { getSeverityFromRiskScore, Severity, SeverityType } from '@ballerine/common';
 import { ctw, severityToClassName } from '@/common';
 import { toTitleCase } from 'string-ts';
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  RiskIndicatorsSummary,
-  ScrollArea,
-} from '@/components';
+import { Badge, Card, CardContent, CardHeader, RiskIndicatorsSummary } from '@/components';
 import { TextWithNAFallback } from '@/components/atoms/TextWithNAFallback';
 
 export const BusinessReportSummary: FunctionComponent<{
@@ -81,25 +74,31 @@ export const BusinessReportSummary: FunctionComponent<{
           </div>
         </CardContent>
       </Card>
+
       {homepageScreenshotUrl && (
         <Card className={'col-span-2 overflow-hidden'}>
-          <ScrollArea orientation="vertical" className="h-[300px] w-full">
-            <div className="relative w-full">
+          <div className={'flex flex-col h-full relative'}>
+            <a
+              href={homepageScreenshotUrl}
+              target={'_blank'}
+              rel={'noreferrer'}
+              className={'relative flex-1 overflow-y-auto'}
+              title={'Click to view full screenshot'}
+            >
               <img
                 src={homepageScreenshotUrl}
                 alt={'Homepage Screenshot'}
-                className={'h-auto w-full'}
+                className={'absolute inset-0 h-auto w-full object-cover object-top'}
               />
-              <div
-                className={
-                  'bottom-right-4 absolute rounded border border-white bg-black p-1 text-xs text-white'
-                }
-                style={{ bottom: 8, right: 8 }}
-              >
-                Scroll to view full screenshot
-              </div>
+            </a>
+            <div
+              className={
+                'top-left-4 absolute rounded border border-white bg-black p-1 text-xs text-white'
+              }
+            >
+              Click to view full screenshot or scroll to explore
             </div>
-          </ScrollArea>
+          </div>
         </Card>
       )}
 
