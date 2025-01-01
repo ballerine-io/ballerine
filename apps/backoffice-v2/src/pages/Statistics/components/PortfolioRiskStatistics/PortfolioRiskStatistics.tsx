@@ -18,6 +18,8 @@ import { titleCase } from 'string-ts';
 import { usePortfolioRiskStatisticsLogic } from '@/pages/Statistics/components/PortfolioRiskStatistics/hooks/usePortfolioRiskStatisticsLogic/usePortfolioRiskStatisticsLogic';
 import { z } from 'zod';
 import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
+import { useNavigate } from 'react-router-dom';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
 export const PortfolioRiskStatistics: FunctionComponent<z.infer<typeof MetricsResponseSchema>> = ({
   riskLevelCounts,
@@ -36,6 +38,9 @@ export const PortfolioRiskStatistics: FunctionComponent<z.infer<typeof MetricsRe
     riskLevelCounts,
     violationCounts,
   });
+
+  const locale = useLocale();
+  const navigate = useNavigate();
 
   return (
     <div>
@@ -81,8 +86,11 @@ export const PortfolioRiskStatistics: FunctionComponent<z.infer<typeof MetricsRe
                         key={riskLevel}
                         className={ctw(
                           riskLevelToFillColor[riskLevel as keyof typeof riskLevelToFillColor],
-                          'outline-none',
+                          'cursor-pointer outline-none',
                         )}
+                        onClick={() =>
+                          navigate(`/${locale}/merchant-monitoring?riskLevels[0]=${riskLevel}`)
+                        }
                       />
                     ))}
                   </Pie>
@@ -166,21 +174,15 @@ export const PortfolioRiskStatistics: FunctionComponent<z.infer<typeof MetricsRe
                 <TableBody ref={parent}>
                   {filteredRiskIndicators.map(({ name, count }, index) => (
                     <TableRow key={name} className={'border-b-0 hover:bg-[unset]'}>
-                      <TableCell
-                        className={ctw('pb-0 ps-0', {
-                          'pt-2': index !== 0,
-                        })}
-                      >
-                        <div className={'h-full'}>
-                          <div
-                            className={`rounded bg-blue-200 p-1 transition-all`}
-                            style={{
-                              width: `${widths[index]}%`,
-                            }}
-                          >
-                            {titleCase(name ?? '')}
-                          </div>
-                          {/*<span className={'relative z-50 ms-4'}>{titleCase(name ?? '')}</span>*/}
+                      <TableCell className={ctw('pb-0 ps-0', index !== 0 && 'pt-2')}>
+                        <div
+                          className={`h-full cursor-pointer rounded bg-blue-200 p-1 transition-all`}
+                          onClick={() =>
+                            navigate(`/${locale}/merchant-monitoring?findings[0]=${name}`)
+                          }
+                          style={{ width: `${widths[index]}%` }}
+                        >
+                          {titleCase(name ?? '')}
                         </div>
                       </TableCell>
                       <TableCell className={'pb-0 ps-0'}>

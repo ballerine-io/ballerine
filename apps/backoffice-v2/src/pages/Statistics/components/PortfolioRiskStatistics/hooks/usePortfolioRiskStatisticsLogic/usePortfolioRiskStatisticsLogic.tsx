@@ -21,28 +21,26 @@ export const usePortfolioRiskStatisticsLogic = ({
     [],
   );
   const totalRiskIndicators = Object.values(violationCounts).reduce((acc, curr) => acc + curr, 0);
-  const filteredRiskIndicators = useMemo(() => {
-    return Object.entries(violationCounts)
-      .map(([name, count]) => ({
-        name,
-        count,
-      }))
-      .sort((a, b) => {
-        if (riskIndicatorsSorting === 'asc') {
-          return a.count - b.count;
-        }
-
-        return b.count - a.count;
-      })
-      .slice(0, 5);
-  }, [violationCounts, riskIndicatorsSorting]);
-  const widths = useMemo(() => {
-    const maxValue = Math.max(...filteredRiskIndicators.map(item => item.count), 0);
-
-    return filteredRiskIndicators.map(item =>
-      item.count === 0 ? 0 : Math.max((item.count / maxValue) * 100, 2),
-    );
-  }, [filteredRiskIndicators]);
+  const filteredRiskIndicators = useMemo(
+    () =>
+      Object.entries(violationCounts)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => (riskIndicatorsSorting === 'asc' ? a.count - b.count : b.count - a.count))
+        .slice(0, 5),
+    [violationCounts, riskIndicatorsSorting],
+  );
+  const widths = useMemo(
+    () =>
+      filteredRiskIndicators.map(item =>
+        item.count > 0
+          ? Math.max(
+              (item.count / Math.max(...filteredRiskIndicators.map(item => item.count), 0)) * 100,
+              2,
+            )
+          : 0,
+      ),
+    [filteredRiskIndicators],
+  );
 
   return {
     riskLevelToFillColor,

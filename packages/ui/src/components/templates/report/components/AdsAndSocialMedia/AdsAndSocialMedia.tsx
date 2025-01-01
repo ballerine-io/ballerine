@@ -73,42 +73,14 @@ const socialMediaMapper: {
   },
 } as const;
 
-type AdsAndSocialDataFieldProps = {
-  icon: ReactNode;
-  label: string;
-  value: string | undefined;
-};
-const AdsAndSocialDataField = ({ label, icon, value }: AdsAndSocialDataFieldProps) => (
-  <div className={ctw('flex justify-between', label !== 'Biography' && 'items-center')}>
-    <div className="flex basis-1/3 items-center gap-4 whitespace-nowrap">
-      {icon}
-      <span className="font-semibold">{label}</span>
-    </div>
-
-    <TextWithNAFallback
-      className={ctw(
-        'grow-0 basis-2/3 overflow-hidden text-ellipsis',
-        !value && 'text-gray-400',
-        label !== 'Biography' && 'whitespace-nowrap',
-      )}
-    >
-      {value}
-    </TextWithNAFallback>
-  </div>
-);
-
 const cleanLink = (link: string) => {
   if (!link || !z.string().url().safeParse(link).success) {
     return 'N/A';
   }
 
-  let { hostname, pathname } = new URL(link);
+  const { hostname, pathname } = new URL(link);
 
-  if (hostname.startsWith('www.')) {
-    hostname = hostname.slice(4);
-  }
-
-  return `${hostname}${pathname}`;
+  return `${hostname.startsWith('www.') ? hostname.slice(4) : hostname}${pathname}`;
 };
 
 // TODO: this component can be further decoupled to re-use for social media data and ads data.
@@ -148,8 +120,8 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
               </div>
 
               {page ? (
-                <div className="flex justify-between">
-                  <div className="min-w-0 grow-0 basis-2/3">
+                <div className="flex justify-between gap-4">
+                  <div className="min-w-0 grow-0 w-2/3">
                     <div className="flex items-center">
                       <LinkIcon className="h-5 w-5 text-gray-400" />
                       <a
@@ -168,17 +140,38 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
                       </span>
                     )}
 
-                    <div className="mt-8 space-y-4">
-                      {Object.entries(socialMediaMapper[provider].fields).map(
-                        ([field, { icon, label }]) => (
-                          <AdsAndSocialDataField
-                            key={field}
-                            icon={icon}
-                            label={label}
-                            value={rest[field as keyof typeof rest]}
-                          />
-                        ),
-                      )}
+                    <div className="flex gap-6 mt-8">
+                      <div className="flex flex-col gap-4">
+                        {Object.entries(socialMediaMapper[provider].fields).map(
+                          ([, { icon, label }]) => (
+                            <div key={label} className="flex items-center gap-4 whitespace-nowrap">
+                              {icon}
+                              <span className="font-semibold">{label}</span>
+                            </div>
+                          ),
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-4 min-w-0">
+                        {Object.entries(socialMediaMapper[provider].fields).map(
+                          ([field, { label }]) => {
+                            const value = rest[field as keyof typeof rest];
+
+                            return (
+                              <TextWithNAFallback
+                                key={label}
+                                className={ctw(
+                                  'overflow-hidden text-ellipsis max-w-full',
+                                  !value && 'text-gray-400',
+                                  label !== 'Biography' && 'whitespace-nowrap',
+                                )}
+                              >
+                                {value}
+                              </TextWithNAFallback>
+                            );
+                          },
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -186,7 +179,7 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
                     className={buttonVariants({
                       variant: 'link',
                       className:
-                        'h-[unset] cursor-pointer !p-0 !text-[#14203D] underline decoration-[1.5px]',
+                        'h-[unset] cursor-pointer !p-0 !text-[#14203D] underline decoration-[1.5px] w-1/3',
                     })}
                     href={link}
                   >
