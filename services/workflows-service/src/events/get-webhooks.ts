@@ -7,6 +7,9 @@ export type Webhook = {
   url: string;
   environment: string | undefined;
   apiVersion: string;
+  config?: {
+    withChildWorkflows?: boolean;
+  };
 };
 
 export const getWebhooks = (
@@ -17,11 +20,12 @@ export const getWebhooks = (
   return (config?.subscriptions ?? [])
     .filter(({ type, events }) => type === 'webhook' && events.includes(event))
     .map(
-      ({ url }): Webhook => ({
+      ({ url, config }): Webhook => ({
         id: randomUUID(),
         url,
         environment: envName,
         apiVersion: packageJson.version,
+        config,
       }),
     );
 };
