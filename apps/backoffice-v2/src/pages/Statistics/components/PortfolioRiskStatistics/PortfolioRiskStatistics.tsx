@@ -18,7 +18,7 @@ import { titleCase } from 'string-ts';
 import { usePortfolioRiskStatisticsLogic } from '@/pages/Statistics/components/PortfolioRiskStatistics/hooks/usePortfolioRiskStatisticsLogic/usePortfolioRiskStatisticsLogic';
 import { z } from 'zod';
 import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
 export const PortfolioRiskStatistics: FunctionComponent<z.infer<typeof MetricsResponseSchema>> = ({
@@ -175,15 +175,13 @@ export const PortfolioRiskStatistics: FunctionComponent<z.infer<typeof MetricsRe
                   {filteredRiskIndicators.map(({ name, count }, index) => (
                     <TableRow key={name} className={'border-b-0 hover:bg-[unset]'}>
                       <TableCell className={ctw('pb-0 ps-0', index !== 0 && 'pt-2')}>
-                        <div
-                          className={`h-full cursor-pointer rounded bg-blue-200 p-1 transition-all`}
-                          onClick={() =>
-                            navigate(`/${locale}/merchant-monitoring?findings[0]=${name}`)
-                          }
+                        <Link
+                          to={`/${locale}/merchant-monitoring?findings[0]=${name}`}
+                          className={`block h-full cursor-pointer rounded bg-blue-200 p-1 transition-all`}
                           style={{ width: `${widths[index]}%` }}
                         >
                           {titleCase(name ?? '')}
-                        </div>
+                        </Link>
                       </TableCell>
                       <TableCell className={'pb-0 ps-0'}>
                         {Intl.NumberFormat().format(count)}
