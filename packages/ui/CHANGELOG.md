@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.59
+
+### Patch Changes
+
+- Adds interactivity to the homepage charts
+
 ## 0.5.58
 
 ### Patch Changes

@@ -152,89 +152,101 @@ export const WebsiteCredibility: FunctionComponent<{
           <CardHeader className="pt-4 font-bold">Estimated Monthly Visitors</CardHeader>
 
           <CardContent className="h-4/5 w-full pb-0 mt-auto">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={trafficAnalysis.montlyVisitsIndicators}>
-                <CartesianGrid vertical={false} strokeDasharray="0" />
-                <XAxis
-                  dataKey="label"
-                  tickFormatter={value => dayjs(value, 'MMMM YYYY').format('MMM YYYY')}
-                />
-                <YAxis tickFormatter={Intl.NumberFormat('en', { notation: 'compact' }).format} />
-                <RechartsTooltip
-                  content={({ active, payload, label }) => {
-                    if (active && payload && payload.length) {
-                      return (
-                        <div className="bg-white border border-gray-400 rounded-md px-4 py-2 text-gray-600">
-                          <p className="max-w-xs">{`On ${label} the company's website had approx. ${Intl.NumberFormat(
-                            'en',
-                          ).format(parseInt(String(payload.at(0)?.value)))} visitors`}</p>
-                        </div>
-                      );
-                    }
+            {trafficAnalysis.montlyVisitsIndicators.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={trafficAnalysis.montlyVisitsIndicators}>
+                  <CartesianGrid vertical={false} strokeDasharray="0" />
+                  <XAxis
+                    dataKey="label"
+                    tickFormatter={value => dayjs(value, 'MMMM YYYY').format('MMM YYYY')}
+                  />
+                  <YAxis tickFormatter={Intl.NumberFormat('en', { notation: 'compact' }).format} />
+                  <RechartsTooltip
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="bg-white border border-gray-400 rounded-md px-4 py-2 text-gray-600">
+                            <p className="max-w-xs">{`On ${label} the company's website had approx. ${Intl.NumberFormat(
+                              'en',
+                            ).format(parseInt(String(payload.at(0)?.value)))} visitors`}</p>
+                          </div>
+                        );
+                      }
 
-                    return null;
-                  }}
-                />
-                <Line dataKey="value" stroke="#435597" strokeWidth={2} activeDot={{ r: 6 }} />
-              </LineChart>
-            </ResponsiveContainer>
+                      return null;
+                    }}
+                  />
+                  <Line dataKey="value" stroke="#435597" strokeWidth={2} activeDot={{ r: 6 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex justify-center items-center h-full w-full">
+                <p>No Monthly Visitors Data Available</p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
         {/* <div className="flex 2xl:flex-col gap-4 h-[12rem] 2xl:h-full w-full 2xl:w-2/5">
-          <div className="h-full 2xl:h-1/2 w-1/2 2xl:w-full"> */}
+                  <div className="h-full 2xl:h-1/2 w-1/2 2xl:w-full"> */}
         <div className="flex flex-col gap-4 h-full w-2/5">
           <Card className="w-full h-1/2">
             <CardHeader className="pt-4 pb-0 font-bold">Traffic Sources</CardHeader>
 
             <CardContent className="h-4/5 w-full pb-0 mt-auto">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={trafficSources}
-                    dataKey="value"
-                    nameKey="label"
-                    cx="40%"
-                    cy="50%"
-                    innerRadius={40}
-                    outerRadius={60}
-                    startAngle={90}
-                    endAngle={450}
-                    className="focus:outline-none"
-                  >
-                    {trafficSources.map((_, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={PIE_COLORS[index % PIE_COLORS.length]}
-                        stroke="#ffffff"
-                        strokeWidth={2}
-                      />
-                    ))}
-                  </Pie>
-                  <Legend
-                    layout="vertical"
-                    align="right"
-                    verticalAlign="middle"
-                    wrapperStyle={{ width: '55%', maxHeight: '100%' }}
-                    content={({ payload }) => (
-                      <div className="flex flex-col space-y-1 pr-4">
-                        {payload?.map((entry, index) => (
-                          <div key={`item-${index}`} className="flex items-center space-x-2">
-                            <span
-                              className="block w-2 h-2 rounded-full"
-                              style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
-                            />
-                            <div className="flex justify-between w-full">
-                              <span className="text-gray-500">{capitalize(entry.value)}</span>
-                              <span className="font-semibold">{entry.payload?.value}%</span>
+              {trafficSources.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={trafficSources}
+                      dataKey="value"
+                      nameKey="label"
+                      cx="40%"
+                      cy="50%"
+                      innerRadius={40}
+                      outerRadius={60}
+                      startAngle={90}
+                      endAngle={450}
+                      className="focus:outline-none"
+                    >
+                      {trafficSources.map((_, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={PIE_COLORS[index % PIE_COLORS.length]}
+                          stroke="#ffffff"
+                          strokeWidth={2}
+                        />
+                      ))}
+                    </Pie>
+                    <Legend
+                      layout="vertical"
+                      align="right"
+                      verticalAlign="middle"
+                      wrapperStyle={{ width: '55%', maxHeight: '100%' }}
+                      content={({ payload }) => (
+                        <div className="flex flex-col space-y-1 pr-4">
+                          {payload?.map((entry, index) => (
+                            <div key={`item-${index}`} className="flex items-center space-x-2">
+                              <span
+                                className="block w-2 h-2 rounded-full"
+                                style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
+                              />
+                              <div className="flex justify-between w-full">
+                                <span className="text-gray-500">{capitalize(entry.value)}</span>
+                                <span className="font-semibold">{entry.payload?.value}%</span>
+                              </div>
                             </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+                          ))}
+                        </div>
+                      )}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex justify-center items-center h-full w-full">
+                  <p>No Traffic Sources Data Available</p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -243,42 +255,48 @@ export const WebsiteCredibility: FunctionComponent<{
             <CardHeader className="pt-4 font-bold">Engagement</CardHeader>
 
             <CardContent className="h-3/5 flex items-center gap-6">
-              {trafficAnalysis?.engagements.map(({ label, value }) => {
-                const { suffix, description, shouldRound } =
-                  engagementMetricsMapper[label as keyof typeof engagementMetricsMapper] ?? {};
-                const floatValue = parseFloat(value);
+              {trafficAnalysis.engagements.length > 0 ? (
+                trafficAnalysis?.engagements.map(({ label, value }) => {
+                  const { suffix, description, shouldRound } =
+                    engagementMetricsMapper[label as keyof typeof engagementMetricsMapper] ?? {};
+                  const floatValue = parseFloat(value);
 
-                return (
-                  <div key={label} className="basis-1/3">
-                    <div className="flex items-center gap-2">
-                      <p className="text-gray-500">{label}</p>
+                  return (
+                    <div key={label} className="basis-1/3">
+                      <div className="flex items-center gap-2">
+                        <p className="text-gray-500">{label}</p>
 
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger className="cursor-help">
-                            <InfoIcon className="text-gray-500 w-4 h-4" />
-                          </TooltipTrigger>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className="cursor-help">
+                              <InfoIcon className="text-gray-500 w-4 h-4" />
+                            </TooltipTrigger>
 
-                          <TooltipContent
-                            side="right"
-                            align="center"
-                            className="bg-gray-50 border border-gray-400 text-primary text-sm max-w-[12rem]"
-                          >
-                            <p className="text-gray-500 text-sm">{description}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                            <TooltipContent
+                              side="right"
+                              align="center"
+                              className="bg-gray-50 border border-gray-400 text-primary text-sm max-w-[12rem]"
+                            >
+                              <p className="text-gray-500 text-sm">{description}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+
+                      <p>
+                        <span className="font-bold">
+                          {shouldRound ? Math.round(floatValue) : floatValue}
+                        </span>
+                        <span className={ctw(suffix === '%' && 'font-bold')}>{suffix}</span>
+                      </p>
                     </div>
-
-                    <p>
-                      <span className="font-bold">
-                        {shouldRound ? Math.round(floatValue) : floatValue}
-                      </span>
-                      <span className={ctw(suffix === '%' && 'font-bold')}>{suffix}</span>
-                    </p>
-                  </div>
-                );
-              })}
+                  );
+                })
+              ) : (
+                <div className="flex justify-center items-center h-full w-full">
+                  <p>No Engagement Data Available</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
