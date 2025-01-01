@@ -1,5 +1,14 @@
 # @ballerine/backoffice-v2
 
+## 0.7.89
+
+### Patch Changes
+
+- Adds interactivity to the homepage charts
+- Updated dependencies
+  - @ballerine/ui@0.5.59
+  - @ballerine/react-pdf-toolkit@1.2.59
+
 ## 0.7.88
 
 ### Patch Changes
