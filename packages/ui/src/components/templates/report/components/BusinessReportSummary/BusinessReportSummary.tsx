@@ -2,7 +2,14 @@ import React, { ComponentProps, FunctionComponent } from 'react';
 import { getSeverityFromRiskScore, Severity, SeverityType } from '@ballerine/common';
 import { ctw, severityToClassName } from '@/common';
 import { toTitleCase } from 'string-ts';
-import { Badge, Card, CardContent, CardHeader, RiskIndicatorsSummary } from '@/components';
+import {
+  Badge,
+  Card,
+  CardContent,
+  CardHeader,
+  RiskIndicatorsSummary,
+  ScrollArea,
+} from '@/components';
 import { TextWithNAFallback } from '@/components/atoms/TextWithNAFallback';
 
 export const BusinessReportSummary: FunctionComponent<{
@@ -76,30 +83,26 @@ export const BusinessReportSummary: FunctionComponent<{
       </Card>
       {homepageScreenshotUrl && (
         <Card className={'col-span-2 overflow-hidden'}>
-          <a
-            href={homepageScreenshotUrl}
-            target={'_blank'}
-            rel={'noreferrer'}
-            className={'flex h-full min-h-[300px] w-full flex-col'}
-            title={'Click to view full screenshot'}
-          >
-            <span className="relative grow">
+          <ScrollArea orientation="vertical" className="h-[300px] w-full">
+            <div className="relative w-full">
               <img
                 src={homepageScreenshotUrl}
                 alt={'Homepage Screenshot'}
-                className={'absolute inset-0 h-full w-full object-cover object-top'}
+                className={'h-auto w-full'}
               />
               <div
                 className={
                   'bottom-right-4 absolute rounded border border-white bg-black p-1 text-xs text-white'
                 }
+                style={{ bottom: 8, right: 8 }}
               >
-                Click to view full screenshot
+                Scroll to view full screenshot
               </div>
-            </span>
-          </a>
+            </div>
+          </ScrollArea>
         </Card>
       )}
+
       <RiskIndicatorsSummary riskIndicators={riskIndicators} Link={Link} />
     </div>
   );
