@@ -133,9 +133,7 @@ export const useDefaultBlocksLogic = () => {
     ...entityDataAdditionalInfo
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
   const { website: websiteBasicRequirement, processingDetails, ...storeInfo } = store ?? {};
-  const kycChildWorkflows = workflow?.childWorkflows?.filter(
-    childWorkflow => childWorkflow?.context?.entity?.type === 'individual',
-  );
+
   const kybChildWorkflows = workflow?.childWorkflows?.filter(
     childWorkflow => childWorkflow?.context?.entity?.type === 'business',
   );

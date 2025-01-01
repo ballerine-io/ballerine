@@ -79,6 +79,8 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
     clientId: PluginPayloadProperty<string>;
   };
 
+  private pluginName = 'Individuals Sanctions V2 Plugin';
+
   constructor({
     payload,
     ...pluginParams
@@ -110,13 +112,13 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
       (this.request?.transformers ?? []).every(
         transformer => transformer.name !== 'jmespath-transformer',
       ),
-      'Individuals Sanctions V2 Plugin - JMESPath request transformers are not supported',
+      `${this.pluginName} - JMESPath request transformers are not supported`,
     );
     invariant(
       (this.response?.transformers ?? []).every(
         transformer => transformer.name !== 'jmespath-transformer',
       ),
-      'Individuals Sanctions V2 Plugin - JMESPath response transformers are not supported',
+      `${this.pluginName} - JMESPath response transformers are not supported`,
     );
   }
 
@@ -157,7 +159,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
 
           invariant(
             firstKycInformation,
-            `Individuals Sanctions V2 Plugin - no KYC information found at ${this.payload.kycInformation.value}`,
+            `${this.pluginName} - no KYC information found at ${this.payload.kycInformation.value}`,
           );
 
           const { firstName, lastName, additionalInfo } = firstKycInformation;
@@ -185,7 +187,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
 
           invariant(
             firstKey && kycInformation[firstKey],
-            `Individuals Sanctions V2 Plugin - no KYC information found at ${this.payload.kycInformation.value}`,
+            `${this.pluginName} - no KYC information found at ${this.payload.kycInformation.value}`,
           );
 
           return kycInformation[firstKey].result.vendorResult.entity.data;
@@ -193,7 +195,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
 
         // Should never reach this point. Will reach here if error handling or validation changes.
         throw new Error(
-          `Individuals Sanctions V2 Plugin - unexpected KYC information found at ${this.payload.kycInformation.value}`,
+          `${this.pluginName} - unexpected KYC information found at ${this.payload.kycInformation.value}`,
         );
       };
       const kycInformationByDataType = getKycInformationByDataType(kycInformation);
@@ -205,7 +207,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
         callbackUrl,
       };
 
-      logger.log('Individuals Sanctions V2 Plugin - Sending API request', {
+      logger.log(`${this.pluginName} - Sending API request`, {
         url,
         method: this.method,
       });
@@ -215,7 +217,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
         Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
       });
 
-      logger.log('Individuals Sanctions V2 Plugin - Received response', {
+      logger.log(`${this.pluginName} - Received response`, {
         status: apiResponse.statusText,
         url,
       });
@@ -224,7 +226,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
 
       invariant(
         !contentLength || Number(contentLength) > 0,
-        'Individuals Sanctions V2 Plugin - Received an empty response',
+        `${this.pluginName} - Received an empty response`,
       );
 
       if (!apiResponse.ok) {

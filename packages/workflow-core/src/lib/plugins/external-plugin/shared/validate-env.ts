@@ -20,7 +20,7 @@ export const validateEnv = (pluginName: string) => {
       return acc;
     }, {} as Record<PropertyKey, string>);
 
-    logger.error(`❌ ${pluginName} Plugin - Invalid environment variables:\n`, formattedErrors);
+    logger.error(`❌ ${pluginName} - Invalid environment variables:\n`, formattedErrors);
 
     throw new Error('Invalid environment variables');
   }

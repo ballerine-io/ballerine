@@ -1,12 +1,11 @@
 import { z } from 'zod';
 import { invariant } from 'outvariant';
-import { isErrorWithMessage } from '@ballerine/common';
+import { isErrorWithMessage, ProcessStatus } from '@ballerine/common';
 
 import { logger } from '../../../logger';
 import { ApiPlugin } from '../api-plugin';
 import { TContext } from '../../../utils/types';
 import { validateEnv } from '../shared/validate-env';
-import { getPluginStatus } from '../shared/get-plugin-status';
 import { getTransformer } from '../../../workflow-runner-utils';
 import { IApiPluginParams, PluginPayloadProperty } from '../types';
 import { getPayloadPropertiesValue } from '../shared/get-payload-properties-value';
@@ -15,47 +14,60 @@ import { handleJmespathTransformers } from '../shared/handle-jmespath-transforme
 const BankAccountVerificationPluginPayloadSchema = z.object({
   clientId: z.string().min(1),
   vendor: z.enum(['experian']),
-  data: z.object({
-    address: z.object({
-      streetNumber: z.string().min(1),
-      street: z.string().min(1),
-      city: z.string().min(1),
-      postCode: z.string().min(1),
-    }),
-    bankAccountDetails: z.object({
-      holder: z.object({
+  address: z.object({
+    streetNumber: z.string().min(1),
+    street: z.string().min(1),
+    city: z.string().min(1),
+    postcode: z.string().min(1),
+  }),
+  bankAccountDetails: z.object({
+    holder: z.union([
+      z.union([
+        z.object({
+          bankAccountName: z.string().min(1),
+          companyRegistrationNumber: z.string().min(1),
+        }),
+        z.object({
+          bankAccountName: z.string().min(1),
+          registeredCharityNumber: z.string().min(1),
+        }),
+      ]),
+      z.object({
         firstName: z.string().min(1),
         middleName: z.string().optional(),
         lastName: z.string().min(1),
       }),
-      sortCode: z.string().min(1),
-      bankAccountNumber: z.string().min(1),
-    }),
+    ]),
+    sortCode: z.string().min(1),
+    bankAccountNumber: z.string().min(1),
   }),
 });
 
 type TBankAccountVerificationPluginPayload = {
-  clientId: PluginPayloadProperty<string>;
-  vendor: PluginPayloadProperty<string>;
+  clientId: PluginPayloadProperty;
+  vendor: PluginPayloadProperty;
   data: {
     address: {
-      streetNumber: PluginPayloadProperty<string>;
-      street: PluginPayloadProperty<string>;
-      city: PluginPayloadProperty<string>;
-      postCode: PluginPayloadProperty<string>;
+      streetNumber: PluginPayloadProperty;
+      street: PluginPayloadProperty;
+      city: PluginPayloadProperty;
+      postcode: PluginPayloadProperty;
     };
     bankAccountDetails: {
-      sortCode: PluginPayloadProperty<string>;
-      bankAccountNumber: PluginPayloadProperty<string>;
+      sortCode: PluginPayloadProperty;
+      bankAccountNumber: PluginPayloadProperty;
     } & (
       | {
           holder: {
-            firstName: PluginPayloadProperty<string>;
+            firstName: PluginPayloadProperty;
             middleName: PluginPayloadProperty<string | undefined>;
-            lastName: PluginPayloadProperty<string>;
+            lastName: PluginPayloadProperty;
           };
         }
-      | { bankAccountName: PluginPayloadProperty<string> }
+      | ({ bankAccountName: PluginPayloadProperty } & (
+          | { companyRegistrationNumber: PluginPayloadProperty }
+          | { registeredCharityNumber: PluginPayloadProperty }
+        ))
     );
   };
 };
@@ -63,6 +75,8 @@ type TBankAccountVerificationPluginPayload = {
 export class BankAccountVerificationPlugin extends ApiPlugin {
   public static pluginType = 'http';
   public payload: TBankAccountVerificationPluginPayload;
+
+  private pluginName = 'Bank Account Verification Plugin';
 
   constructor({
     payload,
@@ -92,14 +106,14 @@ export class BankAccountVerificationPlugin extends ApiPlugin {
     this.payload = payload;
 
     handleJmespathTransformers({
-      pluginName: 'Bank Account Verification Plugin',
+      pluginName: this.pluginName,
       requestTransformers: this.request?.transformers,
       responseTransformers: this.response?.transformers,
     });
   }
 
   async invoke(context: TContext) {
-    const env = validateEnv('Bank Account Verification');
+    const env = validateEnv(this.pluginName);
 
     let requestPayload;
 
@@ -125,14 +139,20 @@ export class BankAccountVerificationPlugin extends ApiPlugin {
         context,
       });
 
-      const validatedPayload = BankAccountVerificationPluginPayloadSchema.parse(payload);
+      const validatedPayload = BankAccountVerificationPluginPayloadSchema.safeParse(payload);
+
+      if (!validatedPayload.success) {
+        return this.returnErrorResponse(
+          `Invalid payload: ${JSON.stringify(validatedPayload.error.errors)}`,
+        );
+      }
 
       requestPayload = {
         ...requestPayload,
-        ...validatedPayload,
+        ...validatedPayload.data,
       };
 
-      logger.log('Bank Account Verification Plugin - Sending API request', {
+      logger.log(`${this.pluginName} - Sending API request`, {
         url,
         method: this.method,
       });
@@ -142,7 +162,7 @@ export class BankAccountVerificationPlugin extends ApiPlugin {
         Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
       });
 
-      logger.log('Bank Account Verification Plugin - Received response', {
+      logger.log(`${this.pluginName} - Received response`, {
         status: apiResponse.statusText,
         url,
       });
@@ -151,7 +171,7 @@ export class BankAccountVerificationPlugin extends ApiPlugin {
 
       invariant(
         !contentLength || Number(contentLength) > 0,
-        'Bank Account Verification Plugin - Received an empty response',
+        `${this.pluginName} - Received an empty response`,
       );
 
       if (!apiResponse.ok) {
@@ -174,7 +194,7 @@ export class BankAccountVerificationPlugin extends ApiPlugin {
       responseBody = {
         ...responseBody,
         name: this.name,
-        status: getPluginStatus(responseBody),
+        status: ProcessStatus.SUCCESS,
       };
 
       const { isValidResponse, errorMessage } = await this.validateContent(
