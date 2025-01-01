@@ -68,7 +68,7 @@ export class RequestIdMiddleware implements NestMiddleware {
   private setReqId(req: Request<unknown>, res: Response<unknown>) {
     try {
       req.id = randomUUID();
-      // this.cls.set('requestId', req.id);
+      this.cls.set('requestId', req.id);
       res.setHeader('X-Request-ID', req.id);
     } catch (e) {
       // Mainly for debugging purposes. See https://github.com/Papooch/nestjs-cls/issues/67

@@ -22,13 +22,13 @@ export class AuthKeyMiddleware implements NestMiddleware {
       const { id, name, projects, authenticationConfiguration, ...customerWithoutProjects } =
         dbApiKey.customer;
 
-      // this.cls.set('entity', {
-      //   customer: {
-      //     id,
-      //     name,
-      //   },
-      //   type: 'customer',
-      // });
+      this.cls.set('entity', {
+        customer: {
+          id,
+          name,
+        },
+        type: 'customer',
+      });
 
       req.user = {
         customer: customerWithoutProjects,
