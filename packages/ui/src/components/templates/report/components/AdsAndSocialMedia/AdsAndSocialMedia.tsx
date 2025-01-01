@@ -1,104 +1,233 @@
-import React, { FunctionComponent } from 'react';
-import { Card, CardContent, CardHeader } from '@/components';
-import { TextWithNAFallback } from '@/components/atoms/TextWithNAFallback';
 import { ctw } from '@/common';
-import { AdImageWithLink } from '../AdImageWithLink';
-import { toTitleCase } from 'string-ts';
-import { AnchorIfUrl } from '@/components/atoms/AnchorIfUrl';
-import { valueOrNA } from '@ballerine/common';
+import { buttonVariants, Card, Image, TextWithNAFallback } from '@/components';
+import {
+  toAdsImages,
+  toSocialMediaPresence,
+} from '@/components/templates/report/adapters/report-adapter';
+import { AdsProviders } from '@/components/templates/report/constants';
+import {
+  BanIcon,
+  BriefcaseIcon,
+  CalendarIcon,
+  CheckIcon,
+  InfoIcon,
+  LinkIcon,
+  MailIcon,
+  MapPinIcon,
+  PhoneIcon,
+  TagIcon,
+  ThumbsUpIcon,
+  UsersIcon,
+} from 'lucide-react';
+import { FunctionComponent, ReactNode } from 'react';
+import { capitalize, toLowerCase } from 'string-ts';
+import { z } from 'zod';
+import { FacebookIcon } from './icons/FacebookIcon';
+import { InstagramIcon } from './icons/InstagramIcon';
 
-export const AdsAndSocialMedia: FunctionComponent<{
-  violations: Array<{
-    label: string;
-    severity: string;
-  }>;
-  mediaPresence: Array<{
-    label: string;
-    items: Array<{
-      label: string;
-      value: string;
-    }>;
-  }>;
-  adsImages: Array<{
-    provider: string;
-    src: string;
-    link: string;
-  }>;
-  relatedAdsSummary: string;
-  relatedAdsImages: Array<{
-    src: string;
-    link: string;
-  }>;
-}> = ({ violations, mediaPresence, adsImages, relatedAdsSummary, relatedAdsImages }) => {
-  return (
-    <div className={'space-y-8'}>
-      <h3 className={'text-lg font-bold'}>Ads and Social Media Analysis</h3>
-      <Card>
-        <CardHeader className={'pt-4 font-bold'}>Social Media Presence</CardHeader>
-        <CardContent className={'space-y-8'}>
-          <div className={'grid grid-cols-2 gap-8'}>
-            {!!mediaPresence?.length &&
-              mediaPresence?.map(({ label, items }) => (
-                <div key={label}>
-                  <TextWithNAFallback as={'h3'} className="mb-3 font-bold">
-                    {toTitleCase(label ?? '')}
-                  </TextWithNAFallback>
-                  <ul
-                    className={ctw('space-y-1', {
-                      'ps-4': !!items?.length,
-                    })}
-                  >
-                    {!!items?.length &&
-                      items.map(({ label, value }) => {
-                        return (
-                          <li key={label} className={'list-disc'}>
-                            <TextWithNAFallback className={'me-2 font-semibold'}>
-                              {toTitleCase(label ?? '')}:
-                            </TextWithNAFallback>
-                            <TextWithNAFallback as={AnchorIfUrl} className={'break-all'}>
-                              {value}
-                            </TextWithNAFallback>
-                          </li>
-                        );
-                      })}
-                    {!items?.length && <li>No social media presence detected.</li>}
-                  </ul>
-                </div>
-              ))}
-            {!mediaPresence?.length && (
-              <div>
-                <ul>
-                  <li>No social media presence detected.</li>
-                </ul>
-              </div>
-            )}
-          </div>
-          <div className={'grid grid-cols-[400px_400px] gap-8'}>
-            {adsImages.map(({ provider, src, link }, index) => (
-              <AdImageWithLink
-                title={`${valueOrNA(toTitleCase(provider ?? ''))} Image`}
-                key={src}
-                src={src}
-                alt={`${provider} ad ${index + 1}`}
-                link={link}
-              />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-      {/*Hiding this for now, will be added back in later*/}
-      {/*<Card>*/}
-      {/*  <CardHeader className={'pt-4 font-bold'}>Related Ads</CardHeader>*/}
-      {/*  <CardContent className={'flex flex-col space-y-4'}>*/}
-      {/*    <div className={'grid grid-cols-[400px_400px] gap-8'}>*/}
-      {/*      {!!relatedAdsImages?.length &&*/}
-      {/*        relatedAdsImages.map(({ src, link }, index) => (*/}
-      {/*          <AdExample key={src} src={src} link={link} alt={`Ad Example ${index + 1}`} />*/}
-      {/*        ))}*/}
-      {/*      {!relatedAdsImages?.length && <>No ads detected.</>}*/}
-      {/*    </div>*/}
-      {/*  </CardContent>*/}
-      {/*</Card>*/}
-    </div>
-  );
+const socialMediaMapper: {
+  facebook: {
+    icon: ReactNode;
+    fields: Record<
+      Exclude<keyof AdsAndSocialMediaProps['mediaPresence']['facebook'], 'page' | 'id'>,
+      { icon: ReactNode; label: string }
+    >;
+  };
+  instagram: {
+    icon: ReactNode;
+    fields: Record<
+      Exclude<keyof AdsAndSocialMediaProps['mediaPresence']['instagram'], 'page' | 'userName'>,
+      { icon: ReactNode; label: string }
+    >;
+  };
+} = {
+  facebook: {
+    icon: <FacebookIcon className="h-8 w-8" />,
+    fields: {
+      creationDate: {
+        icon: <CalendarIcon className="h-5 w-5 text-gray-500" />,
+        label: 'Creation Date',
+      },
+      phoneNumber: { icon: <PhoneIcon className="h-5 w-5 text-gray-500" />, label: 'Phone Number' },
+      email: { icon: <MailIcon className="h-5 w-5 text-gray-500" />, label: 'Email' },
+      address: { icon: <MapPinIcon className="h-5 w-5 text-gray-500" />, label: 'Address' },
+      likes: { icon: <ThumbsUpIcon className="h-5 w-5 text-gray-500" />, label: 'Likes' },
+      categories: { icon: <TagIcon className="h-5 w-5 text-gray-500" />, label: 'Categories' },
+    },
+  },
+  instagram: {
+    icon: <InstagramIcon className="h-8 w-8" />,
+    fields: {
+      isBusinessAccount: {
+        icon: <BriefcaseIcon className="h-5 w-5 text-gray-500" />,
+        label: 'Business Profile',
+      },
+      isVerified: { icon: <CheckIcon className="h-5 w-5 text-gray-500" />, label: 'Verified' },
+      followers: { icon: <UsersIcon className="h-5 w-5 text-gray-500" />, label: 'Followers' },
+      categories: {
+        icon: <TagIcon className="h-5 w-5 text-gray-500" />,
+        label: 'Categories',
+      },
+      biography: { icon: <InfoIcon className="h-5 w-5 text-gray-500" />, label: 'Biography' },
+    },
+  },
+} as const;
+
+type AdsAndSocialDataFieldProps = {
+  icon: ReactNode;
+  label: string;
+  value: string | undefined;
 };
+const AdsAndSocialDataField = ({ label, icon, value }: AdsAndSocialDataFieldProps) => (
+  <div className={ctw('flex justify-between', label !== 'Biography' && 'items-center')}>
+    <div className="flex basis-1/3 items-center gap-4 whitespace-nowrap">
+      {icon}
+      <span className="font-semibold">{label}</span>
+    </div>
+
+    <TextWithNAFallback
+      className={ctw(
+        'grow-0 basis-2/3 overflow-hidden text-ellipsis',
+        !value && 'text-gray-400',
+        label !== 'Biography' && 'whitespace-nowrap',
+      )}
+    >
+      {value}
+    </TextWithNAFallback>
+  </div>
+);
+
+const cleanLink = (link: string) => {
+  if (!link || !z.string().url().safeParse(link).success) {
+    return 'N/A';
+  }
+
+  let { hostname, pathname } = new URL(link);
+
+  if (hostname.startsWith('www.')) {
+    hostname = hostname.slice(4);
+  }
+
+  return `${hostname}${pathname}`;
+};
+
+// TODO: this component can be further decoupled to re-use for social media data and ads data.
+// Also empty state can be decoupled.
+type AdsAndSocialMediaProps = {
+  mediaPresence: ReturnType<typeof toSocialMediaPresence>;
+  adsImages: ReturnType<typeof toAdsImages>;
+
+  violations?: Array<{ label: string; severity: string }>;
+  relatedAdsSummary?: string;
+  relatedAdsImages?: Array<{ src: string; link: string }>;
+};
+export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
+  mediaPresence,
+  adsImages,
+  relatedAdsImages,
+}) => (
+  <div className="space-y-6 px-4">
+    <h2 className="text-lg font-bold">Ads and Social Media Analysis</h2>
+
+    <div>
+      <h3 className="mb-2 text-base font-bold">Social Media</h3>
+
+      <div className="flex w-full flex-col gap-4">
+        {AdsProviders.map(toLowerCase).map(provider => {
+          const { page, ...rest } = mediaPresence[provider] ?? {};
+          const { src, link } = adsImages[provider] ?? {};
+
+          // || because empty string is not a valid case
+          const idValue = ('id' in rest ? rest.id : rest.userName) || null;
+
+          return (
+            <Card key={provider} className={ctw('shadow-l w-full p-4', !page && 'opacity-60')}>
+              <div className="flex flex-row items-center gap-2 font-semibold">
+                {socialMediaMapper[provider].icon}
+                <h4 className="text-xl">{capitalize(provider)}</h4>
+              </div>
+
+              {page ? (
+                <div className="flex justify-between">
+                  <div className="min-w-0 grow-0 basis-2/3">
+                    <div className="flex items-center">
+                      <LinkIcon className="h-5 w-5 text-gray-400" />
+                      <a
+                        className={ctw(
+                          buttonVariants({ variant: 'browserLink' }),
+                          'ml-2 p-0 text-base',
+                        )}
+                        href={link}
+                      >
+                        {cleanLink(link)}
+                      </a>
+                    </div>
+                    {idValue !== null && (
+                      <span className="text-sm text-gray-400">
+                        {'id' in rest ? `ID ${idValue}` : `@${idValue}`}
+                      </span>
+                    )}
+
+                    <div className="mt-8 space-y-4">
+                      {Object.entries(socialMediaMapper[provider].fields).map(
+                        ([field, { icon, label }]) => (
+                          <AdsAndSocialDataField
+                            key={field}
+                            icon={icon}
+                            label={label}
+                            value={rest[field as keyof typeof rest]}
+                          />
+                        ),
+                      )}
+                    </div>
+                  </div>
+
+                  <a
+                    className={buttonVariants({
+                      variant: 'link',
+                      className:
+                        'h-[unset] cursor-pointer !p-0 !text-[#14203D] underline decoration-[1.5px]',
+                    })}
+                    href={link}
+                  >
+                    <Image
+                      key={src}
+                      src={src}
+                      alt={`${capitalize(provider)} image`}
+                      role="link"
+                      className="h-auto max-h-96 w-auto"
+                    />
+                  </a>
+                </div>
+              ) : (
+                <div className="my-4 flex items-center gap-2 text-gray-400">
+                  <BanIcon className="h-5 w-5" />
+                  <span className="text-sm">No {capitalize(provider)} profile detected.</span>
+                </div>
+              )}
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+
+    {/* <div>
+      <h3 className="mb-2 text-base font-bold">Ads</h3>
+      <Card
+        className={ctw(
+          'flex w-full justify-between p-4 shadow-lg',
+          relatedAdsImages && relatedAdsImages.length > 0 ? 'opacity-100' : 'opacity-60',
+        )}
+      >
+        {relatedAdsImages ? (
+          <>The ads should be displayed here</>
+        ) : (
+          <div className="flex items-center gap-2 text-gray-400">
+            <BanIcon className="h-5 w-5" />
+            <span className="text-sm">No ads detected.</span>
+          </div>
+        )}
+      </Card>
+    </div> */}
+  </div>
+);

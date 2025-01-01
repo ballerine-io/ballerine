@@ -38,6 +38,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { BusinessReportFindingsListResponseDto } from '@/business-report/dtos/business-report-findings.dto';
 import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
+import { BusinessReportMetricsDto } from './dtos/business-report-metrics-dto';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Business Reports')
@@ -113,6 +114,15 @@ export class BusinessReportControllerExternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async listFindings() {
     return await this.merchantMonitoringClient.listFindings();
+  }
+
+  @common.Get('/metrics')
+  @swagger.ApiOkResponse({ type: BusinessReportMetricsDto })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async getMetrics(@CurrentProject() currentProjectId: TProjectId) {
+    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
+
+    return await this.merchantMonitoringClient.getMetrics({ customerId });
   }
 
   @common.Post()

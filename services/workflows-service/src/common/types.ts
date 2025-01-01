@@ -14,6 +14,11 @@ export const SubscriptionSchema = z.discriminatedUnion('type', [
       type: z.literal('webhook'),
       url: z.string().url(),
       events: z.array(z.string()),
+      config: z
+        .object({
+          withChildWorkflows: z.boolean().optional(),
+        })
+        .optional(),
     })
     .strict(),
 ]);
