@@ -1,5 +1,13 @@
 # kyb-app
 
+## 0.3.103
+
+### Patch Changes
+
+- Updated traffic-related stats in the "Website credibility" tab.
+- Updated dependencies
+  - @ballerine/ui@0.5.57
+
 ## 0.3.102
 
 ### Patch Changes

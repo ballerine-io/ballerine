@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.57
+
+### Patch Changes
+
+- Updated traffic-related stats in the "Website credibility" tab.
+
 ## 0.5.56
 
 ### Patch Changes

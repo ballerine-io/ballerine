@@ -79,10 +79,10 @@ importers:
         specifier: 0.9.63
         version: link:../../packages/common
       '@ballerine/react-pdf-toolkit':
-        specifier: ^1.2.54
+        specifier: ^1.2.57
         version: link:../../packages/react-pdf-toolkit
       '@ballerine/ui':
-        specifier: ^0.5.54
+        specifier: ^0.5.57
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.6.82
@@ -524,7 +524,7 @@ importers:
         specifier: ^0.9.63
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.5.56
+        specifier: 0.5.57
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.6.82
@@ -1504,7 +1504,7 @@ importers:
         specifier: ^1.1.28
         version: link:../config
       '@ballerine/ui':
-        specifier: 0.5.56
+        specifier: 0.5.57
         version: link:../ui
       '@react-pdf/renderer':
         specifier: ^3.1.14
@@ -1778,6 +1778,9 @@ importers:
       '@radix-ui/react-slot':
         specifier: ^1.0.1
         version: 1.0.2(@types/react@18.2.37)(react@18.2.0)
+      '@radix-ui/react-tooltip':
+        specifier: ^1.0.7
+        version: 1.0.7(@types/react-dom@18.2.15)(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
       '@rjsf/core':
         specifier: ^5.9.0
         version: 5.14.2(@rjsf/utils@5.14.2)(react@18.2.0)
@@ -1829,6 +1832,9 @@ importers:
       react-phone-input-2:
         specifier: ^2.15.1
         version: 2.15.1(react-dom@18.2.0)(react@18.2.0)
+      recharts:
+        specifier: ^2.7.2
+        version: 2.9.3(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)
       string-ts:
         specifier: ^1.2.0
         version: 1.2.0
@@ -7262,7 +7268,7 @@ packages:
     resolution: {integrity: sha512-2Yv65nlWnWlSpe3fXEyX5i7fx5kIKo4Qbcj+hMO0odwaneFjfXw5fdum+4yL20O0QiaHpia0cYQ9xpNMqrBwHg==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      regenerator-runtime: 0.14.0
+      regenerator-runtime: 0.14.1
     dev: false
 
   /@babel/runtime@7.23.8:
@@ -9568,16 +9574,6 @@ packages:
       - '@types/react'
     dev: false
 
-  /@floating-ui/react-dom@2.0.4(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-CF8k2rgKeh/49UrnIBs4BdxPUV6vize/Db1d/YbCLyp9GiVZ0BEwf5AiDSxJRCr6yOkGqTFHtmrULxkEfYZ7dQ==}
-    peerDependencies:
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
-    dependencies:
-      '@floating-ui/dom': 1.5.3
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-
   /@floating-ui/react-dom@2.1.0(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-lNzj5EQmEKn5FFKc04+zasr09h/uX8RtJRNj5gUXsSQIXHVWTVh+hVAg1vOMCexkX8EgvemMvIFpQfkosnVNyA==}
     peerDependencies:
@@ -9587,7 +9583,6 @@ packages:
       '@floating-ui/dom': 1.5.3
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-    dev: false
 
   /@floating-ui/react@0.25.4(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-lWRQ/UiTvSIBxohn0/2HFHEmnmOVRjl7j6XcRJuLH0ls6f/9AyHMWVzkAJFuwx0n9gaEeCmg9VccCSCJzbEJig==}
@@ -12325,7 +12320,7 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.23.8
-      '@floating-ui/react-dom': 2.0.4(react-dom@18.2.0)(react@18.2.0)
+      '@floating-ui/react-dom': 2.1.0(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-arrow': 1.0.3(@types/react-dom@18.2.15)(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.37)(react@18.2.0)
       '@radix-ui/react-context': 1.0.1(@types/react@18.2.37)(react@18.2.0)
@@ -12354,7 +12349,7 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.23.8
-      '@floating-ui/react-dom': 2.0.4(react-dom@18.2.0)(react@18.2.0)
+      '@floating-ui/react-dom': 2.1.0(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-arrow': 1.0.3(@types/react-dom@18.2.17)(@types/react@18.2.43)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.43)(react@18.2.0)
       '@radix-ui/react-context': 1.0.1(@types/react@18.2.43)(react@18.2.0)
