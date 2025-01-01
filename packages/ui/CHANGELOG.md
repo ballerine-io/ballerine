@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.58
+
+### Patch Changes
+
+- adds scrollable view for partner website
+
 ## 0.5.57
 
 ### Patch Changes
