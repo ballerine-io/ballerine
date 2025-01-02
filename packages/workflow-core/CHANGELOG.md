@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.6.81
+
+### Patch Changes
+
+- bank account verification plugin
+
 ## 0.6.80
 
 ### Patch Changes
