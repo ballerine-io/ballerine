@@ -34,6 +34,7 @@ export type TDynamicFormElement<
   TParams = object,
 > = FunctionComponent<{
   element: IFormElement<TElements, TParams>;
+  children?: React.ReactNode | React.ReactNode[];
 }>;
 
 export type TDynamicFormField<TParams = object> = FunctionComponent<{
@@ -47,7 +48,7 @@ export interface IDynamicFormProps<TValues = object> {
   values: TValues;
   elements: Array<IFormElement<string, any>>;
 
-  fieldExtends?: Record<string, TDynamicFormField<any>>;
+  fieldExtends?: Record<string, TDynamicFormField<any> | TDynamicFormElement<any, any>>;
 
   validationParams?: IValidationParams;
   onChange?: (newValues: TValues) => void;
@@ -58,3 +59,5 @@ export interface IDynamicFormProps<TValues = object> {
   ref?: React.RefObject<IFormRef<TValues>>;
   metadata?: Record<string, any>;
 }
+
+export type { TBaseFields } from '../repositories';
