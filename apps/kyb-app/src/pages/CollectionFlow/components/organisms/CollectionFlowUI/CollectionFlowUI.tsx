@@ -7,9 +7,21 @@ interface ICollectionFlowUIProps {
   context: object;
 }
 
+const validationParams = {
+  validateOnBlur: true,
+  abortEarly: false,
+};
+
 export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
   elements,
   context,
 }) => {
-  return <DynamicFormV2 fieldExtends={formElementsExtends} elements={elements} values={context} />;
+  return (
+    <DynamicFormV2
+      fieldExtends={formElementsExtends}
+      elements={elements}
+      values={context}
+      validationParams={validationParams}
+    />
+  );
 };

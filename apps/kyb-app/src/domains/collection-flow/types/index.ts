@@ -1,6 +1,6 @@
 import { ITheme } from '@/common/types/settings';
-import { Action, Rule, UIElement } from '@/domains/collection-flow/types/ui-schema.types';
-import { AnyObject } from '@ballerine/ui';
+import { Action, Rule } from '@/domains/collection-flow/types/ui-schema.types';
+import { AnyObject, IFormElement } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { CollectionFlowConfig } from './flow-context.types';
 
@@ -128,7 +128,7 @@ export interface UIPage {
   name: string;
   number: number;
   stateName: string;
-  elements: Array<UIElement<AnyObject>>;
+  elements: Array<IFormElement<any, any>>;
   actions: Action[];
   pageValidation?: Rule[];
 }

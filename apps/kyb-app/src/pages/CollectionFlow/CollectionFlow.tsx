@@ -12,7 +12,6 @@ import {
   PageError,
   usePageErrors,
 } from '@/components/organisms/DynamicUI/Page/hooks/usePageErrors';
-import { UIRenderer } from '@/components/organisms/UIRenderer';
 import { Cell } from '@/components/organisms/UIRenderer/elements/Cell';
 import { Divider } from '@/components/organisms/UIRenderer/elements/Divider';
 import { JSONForm } from '@/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
@@ -37,6 +36,7 @@ import {
   setStepCompletionState,
 } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
+import { CollectionFlowUI } from './components/organisms/CollectionFlowUI';
 import { FailedScreen } from './components/pages/FailedScreen';
 import { useAdditionalWorkflowContext } from './hooks/useAdditionalWorkflowContext';
 
@@ -145,7 +145,7 @@ export const CollectionFlow = withSessionProtected(() => {
         config={collectionFlowData?.config}
         additionalContext={additionalContext}
       >
-        {({ state, stateApi }) => {
+        {({ state, stateApi, payload }) => {
           return (
             <DynamicUI.TransitionListener
               pages={elements ?? []}
@@ -299,7 +299,10 @@ export const CollectionFlow = withSessionProtected(() => {
                                       <ProgressBar />
                                     </div>
                                     <div>
-                                      <UIRenderer elements={elems} schema={currentPage.elements} />
+                                      <CollectionFlowUI
+                                        elements={currentPage.elements}
+                                        context={payload}
+                                      />
                                     </div>
                                   </div>
                                 </AppShell.FormContainer>
