@@ -5,13 +5,13 @@ module.exports = {
 
   parserOptions: {
     ...parserOptions,
-    // These types of configs should be relative to the package's root
+
     tsconfigRootDir: __dirname,
-    project: ['./tsconfig.eslint.json'],
+    project: 'tsconfig.eslint.json',
   },
+
   settings: {
     ...settings,
-
     'svelte3/typescript': require('typescript'),
   },
 };

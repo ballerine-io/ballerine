@@ -1,5 +1,41 @@
 # @ballerine/react-pdf-toolkit
 
+## 1.2.59
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.59
+
+## 1.2.58
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.58
+
+## 1.2.57
+
+### Patch Changes
+
+- Updated traffic-related stats in the "Website credibility" tab.
+- Updated dependencies
+  - @ballerine/ui@0.5.57
+
+## 1.2.56
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.56
+
+## 1.2.55
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.55
+
 ## 1.2.54
 
 ### Patch Changes

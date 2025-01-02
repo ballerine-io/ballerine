@@ -8,12 +8,14 @@ import { z } from 'zod';
 export const translateUiDefinition = async ({
   id,
   partialUiDefinition,
+  locale,
 }: {
   id: string;
   partialUiDefinition: Record<string, unknown>;
+  locale: string;
 }) => {
   const [data, error] = await apiClient({
-    endpoint: `../case-management/ui-definition/${id}/translate/en`,
+    endpoint: `../case-management/ui-definition/${id}/translate/${locale}`,
     method: Method.POST,
     body: {
       partialUiDefinition,

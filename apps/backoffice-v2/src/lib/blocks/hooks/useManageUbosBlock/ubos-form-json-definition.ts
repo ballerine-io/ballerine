@@ -18,7 +18,6 @@ export const ubosFormJsonDefinition = {
         'company-ownership-passport-number-input',
         'company-ownership-date-of-birth-input',
         'company-ownership-nationality-input',
-        'company-ownership-gender-input',
         'company-ownership-country-input',
         'company-ownership-city-input',
       ],
@@ -173,32 +172,6 @@ export const ubosFormJsonDefinition = {
         },
         uiSchema: {
           'ui:field': 'NationalityPicker',
-        },
-      },
-    },
-    {
-      name: 'company-ownership-gender-input',
-      type: 'json-form:text',
-      valueDestination: 'gender',
-      options: {
-        label: 'text.companyOwnership.gender.label',
-        hint: 'text.companyOwnership.gender.placeholder',
-        jsonFormDefinition: {
-          type: 'string',
-          oneOf: [
-            {
-              title: 'text.companyOwnership.gender.male',
-              const: 'male',
-            },
-            {
-              title: 'text.companyOwnership.gender.female',
-              const: 'female',
-            },
-            {
-              title: 'text.companyOwnership.gender.other',
-              const: 'other',
-            },
-          ],
         },
       },
     },

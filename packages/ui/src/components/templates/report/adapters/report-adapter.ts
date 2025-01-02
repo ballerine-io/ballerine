@@ -1,7 +1,6 @@
-import { AdsProviders, severityToDisplaySeverity } from '@/components/templates/report/constants';
-import { adsProviderAdapter } from '@/components';
+import { severityToDisplaySeverity } from '@/components/templates/report/constants';
 import { TAdsProvider } from '@/components/templates/report/types';
-import { SeverityType } from '@ballerine/common';
+import { booleanToYesOrNo, SeverityType } from '@ballerine/common';
 
 const getLabel = ({ label, provider }: { label: string; provider: string }) => {
   if (label === 'page') {
@@ -23,6 +22,47 @@ export const toRiskLabels = (riskIndicators: Array<{ name: string; riskLevel: st
   }));
 };
 
+export const toSocialMediaPresence = (data: Record<string, any>) => {
+  const { facebookData, instagramData } = data ?? {};
+
+  return {
+    facebook: {
+      page: facebookData?.pageUrl,
+      id: facebookData?.id,
+      creationDate: facebookData?.creationDate,
+      categories: facebookData?.pageCategories,
+      address: facebookData?.address,
+      phoneNumber: facebookData?.phoneNumber,
+      email: facebookData?.email,
+      likes: facebookData?.numberOfLikes,
+    },
+    instagram: {
+      page: instagramData?.pageUrl,
+      userName: instagramData?.username,
+      categories: instagramData?.pageCategories,
+      biography: instagramData?.biography,
+      followers: instagramData?.numberOfFollowers,
+      isBusinessAccount: booleanToYesOrNo(instagramData?.isBusinessAccount),
+      isVerified: booleanToYesOrNo(instagramData?.isVerified),
+    },
+  } as const satisfies Record<Lowercase<TAdsProvider>, Record<string, unknown>>;
+};
+
+export const toAdsImages = (data: Record<string, any>) => {
+  const { facebookData, instagramData } = data ?? {};
+
+  return {
+    facebook: {
+      src: facebookData?.screenshotUrl,
+      link: facebookData?.pageUrl,
+    },
+    instagram: {
+      src: instagramData?.screenshotUrl,
+      link: instagramData?.pageUrl,
+    },
+  };
+};
+
 const normalizeRiskLevel = (riskTypeLevels: Record<string, SeverityType>) => {
   return Object.entries(riskTypeLevels).reduce((acc, [riskType, riskLevel]) => {
     acc[riskType] =
@@ -30,6 +70,15 @@ const normalizeRiskLevel = (riskTypeLevels: Record<string, SeverityType>) => {
 
     return acc;
   }, {} as Record<string, SeverityType>);
+};
+
+const normalizeHyphenedDataString = (str: string) => {
+  const parts = str.split(' - ');
+
+  return {
+    label: parts.length > 1 ? parts.slice(0, -1).join(' - ') : parts.at(0),
+    value: parts.at(-1),
+  };
 };
 
 export const reportAdapter = {
@@ -41,30 +90,7 @@ export const reportAdapter = {
       adsAndSocialMediaAnalysis: toRiskLabels(
         report?.summary?.riskIndicatorsByDomain?.adsAndSocialViolations,
       ),
-      adsAndSocialMediaPresence: [
-        ...Object.entries({ facebook: report?.socialMedia?.facebookData ?? {} }),
-        ...Object.entries({ instagram: report?.socialMedia?.instagramData ?? {} }),
-      ]
-        .map(([provider, data]) => {
-          if (!AdsProviders.includes(provider.toUpperCase() as TAdsProvider)) {
-            return;
-          }
-
-          const adapter = adsProviderAdapter[provider as keyof typeof adsProviderAdapter];
-          const adaptedData = adapter(data);
-
-          return {
-            label: provider,
-            items: Object.entries(adaptedData).map(([label, value]) => ({
-              label: getLabel({
-                label,
-                provider,
-              }),
-              value,
-            })),
-          };
-        })
-        ?.filter((value): value is NonNullable<typeof value> => Boolean(value)),
+      adsAndSocialMediaPresence: toSocialMediaPresence(report?.socialMedia),
       websiteLineOfBusinessAnalysis:
         report?.summary?.riskIndicatorsByDomain?.lineOfBusinessViolations?.map(
           ({
@@ -125,16 +151,7 @@ export const reportAdapter = {
       websiteCredibilityAnalysis: toRiskLabels(
         report?.summary?.riskIndicatorsByDomain?.tldViolations,
       ),
-      adsImages: [
-        ...Object.entries({ facebook: report?.socialMedia?.facebookData ?? {} }),
-        ...Object.entries({ instagram: report?.socialMedia?.instagramData ?? {} }),
-      ]
-        .map(([provider, data]) => ({
-          provider,
-          src: data?.screenshotUrl,
-          link: data?.pageUrl,
-        }))
-        .filter(({ src }: { src: string }) => !!src),
+      adsImages: toAdsImages(report?.socialMedia),
       relatedAdsImages: report?.socialMedia?.pickedAds
         ?.map((data: { screenshotUrl: string; link: string }) => ({
           src: data?.screenshotUrl,
@@ -162,23 +179,17 @@ export const reportAdapter = {
       pricingAnalysis: report?.transactionLaundering?.pricingAnalysis?.indicators,
       websiteStructureAndContentEvaluation:
         report?.transactionLaundering?.websiteStructureEvaluation?.indicators,
-      trafficAnalysis: [
-        {
-          label: 'Estimated Monthly Visits',
-          items: report?.transactionLaundering?.trafficAnalysis?.montlyVisitsIndicators ?? [],
-        },
-        {
-          label: 'Traffic Sources',
-          items: report?.transactionLaundering?.trafficAnalysis?.trafficSources ?? [],
-        },
-        {
-          label: 'Engagements',
-          items: report?.transactionLaundering?.trafficAnalysis?.engagements ?? [],
-        },
-      ] satisfies Array<{
-        label: string;
-        items: string[];
-      }>,
+      trafficAnalysis: {
+        montlyVisitsIndicators: (
+          report?.transactionLaundering?.trafficAnalysis?.montlyVisitsIndicators ?? []
+        ).map(normalizeHyphenedDataString),
+        trafficSources: (report?.transactionLaundering?.trafficAnalysis?.trafficSources ?? []).map(
+          normalizeHyphenedDataString,
+        ),
+        engagements: (report?.transactionLaundering?.trafficAnalysis?.engagements ?? []).map(
+          normalizeHyphenedDataString,
+        ),
+      },
       homepageScreenshotUrl: report?.homepageScreenshot,
       formattedMcc: report?.lineOfBusiness?.formattedMcc,
     };

@@ -1,5 +1,35 @@
 # @ballerine/ui
 
+## 0.5.59
+
+### Patch Changes
+
+- Adds interactivity to the homepage charts
+
+## 0.5.58
+
+### Patch Changes
+
+- adds scrollable view for partner website
+
+## 0.5.57
+
+### Patch Changes
+
+- Updated traffic-related stats in the "Website credibility" tab.
+
+## 0.5.56
+
+### Patch Changes
+
+- Updated user-facing social media view
+
+## 0.5.55
+
+### Patch Changes
+
+- Fixed phone input styling
+
 ## 0.5.54
 
 ### Patch Changes

@@ -18,7 +18,10 @@ export const InputJsonValueSchema = z.union([
 export const JsonValueSchema = z.union([InputJsonValueSchema, z.null()]);
 
 export const BusinessReportRequestSchema = z.object({
-  websiteUrl: z.string().regex(URL_PATTERN, { message: 'Invalid URL' }),
+  websiteUrl: z
+    .string()
+    .regex(URL_PATTERN, { message: 'Invalid URL' })
+    .transform(value => value.toLowerCase()),
   countryCode: z.string().length(2).optional(),
   lineOfBusiness: z.string().optional(),
   parentCompanyName: z.string().optional(),
