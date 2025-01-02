@@ -47,12 +47,11 @@ export class BusinessReportMetricsDto {
   riskLevelCounts!: RiskLevelCountsDto;
 
   @ApiProperty({
-    description: 'Counts of violations by type',
+    description: 'Detected violations counts',
     example: { PROHIBITED_CONTENT: 2, MISSING_INFORMATION: 1 },
-    type: 'object',
-    additionalProperties: { type: 'number' },
+    type: 'array',
   })
   @IsObject()
   @Type(() => Object)
-  violationCounts!: Record<string, number>;
+  violationCounts!: Array<{ count: number; name: string; id: string }>;
 }
