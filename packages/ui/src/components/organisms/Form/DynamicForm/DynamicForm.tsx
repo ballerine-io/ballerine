@@ -3,6 +3,7 @@ import { FunctionComponent, useMemo } from 'react';
 import { Renderer, TRendererSchema } from '../../Renderer';
 import { ValidatorProvider } from '../Validator';
 import { DynamicFormContext, IDynamicFormContext } from './context';
+import { defaultValidationParams } from './defaults';
 import { useSubmit } from './hooks/external/useSubmit';
 import { useFieldHelpers } from './hooks/internal/useFieldHelpers';
 import { useTouched } from './hooks/internal/useTouched';
@@ -15,7 +16,7 @@ import { IDynamicFormProps } from './types';
 export const DynamicFormV2: FunctionComponent<IDynamicFormProps> = ({
   elements,
   values: initialValues,
-  validationParams,
+  validationParams = defaultValidationParams,
   fieldExtends,
   metadata,
   onChange,
@@ -44,8 +45,18 @@ export const DynamicFormV2: FunctionComponent<IDynamicFormProps> = ({
         onEvent,
       },
       metadata: metadata ?? {},
+      validationParams: validationParams ?? {},
     }),
-    [touchedApi.touched, valuesApi.values, submit, fieldHelpers, fieldExtends, onEvent, metadata],
+    [
+      touchedApi.touched,
+      valuesApi.values,
+      submit,
+      fieldHelpers,
+      fieldExtends,
+      onEvent,
+      metadata,
+      validationParams,
+    ],
   );
 
   return (

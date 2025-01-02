@@ -2,7 +2,12 @@ import { AnyObject } from '@/common';
 import { useState } from 'react';
 import { JSONEditorComponent } from '../../../Validator/_stories/components/JsonEditor/JsonEditor';
 import { DynamicFormV2 } from '../../DynamicForm';
+import { IDynamicFormValidationParams } from '../../types';
 import { schema } from './schema';
+
+const validationParams: IDynamicFormValidationParams = {
+  validateOnBlur: false,
+};
 
 export const ValidationShowcaseComponent = () => {
   const [context, setContext] = useState<AnyObject>({});
@@ -17,6 +22,7 @@ export const ValidationShowcaseComponent = () => {
             console.log('onSubmit');
           }}
           onChange={setContext}
+          validationParams={validationParams}
           // onEvent={console.log}
         />
       </div>

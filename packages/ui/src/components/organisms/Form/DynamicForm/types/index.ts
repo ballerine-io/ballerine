@@ -44,13 +44,17 @@ export type TDynamicFormField<TParams = object> = FunctionComponent<{
 
 export type TElementsMap = Record<string, TDynamicFormElement<any, any>>;
 
+export interface IDynamicFormValidationParams extends IValidationParams {
+  validateOnBlur?: boolean;
+}
+
 export interface IDynamicFormProps<TValues = object> {
   values: TValues;
   elements: Array<IFormElement<string, any>>;
 
   fieldExtends?: Record<string, TDynamicFormField<any> | TDynamicFormElement<any, any>>;
 
-  validationParams?: IValidationParams;
+  validationParams?: IDynamicFormValidationParams;
   onChange?: (newValues: TValues) => void;
   onFieldChange?: (fieldName: string, newValue: unknown, newValues: TValues) => void;
   onSubmit?: (values: TValues) => void;

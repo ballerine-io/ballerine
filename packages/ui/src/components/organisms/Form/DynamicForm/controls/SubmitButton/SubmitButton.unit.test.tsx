@@ -53,6 +53,7 @@ describe('SubmitButton', () => {
       onFocus: vi.fn(),
     });
     vi.mocked(useDynamicForm).mockReturnValue({
+      validationParams: { validateOnBlur: false },
       fieldHelpers: mockFieldHelpers,
       submit: vi.fn(),
       values: {},
@@ -112,6 +113,7 @@ describe('SubmitButton', () => {
     const mockRunTasks = vi.fn();
 
     vi.mocked(useDynamicForm).mockReturnValue({
+      validationParams: { validateOnBlur: false },
       fieldHelpers: mockFieldHelpers,
       submit: mockSubmit,
       values: {},
@@ -148,6 +150,7 @@ describe('SubmitButton', () => {
     const mockRunTasks = vi.fn();
 
     vi.mocked(useDynamicForm).mockReturnValue({
+      validationParams: { validateOnBlur: false },
       fieldHelpers: mockFieldHelpers,
       submit: mockSubmit,
       values: {},

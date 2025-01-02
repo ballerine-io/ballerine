@@ -1,5 +1,5 @@
 import { useRuleEngine } from '@/components/organisms/Form/hooks';
-import { TDeepthLevelStack } from '@/components/organisms/Form/Validator';
+import { TDeepthLevelStack, useValidator } from '@/components/organisms/Form/Validator';
 import { useCallback, useMemo } from 'react';
 import { useDynamicForm } from '../../../context';
 import { IFormElement } from '../../../types';
@@ -14,8 +14,9 @@ export const useField = <TValue>(
   const fieldId = useElementId(element, stack);
   const valueDestination = useValueDestination(element, stack);
 
-  const { fieldHelpers, values } = useDynamicForm();
+  const { fieldHelpers, values, validationParams } = useDynamicForm();
   const { sendEvent, sendEventAsync } = useEvents(element);
+  const { validate } = useValidator();
   const { setValue, getValue, setTouched, getTouched } = fieldHelpers;
 
   const value = useMemo(() => getValue<TValue>(valueDestination), [valueDestination, getValue]);
@@ -47,7 +48,12 @@ export const useField = <TValue>(
 
   const onBlur = useCallback(() => {
     sendEvent('onBlur');
-  }, [sendEvent]);
+    setTouched(fieldId, true);
+
+    if (validationParams.validateOnBlur) {
+      validate();
+    }
+  }, [sendEvent, validationParams.validateOnBlur, validate, fieldId, setTouched]);
 
   const onFocus = useCallback(() => {
     sendEvent('onFocus');

@@ -180,6 +180,32 @@ describe('DynamicFormV2', () => {
         onEvent: mockProps.onEvent,
       },
       metadata: mockProps.metadata,
+      validationParams: mockProps.validationParams,
     });
+  });
+
+  it('should use default validation params when not provided in props', () => {
+    const propsWithoutValidation = { ...mockProps };
+    delete propsWithoutValidation.validationParams;
+
+    render(<DynamicFormV2 {...propsWithoutValidation} />);
+
+    const providerProps = vi.mocked(DynamicFormContext.Provider).mock.calls[0]?.[0];
+
+    expect(providerProps?.value.validationParams).toEqual({
+      validateOnBlur: true,
+    });
+  });
+
+  it('should use validation params from props when provided', () => {
+    const customValidationParams = {
+      validateOnBlur: false,
+    };
+
+    render(<DynamicFormV2 {...mockProps} validationParams={customValidationParams} />);
+
+    const providerProps = vi.mocked(DynamicFormContext.Provider).mock.calls[0]?.[0];
+
+    expect(providerProps?.value.validationParams).toEqual(customValidationParams);
   });
 });

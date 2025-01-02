@@ -4,9 +4,10 @@ import { convertFormElementsToValidationSchema } from '../../../helpers/convert-
 import { IFormElement } from '../../../types';
 
 export const useValidationSchema = (elements: Array<IFormElement<any, any>>) => {
-  const validationSchema = useMemo(() => {
-    return convertFormElementsToValidationSchema(elements);
-  }, [elements]);
+  const validationSchema = useMemo(
+    () => convertFormElementsToValidationSchema(elements),
+    [elements],
+  );
 
   return validationSchema;
 };

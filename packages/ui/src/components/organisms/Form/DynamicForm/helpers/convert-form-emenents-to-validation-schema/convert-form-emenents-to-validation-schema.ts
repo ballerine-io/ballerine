@@ -3,18 +3,29 @@ import { IFormElement } from '../../types';
 
 export const convertFormElementsToValidationSchema = (
   elements: Array<IFormElement<any>>,
+  schema: IValidationSchema[] = [],
 ): IValidationSchema[] => {
-  return elements.map(element => {
-    const validationSchema: IValidationSchema = {
-      id: element.id,
-      valueDestination: element.valueDestination,
-      validators: element.validate || [],
-    };
+  const filteredElements = elements.filter(
+    element => element.valueDestination || element.children?.length,
+  );
 
-    if (element.children) {
-      validationSchema.children = convertFormElementsToValidationSchema(element.children);
+  for (let i = 0; i < filteredElements.length; i++) {
+    const element = filteredElements[i]!;
+
+    if (element.valueDestination) {
+      schema.push({
+        id: element.id,
+        valueDestination: element.valueDestination,
+        validators: element.validate || [],
+      });
+
+      if (element.children?.length) {
+        schema[i]!.children = convertFormElementsToValidationSchema(element.children || []);
+      }
+    } else {
+      convertFormElementsToValidationSchema(element.children || [], schema);
     }
+  }
 
-    return validationSchema;
-  });
+  return schema;
 };
