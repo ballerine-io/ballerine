@@ -1,5 +1,11 @@
 # @ballerine/backoffice-v2
 
+## 0.7.90
+
+### Patch Changes
+
+- Fixed issue with browser back button on merchant report page
+
 ## 0.7.89
 
 ### Patch Changes
