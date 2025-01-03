@@ -111,6 +111,7 @@ jobs:
             docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-sb ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-${{ inputs.environment }}
             docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-sb ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ inputs.environment }}
             docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-sb ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:latest
+            docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:latest
           else
             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-dev
             docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-dev ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-${{ inputs.environment }}

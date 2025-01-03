@@ -1,0 +1,17 @@
+FROM node:18.17.1-bullseye-slim
+
+WORKDIR /app
+
+COPY ./package.json .
+
+RUN npm install --legacy-peer-deps
+
+COPY . .
+
+RUN npm run build --verbose
+
+ENV PATH="$PATH:/app/node_modules/.bin"
+
+EXPOSE 5137
+
+CMD ["npm", "run", "prod:next", "--host"]
