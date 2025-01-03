@@ -64,4 +64,5 @@ export interface IDynamicFormProps<TValues = object> {
   metadata?: Record<string, any>;
 }
 
+export type { IFormEventElement, TElementEvent } from '../hooks/internal/useEvents';
 export type { TBaseFields } from '../repositories';
