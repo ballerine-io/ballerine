@@ -42,6 +42,7 @@
     "start": "vite",
     "dev": "vite",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=32768 vite build",
+    "prod:next": "vite build && vite --host",
     "test": "vitest run --passWithNoTests",
     "test:unit": "vitest run --passWithNoTests",
     "test:e2e": "playwright test",
