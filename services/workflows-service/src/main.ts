@@ -94,13 +94,16 @@ const main = async () => {
 
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ limit: '50mb', extended: true }));
+
+  const isLocal = process.env.ENVIRONMENT_NAME === 'local';
+
   app.use(
     cookieSession({
       name: 'session',
       keys: [env.SESSION_SECRET],
-      httpOnly: env.ENVIRONMENT_NAME === 'local',
-      secure: env.ENVIRONMENT_NAME !== 'local' ? true : false,
-      sameSite: env.ENVIRONMENT_NAME !== 'local' ? 'strict' : false,
+      httpOnly: !isLocal,
+      secure: !isLocal,
+      sameSite: !isLocal ? 'strict' : false,
       maxAge: 1000 * 60 * env.SESSION_EXPIRATION_IN_MINUTES,
     }),
   );
