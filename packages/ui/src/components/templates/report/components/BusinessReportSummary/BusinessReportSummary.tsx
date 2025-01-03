@@ -74,32 +74,34 @@ export const BusinessReportSummary: FunctionComponent<{
           </div>
         </CardContent>
       </Card>
+
       {homepageScreenshotUrl && (
         <Card className={'col-span-2 overflow-hidden'}>
-          <a
-            href={homepageScreenshotUrl}
-            target={'_blank'}
-            rel={'noreferrer'}
-            className={'flex h-full min-h-[300px] w-full flex-col'}
-            title={'Click to view full screenshot'}
-          >
-            <span className="relative grow">
+          <div className={'flex flex-col h-full relative'}>
+            <a
+              href={homepageScreenshotUrl}
+              target={'_blank'}
+              rel={'noreferrer'}
+              className={'relative flex-1 overflow-y-auto'}
+              title={'Click to view full screenshot'}
+            >
               <img
                 src={homepageScreenshotUrl}
                 alt={'Homepage Screenshot'}
-                className={'absolute inset-0 h-full w-full object-cover object-top'}
+                className={'absolute inset-0 h-auto w-full object-cover object-top'}
               />
-              <div
-                className={
-                  'bottom-right-4 absolute rounded border border-white bg-black p-1 text-xs text-white'
-                }
-              >
-                Click to view full screenshot
-              </div>
-            </span>
-          </a>
+            </a>
+            <div
+              className={
+                'top-left-4 absolute rounded border border-white bg-black p-1 text-xs text-white'
+              }
+            >
+              Click to view full screenshot or scroll to explore
+            </div>
+          </div>
         </Card>
       )}
+
       <RiskIndicatorsSummary riskIndicators={riskIndicators} Link={Link} />
     </div>
   );

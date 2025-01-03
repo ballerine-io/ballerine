@@ -3,10 +3,10 @@ import { UserStatistics } from '@/pages/Statistics/components/UserStatistics/Use
 import { PortfolioRiskStatistics } from '@/pages/Statistics/components/PortfolioRiskStatistics/PortfolioRiskStatistics';
 import { WorkflowStatistics } from '@/pages/Statistics/components/WorkflowStatistics/WorkflowStatistics';
 import { Loader2 } from 'lucide-react';
-import { useHomeMetricsQuery } from '@/domains/metrics/hooks/queries/useHomeMetricsQuery/useHomeMetricsQuery';
+import { useBusinessReportMetricsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
 
 export const Statistics: FunctionComponent = () => {
-  const { data, isLoading, error } = useHomeMetricsQuery();
+  const { data, isLoading, error } = useBusinessReportMetricsQuery();
 
   if (error) {
     throw error;
@@ -20,13 +20,12 @@ export const Statistics: FunctionComponent = () => {
     <div>
       <h1 className={'pb-5 text-2xl font-bold'}>Statistics</h1>
       <div className={'flex flex-col space-y-8'}>
-        <UserStatistics fullName={'John Doe'} />
+        {/* <UserStatistics fullName={'John Doe'} /> */}
         <PortfolioRiskStatistics
-          riskIndicators={data.riskIndicators}
-          reports={data.reports}
-          cases={data.cases}
+          riskLevelCounts={data.riskLevelCounts}
+          violationCounts={data.violationCounts}
         />
-        <WorkflowStatistics />
+        {/* <WorkflowStatistics /> */}
       </div>
     </div>
   );

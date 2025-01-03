@@ -8,7 +8,6 @@ import { NoBlocks } from '@/lib/blocks/components/NoBlocks/NoBlocks';
 import { Link } from 'react-router-dom';
 import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
 import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
-import React from 'react';
 import { camelCase } from 'string-ts';
 
 export const DefaultBlocks = () => {
@@ -38,7 +37,7 @@ export const DefaultBlocks = () => {
               );
             })}
           </TabsList>
-          <ScrollArea orientation={'vertical'} className={'h-[73vh]'}>
+          <ScrollArea orientation={'vertical'} className={'h-[73vh] pe-4'}>
             {tabs.map(tab => {
               const tabName = camelCase(tab.name);
 

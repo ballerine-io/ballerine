@@ -1,5 +1,63 @@
 # @ballerine/ui
 
+## 0.5.59
+
+### Patch Changes
+
+- Adds interactivity to the homepage charts
+
+## 0.5.58
+
+### Patch Changes
+
+- adds scrollable view for partner website
+
+## 0.5.57
+
+### Patch Changes
+
+- Updated traffic-related stats in the "Website credibility" tab.
+
+## 0.5.56
+
+### Patch Changes
+
+- Updated user-facing social media view
+
+## 0.5.55
+
+### Patch Changes
+
+- Fixed phone input styling
+
+## 0.5.54
+
+### Patch Changes
+
+- Updated button with disabled state
+- Updated dependencies
+  - @ballerine/common@0.9.60
+
+## 0.5.53
+
+### Patch Changes
+
+- added command.loading
+
+## 0.5.52
+
+### Patch Changes
+
+- add href attribute to anchor-if-url component
+
+## 0.5.51
+
+### Patch Changes
+
+- core
+- Updated dependencies
+  - @ballerine/common@0.9.59
+
 ## 0.5.50
 
 ### Patch Changes

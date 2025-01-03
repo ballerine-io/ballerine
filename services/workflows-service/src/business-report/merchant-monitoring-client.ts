@@ -6,20 +6,13 @@ import { CountryCode } from '@/common/countries';
 import {
   MERCHANT_REPORT_STATUSES,
   MERCHANT_REPORT_TYPES,
-  MERCHANT_REPORT_TYPES_MAP,
   MERCHANT_REPORT_VERSIONS,
   MerchantReportType,
   MerchantReportVersion,
 } from '@/business-report/constants';
-import { TReportRequest } from '@/common/utils/unified-api-client/unified-api-client';
 import * as errors from '@/errors';
 
 const CreateReportResponseSchema = z.object({});
-const CreateReportBatchResponseSchema = z.array(
-  z.object({
-    reportId: z.string(),
-  }),
-);
 const ReportSchema = z.object({
   id: z.string(),
   websiteId: z.string(),
@@ -64,6 +57,16 @@ const FindManyReportsResponseSchema = z.object({
   data: z.array(ReportSchema),
 });
 
+const MetricsResponseSchema = z.object({
+  riskLevelCounts: z.object({
+    low: z.number(),
+    medium: z.number(),
+    high: z.number(),
+    critical: z.number(),
+  }),
+  violationCounts: z.record(z.string(), z.number()),
+});
+
 @Injectable()
 export class MerchantMonitoringClient {
   private axios: AxiosInstance;
@@ -74,7 +77,7 @@ export class MerchantMonitoringClient {
       headers: {
         Authorization: `Bearer ${env.UNIFIED_API_TOKEN ?? ''}`,
       },
-      timeout: 30_000,
+      timeout: 300_000,
     });
   }
 
@@ -121,30 +124,38 @@ export class MerchantMonitoringClient {
   }
 
   public async createBatch({
-    reportRequests,
-    clientName,
-    metadata,
+    customerId,
+    workflowVersion,
     withQualityControl,
-    reportType = MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1,
-    workflowVersion = '2',
+    reportType,
+    reports,
   }: {
-    reportRequests: TReportRequest;
-    clientName?: string;
-    reportType?: MerchantReportType;
+    customerId: string;
     workflowVersion?: MerchantReportVersion;
-    metadata?: Record<string, unknown>;
     withQualityControl?: boolean;
+    reportType: MerchantReportType;
+    reports: Array<{
+      businessId: string;
+      websiteUrl: string;
+      countryCode?: string;
+      parentCompanyName?: string;
+      callbackUrl?: string;
+    }>;
   }) {
-    const response = await this.axios.post('merchants/analysis/batch', {
-      reportRequests,
-      clientName,
-      metadata,
-      reportType,
-      withQualityControl,
-      workflowVersion,
-    });
-
-    return CreateReportBatchResponseSchema.parse(response.data);
+    await this.axios.post(
+      'merchants/analysis/batch/next',
+      reports.map(report => ({
+        customerId,
+        merchantId: report.businessId,
+        websiteUrl: report.websiteUrl,
+        countryCode: report.countryCode,
+        parentCompanyName: report.parentCompanyName,
+        callbackUrl: report.callbackUrl,
+        reportType,
+        workflowVersion,
+        withQualityControl,
+      })),
+    );
   }
 
   public async findById({ id, customerId }: { id: string; customerId: string }) {
@@ -194,8 +205,13 @@ export class MerchantMonitoringClient {
     customerId,
     businessId,
     limit,
+    from,
+    to,
     page,
     reportType,
+    riskLevels,
+    statuses,
+    findings,
     withoutUnpublishedOngoingReports,
     searchQuery,
   }: {
@@ -203,7 +219,12 @@ export class MerchantMonitoringClient {
     businessId?: string;
     limit: number;
     page: number;
+    from?: string;
+    to?: string;
     reportType?: MerchantReportType;
+    riskLevels?: Array<'low' | 'medium' | 'high' | 'critical'>;
+    statuses?: Array<'failed' | 'quality-control' | 'completed' | 'in-progress'>;
+    findings?: string[];
     withoutUnpublishedOngoingReports?: boolean;
     searchQuery?: string;
   }) {
@@ -212,7 +233,12 @@ export class MerchantMonitoringClient {
         customerId,
         ...(businessId && { merchantId: businessId }),
         limit,
+        from,
+        to,
+        riskLevels,
         page,
+        statuses,
+        findings,
         withoutUnpublishedOngoingReports,
         ...(searchQuery && { searchQuery }),
         ...(reportType && { reportType }),
@@ -229,5 +255,28 @@ export class MerchantMonitoringClient {
     const response = await this.findMany({ customerId, limit: 1, page: 1 });
 
     return response.totalItems;
+  }
+
+  public async listFindings() {
+    const response = await this.axios.get('external/findings', {
+      headers: {
+        Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
+      },
+    });
+
+    return response.data ?? [];
+  }
+
+  public async getMetrics({ customerId }: { customerId: string }) {
+    const response = await this.axios.get('merchants/analysis/metrics', {
+      params: {
+        customerId,
+      },
+      headers: {
+        Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
+      },
+    });
+
+    return MetricsResponseSchema.parse(response.data);
   }
 }

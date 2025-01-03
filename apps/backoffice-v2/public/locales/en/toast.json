@@ -104,5 +104,13 @@
   "update_details": {
     "success": "Details updated successfully.",
     "error": "Error occurred while updating details."
+  },
+  "ubo_created": {
+    "success": "UBO successfully added",
+    "error": "Error adding UBO"
+  },
+  "ubo_deleted": {
+    "success": "UBO successfully removed",
+    "error": "Error removing UBO"
   }
 }

@@ -1,5 +1,87 @@
 # @ballerine/backoffice-v2
 
+## 0.7.90
+
+### Patch Changes
+
+- Fixed issue with browser back button on merchant report page
+
+## 0.7.89
+
+### Patch Changes
+
+- Adds interactivity to the homepage charts
+- Updated dependencies
+  - @ballerine/ui@0.5.59
+  - @ballerine/react-pdf-toolkit@1.2.59
+
+## 0.7.88
+
+### Patch Changes
+
+- Updated traffic-related stats in the "Website credibility" tab.
+- Updated dependencies
+  - @ballerine/react-pdf-toolkit@1.2.57
+  - @ballerine/ui@0.5.57
+
+## 0.7.87
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.63
+  - @ballerine/workflow-browser-sdk@0.6.82
+  - @ballerine/workflow-node-sdk@0.6.82
+
+## 0.7.86
+
+### Patch Changes
+
+- @ballerine/workflow-browser-sdk@0.6.81
+- @ballerine/workflow-node-sdk@0.6.81
+
+## 0.7.85
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.61
+  - @ballerine/workflow-browser-sdk@0.6.80
+  - @ballerine/workflow-node-sdk@0.6.80
+
+## 0.7.84
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.60
+  - @ballerine/ui@0.5.54
+  - @ballerine/workflow-browser-sdk@0.6.79
+  - @ballerine/react-pdf-toolkit@1.2.54
+  - @ballerine/workflow-node-sdk@0.6.79
+
+## 0.7.83
+
+### Patch Changes
+
+- added command.loading
+- Updated dependencies
+  - @ballerine/ui@0.5.53
+  - @ballerine/react-pdf-toolkit@1.2.53
+
+## 0.7.82
+
+### Patch Changes
+
+- core
+- Updated dependencies
+  - @ballerine/blocks@0.2.30
+  - @ballerine/common@0.9.59
+  - @ballerine/react-pdf-toolkit@1.2.51
+  - @ballerine/ui@0.5.51
+  - @ballerine/workflow-browser-sdk@0.6.78
+  - @ballerine/workflow-node-sdk@0.6.78
+
 ## 0.7.81
 
 ### Patch Changes

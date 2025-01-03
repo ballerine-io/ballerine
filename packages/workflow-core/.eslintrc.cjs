@@ -1,10 +1,11 @@
 /** @type {import('eslint').Linter.Config} */
 module.exports = {
   extends: ['@ballerine/eslint-config'],
-  parserOptions: {
-    project: './tsconfig.eslint.json',
-  },
   rules: {
     'no-console': 'error',
+  },
+  parserOptions: {
+    tsconfigRootDir: __dirname,
+    project: 'tsconfig.eslint.json',
   },
 };
