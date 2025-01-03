@@ -70,6 +70,7 @@ export interface IWorkflowCompletedEventData {
   state: string | null;
   entityId: string;
   correlationId: string;
+  childWorkflowsRuntimeData?: WorkflowRuntimeData[];
 }
 
 export interface IWorkflowStateChangedEventData {

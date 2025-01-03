@@ -39,6 +39,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
   });
   const [{ activeTab, isNotesOpen }] = useZodSearchParams(
     MerchantMonitoringBusinessReportSearchSchema,
+    { replace: true },
   );
   const navigate = useNavigate();
   const onNavigateBack = useCallback(() => {

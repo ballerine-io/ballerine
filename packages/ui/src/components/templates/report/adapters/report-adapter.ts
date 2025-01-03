@@ -72,6 +72,15 @@ const normalizeRiskLevel = (riskTypeLevels: Record<string, SeverityType>) => {
   }, {} as Record<string, SeverityType>);
 };
 
+const normalizeHyphenedDataString = (str: string) => {
+  const parts = str.split(' - ');
+
+  return {
+    label: parts.length > 1 ? parts.slice(0, -1).join(' - ') : parts.at(0),
+    value: parts.at(-1),
+  };
+};
+
 export const reportAdapter = {
   DEFAULT: (report: Record<string, any>) => {
     return {
@@ -170,23 +179,17 @@ export const reportAdapter = {
       pricingAnalysis: report?.transactionLaundering?.pricingAnalysis?.indicators,
       websiteStructureAndContentEvaluation:
         report?.transactionLaundering?.websiteStructureEvaluation?.indicators,
-      trafficAnalysis: [
-        {
-          label: 'Estimated Monthly Visits',
-          items: report?.transactionLaundering?.trafficAnalysis?.montlyVisitsIndicators ?? [],
-        },
-        {
-          label: 'Traffic Sources',
-          items: report?.transactionLaundering?.trafficAnalysis?.trafficSources ?? [],
-        },
-        {
-          label: 'Engagements',
-          items: report?.transactionLaundering?.trafficAnalysis?.engagements ?? [],
-        },
-      ] satisfies Array<{
-        label: string;
-        items: string[];
-      }>,
+      trafficAnalysis: {
+        montlyVisitsIndicators: (
+          report?.transactionLaundering?.trafficAnalysis?.montlyVisitsIndicators ?? []
+        ).map(normalizeHyphenedDataString),
+        trafficSources: (report?.transactionLaundering?.trafficAnalysis?.trafficSources ?? []).map(
+          normalizeHyphenedDataString,
+        ),
+        engagements: (report?.transactionLaundering?.trafficAnalysis?.engagements ?? []).map(
+          normalizeHyphenedDataString,
+        ),
+      },
       homepageScreenshotUrl: report?.homepageScreenshot,
       formattedMcc: report?.lineOfBusiness?.formattedMcc,
     };

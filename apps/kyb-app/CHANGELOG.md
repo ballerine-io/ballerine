@@ -1,5 +1,41 @@
 # kyb-app
 
+## 0.3.105
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.59
+
+## 0.3.104
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.58
+
+## 0.3.103
+
+### Patch Changes
+
+- Updated traffic-related stats in the "Website credibility" tab.
+- Updated dependencies
+  - @ballerine/ui@0.5.57
+
+## 0.3.102
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.63
+  - @ballerine/workflow-browser-sdk@0.6.82
+
+## 0.3.101
+
+### Patch Changes
+
+- @ballerine/workflow-browser-sdk@0.6.81
+
 ## 0.3.100
 
 ### Patch Changes

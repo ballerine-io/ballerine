@@ -28,7 +28,7 @@ export const useMerchantMonitoringLogic = () => {
   const [
     { page, pageSize, sortBy, sortDir, reportType, riskLevels, statuses, from, to, findings },
     setSearchParams,
-  ] = useZodSearchParams(MerchantMonitoringSearchSchema);
+  ] = useZodSearchParams(MerchantMonitoringSearchSchema, { replace: true });
 
   const { findings: findingsOptions, isLoading: isLoadingFindings } = useFindings();
 

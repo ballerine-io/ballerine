@@ -945,7 +945,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
               from: 'no-reply@ballerine.com',
               name: join(' ',[metadata.customerName,'Onboarding']),
-              receivers: [data.additionalInfo.bdEmail],
+              receivers: [entity.data.additionalInfo.bdEmail],
               language: workflowRuntimeConfig.language,
               templateId: ${
                 options.templateId
