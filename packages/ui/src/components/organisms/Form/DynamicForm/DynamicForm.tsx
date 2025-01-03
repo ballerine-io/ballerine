@@ -9,6 +9,7 @@ import { useFieldHelpers } from './hooks/internal/useFieldHelpers';
 import { useTouched } from './hooks/internal/useTouched';
 import { useValidationSchema } from './hooks/internal/useValidationSchema';
 import { useValues } from './hooks/internal/useValues';
+import { EventsProvider } from './providers/EventsProvider';
 import { TaskRunner } from './providers/TaskRunner';
 import { extendFieldsRepository, getFieldsRepository } from './repositories';
 import { IDynamicFormProps } from './types';
@@ -61,14 +62,16 @@ export const DynamicFormV2: FunctionComponent<IDynamicFormProps> = ({
 
   return (
     <TaskRunner>
-      <DynamicFormContext.Provider value={context}>
-        <ValidatorProvider schema={validationSchema} value={context.values} {...validationParams}>
-          <Renderer
-            elements={elements}
-            schema={context.elementsMap as unknown as TRendererSchema}
-          />
-        </ValidatorProvider>
-      </DynamicFormContext.Provider>
+      <EventsProvider onEvent={onEvent}>
+        <DynamicFormContext.Provider value={context}>
+          <ValidatorProvider schema={validationSchema} value={context.values} {...validationParams}>
+            <Renderer
+              elements={elements}
+              schema={context.elementsMap as unknown as TRendererSchema}
+            />
+          </ValidatorProvider>
+        </DynamicFormContext.Provider>
+      </EventsProvider>
     </TaskRunner>
   );
 };

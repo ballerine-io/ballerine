@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react';
 import { IRule } from '../../hooks/useRuleEngine';
 import { IValidationError, IValidationParams, TValidators } from '../../Validator';
-import { IFormEventElement, TElementEvent } from '../hooks/internal/useEvents/types';
+import { IEventsProviderProps } from '../providers/EventsProvider';
 
 export interface ICommonFieldParams {
   label?: string;
@@ -58,7 +58,7 @@ export interface IDynamicFormProps<TValues = object> {
   onChange?: (newValues: TValues) => void;
   onFieldChange?: (fieldName: string, newValue: unknown, newValues: TValues) => void;
   onSubmit?: (values: TValues) => void;
-  onEvent?: (eventName: TElementEvent, element: IFormEventElement<string, any>) => void;
+  onEvent?: IEventsProviderProps['onEvent'];
 
   ref?: React.RefObject<IFormRef<TValues>>;
   metadata?: Record<string, any>;
