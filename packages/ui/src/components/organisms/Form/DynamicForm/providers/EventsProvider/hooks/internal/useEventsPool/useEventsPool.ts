@@ -16,7 +16,11 @@ export const useEventsPool = (onEvent: IEventsProviderProps['onEvent']) => {
       );
 
       if (isListenerExists) {
-        return prev;
+        return prev.map(prevListener =>
+          prevListener.id === listener.id && prevListener.eventName === listener.eventName
+            ? listener
+            : prevListener,
+        );
       }
 
       return [...prev, listener];
@@ -32,7 +36,7 @@ export const useEventsPool = (onEvent: IEventsProviderProps['onEvent']) => {
   const run = useCallback(
     (eventName: TElementEvent, element: IFormEventElement<string, any>) => {
       listeners.forEach(listener => {
-        if (listener.eventName === eventName) {
+        if (listener.eventName === eventName && listener.id === element.id) {
           listener.callback(eventName, element);
         }
       });
