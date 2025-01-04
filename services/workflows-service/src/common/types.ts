@@ -11,7 +11,7 @@ export type TDocumentsWithoutPageType = TDocumentWithoutPageType[];
 export const SubscriptionSchema = z.discriminatedUnion('type', [
   z
     .object({
-      type: z.literal('webhook'),
+      type: z.enum(['webhook', 'email']),
       url: z.string().url(),
       events: z.array(z.string()),
       config: z
