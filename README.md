@@ -16,7 +16,7 @@
 
   <a href="https://docs.ballerine.com/">Documentation</a>
     ·
-   <a href="https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw">Slack</a>
+   <a href="https://join.slack.com/t/ballerine-oss/shared_invite/zt-1il7txerq-K0YrXtlzMttGgD3XXYxlfw">Slack</a>
     ·
     <a href="https://www.ballerine.com/">Website</a>
     ·
