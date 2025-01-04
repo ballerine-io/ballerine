@@ -8,6 +8,7 @@
     "dev": "vite --host",
     "start": "vite",
     "build": "tsc && vite build",
+    "prod:next": "vite build && vite --host",
     "lint": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

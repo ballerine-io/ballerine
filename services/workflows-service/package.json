@@ -12,6 +12,7 @@
     "start": "nest start",
     "dev": "npm run start:watch",
     "start:prod": "node dist/src/main",
+    "start:preview": "npm run db:migrate-up && npm run db:data-migration:migrate && npm run db:data-sync && npm run start:prod",
     "prod": "npm run db:migrate-up && npm run start:prod",
     "prod:next": "npm run db:migrate-up && npm run db:data-sync && npm run start:prod",
     "start:watch": "nest start --watch",
