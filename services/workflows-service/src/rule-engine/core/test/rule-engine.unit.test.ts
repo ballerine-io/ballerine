@@ -9,6 +9,7 @@ import {
 import z from 'zod';
 import { amlContext, context } from './data-helper';
 import { RuleEngine, runRuleSet } from '../rule-engine';
+import { faker } from '@faker-js/faker';
 
 const mockData = {
   country: 'US',
@@ -253,9 +254,13 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const engine = RuleEngine(ruleSetExample);
-    let result = engine.run(context);
+    const context1 = JSON.parse(JSON.stringify(context));
+    // @ts-ignore
+    context1.pluginsOutput.businessInformation.data[0].establishDate = faker.date.recent().toISOString()
 
+    const engine = RuleEngine(ruleSetExample);
+    let result = engine.run(context1 as any);
+    console.log(result);
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
     expect(result[0]).toMatchInlineSnapshot(`
