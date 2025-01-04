@@ -254,6 +254,16 @@ describe('Rule Engine', () => {
     };
 
     const engine = RuleEngine(ruleSetExample);
+    const today = new Date();
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(today.getMonth() - 6);
+
+    if (context.pluginsOutput?.businessInformation?.data?.[0]) {
+      context.pluginsOutput.businessInformation.data[0].establishDate = sixMonthsAgo
+        .toISOString()
+        .split('T')[0] as string;
+    }
+
     let result = engine.run(context);
 
     expect(result).toBeDefined();
@@ -313,7 +323,13 @@ describe('Rule Engine', () => {
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
-    const context1 = JSON.parse(JSON.stringify(context)) as any;
+    const context1 = {
+      pluginsOutput: {
+        businessInformation: {
+          data: [{ establishDate: sixMonthsAgo.toISOString() }],
+        },
+      },
+    };
 
     let result = engine.run(context1);
     expect(result).toBeDefined();
