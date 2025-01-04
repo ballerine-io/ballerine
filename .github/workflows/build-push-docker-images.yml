@@ -23,10 +23,15 @@ on:
         required: true
         description: "Tag name of the Preview Image"
         type: string
+      file:
+        required: true
+        description: "File name for the Preview Image"
+        type: string
 
 permissions:
   id-token: write
   contents: write
+  packages: write
   pull-requests: write
 
 jobs:
@@ -40,18 +45,56 @@ jobs:
           ref: ${{ inputs.ref }}
           fetch-depth: 1
           persist-credentials: false
-          sparse-checkout: |
-            ${{ inputs.context }}
-          sparse-checkout-cone-mode: true
 
-      - name: Get tags
-        run: git fetch --tags origin
+      - name: Configure AWS credentials
+        if: inputs.image_name == 'workflows-service-ee'
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ vars.PREVIEW_OIDC_ROLE }}
+          aws-region: ${{ vars.PREVIEW_AWS_REGION }}
+
+      # Access the secret
+      - name: Retrieve secret from Secrets Manager
+        if: inputs.image_name == 'workflows-service-ee'
+        id: get-secret
+        run: |
+          echo ${{ inputs.image_name }}
+          secret_value=$(aws secretsmanager get-secret-value --secret-id ${{ vars.PREVIEW_SECRET }} --query 'SecretString' --output text | jq -r '.SUBMODULE_SECRET')
+          echo "SUBMODULE_SECRET=$secret_value" >> $GITHUB_ENV
+          echo "SUBMODULE_SECRET=$secret_value" >> $GITHUB_OUTPUT
+      
+      - name: Checkout wf-data-migration
+        id: wf-migration-code
+        if: inputs.image_name == 'workflows-service-ee'
+        uses: actions/checkout@v4
+        with:
+          repository: ballerine-io/wf-data-migration
+          token: ${{ steps.get-secret.outputs.SUBMODULE_SECRET }}
+          ref: dev
+          fetch-depth: 1
+          path: services/workflows-service/prisma/data-migrations
+
+      - name: Get Latest Commit ID
+        if: inputs.image_name == 'workflows-service-ee'
+        id: lastcommit
+        uses: nmbgeek/github-action-get-latest-commit@main
+        with:
+          owner: ${{ github.repository_owner }}
+          token: ${{ steps.get-secret.outputs.SUBMODULE_SECRET }}
+          repo: wf-data-migration
+          branch: dev
+
+      # - name: Get tags
+      #   if: ${{ inputs.image_name }} != 'workflows-service-ee'
+      #   run: git fetch --tags origin
 
       - name: Get version
-        if: ${{ inputs.image_name }} == 'workflows-service'
+        if: ${{ inputs.image_name == 'workflows-service' }}
         id: version
         run: |
-          TAG=$(git tag -l "$(echo ${{ inputs.image_name }}@)*" | sort -V -r | head -n 1)
+          echo ${{ inputs.image_name }}
+          git fetch --tags origin
+          TAG=$(git tag -l "$(echo workflow-service@)*" | sort -V -r | head -n 1)
           echo "tag=$TAG"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "TAG=$TAG" >> "$GITHUB_ENV"
@@ -61,7 +104,7 @@ jobs:
       
       - name: Bump version
         id: bump-version
-        if: ${{ inputs.image_name }} == 'workflows-service'
+        if: ${{ inputs.image_name == 'workflows-service' }}
         uses: ./.github/actions/bump-version
         with:
           tag: ${{ steps.version.outputs.tag }}
@@ -103,7 +146,7 @@ jobs:
       - name: Print docker version outputs
         run: |
           echo "Metadata: ${{ steps.docker_meta.outputs.tags }}"
-          if [[ "${{ inputs.image_name }}" == "workflows-service" ]]; then
+          if [[ "${{ inputs.image_name }}" == "workflows-service" && "${{ inputs.image_name }}" != "workflows-service-ee" ]]; then
             echo "sha_short: ${{ steps.version.outputs.sha_short }}"
             echo "bump-version-version: ${{ steps.bump-version.outputs.version }}"
             echo "bump-version-tag: ${{ steps.bump-version.outputs.tag }}"
@@ -118,17 +161,6 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           tags: ${{ steps.docker_meta.outputs.tags }}
+          file: ${{ inputs.file }}
           build-args: |
-            ${{ inputs.image_name == 'workflows-service' && format('"RELEASE={0}"\n"SHORT_SHA={1}"', steps.version.outputs.tag, steps.version.outputs.sha_short) || '' }}
-
-      - name: Scan Docker Image
-        uses: aquasecurity/trivy-action@master
-        continue-on-error: true
-        with:
-          image-ref: ${{ steps.docker_meta.outputs.tags }}
-          format: 'table'
-          ignore-unfixed: true
-          exit-code: 1
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-          timeout: '5m'
+            ${{ (inputs.image_name == 'workflows-service' && format('"RELEASE={0}"\n"SHORT_SHA={1}"', steps.version.outputs.tag, steps.version.outputs.sha_short)) || (inputs.image_name == 'workflows-service-ee' && format('"BASE_IMAGE=ghcr.io/ballerine-io/workflows-service:{0}"', inputs.tag)) || '' }}
