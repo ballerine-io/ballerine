@@ -49,12 +49,12 @@ export class WorkflowStateChangedWebhookCaller {
       },
     });
 
-    const webhooks = getWebhooks(
-      data.runtimeData.config,
-      customer.subscriptions,
-      this.configService.get('ENVIRONMENT_NAME'),
-      'workflow.state.changed',
-    );
+    const webhooks = getWebhooks({
+      workflowConfig: data.runtimeData.config,
+      customerSubscriptions: customer.subscriptions,
+      envName: this.configService.get('ENVIRONMENT_NAME'),
+      event: 'workflow.state.changed',
+    });
 
     const { webhookSharedSecret } =
       customer.authenticationConfiguration as TAuthenticationConfiguration;

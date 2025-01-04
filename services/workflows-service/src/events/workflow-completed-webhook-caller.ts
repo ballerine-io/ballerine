@@ -56,12 +56,12 @@ export class WorkflowCompletedWebhookCaller {
       },
     });
 
-    const webhooks = getWebhooks(
-      data.runtimeData.config,
-      customer.subscriptions,
-      this.configService.get('ENVIRONMENT_NAME'),
-      'workflow.completed',
-    );
+    const webhooks = getWebhooks({
+      workflowConfig: data.runtimeData.config,
+      customerSubscriptions: customer.subscriptions,
+      envName: this.configService.get('ENVIRONMENT_NAME'),
+      event: 'workflow.completed',
+    });
 
     const { webhookSharedSecret } =
       customer.authenticationConfiguration as TAuthenticationConfiguration;

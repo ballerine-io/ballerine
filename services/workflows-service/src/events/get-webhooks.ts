@@ -48,12 +48,17 @@ export const mergeSubscriptions = (
   return [...processedCustomerSubs, ...workflowSubscriptions];
 };
 
-export const getWebhooks = (
-  workflowConfig: WorkflowConfig,
-  customerSubscriptions: TCustomerSubscription['subscriptions'],
-  envName: string | undefined,
-  event: string,
-): Webhook[] => {
+export const getWebhooks = ({
+  workflowConfig,
+  customerSubscriptions,
+  envName,
+  event,
+}: {
+  workflowConfig: WorkflowConfig;
+  customerSubscriptions: TCustomerSubscription['subscriptions'];
+  envName: string | undefined;
+  event: string;
+}): Webhook[] => {
   const mergedSubscriptions = mergeSubscriptions(
     customerSubscriptions,
     workflowConfig?.subscriptions ?? [],

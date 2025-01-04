@@ -108,12 +108,12 @@ export class DocumentChangedWebhookCaller {
       },
     });
 
-    const webhooks = getWebhooks(
-      data.updatedRuntimeData.config,
-      customer.subscriptions,
-      this.configService.get('ENVIRONMENT_NAME'),
-      'workflow.context.document.changed',
-    );
+    const webhooks = getWebhooks({
+      workflowConfig: data.updatedRuntimeData.config,
+      customerSubscriptions: customer.subscriptions,
+      envName: this.configService.get('ENVIRONMENT_NAME'),
+      event: 'workflow.context.document.changed',
+    });
 
     data.updatedRuntimeData.context.documents.forEach((doc: any) => {
       delete doc.propertiesSchema;
