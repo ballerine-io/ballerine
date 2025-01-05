@@ -1,5 +1,5 @@
-import { IsNumber, IsObject, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsArray, IsNumber, IsString, ValidateNested } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -47,12 +47,26 @@ export class BusinessReportMetricsDto {
   riskLevelCounts!: RiskLevelCountsDto;
 
   @ApiProperty({
-    description: 'Counts of violations by type',
-    example: { PROHIBITED_CONTENT: 2, MISSING_INFORMATION: 1 },
-    type: 'object',
-    additionalProperties: { type: 'number' },
+    description: 'Detected violations counts',
+    example: [{ id: 'PROHIBITED_CONTENT', name: 'Prohibited content', count: 2 }],
+    type: 'array',
   })
-  @IsObject()
-  @Type(() => Object)
-  violationCounts!: Record<string, number>;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ViolationCountDto)
+  violationCounts!: ViolationCountDto[];
+}
+
+export class ViolationCountDto {
+  @ApiProperty()
+  @IsString()
+  id!: string;
+
+  @ApiProperty()
+  @IsString()
+  name!: string;
+
+  @ApiProperty()
+  @IsNumber()
+  count!: number;
 }

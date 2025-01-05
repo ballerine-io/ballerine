@@ -20,11 +20,10 @@ export const usePortfolioRiskStatisticsLogic = ({
     },
     [],
   );
-  const totalRiskIndicators = Object.values(violationCounts).reduce((acc, curr) => acc + curr, 0);
+  const totalRiskIndicators = violationCounts.reduce((acc, { count }) => acc + count, 0);
   const filteredRiskIndicators = useMemo(
     () =>
-      Object.entries(violationCounts)
-        .map(([name, count]) => ({ name, count }))
+      violationCounts
         .sort((a, b) => (riskIndicatorsSorting === 'asc' ? a.count - b.count : b.count - a.count))
         .slice(0, 5),
     [violationCounts, riskIndicatorsSorting],
