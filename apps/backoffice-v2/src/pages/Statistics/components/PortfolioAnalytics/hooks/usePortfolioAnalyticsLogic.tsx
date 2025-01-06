@@ -11,7 +11,7 @@ import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/
 export const usePortfolioRiskStatisticsLogic = ({
   riskLevelCounts,
   violationCounts,
-}: Pick<z.infer<typeof MetricsResponseSchema>, 'riskLevelCounts' | 'violationCounts'>) => {
+}: z.infer<typeof MetricsResponseSchema>) => {
   const [parent] = useAutoAnimate<HTMLTableSectionElement>();
   const [riskIndicatorsSorting, setRiskIndicatorsSorting] = useState<SortDirection>('desc');
   const onSortRiskIndicators = useCallback(
