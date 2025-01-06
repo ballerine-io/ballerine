@@ -1,4 +1,4 @@
-import { FunctionComponent, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { Renderer, TRendererSchema } from '../../Renderer';
 import { ValidatorProvider } from '../Validator';
@@ -14,7 +14,7 @@ import { TaskRunner } from './providers/TaskRunner';
 import { extendFieldsRepository, getFieldsRepository } from './repositories';
 import { IDynamicFormProps } from './types';
 
-export const DynamicFormV2: FunctionComponent<IDynamicFormProps> = ({
+export const DynamicFormV2 = <TValues extends object>({
   elements,
   values: initialValues,
   validationParams = defaultValidationParams,
@@ -24,9 +24,9 @@ export const DynamicFormV2: FunctionComponent<IDynamicFormProps> = ({
   onFieldChange,
   onSubmit,
   onEvent,
-}) => {
+}: IDynamicFormProps<TValues>) => {
   const validationSchema = useValidationSchema(elements);
-  const valuesApi = useValues({
+  const valuesApi = useValues<TValues>({
     values: initialValues,
     onChange,
     onFieldChange,
@@ -35,7 +35,7 @@ export const DynamicFormV2: FunctionComponent<IDynamicFormProps> = ({
   const fieldHelpers = useFieldHelpers({ valuesApi, touchedApi });
   const { submit } = useSubmit({ values: valuesApi.values, onSubmit });
 
-  const context: IDynamicFormContext<typeof valuesApi.values> = useMemo(
+  const context: IDynamicFormContext<TValues> = useMemo(
     () => ({
       touched: touchedApi.touched,
       values: valuesApi.values,
