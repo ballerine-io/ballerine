@@ -1,9 +1,9 @@
 import { Button, ctw, Popover, PopoverContent, PopoverTrigger } from '@ballerine/ui';
-import { format, isAfter, isBefore, setMonth, setYear, startOfMonth } from 'date-fns';
+import dayjs from 'dayjs';
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
-const today = new Date();
+const today = dayjs();
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 type MonthPickerProps = {
@@ -14,13 +14,16 @@ type MonthPickerProps = {
 
 export const MonthPicker = ({ date, setDate, minDate }: MonthPickerProps) => {
   const [open, setOpen] = useState(false);
-  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [currentYear, setCurrentYear] = useState(today.year());
+
+  const dayjsDate = dayjs(date);
+  const dayjsMinDate = minDate ? dayjs(minDate) : undefined;
 
   const handleMonthSelect = (monthIndex: number) => {
-    const newDate = setMonth(setYear(date, currentYear), monthIndex);
+    const newDate = dayjs(date).year(currentYear).month(monthIndex);
 
-    if (isBefore(newDate, today) || isSameMonth(newDate, today)) {
-      setDate(newDate);
+    if (newDate.isSame(today, 'month') || newDate.isBefore(today, 'month')) {
+      setDate(newDate.toDate());
       setOpen(false);
     }
   };
@@ -29,14 +32,14 @@ export const MonthPicker = ({ date, setDate, minDate }: MonthPickerProps) => {
     setCurrentYear(prevYear => prevYear + increment);
   };
 
-  const isSameMonth = (date1: Date, date2: Date) => {
-    return date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth();
+  const isSameMonth = (date1: dayjs.Dayjs, date2: dayjs.Dayjs) => {
+    return date1.isSame(date2, 'month');
   };
 
   const isMonthDisabled = (monthIndex: number) => {
-    const monthDate = startOfMonth(setMonth(setYear(today, currentYear), monthIndex));
+    const monthDate = dayjs().year(currentYear).month(monthIndex).startOf('month');
 
-    return isAfter(monthDate, today);
+    return monthDate.isAfter(today, 'month');
   };
 
   return (
@@ -49,7 +52,7 @@ export const MonthPicker = ({ date, setDate, minDate }: MonthPickerProps) => {
             !date && 'text-muted-foreground',
           )}
         >
-          <span>{format(date, 'MMMM yyyy')}</span>
+          <span>{dayjsDate.format('MMMM YYYY')}</span>
           <ChevronDown className="ml-auto h-4 w-4 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -59,7 +62,7 @@ export const MonthPicker = ({ date, setDate, minDate }: MonthPickerProps) => {
             variant="outline"
             size="icon"
             onClick={() => handleYearChange(-1)}
-            disabled={minDate && currentYear <= minDate.getFullYear()}
+            disabled={dayjsMinDate && currentYear <= dayjsMinDate.year()}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -68,7 +71,7 @@ export const MonthPicker = ({ date, setDate, minDate }: MonthPickerProps) => {
             variant="outline"
             size="icon"
             onClick={() => handleYearChange(1)}
-            disabled={currentYear >= today.getFullYear()}
+            disabled={currentYear >= today.year()}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -80,12 +83,14 @@ export const MonthPicker = ({ date, setDate, minDate }: MonthPickerProps) => {
               onClick={() => handleMonthSelect(index)}
               disabled={
                 isMonthDisabled(index) ||
-                (minDate && currentYear === minDate.getFullYear() && index < minDate.getMonth())
+                (dayjsMinDate &&
+                  currentYear === dayjsMinDate.year() &&
+                  index < dayjsMinDate.month())
               }
               variant="ghost"
               className={ctw(
                 'h-9 w-full',
-                isSameMonth(date, setMonth(setYear(new Date(), currentYear), index)) &&
+                isSameMonth(dayjsDate, dayjs().year(currentYear).month(index)) &&
                   'bg-primary text-primary-foreground',
               )}
             >
