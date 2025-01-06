@@ -30,6 +30,7 @@ import {
   setStepCompletionState,
 } from '@ballerine/common';
 import { CollectionFlowUI } from './components/organisms/CollectionFlowUI';
+import { PluginsRunner } from './components/organisms/CollectionFlowUI/components/utility/PluginsRunner';
 import { FailedScreen } from './components/pages/FailedScreen';
 import { useAdditionalWorkflowContext } from './hooks/useAdditionalWorkflowContext';
 
@@ -272,10 +273,12 @@ export const CollectionFlow = withSessionProtected(() => {
                                       <ProgressBar />
                                     </div>
                                     <div>
-                                      <CollectionFlowUI
-                                        elements={currentPage.elements}
-                                        context={payload}
-                                      />
+                                      <PluginsRunner plugins={currentPage.plugins || []}>
+                                        <CollectionFlowUI
+                                          elements={currentPage.elements}
+                                          context={payload}
+                                        />
+                                      </PluginsRunner>
                                     </div>
                                   </div>
                                 </AppShell.FormContainer>
