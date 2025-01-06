@@ -1,3 +1,5 @@
+import './validator';
+
 import { DynamicFormV2, IFormElement } from '@ballerine/ui';
 import { FunctionComponent } from 'react';
 import { formElementsExtends } from './ui-elemenets.extends';
