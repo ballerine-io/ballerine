@@ -18,7 +18,7 @@ export interface ICommonValidator<T = object, TValidatorType extends string = TB
   value: T;
   message?: string;
   applyWhen?: IValidationRule;
-  considerRequred?: boolean;
+  considerRequired?: boolean;
 }
 
 export type TValidators<
@@ -45,9 +45,10 @@ export interface IValidationError {
 
 export * from '../hooks/internal/useValidatorRef/types';
 
-export type TValidator<T, TValidatorParams = unknown> = (
-  value: T,
-  validator: ICommonValidator<TValidatorParams>,
-) => void;
+export type TValidator<
+  T,
+  TValidatorParams = unknown,
+  TValidatorType extends string = TBaseValidators,
+> = (value: T, validator: ICommonValidator<TValidatorParams, TValidatorType>) => void;
 
 export type TDeepthLevelStack = number[];

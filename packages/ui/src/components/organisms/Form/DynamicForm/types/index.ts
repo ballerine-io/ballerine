@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react';
 import { IRule } from '../../hooks/useRuleEngine';
 import { IValidationError, IValidationParams, TValidators } from '../../Validator';
-import { IFormEventElement, TElementEvent } from '../hooks/internal/useEvents/types';
+import { IEventsProviderProps } from '../providers/EventsProvider';
 
 export interface ICommonFieldParams {
   label?: string;
@@ -34,6 +34,7 @@ export type TDynamicFormElement<
   TParams = object,
 > = FunctionComponent<{
   element: IFormElement<TElements, TParams>;
+  children?: React.ReactNode | React.ReactNode[];
 }>;
 
 export type TDynamicFormField<TParams = object> = FunctionComponent<{
@@ -43,18 +44,25 @@ export type TDynamicFormField<TParams = object> = FunctionComponent<{
 
 export type TElementsMap = Record<string, TDynamicFormElement<any, any>>;
 
+export interface IDynamicFormValidationParams extends IValidationParams {
+  validateOnBlur?: boolean;
+}
+
 export interface IDynamicFormProps<TValues = object> {
   values: TValues;
   elements: Array<IFormElement<string, any>>;
 
-  fieldExtends?: Record<string, TDynamicFormField<any>>;
+  fieldExtends?: Record<string, TDynamicFormField<any> | TDynamicFormElement<any, any>>;
 
-  validationParams?: IValidationParams;
+  validationParams?: IDynamicFormValidationParams;
   onChange?: (newValues: TValues) => void;
   onFieldChange?: (fieldName: string, newValue: unknown, newValues: TValues) => void;
   onSubmit?: (values: TValues) => void;
-  onEvent?: (eventName: TElementEvent, element: IFormEventElement<string, any>) => void;
+  onEvent?: IEventsProviderProps['onEvent'];
 
   ref?: React.RefObject<IFormRef<TValues>>;
   metadata?: Record<string, any>;
 }
+
+export type { IFormEventElement, TElementEvent } from '../hooks/internal/useEvents';
+export type { TBaseFields } from '../repositories';

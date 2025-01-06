@@ -1,6 +1,7 @@
 import { IRuleExecutionResult, useRuleEngine } from '@/components/organisms/Form/hooks';
 import { renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { useValidator } from '../../../../Validator';
 import { IDynamicFormContext, useDynamicForm } from '../../../context';
 import { ICommonFieldParams, IFormElement } from '../../../types';
 import { useEvents } from '../../internal/useEvents';
@@ -29,6 +30,10 @@ vi.mock('../../internal/useEvents', () => ({
   useEvents: vi.fn(),
 }));
 
+vi.mock('../../../../Validator', () => ({
+  useValidator: vi.fn(),
+}));
+
 describe('useField', () => {
   const mockElement = {
     id: 'test-field',
@@ -45,6 +50,7 @@ describe('useField', () => {
   const mockGetTouched = vi.fn();
   const mockSendEvent = vi.fn();
   const mockSendEventAsync = vi.fn();
+  const mockValidate = vi.fn();
 
   const mockFieldHelpers = {
     setValue: mockSetValue,
@@ -66,7 +72,13 @@ describe('useField', () => {
     vi.mocked(useDynamicForm).mockReturnValue({
       fieldHelpers: mockFieldHelpers,
       values: {},
+      validationParams: {
+        validateOnBlur: true,
+      },
     } as unknown as IDynamicFormContext<object>);
+    vi.mocked(useValidator).mockReturnValue({
+      validate: mockValidate,
+    } as any);
     mockGetValue.mockReturnValue('test-value');
     mockGetTouched.mockReturnValue(false);
 
@@ -137,12 +149,30 @@ describe('useField', () => {
   });
 
   describe('onBlur', () => {
-    it('should trigger blur event', () => {
+    it('should trigger blur event and validate when validateOnBlur is true', () => {
       const { result } = renderHook(() => useField(mockElement, mockStack));
 
       result.current.onBlur();
 
       expect(mockSendEvent).toHaveBeenCalledWith('onBlur');
+      expect(mockValidate).toHaveBeenCalled();
+    });
+
+    it('should not validate when validateOnBlur is false', () => {
+      vi.mocked(useDynamicForm).mockReturnValue({
+        fieldHelpers: mockFieldHelpers,
+        values: {},
+        validationParams: {
+          validateOnBlur: false,
+        },
+      } as unknown as IDynamicFormContext<object>);
+
+      const { result } = renderHook(() => useField(mockElement, mockStack));
+
+      result.current.onBlur();
+
+      expect(mockSendEvent).toHaveBeenCalledWith('onBlur');
+      expect(mockValidate).not.toHaveBeenCalled();
     });
   });
 

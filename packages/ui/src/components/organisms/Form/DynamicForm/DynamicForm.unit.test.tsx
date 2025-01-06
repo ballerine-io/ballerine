@@ -9,6 +9,7 @@ import { useFieldHelpers } from './hooks/internal/useFieldHelpers';
 import { useTouched } from './hooks/internal/useTouched';
 import { useValidationSchema } from './hooks/internal/useValidationSchema';
 import { useValues } from './hooks/internal/useValues';
+import { EventsProvider } from './providers/EventsProvider';
 import { TaskRunner } from './providers/TaskRunner';
 import { ICommonFieldParams, IDynamicFormProps, IFormElement } from './types';
 
@@ -28,6 +29,8 @@ vi.mock('./hooks/internal/useValidationSchema');
 vi.mock('./hooks/internal/useValues');
 
 vi.mock('./providers/TaskRunner');
+
+vi.mock('./providers/EventsProvider');
 
 vi.mock('./context', () => ({
   DynamicFormContext: {
@@ -50,6 +53,9 @@ describe('DynamicFormV2', () => {
     });
     vi.mocked(TaskRunner).mockImplementation(({ children }: any) => {
       return <div data-testid="task-runner">{children}</div>;
+    });
+    vi.mocked(EventsProvider).mockImplementation(({ children }: any) => {
+      return <div data-testid="events-provider">{children}</div>;
     });
 
     vi.mocked(useTouched).mockReturnValue({
@@ -95,6 +101,16 @@ describe('DynamicFormV2', () => {
   it('should render TaskRunner component', () => {
     const { getByTestId } = render(<DynamicFormV2 {...mockProps} />);
     expect(getByTestId('task-runner')).toBeInTheDocument();
+  });
+
+  it('should render EventsProvider with correct props', () => {
+    render(<DynamicFormV2 {...mockProps} />);
+    expect(EventsProvider).toHaveBeenCalledWith(
+      expect.objectContaining({
+        onEvent: mockProps.onEvent,
+      }),
+      expect.anything(),
+    );
   });
 
   it('should pass elements to useValidationSchema', () => {
@@ -180,6 +196,32 @@ describe('DynamicFormV2', () => {
         onEvent: mockProps.onEvent,
       },
       metadata: mockProps.metadata,
+      validationParams: mockProps.validationParams,
     });
+  });
+
+  it('should use default validation params when not provided in props', () => {
+    const propsWithoutValidation = { ...mockProps };
+    delete propsWithoutValidation.validationParams;
+
+    render(<DynamicFormV2 {...propsWithoutValidation} />);
+
+    const providerProps = vi.mocked(DynamicFormContext.Provider).mock.calls[0]?.[0];
+
+    expect(providerProps?.value.validationParams).toEqual({
+      validateOnBlur: true,
+    });
+  });
+
+  it('should use validation params from props when provided', () => {
+    const customValidationParams = {
+      validateOnBlur: false,
+    };
+
+    render(<DynamicFormV2 {...mockProps} validationParams={customValidationParams} />);
+
+    const providerProps = vi.mocked(DynamicFormContext.Provider).mock.calls[0]?.[0];
+
+    expect(providerProps?.value.validationParams).toEqual(customValidationParams);
   });
 });

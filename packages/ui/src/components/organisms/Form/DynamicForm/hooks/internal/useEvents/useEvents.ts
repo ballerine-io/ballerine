@@ -3,8 +3,8 @@ import { formatValueDestination } from '@/components/organisms/Form/Validator/ut
 import debounce from 'lodash/debounce';
 import { useCallback } from 'react';
 import { useStack } from '../../../fields/FieldList/providers/StackProvider';
+import { useEventsDispatcher } from '../../../providers/EventsProvider';
 import { IFormElement } from '../../../types';
-import { useCallbacks } from '../useCallbacks';
 import { IFormEventElement, TElementEvent } from './types';
 
 export interface IUseEventParams {
@@ -15,7 +15,7 @@ export const useEvents = (
   element: IFormElement<any, any>,
   params: IUseEventParams = { asyncEventDelay: 500 },
 ) => {
-  const { onEvent } = useCallbacks();
+  const onEvent = useEventsDispatcher();
   const { stack } = useStack();
   const { asyncEventDelay } = params;
 

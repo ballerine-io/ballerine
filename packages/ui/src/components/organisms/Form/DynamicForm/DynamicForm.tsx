@@ -3,11 +3,13 @@ import { FunctionComponent, useMemo } from 'react';
 import { Renderer, TRendererSchema } from '../../Renderer';
 import { ValidatorProvider } from '../Validator';
 import { DynamicFormContext, IDynamicFormContext } from './context';
+import { defaultValidationParams } from './defaults';
 import { useSubmit } from './hooks/external/useSubmit';
 import { useFieldHelpers } from './hooks/internal/useFieldHelpers';
 import { useTouched } from './hooks/internal/useTouched';
 import { useValidationSchema } from './hooks/internal/useValidationSchema';
 import { useValues } from './hooks/internal/useValues';
+import { EventsProvider } from './providers/EventsProvider';
 import { TaskRunner } from './providers/TaskRunner';
 import { extendFieldsRepository, getFieldsRepository } from './repositories';
 import { IDynamicFormProps } from './types';
@@ -15,7 +17,7 @@ import { IDynamicFormProps } from './types';
 export const DynamicFormV2: FunctionComponent<IDynamicFormProps> = ({
   elements,
   values: initialValues,
-  validationParams,
+  validationParams = defaultValidationParams,
   fieldExtends,
   metadata,
   onChange,
@@ -44,20 +46,32 @@ export const DynamicFormV2: FunctionComponent<IDynamicFormProps> = ({
         onEvent,
       },
       metadata: metadata ?? {},
+      validationParams: validationParams ?? {},
     }),
-    [touchedApi.touched, valuesApi.values, submit, fieldHelpers, fieldExtends, onEvent, metadata],
+    [
+      touchedApi.touched,
+      valuesApi.values,
+      submit,
+      fieldHelpers,
+      fieldExtends,
+      onEvent,
+      metadata,
+      validationParams,
+    ],
   );
 
   return (
     <TaskRunner>
-      <DynamicFormContext.Provider value={context}>
-        <ValidatorProvider schema={validationSchema} value={context.values} {...validationParams}>
-          <Renderer
-            elements={elements}
-            schema={context.elementsMap as unknown as TRendererSchema}
-          />
-        </ValidatorProvider>
-      </DynamicFormContext.Provider>
+      <EventsProvider onEvent={onEvent}>
+        <DynamicFormContext.Provider value={context}>
+          <ValidatorProvider schema={validationSchema} value={context.values} {...validationParams}>
+            <Renderer
+              elements={elements}
+              schema={context.elementsMap as unknown as TRendererSchema}
+            />
+          </ValidatorProvider>
+        </DynamicFormContext.Provider>
+      </EventsProvider>
     </TaskRunner>
   );
 };

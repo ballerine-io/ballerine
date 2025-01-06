@@ -3,19 +3,19 @@ import { formatValueDestination } from '@/components/organisms/Form/Validator/ut
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useStack } from '../../../fields/FieldList/providers/StackProvider';
-import { useCallbacks } from '../useCallbacks';
+import { useEventsDispatcher } from '../../../providers/EventsProvider';
 import { IFormEventElement } from './types';
 import { useEvents } from './useEvents';
 
 vi.mock('@/components/organisms/Form/Validator/utils/format-id');
 vi.mock('@/components/organisms/Form/Validator/utils/format-value-destination');
 vi.mock('../../../fields/FieldList/providers/StackProvider');
-vi.mock('../useCallbacks');
+vi.mock('../../../providers/EventsProvider');
 
 const mockFormatId = vi.mocked(formatId);
 const mockFormatValueDestination = vi.mocked(formatValueDestination);
 const mockUseStack = vi.mocked(useStack);
-const mockUseCallbacks = vi.mocked(useCallbacks);
+const mockUseEventsDispatcher = vi.mocked(useEventsDispatcher);
 
 describe('useEvents', () => {
   const mockElement = {
@@ -29,12 +29,10 @@ describe('useEvents', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseCallbacks.mockReturnValue({ onEvent: mockOnEvent });
+    mockUseEventsDispatcher.mockReturnValue(mockOnEvent);
     mockUseStack.mockReturnValue({ stack: mockStack });
     mockFormatId.mockReturnValue('formatted-id');
     mockFormatValueDestination.mockReturnValue('formatted.destination');
-    mockUseCallbacks.mockReturnValue({ onEvent: mockOnEvent });
-    vi.mocked(useCallbacks).mockReturnValue({ onEvent: mockOnEvent });
   });
 
   it('should return sendEvent and sendEventAsync functions', () => {
@@ -65,13 +63,6 @@ describe('useEvents', () => {
 
     expect(mockFormatId).toHaveBeenCalledWith('test-id', []);
     expect(mockFormatValueDestination).toHaveBeenCalledWith('test.destination', []);
-  });
-
-  it('should handle undefined onEvent callback', () => {
-    mockUseCallbacks.mockReturnValue({ onEvent: undefined });
-    const { result } = renderHook(() => useEvents(mockElement));
-
-    expect(() => result.current.sendEvent('onFocus')).not.toThrow();
   });
 
   it('should use default asyncEventDelay when not provided', () => {

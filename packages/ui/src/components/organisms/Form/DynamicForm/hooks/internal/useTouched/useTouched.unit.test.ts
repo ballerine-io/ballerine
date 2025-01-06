@@ -11,6 +11,10 @@ vi.mock(
   }),
 );
 
+vi.mock('../../../helpers/get-field-definitions-from-schema', () => ({
+  getFieldDefinitionsFromSchema: vi.fn(elements => elements),
+}));
+
 describe('useTouched', () => {
   const elements: IFormElement[] = [
     { id: '1', valueDestination: '1', children: [], validate: [], element: 'textinput' },
