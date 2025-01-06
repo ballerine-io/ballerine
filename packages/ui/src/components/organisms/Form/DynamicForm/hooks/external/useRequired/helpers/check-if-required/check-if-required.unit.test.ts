@@ -69,7 +69,7 @@ describe('checkIfRequired', () => {
       validate: [
         {
           type: 'custom',
-          considerRequred: true,
+          considerRequired: true,
           value: {},
           message: 'Field is required',
         },

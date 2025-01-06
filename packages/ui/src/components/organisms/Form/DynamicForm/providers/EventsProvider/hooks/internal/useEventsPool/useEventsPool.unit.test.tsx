@@ -69,6 +69,15 @@ describe('useEventsPool', () => {
 
   it('should run event for matching listeners', () => {
     const { result, rerender } = renderHook(() => useEventsPool(mockOnEvent));
+
+    const mockElement = {
+      id: 'test-id-1',
+      valueDestination: 'test',
+      formattedId: 'test-id-1',
+      formattedValueDestination: 'test',
+      element: 'test',
+    } as IFormEventElement<string, any>;
+
     const listener1 = {
       id: 'test-id-1',
       eventName: 'onChange',
@@ -81,12 +90,16 @@ describe('useEventsPool', () => {
       callback: vi.fn(),
     } as IEventsListener;
 
-    result.current.subscribe(listener1);
-    result.current.subscribe(listener2);
+    act(() => {
+      result.current.subscribe(listener1);
+      result.current.subscribe(listener2);
+    });
 
     rerender();
 
-    result.current.run('onChange', mockElement);
+    act(() => {
+      result.current.run('onChange', mockElement);
+    });
 
     expect(listener1.callback).toHaveBeenCalledWith('onChange', mockElement);
     expect(listener2.callback).not.toHaveBeenCalled();

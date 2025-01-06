@@ -5,7 +5,7 @@ export const checkIfRequired = (element: IFormElement, context: object) => {
   const { validate = [] } = element;
 
   const requiredLikeValidators = validate.filter(
-    validator => validator.type === 'required' || validator.considerRequred,
+    validator => validator.type === 'required' || validator.considerRequired,
   );
 
   const isRequired = requiredLikeValidators.length
