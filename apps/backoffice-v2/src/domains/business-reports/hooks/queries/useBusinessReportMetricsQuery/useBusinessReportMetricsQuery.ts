@@ -38,7 +38,7 @@ export const useBusinessReportMetricsQuery = ({ from, to }: { from?: string; to?
   const isAuthenticated = useIsAuthenticated();
 
   return useQuery({
-    queryKey: ['business-report-metrics', from],
+    queryKey: ['business-report-metrics', from, to],
     queryFn: () => fetchBusinessReportMetrics({ from, to }),
     enabled: isAuthenticated,
     keepPreviousData: true,
