@@ -66,7 +66,7 @@ export const useReportTabs = ({
     {
       title: 'Ads and Social Media Analysis',
       search: '?activeTab=adsAndSocialMedia',
-      violations: adsAndSocialMediaAnalysis ?? [],
+      violations: null,
     },
     {
       title: 'Website Line of Business Analysis',

@@ -40,7 +40,9 @@ export const WebsitesCompany: FunctionComponent<{
                   )}
                 </li>
               ))}
-            {!companyReputationAnalysis?.length && <li>No Indications Detected.</li>}
+            {!companyReputationAnalysis?.length && (
+              <li>No indications of negative company reputation were detected.</li>
+            )}
           </ol>
         </CardContent>
       </Card>
