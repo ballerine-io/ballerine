@@ -11,7 +11,7 @@ interface ICollectionFlowUIProps {
 
 const validationParams = {
   validateOnBlur: true,
-  abortEarly: false,
+  abortEarly: true,
 };
 
 export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({

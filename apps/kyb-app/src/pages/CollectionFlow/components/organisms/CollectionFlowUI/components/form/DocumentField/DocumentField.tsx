@@ -90,7 +90,5 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
 
   useEventsConsumer(useListener(element as IFormEventElement<any, any>, mergeDocumentWithTemplate));
 
-  console.log('values', values);
-
   return <FileField element={formattedElement} />;
 };

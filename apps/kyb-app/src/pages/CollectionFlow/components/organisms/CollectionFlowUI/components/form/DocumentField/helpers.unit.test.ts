@@ -12,7 +12,7 @@ describe('buildPathToDocumentFileId', () => {
 
     const result = buildPathToDocumentFileId(params);
 
-    expect(result).toBe('documents.pages[0].1.fileId');
+    expect(result).toBe('documents[0].pages[1].fileId');
   });
 });
 
