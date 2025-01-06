@@ -56,9 +56,8 @@ export const Home: FunctionComponent = () => {
         {/*    <Outlet />*/}
         {/*  </TabsContent>*/}
         {/*</Tabs>*/}
-        <Outlet />
-        {/* {(isDemo || isExample) && <Outlet />}
-        {!isDemo && !isExample && <WelcomeCard />} */}
+        {(isDemo || isExample) && <Outlet />}
+        {!isDemo && !isExample && <WelcomeCard />}
       </div>
     </div>
   );
