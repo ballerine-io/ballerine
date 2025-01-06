@@ -172,11 +172,11 @@ export const PortfolioRiskStatistics: FunctionComponent<z.infer<typeof MetricsRe
                   </TableRow>
                 </TableHeader>
                 <TableBody ref={parent}>
-                  {filteredRiskIndicators.map(({ name, count }, index) => (
+                  {filteredRiskIndicators.map(({ name, count, id }, index) => (
                     <TableRow key={name} className={'border-b-0 hover:bg-[unset]'}>
                       <TableCell className={ctw('pb-0 ps-0', index !== 0 && 'pt-2')}>
                         <Link
-                          to={`/${locale}/merchant-monitoring?findings[0]=${name}`}
+                          to={`/${locale}/merchant-monitoring?findings[0]=${id}`}
                           className={`block h-full cursor-pointer rounded bg-blue-200 p-1 transition-all`}
                           style={{ width: `${widths[index]}%` }}
                         >

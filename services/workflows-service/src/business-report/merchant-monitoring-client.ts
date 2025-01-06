@@ -64,7 +64,13 @@ const MetricsResponseSchema = z.object({
     high: z.number(),
     critical: z.number(),
   }),
-  violationCounts: z.record(z.string(), z.number()),
+  violationCounts: z.array(
+    z.object({
+      name: z.string(),
+      id: z.string(),
+      count: z.number(),
+    }),
+  ),
 });
 
 @Injectable()
