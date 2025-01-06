@@ -1,9 +1,12 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { getFieldDefinitionsFromSchema } from '../../../helpers/get-field-definitions-from-schema';
 import { IFormElement } from '../../../types';
 import { generateTouchedMapForAllElements } from './helpers/generate-touched-map-for-all-elements/generate-touched-map-for-all-elements';
 import { ITouchedState } from './types';
 
-export const useTouched = (elements: Array<IFormElement<any, any>>, context: object) => {
+export const useTouched = (_elements: Array<IFormElement<any, any>>, context: object) => {
+  const elements = useMemo(() => getFieldDefinitionsFromSchema(_elements), [_elements]);
+
   const [touched, setTouchedState] = useState<ITouchedState>({});
 
   const setFieldTouched = useCallback((fieldName: string, isTouched: boolean) => {
