@@ -25,7 +25,7 @@ export const usePortfolioRiskStatisticsLogic = ({
     () =>
       violationCounts
         .sort((a, b) => (riskIndicatorsSorting === 'asc' ? a.count - b.count : b.count - a.count))
-        .slice(0, 5),
+        .slice(0, 10),
     [violationCounts, riskIndicatorsSorting],
   );
   const widths = useMemo(

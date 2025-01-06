@@ -1,11 +1,9 @@
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import { Card } from '@/common/components/atoms/Card/Card';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { Cell, Pie, PieChart } from 'recharts';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { Button } from '@/common/components/atoms/Button/Button';
-import { TrendingDown, TrendingUp } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -31,8 +29,6 @@ export const PortfolioRiskStatistics: FunctionComponent<z.infer<typeof MetricsRe
     widths,
     riskLevelToBackgroundColor,
     totalRiskIndicators,
-    riskIndicatorsSorting,
-    onSortRiskIndicators,
     filteredRiskIndicators,
   } = usePortfolioRiskStatisticsLogic({
     riskLevelCounts,
@@ -124,51 +120,15 @@ export const PortfolioRiskStatistics: FunctionComponent<z.infer<typeof MetricsRe
         </div>
         <div className={'min-h-[10.125rem] rounded-xl bg-[#F6F6F6] p-2'}>
           <Card className={'flex h-full flex-col px-3'}>
-            <CardHeader className={'pb-1'}>Risk Indicators</CardHeader>
+            <CardHeader className={'pb-2'}>Top 10 Content Violations</CardHeader>
             <CardContent>
-              <div className={'mb-7 flex items-end space-x-2'}>
-                <span className={'text-3xl font-semibold'}>
-                  {Intl.NumberFormat().format(totalRiskIndicators)}
-                </span>
-                <span className={'text-sm leading-7 text-slate-500'}>Total indicators</span>
-              </div>
-              <div className={'mb-6'}>
-                <Button
-                  variant={'ghost'}
-                  className={ctw(
-                    'gap-x-2 rounded-none border-b border-b-slate-400 text-slate-400',
-                    {
-                      'border-b-[rgb(0,122,255)] text-[rgb(0,122,255)] hover:text-[rgb(0,122,255)]':
-                        riskIndicatorsSorting === 'desc',
-                    },
-                  )}
-                  onClick={onSortRiskIndicators('desc')}
-                >
-                  <TrendingUp />
-                  Highest First
-                </Button>
-                <Button
-                  variant={'ghost'}
-                  className={ctw(
-                    'gap-x-2 rounded-none border-b border-b-slate-400 text-slate-400',
-                    {
-                      'border-b-[rgb(0,122,255)] text-[rgb(0,122,255)] hover:text-[rgb(0,122,255)]':
-                        riskIndicatorsSorting === 'asc',
-                    },
-                  )}
-                  onClick={onSortRiskIndicators('asc')}
-                >
-                  <TrendingDown />
-                  Lowest First
-                </Button>
-              </div>
               <Table>
                 <TableHeader className={'[&_tr]:border-b-0'}>
                   <TableRow className={'hover:bg-[unset]'}>
                     <TableHead className={'h-0 ps-0 font-bold text-foreground'}>
                       Indicator
                     </TableHead>
-                    <TableHead className={'h-0 ps-0 font-bold text-foreground'}>Amount</TableHead>
+                    <TableHead className={'h-0 px-0 font-bold text-foreground'}>Amount</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody ref={parent}>
@@ -183,7 +143,7 @@ export const PortfolioRiskStatistics: FunctionComponent<z.infer<typeof MetricsRe
                           {titleCase(name ?? '')}
                         </Link>
                       </TableCell>
-                      <TableCell className={'pb-0 ps-0'}>
+                      <TableCell className={'!px-0 pb-0'}>
                         {Intl.NumberFormat().format(count)}
                       </TableCell>
                     </TableRow>
