@@ -34,6 +34,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
     search,
     onSearch,
     totalPages,
+    totalItems,
     page,
     onPrevPage,
     onNextPage,
@@ -63,8 +64,8 @@ export const MerchantMonitoring: FunctionComponent = () => {
 
   return (
     <div className="flex h-full flex-col space-y-4 px-6 pb-6 pt-10">
-      <div className={`flex justify-between`}>
-        <h1 className="pb-5 text-2xl font-bold">Merchant Monitoring</h1>
+      <div className={`flex justify-between pb-2`}>
+        <h1 className="text-2xl font-bold">Merchant Monitoring</h1>
         <div className={`flex space-x-3`}>
           <TooltipProvider delayDuration={0}>
             <Tooltip>
@@ -201,7 +202,17 @@ export const MerchantMonitoring: FunctionComponent = () => {
           </Button>
         )}
       </div>
-      <div className="flex w-full flex-1 flex-col gap-6 overflow-auto pt-4">
+      <div>
+        {!isLoadingBusinessReports && (
+          <Badge
+            variant="secondary"
+            className="rounded-full px-3 py-1 text-sm font-semibold text-gray-700"
+          >
+            {totalItems} results
+          </Badge>
+        )}
+      </div>
+      <div className="flex w-full flex-1 flex-col gap-6 overflow-auto">
         {isLoadingBusinessReports && (
           <div className={`flex h-full w-full items-center justify-center`}>
             <Loader2 className={`animate-spin d-[60px]`} />

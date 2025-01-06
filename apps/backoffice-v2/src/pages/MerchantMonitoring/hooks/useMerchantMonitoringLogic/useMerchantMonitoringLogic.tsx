@@ -139,7 +139,7 @@ export const useMerchantMonitoringLogic = () => {
 
   return {
     totalPages: data?.totalPages || 0,
-    totalItems: data?.totalItems || 0,
+    totalItems: Intl.NumberFormat(locale).format(data?.totalItems || 0),
     createBusinessReport: customer?.features?.createBusinessReport,
     createBusinessReportBatch: customer?.features?.createBusinessReportBatch,
     businessReports: data?.data || [],
