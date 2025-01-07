@@ -12,12 +12,7 @@ export const checkIfRequired = (element: IFormElement, context: object) => {
     ? requiredLikeValidators.some(validator => {
         const { applyWhen } = validator;
         const shouldValidate = applyWhen
-          ? executeRules(context, [
-              {
-                engine: applyWhen.type,
-                value: applyWhen.value,
-              },
-            ]).every(result => result.result)
+          ? executeRules(context, [applyWhen]).every(result => result.result)
           : true;
 
         if (!shouldValidate) return false;

@@ -15,7 +15,7 @@ export const schema: Array<IFormElement<any, any>> = [
         value: {},
         message: 'First name is required',
         applyWhen: {
-          type: 'json-logic',
+          engine: 'json-logic',
           value: {
             '!': { var: 'forceEverythingOptionnal' },
           },
@@ -60,7 +60,7 @@ export const schema: Array<IFormElement<any, any>> = [
         value: {},
         message: 'Last name is required',
         applyWhen: {
-          type: 'json-logic',
+          engine: 'json-logic',
           value: {
             and: [{ '!!': { var: 'firstName' } }, { '!': { var: 'forceEverythingOptionnal' } }],
           },

@@ -92,7 +92,7 @@ describe('checkIfRequired', () => {
           value: {},
           message: 'Field is required',
           applyWhen: {
-            type: 'json-logic',
+            engine: 'json-logic',
             value: { '==': [{ var: 'someField' }, true] },
           },
         },
@@ -125,7 +125,7 @@ describe('checkIfRequired', () => {
           value: {},
           message: 'Field is required',
           applyWhen: {
-            type: 'json-logic',
+            engine: 'json-logic',
             value: { '==': [{ var: 'someField' }, true] },
           },
         },
