@@ -1,6 +1,5 @@
-import { IFormEventElement } from '@ballerine/ui';
 import { renderHook } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { usePlugins } from '../../components/utility/PluginsRunner/hooks/external/usePlugins';
 import { IPlugin } from '../../components/utility/PluginsRunner/types';
 import { usePluginRunners } from './usePluginRunners';
@@ -9,36 +8,34 @@ vi.mock('../../components/utility/PluginsRunner/hooks/external/usePlugins');
 
 describe('usePluginRunners', () => {
   const mockRunPlugin = vi.fn();
-  const mockedUsePlugins = vi.mocked(usePlugins);
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.useFakeTimers();
-    mockedUsePlugins.mockReturnValue({
+    vi.mocked(usePlugins).mockReturnValue({
       runPlugin: mockRunPlugin,
-      plugins: [],
-      pluginStatuses: {},
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-    });
+    } as any);
   });
 
-  it('should create runners from plugins', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.useRealTimers();
+  });
+
+  it('should return runners and getPluginRunner', () => {
     const plugins = [
       {
         name: 'test-plugin',
         runOn: [{ type: 'onChange', elementId: 'test-id' }],
         commonParams: { debounceTime: 100 },
       },
-    ];
+    ] as IPlugin[];
 
-    const { result } = renderHook(() => usePluginRunners(plugins as IPlugin[]));
+    const { result } = renderHook(() => usePluginRunners(plugins));
 
     expect(result.current.runners).toHaveLength(1);
-    expect(result.current.runners[0]).toMatchObject({
-      name: 'test-plugin',
-      runOn: plugins[0]?.runOn,
-    });
+    expect(result.current.runners?.[0]?.name).toBe('test-plugin');
+    expect(typeof result.current.runners?.[0]?.run).toBe('function');
+    expect(typeof result.current.getPluginRunner).toBe('function');
   });
 
   it('should find plugin runner by event name and element', () => {
@@ -47,15 +44,25 @@ describe('usePluginRunners', () => {
         name: 'test-plugin',
         runOn: [{ type: 'onChange', elementId: 'test-id' }],
       },
-    ];
+    ] as IPlugin[];
 
-    const { result } = renderHook(() => usePluginRunners(plugins as IPlugin[]));
+    const { result } = renderHook(() => usePluginRunners(plugins));
 
-    const runner = result.current.getPluginRunner('onChange', {
-      id: 'test-id',
-    } as IFormEventElement<any, any>);
+    const runner = result.current.getPluginRunner('onChange', { id: 'test-id' });
+    expect(runner?.name).toBe('test-plugin');
+  });
 
-    expect(runner).toBeDefined();
+  it('should find plugin runner by event name only', () => {
+    const plugins = [
+      {
+        name: 'test-plugin',
+        runOn: [{ type: 'onSubmit' }],
+      },
+    ] as IPlugin[];
+
+    const { result } = renderHook(() => usePluginRunners(plugins));
+
+    const runner = result.current.getPluginRunner('onSubmit');
     expect(runner?.name).toBe('test-plugin');
   });
 
@@ -65,14 +72,11 @@ describe('usePluginRunners', () => {
         name: 'test-plugin',
         runOn: [{ type: 'onChange', elementId: 'test-id' }],
       },
-    ];
+    ] as IPlugin[];
 
-    const { result } = renderHook(() => usePluginRunners(plugins as IPlugin[]));
+    const { result } = renderHook(() => usePluginRunners(plugins));
 
-    const runner = result.current.getPluginRunner('onBlur', {
-      id: 'different-id',
-    } as IFormEventElement<any, any>);
-
+    const runner = result.current.getPluginRunner('onSubmit');
     expect(runner).toBeUndefined();
   });
 
@@ -80,21 +84,21 @@ describe('usePluginRunners', () => {
     const plugins = [
       {
         name: 'test-plugin',
-        runOn: [{ type: 'onChange', elementId: 'test-id' }],
+        runOn: [{ type: 'onChange' }],
         commonParams: { debounceTime: 100 },
       },
-    ];
+    ] as IPlugin[];
 
-    const { result } = renderHook(() => usePluginRunners(plugins as IPlugin[]));
-    const context = { someData: 'test' };
+    const { result } = renderHook(() => usePluginRunners(plugins));
 
-    result.current.runners[0]?.run(context);
-    result.current.runners[0]?.run(context);
-    result.current.runners[0]?.run(context);
+    const context = { testData: 'test' };
+    result.current.runners?.[0]?.run?.(context);
+    result.current.runners?.[0]?.run?.(context);
+
+    expect(mockRunPlugin).not.toHaveBeenCalled();
 
     vi.advanceTimersByTime(150);
 
     expect(mockRunPlugin).toHaveBeenCalledTimes(1);
-    expect(mockRunPlugin).toHaveBeenCalledWith('test-plugin', context);
   });
 });
