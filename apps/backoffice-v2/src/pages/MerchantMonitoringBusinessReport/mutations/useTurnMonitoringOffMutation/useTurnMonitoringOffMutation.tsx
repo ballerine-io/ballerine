@@ -10,7 +10,7 @@ export const useTurnMonitoringOffMutation = ({
   onSuccess,
 }: {
   onSuccess?: <TData>(data: TData) => void;
-}) => {
+} = {}) => {
   const queryClient = useQueryClient();
 
   return useMutation({

@@ -33,8 +33,8 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     noteableType: 'Report',
   });
 
-  const turnMonitoringOnMutation = useTurnMonitoringOnMutation({});
-  const turnMonitoringOffMutation = useTurnMonitoringOffMutation({});
+  const turnMonitoringOnMutation = useTurnMonitoringOnMutation();
+  const turnMonitoringOffMutation = useTurnMonitoringOffMutation();
 
   const { tabs } = useReportTabs({
     reportVersion: businessReport?.workflowVersion,

@@ -115,13 +115,15 @@ export class BusinessReportControllerExternal {
       ...(search ? { searchQuery: search } : {}),
     });
 
+    const merchantIds = data.map(report => report.merchantId);
+    const businesses = await this.businessService.list(
+      { where: { id: { in: merchantIds } }, select: { id: true, metadata: true } },
+      [currentProjectId],
+    );
+
     const reports = await Promise.all(
       data.map(async report => {
-        const business = await this.businessService.getById(
-          report.merchantId,
-          { select: { metadata: true } },
-          [currentProjectId],
-        );
+        const business = businesses.find(business => business.id === report.merchantId);
 
         const metadata = business?.metadata as {
           featureConfig?: TCustomerWithFeatures['features'];
