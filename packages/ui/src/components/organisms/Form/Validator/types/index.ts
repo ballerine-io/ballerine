@@ -1,7 +1,7 @@
 export type TBaseValidationRules = 'json-logic';
 
 export interface IValidationRule {
-  type: TBaseValidationRules;
+  engine: TBaseValidationRules;
   value: object;
 }
 

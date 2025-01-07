@@ -63,7 +63,7 @@ export const schema: Array<IFormElement<any, any>> = [
         value: {},
         message: 'Passport photo is required',
         applyWhen: {
-          type: 'json-logic',
+          engine: 'json-logic',
           value: {
             '!': { var: 'iDontHaveDocument' },
           },

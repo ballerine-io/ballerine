@@ -749,7 +749,7 @@ describe('validate', () => {
                 message: 'Field is required.',
                 value: {},
                 applyWhen: {
-                  type: 'json-logic',
+                  engine: 'json-logic',
                   value: {
                     var: 'firstName',
                   },
@@ -781,7 +781,7 @@ describe('validate', () => {
                 message: 'Field is required.',
                 value: {},
                 applyWhen: {
-                  type: 'json-logic',
+                  engine: 'json-logic',
                   value: {
                     '==': [{ var: 'firstName' }, 'Banana'],
                   },

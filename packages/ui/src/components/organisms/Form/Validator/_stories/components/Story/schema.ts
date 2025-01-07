@@ -42,7 +42,7 @@ export const initialSchema: IValidationSchema[] = [
         message: 'Age is required',
         value: {},
         applyWhen: {
-          type: 'json-logic',
+          engine: 'json-logic',
           value: {
             and: [{ '!!': { var: 'firstName' } }, { '!!': { var: 'lastName' } }],
           },
