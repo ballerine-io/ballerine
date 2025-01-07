@@ -8,9 +8,6 @@ import { WelcomeCard } from '@/pages/Home/components/WelcomeCard/WelcomeCard';
 
 export const Home: FunctionComponent = () => {
   const {
-    onDateRangeChange,
-    from,
-    to,
     firstName,
     fullName,
     avatarUrl,

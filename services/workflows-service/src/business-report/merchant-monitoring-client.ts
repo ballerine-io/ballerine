@@ -71,6 +71,9 @@ const MetricsResponseSchema = z.object({
       count: z.number(),
     }),
   ),
+  totalActiveMerchants: z.number(),
+  addedMerchantsCount: z.number(),
+  removedMerchantsCount: z.number(),
 });
 
 @Injectable()
@@ -273,10 +276,20 @@ export class MerchantMonitoringClient {
     return response.data ?? [];
   }
 
-  public async getMetrics({ customerId }: { customerId: string }) {
+  public async getMetrics({
+    customerId,
+    from,
+    to,
+  }: {
+    customerId: string;
+    from?: string;
+    to?: string;
+  }) {
     const response = await this.axios.get('merchants/analysis/metrics', {
       params: {
         customerId,
+        from,
+        to,
       },
       headers: {
         Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,

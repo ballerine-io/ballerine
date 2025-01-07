@@ -7,6 +7,8 @@ export const AuthenticatedUserSchema = z
     firstName: z.string(),
     lastName: z.string(),
     avatarUrl: z.string().nullable().optional(),
+    lastActiveAt: z.string().datetime().nullable().optional(),
+    registrationDate: z.string().datetime(),
   })
   .transform(({ firstName, lastName, ...other }) => ({
     ...other,
