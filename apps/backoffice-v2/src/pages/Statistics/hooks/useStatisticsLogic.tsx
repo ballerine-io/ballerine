@@ -10,16 +10,19 @@ export const useStatisticsLogic = () => {
   const registrationDate = new Date(userData?.user?.registrationDate ?? '1970-01-01');
 
   const StatisticsSearchSchema = z.object({
-    from: z.string().transform(data => {
-      const dayjsDate = dayjs(data, 'YYYY-MM-DD', true);
+    from: z
+      .string()
+      .optional()
+      .transform(data => {
+        const dayjsDate = dayjs(data, 'YYYY-MM-DD', true);
 
-      return dayjsDate.isValid() &&
-        dayjsDate.isBefore(dayjs()) &&
-        dayjsDate.date() === 1 &&
-        dayjsDate.add(1, 'day').isAfter(dayjs(registrationDate).startOf('month'))
-        ? data
-        : dayjs().startOf('month').format('YYYY-MM-DD');
-    }),
+        return dayjsDate.isValid() &&
+          dayjsDate.isBefore(dayjs()) &&
+          dayjsDate.date() === 1 &&
+          dayjsDate.add(1, 'day').isAfter(dayjs(registrationDate).startOf('month'))
+          ? data
+          : dayjs().startOf('month').format('YYYY-MM-DD');
+      }),
   });
 
   const [{ from }, setSearchParams] = useZodSearchParams(StatisticsSearchSchema);
