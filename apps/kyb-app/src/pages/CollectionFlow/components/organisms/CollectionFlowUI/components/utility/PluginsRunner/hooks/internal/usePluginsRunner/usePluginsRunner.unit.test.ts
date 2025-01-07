@@ -3,11 +3,13 @@ import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getPlugin } from '../../../plugins.repository';
 import { IPlugin } from '../../../types';
+import { usePluginListeners } from './usePluginListeners';
 import { usePluginsRunner } from './usePluginsRunner';
 
 // Mock dependencies
 vi.mock('@/components/organisms/DynamicUI/StateManager/components/StateProvider');
 vi.mock('../../../plugins.repository');
+vi.mock('./usePluginListeners');
 
 describe('usePluginsRunner', () => {
   const mockStateApi = {
@@ -15,7 +17,8 @@ describe('usePluginsRunner', () => {
   };
 
   const mockPlugin = vi.fn();
-  const testPlugin = { name: 'test-plugin' } as IPlugin;
+  const mockNotifyListeners = vi.fn();
+  const testPlugin = { name: 'test-plugin', params: { param: 'test' } } as IPlugin;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -26,6 +29,12 @@ describe('usePluginsRunner', () => {
     } as any);
 
     vi.mocked(getPlugin).mockReturnValue(mockPlugin);
+    vi.mocked(usePluginListeners).mockReturnValue({
+      notifyListeners: mockNotifyListeners,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      listeners: [],
+    });
   });
 
   it('should initialize with empty plugin statuses', () => {
@@ -39,20 +48,44 @@ describe('usePluginsRunner', () => {
     await expect(result.current.runPlugin(testPlugin)).rejects.toThrow('Plugin not found');
   });
 
-  it('should update plugin status through lifecycle', async () => {
+  it('should notify listeners and update plugin status through lifecycle', async () => {
+    const mockContext = { data: 'test' };
+    const mockResult = { data: 'result' };
+    vi.mocked(mockStateApi.getContext).mockReturnValue(mockContext);
+    vi.mocked(mockPlugin).mockResolvedValueOnce(mockResult);
+
     const { result } = renderHook(() => usePluginsRunner([testPlugin]));
 
     await act(async () => {
       await result.current.runPlugin(testPlugin);
     });
 
-    expect(result.current.pluginStatuses['test-plugin']).toEqual({
-      name: 'test-plugin',
+    // Verify status updates and notifications
+    expect(mockNotifyListeners).toHaveBeenCalledTimes(2);
+    expect(mockNotifyListeners).toHaveBeenNthCalledWith(
+      1,
+      mockContext,
+      testPlugin.name,
+      testPlugin.params,
+      'running',
+    );
+    expect(mockNotifyListeners).toHaveBeenNthCalledWith(
+      2,
+      mockResult,
+      testPlugin.name,
+      testPlugin.params,
+      'completed',
+    );
+
+    expect(result.current.pluginStatuses[testPlugin.name]).toEqual({
+      name: testPlugin.name,
       status: 'completed',
     });
   });
 
-  it('should handle plugin failure', async () => {
+  it('should notify listeners and handle plugin failure', async () => {
+    const mockContext = { data: 'test' };
+    vi.mocked(mockStateApi.getContext).mockReturnValue(mockContext);
     vi.mocked(mockPlugin).mockRejectedValueOnce(new Error('Plugin failed'));
 
     const { result } = renderHook(() => usePluginsRunner([testPlugin]));
@@ -65,8 +98,25 @@ describe('usePluginsRunner', () => {
       }
     });
 
-    expect(result.current.pluginStatuses['test-plugin']).toEqual({
-      name: 'test-plugin',
+    // Verify failure notifications
+    expect(mockNotifyListeners).toHaveBeenCalledTimes(2);
+    expect(mockNotifyListeners).toHaveBeenNthCalledWith(
+      1,
+      mockContext,
+      testPlugin.name,
+      testPlugin.params,
+      'running',
+    );
+    expect(mockNotifyListeners).toHaveBeenNthCalledWith(
+      2,
+      mockContext,
+      testPlugin.name,
+      testPlugin.params,
+      'failed',
+    );
+
+    expect(result.current.pluginStatuses[testPlugin.name]).toEqual({
+      name: testPlugin.name,
       status: 'failed',
     });
   });
@@ -76,12 +126,11 @@ describe('usePluginsRunner', () => {
     vi.mocked(mockStateApi.getContext).mockReturnValue(mockContext);
 
     const { result } = renderHook(() => usePluginsRunner([testPlugin]));
-    const pluginParams = { param: 'test' };
 
     await act(async () => {
       await result.current.runPlugin(testPlugin);
     });
 
-    expect(mockPlugin).toHaveBeenCalledWith(mockContext, { api: mockStateApi }, pluginParams);
+    expect(mockPlugin).toHaveBeenCalledWith(mockContext, { api: mockStateApi }, testPlugin.params);
   });
 });

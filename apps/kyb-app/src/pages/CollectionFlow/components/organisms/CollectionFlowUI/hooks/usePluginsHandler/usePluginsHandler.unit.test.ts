@@ -31,6 +31,8 @@ describe('usePluginsHandler', () => {
       plugins: mockPlugins,
       runPlugin: vi.fn(),
       pluginStatuses: {},
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
     });
 
     mockedUsePluginRunners.mockReturnValue({

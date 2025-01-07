@@ -8,4 +8,6 @@ export const ocrPlugin = async (
   { api }: { api: StateMachineAPI },
 ) => {
   await api.invokePlugin('fetch_company_information');
+
+  return api.getContext();
 };

@@ -22,6 +22,8 @@ describe('PluginsRunner', () => {
       pluginStatuses: {},
       runPlugin: vi.fn(),
       plugins: mockPlugins,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
     });
   });
 
