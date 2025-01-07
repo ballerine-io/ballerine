@@ -49,7 +49,7 @@ export interface IDynamicFormValidationParams extends IValidationParams {
   validateOnBlur?: boolean;
 }
 
-export interface IDynamicFormProps<TValues = object> {
+export interface IDynamicFormProps<TValues extends object> {
   values: TValues;
   elements: Array<IFormElement<string, any>>;
 
