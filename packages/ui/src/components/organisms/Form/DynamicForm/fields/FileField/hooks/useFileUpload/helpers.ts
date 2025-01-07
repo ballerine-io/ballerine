@@ -1,5 +1,6 @@
 import axios from 'axios';
 import get from 'lodash/get';
+import { formatString } from '../../../../utils/format-string';
 import { IFileFieldParams } from '../../FileField';
 
 export const formatHeaders = (
@@ -9,19 +10,7 @@ export const formatHeaders = (
   const formattedHeaders: Record<string, string> = {};
 
   Object.entries(headers).forEach(([key, value]) => {
-    let formattedValue = value;
-    const matches = value.match(/\{([^}]+)\}/g);
-
-    if (matches) {
-      matches.forEach(match => {
-        const metadataKey = match.slice(1, -1);
-
-        if (metadata[metadataKey]) {
-          formattedValue = formattedValue.replace(match, metadata[metadataKey]);
-        }
-      });
-    }
-
+    const formattedValue = formatString(value, metadata);
     formattedHeaders[key] = formattedValue;
   });
 

@@ -4,6 +4,7 @@ import { useElement, useField } from '../../../../hooks/external';
 import { useTaskRunner } from '../../../../providers/TaskRunner/hooks/useTaskRunner';
 import { ITask } from '../../../../providers/TaskRunner/types';
 import { IFormElement } from '../../../../types';
+import { formatString } from '../../../../utils/format-string';
 import { useStack } from '../../../FieldList/providers/StackProvider';
 import { IFileFieldParams } from '../../FileField';
 import { formatHeaders, uploadFile } from './helpers';
@@ -38,6 +39,7 @@ export const useFileUpload = (
         ...uploadSettings,
         method: uploadSettings?.method || 'POST',
         headers: formatHeaders(uploadSettings?.headers || {}, metadata),
+        url: formatString(uploadSettings?.url || '', metadata),
       };
 
       if (uploadOn === 'change') {
