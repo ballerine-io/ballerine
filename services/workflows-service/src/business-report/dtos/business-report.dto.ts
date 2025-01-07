@@ -62,6 +62,9 @@ export class BusinessReportDto {
   @ApiProperty({ type: String })
   updatedAt!: string;
 
+  @ApiProperty({ type: Boolean })
+  monitoringStatus!: boolean;
+
   @ApiProperty({ type: Object })
   data!: Record<string, unknown>;
 }

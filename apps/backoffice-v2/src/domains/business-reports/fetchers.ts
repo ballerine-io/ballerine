@@ -30,6 +30,7 @@ export const BusinessReportSchema = z
     workflowVersion: z.enum([MERCHANT_REPORT_VERSIONS[0]!, ...MERCHANT_REPORT_VERSIONS.slice(1)]),
     isAlert: z.boolean().nullable(),
     companyName: z.string().nullish(),
+    monitoringStatus: z.boolean(),
     website: z.object({
       id: z.string(),
       url: z.string().url(),

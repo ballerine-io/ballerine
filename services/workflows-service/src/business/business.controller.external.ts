@@ -27,6 +27,7 @@ import { BusinessPatchDto } from '@/business/dtos/business.patch.dto';
 import { BusinessDto } from '@/business/dtos/business.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { ARRAY_MERGE_OPTION } from '@ballerine/workflow-core';
+import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Businesses')
@@ -132,6 +133,62 @@ export class BusinessControllerExternal {
     });
   }
 
+  @common.Patch('/:id/monitoring/:state')
+  @swagger.ApiForbiddenResponse()
+  @swagger.ApiOkResponse({ type: BusinessDto })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async updateOngoingMonitoringState(
+    @common.Param('id') businessId: string,
+    @common.Param('state') state: 'on' | 'off',
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    const business = await this.businessService.getById(
+      businessId,
+      { select: { metadata: true } },
+      [currentProjectId],
+    );
+
+    const metadata = business?.metadata as {
+      featureConfig?: TCustomerWithFeatures['features'];
+    };
+
+    const enabled = state === 'on';
+
+    const updatedMetadata = !metadata
+      ? {
+          featureConfig: {
+            [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
+              enabled,
+            },
+          },
+        }
+      : {
+          ...metadata,
+          featureConfig: {
+            ...metadata.featureConfig,
+            [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
+              ...metadata.featureConfig?.[FEATURE_LIST.ONGOING_MERCHANT_REPORT],
+              enabled,
+            },
+          },
+        };
+
+    await this.prismaService.$transaction(async transaction => {
+      const stringifiedMetadata = JSON.stringify(updatedMetadata);
+
+      await transaction.$executeRaw`
+        UPDATE "Business"
+        SET "metadata" = jsonb_deep_merge_with_options(
+          COALESCE("metadata", '{}'::jsonb),
+          ${stringifiedMetadata}::jsonb,
+          ${ARRAY_MERGE_OPTION.BY_INDEX}
+                         )
+        WHERE "id" = ${businessId}
+          AND "projectId" = ${currentProjectId};
+      `;
+    });
+  }
+
   @common.Patch(':id')
   @UseCustomerAuthGuard()
   @swagger.ApiForbiddenResponse()
@@ -163,14 +220,14 @@ export class BusinessControllerExternal {
           const stringifiedMetadata = JSON.stringify(metadata);
 
           await transaction.$executeRaw`
-              UPDATE "Business"
-              SET "metadata" = jsonb_deep_merge_with_options(
-                COALESCE("metadata", '{}'::jsonb),
-                ${stringifiedMetadata}::jsonb,
-                ${ARRAY_MERGE_OPTION.BY_INDEX}
-              )
-              WHERE "id" = ${businessId} AND "projectId" = ${currentProjectId};
-            `;
+            UPDATE "Business"
+            SET "metadata" = jsonb_deep_merge_with_options(
+              COALESCE("metadata", '{}'::jsonb),
+              ${stringifiedMetadata}::jsonb,
+              ${ARRAY_MERGE_OPTION.BY_INDEX}
+            )
+            WHERE "id" = ${businessId} AND "projectId" = ${currentProjectId};
+          `;
         }
 
         return this.businessService.updateById(

@@ -3,7 +3,14 @@ import { titleCase } from 'string-ts';
 import { Link } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import React, { FunctionComponent } from 'react';
-import { Badge, TextWithNAFallback } from '@ballerine/ui';
+import {
+  Badge,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  TextWithNAFallback,
+} from '@ballerine/ui';
 
 import { ctw } from '@/common/utils/ctw/ctw';
 import { Notes } from '@/domains/notes/Notes';
@@ -28,6 +35,8 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     activeTab,
     notes,
     isNotesOpen,
+    turnOngoingMonitoringOn,
+    turnOngoingMonitoringOff,
   } = useMerchantMonitoringBusinessReportLogic();
 
   return (
@@ -40,7 +49,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     >
       <SidebarInset>
         <section className="flex h-full flex-col px-6 pb-6 pt-4">
-          <div>
+          <div className={`flex justify-between`}>
             <Button
               variant={'ghost'}
               onClick={onNavigateBack}
@@ -48,6 +57,33 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
             >
               <ChevronLeft size={18} /> <span>Back</span>
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={
+                    'px-2 py-0 text-xs aria-disabled:pointer-events-none aria-disabled:opacity-50'
+                  }
+                >
+                  Options
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem className={`w-full px-8 py-1`} asChild>
+                  <Button
+                    onClick={() => {
+                      businessReport?.monitoringStatus
+                        ? turnOngoingMonitoringOff(businessReport?.merchantId)
+                        : turnOngoingMonitoringOn(businessReport?.merchantId);
+                    }}
+                    variant={'ghost'}
+                    className="justify-start"
+                  >
+                    Turn Monitoring {businessReport?.monitoringStatus ? 'Off' : 'On'}
+                  </Button>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <TextWithNAFallback as={'h2'} className="pb-4 text-2xl font-bold">
             {websiteWithNoProtocol}
@@ -73,10 +109,21 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
                   ?.text ?? titleCase(businessReport?.status ?? '')}
               </Badge>
             </div>
-            <div>
-              <span className={`me-2 text-sm leading-6 text-slate-400`}>Created at</span>
+            <div className={`text-sm`}>
+              <span className={`me-2 leading-6 text-slate-400`}>Created at</span>
               {businessReport?.createdAt &&
                 dayjs(new Date(businessReport?.createdAt)).format('HH:mm MMM Do, YYYY')}
+            </div>
+            <div className={`flex items-center space-x-2 text-sm`}>
+              <span className={`text-slate-400`}>Monitoring Status</span>
+              <span
+                className={ctw('select-none rounded-full d-3', {
+                  'bg-success': businessReport?.monitoringStatus,
+                  'bg-slate-400': !businessReport?.monitoringStatus,
+                })}
+              >
+                &nbsp;
+              </span>
             </div>
             <NotesButton numberOfNotes={notes?.length} />
           </div>
