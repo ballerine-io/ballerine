@@ -10,8 +10,9 @@ export const useElement = <TElements extends string, TParams>(
   element: IFormElement<TElements, TParams>,
   stack: TDeepthLevelStack = [],
 ) => {
-  const { values } = useDynamicForm();
-  const hiddenRulesResult = useRuleEngine(values, {
+  const { values, metadata } = useDynamicForm();
+  const valuesAndMetadata = useMemo(() => ({ ...values, ...metadata }), [values, metadata]);
+  const hiddenRulesResult = useRuleEngine(valuesAndMetadata, {
     rules: element.hidden,
     runOnInitialize: true,
     executionDelay: 500,

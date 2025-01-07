@@ -1,4 +1,5 @@
 import { TBaseValidators, TValidator } from '../types';
+import { formatValidator } from './format';
 import { maxLengthValidator } from './max-length';
 import { maximumValueValidator } from './maximum';
 import { minLengthValidator } from './min-length';
@@ -13,6 +14,7 @@ export const baseValidatorsMap: Record<TBaseValidators, TValidator<any, any>> = 
   pattern: patternValueValidator,
   minimum: minimumValueValidator,
   maximum: maximumValueValidator,
+  format: formatValidator,
 };
 
 export const validatorsExtends: Record<string, TValidator<any, any>> = {};

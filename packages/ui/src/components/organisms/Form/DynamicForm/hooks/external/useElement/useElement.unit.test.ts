@@ -26,6 +26,9 @@ describe('useElement', () => {
       values: {
         test: 1,
       },
+      metadata: {
+        someMetadata: 'test',
+      },
     } as any);
 
     vi.mocked(useEvents).mockReturnValue({
@@ -82,7 +85,7 @@ describe('useElement', () => {
 
       expect(result.current.hidden).toBe(true);
       expect(useRuleEngine).toHaveBeenCalledWith(
-        { test: 1 },
+        { test: 1, someMetadata: 'test' },
         {
           rules: element.hidden,
           runOnInitialize: true,
@@ -117,6 +120,29 @@ describe('useElement', () => {
       const { result } = renderHook(() => useElement(element));
 
       expect(result.current.hidden).toBe(false);
+    });
+
+    it('should pass combined values and metadata to useRuleEngine', () => {
+      vi.mocked(useDynamicForm).mockReturnValue({
+        values: { someValue: 'test-value' },
+        metadata: { someMetadata: 'test-metadata' },
+      } as any);
+
+      const element = {
+        id: 'test-id',
+        hidden: [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 1] } }],
+      } as IFormElement<string, any>;
+
+      renderHook(() => useElement(element));
+
+      expect(useRuleEngine).toHaveBeenCalledWith(
+        { someValue: 'test-value', someMetadata: 'test-metadata' },
+        {
+          rules: element.hidden,
+          runOnInitialize: true,
+          executionDelay: 500,
+        },
+      );
     });
   });
 

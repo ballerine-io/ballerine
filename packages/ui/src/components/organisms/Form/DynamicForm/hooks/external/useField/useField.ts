@@ -14,7 +14,7 @@ export const useField = <TValue>(
   const fieldId = useElementId(element, stack);
   const valueDestination = useValueDestination(element, stack);
 
-  const { fieldHelpers, values, validationParams } = useDynamicForm();
+  const { fieldHelpers, values, validationParams, metadata } = useDynamicForm();
   const { sendEvent, sendEventAsync } = useEvents(element);
   const { validate } = useValidator();
   const { setValue, getValue, setTouched, getTouched } = fieldHelpers;
@@ -22,7 +22,9 @@ export const useField = <TValue>(
   const value = useMemo(() => getValue<TValue>(valueDestination), [valueDestination, getValue]);
   const touched = useMemo(() => getTouched(fieldId), [fieldId, getTouched]);
 
-  const disabledRulesResult = useRuleEngine(values, {
+  const valuesAndMetadata = useMemo(() => ({ ...values, ...metadata }), [values, metadata]);
+
+  const disabledRulesResult = useRuleEngine(valuesAndMetadata, {
     rules: element.disable,
     runOnInitialize: true,
     executionDelay: 500,
