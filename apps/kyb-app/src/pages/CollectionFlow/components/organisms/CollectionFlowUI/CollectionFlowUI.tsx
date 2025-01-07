@@ -3,7 +3,8 @@ import './validator';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider/hooks/useStateManagerContext';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { DynamicFormV2, IFormElement } from '@ballerine/ui';
-import { FunctionComponent, useCallback } from 'react';
+import { FunctionComponent, useCallback, useMemo } from 'react';
+import { useAppMetadata } from './hooks/useAppMetadata';
 import { usePluginsHandler } from './hooks/usePluginsHandler/usePluginsHandler';
 import { formElementsExtends } from './ui-elemenets.extends';
 
@@ -23,6 +24,14 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
 }) => {
   const { stateApi } = useStateManagerContext();
   const { handleEvent } = usePluginsHandler();
+  const appMetadata = useAppMetadata();
+
+  const metadata = useMemo(
+    () => ({
+      app: appMetadata,
+    }),
+    [appMetadata],
+  );
 
   const handleChange = useCallback(
     (values: CollectionFlowContext) => {
@@ -31,6 +40,10 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
     [stateApi],
   );
 
+  const handleSubmit = useCallback(() => {
+    handleEvent('onSubmit');
+  }, [handleEvent]);
+
   return (
     <DynamicFormV2<CollectionFlowContext>
       fieldExtends={formElementsExtends}
@@ -38,8 +51,9 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
       values={context}
       onChange={handleChange}
       onEvent={handleEvent}
-      onSubmit={() => handleEvent('onSubmit')}
+      onSubmit={handleSubmit}
       validationParams={validationParams}
+      metadata={metadata}
     />
   );
 };
