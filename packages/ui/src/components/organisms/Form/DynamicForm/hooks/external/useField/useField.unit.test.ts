@@ -202,10 +202,10 @@ describe('useField', () => {
   });
 
   describe('disabled state', () => {
-    it('should be disabled when all rules return true', () => {
+    it('should be disabled when any rule returns true', () => {
       vi.mocked(useRuleEngine).mockReturnValue([
         { result: true, rule: {} } as IRuleExecutionResult,
-        { result: true, rule: {} } as IRuleExecutionResult,
+        { result: false, rule: {} } as IRuleExecutionResult,
       ]);
 
       const { result } = renderHook(() => useField(mockElement, mockStack));
@@ -213,9 +213,9 @@ describe('useField', () => {
       expect(result.current.disabled).toBe(true);
     });
 
-    it('should not be disabled when any rule returns false', () => {
+    it('should not be disabled when all rules return false', () => {
       vi.mocked(useRuleEngine).mockReturnValue([
-        { result: true, rule: {} } as IRuleExecutionResult,
+        { result: false, rule: {} } as IRuleExecutionResult,
         { result: false, rule: {} } as IRuleExecutionResult,
       ]);
 

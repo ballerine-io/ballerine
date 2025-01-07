@@ -1,12 +1,12 @@
-import { PageResolver } from '@/components/organisms/DynamicUI/PageResolver';
-import { StateManager } from '@/components/organisms/DynamicUI/StateManager/StateManager';
-import { AnyChildren } from '@ballerine/ui';
-import { dynamicUIContext } from './dynamic-ui.context';
 import { useDynamicUIContextComposer } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContextComposer';
-import { TransitionListener } from '@/components/organisms/DynamicUI/TransitionListener';
 import { UIState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
 import { Page } from '@/components/organisms/DynamicUI/Page';
+import { PageResolver } from '@/components/organisms/DynamicUI/PageResolver';
 import { ActionsHandler } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler';
+import { StateManager } from '@/components/organisms/DynamicUI/StateManager/StateManager';
+import { TransitionListener } from '@/components/organisms/DynamicUI/TransitionListener';
+import { AnyChildren } from '@ballerine/ui';
+import { dynamicUIContext } from './dynamic-ui.context';
 
 const { Provider } = dynamicUIContext;
 

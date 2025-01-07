@@ -54,7 +54,7 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
   return (
     <Button
       data-testid={`${id}-submit-button`}
-      variant="secondary"
+      variant="default"
       disabled={disabled || isRunning}
       onClick={handleSubmit}
     >

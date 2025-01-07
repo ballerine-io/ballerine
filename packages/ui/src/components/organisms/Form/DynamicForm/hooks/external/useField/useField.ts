@@ -33,7 +33,7 @@ export const useField = <TValue>(
   const isDisabled = useMemo(() => {
     if (!disabledRulesResult.length) return false;
 
-    return disabledRulesResult.every(result => result.result === true);
+    return disabledRulesResult.some(result => result.result === true);
   }, [disabledRulesResult]);
 
   const onChange = useCallback(

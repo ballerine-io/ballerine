@@ -49,7 +49,9 @@ export const SelectField: TDynamicFormField<ISelectFieldParams> = ({ element }) 
         testId={createTestId(element, stack)}
         placeholdersParams={{
           placeholder: placeholder || '',
+          searchPlaceholder: '',
         }}
+        searchable
         disabled={disabled}
         onChange={handleChange}
         onBlur={onBlur}

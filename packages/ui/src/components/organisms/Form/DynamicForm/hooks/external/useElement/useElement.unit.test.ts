@@ -69,10 +69,31 @@ describe('useElement', () => {
     });
   });
 
-  describe('when hidden rules provided', () => {
-    it('should return hidden true when all hidden rules return true', () => {
+  describe('hidden state', () => {
+    it('should return hidden false when no hidden rules exist', () => {
+      const element = {
+        id: 'test-id',
+      } as IFormElement<string, any>;
+
+      const { result } = renderHook(() => useElement(element));
+
+      expect(result.current.hidden).toBe(false);
+    });
+
+    it('should return hidden false when hidden rules array is empty', () => {
+      const element = {
+        id: 'test-id',
+        hidden: [],
+      } as unknown as IFormElement<string, any>;
+
+      const { result } = renderHook(() => useElement(element));
+
+      expect(result.current.hidden).toBe(false);
+    });
+
+    it('should return hidden true when any hidden rule returns true', () => {
       vi.mocked(useRuleEngine).mockReturnValue([
-        { result: true, rule: {} },
+        { result: false, rule: {} },
         { result: true, rule: {} },
       ] as IRuleExecutionResult[]);
 
@@ -84,37 +105,17 @@ describe('useElement', () => {
       const { result } = renderHook(() => useElement(element));
 
       expect(result.current.hidden).toBe(true);
-      expect(useRuleEngine).toHaveBeenCalledWith(
-        { test: 1, someMetadata: 'test' },
-        {
-          rules: element.hidden,
-          runOnInitialize: true,
-          executionDelay: 500,
-        },
-      );
     });
 
-    it('should return hidden false when any hidden rule returns false', () => {
+    it('should return hidden false when all hidden rules return false', () => {
       vi.mocked(useRuleEngine).mockReturnValue([
-        { result: true, rule: {} },
+        { result: false, rule: {} },
         { result: false, rule: {} },
       ] as IRuleExecutionResult[]);
 
       const element = {
         id: 'test-id',
         hidden: [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 5] } }],
-      } as IFormElement<string, any>;
-
-      const { result } = renderHook(() => useElement(element));
-
-      expect(result.current.hidden).toBe(false);
-    });
-
-    it('should return hidden false when no rules exist', () => {
-      vi.mocked(useRuleEngine).mockReturnValue([]);
-
-      const element = {
-        id: 'test-id',
       } as IFormElement<string, any>;
 
       const { result } = renderHook(() => useElement(element));
@@ -143,6 +144,24 @@ describe('useElement', () => {
           executionDelay: 500,
         },
       );
+    });
+
+    it('should memoize hidden state', () => {
+      vi.mocked(useRuleEngine).mockReturnValue([
+        { result: true, rule: {} },
+      ] as IRuleExecutionResult[]);
+
+      const element = {
+        id: 'test-id',
+        hidden: [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 1] } }],
+      } as IFormElement<string, any>;
+
+      const { result, rerender } = renderHook(() => useElement(element));
+      const initialHidden = result.current.hidden;
+
+      rerender();
+
+      expect(result.current.hidden).toBe(initialHidden);
     });
   });
 
