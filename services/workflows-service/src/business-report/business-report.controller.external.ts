@@ -38,7 +38,6 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { BusinessReportFindingsListResponseDto } from '@/business-report/dtos/business-report-findings.dto';
 import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
-import { BusinessReportMetricsDto } from '@/business-report/dtos/business-report-metrics-dto';
 import {
   BusinessReportMetricsRequestQueryDto,
   BusinessReportsMetricsQuerySchema,
