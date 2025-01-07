@@ -17,7 +17,7 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
   const { id } = useElement(element);
   const { disabled: _disabled } = useField(element);
   const { fieldHelpers, submit } = useDynamicForm();
-  const { runTasks } = useTaskRunner();
+  const { runTasks, isRunning } = useTaskRunner();
   const { sendEvent } = useEvents(element);
 
   const { touchAllFields } = fieldHelpers;
@@ -55,7 +55,7 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
     <Button
       data-testid={`${id}-submit-button`}
       variant="secondary"
-      disabled={disabled}
+      disabled={disabled || isRunning}
       onClick={handleSubmit}
     >
       {text}
