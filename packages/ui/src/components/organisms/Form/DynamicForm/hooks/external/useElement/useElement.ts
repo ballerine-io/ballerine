@@ -21,7 +21,7 @@ export const useElement = <TElements extends string, TParams>(
   const isHidden = useMemo(() => {
     if (!hiddenRulesResult.length) return false;
 
-    return hiddenRulesResult.every(result => result.result === true);
+    return hiddenRulesResult.some(result => result.result === true);
   }, [hiddenRulesResult]);
 
   useClearValueOnUnmount(element, isHidden);
