@@ -1,3 +1,4 @@
+import { AnyObject } from '@/common';
 import { describe, expect, it } from 'vitest';
 import { formatString } from './format-string';
 
@@ -6,7 +7,7 @@ describe('formatString', () => {
     const input = 'test string';
     const metadata = { key: 'value' };
 
-    const result = formatString(input, metadata);
+    const result = formatString(input, metadata as AnyObject);
 
     expect(result).toBe(input);
   });
@@ -15,7 +16,7 @@ describe('formatString', () => {
     const input = 'Hello {name}';
     const metadata = { name: 'John' };
 
-    const result = formatString(input, metadata);
+    const result = formatString(input, metadata as AnyObject);
 
     expect(result).toBe('Hello John');
   });
@@ -27,7 +28,7 @@ describe('formatString', () => {
       name: 'John',
     };
 
-    const result = formatString(input, metadata);
+    const result = formatString(input, metadata as AnyObject);
 
     expect(result).toBe('Hello John');
   });
@@ -36,8 +37,24 @@ describe('formatString', () => {
     const input = 'Hello {name}, your ID is {userId}';
     const metadata = {};
 
-    const result = formatString(input, metadata);
+    const result = formatString(input, metadata as AnyObject);
 
     expect(result).toBe('Hello {name}, your ID is {userId}');
+  });
+
+  it('should handle nested metadata properties', () => {
+    const input = 'Hello {user.name}, your role is {user.role.type}';
+    const metadata = {
+      user: {
+        name: 'John',
+        role: {
+          type: 'admin',
+        },
+      },
+    };
+
+    const result = formatString(input, metadata as AnyObject);
+
+    expect(result).toBe('Hello John, your role is admin');
   });
 });

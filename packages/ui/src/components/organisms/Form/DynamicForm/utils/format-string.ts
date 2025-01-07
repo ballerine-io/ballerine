@@ -1,6 +1,9 @@
-export const formatString = (string: string, metadata: Record<string, string> = {}) => {
+import { AnyObject } from '@/common';
+import get from 'lodash/get';
+
+export const formatString = (string: string, metadata: AnyObject = {}) => {
   // Replace patterns like {key} with corresponding metadata values
   return string.replace(/\{([^}]+)\}/g, (match, key) => {
-    return metadata[key] || match;
+    return (get(metadata, key) as unknown as string) || match;
   });
 };
