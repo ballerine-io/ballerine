@@ -3,12 +3,15 @@ import { useCallback, useMemo } from 'react';
 import { useTouched } from '../useTouched';
 import { useValues } from '../useValues';
 
-export interface IUseFieldHelpersParams {
-  valuesApi: ReturnType<typeof useValues>;
+export interface IUseFieldHelpersParams<TValues extends object> {
+  valuesApi: ReturnType<typeof useValues<TValues>>;
   touchedApi: ReturnType<typeof useTouched>;
 }
 
-export const useFieldHelpers = ({ valuesApi, touchedApi }: IUseFieldHelpersParams) => {
+export const useFieldHelpers = <TValues extends object>({
+  valuesApi,
+  touchedApi,
+}: IUseFieldHelpersParams<TValues>) => {
   const { values, setFieldValue } = valuesApi;
   const { touched, setFieldTouched, touchAllFields } = touchedApi;
 

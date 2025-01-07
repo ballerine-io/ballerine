@@ -1,5 +1,6 @@
 import { ITheme } from '@/common/types/settings';
 import { Action, Rule } from '@/domains/collection-flow/types/ui-schema.types';
+import { IPlugin } from '@/pages/CollectionFlow/components/organisms/CollectionFlowUI/components/utility/PluginsRunner/types';
 import { AnyObject, IFormElement } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { CollectionFlowConfig } from './flow-context.types';
@@ -129,6 +130,7 @@ export interface UIPage {
   number: number;
   stateName: string;
   elements: Array<IFormElement<any, any>>;
+  plugins: IPlugin[];
   actions: Action[];
   pageValidation?: Rule[];
 }

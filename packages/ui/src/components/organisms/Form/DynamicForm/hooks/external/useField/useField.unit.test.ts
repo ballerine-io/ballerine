@@ -59,6 +59,10 @@ describe('useField', () => {
     getTouched: mockGetTouched,
   };
 
+  const mockMetadata = {
+    someMetadata: 'test',
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
 
@@ -72,6 +76,7 @@ describe('useField', () => {
     vi.mocked(useDynamicForm).mockReturnValue({
       fieldHelpers: mockFieldHelpers,
       values: {},
+      metadata: mockMetadata,
       validationParams: {
         validateOnBlur: true,
       },
@@ -162,6 +167,7 @@ describe('useField', () => {
       vi.mocked(useDynamicForm).mockReturnValue({
         fieldHelpers: mockFieldHelpers,
         values: {},
+        metadata: mockMetadata,
         validationParams: {
           validateOnBlur: false,
         },
@@ -230,7 +236,29 @@ describe('useField', () => {
       renderHook(() => useField(mockElement, mockStack));
 
       expect(useRuleEngine).toHaveBeenCalledWith(
-        {},
+        { someMetadata: 'test' },
+        {
+          rules: mockElement.disable,
+          runOnInitialize: true,
+          executionDelay: 500,
+        },
+      );
+    });
+
+    it('should pass combined values and metadata to useRuleEngine', () => {
+      vi.mocked(useDynamicForm).mockReturnValue({
+        fieldHelpers: mockFieldHelpers,
+        values: { someValue: 'test-value' },
+        metadata: { someMetadata: 'test-metadata' },
+        validationParams: {
+          validateOnBlur: true,
+        },
+      } as unknown as IDynamicFormContext<object>);
+
+      renderHook(() => useField(mockElement, mockStack));
+
+      expect(useRuleEngine).toHaveBeenCalledWith(
+        { someValue: 'test-value', someMetadata: 'test-metadata' },
         {
           rules: mockElement.disable,
           runOnInitialize: true,

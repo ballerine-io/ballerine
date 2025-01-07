@@ -4,6 +4,7 @@ import { useValidator } from '../../../Validator';
 import { useDynamicForm } from '../../context';
 import { useElement } from '../../hooks/external/useElement';
 import { useField } from '../../hooks/external/useField';
+import { useEvents } from '../../hooks/internal/useEvents';
 import { useTaskRunner } from '../../providers/TaskRunner/hooks/useTaskRunner';
 import { TDynamicFormElement } from '../../types';
 
@@ -16,11 +17,12 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
   const { id } = useElement(element);
   const { disabled: _disabled } = useField(element);
   const { fieldHelpers, submit } = useDynamicForm();
-  const { runTasks } = useTaskRunner();
+  const { runTasks, isRunning } = useTaskRunner();
+  const { sendEvent } = useEvents(element);
 
   const { touchAllFields } = fieldHelpers;
 
-  const { isValid } = useValidator();
+  const { isValid, errors } = useValidator();
 
   const { disableWhenFormIsInvalid = false, text = 'Submit' } = element.params || {};
 
@@ -33,20 +35,27 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
   const handleSubmit = useCallback(async () => {
     touchAllFields();
 
-    if (!isValid) return;
+    if (!isValid) {
+      console.log(`Submit button clicked but form is invalid`);
+      console.log('Validation errors', errors);
+
+      return;
+    }
 
     console.log('Starting tasks');
     await runTasks();
     console.log('Tasks finished');
 
     submit();
-  }, [submit, isValid, touchAllFields, runTasks]);
+
+    sendEvent('onSubmit');
+  }, [submit, isValid, touchAllFields, runTasks, sendEvent, errors]);
 
   return (
     <Button
       data-testid={`${id}-submit-button`}
       variant="secondary"
-      disabled={disabled}
+      disabled={disabled || isRunning}
       onClick={handleSubmit}
     >
       {text}

@@ -1,3 +1,4 @@
+import { AnyObject } from '@/common';
 import { FunctionComponent } from 'react';
 import { IRule } from '../../hooks/useRuleEngine';
 import { IValidationError, IValidationParams, TValidators } from '../../Validator';
@@ -48,7 +49,7 @@ export interface IDynamicFormValidationParams extends IValidationParams {
   validateOnBlur?: boolean;
 }
 
-export interface IDynamicFormProps<TValues = object> {
+export interface IDynamicFormProps<TValues extends object> {
   values: TValues;
   elements: Array<IFormElement<string, any>>;
 
@@ -61,7 +62,7 @@ export interface IDynamicFormProps<TValues = object> {
   onEvent?: IEventsProviderProps['onEvent'];
 
   ref?: React.RefObject<IFormRef<TValues>>;
-  metadata?: Record<string, any>;
+  metadata?: AnyObject;
 }
 
 export type { IFormEventElement, TElementEvent } from '../hooks/internal/useEvents';

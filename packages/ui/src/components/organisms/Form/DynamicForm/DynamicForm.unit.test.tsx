@@ -11,7 +11,7 @@ import { useValidationSchema } from './hooks/internal/useValidationSchema';
 import { useValues } from './hooks/internal/useValues';
 import { EventsProvider } from './providers/EventsProvider';
 import { TaskRunner } from './providers/TaskRunner';
-import { ICommonFieldParams, IDynamicFormProps, IFormElement } from './types';
+import { ICommonFieldParams, IDynamicFormProps, IFormElement, IFormRef } from './types';
 
 // Mock dependencies
 vi.mock('../../Renderer');
@@ -92,7 +92,7 @@ describe('DynamicFormV2', () => {
     onSubmit: vi.fn(),
     onEvent: vi.fn(),
     metadata: {},
-  } as unknown as IDynamicFormProps;
+  } as unknown as IDynamicFormProps<any>;
 
   it('should render without crashing', () => {
     render(<DynamicFormV2 {...mockProps} />);
@@ -223,5 +223,80 @@ describe('DynamicFormV2', () => {
     const providerProps = vi.mocked(DynamicFormContext.Provider).mock.calls[0]?.[0];
 
     expect(providerProps?.value.validationParams).toEqual(customValidationParams);
+  });
+
+  describe('ref', () => {
+    const touchedMock = {
+      touched: { field1: true },
+      setTouched: vi.fn(),
+      setFieldTouched: vi.fn(),
+      touchAllFields: vi.fn(),
+    };
+    const valuesMock = {
+      values: { field1: 'value1' },
+      setValues: vi.fn(),
+      setFieldValue: vi.fn(),
+    };
+    const submitMock = { submit: vi.fn() };
+    const fieldHelpersMock = {
+      getTouched: vi.fn(),
+      getValue: vi.fn(),
+      setTouched: vi.fn(),
+      setValue: vi.fn(),
+      touchAllFields: vi.fn(),
+    };
+
+    beforeEach(() => {
+      vi.mocked(useTouched).mockReturnValue(touchedMock);
+      vi.mocked(useValues).mockReturnValue(valuesMock);
+      vi.mocked(useSubmit).mockReturnValue(submitMock);
+      vi.mocked(useFieldHelpers).mockReturnValue(fieldHelpersMock);
+    });
+
+    it('should expose submit method through ref', () => {
+      const ref = { current: null as IFormRef<any> | null };
+      render(<DynamicFormV2 {...mockProps} ref={ref} />);
+
+      expect(ref.current).toHaveProperty('submit', submitMock.submit);
+    });
+
+    it('should expose validate method through ref', () => {
+      const ref = { current: null as IFormRef<any> | null };
+      render(<DynamicFormV2 {...mockProps} ref={ref} />);
+
+      expect(ref.current).toHaveProperty('validate');
+      expect(ref.current?.validate()).toBeNull();
+    });
+
+    it('should expose setValues method through ref', () => {
+      const ref = { current: null as IFormRef<any> | null };
+      render(<DynamicFormV2 {...mockProps} ref={ref} />);
+
+      expect(ref.current).toHaveProperty('setValues', valuesMock.setValues);
+    });
+
+    it('should expose setTouched method through ref', () => {
+      const ref = { current: null as IFormRef<any> | null };
+      render(<DynamicFormV2 {...mockProps} ref={ref} />);
+
+      expect(ref.current).toHaveProperty('setTouched', touchedMock.setTouched);
+    });
+
+    it('should expose setFieldValue method through ref', () => {
+      const ref = { current: null as IFormRef<any> | null };
+      render(<DynamicFormV2 {...mockProps} ref={ref} />);
+
+      expect(ref.current).toHaveProperty('setFieldValue');
+
+      ref.current?.setFieldValue('testField', 'testValue');
+      expect(fieldHelpersMock.setValue).toHaveBeenCalledWith('testField', 'testField', 'testValue');
+    });
+
+    it('should expose setFieldTouched method through ref', () => {
+      const ref = { current: null as IFormRef<any> | null };
+      render(<DynamicFormV2 {...mockProps} ref={ref} />);
+
+      expect(ref.current).toHaveProperty('setFieldTouched', fieldHelpersMock.setTouched);
+    });
   });
 });

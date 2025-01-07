@@ -20,7 +20,7 @@ export const documentValidator: TValidator<
     throw new Error(message);
   }
 
-  const documentValue = document[pageNumber]?.[pageProperty];
+  const documentValue = document.pages[pageNumber]?.[pageProperty];
 
   if (!documentValue) {
     throw new Error(message);
