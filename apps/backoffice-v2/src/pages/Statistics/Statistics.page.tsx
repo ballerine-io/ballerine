@@ -21,7 +21,7 @@ export const Statistics: FunctionComponent = () => {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Statistics</h1>
-        <MonthPicker date={date ?? new Date()} setDate={setDate} minDate={registrationDate} />
+        <MonthPicker date={date} setDate={setDate} minDate={registrationDate} />
       </div>
 
       <div className="flex flex-col space-y-8">
