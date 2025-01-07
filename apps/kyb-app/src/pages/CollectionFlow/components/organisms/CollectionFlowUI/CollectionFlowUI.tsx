@@ -1,5 +1,6 @@
 import './validator';
 
+import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider/hooks/useStateManagerContext';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { DynamicFormV2, IFormElement, IFormRef } from '@ballerine/ui';
@@ -8,6 +9,7 @@ import { usePluginsSubscribe } from './components/utility/PluginsRunner';
 import { usePlugins } from './components/utility/PluginsRunner/hooks/external/usePlugins';
 import { TPluginListener } from './components/utility/PluginsRunner/hooks/internal/usePluginsRunner/usePluginListeners';
 import { useAppMetadata } from './hooks/useAppMetadata';
+import { useAppSync } from './hooks/useAppSync';
 import { usePluginsHandler } from './hooks/usePluginsHandler/usePluginsHandler';
 import { formElementsExtends } from './ui-elemenets.extends';
 
@@ -19,6 +21,7 @@ interface ICollectionFlowUIProps<TValues = CollectionFlowContext> {
 const validationParams = {
   validateOnBlur: true,
   abortEarly: true,
+  validationDelay: 200,
 };
 
 export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
@@ -26,7 +29,9 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
   context,
 }) => {
   const { stateApi } = useStateManagerContext();
+  const { helpers } = useDynamicUIContext();
   const { handleEvent } = usePluginsHandler();
+  const { isSyncing, sync } = useAppSync();
   const appMetadata = useAppMetadata();
   const { pluginStatuses } = usePlugins();
 
@@ -47,8 +52,11 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
     () => ({
       _app: appMetadata,
       _plugins: pluginStatuses,
+      _appState: {
+        isSyncing,
+      },
     }),
-    [appMetadata, pluginStatuses],
+    [appMetadata, pluginStatuses, isSyncing],
   );
 
   const handleChange = useCallback(
@@ -58,12 +66,15 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
     [stateApi],
   );
 
-  const handleSubmit = useCallback(() => {
-    handleEvent('onSubmit');
-  }, [handleEvent]);
-
-  console.log('context', context);
-  console.log(metadata);
+  const handleSubmit = useCallback(
+    async (values: CollectionFlowContext) => {
+      helpers.setLoading(true);
+      await sync(values);
+      handleEvent('onSubmit');
+      helpers.setLoading(false);
+    },
+    [handleEvent, sync, helpers],
+  );
 
   return (
     <DynamicFormV2
@@ -72,7 +83,7 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
       values={context as CollectionFlowContext}
       onChange={handleChange as (newValues: object) => void}
       onEvent={handleEvent}
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit as (values: object) => void}
       validationParams={validationParams}
       metadata={metadata}
       ref={formRef}

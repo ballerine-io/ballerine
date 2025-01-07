@@ -23,12 +23,7 @@ import { LoadingScreen } from '@/pages/CollectionFlow/components/atoms/LoadingSc
 import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { CompletedScreen } from '@/pages/CollectionFlow/components/pages/CompletedScreen';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
-import {
-  CollectionFlowStatusesEnum,
-  getCollectionFlowState,
-  setCollectionFlowStatus,
-  setStepCompletionState,
-} from '@ballerine/common';
+import { CollectionFlowStatusesEnum, getCollectionFlowState } from '@ballerine/common';
 import { CollectionFlowUI } from './components/organisms/CollectionFlowUI';
 import { PluginsRunner } from './components/organisms/CollectionFlowUI/components/utility/PluginsRunner';
 import { FailedScreen } from './components/pages/FailedScreen';
@@ -123,34 +118,8 @@ export const CollectionFlow = withSessionProtected(() => {
           return (
             <DynamicUI.TransitionListener
               pages={elements ?? []}
-              onNext={async (tools, prevState, currentState) => {
+              onNext={async (tools, prevState) => {
                 tools.setElementCompleted(prevState, true);
-
-                const context = stateApi.getContext();
-
-                const collectionFlow = getCollectionFlowState(context);
-
-                if (collectionFlow) {
-                  const steps = collectionFlow?.steps || [];
-
-                  const isAnyStepCompleted = steps.some(step => step.isCompleted);
-
-                  setStepCompletionState(context, {
-                    stepName: prevState,
-                    completed: true,
-                  });
-
-                  collectionFlow.currentStep = currentState;
-
-                  if (!isAnyStepCompleted) {
-                    console.log('Collection flow touched, changing state to inprogress');
-                    setCollectionFlowStatus(context, CollectionFlowStatusesEnum.inprogress);
-                  }
-
-                  stateApi.setContext(context);
-
-                  await stateApi.invokePlugin('sync_workflow_runtime');
-                }
               }}
             >
               {() => {
