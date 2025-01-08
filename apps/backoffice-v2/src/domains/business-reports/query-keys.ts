@@ -17,14 +17,14 @@ export const businessReportsQueryKey = createQueryKeys('business-reports', {
     ...params
   }: {
     reportType?: MerchantReportType;
-    search: string;
-    page: number;
-    pageSize: number;
-    sortBy: string;
-    sortDir: string;
-    riskLevels: TRiskLevel[];
-    statuses: TReportStatusValue[];
-    findings: string[];
+    search?: string;
+    page?: number;
+    pageSize?: number;
+    sortBy?: string;
+    sortDir?: string;
+    riskLevels?: TRiskLevel[];
+    statuses?: TReportStatusValue[];
+    findings?: string[];
     from?: string;
     to?: string;
     isAlert?: boolean;

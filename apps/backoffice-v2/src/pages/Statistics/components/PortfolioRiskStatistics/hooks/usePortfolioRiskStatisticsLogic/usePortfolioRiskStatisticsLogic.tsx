@@ -7,6 +7,13 @@ import {
 } from '@/pages/Statistics/components/PortfolioRiskStatistics/constants';
 import { z } from 'zod';
 import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { useNavigate } from 'react-router-dom';
+import { useBusinessReportsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportsQuery/useBusinessReportsQuery';
+import dayjs from 'dayjs';
+import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
+import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { getStatisticsSearchSchema } from '@/pages/Statistics/hooks/useStatisticsLogic';
 
 export const usePortfolioRiskStatisticsLogic = ({
   riskLevelCounts,
@@ -40,6 +47,29 @@ export const usePortfolioRiskStatisticsLogic = ({
       ),
     [filteredRiskIndicators],
   );
+  const locale = useLocale();
+  const navigate = useNavigate();
+  const getLast30DaysDateRange = () => {
+    const today = dayjs();
+    const thirtyDaysAgo = today.subtract(30, 'day');
+
+    return {
+      from: thirtyDaysAgo.format('YYYY-MM-DD'),
+      to: today.format('YYYY-MM-DD'),
+    };
+  };
+
+  const last30DaysDateRange = getLast30DaysDateRange();
+  const { data: userData } = useAuthenticatedUserQuery();
+  const registrationDate = new Date(userData?.user?.registrationDate ?? '1970-01-01');
+  const StatisticsSearchSchema = getStatisticsSearchSchema(registrationDate);
+  const [{ from }] = useZodSearchParams(StatisticsSearchSchema);
+  const { data: businessReports } = useBusinessReportsQuery({
+    isAlert: true,
+    from,
+    to: dayjs(from).add(1, 'month').format('YYYY-MM-DD'),
+  });
+  const alertedReports = businessReports?.data?.length ?? 0;
 
   return {
     riskLevelToFillColor,
@@ -50,5 +80,10 @@ export const usePortfolioRiskStatisticsLogic = ({
     onSortRiskIndicators,
     filteredRiskIndicators,
     totalRiskIndicators,
+    locale,
+    navigate,
+    from: last30DaysDateRange.from,
+    to: last30DaysDateRange.to,
+    alertedReports,
   };
 };
