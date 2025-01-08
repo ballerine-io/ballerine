@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { SlidersHorizontal } from 'lucide-react';
-import { useCallback, ComponentProps, useMemo } from 'react';
+import { useCallback, ComponentProps, useMemo, useEffect } from 'react';
 
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { useSearch } from '@/common/hooks/useSearch/useSearch';
@@ -20,6 +20,21 @@ import {
   IS_ALERT_TO_DISPLAY_TEXT,
   DISPLAY_TEXT_TO_IS_ALERT,
 } from '@/pages/MerchantMonitoring/schemas';
+
+const useDefaultDateRange = () => {
+  const [{ from, to }, setSearchParams] = useZodSearchParams(MerchantMonitoringSearchSchema);
+
+  useEffect(() => {
+    if (from || to) {
+      return;
+    }
+
+    setSearchParams({
+      from: dayjs().subtract(30, 'day').format('YYYY-MM-DD'),
+      to: dayjs().format('YYYY-MM-DD'),
+    });
+  }, []);
+};
 
 export const useMerchantMonitoringLogic = () => {
   const locale = useLocale();
@@ -118,6 +133,7 @@ export const useMerchantMonitoringLogic = () => {
       findings: [],
       from: undefined,
       to: undefined,
+      isAlert: 'All',
       page: '1',
     });
 
@@ -155,6 +171,8 @@ export const useMerchantMonitoringLogic = () => {
     }),
     [findingsOptions],
   );
+
+  useDefaultDateRange();
 
   return {
     totalPages: data?.totalPages || 0,
