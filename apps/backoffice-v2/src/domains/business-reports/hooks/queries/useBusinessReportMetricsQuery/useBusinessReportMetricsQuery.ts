@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
-import { useIsAuthenticated } from '@/domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 import { apiClient } from '@/common/api-client/api-client';
 import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
+import { useIsAuthenticated } from '@/domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
+import { useQuery } from '@tanstack/react-query';
 import { z } from 'zod';
 
 export const MetricsResponseSchema = z.object({
@@ -19,11 +19,14 @@ export const MetricsResponseSchema = z.object({
       count: z.number(),
     }),
   ),
+  totalActiveMerchants: z.number(),
+  addedMerchantsCount: z.number(),
+  removedMerchantsCount: z.number(),
 });
 
-export const fetchBusinessReportMetrics = async () => {
+export const fetchBusinessReportMetrics = async ({ from, to }: { from?: string; to?: string }) => {
   const [businessReportMetrics, error] = await apiClient({
-    endpoint: `../external/business-reports/metrics`,
+    endpoint: `../external/business-reports/metrics?from=${from}&to=${to}`,
     method: Method.GET,
     schema: MetricsResponseSchema,
   });
@@ -31,12 +34,12 @@ export const fetchBusinessReportMetrics = async () => {
   return handleZodError(error, businessReportMetrics);
 };
 
-export const useBusinessReportMetricsQuery = () => {
+export const useBusinessReportMetricsQuery = ({ from, to }: { from?: string; to?: string }) => {
   const isAuthenticated = useIsAuthenticated();
 
   return useQuery({
-    queryKey: ['business-report-metrics'],
-    queryFn: () => fetchBusinessReportMetrics(),
+    queryKey: ['business-report-metrics', from, to],
+    queryFn: () => fetchBusinessReportMetrics({ from, to }),
     enabled: isAuthenticated,
     keepPreviousData: true,
   });

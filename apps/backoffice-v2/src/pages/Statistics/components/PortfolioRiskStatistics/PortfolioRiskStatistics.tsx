@@ -19,10 +19,9 @@ import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/
 import { Link, useNavigate } from 'react-router-dom';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
-export const PortfolioRiskStatistics: FunctionComponent<z.infer<typeof MetricsResponseSchema>> = ({
-  riskLevelCounts,
-  violationCounts,
-}) => {
+export const PortfolioRiskStatistics: FunctionComponent<
+  Pick<z.infer<typeof MetricsResponseSchema>, 'riskLevelCounts' | 'violationCounts'>
+> = ({ riskLevelCounts, violationCounts }) => {
   const {
     riskLevelToFillColor,
     parent,
@@ -40,7 +39,7 @@ export const PortfolioRiskStatistics: FunctionComponent<z.infer<typeof MetricsRe
 
   return (
     <div>
-      <h5 className={'mb-4 font-bold'}>Portfolio Risk Statistics</h5>
+      <h3 className={'mb-4 text-xl font-bold'}>Portfolio Risk Statistics</h3>
       <div className={'grid grid-cols-3 gap-6'}>
         <div className={'min-h-[27.5rem] rounded-xl bg-[#F6F6F6] p-2'}>
           <Card className={'flex h-full flex-col px-3'}>
