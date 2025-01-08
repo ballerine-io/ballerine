@@ -38,11 +38,12 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { BusinessReportFindingsListResponseDto } from '@/business-report/dtos/business-report-findings.dto';
 import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
-import { BusinessReportMetricsDto } from '@/business-report/dtos/business-report-metrics-dto';
 import {
   BusinessReportMetricsRequestQueryDto,
   BusinessReportsMetricsQuerySchema,
 } from '@/business-report/dtos/business-report-metrics.dto';
+import { BusinessReportMetricsDto } from './dtos/business-report-metrics-dto';
+import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Business Reports')
@@ -95,9 +96,11 @@ export class BusinessReportControllerExternal {
       findings,
     }: BusinessReportListRequestParamDto,
   ) {
-    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
+    const { id: customerId, features } = await this.customerService.getByProjectId(
+      currentProjectId,
+    );
 
-    return await this.businessReportService.findMany({
+    const { data, totalPages, totalItems } = await this.businessReportService.findMany({
       withoutUnpublishedOngoingReports: true,
       limit: page.size,
       page: page.number,
@@ -111,6 +114,40 @@ export class BusinessReportControllerExternal {
       ...(businessId ? { businessId } : {}),
       ...(search ? { searchQuery: search } : {}),
     });
+
+    const merchantIds = data.map(report => report.merchantId);
+    const businesses = await this.businessService.list(
+      { where: { id: { in: merchantIds } }, select: { id: true, metadata: true } },
+      [currentProjectId],
+    );
+
+    const reports = await Promise.all(
+      data.map(async report => {
+        const business = businesses.find(business => business.id === report.merchantId);
+
+        const metadata = business?.metadata as {
+          featureConfig?: TCustomerWithFeatures['features'];
+        };
+
+        const isOngoingEnabledForBusiness =
+          metadata?.featureConfig?.[FEATURE_LIST.ONGOING_MERCHANT_REPORT]?.enabled;
+
+        return {
+          ...report,
+          monitoringStatus:
+            (isOngoingEnabledForBusiness ||
+              (isOngoingEnabledForBusiness === undefined &&
+                features?.ONGOING_MERCHANT_REPORT?.options?.runByDefault)) ??
+            false,
+        };
+      }),
+    );
+
+    return {
+      totalPages,
+      totalItems,
+      data: reports,
+    };
   }
 
   @common.Get('/findings')
@@ -224,9 +261,32 @@ export class BusinessReportControllerExternal {
     @CurrentProject() currentProjectId: TProjectId,
     @Param('id') id: string,
   ) {
-    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
+    const { id: customerId, features } = await this.customerService.getByProjectId(
+      currentProjectId,
+    );
 
-    return await this.businessReportService.findById({ id, customerId });
+    const report = await this.businessReportService.findById({ id, customerId });
+    const business = await this.businessService.getById(
+      report.merchantId,
+      { select: { metadata: true } },
+      [currentProjectId],
+    );
+
+    const metadata = business?.metadata as {
+      featureConfig?: TCustomerWithFeatures['features'];
+    };
+
+    const isOngoingEnabledForBusiness =
+      metadata?.featureConfig?.[FEATURE_LIST.ONGOING_MERCHANT_REPORT]?.enabled;
+
+    return {
+      ...report,
+      monitoringStatus:
+        (isOngoingEnabledForBusiness ||
+          (isOngoingEnabledForBusiness === undefined &&
+            features?.ONGOING_MERCHANT_REPORT?.options?.runByDefault)) ??
+        false,
+    };
   }
 
   @swagger.ApiExcludeEndpoint()

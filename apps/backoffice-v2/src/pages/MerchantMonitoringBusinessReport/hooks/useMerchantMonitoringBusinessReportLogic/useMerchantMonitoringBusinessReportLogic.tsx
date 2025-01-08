@@ -9,6 +9,18 @@ import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNote
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
 import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
 import { MERCHANT_REPORT_STATUSES_MAP } from '@/domains/business-reports/constants';
+import { useTurnMonitoringOnMutation } from '@/pages/MerchantMonitoringBusinessReport/mutations/useTurnMonitoringOnMutation/useTurnMonitoringOnMutation';
+import { useTurnMonitoringOffMutation } from '@/pages/MerchantMonitoringBusinessReport/mutations/useTurnMonitoringOffMutation/useTurnMonitoringOffMutation';
+
+const statusToBadgeData = {
+  [MERCHANT_REPORT_STATUSES_MAP.completed]: { variant: 'info', text: 'Manual Review' },
+  [MERCHANT_REPORT_STATUSES_MAP['in-progress']]: { variant: 'violet', text: 'In-progress' },
+  [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: {
+    variant: 'violet',
+    text: 'Quality Control',
+  },
+  [MERCHANT_REPORT_STATUSES_MAP['failed']]: { variant: 'destructive', text: 'Failed' },
+} as const;
 
 export const useMerchantMonitoringBusinessReportLogic = () => {
   const { businessReportId } = useParams();
@@ -21,13 +33,18 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     noteableType: 'Report',
   });
 
+  const turnMonitoringOnMutation = useTurnMonitoringOnMutation();
+  const turnMonitoringOffMutation = useTurnMonitoringOffMutation();
+
   const { tabs } = useReportTabs({
     reportVersion: businessReport?.workflowVersion,
     report: businessReport?.data ?? {},
     companyName: businessReport?.companyName,
     Link: RiskIndicatorLink,
   });
+
   const tabsValues = useMemo(() => tabs.map(tab => tab.value), [tabs]);
+
   const MerchantMonitoringBusinessReportSearchSchema = z.object({
     isNotesOpen: ParsedBooleanSchema.catch(false),
     activeTab: z
@@ -37,11 +54,14 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
       )
       .catch(tabsValues[0]!),
   });
+
   const [{ activeTab, isNotesOpen }] = useZodSearchParams(
     MerchantMonitoringBusinessReportSearchSchema,
     { replace: true },
   );
+
   const navigate = useNavigate();
+
   const onNavigateBack = useCallback(() => {
     const previousPath = sessionStorage.getItem(
       'merchant-monitoring:business-report:previous-path',
@@ -56,15 +76,24 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     navigate(previousPath);
     sessionStorage.removeItem('merchant-monitoring:business-report:previous-path');
   }, [navigate]);
-  const statusToBadgeData = {
-    [MERCHANT_REPORT_STATUSES_MAP.completed]: { variant: 'info', text: 'Manual Review' },
-    [MERCHANT_REPORT_STATUSES_MAP['in-progress']]: { variant: 'violet', text: 'In-progress' },
-    [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: {
-      variant: 'violet',
-      text: 'Quality Control',
+
+  const turnOngoingMonitoringOn = useCallback(
+    (merchantId: string | undefined) => {
+      if (merchantId) {
+        turnMonitoringOnMutation.mutate(merchantId);
+      }
     },
-    [MERCHANT_REPORT_STATUSES_MAP['failed']]: { variant: 'destructive', text: 'Failed' },
-  } as const;
+    [turnMonitoringOnMutation],
+  );
+
+  const turnOngoingMonitoringOff = useCallback(
+    (merchantId: string | undefined) => {
+      if (merchantId) {
+        turnMonitoringOffMutation.mutate(merchantId);
+      }
+    },
+    [turnMonitoringOffMutation],
+  );
 
   const websiteWithNoProtocol = safeUrl(businessReport?.website)?.hostname;
 
@@ -77,5 +106,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     notes,
     activeTab,
     isNotesOpen,
+    turnOngoingMonitoringOn,
+    turnOngoingMonitoringOff,
   };
 };
