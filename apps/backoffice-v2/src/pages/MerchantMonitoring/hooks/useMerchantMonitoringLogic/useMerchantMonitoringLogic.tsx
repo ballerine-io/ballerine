@@ -133,6 +133,7 @@ export const useMerchantMonitoringLogic = () => {
       findings: [],
       from: undefined,
       to: undefined,
+      isAlert: 'All',
       page: '1',
     });
 
