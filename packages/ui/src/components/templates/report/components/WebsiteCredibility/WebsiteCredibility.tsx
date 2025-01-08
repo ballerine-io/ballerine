@@ -1,11 +1,11 @@
-import { ctw } from '@/common';
 import { Card, CardContent, CardHeader } from '@/components';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/atoms';
 import { BallerineLink } from '@/components/atoms/BallerineLink/BallerineLink';
+import { ctw } from '@/common';
 import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
 import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
 import dayjs from 'dayjs';
-import { InfoIcon } from 'lucide-react';
+import { InfoIcon, TrendingDown } from 'lucide-react';
 import { FunctionComponent, useMemo } from 'react';
 import {
   CartesianGrid,
@@ -21,6 +21,10 @@ import {
   YAxis,
 } from 'recharts';
 import { capitalize } from 'string-ts';
+import { TrendingUp } from 'lucide-react';
+import { Area, AreaChart } from 'recharts';
+import { CardDescription, CardFooter, CardTitle } from '@/components/atoms';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/atoms';
 
 const engagementMetricsMapper = {
   'Time on site': {
@@ -78,6 +82,22 @@ export const WebsiteCredibility: FunctionComponent<{
         })
         .map(({ label, value }) => ({ label, value: parseFloat(value.toFixed(2)) })),
     [trafficAnalysis.trafficSources],
+  );
+
+  const calculateTrend = (data: Array<{ label: string; value: string }>) => {
+    if (data.length < 2) {
+      return { direction: 'No trend data', percentage: 0 };
+    }
+    const lastMonthValue = parseInt(data[data.length - 1]?.value ?? '0');
+    const previousMonthValue = parseInt(data[data.length - 2]?.value ?? '0');
+    const percentageChange = ((lastMonthValue - previousMonthValue) / previousMonthValue) * 100;
+    const direction = lastMonthValue > previousMonthValue ? 'up' : 'down';
+
+    return { direction, percentage: Math.abs(percentageChange) };
+  };
+
+  const trend = calculateTrend(
+    trafficAnalysis.montlyVisitsIndicators.map(({ label, value }) => ({ label, value })),
   );
 
   return (
@@ -218,7 +238,6 @@ export const WebsiteCredibility: FunctionComponent<{
           </ol>
         </CardContent>
       </Card>
-
       <div>
         <ContentTooltip
           description={
@@ -236,47 +255,94 @@ export const WebsiteCredibility: FunctionComponent<{
           <h3 className="font-bold">Traffic Analysis</h3>
         </ContentTooltip>
       </div>
-
       {/* <div className="flex flex-col 2xl:flex-row gap-4 w-full h-auto 2xl:h-96">
         <div className="h-[24rem] 2xl:h-full w-full 2xl:w-3/5"> */}
       <div className="flex h-[30rem] w-full gap-4">
-        <Card className="h-full w-3/5">
-          <CardHeader className="pt-4 font-bold">Estimated Monthly Visitors</CardHeader>
-
-          <CardContent className="mt-auto h-4/5 w-full pb-0">
+        <Card className="flex h-full w-3/5 flex-col">
+          <CardHeader className="p-4 font-bold">
+            Estimated Monthly Visitors
+            <CardDescription className="font-normal">
+              Showing total visitors for the last 6 months
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
             {trafficAnalysis.montlyVisitsIndicators.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={trafficAnalysis.montlyVisitsIndicators}>
-                  <CartesianGrid vertical={false} strokeDasharray="0" />
+              <ChartContainer
+                className="h-[20rem] w-full"
+                config={{
+                  desktop: {
+                    label: 'Monthly Visitors',
+                    color: '#007aff',
+                  },
+                }}
+              >
+                <AreaChart
+                  accessibilityLayer
+                  data={trafficAnalysis.montlyVisitsIndicators.map(item => ({
+                    month: item.label,
+                    visitors: item.value,
+                  }))}
+                  margin={{
+                    left: 12,
+                    right: 12,
+                  }}
+                >
+                  <defs>
+                    <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#007aff" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#007aff" stopOpacity={0.1} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid vertical={false} />
                   <XAxis
-                    dataKey="label"
+                    dataKey="month"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
                     tickFormatter={value => dayjs(value, 'MMMM YYYY').format('MMM YYYY')}
                   />
-                  <YAxis tickFormatter={Intl.NumberFormat('en', { notation: 'compact' }).format} />
-                  <RechartsTooltip
-                    content={({ active, payload, label }) => {
-                      if (active && payload && payload.length) {
-                        return (
-                          <div className="rounded-md border border-gray-400 bg-white px-4 py-2 text-gray-600">
-                            <p className="max-w-xs">{`On ${label} the company's website had approx. ${Intl.NumberFormat(
-                              'en',
-                            ).format(parseInt(String(payload.at(0)?.value)))} visitors`}</p>
-                          </div>
-                        );
-                      }
-
-                      return null;
-                    }}
+                  <YAxis
+                    domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.2)]}
+                    tickFormatter={value =>
+                      Intl.NumberFormat('en', { notation: 'compact' }).format(value)
+                    }
                   />
-                  <Line dataKey="value" stroke="#435597" strokeWidth={2} activeDot={{ r: 6 }} />
-                </LineChart>
-              </ResponsiveContainer>
+                  <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
+                  <Area
+                    dataKey="visitors"
+                    type="natural"
+                    fill="url(#colorVisitors)"
+                    fillOpacity={0.4}
+                    stroke="#007aff"
+                  />
+                </AreaChart>
+              </ChartContainer>
             ) : (
               <div className="flex h-full w-full items-center justify-center">
                 <p>No Monthly Visitors Data Available</p>
               </div>
             )}
           </CardContent>
+          <CardFooter>
+            <div className="flex w-full items-start gap-2 text-sm">
+              <div className="grid gap-2">
+                <div className="flex items-center gap-2 font-medium leading-none">
+                  {trend.direction !== 'No trend data' && (
+                    <>
+                      {trend.direction === 'up' ? (
+                        <TrendingUp className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <TrendingDown className="h-4 w-4 text-red-500" />
+                      )}
+                      <span>{`Trending ${trend.direction} by ${trend.percentage.toFixed(
+                        1,
+                      )}% this month`}</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </CardFooter>
         </Card>
 
         {/* <div className="flex 2xl:flex-col gap-4 h-[12rem] 2xl:h-full w-full 2xl:w-2/5">
