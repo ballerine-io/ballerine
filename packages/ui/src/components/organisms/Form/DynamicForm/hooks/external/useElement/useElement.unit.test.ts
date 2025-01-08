@@ -8,6 +8,7 @@ import { useDynamicForm } from '../../../context';
 import { IFormElement } from '../../../types';
 import { useEvents } from '../../internal/useEvents';
 import { useElementId } from '../useElementId';
+import { useRules } from '../useRules';
 import { useClearValueOnUnmount } from './hooks/useClearValueOnUnmount';
 import { useElement } from './useElement';
 
@@ -15,6 +16,7 @@ vi.mock('@/components/organisms/Form/hooks/useRuleEngine');
 vi.mock('../../../context');
 vi.mock('../../internal/useEvents');
 vi.mock('../useElementId');
+vi.mock('../useRules');
 vi.mock('./hooks/useClearValueOnUnmount');
 
 describe('useElement', () => {
@@ -44,6 +46,7 @@ describe('useElement', () => {
 
     vi.mocked(useRuleEngine).mockReturnValue([]);
     vi.mocked(useClearValueOnUnmount).mockImplementation(() => undefined);
+    vi.mocked(useRules).mockImplementation(rules => rules ?? []);
   });
 
   describe('when stack not provided', () => {
@@ -78,6 +81,7 @@ describe('useElement', () => {
       const { result } = renderHook(() => useElement(element));
 
       expect(result.current.hidden).toBe(false);
+      expect(useRules).toHaveBeenCalledWith(undefined, []);
     });
 
     it('should return hidden false when hidden rules array is empty', () => {
@@ -89,6 +93,7 @@ describe('useElement', () => {
       const { result } = renderHook(() => useElement(element));
 
       expect(result.current.hidden).toBe(false);
+      expect(useRules).toHaveBeenCalledWith([], []);
     });
 
     it('should return hidden true when any hidden rule returns true', () => {
@@ -105,6 +110,7 @@ describe('useElement', () => {
       const { result } = renderHook(() => useElement(element));
 
       expect(result.current.hidden).toBe(true);
+      expect(useRules).toHaveBeenCalledWith(element.hidden, []);
     });
 
     it('should return hidden false when all hidden rules return false', () => {
@@ -121,6 +127,7 @@ describe('useElement', () => {
       const { result } = renderHook(() => useElement(element));
 
       expect(result.current.hidden).toBe(false);
+      expect(useRules).toHaveBeenCalledWith(element.hidden, []);
     });
 
     it('should pass combined values and metadata to useRuleEngine', () => {
@@ -136,6 +143,7 @@ describe('useElement', () => {
 
       renderHook(() => useElement(element));
 
+      expect(useRules).toHaveBeenCalledWith(element.hidden, []);
       expect(useRuleEngine).toHaveBeenCalledWith(
         { someValue: 'test-value', someMetadata: 'test-metadata' },
         {
@@ -144,6 +152,18 @@ describe('useElement', () => {
           executionDelay: 500,
         },
       );
+    });
+
+    it('should pass stack to useRules when provided', () => {
+      const element = {
+        id: 'test-id',
+        hidden: [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 1] } }],
+      } as IFormElement<string, any>;
+      const stack = [1, 2];
+
+      renderHook(() => useElement(element, stack));
+
+      expect(useRules).toHaveBeenCalledWith(element.hidden, stack);
     });
 
     it('should memoize hidden state', () => {

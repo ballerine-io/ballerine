@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { useDynamicForm } from '../../../context';
 import { IFormElement } from '../../../types';
 import { useElementId } from '../useElementId';
+import { useRules } from '../useRules';
 import { useClearValueOnUnmount } from './hooks/useClearValueOnUnmount';
 
 export const useElement = <TElements extends string, TParams>(
@@ -13,7 +14,7 @@ export const useElement = <TElements extends string, TParams>(
   const { values, metadata } = useDynamicForm();
   const valuesAndMetadata = useMemo(() => ({ ...values, ...metadata }), [values, metadata]);
   const hiddenRulesResult = useRuleEngine(valuesAndMetadata, {
-    rules: element.hidden,
+    rules: useRules(element.hidden, stack),
     runOnInitialize: true,
     executionDelay: 500,
   });

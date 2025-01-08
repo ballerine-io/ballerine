@@ -7,6 +7,7 @@ import { ICommonFieldParams, IFormElement } from '../../../types';
 import { useEvents } from '../../internal/useEvents';
 import { IFormEventElement } from '../../internal/useEvents/types';
 import { useElementId } from '../useElementId';
+import { useRules } from '../useRules';
 import { useValueDestination } from '../useValueDestination';
 import { useField } from './useField';
 
@@ -24,6 +25,10 @@ vi.mock('../useElementId', () => ({
 
 vi.mock('../useValueDestination', () => ({
   useValueDestination: vi.fn(),
+}));
+
+vi.mock('../useRules', () => ({
+  useRules: vi.fn(),
 }));
 
 vi.mock('../../internal/useEvents', () => ({
@@ -69,6 +74,7 @@ describe('useField', () => {
     vi.mocked(useElementId).mockReturnValue('test-field-1-2');
     vi.mocked(useValueDestination).mockReturnValue('test.path[1][2]');
     vi.mocked(useRuleEngine).mockReturnValue([]);
+    vi.mocked(useRules).mockImplementation(rules => rules ?? []);
     vi.mocked(useEvents).mockReturnValue({
       sendEvent: mockSendEvent,
       sendEventAsync: mockSendEventAsync,
@@ -264,6 +270,42 @@ describe('useField', () => {
           runOnInitialize: true,
           executionDelay: 500,
         },
+      );
+    });
+
+    it('should call useRules with element disable rules and stack', () => {
+      const element = {
+        ...mockElement,
+        disable: [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 1] } }],
+      } as IFormElement<string, any>;
+
+      renderHook(() => useField(element, mockStack));
+
+      expect(useRules).toHaveBeenCalledWith(element.disable, mockStack);
+    });
+
+    it('should call useRules with undefined when no disable rules exist', () => {
+      const element = {
+        ...mockElement,
+        disable: undefined,
+      };
+
+      renderHook(() => useField(element, mockStack));
+
+      expect(useRules).toHaveBeenCalledWith(undefined, mockStack);
+    });
+
+    it('should use rules returned by useRules in useRuleEngine', () => {
+      const mockRules = [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 1] } }];
+      vi.mocked(useRules).mockReturnValue(mockRules);
+
+      renderHook(() => useField(mockElement, mockStack));
+
+      expect(useRuleEngine).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.objectContaining({
+          rules: mockRules,
+        }),
       );
     });
   });

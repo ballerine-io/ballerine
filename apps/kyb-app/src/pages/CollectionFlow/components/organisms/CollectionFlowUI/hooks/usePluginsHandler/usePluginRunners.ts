@@ -23,12 +23,12 @@ export const usePluginRunners = (plugins: IPlugin[] = []) => {
   const getPluginRunner = useCallback(
     (eventName: TElementEvent, element?: IFormEventElement<any, any>) => {
       if (eventName && element) {
-        return runners.find(runner =>
+        return runners.filter(runner =>
           runner.runOn?.some(runOn => runOn.type === eventName && runOn.elementId === element.id),
         );
       }
 
-      return runners.find(runner => runner.runOn?.some(runOn => runOn.type === eventName));
+      return runners.filter(runner => runner.runOn?.some(runOn => runOn.type === eventName));
     },
     [runners],
   );

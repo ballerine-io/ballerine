@@ -12,23 +12,23 @@ export const usePluginsHandler = () => {
 
   const handleEvent = useCallback(
     (eventName: TElementEvent, element?: IFormEventElement<any, any>) => {
-      console.log('handleEvent', eventName, element);
-      const runner = getPluginRunner(eventName, element);
+      const runners = getPluginRunner(eventName, element);
       const context = stateApi.getContext();
 
-      if (!runner) return;
+      if (!runners?.length) return;
 
-      console.log(`Found plugin ${runner.name} for event ${eventName}`);
+      console.log(`Found plugins ${JSON.stringify(runners)} for event ${eventName}`);
 
-      if (!checkIfPluginCanRun(runner.runOn, eventName, context)) {
-        console.log(`Plugin ${runner.name} cannot run for event ${eventName}`);
+      runners.forEach(runner => {
+        if (!checkIfPluginCanRun(runner.runOn, eventName, context)) {
+          console.log(`Plugin ${runner.name} cannot run for event ${eventName}`);
 
-        return;
-      }
+          return;
+        }
 
-      console.log(`Plugin ${runner.name} can run for event ${eventName}`);
-
-      runner.run(context);
+        console.log(`Plugin ${runner.name} can run for event ${eventName}`);
+        runner.run(context);
+      });
     },
     [getPluginRunner, stateApi],
   );
