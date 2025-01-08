@@ -57,6 +57,7 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
       variant="default"
       disabled={disabled || isRunning}
       onClick={handleSubmit}
+      className="bg-[#1f2937] hover:bg-[#1f2937]/90 text-[#f8fafc]"
     >
       {text}
     </Button>
