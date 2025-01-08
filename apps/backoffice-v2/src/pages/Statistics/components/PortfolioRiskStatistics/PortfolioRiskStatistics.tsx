@@ -16,8 +16,8 @@ import { titleCase } from 'string-ts';
 import { usePortfolioRiskStatisticsLogic } from '@/pages/Statistics/components/PortfolioRiskStatistics/hooks/usePortfolioRiskStatisticsLogic/usePortfolioRiskStatisticsLogic';
 import { z } from 'zod';
 import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
-import { Link, useNavigate } from 'react-router-dom';
-import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { Link } from 'react-router-dom';
+import { buttonVariants, WarningFilledSvg } from '@ballerine/ui';
 
 export const PortfolioRiskStatistics: FunctionComponent<
   Pick<z.infer<typeof MetricsResponseSchema>, 'riskLevelCounts' | 'violationCounts'>
@@ -29,13 +29,15 @@ export const PortfolioRiskStatistics: FunctionComponent<
     riskLevelToBackgroundColor,
     totalRiskIndicators,
     filteredRiskIndicators,
+    locale,
+    navigate,
+    from,
+    to,
+    alertedReports,
   } = usePortfolioRiskStatisticsLogic({
     riskLevelCounts,
     violationCounts,
   });
-
-  const locale = useLocale();
-  const navigate = useNavigate();
 
   return (
     <div>
@@ -43,7 +45,7 @@ export const PortfolioRiskStatistics: FunctionComponent<
       <div className={'grid grid-cols-3 gap-6'}>
         <div className={'min-h-[27.5rem] rounded-xl bg-[#F6F6F6] p-2'}>
           <Card className={'flex h-full flex-col px-3'}>
-            <CardHeader className={'pb-1'}>Merchant Monitoring Risk</CardHeader>
+            <CardHeader className={'pb-1 font-bold'}>Merchant Monitoring Risk</CardHeader>
             <CardContent>
               <p className={'mb-8 text-slate-400'}>
                 Risk levels of all merchant monitoring reports.
@@ -119,7 +121,7 @@ export const PortfolioRiskStatistics: FunctionComponent<
         </div>
         <div className={'min-h-[10.125rem] rounded-xl bg-[#F6F6F6] p-2'}>
           <Card className={'flex h-full flex-col px-3'}>
-            <CardHeader className={'pb-2'}>Top 10 Content Violations</CardHeader>
+            <CardHeader className={'pb-2 font-bold'}>Top 10 Content Violations</CardHeader>
             <CardContent>
               <Table>
                 <TableHeader className={'[&_tr]:border-b-0'}>
@@ -149,6 +151,32 @@ export const PortfolioRiskStatistics: FunctionComponent<
                   ))}
                 </TableBody>
               </Table>
+            </CardContent>
+          </Card>
+        </div>
+        <div className={'self-start rounded-xl bg-[#F6F6F6] p-2'}>
+          <Card className={'flex h-full flex-col px-3'}>
+            <CardHeader className={'pb-2 font-bold'}>Unresolved Monitoring Alerts</CardHeader>
+            <CardContent>
+              <div className={'flex justify-between'}>
+                <div className={'flex items-center space-x-1'}>
+                  <WarningFilledSvg className={'mt-1 d-10'} />
+                  <span className={'text-3xl font-semibold'}>
+                    {Intl.NumberFormat().format(alertedReports)}
+                  </span>
+                </div>
+                <Link
+                  to={`/${locale}/merchant-monitoring?from=${from}&to=${to}&isAlert=Alerted`}
+                  className={ctw(
+                    buttonVariants({
+                      variant: 'link',
+                    }),
+                    'h-[unset] cursor-pointer !p-0 !text-blue-500',
+                  )}
+                >
+                  View
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </div>

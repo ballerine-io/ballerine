@@ -20,14 +20,14 @@ export const useBusinessReportsQuery = ({
   isAlert,
 }: {
   reportType?: MerchantReportType;
-  search: string;
-  page: number;
-  pageSize: number;
-  sortBy: string;
-  sortDir: string;
-  riskLevels: TRiskLevel[];
-  statuses: TReportStatusValue[];
-  findings: string[];
+  search?: string;
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortDir?: string;
+  riskLevels?: TRiskLevel[];
+  statuses?: TReportStatusValue[];
+  findings?: string[];
   from?: string;
   to?: string;
   isAlert?: boolean;

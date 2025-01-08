@@ -7,6 +7,9 @@ import {
 } from '@/pages/Statistics/components/PortfolioRiskStatistics/constants';
 import { z } from 'zod';
 import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { useNavigate } from 'react-router-dom';
+import { useBusinessReportsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportsQuery/useBusinessReportsQuery';
 
 export const usePortfolioRiskStatisticsLogic = ({
   riskLevelCounts,
@@ -40,6 +43,31 @@ export const usePortfolioRiskStatisticsLogic = ({
       ),
     [filteredRiskIndicators],
   );
+  const locale = useLocale();
+  const navigate = useNavigate();
+  const getLast30DaysDateRange = () => {
+    const currentDate = new Date();
+    const thirtyDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000); // Subtract 30 days in milliseconds
+
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+    const currentDay = currentDate.getDate().toString().padStart(2, '0');
+
+    const startYear = thirtyDaysAgo.getFullYear();
+    const startMonth = (thirtyDaysAgo.getMonth() + 1).toString().padStart(2, '0');
+    const startDay = thirtyDaysAgo.getDate().toString().padStart(2, '0');
+
+    return {
+      from: `${startYear}-${startMonth}-${startDay}`,
+      to: `${currentYear}-${currentMonth}-${currentDay}`,
+    };
+  };
+
+  const { from, to } = getLast30DaysDateRange();
+  const { data: businessReports } = useBusinessReportsQuery({
+    isAlert: true,
+  });
+  const alertedReports = businessReports?.data?.length ?? 0;
 
   return {
     riskLevelToFillColor,
@@ -50,5 +78,10 @@ export const usePortfolioRiskStatisticsLogic = ({
     onSortRiskIndicators,
     filteredRiskIndicators,
     totalRiskIndicators,
+    locale,
+    navigate,
+    from,
+    to,
+    alertedReports,
   };
 };

@@ -5,7 +5,6 @@ import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader
 import Chatbot from '@/domains/chat/chatbot-opengpt';
 import { env } from '@/common/env/env';
 import { Outlet } from 'react-router-dom';
-import { ServerDownLayout } from './ServerDown.layout';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
@@ -44,9 +43,7 @@ const ChatbotLayout: FunctionComponent = () => {
 export const Root: FunctionComponent = () => {
   return (
     <Providers>
-      <ServerDownLayout>
-        <Outlet />
-      </ServerDownLayout>
+      <Outlet />
       <ChatbotLayout />
       {/*<Suspense>*/}
       {/*  <ReactQueryDevtools  />*/}

@@ -89,16 +89,16 @@ export const fetchLatestBusinessReport = async ({
 
 export const fetchBusinessReports = async (params: {
   reportType?: MerchantReportType;
-  riskLevels: TRiskLevel[];
-  statuses: TReportStatusValue[];
-  findings: string[];
+  riskLevels?: TRiskLevel[];
+  statuses?: TReportStatusValue[];
+  findings?: string[];
   from?: string;
   to?: string;
-  page: {
+  page?: {
     number: number;
     size: number;
   };
-  orderBy: string;
+  orderBy?: string;
 }) => {
   const queryParams = qs.stringify(params, { encode: false });
 
