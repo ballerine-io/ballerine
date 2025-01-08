@@ -5,6 +5,7 @@ import { useDynamicForm } from '../../../context';
 import { IFormElement } from '../../../types';
 import { useEvents } from '../../internal/useEvents';
 import { useElementId } from '../useElementId';
+import { useRules } from '../useRules';
 import { useValueDestination } from '../useValueDestination';
 
 export const useField = <TValue>(
@@ -25,7 +26,7 @@ export const useField = <TValue>(
   const valuesAndMetadata = useMemo(() => ({ ...values, ...metadata }), [values, metadata]);
 
   const disabledRulesResult = useRuleEngine(valuesAndMetadata, {
-    rules: element.disable,
+    rules: useRules(element.disable, stack),
     runOnInitialize: true,
     executionDelay: 500,
   });
