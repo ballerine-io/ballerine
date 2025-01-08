@@ -5,11 +5,8 @@ import dayjs from 'dayjs';
 import { useState } from 'react';
 import { z } from 'zod';
 
-export const useStatisticsLogic = () => {
-  const { data: userData } = useAuthenticatedUserQuery();
-  const registrationDate = new Date(userData?.user?.registrationDate ?? '1970-01-01');
-
-  const StatisticsSearchSchema = z.object({
+export const getStatisticsSearchSchema = (registrationDate: Date) =>
+  z.object({
     from: z
       .string()
       .optional()
@@ -25,6 +22,10 @@ export const useStatisticsLogic = () => {
       }),
   });
 
+export const useStatisticsLogic = () => {
+  const { data: userData } = useAuthenticatedUserQuery();
+  const registrationDate = new Date(userData?.user?.registrationDate ?? '1970-01-01');
+  const StatisticsSearchSchema = getStatisticsSearchSchema(registrationDate);
   const [{ from }, setSearchParams] = useZodSearchParams(StatisticsSearchSchema);
   const [date, setDate] = useState<string | undefined>(from ?? undefined);
   const { data, isLoading, error } = useBusinessReportMetricsQuery({

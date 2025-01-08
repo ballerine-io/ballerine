@@ -11,6 +11,9 @@ import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { useNavigate } from 'react-router-dom';
 import { useBusinessReportsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportsQuery/useBusinessReportsQuery';
 import dayjs from 'dayjs';
+import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
+import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { getStatisticsSearchSchema } from '@/pages/Statistics/hooks/useStatisticsLogic';
 
 export const usePortfolioRiskStatisticsLogic = ({
   riskLevelCounts,
@@ -56,9 +59,15 @@ export const usePortfolioRiskStatisticsLogic = ({
     };
   };
 
-  const { from, to } = getLast30DaysDateRange();
+  const last30DaysDateRange = getLast30DaysDateRange();
+  const { data: userData } = useAuthenticatedUserQuery();
+  const registrationDate = new Date(userData?.user?.registrationDate ?? '1970-01-01');
+  const StatisticsSearchSchema = getStatisticsSearchSchema(registrationDate);
+  const [{ from }] = useZodSearchParams(StatisticsSearchSchema);
   const { data: businessReports } = useBusinessReportsQuery({
     isAlert: true,
+    from,
+    to: dayjs(from).add(1, 'month').format('YYYY-MM-DD'),
   });
   const alertedReports = businessReports?.data?.length ?? 0;
 
@@ -73,8 +82,8 @@ export const usePortfolioRiskStatisticsLogic = ({
     totalRiskIndicators,
     locale,
     navigate,
-    from,
-    to,
+    from: last30DaysDateRange.from,
+    to: last30DaysDateRange.to,
     alertedReports,
   };
 };
