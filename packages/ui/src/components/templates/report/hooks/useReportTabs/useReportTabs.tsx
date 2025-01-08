@@ -65,7 +65,7 @@ export const useReportTabs = ({
       violations: websiteCredibilityAnalysis,
     },
     {
-      title: 'Ads and Social Media Analysis',
+      title: 'Social Media Analysis',
       search: '?activeTab=adsAndSocialMedia',
       violations: null,
     },
@@ -177,7 +177,7 @@ export const useReportTabs = ({
           ),
         },
         {
-          label: 'Ads and Social Media',
+          label: 'Social Media',
           value: 'adsAndSocialMedia',
           content: (
             <AdsAndSocialMedia

@@ -109,7 +109,7 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
           },
         }}
       >
-        <h2 className="text-lg font-bold">Ads and Social Media Analysis</h2>
+        <h2 className="text-lg font-bold">Social Media Analysis</h2>
       </ContentTooltip>
     </div>
 
