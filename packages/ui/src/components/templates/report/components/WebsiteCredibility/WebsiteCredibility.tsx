@@ -2,6 +2,7 @@ import { ctw } from '@/common';
 import { Card, CardContent, CardHeader } from '@/components';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/atoms';
 import { BallerineLink } from '@/components/atoms/BallerineLink/BallerineLink';
+import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
 import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
 import dayjs from 'dayjs';
 import { InfoIcon } from 'lucide-react';
@@ -81,10 +82,42 @@ export const WebsiteCredibility: FunctionComponent<{
 
   return (
     <div className="space-y-8">
-      <h3 className="col-span-full text-lg font-bold">Website Credibility Analysis</h3>
+      <div>
+        <ContentTooltip
+          description={
+            <p>
+              Evaluates the trustworthiness of the website, based on various factors, including its
+              security measures, design, and user feedback.
+            </p>
+          }
+          props={{
+            tooltipContent: {
+              align: 'center',
+            },
+          }}
+        >
+          <h3 className="col-span-full text-lg font-bold">Website Credibility Analysis</h3>
+        </ContentTooltip>
+      </div>
       <RiskIndicators violations={violations} />
       <Card>
-        <CardHeader className="pt-4 font-bold">Online Reputation Analysis</CardHeader>
+        <div>
+          <ContentTooltip
+            description={
+              <p>
+                Examines public perception and user feedback, flagging mentions of fraud or scams to
+                highlight potential risks.
+              </p>
+            }
+            props={{
+              tooltipContent: {
+                align: 'center',
+              },
+            }}
+          >
+            <CardHeader className="p-0 py-6 pl-6 font-bold">Online Reputation Analysis</CardHeader>
+          </ContentTooltip>
+        </div>
         <CardContent>
           <ol
             className={ctw({
@@ -109,7 +142,23 @@ export const WebsiteCredibility: FunctionComponent<{
         </CardContent>
       </Card>
       <Card>
-        <CardHeader className="pt-4 font-bold">Pricing Analysis</CardHeader>
+        <div>
+          <ContentTooltip
+            description={
+              <p>
+                Analyzes webiste pricing strategies to detect anomalies, flagging deceptive
+                practices and identifying potential scams or counterfeit goods.
+              </p>
+            }
+            props={{
+              tooltipContent: {
+                align: 'center',
+              },
+            }}
+          >
+            <CardHeader className="p-0 py-6 pl-6 font-bold">Pricing Analysis</CardHeader>
+          </ContentTooltip>
+        </div>
         <CardContent>
           <ol
             className={ctw({
@@ -132,7 +181,25 @@ export const WebsiteCredibility: FunctionComponent<{
         </CardContent>
       </Card>
       <Card>
-        <CardHeader className="pt-4 font-bold">Website Structure and Content Evaluation</CardHeader>
+        <div>
+          <ContentTooltip
+            description={
+              <p>
+                Evaluates the quality and layout of the website, identifying issues like missing
+                legal pages such as terms and conditions.
+              </p>
+            }
+            props={{
+              tooltipContent: {
+                align: 'center',
+              },
+            }}
+          >
+            <CardHeader className="p-0 py-6 pl-6 font-bold">
+              Website Structure and Content Evaluation
+            </CardHeader>
+          </ContentTooltip>
+        </div>
         <CardContent>
           <ol
             className={ctw({
@@ -152,7 +219,23 @@ export const WebsiteCredibility: FunctionComponent<{
         </CardContent>
       </Card>
 
-      <h3 className="pt-4 font-bold">Traffic Analysis</h3>
+      <div>
+        <ContentTooltip
+          description={
+            <p>
+              Analyzes visitor volume and sources to gauge popularity and detect red flags in
+              expected merchant behavior.
+            </p>
+          }
+          props={{
+            tooltipContent: {
+              align: 'center',
+            },
+          }}
+        >
+          <h3 className="font-bold">Traffic Analysis</h3>
+        </ContentTooltip>
+      </div>
 
       {/* <div className="flex flex-col 2xl:flex-row gap-4 w-full h-auto 2xl:h-96">
         <div className="h-[24rem] 2xl:h-full w-full 2xl:w-3/5"> */}

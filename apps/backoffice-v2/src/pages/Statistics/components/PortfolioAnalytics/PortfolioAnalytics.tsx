@@ -15,37 +15,44 @@ export const PortfolioAnalytics: FunctionComponent<
 > = ({ totalActiveMerchants, addedMerchantsCount, removedMerchantsCount }) => {
   return (
     <div className="space-y-6">
-      <div className="space-y-1">
-        <h3 className="text-xl font-semibold tracking-tight">Portfolio Analytics</h3>
-        <div className="flex items-center gap-2">
-          <Users className="h-4 w-4 text-muted-foreground" />
-          <p>
-            Total Active Merchants: <span className="font-semibold">{totalActiveMerchants}</span>
-          </p>
-        </div>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
+      <h1 className="text-3xl font-bold">Portfolio Analytics</h1>
+      <div className="grid grid-cols-4 gap-6">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">New Merchants Added</CardTitle>
-            <UserPlus className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {addedMerchantsCount > 0 ? `+${addedMerchantsCount}` : `0`}
+          <CardContent className="pt-6">
+            <div className="space-y-2">
+              <h2 className="text-xl font-semibold">Total Active Merchants</h2>
+              <p className="text-3xl font-bold">
+                {Intl.NumberFormat('en').format(totalActiveMerchants)}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Merchants currently subscribed to monitoring
+              </p>
             </div>
           </CardContent>
         </Card>
-
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Merchants Removed</CardTitle>
-            <UserMinus className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {removedMerchantsCount > 0 ? `-${removedMerchantsCount}` : `0`}
+          <CardContent className="pt-6">
+            <div className="space-y-2">
+              <h2 className="text-xl font-semibold">New Merchants</h2>
+              <p className="text-3xl font-bold">
+                +{Intl.NumberFormat('en').format(addedMerchantsCount)}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Merchants added within the selected time range
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="space-y-2">
+              <h2 className="text-xl font-semibold">Merchants Removed</h2>
+              <p className="text-3xl font-bold">
+                {Intl.NumberFormat('en').format(removedMerchantsCount)}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Merchants removed from monitoring within the selected time range
+              </p>
             </div>
           </CardContent>
         </Card>

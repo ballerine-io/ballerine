@@ -28,9 +28,7 @@ import {
 } from '@/domains/business-reports/constants';
 import React from 'react';
 import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
-import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
-import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
-import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
+import { TooltipTrigger, TooltipContent, Tooltip } from '@ballerine/ui';
 
 const columnHelper = createColumnHelper<TBusinessReport>();
 

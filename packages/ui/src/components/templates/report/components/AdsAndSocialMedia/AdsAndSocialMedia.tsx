@@ -24,6 +24,7 @@ import { capitalize, toLowerCase } from 'string-ts';
 import { z } from 'zod';
 import { FacebookIcon } from './icons/FacebookIcon';
 import { InstagramIcon } from './icons/InstagramIcon';
+import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
 
 const socialMediaMapper: {
   facebook: {
@@ -99,7 +100,18 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
   relatedAdsImages,
 }) => (
   <div className="space-y-6 px-4">
-    <h2 className="text-lg font-bold">Ads and Social Media Analysis</h2>
+    <div>
+      <ContentTooltip
+        description={<p>Reviews the merchant&apos;s social media presence.</p>}
+        props={{
+          tooltipContent: {
+            align: 'center',
+          },
+        }}
+      >
+        <h2 className="text-lg font-bold">Social Media Analysis</h2>
+      </ContentTooltip>
+    </div>
 
     <div>
       <h3 className="mb-2 text-base font-bold">Social Media</h3>
@@ -121,7 +133,7 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
 
               {page ? (
                 <div className="flex justify-between gap-4">
-                  <div className="min-w-0 grow-0 w-2/3">
+                  <div className="w-2/3 min-w-0 grow-0">
                     <div className="flex items-center">
                       <LinkIcon className="h-5 w-5 text-gray-400" />
                       <a
@@ -140,7 +152,7 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
                       </span>
                     )}
 
-                    <div className="flex gap-6 mt-8">
+                    <div className="mt-8 flex gap-6">
                       <div className="flex flex-col gap-4">
                         {Object.entries(socialMediaMapper[provider].fields).map(
                           ([, { icon, label }]) => (
@@ -152,7 +164,7 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
                         )}
                       </div>
 
-                      <div className="flex flex-col gap-4 min-w-0">
+                      <div className="flex min-w-0 flex-col gap-4">
                         {Object.entries(socialMediaMapper[provider].fields).map(
                           ([field, { label }]) => {
                             const value = rest[field as keyof typeof rest];
@@ -161,7 +173,7 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
                               <TextWithNAFallback
                                 key={label}
                                 className={ctw(
-                                  'overflow-hidden text-ellipsis max-w-full',
+                                  'max-w-full overflow-hidden text-ellipsis',
                                   !value && 'text-gray-400',
                                   label !== 'Biography' && 'whitespace-nowrap',
                                 )}
@@ -179,7 +191,7 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
                     className={buttonVariants({
                       variant: 'link',
                       className:
-                        'h-[unset] cursor-pointer !p-0 !text-[#14203D] underline decoration-[1.5px] w-1/3',
+                        'h-[unset] w-1/3 cursor-pointer !p-0 !text-[#14203D] underline decoration-[1.5px]',
                     })}
                     href={link}
                   >
