@@ -11,14 +11,14 @@ export const REPORT_TYPE_TO_DISPLAY_TEXT = {
 
 export const IS_ALERT_TO_DISPLAY_TEXT = {
   All: 'All',
-  true: 'Yes',
-  false: 'No',
+  true: 'Alerted',
+  false: 'Not Alerted',
 } as const;
 
 export const DISPLAY_TEXT_TO_IS_ALERT = {
   All: 'All',
-  Yes: true,
-  No: false,
+  Alerted: true,
+  'Not Alerted': false,
 } as const;
 
 export const DISPLAY_TEXT_TO_MERCHANT_REPORT_TYPE = {

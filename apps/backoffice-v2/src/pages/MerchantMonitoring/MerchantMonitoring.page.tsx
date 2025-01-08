@@ -199,7 +199,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className={`h-8 space-x-2.5 p-2 font-normal`}>
               <SlidersHorizontal className="me-2 d-4" />
-              <span>Alert</span>
+              <span>Monitoring Alerts</span>
               {isAlert !== 'All' && (
                 <>
                   <Separator orientation="vertical" className="mx-2 h-4" />
