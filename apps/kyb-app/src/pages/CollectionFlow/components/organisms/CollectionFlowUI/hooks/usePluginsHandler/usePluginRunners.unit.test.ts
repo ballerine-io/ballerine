@@ -48,7 +48,12 @@ describe('usePluginRunners', () => {
 
     const { result } = renderHook(() => usePluginRunners(plugins));
 
-    const runner = result.current.getPluginRunner('onChange', { id: 'test-id' });
+    const runner = result.current.getPluginRunner('onChange', {
+      id: 'test-id',
+      element: {
+        id: 'test-id',
+      },
+    } as any);
     expect(runner?.name).toBe('test-plugin');
   });
 

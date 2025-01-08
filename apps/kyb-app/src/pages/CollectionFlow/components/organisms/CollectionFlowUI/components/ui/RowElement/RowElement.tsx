@@ -1,15 +1,24 @@
-import { createTestId, TDynamicFormElement } from '@ballerine/ui';
+import { createTestId, ctw, TDynamicFormElement } from '@ballerine/ui';
 import { ElementContainer } from '../../utility/ElementContainer';
 
 export const ROW_UI_ELEMENT_TYPE = 'row';
 
-export const RowElement: TDynamicFormElement<typeof ROW_UI_ELEMENT_TYPE> = ({
+interface IRowElementParams {
+  className?: string;
+}
+
+export const RowElement: TDynamicFormElement<typeof ROW_UI_ELEMENT_TYPE, IRowElementParams> = ({
   element,
   children,
 }) => {
+  const { className } = element.params || {};
+
   return (
     <ElementContainer element={element}>
-      <div className="flex flex-row gap-2" data-testid={createTestId(element)}>
+      <div
+        className={ctw('flex flex-row gap-2 w-full', className)}
+        data-testid={createTestId(element)}
+      >
         {children}
       </div>
     </ElementContainer>
