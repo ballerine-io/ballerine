@@ -27,6 +27,7 @@ export const businessReportsQueryKey = createQueryKeys('business-reports', {
     findings: string[];
     from?: string;
     to?: string;
+    isAlert?: boolean;
   }) => ({
     queryKey: [{ page, pageSize, sortBy, sortDir, ...params }],
     queryFn: () => {

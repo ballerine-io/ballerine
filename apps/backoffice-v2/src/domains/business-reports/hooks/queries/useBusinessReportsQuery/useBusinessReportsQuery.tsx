@@ -17,6 +17,7 @@ export const useBusinessReportsQuery = ({
   findings,
   from,
   to,
+  isAlert,
 }: {
   reportType?: MerchantReportType;
   search: string;
@@ -29,6 +30,7 @@ export const useBusinessReportsQuery = ({
   findings: string[];
   from?: string;
   to?: string;
+  isAlert?: boolean;
 }) => {
   const isAuthenticated = useIsAuthenticated();
 
@@ -45,6 +47,7 @@ export const useBusinessReportsQuery = ({
       findings,
       from,
       to,
+      isAlert,
     }),
     enabled: isAuthenticated && !!sortBy && !!sortDir && !!page && !!pageSize,
     staleTime: 100_000,
