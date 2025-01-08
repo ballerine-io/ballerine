@@ -10,6 +10,7 @@ import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { useNavigate } from 'react-router-dom';
 import { useBusinessReportsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportsQuery/useBusinessReportsQuery';
+import dayjs from 'dayjs';
 
 export const usePortfolioRiskStatisticsLogic = ({
   riskLevelCounts,
@@ -46,20 +47,12 @@ export const usePortfolioRiskStatisticsLogic = ({
   const locale = useLocale();
   const navigate = useNavigate();
   const getLast30DaysDateRange = () => {
-    const currentDate = new Date();
-    const thirtyDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000); // Subtract 30 days in milliseconds
-
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-    const currentDay = currentDate.getDate().toString().padStart(2, '0');
-
-    const startYear = thirtyDaysAgo.getFullYear();
-    const startMonth = (thirtyDaysAgo.getMonth() + 1).toString().padStart(2, '0');
-    const startDay = thirtyDaysAgo.getDate().toString().padStart(2, '0');
+    const today = dayjs();
+    const thirtyDaysAgo = today.subtract(30, 'day');
 
     return {
-      from: `${startYear}-${startMonth}-${startDay}`,
-      to: `${currentYear}-${currentMonth}-${currentDay}`,
+      from: thirtyDaysAgo.format('YYYY-MM-DD'),
+      to: today.format('YYYY-MM-DD'),
     };
   };
 
