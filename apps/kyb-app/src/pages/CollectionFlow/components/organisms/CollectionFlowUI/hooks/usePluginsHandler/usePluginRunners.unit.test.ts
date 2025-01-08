@@ -33,8 +33,8 @@ describe('usePluginRunners', () => {
     const { result } = renderHook(() => usePluginRunners(plugins));
 
     expect(result.current.runners).toHaveLength(1);
-    expect(result.current.runners?.[0]?.name).toBe('test-plugin');
-    expect(typeof result.current.runners?.[0]?.run).toBe('function');
+    expect(result.current.runners[0]?.name).toBe('test-plugin');
+    expect(typeof result.current.runners[0]?.run).toBe('function');
     expect(typeof result.current.getPluginRunner).toBe('function');
   });
 
@@ -48,13 +48,13 @@ describe('usePluginRunners', () => {
 
     const { result } = renderHook(() => usePluginRunners(plugins));
 
-    const runner = result.current.getPluginRunner('onChange', {
+    const runners = result.current.getPluginRunner('onChange', {
       id: 'test-id',
       element: {
         id: 'test-id',
       },
     } as any);
-    expect(runner?.name).toBe('test-plugin');
+    expect(runners[0]?.name).toBe('test-plugin');
   });
 
   it('should find plugin runner by event name only', () => {
@@ -67,11 +67,11 @@ describe('usePluginRunners', () => {
 
     const { result } = renderHook(() => usePluginRunners(plugins));
 
-    const runner = result.current.getPluginRunner('onSubmit');
-    expect(runner?.name).toBe('test-plugin');
+    const runners = result.current.getPluginRunner('onSubmit');
+    expect(runners[0]?.name).toBe('test-plugin');
   });
 
-  it('should return undefined when no matching plugin runner found', () => {
+  it('should return empty array when no matching plugin runner found', () => {
     const plugins = [
       {
         name: 'test-plugin',
@@ -81,8 +81,8 @@ describe('usePluginRunners', () => {
 
     const { result } = renderHook(() => usePluginRunners(plugins));
 
-    const runner = result.current.getPluginRunner('onSubmit');
-    expect(runner).toBeUndefined();
+    const runners = result.current.getPluginRunner('onSubmit');
+    expect(runners).toHaveLength(0);
   });
 
   it('should debounce plugin execution', () => {
@@ -97,8 +97,8 @@ describe('usePluginRunners', () => {
     const { result } = renderHook(() => usePluginRunners(plugins));
 
     const context = { testData: 'test' };
-    result.current.runners?.[0]?.run?.(context);
-    result.current.runners?.[0]?.run?.(context);
+    result.current.runners[0]?.run?.(context);
+    result.current.runners[0]?.run?.(context);
 
     expect(mockRunPlugin).not.toHaveBeenCalled();
 

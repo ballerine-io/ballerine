@@ -76,6 +76,8 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
     [handleEvent, sync, helpers],
   );
 
+  console.log('context', context);
+
   return (
     <DynamicFormV2
       fieldExtends={formElementsExtends}

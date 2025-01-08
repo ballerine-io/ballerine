@@ -49,9 +49,9 @@ describe('usePluginsHandler', () => {
     mockGetContext.mockReturnValue({ someContext: 'value' });
   });
 
-  it('should not run plugin when no matching runner found', () => {
+  it('should not run plugin when no matching runners found', () => {
     const { result } = renderHook(() => usePluginsHandler());
-    mockGetPluginRunner.mockReturnValue(undefined);
+    mockGetPluginRunner.mockReturnValue([]);
 
     result.current.handleEvent('onChange', { id: 'test' } as IFormEventElement<any, any>);
 
@@ -67,7 +67,7 @@ describe('usePluginsHandler', () => {
     };
 
     const { result } = renderHook(() => usePluginsHandler());
-    mockGetPluginRunner.mockReturnValue(mockRunner);
+    mockGetPluginRunner.mockReturnValue([mockRunner]);
     mockedCheckIfPluginCanRun.mockReturnValue(false);
 
     result.current.handleEvent('onChange', { id: 'test' } as IFormEventElement<any, any>);
@@ -84,7 +84,7 @@ describe('usePluginsHandler', () => {
     const context = { someContext: 'value' };
 
     const { result } = renderHook(() => usePluginsHandler());
-    mockGetPluginRunner.mockReturnValue(mockRunner);
+    mockGetPluginRunner.mockReturnValue([mockRunner]);
     mockedCheckIfPluginCanRun.mockReturnValue(true);
 
     result.current.handleEvent('onChange', { id: 'test' } as IFormEventElement<any, any>);
