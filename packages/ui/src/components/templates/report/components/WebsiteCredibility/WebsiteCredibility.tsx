@@ -85,11 +85,14 @@ export const WebsiteCredibility: FunctionComponent<{
   );
 
   const calculateTrend = (data: Array<{ label: string; value: string }>) => {
-    if (data.length < 2) return { direction: 'No trend data', percentage: 0 };
+    if (data.length < 2) {
+      return { direction: 'No trend data', percentage: 0 };
+    }
     const lastMonthValue = parseInt(data[data.length - 1]?.value ?? '0');
     const previousMonthValue = parseInt(data[data.length - 2]?.value ?? '0');
     const percentageChange = ((lastMonthValue - previousMonthValue) / previousMonthValue) * 100;
     const direction = lastMonthValue > previousMonthValue ? 'up' : 'down';
+
     return { direction, percentage: Math.abs(percentageChange) };
   };
 
