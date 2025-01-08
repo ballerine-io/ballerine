@@ -8,19 +8,8 @@ import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSear
 import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
 import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
-import { MERCHANT_REPORT_STATUSES_MAP } from '@/domains/business-reports/constants';
 import { useTurnMonitoringOnMutation } from '@/pages/MerchantMonitoringBusinessReport/mutations/useTurnMonitoringOnMutation/useTurnMonitoringOnMutation';
 import { useTurnMonitoringOffMutation } from '@/pages/MerchantMonitoringBusinessReport/mutations/useTurnMonitoringOffMutation/useTurnMonitoringOffMutation';
-
-const statusToBadgeData = {
-  [MERCHANT_REPORT_STATUSES_MAP.completed]: { variant: 'info', text: 'Manual Review' },
-  [MERCHANT_REPORT_STATUSES_MAP['in-progress']]: { variant: 'violet', text: 'In-progress' },
-  [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: {
-    variant: 'violet',
-    text: 'Quality Control',
-  },
-  [MERCHANT_REPORT_STATUSES_MAP['failed']]: { variant: 'destructive', text: 'Failed' },
-} as const;
 
 export const useMerchantMonitoringBusinessReportLogic = () => {
   const { businessReportId } = useParams();
@@ -101,7 +90,6 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     onNavigateBack,
     websiteWithNoProtocol,
     businessReport,
-    statusToBadgeData,
     tabs,
     notes,
     activeTab,
