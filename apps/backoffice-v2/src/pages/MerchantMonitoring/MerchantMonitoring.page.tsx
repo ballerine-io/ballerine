@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import { isNonEmptyArray } from '@ballerine/common';
 import { UrlPagination } from '@/common/components/molecules/UrlPagination/UrlPagination';
 import { useMerchantMonitoringLogic } from '@/pages/MerchantMonitoring/hooks/useMerchantMonitoringLogic/useMerchantMonitoringLogic';
@@ -50,6 +50,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
     onReportTypeChange,
     onClearAllFilters,
     REPORT_TYPE_TO_DISPLAY_TEXT,
+    IS_ALERT_TO_DISPLAY_TEXT,
     FINDINGS_FILTER,
     RISK_LEVEL_FILTER,
     STATUS_LEVEL_FILTER,
@@ -58,8 +59,10 @@ export const MerchantMonitoring: FunctionComponent = () => {
     riskLevels,
     statuses,
     findings,
+    isAlert,
     multiselectProps,
     isClearAllButtonVisible,
+    onIsAlertChange,
   } = useMerchantMonitoringLogic();
 
   return (
@@ -132,7 +135,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className={`h-8 space-x-2.5 p-2 font-normal`}>
-              <SlidersHorizontal className="mr-2 d-4" />
+              <SlidersHorizontal className="me-2 d-4" />
               <span>Type</span>
               {reportType !== 'All' && (
                 <>
@@ -192,6 +195,41 @@ export const MerchantMonitoring: FunctionComponent = () => {
           onSelect={handleFilterChange(FINDINGS_FILTER.accessor)}
           onClearSelect={handleFilterClear(FINDINGS_FILTER.accessor)}
         />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className={`h-8 space-x-2.5 p-2 font-normal`}>
+              <SlidersHorizontal className="me-2 d-4" />
+              <span>Monitoring Alerts</span>
+              {isAlert !== 'All' && (
+                <>
+                  <Separator orientation="vertical" className="mx-2 h-4" />
+                  <div className="hidden space-x-1 lg:flex">
+                    <Badge
+                      key={`${isAlert}-badge`}
+                      variant="secondary"
+                      className="rounded-sm px-1 text-xs font-normal"
+                    >
+                      {isAlert}
+                    </Badge>
+                  </div>
+                </>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align={`start`}>
+            {Object.entries(IS_ALERT_TO_DISPLAY_TEXT).map(([value, label]) => (
+              <DropdownMenuCheckboxItem
+                key={label}
+                checked={isAlert === label}
+                onCheckedChange={() =>
+                  onIsAlertChange(value as keyof typeof IS_ALERT_TO_DISPLAY_TEXT)
+                }
+              >
+                {label}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
         {isClearAllButtonVisible && (
           <Button
             variant={`ghost`}
