@@ -3,6 +3,7 @@ import { TDeepthLevelStack } from '@/components/organisms/Form/Validator';
 import { useMemo } from 'react';
 import { useDynamicForm } from '../../../context';
 import { IFormElement } from '../../../types';
+import { usePriorityFields } from '../../internal/usePriorityFields';
 import { useElementId } from '../useElementId';
 import { useRules } from '../useRules';
 import { useClearValueOnUnmount } from './hooks/useClearValueOnUnmount';
@@ -30,6 +31,6 @@ export const useElement = <TElements extends string, TParams>(
   return {
     id: useElementId(element, stack),
     originId: element.id,
-    hidden: isHidden,
+    hidden: usePriorityFields(element).isShouldHidePriorityField || isHidden,
   };
 };

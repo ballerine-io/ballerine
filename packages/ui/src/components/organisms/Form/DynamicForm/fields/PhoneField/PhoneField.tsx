@@ -7,6 +7,7 @@ import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
+import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { TDynamicFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 
@@ -20,7 +21,10 @@ export const PhoneField: TDynamicFormElement<string, IPhoneFieldParams> = ({ ele
 
   const { defaultCountry = 'us' } = element.params || {};
   const { stack } = useStack();
-  const { value, onChange, onBlur, onFocus } = useField<string | undefined>(element, stack);
+  const { value, disabled, onChange, onBlur, onFocus } = useField<string | undefined>(
+    element,
+    stack,
+  );
 
   const handleChange = useCallback(
     (value: string) => {
@@ -35,11 +39,13 @@ export const PhoneField: TDynamicFormElement<string, IPhoneFieldParams> = ({ ele
         country={defaultCountry}
         testId={createTestId(element, stack)}
         value={value}
+        disabled={disabled}
         onChange={handleChange}
         onBlur={onBlur}
         onFocus={onFocus}
       />
       <FieldDescription element={element} />
+      <FieldPriorityReason element={element} />
       <FieldErrors element={element} />
     </FieldLayout>
   );

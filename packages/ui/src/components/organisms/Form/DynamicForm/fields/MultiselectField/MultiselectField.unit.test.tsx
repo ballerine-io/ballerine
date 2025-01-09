@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
@@ -49,6 +50,10 @@ vi.mock('../../hooks/internal/useUnmountEvent', () => ({
   useUnmountEvent: vi.fn(),
 }));
 
+vi.mock('../../hooks/internal/usePriorityFields', () => ({
+  usePriorityFields: vi.fn(),
+}));
+
 vi.mock('../../layouts/FieldErrors', () => ({
   FieldErrors: vi.fn(),
 }));
@@ -59,6 +64,12 @@ vi.mock('../../layouts/FieldDescription', () => ({
 
 vi.mock('../../layouts/FieldLayout', () => ({
   FieldLayout: vi.fn(({ children }) => <div>{children}</div>),
+}));
+
+vi.mock('../../layouts/FieldPriorityReason', () => ({
+  FieldPriorityReason: vi.fn(({ element }) => (
+    <div data-testid="priority-reason">{element.id}</div>
+  )),
 }));
 
 vi.mock('../FieldList/providers/StackProvider', () => ({
@@ -94,6 +105,13 @@ describe('MultiselectField', () => {
       onFocus: vi.fn(),
       disabled: false,
     } as unknown as ReturnType<typeof useField>);
+
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
   });
 
   it('renders MultiSelect component within FieldLayout', () => {
@@ -241,5 +259,32 @@ describe('MultiselectField', () => {
       expect.objectContaining({ element: mockElement }),
       expect.anything(),
     );
+  });
+
+  it('renders priority reason when priorityField exists', () => {
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: {
+        id: 'test-id',
+        reason: 'This is a priority field',
+      },
+      isPriorityField: true,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
+
+    render(<MultiselectField element={mockElement} />);
+    expect(screen.getByTestId('priority-reason')).toBeInTheDocument();
+  });
+
+  it('does not render priority reason when priorityField is undefined', () => {
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
+
+    render(<MultiselectField element={mockElement} />);
+    expect(screen.queryByText('This is a priority field')).not.toBeInTheDocument();
   });
 });

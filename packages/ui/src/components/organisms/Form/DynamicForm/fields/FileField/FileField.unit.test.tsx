@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
@@ -12,6 +13,7 @@ import { useFileUpload } from './hooks/useFileUpload';
 vi.mock('../../hooks/external');
 vi.mock('../../hooks/internal/useMountEvent');
 vi.mock('../../hooks/internal/useUnmountEvent');
+vi.mock('../../hooks/internal/usePriorityFields');
 vi.mock('../FieldList/providers/StackProvider');
 vi.mock('./hooks/useFileUpload');
 vi.mock('@/components/atoms', () => ({
@@ -60,6 +62,13 @@ describe('FileField', () => {
     vi.mocked(useFileUpload).mockReturnValue({
       handleChange: vi.fn(),
       isUploading: false,
+    });
+
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
     });
   });
 
@@ -166,5 +175,34 @@ describe('FileField', () => {
     const description = screen.getByTestId('field-description');
     expect(description).toBeInTheDocument();
     expect(description).toHaveTextContent(mockElement.id);
+  });
+
+  it('renders priority reason when priorityField exists', () => {
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: {
+        id: 'test-id',
+        reason: 'This is a priority field',
+      },
+      isPriorityField: true,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
+
+    render(<FileField element={mockElement} />);
+
+    expect(screen.getByText('This is a priority field')).toBeInTheDocument();
+  });
+
+  it('does not render priority reason when priorityField is undefined', () => {
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
+
+    render(<FileField element={mockElement} />);
+
+    expect(screen.queryByText('This is a priority field')).not.toBeInTheDocument();
   });
 });

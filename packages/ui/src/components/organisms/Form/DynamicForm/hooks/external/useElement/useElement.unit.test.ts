@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDynamicForm } from '../../../context';
 import { IFormElement } from '../../../types';
 import { useEvents } from '../../internal/useEvents';
+import { usePriorityFields } from '../../internal/usePriorityFields';
 import { useElementId } from '../useElementId';
 import { useRules } from '../useRules';
 import { useClearValueOnUnmount } from './hooks/useClearValueOnUnmount';
@@ -15,6 +16,7 @@ import { useElement } from './useElement';
 vi.mock('@/components/organisms/Form/hooks/useRuleEngine');
 vi.mock('../../../context');
 vi.mock('../../internal/useEvents');
+vi.mock('../../internal/usePriorityFields');
 vi.mock('../useElementId');
 vi.mock('../useRules');
 vi.mock('./hooks/useClearValueOnUnmount');
@@ -47,6 +49,11 @@ describe('useElement', () => {
     vi.mocked(useRuleEngine).mockReturnValue([]);
     vi.mocked(useClearValueOnUnmount).mockImplementation(() => undefined);
     vi.mocked(useRules).mockImplementation(rules => rules ?? []);
+    vi.mocked(usePriorityFields).mockReturnValue({
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
   });
 
   describe('when stack not provided', () => {
@@ -182,6 +189,34 @@ describe('useElement', () => {
       rerender();
 
       expect(result.current.hidden).toBe(initialHidden);
+    });
+
+    it('should return hidden true when priority field should be hidden', () => {
+      vi.mocked(usePriorityFields).mockReturnValue({
+        isPriorityField: true,
+        isShouldDisablePriorityField: false,
+        isShouldHidePriorityField: true,
+      });
+
+      const element = { id: 'test-id' } as IFormElement<string, any>;
+
+      const { result } = renderHook(() => useElement(element));
+
+      expect(result.current.hidden).toBe(true);
+    });
+
+    it('should return hidden false when priority field should not be hidden', () => {
+      vi.mocked(usePriorityFields).mockReturnValue({
+        isPriorityField: true,
+        isShouldDisablePriorityField: false,
+        isShouldHidePriorityField: false,
+      });
+
+      const element = { id: 'test-id' } as IFormElement<string, any>;
+
+      const { result } = renderHook(() => useElement(element));
+
+      expect(result.current.hidden).toBe(false);
     });
   });
 

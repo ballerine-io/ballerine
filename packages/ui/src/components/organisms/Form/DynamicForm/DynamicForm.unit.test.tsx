@@ -225,6 +225,29 @@ describe('DynamicFormV2', () => {
     expect(providerProps?.value.validationParams).toEqual(customValidationParams);
   });
 
+  it('should pass priorityFields to context when provided', () => {
+    const priorityFields = [
+      { id: 'field1', reason: 'required' },
+      { id: 'field2', reason: 'important' },
+    ];
+
+    render(<DynamicFormV2 {...mockProps} priorityFields={priorityFields} />);
+
+    const providerProps = vi.mocked(DynamicFormContext.Provider).mock.calls[0]?.[0];
+    expect(providerProps?.value.priorityFields).toEqual(priorityFields);
+  });
+
+  it('should pass priorityFieldsParams to context when provided', () => {
+    const priorityFieldsParams = {
+      behavior: 'disableOthers' as const,
+    };
+
+    render(<DynamicFormV2 {...mockProps} priorityFieldsParams={priorityFieldsParams} />);
+
+    const providerProps = vi.mocked(DynamicFormContext.Provider).mock.calls[0]?.[0];
+    expect(providerProps?.value.priorityFieldsParams).toEqual(priorityFieldsParams);
+  });
+
   describe('ref', () => {
     const touchedMock = {
       touched: { field1: true },

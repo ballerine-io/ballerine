@@ -6,6 +6,7 @@ import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
+import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { ICommonFieldParams, TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 
@@ -15,13 +16,15 @@ export const CheckboxField: TDynamicFormField<ICommonFieldParams> = ({ element }
 
   const { label } = element.params || {};
   const { stack } = useStack();
-  const { id } = useElement(element, stack);
+  const { id, hidden } = useElement(element, stack);
   const { value, onChange, onFocus, onBlur, disabled } = useField<boolean | undefined>(
     element,
     stack,
   );
   const { values } = useDynamicForm();
   const isRequired = useRequired(element, values);
+
+  if (hidden) return null;
 
   return (
     <div className="flex flex-col">
@@ -39,6 +42,7 @@ export const CheckboxField: TDynamicFormField<ICommonFieldParams> = ({ element }
         </Label>
       </div>
       <FieldDescription element={element} />
+      <FieldPriorityReason element={element} />
       <FieldErrors element={element} />
     </div>
   );
