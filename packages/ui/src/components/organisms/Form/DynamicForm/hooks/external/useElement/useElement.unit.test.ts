@@ -50,6 +50,7 @@ describe('useElement', () => {
     vi.mocked(useClearValueOnUnmount).mockImplementation(() => undefined);
     vi.mocked(useRules).mockImplementation(rules => rules ?? []);
     vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
       isPriorityField: false,
       isShouldDisablePriorityField: false,
       isShouldHidePriorityField: false,
@@ -196,6 +197,7 @@ describe('useElement', () => {
         isPriorityField: true,
         isShouldDisablePriorityField: false,
         isShouldHidePriorityField: true,
+        priorityField: { id: 'test-id', reason: 'test-reason' },
       });
 
       const element = { id: 'test-id' } as IFormElement<string, any>;
@@ -210,6 +212,7 @@ describe('useElement', () => {
         isPriorityField: true,
         isShouldDisablePriorityField: false,
         isShouldHidePriorityField: false,
+        priorityField: { id: 'test-id', reason: 'test-reason' },
       });
 
       const element = { id: 'test-id' } as IFormElement<string, any>;
