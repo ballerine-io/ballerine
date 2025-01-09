@@ -1832,6 +1832,9 @@ importers:
       json-logic-js:
         specifier: ^2.0.2
         version: 2.0.2
+      jsonata:
+        specifier: ^2.0.6
+        version: 2.0.6
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -7709,9 +7712,9 @@ packages:
       eslint-plugin-prefer-arrow: ^1.2.3
       eslint-plugin-unused-imports: ^3.0.0
     dependencies:
-      '@stylistic/eslint-plugin-ts': 1.6.2(eslint@8.54.0)(typescript@5.1.6)
-      '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.54.0)(typescript@5.1.6)
-      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@5.1.6)
+      '@stylistic/eslint-plugin-ts': 1.6.2(eslint@8.54.0)(typescript@5.5.4)
+      '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.54.0)(typescript@5.5.4)
+      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@5.5.4)
       eslint: 8.54.0
       eslint-config-prettier: 9.0.0(eslint@8.54.0)
       eslint-plugin-prefer-arrow: 1.2.3(eslint@8.54.0)
@@ -10529,7 +10532,7 @@ packages:
       magic-string: 0.27.0
       react-docgen-typescript: 2.2.2(typescript@5.5.4)
       typescript: 5.5.4
-      vite: 5.3.5(@types/node@18.17.19)
+      vite: 5.3.5(@types/node@20.9.2)
     dev: true
 
   /@jridgewell/gen-mapping@0.3.3:
@@ -17170,7 +17173,7 @@ packages:
       react: 18.2.0
       react-docgen: 6.0.4
       react-dom: 18.2.0(react@18.2.0)
-      vite: 5.3.5(@types/node@18.17.19)
+      vite: 5.3.5(@types/node@20.9.2)
     transitivePeerDependencies:
       - '@preact/preset-vite'
       - encoding
@@ -20973,7 +20976,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.23.3(@babel/core@7.23.3)
       magic-string: 0.27.0
       react-refresh: 0.14.0
-      vite: 5.3.5(@types/node@18.17.19)
+      vite: 5.3.5(@types/node@20.9.2)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -26795,7 +26798,7 @@ packages:
       '@typescript-eslint/eslint-plugin':
         optional: true
     dependencies:
-      '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.54.0)(typescript@5.1.6)
+      '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.54.0)(typescript@5.5.4)
       eslint: 8.54.0
       eslint-rule-composer: 0.3.0
     dev: true
@@ -39527,7 +39530,7 @@ packages:
       debug: 4.3.6
       globrex: 0.1.2
       tsconfck: 3.1.4(typescript@5.5.4)
-      vite: 5.3.5(@types/node@18.17.19)
+      vite: 5.3.5(@types/node@20.9.2)
     transitivePeerDependencies:
       - supports-color
       - typescript

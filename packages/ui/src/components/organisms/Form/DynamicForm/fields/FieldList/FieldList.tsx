@@ -1,4 +1,3 @@
-import { AnyObject } from '@/common';
 import { Button } from '@/components/atoms';
 import { Renderer, TRendererSchema } from '@/components/organisms/Renderer';
 import { useDynamicForm } from '../../context';
@@ -15,7 +14,8 @@ import { StackProvider, useStack } from './providers/StackProvider';
 export type TFieldListValueType<T extends { _id: string }> = T[];
 
 export interface IFieldListParams {
-  defaultValue: AnyObject;
+  // jsonata expression
+  defaultValue?: string;
   addButtonLabel?: string;
   removeButtonLabel?: string;
 }

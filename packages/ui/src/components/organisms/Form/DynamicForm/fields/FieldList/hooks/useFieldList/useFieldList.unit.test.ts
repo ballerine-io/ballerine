@@ -1,5 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { useDynamicForm } from '../../../../context';
 import { useField } from '../../../../hooks/external';
 import { IFormElement } from '../../../../types';
 import { useStack } from '../../providers/StackProvider';
@@ -7,6 +8,7 @@ import { IUseFieldParams, useFieldList } from './useFieldList';
 
 vi.mock('../../../../hooks/external');
 vi.mock('../../providers/StackProvider');
+vi.mock('../../../../context');
 
 describe('useFieldList', () => {
   const mockElement = {
@@ -14,12 +16,17 @@ describe('useFieldList', () => {
     valueDestination: 'test',
     element: 'fieldlist',
     params: {
-      defaultValue: { test: 'value' },
+      defaultValue: 'test.value',
     },
-  } as unknown as IFormElement<string, IUseFieldParams<object>>;
+  } as IFormElement<string, IUseFieldParams>;
 
   const mockOnChange = vi.fn();
   const mockStack = [0];
+  const mockValues = {
+    test: {
+      value: 'defaultValue',
+    },
+  };
 
   beforeEach(() => {
     vi.mocked(useStack).mockReturnValue({ stack: mockStack });
@@ -27,6 +34,9 @@ describe('useFieldList', () => {
       onChange: mockOnChange,
       value: [],
     } as unknown as ReturnType<typeof useField>);
+    vi.mocked(useDynamicForm).mockReturnValue({
+      values: mockValues,
+    } as any);
   });
 
   afterEach(() => {
@@ -38,16 +48,29 @@ describe('useFieldList', () => {
     expect(result.current.items).toEqual([]);
   });
 
-  it('should add item with default value', () => {
+  it('should add item with default value from jsonata expression', async () => {
     const { result } = renderHook(() => useFieldList({ element: mockElement }));
 
-    result.current.addItem();
+    await result.current.addItem();
 
-    expect(mockOnChange).toHaveBeenCalledWith([{ test: 'value' }]);
+    expect(mockOnChange).toHaveBeenCalledWith(['defaultValue']);
+  });
+
+  it('should add empty item when no default value provided', async () => {
+    const elementWithoutDefault = {
+      ...mockElement,
+      params: {},
+    };
+
+    const { result } = renderHook(() => useFieldList({ element: elementWithoutDefault }));
+
+    await result.current.addItem();
+
+    expect(mockOnChange).toHaveBeenCalledWith([]);
   });
 
   it('should remove item at specified index', () => {
-    const existingItems = [{ test: '1' }, { test: '2' }, { test: '3' }];
+    const existingItems = ['item1', 'item2', 'item3'];
     vi.mocked(useField).mockReturnValue({
       onChange: mockOnChange,
       value: existingItems,
@@ -57,7 +80,7 @@ describe('useFieldList', () => {
 
     result.current.removeItem(1);
 
-    expect(mockOnChange).toHaveBeenCalledWith([{ test: '1' }, { test: '3' }]);
+    expect(mockOnChange).toHaveBeenCalledWith(['item1', 'item3']);
   });
 
   it('should not remove item if value is not an array', () => {
