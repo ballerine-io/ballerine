@@ -57,7 +57,7 @@ describe('FieldList', () => {
     children: [],
   } as unknown as IFormElement<
     'fieldlist',
-    { addButtonLabel: string; removeButtonLabel: string } & IUseFieldParams<object>
+    { addButtonLabel: string; removeButtonLabel: string } & IUseFieldParams
   >;
 
   const mockItems = [{ id: 1 }, { id: 2 }];
@@ -138,7 +138,7 @@ describe('FieldList', () => {
       params: {},
     } as unknown as IFormElement<
       'fieldlist',
-      { addButtonLabel: string; removeButtonLabel: string } & IUseFieldParams<object>
+      { addButtonLabel: string; removeButtonLabel: string } & IUseFieldParams
     >;
 
     render(<FieldList element={elementWithoutLabels} />);
