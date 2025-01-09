@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { FunctionComponent } from 'react';
 import { IFormElement } from '../../types';
 
@@ -10,5 +11,10 @@ export const FieldDescription: FunctionComponent<IFieldDescriptionProps> = ({ el
 
   if (!description) return null;
 
-  return <p className="mt-2 text-sm text-gray-400">{description}</p>;
+  return (
+    <p
+      className="mt-2 text-sm text-gray-400"
+      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(description) }}
+    />
+  );
 };
