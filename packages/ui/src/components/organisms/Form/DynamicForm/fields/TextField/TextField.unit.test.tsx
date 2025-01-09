@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useElement, useField } from '../../hooks/external';
 import { useEvents } from '../../hooks/internal/useEvents';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { IFormElement } from '../../types';
@@ -70,6 +71,10 @@ vi.mock('../../layouts/FieldDescription', () => ({
   FieldDescription: vi.fn(),
 }));
 
+vi.mock('../../hooks/internal/usePriorityFields', () => ({
+  usePriorityFields: vi.fn(),
+}));
+
 describe('TextField', () => {
   const mockStack = [0];
   const mockElement = {
@@ -106,6 +111,12 @@ describe('TextField', () => {
       sendEvent: vi.fn(),
       sendEventAsync: vi.fn(),
     } as unknown as ReturnType<typeof useEvents>);
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
   });
 
   it('should render Input component when style is text', () => {
@@ -271,5 +282,34 @@ describe('TextField', () => {
       }),
       expect.any(Object),
     );
+  });
+
+  it('renders priority reason when priorityField exists', () => {
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: {
+        id: 'test-id',
+        reason: 'This is a priority field',
+      },
+      isPriorityField: true,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
+
+    render(<TextField element={mockElement} />);
+
+    expect(screen.getByText('This is a priority field')).toBeInTheDocument();
+  });
+
+  it('does not render priority reason when priorityField is undefined', () => {
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
+
+    render(<TextField element={mockElement} />);
+
+    expect(screen.queryByText('This is a priority field')).not.toBeInTheDocument();
   });
 });

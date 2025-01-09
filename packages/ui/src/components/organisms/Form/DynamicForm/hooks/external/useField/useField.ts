@@ -4,6 +4,7 @@ import { useCallback, useMemo } from 'react';
 import { useDynamicForm } from '../../../context';
 import { IFormElement } from '../../../types';
 import { useEvents } from '../../internal/useEvents';
+import { usePriorityFields } from '../../internal/usePriorityFields';
 import { useElementId } from '../useElementId';
 import { useRules } from '../useRules';
 import { useValueDestination } from '../useValueDestination';
@@ -65,7 +66,7 @@ export const useField = <TValue>(
   return {
     value,
     touched,
-    disabled: isDisabled,
+    disabled: usePriorityFields(element).isShouldDisablePriorityField || isDisabled,
     onChange,
     onBlur,
     onFocus,

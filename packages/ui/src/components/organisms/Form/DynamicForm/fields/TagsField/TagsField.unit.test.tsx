@@ -1,8 +1,9 @@
 import { TagsInput } from '@/components/molecules';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TDeepthLevelStack } from '../../../Validator';
 import { useElement, useField } from '../../hooks/external';
+import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
@@ -35,6 +36,10 @@ vi.mock('../../layouts/FieldDescription', () => ({
   FieldDescription: vi.fn(),
 }));
 
+vi.mock('../../hooks/internal/usePriorityFields', () => ({
+  usePriorityFields: vi.fn(),
+}));
+
 describe('TagsField', () => {
   const mockElement = {
     id: 'test-tags',
@@ -62,6 +67,12 @@ describe('TagsField', () => {
       id: 'test-tags',
       originId: 'test-tags',
       hidden: false,
+    });
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
     });
   });
 
@@ -126,5 +137,34 @@ describe('TagsField', () => {
       }),
       expect.any(Object),
     );
+  });
+
+  it('renders priority reason when priorityField exists', () => {
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: {
+        id: 'test-id',
+        reason: 'This is a priority field',
+      },
+      isPriorityField: true,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
+
+    render(<TagsField element={mockElement} />);
+
+    expect(screen.getByText('This is a priority field')).toBeInTheDocument();
+  });
+
+  it('does not render priority reason when priorityField is undefined', () => {
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
+
+    render(<TagsField element={mockElement} />);
+
+    expect(screen.queryByText('This is a priority field')).not.toBeInTheDocument();
   });
 });

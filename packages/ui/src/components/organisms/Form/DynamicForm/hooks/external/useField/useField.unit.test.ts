@@ -6,6 +6,7 @@ import { IDynamicFormContext, useDynamicForm } from '../../../context';
 import { ICommonFieldParams, IFormElement } from '../../../types';
 import { useEvents } from '../../internal/useEvents';
 import { IFormEventElement } from '../../internal/useEvents/types';
+import { usePriorityFields } from '../../internal/usePriorityFields';
 import { useElementId } from '../useElementId';
 import { useRules } from '../useRules';
 import { useValueDestination } from '../useValueDestination';
@@ -33,6 +34,10 @@ vi.mock('../useRules', () => ({
 
 vi.mock('../../internal/useEvents', () => ({
   useEvents: vi.fn(),
+}));
+
+vi.mock('../../internal/usePriorityFields', () => ({
+  usePriorityFields: vi.fn(),
 }));
 
 vi.mock('../../../../Validator', () => ({
@@ -90,6 +95,12 @@ describe('useField', () => {
     vi.mocked(useValidator).mockReturnValue({
       validate: mockValidate,
     } as any);
+    vi.mocked(usePriorityFields).mockReturnValue({
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+      priorityField: undefined,
+    });
     mockGetValue.mockReturnValue('test-value');
     mockGetTouched.mockReturnValue(false);
 
@@ -232,6 +243,32 @@ describe('useField', () => {
 
     it('should not be disabled when no rules exist', () => {
       vi.mocked(useRuleEngine).mockReturnValue([]);
+
+      const { result } = renderHook(() => useField(mockElement, mockStack));
+
+      expect(result.current.disabled).toBe(false);
+    });
+
+    it('should be disabled when priority field should be disabled', () => {
+      vi.mocked(usePriorityFields).mockReturnValue({
+        isPriorityField: true,
+        isShouldDisablePriorityField: true,
+        isShouldHidePriorityField: false,
+        priorityField: undefined,
+      });
+
+      const { result } = renderHook(() => useField(mockElement, mockStack));
+
+      expect(result.current.disabled).toBe(true);
+    });
+
+    it('should not be disabled when priority field should not be disabled', () => {
+      vi.mocked(usePriorityFields).mockReturnValue({
+        isPriorityField: true,
+        isShouldDisablePriorityField: false,
+        isShouldHidePriorityField: false,
+        priorityField: undefined,
+      });
 
       const { result } = renderHook(() => useField(mockElement, mockStack));
 

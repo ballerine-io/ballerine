@@ -5,6 +5,7 @@ import { IDynamicFormContext, useDynamicForm } from '../../context';
 import { useElement, useField } from '../../hooks/external';
 import { useRequired } from '../../hooks/external/useRequired';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
@@ -16,6 +17,7 @@ vi.mock('../../hooks/external');
 vi.mock('../../hooks/external/useRequired');
 vi.mock('../../hooks/internal/useMountEvent');
 vi.mock('../../hooks/internal/useUnmountEvent');
+vi.mock('../../hooks/internal/usePriorityFields');
 
 describe('CheckboxField', () => {
   const mockElement = {
@@ -47,6 +49,12 @@ describe('CheckboxField', () => {
     vi.mocked(useRequired).mockReturnValue(false);
     vi.mocked(useMountEvent).mockReturnValue();
     vi.mocked(useUnmountEvent).mockReturnValue();
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
   });
 
   afterEach(() => {
@@ -116,5 +124,42 @@ describe('CheckboxField', () => {
 
     expect(useMountEvent).toHaveBeenCalledWith(mockElement);
     expect(useUnmountEvent).toHaveBeenCalledWith(mockElement);
+  });
+
+  it('renders priority reason when priorityField exists', () => {
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: {
+        id: 'test-id',
+        reason: 'This is a priority field',
+      },
+      isPriorityField: true,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
+
+    render(<CheckboxField element={mockElement} />);
+
+    expect(screen.getByText('This is a priority field')).toBeInTheDocument();
+  });
+
+  it('does not render priority reason when priorityField is undefined', () => {
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
+
+    render(<CheckboxField element={mockElement} />);
+
+    expect(screen.queryByText('This is a priority field')).not.toBeInTheDocument();
+  });
+
+  it('does not render when hidden is true', () => {
+    vi.mocked(useElement).mockReturnValue({ id: 'test-id', originId: 'test-id', hidden: true });
+
+    render(<CheckboxField element={mockElement} />);
+
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
   });
 });

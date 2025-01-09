@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useElement, useField } from '../../hooks/external';
+import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { IFormElement } from '../../types';
@@ -28,6 +29,10 @@ vi.mock('../../layouts/FieldDescription', () => ({
 
 vi.mock('../../layouts/FieldErrors', () => ({
   FieldErrors: vi.fn(),
+}));
+
+vi.mock('../../hooks/internal/usePriorityFields', () => ({
+  usePriorityFields: vi.fn(),
 }));
 
 describe('RadioField', () => {
@@ -59,6 +64,12 @@ describe('RadioField', () => {
       id: 'test-radio',
       originId: 'test-radio',
       hidden: false,
+    });
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
     });
   });
 
@@ -145,5 +156,34 @@ describe('RadioField', () => {
       }),
       expect.anything(),
     );
+  });
+
+  it('renders priority reason when priorityField exists', () => {
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: {
+        id: 'test-id',
+        reason: 'This is a priority field',
+      },
+      isPriorityField: true,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
+
+    render(<RadioField element={mockElement} />);
+
+    expect(screen.getByText('This is a priority field')).toBeInTheDocument();
+  });
+
+  it('does not render priority reason when priorityField is undefined', () => {
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
+
+    render(<RadioField element={mockElement} />);
+
+    expect(screen.queryByText('This is a priority field')).not.toBeInTheDocument();
   });
 });

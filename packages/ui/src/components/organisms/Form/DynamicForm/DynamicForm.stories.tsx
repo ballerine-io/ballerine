@@ -4,6 +4,7 @@ import { CustomInputsShowCaseComponent } from './_stories/CustomInputsShowcase';
 import { CustomValidatorsShowcaseComponent } from './_stories/CustomValidatorsShowcase';
 import { FileUploadShowcaseComponent } from './_stories/FileUploadShowcase';
 import { InputsShowcaseComponent } from './_stories/InputsShowcase';
+import { PriorityFieldsShowcase } from './_stories/PriorityFieldsShowcase/PriorityFieldsShowcase';
 import { ValidationShowcaseComponent } from './_stories/ValidationShowcase/ValidationShowcase';
 
 export default {
@@ -32,4 +33,16 @@ export const CustomInputsShowCase = {
 
 export const CustomValidatorsShowcase = {
   render: () => <CustomValidatorsShowcaseComponent />,
+};
+
+export const PriorityFieldsShowcaseBehaviorDisable = {
+  render: () => <PriorityFieldsShowcase behavior="disableOthers" />,
+};
+
+export const PriorityFieldsShowcaseBehaviorHide = {
+  render: () => <PriorityFieldsShowcase behavior="hideOthers" />,
+};
+
+export const PriorityFieldsShowcaseBehaviorDoNothing = {
+  render: () => <PriorityFieldsShowcase behavior="doNothing" />,
 };

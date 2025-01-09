@@ -1,10 +1,11 @@
 import { PhoneNumberInput } from '@/components/atoms';
 import { createTestId } from '@/components/organisms/Renderer';
 import '@testing-library/jest-dom';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
@@ -27,6 +28,10 @@ vi.mock('../../hooks/internal/useMountEvent', () => ({
 
 vi.mock('../../hooks/internal/useUnmountEvent', () => ({
   useUnmountEvent: vi.fn(),
+}));
+
+vi.mock('../../hooks/internal/usePriorityFields', () => ({
+  usePriorityFields: vi.fn(),
 }));
 
 vi.mock('../../layouts/FieldErrors', () => ({
@@ -62,6 +67,7 @@ describe('PhoneField', () => {
     onChange: vi.fn(),
     onBlur: vi.fn(),
     onFocus: vi.fn(),
+    disabled: false,
   };
 
   beforeEach(() => {
@@ -71,6 +77,12 @@ describe('PhoneField', () => {
     vi.mocked(createTestId).mockReturnValue('test-id');
     vi.mocked(useMountEvent).mockReturnValue(undefined);
     vi.mocked(useUnmountEvent).mockReturnValue(undefined);
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
   });
 
   it('should render PhoneNumberInput with default country "us"', () => {
@@ -84,6 +96,23 @@ describe('PhoneField', () => {
         onChange: expect.any(Function),
         onBlur: mockFieldValues.onBlur,
         onFocus: mockFieldValues.onFocus,
+        disabled: false,
+      }),
+      expect.anything(),
+    );
+  });
+
+  it('should render PhoneNumberInput with disabled state when field is disabled', () => {
+    vi.mocked(useField).mockReturnValue({
+      ...mockFieldValues,
+      disabled: true,
+    } as any);
+
+    render(<PhoneField element={mockElement} />);
+
+    expect(PhoneNumberInput).toHaveBeenCalledWith(
+      expect.objectContaining({
+        disabled: true,
       }),
       expect.anything(),
     );
@@ -157,5 +186,34 @@ describe('PhoneField', () => {
     const mockUseUnmountEvent = vi.mocked(useUnmountEvent);
     render(<PhoneField element={mockElement} />);
     expect(mockUseUnmountEvent).toHaveBeenCalledWith(mockElement);
+  });
+
+  it('renders priority reason when priorityField exists', () => {
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: {
+        id: 'test-id',
+        reason: 'This is a priority field',
+      },
+      isPriorityField: true,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
+
+    render(<PhoneField element={mockElement} />);
+
+    expect(screen.getByText('This is a priority field')).toBeInTheDocument();
+  });
+
+  it('does not render priority reason when priorityField is undefined', () => {
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
+
+    render(<PhoneField element={mockElement} />);
+
+    expect(screen.queryByText('This is a priority field')).not.toBeInTheDocument();
   });
 });

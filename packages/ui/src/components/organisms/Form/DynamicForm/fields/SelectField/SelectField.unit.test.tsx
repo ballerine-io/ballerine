@@ -1,11 +1,12 @@
 import { DropdownInput } from '@/components/molecules';
 import { createTestId } from '@/components/organisms/Renderer';
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useElement, useField } from '../../hooks/external';
 import { useEvents } from '../../hooks/internal/useEvents';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { TBaseFields } from '../../repositories/fields-repository';
@@ -61,6 +62,10 @@ vi.mock('../../hooks/internal/useUnmountEvent', () => ({
   useUnmountEvent: vi.fn(),
 }));
 
+vi.mock('../../hooks/internal/usePriorityFields', () => ({
+  usePriorityFields: vi.fn(),
+}));
+
 vi.mock('../../layouts/FieldLayout', () => ({
   FieldLayout: ({ children }: any) => <div>{children}</div>,
 }));
@@ -87,6 +92,14 @@ describe('SelectField', () => {
 
   const mockStack = [0];
   const mockTestId = 'test-select-field';
+  const mockFieldProps = {
+    value: undefined,
+    disabled: false,
+    onChange: vi.fn(),
+    onBlur: vi.fn(),
+    onFocus: vi.fn(),
+    touched: false,
+  };
 
   beforeEach(() => {
     cleanup();
@@ -98,35 +111,40 @@ describe('SelectField', () => {
       originId: mockElement.id,
       hidden: false,
     } as ReturnType<typeof useElement>);
-    vi.mocked(useField).mockReturnValue({
-      value: undefined,
-      disabled: false,
-      onChange: vi.fn(),
-      onBlur: vi.fn(),
-      onFocus: vi.fn(),
-      touched: false,
-    });
+    vi.mocked(useField).mockReturnValue(mockFieldProps);
     vi.mocked(createTestId).mockReturnValue(mockTestId);
     vi.mocked(useEvents).mockReturnValue({
       sendEvent: vi.fn(),
       sendEventAsync: vi.fn(),
     } as unknown as ReturnType<typeof useEvents>);
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
   });
 
   it('should render DropdownInput with correct props', () => {
     render(<SelectField element={mockElement} />);
 
     expect(DropdownInput).toHaveBeenCalledWith(
-      expect.objectContaining({
+      {
         name: mockElement.id,
         options: mockElement.params?.options || [],
         testId: mockTestId,
         placeholdersParams: {
           placeholder: mockElement.params?.placeholder || '',
+          searchPlaceholder: '',
         },
         disabled: false,
-      }),
-      expect.any(Object),
+        value: undefined,
+        searchable: true,
+        onChange: expect.any(Function),
+        onBlur: mockFieldProps.onBlur,
+        onFocus: mockFieldProps.onFocus,
+      },
+      {},
     );
   });
 
@@ -142,6 +160,7 @@ describe('SelectField', () => {
         options: [],
         placeholdersParams: {
           placeholder: '',
+          searchPlaceholder: '',
         },
       }),
       expect.any(Object),
@@ -311,5 +330,34 @@ describe('SelectField', () => {
       }),
       expect.any(Object),
     );
+  });
+
+  it('renders priority reason when priorityField exists', () => {
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: {
+        id: 'test-id',
+        reason: 'This is a priority field',
+      },
+      isPriorityField: true,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
+
+    render(<SelectField element={mockElement} />);
+
+    expect(screen.getByText('This is a priority field')).toBeInTheDocument();
+  });
+
+  it('does not render priority reason when priorityField is undefined', () => {
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
+
+    render(<SelectField element={mockElement} />);
+
+    expect(screen.queryByText('This is a priority field')).not.toBeInTheDocument();
   });
 });

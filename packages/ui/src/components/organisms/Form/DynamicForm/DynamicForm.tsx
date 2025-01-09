@@ -20,6 +20,8 @@ export const DynamicFormV2 = forwardRef(
       elements,
       values: initialValues,
       validationParams = defaultValidationParams,
+      priorityFields,
+      priorityFieldsParams,
       fieldExtends,
       metadata,
       onChange,
@@ -62,6 +64,8 @@ export const DynamicFormV2 = forwardRef(
         },
         metadata: metadata ?? {},
         validationParams: validationParams ?? {},
+        priorityFields,
+        priorityFieldsParams,
       }),
       [
         touchedApi.touched,
@@ -72,6 +76,8 @@ export const DynamicFormV2 = forwardRef(
         onEvent,
         metadata,
         validationParams,
+        priorityFields,
+        priorityFieldsParams,
       ],
     );
 

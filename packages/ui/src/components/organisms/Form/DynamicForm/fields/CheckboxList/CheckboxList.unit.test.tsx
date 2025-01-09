@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
+import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
@@ -28,6 +29,10 @@ vi.mock('../../layouts/FieldErrors', () => ({
 
 vi.mock('../../layouts/FieldDescription', () => ({
   FieldDescription: vi.fn(),
+}));
+
+vi.mock('../../hooks/internal/usePriorityFields', () => ({
+  usePriorityFields: vi.fn(),
 }));
 
 vi.mock('@/components/atoms', () => ({
@@ -87,6 +92,13 @@ describe('CheckboxListField', () => {
       onBlur: vi.fn(),
       disabled: false,
     } as unknown as ReturnType<typeof useField>);
+
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
   });
 
   it('renders all checkbox options', () => {
@@ -232,5 +244,34 @@ describe('CheckboxListField', () => {
       expect.objectContaining({ element: mockElement }),
       expect.anything(),
     );
+  });
+
+  it('renders priority reason when priorityField exists', () => {
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: {
+        id: 'test-id',
+        reason: 'This is a priority field',
+      },
+      isPriorityField: true,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
+
+    render(<CheckboxListField element={mockElement} />);
+
+    expect(screen.getByText('This is a priority field')).toBeInTheDocument();
+  });
+
+  it('does not render priority reason when priorityField is undefined', () => {
+    vi.mocked(usePriorityFields).mockReturnValue({
+      priorityField: undefined,
+      isPriorityField: false,
+      isShouldDisablePriorityField: false,
+      isShouldHidePriorityField: false,
+    });
+
+    render(<CheckboxListField element={mockElement} />);
+
+    expect(screen.queryByText('This is a priority field')).not.toBeInTheDocument();
   });
 });

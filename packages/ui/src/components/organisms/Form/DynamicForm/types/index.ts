@@ -49,13 +49,23 @@ export interface IDynamicFormValidationParams extends IValidationParams {
   validateOnBlur?: boolean;
 }
 
+export interface IPriorityField {
+  id: string;
+  reason: string;
+}
+
+export interface IPriorityFieldParams {
+  behavior: 'disableOthers' | 'hideOthers' | 'doNothing';
+}
+
 export interface IDynamicFormProps<TValues extends object> {
   values: TValues;
   elements: Array<IFormElement<string, any>>;
 
   fieldExtends?: Record<string, TDynamicFormField<any> | TDynamicFormElement<any, any>>;
-
   validationParams?: IDynamicFormValidationParams;
+  priorityFields?: IPriorityField[];
+  priorityFieldsParams?: IPriorityFieldParams;
   onChange?: (newValues: TValues) => void;
   onFieldChange?: (fieldName: string, newValue: unknown, newValues: TValues) => void;
   onSubmit?: (values: TValues) => void;

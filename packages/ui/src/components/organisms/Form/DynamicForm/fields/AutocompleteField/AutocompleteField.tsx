@@ -10,6 +10,7 @@ import { useStack } from '../FieldList/providers/StackProvider';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
+import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 
 export interface IAutocompleteFieldOption {
   label: string;
@@ -48,6 +49,7 @@ export const AutocompleteField: TDynamicFormField<IAutocompleteFieldParams> = ({
         onFocus={onFocus}
       />
       <FieldDescription element={element} />
+      <FieldPriorityReason element={element} />
       <FieldErrors element={element} />
     </FieldLayout>
   );

@@ -8,6 +8,7 @@ import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
+import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { serializeTextFieldValue } from './helpers';
@@ -66,6 +67,7 @@ export const TextField: TDynamicFormField<ITextFieldParams> = ({ element }) => {
         />
       )}
       <FieldDescription element={element} />
+      <FieldPriorityReason element={element} />
       <FieldErrors element={element} />
     </FieldLayout>
   );
