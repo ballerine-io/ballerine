@@ -21,6 +21,8 @@ export const Renderer: React.FunctionComponent<IRendererProps & { stack?: number
         }
 
         if (element.children) {
+          console.log('element', element);
+
           return (
             <Component
               key={createRenderedElementKey(element, stack)}

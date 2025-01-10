@@ -7,10 +7,10 @@ import { createTestId } from './utils/create-test-id';
 const ContainerComponent: IRendererComponent<IRendererElement, any, { text: string }> = ({
   stack,
   children,
-  definition,
+  element,
 }) => {
   return (
-    <div className="container" data-test-id={createTestId(definition, stack)}>
+    <div className="container" data-test-id={createTestId(element, stack)}>
       {children}
     </div>
   );
@@ -19,11 +19,11 @@ const ContainerComponent: IRendererComponent<IRendererElement, any, { text: stri
 const Heading: IRendererComponent<IRendererElement, any, { text: string }> = ({
   stack,
   options,
-  definition,
+  element,
 }) => {
   return (
     <h1
-      data-test-id={createTestId(definition, stack)}
+      data-test-id={createTestId(element, stack)}
       style={{ marginTop: '24px', marginBottom: '24px', fontWeight: 'bold', fontSize: '32px' }}
     >
       {options?.text}
@@ -35,11 +35,11 @@ const TextField: IRendererComponent<
   IRendererElement,
   any,
   { label: string; placeholder: string }
-> = ({ stack, options, definition }) => {
+> = ({ stack, options, element }) => {
   const id = useId();
 
   return (
-    <div className="flex flex-col gap-4" data-test-id={createTestId(definition, stack)}>
+    <div className="flex flex-col gap-4" data-test-id={createTestId(element, stack)}>
       {options?.label && <label htmlFor={id}>{options?.label}</label>}
       <input
         id={id}
