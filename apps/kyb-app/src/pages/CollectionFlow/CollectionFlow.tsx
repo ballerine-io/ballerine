@@ -7,10 +7,7 @@ import { useTheme } from '@/common/providers/ThemeProvider';
 import { AppShell } from '@/components/layouts/AppShell';
 import { PoweredByLogo } from '@/components/molecules/PoweredByLogo';
 import { DynamicUI, State } from '@/components/organisms/DynamicUI';
-import {
-  PageError,
-  usePageErrors,
-} from '@/components/organisms/DynamicUI/Page/hooks/usePageErrors';
+import { usePageErrors } from '@/components/organisms/DynamicUI/Page/hooks/usePageErrors';
 import { StepperUI } from '@/components/organisms/UIRenderer/elements/StepperUI';
 import { useCustomer } from '@/components/providers/CustomerProvider';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
@@ -28,13 +25,10 @@ import { CollectionFlowUI } from './components/organisms/CollectionFlowUI';
 import { PluginsRunner } from './components/organisms/CollectionFlowUI/components/utility/PluginsRunner';
 import { FailedScreen } from './components/pages/FailedScreen';
 import { useAdditionalWorkflowContext } from './hooks/useAdditionalWorkflowContext';
+import { useRevisionStates } from './hooks/useRevisionStates';
 
 const isCompleted = (state: string) => state === 'completed' || state === 'finish';
 const isFailed = (state: string) => state === 'failed';
-
-const getRevisionStateName = (pageErrors: PageError[]) => {
-  return pageErrors?.filter(pageError => !!pageError.errors.length)?.[0]?.stateName;
-};
 
 export const CollectionFlow = withSessionProtected(() => {
   const { language } = useLanguageParam();
@@ -48,13 +42,20 @@ export const CollectionFlow = withSessionProtected(() => {
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;
 
+  const { initialRevisionState, revisionStateNames } = useRevisionStates(
+    elements || [],
+    collectionFlowData?.context ?? ({} as CollectionFlowContext),
+  );
+
   const pageErrors = usePageErrors(
     collectionFlowData?.context ?? ({} as CollectionFlowContext),
     elements || [],
   );
+
   const isRevision = useMemo(
     () =>
-      getCollectionFlowState(collectionFlowData)?.status === CollectionFlowStatusesEnum.revision,
+      getCollectionFlowState(collectionFlowData?.context)?.status ===
+      CollectionFlowStatusesEnum.revision,
     [collectionFlowData],
   );
 
@@ -63,21 +64,19 @@ export const CollectionFlow = withSessionProtected(() => {
     const collectionFlow = getCollectionFlowState(contextCopy);
 
     if (isRevision && collectionFlow) {
-      const revisionStateName = getRevisionStateName(pageErrors);
-      collectionFlow.currentStep = revisionStateName || collectionFlow.currentStep;
-      revisionStateName || collectionFlow.currentStep;
+      collectionFlow.currentStep = initialRevisionState || collectionFlow.currentStep;
     }
 
     return contextCopy as CollectionFlowContext;
-  }, [isRevision, pageErrors]);
+  }, [isRevision, collectionFlowData?.context, initialRevisionState]);
 
   const initialUIState = useMemo(() => {
     return prepareInitialUIState(
       elements || [],
-      (collectionFlowData?.context as CollectionFlowContext) || {},
+      (initialContext as CollectionFlowContext) || {},
       isRevision,
     );
-  }, [elements, collectionFlowData, isRevision]);
+  }, [elements, isRevision, initialContext]);
 
   // Breadcrumbs now using scrollIntoView method to make sure that breadcrumb is always in viewport.
   // Due to dynamic dimensions of logo it doesnt work well if scroll happens before logo is loaded.
@@ -161,7 +160,9 @@ export const CollectionFlow = withSessionProtected(() => {
                                       )}
                                     </div>
                                     <div className="min-h-0 flex-1 pb-10">
-                                      {isLogoLoaded ? <StepperUI /> : null}
+                                      {isLogoLoaded ? (
+                                        <StepperUI revisionStateNames={revisionStateNames} />
+                                      ) : null}
                                     </div>
                                     <div>
                                       {customer?.displayName && (
@@ -246,6 +247,7 @@ export const CollectionFlow = withSessionProtected(() => {
                                         <CollectionFlowUI
                                           elements={currentPage.elements}
                                           context={payload}
+                                          isRevision={isRevision}
                                         />
                                       </PluginsRunner>
                                     </div>

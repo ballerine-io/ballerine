@@ -11,11 +11,13 @@ import { TPluginListener } from './components/utility/PluginsRunner/hooks/intern
 import { useAppMetadata } from './hooks/useAppMetadata';
 import { useAppSync } from './hooks/useAppSync';
 import { usePluginsHandler } from './hooks/usePluginsHandler/usePluginsHandler';
+import { usePriorityFields } from './hooks/usePriorityFields';
 import { formElementsExtends } from './ui-elemenets.extends';
 
 interface ICollectionFlowUIProps<TValues = CollectionFlowContext> {
   elements: Array<IFormElement<any, any>>;
   context: TValues;
+  isRevision?: boolean;
 }
 
 const validationParams = {
@@ -27,6 +29,7 @@ const validationParams = {
 export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
   elements,
   context,
+  isRevision,
 }) => {
   const { stateApi } = useStateManagerContext();
   const { helpers } = useDynamicUIContext();
@@ -34,6 +37,7 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
   const { isSyncing, sync } = useAppSync();
   const appMetadata = useAppMetadata();
   const { pluginStatuses } = usePlugins();
+  const priorityFields = usePriorityFields(elements, context, !isRevision);
 
   const formRef = useRef<IFormRef>(null);
   const handlePluginExecution: TPluginListener = useCallback(
@@ -76,8 +80,6 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
     [handleEvent, sync, helpers],
   );
 
-  console.log('context', context);
-
   return (
     <DynamicFormV2
       fieldExtends={formElementsExtends}
@@ -86,6 +88,7 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
       onChange={handleChange as (newValues: object) => void}
       onEvent={handleEvent}
       onSubmit={handleSubmit as (values: object) => void}
+      priorityFields={priorityFields}
       validationParams={validationParams}
       metadata={metadata}
       ref={formRef}

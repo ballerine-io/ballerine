@@ -1,8 +1,10 @@
 import { useRefValue } from '@/hooks/useRefValue';
+import { TDocument } from '@ballerine/common';
 import {
-  AnyObject,
   FileField,
+  IFormElement,
   IFormEventElement,
+  TBaseFields,
   TDynamicFormField,
   TElementEvent,
   useDynamicForm,
@@ -28,6 +30,12 @@ export interface IDocumentFieldParams {
   page?: number;
   pageProperty?: string;
 }
+
+export const isDocumentFieldDefinition = (
+  element: IFormElement<any, any>,
+): element is IFormElement<TBaseFields | typeof DOCUMENT_FIELD_TYPE, IDocumentFieldParams> => {
+  return element.element === DOCUMENT_FIELD_TYPE;
+};
 
 export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element }) => {
   const { documentTemplate, page = 0, pageProperty = 'ballerineFileId' } = element.params || {};
@@ -59,7 +67,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
 
   const mergeDocumentWithTemplate = useCallback(
     (_: TElementEvent, eventElement: IFormEventElement<any, any>) => {
-      const documents: AnyObject[] = get(valuesRef.current, element.valueDestination, []);
+      const documents: TDocument[] = get(valuesRef.current, element.valueDestination, []);
 
       // Document is being removed by input
       if (get(valuesRef.current, eventElement.valueDestination) === undefined) {
@@ -78,7 +86,8 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
         const mergedDocument = {
           ...((latestDocument as unknown as object) || {}),
           ...documentTemplate,
-        };
+          decision: {},
+        } as unknown as TDocument;
 
         documents[documents.length - 1] = mergedDocument;
 
