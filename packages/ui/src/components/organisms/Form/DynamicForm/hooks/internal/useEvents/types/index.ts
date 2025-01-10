@@ -8,6 +8,7 @@ export type TElementEvent =
   | 'onBlur'
   | 'onFocus'
   | 'onSubmit'
+  | 'onClick'
   | 'onUnmount';
 
 export interface IFormEventElement<TElements extends string, TParams = ICommonFieldParams>

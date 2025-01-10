@@ -1,3 +1,4 @@
+export * from './useControl';
 export * from './useElement';
 export * from './useElementId';
 export * from './useField';

@@ -2,8 +2,9 @@ import { Button } from '@/components/atoms';
 import { useCallback, useMemo } from 'react';
 import { useValidator } from '../../../Validator';
 import { useDynamicForm } from '../../context';
+import { useStack } from '../../fields/FieldList/providers/StackProvider';
+import { useControl } from '../../hooks/external/useControl/useControl';
 import { useElement } from '../../hooks/external/useElement';
-import { useField } from '../../hooks/external/useField';
 import { useEvents } from '../../hooks/internal/useEvents';
 import { useTaskRunner } from '../../providers/TaskRunner/hooks/useTaskRunner';
 import { TDynamicFormElement } from '../../types';
@@ -15,7 +16,8 @@ export interface ISubmitButtonParams {
 
 export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({ element }) => {
   const { id } = useElement(element);
-  const { disabled: _disabled } = useField(element);
+  const { stack } = useStack();
+  const { disabled: _disabled, onClick } = useControl(element, stack);
   const { fieldHelpers, submit } = useDynamicForm();
   const { runTasks, isRunning } = useTaskRunner();
   const { sendEvent } = useEvents(element);
@@ -33,6 +35,8 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
   }, [disableWhenFormIsInvalid, isValid, _disabled]);
 
   const handleSubmit = useCallback(async () => {
+    onClick();
+
     touchAllFields();
 
     if (!isValid) {
@@ -49,7 +53,7 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
     submit();
 
     sendEvent('onSubmit');
-  }, [submit, isValid, touchAllFields, runTasks, sendEvent, errors]);
+  }, [submit, isValid, touchAllFields, runTasks, sendEvent, errors, onClick]);
 
   return (
     <Button
