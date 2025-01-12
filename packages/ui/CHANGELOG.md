@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.61
+
+### Patch Changes
+
+- Fix display when traffic sources list is empty
+
 ## 0.5.60
 
 ### Patch Changes

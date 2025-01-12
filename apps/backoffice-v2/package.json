@@ -57,7 +57,7 @@
     "@ballerine/workflow-browser-sdk": "0.6.84",
     "@ballerine/workflow-node-sdk": "0.6.84",
     "@ballerine/react-pdf-toolkit": "^1.2.60",
-    "@ballerine/ui": "^0.5.60",
+    "@ballerine/ui": "^0.5.61",
     "@botpress/webchat": "^2.1.10",
     "@botpress/webchat-generator": "^0.2.9",
     "@fontsource/inter": "^4.5.15",
