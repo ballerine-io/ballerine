@@ -135,7 +135,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className={`h-8 space-x-2.5 p-2 font-normal`}>
-              <SlidersHorizontal className="me-2 d-4" />
+              <SlidersHorizontal className="d-4" />
               <span>Type</span>
               {reportType !== 'All' && (
                 <>
@@ -198,7 +198,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className={`h-8 space-x-2.5 p-2 font-normal`}>
-              <SlidersHorizontal className="me-2 d-4" />
+              <SlidersHorizontal className="d-4" />
               <span>Monitoring Alerts</span>
               {isAlert !== 'All' && (
                 <>

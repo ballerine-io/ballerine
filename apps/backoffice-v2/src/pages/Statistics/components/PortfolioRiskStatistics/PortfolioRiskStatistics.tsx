@@ -27,7 +27,6 @@ export const PortfolioRiskStatistics: FunctionComponent<
     parent,
     widths,
     riskLevelToBackgroundColor,
-    totalRiskIndicators,
     filteredRiskIndicators,
     locale,
     navigate,
@@ -35,7 +34,6 @@ export const PortfolioRiskStatistics: FunctionComponent<
     to,
     alertedReports,
   } = usePortfolioRiskStatisticsLogic({
-    riskLevelCounts,
     violationCounts,
   });
 

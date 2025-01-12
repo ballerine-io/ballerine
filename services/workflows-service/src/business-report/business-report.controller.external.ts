@@ -94,6 +94,7 @@ export class BusinessReportControllerExternal {
       riskLevels,
       statuses,
       findings,
+      isAlert,
     }: BusinessReportListRequestParamDto,
   ) {
     const { id: customerId, features } = await this.customerService.getByProjectId(
@@ -102,14 +103,14 @@ export class BusinessReportControllerExternal {
 
     const { data, totalPages, totalItems } = await this.businessReportService.findMany({
       withoutUnpublishedOngoingReports: true,
-      limit: page.size,
-      page: page.number,
+      ...(page ? { limit: page.size, page: page.number } : {}),
       customerId,
       from,
       to,
       riskLevels,
       statuses,
       findings,
+      isAlert,
       ...(reportType ? { reportType } : {}),
       ...(businessId ? { businessId } : {}),
       ...(search ? { searchQuery: search } : {}),

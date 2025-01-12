@@ -9,7 +9,6 @@ import { z } from 'zod';
 import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
 
 export const usePortfolioRiskStatisticsLogic = ({
-  riskLevelCounts,
   violationCounts,
 }: z.infer<typeof MetricsResponseSchema>) => {
   const [parent] = useAutoAnimate<HTMLTableSectionElement>();
@@ -20,7 +19,7 @@ export const usePortfolioRiskStatisticsLogic = ({
     },
     [],
   );
-  const totalRiskIndicators = violationCounts.reduce((acc, { count }) => acc + count, 0);
+
   const filteredRiskIndicators = useMemo(
     () =>
       violationCounts
@@ -28,6 +27,7 @@ export const usePortfolioRiskStatisticsLogic = ({
         .slice(0, 5),
     [violationCounts, riskIndicatorsSorting],
   );
+
   const widths = useMemo(
     () =>
       filteredRiskIndicators.map(item =>
@@ -49,6 +49,5 @@ export const usePortfolioRiskStatisticsLogic = ({
     riskIndicatorsSorting,
     onSortRiskIndicators,
     filteredRiskIndicators,
-    totalRiskIndicators,
   };
 };
