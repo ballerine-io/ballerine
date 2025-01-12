@@ -65,19 +65,19 @@ export const WebsiteCredibility: FunctionComponent<{
   trafficAnalysis,
 }) => {
   // TODO: Ideally should happen on backend
-  const trafficSources = useMemo(
-    () =>
-      trafficAnalysis.trafficSources
-        .map(({ label, value }) => ({ label, value: parseFloat(value) }))
-        .concat({
-          label: 'Other',
-          value:
-            100 -
-            trafficAnalysis.trafficSources.reduce((acc, item) => acc + parseFloat(item.value), 0),
-        })
-        .map(({ label, value }) => ({ label, value: parseFloat(value.toFixed(2)) })),
-    [trafficAnalysis.trafficSources],
-  );
+  const trafficSources = useMemo(() => {
+    if (!trafficAnalysis?.trafficSources?.length) return [];
+
+    return trafficAnalysis.trafficSources
+      .map(({ label, value }) => ({ label, value: parseFloat(value) }))
+      .concat({
+        label: 'Other',
+        value:
+          100 -
+          trafficAnalysis.trafficSources.reduce((acc, item) => acc + parseFloat(item.value), 0),
+      })
+      .map(({ label, value }) => ({ label, value: parseFloat(value.toFixed(2)) }));
+  }, [trafficAnalysis.trafficSources]);
 
   return (
     <div className="space-y-8">
@@ -147,11 +147,11 @@ export const WebsiteCredibility: FunctionComponent<{
 
       {/* <div className="flex flex-col 2xl:flex-row gap-4 w-full h-auto 2xl:h-96">
         <div className="h-[24rem] 2xl:h-full w-full 2xl:w-3/5"> */}
-      <div className="flex gap-4 h-[30rem] w-full">
+      <div className="flex h-[30rem] w-full gap-4">
         <Card className="h-full w-3/5">
           <CardHeader className="pt-4 font-bold">Estimated Monthly Visitors</CardHeader>
 
-          <CardContent className="h-4/5 w-full pb-0 mt-auto">
+          <CardContent className="mt-auto h-4/5 w-full pb-0">
             {trafficAnalysis.montlyVisitsIndicators.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={trafficAnalysis.montlyVisitsIndicators}>
@@ -165,7 +165,7 @@ export const WebsiteCredibility: FunctionComponent<{
                     content={({ active, payload, label }) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className="bg-white border border-gray-400 rounded-md px-4 py-2 text-gray-600">
+                          <div className="rounded-md border border-gray-400 bg-white px-4 py-2 text-gray-600">
                             <p className="max-w-xs">{`On ${label} the company's website had approx. ${Intl.NumberFormat(
                               'en',
                             ).format(parseInt(String(payload.at(0)?.value)))} visitors`}</p>
@@ -180,7 +180,7 @@ export const WebsiteCredibility: FunctionComponent<{
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex justify-center items-center h-full w-full">
+              <div className="flex h-full w-full items-center justify-center">
                 <p>No Monthly Visitors Data Available</p>
               </div>
             )}
@@ -189,11 +189,11 @@ export const WebsiteCredibility: FunctionComponent<{
 
         {/* <div className="flex 2xl:flex-col gap-4 h-[12rem] 2xl:h-full w-full 2xl:w-2/5">
                   <div className="h-full 2xl:h-1/2 w-1/2 2xl:w-full"> */}
-        <div className="flex flex-col gap-4 h-full w-2/5">
-          <Card className="w-full h-1/2">
-            <CardHeader className="pt-4 pb-0 font-bold">Traffic Sources</CardHeader>
+        <div className="flex h-full w-2/5 flex-col gap-4">
+          <Card className="h-1/2 w-full">
+            <CardHeader className="pb-0 pt-4 font-bold">Traffic Sources</CardHeader>
 
-            <CardContent className="h-4/5 w-full pb-0 mt-auto">
+            <CardContent className="mt-auto h-4/5 w-full pb-0">
               {trafficSources.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -228,10 +228,10 @@ export const WebsiteCredibility: FunctionComponent<{
                           {payload?.map((entry, index) => (
                             <div key={`item-${index}`} className="flex items-center space-x-2">
                               <span
-                                className="block w-2 h-2 rounded-full"
+                                className="block h-2 w-2 rounded-full"
                                 style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
                               />
-                              <div className="flex justify-between w-full">
+                              <div className="flex w-full justify-between">
                                 <span className="text-gray-500">{capitalize(entry.value)}</span>
                                 <span className="font-semibold">{entry.payload?.value}%</span>
                               </div>
@@ -243,7 +243,7 @@ export const WebsiteCredibility: FunctionComponent<{
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="flex justify-center items-center h-full w-full">
+                <div className="flex h-full w-full items-center justify-center">
                   <p>No Traffic Sources Data Available</p>
                 </div>
               )}
@@ -254,7 +254,7 @@ export const WebsiteCredibility: FunctionComponent<{
           <Card className="h-1/2 w-full">
             <CardHeader className="pt-4 font-bold">Engagement</CardHeader>
 
-            <CardContent className="h-3/5 flex items-center gap-6">
+            <CardContent className="flex h-3/5 items-center gap-6">
               {trafficAnalysis.engagements.length > 0 ? (
                 trafficAnalysis?.engagements.map(({ label, value }) => {
                   const { suffix, description, shouldRound } =
@@ -269,15 +269,15 @@ export const WebsiteCredibility: FunctionComponent<{
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger className="cursor-help">
-                              <InfoIcon className="text-gray-500 w-4 h-4" />
+                              <InfoIcon className="h-4 w-4 text-gray-500" />
                             </TooltipTrigger>
 
                             <TooltipContent
                               side="right"
                               align="center"
-                              className="bg-gray-50 border border-gray-400 text-primary text-sm max-w-[12rem]"
+                              className="text-primary max-w-[12rem] border border-gray-400 bg-gray-50 text-sm"
                             >
-                              <p className="text-gray-500 text-sm">{description}</p>
+                              <p className="text-sm text-gray-500">{description}</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -293,7 +293,7 @@ export const WebsiteCredibility: FunctionComponent<{
                   );
                 })
               ) : (
-                <div className="flex justify-center items-center h-full w-full">
+                <div className="flex h-full w-full items-center justify-center">
                   <p>No Engagement Data Available</p>
                 </div>
               )}
