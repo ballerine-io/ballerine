@@ -64,7 +64,22 @@ export class WinstonLogger implements IAppLogger {
     if (typeof error === 'string') {
       this.logger.error({ message: error, ...payload });
     } else {
-      this.logger.error({ error, ...payload });
+      const errorProperties = Object.getOwnPropertyNames(error).reduce(
+        (acc, key) => ({
+          ...acc,
+          [key]: (error as any)[key],
+        }),
+        {},
+      );
+
+      const errorObj = {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+        ...errorProperties,
+      };
+
+      this.logger.error({ error: errorObj, ...payload });
     }
   }
 
