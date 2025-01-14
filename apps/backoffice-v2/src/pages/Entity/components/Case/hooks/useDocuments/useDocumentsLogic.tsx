@@ -1,17 +1,20 @@
-import { ComponentProps, useCallback, useRef, useState } from 'react';
+import { ComponentProps, useCallback, useMemo, useRef, useState } from 'react';
 
-import { IDocumentsProps } from '../../interfaces';
-import { TransformWrapper } from 'react-zoom-pan-pinch';
-import { useCrop } from '@/common/hooks/useCrop/useCrop';
 import { DOWNLOAD_ONLY_MIME_TYPES } from '@/common/constants';
+import { useCrop } from '@/common/hooks/useCrop/useCrop';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useTesseract } from '@/common/hooks/useTesseract/useTesseract';
 import { createArrayOfNumbers } from '@/common/utils/create-array-of-numbers/create-array-of-numbers';
-import { useStorageFileByIdQuery } from '@/domains/storage/hooks/queries/useStorageFileByIdQuery/useStorageFileByIdQuery';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
+import { useStorageFileByIdQuery } from '@/domains/storage/hooks/queries/useStorageFileByIdQuery/useStorageFileByIdQuery';
+import { TransformWrapper } from 'react-zoom-pan-pinch';
+import { IDocumentsProps } from '../../interfaces';
+import { convertCsvDocumentsToPdf } from './helpers';
 
-export const useDocumentsLogic = (documents: IDocumentsProps['documents']) => {
-  const initialImage = documents?.[0];
+export const useDocumentsLogic = (_initialDocuments: IDocumentsProps['documents']) => {
+  const documents = useMemo(() => convertCsvDocumentsToPdf(_initialDocuments), [_initialDocuments]);
+  const initialImage = useMemo(() => documents?.[0], [documents]);
+
   const { data: customer } = useCustomerQuery();
   const { crop, isCropping, onCrop, onCancelCrop } = useCrop();
   const selectedImageRef = useRef<HTMLImageElement>();
