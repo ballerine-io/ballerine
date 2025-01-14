@@ -20,8 +20,9 @@ export class BusinessReportListRequestParamDto {
   @ApiProperty({ type: String, required: false })
   search?: string;
 
+  @IsOptional()
   @ApiProperty({ type: PageDto })
-  page!: PageDto;
+  page?: PageDto;
 
   @IsOptional()
   @IsString()
@@ -49,6 +50,8 @@ export class BusinessReportListRequestParamDto {
   @IsString({ each: true })
   @ApiProperty({ type: [String], required: false })
   statuses?: Array<'failed' | 'quality-control' | 'completed' | 'in-progress'>;
+
+  isAlert?: boolean;
 
   @IsOptional()
   @IsArray()
@@ -88,10 +91,15 @@ export const ListBusinessReportsSchema = z.object({
     .optional(),
   findings: z.array(z.string()).optional(),
   search: z.string().optional(),
-  page: z.object({
-    number: z.coerce.number().int().positive(),
-    size: z.coerce.number().int().positive().max(100),
-  }),
+  isAlert: z
+    .preprocess(value => (typeof value === 'string' ? JSON.parse(value) : value), z.boolean())
+    .optional(),
+  page: z
+    .object({
+      number: z.coerce.number().int().positive(),
+      size: z.coerce.number().int().positive().max(100),
+    })
+    .optional(),
 });
 
 export class BusinessReportListResponseDto {

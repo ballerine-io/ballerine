@@ -7,7 +7,7 @@ import { PortfolioRiskStatistics } from './components/PortfolioRiskStatistics/Po
 import { useStatisticsLogic } from './hooks/useStatisticsLogic';
 
 export const Statistics: FunctionComponent = () => {
-  const { data, isLoading, error, date, setDate, registrationDate } = useStatisticsLogic();
+  const { data, isLoading, error, date, setDate } = useStatisticsLogic();
 
   if (error) {
     throw error;
@@ -21,7 +21,7 @@ export const Statistics: FunctionComponent = () => {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Statistics</h1>
-        <MonthPicker date={date} setDate={setDate} minDate={registrationDate} />
+        <MonthPicker date={date} setDate={setDate} />
       </div>
 
       <div className="flex flex-col space-y-8">
@@ -30,12 +30,10 @@ export const Statistics: FunctionComponent = () => {
           addedMerchantsCount={data.addedMerchantsCount}
           removedMerchantsCount={data.removedMerchantsCount}
         />
-        {/* <UserStatistics fullName={'John Doe'} /> */}
         <PortfolioRiskStatistics
           riskLevelCounts={data.riskLevelCounts}
           violationCounts={data.violationCounts}
         />
-        {/* <WorkflowStatistics /> */}
       </div>
     </div>
   );

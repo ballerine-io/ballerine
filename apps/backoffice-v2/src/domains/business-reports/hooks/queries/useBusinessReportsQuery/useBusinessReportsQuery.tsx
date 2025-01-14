@@ -49,7 +49,7 @@ export const useBusinessReportsQuery = ({
       to,
       isAlert,
     }),
-    enabled: isAuthenticated && !!sortBy && !!sortDir && !!page && !!pageSize,
+    enabled: isAuthenticated,
     staleTime: 100_000,
     refetchInterval: 1_000_000,
   });

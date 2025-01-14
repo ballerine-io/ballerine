@@ -46,15 +46,15 @@ export class SessionSerializer extends PassportSerializer {
           firstName: true,
           lastName: true,
           avatarUrl: true,
-          createdAt: true,
           lastActiveAt: true,
           userToProjects: { select: { projectId: true } },
         },
       });
 
-      const { userToProjects, createdAt, ...userData } = userResult;
+      const { userToProjects, ...userData } = userResult;
+
       const authenticatedEntity = {
-        user: { ...userData, registrationDate: createdAt },
+        user: userData,
         projectIds: userToProjects?.map(userToProject => userToProject.projectId) || null,
         type: 'user',
       } as AuthenticatedEntity & { projectIds: string[] | null };

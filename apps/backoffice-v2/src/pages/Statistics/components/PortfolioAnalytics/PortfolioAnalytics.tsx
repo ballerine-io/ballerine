@@ -1,11 +1,9 @@
+import { z } from 'zod';
+import { FunctionComponent } from 'react';
+
 import { Card } from '@/common/components/atoms/Card/Card';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
-import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
-import { CardTitle } from '@/common/components/atoms/Card/Card.Title';
 import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
-import { UserMinus, UserPlus, Users } from 'lucide-react';
-import { FunctionComponent } from 'react';
-import { z } from 'zod';
 
 export const PortfolioAnalytics: FunctionComponent<
   Pick<
@@ -35,7 +33,9 @@ export const PortfolioAnalytics: FunctionComponent<
             <div className="space-y-2">
               <h2 className="text-xl font-semibold">New Merchants</h2>
               <p className="text-3xl font-bold">
-                +{Intl.NumberFormat('en').format(addedMerchantsCount)}
+                {addedMerchantsCount > 0
+                  ? `+${Intl.NumberFormat('en').format(addedMerchantsCount)}`
+                  : 0}
               </p>
               <p className="text-sm text-muted-foreground">
                 Merchants added within the selected time range

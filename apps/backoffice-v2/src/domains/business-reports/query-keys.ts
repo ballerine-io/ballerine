@@ -33,11 +33,15 @@ export const businessReportsQueryKey = createQueryKeys('business-reports', {
     queryFn: () => {
       const data = {
         ...params,
-        page: {
-          number: Number(page),
-          size: Number(pageSize),
-        },
-        orderBy: `${sortBy}:${sortDir}`,
+        ...(page && pageSize
+          ? {
+              page: {
+                number: Number(page),
+                size: Number(pageSize),
+              },
+            }
+          : {}),
+        ...(sortBy && sortDir ? { orderBy: `${sortBy}:${sortDir}` } : {}),
       };
 
       return fetchBusinessReports(data);

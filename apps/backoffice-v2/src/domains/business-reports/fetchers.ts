@@ -28,7 +28,9 @@ export const BusinessReportSchema = z
     parentCompanyName: z.string().nullable(),
     merchantId: z.string(),
     workflowVersion: z.enum([MERCHANT_REPORT_VERSIONS[0]!, ...MERCHANT_REPORT_VERSIONS.slice(1)]),
-    isAlert: z.boolean().nullable(),
+    isAlert: z
+      .preprocess(value => (typeof value === 'string' ? JSON.parse(value) : value), z.boolean())
+      .optional(),
     companyName: z.string().nullish(),
     monitoringStatus: z.boolean(),
     website: z.object({
@@ -66,6 +68,10 @@ export const BusinessReportsSchema = z.object({
   totalPages: z.number().nonnegative(),
 });
 
+export const BusinessReportsCountSchema = z.object({
+  count: z.number(),
+});
+
 export type TBusinessReport = z.infer<typeof BusinessReportSchema>;
 
 export type TBusinessReports = z.infer<typeof BusinessReportsSchema>;
@@ -87,7 +93,7 @@ export const fetchLatestBusinessReport = async ({
   return handleZodError(error, data);
 };
 
-export const fetchBusinessReports = async (params: {
+type BusinessReportsParams = {
   reportType?: MerchantReportType;
   riskLevels?: TRiskLevel[];
   statuses?: TReportStatusValue[];
@@ -99,13 +105,27 @@ export const fetchBusinessReports = async (params: {
     size: number;
   };
   orderBy?: string;
-}) => {
+};
+export const fetchBusinessReports = async (params: BusinessReportsParams) => {
   const queryParams = qs.stringify(params, { encode: false });
 
   const [data, error] = await apiClient({
     endpoint: `../external/business-reports/?${queryParams}`,
     method: Method.GET,
     schema: BusinessReportsSchema,
+    timeout: 30_000,
+  });
+
+  return handleZodError(error, data);
+};
+
+export const countBusinessReports = async (params: BusinessReportsParams) => {
+  const queryParams = qs.stringify(params, { encode: false });
+
+  const [data, error] = await apiClient({
+    endpoint: `../external/business-reports/count/?${queryParams}`,
+    method: Method.GET,
+    schema: BusinessReportsCountSchema,
     timeout: 30_000,
   });
 
