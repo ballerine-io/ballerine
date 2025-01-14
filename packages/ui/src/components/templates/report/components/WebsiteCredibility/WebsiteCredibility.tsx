@@ -21,7 +21,7 @@ import {
 import { capitalize } from 'string-ts';
 import { TrendingUp } from 'lucide-react';
 import { Area, AreaChart } from 'recharts';
-import { CardDescription, CardFooter, CardTitle } from '@/components/atoms';
+import { CardDescription, CardFooter } from '@/components/atoms';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/atoms';
 
 const engagementMetricsMapper = {
@@ -86,6 +86,7 @@ export const WebsiteCredibility: FunctionComponent<{
     if (data.length < 2) {
       return { direction: 'No trend data', percentage: 0 };
     }
+
     const lastMonthValue = parseInt(data[data.length - 1]?.value ?? '0');
     const previousMonthValue = parseInt(data[data.length - 2]?.value ?? '0');
     const percentageChange = ((lastMonthValue - previousMonthValue) / previousMonthValue) * 100;
@@ -358,8 +359,7 @@ export const WebsiteCredibility: FunctionComponent<{
         <div className="flex h-full w-2/5 flex-col gap-4">
           <Card className="h-1/2 w-full">
             <CardHeader className="pb-0 pt-4 font-bold">Traffic Sources</CardHeader>
-
-            <CardContent className="mt-auto h-4/5 w-full pb-0">
+            <CardContent className="mt-auto h-full w-full pb-0">
               {trafficSources.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>

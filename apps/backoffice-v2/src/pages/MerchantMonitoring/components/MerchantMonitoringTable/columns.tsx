@@ -53,9 +53,7 @@ export const columns = [
       const companyName = info.getValue();
 
       return (
-        <TextWithNAFallback>
-          <span className={`ms-4 font-semibold`}>{companyName}</span>
-        </TextWithNAFallback>
+        <TextWithNAFallback className={`ms-4 font-semibold`}>{companyName}</TextWithNAFallback>
       );
     },
     header: 'Company Name',
