@@ -11,8 +11,6 @@ import {
   CartesianGrid,
   Cell,
   Legend,
-  Line,
-  LineChart,
   Pie,
   PieChart,
   Tooltip as RechartsTooltip,
@@ -70,19 +68,19 @@ export const WebsiteCredibility: FunctionComponent<{
   trafficAnalysis,
 }) => {
   // TODO: Ideally should happen on backend
-  const trafficSources = useMemo(
-    () =>
-      trafficAnalysis.trafficSources
-        .map(({ label, value }) => ({ label, value: parseFloat(value) }))
-        .concat({
-          label: 'Other',
-          value:
-            100 -
-            trafficAnalysis.trafficSources.reduce((acc, item) => acc + parseFloat(item.value), 0),
-        })
-        .map(({ label, value }) => ({ label, value: parseFloat(value.toFixed(2)) })),
-    [trafficAnalysis.trafficSources],
-  );
+  const trafficSources = useMemo(() => {
+    if (!trafficAnalysis?.trafficSources?.length) return [];
+
+    return trafficAnalysis.trafficSources
+      .map(({ label, value }) => ({ label, value: parseFloat(value) }))
+      .concat({
+        label: 'Other',
+        value:
+          100 -
+          trafficAnalysis.trafficSources.reduce((acc, item) => acc + parseFloat(item.value), 0),
+      })
+      .map(({ label, value }) => ({ label, value: parseFloat(value.toFixed(2)) }));
+  }, [trafficAnalysis.trafficSources]);
 
   const calculateTrend = (data: Array<{ label: string; value: string }>) => {
     if (data.length < 2) {
@@ -255,8 +253,6 @@ export const WebsiteCredibility: FunctionComponent<{
           <h3 className="font-bold">Traffic Analysis</h3>
         </ContentTooltip>
       </div>
-      {/* <div className="flex flex-col 2xl:flex-row gap-4 w-full h-auto 2xl:h-96">
-        <div className="h-[24rem] 2xl:h-full w-full 2xl:w-3/5"> */}
       <div className="flex h-[30rem] w-full gap-4">
         <Card className="flex h-full w-3/5 flex-col">
           <CardHeader className="p-4 font-bold">
@@ -265,7 +261,7 @@ export const WebsiteCredibility: FunctionComponent<{
               Showing total visitors for the last 6 months
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="mt-auto h-4/5 w-full pb-0">
             {trafficAnalysis.montlyVisitsIndicators.length > 0 ? (
               <ChartContainer
                 className="h-[20rem] w-full"
@@ -307,6 +303,21 @@ export const WebsiteCredibility: FunctionComponent<{
                       Intl.NumberFormat('en', { notation: 'compact' }).format(value)
                     }
                   />
+                  <RechartsTooltip
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="rounded-md border border-gray-400 bg-white px-4 py-2 text-gray-600">
+                            <p className="max-w-xs">{`On ${label} the company's website had approx. ${Intl.NumberFormat(
+                              'en',
+                            ).format(parseInt(String(payload.at(0)?.value)))} visitors`}</p>
+                          </div>
+                        );
+                      }
+
+                      return null;
+                    }}
+                  />
                   <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
                   <Area
                     dataKey="visitors"
@@ -344,9 +355,6 @@ export const WebsiteCredibility: FunctionComponent<{
             </div>
           </CardFooter>
         </Card>
-
-        {/* <div className="flex 2xl:flex-col gap-4 h-[12rem] 2xl:h-full w-full 2xl:w-2/5">
-                  <div className="h-full 2xl:h-1/2 w-1/2 2xl:w-full"> */}
         <div className="flex h-full w-2/5 flex-col gap-4">
           <Card className="h-1/2 w-full">
             <CardHeader className="pb-0 pt-4 font-bold">Traffic Sources</CardHeader>
@@ -407,8 +415,6 @@ export const WebsiteCredibility: FunctionComponent<{
               )}
             </CardContent>
           </Card>
-
-          {/* <Card className="h-full 2xl:h-1/2 w-1/2 2xl:w-full"> */}
           <Card className="h-1/2 w-full">
             <CardHeader className="pt-4 font-bold">Engagement</CardHeader>
 
