@@ -28,9 +28,7 @@ export const BusinessReportSchema = z
     parentCompanyName: z.string().nullable(),
     merchantId: z.string(),
     workflowVersion: z.enum([MERCHANT_REPORT_VERSIONS[0]!, ...MERCHANT_REPORT_VERSIONS.slice(1)]),
-    isAlert: z
-      .preprocess(value => (typeof value === 'string' ? JSON.parse(value) : value), z.boolean())
-      .optional(),
+    isAlert: z.boolean().nullish(),
     companyName: z.string().nullish(),
     monitoringStatus: z.boolean(),
     website: z.object({
