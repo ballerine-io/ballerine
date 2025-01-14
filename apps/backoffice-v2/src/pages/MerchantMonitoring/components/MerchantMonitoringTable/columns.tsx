@@ -12,7 +12,13 @@ import { titleCase } from 'string-ts';
 
 import { ctw } from '@/common/utils/ctw/ctw';
 import { getSeverityFromRiskScore } from '@ballerine/common';
-import { Badge, severityToClassName, TextWithNAFallback, WarningFilledSvg } from '@ballerine/ui';
+import {
+  Badge,
+  CheckCircle,
+  severityToClassName,
+  TextWithNAFallback,
+  WarningFilledSvg,
+} from '@ballerine/ui';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
 import { Minus } from 'lucide-react';
@@ -20,6 +26,9 @@ import {
   MERCHANT_REPORT_STATUSES_MAP,
   MERCHANT_REPORT_TYPES_MAP,
 } from '@/domains/business-reports/constants';
+import React from 'react';
+import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
+import { TooltipTrigger, TooltipContent, Tooltip } from '@ballerine/ui';
 
 const columnHelper = createColumnHelper<TBusinessReport>();
 
@@ -39,84 +48,15 @@ const REPORT_TYPE_TO_SCAN_TYPE = {
 } as const;
 
 export const columns = [
-  columnHelper.accessor('isAlert', {
-    cell: ({ getValue }) => {
-      return getValue() ? (
-        <WarningFilledSvg className={`ms-4 d-6`} />
-      ) : (
-        <Minus className={`ms-4 text-[#D9D9D9] d-6`} />
-      );
-    },
-    header: 'Alert',
-  }),
-  columnHelper.accessor('reportType', {
+  columnHelper.accessor('companyName', {
     cell: info => {
-      const scanType = REPORT_TYPE_TO_SCAN_TYPE[info.getValue()];
-
-      return <TextWithNAFallback>{scanType}</TextWithNAFallback>;
-    },
-    header: 'Scan Type',
-  }),
-  columnHelper.accessor('createdAt', {
-    cell: info => {
-      const createdAt = info.getValue();
-
-      if (!createdAt) {
-        return <TextWithNAFallback>{createdAt}</TextWithNAFallback>;
-      }
-
-      // Convert UTC time to local browser time
-      const localDateTime = dayjs.utc(createdAt).local();
-
-      const date = localDateTime.format('MMM DD, YYYY');
-      const time = localDateTime.format('HH:mm');
+      const companyName = info.getValue();
 
       return (
-        <div className={`flex flex-col space-y-0.5`}>
-          <span className={`font-semibold`}>{date}</span>
-          <span className={`text-xs text-[#999999]`}>{time}</span>
-        </div>
+        <TextWithNAFallback className={`ms-4 font-semibold`}>{companyName}</TextWithNAFallback>
       );
     },
-    header: 'Created At',
-  }),
-  columnHelper.accessor('merchantId', {
-    cell: info => {
-      // eslint-disable-next-line react-hooks/rules-of-hooks -- ESLint doesn't like `cell` not being `Cell`.
-      const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
-
-      const id = info.getValue();
-
-      return (
-        <div className={`flex w-full max-w-[12ch] items-center space-x-2`}>
-          <TextWithNAFallback style={{ ...styles, width: '70%' }} ref={ref}>
-            {id}
-          </TextWithNAFallback>
-
-          <CopyToClipboardButton textToCopy={id ?? ''} />
-        </div>
-      );
-    },
-    header: 'Merchant ID',
-  }),
-  columnHelper.accessor('id', {
-    cell: info => {
-      // eslint-disable-next-line react-hooks/rules-of-hooks -- ESLint doesn't like `cell` not being `Cell`.
-      const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
-
-      const id = info.getValue();
-
-      return (
-        <div className={`flex w-full max-w-[12ch] items-center space-x-2`}>
-          <TextWithNAFallback style={{ ...styles, width: '70%' }} ref={ref}>
-            {id}
-          </TextWithNAFallback>
-
-          <CopyToClipboardButton textToCopy={id ?? ''} />
-        </div>
-      );
-    },
-    header: 'Report ID',
+    header: 'Company Name',
   }),
   columnHelper.accessor('website', {
     cell: info => {
@@ -125,14 +65,6 @@ export const columns = [
       return <TextWithNAFallback>{website}</TextWithNAFallback>;
     },
     header: 'Website',
-  }),
-  columnHelper.accessor('companyName', {
-    cell: info => {
-      const companyName = info.getValue();
-
-      return <TextWithNAFallback>{companyName}</TextWithNAFallback>;
-    },
-    header: 'Company Name',
   }),
   columnHelper.accessor('riskScore', {
     cell: info => {
@@ -158,6 +90,128 @@ export const columns = [
       );
     },
     header: 'Risk Level',
+  }),
+  columnHelper.accessor('monitoringStatus', {
+    cell: ({ getValue }) => {
+      return getValue() ? (
+        <Tooltip delayDuration={300}>
+          <TooltipTrigger>
+            <CheckCircle
+              size={18}
+              className={`stroke-background`}
+              containerProps={{
+                className: 'me-3 bg-success mt-px',
+              }}
+            />
+          </TooltipTrigger>
+          <TooltipContent>
+            This website is actively monitored for changes on a recurring basis
+          </TooltipContent>
+        </Tooltip>
+      ) : (
+        <Tooltip delayDuration={300}>
+          <TooltipTrigger>
+            <IndicatorCircle
+              size={18}
+              className={`stroke-transparent`}
+              containerProps={{
+                className: 'bg-slate-500/20',
+              }}
+            />
+          </TooltipTrigger>
+          <TooltipContent>This website is not currently monitored for changes</TooltipContent>
+        </Tooltip>
+      );
+    },
+    header: () => (
+      <Tooltip delayDuration={300}>
+        <TooltipTrigger>
+          <span className={`max-w-[20ch] truncate`}>Monitored</span>
+        </TooltipTrigger>
+        <TooltipContent>
+          Indicates whether this website is being monitored for changes
+        </TooltipContent>
+      </Tooltip>
+    ),
+  }),
+  columnHelper.accessor('reportType', {
+    cell: info => {
+      const scanType = REPORT_TYPE_TO_SCAN_TYPE[info.getValue()];
+
+      return <TextWithNAFallback>{scanType}</TextWithNAFallback>;
+    },
+    header: 'Scan Type',
+  }),
+  columnHelper.accessor('isAlert', {
+    cell: ({ getValue }) => {
+      return getValue() ? (
+        <WarningFilledSvg className={`d-6`} />
+      ) : (
+        <Minus className={`text-[#D9D9D9] d-6`} />
+      );
+    },
+    header: 'Alert',
+  }),
+  columnHelper.accessor('createdAt', {
+    cell: info => {
+      const createdAt = info.getValue();
+
+      if (!createdAt) {
+        return <TextWithNAFallback>{createdAt}</TextWithNAFallback>;
+      }
+
+      // Convert UTC time to local browser time
+      const localDateTime = dayjs.utc(createdAt).local();
+
+      const date = localDateTime.format('MMM DD, YYYY');
+      const time = localDateTime.format('HH:mm');
+
+      return (
+        <div className={`flex flex-col space-y-0.5`}>
+          <span>{date}</span>
+          <span className={`text-xs text-[#999999]`}>{time}</span>
+        </div>
+      );
+    },
+    header: 'Created At',
+  }),
+  // columnHelper.accessor('merchantId', {
+  //   cell: info => {
+  //     // eslint-disable-next-line react-hooks/rules-of-hooks -- ESLint doesn't like `cell` not being `Cell`.
+  //     const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
+  //
+  //     const id = info.getValue();
+  //
+  //     return (
+  //       <div className={`flex w-full max-w-[12ch] items-center space-x-2`}>
+  //         <TextWithNAFallback style={{ ...styles, width: '70%' }} ref={ref}>
+  //           {id}
+  //         </TextWithNAFallback>
+  //
+  //         <CopyToClipboardButton textToCopy={id ?? ''} />
+  //       </div>
+  //     );
+  //   },
+  //   header: 'Merchant ID',
+  // }),
+  columnHelper.accessor('id', {
+    cell: info => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- ESLint doesn't like `cell` not being `Cell`.
+      const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
+
+      const id = info.getValue();
+
+      return (
+        <div className={`flex w-full max-w-[12ch] items-center space-x-2`}>
+          <TextWithNAFallback style={{ ...styles, width: '70%' }} ref={ref}>
+            {id}
+          </TextWithNAFallback>
+
+          <CopyToClipboardButton textToCopy={id ?? ''} />
+        </div>
+      );
+    },
+    header: 'Report ID',
   }),
   columnHelper.accessor('status', {
     cell: info => {

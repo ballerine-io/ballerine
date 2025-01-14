@@ -1,11 +1,9 @@
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import { Card } from '@/common/components/atoms/Card/Card';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { Cell, Pie, PieChart } from 'recharts';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { Button } from '@/common/components/atoms/Button/Button';
-import { TrendingDown, TrendingUp } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -18,37 +16,34 @@ import { titleCase } from 'string-ts';
 import { usePortfolioRiskStatisticsLogic } from '@/pages/Statistics/components/PortfolioRiskStatistics/hooks/usePortfolioRiskStatisticsLogic/usePortfolioRiskStatisticsLogic';
 import { z } from 'zod';
 import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
-import { Link, useNavigate } from 'react-router-dom';
-import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { Link } from 'react-router-dom';
+import { buttonVariants, WarningFilledSvg } from '@ballerine/ui';
 
-export const PortfolioRiskStatistics: FunctionComponent<z.infer<typeof MetricsResponseSchema>> = ({
-  riskLevelCounts,
-  violationCounts,
-}) => {
+export const PortfolioRiskStatistics: FunctionComponent<
+  Pick<z.infer<typeof MetricsResponseSchema>, 'riskLevelCounts' | 'violationCounts'>
+> = ({ riskLevelCounts, violationCounts }) => {
   const {
     riskLevelToFillColor,
     parent,
     widths,
     riskLevelToBackgroundColor,
-    totalRiskIndicators,
-    riskIndicatorsSorting,
-    onSortRiskIndicators,
     filteredRiskIndicators,
+    locale,
+    navigate,
+    from,
+    to,
+    alertedReports,
   } = usePortfolioRiskStatisticsLogic({
-    riskLevelCounts,
     violationCounts,
   });
 
-  const locale = useLocale();
-  const navigate = useNavigate();
-
   return (
     <div>
-      <h5 className={'mb-4 font-bold'}>Portfolio Risk Statistics</h5>
+      <h3 className={'mb-4 text-xl font-bold'}>Portfolio Risk Statistics</h3>
       <div className={'grid grid-cols-3 gap-6'}>
         <div className={'min-h-[27.5rem] rounded-xl bg-[#F6F6F6] p-2'}>
           <Card className={'flex h-full flex-col px-3'}>
-            <CardHeader className={'pb-1'}>Merchant Monitoring Risk</CardHeader>
+            <CardHeader className={'pb-1 font-bold'}>Merchant Monitoring Risk</CardHeader>
             <CardContent>
               <p className={'mb-8 text-slate-400'}>
                 Risk levels of all merchant monitoring reports.
@@ -124,51 +119,15 @@ export const PortfolioRiskStatistics: FunctionComponent<z.infer<typeof MetricsRe
         </div>
         <div className={'min-h-[10.125rem] rounded-xl bg-[#F6F6F6] p-2'}>
           <Card className={'flex h-full flex-col px-3'}>
-            <CardHeader className={'pb-1'}>Risk Indicators</CardHeader>
+            <CardHeader className={'pb-2 font-bold'}>Top 10 Content Violations</CardHeader>
             <CardContent>
-              <div className={'mb-7 flex items-end space-x-2'}>
-                <span className={'text-3xl font-semibold'}>
-                  {Intl.NumberFormat().format(totalRiskIndicators)}
-                </span>
-                <span className={'text-sm leading-7 text-slate-500'}>Total indicators</span>
-              </div>
-              <div className={'mb-6'}>
-                <Button
-                  variant={'ghost'}
-                  className={ctw(
-                    'gap-x-2 rounded-none border-b border-b-slate-400 text-slate-400',
-                    {
-                      'border-b-[rgb(0,122,255)] text-[rgb(0,122,255)] hover:text-[rgb(0,122,255)]':
-                        riskIndicatorsSorting === 'desc',
-                    },
-                  )}
-                  onClick={onSortRiskIndicators('desc')}
-                >
-                  <TrendingUp />
-                  Highest First
-                </Button>
-                <Button
-                  variant={'ghost'}
-                  className={ctw(
-                    'gap-x-2 rounded-none border-b border-b-slate-400 text-slate-400',
-                    {
-                      'border-b-[rgb(0,122,255)] text-[rgb(0,122,255)] hover:text-[rgb(0,122,255)]':
-                        riskIndicatorsSorting === 'asc',
-                    },
-                  )}
-                  onClick={onSortRiskIndicators('asc')}
-                >
-                  <TrendingDown />
-                  Lowest First
-                </Button>
-              </div>
               <Table>
                 <TableHeader className={'[&_tr]:border-b-0'}>
                   <TableRow className={'hover:bg-[unset]'}>
                     <TableHead className={'h-0 ps-0 font-bold text-foreground'}>
                       Indicator
                     </TableHead>
-                    <TableHead className={'h-0 ps-0 font-bold text-foreground'}>Amount</TableHead>
+                    <TableHead className={'h-0 px-0 font-bold text-foreground'}>Amount</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody ref={parent}>
@@ -183,13 +142,39 @@ export const PortfolioRiskStatistics: FunctionComponent<z.infer<typeof MetricsRe
                           {titleCase(name ?? '')}
                         </Link>
                       </TableCell>
-                      <TableCell className={'pb-0 ps-0'}>
+                      <TableCell className={'!px-0 pb-0'}>
                         {Intl.NumberFormat().format(count)}
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
+            </CardContent>
+          </Card>
+        </div>
+        <div className={'self-start rounded-xl bg-[#F6F6F6] p-2'}>
+          <Card className={'flex h-full flex-col px-3'}>
+            <CardHeader className={'pb-2 font-bold'}>Unresolved Monitoring Alerts</CardHeader>
+            <CardContent>
+              <div className={'flex justify-between'}>
+                <div className={'flex items-center space-x-1'}>
+                  <WarningFilledSvg className={'mt-1 d-10'} />
+                  <span className={'text-3xl font-semibold'}>
+                    {Intl.NumberFormat().format(alertedReports)}
+                  </span>
+                </div>
+                <Link
+                  to={`/${locale}/merchant-monitoring?from=${from}&to=${to}&isAlert=Alerted`}
+                  className={ctw(
+                    buttonVariants({
+                      variant: 'link',
+                    }),
+                    'h-[unset] cursor-pointer !p-0 !text-blue-500',
+                  )}
+                >
+                  View
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </div>
