@@ -1,7 +1,8 @@
-import { ComponentProps, FunctionComponent } from 'react';
-import { useSort } from '@/common/hooks/useSort/useSort';
+import { useRadixScrollBoundaries } from '@/common/hooks/useRadixScrollBoundaries/useRadixScrollBoundaries';
 import { useSelect } from '@/common/hooks/useSelect/useSelect';
+import { useSort } from '@/common/hooks/useSort/useSort';
 import { DataTable } from '@ballerine/ui';
+import { ComponentProps, FunctionComponent } from 'react';
 import { PartialDeep } from 'type-fest';
 
 export const UrlDataTable: FunctionComponent<
@@ -10,10 +11,13 @@ export const UrlDataTable: FunctionComponent<
 > = props => {
   const { sortDir, sortBy, onSort } = useSort();
   const { selected, onSelect } = useSelect();
+  const { ref, handleScroll } = useRadixScrollBoundaries();
 
   return (
     <DataTable
       {...props}
+      ref={ref}
+      handleScroll={handleScroll}
       sort={{
         sortBy,
         sortDir,
