@@ -5,29 +5,32 @@ import * as swagger from '@nestjs/swagger';
 import { ApiBearerAuth, ApiExcludeEndpoint } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 import type { Request } from 'express';
+import _ from 'lodash';
+
+import { BusinessInformation } from '@/business/dtos/business-information';
+import { BusinessDto } from '@/business/dtos/business.dto';
+import { BusinessPatchDto } from '@/business/dtos/business.patch.dto';
+import { BusinessUpdateDto } from '@/business/dtos/business.update';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
+import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
+import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
+import { PrismaService } from '@/prisma/prisma.service';
+import { isRecordNotFoundError } from '@/prisma/prisma.util';
+import type { TProjectId, TProjectIds } from '@/types';
+import { WorkflowDefinitionFindManyArgs } from '@/workflow/dtos/workflow-definition-find-many-args';
+import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
+import { WorkflowDefinitionModel } from '@/workflow/workflow-definition.model';
+import { WorkflowService } from '@/workflow/workflow.service';
+import { ARRAY_MERGE_OPTION } from '@ballerine/workflow-core';
 import * as errors from '../errors';
-import { BusinessFindManyArgs } from './dtos/business-find-many-args';
-import { BusinessWhereUniqueInput } from './dtos/business-where-unique-input';
 import { BusinessModel } from './business.model';
 import { BusinessService } from './business.service';
-import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { BusinessCreateDto } from './dtos/business-create';
-import { WorkflowDefinitionModel } from '@/workflow/workflow-definition.model';
-import { WorkflowDefinitionFindManyArgs } from '@/workflow/dtos/workflow-definition-find-many-args';
-import { WorkflowService } from '@/workflow/workflow.service';
-import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
-import { BusinessUpdateDto } from '@/business/dtos/business.update';
-import { BusinessInformation } from '@/business/dtos/business-information';
-import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
-import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
-import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import type { TProjectId, TProjectIds } from '@/types';
-import { CurrentProject } from '@/common/decorators/current-project.decorator';
-import { BusinessPatchDto } from '@/business/dtos/business.patch.dto';
-import { BusinessDto } from '@/business/dtos/business.dto';
-import { PrismaService } from '@/prisma/prisma.service';
-import { ARRAY_MERGE_OPTION } from '@ballerine/workflow-core';
-import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
+import { BusinessFindManyArgs } from './dtos/business-find-many-args';
+import { BusinessMonitoringPatchDto } from './dtos/business-monitoring.patch.dto';
+import { BusinessWhereUniqueInput } from './dtos/business-where-unique-input';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Businesses')
@@ -133,13 +136,13 @@ export class BusinessControllerExternal {
     });
   }
 
-  @common.Patch('/:id/monitoring/:state')
+  @common.Patch('/:id/monitoring')
   @swagger.ApiForbiddenResponse()
   @swagger.ApiOkResponse({ type: BusinessDto })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   async updateOngoingMonitoringState(
     @common.Param('id') businessId: string,
-    @common.Param('state') state: 'on' | 'off',
+    @common.Body() data: BusinessMonitoringPatchDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
     const business = await this.businessService.getById(
@@ -152,26 +155,15 @@ export class BusinessControllerExternal {
       featureConfig?: TCustomerWithFeatures['features'];
     };
 
-    const enabled = state === 'on';
-
-    const updatedMetadata = !metadata
-      ? {
-          featureConfig: {
-            [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
-              enabled,
-            },
-          },
-        }
-      : {
-          ...metadata,
-          featureConfig: {
-            ...metadata.featureConfig,
-            [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
-              ...metadata.featureConfig?.[FEATURE_LIST.ONGOING_MERCHANT_REPORT],
-              enabled,
-            },
-          },
-        };
+    const updatedMetadata = _.merge({}, metadata, {
+      featureConfig: {
+        [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
+          enabled: data.state === 'on',
+          reason: data.reason ?? null,
+          userReason: data.userReason ?? null,
+        },
+      },
+    });
 
     await this.prismaService.$transaction(async transaction => {
       const stringifiedMetadata = JSON.stringify(updatedMetadata);
