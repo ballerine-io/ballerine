@@ -141,7 +141,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
                 </TabsTrigger>
               ))}
             </TabsList>
-            <ScrollArea orientation={'vertical'} className={'h-[75vh]'}>
+            <ScrollArea orientation={'vertical'} className={'h-[65vh] 2xl:h-[75vh]'}>
               {tabs.map(tab => (
                 <TabsContent key={tab.value} value={tab.value}>
                   {tab.content}

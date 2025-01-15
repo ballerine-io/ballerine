@@ -4,11 +4,11 @@ export const usePersistentScroll = () => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const resetScrollPosition = () => {
-    localStorage.removeItem('scrollPosition');
+    sessionStorage.removeItem('scrollPosition');
   };
 
   const restoreScrollPosition = () => {
-    const savedPosition = localStorage.getItem('scrollPosition');
+    const savedPosition = sessionStorage.getItem('scrollPosition');
 
     if (savedPosition && scrollAreaRef.current) {
       scrollAreaRef.current.scroll(0, parseInt(savedPosition, 10));
@@ -23,7 +23,7 @@ export const usePersistentScroll = () => {
 
   const handleScroll = () => {
     const scrollTop = scrollAreaRef.current?.scrollTop ?? 0;
-    localStorage.setItem('scrollPosition', scrollTop.toString());
+    sessionStorage.setItem('scrollPosition', scrollTop.toString());
   };
 
   return { ref: scrollAreaRef, handleScroll };
