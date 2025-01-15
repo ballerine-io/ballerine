@@ -13,6 +13,7 @@ import {
 import * as errors from '@/errors';
 
 const CreateReportResponseSchema = z.object({});
+
 const ReportSchema = z.object({
   id: z.string(),
   websiteId: z.string(),
@@ -27,9 +28,7 @@ const ReportSchema = z.object({
     })
     .nullable(),
   riskScore: z.number().nullable(),
-  isAlert: z
-    .preprocess(value => (typeof value === 'string' ? JSON.parse(value) : value), z.boolean())
-    .optional(),
+  isAlert: z.boolean().nullable(),
   companyName: z.string().nullish(),
   website: z.object({
     id: z.string(),
