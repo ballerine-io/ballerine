@@ -9,6 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  Skeleton,
   TextWithNAFallback,
 } from '@ballerine/ui';
 
@@ -37,6 +38,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     isNotesOpen,
     turnOngoingMonitoringOn,
     turnOngoingMonitoringOff,
+    isFetchingBusinessReport,
   } = useMerchantMonitoringBusinessReportLogic();
 
   return (
@@ -85,48 +87,56 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <TextWithNAFallback as={'h2'} className="pb-4 text-2xl font-bold">
-            {websiteWithNoProtocol}
-          </TextWithNAFallback>
-          <div className={`flex items-center space-x-8 pb-4`}>
-            <div className={`flex items-center`}>
-              <span className={`me-4 text-sm leading-6 text-slate-400`}>Status</span>
-              <Badge
-                variant={
-                  statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]
-                    ?.variant
-                }
-                className={ctw(`text-sm font-bold`, {
-                  'bg-info/20 text-info':
-                    businessReport?.status === MERCHANT_REPORT_STATUSES_MAP.completed,
-                  'bg-violet-500/20 text-violet-500': [
-                    MERCHANT_REPORT_STATUSES_MAP['in-progress'],
-                    MERCHANT_REPORT_STATUSES_MAP['quality-control'],
-                  ].includes(businessReport?.status ?? ''),
-                })}
-              >
-                {statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]
-                  ?.text ?? titleCase(businessReport?.status ?? '')}
-              </Badge>
+          {isFetchingBusinessReport ? (
+            <Skeleton className="h-6 w-32" />
+          ) : (
+            <TextWithNAFallback as={'h2'} className="pb-4 text-2xl font-bold">
+              {websiteWithNoProtocol}
+            </TextWithNAFallback>
+          )}
+          {isFetchingBusinessReport ? (
+            <Skeleton className="my-6 h-6 w-2/3" />
+          ) : (
+            <div className={`flex items-center space-x-8 pb-4`}>
+              <div className={`flex items-center`}>
+                <span className={`me-4 text-sm leading-6 text-slate-400`}>Status</span>
+                <Badge
+                  variant={
+                    statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]
+                      ?.variant
+                  }
+                  className={ctw(`text-sm font-bold`, {
+                    'bg-info/20 text-info':
+                      businessReport?.status === MERCHANT_REPORT_STATUSES_MAP.completed,
+                    'bg-violet-500/20 text-violet-500': [
+                      MERCHANT_REPORT_STATUSES_MAP['in-progress'],
+                      MERCHANT_REPORT_STATUSES_MAP['quality-control'],
+                    ].includes(businessReport?.status ?? ''),
+                  })}
+                >
+                  {statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]
+                    ?.text ?? titleCase(businessReport?.status ?? '')}
+                </Badge>
+              </div>
+              <div className={`text-sm`}>
+                <span className={`me-2 leading-6 text-slate-400`}>Created at</span>
+                {businessReport?.createdAt &&
+                  dayjs(new Date(businessReport?.createdAt)).format('HH:mm MMM Do, YYYY')}
+              </div>
+              <div className={`flex items-center space-x-2 text-sm`}>
+                <span className={`text-slate-400`}>Monitoring Status</span>
+                <span
+                  className={ctw('select-none rounded-full d-3', {
+                    'bg-success': businessReport?.monitoringStatus,
+                    'bg-slate-400': !businessReport?.monitoringStatus,
+                  })}
+                >
+                  &nbsp;
+                </span>
+              </div>
+              <NotesButton numberOfNotes={notes?.length} />
             </div>
-            <div className={`text-sm`}>
-              <span className={`me-2 leading-6 text-slate-400`}>Created at</span>
-              {businessReport?.createdAt &&
-                dayjs(new Date(businessReport?.createdAt)).format('HH:mm MMM Do, YYYY')}
-            </div>
-            <div className={`flex items-center space-x-2 text-sm`}>
-              <span className={`text-slate-400`}>Monitoring Status</span>
-              <span
-                className={ctw('select-none rounded-full d-3', {
-                  'bg-success': businessReport?.monitoringStatus,
-                  'bg-slate-400': !businessReport?.monitoringStatus,
-                })}
-              >
-                &nbsp;
-              </span>
-            </div>
-            <NotesButton numberOfNotes={notes?.length} />
-          </div>
+          )}
           <Tabs defaultValue={activeTab} className="w-full" key={activeTab}>
             <TabsList className={'mb-4'}>
               {tabs.map(tab => (
@@ -142,11 +152,24 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
               ))}
             </TabsList>
             <ScrollArea orientation={'vertical'} className={'h-[75vh]'}>
-              {tabs.map(tab => (
-                <TabsContent key={tab.value} value={tab.value}>
-                  {tab.content}
-                </TabsContent>
-              ))}
+              {isFetchingBusinessReport ? (
+                <>
+                  <Skeleton className="h-6 w-72" />
+                  <Skeleton className="mt-6 h-4 w-40" />
+
+                  <div className="mt-6 flex h-[24rem] w-full flex-nowrap gap-8">
+                    <Skeleton className="w-2/3" />
+                    <Skeleton className="w-1/3" />
+                  </div>
+                  <Skeleton className="mt-6 h-[16rem]" />
+                </>
+              ) : (
+                tabs.map(tab => (
+                  <TabsContent key={tab.value} value={tab.value}>
+                    {tab.content}
+                  </TabsContent>
+                ))
+              )}
             </ScrollArea>
           </Tabs>
         </section>

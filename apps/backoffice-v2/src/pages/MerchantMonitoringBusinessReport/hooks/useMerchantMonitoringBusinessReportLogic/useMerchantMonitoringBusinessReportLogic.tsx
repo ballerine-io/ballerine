@@ -24,9 +24,9 @@ const statusToBadgeData = {
 
 export const useMerchantMonitoringBusinessReportLogic = () => {
   const { businessReportId } = useParams();
-  const { data: businessReport } = useBusinessReportByIdQuery({
-    id: businessReportId ?? '',
-  });
+  const { data: businessReport, isFetching: isFetchingBusinessReport } = useBusinessReportByIdQuery(
+    { id: businessReportId ?? '' },
+  );
 
   const { data: notes } = useNotesByNoteable({
     noteableId: businessReportId,
@@ -108,5 +108,6 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     isNotesOpen,
     turnOngoingMonitoringOn,
     turnOngoingMonitoringOff,
+    isFetchingBusinessReport,
   };
 };
