@@ -14,17 +14,21 @@ import {
   createReportAdapter,
 } from '@/components';
 
-export const useReportTabs = ({
-  reportVersion,
-  report,
-  companyName,
-  Link,
-}: {
+type UseReportTabsProps = {
   reportVersion: string;
+  isOnboarding: boolean;
   report: Record<PropertyKey, any>;
   companyName: string;
   Link: ComponentProps<typeof BusinessReportSummary>['Link'];
-}) => {
+};
+
+export const useReportTabs = ({
+  reportVersion,
+  isOnboarding,
+  report,
+  companyName,
+  Link,
+}: UseReportTabsProps) => {
   const adapter = createReportAdapter({
     reportVersion,
   });
@@ -122,6 +126,7 @@ export const useReportTabs = ({
 
               <BusinessReportSummary
                 summary={summary}
+                isOnboarding={isOnboarding}
                 ongoingMonitoringSummary={ongoingMonitoringSummary}
                 riskScore={riskScore}
                 riskIndicators={riskIndicators as Writable<typeof riskIndicators>}
@@ -216,6 +221,7 @@ export const useReportTabs = ({
       formattedMcc,
       homepageScreenshotUrl,
       lineOfBusinessDescription,
+      isOnboarding,
       ongoingMonitoringSummary,
       onlineReputationAnalysis,
       pricingAnalysis,
