@@ -17,10 +17,30 @@ import { isObject } from '@ballerine/common';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-const ZodDeboardingSchema = z.object({
-  reason: z.string().optional(),
-  userReason: z.string().optional(),
-});
+const ZodDeboardingSchema = z
+  .object({
+    reason: z.string().optional(),
+    userReason: z.string().optional(),
+  })
+  .refine(
+    ({ reason, userReason }) => {
+      if (reason === 'other') {
+        return !!userReason && userReason.length >= 5;
+      }
+
+      return true;
+    },
+    ({ reason }) => {
+      if (reason === 'other') {
+        return {
+          message: 'Please provide a reason of at least 5 characters',
+          path: ['userReason'],
+        };
+      }
+
+      return { message: 'Invalid Input' };
+    },
+  );
 
 const statusToBadgeData = {
   [MERCHANT_REPORT_STATUSES_MAP.completed]: { variant: 'info', text: 'Manual Review' },
@@ -65,24 +85,6 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
   });
 
   const onSubmit: SubmitHandler<z.infer<typeof ZodDeboardingSchema>> = async (data, e) => {
-    if (!data.reason) {
-      form.setError('reason', { type: 'required', message: 'This field is required' });
-
-      return;
-    }
-
-    if (
-      (data.reason === 'other' && !data.userReason) ||
-      (data.userReason && data.userReason?.length < 5)
-    ) {
-      form.setError('userReason', {
-        type: 'minLength',
-        message: 'Please provide a reason of at least 5 characters',
-      });
-
-      return;
-    }
-
     if (!businessReport?.merchantId) {
       throw new Error('Merchant ID is missing');
     }
