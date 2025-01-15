@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-export const useRadixScrollBoundaries = () => {
+export const usePersistentScroll = () => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const resetScrollPosition = () => {
@@ -11,9 +11,7 @@ export const useRadixScrollBoundaries = () => {
     const savedPosition = localStorage.getItem('scrollPosition');
 
     if (savedPosition && scrollAreaRef.current) {
-      if (scrollAreaRef.current) {
-        scrollAreaRef.current.scrollTop = parseInt(savedPosition, 10);
-      }
+      scrollAreaRef.current.scroll(0, parseInt(savedPosition, 10));
     }
   };
 

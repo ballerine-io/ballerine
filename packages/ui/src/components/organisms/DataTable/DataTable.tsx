@@ -337,6 +337,6 @@ const DataTableBase = <TData extends RowData, TValue = any>(
 };
 
 const forward = React.forwardRef as <T, P = NonNullable<unknown>>(
-  render: (props: P, ref: React.Ref<T>) => React.ReactNode | null,
-) => (props: P & React.RefAttributes<T>) => React.ReactNode | null;
+  render: (props: P, ref: React.Ref<T>) => React.ReactNode,
+) => (props: P & React.RefAttributes<T>) => React.ReactNode;
 export const DataTable = forward(DataTableBase);
