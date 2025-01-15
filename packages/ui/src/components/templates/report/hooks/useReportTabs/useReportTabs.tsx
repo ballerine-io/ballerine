@@ -16,7 +16,7 @@ import {
 
 type UseReportTabsProps = {
   reportVersion: string;
-  isOngoing: boolean;
+  isOnboarding: boolean;
   report: Record<PropertyKey, any>;
   companyName: string;
   Link: ComponentProps<typeof BusinessReportSummary>['Link'];
@@ -24,7 +24,7 @@ type UseReportTabsProps = {
 
 export const useReportTabs = ({
   reportVersion,
-  isOngoing,
+  isOnboarding,
   report,
   companyName,
   Link,
@@ -126,7 +126,7 @@ export const useReportTabs = ({
 
               <BusinessReportSummary
                 summary={summary}
-                isOngoing={isOngoing}
+                isOnboarding={isOnboarding}
                 ongoingMonitoringSummary={ongoingMonitoringSummary}
                 riskScore={riskScore}
                 riskIndicators={riskIndicators as Writable<typeof riskIndicators>}
@@ -221,6 +221,7 @@ export const useReportTabs = ({
       formattedMcc,
       homepageScreenshotUrl,
       lineOfBusinessDescription,
+      isOnboarding,
       ongoingMonitoringSummary,
       onlineReputationAnalysis,
       pricingAnalysis,
