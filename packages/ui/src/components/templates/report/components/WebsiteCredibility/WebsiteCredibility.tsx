@@ -1,24 +1,3 @@
-import dayjs from 'dayjs';
-import { InfoIcon } from 'lucide-react';
-import { FunctionComponent, useMemo } from 'react';
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  Cell,
-  Legend,
-  Pie,
-  PieChart,
-  Tooltip as RechartsTooltip,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-} from 'recharts';
-import { capitalize } from 'string-ts';
-import { TrendingUp } from 'lucide-react';
-import { Area, AreaChart } from 'recharts';
-import { CardDescription, CardFooter, CardTitle } from '@/components/atoms';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/atoms';
 import { ctw } from '@/common';
 import { Card, CardContent, CardHeader } from '@/components';
 import {
@@ -34,6 +13,22 @@ import {
 import { BallerineLink } from '@/components/atoms/BallerineLink/BallerineLink';
 import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
 import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
+import dayjs from 'dayjs';
+import { InfoIcon } from 'lucide-react';
+import { FunctionComponent, useMemo } from 'react';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import { capitalize } from 'string-ts';
 
 const engagementMetricsMapper = {
   'Time on site': {
@@ -189,8 +184,8 @@ export const WebsiteCredibility: FunctionComponent<{
                 <ChartContainer
                   className="h-[20rem] w-full"
                   config={{
-                    desktop: {
-                      label: 'Monthly Visitors',
+                    visitors: {
+                      label: 'Visited',
                       color: '#007aff',
                     },
                   }}
@@ -228,7 +223,16 @@ export const WebsiteCredibility: FunctionComponent<{
                     />
                     <ChartTooltip
                       cursor={false}
-                      content={<ChartTooltipContent indicator="line" />}
+                      content={
+                        <ChartTooltipContent
+                          indicator="dot"
+                          valueRender={value => (
+                            <span className="text-foreground font-mono font-medium tabular-nums ml-4">
+                              {Intl.NumberFormat('en').format(Number(value))}
+                            </span>
+                          )}
+                        />
+                      }
                     />
                     <Area
                       dataKey="visitors"
