@@ -22,6 +22,7 @@ import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 export interface DocumentFieldParams {
   documentData: Partial<Document>;
+  acceptFileFormats?: string;
 }
 
 export const DocumentField = (
@@ -243,6 +244,7 @@ export const DocumentField = (
         onBlur={onBlur as () => void}
         testId={definition.name}
         onChange={handleChange}
+        acceptFileFormats={definition.options.acceptFileFormats}
       />
       {!!warnings.length && <ErrorsList errors={warnings.map(err => err.message)} />}
       {isTouched && !!validationErrors.length && (

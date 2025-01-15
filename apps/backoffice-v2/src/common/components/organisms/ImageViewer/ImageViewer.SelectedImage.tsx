@@ -1,3 +1,4 @@
+import { isCsv } from '@/common/utils/is-csv/is-csv';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 import { ctw } from '../../../utils/ctw/ctw';
 import { isPdf } from '../../../utils/is-pdf/is-pdf';
@@ -31,10 +32,10 @@ export const SelectedImage = forwardRef<HTMLImageElement | HTMLIFrameElement, TS
       setIsError(false);
     }, [isError, selectedImage?.imageUrl]);
 
-    if (isPdf(selectedImage)) {
+    if (isPdf(selectedImage) || isCsv(selectedImage)) {
       return (
         <iframe
-          src={selectedImage?.imageUrl + '#toolbar=0&navpanes=0'}
+          src={`${selectedImage?.imageUrl}#toolbar=0&navpanes=0`}
           ref={ref}
           className={ctw(className, `d-full mx-auto`, {
             'h-[600px] w-[600px]': isPlaceholder,
@@ -60,3 +61,5 @@ export const SelectedImage = forwardRef<HTMLImageElement | HTMLIFrameElement, TS
     );
   },
 );
+
+SelectedImage.displayName = 'SelectedImage';
