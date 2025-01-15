@@ -7,11 +7,16 @@ import {
 } from '@/pages/Statistics/components/PortfolioRiskStatistics/constants';
 import { z } from 'zod';
 import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
+import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
+import { StatisticsSearchSchema } from '@/pages/Statistics/hooks/useStatisticsLogic';
+import { useBusinessReportsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportsQuery/useBusinessReportsQuery';
 
 export const usePortfolioRiskStatisticsLogic = ({
-  riskLevelCounts,
   violationCounts,
-}: z.infer<typeof MetricsResponseSchema>) => {
+}: Pick<z.infer<typeof MetricsResponseSchema>, 'violationCounts'>) => {
   const [parent] = useAutoAnimate<HTMLTableSectionElement>();
   const [riskIndicatorsSorting, setRiskIndicatorsSorting] = useState<SortDirection>('desc');
   const onSortRiskIndicators = useCallback(
@@ -20,14 +25,15 @@ export const usePortfolioRiskStatisticsLogic = ({
     },
     [],
   );
-  const totalRiskIndicators = violationCounts.reduce((acc, { count }) => acc + count, 0);
+
   const filteredRiskIndicators = useMemo(
     () =>
       violationCounts
         .sort((a, b) => (riskIndicatorsSorting === 'asc' ? a.count - b.count : b.count - a.count))
-        .slice(0, 5),
+        .slice(0, 10),
     [violationCounts, riskIndicatorsSorting],
   );
+
   const widths = useMemo(
     () =>
       filteredRiskIndicators.map(item =>
@@ -40,6 +46,28 @@ export const usePortfolioRiskStatisticsLogic = ({
       ),
     [filteredRiskIndicators],
   );
+  const locale = useLocale();
+  const navigate = useNavigate();
+  const getLast30DaysDateRange = () => {
+    const today = dayjs();
+    const thirtyDaysAgo = today.subtract(30, 'day');
+
+    return {
+      from: thirtyDaysAgo.format('YYYY-MM-DD'),
+      to: today.format('YYYY-MM-DD'),
+    };
+  };
+
+  const last30DaysDateRange = getLast30DaysDateRange();
+  const [{ from }] = useZodSearchParams(StatisticsSearchSchema);
+
+  const { data: businessReports } = useBusinessReportsQuery({
+    isAlert: true,
+    from,
+    to: dayjs(from).add(1, 'month').format('YYYY-MM-DD'),
+  });
+
+  const alertedReports = businessReports?.totalItems ?? 0;
 
   return {
     riskLevelToFillColor,
@@ -49,6 +77,10 @@ export const usePortfolioRiskStatisticsLogic = ({
     riskIndicatorsSorting,
     onSortRiskIndicators,
     filteredRiskIndicators,
-    totalRiskIndicators,
+    locale,
+    navigate,
+    from: last30DaysDateRange.from,
+    to: last30DaysDateRange.to,
+    alertedReports,
   };
 };

@@ -17,18 +17,20 @@ export const useBusinessReportsQuery = ({
   findings,
   from,
   to,
+  isAlert,
 }: {
   reportType?: MerchantReportType;
-  search: string;
-  page: number;
-  pageSize: number;
-  sortBy: string;
-  sortDir: string;
-  riskLevels: TRiskLevel[];
-  statuses: TReportStatusValue[];
-  findings: string[];
+  search?: string;
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortDir?: string;
+  riskLevels?: TRiskLevel[];
+  statuses?: TReportStatusValue[];
+  findings?: string[];
   from?: string;
   to?: string;
+  isAlert?: boolean;
 }) => {
   const isAuthenticated = useIsAuthenticated();
 
@@ -45,8 +47,9 @@ export const useBusinessReportsQuery = ({
       findings,
       from,
       to,
+      isAlert,
     }),
-    enabled: isAuthenticated && !!sortBy && !!sortDir && !!page && !!pageSize,
+    enabled: isAuthenticated,
     staleTime: 100_000,
     refetchInterval: 1_000_000,
   });

@@ -4,6 +4,7 @@ import { FunctionComponent } from 'react';
 import { ImageOCR } from '@/common/components/molecules/ImageOCR/ImageOCR';
 import { ImageViewer } from '@/common/components/organisms/ImageViewer/ImageViewer';
 import { ctw } from '@/common/utils/ctw/ctw';
+import { isCsv } from '@/common/utils/is-csv/is-csv';
 import { isPdf } from '@/common/utils/is-pdf/is-pdf';
 import { useDocumentsToolbarLogic } from '@/pages/Entity/components/Case/hooks/useDocumentsToolbarLogic/useDocumentsToolbarLogic';
 
@@ -55,7 +56,7 @@ export const DocumentsToolbar: FunctionComponent<{
           <ExternalLinkIcon className={`p-0.5`} />
         </button>
       )}
-      {!isPdf(image) && !isLoading && (
+      {!isPdf(image) && !isCsv(image) && !isLoading && (
         <>
           <button
             type={`button`}

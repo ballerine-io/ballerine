@@ -1,31 +1,39 @@
-import React, { FunctionComponent } from 'react';
-import { UserStatistics } from '@/pages/Statistics/components/UserStatistics/UserStatistics';
-import { PortfolioRiskStatistics } from '@/pages/Statistics/components/PortfolioRiskStatistics/PortfolioRiskStatistics';
-import { WorkflowStatistics } from '@/pages/Statistics/components/WorkflowStatistics/WorkflowStatistics';
 import { Loader2 } from 'lucide-react';
-import { useBusinessReportMetricsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
+import { FunctionComponent } from 'react';
+
+import { MonthPicker } from './components/MonthPicker/MonthPicker';
+import { PortfolioAnalytics } from './components/PortfolioAnalytics/PortfolioAnalytics';
+import { PortfolioRiskStatistics } from './components/PortfolioRiskStatistics/PortfolioRiskStatistics';
+import { useStatisticsLogic } from './hooks/useStatisticsLogic';
 
 export const Statistics: FunctionComponent = () => {
-  const { data, isLoading, error } = useBusinessReportMetricsQuery();
+  const { data, isLoading, error, date, setDate } = useStatisticsLogic();
 
   if (error) {
     throw error;
   }
 
   if (isLoading || !data) {
-    return <Loader2 className={'w-4 animate-spin'} />;
+    return <Loader2 className="w-4 animate-spin" />;
   }
 
   return (
     <div>
-      <h1 className={'pb-5 text-2xl font-bold'}>Statistics</h1>
-      <div className={'flex flex-col space-y-8'}>
-        {/* <UserStatistics fullName={'John Doe'} /> */}
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Statistics</h1>
+        <MonthPicker date={date} setDate={setDate} />
+      </div>
+
+      <div className="flex flex-col space-y-8">
+        <PortfolioAnalytics
+          totalActiveMerchants={data.totalActiveMerchants}
+          addedMerchantsCount={data.addedMerchantsCount}
+          removedMerchantsCount={data.removedMerchantsCount}
+        />
         <PortfolioRiskStatistics
           riskLevelCounts={data.riskLevelCounts}
           violationCounts={data.violationCounts}
         />
-        {/* <WorkflowStatistics /> */}
       </div>
     </div>
   );

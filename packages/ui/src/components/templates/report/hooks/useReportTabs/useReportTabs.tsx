@@ -1,6 +1,7 @@
 import { Crown } from 'lucide-react';
 import { ComponentProps, ReactNode, useMemo } from 'react';
 import { Writable } from 'type-fest';
+import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
 
 import {
   AdsAndSocialMedia,
@@ -64,9 +65,9 @@ export const useReportTabs = ({
       violations: websiteCredibilityAnalysis,
     },
     {
-      title: 'Ads and Social Media Analysis',
+      title: 'Social Media Analysis',
       search: '?activeTab=adsAndSocialMedia',
-      violations: adsAndSocialMediaAnalysis ?? [],
+      violations: null,
     },
     {
       title: 'Website Line of Business Analysis',
@@ -100,7 +101,25 @@ export const useReportTabs = ({
           value: 'summary',
           content: (
             <>
-              <h3 className={'mb-8 text-lg font-bold'}>Summary</h3>
+              <ContentTooltip
+                description={
+                  <p>
+                    Provides a concise overview of the merchant&apos;s risk level, integrating
+                    various factors into a clear summary for informed decisions.
+                  </p>
+                }
+                props={{
+                  tooltipContent: {
+                    className: 'max-w-[400px] whitespace-normal',
+                  },
+                  tooltipTrigger: {
+                    className: 'col-span-full text-lg font-bold',
+                  },
+                }}
+              >
+                <h3 className={'mb-8 text-lg font-bold'}>Summary</h3>
+              </ContentTooltip>
+
               <BusinessReportSummary
                 summary={summary}
                 ongoingMonitoringSummary={ongoingMonitoringSummary}
@@ -158,7 +177,7 @@ export const useReportTabs = ({
           ),
         },
         {
-          label: 'Ads and Social Media',
+          label: 'Social Media',
           value: 'adsAndSocialMedia',
           content: (
             <AdsAndSocialMedia

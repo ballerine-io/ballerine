@@ -52,6 +52,7 @@ export class SessionSerializer extends PassportSerializer {
       });
 
       const { userToProjects, ...userData } = userResult;
+
       const authenticatedEntity = {
         user: userData,
         projectIds: userToProjects?.map(userToProject => userToProject.projectId) || null,
