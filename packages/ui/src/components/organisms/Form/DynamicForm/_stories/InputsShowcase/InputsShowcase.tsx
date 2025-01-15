@@ -135,6 +135,49 @@ const schema: Array<IFormElement<any, any>> = [
     },
   },
   {
+    id: 'DocumentField-1',
+    element: 'documentfield',
+    valueDestination: 'documents',
+    params: {
+      label: 'Document Field',
+      placeholder: 'Select File',
+      description: 'Upload a file from your device',
+      pageIndex: 0,
+      pageProperty: 'ballerineFileId',
+      template: {
+        id: 'document-1',
+        pages: [],
+      },
+      uploadSettings: {
+        url: 'http://localhost:3000/upload',
+        method: 'POST',
+        resultPath: 'filename',
+      },
+    },
+  },
+  {
+    id: 'DocumentField-2',
+    element: 'documentfield',
+    valueDestination: 'documents',
+    params: {
+      label: 'Document Field',
+      placeholder: 'Select File',
+      description: 'Upload a file from your device',
+      pageIndex: 0,
+      pageProperty: 'ballerineFileId',
+      template: {
+        id: 'document-2',
+        pages: [],
+      },
+      uploadOn: 'submit',
+      uploadSettings: {
+        url: 'http://localhost:3000/upload',
+        method: 'POST',
+        resultPath: 'filename',
+      },
+    },
+  },
+  {
     id: 'FieldList',
     element: 'fieldlist',
     valueDestination: 'fieldlist',

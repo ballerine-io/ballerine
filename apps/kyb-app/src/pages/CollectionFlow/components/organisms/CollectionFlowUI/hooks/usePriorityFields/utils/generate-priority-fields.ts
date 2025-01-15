@@ -6,14 +6,11 @@ import {
   getFieldDefinitionsFromSchema,
   IFormElement,
   IPriorityField,
+  isDocumentFieldDefinition,
   TBaseFields,
   TDeepthLevelStack,
 } from '@ballerine/ui';
 import get from 'lodash/get';
-import {
-  DOCUMENT_FIELD_TYPE,
-  isDocumentFieldDefinition,
-} from '../../../components/form/DocumentField';
 
 export const generatePriorityFields = (
   elements: Array<IFormElement<any, any>>,
@@ -22,21 +19,16 @@ export const generatePriorityFields = (
   const fieldElements = getFieldDefinitionsFromSchema(elements);
   const priorityFields: IPriorityField[] = [];
 
-  const run = (
-    elements: Array<IFormElement<TBaseFields | typeof DOCUMENT_FIELD_TYPE, any>>,
-    stack: TDeepthLevelStack = [],
-  ) => {
+  const run = (elements: Array<IFormElement<TBaseFields, any>>, stack: TDeepthLevelStack = []) => {
     for (const element of elements) {
       // Extracting revision reason fro documents isnt common so we handling it explicitly
-      if (element.element === DOCUMENT_FIELD_TYPE) {
+      if (element.element === 'documentfield') {
         const documentDefinition = isDocumentFieldDefinition(element);
 
         if (!documentDefinition) continue;
 
         const documents = get(context, formatValueDestination(element.valueDestination, stack));
-        const document = documents.find(
-          (doc: TDocument) => doc.id === element.params?.documentTemplate.id,
-        );
+        const document = documents.find((doc: TDocument) => doc.id === element.params?.template.id);
 
         if (!document) continue;
 

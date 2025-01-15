@@ -1,7 +1,5 @@
 import { TBaseFields } from '@ballerine/ui';
 import { COUNTRY_PICKER_FIELD_TYPE, CountryPickerField } from './components/form/CountryPicker';
-import { DOCUMENT_FIELD_TYPE } from './components/form/DocumentField';
-import { DocumentField } from './components/form/DocumentField/DocumentField';
 import {
   INDUSTRIES_PICKER_FIELD_TYPE,
   IndustriesPickerField,
@@ -31,7 +29,6 @@ const fields = {
   [MCC_PICKER_FIELD_TYPE]: MCCPickerField,
   [NATIONALITY_PICKER_FIELD_TYPE]: NationalityPickerField,
   [STATE_PICKER_FIELD_TYPE]: StatePickerField,
-  [DOCUMENT_FIELD_TYPE]: DocumentField,
 };
 
 const uiElements = {

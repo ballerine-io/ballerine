@@ -3,6 +3,7 @@ import { AutocompleteField } from '../fields/AutocompleteField';
 import { CheckboxField } from '../fields/CheckboxField';
 import { CheckboxListField } from '../fields/CheckboxList';
 import { DateField } from '../fields/DateField';
+import { DocumentField } from '../fields/DocumentField';
 import { FieldList } from '../fields/FieldList';
 import { FileField } from '../fields/FileField';
 import { MultiselectField } from '../fields/MultiselectField';
@@ -18,6 +19,7 @@ export const baseFields = {
   checkboxfield: CheckboxField,
   checkboxlistfield: CheckboxListField,
   datefield: DateField,
+  documentfield: DocumentField,
   multiselectfield: MultiselectField,
   textfield: TextField,
   fieldlist: FieldList,

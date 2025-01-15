@@ -43,6 +43,8 @@ export const usePageErrors = (context: CollectionFlowContext, pages: UIPage[]): 
       return pageErrorBase;
     });
 
+    console.log('contex documents', context.documents);
+
     pagesWithErrors.forEach(pageError => {
       pageError.errors = [
         ...((context.documents as Document[]) || []),

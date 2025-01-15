@@ -2,6 +2,7 @@ export * from './AutocompleteField';
 export * from './CheckboxField';
 export * from './CheckboxList';
 export * from './DateField';
+export * from './DocumentField';
 export * from './FieldList';
 export * from './FileField';
 export * from './MultiselectField';
