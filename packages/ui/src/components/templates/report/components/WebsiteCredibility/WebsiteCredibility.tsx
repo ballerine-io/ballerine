@@ -13,7 +13,6 @@ import {
   Legend,
   Pie,
   PieChart,
-  Tooltip as RechartsTooltip,
   ResponsiveContainer,
   XAxis,
   YAxis,
@@ -21,7 +20,7 @@ import {
 import { capitalize } from 'string-ts';
 import { TrendingUp } from 'lucide-react';
 import { Area, AreaChart } from 'recharts';
-import { CardDescription, CardFooter, CardTitle } from '@/components/atoms';
+import { CardDescription, CardFooter } from '@/components/atoms';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/atoms';
 
 const engagementMetricsMapper = {
@@ -190,7 +189,7 @@ export const WebsiteCredibility: FunctionComponent<{
               </CardDescription>
             </CardHeader>
 
-            <CardContent className="p-2">
+            <CardContent className="h-full p-2">
               {trafficAnalysis.montlyVisitsIndicators.length > 0 ? (
                 <ChartContainer
                   className="h-[20rem] w-full"
