@@ -15,7 +15,7 @@ export const useWebsiteMonitoringBusinessReportTab = ({
   const { tabs: tabsWithSummary, riskIndicators: originalRiskIndicators } = useReportTabs({
     reportVersion: businessReport?.workflowVersion,
     report: businessReport?.data ?? {},
-    isOngoing: businessReport?.reportType === MERCHANT_REPORT_TYPES_MAP.ONGOING_MERCHANT_REPORT_T1,
+    isOnboarding: businessReport?.reportType === MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1,
     companyName:
       (businessReport?.data?.websiteCompanyAnalysis as UnknownRecord | undefined)?.companyName ??
       '',
