@@ -221,9 +221,15 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
                         throw new Error('Merchant ID is missing');
                       }
 
-                      turnOngoingMonitoringOn({ merchantId: businessReport.merchantId });
-                      setIsDeboardModalOpen(false);
-                      setIsDropdownOpen(false);
+                      turnOngoingMonitoringOn(
+                        { merchantId: businessReport.merchantId },
+                        {
+                          onSuccess: () => {
+                            setIsDeboardModalOpen(false);
+                            setIsDropdownOpen(false);
+                          },
+                        },
+                      );
                     }}
                     variant={'ghost'}
                     className="justify-start"

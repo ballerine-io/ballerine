@@ -19,8 +19,10 @@ export const useToggleMonitoringMutation = ({
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: { merchantId: string; body?: TurnOngoingMonitoringBody }) =>
-      turnOngoingMonitoring({ merchantId: data.merchantId, body: { ...data.body, state } }),
+    mutationFn: async (data: {
+      merchantId: string;
+      body?: Omit<TurnOngoingMonitoringBody, 'state'>;
+    }) => turnOngoingMonitoring({ merchantId: data.merchantId, body: { ...data.body, state } }),
     onSuccess: data => {
       void queryClient.invalidateQueries();
 

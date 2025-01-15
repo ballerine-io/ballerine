@@ -5,13 +5,11 @@ import { apiClient } from '@/common/api-client/api-client';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 
 export type TurnOngoingMonitoringBody = z.infer<typeof TurnOngoingMonitoringBodySchema>;
-export const TurnOngoingMonitoringBodySchema = z
-  .object({
-    state: z.string().optional(),
-    reason: z.string().optional(),
-    userReason: z.string().optional(),
-  })
-  .optional();
+export const TurnOngoingMonitoringBodySchema = z.object({
+  state: z.string(),
+  reason: z.string().optional(),
+  userReason: z.string().optional(),
+});
 
 export type TurnOngoingMonitoringResponse = z.infer<typeof TurnOngoingMonitoringResponseSchema>;
 export const TurnOngoingMonitoringResponseSchema = z.object({

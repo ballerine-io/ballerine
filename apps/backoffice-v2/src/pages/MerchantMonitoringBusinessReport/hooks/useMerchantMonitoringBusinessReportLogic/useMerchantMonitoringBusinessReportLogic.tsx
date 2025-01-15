@@ -1,10 +1,11 @@
 import { ParsedBooleanSchema, useReportTabs } from '@ballerine/ui';
 import { t } from 'i18next';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { safeUrl } from '@/common/utils/safe-url/safe-url';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
@@ -50,8 +51,8 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     noteableType: 'Report',
   });
 
-  const [isDeboardModalOpen, setIsDeboardModalOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDeboardModalOpen, setIsDeboardModalOpen] = useToggle(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useToggle(false);
 
   const formDefaultValues = {
     reason: undefined,
