@@ -1,6 +1,7 @@
 import { ParsedBooleanSchema, useReportTabs } from '@ballerine/ui';
 import { t } from 'i18next';
 import { useCallback, useMemo } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -9,13 +10,15 @@ import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { safeUrl } from '@/common/utils/safe-url/safe-url';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
-import { MERCHANT_REPORT_STATUSES_MAP } from '@/domains/business-reports/constants';
+import {
+  MERCHANT_REPORT_STATUSES_MAP,
+  MERCHANT_REPORT_TYPES_MAP,
+} from '@/domains/business-reports/constants';
 import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
 import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
 import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
 import { isObject } from '@ballerine/common';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { SubmitHandler, useForm } from 'react-hook-form';
 
 const ZodDeboardingSchema = z
   .object({
@@ -62,9 +65,9 @@ const deboardingReasonOptions = [
 
 export const useMerchantMonitoringBusinessReportLogic = () => {
   const { businessReportId } = useParams();
-  const { data: businessReport } = useBusinessReportByIdQuery({
-    id: businessReportId ?? '',
-  });
+  const { data: businessReport, isFetching: isFetchingBusinessReport } = useBusinessReportByIdQuery(
+    { id: businessReportId ?? '' },
+  );
 
   const { data: notes } = useNotesByNoteable({
     noteableId: businessReportId,
@@ -125,6 +128,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
 
   const { tabs } = useReportTabs({
     reportVersion: businessReport?.workflowVersion,
+    isOnboarding: businessReport?.reportType === MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1,
     report: businessReport?.data ?? {},
     companyName: businessReport?.companyName,
     Link: RiskIndicatorLink,
@@ -183,5 +187,6 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     form,
     onSubmit,
     deboardingReasonOptions,
+    isFetchingBusinessReport,
   };
 };
