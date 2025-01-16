@@ -8,7 +8,10 @@ import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSear
 import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
 import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
-import { MERCHANT_REPORT_STATUSES_MAP } from '@/domains/business-reports/constants';
+import {
+  MERCHANT_REPORT_STATUSES_MAP,
+  MERCHANT_REPORT_TYPES_MAP,
+} from '@/domains/business-reports/constants';
 import { useTurnMonitoringOnMutation } from '@/pages/MerchantMonitoringBusinessReport/mutations/useTurnMonitoringOnMutation/useTurnMonitoringOnMutation';
 import { useTurnMonitoringOffMutation } from '@/pages/MerchantMonitoringBusinessReport/mutations/useTurnMonitoringOffMutation/useTurnMonitoringOffMutation';
 
@@ -24,9 +27,9 @@ const statusToBadgeData = {
 
 export const useMerchantMonitoringBusinessReportLogic = () => {
   const { businessReportId } = useParams();
-  const { data: businessReport } = useBusinessReportByIdQuery({
-    id: businessReportId ?? '',
-  });
+  const { data: businessReport, isFetching: isFetchingBusinessReport } = useBusinessReportByIdQuery(
+    { id: businessReportId ?? '' },
+  );
 
   const { data: notes } = useNotesByNoteable({
     noteableId: businessReportId,
@@ -38,6 +41,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
 
   const { tabs } = useReportTabs({
     reportVersion: businessReport?.workflowVersion,
+    isOnboarding: businessReport?.reportType === MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1,
     report: businessReport?.data ?? {},
     companyName: businessReport?.companyName,
     Link: RiskIndicatorLink,
@@ -108,5 +112,6 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     isNotesOpen,
     turnOngoingMonitoringOn,
     turnOngoingMonitoringOff,
+    isFetchingBusinessReport,
   };
 };

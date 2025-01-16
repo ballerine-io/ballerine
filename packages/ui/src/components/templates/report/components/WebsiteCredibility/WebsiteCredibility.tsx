@@ -179,7 +179,7 @@ export const WebsiteCredibility: FunctionComponent<{
               </CardDescription>
             </CardHeader>
 
-            <CardContent className="p-2">
+            <CardContent className="h-full p-2">
               {trafficAnalysis.montlyVisitsIndicators.length > 0 ? (
                 <ChartContainer
                   className="h-[20rem] w-full"
