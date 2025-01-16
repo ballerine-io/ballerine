@@ -1,11 +1,13 @@
-import { useFiltersQuery } from '@/domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
-import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useCallback, useMemo } from 'react';
 import { Building, Goal, Home, MonitorDot, Users } from 'lucide-react';
-import { TRoutes, TRouteWithChildren } from '@/Router/types';
+import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
+
+import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
+import { useFiltersQuery } from '@/domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
+import { MERCHANT_MONITORING_QUERY_PARAMS_KEY } from '@/pages/MerchantMonitoring/constants';
+import { TRoutes, TRouteWithChildren } from '@/Router/types';
 
 export const useNavbarLogic = () => {
   const { data: filters } = useFiltersQuery();
@@ -20,6 +22,7 @@ export const useNavbarLogic = () => {
     [filters],
   );
   const { data: customer } = useCustomerQuery();
+  const merchantMonitoringParams = sessionStorage.getItem(MERCHANT_MONITORING_QUERY_PARAMS_KEY);
 
   const navItems = [
     {
@@ -33,7 +36,7 @@ export const useNavbarLogic = () => {
           {
             text: 'Merchant Monitoring',
             icon: <MonitorDot size={20} />,
-            href: `/en/merchant-monitoring`,
+            href: `/en/merchant-monitoring${merchantMonitoringParams ?? ''}`,
             key: 'nav-item-merchant-monitoring',
           },
         ]

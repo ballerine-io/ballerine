@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 import { TBusinessReport } from '@/domains/business-reports/fetchers';
 import { BooleanishRecordSchema } from '@ballerine/ui';
+import dayjs from 'dayjs';
 
 export const REPORT_TYPE_TO_DISPLAY_TEXT = {
   All: 'All',
@@ -125,6 +126,6 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
       ],
     )
     .catch('All'),
-  from: z.string().date().optional(),
-  to: z.string().date().optional(),
+  from: z.string().date().catch(dayjs().subtract(30, 'day').format('YYYY-MM-DD')),
+  to: z.string().date().catch(dayjs().format('YYYY-MM-DD')),
 });

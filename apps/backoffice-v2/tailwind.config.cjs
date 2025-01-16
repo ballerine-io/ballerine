@@ -4,7 +4,13 @@ const { fontFamily } = require('tailwindcss/defaultTheme');
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ['class'],
-  content: ['./*.html', './src/**/*.css', './src/**/*.ts', './src/**/*.tsx'],
+  content: [
+    './*.html',
+    './src/**/*.css',
+    './src/**/*.ts',
+    './src/**/*.tsx',
+    './node_modules/@ballerine/ui/src/**/*.js',
+  ],
   theme: {
     container: {
       center: true,

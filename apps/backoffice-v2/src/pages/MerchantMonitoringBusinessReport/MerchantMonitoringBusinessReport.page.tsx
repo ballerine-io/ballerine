@@ -306,7 +306,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
                 </TabsTrigger>
               ))}
             </TabsList>
-            <ScrollArea orientation={'vertical'} className={'h-[75vh]'}>
+            <ScrollArea orientation={'vertical'} className={'h-[65vh] 2xl:h-[75vh]'}>
               {isFetchingBusinessReport ? (
                 <>
                   <Skeleton className="h-6 w-72" />
