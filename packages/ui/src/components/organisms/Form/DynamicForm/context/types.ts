@@ -16,7 +16,7 @@ export interface IDynamicFormContext<TValues extends object> {
   values: TValues;
   touched: ITouchedState;
   elementsMap: TElementsMap;
-  fieldHelpers: IFieldHelpers<TValues>;
+  fieldHelpers: IFieldHelpers;
   submit: () => void;
   callbacks: IDynamicFormCallbacks;
   metadata: Record<string, string>;

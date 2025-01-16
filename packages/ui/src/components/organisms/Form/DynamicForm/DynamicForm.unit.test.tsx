@@ -174,6 +174,7 @@ describe('DynamicFormV2', () => {
       setTouched: vi.fn(),
       setValue: vi.fn(),
       touchAllFields: vi.fn(),
+      setValues: vi.fn(),
     };
 
     vi.mocked(useTouched).mockReturnValue(touchedMock);
@@ -266,6 +267,7 @@ describe('DynamicFormV2', () => {
       getValue: vi.fn(),
       setTouched: vi.fn(),
       setValue: vi.fn(),
+      setValues: vi.fn(),
       touchAllFields: vi.fn(),
     };
 

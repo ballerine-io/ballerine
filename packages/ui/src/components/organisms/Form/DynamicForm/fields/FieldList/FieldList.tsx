@@ -36,7 +36,7 @@ export const FieldList: TDynamicFormField<IFieldListParams> = props => {
 
   return (
     <div className="flex flex-col gap-4" data-testid={`${fieldId}-fieldlist`}>
-      {items.map((_, index) => {
+      {items.map((_: unknown, index: number) => {
         return (
           <div
             key={`${fieldId}-${index}`}
