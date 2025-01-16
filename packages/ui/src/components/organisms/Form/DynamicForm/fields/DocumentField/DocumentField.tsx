@@ -4,13 +4,14 @@ import { Input } from '@/components/atoms/Input';
 import { createTestId } from '@/components/organisms/Renderer/utils/create-test-id';
 import { Upload, XCircle } from 'lucide-react';
 import { useCallback, useMemo, useRef } from 'react';
-import { useField } from '../../hooks/external';
+import { useElement, useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
+import { useTaskRunner } from '../../providers/TaskRunner/hooks/useTaskRunner';
 import { IFormElement, TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { IFileFieldParams } from '../FileField';
@@ -39,8 +40,10 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
 
   const { params } = element;
   const { placeholder = 'Choose file', acceptFileFormats = undefined } = params || {};
+  const { removeTask } = useTaskRunner();
 
   const { stack } = useStack();
+  const { id } = useElement(element, stack);
   const {
     value: documentsList,
     disabled,
@@ -84,11 +87,12 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
     );
 
     onChange(updatedDocuments);
+    removeTask(id);
 
     if (inputRef.current) {
       inputRef.current.value = '';
     }
-  }, [documentsList, element, onChange]);
+  }, [documentsList, element, onChange, id, removeTask]);
 
   return (
     <FieldLayout element={element}>

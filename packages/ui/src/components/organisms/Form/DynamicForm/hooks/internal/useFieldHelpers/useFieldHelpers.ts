@@ -12,7 +12,7 @@ export const useFieldHelpers = <TValues extends object>({
   valuesApi,
   touchedApi,
 }: IUseFieldHelpersParams<TValues>) => {
-  const { values, setFieldValue } = valuesApi;
+  const { values, setFieldValue, setValues } = valuesApi;
   const { touched, setFieldTouched, touchAllFields } = touchedApi;
 
   const getTouched = useCallback(
@@ -35,9 +35,10 @@ export const useFieldHelpers = <TValues extends object>({
       getValue,
       setTouched: setFieldTouched,
       setValue: setFieldValue,
+      setValues: setValues,
       touchAllFields: touchAllFields,
     }),
-    [getTouched, getValue, setFieldTouched, setFieldValue, touchAllFields],
+    [getTouched, getValue, setFieldTouched, setFieldValue, setValues, touchAllFields],
   );
 
   return helpers;

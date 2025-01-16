@@ -1,5 +1,5 @@
 export const composePathToFileId = (
   documentIndex: number,
-  pageProperty: string,
-  pageIndex: number,
+  pageProperty = 'ballerineFileId',
+  pageIndex = 0,
 ) => `[${documentIndex}].pages[${pageIndex}].${pageProperty}`;

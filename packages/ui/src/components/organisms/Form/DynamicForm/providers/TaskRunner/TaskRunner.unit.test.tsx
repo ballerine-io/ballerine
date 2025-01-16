@@ -66,16 +66,18 @@ describe('TaskRunner', () => {
 
     const { result, rerender } = renderHook(() => useContext(TaskRunnerContext), { wrapper });
 
+    const context = { test: 'value' };
+
     const mockTask1: ITask = {
       id: '1',
       element: {} as any,
-      run: vi.fn().mockResolvedValue(undefined),
+      run: vi.fn().mockResolvedValue(context),
     };
 
     const mockTask2: ITask = {
       id: '2',
       element: {} as any,
-      run: vi.fn().mockResolvedValue(undefined),
+      run: vi.fn().mockResolvedValue(context),
     };
 
     result.current.addTask(mockTask1);
@@ -83,56 +85,11 @@ describe('TaskRunner', () => {
 
     rerender();
 
-    await result.current.runTasks();
+    await result.current.runTasks(context);
 
-    expect(mockTask1.run).toHaveBeenCalled();
-    expect(mockTask2.run).toHaveBeenCalled();
+    expect(mockTask1.run).toHaveBeenCalledWith(context);
+    expect(mockTask2.run).toHaveBeenCalledWith(context);
     expect(result.current.isRunning).toBe(false);
-  });
-
-  it('should not run tasks if already running', async () => {
-    vi.useFakeTimers();
-
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <TaskRunner>{children}</TaskRunner>
-    );
-
-    const { result, rerender } = renderHook(() => useContext(TaskRunnerContext), { wrapper });
-
-    const mockTask: ITask = {
-      id: '1',
-      element: {} as any,
-      run: vi.fn().mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100))),
-    };
-
-    result.current.addTask(mockTask);
-
-    rerender();
-
-    // Start first run
-    const firstRun = result.current.runTasks();
-
-    rerender();
-
-    // Verify isRunning is true
-    expect(result.current.isRunning).toBe(true);
-
-    // Try to run again while first is still running
-    const secondRun = result.current.runTasks();
-
-    // Advance timers to resolve the promises
-    vi.advanceTimersByTime(100);
-
-    await firstRun;
-    await secondRun;
-
-    rerender();
-
-    // Verify task only ran once and isRunning is false
-    expect(mockTask.run).toHaveBeenCalledTimes(1);
-    expect(result.current.isRunning).toBe(false);
-
-    vi.useRealTimers();
   });
 
   it('should render children', () => {

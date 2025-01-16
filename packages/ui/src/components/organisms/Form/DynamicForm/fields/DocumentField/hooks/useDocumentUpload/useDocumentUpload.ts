@@ -1,4 +1,6 @@
+import { AnyObject } from '@/common';
 import get from 'lodash/get';
+import set from 'lodash/set';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDynamicForm } from '../../../../context';
 import { uploadFile } from '../../../../helpers/upload-file';
@@ -80,25 +82,32 @@ export const useDocumentUpload = (
           element,
           e.target?.files?.[0] as File,
         );
+
         onChange(updatedDocuments);
 
-        const taskRun = async () => {
+        const taskRun = async (context: AnyObject) => {
           try {
+            const documents = get(context, element.valueDestination);
+
             setIsUploading(true);
             const result = await uploadFile(
               e.target?.files?.[0] as File,
               uploadParams as IDocumentFieldParams['uploadSettings'],
             );
 
-            const documents = get(valuesRef.current, element.valueDestination);
             const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
               documents,
               element,
               result,
             );
-            onChange(updatedDocuments);
+
+            set(context, element.valueDestination, updatedDocuments);
+
+            return context;
           } catch (error) {
-            console.error('Failed to upload file.', error);
+            console.error('Failed to upload file.', error, element);
+
+            return context;
           } finally {
             setIsUploading(false);
           }

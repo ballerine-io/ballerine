@@ -16,6 +16,7 @@ describe('useFieldHelpers', () => {
   const mockSetFieldValue = vi.fn();
   const mockSetFieldTouched = vi.fn();
   const mockTouchAllFields = vi.fn();
+  const mockSetValues = vi.fn();
 
   const mockValuesApi = {
     values: {
@@ -26,6 +27,7 @@ describe('useFieldHelpers', () => {
       },
     },
     setFieldValue: mockSetFieldValue,
+    setValues: mockSetValues,
   };
 
   const mockTouchedApi = {
@@ -57,6 +59,7 @@ describe('useFieldHelpers', () => {
     expect(result.current).toHaveProperty('getValue');
     expect(result.current).toHaveProperty('setTouched');
     expect(result.current).toHaveProperty('setValue');
+    expect(result.current).toHaveProperty('setValues');
     expect(result.current).toHaveProperty('touchAllFields');
   });
 
@@ -96,6 +99,16 @@ describe('useFieldHelpers', () => {
 
     expect(mockSetFieldValue).toHaveBeenCalledTimes(1);
     expect(mockSetFieldValue).toHaveBeenCalledWith('field1', 'path.to.field', 'newValue');
+  });
+
+  it('setValues should call valuesApi.setValues', () => {
+    const { result } = setup();
+
+    const newValues = { field1: 'new1', field2: 'new2' };
+    result.current.setValues(newValues);
+
+    expect(mockSetValues).toHaveBeenCalledTimes(1);
+    expect(mockSetValues).toHaveBeenCalledWith(newValues);
   });
 
   it('touchAllFields should call touchedApi.touchAllFields', () => {
