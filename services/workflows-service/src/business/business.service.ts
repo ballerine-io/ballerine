@@ -15,7 +15,6 @@ import { AxiosError } from 'axios';
 import { plainToClass } from 'class-transformer';
 import dayjs from 'dayjs';
 import { lastValueFrom } from 'rxjs';
-import { z } from 'zod';
 import { BusinessRepository } from './business.repository';
 
 @Injectable()
@@ -71,8 +70,8 @@ export class BusinessService {
   async getMerchantMonitoringMetrics({
     projectIds,
     features,
-    from,
-    to,
+    from = dayjs().startOf('month').toISOString(),
+    to = dayjs(from).add(1, 'month').toISOString(),
   }: {
     projectIds: string[];
     features: TCustomerWithFeatures['features'];
@@ -83,35 +82,20 @@ export class BusinessService {
     addedMerchantsCount: number;
     unmonitoredMerchants: number;
   }> {
-    // Metrics are currently mostly requested by month
-    if (!from) {
-      from = dayjs().startOf('month').toISOString();
-    }
-
-    if (!to) {
-      to = dayjs(from).add(1, 'month').toISOString();
-    }
-
     const allProjectMerchants = await this.repository.findMany({}, projectIds);
 
     const totalActiveMerchants = allProjectMerchants.filter(b => {
-      const disabledAt = z
-        .number()
-        .nullable()
-        .catch(() => null)
-        .parse(
-          (
-            b.metadata as {
-              featureConfig: Record<
-                (typeof FEATURE_LIST)[keyof typeof FEATURE_LIST],
-                TCustomerFeaturesConfig & { disabledAt: number | null | undefined }
-              >;
-            }
-          )?.featureConfig?.[FEATURE_LIST.ONGOING_MERCHANT_REPORT]?.disabledAt,
-        );
+      const isEnabled = (
+        b?.metadata as {
+          featureConfig: Record<
+            (typeof FEATURE_LIST)[keyof typeof FEATURE_LIST],
+            TCustomerFeaturesConfig & { disabledAt: number | null | undefined }
+          >;
+        }
+      )?.featureConfig?.[FEATURE_LIST.ONGOING_MERCHANT_REPORT]?.enabled;
 
       return (
-        disabledAt === null ||
+        isEnabled ||
         (b.metadata === null && features?.ONGOING_MERCHANT_REPORT?.options?.runByDefault)
       );
     }).length;
@@ -122,8 +106,8 @@ export class BusinessService {
           OR: [
             {
               metadata: {
-                path: ['featureConfig', FEATURE_LIST.ONGOING_MERCHANT_REPORT, 'disabledAt'],
-                equals: Prisma.AnyNull,
+                path: ['featureConfig', FEATURE_LIST.ONGOING_MERCHANT_REPORT, 'enabled'],
+                equals: true,
               },
             },
             features?.ONGOING_MERCHANT_REPORT?.options?.runByDefault
