@@ -16,12 +16,12 @@ describe('documentValidator', () => {
 
   it('should throw error when value is not an array', () => {
     expect(() => documentValidator(null as unknown as TDocument[], mockParams)).toThrow(
-      'Document is required',
+      'Test message',
     );
   });
 
   it('should throw error when array is empty', () => {
-    expect(() => documentValidator([], mockParams)).toThrow('Document is required');
+    expect(() => documentValidator([], mockParams)).toThrow('Test message');
   });
 
   it('should throw error when document with specified id is not found', () => {

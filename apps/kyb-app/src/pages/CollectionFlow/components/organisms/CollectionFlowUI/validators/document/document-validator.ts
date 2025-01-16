@@ -11,7 +11,7 @@ export const documentValidator: TValidator<
   const { id, pageNumber = 0, pageProperty = 'ballerineFileId' } = params.value;
 
   if (!Array.isArray(value) || !value.length) {
-    throw new Error('Document is required');
+    throw new Error(message);
   }
 
   const document = value.find(doc => doc.id === id);

@@ -36,8 +36,8 @@ const schema: Array<IFormElement<any, any>> = [
   },
   {
     id: 'FileField:SubmitUpload',
-    element: 'filefield',
-    valueDestination: 'file-submit-upload',
+    element: 'documentfield',
+    valueDestination: 'documents',
     params: {
       label: 'Upload on Submit',
       placeholder: 'Select File',
@@ -45,6 +45,28 @@ const schema: Array<IFormElement<any, any>> = [
       uploadSettings: {
         url: 'http://localhost:3000/upload',
         resultPath: 'filename',
+      },
+      template: {
+        id: 'document-1',
+        pages: [],
+      },
+    },
+  },
+  {
+    id: 'FileField:SubmitUpload-2',
+    element: 'documentfield',
+    valueDestination: 'documents',
+    params: {
+      label: 'Upload on Submit-2',
+      placeholder: 'Select File',
+      uploadOn: 'submit',
+      uploadSettings: {
+        url: 'http://localhost:3000/upload',
+        resultPath: 'filename',
+      },
+      template: {
+        id: 'document-2',
+        pages: [],
       },
     },
   },

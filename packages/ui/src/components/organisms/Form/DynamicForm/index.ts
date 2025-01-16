@@ -5,4 +5,5 @@ export * from './helpers/get-field-definitions-from-schema';
 export * from './hooks/external';
 export * from './providers/EventsProvider';
 export * from './types';
+export * from './utils/format-headers';
 export * from './utils/format-string';

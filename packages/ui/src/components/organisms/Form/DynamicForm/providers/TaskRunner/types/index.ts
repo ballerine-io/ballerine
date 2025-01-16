@@ -1,9 +1,10 @@
+import { AnyObject } from '@/common';
 import { IFormElement } from '../../../types';
 
 export interface ITask {
   id: string;
   element: IFormElement;
-  run: () => Promise<void>;
+  run: <TContext extends AnyObject>(context: TContext) => Promise<TContext>;
 }
 
 export interface ITaskRunnerContext {
@@ -11,5 +12,5 @@ export interface ITaskRunnerContext {
   isRunning: boolean;
   addTask: (task: ITask) => void;
   removeTask: (id: string) => void;
-  runTasks: () => Promise<void>;
+  runTasks: <TContext extends AnyObject>(context: TContext) => Promise<TContext>;
 }

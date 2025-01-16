@@ -4,4 +4,5 @@ export interface IFieldHelpers {
   setTouched: (fieldId: string, touched: boolean) => void;
   setValue: <T>(fieldId: string, valueDestination: string, value: T) => void;
   touchAllFields: () => void;
+  setValues: (values: any) => void;
 }

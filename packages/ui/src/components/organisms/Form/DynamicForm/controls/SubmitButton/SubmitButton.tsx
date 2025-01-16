@@ -18,7 +18,7 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
   const { id } = useElement(element);
   const { stack } = useStack();
   const { disabled: _disabled, onClick } = useControl(element, stack);
-  const { fieldHelpers, submit } = useDynamicForm();
+  const { fieldHelpers, values, submit } = useDynamicForm();
   const { runTasks, isRunning } = useTaskRunner();
   const { sendEvent } = useEvents(element);
 
@@ -47,13 +47,15 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
     }
 
     console.log('Starting tasks');
-    await runTasks();
+    const updatedContext = await runTasks({ ...values });
     console.log('Tasks finished');
+
+    fieldHelpers.setValues(updatedContext);
 
     submit();
 
     sendEvent('onSubmit');
-  }, [submit, isValid, touchAllFields, runTasks, sendEvent, errors, onClick]);
+  }, [submit, isValid, touchAllFields, runTasks, sendEvent, errors, onClick, values, fieldHelpers]);
 
   return (
     <Button

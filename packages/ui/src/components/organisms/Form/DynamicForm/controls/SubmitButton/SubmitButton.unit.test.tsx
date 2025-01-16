@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useValidator } from '../../../Validator';
 import { IValidatorContext } from '../../../Validator/context';
 import { IDynamicFormContext, useDynamicForm } from '../../context';
+import { useControl } from '../../hooks/external/useControl/useControl';
 import { useElement } from '../../hooks/external/useElement';
 import { useField } from '../../hooks/external/useField';
 import { useEvents } from '../../hooks/internal/useEvents';
@@ -22,7 +23,7 @@ vi.mock('../../hooks/external/useElement');
 vi.mock('../../hooks/external/useField');
 vi.mock('../../hooks/internal/useEvents');
 vi.mock('../../providers/TaskRunner/hooks/useTaskRunner');
-
+vi.mock('../../hooks/external/useControl/useControl');
 describe('SubmitButton', () => {
   const mockElement = {
     id: 'test-button',
@@ -38,6 +39,7 @@ describe('SubmitButton', () => {
     getValue: vi.fn(),
     setTouched: vi.fn(),
     setValue: vi.fn(),
+    setValues: vi.fn(),
   };
 
   const mockSendEvent = vi.fn();
@@ -83,6 +85,12 @@ describe('SubmitButton', () => {
       sendEvent: mockSendEvent,
       sendEventAsync: vi.fn(),
     } as unknown as ReturnType<typeof useEvents>);
+    vi.mocked(useControl).mockReturnValue({
+      disabled: false,
+      onClick: vi.fn(),
+      onFocus: vi.fn(),
+      onBlur: vi.fn(),
+    });
   });
 
   afterEach(() => {
@@ -157,6 +165,7 @@ describe('SubmitButton', () => {
   it('does not submit or trigger events when form is invalid', async () => {
     const mockSubmit = vi.fn();
     const mockRunTasks = vi.fn();
+    const mockOnClick = vi.fn();
 
     vi.mocked(useDynamicForm).mockReturnValue({
       validationParams: { validateOnBlur: false },
@@ -181,11 +190,18 @@ describe('SubmitButton', () => {
       values: {},
       validate: vi.fn(),
     } as unknown as IValidatorContext<object>);
+    vi.mocked(useControl).mockReturnValue({
+      disabled: false,
+      onClick: mockOnClick,
+      onFocus: vi.fn(),
+      onBlur: vi.fn(),
+    });
 
     render(<SubmitButton element={mockElement} />);
 
     await userEvent.click(screen.getByTestId('test-button-submit-button'));
 
+    expect(mockOnClick).toHaveBeenCalled();
     expect(mockFieldHelpers.touchAllFields).toHaveBeenCalled();
     expect(mockRunTasks).not.toHaveBeenCalled();
     expect(mockSubmit).not.toHaveBeenCalled();

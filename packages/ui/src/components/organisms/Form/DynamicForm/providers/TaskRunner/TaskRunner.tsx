@@ -1,3 +1,5 @@
+import { AnyObject } from '@/common';
+import { asyncCompose } from '@/common/utils/async-compose';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import { TaskRunnerContext } from './context';
 import { ITask } from './types';
@@ -18,15 +20,24 @@ export const TaskRunner = ({ children }: ITaskRunnerProps) => {
     setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
   }, []);
 
-  const runTasks = useCallback(async () => {
-    if (isRunning) return;
+  const runTasks = useCallback(
+    async <TContext extends AnyObject>(context: TContext) => {
+      if (isRunning) return context;
 
-    setIsRunning(true);
-    await Promise.allSettled(tasks.map(task => task.run()));
-    setIsRunning(false);
-  }, [tasks, isRunning]);
+      setIsRunning(true);
 
-  const context = useMemo(
+      const tasksCompose = asyncCompose(...tasks.map(task => task.run));
+
+      await tasksCompose(context);
+
+      setIsRunning(false);
+
+      return context;
+    },
+    [tasks, isRunning],
+  );
+
+  const taskRunnerContext = useMemo(
     () => ({
       tasks,
       isRunning,
@@ -37,5 +48,7 @@ export const TaskRunner = ({ children }: ITaskRunnerProps) => {
     [tasks, isRunning, addTask, removeTask, runTasks],
   );
 
-  return <TaskRunnerContext.Provider value={context}>{children}</TaskRunnerContext.Provider>;
+  return (
+    <TaskRunnerContext.Provider value={taskRunnerContext}>{children}</TaskRunnerContext.Provider>
+  );
 };

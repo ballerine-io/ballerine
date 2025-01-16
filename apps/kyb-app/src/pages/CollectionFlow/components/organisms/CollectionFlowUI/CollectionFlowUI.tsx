@@ -43,7 +43,6 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
   const handlePluginExecution: TPluginListener = useCallback(
     (result, _, __, status) => {
       if (status === 'completed') {
-        console.log({ _RESULT: result });
         formRef.current?.setValues(structuredClone(result) as object);
       }
     },

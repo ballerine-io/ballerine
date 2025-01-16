@@ -1,5 +1,4 @@
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
-import { DOCUMENT_FIELD_TYPE } from '../../../components/form/DocumentField';
 import { generatePriorityFields } from './generate-priority-fields';
 
 describe('generatePriorityFields', () => {
@@ -16,7 +15,7 @@ describe('generatePriorityFields', () => {
 
   const mockElements = [
     {
-      element: DOCUMENT_FIELD_TYPE,
+      element: 'documentfield',
       id: 'document-1',
       valueDestination: 'documents',
       params: {
@@ -67,7 +66,7 @@ describe('generatePriorityFields', () => {
         children: [
           {
             id: 'document',
-            element: DOCUMENT_FIELD_TYPE,
+            element: 'documentfield',
             valueDestination: 'entries[$0].documents',
             params: {
               documentTemplate: {

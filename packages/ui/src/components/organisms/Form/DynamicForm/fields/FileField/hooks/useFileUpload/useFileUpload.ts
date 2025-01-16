@@ -1,3 +1,5 @@
+import { AnyObject } from '@/common';
+import set from 'lodash/set';
 import { useCallback, useState } from 'react';
 import { useDynamicForm } from '../../../../context';
 import { useElement, useField } from '../../../../hooks/external';
@@ -61,16 +63,20 @@ export const useFileUpload = (
       if (uploadOn === 'submit') {
         onChange(e.target?.files?.[0] as File);
 
-        const taskRun = async () => {
+        const taskRun = async (context: AnyObject) => {
           try {
             setIsUploading(true);
             const result = await uploadFile(
               e.target?.files?.[0] as File,
               uploadParams as IFileFieldParams['uploadSettings'],
             );
-            onChange(result);
+            set(context, element.valueDestination, result);
+
+            return context;
           } catch (error) {
             console.error('Failed to upload file.', error);
+
+            return context;
           } finally {
             setIsUploading(false);
           }
