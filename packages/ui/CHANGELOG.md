@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.64
+
+### Patch Changes
+
+- Fixed graph cut off issue
+
 ## 0.5.63
 
 ### Patch Changes
