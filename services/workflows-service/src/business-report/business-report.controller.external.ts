@@ -44,6 +44,7 @@ import {
 } from '@/business-report/dtos/business-report-metrics.dto';
 import { BusinessReportMetricsDto } from './dtos/business-report-metrics-dto';
 import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
+import dayjs from 'dayjs';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Business Reports')
@@ -168,7 +169,28 @@ export class BusinessReportControllerExternal {
   ) {
     const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
 
-    return await this.merchantMonitoringClient.getMetrics({ customerId, from, to });
+    const unmonitoredMerchants = await this.prismaService.business.count({
+      where: {
+        projectId: currentProjectId,
+        metadata: {
+          path: ['featureConfig', FEATURE_LIST.ONGOING_MERCHANT_REPORT, 'disabledAt'],
+          not: 'null',
+          ...(from && { gt: dayjs(from).toDate().getTime() }),
+          ...(to && { lte: dayjs(to).toDate().getTime() }),
+        },
+      },
+    });
+
+    const merchantMonitoringMetrics = await this.merchantMonitoringClient.getMetrics({
+      customerId,
+      from,
+      to,
+    });
+
+    return {
+      ...merchantMonitoringMetrics,
+      removedMerchantsCount: unmonitoredMerchants,
+    };
   }
 
   @common.Post()
