@@ -4,17 +4,19 @@ import {
   TCompanyInformation,
 } from '@/business/types/business-information';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { FEATURE_LIST, TCustomerFeaturesConfig, TCustomerWithFeatures } from '@/customer/types';
 import { env } from '@/env';
 import type { PrismaTransaction, TProjectIds } from '@/types';
 import { HttpService } from '@nestjs/axios';
 import * as common from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
-import { Business } from '@prisma/client';
+import { Business, Prisma } from '@prisma/client';
 import { AxiosError } from 'axios';
 import { plainToClass } from 'class-transformer';
+import dayjs from 'dayjs';
 import { lastValueFrom } from 'rxjs';
+import { z } from 'zod';
 import { BusinessRepository } from './business.repository';
-import { TCustomerWithFeatures } from '@/customer/types';
 
 @Injectable()
 export class BusinessService {
@@ -64,6 +66,105 @@ export class BusinessService {
     transaction?: PrismaTransaction,
   ) {
     return await this.repository.updateById(id, args, transaction);
+  }
+
+  async getMerchantMonitoringMetrics({
+    projectIds,
+    features,
+    from,
+    to,
+  }: {
+    projectIds: string[];
+    features: TCustomerWithFeatures['features'];
+    from: string | undefined;
+    to: string | undefined;
+  }): Promise<{
+    totalActiveMerchants: number;
+    addedMerchantsCount: number;
+    unmonitoredMerchants: number;
+  }> {
+    // Metrics are currently mostly requested by month
+    if (!from) {
+      from = dayjs().startOf('month').toISOString();
+    }
+
+    if (!to) {
+      to = dayjs(from).add(1, 'month').toISOString();
+    }
+
+    const allProjectMerchants = await this.repository.findMany({}, projectIds);
+
+    const totalActiveMerchants = allProjectMerchants.filter(b => {
+      const disabledAt = z
+        .number()
+        .nullable()
+        .catch(() => null)
+        .parse(
+          (
+            b.metadata as {
+              featureConfig: Record<
+                (typeof FEATURE_LIST)[keyof typeof FEATURE_LIST],
+                TCustomerFeaturesConfig & { disabledAt: number | null | undefined }
+              >;
+            }
+          )?.featureConfig?.[FEATURE_LIST.ONGOING_MERCHANT_REPORT]?.disabledAt,
+        );
+
+      return (
+        disabledAt === null ||
+        (b.metadata === null && features?.ONGOING_MERCHANT_REPORT?.options?.runByDefault)
+      );
+    }).length;
+
+    const addedMerchantsCount = await this.repository.count(
+      {
+        where: {
+          OR: [
+            {
+              metadata: {
+                path: ['featureConfig', FEATURE_LIST.ONGOING_MERCHANT_REPORT, 'disabledAt'],
+                equals: Prisma.AnyNull,
+              },
+            },
+            features?.ONGOING_MERCHANT_REPORT?.options?.runByDefault
+              ? { metadata: { equals: Prisma.AnyNull } }
+              : {},
+          ],
+          createdAt: {
+            gte: dayjs(from).toISOString(),
+            lt: dayjs(to).toISOString(),
+          },
+        },
+      },
+      projectIds,
+    );
+
+    const unmonitoredMerchants = await this.repository.count(
+      {
+        where: {
+          OR: [
+            {
+              metadata: {
+                path: ['featureConfig', FEATURE_LIST.ONGOING_MERCHANT_REPORT, 'disabledAt'],
+                not: 'null',
+                gte: dayjs(from).toDate().getTime(),
+                lt: dayjs(to).toDate().getTime(),
+              },
+            },
+            !features?.ONGOING_MERCHANT_REPORT?.options?.runByDefault
+              ? { metadata: { equals: Prisma.AnyNull } }
+              : {},
+          ],
+        },
+      },
+      projectIds,
+    );
+
+    return {
+      totalActiveMerchants,
+      addedMerchantsCount,
+      unmonitoredMerchants,
+    };
   }
 
   async fetchCompanyInformation({

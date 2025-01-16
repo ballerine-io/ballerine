@@ -44,7 +44,6 @@ import {
 } from '@/business-report/dtos/business-report-metrics.dto';
 import { BusinessReportMetricsDto } from './dtos/business-report-metrics-dto';
 import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
-import dayjs from 'dayjs';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Business Reports')
@@ -167,19 +166,17 @@ export class BusinessReportControllerExternal {
     @CurrentProject() currentProjectId: TProjectId,
     @Query() { from, to }: BusinessReportMetricsRequestQueryDto,
   ) {
-    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
+    const { id: customerId, features } = await this.customerService.getByProjectId(
+      currentProjectId,
+    );
 
-    const unmonitoredMerchants = await this.prismaService.business.count({
-      where: {
-        projectId: currentProjectId,
-        metadata: {
-          path: ['featureConfig', FEATURE_LIST.ONGOING_MERCHANT_REPORT, 'disabledAt'],
-          not: 'null',
-          ...(from && { gt: dayjs(from).toDate().getTime() }),
-          ...(to && { lte: dayjs(to).toDate().getTime() }),
-        },
-      },
-    });
+    const { totalActiveMerchants, addedMerchantsCount, unmonitoredMerchants } =
+      await this.businessService.getMerchantMonitoringMetrics({
+        projectIds: [currentProjectId],
+        features,
+        from,
+        to,
+      });
 
     const merchantMonitoringMetrics = await this.merchantMonitoringClient.getMetrics({
       customerId,
@@ -189,6 +186,8 @@ export class BusinessReportControllerExternal {
 
     return {
       ...merchantMonitoringMetrics,
+      totalActiveMerchants,
+      addedMerchantsCount,
       removedMerchantsCount: unmonitoredMerchants,
     };
   }
