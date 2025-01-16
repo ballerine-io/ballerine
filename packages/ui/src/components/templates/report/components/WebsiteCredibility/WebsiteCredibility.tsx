@@ -1,20 +1,5 @@
-import { ctw } from '@/common';
-import { Card, CardContent, CardHeader } from '@/components';
-import {
-  CardDescription,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/atoms';
-import { BallerineLink } from '@/components/atoms/BallerineLink/BallerineLink';
-import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
-import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
 import dayjs from 'dayjs';
-import { InfoIcon } from 'lucide-react';
+import { InfoIcon, TrendingDown, TrendingUp } from 'lucide-react';
 import { FunctionComponent, useMemo } from 'react';
 import {
   Area,
@@ -29,6 +14,23 @@ import {
   YAxis,
 } from 'recharts';
 import { capitalize } from 'string-ts';
+
+import { ctw } from '@/common';
+import { Card, CardContent, CardHeader } from '@/components';
+import {
+  CardDescription,
+  CardFooter,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/atoms';
+import { BallerineLink } from '@/components/atoms/BallerineLink/BallerineLink';
+import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
+import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
 
 const engagementMetricsMapper = {
   'Time on site': {
@@ -77,16 +79,57 @@ export const WebsiteCredibility: FunctionComponent<{
   const trafficSources = useMemo(() => {
     if (!trafficAnalysis?.trafficSources?.length) return [];
 
-    return trafficAnalysis.trafficSources
-      .map(({ label, value }) => ({ label, value: parseFloat(value) }))
-      .concat({
-        label: 'Other',
-        value:
-          100 -
-          trafficAnalysis.trafficSources.reduce((acc, item) => acc + parseFloat(item.value), 0),
-      })
-      .map(({ label, value }) => ({ label, value: parseFloat(value.toFixed(2)) }));
+    const values = trafficAnalysis.trafficSources.map(({ label, value }) => ({
+      label,
+      value: parseFloat(value),
+    }));
+
+    const remainder = 100 - values.reduce((acc, item) => acc + item.value, 0);
+
+    const existingOtherIdx = values.findIndex(({ label }) => label === 'other');
+
+    if (existingOtherIdx > -1) {
+      values[existingOtherIdx]!.value = values[existingOtherIdx]!.value + remainder;
+    } else if (remainder > 0) {
+      values.push({ label: 'other', value: remainder });
+    }
+
+    return values;
   }, [trafficAnalysis.trafficSources]);
+
+  let minVisitors = 0;
+  let maxVisitors = 0;
+
+  trafficAnalysis.montlyVisitsIndicators.forEach(({ value }) => {
+    const num = parseInt(value);
+
+    if (num < minVisitors) {
+      minVisitors = num;
+    }
+
+    if (num > maxVisitors) {
+      maxVisitors = num;
+    }
+  });
+
+  const visitorsTotalArea = maxVisitors - minVisitors;
+
+  const calculateTrend = (data: Array<{ label: string; value: string }>) => {
+    if (data.length < 2) {
+      return { direction: 'No trend data', percentage: 0 };
+    }
+
+    const lastMonthValue = parseInt(data[data.length - 1]?.value ?? '0');
+    const previousMonthValue = parseInt(data[data.length - 2]?.value ?? '0');
+    const percentageChange = ((lastMonthValue - previousMonthValue) / previousMonthValue) * 100;
+    const direction = lastMonthValue > previousMonthValue ? 'up' : 'down';
+
+    return { direction, percentage: Math.abs(percentageChange) };
+  };
+
+  const trend = calculateTrend(
+    trafficAnalysis.montlyVisitsIndicators.map(({ label, value }) => ({ label, value })),
+  );
 
   return (
     <div className="space-y-8">
@@ -216,7 +259,14 @@ export const WebsiteCredibility: FunctionComponent<{
                       tickFormatter={value => dayjs(value, 'MMMM YYYY').format('MMM YYYY')}
                     />
                     <YAxis
-                      domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.2)]}
+                      ticks={[
+                        minVisitors,
+                        Math.trunc(visitorsTotalArea / 4),
+                        Math.trunc(visitorsTotalArea / 2),
+                        Math.trunc((3 * visitorsTotalArea) / 4),
+                        maxVisitors,
+                      ]}
+                      domain={[minVisitors - (maxVisitors * 1.2 - maxVisitors), maxVisitors * 1.2]}
                       tickFormatter={value =>
                         Intl.NumberFormat('en', { notation: 'compact' }).format(value)
                       }
@@ -249,6 +299,26 @@ export const WebsiteCredibility: FunctionComponent<{
                 </div>
               )}
             </CardContent>
+            <CardFooter>
+              <div className="flex w-full items-start gap-2 text-sm">
+                <div className="grid gap-2">
+                  <div className="flex items-center gap-2 font-medium leading-none">
+                    {trend.direction !== 'No trend data' && (
+                      <>
+                        {trend.direction === 'up' ? (
+                          <TrendingUp className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <TrendingDown className="h-4 w-4 text-red-500" />
+                        )}
+                        <span>{`Trending ${trend.direction} by ${trend.percentage.toFixed(
+                          1,
+                        )}% this month`}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </CardFooter>
           </Card>
 
           <div className="flex h-full w-2/5 flex-col gap-4">
