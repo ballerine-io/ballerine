@@ -1,34 +1,33 @@
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 
 // Add these plugins to dayjs
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-import { createColumnHelper } from '@tanstack/react-table';
 import { TBusinessReport } from '@/domains/business-reports/fetchers';
+import { createColumnHelper } from '@tanstack/react-table';
 import { titleCase } from 'string-ts';
 
-import { ctw } from '@/common/utils/ctw/ctw';
-import { getSeverityFromRiskScore } from '@ballerine/common';
-import {
-  Badge,
-  CheckCircle,
-  severityToClassName,
-  TextWithNAFallback,
-  WarningFilledSvg,
-} from '@ballerine/ui';
-import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
-import { Minus } from 'lucide-react';
+import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
+import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
+import { ctw } from '@/common/utils/ctw/ctw';
 import {
   MERCHANT_REPORT_STATUSES_MAP,
   MERCHANT_REPORT_TYPES_MAP,
 } from '@/domains/business-reports/constants';
-import React from 'react';
-import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
-import { TooltipTrigger, TooltipContent, Tooltip } from '@ballerine/ui';
+import { getSeverityFromRiskScore } from '@ballerine/common';
+import {
+  Badge,
+  CheckCircle,
+  ContentTooltip,
+  severityToClassName,
+  TextWithNAFallback,
+  WarningFilledSvg,
+} from '@ballerine/ui';
+import { Minus } from 'lucide-react';
 
 const columnHelper = createColumnHelper<TBusinessReport>();
 
@@ -93,9 +92,19 @@ export const columns = [
   }),
   columnHelper.accessor('monitoringStatus', {
     cell: ({ getValue }) => {
-      return getValue() ? (
-        <Tooltip delayDuration={300}>
-          <TooltipTrigger>
+      const value = getValue();
+
+      return (
+        <ContentTooltip
+          description={
+            <p>This merchant is {!value && 'not '}subscribed to recurring ongoing monitoring</p>
+          }
+          props={{
+            tooltipTrigger: { className: 'flex w-full justify-center' },
+            tooltipContent: { align: 'center', side: 'top' },
+          }}
+        >
+          {value ? (
             <CheckCircle
               size={18}
               className={`stroke-background`}
@@ -103,14 +112,7 @@ export const columns = [
                 className: 'me-3 bg-success mt-px',
               }}
             />
-          </TooltipTrigger>
-          <TooltipContent>
-            This website is actively monitored for changes on a recurring basis
-          </TooltipContent>
-        </Tooltip>
-      ) : (
-        <Tooltip delayDuration={300}>
-          <TooltipTrigger>
+          ) : (
             <IndicatorCircle
               size={18}
               className={`stroke-transparent`}
@@ -118,20 +120,19 @@ export const columns = [
                 className: 'bg-slate-500/20',
               }}
             />
-          </TooltipTrigger>
-          <TooltipContent>This website is not currently monitored for changes</TooltipContent>
-        </Tooltip>
+          )}
+        </ContentTooltip>
       );
     },
     header: () => (
-      <Tooltip delayDuration={300}>
-        <TooltipTrigger>
-          <span className={`max-w-[20ch] truncate`}>Monitored</span>
-        </TooltipTrigger>
-        <TooltipContent>
-          Indicates whether this website is being monitored for changes
-        </TooltipContent>
-      </Tooltip>
+      <ContentTooltip
+        description={<p>Indicates whether the merchant is subscribed to ongoing monitoring</p>}
+        props={{
+          tooltipContent: { align: 'center', side: 'top' },
+        }}
+      >
+        <span className={`max-w-[20ch] truncate text-sm`}>Monitored</span>
+      </ContentTooltip>
     ),
   }),
   columnHelper.accessor('reportType', {

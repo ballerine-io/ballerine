@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.63
+
+### Patch Changes
+
+- Export ContentTooltip component
+
 ## 0.5.62
 
 ### Patch Changes

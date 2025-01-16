@@ -1,30 +1,80 @@
-import dayjs from 'dayjs';
-import { titleCase } from 'string-ts';
-import { Link } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
-import React, { FunctionComponent } from 'react';
 import {
   Badge,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  TextArea,
   Skeleton,
   TextWithNAFallback,
 } from '@ballerine/ui';
+import dayjs from 'dayjs';
+import { ChevronLeft } from 'lucide-react';
+import React, { forwardRef, FunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
+import { titleCase } from 'string-ts';
 
-import { ctw } from '@/common/utils/ctw/ctw';
-import { Notes } from '@/domains/notes/Notes';
-import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
 import { Button } from '@/common/components/atoms/Button/Button';
+import { Select } from '@/common/components/atoms/Select/Select';
+import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
+import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
+import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
+import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
+import { NotesButton } from '@/common/components/molecules/NotesButton/NotesButton';
+import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
+import { Form } from '@/common/components/organisms/Form/Form';
+import { FormControl } from '@/common/components/organisms/Form/Form.Control';
+import { FormField } from '@/common/components/organisms/Form/Form.Field';
+import { FormItem } from '@/common/components/organisms/Form/Form.Item';
+import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
+import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
+import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
+import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
+import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
 import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
-import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
-import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
-import { NotesButton } from '@/common/components/molecules/NotesButton/NotesButton';
+import { ctw } from '@/common/utils/ctw/ctw';
 import { MERCHANT_REPORT_STATUSES_MAP } from '@/domains/business-reports/constants';
-import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
+import { Notes } from '@/domains/notes/Notes';
 import { useMerchantMonitoringBusinessReportLogic } from '@/pages/MerchantMonitoringBusinessReport/hooks/useMerchantMonitoringBusinessReportLogic/useMerchantMonitoringBusinessReportLogic';
+
+const DialogDropdownItem = forwardRef<
+  React.ElementRef<typeof DropdownMenuItem>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuItem> & {
+    triggerChildren: React.ReactNode;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
+  }
+>(({ className, ...props }, ref) => {
+  const { triggerChildren, children, open, onOpenChange, ...itemProps } = props;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>
+        <DropdownMenuItem
+          {...itemProps}
+          ref={ref}
+          className={className}
+          onSelect={event => {
+            event.preventDefault();
+          }}
+        >
+          {triggerChildren}
+        </DropdownMenuItem>
+      </DialogTrigger>
+
+      <DialogContent onPointerDownOutside={e => e.preventDefault()}>{children}</DialogContent>
+    </Dialog>
+  );
+});
+DialogDropdownItem.displayName = 'DialogDropdownItem';
 
 export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
   const {
@@ -37,7 +87,13 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     notes,
     isNotesOpen,
     turnOngoingMonitoringOn,
-    turnOngoingMonitoringOff,
+    isDeboardModalOpen,
+    setIsDeboardModalOpen,
+    isDropdownOpen,
+    setIsDropdownOpen,
+    form,
+    onSubmit,
+    deboardingReasonOptions,
     isFetchingBusinessReport,
   } = useMerchantMonitoringBusinessReportLogic();
 
@@ -59,7 +115,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
             >
               <ChevronLeft size={18} /> <span>Back</span>
             </Button>
-            <DropdownMenu>
+            <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
@@ -70,20 +126,119 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
                   Options
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem className={`w-full px-8 py-1`} asChild>
+
+              <DropdownMenuContent
+                align="end"
+                onEscapeKeyDown={e => {
+                  if (isDeboardModalOpen) {
+                    e.preventDefault();
+                  }
+
+                  setIsDeboardModalOpen(false);
+                }}
+              >
+                {businessReport?.monitoringStatus === true ? (
+                  <DialogDropdownItem
+                    triggerChildren={
+                      <Button variant={'ghost'} className="justify-start">
+                        Turn Monitoring Off
+                      </Button>
+                    }
+                    open={isDeboardModalOpen}
+                    onOpenChange={setIsDeboardModalOpen}
+                  >
+                    <DialogHeader>
+                      <DialogTitle>Confirm Deboarding</DialogTitle>
+                      <DialogDescription>
+                        Are you sure you want to deboard this merchant (turn the monitoring off)?
+                      </DialogDescription>
+                    </DialogHeader>
+
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <FormField
+                          control={form.control}
+                          name="reason"
+                          render={({ field }) => (
+                            <FormItem>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormLabel>Reason</FormLabel>
+
+                                <FormControl>
+                                  <SelectTrigger className="h-9 w-full border-input p-1 shadow-sm">
+                                    <SelectValue placeholder="Select a reason" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <FormMessage />
+                                <SelectContent>
+                                  {deboardingReasonOptions?.map(({ label, value }, index) => {
+                                    return (
+                                      <SelectItem key={index} value={value}>
+                                        {label}
+                                      </SelectItem>
+                                    );
+                                  })}
+                                </SelectContent>
+                              </Select>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="userReason"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Additional details</FormLabel>
+
+                              <FormControl>
+                                <TextArea {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <DialogFooter className="mt-6 flex justify-end space-x-4">
+                          <Button
+                            type="button"
+                            onClick={() => {
+                              setIsDeboardModalOpen(false);
+                            }}
+                            variant="ghost"
+                          >
+                            Cancel
+                          </Button>
+                          <Button type="submit" variant="destructive">
+                            Turn Off
+                          </Button>
+                        </DialogFooter>
+                      </form>
+                    </Form>
+                  </DialogDropdownItem>
+                ) : (
                   <Button
                     onClick={() => {
-                      businessReport?.monitoringStatus
-                        ? turnOngoingMonitoringOff(businessReport?.merchantId)
-                        : turnOngoingMonitoringOn(businessReport?.merchantId);
+                      if (!businessReport?.merchantId) {
+                        throw new Error('Merchant ID is missing');
+                      }
+
+                      turnOngoingMonitoringOn(
+                        { merchantId: businessReport.merchantId },
+                        {
+                          onSuccess: () => {
+                            setIsDeboardModalOpen(false);
+                            setIsDropdownOpen(false);
+                          },
+                        },
+                      );
                     }}
                     variant={'ghost'}
                     className="justify-start"
                   >
-                    Turn Monitoring {businessReport?.monitoringStatus ? 'Off' : 'On'}
+                    Turn Monitoring On
                   </Button>
-                </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

@@ -1,6 +1,7 @@
 import { ctw } from '@/common/utils/ctw';
 import * as React from 'react';
 import * as RechartsPrimitive from 'recharts';
+import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: '', dark: '.dark' } as const;
@@ -100,6 +101,7 @@ const ChartTooltipContent = React.forwardRef<
       indicator?: 'line' | 'dot' | 'dashed';
       nameKey?: string;
       labelKey?: string;
+      valueRender?: (value: ValueType) => React.ReactNode;
     }
 >(
   (
@@ -110,6 +112,7 @@ const ChartTooltipContent = React.forwardRef<
       indicator = 'dot',
       hideLabel = false,
       hideIndicator = false,
+      valueRender,
       label,
       labelFormatter,
       labelClassName,
@@ -217,11 +220,12 @@ const ChartTooltipContent = React.forwardRef<
                           {itemConfig?.label || item.name}
                         </span>
                       </div>
-                      {item.value && (
-                        <span className="text-foreground font-mono font-medium tabular-nums">
-                          {item.value.toLocaleString()}
-                        </span>
-                      )}
+                      {item.value &&
+                        (valueRender?.(item.value) ?? (
+                          <span className="text-foreground font-mono font-medium tabular-nums">
+                            {item.value.toLocaleString()}
+                          </span>
+                        ))}
                     </div>
                   </>
                 )}
@@ -291,7 +295,7 @@ const ChartLegendContent = React.forwardRef<
 ChartLegendContent.displayName = 'ChartLegend';
 
 // Helper to extract item config from a payload.
-function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key: string) {
+const getPayloadConfigFromPayload = (config: ChartConfig, payload: unknown, key: string) => {
   if (typeof payload !== 'object' || payload === null) {
     return undefined;
   }
@@ -314,7 +318,7 @@ function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key:
   }
 
   return configLabelKey in config ? config[configLabelKey] : config[key as keyof typeof config];
-}
+};
 
 export {
   ChartContainer,
