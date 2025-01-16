@@ -1,19 +1,49 @@
-import { z } from 'zod';
-import { useCallback, useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { ParsedBooleanSchema, useReportTabs } from '@ballerine/ui';
+import { t } from 'i18next';
+import { useCallback, useMemo } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
-import { safeUrl } from '@/common/utils/safe-url/safe-url';
+import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
-import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
+import { safeUrl } from '@/common/utils/safe-url/safe-url';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
-import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
 import {
   MERCHANT_REPORT_STATUSES_MAP,
   MERCHANT_REPORT_TYPES_MAP,
 } from '@/domains/business-reports/constants';
-import { useTurnMonitoringOnMutation } from '@/pages/MerchantMonitoringBusinessReport/mutations/useTurnMonitoringOnMutation/useTurnMonitoringOnMutation';
-import { useTurnMonitoringOffMutation } from '@/pages/MerchantMonitoringBusinessReport/mutations/useTurnMonitoringOffMutation/useTurnMonitoringOffMutation';
+import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
+import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
+import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
+import { isObject } from '@ballerine/common';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const ZodDeboardingSchema = z
+  .object({
+    reason: z.string().optional(),
+    userReason: z.string().optional(),
+  })
+  .refine(
+    ({ reason, userReason }) => {
+      if (reason === 'other') {
+        return !!userReason && userReason.length >= 5;
+      }
+
+      return true;
+    },
+    ({ reason }) => {
+      if (reason === 'other') {
+        return {
+          message: 'Please provide a reason of at least 5 characters',
+          path: ['userReason'],
+        };
+      }
+
+      return { message: 'Invalid Input' };
+    },
+  );
 
 const statusToBadgeData = {
   [MERCHANT_REPORT_STATUSES_MAP.completed]: { variant: 'info', text: 'Manual Review' },
@@ -24,6 +54,14 @@ const statusToBadgeData = {
   },
   [MERCHANT_REPORT_STATUSES_MAP['failed']]: { variant: 'destructive', text: 'Failed' },
 } as const;
+
+const deboardingReasonOptions = [
+  { value: 'fraud', label: 'Fraudulent Activity Detected' },
+  { value: 'regulations', label: 'Non-Compliance with Regulations' },
+  { value: 'disputes', label: 'Excessive Chargebacks or Disputes' },
+  { value: 'expired', label: 'Business Relationship Ended' },
+  { value: 'other', label: 'Other' },
+] as const;
 
 export const useMerchantMonitoringBusinessReportLogic = () => {
   const { businessReportId } = useParams();
@@ -36,8 +74,57 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     noteableType: 'Report',
   });
 
-  const turnMonitoringOnMutation = useTurnMonitoringOnMutation();
-  const turnMonitoringOffMutation = useTurnMonitoringOffMutation();
+  const [isDeboardModalOpen, setIsDeboardModalOpen] = useToggle(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useToggle(false);
+
+  const formDefaultValues = {
+    reason: undefined,
+    userReason: '',
+  } satisfies z.infer<typeof ZodDeboardingSchema>;
+
+  const form = useForm({
+    resolver: zodResolver(ZodDeboardingSchema),
+    defaultValues: formDefaultValues,
+  });
+
+  const onSubmit: SubmitHandler<z.infer<typeof ZodDeboardingSchema>> = async (data, e) => {
+    if (!businessReport?.merchantId) {
+      throw new Error('Merchant ID is missing');
+    }
+
+    return turnOffMonitoringMutation.mutate({ merchantId: businessReport.merchantId, body: data });
+  };
+
+  const turnOnMonitoringMutation = useToggleMonitoringMutation({
+    state: 'on',
+    onSuccess: () => {
+      toast.success(t(`toast:business_monitoring_on.success`));
+    },
+    onError: error => {
+      toast.error(
+        t(`toast:business_monitoring_on.error`, {
+          errorMessage: isObject(error) && 'message' in error ? error.message : error,
+        }),
+      );
+    },
+  });
+
+  const turnOffMonitoringMutation = useToggleMonitoringMutation({
+    state: 'off',
+    onSuccess: () => {
+      setIsDeboardModalOpen(false);
+      setIsDropdownOpen(false);
+      form.reset();
+      toast.success(t(`toast:business_monitoring_off.success`));
+    },
+    onError: error => {
+      toast.error(
+        t(`toast:business_monitoring_off.error`, {
+          errorMessage: isObject(error) && 'message' in error ? error.message : error,
+        }),
+      );
+    },
+  });
 
   const { tabs } = useReportTabs({
     reportVersion: businessReport?.workflowVersion,
@@ -81,24 +168,6 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     sessionStorage.removeItem('merchant-monitoring:business-report:previous-path');
   }, [navigate]);
 
-  const turnOngoingMonitoringOn = useCallback(
-    (merchantId: string | undefined) => {
-      if (merchantId) {
-        turnMonitoringOnMutation.mutate(merchantId);
-      }
-    },
-    [turnMonitoringOnMutation],
-  );
-
-  const turnOngoingMonitoringOff = useCallback(
-    (merchantId: string | undefined) => {
-      if (merchantId) {
-        turnMonitoringOffMutation.mutate(merchantId);
-      }
-    },
-    [turnMonitoringOffMutation],
-  );
-
   const websiteWithNoProtocol = safeUrl(businessReport?.website)?.hostname;
 
   return {
@@ -110,8 +179,14 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     notes,
     activeTab,
     isNotesOpen,
-    turnOngoingMonitoringOn,
-    turnOngoingMonitoringOff,
+    turnOngoingMonitoringOn: turnOnMonitoringMutation.mutate,
+    isDeboardModalOpen,
+    setIsDeboardModalOpen,
+    isDropdownOpen,
+    setIsDropdownOpen,
+    form,
+    onSubmit,
+    deboardingReasonOptions,
     isFetchingBusinessReport,
   };
 };
