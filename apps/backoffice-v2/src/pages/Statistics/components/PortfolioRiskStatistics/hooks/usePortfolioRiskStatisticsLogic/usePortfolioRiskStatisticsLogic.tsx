@@ -16,7 +16,8 @@ import { useBusinessReportsQuery } from '@/domains/business-reports/hooks/querie
 
 export const usePortfolioRiskStatisticsLogic = ({
   violationCounts,
-}: Pick<z.infer<typeof MetricsResponseSchema>, 'violationCounts'>) => {
+  userSelectedDate,
+}: Pick<z.infer<typeof MetricsResponseSchema>, 'violationCounts'> & { userSelectedDate: Date }) => {
   const [parent] = useAutoAnimate<HTMLTableSectionElement>();
   const [riskIndicatorsSorting, setRiskIndicatorsSorting] = useState<SortDirection>('desc');
   const onSortRiskIndicators = useCallback(
@@ -48,23 +49,14 @@ export const usePortfolioRiskStatisticsLogic = ({
   );
   const locale = useLocale();
   const navigate = useNavigate();
-  const getLast30DaysDateRange = () => {
-    const today = dayjs();
-    const thirtyDaysAgo = today.subtract(30, 'day');
 
-    return {
-      from: thirtyDaysAgo.format('YYYY-MM-DD'),
-      to: today.format('YYYY-MM-DD'),
-    };
-  };
-
-  const last30DaysDateRange = getLast30DaysDateRange();
-  const [{ from }] = useZodSearchParams(StatisticsSearchSchema);
+  const from = dayjs(userSelectedDate).format('YYYY-MM-DD');
+  const to = dayjs(userSelectedDate).add(1, 'month').format('YYYY-MM-DD');
 
   const { data: businessReports } = useBusinessReportsQuery({
     isAlert: true,
     from,
-    to: dayjs(from).add(1, 'month').format('YYYY-MM-DD'),
+    to,
   });
 
   const alertedReports = businessReports?.totalItems ?? 0;
@@ -79,8 +71,8 @@ export const usePortfolioRiskStatisticsLogic = ({
     filteredRiskIndicators,
     locale,
     navigate,
-    from: last30DaysDateRange.from,
-    to: last30DaysDateRange.to,
+    from,
+    to,
     alertedReports,
   };
 };

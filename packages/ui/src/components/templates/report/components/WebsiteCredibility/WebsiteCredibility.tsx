@@ -1,13 +1,24 @@
-import { Card, CardContent, CardHeader } from '@/components';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/atoms';
-import { BallerineLink } from '@/components/atoms/BallerineLink/BallerineLink';
 import { ctw } from '@/common';
+import { Card, CardContent, CardHeader } from '@/components';
+import {
+  CardDescription,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/atoms';
+import { BallerineLink } from '@/components/atoms/BallerineLink/BallerineLink';
 import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
 import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
 import dayjs from 'dayjs';
-import { InfoIcon, TrendingDown } from 'lucide-react';
+import { InfoIcon } from 'lucide-react';
 import { FunctionComponent, useMemo } from 'react';
 import {
+  Area,
+  AreaChart,
   CartesianGrid,
   Cell,
   Legend,
@@ -18,10 +29,6 @@ import {
   YAxis,
 } from 'recharts';
 import { capitalize } from 'string-ts';
-import { TrendingUp } from 'lucide-react';
-import { Area, AreaChart } from 'recharts';
-import { CardDescription, CardFooter } from '@/components/atoms';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/atoms';
 
 const engagementMetricsMapper = {
   'Time on site': {
@@ -80,23 +87,6 @@ export const WebsiteCredibility: FunctionComponent<{
       })
       .map(({ label, value }) => ({ label, value: parseFloat(value.toFixed(2)) }));
   }, [trafficAnalysis.trafficSources]);
-
-  const calculateTrend = (data: Array<{ label: string; value: string }>) => {
-    if (data.length < 2) {
-      return { direction: 'No trend data', percentage: 0 };
-    }
-
-    const lastMonthValue = parseInt(data[data.length - 1]?.value ?? '0');
-    const previousMonthValue = parseInt(data[data.length - 2]?.value ?? '0');
-    const percentageChange = ((lastMonthValue - previousMonthValue) / previousMonthValue) * 100;
-    const direction = lastMonthValue > previousMonthValue ? 'up' : 'down';
-
-    return { direction, percentage: Math.abs(percentageChange) };
-  };
-
-  const trend = calculateTrend(
-    trafficAnalysis.montlyVisitsIndicators.map(({ label, value }) => ({ label, value })),
-  );
 
   return (
     <div className="space-y-8">
@@ -194,8 +184,8 @@ export const WebsiteCredibility: FunctionComponent<{
                 <ChartContainer
                   className="h-[20rem] w-full"
                   config={{
-                    desktop: {
-                      label: 'Monthly Visitors',
+                    visitors: {
+                      label: 'Visited',
                       color: '#007aff',
                     },
                   }}
@@ -233,7 +223,16 @@ export const WebsiteCredibility: FunctionComponent<{
                     />
                     <ChartTooltip
                       cursor={false}
-                      content={<ChartTooltipContent indicator="line" />}
+                      content={
+                        <ChartTooltipContent
+                          indicator="dot"
+                          valueRender={value => (
+                            <span className="text-foreground font-mono font-medium tabular-nums ml-4">
+                              {Intl.NumberFormat('en').format(Number(value))}
+                            </span>
+                          )}
+                        />
+                      }
                     />
                     <Area
                       dataKey="visitors"
@@ -250,30 +249,8 @@ export const WebsiteCredibility: FunctionComponent<{
                 </div>
               )}
             </CardContent>
-            <CardFooter>
-              <div className="flex w-full items-start gap-2 text-sm">
-                <div className="grid gap-2">
-                  <div className="flex items-center gap-2 font-medium leading-none">
-                    {trend.direction !== 'No trend data' && (
-                      <>
-                        {trend.direction === 'up' ? (
-                          <TrendingUp className="h-4 w-4 text-green-500" />
-                        ) : (
-                          <TrendingDown className="h-4 w-4 text-red-500" />
-                        )}
-                        <span>{`Trending ${trend.direction} by ${trend.percentage.toFixed(
-                          1,
-                        )}% this month`}</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </CardFooter>
           </Card>
 
-          {/* <div className="flex 2xl:flex-col gap-4 h-[12rem] 2xl:h-full w-full 2xl:w-2/5">
-                  <div className="h-full 2xl:h-1/2 w-1/2 2xl:w-full"> */}
           <div className="flex h-full w-2/5 flex-col gap-4">
             <Card className="h-1/2 w-full">
               <CardHeader className="px-6 pb-2 pt-4 font-bold">Traffic Sources</CardHeader>
@@ -468,9 +445,6 @@ export const WebsiteCredibility: FunctionComponent<{
           </ol>
         </CardContent>
       </Card>
-
-      {/* <div className="flex flex-col 2xl:flex-row gap-4 w-full h-auto 2xl:h-96">
-        <div className="h-[24rem] 2xl:h-full w-full 2xl:w-3/5"> */}
     </div>
   );
 };
