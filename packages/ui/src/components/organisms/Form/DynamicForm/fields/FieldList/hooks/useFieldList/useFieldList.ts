@@ -19,14 +19,18 @@ export const useFieldList = ({ element }: IUseFieldListProps) => {
   const { values } = useDynamicForm();
 
   const addItem = useCallback(async () => {
-    if (element.params?.defaultValue) {
-      const expression = element.params?.defaultValue;
-      const result = await jsonata(expression).evaluate(values);
-      onChange([...value, result]);
-    } else {
-      onChange([...value]);
+    const expression = element.params?.defaultValue;
+
+    if (!expression) {
+      console.log('Default value is missing for', element.id);
+      onChange([...value, expression]);
+
+      return;
     }
-  }, [value, element.params?.defaultValue, onChange, values]);
+
+    const result = await jsonata(expression).evaluate(values);
+    onChange([...value, result]);
+  }, [value, element.params?.defaultValue, onChange, values, element.id]);
 
   const removeItem = useCallback(
     (index: number) => {
