@@ -31,6 +31,7 @@ export const Statistics: FunctionComponent = () => {
           removedMerchantsCount={data.removedMerchantsCount}
         />
         <PortfolioRiskStatistics
+          userSelectedDate={date}
           riskLevelCounts={data.riskLevelCounts}
           violationCounts={data.violationCounts}
         />
