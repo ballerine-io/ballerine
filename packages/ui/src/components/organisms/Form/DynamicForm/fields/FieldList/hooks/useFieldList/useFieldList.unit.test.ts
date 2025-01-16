@@ -56,7 +56,7 @@ describe('useFieldList', () => {
     expect(mockOnChange).toHaveBeenCalledWith(['defaultValue']);
   });
 
-  it('should add empty item when no default value provided', async () => {
+  it('should add defaultValue as is when no default value provided', async () => {
     const elementWithoutDefault = {
       ...mockElement,
       params: {},
@@ -66,7 +66,24 @@ describe('useFieldList', () => {
 
     await result.current.addItem();
 
-    expect(mockOnChange).toHaveBeenCalledWith([]);
+    expect(mockOnChange).toHaveBeenCalledWith([undefined]);
+  });
+
+  it('should log message when default value is missing', async () => {
+    const consoleSpy = vi.spyOn(console, 'log');
+    const elementWithoutDefault = {
+      ...mockElement,
+      params: {},
+    };
+
+    const { result } = renderHook(() => useFieldList({ element: elementWithoutDefault }));
+
+    await result.current.addItem();
+
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Default value is missing for',
+      elementWithoutDefault.id,
+    );
   });
 
   it('should remove item at specified index', () => {
