@@ -106,4 +106,13 @@ export class BusinessRepository {
       ...args,
     });
   }
+
+  async count<T extends Prisma.BusinessCountArgs>(
+    args: Prisma.SelectSubset<T, Prisma.BusinessCountArgs>,
+    projectIds: TProjectIds,
+  ) {
+    return await this.prismaService.business.count(
+      this.scopeService.scopeFindMany(args, projectIds),
+    );
+  }
 }

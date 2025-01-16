@@ -155,12 +155,14 @@ export class BusinessControllerExternal {
       featureConfig?: TCustomerWithFeatures['features'];
     };
 
+    const isEnabled = data.state === 'on';
     const updatedMetadata = _.merge({}, metadata, {
       featureConfig: {
         [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
-          enabled: data.state === 'on',
+          enabled: isEnabled,
           reason: data.reason ?? null,
           userReason: data.userReason ?? null,
+          disabledAt: isEnabled ? null : new Date().getTime(),
         },
       },
     });

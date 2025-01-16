@@ -166,9 +166,30 @@ export class BusinessReportControllerExternal {
     @CurrentProject() currentProjectId: TProjectId,
     @Query() { from, to }: BusinessReportMetricsRequestQueryDto,
   ) {
-    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
+    const { id: customerId, features } = await this.customerService.getByProjectId(
+      currentProjectId,
+    );
 
-    return await this.merchantMonitoringClient.getMetrics({ customerId, from, to });
+    const { totalActiveMerchants, addedMerchantsCount, unmonitoredMerchants } =
+      await this.businessService.getMerchantMonitoringMetrics({
+        projectIds: [currentProjectId],
+        features,
+        from,
+        to,
+      });
+
+    const merchantMonitoringMetrics = await this.merchantMonitoringClient.getMetrics({
+      customerId,
+      from,
+      to,
+    });
+
+    return {
+      ...merchantMonitoringMetrics,
+      totalActiveMerchants,
+      addedMerchantsCount,
+      removedMerchantsCount: unmonitoredMerchants,
+    };
   }
 
   @common.Post()
