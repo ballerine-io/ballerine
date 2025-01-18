@@ -6,7 +6,7 @@ import { MultiselectfieldSelectedItem } from './MultiselectFieldSelectedItem';
 
 describe('MultiselectfieldSelectedItem', () => {
   const mockOption: MultiSelectOption = {
-    title: 'Test Option',
+    label: 'Test Option',
     value: 'test-value',
   };
 

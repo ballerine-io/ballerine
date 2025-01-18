@@ -30,6 +30,8 @@ export interface IDocumentFieldParams<
   pageProperty?: string;
 }
 
+export const DOCUMENT_FIELD_TYPE = 'documentfield';
+
 export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element }) => {
   useMountEvent(element);
   useUnmountEvent(element);

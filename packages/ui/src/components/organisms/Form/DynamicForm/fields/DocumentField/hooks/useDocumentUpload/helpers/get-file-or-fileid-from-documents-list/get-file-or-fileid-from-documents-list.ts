@@ -9,7 +9,6 @@ export const getFileOrFileIdFromDocumentsList = (
 ): File | string | undefined => {
   const { pageIndex = 0, pageProperty = 'ballerineFileId', template } = element.params || {};
 
-  console.log('documentsList', documentsList);
   const documentIndex = documentsList?.findIndex(document => document.id === template?.id);
 
   if (documentIndex === -1) return undefined;

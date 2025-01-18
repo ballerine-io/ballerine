@@ -78,9 +78,9 @@ vi.mock('../FieldList/providers/StackProvider', () => ({
 
 describe('MultiselectField', () => {
   const mockOptions: MultiSelectOption[] = [
-    { title: 'Option 1', value: 'opt1' },
-    { title: 'Option 2', value: 'opt2' },
-    { title: 'Option 3', value: 'opt3' },
+    { label: 'Option 1', value: 'opt1' },
+    { label: 'Option 2', value: 'opt2' },
+    { label: 'Option 3', value: 'opt3' },
   ];
 
   const mockElement = {
@@ -186,7 +186,7 @@ describe('MultiselectField', () => {
 
     const multiselect = vi.mocked(MultiSelect).mock.calls[0]![0];
     const mockParams: SelectedElementParams = { unselectButtonProps: { onClick: vi.fn() } as any };
-    const mockOption: MultiSelectOption = { title: 'Test', value: 'test' };
+    const mockOption: MultiSelectOption = { label: 'Test', value: 'test' };
 
     const result = multiselect.renderSelected(mockParams, mockOption);
     expect(result.type).toBe(MultiselectfieldSelectedItem);

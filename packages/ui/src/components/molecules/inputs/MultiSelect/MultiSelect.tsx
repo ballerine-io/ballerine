@@ -10,7 +10,7 @@ import { FocusEvent, useCallback, useMemo, useRef, useState } from 'react';
 export type MultiSelectValue = string | number;
 
 export interface MultiSelectOption {
-  title: string;
+  label: string;
   value: MultiSelectValue;
 }
 
@@ -118,7 +118,7 @@ export const MultiSelect = ({
       .filter(option => !selectedMap[option.value as Exclude<PropertyKey, symbol>])
       .filter(option =>
         inputValue
-          ? option.title?.toLocaleLowerCase().includes(inputValue.toLocaleLowerCase())
+          ? option.label?.toLocaleLowerCase().includes(inputValue.toLocaleLowerCase())
           : true,
       );
   }, [options, selected, inputValue]);
@@ -203,7 +203,7 @@ export const MultiSelect = ({
                         className={'cursor-pointer'}
                         data-testid={testId ? `${testId}-option` : undefined}
                       >
-                        {option.title}
+                        {option.label}
                       </CommandItem>
                     );
                   })}
