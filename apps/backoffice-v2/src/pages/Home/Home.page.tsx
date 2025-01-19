@@ -8,9 +8,6 @@ import { WelcomeCard } from '@/pages/Home/components/WelcomeCard/WelcomeCard';
 
 export const Home: FunctionComponent = () => {
   const {
-    onDateRangeChange,
-    from,
-    to,
     firstName,
     fullName,
     avatarUrl,
@@ -56,7 +53,6 @@ export const Home: FunctionComponent = () => {
         {/*    </TabsTrigger>*/}
         {/*  </TabsList>*/}
         {/*  <TabsContent value={defaultTabValue}>*/}
-        {/*    <Outlet />*/}
         {/*  </TabsContent>*/}
         {/*</Tabs>*/}
         {(isDemo || isExample) && <Outlet />}

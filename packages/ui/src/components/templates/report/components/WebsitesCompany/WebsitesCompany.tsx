@@ -3,6 +3,7 @@ import { ctw } from '@/common';
 import { Card, CardContent, CardHeader } from '@/components';
 import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
 import { BallerineLink } from '@/components/atoms/BallerineLink/BallerineLink';
+import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
 
 export const WebsitesCompany: FunctionComponent<{
   companyName: string;
@@ -17,9 +18,27 @@ export const WebsitesCompany: FunctionComponent<{
 }> = ({ companyName, companyReputationAnalysis, violations }) => {
   return (
     <div className={'space-y-8'}>
-      <h3 className={'text-lg font-bold'}>
-        Website&apos;s Company Analysis{companyName && companyName !== `N/A` && ` - ${companyName}`}
-      </h3>
+      <div>
+        <ContentTooltip
+          description={
+            <p>
+              Evaluates the company&apos;s reputation using customer feedback, reviews, and media
+              coverage. Identifies trust issues and potential red flags.
+            </p>
+          }
+          props={{
+            tooltipContent: {
+              align: 'center',
+            },
+          }}
+        >
+          <h3 className={'text-lg font-bold'}>
+            Website&apos;s Company Analysis
+            {companyName && companyName !== `N/A` && ` - ${companyName}`}
+          </h3>
+        </ContentTooltip>
+      </div>
+
       <RiskIndicators violations={violations} />
       <Card>
         <CardHeader className={'pt-4 font-bold'}>Company Reputation Analysis</CardHeader>
@@ -40,7 +59,9 @@ export const WebsitesCompany: FunctionComponent<{
                   )}
                 </li>
               ))}
-            {!companyReputationAnalysis?.length && <li>No Indications Detected.</li>}
+            {!companyReputationAnalysis?.length && (
+              <li>No indications of negative company reputation were detected.</li>
+            )}
           </ol>
         </CardContent>
       </Card>

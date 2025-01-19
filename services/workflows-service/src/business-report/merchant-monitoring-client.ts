@@ -13,6 +13,7 @@ import {
 import * as errors from '@/errors';
 
 const CreateReportResponseSchema = z.object({});
+
 const ReportSchema = z.object({
   id: z.string(),
   websiteId: z.string(),
@@ -51,6 +52,7 @@ const ReportSchema = z.object({
     .transform(value => new Date(value)),
   data: z.record(z.string(), z.unknown()).nullish(),
 });
+
 const FindManyReportsResponseSchema = z.object({
   totalItems: z.number(),
   totalPages: z.number(),
@@ -71,6 +73,9 @@ const MetricsResponseSchema = z.object({
       count: z.number(),
     }),
   ),
+  totalActiveMerchants: z.number(),
+  addedMerchantsCount: z.number(),
+  removedMerchantsCount: z.number(),
 });
 
 @Injectable()
@@ -218,19 +223,21 @@ export class MerchantMonitoringClient {
     riskLevels,
     statuses,
     findings,
+    isAlert,
     withoutUnpublishedOngoingReports,
     searchQuery,
   }: {
     customerId: string;
     businessId?: string;
-    limit: number;
-    page: number;
+    limit?: number;
+    page?: number;
     from?: string;
     to?: string;
     reportType?: MerchantReportType;
     riskLevels?: Array<'low' | 'medium' | 'high' | 'critical'>;
     statuses?: Array<'failed' | 'quality-control' | 'completed' | 'in-progress'>;
     findings?: string[];
+    isAlert?: boolean;
     withoutUnpublishedOngoingReports?: boolean;
     searchQuery?: string;
   }) {
@@ -245,6 +252,7 @@ export class MerchantMonitoringClient {
         page,
         statuses,
         findings,
+        isAlert,
         withoutUnpublishedOngoingReports,
         ...(searchQuery && { searchQuery }),
         ...(reportType && { reportType }),
@@ -273,10 +281,20 @@ export class MerchantMonitoringClient {
     return response.data ?? [];
   }
 
-  public async getMetrics({ customerId }: { customerId: string }) {
+  public async getMetrics({
+    customerId,
+    from,
+    to,
+  }: {
+    customerId: string;
+    from?: string;
+    to?: string;
+  }) {
     const response = await this.axios.get('merchants/analysis/metrics', {
       params: {
         customerId,
+        from,
+        to,
       },
       headers: {
         Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,

@@ -1,16 +1,53 @@
 # @ballerine/ui
 
-## 0.5.61
+## 0.5.66
 
 ### Patch Changes
 
 - version bump
+- Updated dependencies
+  - @ballerine/common@0.9.67
+
+## 0.5.65
+
+### Patch Changes
+
+- Added scroll persistence on data table
+
+## 0.5.64
+
+### Patch Changes
+
+- Fixed graph cut off issue
+
+## 0.5.63
+
+### Patch Changes
+
+- Export ContentTooltip component
+
+## 0.5.62
+
+### Patch Changes
+
+- version bump
+  s Please enter a summary for your changes.
+- Updated dependencies
+  - @ballerine/common@0.9.66
+
+## 0.5.61
+
+### Patch Changes
+
+- Fix display when traffic sources list is empty
 
 ## 0.5.60
 
 ### Patch Changes
 
-- version bump
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.65
 
 ## 0.5.59
 

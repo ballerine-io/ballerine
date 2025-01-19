@@ -24,6 +24,7 @@ import { capitalize, toLowerCase } from 'string-ts';
 import { z } from 'zod';
 import { FacebookIcon } from './icons/FacebookIcon';
 import { InstagramIcon } from './icons/InstagramIcon';
+import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
 
 const socialMediaMapper: {
   facebook: {
@@ -99,7 +100,18 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
   relatedAdsImages,
 }) => (
   <div className="space-y-6 px-4">
-    <h2 className="text-lg font-bold">Ads and Social Media Analysis</h2>
+    <div>
+      <ContentTooltip
+        description={<p>Reviews the merchant&apos;s social media presence.</p>}
+        props={{
+          tooltipContent: {
+            align: 'center',
+          },
+        }}
+      >
+        <h2 className="text-lg font-bold">Social Media Analysis</h2>
+      </ContentTooltip>
+    </div>
 
     <div>
       <h3 className="mb-2 text-base font-bold">Social Media</h3>

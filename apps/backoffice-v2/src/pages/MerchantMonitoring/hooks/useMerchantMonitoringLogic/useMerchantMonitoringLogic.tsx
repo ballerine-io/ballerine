@@ -1,23 +1,42 @@
 import dayjs from 'dayjs';
 import { SlidersHorizontal } from 'lucide-react';
-import React, { useCallback, ComponentProps, useMemo } from 'react';
+import { ComponentProps, useCallback, useEffect, useMemo } from 'react';
 
-import { useLocale } from '@/common/hooks/useLocale/useLocale';
-import { useSearch } from '@/common/hooks/useSearch/useSearch';
-import { usePagination } from '@/common/hooks/usePagination/usePagination';
-import { useFindings } from '@/pages/MerchantMonitoring/hooks/useFindings/useFindings';
-import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
-import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { usePagination } from '@/common/hooks/usePagination/usePagination';
+import { useSearch } from '@/common/hooks/useSearch/useSearch';
+import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { useBusinessReportsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportsQuery/useBusinessReportsQuery';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
+import { useFindings } from '@/pages/MerchantMonitoring/hooks/useFindings/useFindings';
 import {
+  DISPLAY_TEXT_TO_IS_ALERT,
   DISPLAY_TEXT_TO_MERCHANT_REPORT_TYPE,
+  IS_ALERT_TO_DISPLAY_TEXT,
   MerchantMonitoringSearchSchema,
+  REPORT_STATUS_LABEL_TO_VALUE_MAP,
   REPORT_TYPE_TO_DISPLAY_TEXT,
   RISK_LEVEL_FILTER,
   STATUS_LEVEL_FILTER,
-  REPORT_STATUS_LABEL_TO_VALUE_MAP,
 } from '@/pages/MerchantMonitoring/schemas';
+import { useLocation } from 'react-router-dom';
+import { MERCHANT_MONITORING_QUERY_PARAMS_KEY } from '@/pages/MerchantMonitoring/constants';
+
+const useDefaultDateRange = () => {
+  const [{ from, to }, setSearchParams] = useZodSearchParams(MerchantMonitoringSearchSchema);
+
+  useEffect(() => {
+    if (from || to) {
+      return;
+    }
+
+    setSearchParams({
+      from: dayjs().subtract(30, 'day').format('YYYY-MM-DD'),
+      to: dayjs().format('YYYY-MM-DD'),
+    });
+  }, []);
+};
 
 export const useMerchantMonitoringLogic = () => {
   const locale = useLocale();
@@ -26,9 +45,26 @@ export const useMerchantMonitoringLogic = () => {
   const { search, debouncedSearch, onSearch } = useSearch();
 
   const [
-    { page, pageSize, sortBy, sortDir, reportType, riskLevels, statuses, from, to, findings },
+    {
+      page,
+      pageSize,
+      sortBy,
+      sortDir,
+      reportType,
+      riskLevels,
+      statuses,
+      from,
+      to,
+      findings,
+      isAlert,
+    },
     setSearchParams,
   ] = useZodSearchParams(MerchantMonitoringSearchSchema, { replace: true });
+
+  const { search: searchString } = useLocation();
+  useEffect(() => {
+    sessionStorage.setItem(MERCHANT_MONITORING_QUERY_PARAMS_KEY, searchString);
+  }, [searchString]);
 
   const { findings: findingsOptions, isLoading: isLoadingFindings } = useFindings();
 
@@ -51,6 +87,7 @@ export const useMerchantMonitoringLogic = () => {
       .flatMap(status => (status === 'quality-control' ? ['quality-control', 'failed'] : [status])),
     from,
     to: to ? dayjs(to).add(1, 'day').format('YYYY-MM-DD') : undefined,
+    ...(isAlert !== 'All' && { isAlert: DISPLAY_TEXT_TO_IS_ALERT[isAlert] }),
   });
 
   const isClearAllButtonVisible = useMemo(
@@ -69,6 +106,10 @@ export const useMerchantMonitoringLogic = () => {
 
   const onReportTypeChange = (reportType: keyof typeof REPORT_TYPE_TO_DISPLAY_TEXT) => {
     setSearchParams({ reportType: REPORT_TYPE_TO_DISPLAY_TEXT[reportType] });
+  };
+
+  const onIsAlertChange = (isAlert: keyof typeof IS_ALERT_TO_DISPLAY_TEXT) => {
+    setSearchParams({ isAlert: IS_ALERT_TO_DISPLAY_TEXT[isAlert] });
   };
 
   const handleFilterChange = useCallback(
@@ -99,6 +140,7 @@ export const useMerchantMonitoringLogic = () => {
       findings: [],
       from: undefined,
       to: undefined,
+      isAlert: 'All',
       page: '1',
     });
 
@@ -137,9 +179,11 @@ export const useMerchantMonitoringLogic = () => {
     [findingsOptions],
   );
 
+  useDefaultDateRange();
+
   return {
     totalPages: data?.totalPages || 0,
-    totalItems: data?.totalItems || 0,
+    totalItems: Intl.NumberFormat(locale).format(data?.totalItems || 0),
     createBusinessReport: customer?.features?.createBusinessReport,
     createBusinessReportBatch: customer?.features?.createBusinessReportBatch,
     businessReports: data?.data || [],
@@ -167,8 +211,11 @@ export const useMerchantMonitoringLogic = () => {
     riskLevels,
     statuses,
     findings,
+    isAlert,
+    IS_ALERT_TO_DISPLAY_TEXT,
     dates: { from, to },
     onDatesChange,
+    onIsAlertChange,
     onClearAllFilters,
   };
 };

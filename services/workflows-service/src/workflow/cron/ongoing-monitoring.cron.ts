@@ -70,8 +70,19 @@ export class OngoingMonitoringCron {
 
           for (const business of businesses) {
             try {
+              const isOngoingEnabledForBusiness =
+                business.metadata?.featureConfig?.[this.processFeatureName]?.enabled;
+
+              if (!isOngoingEnabledForBusiness) {
+                this.logger.log(
+                  `Ongoing monitoring is not enabled for business ${business.companyName} (id: ${business.id})`,
+                );
+
+                continue;
+              }
+
               if (
-                !business.metadata?.featureConfig?.[this.processFeatureName]?.enabled &&
+                isOngoingEnabledForBusiness === undefined &&
                 !featureConfig?.options.runByDefault
               ) {
                 this.logger.log(

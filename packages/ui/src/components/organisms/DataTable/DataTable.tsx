@@ -73,19 +73,26 @@ export interface IDataTableProps<TData, TValue = any> {
     onSelect: (ids: Record<string, boolean>) => void;
     selected: Record<string, boolean>;
   };
+
+  scrollRef?: React.RefObject<HTMLDivElement>;
+  handleScroll?: (event: React.UIEvent<HTMLDivElement>) => void;
 }
 
-export const DataTable = <TData extends RowData, TValue = any>({
-  data,
-  props,
-  caption,
-  columns,
-  CellContentWrapper,
-  options = {},
-  CollapsibleContent,
-  sort,
-  select,
-}: IDataTableProps<TData, TValue>) => {
+const DataTableBase = <TData extends RowData, TValue = any>(
+  {
+    data,
+    props,
+    caption,
+    columns,
+    CellContentWrapper,
+    options = {},
+    CollapsibleContent,
+    sort,
+    select,
+    handleScroll,
+  }: IDataTableProps<TData, TValue>,
+  ref: React.ForwardedRef<HTMLDivElement>,
+) => {
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const { enableSorting = false } = options;
@@ -204,7 +211,7 @@ export const DataTable = <TData extends RowData, TValue = any>({
 
   return (
     <div className="relative overflow-auto rounded-md border bg-white shadow">
-      <ScrollArea orientation="both" {...props?.scroll}>
+      <ScrollArea orientation="both" {...props?.scroll} onScrollCapture={handleScroll} ref={ref}>
         <Table {...props?.table}>
           {caption && (
             <TableCaption
@@ -327,3 +334,8 @@ export const DataTable = <TData extends RowData, TValue = any>({
     </div>
   );
 };
+
+const forward = React.forwardRef as <T, P = NonNullable<unknown>>(
+  render: (props: P, ref: React.Ref<T>) => React.ReactNode,
+) => (props: P & React.RefAttributes<T>) => React.ReactNode;
+export const DataTable = forward(DataTableBase);
