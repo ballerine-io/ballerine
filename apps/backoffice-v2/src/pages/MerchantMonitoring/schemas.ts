@@ -126,6 +126,6 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
       ],
     )
     .catch('All'),
-  from: z.string().date().catch(dayjs().subtract(30, 'day').format('YYYY-MM-DD')),
-  to: z.string().date().catch(dayjs().format('YYYY-MM-DD')),
+  from: z.string().date().optional(),
+  to: z.string().date().optional(),
 });

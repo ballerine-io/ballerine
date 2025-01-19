@@ -23,6 +23,21 @@ import {
 import { useLocation } from 'react-router-dom';
 import { MERCHANT_MONITORING_QUERY_PARAMS_KEY } from '@/pages/MerchantMonitoring/constants';
 
+const useDefaultDateRange = () => {
+  const [{ from, to }, setSearchParams] = useZodSearchParams(MerchantMonitoringSearchSchema);
+
+  useEffect(() => {
+    if (from || to) {
+      return;
+    }
+
+    setSearchParams({
+      from: dayjs().subtract(30, 'day').format('YYYY-MM-DD'),
+      to: dayjs().format('YYYY-MM-DD'),
+    });
+  }, []);
+};
+
 export const useMerchantMonitoringLogic = () => {
   const locale = useLocale();
   const { data: customer } = useCustomerQuery();
@@ -163,6 +178,8 @@ export const useMerchantMonitoringLogic = () => {
     }),
     [findingsOptions],
   );
+
+  useDefaultDateRange();
 
   return {
     totalPages: data?.totalPages || 0,
