@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.65
+
+### Patch Changes
+
+- Added scroll persistence on data table
+
 ## 0.5.64
 
 ### Patch Changes
