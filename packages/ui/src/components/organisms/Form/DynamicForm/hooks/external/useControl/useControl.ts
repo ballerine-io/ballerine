@@ -6,7 +6,7 @@ import { IFormElement } from '../../../types';
 import { useEvents } from '../../internal/useEvents';
 import { useRules } from '../useRules';
 
-export const useControl = (element: IFormElement<any, any>, stack: TDeepthLevelStack = []) => {
+export const useControl = (element: IFormElement<any, any>, stack?: TDeepthLevelStack) => {
   const { values, validationParams, metadata } = useDynamicForm();
   const { sendEvent } = useEvents(element);
   const { validate } = useValidator();

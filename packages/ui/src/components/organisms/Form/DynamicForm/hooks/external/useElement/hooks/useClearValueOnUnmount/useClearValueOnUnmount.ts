@@ -14,6 +14,7 @@ export const useClearValueOnUnmount = (element: IFormElement<any, any>, hidden: 
   useUnmount(() => {
     if (!prevHidden.current && hidden) {
       clean(value);
+      console.log('clean', value);
     }
   });
 };

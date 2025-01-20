@@ -4,10 +4,9 @@ import { useMemo } from 'react';
 import { replaceTagsWithIndexesInRule } from './helpers';
 
 export const useRules = (rules?: IRule[], stack?: TDeepthLevelStack) => {
-  const rulesWithIndexes = useMemo(
-    () => replaceTagsWithIndexesInRule(rules ?? [], stack),
-    [rules, stack],
-  );
+  const rulesWithIndexes = useMemo(() => {
+    return rules ? replaceTagsWithIndexesInRule(rules, stack) : [];
+  }, [rules, stack]);
 
   return rulesWithIndexes;
 };
