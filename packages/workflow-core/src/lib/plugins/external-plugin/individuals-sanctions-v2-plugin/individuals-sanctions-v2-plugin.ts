@@ -94,8 +94,8 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
 
     handleJmespathTransformers({
       pluginName: this.pluginName,
-      requestTransformers: this.response?.transformers,
-      responseTransformers: this.request?.transformers,
+      requestTransformers: this.request?.transformers,
+      responseTransformers: this.response?.transformers,
     });
   }
 
