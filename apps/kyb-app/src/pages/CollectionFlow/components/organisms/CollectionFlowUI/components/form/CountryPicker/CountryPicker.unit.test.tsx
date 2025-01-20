@@ -22,7 +22,7 @@ describe('CountryPickerField', () => {
   const mockCountries = [
     { const: 'US', title: 'United States' },
     { const: 'GB', title: 'United Kingdom' },
-  ];
+  ] as ReturnType<typeof getCountries>;
 
   beforeEach(() => {
     vi.mocked(getCountries).mockReturnValue(mockCountries);
