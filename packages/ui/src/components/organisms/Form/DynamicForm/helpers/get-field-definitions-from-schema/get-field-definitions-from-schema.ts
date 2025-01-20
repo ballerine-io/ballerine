@@ -15,7 +15,7 @@ export const getFieldDefinitionsFromSchema = (
       definition.push(element);
 
       if (element.children?.length) {
-        definition[i]!.children = getFieldDefinitionsFromSchema(element.children || []);
+        element.children = getFieldDefinitionsFromSchema(element.children || []);
       }
     } else {
       getFieldDefinitionsFromSchema(element.children || [], definition);
