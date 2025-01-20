@@ -1,13 +1,13 @@
 import { ctw } from '@/common';
 import { muiTheme } from '@/common/mui-theme';
 import { Paper } from '@/components/atoms';
-import { TextField, TextFieldProps, ThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs, { Dayjs } from 'dayjs';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
-import { FocusEvent, FunctionComponent, useCallback, useMemo, useState } from 'react';
+import { FocusEvent, useCallback, useMemo } from 'react';
 
 export interface DatePickerChangeEvent {
   target: {
@@ -36,6 +36,7 @@ export interface DatePickerProps {
   textInputClassName?: string;
   onChange: (event: DatePickerChangeEvent) => void;
   onBlur?: (event: FocusEvent<any>) => void;
+  onFocus?: (event: FocusEvent<any>) => void;
 }
 
 export const DatePickerInput = ({
@@ -47,6 +48,7 @@ export const DatePickerInput = ({
   textInputClassName,
   onChange,
   onBlur,
+  onFocus,
 }: DatePickerProps) => {
   const {
     outputValueFormat = 'iso',
@@ -54,7 +56,6 @@ export const DatePickerInput = ({
     disableFuture = false,
     disablePast = false,
   } = params || {};
-  const [isFocused, setFocused] = useState(false);
 
   const serializeValue = useCallback(
     (value: Dayjs): string => {
@@ -108,53 +109,6 @@ export const DatePickerInput = ({
     return deserializeValue(_value);
   }, [_value, deserializeValue]);
 
-  const Field = useMemo(() => {
-    const Component: FunctionComponent<TextFieldProps> = props => {
-      return (
-        <TextField
-          {...props}
-          variant="standard"
-          fullWidth
-          size="small"
-          onFocus={e => {
-            setFocused(true);
-            props.onFocus && props.onFocus(e);
-          }}
-          onBlur={e => {
-            setFocused(false);
-            onBlur && onBlur(e);
-          }}
-          error={!isFocused ? props.error : false}
-          FormHelperTextProps={{
-            classes: {
-              root: 'pl-2 text-destructive font-inter text-[0.8rem]',
-            },
-          }}
-          helperText={!isFocused && props.error ? 'Please enter valid date.' : undefined}
-          InputProps={{
-            ...props.InputProps,
-            classes: {
-              root: ctw(
-                'bg-background border-input rounded-md border text-sm shadow-sm transition-colors px-3 py-0',
-                textInputClassName,
-              ),
-              focused: 'border-input ring-ring ring-1',
-              disabled: 'opacity-50 cursor-not-allowed',
-            },
-            disableUnderline: true,
-          }}
-          inputProps={{
-            ...props.inputProps,
-            'data-testid': testId,
-            className: 'py-0 px-0 h-9',
-          }}
-        />
-      );
-    };
-
-    return Component;
-  }, [isFocused, onBlur, testId]);
-
   return (
     <ThemeProvider theme={muiTheme}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -164,10 +118,11 @@ export const DatePickerInput = ({
           disabled={disabled}
           value={value}
           onChange={handleChange}
+          onBlur={onBlur}
+          onFocus={onFocus}
           reduceAnimations
           format={inputDateFormat}
           slots={{
-            textField: Field,
             openPickerIcon: () => <CalendarDays size="16" color="#64748B" className="opacity-50" />,
             rightArrowIcon: () => (
               <ChevronRight size="18" className="hover:text-muted-foreground cursor-pointer" />
@@ -195,6 +150,28 @@ export const DatePickerInput = ({
             },
             popper: {
               className: 'pointer-events-auto',
+            },
+            textField: {
+              size: 'small',
+              fullWidth: true,
+              className: ctw(
+                'flex h-10 w-full rounded-md border border-input bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
+                '[&_.MuiOutlinedInput-notchedOutline]:border-none',
+                '[&_.MuiOutlinedInput-root]:border',
+                '[&_.MuiOutlinedInput-root]:border-input',
+                '[&_.MuiOutlinedInput-root]:rounded-md',
+                '[&_.MuiOutlinedInput-root.Mui-focused]:border-ring',
+                '[&_.MuiOutlinedInput-root.Mui-focused]:ring-1',
+                '[&_.MuiOutlinedInput-root.Mui-focused]:ring-ring',
+                '[&_.MuiFormControl-root]:p-0',
+                textInputClassName,
+              ),
+              inputProps: {
+                'data-test-id': testId,
+              },
+              InputProps: {
+                className: 'focus:outline-none',
+              },
             },
           }}
         />
