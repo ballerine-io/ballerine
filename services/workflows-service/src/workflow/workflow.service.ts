@@ -2744,10 +2744,10 @@ export class WorkflowService {
       const businessContextToEntityAdapter = (data: Static<typeof BusinessDataSchema>) =>
         ({
           companyName: data.companyName,
-        } satisfies Parameters<typeof this.entityRepository.business.updateById>[1]['data']);
+        } satisfies Parameters<typeof this.businessService.updateById>[1]['data']);
 
       if (workflowRuntimeData.businessId && context.entity?.data) {
-        await this.entityRepository.business.updateById(workflowRuntimeData.businessId, {
+        await this.businessService.updateById(workflowRuntimeData.businessId, {
           data: businessContextToEntityAdapter(
             context.entity.data as Static<typeof BusinessDataSchema>,
           ),

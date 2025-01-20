@@ -1,8 +1,16 @@
 import axios, { AxiosInstance } from 'axios';
 import { env } from '@/env';
 import { Logger } from '@nestjs/common';
-import { Customer } from '@prisma/client';
+import { Business, Customer } from '@prisma/client';
 import { TSchema } from '@sinclair/typebox';
+import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
+
+type BusinessPayload = Pick<
+  Business,
+  'id' | 'correlationId' | 'companyName' | 'metadata' | 'createdAt' | 'updatedAt'
+> & {
+  customerId: string;
+};
 
 export type TOcrImages = Array<
   | {
@@ -69,5 +77,38 @@ export class UnifiedApiClient {
 
   public async deleteCustomer(id: string) {
     return await this.axiosInstance.delete(`/customers/${id}`);
+  }
+
+  public async createOrUpdateBusiness(payload: BusinessPayload) {
+    const formattedPayload = this.formatBusiness(payload);
+
+    return await this.axiosInstance.put(
+      `/customers/${payload.customerId}/merchants/${payload.id}`,
+      formattedPayload,
+    );
+  }
+
+  public formatBusiness(business: BusinessPayload) {
+    const metadata = business.metadata as unknown as {
+      featureConfig: TCustomerWithFeatures['features'];
+      lastOngoingReportInvokedAt: number;
+    } | null;
+
+    const unsubscribedMonitoringAt = metadata?.featureConfig?.[FEATURE_LIST.ONGOING_MERCHANT_REPORT]
+      ?.disabledAt
+      ? new Date(metadata.featureConfig[FEATURE_LIST.ONGOING_MERCHANT_REPORT]!.disabledAt!)
+      : metadata?.featureConfig?.[FEATURE_LIST.ONGOING_MERCHANT_REPORT]?.enabled === false
+      ? new Date()
+      : null;
+
+    return {
+      id: business.id,
+      correlationId: business.correlationId,
+      companyName: business.companyName,
+      customerId: business.customerId,
+      unsubscribedMonitoringAt: unsubscribedMonitoringAt?.toISOString() ?? null,
+      createdAt: business.createdAt.toISOString(),
+      updatedAt: business.updatedAt.toISOString(),
+    };
   }
 }
