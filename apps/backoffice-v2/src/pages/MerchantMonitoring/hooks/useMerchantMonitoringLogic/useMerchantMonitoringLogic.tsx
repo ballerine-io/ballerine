@@ -20,8 +20,21 @@ import {
   RISK_LEVEL_FILTER,
   STATUS_LEVEL_FILTER,
 } from '@/pages/MerchantMonitoring/schemas';
-import { useLocation } from 'react-router-dom';
-import { MERCHANT_MONITORING_QUERY_PARAMS_KEY } from '@/pages/MerchantMonitoring/constants';
+
+const useDefaultDateRange = () => {
+  const [{ from, to }, setSearchParams] = useZodSearchParams(MerchantMonitoringSearchSchema);
+
+  useEffect(() => {
+    if (from || to) {
+      return;
+    }
+
+    setSearchParams({
+      from: dayjs().subtract(30, 'day').format('YYYY-MM-DD'),
+      to: dayjs().format('YYYY-MM-DD'),
+    });
+  }, []);
+};
 
 export const useMerchantMonitoringLogic = () => {
   const locale = useLocale();
@@ -45,11 +58,6 @@ export const useMerchantMonitoringLogic = () => {
     },
     setSearchParams,
   ] = useZodSearchParams(MerchantMonitoringSearchSchema, { replace: true });
-
-  const { search: searchString } = useLocation();
-  useEffect(() => {
-    sessionStorage.setItem(MERCHANT_MONITORING_QUERY_PARAMS_KEY, searchString);
-  }, [searchString]);
 
   const { findings: findingsOptions, isLoading: isLoadingFindings } = useFindings();
 
@@ -163,6 +171,8 @@ export const useMerchantMonitoringLogic = () => {
     }),
     [findingsOptions],
   );
+
+  useDefaultDateRange();
 
   return {
     totalPages: data?.totalPages || 0,
