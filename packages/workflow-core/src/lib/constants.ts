@@ -6,7 +6,7 @@ import { EmailPlugin } from './plugins/external-plugin/email-plugin';
 import { MastercardMerchantScreeningPlugin } from './plugins/external-plugin/mastercard-merchant-screening-plugin';
 import { ObjectValues } from './types';
 import { BALLERINE_API_PLUGINS } from './plugins/external-plugin/vendor-consts';
-import { BallerineApiPlugin } from './plugins/external-plugin/ballerine-plugin';
+import { BallerineApiPlugin } from './plugins/external-plugin/ballerine-api-plugin';
 import { BallerineEmailPlugin } from './plugins/external-plugin/ballerine-email-plugin';
 import { IndividualsSanctionsV2Plugin } from './plugins/external-plugin/individuals-sanctions-v2-plugin/individuals-sanctions-v2-plugin';
 import { BankAccountVerificationPlugin } from './plugins/external-plugin/bank-account-verification-plugin/bank-account-verification-plugin';

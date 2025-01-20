@@ -12,9 +12,9 @@ import { logger } from '../../../logger';
 import { ApiPlugin } from '../api-plugin';
 import { TContext } from '../../../utils/types';
 import { validateEnv } from '../shared/validate-env';
-import { getTransformer } from '../../../workflow-runner-utils';
 import { IApiPluginParams, PluginPayloadProperty } from '../types';
 import { getPayloadPropertiesValue } from '../shared/get-payload-properties-value';
+import { handleJmespathTransformers } from '../shared/handle-jmespath-transformers';
 
 const isObjectWithKycInformation = (obj: unknown) => {
   return isType(KycInformationSchema)(obj);
@@ -87,39 +87,16 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
   }: IApiPluginParams & { payload: IndividualsSanctionsV2Plugin['payload'] }) {
     super({
       ...pluginParams,
-      response: {
-        ...pluginParams.response,
-        transformers: [
-          ...(pluginParams.response?.transformers ?? []),
-          getTransformer({
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
-          }),
-        ],
-      },
       method: 'POST' as const,
     });
+
     this.payload = payload;
 
-    // Deprecating JMESPath is in progress.
-    invariant(
-      (this.request?.transformers ?? []).every(
-        transformer => transformer.name !== 'jmespath-transformer',
-      ),
-      `${this.pluginName} - JMESPath request transformers are not supported`,
-    );
-    invariant(
-      (this.response?.transformers ?? []).every(
-        transformer => transformer.name !== 'jmespath-transformer',
-      ),
-      `${this.pluginName} - JMESPath response transformers are not supported`,
-    );
+    handleJmespathTransformers({
+      pluginName: this.pluginName,
+      requestTransformers: this.response?.transformers,
+      responseTransformers: this.request?.transformers,
+    });
   }
 
   async invoke(context: TContext) {

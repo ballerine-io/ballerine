@@ -6,10 +6,8 @@ import { logger } from '../../../logger';
 import { ApiPlugin } from '../api-plugin';
 import { TContext } from '../../../utils/types';
 import { validateEnv } from '../shared/validate-env';
-import { getTransformer } from '../../../workflow-runner-utils';
 import { IApiPluginParams, PluginPayloadProperty } from '../types';
 import { getPayloadPropertiesValue } from '../shared/get-payload-properties-value';
-import { handleJmespathTransformers } from '../shared/handle-jmespath-transformers';
 
 const BankAccountVerificationPluginPayloadSchema = z.object({
   clientId: z.string().min(1),
@@ -82,54 +80,18 @@ export class BankAccountVerificationPlugin extends ApiPlugin {
     payload,
     ...pluginParams
   }: IApiPluginParams & { payload: BankAccountVerificationPlugin['payload'] }) {
-    super({
+    const bankAccountVerificationPluginParams = {
       ...pluginParams,
-      response: {
-        ...pluginParams.response,
-        transformers: [
-          ...(pluginParams.response?.transformers ?? []),
-          getTransformer({
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
-          }),
-        ],
-      },
       method: 'POST' as const,
-    });
+    };
+
+    super(bankAccountVerificationPluginParams);
 
     this.payload = payload;
-
-    handleJmespathTransformers({
-      pluginName: this.pluginName,
-      requestTransformers: this.request?.transformers,
-      responseTransformers: this.response?.transformers,
-    });
   }
 
   async invoke(context: TContext) {
     const env = validateEnv(this.pluginName);
-
-    let requestPayload;
-
-    if (this.request?.transformers) {
-      requestPayload = await this.transformData(this.request.transformers, context);
-
-      const { isValidRequest, errorMessage } = await this.validateContent(
-        this.request.schemaValidator,
-        requestPayload,
-        'Request',
-      );
-
-      if (!isValidRequest) {
-        return this.returnErrorResponse(errorMessage ?? 'Invalid request');
-      }
-    }
 
     try {
       const url = `${env.UNIFIED_API_URL}/bank-account-verification/commercial`;
@@ -143,21 +105,16 @@ export class BankAccountVerificationPlugin extends ApiPlugin {
 
       if (!validatedPayload.success) {
         return this.returnErrorResponse(
-          `Invalid payload: ${JSON.stringify(validatedPayload.error.errors)}`,
+          `${this.pluginName} - Invalid payload: ${JSON.stringify(validatedPayload.error.errors)}`,
         );
       }
-
-      requestPayload = {
-        ...requestPayload,
-        ...validatedPayload.data,
-      };
 
       logger.log(`${this.pluginName} - Sending API request`, {
         url,
         method: this.method,
       });
 
-      const apiResponse = await this.makeApiRequest(url, this.method, requestPayload, {
+      const apiResponse = await this.makeApiRequest(url, this.method, validatedPayload.data, {
         ...this.headers,
         Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
       });
@@ -178,44 +135,32 @@ export class BankAccountVerificationPlugin extends ApiPlugin {
         const errorResponse = await apiResponse.json();
 
         return this.returnErrorResponse(
-          `Request Failed: ${apiResponse.statusText} Error: ${JSON.stringify(errorResponse)}`,
+          `${this.pluginName} - Request Failed: ${apiResponse.statusText} Error: ${JSON.stringify(
+            errorResponse,
+          )}`,
         );
       }
 
       const res = await apiResponse.json();
-      const result = z.record(z.string(), z.unknown()).parse(res);
-
-      let responseBody = result;
-
-      if (this.response?.transformers) {
-        responseBody = await this.transformData(this.response.transformers, result);
-      }
-
-      responseBody = {
-        ...responseBody,
-        name: this.name,
-        status: ProcessStatus.SUCCESS,
-      };
-
-      const { isValidResponse, errorMessage } = await this.validateContent(
-        this.response?.schemaValidator,
-        responseBody,
-        'Response',
-      );
-
-      if (!isValidResponse) {
-        return this.returnErrorResponse(errorMessage ?? 'Invalid response');
-      }
+      const responseBody = z.record(z.string(), z.unknown()).parse(res);
 
       if (this.successAction) {
-        return this.returnSuccessResponse(this.successAction, responseBody);
+        return this.returnSuccessResponse(this.successAction, {
+          ...responseBody,
+          name: this.name,
+          status: ProcessStatus.SUCCESS,
+        });
       }
 
       return {};
     } catch (error) {
-      logger.error('Error occurred while sending an API request', { error });
+      logger.error(`${this.pluginName} - Error occurred while sending an API request`, { error });
 
-      return this.returnErrorResponse(isErrorWithMessage(error) ? error.message : 'Unknown error');
+      return this.returnErrorResponse(
+        isErrorWithMessage(error)
+          ? `${this.pluginName} - ${error.message}`
+          : `${this.pluginName} - Unknown error`,
+      );
     }
   }
 }
