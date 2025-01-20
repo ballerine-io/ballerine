@@ -536,7 +536,7 @@ importers:
         specifier: ^0.9.66
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.5.65
+        specifier: 0.5.66
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.6.85
@@ -1516,7 +1516,7 @@ importers:
         specifier: ^1.1.30
         version: link:../config
       '@ballerine/ui':
-        specifier: 0.5.65
+        specifier: 0.5.66
         version: link:../ui
       '@react-pdf/renderer':
         specifier: ^3.1.14
@@ -25455,7 +25455,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.5)
+      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.3)
       debug: 3.2.7
       eslint: 8.54.0
       eslint-import-resolver-node: 0.3.9
@@ -25514,7 +25514,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@5.1.6)
+      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.5)
       debug: 3.2.7
       eslint: 8.54.0
       eslint-import-resolver-node: 0.3.9
@@ -25620,7 +25620,7 @@ packages:
       '@typescript-eslint/parser':
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.5)
+      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.3)
       array-includes: 3.1.7
       array.prototype.findlastindex: 1.2.3
       array.prototype.flat: 1.3.2
@@ -25690,7 +25690,7 @@ packages:
       '@typescript-eslint/parser':
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@5.1.6)
+      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.5)
       array-includes: 3.1.7
       array.prototype.findlastindex: 1.2.3
       array.prototype.flat: 1.3.2
@@ -26007,7 +26007,7 @@ packages:
       '@typescript-eslint/eslint-plugin':
         optional: true
     dependencies:
-      '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.54.0)(typescript@5.1.6)
+      '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.54.0)(typescript@4.9.5)
       eslint: 8.54.0
       eslint-rule-composer: 0.3.0
     dev: true

@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.66
+
+### Patch Changes
+
+- Fixed Date Picker popup flickering
+
 ## 0.5.65
 
 ### Patch Changes
