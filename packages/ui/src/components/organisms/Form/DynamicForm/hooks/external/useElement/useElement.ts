@@ -6,6 +6,7 @@ import { IFormElement } from '../../../types';
 import { usePriorityFields } from '../../internal/usePriorityFields';
 import { useElementId } from '../useElementId';
 import { useRules } from '../useRules';
+import { useClearValueOnUnmount } from './hooks/useClearValueOnUnmount';
 
 export const useElement = <TElements extends string, TParams>(
   element: IFormElement<TElements, TParams>,
@@ -16,7 +17,7 @@ export const useElement = <TElements extends string, TParams>(
   const hiddenRulesResult = useRuleEngine(valuesAndMetadata, {
     rules: useRules(element.hidden, stack),
     runOnInitialize: true,
-    executionDelay: 500,
+    executeRulesSync: true,
   });
 
   const isHidden = useMemo(() => {
@@ -25,7 +26,7 @@ export const useElement = <TElements extends string, TParams>(
     return hiddenRulesResult.some(result => result.result === true);
   }, [hiddenRulesResult]);
 
-  // useClearValueOnUnmount(element, isHidden);
+  useClearValueOnUnmount(element, isHidden);
 
   return {
     id: useElementId(element, stack),

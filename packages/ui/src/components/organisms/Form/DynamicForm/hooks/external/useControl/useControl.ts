@@ -15,7 +15,7 @@ export const useControl = (element: IFormElement<any, any>, stack?: TDeepthLevel
   const disabledRulesResult = useRuleEngine(valuesAndMetadata, {
     rules: useRules(element.disable, stack),
     runOnInitialize: true,
-    executionDelay: 500,
+    executeRulesSync: true,
   });
 
   const isDisabled = useMemo(() => {

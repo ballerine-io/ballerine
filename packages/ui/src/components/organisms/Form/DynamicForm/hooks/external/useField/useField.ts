@@ -9,7 +9,7 @@ import { useElementId } from '../useElementId';
 import { useRules } from '../useRules';
 import { useValueDestination } from '../useValueDestination';
 
-export const useField = <TValue>(element: IFormElement<any, any>, stack: TDeepthLevelStack) => {
+export const useField = <TValue>(element: IFormElement<any, any>, stack?: TDeepthLevelStack) => {
   const fieldId = useElementId(element, stack);
   const valueDestination = useValueDestination(element, stack);
 
