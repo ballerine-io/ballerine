@@ -20,8 +20,6 @@ import {
   RISK_LEVEL_FILTER,
   STATUS_LEVEL_FILTER,
 } from '@/pages/MerchantMonitoring/schemas';
-import { useLocation } from 'react-router-dom';
-import { MERCHANT_MONITORING_QUERY_PARAMS_KEY } from '@/pages/MerchantMonitoring/constants';
 
 const useDefaultDateRange = () => {
   const [{ from, to }, setSearchParams] = useZodSearchParams(MerchantMonitoringSearchSchema);
@@ -60,11 +58,6 @@ export const useMerchantMonitoringLogic = () => {
     },
     setSearchParams,
   ] = useZodSearchParams(MerchantMonitoringSearchSchema, { replace: true });
-
-  const { search: searchString } = useLocation();
-  useEffect(() => {
-    sessionStorage.setItem(MERCHANT_MONITORING_QUERY_PARAMS_KEY, searchString);
-  }, [searchString]);
 
   const { findings: findingsOptions, isLoading: isLoadingFindings } = useFindings();
 
