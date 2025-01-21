@@ -82,6 +82,8 @@ const createFutureDate = (daysToAdd: number) => {
   return futureDate;
 };
 
+const isoPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+
 describe('AlertService', () => {
   let prismaService: PrismaService;
   let alertService: AlertService;
@@ -2398,6 +2400,22 @@ describe('AlertService', () => {
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
         expect(alerts[0]?.counterpartyId).toEqual(null);
         expect(alerts[0]?.counterpartyBeneficiaryId).toEqual(counterparty.id);
+        expect(alerts[0]?.executionDetails).toMatchObject({
+          filters: {
+            counterpartyBeneficiaryId: counterparty.id,
+            paymentMethod: {
+              in: ['credit_card'],
+            },
+            projectId: project.id,
+            transactionDate: {
+              gte: expect.stringMatching(isoPattern),
+            },
+            transactionDirection: 'inbound',
+          },
+          subject: {
+            counterpartyBeneficiaryId: counterparty.id,
+          },
+        });
       });
 
       it(`Shouldnt create alert for non credit card transaction`, async () => {
