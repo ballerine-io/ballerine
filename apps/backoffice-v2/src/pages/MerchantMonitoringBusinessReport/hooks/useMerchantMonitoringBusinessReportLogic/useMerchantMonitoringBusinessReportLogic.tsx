@@ -94,7 +94,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
       throw new Error('Merchant ID is missing');
     }
 
-    return turnOffMonitoringMutation.mutate({ merchantId: businessReport.merchantId, body: data });
+    return turnOffMonitoringMutation.mutate(businessReport.merchantId);
   };
 
   const { mutateAsync: mutateCreateNote } = useCreateNoteMutation({ disableToast: true });

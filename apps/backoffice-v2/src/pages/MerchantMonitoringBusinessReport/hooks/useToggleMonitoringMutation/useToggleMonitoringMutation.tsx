@@ -2,10 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { HttpError } from '@/common/errors/http-error';
-import {
-  turnOngoingMonitoring,
-  TurnOngoingMonitoringBody,
-} from '@/pages/MerchantMonitoringBusinessReport/fetchers';
+import { turnOngoingMonitoring } from '@/pages/MerchantMonitoringBusinessReport/fetchers';
 
 export const useToggleMonitoringMutation = ({
   state,
@@ -19,10 +16,8 @@ export const useToggleMonitoringMutation = ({
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: {
-      merchantId: string;
-      body?: Omit<TurnOngoingMonitoringBody, 'state'>;
-    }) => turnOngoingMonitoring({ merchantId: data.merchantId, body: { ...data.body, state } }),
+    mutationFn: async (merchantId: string) =>
+      turnOngoingMonitoring({ merchantId, body: { state } }),
     onSuccess: data => {
       void queryClient.invalidateQueries();
 
