@@ -82,6 +82,7 @@ describe('workflow-runner', () => {
           ).pluginsOutput,
         ).toEqual({
           ballerineEnrichment: {
+            invokedAt: expect.any(Number),
             result: {
               companyInfo: {
                 companyName: 'TestCorp Ltd',

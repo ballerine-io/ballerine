@@ -94,3 +94,13 @@ export interface SerializableIterativePluginParams {
 
   invoke?(...args: any): void;
 }
+
+export type PluginPayloadProperty<TValue = string> =
+  | TValue
+  | {
+      __type: 'path';
+      value: string;
+    }
+  | {
+      [key: string]: PluginPayloadProperty;
+    };

@@ -35,7 +35,7 @@ async function generateCommitMessage(diff) {
             "- Don't capitalize first letter\n" +
             '- No period at the end\n' +
             '- Keep first line under 72 chars\n' +
-            '- Body lines must not exceed 100 chars, including the roast - the roast shouldnt be longer than 100 chars\n' +
+            '- All lines must not exceed 100 chars, including the roast - the roast shouldnt be longer than 100 chars\n' +
             '- Must have blank line between title and body\n\n' +
             'After analyzing the diff:\n' +
             '1. Write a concise conventional commit message\n' +

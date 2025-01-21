@@ -277,7 +277,7 @@ export const WebsiteCredibility: FunctionComponent<{
                         <ChartTooltipContent
                           indicator="dot"
                           valueRender={value => (
-                            <span className="text-foreground font-mono font-medium tabular-nums ml-4">
+                            <span className="text-foreground ml-4 font-mono font-medium tabular-nums">
                               {Intl.NumberFormat('en').format(Number(value))}
                             </span>
                           )}

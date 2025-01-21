@@ -1,7 +1,23 @@
 import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
+
 import { logger } from '../../logger';
-import { TContext, Transformer, Transformers, Validator } from '../../utils';
 import { IApiPluginParams } from './types';
+import {
+  HelpersTransformer,
+  TContext,
+  THelperFormatingLogic,
+  Transformer,
+  Transformers,
+  Validator,
+} from '../../utils';
+
+const invokedAtTransformer: HelpersTransformer = new HelpersTransformer([
+  {
+    source: 'invokedAt',
+    target: 'invokedAt',
+    method: 'setTimeToRecordUTC',
+  },
+] as THelperFormatingLogic);
 
 export class ApiPlugin {
   public static pluginType = 'http';
@@ -86,11 +102,10 @@ export class ApiPlugin {
 
       if (apiResponse.ok) {
         const result = await apiResponse.json();
-        let responseBody = result as AnyRecord;
 
-        if (this.response?.transformers) {
-          responseBody = await this.transformData(this.response.transformers, result as AnyRecord);
-        }
+        const responseTransformers = [...(this.response?.transformers || []), invokedAtTransformer];
+
+        const responseBody = await this.transformData(responseTransformers, result as AnyRecord);
 
         const { isValidResponse, errorMessage } = await this.validateContent(
           this.response!.schemaValidator,
