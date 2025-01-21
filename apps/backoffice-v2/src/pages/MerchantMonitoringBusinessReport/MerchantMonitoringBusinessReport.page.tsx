@@ -171,10 +171,10 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
                                 </FormControl>
                                 <FormMessage />
                                 <SelectContent>
-                                  {deboardingReasonOptions?.map(({ label, value }, index) => {
+                                  {deboardingReasonOptions?.map((option, index) => {
                                     return (
-                                      <SelectItem key={index} value={value}>
-                                        {label}
+                                      <SelectItem key={index} value={option}>
+                                        {option}
                                       </SelectItem>
                                     );
                                   })}
