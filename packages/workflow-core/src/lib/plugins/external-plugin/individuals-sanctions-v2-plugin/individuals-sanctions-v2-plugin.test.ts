@@ -756,8 +756,9 @@ describe('IndividualsSanctionsV2Plugin', () => {
         // See WorkflowRunner.__invokeApiPlugin for reference.
         callbackAction: 'ONGOING_AML_SUCCESS',
         responseBody: {
+          name: 'sanctionsScreening',
+          error: 'Something went wrong',
           status: ProcessStatus.ERROR,
-          invokedAt: expect.any(Number),
         },
       });
     });
@@ -845,8 +846,9 @@ describe('IndividualsSanctionsV2Plugin', () => {
       expect(invokeResponse).toMatchObject({
         callbackAction: 'ONGOING_AML_SUCCESS',
         responseBody: {
+          name: 'sanctionsScreening',
+          reason: 'NOT_IMPLEMENTED',
           status: ProcessStatus.CANCELED,
-          invokedAt: expect.any(Number),
         },
       });
     });
@@ -864,10 +866,12 @@ describe('IndividualsSanctionsV2Plugin', () => {
           return new Response(
             JSON.stringify({
               data: {},
+              invokedAt: Date.now(),
             }),
           );
         }),
       );
+
       const pluginParams = {
         url: 'http://test.com',
         method: 'POST',
@@ -935,6 +939,7 @@ describe('IndividualsSanctionsV2Plugin', () => {
         callbackAction: 'ONGOING_AML_SUCCESS',
         responseBody: {
           data: {},
+          name: 'sanctionsScreening',
           status: ProcessStatus.IN_PROGRESS,
           invokedAt: expect.any(Number),
         },

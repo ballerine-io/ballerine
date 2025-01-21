@@ -14,11 +14,11 @@ export const handleJmespathTransformers = ({
 }) => {
   invariant(
     (requestTransformers ?? []).every(transformer => transformer.name !== 'jmespath-transformer'),
-    `${pluginName} Plugin - JMESPath request transformers are not supported`,
+    `${pluginName} - JMESPath request transformers are not supported`,
   );
 
   invariant(
     (responseTransformers ?? []).every(transformer => transformer.name !== 'jmespath-transformer'),
-    `${pluginName} Plugin - JMESPath response transformers are not supported`,
+    `${pluginName} - JMESPath response transformers are not supported`,
   );
 };
