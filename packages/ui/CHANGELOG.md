@@ -4,9 +4,7 @@
 
 ### Patch Changes
 
-- version bump
-- Updated dependencies
-  - @ballerine/common@0.9.67
+- Fixed Date Picker popup flickering
 
 ## 0.5.65
 

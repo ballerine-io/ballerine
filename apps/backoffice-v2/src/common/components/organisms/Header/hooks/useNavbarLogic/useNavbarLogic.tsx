@@ -6,7 +6,6 @@ import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { useFiltersQuery } from '@/domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
-import { MERCHANT_MONITORING_QUERY_PARAMS_KEY } from '@/pages/MerchantMonitoring/constants';
 import { TRoutes, TRouteWithChildren } from '@/Router/types';
 
 export const useNavbarLogic = () => {
@@ -22,7 +21,6 @@ export const useNavbarLogic = () => {
     [filters],
   );
   const { data: customer } = useCustomerQuery();
-  const merchantMonitoringParams = sessionStorage.getItem(MERCHANT_MONITORING_QUERY_PARAMS_KEY);
 
   const navItems = [
     {
@@ -36,7 +34,7 @@ export const useNavbarLogic = () => {
           {
             text: 'Merchant Monitoring',
             icon: <MonitorDot size={20} />,
-            href: `/en/merchant-monitoring${merchantMonitoringParams ?? ''}`,
+            href: `/en/merchant-monitoring`,
             key: 'nav-item-merchant-monitoring',
           },
         ]
