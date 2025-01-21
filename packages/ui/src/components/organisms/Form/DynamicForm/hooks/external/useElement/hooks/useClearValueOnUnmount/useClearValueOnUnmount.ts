@@ -1,20 +1,39 @@
 import { IFormElement } from '@/components/organisms/Form/DynamicForm/types';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useStack } from '../../../../../fields';
 import { useClear } from '../../../../internal/useClear';
-import { useUnmount } from '../../../../internal/useUnmount';
 import { useField } from '../../../useField';
 
 export const useClearValueOnUnmount = (element: IFormElement<any, any>, hidden: boolean) => {
   const clean = useClear(element);
-  const prevHidden = useRef(hidden);
   const { stack } = useStack();
   const { value } = useField(element, stack);
+  const valueRef = useRef(value);
+  const cleanRef = useRef(clean);
+  const prevHiddenRef = useRef<boolean | null>(null);
 
-  useUnmount(() => {
-    if (!prevHidden.current && hidden) {
-      clean(value);
-      console.log('clean', value);
+  useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
+
+  useEffect(() => {
+    cleanRef.current = clean;
+  }, [clean]);
+
+  useEffect(() => {
+    if (prevHiddenRef.current === null && hidden) {
+      prevHiddenRef.current = hidden;
+
+      return;
     }
-  });
+
+    if (prevHiddenRef.current !== hidden) {
+      if (hidden) {
+        cleanRef.current(valueRef.current);
+        console.debug(`Cleaned up ${element.id}`);
+      }
+
+      prevHiddenRef.current = hidden;
+    }
+  }, [hidden, cleanRef, valueRef, prevHiddenRef, element.id]);
 };

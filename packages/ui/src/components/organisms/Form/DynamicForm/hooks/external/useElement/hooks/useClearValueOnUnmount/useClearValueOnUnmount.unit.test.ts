@@ -3,73 +3,59 @@ import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useStack } from '../../../../../fields';
 import { useClear } from '../../../../internal/useClear';
-import { useUnmount } from '../../../../internal/useUnmount';
 import { useField } from '../../../useField';
 import { useClearValueOnUnmount } from './useClearValueOnUnmount';
 
-vi.mock('../../../../internal/useClear', () => ({
-  useClear: vi.fn(),
-}));
-vi.mock('../../../../internal/useUnmount', () => ({
-  useUnmount: vi.fn(),
-}));
-vi.mock('../../../useField', () => ({
-  useField: vi.fn(),
-}));
-vi.mock('../../../../../fields', () => ({
-  useStack: vi.fn(),
-}));
+vi.mock('../../../../internal/useClear');
+vi.mock('../../../../../fields');
+vi.mock('../../../useField');
 
 describe('useClearValueOnUnmount', () => {
-  const mockElement = {
-    id: 'test-element',
-    element: 'test',
-  } as IFormElement<any, any>;
-
   const mockClean = vi.fn();
-  const mockValue = 'test-value';
+  const mockElement = { id: 'test-element' } as IFormElement<any, any>;
 
   beforeEach(() => {
     vi.clearAllMocks();
 
     vi.mocked(useClear).mockReturnValue(mockClean);
     vi.mocked(useStack).mockReturnValue({ stack: [] });
-    vi.mocked(useField).mockReturnValue({ value: mockValue } as any);
-    vi.mocked(useUnmount).mockImplementation(callback => callback());
+    vi.mocked(useField).mockReturnValue({
+      value: 'test-value',
+      touched: false,
+      disabled: false,
+      onChange: vi.fn(),
+      onBlur: vi.fn(),
+      onFocus: vi.fn(),
+    });
   });
 
-  it('should call clean when element becomes hidden', () => {
-    renderHook(() => useClearValueOnUnmount(mockElement, true));
-
-    expect(mockClean).not.toHaveBeenCalled();
-  });
-
-  it('should not call clean when element stays visible', () => {
+  it('should not clean when hidden is false', () => {
     renderHook(() => useClearValueOnUnmount(mockElement, false));
 
     expect(mockClean).not.toHaveBeenCalled();
   });
 
-  it('should call clean with value when element transitions from visible to hidden', () => {
-    // First render - element is visible
+  it('should not clean on initial mount when hidden is true', () => {
+    renderHook(() => useClearValueOnUnmount(mockElement, true));
+
+    expect(mockClean).not.toHaveBeenCalled();
+  });
+
+  it('should clean when hidden changes from false to true', () => {
     const { rerender } = renderHook(({ hidden }) => useClearValueOnUnmount(mockElement, hidden), {
       initialProps: { hidden: false },
     });
 
-    // Second render - element becomes hidden
     rerender({ hidden: true });
 
-    expect(mockClean).toHaveBeenCalledWith(mockValue);
-    expect(mockClean).toHaveBeenCalledTimes(1);
+    expect(mockClean).toHaveBeenCalledWith('test-value');
   });
 
-  it('should not call clean when element transitions from hidden to visible', () => {
-    // First render - element is hidden
+  it('should not clean when hidden changes from true to false', () => {
     const { rerender } = renderHook(({ hidden }) => useClearValueOnUnmount(mockElement, hidden), {
       initialProps: { hidden: true },
     });
 
-    // Second render - element becomes visible
     rerender({ hidden: false });
 
     expect(mockClean).not.toHaveBeenCalled();
