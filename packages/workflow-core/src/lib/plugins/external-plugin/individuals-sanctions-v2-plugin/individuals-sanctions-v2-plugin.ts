@@ -1,3 +1,5 @@
+import { z } from 'zod';
+import { invariant } from 'outvariant';
 import {
   isErrorWithMessage,
   isObject,
@@ -5,74 +7,25 @@ import {
   ProcessStatus,
   UnifiedApiReason,
 } from '@ballerine/common';
+
 import { logger } from '../../../logger';
-import { TContext } from '../../../utils/types';
 import { ApiPlugin } from '../api-plugin';
-import { IApiPluginParams } from '../types';
-import get from 'lodash.get';
-import { z } from 'zod';
-import { invariant } from 'outvariant';
-import { getTransformer } from '../../../workflow-runner-utils';
-
-export type PluginPayloadProperty<TValue> =
-  | {
-      type: 'literal';
-      /** @example 10 */
-      value: TValue;
-    }
-  | {
-      type: 'path';
-      /** @example entity.data.address.country */
-      value: string;
-    };
-
-/**
- * Get the value of the properties in the payload depending on the type of the property i.e. 'literal' or 'path'
- * @param properties
- * @param context
- */
-export const getPayloadPropertiesValue = ({
-  properties,
-  context,
-}: {
-  properties: Record<PropertyKey, PluginPayloadProperty<unknown>>;
-  context: TContext;
-}) => {
-  return Object.entries(properties).reduce((acc, [key, property]) => {
-    if (property.type === 'literal') {
-      acc[key] = property.value;
-
-      return acc;
-    }
-
-    if (property.type === 'path') {
-      acc[key] = get(context, property.value);
-
-      return acc;
-    }
-
-    property['type'] satisfies never;
-    throw new Error(`Unknown property type: "${property['type']}"`);
-  }, {} as Record<PropertyKey, unknown>);
-};
+import { TContext } from '../../../utils/types';
+import { validateEnv } from '../shared/validate-env';
+import { IApiPluginParams, PluginPayloadProperty } from '../types';
+import { getPayloadPropertiesValue } from '../shared/get-payload-properties-value';
+import { handleJmespathTransformers } from '../shared/handle-jmespath-transformers';
 
 const isObjectWithKycInformation = (obj: unknown) => {
   return isType(KycInformationSchema)(obj);
 };
-const removeTrailSlash = (url: string) => {
-  return url.replace(/\/$/, '');
-};
 
-const EnvSchema = z.object({
-  UNIFIED_API_URL: z.string().url().transform(removeTrailSlash),
-  UNIFIED_API_TOKEN: z.string().min(1),
-  APP_API_URL: z.string().url().transform(removeTrailSlash),
-});
 const KycInformationSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   dateOfBirth: z.string().date(),
 });
+
 const IndividualsSanctionsV2PluginPayloadSchema = z.object({
   vendor: z.enum(['veriff', 'test', 'dow-jones']),
   ongoingMonitoring: z.boolean(),
@@ -107,29 +60,6 @@ const IndividualsSanctionsV2PluginPayloadSchema = z.object({
   clientId: z.string().min(1),
 });
 
-const validateEnv = () => {
-  const result = EnvSchema.safeParse(process.env);
-
-  if (!result.success) {
-    const formattedErrors = Object.entries(result.error.format()).reduce((acc, [name, value]) => {
-      if (value && '_errors' in value) {
-        acc[name] = value._errors.join(', ');
-      }
-
-      return acc;
-    }, {} as Record<PropertyKey, string>);
-
-    logger.error(
-      '❌ Individuals Sanctions V2 Plugin - Invalid environment variables:\n',
-      formattedErrors,
-    );
-
-    throw new Error('Invalid environment variables');
-  }
-
-  return result.data;
-};
-
 export class IndividualsSanctionsV2Plugin extends ApiPlugin {
   public static pluginType = 'http';
   public payload: {
@@ -143,11 +73,13 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
         lastName: PluginPayloadProperty<string>;
         dateOfBirth: PluginPayloadProperty<string>;
       }>,
-      { type: 'path' }
+      { __type: 'path' }
     >;
     endUserId: PluginPayloadProperty<string>;
     clientId: PluginPayloadProperty<string>;
   };
+
+  private pluginName = 'Individuals Sanctions V2 Plugin';
 
   constructor({
     payload,
@@ -155,43 +87,20 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
   }: IApiPluginParams & { payload: IndividualsSanctionsV2Plugin['payload'] }) {
     super({
       ...pluginParams,
-      response: {
-        ...pluginParams.response,
-        transformers: [
-          ...(pluginParams.response?.transformers ?? []),
-          getTransformer({
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
-          }),
-        ],
-      },
       method: 'POST' as const,
     });
+
     this.payload = payload;
 
-    // Deprecating JMESPath is in progress.
-    invariant(
-      (this.request?.transformers ?? []).every(
-        transformer => transformer.name !== 'jmespath-transformer',
-      ),
-      'Individuals Sanctions V2 Plugin - JMESPath request transformers are not supported',
-    );
-    invariant(
-      (this.response?.transformers ?? []).every(
-        transformer => transformer.name !== 'jmespath-transformer',
-      ),
-      'Individuals Sanctions V2 Plugin - JMESPath response transformers are not supported',
-    );
+    handleJmespathTransformers({
+      pluginName: this.pluginName,
+      requestTransformers: this.request?.transformers,
+      responseTransformers: this.response?.transformers,
+    });
   }
 
   async invoke(context: TContext) {
-    const env = validateEnv();
+    const env = validateEnv('Individuals Sanctions V2');
     let requestPayload;
 
     if (this.request?.transformers) {
@@ -227,7 +136,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
 
           invariant(
             firstKycInformation,
-            `Individuals Sanctions V2 Plugin - no KYC information found at ${this.payload.kycInformation.value}`,
+            `${this.pluginName} - no KYC information found at ${this.payload.kycInformation.value}`,
           );
 
           const { firstName, lastName, additionalInfo } = firstKycInformation;
@@ -255,7 +164,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
 
           invariant(
             firstKey && kycInformation[firstKey],
-            `Individuals Sanctions V2 Plugin - no KYC information found at ${this.payload.kycInformation.value}`,
+            `${this.pluginName} - no KYC information found at ${this.payload.kycInformation.value}`,
           );
 
           return kycInformation[firstKey].result.vendorResult.entity.data;
@@ -263,18 +172,19 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
 
         // Should never reach this point. Will reach here if error handling or validation changes.
         throw new Error(
-          `Individuals Sanctions V2 Plugin - unexpected KYC information found at ${this.payload.kycInformation.value}`,
+          `${this.pluginName} - unexpected KYC information found at ${this.payload.kycInformation.value}`,
         );
       };
       const kycInformationByDataType = getKycInformationByDataType(kycInformation);
 
       requestPayload = {
+        ...requestPayload,
         ...validatedPayload,
         ...kycInformationByDataType,
         callbackUrl,
       };
 
-      logger.log('Individuals Sanctions V2 Plugin - Sending API request', {
+      logger.log(`${this.pluginName} - Sending API request`, {
         url,
         method: this.method,
       });
@@ -284,7 +194,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
         Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
       });
 
-      logger.log('Individuals Sanctions V2 Plugin - Received response', {
+      logger.log(`${this.pluginName} - Received response`, {
         status: apiResponse.statusText,
         url,
       });
@@ -293,7 +203,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
 
       invariant(
         !contentLength || Number(contentLength) > 0,
-        'Individuals Sanctions V2 Plugin - Received an empty response',
+        `${this.pluginName} - Received an empty response`,
       );
 
       if (!apiResponse.ok) {

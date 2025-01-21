@@ -5,8 +5,6 @@ import { Base64 } from 'js-base64';
 
 const path = process.env.CI ? '.env.example' : '.env';
 
-console.log('Loading environment variables from', path);
-
 config({ path });
 
 const urlArrayTransformer = (value: string) => {
