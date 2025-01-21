@@ -205,7 +205,6 @@ export const CollectionFlow = withSessionProtected(() => {
                                       <div className="flex w-full justify-end">
                                         <AppShell.LanguagePicker />
                                       </div>
-                                      <AppShell.Navigation />
                                     </div>
                                     <div className="pb-10">
                                       {customer?.logoImageUri && (

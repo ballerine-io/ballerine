@@ -28,10 +28,6 @@ import {
   WarningFilledSvg,
 } from '@ballerine/ui';
 import { Minus } from 'lucide-react';
-import {
-  MERCHANT_REPORT_STATUSES_MAP,
-  MERCHANT_REPORT_TYPES_MAP,
-} from '@/domains/business-reports/constants';
 
 const columnHelper = createColumnHelper<TBusinessReport>();
 
