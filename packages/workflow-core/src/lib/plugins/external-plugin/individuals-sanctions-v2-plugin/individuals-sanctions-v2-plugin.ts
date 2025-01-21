@@ -45,6 +45,12 @@ export const getPayloadPropertiesValue = ({
       return acc;
     }
 
+    if (property.type === 'path' && property.value === '*') {
+      acc[key] = context;
+
+      return acc;
+    }
+
     if (property.type === 'path') {
       acc[key] = get(context, property.value);
 
@@ -71,7 +77,7 @@ const EnvSchema = z.object({
 const KycInformationSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-  dateOfBirth: z.string().date(),
+  dateOfBirth: z.string().date().optional(),
 });
 const IndividualsSanctionsV2PluginPayloadSchema = z.object({
   vendor: z.enum(['veriff', 'test', 'dow-jones']),
@@ -97,9 +103,11 @@ const IndividualsSanctionsV2PluginPayloadSchema = z.object({
         firstName: true,
         lastName: true,
       }).extend({
-        additionalInfo: z.object({
-          dateOfBirth: KycInformationSchema.shape.dateOfBirth,
-        }),
+        additionalInfo: z
+          .object({
+            dateOfBirth: KycInformationSchema.shape.dateOfBirth,
+          })
+          .optional(),
       }),
     ),
   ]),
@@ -231,7 +239,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
           );
 
           const { firstName, lastName, additionalInfo } = firstKycInformation;
-          const { dateOfBirth } = additionalInfo;
+          const { dateOfBirth } = additionalInfo ?? {};
 
           return {
             firstName,

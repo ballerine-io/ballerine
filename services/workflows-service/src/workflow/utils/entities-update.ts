@@ -58,6 +58,10 @@ export const entitiesUpdate = async ({
   if (directors && Array.isArray(directors)) {
     promises.push(
       ...directors.map(async director => {
+        if ('ballerineEntityId' in director && director.ballerineEntityId) {
+          return;
+        }
+
         const { id: endUserId } = await endUserService.create({
           data: {
             email: director.email,

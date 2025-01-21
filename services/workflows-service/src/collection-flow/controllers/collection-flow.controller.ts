@@ -19,6 +19,7 @@ import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import * as common from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { CollectionFlowMissingException } from '../exceptions/collection-flow-missing.exception';
+import { EndUserService } from '@/end-user/end-user.service';
 
 @UseTokenAuthGuard()
 @ApiExcludeController()
@@ -29,6 +30,7 @@ export class CollectionFlowController {
     protected readonly workflowService: WorkflowService,
     protected readonly adapterManager: WorkflowAdapterManager,
     protected readonly collectionFlowService: CollectionFlowService,
+    protected readonly endUserService: EndUserService,
   ) {}
 
   @common.Get('/customer')
@@ -159,6 +161,26 @@ export class CollectionFlowController {
 
       collectionFlowState.status = CollectionFlowStatusesEnum.completed;
 
+      const directors = await Promise.all(
+        event.context.entity.data.additionalInfo.directors?.map(
+          async (director: { firstName: string; lastName: string; email: string }) => {
+            const { id } = await this.endUserService.create({
+              data: {
+                firstName: director.firstName,
+                lastName: director.lastName,
+                email: director.email,
+                projectId: tokenScope.projectId,
+              },
+            });
+
+            return {
+              ballerineEntityId: id,
+              ...director,
+            };
+          },
+        ),
+      );
+
       return await this.workflowService.event(
         {
           id: tokenScope.workflowRuntimeDataId,
@@ -167,6 +189,13 @@ export class CollectionFlowController {
             newContext: {
               collectionFlow: {
                 state: collectionFlowState,
+              },
+              entity: {
+                data: {
+                  additionalInfo: {
+                    directors,
+                  },
+                },
               },
             },
             arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,

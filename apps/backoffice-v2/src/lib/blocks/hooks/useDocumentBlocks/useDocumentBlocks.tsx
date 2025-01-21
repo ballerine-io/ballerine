@@ -71,7 +71,7 @@ export const useDocumentBlocks = ({
   const documentsSchemas = getDocumentsSchemas(issuerCountryCode, workflow);
   const documents = useMemo(() => selectWorkflowDocuments(workflow), [workflow]);
   const documentPages = useMemo(
-    () => documents.flatMap(({ pages }) => pages?.map(({ ballerineFileId }) => ballerineFileId)),
+    () => documents?.flatMap(({ pages }) => pages?.map(({ ballerineFileId }) => ballerineFileId)),
     [documents],
   );
   const storageFilesQueryResult = useStorageFilesQuery(documentPages);
