@@ -371,7 +371,7 @@ export const useDefaultBlocksLogic = () => {
   );
 
   const directors = workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
-    directorAdapter(directorsStorageFilesQueryResult),
+    directorAdapter(directorsDocumentPagesResults),
   );
   const revisionReasons =
     workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
