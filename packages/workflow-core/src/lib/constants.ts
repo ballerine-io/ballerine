@@ -44,3 +44,5 @@ export const pluginsRegistry = {
     new (...args: any[]) => any
   >
 >;
+
+export const REQUEST_PAYLOAD_BLACKLIST = ['callbackUrl'];

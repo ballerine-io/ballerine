@@ -1,7 +1,6 @@
 import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
-
+import { REQUEST_PAYLOAD_BLACKLIST } from '../../constants';
 import { logger } from '../../logger';
-import { IApiPluginParams } from './types';
 import {
   HelpersTransformer,
   TContext,
@@ -10,6 +9,7 @@ import {
   Transformers,
   Validator,
 } from '../../utils';
+import { IApiPluginParams } from './types';
 
 const invokedAtTransformer: HelpersTransformer = new HelpersTransformer([
   {
@@ -71,7 +71,7 @@ export class ApiPlugin {
         );
 
         if (!isValidRequest) {
-          return this.returnErrorResponse(errorMessage!);
+          return this.returnErrorResponse(errorMessage!, requestPayload);
         }
       }
 
@@ -84,6 +84,8 @@ export class ApiPlugin {
         url: _url,
         method: this.method,
       });
+
+      requestPayload = this.removeBlacklistedKeys(requestPayload);
 
       const apiResponse = await this.makeApiRequest(
         _url,
@@ -114,13 +116,17 @@ export class ApiPlugin {
         );
 
         if (!isValidResponse) {
-          return this.returnErrorResponse(errorMessage!);
+          return this.returnErrorResponse(errorMessage!, requestPayload);
         }
 
         if (this.successAction) {
-          return this.returnSuccessResponse(this.successAction, {
-            ...responseBody,
-          });
+          return this.returnSuccessResponse(
+            this.successAction,
+            {
+              ...responseBody,
+            },
+            requestPayload,
+          );
         }
 
         return {};
@@ -129,10 +135,14 @@ export class ApiPlugin {
 
         return this.returnErrorResponse(
           'Request Failed: ' + apiResponse.statusText + ' Error: ' + JSON.stringify(errorResponse),
+          requestPayload,
         );
       }
     } catch (error) {
-      return this.returnErrorResponse(isErrorWithMessage(error) ? error.message : '');
+      return this.returnErrorResponse(
+        isErrorWithMessage(error) ? error.message : '',
+        requestPayload,
+      );
     }
   }
 
@@ -163,12 +173,16 @@ export class ApiPlugin {
     return await this.replaceAllVariables(_url, context);
   }
 
-  returnSuccessResponse(callbackAction: string, responseBody: AnyRecord) {
-    return { callbackAction, responseBody };
+  returnSuccessResponse(
+    callbackAction: string,
+    responseBody: AnyRecord,
+    requestPayload?: AnyRecord,
+  ) {
+    return { callbackAction, responseBody, requestPayload };
   }
 
-  returnErrorResponse(errorMessage: string) {
-    return { callbackAction: this.errorAction, error: errorMessage };
+  returnErrorResponse(errorMessage: string, requestPayload?: AnyRecord) {
+    return { callbackAction: this.errorAction, error: errorMessage, requestPayload };
   }
 
   async makeApiRequest(
@@ -411,5 +425,25 @@ export class ApiPlugin {
         return undefined;
       }
     }, record as unknown);
+  }
+
+  removeBlacklistedKeys(payload: AnyRecord = {}) {
+    const payloadWithoutBlacklistedKeys: AnyRecord = structuredClone(payload);
+
+    for (const key in payloadWithoutBlacklistedKeys) {
+      if (REQUEST_PAYLOAD_BLACKLIST.includes(key)) {
+        delete payloadWithoutBlacklistedKeys[key];
+
+        continue;
+      }
+
+      const value = payload[key];
+
+      if (typeof value === 'object') {
+        payloadWithoutBlacklistedKeys[key] = this.removeBlacklistedKeys(value as AnyRecord);
+      }
+    }
+
+    return payloadWithoutBlacklistedKeys;
   }
 }

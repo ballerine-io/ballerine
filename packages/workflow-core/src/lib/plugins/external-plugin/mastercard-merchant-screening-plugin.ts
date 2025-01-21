@@ -1,10 +1,10 @@
 import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
+import { State } from 'country-state-city';
 import { alpha2ToAlpha3 } from 'i18n-iso-countries';
 import { logger } from '../../logger';
 import { TContext } from '../../utils/types';
 import { ApiPlugin } from './api-plugin';
 import { IApiPluginParams } from './types';
-import { State } from 'country-state-city';
 
 export class MastercardMerchantScreeningPlugin extends ApiPlugin {
   public static pluginType = 'http';
@@ -103,13 +103,17 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
         );
 
         if (!isValidResponse) {
-          return this.returnErrorResponse(errorMessage!);
+          return this.returnErrorResponse(errorMessage!, requestPayload);
         }
 
         if (this.successAction) {
-          return this.returnSuccessResponse(this.successAction, {
-            ...responseBody,
-          });
+          return this.returnSuccessResponse(
+            this.successAction,
+            {
+              ...responseBody,
+            },
+            requestPayload,
+          );
         }
 
         return {};
@@ -118,6 +122,7 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
 
         return this.returnErrorResponse(
           'Request Failed: ' + apiResponse.statusText + ' Error: ' + JSON.stringify(errorResponse),
+          requestPayload,
         );
       }
     } catch (error) {
