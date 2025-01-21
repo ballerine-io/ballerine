@@ -16,7 +16,10 @@ import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
 import { BusinessRepository } from './business.repository';
 import { PrismaService } from '../prisma/prisma.service';
-import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
+import {
+  BusinessPayload,
+  UnifiedApiClient,
+} from '@/common/utils/unified-api-client/unified-api-client';
 
 @swagger.ApiTags('internal/businesses')
 @swagger.ApiExcludeController()
@@ -52,7 +55,7 @@ export class BusinessControllerInternal {
   @common.UseGuards(AdminAuthGuard)
   @ApiExcludeEndpoint()
   async getAllBusinesses() {
-    const businesses = await this.repository.findManyUnscoped({
+    const businesses = (await this.repository.findManyUnscoped({
       select: {
         id: true,
         createdAt: true,
@@ -62,7 +65,7 @@ export class BusinessControllerInternal {
         metadata: true,
         project: {
           select: {
-            customer: { select: { id: true } },
+            customer: { select: { id: true, config: true } },
           },
         },
       },
@@ -76,16 +79,11 @@ export class BusinessControllerInternal {
           },
         },
       },
-    });
+    })) as BusinessPayload[];
 
     const unifiedApiClient = new UnifiedApiClient();
 
-    return businesses.map(business => {
-      return unifiedApiClient.formatBusiness({
-        ...business,
-        customerId: business.project.customer.id,
-      });
-    });
+    return businesses.map(business => unifiedApiClient.formatBusiness(business));
   }
 
   @common.Get(':id')

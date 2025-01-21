@@ -4,12 +4,13 @@ import { Logger } from '@nestjs/common';
 import { Business, Customer } from '@prisma/client';
 import { TSchema } from '@sinclair/typebox';
 import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
+import { TCustomerConfig } from '@/customer/schemas/zod-schemas';
 
-type BusinessPayload = Pick<
+export type BusinessPayload = Pick<
   Business,
   'id' | 'correlationId' | 'companyName' | 'metadata' | 'createdAt' | 'updatedAt'
 > & {
-  customerId: string;
+  project: { customer: { id: string; config: TCustomerConfig | null } };
 };
 
 export type TOcrImages = Array<
@@ -80,10 +81,14 @@ export class UnifiedApiClient {
   }
 
   public async createOrUpdateBusiness(payload: BusinessPayload) {
+    if (!this.shouldUpdateBusiness(payload)) {
+      return;
+    }
+
     const formattedPayload = this.formatBusiness(payload);
 
     return await this.axiosInstance.put(
-      `/customers/${payload.customerId}/merchants/${payload.id}`,
+      `/customers/${payload.project.customer.id}/merchants/${payload.id}`,
       formattedPayload,
     );
   }
@@ -105,10 +110,14 @@ export class UnifiedApiClient {
       id: business.id,
       correlationId: business.correlationId,
       companyName: business.companyName,
-      customerId: business.customerId,
+      customerId: business.project.customer.id,
       unsubscribedMonitoringAt: unsubscribedMonitoringAt?.toISOString() ?? null,
       createdAt: business.createdAt.toISOString(),
       updatedAt: business.updatedAt.toISOString(),
     };
+  }
+
+  public shouldUpdateBusiness(business: BusinessPayload) {
+    return business.project.customer.config?.isMerchantMonitoringEnabled;
   }
 }

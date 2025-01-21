@@ -17,7 +17,10 @@ import dayjs from 'dayjs';
 import { lastValueFrom } from 'rxjs';
 import { BusinessRepository } from './business.repository';
 import { CustomerService } from '@/customer/customer.service';
-import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
+import {
+  BusinessPayload,
+  UnifiedApiClient,
+} from '@/common/utils/unified-api-client/unified-api-client';
 import { PrismaService } from '@/prisma/prisma.service';
 import { beginTransactionIfNotExistCurry } from '@/prisma/prisma.util';
 import { TCustomerConfig } from '@/customer/schemas/zod-schemas';
@@ -64,23 +67,9 @@ export class BusinessService {
           },
         },
         tx,
-      )) as Business & {
-        project: {
-          customer: {
-            id: string;
-            config: TCustomerConfig | null;
-          };
-        };
-      };
+      )) as unknown as BusinessPayload;
 
-      if (businessPayload.project.customer.config?.isMerchantMonitoringEnabled) {
-        await retry(() =>
-          this.unifiedApiClient.createOrUpdateBusiness({
-            ...businessPayload,
-            customerId: businessPayload.project.customer.id,
-          }),
-        );
-      }
+      await retry(() => this.unifiedApiClient.createOrUpdateBusiness(businessPayload));
 
       return business;
     });
@@ -151,23 +140,9 @@ export class BusinessService {
           },
         },
         tx,
-      )) as Business & {
-        project: {
-          customer: {
-            id: string;
-            config: TCustomerConfig | null;
-          };
-        };
-      };
+      )) as unknown as BusinessPayload;
 
-      if (businessPayload.project.customer.config?.isMerchantMonitoringEnabled) {
-        await retry(() =>
-          this.unifiedApiClient.createOrUpdateBusiness({
-            ...businessPayload,
-            customerId: businessPayload.project.customer.id,
-          }),
-        );
-      }
+      await retry(() => this.unifiedApiClient.createOrUpdateBusiness(businessPayload));
 
       return business;
     });
