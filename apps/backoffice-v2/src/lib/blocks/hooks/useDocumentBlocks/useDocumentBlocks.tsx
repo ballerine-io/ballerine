@@ -409,7 +409,6 @@ export const useDocumentBlocks = ({
                         }
 
                         if (ocrResult?.parsedData?.[title]) {
-                          debugger;
                           const isOcrValueString = typeof ocrResult.parsedData[title] === 'string';
 
                           if (isOcrValueString && ocrResult.parsedData[title].length > 0) {
