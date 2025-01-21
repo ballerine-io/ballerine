@@ -160,8 +160,6 @@ export class BusinessControllerExternal {
       featureConfig: {
         [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
           enabled: isEnabled,
-          reason: data.reason ?? null,
-          userReason: data.userReason ?? null,
           disabledAt: isEnabled ? null : new Date().getTime(),
         },
       },

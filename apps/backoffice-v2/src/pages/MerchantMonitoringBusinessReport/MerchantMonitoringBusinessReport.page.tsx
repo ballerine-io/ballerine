@@ -171,10 +171,10 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
                                 </FormControl>
                                 <FormMessage />
                                 <SelectContent>
-                                  {deboardingReasonOptions?.map(({ label, value }, index) => {
+                                  {deboardingReasonOptions?.map((option, index) => {
                                     return (
-                                      <SelectItem key={index} value={value}>
-                                        {label}
+                                      <SelectItem key={index} value={option}>
+                                        {option}
                                       </SelectItem>
                                     );
                                   })}
@@ -223,15 +223,12 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
                         throw new Error('Merchant ID is missing');
                       }
 
-                      turnOngoingMonitoringOn(
-                        { merchantId: businessReport.merchantId },
-                        {
-                          onSuccess: () => {
-                            setIsDeboardModalOpen(false);
-                            setIsDropdownOpen(false);
-                          },
+                      turnOngoingMonitoringOn(businessReport.merchantId, {
+                        onSuccess: () => {
+                          setIsDeboardModalOpen(false);
+                          setIsDropdownOpen(false);
                         },
-                      );
+                      });
                     }}
                     variant={'ghost'}
                     className="justify-start"

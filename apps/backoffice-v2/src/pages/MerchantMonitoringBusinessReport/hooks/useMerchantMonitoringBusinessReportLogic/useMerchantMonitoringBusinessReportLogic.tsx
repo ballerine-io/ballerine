@@ -1,5 +1,6 @@
 import { ParsedBooleanSchema, useReportTabs } from '@ballerine/ui';
 import { t } from 'i18next';
+import { capitalize } from 'lodash-es';
 import { useCallback, useMemo } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -15,6 +16,7 @@ import {
   MERCHANT_REPORT_TYPES_MAP,
 } from '@/domains/business-reports/constants';
 import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
+import { useCreateNoteMutation } from '@/domains/notes/hooks/mutations/useCreateNoteMutation/useCreateNoteMutation';
 import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
 import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
 import { isObject } from '@ballerine/common';
@@ -56,11 +58,11 @@ const statusToBadgeData = {
 } as const;
 
 const deboardingReasonOptions = [
-  { value: 'fraud', label: 'Fraudulent Activity Detected' },
-  { value: 'regulations', label: 'Non-Compliance with Regulations' },
-  { value: 'disputes', label: 'Excessive Chargebacks or Disputes' },
-  { value: 'expired', label: 'Business Relationship Ended' },
-  { value: 'other', label: 'Other' },
+  'Fraudulent Activity Detected',
+  'Non-Compliance with Regulations',
+  'Excessive Chargebacks or Disputes',
+  'Business Relationship Ended',
+  'Other',
 ] as const;
 
 export const useMerchantMonitoringBusinessReportLogic = () => {
@@ -92,12 +94,21 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
       throw new Error('Merchant ID is missing');
     }
 
-    return turnOffMonitoringMutation.mutate({ merchantId: businessReport.merchantId, body: data });
+    return turnOffMonitoringMutation.mutate(businessReport.merchantId);
   };
 
+  const { mutateAsync: mutateCreateNote } = useCreateNoteMutation({ disableToast: true });
   const turnOnMonitoringMutation = useToggleMonitoringMutation({
     state: 'on',
     onSuccess: () => {
+      void mutateCreateNote({
+        content: 'Monitoring turned on',
+        entityId: businessReport?.merchantId ?? '',
+        entityType: 'Business',
+        noteableId: businessReport?.id ?? '',
+        noteableType: 'Report',
+        parentNoteId: null,
+      });
       toast.success(t(`toast:business_monitoring_on.success`));
     },
     onError: error => {
@@ -112,6 +123,22 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
   const turnOffMonitoringMutation = useToggleMonitoringMutation({
     state: 'off',
     onSuccess: () => {
+      const { reason, userReason } = form.getValues();
+      const content = [
+        'Monitoring turned off',
+        reason ? `with reason: ${capitalize(reason)}` : null,
+        userReason ? `(${userReason})` : '',
+      ]
+        .filter(Boolean)
+        .join(' ');
+      void mutateCreateNote({
+        content,
+        entityId: businessReport?.merchantId ?? '',
+        entityType: 'Business',
+        noteableId: businessReport?.id ?? '',
+        noteableType: 'Report',
+        parentNoteId: null,
+      });
       setIsDeboardModalOpen(false);
       setIsDropdownOpen(false);
       form.reset();
