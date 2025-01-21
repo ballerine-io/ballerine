@@ -18,7 +18,7 @@ import { motionBadgeProps } from '@/lib/blocks/motion-badge-props';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import {
   composePickableCategoryType,
-  extractCountryCodeFromWorkflow,
+  extractCountryCodeFromDocuments,
   isExistingSchemaForDocument,
 } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { selectWorkflowDocuments } from '@/pages/Entity/selectors/selectWorkflowDocuments';
@@ -67,7 +67,7 @@ export const useDocumentBlocks = ({
     };
   };
 }) => {
-  const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
+  const issuerCountryCode = extractCountryCodeFromDocuments(workflow?.context?.documents);
   const documentsSchemas = getDocumentsSchemas(issuerCountryCode, workflow);
   const documents = useMemo(() => selectWorkflowDocuments(workflow), [workflow]);
   const documentPages = useMemo(

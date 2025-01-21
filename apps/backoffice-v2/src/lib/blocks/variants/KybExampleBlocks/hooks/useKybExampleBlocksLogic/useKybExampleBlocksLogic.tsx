@@ -29,7 +29,7 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { associatedCompanyToWorkflowAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-to-workflow-adapter';
 import { getDocumentsByCountry } from '@ballerine/common';
-import { extractCountryCodeFromWorkflow } from '@/pages/Entity/hooks/useEntityLogic/utils';
+import { extractCountryCodeFromDocuments } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { directorAdapter } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/helpers';
 import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
@@ -206,12 +206,11 @@ export const useKybExampleBlocksLogic = () => {
     ],
   );
   const onMutateApproveTaskByIdDirectors = useCallback(
-    (documentId: string) => () =>
-      mutateApproveTaskById({ documentId, contextUpdateMethod: 'director' }),
+    (documentId: string) => mutateApproveTaskById({ documentId, contextUpdateMethod: 'director' }),
     [mutateApproveTaskById],
   );
   const onMutateRemoveDecisionTaskByIdDirectors = useCallback(
-    (documentId: string) => () =>
+    (documentId: string) =>
       mutateRemoveDecisionTaskById({ documentId, contextUpdateMethod: 'director' }),
     [mutateRemoveDecisionTaskById],
   );
@@ -223,16 +222,7 @@ export const useKybExampleBlocksLogic = () => {
     workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
       ({ enum: enum_ }) => !!enum_,
     )?.enum ?? [];
-  const documentSchemas = useMemo(() => {
-    const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
-    const documentsSchemas = issuerCountryCode ? getDocumentsByCountry(issuerCountryCode) : [];
 
-    if (!Array.isArray(documentsSchemas) || !documentsSchemas.length) {
-      console.warn(`No document schema found for issuer country code of "${issuerCountryCode}".`);
-    }
-
-    return documentsSchemas;
-  }, [workflow]);
   const directorsBlock = createDirectorsBlocks({
     workflowId: workflow?.id ?? '',
     onReuploadNeeded: onMutateRevisionTaskByIdDirectors,
@@ -243,7 +233,6 @@ export const useKybExampleBlocksLogic = () => {
     revisionReasons,
     isEditable: caseState.writeEnabled,
     isApproveDisabled: isLoadingApproveTaskById,
-    documentSchemas,
     isLoadingDocuments: directorsStorageFilesQueryResult?.some(file => file?.isLoading),
     // Remove once callToActionLegacy is removed
     workflow,

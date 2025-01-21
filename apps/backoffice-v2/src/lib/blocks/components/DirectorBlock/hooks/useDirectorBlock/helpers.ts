@@ -7,6 +7,9 @@ export const directorDocumentsAdapter = ({ documents, storageFiles }) => {
         id: document?.id,
         category: document?.category,
         type: document?.type,
+        issuer: {
+          country: document?.issuer?.country,
+        },
         decision: {
           status: document?.decision?.status,
         },

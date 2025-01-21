@@ -1,6 +1,8 @@
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { ComponentProps } from 'react';
 import { DirectorBlock } from '../../DirectorBlock';
+import { getDocumentsByCountry } from '@ballerine/common';
+import { extractCountryCodeFromDocuments } from '@/pages/Entity/hooks/useEntityLogic/utils';
 
 export const createDirectorsBlocks = ({
   workflowId,
@@ -12,10 +14,9 @@ export const createDirectorsBlocks = ({
   revisionReasons,
   isEditable,
   isApproveDisabled,
-  documentSchemas,
   isLoadingDocuments,
   workflow,
-}: Omit<ComponentProps<typeof DirectorBlock>, 'director'> & {
+}: Omit<ComponentProps<typeof DirectorBlock>, 'director' | 'documentSchemas'> & {
   directors: Array<ComponentProps<typeof DirectorBlock>['director']>;
 }) => {
   const directorsBlocks = createBlocksTyped().addBlock();
@@ -25,6 +26,13 @@ export const createDirectorsBlocks = ({
   }
 
   directors?.forEach(director => {
+    const issuerCountryCode = extractCountryCodeFromDocuments(director.documents);
+    const documentSchemas = issuerCountryCode ? getDocumentsByCountry(issuerCountryCode) : [];
+
+    if (!Array.isArray(documentSchemas) || !documentSchemas.length) {
+      console.warn(`No document schema found for issuer country code of "${issuerCountryCode}".`);
+    }
+
     directorsBlocks.addCell({
       type: 'node',
       value: (

@@ -51,6 +51,9 @@ export const useDirectorBlock = ({
       id: string;
       category: string;
       type: string;
+      issuer: {
+        country: string;
+      };
       pages: Array<{
         type: string;
         imageUrl: string;

@@ -144,25 +144,14 @@ export class CollectionFlowController {
   @common.Post('/final-submission')
   async finalSubmission(@TokenScope() tokenScope: ITokenScope, @common.Body() body: FinishFlowDto) {
     try {
-      const event = await this.workflowService.event(
-        {
-          id: tokenScope.workflowRuntimeDataId,
-          name: body.eventName,
-        },
+      const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
+        tokenScope.workflowRuntimeDataId,
+        {},
         [tokenScope.projectId],
-        tokenScope.projectId,
       );
 
-      const collectionFlowState = getCollectionFlowState(event.context);
-
-      if (!collectionFlowState) {
-        throw new CollectionFlowMissingException();
-      }
-
-      collectionFlowState.status = CollectionFlowStatusesEnum.completed;
-
       const directors = await Promise.all(
-        event.context.entity.data.additionalInfo.directors?.map(
+        workflowRuntimeData.context.entity.data.additionalInfo.directors?.map(
           async (director: { firstName: string; lastName: string; email: string }) => {
             const { id } = await this.endUserService.create({
               data: {
@@ -181,6 +170,65 @@ export class CollectionFlowController {
         ),
       );
 
+      const ubos = await Promise.all(
+        workflowRuntimeData.context.entity.data.additionalInfo.ubos?.map(
+          async (ubo: { firstName: string; lastName: string; email: string }) => {
+            const { id } = await this.endUserService.create({
+              data: {
+                firstName: ubo.firstName,
+                lastName: ubo.lastName,
+                email: ubo.email,
+                projectId: tokenScope.projectId,
+              },
+            });
+
+            return {
+              ballerineEntityId: id,
+              ...ubo,
+            };
+          },
+        ),
+      );
+
+      await this.workflowService.event(
+        {
+          id: tokenScope.workflowRuntimeDataId,
+          name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+          payload: {
+            newContext: {
+              entity: {
+                data: {
+                  additionalInfo: {
+                    directors,
+                    ubos,
+                  },
+                },
+              },
+            },
+            arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
+          },
+        },
+        [tokenScope.projectId],
+        tokenScope.projectId,
+      );
+
+      const updatedWorkflowRuntimeData = await this.workflowService.event(
+        {
+          id: tokenScope.workflowRuntimeDataId,
+          name: body.eventName,
+        },
+        [tokenScope.projectId],
+        tokenScope.projectId,
+      );
+
+      const collectionFlowState = getCollectionFlowState(updatedWorkflowRuntimeData.context);
+
+      if (!collectionFlowState) {
+        throw new CollectionFlowMissingException();
+      }
+
+      collectionFlowState.status = CollectionFlowStatusesEnum.completed;
+
       return await this.workflowService.event(
         {
           id: tokenScope.workflowRuntimeDataId,
@@ -189,13 +237,6 @@ export class CollectionFlowController {
             newContext: {
               collectionFlow: {
                 state: collectionFlowState,
-              },
-              entity: {
-                data: {
-                  additionalInfo: {
-                    directors,
-                  },
-                },
               },
             },
             arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
