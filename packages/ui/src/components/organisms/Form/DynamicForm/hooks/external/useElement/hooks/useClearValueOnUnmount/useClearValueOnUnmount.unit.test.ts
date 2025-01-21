@@ -1,5 +1,5 @@
 import { IFormElement } from '@/components/organisms/Form/DynamicForm/types';
-import { renderHook } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useStack } from '../../../../../fields';
 import { useClear } from '../../../../internal/useClear';
@@ -59,5 +59,47 @@ describe('useClearValueOnUnmount', () => {
     rerender({ hidden: false });
 
     expect(mockClean).not.toHaveBeenCalled();
+  });
+
+  it('should use latest value when hidden changes', async () => {
+    vi.mocked(useField).mockReturnValue({
+      value: 'new-value',
+      touched: false,
+      disabled: false,
+      onChange: vi.fn(),
+      onBlur: vi.fn(),
+      onFocus: vi.fn(),
+    });
+
+    const { rerender } = renderHook(({ hidden }) => useClearValueOnUnmount(mockElement, hidden), {
+      initialProps: { hidden: false },
+    });
+
+    rerender({ hidden: true });
+
+    await waitFor(() => {
+      expect(mockClean).toHaveBeenCalledWith('new-value');
+    });
+
+    vi.mocked(useField).mockReturnValue({
+      value: 'test-value',
+      touched: false,
+      disabled: false,
+      onChange: vi.fn(),
+      onBlur: vi.fn(),
+      onFocus: vi.fn(),
+    });
+
+    rerender({ hidden: false });
+
+    await waitFor(() => {
+      expect(mockClean).toHaveBeenCalledTimes(1);
+    });
+
+    rerender({ hidden: true });
+
+    await waitFor(() => {
+      expect(mockClean).toHaveBeenCalledWith('test-value');
+    });
   });
 });
