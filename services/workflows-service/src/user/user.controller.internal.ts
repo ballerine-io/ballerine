@@ -9,16 +9,12 @@ import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import type { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { UserStatus } from '@prisma/client';
-import { WebhookService } from '@/webhooks/webhook.service';
 
 @swagger.ApiExcludeController()
 @common.Controller('internal/users')
 @swagger.ApiExcludeController()
 export class UserControllerInternal {
-  constructor(
-    protected readonly service: UserService,
-    protected readonly webhooksService: WebhookService,
-  ) {}
+  constructor(protected readonly service: UserService) {}
 
   @common.Get()
   @swagger.ApiQuery({ name: 'projectId', type: String })

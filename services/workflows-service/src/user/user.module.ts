@@ -7,12 +7,11 @@ import { UserService } from './user.service';
 import { AuthModule } from '../auth/auth.module';
 import { ACLModule } from '@/common/access-control/acl.module';
 import { ProjectModule } from '@/project/project.module';
-import { WebhookService } from '@/webhooks/webhook.service';
 
 @Module({
   imports: [ACLModule, forwardRef(() => AuthModule), ProjectModule],
   controllers: [UserControllerInternal],
-  providers: [UserRepository, UserService, WebhookService],
+  providers: [UserRepository, UserService],
   exports: [ACLModule, AuthModule, UserService],
 })
 export class UserModule {}
