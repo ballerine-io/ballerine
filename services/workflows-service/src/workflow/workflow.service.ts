@@ -1621,24 +1621,6 @@ export class WorkflowService {
             },
           });
 
-          const collectionFlow = buildCollectionFlowState({
-            apiUrl: env.APP_API_URL,
-            steps: uiDefinition?.definition
-              ? getOrderedSteps(
-                  (uiDefinition?.definition as Prisma.JsonObject)?.definition as Record<
-                    string,
-                    Record<string, unknown>
-                  >,
-                  { finalStates: [...WORKFLOW_FINAL_STATES] },
-                ).map(stepName => ({
-                  stateName: stepName,
-                }))
-              : [],
-            additionalInformation: {
-              customerCompany: customer.displayName,
-            },
-          });
-
           workflowRuntimeData = await this.workflowRuntimeDataRepository.updateStateById(
             workflowRuntimeData.id,
             {

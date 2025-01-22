@@ -48,6 +48,9 @@ import { RuleEngineModule } from './rule-engine/rule-engine.module';
 import { NotionModule } from '@/notion/notion.module';
 import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
 import { NoteModule } from '@/note/note.module';
+import { BullMqModule } from './bull-mq/bull-mq.module';
+import { OutgoingWebhooksModule } from './webhooks/outgoing-webhooks/outgoing-webhooks.module';
+import { IncomingWebhooksModule } from './webhooks/incoming/incoming-webhooks.module';
 
 export const validate = async (config: Record<string, unknown>) => {
   const zodEnvSchema = z
@@ -90,7 +93,8 @@ export const validate = async (config: Record<string, unknown>) => {
     EventEmitterModule.forRoot(),
     UserModule,
     WorkflowModule,
-    WebhooksModule,
+    OutgoingWebhooksModule,
+    IncomingWebhooksModule,
     NoteModule,
     UiDefinitionModule,
     StorageModule,

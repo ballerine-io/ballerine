@@ -9,10 +9,12 @@ import { ExtractWorkflowEventData } from '@/workflow/types';
 import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeData } from '@prisma/client';
-import { StateTag } from '@ballerine/common';
+import { sign, StateTag } from '@ballerine/common';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
+import { env } from '@/env';
+import { OutgoingWebhookQueueService } from '@/bull-mq/outgoing-webhook/outgoing-webhook-queue.service';
 
 @Injectable()
 export class WorkflowCompletedWebhookCaller {
@@ -26,6 +28,7 @@ export class WorkflowCompletedWebhookCaller {
     private readonly workflowService: WorkflowService,
     private readonly customerService: CustomerService,
     private readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
+    private readonly outgoingWebhookQueueService: OutgoingWebhookQueueService,
   ) {
     this.#__axios = this.httpService.axiosRef;
 

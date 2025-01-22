@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { ExpressAdapter } from '@bull-board/express';
-import { BullAdapter } from '@bull-board/api/bullAdapter';
+import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { QUEUES } from '@/bull-mq/consts';
 import { OutgoingWebhookQueueService } from '@/bull-mq/outgoing-webhook/outgoing-webhook-queue.service';
@@ -13,14 +13,14 @@ import { OutgoingWebhooksModule } from '@/webhooks/outgoing-webhooks/outgoing-we
 function composeQueueAndDlqBoard(queue: (typeof QUEUES)[keyof typeof QUEUES]) {
   const baseFeature = BullBoardModule.forFeature({
     name: queue.name,
-    adapter: BullAdapter,
+    adapter: BullMQAdapter,
   });
 
   const dlqFeature =
     'dlq' in queue
       ? BullBoardModule.forFeature({
           name: `${queue.name}-dlq`,
-          adapter: BullAdapter,
+          adapter: BullMQAdapter,
         })
       : null;
 
