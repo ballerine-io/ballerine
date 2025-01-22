@@ -1,6 +1,5 @@
 import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
-import { REQUEST_PAYLOAD_BLACKLIST } from '../../constants';
-import { logger } from '../../logger';
+import { logger } from '../../../logger';
 import {
   HelpersTransformer,
   TContext,
@@ -8,8 +7,9 @@ import {
   Transformer,
   Transformers,
   Validator,
-} from '../../utils';
-import { IApiPluginParams } from './types';
+} from '../../../utils';
+import { IApiPluginParams } from '../types';
+import { REQUEST_PAYLOAD_BLACKLIST } from './constants';
 
 const invokedAtTransformer: HelpersTransformer = new HelpersTransformer([
   {
@@ -431,7 +431,7 @@ export class ApiPlugin {
     const payloadWithoutBlacklistedKeys: AnyRecord = structuredClone(payload);
 
     for (const key in payloadWithoutBlacklistedKeys) {
-      if (REQUEST_PAYLOAD_BLACKLIST.includes(key)) {
+      if (REQUEST_PAYLOAD_BLACKLIST.includes(key as (typeof REQUEST_PAYLOAD_BLACKLIST)[number])) {
         delete payloadWithoutBlacklistedKeys[key];
 
         continue;
