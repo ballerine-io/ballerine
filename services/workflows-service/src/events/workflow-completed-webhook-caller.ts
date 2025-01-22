@@ -13,6 +13,7 @@ import { StateTag } from '@ballerine/common';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
+import { WebhookService } from '@/webhooks/webhook.service';
 
 @Injectable()
 export class WorkflowCompletedWebhookCaller {
@@ -26,6 +27,7 @@ export class WorkflowCompletedWebhookCaller {
     private readonly workflowService: WorkflowService,
     private readonly customerService: CustomerService,
     private readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
+    private readonly webhookService: WebhookService,
   ) {
     this.#__axios = this.httpService.axiosRef;
 
@@ -129,26 +131,14 @@ export class WorkflowCompletedWebhookCaller {
       data: {
         ...restRuntimeData.context,
       },
-    };
-
-    const webhookArgs = {
-      requestConfig: {
-        url,
-        method: 'POST',
-        headers: {},
-        body: payload,
-        timeout: 15_000,
-      },
-      customerConfig: {
-        webhookSharedSecret,
-      },
     } as const;
 
-    if (env.QUEUE_SYSTEM_ENABLED) {
-      return await this.outgoingWebhookQueueService.addJob(webhookArgs);
-    }
+    await this.webhookService.invokeWebhook(payload.eventName, {
+      data: payload,
+      secret: webhookSharedSecret,
+    });
 
-    try {
+    {
       // Omit from data properties already sent as part of the webhook payload
       const { runtimeData, correlationId, entityId, childWorkflowsRuntimeData, ...restData } = data;
       const {
@@ -176,44 +166,12 @@ export class WorkflowCompletedWebhookCaller {
           ...restRuntimeData.context,
           childWorkflowsRuntimeData,
         },
-      };
+      } as const;
 
-      if (env.QUEUE_SYSTEM_ENABLED) {
-        return await this.outgoingWebhookQueueService.addJob({
-          requestConfig: {
-            url,
-            method: 'POST',
-            headers: {},
-            body: payload,
-            timeout: 15_000,
-          },
-          customerConfig: {
-            webhookSharedSecret,
-          },
-        });
-      }
-
-      const res = await this.#__axios.post(url, payload, {
-        headers: {
-          'X-Authorization': webhookSharedSecret,
-          'X-HMAC-Signature': sign({ payload, key: webhookSharedSecret }),
-        },
+      await this.webhookService.invokeWebhook(payload.eventName, {
+        data: payload,
+        secret: webhookSharedSecret,
       });
-
-      this.logger.log('Webhook Result:', {
-        status: res.status,
-        statusText: res.statusText,
-        data: res.data,
-      });
-    } catch (error: Error | any) {
-      this.logger.log('Webhook error data::  ', {
-        state: data.state,
-        entityId: data.entityId,
-        correlationId: data.correlationId,
-        id: data.runtimeData.id,
-      });
-      this.logger.error('Failed to send webhook', { id, message: error?.message, error });
-      alertWebhookFailure(error);
     }
   }
 

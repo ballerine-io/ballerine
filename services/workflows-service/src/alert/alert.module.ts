@@ -10,22 +10,16 @@ import { AlertRepository } from '@/alert/alert.repository';
 import { AlertService } from '@/alert/alert.service';
 import { AlertControllerExternal } from '@/alert/alert.controller.external';
 import { PrismaModule } from '@/prisma/prisma.module';
-import {
-  WebhookHttpService,
-  WebhookManagerService,
-} from '@/alert/webhook-manager/webhook-manager.service';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import axiosRetry from 'axios-retry';
 import { isAxiosError } from 'axios';
 import { getHttpStatusFromAxiosError, interceptAxiosRequests } from '@/common/http-service/utils';
-import { WebhookEventEmitterService } from './webhook-manager/webhook-event-emitter.service';
 import { ProjectModule } from '@/project/project.module';
 import { UserRepository } from '@/user/user.repository';
 import { AlertDefinitionModule } from '@/alert-definition/alert-definition.module';
 import { SentryModule } from '@/sentry/sentry.module';
-import { BullMqModule } from '@/bull-mq/bull-mq.module';
-import { OutgoingWebhooksModule } from '@/webhooks/outgoing-webhooks/outgoing-webhooks.module';
+import { WebhookModule } from '@/webhooks/webhook.module';
 
 @Module({
   imports: [
@@ -34,8 +28,7 @@ import { OutgoingWebhooksModule } from '@/webhooks/outgoing-webhooks/outgoing-we
     PrismaModule,
     SentryModule,
     ProjectModule,
-    BullMqModule,
-    OutgoingWebhooksModule,
+    WebhookModule,
     HttpModule.register({
       timeout: 5000,
       maxRedirects: 10,
@@ -52,20 +45,16 @@ import { OutgoingWebhooksModule } from '@/webhooks/outgoing-webhooks/outgoing-we
   ],
   controllers: [AlertControllerInternal, AlertControllerExternal],
   providers: [
-    WebhookHttpService,
     AlertService,
     AlertRepository,
     AlertDefinitionRepository,
-    WebhookManagerService,
-    WebhookEventEmitterService,
-    BullMqModule,
-    OutgoingWebhooksModule,
+    WebhookModule,
     // TODO: Export to user module
     UserService,
     UserRepository,
     PasswordService,
   ],
-  exports: [ACLModule, AlertRepository, AlertService, WebhookEventEmitterService],
+  exports: [ACLModule, AlertRepository, AlertService],
 })
 export class AlertModule {
   constructor(

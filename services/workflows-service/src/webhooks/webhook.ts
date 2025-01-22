@@ -13,11 +13,6 @@ export type TWebhookEventData<T> = IWebhookEventData<T> | IWebhookEntityEventDat
 export type TEventName<T> = TWebhookEventData<T>['eventName'] | (string & object);
 
 export type ExtractWebhookEventData<T, TEvent extends TEventName<T>> = Omit<
-  Extract<
-    TWebhookEventData<T>,
-    {
-      eventName: TEvent;
-    }
-  >,
+  Extract<TWebhookEventData<T>, { eventName: TEvent }>,
   'eventName'
 >;

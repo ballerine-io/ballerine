@@ -13,9 +13,7 @@ import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { ConfigService } from '@nestjs/config';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
-import { env } from '@/env';
-import { OutgoingWebhookQueueService } from '@/bull-mq/outgoing-webhook/outgoing-webhook-queue.service';
-import { OutgoingWebhooksService } from '@/webhooks/outgoing-webhooks/outgoing-webhooks.service';
+import { WebhookService } from '@/webhooks/webhook.service';
 
 const getExtensionFromMimeType = (mimeType: string) => {
   const parts = mimeType?.split('/');
@@ -37,8 +35,7 @@ export class DocumentChangedWebhookCaller {
     workflowEventEmitter: WorkflowEventEmitterService,
     private readonly logger: AppLoggerService,
     private readonly customerService: CustomerService,
-    private readonly outgoingWebhookQueueService: OutgoingWebhookQueueService,
-    private readonly outgoingWebhooksService: OutgoingWebhooksService,
+    private readonly webhookService: WebhookService,
   ) {
     this.#__axios = this.httpService.axiosRef;
 
@@ -201,43 +198,11 @@ export class DocumentChangedWebhookCaller {
       correlationId: data.correlationId,
       environment,
       data: data.updatedRuntimeData.context,
-    };
-
-    const webhookArgs = {
-      requestConfig: {
-        url,
-        method: 'POST',
-        headers: {},
-        body: payload,
-        timeout: 15_000,
-      },
-      customerConfig: {
-        webhookSharedSecret,
-      },
     } as const;
 
-    if (env.QUEUE_SYSTEM_ENABLED) {
-      return await this.outgoingWebhookQueueService.addJob(webhookArgs);
-    }
-
-    try {
-      const res = await this.outgoingWebhooksService.invokeWebhook(webhookArgs);
-      this.logger.log('Webhook Result:', {
-        status: res.status,
-        statusText: res.statusText,
-        data: res.data,
-      });
-    } catch (error: Error | any) {
-      this.logger.log('Webhook error data::  ', {
-        state: data.state,
-        entityId: data.entityId,
-        correlationId: data.correlationId,
-        id: data.updatedRuntimeData.id,
-        newDocumentsByIdentifier,
-        oldDocuments,
-      });
-      this.logger.error('Failed to send webhook', { id, message: error?.message, error });
-      alertWebhookFailure(error);
-    }
+    await this.webhookService.invokeWebhook(payload.eventName, {
+      data: payload,
+      secret: webhookSharedSecret,
+    });
   }
 }
