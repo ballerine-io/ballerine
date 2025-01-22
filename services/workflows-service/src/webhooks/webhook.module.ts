@@ -20,7 +20,7 @@ const REDIS_CONFIG: ConnectionOptions = {
 @Module({
   imports: [
     AppLoggerModule,
-    // HttpModule,
+    HttpModule,
     BullModule.forRoot({
       connection: REDIS_CONFIG,
     }),
