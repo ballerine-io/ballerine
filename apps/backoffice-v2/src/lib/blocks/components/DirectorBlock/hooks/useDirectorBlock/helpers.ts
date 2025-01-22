@@ -13,6 +13,7 @@ export const directorDocumentsAdapter = ({ documents, storageFiles }) => {
         decision: {
           status: document?.decision?.status,
         },
+        version: document?.version,
         properties: document?.properties,
         propertiesSchema: document?.propertiesSchema,
         pages: document?.pages?.map(

@@ -334,11 +334,12 @@ export const useDefaultBlocksLogic = () => {
   const onMutateRevisionTaskByIdDirectors = useCallback(
     ({
         workflowId,
+        directorId,
         documentId,
         reason,
       }: Pick<
         Parameters<typeof mutateRevisionTaskById>[0],
-        'workflowId' | 'documentId' | 'reason'
+        'workflowId' | 'directorId' | 'documentId' | 'reason'
       >) =>
       () => {
         if (!documentId) {
@@ -349,6 +350,7 @@ export const useDefaultBlocksLogic = () => {
 
         mutateRevisionTaskById({
           workflowId,
+          directorId,
           documentId,
           reason,
           contextUpdateMethod: 'director',
@@ -358,12 +360,13 @@ export const useDefaultBlocksLogic = () => {
   );
 
   const onMutateApproveTaskByIdDirectors = useCallback(
-    (documentId: string) => mutateApproveTaskById({ documentId, contextUpdateMethod: 'director' }),
+    ({ directorId, documentId }: { directorId: string; documentId: string }) =>
+      mutateApproveTaskById({ directorId, documentId, contextUpdateMethod: 'director' }),
     [mutateApproveTaskById],
   );
   const onMutateRemoveDecisionTaskByIdDirectors = useCallback(
-    (documentId: string) =>
-      mutateRemoveDecisionTaskById({ documentId, contextUpdateMethod: 'director' }),
+    ({ directorId, documentId }: { directorId: string; documentId: string }) =>
+      mutateRemoveDecisionTaskById({ directorId, documentId, contextUpdateMethod: 'director' }),
     [mutateRemoveDecisionTaskById],
   );
 

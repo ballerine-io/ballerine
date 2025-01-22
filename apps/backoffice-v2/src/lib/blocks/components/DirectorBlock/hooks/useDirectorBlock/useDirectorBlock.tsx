@@ -33,15 +33,23 @@ export const useDirectorBlock = ({
   workflowId: string;
   onReuploadNeeded: ({
     workflowId,
+    directorId,
     documentId,
     reason,
   }: {
     workflowId: string;
+    directorId?: string;
     documentId: string;
     reason?: string;
   }) => () => void;
-  onRemoveDecision: (documentId: string) => void;
-  onApprove: (documentId: string) => void;
+  onRemoveDecision: ({
+    directorId,
+    documentId,
+  }: {
+    directorId: string;
+    documentId: string;
+  }) => void;
+  onApprove: ({ directorId, documentId }: { directorId: string; documentId: string }) => void;
   director: {
     id: string;
     firstName: string;
@@ -54,6 +62,7 @@ export const useDirectorBlock = ({
       issuer: {
         country: string;
       };
+      version: string;
       pages: Array<{
         type: string;
         imageUrl: string;
@@ -148,7 +157,12 @@ export const useDirectorBlock = ({
                   Re-upload needed
                   <X
                     className="h-4 w-4 cursor-pointer"
-                    onClick={() => onRemoveDecision(document.id)}
+                    onClick={() =>
+                      onRemoveDecision({
+                        directorId: director.id,
+                        documentId: document.id,
+                      })
+                    }
                   />
                 </React.Fragment>
               ),
@@ -241,7 +255,12 @@ export const useDirectorBlock = ({
                     </Button>
                     <Button
                       disabled={isApproveActionDisabled}
-                      onClick={() => onApprove(document.id)}
+                      onClick={() =>
+                        onApprove({
+                          directorId: director.id,
+                          documentId: document.id,
+                        })
+                      }
                     >
                       Approve
                     </Button>

@@ -174,12 +174,13 @@ export const useKybExampleBlocksLogic = () => {
 
   const onMutateRevisionTaskByIdDirectors = useCallback(
     ({
+        directorId,
         workflowId,
         documentId,
         reason,
       }: Pick<
         Parameters<typeof mutateRevisionTaskById>[0],
-        'workflowId' | 'documentId' | 'reason'
+        'directorId' | 'workflowId' | 'documentId' | 'reason'
       >) =>
       () => {
         if (!documentId) {
@@ -189,6 +190,7 @@ export const useKybExampleBlocksLogic = () => {
         }
 
         mutateRevisionTaskById({
+          directorId,
           workflowId,
           documentId,
           reason,
@@ -206,12 +208,13 @@ export const useKybExampleBlocksLogic = () => {
     ],
   );
   const onMutateApproveTaskByIdDirectors = useCallback(
-    (documentId: string) => mutateApproveTaskById({ documentId, contextUpdateMethod: 'director' }),
+    ({ directorId, documentId }: { directorId: string; documentId: string }) =>
+      mutateApproveTaskById({ directorId, documentId, contextUpdateMethod: 'director' }),
     [mutateApproveTaskById],
   );
   const onMutateRemoveDecisionTaskByIdDirectors = useCallback(
-    (documentId: string) =>
-      mutateRemoveDecisionTaskById({ documentId, contextUpdateMethod: 'director' }),
+    ({ directorId, documentId }: { directorId: string; documentId: string }) =>
+      mutateRemoveDecisionTaskById({ directorId, documentId, contextUpdateMethod: 'director' }),
     [mutateRemoveDecisionTaskById],
   );
 
