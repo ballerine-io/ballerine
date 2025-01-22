@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.6.88
+
+### Patch Changes
+
+- Added pluginsInput with requestPayload per plugins & invokedAt now disablable
+
 ## 0.6.87
 
 ### Patch Changes
