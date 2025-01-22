@@ -107,8 +107,6 @@ export class ApiPlugin {
         url: _url,
       });
 
-      console.log('apiResponse', apiResponse.ok);
-
       if (apiResponse.ok) {
         const result = await apiResponse.json();
 
