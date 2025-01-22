@@ -35,7 +35,10 @@ export class RetryableQueue<T extends Record<string, unknown> = any> {
       const { maxRetries, isRetryable = true } = job.data;
 
       if (!isRetryable || job.attemptsMade >= maxRetries) {
-        return await this.dlq.add(job.id ?? `dlq-${Date.now()}`, { ...job.data, error: err });
+        return await this.dlq.add(
+          (job.id ?? `dlq-${Date.now()}`) as any,
+          { ...job.data, error: err } as any,
+        );
       }
 
       return await job.moveToDelayed(Date.now() + Math.pow(2, job.attemptsMade + 1) * 1000);
