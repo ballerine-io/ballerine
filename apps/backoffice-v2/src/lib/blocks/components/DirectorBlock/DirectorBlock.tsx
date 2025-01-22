@@ -1,6 +1,6 @@
 import { BlocksComponent } from '@ballerine/blocks';
 import { cells } from '../../create-blocks-typed/create-blocks-typed';
-import { useEndUserById } from '@/domains/individuals/queries/useEndUserById/useEndUserById';
+import { useEndUserByIdQuery } from '@/domains/individuals/queries/useEndUserByIdQuery/useEndUserByIdQuery';
 import { useDirectorBlock } from './hooks/useDirectorBlock/useDirectorBlock';
 
 export const DirectorBlock = ({
@@ -19,7 +19,7 @@ export const DirectorBlock = ({
 }: Omit<Parameters<typeof useDirectorBlock>[0], 'director'> & {
   director: Omit<Parameters<typeof useDirectorBlock>[0]['director'], 'aml'>;
 }) => {
-  const { data: endUser } = useEndUserById({ id: director.id });
+  const { data: endUser } = useEndUserByIdQuery({ id: director.id });
   const directorWithAml = {
     ...director,
     aml: {
