@@ -10,12 +10,14 @@ import {
 } from '../../../utils';
 import { IApiPluginParams } from '../types';
 
-const invokedAtTransformer: HelpersTransformer = new HelpersTransformer([
-  {
-    source: 'invokedAt',
-    target: 'invokedAt',
-    method: 'setTimeToRecordUTC',
-  },
+export const invokedAtTransformerDefinition = {
+  source: 'invokedAt',
+  target: 'invokedAt',
+  method: 'setTimeToRecordUTC',
+};
+
+export const invokedAtTransformer: HelpersTransformer = new HelpersTransformer([
+  invokedAtTransformerDefinition,
 ] as THelperFormatingLogic);
 
 export class ApiPlugin {
@@ -36,6 +38,7 @@ export class ApiPlugin {
   secretsManager: IApiPluginParams['secretsManager'];
   memoizedSecrets: Record<string, string> | undefined;
   whitelistedInputProperties: string[] | undefined;
+  includeInvokedAt: boolean;
 
   constructor(pluginParams: IApiPluginParams) {
     this.name = pluginParams.name;
@@ -56,6 +59,7 @@ export class ApiPlugin {
 
     this.displayName = pluginParams.displayName;
     this.whitelistedInputProperties = pluginParams.whitelistedInputProperties;
+    this.includeInvokedAt = pluginParams.includeInvokedAt ?? true;
   }
 
   async invoke(context: TContext, additionalContext?: AnyRecord) {
@@ -103,10 +107,14 @@ export class ApiPlugin {
         url: _url,
       });
 
+      console.log('apiResponse', apiResponse.ok);
+
       if (apiResponse.ok) {
         const result = await apiResponse.json();
 
-        const responseTransformers = [...(this.response?.transformers || []), invokedAtTransformer];
+        const responseTransformers = this.includeInvokedAt
+          ? [...(this.response?.transformers || []), invokedAtTransformer]
+          : this.response?.transformers || [];
 
         const responseBody = await this.transformData(responseTransformers, result as AnyRecord);
 

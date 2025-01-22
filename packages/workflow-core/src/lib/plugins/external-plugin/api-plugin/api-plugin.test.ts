@@ -1,9 +1,9 @@
 import { AnyRecord } from '@ballerine/common';
 import { beforeEach, describe, expect, it, SpyInstance, vi } from 'vitest';
-import { ApiPlugin } from './api-plugin';
+import { ApiPlugin, invokedAtTransformerDefinition } from './api-plugin';
 
 describe('ApiPlugin', () => {
-  describe('apiPlugin.invoke', async () => {
+  describe('apiPlugin.invoke', () => {
     beforeEach(() => {
       vi.clearAllMocks();
     });
@@ -145,105 +145,174 @@ describe('ApiPlugin', () => {
         });
       });
     });
-  });
 
-  describe('generateRequestPayloadFromWhitelist', () => {
-    let apiPlugin: ApiPlugin;
+    describe('includeInvokedAt', () => {
+      let apiPlugin: ApiPlugin;
+      let transformDataSpy: SpyInstance;
+      let validateContentSpy: SpyInstance;
+      let makeApiRequestSpy: SpyInstance;
 
-    beforeEach(() => {
-      apiPlugin = new ApiPlugin({
-        name: 'ballerineEnrichment',
-        displayName: 'Ballerine Enrichment',
-        url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.jsonn',
-        method: 'GET' as const,
-        stateNames: ['checkBusinessScore'],
-        successAction: 'API_CALL_SUCCESS',
-        errorAction: 'API_CALL_FAILURE',
+      beforeEach(() => {
+        vi.clearAllMocks();
+
+        apiPlugin = new ApiPlugin({
+          name: 'ballerineEnrichment',
+          displayName: 'Ballerine Enrichment',
+          url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.jsonn',
+          method: 'GET' as const,
+          stateNames: ['checkBusinessScore'],
+          successAction: 'API_CALL_SUCCESS',
+          errorAction: 'API_CALL_FAILURE',
+          request: { transformers: [] },
+          response: { transformers: [] },
+          includeInvokedAt: true,
+        });
+
+        transformDataSpy = vi.spyOn(apiPlugin, 'transformData') as SpyInstance;
+        validateContentSpy = vi.spyOn(apiPlugin, 'validateContent') as SpyInstance;
+        makeApiRequestSpy = vi.spyOn(apiPlugin, 'makeApiRequest') as SpyInstance;
+      });
+
+      it('should include invokedAt transformer if includeInvokedAt is true', async () => {
+        apiPlugin.includeInvokedAt = true;
+
+        const context = { test: '123' };
+        const response = {};
+
+        validateContentSpy.mockResolvedValue({ isValidResponse: true, isValidRequest: true });
+        makeApiRequestSpy.mockResolvedValue({
+          statusText: 'OK',
+          ok: true,
+          json: () => Promise.resolve(response),
+          headers: new Headers(),
+        });
+
+        await apiPlugin.invoke(context);
+
+        expect(transformDataSpy).toHaveBeenLastCalledWith(
+          [expect.objectContaining({ mapping: [invokedAtTransformerDefinition] })],
+          expect.objectContaining({ invokedAt: expect.any(Number) }),
+        );
+      });
+
+      it('should not include invokedAt transformer if includeInvokedAt is false', async () => {
+        apiPlugin.includeInvokedAt = false;
+
+        const context = { test: '123' };
+        const response = {};
+
+        validateContentSpy.mockResolvedValue({ isValidResponse: true, isValidRequest: true });
+        makeApiRequestSpy.mockResolvedValue({
+          statusText: 'OK',
+          ok: true,
+          json: () => Promise.resolve(response),
+          headers: new Headers(),
+        });
+
+        await apiPlugin.invoke(context);
+
+        expect(transformDataSpy).toHaveBeenLastCalledWith([], response);
       });
     });
 
-    it('builds request payload from whitelisted input properties', () => {
-      apiPlugin = new ApiPlugin({
-        name: 'ballerineEnrichment',
-        displayName: 'Ballerine Enrichment',
-        url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.jsonn',
-        method: 'GET' as const,
-        stateNames: ['checkBusinessScore'],
-        successAction: 'API_CALL_SUCCESS',
-        errorAction: 'API_CALL_FAILURE',
-        whitelistedInputProperties: ['allowedProp1', 'allowedProp2'],
+    describe('generateRequestPayloadFromWhitelist', () => {
+      let apiPlugin: ApiPlugin;
+
+      beforeEach(() => {
+        apiPlugin = new ApiPlugin({
+          name: 'ballerineEnrichment',
+          displayName: 'Ballerine Enrichment',
+          url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.jsonn',
+          method: 'GET' as const,
+          stateNames: ['checkBusinessScore'],
+          successAction: 'API_CALL_SUCCESS',
+          errorAction: 'API_CALL_FAILURE',
+        });
       });
 
-      const payload = {
-        allowedProp1: 'https://example.com',
-        allowedProp2: 'https://example.com123',
-        notAllowedProp1: 'https://example.com123',
-        notAllowedProp2: 'https://example.com123',
-      };
-      const result = apiPlugin.generateRequestPayloadFromWhitelist(payload);
-      expect(result).toEqual({
-        allowedProp1: 'https://example.com',
-        allowedProp2: 'https://example.com123',
-      });
-    });
+      it('builds request payload from whitelisted input properties', () => {
+        apiPlugin = new ApiPlugin({
+          name: 'ballerineEnrichment',
+          displayName: 'Ballerine Enrichment',
+          url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.jsonn',
+          method: 'GET' as const,
+          stateNames: ['checkBusinessScore'],
+          successAction: 'API_CALL_SUCCESS',
+          errorAction: 'API_CALL_FAILURE',
+          whitelistedInputProperties: ['allowedProp1', 'allowedProp2'],
+        });
 
-    it('should include nested objects of whitelisted properties', () => {
-      apiPlugin = new ApiPlugin({
-        name: 'ballerineEnrichment',
-        displayName: 'Ballerine Enrichment',
-        url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.jsonn',
-        method: 'GET' as const,
-        stateNames: ['checkBusinessScore'],
-        successAction: 'API_CALL_SUCCESS',
-        errorAction: 'API_CALL_FAILURE',
-        whitelistedInputProperties: ['allowedProp1', 'allowedProp2'],
-      });
-
-      const payload = {
-        allowedProp1: 'https://example.com',
-        allowedProp2: {
-          nestedProp1: 'https://example.com123',
-          nestedProp2: 'https://example.com123',
-        },
-        notAllowedProp1: 'https://example.com123',
-        notAllowedProp2: 'https://example.com123',
-      };
-      const result = apiPlugin.generateRequestPayloadFromWhitelist(payload);
-      expect(result).toEqual({
-        allowedProp1: 'https://example.com',
-        allowedProp2: {
-          nestedProp1: 'https://example.com123',
-          nestedProp2: 'https://example.com123',
-        },
-      });
-    });
-
-    it('should not lookup for whitelisted properties in arrays', () => {
-      apiPlugin = new ApiPlugin({
-        name: 'ballerineEnrichment',
-        displayName: 'Ballerine Enrichment',
-        url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.jsonn',
-        method: 'GET' as const,
-        stateNames: ['checkBusinessScore'],
-        successAction: 'API_CALL_SUCCESS',
-        errorAction: 'API_CALL_FAILURE',
-        whitelistedInputProperties: ['allowedProp1', 'allowedProp2'],
+        const payload = {
+          allowedProp1: 'https://example.com',
+          allowedProp2: 'https://example.com123',
+          notAllowedProp1: 'https://example.com123',
+          notAllowedProp2: 'https://example.com123',
+        };
+        const result = apiPlugin.generateRequestPayloadFromWhitelist(payload);
+        expect(result).toEqual({
+          allowedProp1: 'https://example.com',
+          allowedProp2: 'https://example.com123',
+        });
       });
 
-      const payload = {
-        someArray: [{ allowedProp1: 'https://example.com' }],
-        allowedProp2: 'https://example.com',
-      };
-      const result = apiPlugin.generateRequestPayloadFromWhitelist(payload);
-      expect(result).toEqual({
-        allowedProp2: 'https://example.com',
-      });
-    });
+      it('should include nested objects of whitelisted properties', () => {
+        apiPlugin = new ApiPlugin({
+          name: 'ballerineEnrichment',
+          displayName: 'Ballerine Enrichment',
+          url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.jsonn',
+          method: 'GET' as const,
+          stateNames: ['checkBusinessScore'],
+          successAction: 'API_CALL_SUCCESS',
+          errorAction: 'API_CALL_FAILURE',
+          whitelistedInputProperties: ['allowedProp1', 'allowedProp2'],
+        });
 
-    it('should not modify the original payload if no whitelisted properties are provided', () => {
-      const payload = { data: 'test' };
-      const result = apiPlugin.generateRequestPayloadFromWhitelist(payload);
-      expect(result).toEqual({ data: 'test' });
+        const payload = {
+          allowedProp1: 'https://example.com',
+          allowedProp2: {
+            nestedProp1: 'https://example.com123',
+            nestedProp2: 'https://example.com123',
+          },
+          notAllowedProp1: 'https://example.com123',
+          notAllowedProp2: 'https://example.com123',
+        };
+        const result = apiPlugin.generateRequestPayloadFromWhitelist(payload);
+        expect(result).toEqual({
+          allowedProp1: 'https://example.com',
+          allowedProp2: {
+            nestedProp1: 'https://example.com123',
+            nestedProp2: 'https://example.com123',
+          },
+        });
+      });
+
+      it('should not lookup for whitelisted properties in arrays', () => {
+        apiPlugin = new ApiPlugin({
+          name: 'ballerineEnrichment',
+          displayName: 'Ballerine Enrichment',
+          url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.jsonn',
+          method: 'GET' as const,
+          stateNames: ['checkBusinessScore'],
+          successAction: 'API_CALL_SUCCESS',
+          errorAction: 'API_CALL_FAILURE',
+          whitelistedInputProperties: ['allowedProp1', 'allowedProp2'],
+        });
+
+        const payload = {
+          someArray: [{ allowedProp1: 'https://example.com' }],
+          allowedProp2: 'https://example.com',
+        };
+        const result = apiPlugin.generateRequestPayloadFromWhitelist(payload);
+        expect(result).toEqual({
+          allowedProp2: 'https://example.com',
+        });
+      });
+
+      it('should not modify the original payload if no whitelisted properties are provided', () => {
+        const payload = { data: 'test' };
+        const result = apiPlugin.generateRequestPayloadFromWhitelist(payload);
+        expect(result).toEqual({ data: 'test' });
+      });
     });
   });
 });
