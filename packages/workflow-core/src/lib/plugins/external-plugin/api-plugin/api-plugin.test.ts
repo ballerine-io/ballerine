@@ -1,3 +1,4 @@
+import { AnyRecord } from '@ballerine/common';
 import { beforeEach, describe, expect, it, SpyInstance, vi } from 'vitest';
 import { ApiPlugin } from './api-plugin';
 
@@ -7,7 +8,7 @@ describe('ApiPlugin', () => {
       vi.clearAllMocks();
     });
 
-    it('should call removeBlacklistedKeys', async () => {
+    it('should call generateRequestPayloadFromWhitelist', async () => {
       const context = { data: 'test' };
       const apiPlugin = new ApiPlugin({
         name: 'ballerineEnrichment',
@@ -20,9 +21,13 @@ describe('ApiPlugin', () => {
         request: {
           transformers: [],
         },
+        whitelistedInputProperties: undefined,
       });
 
-      const removeBlacklistedKeysSpy = vi.spyOn(apiPlugin, 'removeBlacklistedKeys');
+      const generateRequestPayloadFromWhitelistSpy = vi.spyOn(
+        apiPlugin,
+        'generateRequestPayloadFromWhitelist',
+      );
       const transformDataSpy = vi.spyOn(apiPlugin, 'transformData');
       const validateContentSpy = vi.spyOn(apiPlugin, 'validateContent');
       const makeApiRequestSpy = vi.spyOn(apiPlugin, 'makeApiRequest');
@@ -38,7 +43,8 @@ describe('ApiPlugin', () => {
 
       await apiPlugin.invoke(context);
 
-      expect(removeBlacklistedKeysSpy).toHaveBeenCalledWith(context);
+      expect(generateRequestPayloadFromWhitelistSpy).toHaveBeenCalledWith(context);
+      expect(generateRequestPayloadFromWhitelistSpy).toHaveBeenCalledTimes(1);
     });
 
     describe('requestPayload', () => {
@@ -86,26 +92,62 @@ describe('ApiPlugin', () => {
         expect(await apiPlugin.invoke(context)).toHaveProperty('requestPayload', context);
       });
 
-      it('failed request should include requestPayload', async () => {
-        const context = { test: '123' };
+      describe('failed request', () => {
+        it('should include requestPayload', async () => {
+          const context = { test: '123' };
 
-        transformDataSpy.mockResolvedValue(context);
-        validateContentSpy.mockResolvedValue({ isValidRequest: false });
-        makeApiRequestSpy.mockResolvedValue({
-          statusText: 'OK',
-          ok: false,
-          json: () => Promise.resolve({}),
-          headers: new Headers(),
+          transformDataSpy.mockResolvedValue(context);
+          makeApiRequestSpy.mockResolvedValue({
+            statusText: 'OK',
+            ok: false,
+            json: () => Promise.resolve({}),
+            headers: new Headers(),
+          });
+
+          const invokeResult = (await apiPlugin.invoke(context)) as { requestPayload: AnyRecord };
+
+          expect(invokeResult).toHaveProperty('requestPayload');
+          expect(invokeResult.requestPayload).toContain(context);
         });
+      });
 
-        await apiPlugin.invoke(context);
+      describe('not valid response', () => {
+        it('should include requestPayload', async () => {
+          const context = { test: '123' };
 
-        expect(await apiPlugin.invoke(context)).toHaveProperty('requestPayload', context);
+          transformDataSpy.mockResolvedValue(context);
+          validateContentSpy.mockResolvedValue({ isValidResponse: false });
+          makeApiRequestSpy.mockResolvedValue({
+            statusText: 'OK',
+            ok: true,
+            json: () => Promise.resolve({}),
+            headers: new Headers(),
+          });
+
+          const invokeResult = (await apiPlugin.invoke(context)) as { requestPayload: AnyRecord };
+
+          expect(invokeResult).toHaveProperty('requestPayload');
+          expect(invokeResult.requestPayload).toEqual(context);
+        });
+      });
+
+      describe('not valid request', () => {
+        it('should include requestPayload', async () => {
+          const context = { test: '123' };
+
+          transformDataSpy.mockResolvedValue(context);
+          validateContentSpy.mockResolvedValue({ isValidRequest: false });
+
+          const invokeResult = (await apiPlugin.invoke(context)) as { requestPayload: AnyRecord };
+
+          expect(invokeResult).toHaveProperty('requestPayload');
+          expect(invokeResult.requestPayload).toEqual(context);
+        });
       });
     });
   });
 
-  describe('removeBlacklistedKeys', () => {
+  describe('generateRequestPayloadFromWhitelist', () => {
     let apiPlugin: ApiPlugin;
 
     beforeEach(() => {
@@ -120,22 +162,88 @@ describe('ApiPlugin', () => {
       });
     });
 
-    it('removes blacklisted keys from request payload', () => {
-      const payload = { callbackUrl: 'https://example.com', data: 'test' };
-      const result = apiPlugin.removeBlacklistedKeys(payload);
-      expect(result).toEqual({ data: 'test' });
+    it('builds request payload from whitelisted input properties', () => {
+      apiPlugin = new ApiPlugin({
+        name: 'ballerineEnrichment',
+        displayName: 'Ballerine Enrichment',
+        url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.jsonn',
+        method: 'GET' as const,
+        stateNames: ['checkBusinessScore'],
+        successAction: 'API_CALL_SUCCESS',
+        errorAction: 'API_CALL_FAILURE',
+        whitelistedInputProperties: ['allowedProp1', 'allowedProp2'],
+      });
+
+      const payload = {
+        allowedProp1: 'https://example.com',
+        allowedProp2: 'https://example.com123',
+        notAllowedProp1: 'https://example.com123',
+        notAllowedProp2: 'https://example.com123',
+      };
+      const result = apiPlugin.generateRequestPayloadFromWhitelist(payload);
+      expect(result).toEqual({
+        allowedProp1: 'https://example.com',
+        allowedProp2: 'https://example.com123',
+      });
     });
 
-    it('doesnt remove non-blacklisted keys', () => {
-      const payload = { callbackUrl: 'https://example.com', data: 'test' };
-      const result = apiPlugin.removeBlacklistedKeys(payload);
-      expect(result).toEqual({ data: 'test' });
+    it('should include nested objects of whitelisted properties', () => {
+      apiPlugin = new ApiPlugin({
+        name: 'ballerineEnrichment',
+        displayName: 'Ballerine Enrichment',
+        url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.jsonn',
+        method: 'GET' as const,
+        stateNames: ['checkBusinessScore'],
+        successAction: 'API_CALL_SUCCESS',
+        errorAction: 'API_CALL_FAILURE',
+        whitelistedInputProperties: ['allowedProp1', 'allowedProp2'],
+      });
+
+      const payload = {
+        allowedProp1: 'https://example.com',
+        allowedProp2: {
+          nestedProp1: 'https://example.com123',
+          nestedProp2: 'https://example.com123',
+        },
+        notAllowedProp1: 'https://example.com123',
+        notAllowedProp2: 'https://example.com123',
+      };
+      const result = apiPlugin.generateRequestPayloadFromWhitelist(payload);
+      expect(result).toEqual({
+        allowedProp1: 'https://example.com',
+        allowedProp2: {
+          nestedProp1: 'https://example.com123',
+          nestedProp2: 'https://example.com123',
+        },
+      });
     });
 
-    it('correctly handles nested objects', () => {
-      const payload = { data: { callbackUrl: 'https://example.com' } };
-      const result = apiPlugin.removeBlacklistedKeys(payload);
-      expect(result).toEqual({ data: {} });
+    it('should not lookup for whitelisted properties in arrays', () => {
+      apiPlugin = new ApiPlugin({
+        name: 'ballerineEnrichment',
+        displayName: 'Ballerine Enrichment',
+        url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.jsonn',
+        method: 'GET' as const,
+        stateNames: ['checkBusinessScore'],
+        successAction: 'API_CALL_SUCCESS',
+        errorAction: 'API_CALL_FAILURE',
+        whitelistedInputProperties: ['allowedProp1', 'allowedProp2'],
+      });
+
+      const payload = {
+        someArray: [{ allowedProp1: 'https://example.com' }],
+        allowedProp2: 'https://example.com',
+      };
+      const result = apiPlugin.generateRequestPayloadFromWhitelist(payload);
+      expect(result).toEqual({
+        allowedProp2: 'https://example.com',
+      });
+    });
+
+    it('should not modify the original payload if no whitelisted properties are provided', () => {
+      const payload = { data: 'test' };
+      const result = apiPlugin.generateRequestPayloadFromWhitelist(payload);
+      expect(result).toEqual({ data: 'test' });
     });
   });
 });

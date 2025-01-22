@@ -9,7 +9,6 @@ import {
   Validator,
 } from '../../../utils';
 import { IApiPluginParams } from '../types';
-import { REQUEST_PAYLOAD_BLACKLIST } from './constants';
 
 const invokedAtTransformer: HelpersTransformer = new HelpersTransformer([
   {
@@ -36,6 +35,7 @@ export class ApiPlugin {
   displayName: string | undefined;
   secretsManager: IApiPluginParams['secretsManager'];
   memoizedSecrets: Record<string, string> | undefined;
+  whitelistedInputProperties: string[] | undefined;
 
   constructor(pluginParams: IApiPluginParams) {
     this.name = pluginParams.name;
@@ -55,14 +55,17 @@ export class ApiPlugin {
     this.secretsManager = pluginParams.secretsManager;
 
     this.displayName = pluginParams.displayName;
+    this.whitelistedInputProperties = pluginParams.whitelistedInputProperties;
   }
 
   async invoke(context: TContext, additionalContext?: AnyRecord) {
     let requestPayload;
+    let outputRequestPayload;
 
     try {
       if (this.request && 'transformers' in this.request) {
         requestPayload = await this.transformData(this.request.transformers, context);
+        outputRequestPayload = this.generateRequestPayloadFromWhitelist(requestPayload);
 
         const { isValidRequest, errorMessage } = await this.validateContent(
           this.request.schemaValidator,
@@ -71,7 +74,7 @@ export class ApiPlugin {
         );
 
         if (!isValidRequest) {
-          return this.returnErrorResponse(errorMessage!, requestPayload);
+          return this.returnErrorResponse(errorMessage!, outputRequestPayload);
         }
       }
 
@@ -84,8 +87,6 @@ export class ApiPlugin {
         url: _url,
         method: this.method,
       });
-
-      requestPayload = this.removeBlacklistedKeys(requestPayload);
 
       const apiResponse = await this.makeApiRequest(
         _url,
@@ -116,7 +117,7 @@ export class ApiPlugin {
         );
 
         if (!isValidResponse) {
-          return this.returnErrorResponse(errorMessage!, requestPayload);
+          return this.returnErrorResponse(errorMessage!, outputRequestPayload);
         }
 
         if (this.successAction) {
@@ -125,7 +126,7 @@ export class ApiPlugin {
             {
               ...responseBody,
             },
-            requestPayload,
+            outputRequestPayload,
           );
         }
 
@@ -135,13 +136,13 @@ export class ApiPlugin {
 
         return this.returnErrorResponse(
           'Request Failed: ' + apiResponse.statusText + ' Error: ' + JSON.stringify(errorResponse),
-          requestPayload,
+          outputRequestPayload,
         );
       }
     } catch (error) {
       return this.returnErrorResponse(
         isErrorWithMessage(error) ? error.message : '',
-        requestPayload,
+        outputRequestPayload,
       );
     }
   }
@@ -427,23 +428,22 @@ export class ApiPlugin {
     }, record as unknown);
   }
 
-  removeBlacklistedKeys(payload: AnyRecord = {}) {
-    const payloadWithoutBlacklistedKeys: AnyRecord = structuredClone(payload);
+  generateRequestPayloadFromWhitelist(payload: AnyRecord = {}) {
+    if (!this.whitelistedInputProperties) return payload;
 
-    for (const key in payloadWithoutBlacklistedKeys) {
-      if (REQUEST_PAYLOAD_BLACKLIST.includes(key as (typeof REQUEST_PAYLOAD_BLACKLIST)[number])) {
-        delete payloadWithoutBlacklistedKeys[key];
+    const whitelistedPayload: AnyRecord = {};
 
-        continue;
-      }
-
+    for (const key of this.whitelistedInputProperties) {
       const value = payload[key];
+      whitelistedPayload[key] = value;
 
-      if (typeof value === 'object') {
-        payloadWithoutBlacklistedKeys[key] = this.removeBlacklistedKeys(value as AnyRecord);
+      if (value) continue;
+
+      if (typeof value === 'object' && !Array.isArray(value)) {
+        whitelistedPayload[key] = this.generateRequestPayloadFromWhitelist(value as AnyRecord);
       }
     }
 
-    return payloadWithoutBlacklistedKeys;
+    return whitelistedPayload;
   }
 }

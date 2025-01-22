@@ -13,6 +13,7 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
     super({
       ...pluginParams,
       method: 'POST' as const,
+      whitelistedInputProperties: ['searchGlobally', 'merchant', 'principals'],
     });
   }
 
@@ -21,7 +22,6 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
 
     if (this.request && 'transformers' in this.request && this.request.transformers) {
       requestPayload = await this.transformData(this.request.transformers, context);
-
       const { isValidRequest, errorMessage } = await this.validateContent(
         this.request.schemaValidator,
         requestPayload,
@@ -29,7 +29,10 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
       );
 
       if (!isValidRequest) {
-        return this.returnErrorResponse(errorMessage!);
+        return this.returnErrorResponse(
+          errorMessage!,
+          this.generateRequestPayloadFromWhitelist(requestPayload),
+        );
       }
     }
 
@@ -103,7 +106,10 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
         );
 
         if (!isValidResponse) {
-          return this.returnErrorResponse(errorMessage!, requestPayload);
+          return this.returnErrorResponse(
+            errorMessage!,
+            this.generateRequestPayloadFromWhitelist(requestPayload),
+          );
         }
 
         if (this.successAction) {
@@ -112,7 +118,7 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
             {
               ...responseBody,
             },
-            requestPayload,
+            this.generateRequestPayloadFromWhitelist(requestPayload),
           );
         }
 
@@ -122,13 +128,16 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
 
         return this.returnErrorResponse(
           'Request Failed: ' + apiResponse.statusText + ' Error: ' + JSON.stringify(errorResponse),
-          requestPayload,
+          this.generateRequestPayloadFromWhitelist(requestPayload),
         );
       }
     } catch (error) {
       logger.error('Error occurred while sending an API request', { error });
 
-      return this.returnErrorResponse(isErrorWithMessage(error) ? error.message : '');
+      return this.returnErrorResponse(
+        isErrorWithMessage(error) ? error.message : '',
+        this.generateRequestPayloadFromWhitelist(requestPayload),
+      );
     }
   }
 }
