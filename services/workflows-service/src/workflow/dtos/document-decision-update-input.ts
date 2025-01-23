@@ -31,6 +31,7 @@ export class DocumentDecisionUpdateInput {
     required: false,
     type: String,
   })
+  @IsOptional()
   @IsString()
   directorId?: string;
 }
