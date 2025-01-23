@@ -88,7 +88,7 @@ export class UnifiedApiClient {
     const formattedPayload = this.formatBusiness(payload);
 
     return await this.axiosInstance.put(
-      `/customers/${payload.project.customer.id}/merchants/${payload.id}`,
+      `/customers/${payload.project.customer.id}/businesses/${payload.id}`,
       formattedPayload,
     );
   }
