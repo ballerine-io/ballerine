@@ -23,32 +23,20 @@ describe('IndividualsSanctionsV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
-          clientId: {
-            type: 'literal',
-            value: 'clientId',
-          },
-          vendor: {
-            type: 'literal',
-            value: 'dow-jones',
-          },
-          ongoingMonitoring: {
-            type: 'literal',
-            value: true,
-          },
-          immediateResults: {
-            type: 'literal',
-            value: true,
-          },
+          clientId: 'clientId',
+          vendor: 'dow-jones',
+          ongoingMonitoring: true,
+          immediateResults: true,
           workflowRuntimeId: {
-            type: 'path',
+            __type: 'path',
             value: 'workflowRuntimeId',
           },
           endUserId: {
-            type: 'path',
+            __type: 'path',
             value: 'entity.data.additionalInfo.mainRepresentative.ballerineEntityId',
           },
           kycInformation: {
-            type: 'path',
+            __type: 'path',
             value: 'childWorkflows.kyc_email_session_example',
           },
         },
@@ -86,32 +74,20 @@ describe('IndividualsSanctionsV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
-          clientId: {
-            type: 'literal',
-            value: 'clientId',
-          },
-          vendor: {
-            type: 'literal',
-            value: 'dow-jones',
-          },
-          ongoingMonitoring: {
-            type: 'literal',
-            value: true,
-          },
-          immediateResults: {
-            type: 'literal',
-            value: true,
-          },
+          clientId: 'clientId',
+          vendor: 'dow-jones',
+          ongoingMonitoring: true,
+          immediateResults: true,
           workflowRuntimeId: {
-            type: 'path',
+            __type: 'path',
             value: 'workflowRuntimeId',
           },
           endUserId: {
-            type: 'path',
+            __type: 'path',
             value: 'entity.data.additionalInfo.mainRepresentative.ballerineEntityId',
           },
           kycInformation: {
-            type: 'path',
+            __type: 'path',
             value: 'childWorkflows.kyc_email_session_example',
           },
         },
@@ -149,32 +125,20 @@ describe('IndividualsSanctionsV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
-          clientId: {
-            type: 'literal',
-            value: 'clientId',
-          },
-          vendor: {
-            type: 'literal',
-            value: 'dow-jones',
-          },
-          ongoingMonitoring: {
-            type: 'literal',
-            value: true,
-          },
-          immediateResults: {
-            type: 'literal',
-            value: true,
-          },
+          clientId: 'clientId',
+          vendor: 'dow-jones',
+          ongoingMonitoring: true,
+          immediateResults: true,
           workflowRuntimeId: {
-            type: 'path',
+            __type: 'path',
             value: 'workflowRuntimeId',
           },
           endUserId: {
-            type: 'path',
+            __type: 'path',
             value: 'entity.data.additionalInfo.mainRepresentative.ballerineEntityId',
           },
           kycInformation: {
-            type: 'path',
+            __type: 'path',
             value: 'childWorkflows.kyc_email_session_example',
           },
         },
@@ -212,32 +176,20 @@ describe('IndividualsSanctionsV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
-          clientId: {
-            type: 'literal',
-            value: 'clientId',
-          },
-          vendor: {
-            type: 'literal',
-            value: 'dow-jones',
-          },
-          ongoingMonitoring: {
-            type: 'literal',
-            value: true,
-          },
-          immediateResults: {
-            type: 'literal',
-            value: true,
-          },
+          clientId: 'clientId',
+          vendor: 'dow-jones',
+          ongoingMonitoring: true,
+          immediateResults: true,
           workflowRuntimeId: {
-            type: 'path',
+            __type: 'path',
             value: 'workflowRuntimeId',
           },
           endUserId: {
-            type: 'path',
+            __type: 'path',
             value: 'entity.data.additionalInfo.mainRepresentative.ballerineEntityId',
           },
           kycInformation: {
-            type: 'path',
+            __type: 'path',
             value: 'childWorkflows.kyc_email_session_example',
           },
         },
@@ -278,32 +230,20 @@ describe('IndividualsSanctionsV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
-          clientId: {
-            type: 'literal',
-            value: 'clientId',
-          },
-          vendor: {
-            type: 'literal',
-            value: 'dow-jones',
-          },
-          ongoingMonitoring: {
-            type: 'literal',
-            value: true,
-          },
-          immediateResults: {
-            type: 'literal',
-            value: true,
-          },
+          clientId: 'clientId',
+          vendor: 'dow-jones',
+          ongoingMonitoring: true,
+          immediateResults: true,
           workflowRuntimeId: {
-            type: 'path',
+            __type: 'path',
             value: 'workflowRuntimeId',
           },
           endUserId: {
-            type: 'path',
+            __type: 'path',
             value: 'entity.data.additionalInfo.mainRepresentative.ballerineEntityId',
           },
           kycInformation: {
-            type: 'path',
+            __type: 'path',
             value: 'childWorkflows.kyc_email_session_example',
           },
         },
@@ -336,15 +276,15 @@ describe('IndividualsSanctionsV2Plugin', () => {
         // @ts-expect-error -- testing invalid payload
         payload: {
           workflowRuntimeId: {
-            type: 'path',
+            __type: 'path',
             value: 'workflowRuntimeId',
           },
           endUserId: {
-            type: 'path',
+            __type: 'path',
             value: 'entity.data.additionalInfo.mainRepresentative.ballerineEntityId',
           },
           kycInformation: {
-            type: 'path',
+            __type: 'path',
             value: 'childWorkflows.kyc_email_session_example',
           },
         },
@@ -411,22 +351,10 @@ describe('IndividualsSanctionsV2Plugin', () => {
         successAction: 'ONGOING_AML_SUCCESS',
         // @ts-expect-error -- testing invalid payload
         payload: {
-          clientId: {
-            type: 'literal',
-            value: 'clientId',
-          },
-          vendor: {
-            type: 'literal',
-            value: 'dow-jones',
-          },
-          ongoingMonitoring: {
-            type: 'literal',
-            value: true,
-          },
-          immediateResults: {
-            type: 'literal',
-            value: false,
-          },
+          clientId: 'clientId',
+          vendor: 'dow-jones',
+          ongoingMonitoring: true,
+          immediateResults: false,
         },
       } satisfies ConstructorParameters<typeof IndividualsSanctionsV2Plugin>[0];
       const plugin = new IndividualsSanctionsV2Plugin(
@@ -505,32 +433,20 @@ describe('IndividualsSanctionsV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
-          clientId: {
-            type: 'literal',
-            value: 'clientId',
-          },
-          vendor: {
-            type: 'literal',
-            value: 'dow-jones',
-          },
-          ongoingMonitoring: {
-            type: 'literal',
-            value: true,
-          },
-          immediateResults: {
-            type: 'literal',
-            value: false,
-          },
+          clientId: 'clientId',
+          vendor: 'dow-jones',
+          ongoingMonitoring: true,
+          immediateResults: false,
           workflowRuntimeId: {
-            type: 'path',
+            __type: 'path',
             value: 'workflowRuntimeId',
           },
           endUserId: {
-            type: 'path',
+            __type: 'path',
             value: 'entity.data.additionalInfo.mainRepresentative.ballerineEntityId',
           },
           kycInformation: {
-            type: 'path',
+            __type: 'path',
             value: 'entity.data.additionalInfo.ubos',
           },
         },
@@ -605,32 +521,20 @@ describe('IndividualsSanctionsV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
-          clientId: {
-            type: 'literal',
-            value: 'clientId',
-          },
-          vendor: {
-            type: 'literal',
-            value: 'dow-jones',
-          },
-          ongoingMonitoring: {
-            type: 'literal',
-            value: true,
-          },
-          immediateResults: {
-            type: 'literal',
-            value: false,
-          },
+          clientId: 'clientId',
+          vendor: 'dow-jones',
+          ongoingMonitoring: true,
+          immediateResults: false,
           workflowRuntimeId: {
-            type: 'path',
+            __type: 'path',
             value: 'workflowRuntimeId',
           },
           endUserId: {
-            type: 'path',
+            __type: 'path',
             value: 'entity.data.additionalInfo.mainRepresentative.ballerineEntityId',
           },
           kycInformation: {
-            type: 'path',
+            __type: 'path',
             value: 'entity.data',
           },
         },
@@ -699,32 +603,20 @@ describe('IndividualsSanctionsV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
-          clientId: {
-            type: 'literal',
-            value: 'clientId',
-          },
-          vendor: {
-            type: 'literal',
-            value: 'dow-jones',
-          },
-          ongoingMonitoring: {
-            type: 'literal',
-            value: true,
-          },
-          immediateResults: {
-            type: 'literal',
-            value: false,
-          },
+          clientId: 'clientId',
+          vendor: 'dow-jones',
+          ongoingMonitoring: true,
+          immediateResults: false,
           workflowRuntimeId: {
-            type: 'path',
+            __type: 'path',
             value: 'workflowRuntimeId',
           },
           endUserId: {
-            type: 'path',
+            __type: 'path',
             value: 'entity.data.additionalInfo.mainRepresentative.ballerineEntityId',
           },
           kycInformation: {
-            type: 'path',
+            __type: 'path',
             value: 'childWorkflows.kyc_email_session_example',
           },
         },
@@ -802,32 +694,20 @@ describe('IndividualsSanctionsV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
-          clientId: {
-            type: 'literal',
-            value: 'clientId',
-          },
-          vendor: {
-            type: 'literal',
-            value: 'dow-jones',
-          },
-          ongoingMonitoring: {
-            type: 'literal',
-            value: true,
-          },
-          immediateResults: {
-            type: 'literal',
-            value: false,
-          },
+          clientId: 'clientId',
+          vendor: 'dow-jones',
+          ongoingMonitoring: true,
+          immediateResults: false,
           workflowRuntimeId: {
-            type: 'path',
+            __type: 'path',
             value: 'workflowRuntimeId',
           },
           endUserId: {
-            type: 'path',
+            __type: 'path',
             value: 'entity.data.additionalInfo.mainRepresentative.ballerineEntityId',
           },
           kycInformation: {
-            type: 'path',
+            __type: 'path',
             value: 'childWorkflows.kyc_email_session_example',
           },
         },
@@ -876,8 +756,9 @@ describe('IndividualsSanctionsV2Plugin', () => {
         // See WorkflowRunner.__invokeApiPlugin for reference.
         callbackAction: 'ONGOING_AML_SUCCESS',
         responseBody: {
+          name: 'sanctionsScreening',
+          error: 'Something went wrong',
           status: ProcessStatus.ERROR,
-          invokedAt: expect.any(Number),
         },
       });
     });
@@ -909,32 +790,20 @@ describe('IndividualsSanctionsV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
-          clientId: {
-            type: 'literal',
-            value: 'clientId',
-          },
-          vendor: {
-            type: 'literal',
-            value: 'dow-jones',
-          },
-          ongoingMonitoring: {
-            type: 'literal',
-            value: true,
-          },
-          immediateResults: {
-            type: 'literal',
-            value: false,
-          },
+          clientId: 'clientId',
+          vendor: 'dow-jones',
+          ongoingMonitoring: true,
+          immediateResults: false,
           workflowRuntimeId: {
-            type: 'path',
+            __type: 'path',
             value: 'workflowRuntimeId',
           },
           endUserId: {
-            type: 'path',
+            __type: 'path',
             value: 'entity.data.additionalInfo.mainRepresentative.ballerineEntityId',
           },
           kycInformation: {
-            type: 'path',
+            __type: 'path',
             value: 'childWorkflows.kyc_email_session_example',
           },
         },
@@ -977,8 +846,9 @@ describe('IndividualsSanctionsV2Plugin', () => {
       expect(invokeResponse).toMatchObject({
         callbackAction: 'ONGOING_AML_SUCCESS',
         responseBody: {
+          name: 'sanctionsScreening',
+          reason: 'NOT_IMPLEMENTED',
           status: ProcessStatus.CANCELED,
-          invokedAt: expect.any(Number),
         },
       });
     });
@@ -996,10 +866,12 @@ describe('IndividualsSanctionsV2Plugin', () => {
           return new Response(
             JSON.stringify({
               data: {},
+              invokedAt: Date.now(),
             }),
           );
         }),
       );
+
       const pluginParams = {
         url: 'http://test.com',
         method: 'POST',
@@ -1010,32 +882,20 @@ describe('IndividualsSanctionsV2Plugin', () => {
         errorAction: 'ONGOING_AML_FAILED',
         successAction: 'ONGOING_AML_SUCCESS',
         payload: {
-          clientId: {
-            type: 'literal',
-            value: 'clientId',
-          },
-          vendor: {
-            type: 'literal',
-            value: 'dow-jones',
-          },
-          ongoingMonitoring: {
-            type: 'literal',
-            value: true,
-          },
-          immediateResults: {
-            type: 'literal',
-            value: false,
-          },
+          clientId: 'clientId',
+          vendor: 'dow-jones',
+          ongoingMonitoring: true,
+          immediateResults: false,
           workflowRuntimeId: {
-            type: 'path',
+            __type: 'path',
             value: 'workflowRuntimeId',
           },
           endUserId: {
-            type: 'path',
+            __type: 'path',
             value: 'entity.data.additionalInfo.mainRepresentative.ballerineEntityId',
           },
           kycInformation: {
-            type: 'path',
+            __type: 'path',
             value: 'childWorkflows.kyc_email_session_example',
           },
         },
@@ -1079,6 +939,7 @@ describe('IndividualsSanctionsV2Plugin', () => {
         callbackAction: 'ONGOING_AML_SUCCESS',
         responseBody: {
           data: {},
+          name: 'sanctionsScreening',
           status: ProcessStatus.IN_PROGRESS,
           invokedAt: expect.any(Number),
         },
