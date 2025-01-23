@@ -100,6 +100,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   data,
   valueId,
   id,
+  directorId,
   documents,
   title,
   workflowId,
@@ -133,6 +134,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     defaultValues,
   });
   const { mutate: mutateUpdateWorkflowById } = useUpdateDocumentByIdMutation({
+    directorId,
     workflowId,
     documentId: valueId,
   });

@@ -4,26 +4,14 @@ export const directorDocumentsAdapter = ({ documents, storageFiles }) => {
   return documents?.map(
     (document, documentIndex) =>
       ({
-        id: document?.id,
-        category: document?.category,
-        type: document?.type,
-        issuer: {
-          country: document?.issuer?.country,
-        },
-        decision: {
-          status: document?.decision?.status,
-        },
-        version: document?.version,
-        properties: document?.properties,
-        propertiesSchema: document?.propertiesSchema,
+        ...document,
         pages: document?.pages?.map(
           (page, pageIndex) =>
             ({
-              type: page?.type,
+              ...page,
+              // EditableDetails updates a document by replacing it, we need document to be complete,
+              // and imageUrl to be omitted in the documents passed to the details cell.
               imageUrl: storageFiles?.[documentIndex]?.[pageIndex],
-              metadata: {
-                side: page?.metadata?.side,
-              },
             } satisfies Parameters<
               typeof createDirectorsBlocks
             >[0]['directors'][number]['documents'][number]['pages'][number]),
