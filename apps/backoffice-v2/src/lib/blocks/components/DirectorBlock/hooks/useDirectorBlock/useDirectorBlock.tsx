@@ -96,6 +96,10 @@ export const useDirectorBlock = ({
 
   const blocks = useMemo(() => {
     const { documents } = director;
+    const documentsWithoutImageUrl = documents.map(document => ({
+      ...document,
+      pages: document?.pages?.map(({ imageUrl: _imageUrl, ...page }) => page),
+    }));
     const isDocumentRevision = documents.some(
       document => document?.decision?.status === 'revision',
     );
@@ -112,6 +116,7 @@ export const useDirectorBlock = ({
         .addCell({
           type: 'details',
           contextUpdateMethod: 'director',
+          directorId: director.id,
           hideSeparator: true,
           value: {
             id: document.id,
@@ -124,7 +129,8 @@ export const useDirectorBlock = ({
               : [],
           },
           workflowId,
-          documents,
+          // Otherwise imageUrl will be saved into the document.
+          documents: documentsWithoutImageUrl,
         })
         .cellAt(0, 0);
 
@@ -326,6 +332,7 @@ export const useDirectorBlock = ({
                     })
                     .addCell({
                       type: 'details',
+                      directorId: director.id,
                       contextUpdateMethod: 'director',
                       value: {
                         id: document.id,
@@ -366,7 +373,8 @@ export const useDirectorBlock = ({
                           },
                         ),
                       },
-                      documents,
+                      // Otherwise imageUrl will be saved into the document.
+                      documents: documentsWithoutImageUrl,
                       workflowId,
                     })
                     .addCell(decisionCell)
