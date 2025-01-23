@@ -300,6 +300,7 @@ export const updateWorkflowDecision = async ({
   documentId: string;
   body: {
     decision: string | null;
+    directorId?: string;
     reason?: string;
     comment?: string;
   };

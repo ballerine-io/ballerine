@@ -13,15 +13,18 @@ export const useRemoveDecisionTaskByIdMutation = (workflowId: string) => {
   return useMutation({
     mutationFn: ({
       documentId,
+      directorId,
       contextUpdateMethod,
     }: {
       documentId: string;
+      directorId?: string;
       contextUpdateMethod: 'base' | 'director';
     }) =>
       updateWorkflowDecision({
         workflowId,
         documentId,
         body: {
+          directorId,
           decision: null,
           reason: null,
         },

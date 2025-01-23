@@ -66,6 +66,7 @@ import {
 import { ArrayMergeOption, deepMergeWithOptions, TContext } from './utils';
 import { hasPersistResponseDestination } from './utils/has-persistence-response-destination';
 import { fetchTransformers, reqResTransformersObj } from './workflow-runner-utils';
+import { invariant } from 'outvariant';
 
 export class WorkflowRunner {
   #__subscriptions: Partial<Record<string, Array<(event: WorkflowEvent) => Promise<void>>>>;
@@ -302,7 +303,7 @@ export class WorkflowRunner {
     _: 'iterative' | 'transformer',
     params: unknown,
     actionPlugins: ActionablePlugins,
-  ): IterativePluginParams | TransformerPluginParams {
+  ): Omit<IterativePluginParams, 'actionPluginName'> | TransformerPluginParams {
     if (TransformerPlugin.isTransformerPluginParams(params)) {
       return {
         name: params.name,
@@ -315,6 +316,12 @@ export class WorkflowRunner {
     const actionPlugin = actionPlugins.find(
       //@ts-ignore
       actionPlugin => actionPlugin.name === params?.actionPluginName,
+    );
+
+    // @ts-expect-error -- params is type unknown, changing it would mean updating multiple places
+    invariant(
+      actionPlugin,
+      `Action plugin with a name of "${params?.actionPluginName}" was not found`,
     );
 
     return {

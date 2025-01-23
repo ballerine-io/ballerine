@@ -26,4 +26,12 @@ export class DocumentDecisionUpdateInput {
   @IsOptional()
   @IsString()
   comment?: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
+  @IsString()
+  directorId?: string;
 }
