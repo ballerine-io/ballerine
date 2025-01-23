@@ -1,7 +1,5 @@
 import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
-
-import { logger } from '../../logger';
-import { IApiPluginParams } from './types';
+import { logger } from '../../../logger';
 import {
   HelpersTransformer,
   TContext,
@@ -9,14 +7,17 @@ import {
   Transformer,
   Transformers,
   Validator,
-} from '../../utils';
+} from '../../../utils';
+import { IApiPluginParams } from '../types';
 
-const invokedAtTransformer: HelpersTransformer = new HelpersTransformer([
-  {
-    source: 'invokedAt',
-    target: 'invokedAt',
-    method: 'setTimeToRecordUTC',
-  },
+export const invokedAtTransformerDefinition = {
+  source: 'invokedAt',
+  target: 'invokedAt',
+  method: 'setTimeToRecordUTC',
+};
+
+export const invokedAtTransformer: HelpersTransformer = new HelpersTransformer([
+  invokedAtTransformerDefinition,
 ] as THelperFormatingLogic);
 
 export class ApiPlugin {
@@ -36,6 +37,8 @@ export class ApiPlugin {
   displayName: string | undefined;
   secretsManager: IApiPluginParams['secretsManager'];
   memoizedSecrets: Record<string, string> | undefined;
+  whitelistedInputProperties: string[] | undefined;
+  includeInvokedAt: boolean;
 
   constructor(pluginParams: IApiPluginParams) {
     this.name = pluginParams.name;
@@ -55,14 +58,18 @@ export class ApiPlugin {
     this.secretsManager = pluginParams.secretsManager;
 
     this.displayName = pluginParams.displayName;
+    this.whitelistedInputProperties = pluginParams.whitelistedInputProperties;
+    this.includeInvokedAt = pluginParams.includeInvokedAt ?? true;
   }
 
   async invoke(context: TContext, additionalContext?: AnyRecord) {
     let requestPayload;
+    let outputRequestPayload;
 
     try {
       if (this.request && 'transformers' in this.request) {
         requestPayload = await this.transformData(this.request.transformers, context);
+        outputRequestPayload = this.generateRequestPayloadFromWhitelist(requestPayload);
 
         const { isValidRequest, errorMessage } = await this.validateContent(
           this.request.schemaValidator,
@@ -71,7 +78,7 @@ export class ApiPlugin {
         );
 
         if (!isValidRequest) {
-          return this.returnErrorResponse(errorMessage!);
+          return this.returnErrorResponse(errorMessage!, outputRequestPayload);
         }
       }
 
@@ -103,7 +110,9 @@ export class ApiPlugin {
       if (apiResponse.ok) {
         const result = await apiResponse.json();
 
-        const responseTransformers = [...(this.response?.transformers || []), invokedAtTransformer];
+        const responseTransformers = this.includeInvokedAt
+          ? [...(this.response?.transformers || []), invokedAtTransformer]
+          : this.response?.transformers || [];
 
         const responseBody = await this.transformData(responseTransformers, result as AnyRecord);
 
@@ -114,13 +123,17 @@ export class ApiPlugin {
         );
 
         if (!isValidResponse) {
-          return this.returnErrorResponse(errorMessage!);
+          return this.returnErrorResponse(errorMessage!, outputRequestPayload);
         }
 
         if (this.successAction) {
-          return this.returnSuccessResponse(this.successAction, {
-            ...responseBody,
-          });
+          return this.returnSuccessResponse(
+            this.successAction,
+            {
+              ...responseBody,
+            },
+            outputRequestPayload,
+          );
         }
 
         return {};
@@ -129,10 +142,14 @@ export class ApiPlugin {
 
         return this.returnErrorResponse(
           'Request Failed: ' + apiResponse.statusText + ' Error: ' + JSON.stringify(errorResponse),
+          outputRequestPayload,
         );
       }
     } catch (error) {
-      return this.returnErrorResponse(isErrorWithMessage(error) ? error.message : '');
+      return this.returnErrorResponse(
+        isErrorWithMessage(error) ? error.message : '',
+        outputRequestPayload,
+      );
     }
   }
 
@@ -163,12 +180,16 @@ export class ApiPlugin {
     return await this.replaceAllVariables(_url, context);
   }
 
-  returnSuccessResponse(callbackAction: string, responseBody: AnyRecord) {
-    return { callbackAction, responseBody };
+  returnSuccessResponse(
+    callbackAction: string,
+    responseBody: AnyRecord,
+    requestPayload?: AnyRecord,
+  ) {
+    return { callbackAction, responseBody, requestPayload };
   }
 
-  returnErrorResponse(errorMessage: string) {
-    return { callbackAction: this.errorAction, error: errorMessage };
+  returnErrorResponse(errorMessage: string, requestPayload?: AnyRecord) {
+    return { callbackAction: this.errorAction, error: errorMessage, requestPayload };
   }
 
   async makeApiRequest(
@@ -411,5 +432,24 @@ export class ApiPlugin {
         return undefined;
       }
     }, record as unknown);
+  }
+
+  generateRequestPayloadFromWhitelist(payload: AnyRecord = {}) {
+    if (!this.whitelistedInputProperties) return payload;
+
+    const whitelistedPayload: AnyRecord = {};
+
+    for (const key of this.whitelistedInputProperties) {
+      const value = payload[key];
+      whitelistedPayload[key] = value;
+
+      if (value) continue;
+
+      if (typeof value === 'object' && !Array.isArray(value)) {
+        whitelistedPayload[key] = this.generateRequestPayloadFromWhitelist(value as AnyRecord);
+      }
+    }
+
+    return whitelistedPayload;
   }
 }

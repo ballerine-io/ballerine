@@ -4,8 +4,8 @@ import { search } from 'jmespath';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
-import { pluginsRegistry } from './constants';
 import { BUILT_IN_ACTION } from './built-in-action';
+import { pluginsRegistry } from './constants';
 import { HttpError } from './errors';
 import { BUILT_IN_EVENT } from './index';
 import { logger } from './logger';
@@ -779,7 +779,7 @@ export class WorkflowRunner {
 
   private async __invokeApiPlugin(apiPlugin: HttpPlugin, additionalContext?: AnyRecord) {
     // @ts-expect-error - multiple types of plugins return different responses
-    const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(
+    const { callbackAction, responseBody, requestPayload, error } = await apiPlugin.invoke?.(
       {
         ...this.context,
         workflowRuntimeConfig: this.#__config,
@@ -811,6 +811,12 @@ export class WorkflowRunner {
         responseBody,
         apiPlugin.persistResponseDestination,
       );
+
+      this.context = this.mergeToContext(
+        this.context,
+        { requestPayload, status: ProcessStatus.SUCCESS },
+        `pluginsInput.${apiPlugin.name}`,
+      );
     }
 
     if (!apiPlugin.persistResponseDestination && responseBody) {
@@ -819,6 +825,12 @@ export class WorkflowRunner {
         responseBody,
         `pluginsOutput.${apiPlugin.name}`,
       );
+
+      this.context = this.mergeToContext(
+        this.context,
+        { requestPayload, status: ProcessStatus.SUCCESS },
+        `pluginsInput.${apiPlugin.name}`,
+      );
     }
 
     if (error) {
@@ -826,6 +838,12 @@ export class WorkflowRunner {
         this.context,
         { name: apiPlugin.name, error, status: ProcessStatus.ERROR },
         `pluginsOutput.${apiPlugin.name}`,
+      );
+
+      this.context = this.mergeToContext(
+        this.context,
+        { requestPayload, error, status: ProcessStatus.ERROR },
+        `pluginsInput.${apiPlugin.name}`,
       );
     }
 

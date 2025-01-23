@@ -133,6 +133,17 @@ export const BaseWorkflowByIdSchema = z.object({
       })
       .passthrough()
       .optional(),
+    pluginsInput: z
+      .object({
+        merchantScreening: z
+          .object({
+            requestPayload: z.record(z.string(), z.unknown()).optional(),
+          })
+          .passthrough()
+          .optional(),
+      })
+      .passthrough()
+      .optional(),
     metadata: z
       .object({
         collectionFlowUrl: z.string().url().optional(),

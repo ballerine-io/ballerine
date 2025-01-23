@@ -189,6 +189,7 @@ export const useDirectorBlock = ({
                   revisionReasons: getRevisionReasonsForDocument(document, revisionReasons),
                   disabled: (!isDoneWithRevision && Boolean(document.decision?.status)) || noAction,
                   decision: 'reject',
+                  directorId: director.id,
                   id: document.id,
                   contextUpdateMethod: 'director',
                   workflow,

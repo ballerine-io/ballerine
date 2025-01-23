@@ -1,13 +1,14 @@
+import { ProcessStatus, UnifiedApiReason } from '@ballerine/common';
+import nock from 'nock';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { IndividualsSanctionsV2Plugin } from './individuals-sanctions-v2-plugin';
-import nock from 'nock';
-import { ProcessStatus, UnifiedApiReason } from '@ballerine/common';
 
 describe('IndividualsSanctionsV2Plugin', () => {
   beforeEach(() => {
     nock.disableNetConnect();
     vi.unstubAllEnvs();
     vi.unstubAllGlobals();
+    vi.clearAllMocks();
   });
 
   describe('when a JMESPath request transformer is passed', () => {
