@@ -1,6 +1,5 @@
 import { AnyArray, TypesafeOmit } from '../../../../common/types';
 import { TDocument } from '@ballerine/common';
-import { TWorkflowById } from '../../../../domains/workflows/fetchers';
 import { toTitleCase } from 'string-ts';
 import { TDropdownOption } from '@/lib/blocks/components/EditableDetails/types';
 
@@ -67,8 +66,8 @@ export const isExistingSchemaForDocument = (documentsSchemas: TDocument[]) => {
   return documentsSchemas?.length > 0;
 };
 
-export const extractCountryCodeFromWorkflow = (workflow: TWorkflowById) => {
-  return workflow?.context?.documents?.find(document => {
+export const extractCountryCodeFromDocuments = (documents: TDocument[]) => {
+  return documents?.find(document => {
     return !!document?.issuer?.country;
   })?.issuer?.country;
 };

@@ -4,13 +4,17 @@
 
 ### Patch Changes
 
-- @ballerine/workflow-browser-sdk@0.6.89
+- Updated dependencies
+  - @ballerine/common@0.9.70
+  - @ballerine/workflow-browser-sdk@0.6.89
 
 ## 0.3.87
 
 ### Patch Changes
 
-- @ballerine/workflow-browser-sdk@0.6.88
+- Updated dependencies
+  - @ballerine/common@0.9.69
+  - @ballerine/workflow-browser-sdk@0.6.88
 
 ## 0.3.86
 

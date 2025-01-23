@@ -4,13 +4,17 @@
 
 ### Patch Changes
 
-- Updated workflow-core
+- updated packages
+- Updated dependencies
+  - @ballerine/common@0.9.70
 
 ## 0.6.88
 
 ### Patch Changes
 
-- Added pluginsInput with requestPayload per plugins & invokedAt now disablable
+- updated common and core
+- Updated dependencies
+  - @ballerine/common@0.9.69
 
 ## 0.6.87
 

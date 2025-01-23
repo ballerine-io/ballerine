@@ -21,7 +21,6 @@ import { useBankingDetailsBlock } from '@/lib/blocks/hooks/useBankingDetailsBloc
 import { useCaseInfoBlock } from '@/lib/blocks/hooks/useCaseInfoBlock/useCaseInfoBlock';
 import { useCaseOverviewBlock } from '@/lib/blocks/hooks/useCaseOverviewBlock/useCaseOverviewBlock';
 import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctionsBlock/useCompanySanctionsBlock';
-import { useDirectorsBlocks } from '@/lib/blocks/hooks/useDirectorsBlocks';
 import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
 import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
@@ -48,16 +47,18 @@ import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/
 import { getAddressDeep } from '@/pages/Entity/hooks/useEntityLogic/utils/get-address-deep/get-address-deep';
 import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 import { Send } from 'lucide-react';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-
-const registryInfoWhitelist = ['open_corporates'] as const;
-
 import { useManageUbosBlock } from '@/lib/blocks/hooks/useManageUbosBlock/useManageUbosBlock';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { Button } from '@ballerine/ui';
-import { useCallback } from 'react';
 import { toast } from 'sonner';
+import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
+import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
+import { directorAdapter } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/helpers';
+import { createDirectorsBlocks } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/create-directors-blocks';
+
+const registryInfoWhitelist = ['open_corporates'] as const;
 
 export const useDefaultBlocksLogic = () => {
   const [{ activeTab }] = useSearchParamsByEntity();
@@ -96,31 +97,7 @@ export const useDefaultBlocksLogic = () => {
       },
     [mutateRevisionTaskById],
   );
-  const onReuploadNeededDirectors = useCallback(
-    ({
-        workflowId,
-        documentId,
-        reason,
-      }: Pick<
-        Parameters<typeof mutateRevisionTaskById>[0],
-        'workflowId' | 'documentId' | 'reason'
-      >) =>
-      () => {
-        if (!documentId) {
-          toast.error('Invalid task id');
 
-          return;
-        }
-
-        mutateRevisionTaskById({
-          workflowId,
-          documentId,
-          reason,
-          contextUpdateMethod: 'director',
-        });
-      },
-    [mutateRevisionTaskById],
-  );
   const {
     store,
     bank: bankDetails,
@@ -346,12 +323,69 @@ export const useDefaultBlocksLogic = () => {
 
   const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
 
-  const directorsDocumentsBlocks = useDirectorsBlocks({
+  const { mutate: mutateRemoveDecisionTaskById } = useRemoveDecisionTaskByIdMutation(workflow?.id);
+  const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
+    useApproveTaskByIdMutation(workflow?.id);
+
+  const onMutateRevisionTaskByIdDirectors = useCallback(
+    ({
+        workflowId,
+        directorId,
+        documentId,
+        reason,
+      }: Pick<
+        Parameters<typeof mutateRevisionTaskById>[0],
+        'workflowId' | 'directorId' | 'documentId' | 'reason'
+      >) =>
+      () => {
+        if (!documentId) {
+          toast.error('Invalid task id');
+
+          return;
+        }
+
+        mutateRevisionTaskById({
+          workflowId,
+          directorId,
+          documentId,
+          reason,
+          contextUpdateMethod: 'director',
+        });
+      },
+    [mutateRevisionTaskById],
+  );
+
+  const onMutateApproveTaskByIdDirectors = useCallback(
+    ({ directorId, documentId }: { directorId: string; documentId: string }) =>
+      mutateApproveTaskById({ directorId, documentId, contextUpdateMethod: 'director' }),
+    [mutateApproveTaskById],
+  );
+  const onMutateRemoveDecisionTaskByIdDirectors = useCallback(
+    ({ directorId, documentId }: { directorId: string; documentId: string }) =>
+      mutateRemoveDecisionTaskById({ directorId, documentId, contextUpdateMethod: 'director' }),
+    [mutateRemoveDecisionTaskById],
+  );
+
+  const directors = workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
+    directorAdapter(directorsDocumentPagesResults),
+  );
+  const revisionReasons =
+    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+      ({ enum: enum_ }) => !!enum_,
+    )?.enum ?? [];
+  const directorsDocumentsBlocks = createDirectorsBlocks({
+    workflowId: workflow?.id ?? '',
+    onReuploadNeeded: onMutateRevisionTaskByIdDirectors,
+    onRemoveDecision: onMutateRemoveDecisionTaskByIdDirectors,
+    onApprove: onMutateApproveTaskByIdDirectors,
+    directors,
+    tags: workflow?.tags ?? [],
+    revisionReasons,
+    isEditable: caseState.writeEnabled,
+    isApproveDisabled: isLoadingApproveTaskById,
+    isLoadingDocuments: directorsStorageFilesQueryResult?.some(file => file?.isLoading),
+    // Remove once callToActionLegacy is removed
     workflow,
-    documentFiles: directorsStorageFilesQueryResult,
-    documentImages: directorsDocumentPagesResults,
-    onReuploadNeeded: onReuploadNeededDirectors,
-    isLoadingReuploadNeeded,
   });
 
   const directorsRegistryProvidedBlock =

@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@ballerine/blocks": "0.2.34",
-    "@ballerine/common": "^0.9.68",
+    "@ballerine/common": "^0.9.70",
     "@ballerine/workflow-browser-sdk": "0.6.89",
     "@ballerine/ui": "0.5.67",
     "@lukemorales/query-key-factory": "^1.0.3",
