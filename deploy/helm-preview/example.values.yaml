@@ -209,20 +209,6 @@ workflowService:
   nameOverride: workflowservice
   migration: true
   additionalInitContainers: []
-  # - name: workflowservice-reset-db
-  #   image: ghcr.io/ballerine-io/workflows-service-ee:bal-298
-  #   command:
-  #   - dumb-init
-  #   - npm
-  #   - run
-  #   - db:reset:dev
-  #   envFrom:
-  #   - secretRef:
-  #       name: wf-bal-298-secret-manager
-  #   imagePullPolicy: Always
-  #   resources: {}
-  #   terminationMessagePath: /dev/termination-log
-  #   terminationMessagePolicy: File
   prismaMigrate:
     envFrom: []
     enabled: false
