@@ -13,15 +13,20 @@ export const convertFormElementsToValidationSchema = (
     const element = filteredElements[i]!;
 
     if (element.valueDestination) {
-      schema.push({
+      const schemaElement = {
         id: element.id,
         valueDestination: element.valueDestination,
-        validators: element.validate || [],
-      });
+      } as IValidationSchema;
+
+      if (element.validate) {
+        schemaElement.validators = element.validate;
+      }
 
       if (element.children?.length) {
-        schema[i]!.children = convertFormElementsToValidationSchema(element.children || []);
+        schemaElement.children = convertFormElementsToValidationSchema(element.children || []);
       }
+
+      schema.push(schemaElement);
     } else {
       convertFormElementsToValidationSchema(element.children || [], schema);
     }

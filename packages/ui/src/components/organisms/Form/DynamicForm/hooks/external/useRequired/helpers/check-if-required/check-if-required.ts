@@ -1,7 +1,13 @@
 import { executeRules } from '@/components/organisms/Form/hooks/useRuleEngine/utils/execute-rules';
+import { TDeepthLevelStack } from '@/components/organisms/Form/Validator';
 import { IFormElement } from '../../../../../types';
+import { replaceTagsWithIndexesInRule } from '../../../useRules';
 
-export const checkIfRequired = (element: IFormElement, context: object) => {
+export const checkIfRequired = (
+  element: IFormElement,
+  context: object,
+  stack: TDeepthLevelStack,
+) => {
   const { validate = [] } = element;
 
   const requiredLikeValidators = validate.filter(
@@ -12,7 +18,9 @@ export const checkIfRequired = (element: IFormElement, context: object) => {
     ? requiredLikeValidators.some(validator => {
         const { applyWhen } = validator;
         const shouldValidate = applyWhen
-          ? executeRules(context, [applyWhen]).every(result => result.result)
+          ? executeRules(context, [...replaceTagsWithIndexesInRule([applyWhen], stack)]).every(
+              result => result.result,
+            )
           : true;
 
         if (!shouldValidate) return false;

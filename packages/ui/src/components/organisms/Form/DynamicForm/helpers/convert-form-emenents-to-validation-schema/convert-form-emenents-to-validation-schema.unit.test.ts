@@ -141,7 +141,60 @@ describe('convertFormElementsToValidationSchema', () => {
     ] as const,
   ] as const;
 
-  const cases = [case1, case2, case3];
+  const case4 = [
+    [
+      {
+        id: 'container',
+        children: [
+          {
+            id: 'container-2',
+            children: [
+              {
+                id: 'fieldlist',
+                element: 'fieldlist',
+                valueDestination: 'test',
+                children: [
+                  {
+                    id: 'textinput',
+                    element: 'textinput',
+                    valueDestination: 'test[$0]',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: 'container-4',
+            children: [
+              {
+                id: 'testfield-2',
+                element: 'textinput',
+                valueDestination: 'test',
+              },
+            ],
+          },
+        ],
+      },
+    ] as IFormElement[],
+    [
+      {
+        id: 'fieldlist',
+        valueDestination: 'test',
+        children: [
+          {
+            id: 'textinput',
+            valueDestination: 'test[$0]',
+          },
+        ],
+      },
+      {
+        id: 'testfield-2',
+        valueDestination: 'test',
+      },
+    ] as const,
+  ] as const;
+
+  const cases = [case1, case2, case3, case4];
 
   test.each(cases)('should convert form elements to validation schema', (schema, output) => {
     const validationSchema = convertFormElementsToValidationSchema(schema);

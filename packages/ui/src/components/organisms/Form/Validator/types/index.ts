@@ -52,4 +52,4 @@ export type TValidator<
   TValidatorType extends string = TBaseValidators,
 > = (value: T, validator: ICommonValidator<TValidatorParams, TValidatorType>) => void;
 
-export type TDeepthLevelStack = number[];
+export type TDeepthLevelStack = number[] | undefined;

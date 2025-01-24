@@ -15,7 +15,6 @@ export interface ISubmitButtonParams {
 }
 
 export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({ element }) => {
-  console.log('SubmitButton');
   const { stack } = useStack();
   const { id } = useElement(element, stack);
   const { disabled: _disabled, onClick } = useControl(element, stack);

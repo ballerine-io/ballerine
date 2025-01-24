@@ -18,7 +18,7 @@ describe('checkIfRequired', () => {
       validate: [],
     };
 
-    const result = checkIfRequired(element, {});
+    const result = checkIfRequired(element, {}, []);
 
     expect(result).toBe(false);
   });
@@ -37,7 +37,7 @@ describe('checkIfRequired', () => {
       ],
     };
 
-    const result = checkIfRequired(element, {});
+    const result = checkIfRequired(element, {}, []);
 
     expect(result).toBe(false);
   });
@@ -56,7 +56,7 @@ describe('checkIfRequired', () => {
       ],
     };
 
-    const result = checkIfRequired(element, {});
+    const result = checkIfRequired(element, {}, []);
 
     expect(result).toBe(true);
   });
@@ -76,7 +76,7 @@ describe('checkIfRequired', () => {
       ] as unknown as IFormElement['validate'],
     };
 
-    const result = checkIfRequired(element, {});
+    const result = checkIfRequired(element, {}, []);
 
     expect(result).toBe(true);
   });
@@ -100,10 +100,11 @@ describe('checkIfRequired', () => {
     };
 
     const context = { someField: true };
+    const stack = [1, 2];
 
     mockedExecuteRules.mockReturnValue([{ result: true }] as IRuleExecutionResult[]);
 
-    const result = checkIfRequired(element, context);
+    const result = checkIfRequired(element, context, stack);
 
     expect(result).toBe(true);
     expect(mockedExecuteRules).toHaveBeenCalledWith(context, [
@@ -133,10 +134,11 @@ describe('checkIfRequired', () => {
     };
 
     const context = { someField: false };
+    const stack = [1, 2];
 
     mockedExecuteRules.mockReturnValue([{ result: false, rule: {} }] as IRuleExecutionResult[]);
 
-    const result = checkIfRequired(element, context);
+    const result = checkIfRequired(element, context, stack);
 
     expect(result).toBe(false);
     expect(mockedExecuteRules).toHaveBeenCalledWith(context, [
