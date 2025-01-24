@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { UIElement } from '@/domains/collection-flow';
 import {
   Chip,

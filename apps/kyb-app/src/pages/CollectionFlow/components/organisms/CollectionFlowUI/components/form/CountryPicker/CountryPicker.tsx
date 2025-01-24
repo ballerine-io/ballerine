@@ -18,8 +18,8 @@ export const CountryPickerField: TDynamicFormField<ISelectFieldParams> = ({ elem
       params: {
         ...element.params,
         options: getCountries(language).map(country => ({
-          value: country.const,
-          label: country.title,
+          value: country.const as string,
+          label: country.title as string,
         })),
       },
     };
