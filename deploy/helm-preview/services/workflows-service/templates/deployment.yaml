@@ -49,6 +49,9 @@ spec:
               {{- toYaml . | nindent 14 }}
               {{- end }}
             {{- end }}
+            {{- with .Values.workflowService.additionalInitContainers }}
+              {{- toYaml . | nindent 12}}
+            {{- end }}
             {{- if .Values.workflowService.prismaMigrate.enabled }}
             initContainers:
               - name: wait-for-migration
