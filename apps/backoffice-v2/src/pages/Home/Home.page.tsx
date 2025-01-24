@@ -53,7 +53,6 @@ export const Home: FunctionComponent = () => {
         {/*    </TabsTrigger>*/}
         {/*  </TabsList>*/}
         {/*  <TabsContent value={defaultTabValue}>*/}
-        {/*    <Outlet />*/}
         {/*  </TabsContent>*/}
         {/*</Tabs>*/}
         {(isDemo || isExample) && <Outlet />}

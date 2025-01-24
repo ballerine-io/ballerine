@@ -4,8 +4,8 @@ import { search } from 'jmespath';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
-import { pluginsRegistry } from './constants';
 import { BUILT_IN_ACTION } from './built-in-action';
+import { pluginsRegistry } from './constants';
 import { HttpError } from './errors';
 import { BUILT_IN_EVENT } from './index';
 import { logger } from './logger';
@@ -29,7 +29,7 @@ import {
 import { WorkflowTokenPlugin } from './plugins/common-plugin/workflow-token-plugin';
 import { ApiPlugin } from './plugins/external-plugin/api-plugin';
 import { BallerineEmailPlugin } from './plugins/external-plugin/ballerine-email-plugin';
-import { BallerineApiPlugin } from './plugins/external-plugin/ballerine-plugin';
+import { BallerineApiPlugin } from './plugins/external-plugin/ballerine-api-plugin';
 import { DispatchEventPlugin } from './plugins/external-plugin/dispatch-event-plugin';
 import { KycPlugin } from './plugins/external-plugin/kyc-plugin';
 import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
@@ -66,6 +66,7 @@ import {
 import { ArrayMergeOption, deepMergeWithOptions, TContext } from './utils';
 import { hasPersistResponseDestination } from './utils/has-persistence-response-destination';
 import { fetchTransformers, reqResTransformersObj } from './workflow-runner-utils';
+import { invariant } from 'outvariant';
 
 export class WorkflowRunner {
   #__subscriptions: Partial<Record<string, Array<(event: WorkflowEvent) => Promise<void>>>>;
@@ -302,7 +303,7 @@ export class WorkflowRunner {
     _: 'iterative' | 'transformer',
     params: unknown,
     actionPlugins: ActionablePlugins,
-  ): IterativePluginParams | TransformerPluginParams {
+  ): Omit<IterativePluginParams, 'actionPluginName'> | TransformerPluginParams {
     if (TransformerPlugin.isTransformerPluginParams(params)) {
       return {
         name: params.name,
@@ -315,6 +316,12 @@ export class WorkflowRunner {
     const actionPlugin = actionPlugins.find(
       //@ts-ignore
       actionPlugin => actionPlugin.name === params?.actionPluginName,
+    );
+
+    // @ts-expect-error -- params is type unknown, changing it would mean updating multiple places
+    invariant(
+      actionPlugin,
+      `Action plugin with a name of "${params?.actionPluginName}" was not found`,
     );
 
     return {
@@ -772,7 +779,7 @@ export class WorkflowRunner {
 
   private async __invokeApiPlugin(apiPlugin: HttpPlugin, additionalContext?: AnyRecord) {
     // @ts-expect-error - multiple types of plugins return different responses
-    const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(
+    const { callbackAction, responseBody, requestPayload, error } = await apiPlugin.invoke?.(
       {
         ...this.context,
         workflowRuntimeConfig: this.#__config,
@@ -804,6 +811,12 @@ export class WorkflowRunner {
         responseBody,
         apiPlugin.persistResponseDestination,
       );
+
+      this.context = this.mergeToContext(
+        this.context,
+        { requestPayload, status: ProcessStatus.SUCCESS },
+        `pluginsInput.${apiPlugin.name}`,
+      );
     }
 
     if (!apiPlugin.persistResponseDestination && responseBody) {
@@ -812,6 +825,12 @@ export class WorkflowRunner {
         responseBody,
         `pluginsOutput.${apiPlugin.name}`,
       );
+
+      this.context = this.mergeToContext(
+        this.context,
+        { requestPayload, status: ProcessStatus.SUCCESS },
+        `pluginsInput.${apiPlugin.name}`,
+      );
     }
 
     if (error) {
@@ -819,6 +838,12 @@ export class WorkflowRunner {
         this.context,
         { name: apiPlugin.name, error, status: ProcessStatus.ERROR },
         `pluginsOutput.${apiPlugin.name}`,
+      );
+
+      this.context = this.mergeToContext(
+        this.context,
+        { requestPayload, error, status: ProcessStatus.ERROR },
+        `pluginsInput.${apiPlugin.name}`,
       );
     }
 

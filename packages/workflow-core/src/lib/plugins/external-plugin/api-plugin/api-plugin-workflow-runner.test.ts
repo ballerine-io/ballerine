@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest';
-import { WorkflowRunner } from '../../workflow-runner';
-import { WorkflowRunnerArgs } from '../../types';
-import { ISerializableHttpPluginParams } from './types';
 import { ProcessStatus } from '@ballerine/common';
+import { describe, expect, it } from 'vitest';
+import { WorkflowRunnerArgs } from '../../../types';
+import { WorkflowRunner } from '../../../workflow-runner';
+import { ISerializableHttpPluginParams } from '../types';
 
 const createWorkflowRunner = (
   definition: WorkflowRunnerArgs['definition'],
@@ -82,6 +82,7 @@ describe('workflow-runner', () => {
           ).pluginsOutput,
         ).toEqual({
           ballerineEnrichment: {
+            invokedAt: expect.any(Number),
             result: {
               companyInfo: {
                 companyName: 'TestCorp Ltd',

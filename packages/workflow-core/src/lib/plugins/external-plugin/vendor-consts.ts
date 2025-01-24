@@ -295,16 +295,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               "merge({ name: 'businessInformation', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || jurisdictionCode == 'HK' && 'IN_PROGRESS' || 'SUCCESS' }, @)",
             transformer: 'jmespath',
           },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
-          },
         ],
       },
     }),
@@ -344,16 +334,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               "merge({ name: 'businessInformation', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || jurisdictionCode == 'HK' && 'IN_PROGRESS' || 'SUCCESS' }, @)",
             transformer: 'jmespath',
           },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
-          },
         ],
       },
     }),
@@ -388,16 +368,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             mapping:
               "merge({ name: 'businessInformation', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || jurisdictionCode == 'HK' && 'IN_PROGRESS' || 'SUCCESS' }, @)",
             transformer: 'jmespath',
-          },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
           },
         ],
       },
@@ -436,16 +406,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               "merge({ name: 'sanctionsScreening', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
             transformer: 'jmespath',
           },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
-          },
         ],
       } as SerializableValidatableTransformer,
     }),
@@ -477,16 +437,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             mapping:
               "merge({ name: 'sanctions_screening', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
             transformer: 'jmespath',
-          },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
           },
         ],
       } as SerializableValidatableTransformer,
@@ -522,16 +472,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               "merge({ name: 'companySanctions', status: contains(['NOT_IMPLEMENTED', 'NOT_AVAILABLE'], reason) && 'CANCELED' || error != `null` && 'ERROR' || 'SUCCESS'  }, @)",
             transformer: 'jmespath',
           },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
-          },
         ],
       },
     }),
@@ -563,16 +503,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             mapping:
               "merge({ name: 'companySanctions', status: contains(['NOT_IMPLEMENTED', 'NOT_AVAILABLE'], reason) && 'CANCELED' || error != `null` && 'ERROR' || 'SUCCESS'  }, @)",
             transformer: 'jmespath',
-          },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
           },
         ],
       },
@@ -611,16 +541,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               "merge({ name: 'merchantMonitoring', status: contains(['NOT_IMPLEMENTED', 'NOT_AVAILABLE'], reason) && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS'  }, @)",
             transformer: 'jmespath',
           },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
-          },
         ],
       },
     }),
@@ -658,16 +578,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               "merge({ name: 'ubo', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
             transformer: 'jmespath',
           },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
-          },
         ],
       },
     }),
@@ -703,16 +613,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               "merge({ name: 'ubo', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
             transformer: 'jmespath',
           },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
-          },
         ],
       },
     }),
@@ -747,16 +647,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             mapping:
               "merge({ name: 'ubo', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
             transformer: 'jmespath',
-          },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
           },
         ],
       },

@@ -1,9 +1,13 @@
+import { buttonVariants, WarningFilledSvg } from '@ballerine/ui';
 import { FunctionComponent } from 'react';
-import { Card } from '@/common/components/atoms/Card/Card';
-import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
-import { CardContent } from '@/common/components/atoms/Card/Card.Content';
+import { Link } from 'react-router-dom';
 import { Cell, Pie, PieChart } from 'recharts';
-import { ctw } from '@/common/utils/ctw/ctw';
+import { titleCase } from 'string-ts';
+import { z } from 'zod';
+
+import { Card } from '@/common/components/atoms/Card/Card';
+import { CardContent } from '@/common/components/atoms/Card/Card.Content';
+import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import {
   Table,
   TableBody,
@@ -12,16 +16,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/common/components/atoms/Table';
-import { titleCase } from 'string-ts';
-import { usePortfolioRiskStatisticsLogic } from '@/pages/Statistics/components/PortfolioRiskStatistics/hooks/usePortfolioRiskStatisticsLogic/usePortfolioRiskStatisticsLogic';
-import { z } from 'zod';
+import { ctw } from '@/common/utils/ctw/ctw';
 import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
-import { Link } from 'react-router-dom';
-import { buttonVariants, WarningFilledSvg } from '@ballerine/ui';
+import { usePortfolioRiskStatisticsLogic } from '@/pages/Statistics/components/PortfolioRiskStatistics/hooks/usePortfolioRiskStatisticsLogic/usePortfolioRiskStatisticsLogic';
 
 export const PortfolioRiskStatistics: FunctionComponent<
-  Pick<z.infer<typeof MetricsResponseSchema>, 'riskLevelCounts' | 'violationCounts'>
-> = ({ riskLevelCounts, violationCounts }) => {
+  Pick<z.infer<typeof MetricsResponseSchema>, 'riskLevelCounts' | 'violationCounts'> & {
+    userSelectedDate: Date;
+  }
+> = ({ riskLevelCounts, violationCounts, userSelectedDate }) => {
   const {
     riskLevelToFillColor,
     parent,
@@ -30,10 +33,11 @@ export const PortfolioRiskStatistics: FunctionComponent<
     filteredRiskIndicators,
     locale,
     navigate,
+    alertedReports,
     from,
     to,
-    alertedReports,
   } = usePortfolioRiskStatisticsLogic({
+    userSelectedDate,
     violationCounts,
   });
 
@@ -84,7 +88,9 @@ export const PortfolioRiskStatistics: FunctionComponent<
                           'cursor-pointer outline-none',
                         )}
                         onClick={() =>
-                          navigate(`/${locale}/merchant-monitoring?riskLevels[0]=${riskLevel}`)
+                          navigate(
+                            `/${locale}/merchant-monitoring?riskLevels[0]=${riskLevel}&from=${from}&to=${to}`,
+                          )
                         }
                       />
                     ))}
@@ -135,7 +141,7 @@ export const PortfolioRiskStatistics: FunctionComponent<
                     <TableRow key={name} className={'border-b-0 hover:bg-[unset]'}>
                       <TableCell className={ctw('pb-0 ps-0', index !== 0 && 'pt-2')}>
                         <Link
-                          to={`/${locale}/merchant-monitoring?findings[0]=${id}`}
+                          to={`/${locale}/merchant-monitoring?findings[0]=${id}&from=${from}&to=${to}`}
                           className={`block h-full cursor-pointer rounded bg-blue-200 p-1 transition-all`}
                           style={{ width: `${widths[index]}%` }}
                         >

@@ -1,11 +1,12 @@
-import { useFiltersQuery } from '@/domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
-import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useCallback, useMemo } from 'react';
 import { Building, Goal, Home, MonitorDot, Users } from 'lucide-react';
-import { TRoutes, TRouteWithChildren } from '@/Router/types';
+import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
+
+import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
+import { useFiltersQuery } from '@/domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
+import { TRoutes, TRouteWithChildren } from '@/Router/types';
 
 export const useNavbarLogic = () => {
   const { data: filters } = useFiltersQuery();

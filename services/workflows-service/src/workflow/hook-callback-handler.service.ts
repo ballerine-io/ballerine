@@ -363,7 +363,11 @@ export class HookCallbackHandlerService {
     // @ts-expect-error - we don't validate `context` is an object
     this.setNestedProperty(context, attributePath, result);
     // @ts-expect-error - we don't validate `context` is an object
-    context.documents = persistedDocuments;
+    context.documents = [
+      // @ts-expect-error - we don't validate `context` is an object
+      ...context.documents,
+      ...persistedDocuments,
+    ];
 
     return context;
   }

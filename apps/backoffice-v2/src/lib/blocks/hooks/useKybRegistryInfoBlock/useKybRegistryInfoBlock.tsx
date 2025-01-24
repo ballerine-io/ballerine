@@ -4,6 +4,11 @@ import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-block
 import { WarningFilledSvg } from '@ballerine/ui';
 
 export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
+  const isBankAccountVerification = useMemo(
+    () => !!pluginsOutput?.bankAccountVerification,
+    [pluginsOutput?.bankAccountVerification],
+  );
+
   const getCell = useCallback(() => {
     if (Object.keys(pluginsOutput?.businessInformation?.data?.[0] ?? {}).length) {
       return {
@@ -20,6 +25,39 @@ export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
         },
         workflowId: workflow?.id,
         documents: workflow?.context?.documents,
+      } satisfies Extract<
+        Parameters<ReturnType<typeof createBlocksTyped>['addCell']>[0],
+        {
+          type: 'details';
+        }
+      >;
+    }
+
+    if (Object.keys(pluginsOutput?.bankAccountVerification?.clientResponsePayload ?? {}).length) {
+      const data = {
+        ...pluginsOutput?.bankAccountVerification?.responseHeader.overallResponse,
+        decisionElements:
+          pluginsOutput?.bankAccountVerification?.clientResponsePayload.decisionElements,
+        orchestrationDecisions:
+          pluginsOutput?.bankAccountVerification?.clientResponsePayload.orchestrationDecisions,
+      };
+
+      return {
+        id: 'nested-details',
+        type: 'details',
+        hideSeparator: true,
+        value: {
+          data: Object.entries(data)
+            ?.filter(([property]) => {
+              console.log(property);
+
+              return !['tenantID', 'clientReferenceId'].includes(property);
+            })
+            .map(([title, value]) => ({
+              title,
+              value,
+            })),
+        },
       } satisfies Extract<
         Parameters<ReturnType<typeof createBlocksTyped>['addCell']>[0],
         {
@@ -94,12 +132,12 @@ export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
           .addCell({
             id: 'nested-details-heading',
             type: 'heading',
-            value: 'Registry Information',
+            value: isBankAccountVerification ? 'Bank Account Verification' : 'Registry Information',
           })
           .addCell({
             id: 'nested-details-subheading',
             type: 'subheading',
-            value: 'Registry-Provided Data',
+            value: `${isBankAccountVerification ? 'Experian' : 'Registry'}-Provided Data`,
             props: {
               className: 'mb-4',
             },

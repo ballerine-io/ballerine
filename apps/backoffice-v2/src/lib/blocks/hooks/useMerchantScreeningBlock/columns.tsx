@@ -1,12 +1,11 @@
-import { createColumnHelper } from '@tanstack/react-table';
 import { Button } from '@/common/components/atoms/Button/Button';
-import { ChevronDown } from 'lucide-react';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { JsonDialog, TextWithNAFallback, WarningFilledSvg } from '@ballerine/ui';
 import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
-import React from 'react';
+import { ctw } from '@/common/utils/ctw/ctw';
 import { IMerchantScreening } from '@/lib/blocks/hooks/useMerchantScreeningBlock/interfaces';
 import { isObject, MatchReasonCode } from '@ballerine/common';
+import { JsonDialog, TextWithNAFallback, WarningFilledSvg } from '@ballerine/ui';
+import { createColumnHelper } from '@tanstack/react-table';
+import { ChevronDown } from 'lucide-react';
 
 const columnHelper = createColumnHelper<IMerchantScreening>();
 
@@ -15,6 +14,7 @@ const summaryColumnHelper = createColumnHelper<{
   numberOfInquiries: number;
   checkDate: string;
   fullJsonData: string;
+  merchantScreeningInput: Record<PropertyKey, unknown>;
 }>();
 
 export const terminatedMatchedMerchantsColumns = [
@@ -123,8 +123,28 @@ export const terminatedMatchedMerchantsSummaryColumns = [
       return <TextWithNAFallback>{checkDate}</TextWithNAFallback>;
     },
   }),
+  summaryColumnHelper.accessor('merchantScreeningInput', {
+    header: 'Checked Properties',
+    cell: info => {
+      const fullJsonData = info.getValue();
+
+      return (
+        <div className={`flex items-end justify-start`}>
+          <JsonDialog
+            buttonProps={{
+              variant: 'link',
+              className: 'p-0 text-blue-500',
+              disabled: !isObject(fullJsonData) && !Array.isArray(fullJsonData),
+            }}
+            dialogButtonText={`View`}
+            json={JSON.stringify(fullJsonData)}
+          />
+        </div>
+      );
+    },
+  }),
   summaryColumnHelper.accessor('fullJsonData', {
-    header: 'Full JSON Data',
+    header: 'Results',
     cell: info => {
       const fullJsonData = info.getValue();
 

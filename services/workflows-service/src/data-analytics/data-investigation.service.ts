@@ -17,6 +17,7 @@ import {
   TransactionsAgainstDynamicRulesType,
 } from './types';
 import type { AlertService } from '@/alert/alert.service';
+import { isEmpty } from 'lodash';
 
 @Injectable()
 export class DataInvestigationService {
@@ -143,7 +144,7 @@ export class DataInvestigationService {
       amountBetween,
       direction,
       transactionType,
-      paymentMethods = [],
+      paymentMethods,
       excludePaymentMethods = false,
       projectId,
       amountThreshold,
@@ -167,18 +168,22 @@ export class DataInvestigationService {
           }
         : {}),
       ...(direction ? { transactionDirection: direction } : {}),
-      ...(transactionType
+      ...(!isEmpty(transactionType)
         ? {
             transactionType: {
               in: transactionType as TransactionRecordType[],
             },
           }
         : {}),
-      paymentMethod: {
-        ...(excludePaymentMethods
-          ? { notIn: paymentMethods as PaymentMethod[] }
-          : { in: paymentMethods as PaymentMethod[] }),
-      },
+      ...(!isEmpty(paymentMethods)
+        ? {
+            paymentMethod: {
+              ...(excludePaymentMethods
+                ? { notIn: paymentMethods as PaymentMethod[] }
+                : { in: paymentMethods as PaymentMethod[] }),
+            },
+          }
+        : {}),
     } as const satisfies Prisma.TransactionRecordWhereInput;
   }
 
@@ -204,7 +209,7 @@ export class DataInvestigationService {
   }
 
   investigateCustomersTransactionType(options: TCustomersTransactionTypeOptions) {
-    const { projectId, transactionType = [], paymentMethods = [] } = options;
+    const { projectId, transactionType, paymentMethods } = options;
 
     return {
       projectId,
@@ -215,9 +220,13 @@ export class DataInvestigationService {
             },
           }
         : {}),
-      transactionType: {
-        in: transactionType as TransactionRecordType[],
-      },
+      ...(!isEmpty(transactionType)
+        ? {
+            transactionType: {
+              in: transactionType as TransactionRecordType[],
+            },
+          }
+        : {}),
     } as const satisfies Prisma.TransactionRecordWhereInput;
   }
 
@@ -269,32 +278,36 @@ export class DataInvestigationService {
       paymentMethods,
       excludePaymentMethods,
 
-      transactionType = [],
+      transactionType,
     } = options;
 
     return {
       projectId,
-      ...(amountThreshold
-        ? {
-            transactionBaseAmount: {
-              gte: amountThreshold,
-            },
-          }
-        : {}),
       ...(direction ? { transactionDirection: direction } : {}),
-      ...(transactionType
+      ...(!isEmpty(transactionType)
         ? {
             transactionType: {
               in: transactionType as TransactionRecordType[],
             },
           }
         : {}),
-      paymentMethod: {
-        ...(excludePaymentMethods
-          ? { notIn: paymentMethods as PaymentMethod[] }
-          : { in: paymentMethods as PaymentMethod[] }),
-      },
-      ...(ruleType === 'amount' ? { transactionBaseAmount: amountThreshold } : {}),
+
+      ...(!isEmpty(paymentMethods)
+        ? {
+            paymentMethod: {
+              ...(excludePaymentMethods
+                ? { notIn: paymentMethods as PaymentMethod[] }
+                : { in: paymentMethods as PaymentMethod[] }),
+            },
+          }
+        : {}),
+      ...(ruleType === 'amount' && amountThreshold
+        ? {
+            transactionBaseAmount: {
+              gte: amountThreshold,
+            },
+          }
+        : {}),
     } as const satisfies Prisma.TransactionRecordWhereInput;
   }
 

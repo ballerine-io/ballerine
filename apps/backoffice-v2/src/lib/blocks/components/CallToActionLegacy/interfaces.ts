@@ -6,6 +6,7 @@ export interface ICallToActionLegacyProps {
     text: string;
     props: {
       id: string;
+      directorId?: string;
       workflow: TWorkflowById;
       disabled: boolean;
       decision: 'reject' | 'approve' | 'revision' | 'revised';
@@ -15,10 +16,12 @@ export interface ICallToActionLegacyProps {
       onReuploadReset?: () => void;
       onReuploadNeeded: ({
         workflowId,
+        directorId,
         documentId,
         reason,
       }: {
         workflowId: string;
+        directorId?: string;
         documentId: string;
         reason?: string;
       }) => () => void;

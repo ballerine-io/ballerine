@@ -1,28 +1,36 @@
-import { Card, CardContent, CardHeader } from '@/components';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/atoms';
-import { BallerineLink } from '@/components/atoms/BallerineLink/BallerineLink';
-import { ctw } from '@/common';
-import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
-import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
 import dayjs from 'dayjs';
-import { InfoIcon, TrendingDown } from 'lucide-react';
+import { InfoIcon, TrendingDown, TrendingUp } from 'lucide-react';
 import { FunctionComponent, useMemo } from 'react';
 import {
+  Area,
+  AreaChart,
   CartesianGrid,
   Cell,
   Legend,
   Pie,
   PieChart,
-  Tooltip as RechartsTooltip,
   ResponsiveContainer,
   XAxis,
   YAxis,
 } from 'recharts';
 import { capitalize } from 'string-ts';
-import { TrendingUp } from 'lucide-react';
-import { Area, AreaChart } from 'recharts';
-import { CardDescription, CardFooter, CardTitle } from '@/components/atoms';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/atoms';
+
+import { ctw } from '@/common';
+import { Card, CardContent, CardHeader } from '@/components';
+import {
+  CardDescription,
+  CardFooter,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/atoms';
+import { BallerineLink } from '@/components/atoms/BallerineLink/BallerineLink';
+import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
+import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
 
 const engagementMetricsMapper = {
   'Time on site': {
@@ -71,16 +79,40 @@ export const WebsiteCredibility: FunctionComponent<{
   const trafficSources = useMemo(() => {
     if (!trafficAnalysis?.trafficSources?.length) return [];
 
-    return trafficAnalysis.trafficSources
-      .map(({ label, value }) => ({ label, value: parseFloat(value) }))
-      .concat({
-        label: 'Other',
-        value:
-          100 -
-          trafficAnalysis.trafficSources.reduce((acc, item) => acc + parseFloat(item.value), 0),
-      })
-      .map(({ label, value }) => ({ label, value: parseFloat(value.toFixed(2)) }));
+    const values = trafficAnalysis.trafficSources.map(({ label, value }) => ({
+      label,
+      value: parseFloat(value),
+    }));
+
+    const remainder = 100 - values.reduce((acc, item) => acc + item.value, 0);
+
+    const existingOtherIdx = values.findIndex(({ label }) => label === 'other');
+
+    if (existingOtherIdx > -1) {
+      values[existingOtherIdx]!.value = values[existingOtherIdx]!.value + remainder;
+    } else if (remainder > 0) {
+      values.push({ label: 'other', value: remainder });
+    }
+
+    return values;
   }, [trafficAnalysis.trafficSources]);
+
+  let minVisitors = 0;
+  let maxVisitors = 0;
+
+  trafficAnalysis.montlyVisitsIndicators.forEach(({ value }) => {
+    const num = parseInt(value);
+
+    if (num < minVisitors) {
+      minVisitors = num;
+    }
+
+    if (num > maxVisitors) {
+      maxVisitors = num;
+    }
+  });
+
+  const visitorsTotalArea = maxVisitors - minVisitors;
 
   const calculateTrend = (data: Array<{ label: string; value: string }>) => {
     if (data.length < 2) {
@@ -190,13 +222,13 @@ export const WebsiteCredibility: FunctionComponent<{
               </CardDescription>
             </CardHeader>
 
-            <CardContent className="p-2">
+            <CardContent className="h-full p-2">
               {trafficAnalysis.montlyVisitsIndicators.length > 0 ? (
                 <ChartContainer
                   className="h-[20rem] w-full"
                   config={{
-                    desktop: {
-                      label: 'Monthly Visitors',
+                    visitors: {
+                      label: 'Visited',
                       color: '#007aff',
                     },
                   }}
@@ -227,14 +259,30 @@ export const WebsiteCredibility: FunctionComponent<{
                       tickFormatter={value => dayjs(value, 'MMMM YYYY').format('MMM YYYY')}
                     />
                     <YAxis
-                      domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.2)]}
+                      ticks={[
+                        minVisitors,
+                        Math.trunc(visitorsTotalArea / 4),
+                        Math.trunc(visitorsTotalArea / 2),
+                        Math.trunc((3 * visitorsTotalArea) / 4),
+                        maxVisitors,
+                      ]}
+                      domain={[minVisitors - (maxVisitors * 1.2 - maxVisitors), maxVisitors * 1.2]}
                       tickFormatter={value =>
                         Intl.NumberFormat('en', { notation: 'compact' }).format(value)
                       }
                     />
                     <ChartTooltip
                       cursor={false}
-                      content={<ChartTooltipContent indicator="line" />}
+                      content={
+                        <ChartTooltipContent
+                          indicator="dot"
+                          valueRender={value => (
+                            <span className="text-foreground ml-4 font-mono font-medium tabular-nums">
+                              {Intl.NumberFormat('en').format(Number(value))}
+                            </span>
+                          )}
+                        />
+                      }
                     />
                     <Area
                       dataKey="visitors"
@@ -273,8 +321,6 @@ export const WebsiteCredibility: FunctionComponent<{
             </CardFooter>
           </Card>
 
-          {/* <div className="flex 2xl:flex-col gap-4 h-[12rem] 2xl:h-full w-full 2xl:w-2/5">
-                  <div className="h-full 2xl:h-1/2 w-1/2 2xl:w-full"> */}
           <div className="flex h-full w-2/5 flex-col gap-4">
             <Card className="h-1/2 w-full">
               <CardHeader className="px-6 pb-2 pt-4 font-bold">Traffic Sources</CardHeader>
@@ -469,9 +515,6 @@ export const WebsiteCredibility: FunctionComponent<{
           </ol>
         </CardContent>
       </Card>
-
-      {/* <div className="flex flex-col 2xl:flex-row gap-4 w-full h-auto 2xl:h-96">
-        <div className="h-[24rem] 2xl:h-full w-full 2xl:w-3/5"> */}
     </div>
   );
 };

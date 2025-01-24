@@ -22,6 +22,7 @@ export interface IEditableDetails {
   }>;
   valueId: string;
   id: string;
+  directorId?: string;
   documents: IEditableDetailsDocument[];
   title: string;
   workflowId: string;

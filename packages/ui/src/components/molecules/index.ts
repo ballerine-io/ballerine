@@ -1,5 +1,6 @@
 export * from './Accordion';
 export * from './AccordionCard';
+export * from './ContentTooltip';
 export * from './ErrorsList';
 export * from './inputs';
 export * from './JsonDialog';
