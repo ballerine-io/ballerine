@@ -19,6 +19,7 @@ import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import * as common from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { CollectionFlowMissingException } from '../exceptions/collection-flow-missing.exception';
+import { EndUserService } from '@/end-user/end-user.service';
 
 @UseTokenAuthGuard()
 @ApiExcludeController()
@@ -29,6 +30,7 @@ export class CollectionFlowController {
     protected readonly workflowService: WorkflowService,
     protected readonly adapterManager: WorkflowAdapterManager,
     protected readonly collectionFlowService: CollectionFlowService,
+    protected readonly endUserService: EndUserService,
   ) {}
 
   @common.Get('/customer')
@@ -142,7 +144,75 @@ export class CollectionFlowController {
   @common.Post('/final-submission')
   async finalSubmission(@TokenScope() tokenScope: ITokenScope, @common.Body() body: FinishFlowDto) {
     try {
-      const event = await this.workflowService.event(
+      const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
+        tokenScope.workflowRuntimeDataId,
+        {},
+        [tokenScope.projectId],
+      );
+
+      const directors = await Promise.all(
+        workflowRuntimeData.context.entity.data.additionalInfo.directors?.map(
+          async (director: { firstName: string; lastName: string; email: string }) => {
+            const { id } = await this.endUserService.create({
+              data: {
+                firstName: director.firstName,
+                lastName: director.lastName,
+                email: director.email,
+                projectId: tokenScope.projectId,
+              },
+            });
+
+            return {
+              ballerineEntityId: id,
+              ...director,
+            };
+          },
+        ),
+      );
+
+      const ubos = await Promise.all(
+        workflowRuntimeData.context.entity.data.additionalInfo.ubos?.map(
+          async (ubo: { firstName: string; lastName: string; email: string }) => {
+            const { id } = await this.endUserService.create({
+              data: {
+                firstName: ubo.firstName,
+                lastName: ubo.lastName,
+                email: ubo.email,
+                projectId: tokenScope.projectId,
+              },
+            });
+
+            return {
+              ballerineEntityId: id,
+              ...ubo,
+            };
+          },
+        ),
+      );
+
+      await this.workflowService.event(
+        {
+          id: tokenScope.workflowRuntimeDataId,
+          name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+          payload: {
+            newContext: {
+              entity: {
+                data: {
+                  additionalInfo: {
+                    directors,
+                    ubos,
+                  },
+                },
+              },
+            },
+            arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
+          },
+        },
+        [tokenScope.projectId],
+        tokenScope.projectId,
+      );
+
+      const updatedWorkflowRuntimeData = await this.workflowService.event(
         {
           id: tokenScope.workflowRuntimeDataId,
           name: body.eventName,
@@ -151,7 +221,7 @@ export class CollectionFlowController {
         tokenScope.projectId,
       );
 
-      const collectionFlowState = getCollectionFlowState(event.context);
+      const collectionFlowState = getCollectionFlowState(updatedWorkflowRuntimeData.context);
 
       if (!collectionFlowState) {
         throw new CollectionFlowMissingException();

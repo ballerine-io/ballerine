@@ -16,10 +16,10 @@ export const useCaseInfoBlock = ({
 }) => {
   const predefinedOrder = useMemo(
     () =>
-      workflow.workflowDefinition.config?.uiOptions?.backoffice?.blocks?.businessInformation
+      workflow?.workflowDefinition?.config?.uiOptions?.backoffice?.blocks?.businessInformation
         ?.predefinedOrder ?? [],
     [
-      workflow.workflowDefinition.config?.uiOptions?.backoffice?.blocks?.businessInformation
+      workflow?.workflowDefinition?.config?.uiOptions?.backoffice?.blocks?.businessInformation
         ?.predefinedOrder,
     ],
   );
