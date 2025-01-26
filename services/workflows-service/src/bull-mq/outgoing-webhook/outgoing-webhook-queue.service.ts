@@ -21,59 +21,55 @@ export class OutgoingWebhookQueueService extends BaseQueueWorkerService<WebhookJ
   }
 
   async handleJob(job: Job<TJobArgs>) {
-    this.logger.log(`Processing webhook job ${job.id}`);
-
     const response = await this.webhookService.invokeWebhook({
       ...job.data.jobData,
     });
 
-    this.logger.log(`Webhook job ${job.id} completed with status: ${response.status}`);
+    // if (response.status >= 200 && response.status < 300) {
+    //   return;
+    // }
 
-    if (response.status >= 200 && response.status < 300) {
-      return;
-    }
-
-    await this.handleRetryStrategy(response.status, job);
+    // await this.handleRetryStrategy(response.status, job);
   }
 
-  private async handleRetryStrategy(status: number, job: Job<TJobArgs>) {
-    if (job.opts.attempts && job.attemptsMade >= job.opts.attempts) {
-      this.logger.warn(`Job ${job.id} reached the maximum retry attempts (${job.opts.attempts})`);
-      throw new Error(`Job ${job.id} failed after reaching max attempts`);
-    }
+  // private async handleRetryStrategy(status: number, job: Job<TJobArgs>) {
+  //   if (job.opts.attempts && job.attemptsMade >= job.opts.attempts) {
+  //     this.logger.warn(`Job ${job.id} reached the maximum retry attempts (${job.opts.attempts})`);
+  //     throw new Error(`Job ${job.id} failed after reaching max attempts`);
+  //   }
 
-    let delayMs: number;
+  //   let delayMs: number;
 
-    switch (status) {
-      case HttpStatusCode.TooManyRequests:
-      case HttpStatusCode.InternalServerError:
-      case HttpStatusCode.BadGateway:
-      case HttpStatusCode.ServiceUnavailable:
-      case HttpStatusCode.GatewayTimeout:
-        delayMs = Math.pow(2, job.attemptsMade + 1) * 1000; // Exponential backoff
-        break;
+  //   switch (status) {
+  //     case HttpStatusCode.TooManyRequests:
+  //     case HttpStatusCode.InternalServerError:
+  //     case HttpStatusCode.BadGateway:
+  //     case HttpStatusCode.ServiceUnavailable:
+  //     case HttpStatusCode.GatewayTimeout:
+  //       delayMs = Math.pow(2, job.attemptsMade + 1) * 1000; // Exponential backoff
+  //       break;
 
-      case HttpStatusCode.RequestTimeout:
-        delayMs = 1000 * 60 * (job.attemptsMade + 1); // Linear backoff in minutes
-        break;
+  //     case HttpStatusCode.RequestTimeout:
+  //       delayMs = 1000 * 60 * (job.attemptsMade + 1); // Linear backoff in minutes
+  //       break;
 
-      case HttpStatusCode.BadRequest:
-        throw new Error(`Webhook job failed with status ${status}: Bad Request`);
+  //     case HttpStatusCode.BadRequest:
+  //       throw new Error(`Webhook job failed with status ${status}: Bad Request`);
 
-      default:
-        throw new Error(`Webhook job failed with status ${status}: Unexpected Error`);
-    }
+  //     default:
+  //       throw new Error(`Webhook job failed with status ${status}: Unexpected Error`);
+  //   }
 
-    await this.retryJob(job, delayMs);
-  }
+  //   await this.retryJob(job, delayMs);
+  // }
 
-  private async retryJob(job: Job<TJobArgs>, delayMs: number) {
-    const nextAttempt = job.attemptsMade + 1;
-    this.logger.log(
-      `Scheduling retry for job ${job.id}. Next attempt: ${nextAttempt}, delay: ${delayMs}ms`,
-    );
+  // private async retryJob(job: Job<TJobArgs>, delayMs: number) {
+  //   const nextAttempt = job.attemptsMade + 1;
+  //   this.logger.log(
+  //     `Scheduling retry for job ${job.id}. Next attempt: ${nextAttempt}, delay: ${delayMs}ms`,
+  //   );
 
-    await job.updateProgress(nextAttempt);
-    await job.moveToDelayed(Date.now() + delayMs);
-  }
+  //   await job.updateProgress(nextAttempt);
+  //   await job.moveToDelayed(Date.now() + delayMs);
+  // }
 }

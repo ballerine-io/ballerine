@@ -14,6 +14,7 @@ export const QUEUES = {
   },
   INCOMING_WEBHOOKS_QUEUE: {
     name: 'incoming-webhook-queue',
+    dlq: 'incoming-webhook-queue-dlq',
     config: {
       attempts: 10,
       backoff: {
@@ -24,6 +25,7 @@ export const QUEUES = {
   },
   OUTGOING_WEBHOOKS_QUEUE: {
     name: 'outgoing-webhook-queue',
+    dlq: 'outgoing-webhook-queue-dlq',
     config: {
       attempts: 10,
       backoff: {

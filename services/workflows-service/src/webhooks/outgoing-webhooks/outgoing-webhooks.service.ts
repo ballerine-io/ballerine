@@ -39,21 +39,20 @@ export class OutgoingWebhooksService {
         : {}),
     };
 
-    try {
-      const response = await axios({
-        url,
-        method,
-        headers: signedHeaders,
-        data: body,
-        timeout: timeout || 15000,
-      });
+    return await axios({
+      url,
+      method,
+      headers: signedHeaders,
+      data: body,
+      timeout: timeout || 15000,
+    });
 
-      this.logger.log(`Webhook job completed with status: ${response.status}`);
+    //   this.logger.log(`Webhook job completed with status: ${response.status}`);
 
-      return response;
-    } catch (error) {
-      this.logger.error(`Webhook job failed: ${isErrorWithMessage(error) && error.message}`);
-      throw error;
-    }
+    //   return response;
+    // } catch (error) {
+    //   this.logger.error(`Webhook job failed: ${isErrorWithMessage(error) && error.message}`);
+    //   throw error;
+    // }
   }
 }

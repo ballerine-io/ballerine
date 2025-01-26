@@ -58,8 +58,6 @@ import { OutgoingWebhooksModule } from '@/webhooks/outgoing-webhooks/outgoing-we
     AlertDefinitionRepository,
     WebhookManagerService,
     WebhookEventEmitterService,
-    BullMqModule,
-    OutgoingWebhooksModule,
     // TODO: Export to user module
     UserService,
     UserRepository,
