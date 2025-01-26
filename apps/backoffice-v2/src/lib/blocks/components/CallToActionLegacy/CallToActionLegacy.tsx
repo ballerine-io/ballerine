@@ -33,6 +33,7 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
     isLoadingReuploadNeeded,
     onDialogClose,
     id,
+    directorId,
     workflow,
     decision,
     disabled,
@@ -189,7 +190,10 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
             size="wide"
             variant="warning"
             disabled={disabled}
-            className={ctw({ 'flex gap-2': isReuploadResetable })}
+            className={ctw(
+              { 'flex gap-2': isReuploadResetable },
+              'enabled:bg-warning enabled:hover:bg-warning/90',
+            )}
           >
             {value.text}
             {isReuploadResetable && (
@@ -253,11 +257,14 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
         }
         close={
           <Button
-            className={ctw(`gap-x-2`, {
-              loading: isLoadingReuploadNeeded,
-            })}
+            className={ctw(
+              'gap-x-2',
+              { loading: isLoadingReuploadNeeded },
+              'enabled:bg-primary enabled:hover:bg-primary/90',
+            )}
             onClick={onReuploadNeeded({
               workflowId: workflow?.id,
+              directorId,
               documentId: id,
               reason: comment ? `${reason} - ${comment}` : reason,
             })}

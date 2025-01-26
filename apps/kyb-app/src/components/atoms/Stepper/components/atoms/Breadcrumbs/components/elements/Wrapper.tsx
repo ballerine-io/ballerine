@@ -5,5 +5,9 @@ import { ctw } from '@ballerine/ui';
 export const Wrapper = ({ className, children }: BreadcrumbsWrapperProps) => {
   const { props } = useBreadcrumbElementLogic<BreadcrumbsWrapperProps>('wrapper');
 
-  return <div className={ctw('overflow-hidden', className || props.className)}>{children}</div>;
+  return (
+    <div className={ctw('overflow-hidden', className || props.className)} style={props.style}>
+      {children}
+    </div>
+  );
 };

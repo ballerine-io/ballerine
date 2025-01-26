@@ -1,6 +1,8 @@
+import { ITheme } from '@/common/types/settings';
 import { Action, Rule, UIElement } from '@/domains/collection-flow/types/ui-schema.types';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
+import { CollectionFlowConfig } from './flow-context.types';
 
 export interface AuthorizeDto {
   email: string;
@@ -131,7 +133,7 @@ export interface UIPage {
   pageValidation?: Rule[];
 }
 
-export interface UISchemaConfig {
+export interface UISchemaConfig extends CollectionFlowConfig {
   kybOnExitAction?: 'send-event' | 'redirect-to-customer-portal';
   supportedLanguages: string[];
 }
@@ -148,6 +150,7 @@ export interface UISchema {
   config: UISchemaConfig;
   uiSchema: {
     elements: UIPage[];
+    theme: ITheme;
   };
   definition: {
     definitionType: string;

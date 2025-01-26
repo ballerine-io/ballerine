@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react';
 
-import { AnyChildren } from '@ballerine/ui';
-import { useCustomerQuery } from '@/hooks/useCustomerQuery';
-import { CustomerContext } from '@/components/providers/CustomerProvider/types';
+import { AppNavigate } from '@/common/components/organisms/NavigateWithToken';
 import { customerContext } from '@/components/providers/CustomerProvider/customer.context';
+import { CustomerContext } from '@/components/providers/CustomerProvider/types';
+import { useCustomerQuery } from '@/hooks/useCustomerQuery';
+import { useIsSignupRequired } from '@/pages/Root/hooks/useIsSignupRequired';
+import { AnyChildren } from '@ballerine/ui';
 
 const { Provider } = customerContext;
 
@@ -21,6 +23,7 @@ export const CustomerProvider = ({
   fallback: FallbackComponent,
 }: Props) => {
   const { isLoading, error, customer } = useCustomerQuery();
+  const { isSignupRequired } = useIsSignupRequired();
 
   const context = useMemo(() => {
     const ctx: CustomerContext = {
@@ -29,6 +32,10 @@ export const CustomerProvider = ({
 
     return ctx;
   }, [customer]);
+
+  if (isSignupRequired) {
+    return <AppNavigate to={'/signup'} />;
+  }
 
   if (isLoading) return <>{loadingPlaceholder}</> || null;
 

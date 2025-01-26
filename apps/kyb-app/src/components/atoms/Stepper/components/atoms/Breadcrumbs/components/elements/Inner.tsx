@@ -6,7 +6,7 @@ export const Inner = ({ className, icon }: BreadcrumbsInnerProps) => {
   const { props } = useBreadcrumbElementLogic<BreadcrumbsInnerProps>('inner');
 
   return (
-    <div className={ctw('w-full', 'h-full', className || props.className)}>
+    <div className={ctw('w-full', 'h-full', className || props.className)} style={props.style}>
       {icon || props.icon ? (
         <div className="flex h-full w-full items-center justify-center">{icon || props.icon}</div>
       ) : null}

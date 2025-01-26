@@ -38,7 +38,7 @@ export const SignIn = () => {
             <SigninForm isLoading={isLoading} onSubmit={handleSubmit} />
           </div>
           <div>
-            <p className="text-muted-foreground color-[#94A3B8] text-base leading-6">
+            <p className="text-muted-foreground text-base leading-6 text-[#94A3B8]">
               Contact {customer?.displayName || 'PayLynk'} for support
               <br /> example@example.com
               <br /> (000) 123-4567

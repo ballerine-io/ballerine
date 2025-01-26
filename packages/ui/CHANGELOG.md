@@ -1,5 +1,251 @@
 # @ballerine/ui
 
+## 0.5.67
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.68
+
+## 0.5.66
+
+### Patch Changes
+
+- Fixed Date Picker popup flickering
+
+## 0.5.65
+
+### Patch Changes
+
+- Added scroll persistence on data table
+
+## 0.5.64
+
+### Patch Changes
+
+- Fixed graph cut off issue
+
+## 0.5.63
+
+### Patch Changes
+
+- Export ContentTooltip component
+
+## 0.5.62
+
+### Patch Changes
+
+- version bump
+  s Please enter a summary for your changes.
+- Updated dependencies
+  - @ballerine/common@0.9.66
+
+## 0.5.61
+
+### Patch Changes
+
+- Fix display when traffic sources list is empty
+
+## 0.5.60
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.65
+
+## 0.5.59
+
+### Patch Changes
+
+- Adds interactivity to the homepage charts
+
+## 0.5.58
+
+### Patch Changes
+
+- adds scrollable view for partner website
+
+## 0.5.57
+
+### Patch Changes
+
+- Updated traffic-related stats in the "Website credibility" tab.
+
+## 0.5.56
+
+### Patch Changes
+
+- Updated user-facing social media view
+
+## 0.5.55
+
+### Patch Changes
+
+- Fixed phone input styling
+
+## 0.5.54
+
+### Patch Changes
+
+- Updated button with disabled state
+- Updated dependencies
+  - @ballerine/common@0.9.60
+
+## 0.5.53
+
+### Patch Changes
+
+- added command.loading
+
+## 0.5.52
+
+### Patch Changes
+
+- add href attribute to anchor-if-url component
+
+## 0.5.51
+
+### Patch Changes
+
+- core
+- Updated dependencies
+  - @ballerine/common@0.9.59
+
+## 0.5.50
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.58
+
+## 0.5.49
+
+### Patch Changes
+
+- MM: Better indicator that traffic data was not detected
+
+## 0.5.48
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.55
+
+## 0.5.47
+
+### Patch Changes
+
+- version bump
+  : Please enter a summary for your changes.
+
+## 0.5.46
+
+### Patch Changes
+
+- Created a non JMESPath sanctions plugin using JS
+- Updated dependencies
+  - @ballerine/common@0.9.53
+
+## 0.5.45
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.52
+
+## 0.5.44
+
+### Patch Changes
+
+- Cump
+- Updated dependencies
+  - @ballerine/common@0.9.50
+
+## 0.5.43
+
+### Patch Changes
+
+- bump
+
+## 0.5.42
+
+### Patch Changes
+
+- Change
+- Updated dependencies
+  - @ballerine/common@0.9.48
+
+## 0.5.41
+
+### Patch Changes
+
+- Added safeValue to autocomplete
+
+## 0.5.40
+
+### Patch Changes
+
+- Added defaultCountry code for phone input
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.45
+
+## 0.5.39
+
+### Patch Changes
+
+- Fixed styles in dynamic form
+
+## 0.5.38
+
+### Patch Changes
+
+- Fixed textarea placeholder
+
+## 0.5.37
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.39
+
+## 0.5.36
+
+### Patch Changes
+
+- Fixed text field placeholder color
+
+## 0.5.35
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.37
+
+## 0.5.34
+
+### Patch Changes
+
+- Added fallback date format to date input
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.34
+
+## 0.5.33
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.33
+
 ## 0.5.32
 
 ### Patch Changes

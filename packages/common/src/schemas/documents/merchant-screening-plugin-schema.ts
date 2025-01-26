@@ -74,23 +74,29 @@ const AddressSchema = Type.Object({
 });
 
 const DriversLicenseSchema = Type.Object({
-  Number: Type.String({
-    description: 'The drivers license number of a principal owner.',
-    example: 'M15698025',
-    maxLength: 25,
-  }),
-  CountrySubdivision: Type.String({
-    description:
-      'The abbreviated state or province code for a merchant location (only supported for US and Canada merchants).',
-    example: 'IL',
-    maxLength: 2,
-  }),
-  Country: Type.String({
-    description:
-      'The three-digit country code of the principal owner. Valid values are Three digit alpha country codes as defined in ISO 3166-1.',
-    example: 'USA',
-    maxLength: 3,
-  }),
+  Number: Type.Optional(
+    Type.String({
+      description: 'The drivers license number of a principal owner.',
+      example: 'M15698025',
+      maxLength: 25,
+    }),
+  ),
+  CountrySubdivision: Type.Optional(
+    Type.String({
+      description:
+        'The abbreviated state or province code for a merchant location (only supported for US and Canada merchants).',
+      example: 'IL',
+      maxLength: 2,
+    }),
+  ),
+  Country: Type.Optional(
+    Type.String({
+      description:
+        'The three-digit country code of the principal owner. Valid values are Three digit alpha country codes as defined in ISO 3166-1.',
+      example: 'USA',
+      maxLength: 3,
+    }),
+  ),
 });
 
 const PrincipalSchema = Type.Object({
@@ -113,11 +119,13 @@ const PrincipalSchema = Type.Object({
     maxLength: 40,
   }),
   Address: AddressSchema,
-  PhoneNumber: Type.String({
-    description: "The principal owner's phone number, including the area code.",
-    example: '3165557625',
-    maxLength: 25,
-  }),
+  PhoneNumber: Type.Optional(
+    Type.String({
+      description: "The principal owner's phone number, including the area code.",
+      example: '3165557625',
+      maxLength: 25,
+    }),
+  ),
   AltPhoneNumber: Type.Optional(
     Type.String({
       description: "The principal owner's alternate phone number, including the area code.",
@@ -213,11 +221,13 @@ const MerchantSchema = Type.Object({
     }),
   ),
   Address: Type.Optional(AddressSchema),
-  PhoneNumber: Type.String({
-    description: "The Business or Merchant's phone number, including the area code.",
-    example: '3165557625',
-    maxLength: 25,
-  }),
+  PhoneNumber: Type.Optional(
+    Type.String({
+      description: "The Business or Merchant's phone number, including the area code.",
+      example: '3165557625',
+      maxLength: 25,
+    }),
+  ),
   AltPhoneNumber: Type.Optional(
     Type.String({
       description: "The Business or Merchant's alternate phone number, including the area code.",
@@ -390,9 +400,6 @@ export const MerchantScreeningAggregatedSchema = Type.Object({
   ),
   dateAdded: Type.Optional(Type.String()),
 
-  matches: Type.Record(Type.String(), TypeStringEnum(MatchResponseCodes)),
-  data: Type.Record(Type.String(), Type.Any()),
-
   exactMatchesAmount: Type.Number(),
   partialMatchesAmount: Type.Number(),
 
@@ -414,7 +421,7 @@ export const MerchantScreeningAggregatedSchema = Type.Object({
 });
 
 export const MerchantScreeningProcessedSchema = Type.Object({
-  terminatedMatchedMerchant: Type.Array(
+  terminatedMatchedMerchants: Type.Array(
     Type.Composite([
       MerchantScreeningAggregatedSchema,
       Type.Object({
@@ -422,7 +429,7 @@ export const MerchantScreeningProcessedSchema = Type.Object({
       }),
     ]),
   ),
-  inquiredMatchedMerchant: Type.Array(
+  inquiredMatchedMerchants: Type.Array(
     Type.Composite([
       MerchantScreeningAggregatedSchema,
       Type.Object({

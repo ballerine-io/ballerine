@@ -1,13 +1,17 @@
 import DOMPurify from 'dompurify';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { StepperProgress } from '@/common/components/atoms/StepperProgress';
 import { ProgressBar } from '@/common/components/molecules/ProgressBar';
+import { useTheme } from '@/common/providers/ThemeProvider';
 import { AppShell } from '@/components/layouts/AppShell';
+import { PoweredByLogo } from '@/components/molecules/PoweredByLogo';
 import { DynamicUI, State } from '@/components/organisms/DynamicUI';
-import { usePageErrors } from '@/components/organisms/DynamicUI/Page/hooks/usePageErrors';
-import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import {
+  PageError,
+  usePageErrors,
+} from '@/components/organisms/DynamicUI/Page/hooks/usePageErrors';
 import { UIRenderer } from '@/components/organisms/UIRenderer';
 import { Cell } from '@/components/organisms/UIRenderer/elements/Cell';
 import { Divider } from '@/components/organisms/UIRenderer/elements/Divider';
@@ -24,11 +28,17 @@ import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionPr
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { LoadingScreen } from '@/pages/CollectionFlow/components/atoms/LoadingScreen';
 import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
-import { Failed } from '@/pages/CollectionFlow/components/pages/Failed';
+import { CompletedScreen } from '@/pages/CollectionFlow/components/pages/CompletedScreen';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
-import { Success } from '@/pages/CollectionFlow/components/pages/Success';
+import {
+  CollectionFlowStatusesEnum,
+  getCollectionFlowState,
+  setCollectionFlowStatus,
+  setStepCompletionState,
+} from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
-import set from 'lodash/set';
+import { FailedScreen } from './components/pages/FailedScreen';
+import { useAdditionalWorkflowContext } from './hooks/useAdditionalWorkflowContext';
 
 const elems = {
   h1: Title,
@@ -50,79 +60,55 @@ const elems = {
   divider: Divider,
 };
 
-// TODO: Find a way to make this work via the workflow-browser-sdk `subscribe` method.
-export const useCompleteLastStep = () => {
-  const { stateApi, state } = useStateManagerContext();
-  const { language } = useLanguageParam();
-  const { data: schema } = useUISchemasQuery(language);
-  const { refetch } = useFlowContextQuery();
-  const elements = schema?.uiSchema?.elements;
-  const isPendingSync = useRef(false);
-
-  useEffect(() => {
-    (async () => {
-      if (state !== 'finish') return;
-
-      const { data: context } = await refetch();
-
-      if (
-        !context ||
-        context?.flowConfig?.stepsProgress?.[elements?.at(-1)?.stateName ?? '']?.isCompleted ||
-        isPendingSync.current
-      ) {
-        return;
-      }
-
-      set(context, `flowConfig.stepsProgress.${elements?.at(-1)?.stateName}.isCompleted`, true);
-      await stateApi.invokePlugin('sync_workflow_runtime');
-      isPendingSync.current = true;
-    })();
-  }, [elements, refetch, state, stateApi]);
-};
-
-const isSuccess = (state: string) => state === 'success' || state === 'finish';
+const isCompleted = (state: string) => state === 'completed' || state === 'finish';
 const isFailed = (state: string) => state === 'failed';
+
+const getRevisionStateName = (pageErrors: PageError[]) => {
+  return pageErrors?.filter(pageError => !!pageError.errors.length)?.[0]?.stateName;
+};
 
 export const CollectionFlow = withSessionProtected(() => {
   const { language } = useLanguageParam();
   const { data: schema } = useUISchemasQuery(language);
-  const { data: context } = useFlowContextQuery();
+  const { data: collectionFlowData } = useFlowContextQuery();
   const { customer } = useCustomer();
   const { t } = useTranslation();
+  const { themeDefinition } = useTheme();
+  const additionalContext = useAdditionalWorkflowContext();
 
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;
 
-  const pageErrors = usePageErrors(context ?? {}, elements || []);
+  const pageErrors = usePageErrors(
+    collectionFlowData?.context ?? ({} as CollectionFlowContext),
+    elements || [],
+  );
   const isRevision = useMemo(
-    () => pageErrors.some(error => error.errors?.some(error => error.type === 'warning')),
-    [pageErrors],
+    () =>
+      getCollectionFlowState(collectionFlowData)?.status === CollectionFlowStatusesEnum.revision,
+    [collectionFlowData],
   );
 
-  const filteredNonEmptyErrors = pageErrors?.filter(pageError => !!pageError.errors.length);
+  const initialContext: CollectionFlowContext = useMemo(() => {
+    const contextCopy = { ...collectionFlowData?.context };
+    const collectionFlow = getCollectionFlowState(contextCopy);
 
-  // @ts-ignore
-  const initialContext: CollectionFlowContext | null = useMemo(() => {
-    const appState =
-      filteredNonEmptyErrors?.[0]?.stateName ||
-      context?.flowConfig?.appState ||
-      elements?.at(0)?.stateName;
+    if (isRevision && collectionFlow) {
+      const revisionStateName = getRevisionStateName(pageErrors);
+      collectionFlow.currentStep = revisionStateName || collectionFlow.currentStep;
+      revisionStateName || collectionFlow.currentStep;
+    }
 
-    if (!appState) return null;
-
-    return {
-      ...context,
-      flowConfig: {
-        ...context?.flowConfig,
-        appState,
-      },
-      state: appState,
-    };
-  }, [context, elements, filteredNonEmptyErrors]);
+    return contextCopy as CollectionFlowContext;
+  }, [isRevision, pageErrors]);
 
   const initialUIState = useMemo(() => {
-    return prepareInitialUIState(elements || [], context || {}, isRevision);
-  }, [elements, context, isRevision]);
+    return prepareInitialUIState(
+      elements || [],
+      (collectionFlowData?.context as CollectionFlowContext) || {},
+      isRevision,
+    );
+  }, [elements, collectionFlowData, isRevision]);
 
   // Breadcrumbs now using scrollIntoView method to make sure that breadcrumb is always in viewport.
   // Due to dynamic dimensions of logo it doesnt work well if scroll happens before logo is loaded.
@@ -136,11 +122,19 @@ export const CollectionFlow = withSessionProtected(() => {
     setLogoLoaded(false);
   }, [customer?.logoImageUri]);
 
-  if (initialContext?.flowConfig?.appState === 'approved') return <Approved />;
+  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.approved)
+    return <Approved />;
 
-  if (initialContext?.flowConfig?.appState == 'rejected') return <Rejected />;
+  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.rejected)
+    return <Rejected />;
 
-  return definition && context ? (
+  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.completed)
+    return <CompletedScreen />;
+
+  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.failed)
+    return <FailedScreen />;
+
+  return definition && collectionFlowData ? (
     <DynamicUI initialState={initialUIState}>
       <DynamicUI.StateManager
         initialContext={initialContext}
@@ -148,117 +142,182 @@ export const CollectionFlow = withSessionProtected(() => {
         definitionType={schema?.definition.definitionType}
         extensions={schema?.definition.extensions}
         definition={definition as State}
+        config={collectionFlowData?.config}
+        additionalContext={additionalContext}
       >
         {({ state, stateApi }) => {
-          // Temp state, has to be resolved to success or failure by plugins
-          if (state === 'done') return <LoadingScreen />;
-
-          if (isSuccess(state)) return <Success />;
-
-          if (isFailed(state)) return <Failed />;
-
           return (
-            <DynamicUI.PageResolver state={state} pages={elements ?? []}>
-              {({ currentPage }) => {
-                return currentPage ? (
-                  <DynamicUI.Page page={currentPage}>
-                    <DynamicUI.TransitionListener
-                      onNext={async (tools, prevState) => {
-                        tools.setElementCompleted(prevState, true);
+            <DynamicUI.TransitionListener
+              pages={elements ?? []}
+              onNext={async (tools, prevState, currentState) => {
+                tools.setElementCompleted(prevState, true);
 
-                        set(
-                          stateApi.getContext(),
-                          `flowConfig.stepsProgress.${prevState}.isCompleted`,
-                          true,
-                        );
-                        await stateApi.invokePlugin('sync_workflow_runtime');
-                      }}
-                    >
-                      <DynamicUI.ActionsHandler actions={currentPage.actions} stateApi={stateApi}>
-                        <AppShell>
-                          <AppShell.Sidebar>
-                            <div className="flex h-full flex-col">
-                              <div className="flex h-full flex-1 flex-col">
-                                <div className="flex flex-row justify-between gap-2 whitespace-nowrap pb-10">
-                                  <AppShell.Navigation />
-                                  <div>
-                                    <AppShell.LanguagePicker />
-                                  </div>
-                                </div>
-                                <div className="pb-10">
-                                  {customer?.logoImageUri && (
-                                    <AppShell.Logo
-                                      // @ts-ignore
-                                      logoSrc={customer?.logoImageUri}
-                                      // @ts-ignore
-                                      appName={customer?.displayName}
-                                      onLoad={() => setLogoLoaded(true)}
-                                    />
-                                  )}
-                                </div>
-                                <div className="min-h-0 flex-1 pb-10">
-                                  {isLogoLoaded ? <StepperUI /> : null}
-                                </div>
-                                <div>
-                                  {customer?.displayName && (
-                                    <div className="border-b pb-12">
-                                      {
-                                        t('contact', {
-                                          companyName: customer.displayName,
-                                        }) as string
-                                      }
-                                    </div>
-                                  )}
-                                  <img src={'/poweredby.svg'} className="mt-6" />
-                                </div>
-                              </div>
-                            </div>
-                          </AppShell.Sidebar>
-                          <AppShell.Content>
-                            <AppShell.FormContainer>
-                              {localStorage.getItem('devmode') ? (
-                                <div className="flex flex-col gap-4">
-                                  DEBUG
-                                  <div>
-                                    {currentPage
-                                      ? currentPage.stateName
-                                      : 'Page not found and state ' + state}
-                                  </div>
-                                  <div className="flex gap-4">
-                                    <button onClick={() => stateApi.sendEvent('PREVIOUS')}>
-                                      prev
-                                    </button>
-                                    <button onClick={() => stateApi.sendEvent('NEXT')}>next</button>
-                                  </div>
-                                </div>
-                              ) : null}
-                              <div className="flex flex-col">
-                                <div className="flex items-center gap-3 pb-3">
-                                  <StepperProgress
-                                    currentStep={
-                                      (elements?.findIndex(page => page?.stateName === state) ??
-                                        0) + 1
-                                    }
-                                    totalSteps={elements?.length ?? 0}
-                                  />
-                                  <ProgressBar />
-                                </div>
-                                <div>
-                                  <UIRenderer elements={elems} schema={currentPage.elements} />
-                                </div>
-                              </div>
-                            </AppShell.FormContainer>
-                          </AppShell.Content>
-                        </AppShell>
-                      </DynamicUI.ActionsHandler>
-                    </DynamicUI.TransitionListener>
-                  </DynamicUI.Page>
-                ) : null;
+                const context = stateApi.getContext();
+
+                const collectionFlow = getCollectionFlowState(context);
+
+                if (collectionFlow) {
+                  const steps = collectionFlow?.steps || [];
+
+                  const isAnyStepCompleted = steps.some(step => step.isCompleted);
+
+                  setStepCompletionState(context, {
+                    stepName: prevState,
+                    completed: true,
+                  });
+
+                  collectionFlow.currentStep = currentState;
+
+                  if (!isAnyStepCompleted) {
+                    console.log('Collection flow touched, changing state to inprogress');
+                    setCollectionFlowStatus(context, CollectionFlowStatusesEnum.inprogress);
+                  }
+
+                  stateApi.setContext(context);
+
+                  await stateApi.invokePlugin('sync_workflow_runtime');
+                }
               }}
-            </DynamicUI.PageResolver>
+            >
+              {() => {
+                // Temp state, has to be resolved to success or failure by plugins
+                if (state === 'done') return <LoadingScreen />;
+
+                if (isCompleted(state)) return <CompletedScreen />;
+
+                if (isFailed(state)) return <FailedScreen />;
+
+                return (
+                  <DynamicUI.PageResolver state={state} pages={elements ?? []}>
+                    {({ currentPage }) => {
+                      return currentPage ? (
+                        <DynamicUI.Page page={currentPage}>
+                          <DynamicUI.ActionsHandler
+                            actions={currentPage.actions}
+                            stateApi={stateApi}
+                          >
+                            <AppShell>
+                              <AppShell.Sidebar>
+                                <div className="flex h-full flex-col">
+                                  <div className="flex h-full flex-1 flex-col">
+                                    <div className="flex justify-between gap-8 pb-10">
+                                      <AppShell.Navigation />
+                                      <div className="flex w-full justify-end">
+                                        <AppShell.LanguagePicker />
+                                      </div>
+                                    </div>
+                                    <div className="pb-10">
+                                      {customer?.logoImageUri && (
+                                        <AppShell.Logo
+                                          // @ts-ignore
+                                          logoSrc={themeDefinition.logo || customer?.logoImageUri}
+                                          // @ts-ignore
+                                          appName={customer?.displayName}
+                                          onLoad={() => setLogoLoaded(true)}
+                                        />
+                                      )}
+                                    </div>
+                                    <div className="min-h-0 flex-1 pb-10">
+                                      {isLogoLoaded ? <StepperUI /> : null}
+                                    </div>
+                                    <div>
+                                      {customer?.displayName && (
+                                        <div>
+                                          {
+                                            t('contact', {
+                                              companyName: customer.displayName,
+                                            }) as string
+                                          }
+                                        </div>
+                                      )}
+                                      {themeDefinition.ui?.poweredBy !== false && (
+                                        <div className="flex flex-col">
+                                          <div className="border-b pb-12" />
+                                          <PoweredByLogo
+                                            className="mt-8 max-w-[10rem]"
+                                            sidebarRootId="sidebar"
+                                          />
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </AppShell.Sidebar>
+                              <AppShell.Content>
+                                <AppShell.FormContainer>
+                                  {localStorage.getItem('devmode') ? (
+                                    <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
+                                      <div className="mb-4 flex items-center gap-2">
+                                        <div className="h-2 w-2 animate-pulse rounded-full bg-amber-500" />
+                                        <span
+                                          className="cursor-help font-medium text-amber-900 hover:underline"
+                                          data-tooltip-id="debug-mode-tooltip"
+                                          data-tooltip-content="In debug mode you can navigate between steps without validation. Be aware that if required data is missing, plugins may fail when processing data at the end of the flow."
+                                        >
+                                          Debug Mode Active
+                                        </span>
+                                      </div>
+
+                                      <div className="mb-3 text-sm text-amber-800">
+                                        Current State:{' '}
+                                        {currentPage ? (
+                                          <span className="font-medium">
+                                            {currentPage.stateName}
+                                          </span>
+                                        ) : (
+                                          <span className="italic">
+                                            Page not found - state: {state}
+                                          </span>
+                                        )}
+                                      </div>
+
+                                      <div className="flex gap-3">
+                                        <button
+                                          onClick={() => stateApi.sendEvent('PREVIOUS')}
+                                          className="rounded bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-200"
+                                        >
+                                          Previous
+                                        </button>
+                                        <button
+                                          onClick={() => stateApi.sendEvent('NEXT')}
+                                          className="rounded bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-200"
+                                        >
+                                          Next
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ) : null}
+                                  <div className="flex flex-col">
+                                    <div className="flex items-center gap-3 pb-3">
+                                      <StepperProgress
+                                        currentStep={
+                                          (elements?.findIndex(page => page?.stateName === state) ??
+                                            0) + 1
+                                        }
+                                        totalSteps={elements?.length ?? 0}
+                                      />
+                                      <ProgressBar />
+                                    </div>
+                                    <div>
+                                      <UIRenderer elements={elems} schema={currentPage.elements} />
+                                    </div>
+                                  </div>
+                                </AppShell.FormContainer>
+                              </AppShell.Content>
+                            </AppShell>
+                          </DynamicUI.ActionsHandler>
+                        </DynamicUI.Page>
+                      ) : null;
+                    }}
+                  </DynamicUI.PageResolver>
+                );
+              }}
+            </DynamicUI.TransitionListener>
           );
         }}
       </DynamicUI.StateManager>
     </DynamicUI>
-  ) : null;
+  ) : (
+    <LoadingScreen />
+  );
 });

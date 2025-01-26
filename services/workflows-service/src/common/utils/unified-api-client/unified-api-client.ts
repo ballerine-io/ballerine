@@ -1,19 +1,20 @@
 import axios, { AxiosInstance } from 'axios';
 import { env } from '@/env';
 import { Logger } from '@nestjs/common';
-import { BusinessReportType } from '@prisma/client';
+import { Customer } from '@prisma/client';
+import { TSchema } from '@sinclair/typebox';
 
-export type TReportRequest = Array<{
-  websiteUrl: string;
-  callbackUrl?: string;
-  countryCode?: string;
-  parentCompanyName?: string;
-  lineOfBusiness?: string;
-  merchantName?: string;
-  websiteName?: string;
-  businessReportId?: string;
-  withQualityControl?: boolean;
-}>;
+export type TOcrImages = Array<
+  | {
+      remote: {
+        imageUri: string;
+        mimeType: string;
+      };
+    }
+  | {
+      base64: string;
+    }
+>;
 
 export class UnifiedApiClient {
   private readonly axiosInstance: AxiosInstance;
@@ -28,50 +29,45 @@ export class UnifiedApiClient {
     });
   }
 
-  public async postBatchBusinessReport(
-    {
-      reportRequests,
-      clientName,
-      metadata,
-      withQualityControl,
-      reportType = BusinessReportType.MERCHANT_REPORT_T1,
-      workflowVersion = '2',
-    }: {
-      reportRequests: TReportRequest;
-      clientName?: string;
-      reportType?: BusinessReportType;
-      workflowVersion?: '1' | '2' | '3';
-      metadata?: Record<string, unknown>;
-      withQualityControl?: boolean;
-    },
-    endpoint = '/merchants/analysis/batch',
-  ) {
-    try {
-      const response = await this.axiosInstance.post<
-        Array<{
-          reportId: string;
-          businessReportId: string;
-        }>
-      >(
-        endpoint,
-        {
-          reportRequests,
-          clientName,
-          metadata,
-          reportType,
-          withQualityControl,
-          workflowVersion,
-        },
-        {
-          timeout: 30_000,
-        },
-      );
+  async runOcr({ images, schema }: { images: TOcrImages; schema: TSchema }) {
+    return await this.axiosInstance.post('/v1/smart-ocr', {
+      images,
+      schema,
+    });
+  }
 
-      return response.data;
-    } catch (error) {
-      this.logger.error('Error creating batch report', error);
+  async runDocumentOcr({
+    images,
+    supportedCountries,
+    overrideSchemas,
+  }: {
+    images: TOcrImages;
+    supportedCountries: string[];
+    overrideSchemas: {
+      overrideSchemas: Array<{
+        countryCode: string;
+        documentType: string;
+        documentCategory: string;
+        schema: TSchema;
+      }>;
+    };
+  }) {
+    return await this.axiosInstance.post('/v1/document/smart-ocr', {
+      images,
+      supportedCountries,
+      overrideSchemas,
+    });
+  }
 
-      throw error;
-    }
+  public async createCustomer(payload: Customer) {
+    return await this.axiosInstance.post('/customers', payload);
+  }
+
+  public async updateCustomer(id: string, payload: Customer) {
+    return await this.axiosInstance.put(`/customers/${id}`, payload);
+  }
+
+  public async deleteCustomer(id: string) {
+    return await this.axiosInstance.delete(`/customers/${id}`);
   }
 }

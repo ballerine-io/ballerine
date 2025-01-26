@@ -2,19 +2,22 @@ import { TJsonSchema, Transformers, Validator } from '../../utils';
 import { THelperFormatingLogic } from '../../utils/context-transformers/types';
 import { ActionablePlugin } from '../types';
 
-import { AnyRecord } from '@ballerine/common';
 import { SecretsManager } from '@/lib/types';
+import { AnyRecord } from '@ballerine/common';
+import { ApiEmailTemplates } from './vendor-consts';
 
 export interface ValidatableTransformer {
   transformers?: Transformers;
   schemaValidator?: Validator;
 }
+
 export interface IApiPluginParams {
   name: string;
   pluginKind?: string;
   stateNames: string[];
-  url: string;
+  url: string | { url: string; options: Record<string, string> };
   vendor?: string;
+  template?: ApiEmailTemplates;
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
   request?: ValidatableTransformer;
   response?: ValidatableTransformer;
@@ -24,7 +27,8 @@ export interface IApiPluginParams {
   persistResponseDestination?: string;
   displayName: string | undefined;
   secretsManager?: SecretsManager;
-
+  whitelistedInputProperties?: string[];
+  includeInvokedAt?: boolean;
   invoke?(...args: any[]): any;
 }
 
@@ -91,3 +95,13 @@ export interface SerializableIterativePluginParams {
 
   invoke?(...args: any): void;
 }
+
+export type PluginPayloadProperty<TValue = string> =
+  | TValue
+  | {
+      __type: 'path';
+      value: string;
+    }
+  | {
+      [key: string]: PluginPayloadProperty;
+    };

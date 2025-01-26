@@ -1,5 +1,280 @@
 # @ballerine/react-pdf-toolkit
 
+## 1.2.67
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/config@1.1.32
+  - @ballerine/ui@0.5.67
+
+## 1.2.66
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.66
+
+## 1.2.65
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.65
+
+## 1.2.64
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.64
+
+## 1.2.63
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.63
+
+## 1.2.62
+
+### Patch Changes
+
+- version bump
+  s Please enter a summary for your changes.
+- Updated dependencies
+  - @ballerine/config@1.1.30
+  - @ballerine/ui@0.5.62
+
+## 1.2.61
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.61
+
+## 1.2.60
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/config@1.1.29
+  - @ballerine/ui@0.5.60
+
+## 1.2.59
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.59
+
+## 1.2.58
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.58
+
+## 1.2.57
+
+### Patch Changes
+
+- Updated traffic-related stats in the "Website credibility" tab.
+- Updated dependencies
+  - @ballerine/ui@0.5.57
+
+## 1.2.56
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.56
+
+## 1.2.55
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.55
+
+## 1.2.54
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.54
+
+## 1.2.53
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.53
+
+## 1.2.52
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.52
+
+## 1.2.51
+
+### Patch Changes
+
+- core
+- Updated dependencies
+  - @ballerine/config@1.1.28
+  - @ballerine/ui@0.5.51
+
+## 1.2.50
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/config@1.1.27
+  - @ballerine/ui@0.5.50
+
+## 1.2.49
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.49
+
+## 1.2.48
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/config@1.1.26
+  - @ballerine/ui@0.5.48
+
+## 1.2.47
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.47
+
+## 1.2.46
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.46
+
+## 1.2.45
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/config@1.1.25
+  - @ballerine/ui@0.5.45
+
+## 1.2.44
+
+### Patch Changes
+
+- Cump
+- Updated dependencies
+  - @ballerine/config@1.1.24
+  - @ballerine/ui@0.5.44
+
+## 1.2.43
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.43
+
+## 1.2.42
+
+### Patch Changes
+
+- Change
+- Updated dependencies
+  - @ballerine/config@1.1.23
+  - @ballerine/ui@0.5.42
+
+## 1.2.41
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.41
+
+## 1.2.40
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/config@1.1.22
+  - @ballerine/ui@0.5.40
+
+## 1.2.39
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.39
+
+## 1.2.38
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.38
+
+## 1.2.37
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/config@1.1.21
+  - @ballerine/ui@0.5.37
+
+## 1.2.36
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.36
+
+## 1.2.35
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/config@1.1.19
+  - @ballerine/ui@0.5.35
+
+## 1.2.34
+
+### Patch Changes
+
+- Updated dependencies
+- Bump
+- Updated dependencies
+  - @ballerine/config@1.1.18
+  - @ballerine/ui@0.5.34
+
+## 1.2.33
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/config@1.1.17
+  - @ballerine/ui@0.5.33
+
 ## 1.2.32
 
 ### Patch Changes

@@ -15,11 +15,13 @@ export const StateManager = ({
   children,
   workflowId,
   initialContext,
+  config,
+  additionalContext,
 }: StateManagerProps) => {
   const machine = useMemo(() => {
     const initialMachineState = {
       ...initialContext,
-      state: initialContext?.flowConfig?.appState,
+      state: initialContext?.collectionFlow?.state?.currentStep,
     };
 
     const machine = createStateMachine(
@@ -28,13 +30,15 @@ export const StateManager = ({
       definitionType,
       extensions,
       initialMachineState,
+      additionalContext,
     );
 
     machine.overrideContext(initialMachineState);
-    return machine;
-  }, []);
 
-  const { machineApi } = useMachineLogic(machine);
+    return machine;
+  }, [additionalContext]);
+
+  const { machineApi } = useMachineLogic(machine, additionalContext);
   const {
     contextPayload,
     isPluginLoading,
@@ -60,13 +64,16 @@ export const StateManager = ({
       },
       state,
       payload: contextPayload,
+      config,
       isPluginLoading: isPluginLoading,
     };
+
     return ctx;
   }, [
     state,
     contextPayload,
     isPluginLoading,
+    config,
     getState,
     sendEvent,
     invokePlugin,

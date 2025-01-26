@@ -1,3 +1,5 @@
-import { ISettings } from '@/common/types/settings';
+import { ITheme } from '@/common/types/settings';
 
-export type ThemeContext = ISettings['theme'];
+export interface IThemeContext {
+  themeDefinition: ITheme;
+}

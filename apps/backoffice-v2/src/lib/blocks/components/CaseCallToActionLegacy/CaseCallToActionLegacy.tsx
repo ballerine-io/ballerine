@@ -132,7 +132,7 @@ export const CaseCallToActionLegacy: FunctionComponent<ICaseCallToActionLegacyPr
           <DialogFooter>
             <DialogClose asChild>
               <Button
-                className={ctw(`gap-x-2`, {
+                className={ctw(`gap-x-2 !bg-foreground`, {
                   loading: isLoadingRevisionCase,
                 })}
                 disabled={isLoadingRevisionCase}

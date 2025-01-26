@@ -14,6 +14,7 @@ export type TTextWithNAFallback = <TElement extends ElementType = 'span'>(
 ) => ReactNode;
 
 export const TextWithNAFallback: TTextWithNAFallback = forwardRef(
+  // @ts-ignore
   <TElement extends ElementType = 'span'>(
     {
       as,

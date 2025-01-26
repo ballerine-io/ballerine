@@ -1,9 +1,9 @@
 import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 import { z } from 'zod';
 import { AlertStatus, AlertStatuses, TAlertsList } from '@/domains/alerts/fetchers';
-import { BooleanishSchema } from '@ballerine/ui';
+import { BooleanishRecordSchema } from '@ballerine/ui';
 
-export const getAlertsSearchSchema = (authenticatedUserId: string | undefined) =>
+export const getAlertsSearchSchema = () =>
   BaseSearchSchema.extend({
     sortBy: z
       .enum(['dataTimestamp', 'status'] as const satisfies ReadonlyArray<
@@ -23,7 +23,7 @@ export const getAlertsSearchSchema = (authenticatedUserId: string | undefined) =
         state: [],
         correlationIds: [],
       }),
-    selected: BooleanishSchema.optional(),
+    selected: BooleanishRecordSchema.optional(),
     businessId: z.string().optional(),
     counterpartyId: z.string().optional(),
   });

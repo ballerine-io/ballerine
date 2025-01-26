@@ -23,4 +23,6 @@ export * from './ScrollArea';
 export * from './Skeleton';
 export * from './Table';
 export * from './TextWithNAFallback';
+export * from './Tooltip';
 export * from './WarningFilledSvg';
+export * from './Chart';

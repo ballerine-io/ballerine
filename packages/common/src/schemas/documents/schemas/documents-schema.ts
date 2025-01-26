@@ -298,6 +298,7 @@ export const DocumentsSchema = Type.Array(
                 Type.String(),
                 Type.String({
                   enum: [
+                    'Fraud Suspected',
                     'Suspicious document',
                     'Document does not match customer profile',
                     'Potential identity theft',

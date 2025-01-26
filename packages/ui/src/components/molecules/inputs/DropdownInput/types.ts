@@ -32,4 +32,5 @@ export interface DropdownInputProps {
     };
   };
   testId?: string;
+  textInputClassName?: string;
 }

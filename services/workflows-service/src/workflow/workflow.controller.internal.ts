@@ -32,7 +32,10 @@ import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 // import * as nestAccessControl from 'nest-access-control';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
+import { WorkflowEventInputSchema } from '@/workflow/dtos/workflow-event-input';
 import { FilterQuery } from '@/workflow/types';
+import { type Static, Type } from '@sinclair/typebox';
+import { Validate } from 'ballerine-nestjs-typebox';
 import * as errors from '../errors';
 import { DocumentUpdateParamsInput } from './dtos/document-update-params-input';
 import { DocumentUpdateInput } from './dtos/document-update-update-input';
@@ -44,9 +47,6 @@ import {
 } from './dtos/workflow-where-unique-input';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
-import { Validate } from 'ballerine-nestjs-typebox';
-import { type Static, Type } from '@sinclair/typebox';
-import { WorkflowEventInputSchema } from '@/workflow/dtos/workflow-event-input';
 
 @ApiExcludeController()
 @common.Controller('internal/workflows')
@@ -143,7 +143,6 @@ export class WorkflowControllerInternal {
     status: 400,
     description: 'Validation error',
     schema: Type.Object({
-      errorCode: Type.Literal('BadRequest'),
       message: Type.String(),
       statusCode: Type.Literal(400),
       timestamp: Type.String({
@@ -246,6 +245,7 @@ export class WorkflowControllerInternal {
     return await this.service.updateDocumentById(
       {
         workflowId: params?.id,
+        directorId: data?.directorId,
         documentId: params?.documentId,
         validateDocumentSchema: false,
         documentsUpdateContextMethod: query.contextUpdateMethod,
@@ -289,9 +289,10 @@ export class WorkflowControllerInternal {
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     try {
-      return await this.service.updateDocumentDecisionById(
+      const workflowData = await this.service.updateDocumentDecisionById(
         {
           workflowId: params?.id,
+          directorId: data?.directorId,
           documentId: params?.documentId,
           documentsUpdateContextMethod: query.contextUpdateMethod,
         },
@@ -303,6 +304,8 @@ export class WorkflowControllerInternal {
         projectIds,
         currentProjectId,
       );
+
+      return workflowData;
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
@@ -338,6 +341,24 @@ export class WorkflowControllerInternal {
     }
   }
 
+  @common.Get(':id/documents/:documentId/run-ocr')
+  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseGuards(WorkflowAssigneeGuard)
+  async runDocumentOcr(
+    @common.Param() params: DocumentUpdateParamsInput,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    const ocrResult = await this.service.runOCROnDocument({
+      workflowRuntimeId: params?.id,
+      documentId: params?.documentId,
+      projectId: currentProjectId,
+    });
+
+    return ocrResult;
+  }
+
   // @nestAccessControl.UseRoles({
   //   resource: 'Workflow',
   //   action: 'delete',
@@ -362,7 +383,6 @@ export class WorkflowControllerInternal {
 
             definition: true,
             definitionType: true,
-            backend: true,
 
             extensions: true,
             persistStates: true,

@@ -55,13 +55,6 @@ export const UboPluginSchema = Type.Optional(
     message: Type.Optional(Type.String()),
     orderId: Type.Optional(Type.String()),
     invokedAt: Type.Optional(Type.Number()),
-    data: Type.Optional(
-      Type.Object({
-        uboList: Type.Array(UboSchema),
-        otherUBOList: Type.Array(UboSchema),
-        uboGraph: Type.Array(UboGraphSchema),
-        fullUBOGraph: Type.Array(UboGraphSchema),
-      }),
-    ),
+    data: Type.Optional(Type.Record(Type.String(), Type.Unknown())),
   }),
 );

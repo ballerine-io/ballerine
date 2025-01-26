@@ -28,3 +28,4 @@ export { getSeverityFromRiskScore } from './get-severity-from-risk-score';
 export { valueOrNA } from './value-or-na';
 export { booleanToYesOrNo } from './boolean-to-yes-or-no';
 export { type IErrorWithMessage } from './is-error-with-message';
+export { sign, computeHash } from './sign';

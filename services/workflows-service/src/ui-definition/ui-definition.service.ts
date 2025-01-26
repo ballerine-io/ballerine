@@ -1,9 +1,14 @@
-import type { TProjectId, TProjectIds } from '@/types';
+import {
+  TranslationService,
+  ITranslationServiceResource,
+} from '@/providers/translation/translation.service';
+import type { AnyRecord, TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { replaceNullsWithUndefined } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
-import { Prisma, UiDefinitionContext } from '@prisma/client';
+import { Prisma, UiDefinition, UiDefinitionContext, WorkflowRuntimeData } from '@prisma/client';
+import { get } from 'lodash';
 
 @Injectable()
 export class UiDefinitionService {
@@ -65,13 +70,6 @@ export class UiDefinitionService {
     args: Omit<Prisma.UiDefinitionUpdateArgs, 'where'>,
     projectIds: TProjectIds,
   ) {
-    console.log({
-      ...args,
-      where: {
-        id,
-      },
-    });
-
     return await this.repository.update(
       {
         ...args,
@@ -83,17 +81,61 @@ export class UiDefinitionService {
     );
   }
 
-  async cloneUIDefinitionById(id: string, projectId: TProjectId) {
+  async cloneUIDefinitionById(id: string, projectId: TProjectId, newName: string) {
     const {
       createdAt,
       updatedAt,
       id: _,
+      crossEnvKey,
+      name,
       ...uiDefinition
     } = await this.repository.findById(id, {}, [projectId]);
 
-    //@ts-ignore
-    const uiDefinitionCopy = await this.create({ data: replaceNullsWithUndefined(uiDefinition) });
+    const uiDefinitionCopy = await this.create({
+      data: replaceNullsWithUndefined({
+        ...uiDefinition,
+        name: newName,
+      }),
+    });
 
     return uiDefinitionCopy;
+  }
+
+  traverseUiSchema(
+    uiSchema: Record<string, unknown>,
+    context: WorkflowRuntimeData['context'],
+    language: string,
+    _translationService: TranslationService,
+  ) {
+    for (const key in uiSchema) {
+      if (typeof uiSchema[key] === 'object' && uiSchema[key] !== null) {
+        // If the property is an object (including arrays), recursively traverse it
+        // @ts-expect-error - error from Prisma types fix
+        this.traverseUiSchema(uiSchema[key], context, language, _translationService);
+      } else if (typeof uiSchema[key] === 'string') {
+        const options: AnyRecord = {};
+
+        if (uiSchema.labelVariables) {
+          Object.entries(uiSchema.labelVariables).forEach(([key, value]) => {
+            options[key] = get(context, value);
+          });
+        }
+
+        uiSchema[key] = _translationService.translate(uiSchema[key] as string, language, options);
+      }
+    }
+
+    return uiSchema;
+  }
+
+  getTranslationServiceResources(
+    uiDefinition: UiDefinition & { locales?: unknown },
+  ): ITranslationServiceResource[] | undefined {
+    if (!uiDefinition.locales) return undefined;
+
+    return Object.entries(uiDefinition.locales).map(([language, resource]) => ({
+      language,
+      resource,
+    }));
   }
 }

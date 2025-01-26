@@ -1,8 +1,10 @@
 import { Download, ExternalLinkIcon, FileText } from 'lucide-react';
 import { FunctionComponent } from 'react';
 
+import { ImageOCR } from '@/common/components/molecules/ImageOCR/ImageOCR';
 import { ImageViewer } from '@/common/components/organisms/ImageViewer/ImageViewer';
 import { ctw } from '@/common/utils/ctw/ctw';
+import { isCsv } from '@/common/utils/is-csv/is-csv';
 import { isPdf } from '@/common/utils/is-pdf/is-pdf';
 import { useDocumentsToolbarLogic } from '@/pages/Entity/components/Case/hooks/useDocumentsToolbarLogic/useDocumentsToolbarLogic';
 
@@ -13,6 +15,9 @@ export const DocumentsToolbar: FunctionComponent<{
   onRotateDocument: () => void;
   onOpenDocumentInNewTab: (id: string) => void;
   shouldDownload: boolean;
+  onOcrPressed?: () => void;
+  isOCREnabled: boolean;
+  isLoadingOCR: boolean;
   fileToDownloadBase64: string;
 }> = ({
   image,
@@ -20,7 +25,10 @@ export const DocumentsToolbar: FunctionComponent<{
   hideOpenExternalButton,
   onRotateDocument,
   onOpenDocumentInNewTab,
+  onOcrPressed,
   shouldDownload,
+  isLoadingOCR,
+  isOCREnabled,
   fileToDownloadBase64,
 }) => {
   const { onOpenInNewTabClick } = useDocumentsToolbarLogic({
@@ -30,7 +38,12 @@ export const DocumentsToolbar: FunctionComponent<{
   });
 
   return (
-    <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
+    <div className={`absolute bottom-4 right-4 z-50 flex space-x-2`}>
+      <ImageOCR
+        isOcrDisabled={!isOCREnabled}
+        onOcrPressed={onOcrPressed}
+        isLoadingOCR={isLoadingOCR}
+      />
       {!hideOpenExternalButton && !isLoading && image?.id && (
         <button
           type={`button`}
@@ -43,7 +56,7 @@ export const DocumentsToolbar: FunctionComponent<{
           <ExternalLinkIcon className={`p-0.5`} />
         </button>
       )}
-      {!isPdf(image) && !isLoading && (
+      {!isPdf(image) && !isCsv(image) && !isLoading && (
         <>
           <button
             type={`button`}

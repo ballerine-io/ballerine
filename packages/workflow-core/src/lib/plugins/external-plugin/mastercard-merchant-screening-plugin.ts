@@ -1,4 +1,5 @@
 import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
+import { State } from 'country-state-city';
 import { alpha2ToAlpha3 } from 'i18n-iso-countries';
 import { logger } from '../../logger';
 import { TContext } from '../../utils/types';
@@ -12,6 +13,7 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
     super({
       ...pluginParams,
       method: 'POST' as const,
+      whitelistedInputProperties: ['searchGlobally', 'merchant', 'principals'],
     });
   }
 
@@ -20,7 +22,6 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
 
     if (this.request && 'transformers' in this.request && this.request.transformers) {
       requestPayload = await this.transformData(this.request.transformers, context);
-
       const { isValidRequest, errorMessage } = await this.validateContent(
         this.request.schemaValidator,
         requestPayload,
@@ -28,7 +29,10 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
       );
 
       if (!isValidRequest) {
-        return this.returnErrorResponse(errorMessage!);
+        return this.returnErrorResponse(
+          errorMessage!,
+          this.generateRequestPayloadFromWhitelist(requestPayload),
+        );
       }
     }
 
@@ -37,6 +41,7 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
       const url = `${process.env.UNIFIED_API_URL}/merchant-screening/mastercard`;
       const entity = isObject(context.entity) ? context.entity : {};
       const countrySubdivisionSupportedCountries = ['US', 'CA'] as const;
+      const statesOfCountry = State.getStatesOfCountry(entity?.data?.address?.country);
       const address = {
         line1: [entity?.data?.address?.street, entity?.data?.address?.streetNumber]
           .filter(Boolean)
@@ -47,7 +52,9 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
         countrySubdivision: countrySubdivisionSupportedCountries.includes(
           entity?.data?.address?.country,
         )
-          ? requestPayload?.countrySubdivision
+          ? statesOfCountry.find(
+              state => state.name.toLowerCase() === entity?.data?.address?.state?.toLowerCase(),
+            )?.isoCode
           : undefined,
       };
 
@@ -99,13 +106,20 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
         );
 
         if (!isValidResponse) {
-          return this.returnErrorResponse(errorMessage!);
+          return this.returnErrorResponse(
+            errorMessage!,
+            this.generateRequestPayloadFromWhitelist(requestPayload),
+          );
         }
 
         if (this.successAction) {
-          return this.returnSuccessResponse(this.successAction, {
-            ...responseBody,
-          });
+          return this.returnSuccessResponse(
+            this.successAction,
+            {
+              ...responseBody,
+            },
+            this.generateRequestPayloadFromWhitelist(requestPayload),
+          );
         }
 
         return {};
@@ -114,12 +128,16 @@ export class MastercardMerchantScreeningPlugin extends ApiPlugin {
 
         return this.returnErrorResponse(
           'Request Failed: ' + apiResponse.statusText + ' Error: ' + JSON.stringify(errorResponse),
+          this.generateRequestPayloadFromWhitelist(requestPayload),
         );
       }
     } catch (error) {
       logger.error('Error occurred while sending an API request', { error });
 
-      return this.returnErrorResponse(isErrorWithMessage(error) ? error.message : '');
+      return this.returnErrorResponse(
+        isErrorWithMessage(error) ? error.message : '',
+        this.generateRequestPayloadFromWhitelist(requestPayload),
+      );
     }
   }
 }

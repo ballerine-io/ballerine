@@ -1,19 +1,18 @@
 import { SortDirection } from '@ballerine/common';
-import { ExtractCellProps } from '@ballerine/blocks';
 
-export const sortData = ({
+export const sortData = <TObj extends { title: string }>({
   data,
   direction = 'asc',
   predefinedOrder = [],
 }: {
   direction?: SortDirection;
   predefinedOrder?: string[];
-  data: ExtractCellProps<'details'>['value']['data'];
+  data: TObj[];
 }) => {
-  const orderedData = predefinedOrder.map(key => data.find(value => value.title === key));
+  const orderedData = predefinedOrder.map(key => data.find(item => item.title === key));
 
   const restData = data
-    .filter(data => !predefinedOrder.includes(data.title))
+    .filter(item => !predefinedOrder.includes(item.title))
     .sort((a, b) =>
       direction === 'asc' ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title),
     );

@@ -5,23 +5,19 @@ import { UiDefDefinition, UiSchemaStep } from '@/collection-flow/models/flow-ste
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { type ITokenScope } from '@/common/decorators/token-scope.decorator';
 import { CustomerService } from '@/customer/customer.service';
-import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
+import { TCustomerWithFeatures } from '@/customer/types';
 import { EndUserService } from '@/end-user/end-user.service';
 import { NotFoundException } from '@/errors';
 import { FileService } from '@/providers/file/file.service';
-import {
-  ITranslationServiceResource,
-  TranslationService,
-} from '@/providers/translation/translation.service';
+import { TranslationService } from '@/providers/translation/translation.service';
 import type { TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { AnyRecord } from '@ballerine/common';
+import { AnyRecord, DefaultContextSchema, TCollectionFlowConfig } from '@ballerine/common';
 import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
-import { EndUser, Prisma, UiDefinition, WorkflowRuntimeData } from '@prisma/client';
+import { EndUser, Prisma, WorkflowRuntimeData } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import get from 'lodash/get';
 
@@ -31,7 +27,6 @@ export class CollectionFlowService {
     protected readonly logger: AppLoggerService,
     protected readonly endUserService: EndUserService,
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
-    protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly workflowService: WorkflowService,
     protected readonly businessService: BusinessService,
     protected readonly uiDefinitionService: UiDefinitionService,
@@ -39,39 +34,12 @@ export class CollectionFlowService {
     protected readonly fileService: FileService,
   ) {}
 
-  async getCustomerDetails(projectId: TProjectId): Promise<TCustomerWithDefinitionsFeatures> {
+  async getCustomerDetails(projectId: TProjectId): Promise<TCustomerWithFeatures> {
     return this.customerService.getByProjectId(projectId);
   }
 
   async getUser(endUserId: string, projectId: TProjectId): Promise<EndUser> {
     return await this.endUserService.getById(endUserId, {}, [projectId]);
-  }
-
-  traverseUiSchema(
-    uiSchema: Record<string, unknown>,
-    context: WorkflowRuntimeData['context'],
-    language: string,
-    _translationService: TranslationService,
-  ) {
-    for (const key in uiSchema) {
-      if (typeof uiSchema[key] === 'object' && uiSchema[key] !== null) {
-        // If the property is an object (including arrays), recursively traverse it
-        // @ts-expect-error - error from Prisma types fix
-        this.traverseUiSchema(uiSchema[key], context, language, _translationService);
-      } else if (typeof uiSchema[key] === 'string') {
-        const options: AnyRecord = {};
-
-        if (uiSchema.labelVariables) {
-          Object.entries(uiSchema.labelVariables).forEach(([key, value]) => {
-            options[key] = get(context, value);
-          });
-        }
-
-        uiSchema[key] = _translationService.translate(uiSchema[key] as string, language, options);
-      }
-    }
-
-    return uiSchema;
   }
 
   async getFlowConfiguration(
@@ -87,7 +55,7 @@ export class CollectionFlowService {
       projectIds,
     );
 
-    const uiDefintion = await this.uiDefinitionService.getByWorkflowDefinitionId(
+    const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
       workflowDefinition.id,
       'collection_flow' as const,
       projectIds,
@@ -95,7 +63,7 @@ export class CollectionFlowService {
     );
 
     const translationService = new TranslationService(
-      this.getTranslationServiceResources(uiDefintion),
+      this.uiDefinitionService.getTranslationServiceResources(uiDefinition),
     );
 
     await translationService.init();
@@ -103,34 +71,22 @@ export class CollectionFlowService {
     return {
       id: workflowDefinition.id,
       config: workflowDefinition.config,
-      uiOptions: uiDefintion.uiOptions,
+      uiOptions: uiDefinition.uiOptions,
       uiSchema: {
         // @ts-expect-error - error from Prisma types fix
-        elements: this.traverseUiSchema(
+        elements: this.uiDefinitionService.traverseUiSchema(
           // @ts-expect-error - error from Prisma types fix
-          uiDefintion.uiSchema.elements,
+          uiDefinition.uiSchema.elements,
           context,
           language,
           translationService,
         ) as UiSchemaStep[],
+        theme: uiDefinition.theme,
       },
-      definition: uiDefintion.definition
-        ? (uiDefintion.definition as unknown as UiDefDefinition)
+      definition: uiDefinition.definition
+        ? (uiDefinition.definition as unknown as UiDefDefinition)
         : undefined,
     };
-  }
-
-  private getTranslationServiceResources(
-    uiDefinition: UiDefinition & { locales?: unknown },
-  ): ITranslationServiceResource[] | undefined {
-    if (!uiDefinition.locales) return undefined;
-
-    const resources = Object.entries(uiDefinition.locales).map(([language, resource]) => ({
-      language,
-      resource,
-    }));
-
-    return resources;
   }
 
   // async updateFlowConfiguration(
@@ -227,7 +183,7 @@ export class CollectionFlowService {
   }
 
   async syncWorkflow(payload: UpdateFlowDto, tokenScope: ITokenScope) {
-    if (payload.data.endUser) {
+    if (payload.data.endUser && tokenScope.endUserId) {
       const { ballerineEntityId: _, ...endUserData } = payload.data.endUser;
       await this.endUserService.updateById(tokenScope.endUserId, { data: endUserData });
     }
@@ -284,5 +240,20 @@ export class CollectionFlowService {
       customer.name,
       { shouldDownloadFromSource: false },
     );
+  }
+
+  async getCollectionFlowContext(
+    tokenScope: ITokenScope,
+  ): Promise<{ context: DefaultContextSchema; config: TCollectionFlowConfig }> {
+    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
+      tokenScope.workflowRuntimeDataId,
+      { select: { context: true, state: true, config: true } },
+      [tokenScope.projectId],
+    );
+
+    return {
+      context: workflowRuntimeData.context,
+      config: workflowRuntimeData.config,
+    };
   }
 }

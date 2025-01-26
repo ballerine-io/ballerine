@@ -36,12 +36,12 @@ import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { BusinessService } from '@/business/business.service';
 import { BusinessReportService } from '@/business-report/business-report.service';
-import { BusinessReportRepository } from '@/business-report/business-report.repository';
 import { RiskRuleService } from '@/rule-engine/risk-rule.service';
 import { RuleEngineService } from '@/rule-engine/rule-engine.service';
 import { NotionService } from '@/notion/notion.service';
 import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
+import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
 
 const API_KEY = faker.datatype.uuid();
 
@@ -62,7 +62,6 @@ describe('#EndUserControllerExternal', () => {
       FilterService,
       ProjectScopeService,
       BusinessReportService,
-      BusinessReportRepository,
       FilterRepository,
       FileRepository,
       FileService,
@@ -90,6 +89,7 @@ describe('#EndUserControllerExternal', () => {
       NotionService,
       SentryService,
       SecretsManagerFactory,
+      MerchantMonitoringClient,
     ];
     endUserService = (await fetchServiceFromModule(EndUserService, servicesProviders, [
       PrismaModule,

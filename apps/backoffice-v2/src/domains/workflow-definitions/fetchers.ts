@@ -30,6 +30,41 @@ export const WorkflowDefinitionConfigSchema = z
     theme: WorkflowDefinitionConfigThemeSchema.default({
       type: WorkflowDefinitionConfigThemeEnum.KYB,
     }),
+    uiOptions: z
+      .object({
+        backoffice: z
+          .object({
+            blocks: z
+              .object({
+                businessInformation: z
+                  .object({
+                    predefinedOrder: z.array(z.string()).default([]),
+                  })
+                  .optional(),
+              })
+              .optional(),
+          })
+          .optional(),
+      })
+      .optional(),
+    editableContext: z
+      .object({
+        kyc: z
+          .object({
+            entity: z.boolean().optional(),
+          })
+          .optional(),
+      })
+      .optional(),
+    ubos: z
+      .object({
+        create: z
+          .object({
+            enabled: z.boolean().optional(),
+          })
+          .optional(),
+      })
+      .optional(),
   })
   .passthrough()
   .nullable();
@@ -49,6 +84,10 @@ export const WorkflowDefinitionByIdSchema = ObjectWithIdSchema.extend({
       commonPlugins: z.array(PluginSchema).optional(),
       childWorkflowPlugins: z.array(PluginSchema).optional(),
     })
+    .optional()
+    .nullable(),
+  uiDefinitions: z
+    .array(z.object({ id: z.string(), uiContext: z.string() }))
     .optional()
     .nullable(),
 });

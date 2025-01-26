@@ -4,6 +4,8 @@ import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/
 import { useLocation } from 'react-router-dom';
 import { createReportAdapter, useReportTabs } from '@ballerine/ui';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
+import { UnknownRecord } from 'type-fest';
+import { MERCHANT_REPORT_TYPES_MAP } from '@/domains/business-reports/constants';
 
 export const useWebsiteMonitoringBusinessReportTab = ({
   businessReport,
@@ -11,18 +13,19 @@ export const useWebsiteMonitoringBusinessReportTab = ({
   businessReport: TBusinessReport;
 }) => {
   const { tabs: tabsWithSummary, riskIndicators: originalRiskIndicators } = useReportTabs({
-    // Right now there is no `version` property on business reports.
-    reportVersion: businessReport?.report?.version,
-    report: businessReport?.report?.data ?? {},
-    companyName: businessReport?.companyName,
+    reportVersion: businessReport?.workflowVersion,
+    report: businessReport?.data ?? {},
+    isOnboarding: businessReport?.reportType === MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1,
+    companyName:
+      (businessReport?.data?.websiteCompanyAnalysis as UnknownRecord | undefined)?.companyName ??
+      '',
     Link: RiskIndicatorLink,
   });
   const adapter = createReportAdapter({
-    reportVersion: businessReport?.report?.version,
+    reportVersion: businessReport?.workflowVersion,
   });
-  const { riskLevels, riskScore, summary, homepageScreenshotUrl } = adapter(
-    businessReport?.report?.data ?? {},
-  );
+  const { riskLevels, riskScore, summary, ongoingMonitoringSummary, homepageScreenshotUrl } =
+    adapter(businessReport?.data ?? {});
   const tabs = tabsWithSummary?.filter(tab => tab.value !== 'summary');
   const [{ activeMonitoringTab }] = useSearchParamsByEntity();
   const { search } = useLocation();
@@ -51,6 +54,7 @@ export const useWebsiteMonitoringBusinessReportTab = ({
     riskScore,
     tabs,
     summary,
+    ongoingMonitoringSummary,
     getUpdatedSearchParamsWithActiveMonitoringTab,
     search,
     homepageScreenshotUrl,

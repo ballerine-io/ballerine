@@ -1,8 +1,8 @@
-import posthog from 'posthog-js';
-import * as Sentry from '@sentry/react';
-import { sentryRouterInstrumentation } from '@/router';
-import { getApiOrigin } from '@/get-api-origin/get-api-origin';
+import { getApiOrigin } from '@/common/utils/get-api-origin/get-api-origin';
 import { env } from '@/env/env';
+import { sentryRouterInstrumentation } from '@/router';
+import * as Sentry from '@sentry/react';
+import posthog from 'posthog-js';
 
 export const initializeMonitoring = () => {
   if (window.location.host.includes('127.0.0.1') || window.location.host.includes('localhost')) {
@@ -48,4 +48,34 @@ export const initializeMonitoring = () => {
       replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
     });
   }
+};
+
+export const updateSentryUser = (userMetadata: {
+  id?: string;
+  email?: string;
+  fullName?: string;
+}) => {
+  Sentry.setUser({
+    id: userMetadata.id,
+    email: userMetadata.email,
+    username: userMetadata.fullName,
+  });
+};
+
+export const updatePostHogUser = (userMetadata: {
+  id?: string;
+  email?: string;
+  fullName?: string;
+}) => {
+  if (userMetadata.email) {
+    posthog.identify(userMetadata.email, userMetadata);
+  }
+};
+
+export const clearSentryUser = () => {
+  Sentry.setUser(null);
+};
+
+export const clearPostHogUser = () => {
+  posthog.reset();
 };

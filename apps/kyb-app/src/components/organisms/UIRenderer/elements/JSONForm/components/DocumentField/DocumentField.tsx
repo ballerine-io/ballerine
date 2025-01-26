@@ -18,10 +18,11 @@ import { AnyObject, ErrorsList, RJSFInputProps } from '@ballerine/ui';
 import { HTTPError } from 'ky';
 import get from 'lodash/get';
 import set from 'lodash/set';
-import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 export interface DocumentFieldParams {
   documentData: Partial<Document>;
+  acceptFileFormats?: string;
 }
 
 export const DocumentField = (
@@ -62,6 +63,8 @@ export const DocumentField = (
     [documentDefinition],
   );
   const { validationErrors, warnings } = useUIElementErrors(documentDefinition, getErrorKey);
+  const warningsRef = useRef(warnings);
+
   const { isTouched } = elementState;
 
   const fileId = useMemo(() => {
@@ -229,14 +232,19 @@ export const DocumentField = (
       <FileUploaderField
         uploadFile={fileUploader}
         disabled={
-          //@ts-ignore
-          state.isRevision && warnings.length ? false : elementState.isLoading || restProps.disabled
+          elementState.isLoading ||
+          (state.isRevision && warnings.length
+            ? false
+            : warningsRef.current?.length
+            ? false
+            : restProps.disabled)
         }
         fileId={fileId}
         fileRepository={collectionFlowFileStorage}
         onBlur={onBlur as () => void}
         testId={definition.name}
         onChange={handleChange}
+        acceptFileFormats={definition.options.acceptFileFormats}
       />
       {!!warnings.length && <ErrorsList errors={warnings.map(err => err.message)} />}
       {isTouched && !!validationErrors.length && (

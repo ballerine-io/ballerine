@@ -1,5 +1,102 @@
 # @ballerine/rules-engine-lib
 
+## 0.5.32
+
+### Patch Changes
+
+- version bump
+
+## 0.5.31
+
+### Patch Changes
+
+- version bump
+
+## 0.5.30
+
+### Patch Changes
+
+- version bump
+  s Please enter a summary for your changes.
+
+## 0.5.29
+
+### Patch Changes
+
+- bump
+
+## 0.5.28
+
+### Patch Changes
+
+- core
+
+## 0.5.27
+
+### Patch Changes
+
+- Bump
+
+## 0.5.26
+
+### Patch Changes
+
+- bump
+
+## 0.5.25
+
+### Patch Changes
+
+- version bump
+
+## 0.5.24
+
+### Patch Changes
+
+- Cump
+
+## 0.5.23
+
+### Patch Changes
+
+- Change
+
+## 0.5.22
+
+### Patch Changes
+
+- bump
+
+## 0.5.21
+
+### Patch Changes
+
+- bump
+
+## 0.5.20
+
+### Patch Changes
+
+- bump
+
+## 0.5.19
+
+### Patch Changes
+
+- version bump
+
+## 0.5.18
+
+### Patch Changes
+
+- Bump
+
+## 0.5.17
+
+### Patch Changes
+
+- Bump
+
 ## 0.5.16
 
 ### Patch Changes

@@ -4,6 +4,7 @@ export interface IFilter {
   entity: string;
   query: object;
   createdAt: string;
+  projectId: string;
 }
 
 export interface GetFiltersListDto {
@@ -17,4 +18,20 @@ export interface GetFiltersResponse {
     total: number;
     pages: number;
   };
+}
+export interface CreateFilterDto {
+  name: string;
+  entity: string;
+  query: {
+    where: {
+      businessId: {
+        not: null;
+      };
+      workflowDefinitionId: {
+        in: string[];
+      };
+    };
+    select: object;
+  };
+  projectId: string;
 }

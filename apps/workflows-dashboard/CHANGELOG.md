@@ -1,5 +1,151 @@
 # @ballerine/workflows-dashboard
 
+## 0.2.32
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.68
+  - @ballerine/ui@0.5.67
+
+## 0.2.31
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.67
+  - @ballerine/ui@0.5.66
+
+## 0.2.30
+
+### Patch Changes
+
+- version bump
+  s Please enter a summary for your changes.
+- Updated dependencies
+  - @ballerine/common@0.9.66
+  - @ballerine/ui@0.5.62
+
+## 0.2.29
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.65
+  - @ballerine/ui@0.5.60
+
+## 0.2.28
+
+### Patch Changes
+
+- core
+- Updated dependencies
+  - @ballerine/common@0.9.59
+  - @ballerine/ui@0.5.51
+
+## 0.2.27
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.58
+  - @ballerine/ui@0.5.50
+
+## 0.2.26
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.55
+  - @ballerine/ui@0.5.48
+
+## 0.2.25
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.52
+  - @ballerine/ui@0.5.45
+
+## 0.2.24
+
+### Patch Changes
+
+- Cump
+- Updated dependencies
+  - @ballerine/common@0.9.50
+  - @ballerine/ui@0.5.44
+
+## 0.2.23
+
+### Patch Changes
+
+- Change
+- Updated dependencies
+  - @ballerine/common@0.9.48
+  - @ballerine/ui@0.5.42
+
+## 0.2.22
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.44
+  - @ballerine/common@0.9.45
+  - @ballerine/ui@0.5.40
+
+## 0.2.21
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.39
+  - @ballerine/ui@0.5.37
+
+## 0.2.20
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.38
+  - @ballerine/ui@0.5.36
+
+## 0.2.19
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.37
+  - @ballerine/ui@0.5.35
+
+## 0.2.18
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.34
+  - @ballerine/ui@0.5.34
+
+## 0.2.17
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.33
+  - @ballerine/ui@0.5.33
+
 ## 0.2.16
 
 ### Patch Changes

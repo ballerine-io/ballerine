@@ -1,0 +1,175 @@
+# Deploys a temporary environment for testing a version of the code when a pull request is created / updated with a 'deploy-pr' label
+name: Deploy PR Environment
+concurrency:
+  group: "deploy-${{ github.event.pull_request.head.ref }}"
+  cancel-in-progress: false
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [ labeled, synchronize ]
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+  packages: write
+
+env:
+  REF: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || github.event_name == 'pull_request' && github.event.pull_request.head.ref }}
+
+jobs:
+  deploy-dev-pr-environment:
+    if: contains(github.event.pull_request.labels.*.name, 'deploy-pr') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    outputs:
+      env_name: ${{ steps.env-name.outputs.PR_ENV_NAME }}
+      ref: ${{ steps.clean-ref.outputs.ref }}
+    steps:
+      - name: Clean Ref
+        id: clean-ref
+        shell: bash
+        run: |
+          BRANCH_NAME=${{ env.REF }}
+          CLEAN_BRANCH_NAME=${BRANCH_NAME#refs/heads/}
+          echo "ref=$CLEAN_BRANCH_NAME" >> $GITHUB_OUTPUT
+
+      - name: Checkout the Tool and actions
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.clean-ref.outputs.ref }}
+          fetch-depth: 1
+
+      - name: "Sanitize ENV name"
+        id: sanitize_env
+        shell: bash
+        run: |
+          SANITIZED_BRANCH_NAME=$(echo -n "${{ steps.clean-ref.outputs.ref }}" | tr "/" "-")
+          echo "Sanitized branch name: $SANITIZED_BRANCH_NAME"
+          TRIMMED_BRANCH_NAME=$(echo -n "$SANITIZED_BRANCH_NAME" | cut -c 1-7)
+          echo "sanitized_env_name=$SANITIZED_BRANCH_NAME" >> $GITHUB_OUTPUT;
+          echo "trimmed_env_name=$TRIMMED_BRANCH_NAME" >> $GITHUB_OUTPUT;
+        
+      - name: Environment deployment
+        id: env-name
+        run: |
+          echo "deploying environment"
+          echo "PR_ENV_NAME=${{ steps.sanitize_env.outputs.trimmed_env_name }}" >> $GITHUB_ENV
+          echo "PR_ENV_NAME=${{ steps.sanitize_env.outputs.trimmed_env_name }}" >> $GITHUB_OUTPUT
+  
+  build-wf-service:
+    needs: deploy-dev-pr-environment
+    uses: ./.github/workflows/build-push-docker-images.yml
+    with:
+      registry: ghcr.io/${{ github.repository_owner }}
+      context: services/workflows-service
+      image_name: workflows-service
+      ref: ${{ needs.deploy-dev-pr-environment.outputs.ref }}
+      tag: ${{ needs.deploy-dev-pr-environment.outputs.env_name }}
+      file: 'services/workflows-service/Dockerfile'
+
+  build-wf-service-ee:
+    needs: [deploy-dev-pr-environment,build-wf-service]
+    uses: ./.github/workflows/build-push-docker-images.yml
+    with:
+      registry: ghcr.io/${{ github.repository_owner }}
+      context: services/workflows-service
+      image_name: workflows-service-ee
+      ref: ${{ needs.deploy-dev-pr-environment.outputs.ref }}
+      tag: ${{ needs.deploy-dev-pr-environment.outputs.env_name }}
+      file: 'services/workflows-service/Dockerfile.ee'
+
+  build-backoffice:
+    needs: [deploy-dev-pr-environment]
+    uses: ./.github/workflows/build-push-docker-images.yml
+    with:
+      registry: ghcr.io/${{ github.repository_owner }}
+      context: apps/backoffice-v2
+      image_name: backoffice
+      ref: ${{ needs.deploy-dev-pr-environment.outputs.ref }}
+      tag: ${{ needs.deploy-dev-pr-environment.outputs.env_name }}
+      file: 'apps/backoffice-v2/Dockerfile.preview'
+
+  build-kyb:
+    needs: [deploy-dev-pr-environment]
+    uses: ./.github/workflows/build-push-docker-images.yml
+    with:
+      registry: ghcr.io/${{ github.repository_owner }}
+      context: apps/kyb-app
+      image_name: kyb-app
+      ref: ${{ needs.deploy-dev-pr-environment.outputs.ref }}
+      tag: ${{ needs.deploy-dev-pr-environment.outputs.env_name }}
+      file: 'apps/kyb-app/Dockerfile.preview'
+
+  build-dashboard:
+    needs: [deploy-dev-pr-environment]
+    uses: ./.github/workflows/build-push-docker-images.yml
+    with:
+      registry: ghcr.io/${{ github.repository_owner }}
+      context: apps/workflows-dashboard
+      image_name: workflows-dashboard
+      ref: ${{ needs.deploy-dev-pr-environment.outputs.ref }}
+      tag: ${{ needs.deploy-dev-pr-environment.outputs.env_name }}
+      file: 'apps/workflows-dashboard/Dockerfile.preview'
+  
+  build-unified-api:
+    runs-on: ubuntu-latest
+    needs: [deploy-dev-pr-environment]
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: 'arm64,arm'
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ vars.PREVIEW_OIDC_ROLE }}
+          aws-region: ${{ vars.PREVIEW_AWS_REGION }}
+
+      # Access the secret
+      - name: Retrieve secret from Secrets Manager
+        id: get-secret
+        run: |
+          secret_value=$(aws secretsmanager get-secret-value --secret-id ${{ vars.PREVIEW_SECRET }} --query 'SecretString' --output text | jq -r '.SUBMODULE_SECRET')
+          echo "SUBMODULE_SECRET=$secret_value" >> $GITHUB_ENV
+          echo "SUBMODULE_SECRET=$secret_value" >> $GITHUB_OUTPUT
+
+      - name: Log in to the container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ghcr.io/${{ github.repository_owner }}
+          username: ${{ github.actor }}
+          password: ${{ steps.get-secret.outputs.SUBMODULE_SECRET }}
+
+      - name: Checkout repository
+        run: |
+          docker pull ghcr.io/${{ github.repository_owner }}/${{ vars.UNIFIED_IMAGE_NAME }}:latest
+          docker tag ghcr.io/${{ github.repository_owner }}/${{ vars.UNIFIED_IMAGE_NAME }}:latest ghcr.io/${{ github.repository_owner }}/${{ vars.UNIFIED_IMAGE_NAME }}:${{ needs.deploy-dev-pr-environment.outputs.env_name }}
+          docker push ghcr.io/${{ github.repository_owner }}/${{ vars.UNIFIED_IMAGE_NAME }}:${{ needs.deploy-dev-pr-environment.outputs.env_name }} 
+
+  deploy-preview:
+    needs: [deploy-dev-pr-environment,build-wf-service,build-wf-service-ee,build-backoffice,build-kyb,build-dashboard,build-unified-api]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger workflow in another repo
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GIT_TOKEN }}
+          script: |
+            try {
+              await github.rest.repos.createDispatchEvent({
+                owner: 'ballerine-io',
+                repo: 'cloud-infra-config',
+                event_type: 'deploy-preview',
+                client_payload: {
+                  'ref': '${{ needs.deploy-dev-pr-environment.outputs.env_name }}'
+                }
+              });
+              console.log('Successfully triggered deploy-preview event');
+            } catch (error) {
+              console.error('Failed to trigger deploy-preview event:', error);
+              throw error;
+            }

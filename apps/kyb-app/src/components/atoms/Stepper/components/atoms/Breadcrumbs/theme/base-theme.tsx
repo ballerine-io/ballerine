@@ -14,11 +14,21 @@ export const baseBreadcrumbTheme: BreadcrumbTheme = {
     },
     outer: {
       className: outerCommonClassName,
-      activeClassName: ctw('border-[#007AFF33]'),
+      styles: {
+        borderColor: 'var(--stepper-breadcrumbs-idle-outer-border-color)',
+      },
+      activeStyles: {
+        borderColor: 'var(--stepper-breadcrumbs-idle-outer-active-border-color)',
+      },
     },
     wrapper: {
       className: ctw(wrapperCommonClassName, 'border'),
-      activeClassName: ctw('border-[#007AFF]'),
+      styles: {
+        borderColor: 'var(--stepper-breadcrumbs-idle-wrapper-border-color)',
+      },
+      activeStyles: {
+        borderColor: 'var(--stepper-breadcrumbs-idle-wrapper-active-border-color)',
+      },
     },
   },
   warning: {
@@ -28,7 +38,12 @@ export const baseBreadcrumbTheme: BreadcrumbTheme = {
     },
     outer: {
       className: outerCommonClassName,
-      activeClassName: 'border-[#FF8A0055]',
+      styles: {
+        borderColor: 'var(--stepper-breadcrumbs-warning-outer-border-color)',
+      },
+      activeStyles: {
+        borderColor: 'var(--stepper-breadcrumbs-warning-outer-active-border-color)',
+      },
     },
     wrapper: {
       className: wrapperCommonClassName,
@@ -41,11 +56,19 @@ export const baseBreadcrumbTheme: BreadcrumbTheme = {
     },
     outer: {
       className: outerCommonClassName,
-      activeClassName: 'border-[#00BD5933]',
+      styles: {
+        borderColor: 'var(--stepper-breadcrumbs-completed-outer-border-color)',
+      },
+      activeStyles: {
+        borderColor: 'var(--stepper-breadcrumbs-completed-outer-active-border-color)',
+      },
     },
     wrapper: {
       className: wrapperCommonClassName,
-      activeClassName: ctw('border-[1px] border-[#20B064]'),
+      activeClassName: ctw('border-[1px]'),
+      activeStyles: {
+        borderColor: 'var(--stepper-breadcrumbs-completed-wrapper-active-border-color)',
+      },
     },
   },
 };

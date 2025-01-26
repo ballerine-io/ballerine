@@ -6,9 +6,12 @@ import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useD
 import { useRuleExecutor } from '@/components/organisms/DynamicUI/hooks/useRuleExecutor';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { findDefinitionByName } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
+import { getInputIndex } from '@/components/organisms/UIRenderer/elements/JSONForm/hocs/withDynamicUIInput';
 import { useJSONFormDefinition } from '@/components/organisms/UIRenderer/elements/JSONForm/providers/JSONFormDefinitionProvider/useJSONFormDefinition';
+import { useUIElementProps } from '@/components/organisms/UIRenderer/hooks/useUIElementProps';
 import { UIElement } from '@/domains/collection-flow';
 import { AnyObject, FieldLayout } from '@ballerine/ui';
+import { useClearValueOnHide } from '../../hooks/useClearValueOnHide/useClearValueOnHide';
 
 export const FieldTemplate = (props: FieldTemplateProps) => {
   const { t } = useTranslation();
@@ -19,12 +22,20 @@ export const FieldTemplate = (props: FieldTemplateProps) => {
   const { payload } = useStateManagerContext();
   const { definition } = useJSONFormDefinition();
 
+  const inputIndex = useMemo(() => {
+    const index = getInputIndex(props.id || '');
+
+    return isNaN(index as number) ? null : index;
+  }, [props.id]);
+
   const fieldDefinition = useMemo(
     () =>
-      findDefinitionByName(props.id.replace('root_', ''), definition.elements || []) ||
+      findDefinitionByName(props.id.replace(/root_\d*_?/, ''), definition.elements || []) ||
       ({} as UIElement<AnyObject>),
     [props.id, definition.elements],
   );
+
+  const { hidden } = useUIElementProps(fieldDefinition, inputIndex);
 
   const rules = useMemo(() => fieldDefinition.requiredOn || [], [fieldDefinition.requiredOn]);
 
@@ -38,6 +49,10 @@ export const FieldTemplate = (props: FieldTemplateProps) => {
       props.required,
     [rulesResults, props.required],
   );
+
+  useClearValueOnHide(fieldDefinition, inputIndex);
+
+  if (hidden) return null;
 
   return (
     <div className="max-w-[385px]">

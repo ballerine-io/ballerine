@@ -5,8 +5,7 @@ import * as common from '@nestjs/common';
 import { HttpStatus, NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { ApiOkResponse, ApiResponse } from '@nestjs/swagger';
-import { WorkflowRuntimeData } from '@prisma/client';
-// import * as nestAccessControl from 'nest-access-control';
+import type { WorkflowRuntimeData } from '@prisma/client';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { putPluginsExampleResponse } from '@/workflow/workflow-controller-examples';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
@@ -19,7 +18,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import type { AnyRecord, InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import { WORKFLOW_DEFINITION_TAG } from '@/workflow-defintion/workflow-definition.controller';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
-import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url';
+import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url.dto';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
 import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
 import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
@@ -36,14 +35,17 @@ import {
   WorkflowDefinitionWhereUniqueInput,
   WorkflowDefinitionWhereUniqueInputSchema,
 } from './dtos/workflow-where-unique-input';
-import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
 import { Validate } from 'ballerine-nestjs-typebox';
 import { PutWorkflowExtensionSchema, WorkflowExtensionSchema } from './schemas/extensions.schemas';
 import { type Static, Type } from '@sinclair/typebox';
-import { defaultContextSchema } from '@ballerine/common';
+import { DefaultContextSchema, defaultContextSchema, isObject } from '@ballerine/common';
 import { WorkflowRunSchema } from './schemas/workflow-run';
+import { ValidationError } from '@/errors';
+import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
+import { CreateTokenDto } from '@/workflow/dtos/create-token.dto';
+import { type PartialDeep } from 'type-fest';
 
 export const WORKFLOW_TAG = 'Workflows';
 @swagger.ApiBearerAuth()
@@ -51,10 +53,8 @@ export const WORKFLOW_TAG = 'Workflows';
 @common.Controller('external/workflows')
 export class WorkflowControllerExternal {
   constructor(
-    protected readonly service: WorkflowService,
+    protected readonly workflowService: WorkflowService,
     protected readonly normalizeService: HookCallbackHandlerService,
-    // @nestAccessControl.InjectRolesBuilder()
-    // protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     private readonly workflowTokenService: WorkflowTokenService,
     private readonly workflowDefinitionService: WorkflowDefinitionService,
     private readonly prismaService: PrismaService,
@@ -69,7 +69,7 @@ export class WorkflowControllerExternal {
     @Query() query: GetWorkflowsRuntimeInputDto,
     @ProjectIds() projectIds: TProjectIds,
   ): Promise<GetWorkflowsRuntimeOutputDto> {
-    const results = await this.service.listRuntimeData(
+    const results = await this.workflowService.listRuntimeData(
       {
         page: query.page,
         size: query.limit,
@@ -90,7 +90,7 @@ export class WorkflowControllerExternal {
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @ProjectIds() projectIds: TProjectIds,
   ) {
-    return await this.service.getWorkflowDefinitionById(
+    return await this.workflowService.getWorkflowDefinitionById(
       params.id,
       {
         include: {
@@ -145,7 +145,6 @@ export class WorkflowControllerExternal {
       },
       {
         type: 'body',
-
         schema: WorkflowExtensionSchema,
       },
     ],
@@ -180,15 +179,15 @@ export class WorkflowControllerExternal {
   }
 
   @common.Get('/:id')
-  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiOkResponse({ type: WorkflowRuntimeListItemModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @UseCustomerAuthGuard()
   async getRunnableWorkflowDataById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @ProjectIds() projectIds: TProjectIds,
-  ): Promise<RunnableWorkflowData> {
-    const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(
+  ): Promise<WorkflowRuntimeData> {
+    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
       params.id,
       {},
       projectIds,
@@ -198,16 +197,7 @@ export class WorkflowControllerExternal {
       throw new NotFoundException(`No resource with id [${params.id}] was found`);
     }
 
-    const workflowDefinition = await this.service.getWorkflowDefinitionById(
-      workflowRuntimeData.workflowDefinitionId,
-      {},
-      projectIds,
-    );
-
-    return {
-      workflowDefinition,
-      workflowRuntimeData,
-    };
+    return workflowRuntimeData;
   }
 
   // PATCH /workflows/:id
@@ -221,7 +211,11 @@ export class WorkflowControllerExternal {
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     try {
-      return await this.service.updateWorkflowRuntimeData(params.id, data, currentProjectId);
+      return await this.workflowService.updateWorkflowRuntimeData(
+        params.id,
+        data,
+        currentProjectId,
+      );
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
@@ -259,7 +253,10 @@ export class WorkflowControllerExternal {
   })
   @UseCustomerAuthGuard()
   @common.HttpCode(200)
+  @swagger.ApiUnauthorizedResponse({ type: common.UnauthorizedException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiBadRequestResponse({ type: ValidationError })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     // @ts-expect-error -- Something with swagger package
     schema: WorkflowRunSchema,
@@ -286,15 +283,15 @@ export class WorkflowControllerExternal {
               },
             },
             documents: [],
-            config: {
-              subscriptions: [
-                {
-                  type: 'webhook',
-                  url: 'https://webhook.site/f82ea191-9d64-424f-887e-f8418faf4fe9',
-                  events: ['workflow.completed'],
-                },
-              ],
-            },
+          },
+          config: {
+            subscriptions: [
+              {
+                type: 'webhook',
+                url: 'https://webhook.site/f82ea191-9d64-424f-887e-f8418faf4fe9',
+                events: ['workflow.completed'],
+              },
+            ],
           },
         },
       },
@@ -346,21 +343,37 @@ export class WorkflowControllerExternal {
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<unknown> {
     const { workflowId, context, config } = body;
-    const { entity } = context;
 
-    if (!('id' in entity) && !('ballerineEntityId' in entity)) {
+    if (!context || !isObject(context)) {
+      throw new common.BadRequestException('Context is required');
+    }
+
+    if (
+      !isObject(context.entity) ||
+      (!('id' in context.entity) && !('ballerineEntityId' in context.entity))
+    ) {
       throw new common.BadRequestException('Entity id is required');
+    }
+
+    if (!workflowId) {
+      throw new common.BadRequestException('Workflow id is required');
     }
 
     const hasSalesforceRecord =
       Boolean(body.salesforceObjectName) && Boolean(body.salesforceRecordId);
 
-    const latestDefinitionVersion = await this.workflowDefinitionService.getLatestVersion(
-      workflowId,
-      projectIds,
-    );
+    let latestDefinitionVersion;
 
-    const actionResult = await this.service.createOrUpdateWorkflowRuntime({
+    try {
+      latestDefinitionVersion = await this.workflowDefinitionService.getLatestVersion(
+        workflowId,
+        projectIds,
+      );
+    } catch (e) {
+      throw new common.BadRequestException(`Workflow Definition ${workflowId} was not found`);
+    }
+
+    const actionResult = await this.workflowService.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: latestDefinitionVersion.id,
       context,
       config,
@@ -386,20 +399,20 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createCollectionFlowUrl(
-    @common.Body() { expiry, workflowRuntimeDataId, endUserId }: CreateCollectionFlowUrlDto,
-    @CurrentProject() currentProjectId: TProjectId,
+    @common.Body() { workflowRuntimeDataId }: CreateCollectionFlowUrlDto,
   ) {
-    const expiresAt = new Date(Date.now() + (expiry || 30) * 24 * 60 * 60 * 1000);
+    const result = await this.workflowTokenService.findFirstByWorkflowRuntimeDataIdUnscoped(
+      workflowRuntimeDataId,
+    );
 
-    const { token } = await this.workflowTokenService.create(currentProjectId, {
-      workflowRuntimeDataId: workflowRuntimeDataId,
-      expiresAt,
-      endUserId,
-    });
+    if (!result) {
+      throw new NotFoundException(
+        `No WorkflowRuntimeDataId was found for ${JSON.stringify(workflowRuntimeDataId)}`,
+      );
+    }
 
     return {
-      token,
-      collectionFlowUrl: `${env.COLLECTION_FLOW_URL}?token=${token}`,
+      collectionFlowUrl: `${env.COLLECTION_FLOW_URL}?token=${result.token}`,
     };
   }
 
@@ -409,10 +422,16 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createToken(
-    @common.Body() body: CreateCollectionFlowUrlDto,
+    @common.Body() { expiry, workflowRuntimeDataId, endUserId }: CreateTokenDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const { token } = await this.createCollectionFlowUrl(body, currentProjectId);
+    const expiresAt = new Date(Date.now() + (expiry || 30) * 24 * 60 * 60 * 1000);
+
+    const { token } = await this.workflowTokenService.create(currentProjectId, {
+      workflowRuntimeDataId: workflowRuntimeDataId,
+      expiresAt,
+      endUserId,
+    });
 
     return {
       token,
@@ -430,7 +449,7 @@ export class WorkflowControllerExternal {
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
-    return await this.service.event(
+    return await this.workflowService.event(
       {
         ...data,
         id,
@@ -452,7 +471,7 @@ export class WorkflowControllerExternal {
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    return await this.service.event(
+    return await this.workflowService.event(
       {
         ...data,
         id,
@@ -480,7 +499,7 @@ export class WorkflowControllerExternal {
     @ProjectIds() projectIds: TProjectIds,
   ) {
     try {
-      const context = await this.service.getWorkflowRuntimeDataContext(id, projectIds);
+      const context = await this.workflowService.getWorkflowRuntimeDataContext(id, projectIds);
 
       return { context };
     } catch (err) {
@@ -505,10 +524,11 @@ export class WorkflowControllerExternal {
   ): Promise<void> {
     try {
       await this.prismaService.$transaction(async transaction => {
-        const workflowRuntime = await this.service.getWorkflowRuntimeDataByIdAndLockUnscoped({
-          id: params.id,
-          transaction,
-        });
+        const workflowRuntime =
+          await this.workflowService.getWorkflowRuntimeDataByIdAndLockUnscoped({
+            id: params.id,
+            transaction,
+          });
 
         const context = await this.normalizeService.handleHookResponse({
           workflowRuntime,
@@ -519,7 +539,7 @@ export class WorkflowControllerExternal {
           currentProjectId: workflowRuntime.projectId,
         });
 
-        await this.service.event(
+        await this.workflowService.event(
           {
             id: params.id,
             name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
@@ -533,7 +553,7 @@ export class WorkflowControllerExternal {
           transaction,
         );
 
-        await this.service.event(
+        await this.workflowService.event(
           {
             id: params.id,
             name: params.event,
@@ -554,5 +574,48 @@ export class WorkflowControllerExternal {
     }
 
     return;
+  }
+
+  @common.Patch('/:workflowRuntimeDataId/sync-entity')
+  @ApiResponse({
+    status: 400,
+    description: 'Validation error',
+    schema: Type.Object({
+      message: Type.String(),
+      statusCode: Type.Literal(400),
+      timestamp: Type.String({
+        format: 'date-time',
+      }),
+      path: Type.String(),
+      errors: Type.Array(Type.Object({ message: Type.String(), path: Type.String() })),
+    }),
+  })
+  @Validate({
+    request: [
+      {
+        type: 'param',
+        name: 'workflowRuntimeDataId',
+        description: `The id of the workflow runtime data to update`,
+        schema: Type.String(),
+        example: '123e4567-e89b-12d3-a456-426614174000',
+      },
+      {
+        type: 'body',
+        schema: Type.Any(),
+      },
+    ],
+    response: Type.Any(),
+  })
+  async updateContextAndSyncEntity(
+    @common.Param('workflowRuntimeDataId')
+    workflowRuntimeDataId: string,
+    @common.Body() body: PartialDeep<DefaultContextSchema>,
+    @CurrentProject() projectId: TProjectId,
+  ) {
+    return await this.workflowService.updateContextAndSyncEntity({
+      workflowRuntimeDataId,
+      context: body,
+      projectId,
+    });
   }
 }

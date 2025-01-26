@@ -1,5 +1,344 @@
 # @ballerine/workflow-core
 
+## 0.6.89
+
+### Patch Changes
+
+- updated packages
+- Updated dependencies
+  - @ballerine/common@0.9.70
+
+## 0.6.88
+
+### Patch Changes
+
+- updated common and core
+- Updated dependencies
+  - @ballerine/common@0.9.69
+
+## 0.6.87
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.68
+
+## 0.6.86
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.67
+
+## 0.6.85
+
+### Patch Changes
+
+- version bump
+  s Please enter a summary for your changes.
+- Updated dependencies
+  - @ballerine/common@0.9.66
+
+## 0.6.84
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.65
+
+## 0.6.83
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.64
+
+## 0.6.82
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.63
+
+## 0.6.81
+
+### Patch Changes
+
+- bump
+
+## 0.6.80
+
+### Patch Changes
+
+- Fixed withQualityControl in plugins
+- Updated dependencies
+  - @ballerine/common@0.9.61
+
+## 0.6.79
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.60
+
+## 0.6.78
+
+### Patch Changes
+
+- core
+- Updated dependencies
+  - @ballerine/common@0.9.59
+
+## 0.6.77
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.58
+
+## 0.6.76
+
+### Patch Changes
+
+- Added no op event to workflow runner
+
+## 0.6.75
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.57
+
+## 0.6.74
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.56
+
+## 0.6.73
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.55
+
+## 0.6.72
+
+### Patch Changes
+
+- version bump
+
+## 0.6.71
+
+## 0.6.69
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.54
+
+## 0.6.70
+
+### Patch Changes
+
+- version bump
+
+## 0.6.69
+
+### Patch Changes
+
+- version bump
+
+## 0.6.68
+
+### Patch Changes
+
+- version bump
+  : Please enter a summary for your changes.
+
+## 0.6.67
+
+### Patch Changes
+
+- Created a non JMESPath sanctions plugin using JS
+- Updated dependencies
+  - @ballerine/common@0.9.53
+
+## 0.6.66
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.52
+
+## 0.6.65
+
+### Patch Changes
+
+- Added additionalContext
+- version bump
+
+## 0.6.64
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.51
+
+## 0.6.63
+
+### Patch Changes
+
+- Cump
+- Updated dependencies
+  - @ballerine/common@0.9.50
+
+## 0.6.62
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.49
+
+## 0.6.61
+
+### Patch Changes
+
+- updated MATCH plugin
+
+## 0.6.60
+
+### Patch Changes
+
+- Change
+- Updated dependencies
+  - @ballerine/common@0.9.48
+
+## 0.6.59
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.47
+
+## 0.6.58
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.46
+
+## 0.6.57
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.45
+
+## 0.6.56
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.44
+
+## 0.6.55
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.43
+
+## 0.6.54
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.42
+
+## 0.6.53
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.41
+
+## 0.6.52
+
+### Patch Changes
+
+- update plugin schema and ballerine plugins
+- Updated dependencies
+  - @ballerine/common@0.9.40
+
+## 0.6.51
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.39
+
+## 0.6.50
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.38
+
+## 0.6.49
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.37
+
+## 0.6.48
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.36
+
+## 0.6.47
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.35
+
+## 0.6.46
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.34
+
+## 0.6.45
+
+### Patch Changes
+
+- Added webhook signin
+
+## 0.6.44
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.33
+
 ## 0.6.43
 
 ### Patch Changes

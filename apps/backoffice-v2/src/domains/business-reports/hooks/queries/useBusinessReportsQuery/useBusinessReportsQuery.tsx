@@ -1,8 +1,9 @@
-import { TBusinessReportType } from '@/domains/business-reports/types';
-import { useIsAuthenticated } from '@/domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 import { useQuery } from '@tanstack/react-query';
+
+import { MerchantReportType } from '@/domains/business-reports/constants';
 import { businessReportsQueryKey } from '@/domains/business-reports/query-keys';
-import { isString } from '@/common/utils/is-string/is-string';
+import { TReportStatusValue, TRiskLevel } from '@/pages/MerchantMonitoring/schemas';
+import { useIsAuthenticated } from '@/domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 
 export const useBusinessReportsQuery = ({
   reportType,
@@ -11,26 +12,44 @@ export const useBusinessReportsQuery = ({
   pageSize,
   sortBy,
   sortDir,
+  riskLevels,
+  statuses,
+  findings,
+  from,
+  to,
+  isAlert,
 }: {
-  reportType: TBusinessReportType;
-  search: string;
-  page: number;
-  pageSize: number;
-  sortBy: string;
-  sortDir: string;
+  reportType?: MerchantReportType;
+  search?: string;
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortDir?: string;
+  riskLevels?: TRiskLevel[];
+  statuses?: TReportStatusValue[];
+  findings?: string[];
+  from?: string;
+  to?: string;
+  isAlert?: boolean;
 }) => {
   const isAuthenticated = useIsAuthenticated();
 
   return useQuery({
-    ...businessReportsQueryKey.list({ reportType, search, page, pageSize, sortBy, sortDir }),
-    enabled:
-      isAuthenticated &&
-      isString(reportType) &&
-      !!reportType &&
-      !!sortBy &&
-      !!sortDir &&
-      !!page &&
-      !!pageSize,
+    ...businessReportsQueryKey.list({
+      reportType,
+      search,
+      page,
+      pageSize,
+      sortBy,
+      sortDir,
+      riskLevels,
+      statuses,
+      findings,
+      from,
+      to,
+      isAlert,
+    }),
+    enabled: isAuthenticated,
     staleTime: 100_000,
     refetchInterval: 1_000_000,
   });

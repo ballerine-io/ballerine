@@ -1,8 +1,8 @@
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
-import { checkIsBusiness } from '@/common/utils/check-is-business/check-is-business';
+import { checkIsIndividual } from '@/common/utils/check-is-individual/check-is-individual';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { CommonWorkflowStates, StateTag, valueOrNA } from '@ballerine/common';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
+import { useDocumentOcr } from '@/domains/entities/hooks/mutations/useDocumentOcr/useDocumentOcr';
 import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
 import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
@@ -17,13 +17,13 @@ import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages'
 import { motionBadgeProps } from '@/lib/blocks/motion-badge-props';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import {
-  checkIsEditable,
   composePickableCategoryType,
-  extractCountryCodeFromWorkflow,
+  extractCountryCodeFromDocuments,
   isExistingSchemaForDocument,
 } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { selectWorkflowDocuments } from '@/pages/Entity/selectors/selectWorkflowDocuments';
 import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
+import { CommonWorkflowStates, StateTag, valueOrNA } from '@ballerine/common';
 import { Button, TextArea } from '@ballerine/ui';
 import { X } from 'lucide-react';
 import * as React from 'react';
@@ -67,11 +67,11 @@ export const useDocumentBlocks = ({
     };
   };
 }) => {
-  const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
+  const issuerCountryCode = extractCountryCodeFromDocuments(workflow?.context?.documents);
   const documentsSchemas = getDocumentsSchemas(issuerCountryCode, workflow);
   const documents = useMemo(() => selectWorkflowDocuments(workflow), [workflow]);
   const documentPages = useMemo(
-    () => documents.flatMap(({ pages }) => pages?.map(({ ballerineFileId }) => ballerineFileId)),
+    () => documents?.flatMap(({ pages }) => pages?.map(({ ballerineFileId }) => ballerineFileId)),
     [documents],
   );
   const storageFilesQueryResult = useStorageFilesQuery(documentPages);
@@ -79,6 +79,14 @@ export const useDocumentBlocks = ({
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id);
+  const {
+    mutate: mutateOCRDocument,
+    isLoading: isLoadingOCRDocument,
+    data: ocrResult,
+  } = useDocumentOcr({
+    workflowId: workflow?.id,
+  });
+
   const { isLoading: isLoadingRejectTaskById } = useRejectTaskByIdMutation(workflow?.id);
 
   const { comment, onClearComment, onCommentChange } = useCommentInputLogic();
@@ -264,6 +272,7 @@ export const useDocumentBlocks = ({
                     disabled={!canApprove}
                     size={'wide'}
                     variant={'success'}
+                    className={'enabled:bg-success enabled:hover:bg-success/90'}
                   >
                     Approve
                   </MotionButton>
@@ -358,6 +367,15 @@ export const useDocumentBlocks = ({
           })
           .cellAt(0, 0);
 
+        const documentEntries = Object.entries(
+          {
+            ...additionalProperties,
+            ...propertiesSchema?.properties,
+          } ?? {},
+        ).map(([title, formattedValue]) => {
+          return [title, formattedValue];
+        });
+
         const detailsCell = createBlocksTyped()
           .addBlock()
           .addCell({
@@ -370,12 +388,7 @@ export const useDocumentBlocks = ({
                 value: {
                   id,
                   title: `${category} - ${docType}`,
-                  data: Object.entries(
-                    {
-                      ...additionalProperties,
-                      ...propertiesSchema?.properties,
-                    } ?? {},
-                  )?.map(
+                  data: documentEntries?.map(
                     ([
                       title,
                       {
@@ -393,6 +406,18 @@ export const useDocumentBlocks = ({
                       const getFieldValue = () => {
                         if (typeof value !== 'undefined') {
                           return value;
+                        }
+
+                        if (ocrResult?.parsedData?.[title]) {
+                          const isOcrValueString = typeof ocrResult.parsedData[title] === 'string';
+
+                          if (isOcrValueString && ocrResult.parsedData[title].length > 0) {
+                            return ocrResult.parsedData[title];
+                          }
+
+                          if (!isOcrValueString) {
+                            return ocrResult.parsedData[title];
+                          }
                         }
 
                         if (
@@ -414,8 +439,15 @@ export const useDocumentBlocks = ({
                       };
                       const fieldValue = getFieldValue();
                       const isEditableDecision = isDoneWithRevision || !decision?.status;
-                      const isEditableType =
-                        (title === 'type' && !checkIsBusiness(workflow)) || title !== 'type';
+                      const isIndividual = checkIsIndividual(workflow);
+                      const isEditableCategory =
+                        (title === 'category' && isIndividual) || title !== 'category';
+                      const isEditableField = [
+                        isEditableDecision,
+                        isEditable,
+                        caseState.writeEnabled,
+                        isEditableCategory,
+                      ].every(Boolean);
 
                       return {
                         title,
@@ -423,11 +455,7 @@ export const useDocumentBlocks = ({
                         type,
                         format,
                         pattern,
-                        isEditable:
-                          isEditableDecision &&
-                          caseState.writeEnabled &&
-                          checkIsEditable({ isEditable, field: title }) &&
-                          isEditableType,
+                        isEditable: isEditableField,
                         dropdownOptions,
                         minimum: formatMinimum,
                         maximum: formatMaximum,
@@ -435,7 +463,13 @@ export const useDocumentBlocks = ({
                     },
                   ),
                 },
+                props: {
+                  config: {
+                    sort: { predefinedOrder: ['category', 'type'] },
+                  },
+                },
                 workflowId: workflow?.id,
+                isSaveDisabled: isLoadingOCRDocument,
                 documents: workflow?.context?.documents,
               })
               .addCell(decisionCell)
@@ -450,6 +484,9 @@ export const useDocumentBlocks = ({
             type: 'multiDocuments',
             value: {
               isLoading: storageFilesQueryResult?.some(({ isLoading }) => isLoading),
+              onOcrPressed: () => mutateOCRDocument({ documentId: id }),
+              isDocumentEditable: caseState.writeEnabled,
+              isLoadingOCR: isLoadingOCRDocument,
               data:
                 documents?.[docIndex]?.pages?.map(
                   ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({
@@ -475,6 +512,10 @@ export const useDocumentBlocks = ({
                 isDocumentRevision,
               'bg-warning/10': isDocumentRevision && !workflow?.tags?.includes(StateTag.REVISION),
             }),
+            props: {
+              contentClassName:
+                'grid grid-cols-[1fr_minmax(240px,280px)] md:grid-cols-[1fr_minmax(240px,360px)] lg:grid-cols-[1fr_minmax(240px,441px)] 2xl:grid-cols-[1fr_minmax(240px,600px)] grid-rows-[auto_1fr] gap-4 [&>*:first-child]:col-span-2',
+            },
             value: createBlocksTyped()
               .addBlock()
               .addCell(headerCell)

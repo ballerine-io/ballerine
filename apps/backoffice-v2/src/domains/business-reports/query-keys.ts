@@ -5,7 +5,8 @@ import {
   fetchBusinessReports,
   fetchLatestBusinessReport,
 } from '@/domains/business-reports/fetchers';
-import { TBusinessReportType } from '@/domains/business-reports/types';
+import { MerchantReportType } from '@/domains/business-reports/constants';
+import { TReportStatusValue, TRiskLevel } from '@/pages/MerchantMonitoring/schemas';
 
 export const businessReportsQueryKey = createQueryKeys('business-reports', {
   list: ({
@@ -15,34 +16,38 @@ export const businessReportsQueryKey = createQueryKeys('business-reports', {
     sortDir,
     ...params
   }: {
-    reportType: TBusinessReportType;
-    search: string;
-    page: number;
-    pageSize: number;
-    sortBy: string;
-    sortDir: string;
+    reportType?: MerchantReportType;
+    search?: string;
+    page?: number;
+    pageSize?: number;
+    sortBy?: string;
+    sortDir?: string;
+    riskLevels?: TRiskLevel[];
+    statuses?: TReportStatusValue[];
+    findings?: string[];
+    from?: string;
+    to?: string;
+    isAlert?: boolean;
   }) => ({
     queryKey: [{ page, pageSize, sortBy, sortDir, ...params }],
     queryFn: () => {
       const data = {
         ...params,
-        page: {
-          number: Number(page),
-          size: Number(pageSize),
-        },
-        orderBy: `${sortBy}:${sortDir}`,
+        ...(page && pageSize
+          ? {
+              page: {
+                number: Number(page),
+                size: Number(pageSize),
+              },
+            }
+          : {}),
+        ...(sortBy && sortDir ? { orderBy: `${sortBy}:${sortDir}` } : {}),
       };
 
       return fetchBusinessReports(data);
     },
   }),
-  latest: ({
-    businessId,
-    reportType,
-  }: {
-    businessId: string;
-    reportType: TBusinessReportType;
-  }) => ({
+  latest: ({ businessId, reportType }: { businessId: string; reportType: MerchantReportType }) => ({
     queryKey: [{ businessId, reportType }],
     queryFn: () => fetchLatestBusinessReport({ businessId, reportType }),
   }),

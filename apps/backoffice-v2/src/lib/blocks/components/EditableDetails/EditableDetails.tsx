@@ -100,9 +100,11 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   data,
   valueId,
   id,
+  directorId,
   documents,
   title,
   workflowId,
+  isSaveDisabled,
   contextUpdateMethod = 'base',
   onSubmit: onSubmitCallback,
 }) => {
@@ -132,6 +134,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     defaultValues,
   });
   const { mutate: mutateUpdateWorkflowById } = useUpdateDocumentByIdMutation({
+    directorId,
     workflowId,
     documentId: valueId,
   });
@@ -345,6 +348,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                         )}
                         {isSelect && (
                           <Select
+                            key={keyFactory(field.value, title, `select`, id)}
                             disabled={!isEditable}
                             onValueChange={field.onChange}
                             defaultValue={field.value}
@@ -427,7 +431,11 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
         </div>
         <div className={`flex justify-end`}>
           {data?.some(({ isEditable }) => isEditable) && (
-            <Button type="submit" className={`ms-auto mt-3`}>
+            <Button
+              type="submit"
+              className={`ms-auto mt-3 enabled:bg-primary enabled:hover:bg-primary/90 aria-disabled:pointer-events-none aria-disabled:opacity-50`}
+              aria-disabled={isSaveDisabled}
+            >
               Save
             </Button>
           )}

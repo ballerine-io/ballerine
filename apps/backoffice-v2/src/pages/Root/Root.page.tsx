@@ -1,12 +1,10 @@
-import React, { FunctionComponent, lazy, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { FunctionComponent, lazy, useState } from 'react';
 import { Providers } from '../../common/components/templates/Providers/Providers';
-import { ServerDownLayout } from './ServerDown.layout';
-import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/useCustomerQuery';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
 import Chatbot from '@/domains/chat/chatbot-opengpt';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { RenderChildrenInIFrame } from '@/common/components/organisms/RenderChildrenInIFrame/RenderChildrenInIFrame';
+import { env } from '@/common/env/env';
+import { Outlet } from 'react-router-dom';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
@@ -27,28 +25,25 @@ const ChatbotLayout: FunctionComponent = () => {
     return <FullScreenLoader />;
   }
 
-  if (!customer?.config?.isChatbotEnabled) {
+  if (!customer?.features?.chatbot?.enabled) {
     return null;
   }
 
+  const botpressClientId = customer?.features?.chatbot?.clientId || env.VITE_BOTPRESS_CLIENT_ID;
+
   return (
-    <RenderChildrenInIFrame
-      className={ctw('fixed bottom-right-0', {
-        'h-[700px] w-[400px]': isWebchatOpen,
-        'd-[80px]': !isWebchatOpen,
-      })}
-    >
-      <Chatbot isWebchatOpen={isWebchatOpen} toggleIsWebchatOpen={toggleIsWebchatOpen} />
-    </RenderChildrenInIFrame>
+    <Chatbot
+      isWebchatOpen={isWebchatOpen}
+      toggleIsWebchatOpen={toggleIsWebchatOpen}
+      botpressClientId={botpressClientId}
+    />
   );
 };
 
 export const Root: FunctionComponent = () => {
   return (
     <Providers>
-      <ServerDownLayout>
-        <Outlet />
-      </ServerDownLayout>
+      <Outlet />
       <ChatbotLayout />
       {/*<Suspense>*/}
       {/*  <ReactQueryDevtools  />*/}

@@ -12,6 +12,7 @@ export type TAnchorIfUrl = <TElement extends ElementType = 'span'>(
 ) => ReactNode;
 
 export const AnchorIfUrl: TAnchorIfUrl = forwardRef(
+  // @ts-ignore
   <TElement extends ElementType = 'span'>(
     { as, children, ...props }: PolymorphicComponentProps<TElement> & ComponentProps<'a'>,
     ref?: PolymorphicRef<TElement>,
@@ -20,7 +21,7 @@ export const AnchorIfUrl: TAnchorIfUrl = forwardRef(
 
     if (checkIsUrl(children)) {
       return (
-        <BallerineLink ref={ref} {...props}>
+        <BallerineLink ref={ref} href={children} {...props}>
           {children}
         </BallerineLink>
       );

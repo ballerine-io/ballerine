@@ -148,6 +148,7 @@ class SwaggerSingleton {
                     workflowFinalState: {
                       type: 'string',
                       description: 'Final state of the workflow.',
+                      oneOf: [{ enum: ['approved', 'rejected', 'failed'] }, { type: 'string' }],
                     },
                     ballerineEntityId: {
                       type: 'string',

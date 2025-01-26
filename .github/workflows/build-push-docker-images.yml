@@ -1,0 +1,166 @@
+name: Build and Push Docker Images
+
+on:
+  workflow_call:
+    inputs:
+      registry:
+        required: true
+        description: "The Docker registry URL"
+        type: string
+      context:
+        required: true
+        description: "The build context path for the Docker image"
+        type: string
+      image_name:
+        required: true
+        description: "The name of the Docker image"
+        type: string
+      ref:
+        required: true
+        description: "Branch name of the Preview"
+        type: string
+      tag:
+        required: true
+        description: "Tag name of the Preview Image"
+        type: string
+      file:
+        required: true
+        description: "File name for the Preview Image"
+        type: string
+
+permissions:
+  id-token: write
+  contents: write
+  packages: write
+  pull-requests: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Configure AWS credentials
+        if: inputs.image_name == 'workflows-service-ee'
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ vars.PREVIEW_OIDC_ROLE }}
+          aws-region: ${{ vars.PREVIEW_AWS_REGION }}
+
+      # Access the secret
+      - name: Retrieve secret from Secrets Manager
+        if: inputs.image_name == 'workflows-service-ee'
+        id: get-secret
+        run: |
+          echo ${{ inputs.image_name }}
+          secret_value=$(aws secretsmanager get-secret-value --secret-id ${{ vars.PREVIEW_SECRET }} --query 'SecretString' --output text | jq -r '.SUBMODULE_SECRET')
+          echo "SUBMODULE_SECRET=$secret_value" >> $GITHUB_ENV
+          echo "SUBMODULE_SECRET=$secret_value" >> $GITHUB_OUTPUT
+      
+      - name: Checkout wf-data-migration
+        id: wf-migration-code
+        if: inputs.image_name == 'workflows-service-ee'
+        uses: actions/checkout@v4
+        with:
+          repository: ballerine-io/wf-data-migration
+          token: ${{ steps.get-secret.outputs.SUBMODULE_SECRET }}
+          ref: dev
+          fetch-depth: 1
+          path: services/workflows-service/prisma/data-migrations
+
+      - name: Get Latest Commit ID
+        if: inputs.image_name == 'workflows-service-ee'
+        id: lastcommit
+        uses: nmbgeek/github-action-get-latest-commit@main
+        with:
+          owner: ${{ github.repository_owner }}
+          token: ${{ steps.get-secret.outputs.SUBMODULE_SECRET }}
+          repo: wf-data-migration
+          branch: dev
+
+      # - name: Get tags
+      #   if: ${{ inputs.image_name }} != 'workflows-service-ee'
+      #   run: git fetch --tags origin
+
+      - name: Get version
+        if: ${{ inputs.image_name == 'workflows-service' }}
+        id: version
+        run: |
+          echo ${{ inputs.image_name }}
+          git fetch --tags origin
+          TAG=$(git tag -l "$(echo workflow-service@)*" | sort -V -r | head -n 1)
+          echo "tag=$TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          echo "sha_short=$SHORT_SHA" >> "$GITHUB_OUTPUT"
+          echo "SHORT_SHA=$SHORT_SHA" >> "$GITHUB_ENV"
+      
+      - name: Bump version
+        id: bump-version
+        if: ${{ inputs.image_name == 'workflows-service' }}
+        uses: ./.github/actions/bump-version
+        with:
+          tag: ${{ steps.version.outputs.tag }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: 'arm64,arm'
+
+      - name: Cache Docker layers
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
+            ${{ runner.os }}-docker-
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker images
+        id: docker_meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ inputs.registry }}/${{ inputs.image_name }}
+          tags: |
+            type=raw,value=${{ inputs.tag }}
+            type=sha,format=short
+      
+      - name: Print docker version outputs
+        run: |
+          echo "Metadata: ${{ steps.docker_meta.outputs.tags }}"
+          if [[ "${{ inputs.image_name }}" == "workflows-service" && "${{ inputs.image_name }}" != "workflows-service-ee" ]]; then
+            echo "sha_short: ${{ steps.version.outputs.sha_short }}"
+            echo "bump-version-version: ${{ steps.bump-version.outputs.version }}"
+            echo "bump-version-tag: ${{ steps.bump-version.outputs.tag }}"
+          fi
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ inputs.context }}
+          platforms: linux/amd64
+          push: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          tags: ${{ steps.docker_meta.outputs.tags }}
+          file: ${{ inputs.file }}
+          build-args: |
+            ${{ (inputs.image_name == 'workflows-service' && format('"RELEASE={0}"\n"SHORT_SHA={1}"', steps.version.outputs.tag, steps.version.outputs.sha_short)) || (inputs.image_name == 'workflows-service-ee' && format('"BASE_IMAGE=ghcr.io/ballerine-io/workflows-service:{0}"', inputs.tag)) || '' }}

@@ -1,5 +1,235 @@
 # @ballerine/common
 
+## 0.9.70
+
+### Patch Changes
+
+- updated packages
+
+## 0.9.69
+
+### Patch Changes
+
+- updated common and core
+
+## 0.9.68
+
+### Patch Changes
+
+- version bump
+
+## 0.9.67
+
+### Patch Changes
+
+- version bump
+
+## 0.9.66
+
+### Patch Changes
+
+- version bump
+  s Please enter a summary for your changes.
+
+## 0.9.65
+
+### Patch Changes
+
+- bump
+
+## 0.9.64
+
+### Patch Changes
+
+- bump
+
+## 0.9.63
+
+### Patch Changes
+
+- version bump
+
+## 0.9.62
+
+### Patch Changes
+
+- Updated risk evaluation schema
+
+## 0.9.61
+
+### Patch Changes
+
+- Fixed withQualityControl in plugins
+
+## 0.9.60
+
+### Patch Changes
+
+- Updated button with disabled state
+
+## 0.9.59
+
+### Patch Changes
+
+- core
+
+## 0.9.58
+
+### Patch Changes
+
+- Bump
+
+## 0.9.57
+
+### Patch Changes
+
+- Updated merchant screening schema
+
+## 0.9.56
+
+### Patch Changes
+
+- version bump
+
+## 0.9.55
+
+### Patch Changes
+
+- bump
+
+## 0.9.54
+
+### Patch Changes
+
+- Reworked getOrderedSteps & fixed tests
+- bump
+
+## 0.9.53
+
+### Patch Changes
+
+- Created a non JMESPath sanctions plugin using JS
+
+## 0.9.52
+
+### Patch Changes
+
+- version bump
+
+## 0.9.51
+
+### Patch Changes
+
+- Updated aml schema
+
+## 0.9.50
+
+### Patch Changes
+
+- Cump
+
+## 0.9.49
+
+### Patch Changes
+
+- version bump
+
+## 0.9.48
+
+### Patch Changes
+
+- Change
+
+## 0.9.47
+
+### Patch Changes
+
+- Refactored collection flow utils
+
+## 0.9.46
+
+### Patch Changes
+
+- Bump
+
+## 0.9.45
+
+### Patch Changes
+
+- bump
+
+## 0.9.44
+
+### Patch Changes
+
+- Added collection flow manager & updated schema
+
+## 0.9.43
+
+### Patch Changes
+
+- updated schema
+
+## 0.9.42
+
+### Patch Changes
+
+- fix match schema
+
+## 0.9.41
+
+### Patch Changes
+
+- schema fix
+
+## 0.9.40
+
+### Patch Changes
+
+- update plugin schema and ballerine plugins
+
+## 0.9.39
+
+### Patch Changes
+
+- bump
+
+## 0.9.38
+
+### Patch Changes
+
+- bump
+
+## 0.9.37
+
+### Patch Changes
+
+- version bump
+
+## 0.9.36
+
+### Patch Changes
+
+- version bump
+
+## 0.9.35
+
+### Patch Changes
+
+- bump
+
+## 0.9.34
+
+### Patch Changes
+
+- Bump
+
+## 0.9.33
+
+### Patch Changes
+
+- Bump
+
 ## 0.9.32
 
 ### Patch Changes

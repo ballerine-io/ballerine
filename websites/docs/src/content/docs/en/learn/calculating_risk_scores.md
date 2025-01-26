@@ -11,7 +11,7 @@ Here is an example configuration for calculating risk rules using a plugin:
 
 ```json
 {
-  "name": "risk_evaluation",
+  "name": "riskEvaluation",
   "pluginKind": "riskRules",
   "stateNames": [
     "manual_review",
@@ -28,7 +28,7 @@ Here is an example configuration for calculating risk rules using a plugin:
 ### Explanation
 
 1. **Name (`name`)**:
-    - The name of the plugin, in this case, `risk_evaluation`.
+    - The name of the plugin, in this case, `riskEvaluation`.
 2. **Plugin Kind (`pluginKind`)**:
     - Specifies the type of plugin. For risk calculations, this is `riskRules`.
 3. **State Names (`stateNames`)**:

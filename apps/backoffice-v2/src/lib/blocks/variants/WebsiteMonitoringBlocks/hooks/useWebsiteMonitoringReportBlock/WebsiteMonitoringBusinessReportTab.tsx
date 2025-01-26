@@ -9,6 +9,10 @@ import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
 import { useWebsiteMonitoringBusinessReportTab } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/hooks/useWebsiteMonitoringBusinessReportTab/useWebsiteMonitoringBusinessReportTab';
 import { BusinessReportSummary } from '@ballerine/ui';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
+import {
+  MERCHANT_REPORT_TYPES,
+  MERCHANT_REPORT_TYPES_MAP,
+} from '@/domains/business-reports/constants';
 
 export const WebsiteMonitoringBusinessReportTab = ({
   businessReport,
@@ -22,6 +26,7 @@ export const WebsiteMonitoringBusinessReportTab = ({
     riskScore,
     tabs,
     summary,
+    ongoingMonitoringSummary,
     getUpdatedSearchParamsWithActiveMonitoringTab,
     search,
     homepageScreenshotUrl,
@@ -33,6 +38,8 @@ export const WebsiteMonitoringBusinessReportTab = ({
     <div className={'grid gap-y-4'}>
       <BusinessReportSummary
         summary={summary}
+        isOnboarding={businessReport.reportType === MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1}
+        ongoingMonitoringSummary={ongoingMonitoringSummary}
         riskLevels={riskLevels}
         riskIndicators={riskIndicators}
         riskScore={riskScore}

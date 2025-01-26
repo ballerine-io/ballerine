@@ -18,6 +18,9 @@ const simpleFormSchema: RJSFSchema = {
       type: 'string',
       title: 'Last Name',
     },
+    confirm: {
+      type: 'boolean',
+    },
   },
 };
 

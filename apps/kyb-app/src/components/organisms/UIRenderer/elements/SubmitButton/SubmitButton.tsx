@@ -11,11 +11,9 @@ import { useUIElementHandlers } from '@/components/organisms/UIRenderer/hooks/us
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
 import { UIElementComponent } from '@/components/organisms/UIRenderer/types';
 import { UIPage } from '@/domains/collection-flow';
-import { useFlowTracking } from '@/hooks/useFlowTracking';
+import { getCollectionFlowState, setStepCompletionState } from '@ballerine/common';
 import { Button } from '@ballerine/ui';
 import { useCallback, useMemo } from 'react';
-import set from 'lodash/set';
-import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
 
 export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition }) => {
   const { helpers } = useDynamicUIContext();
@@ -25,8 +23,7 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
   const { currentPage, pages } = usePageResolverContext();
   const { errors } = usePageContext();
   const isValid = useMemo(() => !Object.values(errors).length, [errors]);
-  const { isPluginLoading } = useStateManagerContext();
-  const { data: context } = useFlowContextQuery();
+  const { isPluginLoading, stateApi, payload } = useStateManagerContext();
 
   const setPageElementsTouched = useCallback(
     (page: UIPage, state: UIState) => {
@@ -61,35 +58,31 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
     [helpers, errors],
   );
 
-  const { trackFinish } = useFlowTracking();
-
   const handleClick = useCallback(() => {
     setPageElementsTouched(
       // @ts-ignore
       currentPage,
       state,
     );
-    onClickHandler();
-
     const isFinishPage = currentPage?.name === pages.at(-1)?.name;
 
-    if (isFinishPage && isValid && context) {
-      set(context, `flowConfig.stepsProgress.${currentPage?.stateName}.isCompleted`, true);
+    if (isFinishPage && isValid) {
+      const context = stateApi.getContext();
+
+      const collectionFlow = getCollectionFlowState(context);
+
+      if (collectionFlow) {
+        setStepCompletionState(context, {
+          stepName: currentPage?.stateName as string,
+          completed: true,
+        });
+      }
+
+      stateApi.setContext(context);
     }
 
-    if (isFinishPage && isValid) {
-      trackFinish();
-    }
-  }, [
-    context,
-    currentPage,
-    pages,
-    state,
-    isValid,
-    setPageElementsTouched,
-    onClickHandler,
-    trackFinish,
-  ]);
+    onClickHandler();
+  }, [currentPage, pages, state, isValid, stateApi, setPageElementsTouched, onClickHandler]);
 
   return (
     <Button
@@ -97,6 +90,7 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
       onClick={handleClick}
       disabled={state.isLoading || uiElementState.isLoading || isPluginLoading}
       data-testid={definition.name}
+      className="bg-controls text-controls-foreground"
     >
       {definition.options.text || 'Submit'}
     </Button>

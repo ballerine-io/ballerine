@@ -8,7 +8,7 @@ import { z, ZodSchema } from 'zod';
 export interface IApiClient {
   <TBody extends AnyRecord, TZodSchema extends ZodSchema>(params: {
     endpoint: string;
-    method: typeof Method.POST | typeof Method.PUT | typeof Method.PATCH;
+    method: typeof Method.POST | typeof Method.PUT | typeof Method.PATCH | typeof Method.DELETE;
     body?: TBody;
     options?: Omit<RequestInit, 'body'>;
     timeout?: number;
@@ -19,7 +19,7 @@ export interface IApiClient {
 
   <TBody extends AnyRecord, TZodSchema extends ZodSchema>(params: {
     url: string;
-    method: typeof Method.POST | typeof Method.PUT | typeof Method.PATCH;
+    method: typeof Method.POST | typeof Method.PUT | typeof Method.PATCH | typeof Method.DELETE;
     body?: TBody;
     options?: Omit<RequestInit, 'body'>;
     timeout?: number;
@@ -30,7 +30,7 @@ export interface IApiClient {
 
   <TZodSchema extends ZodSchema>(params: {
     endpoint: string;
-    method: typeof Method.GET | typeof Method.DELETE;
+    method: typeof Method.GET;
     options?: Omit<RequestInit, 'body'>;
     timeout?: number;
     schema: TZodSchema;
@@ -39,7 +39,7 @@ export interface IApiClient {
 
   <TZodSchema extends ZodSchema>(params: {
     url: string;
-    method: typeof Method.GET | typeof Method.DELETE;
+    method: typeof Method.GET;
     options?: Omit<RequestInit, 'body'>;
     timeout?: number;
     schema: TZodSchema;

@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import { env } from '../../src/env';
 import { StateTag, WorkflowDefinitionVariant } from '@ballerine/common';
 
 export const kycEmailSessionDefinition = {
@@ -35,13 +34,13 @@ export const kycEmailSessionDefinition = {
       email_sent: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
-          KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }],
+          KYC_RESPONSE_RECEIVED: [{ target: 'kyc_manual_review' }],
         },
       },
       revision_email_sent: {
         tags: [StateTag.REVISION],
         on: {
-          KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }],
+          KYC_RESPONSE_RECEIVED: [{ target: 'kyc_manual_review' }],
         },
       },
       kyc_manual_review: {
@@ -85,70 +84,18 @@ export const kycEmailSessionDefinition = {
       {
         name: 'kyc_session',
         pluginKind: 'kyc-session',
-        url: `{secret.UNIFIED_API_URL}/individual-verification-sessions`,
-        method: 'POST',
+        vendor: 'veriff',
         stateNames: ['get_kyc_session', 'get_kyc_session_revision'],
         successAction: 'SEND_EMAIL',
         errorAction: 'API_CALL_ERROR',
-        headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-              endUserId: join('__',[entity.ballerineEntityId || entity.data.id || entity.data.identityNumber, pluginsOutput.kyc_session.kyc_session_1.result.metadata.id || '']),
-              firstName: entity.data.firstName,
-              lastName: entity.data.lastName,
-              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/KYC_HOOK_RESPONDED','?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result']),
-              vendor: 'veriff'
-              }`, // jmespath
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: "{kyc_session_1: {vendor: 'veriff', type: 'kyc', result: {metadata: @}}}", // jmespath
-            },
-          ],
-        },
       },
       {
-        name: 'session_email',
-        pluginKind: 'email',
-        url: `{secret.EMAIL_API_URL}`,
-        method: 'POST',
+        name: 'session',
+        pluginKind: 'template-email',
+        template: 'session',
         stateNames: ['email_sent', 'revision_email_sent'],
-        headers: {
-          Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
-          'Content-Type': 'application/json',
-        },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-              kybCompanyName: entity.data.additionalInfo.companyName,
-              customerCompanyName: entity.data.additionalInfo.customerCompany,
-              firstName: entity.data.firstName,
-              kycLink: pluginsOutput.kyc_session.kyc_session_1.result.metadata.url,
-              from: 'no-reply@ballerine.com',
-              name: join(' ',[entity.data.additionalInfo.customerCompany,'Team']),
-              receivers: [entity.data.email],
-              subject: '{customerCompanyName} activation, Action needed.',
-              templateId: (documents[].decision[].revisionReason | [0])!=null && 'd-2c6ae291d9df4f4a8770d6a4e272d803' || 'd-61c568cfa5b145b5916ff89790fe2065',
-              revisionReason: documents[].decision[].revisionReason | [0],
-              language: workflowRuntimeConfig.language,
-              supportEmail: join('',['support@',entity.data.additionalInfo.customerCompany,'.com']),
-              adapter: '${env.MAIL_ADAPTER}'
-              }`, // jmespath
-            },
-          ],
-        },
-        response: {
-          transform: [],
-        },
+        errorAction: 'EMAIL_FAILURE',
+        successAction: 'EMAIL_SENT',
       },
     ],
   },

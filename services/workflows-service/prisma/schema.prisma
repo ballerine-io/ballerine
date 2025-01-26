@@ -124,6 +124,7 @@ model Business {
   companyName             String // Official registered name of the business entity
   registrationNumber      String? // Unique registration number assigned by the relevant authorities
   legalForm               String? // Legal structure of the business entity, e.g., LLC, corporation, partnership
+  dba                     String? // Doing Business As (DBA) name of the business entity
   country                 String?
   countryOfIncorporation  String? // Country where the business entity is incorporated
   dateOfIncorporation     DateTime? // Date when the business entity was incorporated
@@ -163,6 +164,40 @@ model Business {
   @@index([businessType])
 }
 
+enum EntityType {
+  Business
+  EndUser
+}
+
+enum Noteable {
+  Report
+  Alert
+  Workflow
+}
+
+model Note {
+  id            String     @id @default(cuid())
+  entityId      String
+  entityType    EntityType
+  noteableId    String
+  noteableType  Noteable
+  content       String
+  parentNoteId  String?
+  parentNote    Note?      @relation("ReplyToNote", fields: [parentNoteId], references: [id])
+  childrenNotes Note[]     @relation("ReplyToNote")
+  fileIds       String[]
+  createdAt     DateTime   @default(now())
+  createdBy     String     @default("SYSTEM")
+  updatedAt     DateTime   @updatedAt
+  deletedAt     DateTime?
+  projectId     String
+  project       Project    @relation(fields: [projectId], references: [id])
+
+  @@index([entityId, entityType, projectId])
+  @@index([noteableId, noteableType, projectId])
+  @@index([projectId])
+}
+
 model WorkflowDefinition {
   id String @id @default(cuid())
 
@@ -175,16 +210,14 @@ model WorkflowDefinition {
   projectId String?
   isPublic  Boolean @default(false)
 
-  definitionType     String
-  definition         Json
-  contextSchema      Json?
-  documentsSchema    Json?
-  config             Json?
-  supportedPlatforms Json?
-  extensions         Json?
-  variant            String @default("DEFAULT")
+  definitionType  String
+  definition      Json
+  contextSchema   Json?
+  documentsSchema Json?
+  config          Json?
+  extensions      Json?
+  variant         String @default("DEFAULT")
 
-  backend       Json?
   persistStates Json?
   submitStates  Json?
 
@@ -243,6 +276,9 @@ model WorkflowRuntimeData {
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
 
+  deletedAt DateTime?
+  deletedBy String?
+
   @@index([assigneeId, status])
   @@index([endUserId, status])
   @@index([businessId, status])
@@ -252,6 +288,7 @@ model WorkflowRuntimeData {
   @@index([projectId])
   @@index([uiDefinitionId])
   @@index([tags(ops: JsonbPathOps)], type: Gin)
+  @@index([deletedAt])
 }
 
 model File {
@@ -306,9 +343,7 @@ enum CustomerStatuses {
 
 enum BusinessReportType {
   ONGOING_MERCHANT_REPORT_T1
-  ONGOING_MERCHANT_REPORT_T2
   MERCHANT_REPORT_T1
-  MERCHANT_REPORT_T2
   MERCHANT_REPORT_T1_LITE
 }
 
@@ -380,6 +415,7 @@ model Project {
   Alert                    Alert[]
   Counterparty             Counterparty[]
   BusinessReport           BusinessReport[]
+  Note                     Note[]
 
   @@unique([name, customerId])
   @@index(name)
@@ -419,7 +455,7 @@ enum UiDefinitionContext {
 
 model UiDefinition {
   id                   String              @id @default(cuid())
-  crossEnvKey          String?              @unique
+  crossEnvKey          String?             @unique
   workflowDefinitionId String
   uiContext            UiDefinitionContext
 
@@ -431,6 +467,7 @@ model UiDefinition {
 
   definition    Json? // Frontend UI xstate definition
   uiSchema      Json // JSON schmea of how to render UI
+  theme         Json? // Theme for the UI
   schemaOptions Json? // Document Schemas, rejectionReasons: {}, documenTypes: {}, documenCateogries: {}
   uiOptions     Json? // how the view will look, overall
   locales       Json? // Locales for the UI
@@ -450,8 +487,8 @@ model WorkflowRuntimeDataToken {
   token                 String              @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   workflowRuntimeDataId String
   workflowRuntimeData   WorkflowRuntimeData @relation(fields: [workflowRuntimeDataId], references: [id])
-  endUserId             String
-  endUser               EndUser             @relation(fields: [endUserId], references: [id])
+  endUserId             String?
+  endUser               EndUser?            @relation(fields: [endUserId], references: [id])
   projectId             String
   project               Project             @relation(fields: [projectId], references: [id])
   createdAt             DateTime            @default(now())
@@ -693,6 +730,7 @@ model TransactionRecord {
   @@unique([projectId, transactionCorrelationId])
   @@index([transactionType])
   @@index([transactionDate])
+  @@index([transactionDirection])
   @@index([transactionStatus])
   @@index([reviewStatus])
   @@index([projectId])
@@ -780,10 +818,12 @@ model Alert {
   project   Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
   dataTimestamp DateTime
-  state         AlertState
   status        AlertStatus
   tags          String[]
   severity      AlertSeverity?
+
+  state         AlertState
+  decisionAt    DateTime?
 
   executionDetails Json
   additionalInfo   Json?
@@ -792,14 +832,21 @@ model Alert {
   assigneeId String?
   assignedAt DateTime?
 
+  dedupedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   workflowRuntimeDataId String?
   workflowRuntimeData   WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
+  // TODO: Remove this field after data migration
   counterpartyId String?
   counterparty   Counterparty? @relation(fields: [counterpartyId], references: [id])
+
+  counterpartyOriginatorId String?
+  counterpartyBeneficiaryId String?
+  counterpartyOriginator   Counterparty? @relation(name: "counterpartyAlertOriginator", fields: [counterpartyOriginatorId], references: [id])
+  counterpartyBeneficiary   Counterparty? @relation(name: "counterpartyAlertBeneficiary", fields: [counterpartyBeneficiaryId], references: [id])
 
   businessId String?
   business   Business? @relation(fields: [businessId], references: [id])
@@ -809,6 +856,9 @@ model Alert {
   @@index([alertDefinitionId])
   @@index([counterpartyId])
   @@index([createdAt(sort: Desc)])
+
+  @@index([counterpartyOriginatorId])
+  @@index([counterpartyBeneficiaryId])
 }
 
 enum RiskCategory {
@@ -852,6 +902,9 @@ model Counterparty {
   benefitingTransactions  TransactionRecord[] @relation("BenefitingCounterparty")
   alerts                  Alert[]
 
+  alertsBenefiting                  Alert[] @relation("counterpartyAlertBeneficiary")
+  alertsOriginating                 Alert[] @relation("counterpartyAlertOriginator")
+  
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
 

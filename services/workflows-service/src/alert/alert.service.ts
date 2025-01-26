@@ -1,10 +1,9 @@
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { AlertRepository } from '@/alert/alert.repository';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { computeHash } from '@/common/utils/sign/sign';
 import { TIME_UNITS } from '@/data-analytics/consts';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
-import { CheckRiskScoreOptions, InlineRule } from '@/data-analytics/types';
+import { InlineRule } from '@/data-analytics/types';
 import * as errors from '@/errors';
 import { PrismaService } from '@/prisma/prisma.service';
 import { isFkConstraintError } from '@/prisma/prisma.util';
@@ -16,16 +15,23 @@ import {
   AlertSeverity,
   AlertState,
   AlertStatus,
-  BusinessReport,
   MonitoringType,
 } from '@prisma/client';
 import _ from 'lodash';
 import { AlertExecutionStatus } from './consts';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
-import { TDedupeStrategy, TExecutionDetails } from './types';
+import { DedupeWindow, TDedupeStrategy, TExecutionDetails } from './types';
+import { computeHash } from '@ballerine/common';
+import { convertTimeUnitToMilliseconds } from '@/data-analytics/utils';
+import { DataInvestigationService } from '@/data-analytics/data-investigation.service';
+import { equals } from 'class-validator';
 
 const DEFAULT_DEDUPE_STRATEGIES = {
   cooldownTimeframeInMinutes: 60 * 24,
+  dedupeWindow: {
+    timeAmount: 7,
+    timeUnit: TIME_UNITS.days,
+  },
 };
 
 @Injectable()
@@ -34,6 +40,7 @@ export class AlertService {
     private readonly prisma: PrismaService,
     private readonly logger: AppLoggerService,
     private readonly dataAnalyticsService: DataAnalyticsService,
+    private readonly dataInvestigationService: DataInvestigationService,
     private readonly alertRepository: AlertRepository,
     private readonly alertDefinitionRepository: AlertDefinitionRepository,
   ) {}
@@ -57,12 +64,17 @@ export class AlertService {
   async getAlertWithDefinition(
     alertId: string,
     projectId: string,
+    monitoringType: MonitoringType,
   ): Promise<(Alert & { alertDefinition: AlertDefinition }) | null> {
-    const alert = await this.alertRepository.findById(
-      alertId,
+    const alert = await this.alertRepository.findFirst(
       {
         where: {
           id: alertId,
+          alertDefinition: {
+            monitoringType: {
+              equals: monitoringType,
+            },
+          },
         },
         include: {
           alertDefinition: true,
@@ -82,6 +94,7 @@ export class AlertService {
     return await this.alertRepository.updateMany(alertIds, projectId, {
       data: {
         state: decision,
+        decisionAt: new Date(),
         status: this.getStatusFromState(decision),
       },
     });
@@ -96,6 +109,7 @@ export class AlertService {
       return await this.alertRepository.updateMany(alertIds, projectId, {
         data: {
           assigneeId: assigneeId,
+          assignedAt: new Date(),
         },
       });
     } catch (error) {
@@ -185,54 +199,62 @@ export class AlertService {
     }
   }
 
-  async checkOngoingMonitoringAlert(businessReport: BusinessReport, businessCompanyName: string) {
-    const alertDefinitions = await this.alertDefinitionRepository.findMany(
-      {
-        where: {
-          enabled: true,
-          monitoringType: MonitoringType.ongoing_merchant_monitoring,
-        },
-      },
-      [businessReport.projectId],
-    );
-
-    const alertDefinitionsCheck = alertDefinitions.map(async alertDefinition => {
-      const alertResultData = await this.dataAnalyticsService.checkMerchantOngoingAlert(
-        businessReport,
-        (alertDefinition.inlineRule as InlineRule).options as CheckRiskScoreOptions,
-        alertDefinition.defaultSeverity,
-      );
-
-      if (alertResultData) {
-        const { id: businessReportId, businessId, projectId } = businessReport;
-        const subjects = { businessId, projectId };
-
-        const subjectArray = Object.entries(subjects).map(([key, value]) => ({
-          [key]: value,
-        }));
-
-        const createAlertReference = this.createAlert;
-
-        return [
-          alertDefinition,
-          subjectArray,
-          { subjectArray },
-          {
-            ...alertResultData,
-            businessReportId,
-            businessCompanyName,
-          },
-        ] satisfies Parameters<typeof createAlertReference>;
-      }
-    });
-
-    const evaluatedRulesResults = (await Promise.all(alertDefinitionsCheck)).filter(Boolean);
-
-    const alertArgs = evaluatedRulesResults[0];
-
-    if (alertArgs) {
-      return await this.createAlert(...alertArgs);
-    }
+  async checkOngoingMonitoringAlert({
+    businessId,
+    projectId,
+    businessCompanyName,
+  }: {
+    businessId: string;
+    projectId: string;
+    businessCompanyName: string;
+  }) {
+    // const alertDefinitions = await this.alertDefinitionRepository.findMany(
+    //   {
+    //     where: {
+    //       enabled: true,
+    //       monitoringType: MonitoringType.ongoing_merchant_monitoring,
+    //     },
+    //   },
+    //   [projectId],
+    // );
+    //
+    // const alertDefinitionsCheck = alertDefinitions.map(async alertDefinition => {
+    //   const alertResultData = await this.dataAnalyticsService.checkMerchantOngoingAlert(
+    //     {
+    //       // @TODO: Fill in the correct values
+    //     },
+    //     (alertDefinition.inlineRule as InlineRule).options as CheckRiskScoreOptions,
+    //     alertDefinition.defaultSeverity,
+    //   );
+    //
+    //   if (alertResultData) {
+    //     const subjects = { businessId, projectId };
+    //
+    //     const subjectArray = Object.entries(subjects).map(([key, value]) => ({
+    //       [key]: value,
+    //     }));
+    //
+    //     const createAlertReference = this.createAlert;
+    //
+    //     return [
+    //       alertDefinition,
+    //       subjectArray,
+    //       { subjectArray },
+    //       {
+    //         ...alertResultData,
+    //         businessCompanyName,
+    //       },
+    //     ] satisfies Parameters<typeof createAlertReference>;
+    //   }
+    // });
+    //
+    // const evaluatedRulesResults = (await Promise.all(alertDefinitionsCheck)).filter(Boolean);
+    //
+    // const alertArgs = evaluatedRulesResults[0];
+    //
+    // if (alertArgs) {
+    //   return await this.createAlert(...alertArgs);
+    // }
   }
 
   private async checkAlert(alertDefinition: AlertDefinition, ...args: any[]) {
@@ -300,7 +322,7 @@ export class AlertService {
             });
           }
         } catch (error) {
-          console.error(error);
+          this.logger.error('Failed to check alert', { error });
 
           return alertResponse.rejected.push({
             status: AlertExecutionStatus.FAILED,
@@ -320,17 +342,21 @@ export class AlertService {
   }
 
   createAlert(
-    alertDef: Partial<AlertDefinition>,
+    alertDef: Partial<AlertDefinition> & Required<{ projectId: AlertDefinition['projectId'] }>,
     subject: Array<{ [key: string]: unknown }>,
     executionRow: Record<string, unknown>,
     additionalInfo?: Record<string, unknown>,
   ) {
-    return this.alertRepository.create({
+    const mergedSubject = Object.assign({}, ...(subject || []));
+
+    const projectId = alertDef.projectId;
+    const now = new Date();
+
+    const alertData = {
       data: {
+        projectId,
         alertDefinitionId: alertDef.id,
-        projectId: alertDef.projectId,
         severity: alertDef.defaultSeverity,
-        dataTimestamp: new Date(),
         state: AlertState.triggered,
         status: AlertStatus.new,
         additionalInfo: additionalInfo,
@@ -338,12 +364,22 @@ export class AlertService {
           checkpoint: {
             hash: computeHash(executionRow),
           },
-          subject: Object.assign({}, ...(subject || [])),
+          subject: mergedSubject,
           executionRow,
+          filters: this.dataInvestigationService.getInvestigationFilter(
+            projectId,
+            alertDef.inlineRule as InlineRule,
+            mergedSubject,
+          ),
         } satisfies TExecutionDetails as InputJsonValue,
         ...Object.assign({}, ...(subject || [])),
+        updatedAt: now,
+        createdAt: now,
+        dataTimestamp: now,
       },
-    });
+    };
+
+    return this.alertRepository.create(alertData);
   }
 
   private async isDuplicateAlert(
@@ -361,12 +397,16 @@ export class AlertService {
       return true;
     }
 
-    const { cooldownTimeframeInMinutes } = dedupeStrategy || DEFAULT_DEDUPE_STRATEGIES;
+    const { cooldownTimeframeInMinutes, dedupeWindow } =
+      dedupeStrategy || DEFAULT_DEDUPE_STRATEGIES;
 
     const existingAlert = await this.alertRepository.findFirst(
       {
         where: {
           AND: [{ alertDefinitionId: alertDefinition.id }, ...subjectPayload],
+        },
+        orderBy: {
+          createdAt: 'desc', // Ensure we're getting the most recent alert
         },
       },
       [alertDefinition.projectId],
@@ -376,13 +416,17 @@ export class AlertService {
       return false;
     }
 
+    if (this._isTriggeredSinceLastDedupe(existingAlert, dedupeWindow)) {
+      return false;
+    }
+
     const cooldownDurationInMs = cooldownTimeframeInMinutes * 60 * 1000;
 
     // Calculate the timestamp after which alerts will be considered outside the cooldown period
     if (existingAlert.status !== AlertStatus.completed) {
       await this.alertRepository.updateById(existingAlert.id, {
         data: {
-          updatedAt: new Date(),
+          dedupedAt: new Date(),
         },
       });
 
@@ -394,6 +438,18 @@ export class AlertService {
     }
 
     return false;
+  }
+
+  private _isTriggeredSinceLastDedupe(existingAlert: Alert, dedupeWindow: DedupeWindow): boolean {
+    if (!existingAlert.dedupedAt || !dedupeWindow) {
+      return false;
+    }
+
+    const dedupeWindowDurationInMs = convertTimeUnitToMilliseconds(dedupeWindow);
+
+    const dedupeWindowEndTime = existingAlert.dedupedAt.getTime() + dedupeWindowDurationInMs;
+
+    return Date.now() > dedupeWindowEndTime;
   }
 
   private getStatusFromState(newState: AlertState): ObjectValues<typeof AlertStatus> {
@@ -462,71 +518,5 @@ export class AlertService {
     }
 
     return alertSeverityToNumber(a) < alertSeverityToNumber(b) ? 1 : -1;
-  }
-
-  buildTransactionsFiltersByAlert(alert: Alert & { alertDefinition: AlertDefinition }) {
-    const filters: {
-      endDate: Date | undefined;
-      startDate: Date | undefined;
-    } = {
-      endDate: undefined,
-      startDate: undefined,
-    };
-
-    const endDate = alert.updatedAt || alert.createdAt;
-    endDate.setHours(23, 59, 59, 999);
-    filters.endDate = endDate;
-
-    const inlineRule = alert?.alertDefinition?.inlineRule as InlineRule;
-
-    // @ts-ignore - TODO: Replace logic with proper implementation for each rule
-    // eslint-disable-next-line
-    let { timeAmount, timeUnit } = inlineRule.options;
-
-    if (!timeAmount || !timeUnit) {
-      if (
-        inlineRule.fnName === 'evaluateHighVelocityHistoricAverage' &&
-        inlineRule.options.lastDaysPeriod &&
-        timeUnit
-      ) {
-        timeAmount = inlineRule.options.lastDaysPeriod.timeAmount;
-      } else {
-        return filters;
-      }
-    }
-
-    let startDate = new Date(endDate);
-
-    let subtractValue = 0;
-
-    const baseSubstractByMin = timeAmount * 60 * 1000;
-
-    switch (timeUnit) {
-      case TIME_UNITS.minutes:
-        subtractValue = baseSubstractByMin;
-        break;
-      case TIME_UNITS.hours:
-        subtractValue = 60 * baseSubstractByMin;
-        break;
-      case TIME_UNITS.days:
-        subtractValue = 24 * 60 * baseSubstractByMin;
-        break;
-      case TIME_UNITS.months:
-        startDate.setMonth(startDate.getMonth() - timeAmount);
-        break;
-      case TIME_UNITS.years:
-        startDate.setFullYear(startDate.getFullYear() - timeAmount);
-        break;
-    }
-
-    startDate.setHours(0, 0, 0, 0);
-    startDate = new Date(startDate.getTime() - subtractValue);
-
-    const oldestDate = new Date(Math.min(startDate.getTime(), new Date(alert.createdAt).getTime()));
-
-    oldestDate.setHours(0, 0, 0, 0);
-    filters.startDate = oldestDate;
-
-    return filters;
   }
 }

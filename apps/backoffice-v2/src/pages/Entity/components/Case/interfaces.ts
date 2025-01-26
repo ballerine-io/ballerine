@@ -1,6 +1,5 @@
 import { ComponentProps } from 'react';
 
-import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { TStateTags } from '@ballerine/common';
 import { TAssignee } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
 import { Actions } from './Case.Actions';
@@ -27,9 +26,8 @@ export interface IInfoProps {
 export interface IActionsProps {
   id: string;
   fullName: string;
-  avatarUrl: string;
+  numberOfNotes: number;
   showResolutionButtons?: boolean;
-  workflow: TWorkflowById;
 }
 
 export interface ICaseChildren {
@@ -48,8 +46,12 @@ export interface IDocumentsProps {
     fileName: string;
     title: string;
   }>;
+  onOcrPressed: () => void;
   isLoading?: boolean;
+  isLoadingOCR?: boolean;
+  isDocumentEditable?: boolean;
   hideOpenExternalButton?: boolean;
+  wrapperClassName?: string;
 }
 
 export interface IFaceMatchProps extends ComponentProps<'div'> {

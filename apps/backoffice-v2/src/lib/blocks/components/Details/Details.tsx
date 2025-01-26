@@ -10,9 +10,11 @@ export const Details: FunctionComponent<ExtractCellProps<'details'>> = ({
   value,
   hideSeparator,
   contextUpdateMethod,
+  directorId,
   workflowId,
   documents = [],
   onSubmit,
+  isSaveDisabled,
   props,
 }) => {
   if (!value.data?.length) {
@@ -33,11 +35,13 @@ export const Details: FunctionComponent<ExtractCellProps<'details'>> = ({
     >
       <EditableDetails
         workflowId={workflowId}
+        directorId={directorId}
         id={id}
         valueId={value?.id}
         documents={documents}
         title={value?.title}
         data={sortedData}
+        isSaveDisabled={isSaveDisabled}
         contextUpdateMethod={contextUpdateMethod}
         onSubmit={onSubmit}
       />

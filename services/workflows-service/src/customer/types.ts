@@ -1,4 +1,5 @@
 import { Customer } from '@prisma/client';
+import { MerchantReportVersion } from '@/business-report/constants';
 
 export type TAuthenticationConfiguration = {
   apiType: 'API_KEY' | 'OAUTH2' | 'BASIC_AUTH';
@@ -9,49 +10,53 @@ export type TAuthenticationConfiguration = {
 };
 
 export const FEATURE_LIST = {
-  ONGOING_MERCHANT_REPORT_T1: 'ONGOING_MERCHANT_REPORT_T1',
-  ONGOING_MERCHANT_REPORT_T2: 'ONGOING_MERCHANT_REPORT_T2',
+  ONGOING_MERCHANT_REPORT: 'ONGOING_MERCHANT_REPORT',
+  DOCUMENT_OCR: 'isDocumentOcrEnabled',
 } as const;
 
-export type TCustomerFeatures = {
+export type TOngoingMerchantReportOptions = {
+  runByDefault?: boolean;
+  proxyViaCountry: string;
+  workflowVersion: MerchantReportVersion;
+  reportType: 'ONGOING_MERCHANT_REPORT_T1';
+} & (
+  | {
+      scheduleType: 'specific';
+      specificDates: {
+        dayInMonth: number;
+      };
+    }
+  | {
+      scheduleType: 'interval';
+      intervalInDays: number;
+    }
+);
+
+type FeaturesOptions = TOngoingMerchantReportOptions;
+
+export type TCustomerFeaturesConfig = {
   name: keyof typeof FEATURE_LIST;
   enabled: boolean;
-  options: TOngoingAuditReportDefinitionConfig;
-};
-
-export type TOngoingAuditReportDefinitionConfig = {
-  definitionVariation: string;
-  intervalInDays: number;
-  active: boolean;
-  checkTypes: string[];
-  proxyViaCountry: string;
+  options: FeaturesOptions;
 };
 
 export const CUSTOMER_FEATURES = {
-  [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
-    name: 'ONGOING_MERCHANT_REPORT_T1',
-    enabled: true, // show option in UI
+  [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
+    name: FEATURE_LIST.ONGOING_MERCHANT_REPORT,
+    enabled: true,
     options: {
-      definitionVariation: 'ongoing_merchant_audit_t1',
-      intervalInDays: 7,
-      active: true,
-      checkTypes: ['lob', 'content', 'reputation'],
+      scheduleType: 'interval',
+      intervalInDays: 30,
+      runByDefault: true,
+      workflowVersion: '2',
       proxyViaCountry: 'GB',
+      reportType: 'ONGOING_MERCHANT_REPORT_T1',
     },
   },
-  [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2]: {
-    name: 'ONGOING_MERCHANT_REPORT_T2',
-    enabled: false, // show option in UI
-    options: {
-      definitionVariation: 'ongoing_merchant_audit_t2',
-      intervalInDays: 7,
-      active: false,
-      checkTypes: ['lob', 'content', 'reputation'],
-      proxyViaCountry: 'GB',
-    },
-  },
-} satisfies Record<string, TCustomerFeatures>;
+} satisfies TCustomerWithFeatures['features'];
 
-export type TCustomerWithDefinitionsFeatures = Customer & {
-  features?: Record<string, TCustomerFeatures> | null;
+export type TCustomerWithFeatures = Customer & {
+  features?: Partial<
+    Record<(typeof FEATURE_LIST)[keyof typeof FEATURE_LIST], TCustomerFeaturesConfig>
+  > | null;
 };

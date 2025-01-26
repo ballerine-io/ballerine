@@ -1,5 +1,134 @@
 # @ballerine/eslint-config-react
 
+## 2.0.32
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.32
+
+## 2.0.31
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.31
+
+## 2.0.30
+
+### Patch Changes
+
+- version bump
+  s Please enter a summary for your changes.
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.30
+
+## 2.0.29
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.29
+
+## 2.0.28
+
+### Patch Changes
+
+- core
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.28
+
+## 2.0.27
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.27
+
+## 2.0.26
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.26
+
+## 2.0.25
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.25
+
+## 2.0.24
+
+### Patch Changes
+
+- Cump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.24
+
+## 2.0.23
+
+### Patch Changes
+
+- Change
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.23
+
+## 2.0.22
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.22
+
+## 2.0.21
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.21
+
+## 2.0.20
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.20
+
+## 2.0.19
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.19
+
+## 2.0.18
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.18
+
+## 2.0.17
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.17
+
 ## 2.0.16
 
 ### Patch Changes

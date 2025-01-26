@@ -4,7 +4,13 @@ const { fontFamily } = require('tailwindcss/defaultTheme');
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ['class'],
-  content: ['./*.html', './src/**/*.css', './src/**/*.ts', './src/**/*.tsx'],
+  content: [
+    './*.html',
+    './src/**/*.css',
+    './src/**/*.ts',
+    './src/**/*.tsx',
+    './node_modules/@ballerine/ui/src/**/*.js',
+  ],
   theme: {
     container: {
       center: true,
@@ -87,7 +93,7 @@ module.exports = {
   },
   plugins: [
     require('tailwindcss-animate'),
-    plugin(function ({ matchUtilities, theme, matchVariant, addVariant }) {
+    plugin(function ({ matchUtilities, theme, matchVariant, addVariant, addComponents }) {
       matchUtilities(
         {
           // Adds support for d-full instead of w-full h-full
@@ -135,6 +141,14 @@ module.exports = {
         values: {
           light: 'winter',
           dark: 'night',
+        },
+      });
+
+      // Adds support for bg-accent-foreground/15
+      addComponents({
+        '.bg-accent-foreground\\/15': {
+          '--tw-bg-opacity': '0.15',
+          backgroundColor: 'hsla(var(--accent-foreground), var(--tw-bg-opacity))',
         },
       });
     }),

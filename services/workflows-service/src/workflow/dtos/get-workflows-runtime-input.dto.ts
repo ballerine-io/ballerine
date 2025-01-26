@@ -2,7 +2,7 @@ import { oneOf } from '@/common/decorators/one-of.decorator';
 import { SortOrder } from '@/common/query-filters/sort-order';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { WorkflowRuntimeDataStatus } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsNumber, IsOptional } from 'class-validator';
 
 export class GetWorkflowsRuntimeInputDto {
@@ -34,11 +34,15 @@ export class GetWorkflowsRuntimeInputDto {
       'createdBy',
       'createdAt',
     ],
+    default: 'createdAt',
   })
+  @Transform(({ value }) => value || 'createdAt')
   orderBy?: string;
 
   @ApiPropertyOptional({
     enum: ['asc', 'desc'],
+    default: 'desc',
   })
+  @Transform(({ value }) => value || 'desc')
   orderDirection?: SortOrder;
 }

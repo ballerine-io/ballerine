@@ -52,7 +52,6 @@ export const MerchantMonitoringCreateCheckPage: FunctionComponent = () => {
         </Link>
       </div>
       <h1 className="pb-5 text-2xl font-bold">Create Merchant Check</h1>
-      <h3 className="pb-5 text-sm">Registered Company Name</h3>
       <Card>
         <CardContent className={`px-10 pt-8`}>
           <Form {...form}>
@@ -126,7 +125,7 @@ export const MerchantMonitoringCreateCheckPage: FunctionComponent = () => {
                   name="businessCorrelationId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Business ID (Optional)</FormLabel>
+                      <FormLabel>Merchant ID (Optional)</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="q1w2e3r4t5y6u7i8o9p0"

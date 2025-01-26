@@ -1,4 +1,5 @@
 import { AnyChildren } from '@ballerine/ui';
+import React from 'react';
 
 export type BreadcrumbState = 'idle' | 'warning' | 'completed';
 export type BreadcrumbElements = 'wrapper' | 'outer' | 'inner';
@@ -6,16 +7,19 @@ export type BreadcrumbElements = 'wrapper' | 'outer' | 'inner';
 export interface BreadcrumbsOuterProps {
   className?: string;
   children?: AnyChildren;
+  style?: React.CSSProperties;
 }
 
 export interface BreadcrumbsInnerProps {
   className?: string;
   icon?: React.ReactNode;
+  style?: React.CSSProperties;
 }
 
 export interface BreadcrumbsWrapperProps {
   className?: string;
   children?: AnyChildren;
+  style?: React.CSSProperties;
 }
 
 export interface BreadcrumbContext {
@@ -30,6 +34,8 @@ export interface BreadcrumbContext {
 export interface InnerThemeSettings {
   className: string;
   activeClassName?: string;
+  styles?: React.CSSProperties;
+  activeStyles?: React.CSSProperties;
   icon?: React.ReactNode;
   activeIcon?: React.ReactNode;
 }
@@ -37,11 +43,15 @@ export interface InnerThemeSettings {
 export interface OuterThemeSettings {
   className: string;
   activeClassName?: string;
+  styles?: React.CSSProperties;
+  activeStyles?: React.CSSProperties;
 }
 
 export interface WrapperThemeSettings {
   className: string;
   activeClassName?: string;
+  styles?: React.CSSProperties;
+  activeStyles?: React.CSSProperties;
 }
 
 export interface BreadcrumbElementSettings {

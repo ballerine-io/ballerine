@@ -1,9 +1,10 @@
-import { BallerineImage } from '../../atoms/BallerineImage';
+import { isCsv } from '@/common/utils/is-csv/is-csv';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 import { ctw } from '../../../utils/ctw/ctw';
+import { isPdf } from '../../../utils/is-pdf/is-pdf';
+import { BallerineImage } from '../../atoms/BallerineImage';
 import { useSelectedImage } from './hooks/useSelectedImage/useSelectedImage';
 import { TSelectedImageProps } from './interfaces';
-import { isPdf } from '../../../utils/is-pdf/is-pdf';
 
 /**
  * @description To be used by {@link ImageViewer}. Uses {@link BallerineImage} to display the currently selected image with default styling.
@@ -31,13 +32,13 @@ export const SelectedImage = forwardRef<HTMLImageElement | HTMLIFrameElement, TS
       setIsError(false);
     }, [isError, selectedImage?.imageUrl]);
 
-    if (isPdf(selectedImage)) {
+    if (isPdf(selectedImage) || isCsv(selectedImage)) {
       return (
         <iframe
-          src={selectedImage?.imageUrl}
+          src={`${selectedImage?.imageUrl}#toolbar=0&navpanes=0`}
           ref={ref}
           className={ctw(className, `d-full mx-auto`, {
-            'h-[600px] w-[441px]': isPlaceholder,
+            'h-[600px] w-[600px]': isPlaceholder,
           })}
           {...props}
         />
@@ -50,7 +51,7 @@ export const SelectedImage = forwardRef<HTMLImageElement | HTMLIFrameElement, TS
         src={selectedImage?.imageUrl}
         alt={'Selected image'}
         className={ctw(className, `mx-auto`, {
-          '!h-[600px] !w-[441px]': isPlaceholder,
+          '!h-[600px] !w-[600px]': isPlaceholder,
         })}
         ref={ref}
         isLoading={isLoading}
@@ -60,3 +61,5 @@ export const SelectedImage = forwardRef<HTMLImageElement | HTMLIFrameElement, TS
     );
   },
 );
+
+SelectedImage.displayName = 'SelectedImage';

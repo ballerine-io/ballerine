@@ -5,9 +5,10 @@ import { DownloadFile } from '@/common/components/molecules/DownloadFile/Downloa
 import { ImageEditor } from '@/common/components/molecules/ImageEditor/ImageEditor';
 import { ImageViewer } from '@/common/components/organisms/ImageViewer/ImageViewer';
 import { ctw } from '@/common/utils/ctw/ctw';
+import { isCsv } from '@/common/utils/is-csv/is-csv';
 import { keyFactory } from '@/common/utils/key-factory/key-factory';
 import { DocumentsToolbar } from '@/pages/Entity/components/Case/Case.Documents.Toolbar';
-import { useDocuments } from './hooks/useDocuments/useDocuments';
+import { useDocumentsLogic } from './hooks/useDocuments/useDocumentsLogic';
 import { IDocumentsProps } from './interfaces';
 
 /**
@@ -24,19 +25,21 @@ import { IDocumentsProps } from './interfaces';
  */
 export const Documents: FunctionComponent<IDocumentsProps> = ({
   documents,
+  onOcrPressed,
   isLoading,
+  isDocumentEditable,
+  isLoadingOCR,
   hideOpenExternalButton,
+  wrapperClassName,
 }) => {
   const {
     crop,
     onCrop,
     onCancelCrop,
     isCropping,
-    onOcr,
     selectedImageRef,
     initialImage,
     skeletons,
-    isLoadingOCR,
     selectedImage,
     onSelectImage,
     documentRotation,
@@ -45,18 +48,14 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
     onTransformed,
     isRotatedOrTransformed,
     shouldDownload,
+    isOCREnabled,
     fileToDownloadBase64,
-  } = useDocuments(documents);
+  } = useDocumentsLogic(documents);
 
   return (
     <ImageViewer selectedImage={selectedImage} onSelectImage={onSelectImage}>
-      <div className={`flex min-h-[600px] w-full flex-col items-center`}>
-        <div
-          className={ctw(
-            `
-            d-full relative flex justify-center rounded-md`,
-          )}
-        >
+      <div className={`flex w-full flex-col items-center`}>
+        <div className={ctw(`d-full relative flex rounded-md`, wrapperClassName)}>
           {!shouldDownload && (
             <ImageEditor
               image={selectedImage}
@@ -88,8 +87,10 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
             onOpenDocumentInNewTab={onOpenDocumentInNewTab}
             // isRotatedOrTransformed={isRotatedOrTransformed}
             shouldDownload={shouldDownload}
+            isOCREnabled={!!isDocumentEditable && isOCREnabled}
+            onOcrPressed={onOcrPressed}
+            isLoadingOCR={!!isLoadingOCR}
             // isCropping={isCropping}
-            // isLoadingOCR={isLoadingOCR}
             // onCancelCrop={onCancelCrop}
             fileToDownloadBase64={fileToDownloadBase64}
           />
@@ -100,17 +101,21 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
           ? skeletons.map(index => (
               <ImageViewer.SkeletonItem key={`image-viewer-skeleton-${index}`} />
             ))
-          : documents?.map(({ imageUrl, title, fileType, fileName, id }) => (
-              <ImageViewer.Item
-                id={id}
-                key={keyFactory(id, title, fileName, fileType, imageUrl)}
-                src={imageUrl}
-                fileType={fileType}
-                fileName={fileName}
-                alt={title}
-                caption={title}
-              />
-            ))}
+          : documents?.map(document => {
+              const { imageUrl, title, fileType, fileName, id } = document;
+
+              return !isCsv(document) ? (
+                <ImageViewer.Item
+                  id={id}
+                  key={keyFactory(id, title, fileName, fileType, imageUrl)}
+                  src={imageUrl}
+                  fileType={fileType}
+                  fileName={fileName}
+                  alt={title}
+                  caption={title}
+                />
+              ) : null;
+            })}
       </ImageViewer.List>
       <ImageViewer.ZoomModal />
     </ImageViewer>

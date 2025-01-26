@@ -7,9 +7,9 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { alertWebhookFailure } from '@/events/alert-webhook-failure';
 import { ExtractWorkflowEventData } from '@/workflow/types';
 import { getWebhooks, Webhook } from '@/events/get-webhooks';
-import { sign } from '@/common/utils/sign/sign';
 import { CustomerService } from '@/customer/customer.service';
 import type { TAuthenticationConfiguration } from '@/customer/types';
+import { sign } from '@ballerine/common';
 
 @Injectable()
 export class WorkflowStateChangedWebhookCaller {
@@ -42,16 +42,18 @@ export class WorkflowStateChangedWebhookCaller {
       id: data.runtimeData.id,
     });
 
-    const webhooks = getWebhooks(
-      data.runtimeData.config,
-      this.configService.get('ENVIRONMENT_NAME'),
-      'workflow.state.changed',
-    );
-
     const customer = await this.customerService.getByProjectId(data.runtimeData.projectId, {
       select: {
         authenticationConfiguration: true,
+        subscriptions: true,
       },
+    });
+
+    const webhooks = getWebhooks({
+      workflowConfig: data.runtimeData.config,
+      customerSubscriptions: customer.subscriptions,
+      envName: this.configService.get('ENVIRONMENT_NAME'),
+      event: 'workflow.state.changed',
     });
 
     const { webhookSharedSecret } =

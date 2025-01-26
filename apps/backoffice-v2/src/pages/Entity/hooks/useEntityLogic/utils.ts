@@ -1,6 +1,5 @@
 import { AnyArray, TypesafeOmit } from '../../../../common/types';
 import { TDocument } from '@ballerine/common';
-import { TWorkflowById } from '../../../../domains/workflows/fetchers';
 import { toTitleCase } from 'string-ts';
 import { TDropdownOption } from '@/lib/blocks/components/EditableDetails/types';
 
@@ -22,12 +21,6 @@ const composeDataFormCell = (
 };
 const uniqueArrayByKey = (array: AnyArray, key: PropertyKey) => {
   return [...new Map(array.map(item => [item[key], item])).values()] as TDropdownOption[];
-};
-
-const NON_EDITABLE_FIELDS = ['category'] as const;
-
-export const checkIsEditable = ({ isEditable, field }: { isEditable: boolean; field: string }) => {
-  return !NON_EDITABLE_FIELDS.includes(field) && isEditable;
 };
 
 export const composePickableCategoryType = (
@@ -73,8 +66,8 @@ export const isExistingSchemaForDocument = (documentsSchemas: TDocument[]) => {
   return documentsSchemas?.length > 0;
 };
 
-export const extractCountryCodeFromWorkflow = (workflow: TWorkflowById) => {
-  return workflow?.context?.documents?.find(document => {
+export const extractCountryCodeFromDocuments = (documents: TDocument[]) => {
+  return documents?.find(document => {
     return !!document?.issuer?.country;
   })?.issuer?.country;
 };
