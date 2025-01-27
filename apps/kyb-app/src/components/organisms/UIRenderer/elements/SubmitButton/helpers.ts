@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { ARRAY_VALUE_INDEX_PLACEHOLDER } from '@/common/consts/consts';
 import { DocumentFieldParams } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField';
 import { UIElement, UIPage } from '@/domains/collection-flow';
@@ -12,7 +14,7 @@ export const getElementByValueDestination = (
 
   const findByElementDefinitionByDestination = (
     targetDestination: string,
-    elements: UIElement<AnyObject>[],
+    elements: Array<UIElement<AnyObject>>,
   ): UIElement<AnyObject> | null => {
     for (const element of elements) {
       if (element.valueDestination === targetDestination) return element;
@@ -22,6 +24,7 @@ export const getElementByValueDestination = (
           targetDestination,
           element.elements,
         );
+
         if (foundElement) return foundElement;
       }
     }
@@ -36,19 +39,17 @@ export const getElementByValueDestination = (
     );
 
     const element = findByElementDefinitionByDestination(originArrayDestinationPath, page.elements);
+
     return element;
   }
 
   return findByElementDefinitionByDestination(destination, page.elements);
 };
 
-export const getDocumentElementByDocumentError = (
-  id: string,
-  page: UIPage,
-): UIElement<AnyObject> | null => {
+export const getDocumentElementByDocumentError = (id: string, page: any): any => {
   const findElement = (
     id: string,
-    elements: UIElement<AnyObject>[],
+    elements: Array<UIElement<AnyObject>>,
   ): UIElement<DocumentFieldParams> | null => {
     for (const element of elements) {
       //@ts-ignore
@@ -56,6 +57,7 @@ export const getDocumentElementByDocumentError = (
 
       if (element.elements) {
         const foundInElements = findElement(id, element.elements);
+
         if (foundInElements) return foundInElements;
       }
     }

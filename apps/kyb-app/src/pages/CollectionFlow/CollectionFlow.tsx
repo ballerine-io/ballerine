@@ -1,7 +1,7 @@
+import { LoadingScreen } from '@/common/components/molecules/LoadingScreen';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { FunctionComponent, useMemo } from 'react';
-import { LoadingScreen } from './v1/components/atoms/LoadingScreen';
 import { getCollectionFlowVersion } from './versions-repository';
 
 export const CollectionFlow = () => {
@@ -21,8 +21,8 @@ export const CollectionFlow = () => {
   return CollectionFlowComponent ? (
     <CollectionFlowComponent />
   ) : (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-8">
-      <div className="text-3xl font-bold text-gray-800 mb-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-8">
+      <div className="mb-4 text-3xl font-bold text-gray-800">
         No version found for UI Definition version: {schema?.version}
       </div>
       <div className="text-lg text-gray-600">Please contact the support.</div>

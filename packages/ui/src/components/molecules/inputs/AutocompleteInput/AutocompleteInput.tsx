@@ -16,6 +16,7 @@ export type AutocompleteChangeEvent = React.ChangeEvent<{
 }>;
 
 export interface AutocompleteInputProps {
+  id?: string;
   value?: string;
   options: AutocompleteOption[];
   placeholder?: string;
@@ -25,9 +26,11 @@ export interface AutocompleteInputProps {
   textInputClassName?: string;
   onChange: (event: AutocompleteChangeEvent) => void;
   onBlur?: (event: FocusEvent<any>) => void;
+  onFocus?: (event: FocusEvent<any>) => void;
 }
 
 export const AutocompleteInput = ({
+  id,
   options,
   value = '',
   placeholder,
@@ -37,6 +40,7 @@ export const AutocompleteInput = ({
   textInputClassName,
   onChange,
   onBlur,
+  onFocus,
 }: AutocompleteInputProps) => {
   const safeValue = useMemo(() => {
     if (typeof value !== 'string') {
@@ -73,6 +77,7 @@ export const AutocompleteInput = ({
   return (
     <ThemeProvider theme={muiTheme}>
       <Autocomplete
+        id={id}
         disablePortal
         options={optionLabels}
         getOptionLabel={label => label}
@@ -81,6 +86,7 @@ export const AutocompleteInput = ({
         PaperComponent={Paper as ComponentProps<typeof Autocomplete>['PaperComponent']}
         onChange={handleChange}
         disabled={disabled}
+        onFocus={onFocus}
         slotProps={{
           paper: {
             className: 'mt-2 mb-2 w-full',
@@ -119,8 +125,8 @@ export const AutocompleteInput = ({
             //@ts-nocheck
             inputProps={{
               ...params.inputProps,
-              'data-testid': testId,
               className: 'py-0 px-0 h-9',
+              'data-testid': testId,
             }}
             onChange={handleInputChange}
           />

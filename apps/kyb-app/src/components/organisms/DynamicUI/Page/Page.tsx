@@ -34,9 +34,9 @@ export const Page = ({ page, children }: PageProps) => {
     [page],
   );
 
-  const { payload } = useStateManagerContext();
-  const { state } = useDynamicUIContext();
-  const rulesResult = useRuleExecutor(payload, rules, definition, state);
+  const { payload, state } = useStateManagerContext();
+  const { state: _uiState } = useDynamicUIContext();
+  const rulesResult = useRuleExecutor(payload, rules, definition, _uiState);
   const fieldErrors = useMemo(
     () =>
       rulesResult.reduce(

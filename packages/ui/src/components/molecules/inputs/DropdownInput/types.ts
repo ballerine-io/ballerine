@@ -22,6 +22,7 @@ export interface DropdownInputProps {
   openOnFocus?: boolean;
   onChange: (value: string, inputName: string) => void;
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
+  onFocus?: (event: FocusEvent<HTMLInputElement>) => void;
   props?: {
     trigger?: Pick<ComponentProps<typeof PopoverContent>, 'className'> & {
       icon?: React.ReactNode;
