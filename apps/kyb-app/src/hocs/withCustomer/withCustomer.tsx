@@ -1,6 +1,6 @@
+import { LoadingScreen } from '@/common/components/molecules/LoadingScreen';
 import { CustomerProviderFallback } from '@/components/molecules/CustomerProviderFallback';
 import { CustomerProvider } from '@/components/providers/CustomerProvider';
-import { LoadingScreen } from '@/pages/CollectionFlow/v1/components/atoms/LoadingScreen';
 
 export const withCustomer = <TComponentProps extends object>(
   Component: React.ComponentType<TComponentProps>,

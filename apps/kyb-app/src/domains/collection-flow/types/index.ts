@@ -1,6 +1,6 @@
 import { ITheme } from '@/common/types/settings';
-import { Action, Rule } from '@/domains/collection-flow/types/ui-schema.types';
-import { IPlugin } from '@/pages/CollectionFlow/components/organisms/CollectionFlowUI/components/utility/PluginsRunner/types';
+import { Action, Rule, UIElement } from '@/domains/collection-flow/types/ui-schema.types';
+import { IPlugin } from '@/pages/CollectionFlow/versions/v2/components/organisms/CollectionFlowUI/components/utility/PluginsRunner/types';
 import { AnyObject, IFormElement } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { CollectionFlowConfig } from './flow-context.types';
@@ -124,12 +124,15 @@ export interface TCustomer {
   websiteUrl: string;
 }
 
-export interface UIPage {
+export type UIElementV1<TParams = any> = UIElement<TParams>;
+export type UIElementV2<TElements = any, TParams = any> = IFormElement<any, any>;
+
+export interface UIPage<TVersion extends 'v1' | 'v2' = 'v1'> {
   type: 'page';
   name: string;
   number: number;
   stateName: string;
-  elements: Array<IFormElement<any, any>>;
+  elements: Array<TVersion extends 'v1' ? UIElementV1<any> : UIElementV2<any>>;
   plugins: IPlugin[];
   actions: Action[];
   pageValidation?: Rule[];

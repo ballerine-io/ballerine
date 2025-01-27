@@ -1,5 +1,11 @@
 import { getCountryStates } from '@/helpers/countries-data';
-import { IFormElement, ISelectFieldParams, useDynamicForm } from '@ballerine/ui';
+import {
+  formatValueDestination,
+  IFormElement,
+  ISelectFieldParams,
+  useDynamicForm,
+  useStack,
+} from '@ballerine/ui';
 import { IDynamicFormContext } from '@ballerine/ui/dist/components/organisms/Form/DynamicForm/context';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
@@ -10,7 +16,9 @@ vi.mock('@ballerine/ui', () => ({
   SelectField: ({ element }: { element: any }) => (
     <div data-testid="select-field">{JSON.stringify(element)}</div>
   ),
+  formatValueDestination: vi.fn(),
   useDynamicForm: vi.fn(),
+  useStack: vi.fn(),
 }));
 
 vi.mock('@/helpers/countries-data', () => ({
@@ -31,10 +39,16 @@ describe('StatePickerField', () => {
       },
     } as IDynamicFormContext<object>);
 
+    vi.mocked(useStack).mockReturnValue({
+      stack: [],
+    });
+
     vi.mocked(getCountryStates).mockReturnValue([
       { name: 'California', isoCode: 'CA', countryCode: 'US' },
       { name: 'New York', isoCode: 'NY', countryCode: 'US' },
     ]);
+
+    vi.mocked(formatValueDestination).mockImplementation(value => value);
   });
 
   it('renders SelectField with transformed state options when country is selected', () => {
@@ -57,6 +71,7 @@ describe('StatePickerField', () => {
 
   it('preserves existing element params while adding options', () => {
     const elementWithParams = {
+      valueDestination: 'country',
       params: {
         countryCodePath: 'country',
         placeholder: 'Select a state',
@@ -70,6 +85,7 @@ describe('StatePickerField', () => {
 
     expect(elementProp).toEqual({
       element: STATE_PICKER_FIELD_TYPE,
+      valueDestination: 'country',
       params: {
         countryCodePath: 'country',
         placeholder: 'Select a state',

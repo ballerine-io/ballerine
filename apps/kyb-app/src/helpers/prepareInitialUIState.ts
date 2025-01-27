@@ -15,7 +15,7 @@ export const isPageCompleted = (page: UIPage, context: CollectionFlowContext) =>
 };
 
 export const prepareInitialUIState = (
-  pages: UIPage[],
+  pages: Array<UIPage<any>>,
   context: CollectionFlowContext,
   isRevision?: boolean,
 ): UIState => {

@@ -1,4 +1,3 @@
-import DOMPurify from 'dompurify';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,66 +7,31 @@ import { useTheme } from '@/common/providers/ThemeProvider';
 import { AppShell } from '@/components/layouts/AppShell';
 import { PoweredByLogo } from '@/components/molecules/PoweredByLogo';
 import { DynamicUI, State } from '@/components/organisms/DynamicUI';
-import {
-  PageError,
-  usePageErrors,
-} from '@/components/organisms/DynamicUI/Page/hooks/usePageErrors';
-import { UIRenderer } from '@/components/organisms/UIRenderer';
-import { Cell } from '@/components/organisms/UIRenderer/elements/Cell';
-import { Divider } from '@/components/organisms/UIRenderer/elements/Divider';
-import { JSONForm } from '@/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
 import { StepperUI } from '@/components/organisms/UIRenderer/elements/StepperUI';
-import { SubmitButton } from '@/components/organisms/UIRenderer/elements/SubmitButton';
-import { Title } from '@/components/organisms/UIRenderer/elements/Title';
 import { useCustomer } from '@/components/providers/CustomerProvider';
+import { UIPage } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { prepareInitialUIState } from '@/helpers/prepareInitialUIState';
 import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
-import { LoadingScreen } from '@/pages/CollectionFlow/v1/components/atoms/LoadingScreen';
-import { Approved } from '@/pages/CollectionFlow/v1/components/pages/Approved';
-import { CompletedScreen } from '@/pages/CollectionFlow/v1/components/pages/CompletedScreen';
-import { Rejected } from '@/pages/CollectionFlow/v1/components/pages/Rejected';
-import {
-  CollectionFlowStatusesEnum,
-  getCollectionFlowState,
-  setCollectionFlowStatus,
-  setStepCompletionState,
-} from '@ballerine/common';
-import { AnyObject } from '@ballerine/ui';
-import { FailedScreen } from './components/pages/FailedScreen';
-import { useAdditionalWorkflowContext } from './hooks/useAdditionalWorkflowContext';
-
-const elems = {
-  h1: Title,
-  h3: (props: AnyObject) => <h3 className="pt-4 text-xl font-bold">{props?.options?.text}</h3>,
-  h4: (props: AnyObject) => <h4 className="pb-3 text-base font-bold">{props?.options?.text}</h4>,
-  description: (props: AnyObject) => (
-    <p
-      className="font-inter pb-2 text-sm text-slate-500"
-      dangerouslySetInnerHTML={{
-        __html: DOMPurify.sanitize(props.options.descriptionRaw) as string,
-      }}
-    ></p>
-  ),
-  'json-form': JSONForm,
-  container: Cell,
-  mainContainer: Cell,
-  'submit-button': SubmitButton,
-  stepper: StepperUI,
-  divider: Divider,
-};
+import { CollectionFlowStatusesEnum, getCollectionFlowState } from '@ballerine/common';
+import { IFormElement } from '@ballerine/ui';
+import { LoadingScreen } from '../v1/components/atoms/LoadingScreen';
+import { Approved } from '../v1/components/pages/Approved';
+import { CompletedScreen } from '../v1/components/pages/CompletedScreen';
+import { FailedScreen } from '../v1/components/pages/FailedScreen';
+import { Rejected } from '../v1/components/pages/Rejected';
+import { useAdditionalWorkflowContext } from '../v1/hooks/useAdditionalWorkflowContext';
+import { CollectionFlowUI } from './components/organisms/CollectionFlowUI';
+import { PluginsRunner } from './components/organisms/CollectionFlowUI/components/utility/PluginsRunner';
+import { useRevisionStates } from './hooks/useRevisionStates';
 
 const isCompleted = (state: string) => state === 'completed' || state === 'finish';
 const isFailed = (state: string) => state === 'failed';
 
-const getRevisionStateName = (pageErrors: PageError[]) => {
-  return pageErrors?.filter(pageError => !!pageError.errors.length)?.[0]?.stateName;
-};
-
-export const CollectionFlowV1 = withSessionProtected(() => {
+export const CollectionFlowV2 = withSessionProtected(() => {
   const { language } = useLanguageParam();
   const { data: schema } = useUISchemasQuery(language);
   const { data: collectionFlowData } = useFlowContextQuery();
@@ -76,16 +40,18 @@ export const CollectionFlowV1 = withSessionProtected(() => {
   const { themeDefinition } = useTheme();
   const additionalContext = useAdditionalWorkflowContext();
 
-  const elements = schema?.uiSchema?.elements;
+  const elements = schema?.uiSchema?.elements as unknown as Array<UIPage<'v2'>>;
   const definition = schema?.definition.definition;
 
-  const pageErrors = usePageErrors(
-    collectionFlowData?.context ?? ({} as CollectionFlowContext),
+  const { initialRevisionState, revisionStateNames } = useRevisionStates(
     elements || [],
+    collectionFlowData?.context ?? ({} as CollectionFlowContext),
   );
+
   const isRevision = useMemo(
     () =>
-      getCollectionFlowState(collectionFlowData)?.status === CollectionFlowStatusesEnum.revision,
+      getCollectionFlowState(collectionFlowData?.context)?.status ===
+      CollectionFlowStatusesEnum.revision,
     [collectionFlowData],
   );
 
@@ -94,21 +60,19 @@ export const CollectionFlowV1 = withSessionProtected(() => {
     const collectionFlow = getCollectionFlowState(contextCopy);
 
     if (isRevision && collectionFlow) {
-      const revisionStateName = getRevisionStateName(pageErrors);
-      collectionFlow.currentStep = revisionStateName || collectionFlow.currentStep;
-      revisionStateName || collectionFlow.currentStep;
+      collectionFlow.currentStep = initialRevisionState || collectionFlow.currentStep;
     }
 
     return contextCopy as CollectionFlowContext;
-  }, [isRevision, pageErrors]);
+  }, [isRevision, collectionFlowData?.context, initialRevisionState]);
 
   const initialUIState = useMemo(() => {
     return prepareInitialUIState(
       elements || [],
-      (collectionFlowData?.context as CollectionFlowContext) || {},
+      (initialContext as CollectionFlowContext) || {},
       isRevision,
     );
-  }, [elements, collectionFlowData, isRevision]);
+  }, [elements, isRevision, initialContext]);
 
   // Breadcrumbs now using scrollIntoView method to make sure that breadcrumb is always in viewport.
   // Due to dynamic dimensions of logo it doesnt work well if scroll happens before logo is loaded.
@@ -145,38 +109,12 @@ export const CollectionFlowV1 = withSessionProtected(() => {
         config={collectionFlowData?.config}
         additionalContext={additionalContext}
       >
-        {({ state, stateApi }) => {
+        {({ state, stateApi, payload }) => {
           return (
             <DynamicUI.TransitionListener
-              pages={elements ?? []}
-              onNext={async (tools, prevState, currentState) => {
+              pages={elements as unknown as Array<UIPage<'v1'>>}
+              onNext={async (tools, prevState) => {
                 tools.setElementCompleted(prevState, true);
-
-                const context = stateApi.getContext();
-
-                const collectionFlow = getCollectionFlowState(context);
-
-                if (collectionFlow) {
-                  const steps = collectionFlow?.steps || [];
-
-                  const isAnyStepCompleted = steps.some(step => step.isCompleted);
-
-                  setStepCompletionState(context, {
-                    stepName: prevState,
-                    completed: true,
-                  });
-
-                  collectionFlow.currentStep = currentState;
-
-                  if (!isAnyStepCompleted) {
-                    console.log('Collection flow touched, changing state to inprogress');
-                    setCollectionFlowStatus(context, CollectionFlowStatusesEnum.inprogress);
-                  }
-
-                  stateApi.setContext(context);
-
-                  await stateApi.invokePlugin('sync_workflow_runtime');
-                }
               }}
             >
               {() => {
@@ -188,7 +126,10 @@ export const CollectionFlowV1 = withSessionProtected(() => {
                 if (isFailed(state)) return <FailedScreen />;
 
                 return (
-                  <DynamicUI.PageResolver state={state} pages={elements ?? []}>
+                  <DynamicUI.PageResolver
+                    state={state}
+                    pages={elements as unknown as Array<UIPage<'v1'>>}
+                  >
                     {({ currentPage }) => {
                       return currentPage ? (
                         <DynamicUI.Page page={currentPage}>
@@ -218,7 +159,9 @@ export const CollectionFlowV1 = withSessionProtected(() => {
                                       )}
                                     </div>
                                     <div className="min-h-0 flex-1 pb-10">
-                                      {isLogoLoaded ? <StepperUI /> : null}
+                                      {isLogoLoaded ? (
+                                        <StepperUI revisionStateNames={revisionStateNames} />
+                                      ) : null}
                                     </div>
                                     <div>
                                       {customer?.displayName && (
@@ -299,7 +242,17 @@ export const CollectionFlowV1 = withSessionProtected(() => {
                                       <ProgressBar />
                                     </div>
                                     <div>
-                                      <UIRenderer elements={elems} schema={currentPage.elements} />
+                                      <PluginsRunner plugins={currentPage.plugins || []}>
+                                        <CollectionFlowUI
+                                          elements={
+                                            currentPage.elements as unknown as Array<
+                                              IFormElement<any, any>
+                                            >
+                                          }
+                                          context={payload}
+                                          isRevision={isRevision}
+                                        />
+                                      </PluginsRunner>
                                     </div>
                                   </div>
                                 </AppShell.FormContainer>

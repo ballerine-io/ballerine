@@ -19,7 +19,7 @@ describe('generatePriorityFields', () => {
       id: 'document-1',
       valueDestination: 'documents',
       params: {
-        documentTemplate: {
+        template: {
           id: 'doc1',
         },
       },
@@ -69,7 +69,7 @@ describe('generatePriorityFields', () => {
             element: 'documentfield',
             valueDestination: 'entries[$0].documents',
             params: {
-              documentTemplate: {
+              template: {
                 id: 'nested-doc-1',
               },
             },

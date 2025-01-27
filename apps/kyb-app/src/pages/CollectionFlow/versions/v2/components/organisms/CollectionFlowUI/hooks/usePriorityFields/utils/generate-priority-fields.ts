@@ -22,13 +22,11 @@ export const generatePriorityFields = (
   const run = (elements: Array<IFormElement<TBaseFields, any>>, stack: TDeepthLevelStack = []) => {
     for (const element of elements) {
       // Extracting revision reason fro documents isnt common so we handling it explicitly
-      if (element.element === 'documentfield') {
-        const documentDefinition = isDocumentFieldDefinition(element);
-
-        if (!documentDefinition) continue;
-
+      if (isDocumentFieldDefinition(element)) {
         const documents = get(context, formatValueDestination(element.valueDestination, stack));
-        const document = documents.find((doc: TDocument) => doc.id === element.params?.template.id);
+        const document = documents.find(
+          (doc: TDocument) => doc.id === element.params?.template?.id,
+        );
 
         if (!document) continue;
 

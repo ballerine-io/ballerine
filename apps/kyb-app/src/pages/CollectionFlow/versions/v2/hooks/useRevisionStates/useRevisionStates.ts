@@ -3,7 +3,7 @@ import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-cont
 import { useMemo } from 'react';
 import { generatePriorityFields } from '../../components/organisms/CollectionFlowUI/hooks/usePriorityFields/utils/generate-priority-fields';
 
-export const useRevisionStates = (pages: UIPage[], context: CollectionFlowContext) => {
+export const useRevisionStates = (pages: Array<UIPage<'v2'>>, context: CollectionFlowContext) => {
   const revisionStateNames = useMemo(
     () =>
       pages

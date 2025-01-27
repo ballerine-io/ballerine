@@ -1,4 +1,3 @@
-import { CollectionFlowV1 } from '@/pages/CollectionFlow';
 import * as Sentry from '@sentry/react';
 import React from 'react';
 import {
@@ -37,7 +36,7 @@ export const router = sentryCreateBrowserRouter([
         children: [
           {
             path: '',
-            Component: withCustomer(CollectionFlowV1),
+            Component: withCustomer(CollectionFlow),
           },
           {
             path: 'collection-flow',
