@@ -8,6 +8,7 @@ import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 import { usePluginsSubscribe } from './components/utility/PluginsRunner';
 import { usePlugins } from './components/utility/PluginsRunner/hooks/external/usePlugins';
 import { TPluginListener } from './components/utility/PluginsRunner/hooks/internal/usePluginsRunner/usePluginListeners';
+import { updateCollectionFlowState } from './helpers/update-collection-flow-state';
 import { useAppMetadata } from './hooks/useAppMetadata';
 import { useAppSync } from './hooks/useAppSync';
 import { usePluginsHandler } from './hooks/usePluginsHandler/usePluginsHandler';
@@ -71,12 +72,17 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
 
   const handleSubmit = useCallback(
     async (values: CollectionFlowContext) => {
+      const updatedContext = updateCollectionFlowState(
+        structuredClone(values),
+        stateApi.getState(),
+      );
+
       helpers.setLoading(true);
-      await sync(values);
+      await sync(updatedContext);
       handleEvent('onSubmit');
       helpers.setLoading(false);
     },
-    [handleEvent, sync, helpers],
+    [handleEvent, sync, helpers, stateApi],
   );
 
   return (

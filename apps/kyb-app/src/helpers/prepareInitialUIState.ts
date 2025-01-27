@@ -25,8 +25,6 @@ export const prepareInitialUIState = (
     elements: {},
   };
 
-  if (pages[0]?.stateName === context.collectionFlow?.state?.currentStep) return initialUIState;
-
   pages.forEach(page => {
     initialUIState.elements[page.stateName] = {
       isLoading: false,
