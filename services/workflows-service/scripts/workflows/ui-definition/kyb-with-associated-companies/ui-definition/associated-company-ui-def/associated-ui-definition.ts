@@ -31,7 +31,7 @@ export const definition = {
       {
         name: 'update_end_user',
         pluginKind: 'api',
-        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/end-user}`,
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/end-user`,
         method: 'POST',
         headers: { Authorization: 'Bearer {query.token}' },
         stateNames: [],
@@ -53,7 +53,7 @@ export const definition = {
       {
         name: 'sync_workflow_runtime',
         pluginKind: 'api',
-        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/sync}`,
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/sync`,
         method: 'PUT',
         stateNames: [
           'personal_details',

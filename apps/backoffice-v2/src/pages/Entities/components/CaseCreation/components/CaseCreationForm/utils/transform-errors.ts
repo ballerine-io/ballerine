@@ -5,8 +5,16 @@ export const transformErrors = (errors: RJSFValidationError[]): RJSFValidationEr
   return errors.map(error => {
     const errorCopy = structuredClone(error);
 
-    if (errorCopy.name === 'minLength' || errorCopy.name === 'required') {
+    if (errorCopy.name === 'required') {
       errorCopy.message = 'This field is required.';
+    }
+
+    if (errorCopy.name === 'minLength') {
+      errorCopy.message = `This field must be at least ${errorCopy.params.limit} characters long.`;
+    }
+
+    if (errorCopy.name === 'maxLength') {
+      errorCopy.message = `This field must be at most ${errorCopy.params.limit} characters long.`;
     }
 
     if (
@@ -21,7 +29,7 @@ export const transformErrors = (errors: RJSFValidationError[]): RJSFValidationEr
       errorCopy.message = 'Value must be selected from list.';
     }
 
-    // Removing oneOf constant specific errors(they are generated from each item in oneOf array of schema)
+    // Removing oneOf constant specific errors (they are generated from each item in oneOf array of schema)
     if (errorCopy.message?.includes('constant')) {
       errorCopy.message = '';
     }
