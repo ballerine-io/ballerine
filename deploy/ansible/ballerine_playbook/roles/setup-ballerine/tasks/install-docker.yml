@@ -24,15 +24,13 @@
       - libnss3-tools
     state: latest
   become: true
-  tags:
-    - always
+
 
 - name: Upgrade dist to apply security fixes
   ansible.builtin.apt:
     upgrade: dist
   become: true
-  tags:
-    - always
+
 
 - name: Ensure old versions of Docker are not installed
   package:
