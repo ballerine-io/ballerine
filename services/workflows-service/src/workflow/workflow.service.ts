@@ -820,10 +820,12 @@ export class WorkflowService {
   async updateDocumentDecisionById(
     {
       workflowId,
+      directorId,
       documentId,
       documentsUpdateContextMethod,
     }: {
       workflowId: string;
+      directorId?: string;
       documentId: string;
       documentsUpdateContextMethod?: 'base' | 'director';
     },
@@ -903,6 +905,7 @@ export class WorkflowService {
               : document?.type,
         },
         documentsUpdateContextMethod,
+        directorId,
       );
 
       document = this.getDocuments(updatedContext, documentsUpdateContextMethod)?.find(
@@ -924,6 +927,7 @@ export class WorkflowService {
       const updatedWorkflow = await this.updateDocumentById(
         {
           workflowId,
+          directorId,
           documentId,
           validateDocumentSchema,
           documentsUpdateContextMethod: documentsUpdateContextMethod,
@@ -949,11 +953,13 @@ export class WorkflowService {
       documentId,
       validateDocumentSchema = true,
       documentsUpdateContextMethod,
+      directorId,
     }: {
       workflowId: string;
       documentId: string;
       validateDocumentSchema?: boolean;
       documentsUpdateContextMethod?: 'base' | 'director';
+      directorId?: string;
     },
     data: DefaultContextSchema['documents'][number] & { propertiesSchema?: object },
     projectId: TProjectId,
@@ -1011,6 +1017,7 @@ export class WorkflowService {
               runtimeData.context,
               documentSchema,
               documentsUpdateContextMethod,
+              directorId,
             ),
             arrayMergeOption:
               documentsUpdateContextMethod === 'director'
@@ -1079,6 +1086,7 @@ export class WorkflowService {
     context: WorkflowRuntimeData['context'],
     updatePayload: any,
     method: 'base' | 'director' = 'base',
+    directorId?: string,
   ): WorkflowRuntimeData['context'] {
     switch (method) {
       case 'base':
@@ -1088,7 +1096,7 @@ export class WorkflowService {
         };
 
       case 'director':
-        return this.updateDirectorDocument(context, updatePayload);
+        return this.updateDirectorDocument(context, updatePayload, directorId);
 
       default:
         return context;
@@ -1112,8 +1120,15 @@ export class WorkflowService {
   private updateDirectorDocument(
     context: WorkflowRuntimeData['context'],
     documentUpdatePayload: any,
+    directorId: string | undefined,
   ): WorkflowRuntimeData['context'] {
-    const directorsDocuments = this.getDirectorsDocuments(context);
+    if (!directorId) {
+      throw new BadRequestException('Attempted to update director document without a director id');
+    }
+
+    const directorsDocuments = this.getDirectorsDocuments(context, directorId);
+
+    this.logger.log('directorsDocuments', { directorsDocuments });
 
     directorsDocuments.forEach(document => {
       if (document?.id === documentUpdatePayload?.id) {
@@ -1126,9 +1141,19 @@ export class WorkflowService {
     return context;
   }
 
-  private getDirectorsDocuments(context: WorkflowRuntimeData['context']): any[] {
+  private getDirectorsDocuments(
+    context: WorkflowRuntimeData['context'],
+    directorId?: string,
+  ): any[] {
     return (
       this.getDirectors(context)
+        .filter(director => {
+          if (!directorId) {
+            return true;
+          }
+
+          return director.ballerineEntityId === directorId;
+        })
         .map(director => director.additionalInfo?.documents)
         .filter(Boolean)
         .flat() || ([] as any[])

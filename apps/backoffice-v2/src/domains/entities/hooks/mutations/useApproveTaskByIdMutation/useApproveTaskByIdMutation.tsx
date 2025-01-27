@@ -13,10 +13,12 @@ export const useApproveTaskByIdMutation = (workflowId: string) => {
 
   return useMutation({
     mutationFn: ({
+      directorId,
       documentId,
       contextUpdateMethod = 'base',
       comment,
     }: {
+      directorId?: string;
       documentId: string;
       contextUpdateMethod?: 'base' | 'director';
       comment?: string;
@@ -25,6 +27,7 @@ export const useApproveTaskByIdMutation = (workflowId: string) => {
         workflowId,
         documentId,
         body: {
+          directorId,
           decision: Action.APPROVE,
           comment,
         },

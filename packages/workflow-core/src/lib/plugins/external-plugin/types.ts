@@ -2,8 +2,8 @@ import { TJsonSchema, Transformers, Validator } from '../../utils';
 import { THelperFormatingLogic } from '../../utils/context-transformers/types';
 import { ActionablePlugin } from '../types';
 
-import { AnyRecord } from '@ballerine/common';
 import { SecretsManager } from '@/lib/types';
+import { AnyRecord } from '@ballerine/common';
 import { ApiEmailTemplates } from './vendor-consts';
 
 export interface ValidatableTransformer {
@@ -27,7 +27,8 @@ export interface IApiPluginParams {
   persistResponseDestination?: string;
   displayName: string | undefined;
   secretsManager?: SecretsManager;
-
+  whitelistedInputProperties?: string[];
+  includeInvokedAt?: boolean;
   invoke?(...args: any[]): any;
 }
 

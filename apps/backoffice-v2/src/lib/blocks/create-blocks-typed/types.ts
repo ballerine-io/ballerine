@@ -113,6 +113,7 @@ export type TDetailsCell = {
   type: 'details';
   id: string;
   workflowId: string;
+  directorId?: string;
   hideSeparator?: boolean;
   documents?: IEditableDetailsDocument[];
   contextUpdateMethod?: 'base' | 'director';

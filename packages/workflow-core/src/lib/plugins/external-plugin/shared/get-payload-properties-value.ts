@@ -23,6 +23,12 @@ export const getPayloadPropertiesValue = ({
       return acc;
     }
 
+    if ('__type' in property && property.value === '*') {
+      acc[key] = context;
+
+      return acc;
+    }
+
     if ('__type' in property) {
       acc[key] = get(context, property.value);
 

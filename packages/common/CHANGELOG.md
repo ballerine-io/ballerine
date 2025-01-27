@@ -1,5 +1,17 @@
 # @ballerine/common
 
+## 0.9.70
+
+### Patch Changes
+
+- updated packages
+
+## 0.9.69
+
+### Patch Changes
+
+- updated common and core
+
 ## 0.9.68
 
 ### Patch Changes
