@@ -23,7 +23,7 @@
     "test:integration": "jest --testRegex '.*\\.intg\\.test\\.ts$'",
     "test:e2e": "jest --testRegex '.*\\.e2e\\.test\\.ts$'",
     "test:watch": "jest --verbose --watch",
-    "seed": "tsx scripts/seed.ts",
+    "seed": "nest start --entryFile scripts/seed",
     "db:migrate-dev": "prisma migrate dev",
     "db:migrate-up": "prisma migrate deploy",
     "db:clean": "tsx scripts/clean.ts",

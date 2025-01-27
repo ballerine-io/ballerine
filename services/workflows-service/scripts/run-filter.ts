@@ -19,7 +19,6 @@ export async function fliterQuery() {
       id: true,
       email: true,
       phone: true,
-      jsonData: true,
       lastName: true,
       avatarUrl: true,
       createdAt: true,
@@ -31,7 +30,6 @@ export async function fliterQuery() {
       approvalState: true,
       correlationId: true,
       additionalInfo: true,
-      verificationId: true,
       workflowRuntimeData: {
         select: {
           id: true,

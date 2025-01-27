@@ -35,6 +35,9 @@ import { generateKycManualReviewRuntimeAndToken } from './workflows/runtime/gene
 import { generateInitialCollectionFlowExample } from './workflows/runtime/generate-initial-collection-flow-example';
 import { uiKybParentWithAssociatedCompanies } from './workflows/ui-definition/kyb-with-associated-companies/ui-kyb-parent-dynamic-example';
 import { generateWebsiteMonitoringExample } from './workflows/website-monitoring-workflow';
+import { CustomerService } from '@/customer/customer.service';
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from '@/app.module';
 
 const BCRYPT_SALT: string | number = 10;
 
@@ -69,14 +72,14 @@ function generateAvatarImageUri(imageTemplate: string, countOfBusiness: number, 
 }
 
 async function createCustomer(
-  client: PrismaClient,
+  customerService: CustomerService,
   id: string,
   apiKey: string,
   logoImageUri: string,
   faviconImageUri: string,
   webhookSharedSecret: string,
 ) {
-  return client.customer.create({
+  return customerService.create({
     data: {
       id: `customer-${id}`,
       name: `customer-${id}`,
@@ -93,9 +96,28 @@ async function createCustomer(
       faviconImageUri,
       country: 'GB',
       language: 'en',
-      config: {
-        isMerchantMonitoringEnabled: true,
-        isExample: true,
+      config: { isDemo: true, withQualityControl: true, isMerchantMonitoringEnabled: true },
+      features: {
+        createBusinessReport: {
+          enabled: true,
+          options: { type: 'MERCHANT_REPORT_T1', version: '2' },
+        },
+        createBusinessReportBatch: {
+          enabled: true,
+          options: { type: 'MERCHANT_REPORT_T1', version: '2' },
+        },
+        ONGOING_MERCHANT_REPORT: {
+          name: 'ONGOING_MERCHANT_REPORT',
+          enabled: true,
+          options: {
+            reportType: 'ONGOING_MERCHANT_REPORT_T1',
+            runByDefault: true,
+            scheduleType: 'interval',
+            intervalInDays: 30,
+            proxyViaCountry: 'GB',
+            workflowVersion: '2',
+          },
+        },
       },
     },
   });
@@ -120,10 +142,16 @@ const DEFAULT_TOKENS = {
 
 async function seed() {
   console.info('Seeding database...');
+  const app = await NestFactory.createApplicationContext(AppModule, { logger: false });
+
+  app.enableShutdownHooks();
+
+  const customerService = app.get(CustomerService);
+
   const client = new PrismaClient();
   await generateDynamicDefinitionForE2eTest(client);
   const customer = (await createCustomer(
-    client,
+    customerService,
     '1',
     env.API_KEY,
     'https://cdn.ballerine.io/images/ballerine_logo.svg',
@@ -132,7 +160,7 @@ async function seed() {
   )) as Customer;
 
   const customer2 = (await createCustomer(
-    client,
+    customerService,
     '2',
     `${env.API_KEY}2`,
     'https://cdn.ballerine.io/images/ballerine_logo.svg',
@@ -1043,6 +1071,8 @@ async function seed() {
     endUserId: endUserIds[0]!,
     token: DEFAULT_TOKENS.KYC,
   });
+
+  await app.close();
 
   console.info('Seeded database successfully');
 }
