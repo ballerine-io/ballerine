@@ -152,7 +152,9 @@ export class AlertControllerExternal {
       } = alert as TAlertTransactionResponse;
 
       const counterpartyDetails = (counterparty: TAlertTransactionResponse['counterparty']) => {
-        if (!counterparty) return;
+        if (!counterparty) {
+          return;
+        }
 
         return counterparty?.business
           ? {

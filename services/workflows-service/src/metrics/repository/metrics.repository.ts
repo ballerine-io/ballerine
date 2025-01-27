@@ -173,7 +173,9 @@ export class MetricsRepository {
       buildAggregateDailyCasesResolvedQuery(params.fromDate, params.userId, projectIds),
     );
 
-    if (!results.length) return [];
+    if (!results.length) {
+      return [];
+    }
 
     return results.map(result =>
       plainToClass(CasesResolvedInDay, {
