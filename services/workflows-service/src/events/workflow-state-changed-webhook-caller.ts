@@ -96,16 +96,12 @@ export class WorkflowStateChangedWebhookCaller {
     };
 
     const webhookArgs = {
-      requestConfig: {
-        url,
-        method: 'POST',
-        headers: {},
-        body: payload,
-        timeout: 15_000,
-      },
-      customerConfig: {
-        webhookSharedSecret,
-      },
+      url,
+      method: 'POST',
+      headers: {},
+      body: payload,
+      timeout: 15_000,
+      secret: webhookSharedSecret,
     } as const;
 
     if (env.QUEUE_SYSTEM_ENABLED) {

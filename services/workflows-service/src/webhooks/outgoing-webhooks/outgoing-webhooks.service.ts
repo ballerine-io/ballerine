@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import axios, { Method } from 'axios';
+import axios, { Method, RawAxiosRequestHeaders } from 'axios';
 import { AnyRecord, isErrorWithMessage, sign } from '@ballerine/common';
 
 @Injectable()
@@ -8,51 +8,37 @@ export class OutgoingWebhooksService {
   constructor(private readonly logger: AppLoggerService) {}
 
   async invokeWebhook({
-    requestConfig,
-    customerConfig,
+    url,
+    method,
+    headers: argsHeaders,
+    body,
+    timeout,
+    secret,
   }: {
-    requestConfig: {
-      url: string;
-      method: Method;
-      headers?: Record<string, string>;
-      body?: AnyRecord | string;
-      timeout?: number;
-    };
-    customerConfig?: {
-      webhookSharedSecret?: string;
-    };
+    url: string;
+    method: Method;
+    headers?: Partial<RawAxiosRequestHeaders>;
+    body?: AnyRecord | string;
+    timeout?: number;
+    secret?: string;
   }) {
-    const { url, method, headers, body, timeout } = requestConfig;
-
-    const signedHeaders = {
+    const headers: RawAxiosRequestHeaders = {
       Accept: 'application/json',
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
-      ...headers,
-      ...(body && customerConfig?.webhookSharedSecret
-        ? {
-            'X-HMAC-Signature': sign({
-              payload: body,
-              key: customerConfig.webhookSharedSecret,
-            }),
-          }
-        : {}),
+      ...argsHeaders,
     };
+
+    if (body && secret) {
+      headers['X-HMAC-Signature'] = sign({ payload: body, key: secret });
+    }
 
     return await axios({
       url,
       method,
-      headers: signedHeaders,
+      headers,
       data: body,
-      timeout: timeout || 15000,
+      timeout: timeout ?? 15000,
     });
-
-    //   this.logger.log(`Webhook job completed with status: ${response.status}`);
-
-    //   return response;
-    // } catch (error) {
-    //   this.logger.error(`Webhook job failed: ${isErrorWithMessage(error) && error.message}`);
-    //   throw error;
-    // }
   }
 }

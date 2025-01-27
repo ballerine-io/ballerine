@@ -49,16 +49,12 @@ export class WebhookManagerService {
 
     if (env.QUEUE_SYSTEM_ENABLED) {
       return await this.outgoingQueueWebhookService.addJob({
-        requestConfig: {
-          url,
-          method: 'POST',
-          headers: {},
-          body: data as unknown as AnyRecord,
-          timeout: 15_000,
-        },
-        customerConfig: {
-          webhookSharedSecret,
-        },
+        url,
+        method: 'POST',
+        headers: {},
+        body: data as unknown as AnyRecord,
+        timeout: 15_000,
+        secret: webhookSharedSecret,
       });
     }
 
@@ -66,16 +62,12 @@ export class WebhookManagerService {
       this.logger.log('Sending webhook', { id, url });
 
       const response = await this.outgoingWebhookService.invokeWebhook({
-        requestConfig: {
-          url,
-          method: 'POST',
-          headers: {},
-          body: data as unknown as AnyRecord,
-          timeout: 15_000,
-        },
-        customerConfig: {
-          webhookSharedSecret,
-        },
+        url,
+        method: 'POST',
+        headers: {},
+        body: data as unknown as AnyRecord,
+        timeout: 15_000,
+        secret: webhookSharedSecret,
       });
 
       if (response.status < 200 || response.status >= 300) {

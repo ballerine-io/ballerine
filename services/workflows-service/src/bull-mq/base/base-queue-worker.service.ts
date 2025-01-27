@@ -54,11 +54,9 @@ export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy
   }
 
   protected initializeWorker() {
-    this.worker = new Worker(
-      this.queueName,
-      this.handleJob.bind(this),
-      { connection: this.connectionOptions },
-    );
+    this.worker = new Worker(this.queueName, this.handleJob.bind(this), {
+      connection: this.connectionOptions,
+    });
 
     this.addWorkerListeners();
     this.addQueueListeners();
@@ -124,14 +122,14 @@ export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy
     worker?.on(eventName, listener);
   }
 
-  protected setQueueListener<T extends keyof QueueListener<any>>({
+  protected setQueueListener<T extends keyof QueueListener<any, any, any>>({
     queue,
     eventName,
     listener,
   }: {
     queue: Queue | undefined;
     eventName: T;
-    listener: QueueListener<any>[T];
+    listener: QueueListener<any, any, any>[T];
   }) {
     queue?.removeAllListeners(eventName);
     queue?.on(eventName, listener);
