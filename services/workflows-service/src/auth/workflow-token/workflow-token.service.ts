@@ -107,8 +107,8 @@ export class WorkflowTokenService {
     return await this.workflowTokenRepository.findByTokenUnscoped(token);
   }
 
-  async findFirstByWorkflowruntimeDataIdUnscoped(token: string) {
-    return await this.workflowTokenRepository.findFirstByWorkflowruntimeDataIdUnscoped(token);
+  async findFirstByWorkflowRuntimeDataIdUnscoped(token: string) {
+    return await this.workflowTokenRepository.findFirstByWorkflowRuntimeDataIdUnscoped(token);
   }
 
   async findByTokenWithExpiredUnscoped(token: string) {

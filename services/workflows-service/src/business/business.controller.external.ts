@@ -160,26 +160,15 @@ export class BusinessControllerExternal {
       featureConfig: {
         [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
           enabled: isEnabled,
-          reason: data.reason ?? null,
-          userReason: data.userReason ?? null,
           disabledAt: isEnabled ? null : new Date().getTime(),
         },
       },
     });
 
-    await this.prismaService.$transaction(async transaction => {
-      const stringifiedMetadata = JSON.stringify(updatedMetadata);
-
-      await transaction.$executeRaw`
-        UPDATE "Business"
-        SET "metadata" = jsonb_deep_merge_with_options(
-          COALESCE("metadata", '{}'::jsonb),
-          ${stringifiedMetadata}::jsonb,
-          ${ARRAY_MERGE_OPTION.BY_INDEX}
-                         )
-        WHERE "id" = ${businessId}
-          AND "projectId" = ${currentProjectId};
-      `;
+    await this.businessService.updateById(businessId, {
+      data: {
+        metadata: updatedMetadata,
+      },
     });
   }
 

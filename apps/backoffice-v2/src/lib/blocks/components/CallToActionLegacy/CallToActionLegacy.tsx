@@ -33,6 +33,7 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
     isLoadingReuploadNeeded,
     onDialogClose,
     id,
+    directorId,
     workflow,
     decision,
     disabled,
@@ -263,6 +264,7 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
             )}
             onClick={onReuploadNeeded({
               workflowId: workflow?.id,
+              directorId,
               documentId: id,
               reason: comment ? `${reason} - ${comment}` : reason,
             })}

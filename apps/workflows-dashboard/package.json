@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflows-dashboard",
   "private": false,
-  "version": "0.2.30",
+  "version": "0.2.32",
   "type": "module",
   "scripts": {
     "spellcheck": "cspell \"*\"",
@@ -16,8 +16,8 @@
     "test": "NODE_ENV=test jest"
   },
   "dependencies": {
-    "@ballerine/common": "^0.9.66",
-    "@ballerine/ui": "^0.5.62",
+    "@ballerine/common": "^0.9.68",
+    "@ballerine/ui": "^0.5.67",
     "@lukemorales/query-key-factory": "^1.0.3",
     "@radix-ui/react-avatar": "^1.0.3",
     "@radix-ui/react-dialog": "1.0.4",
@@ -64,8 +64,8 @@
     "zod": "^3.22.3"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.1.30",
-    "@ballerine/eslint-config-react": "^2.0.30",
+    "@ballerine/config": "^1.1.32",
+    "@ballerine/eslint-config-react": "^2.0.32",
     "@cspell/cspell-types": "^6.31.1",
     "@types/axios": "^0.14.0",
     "@types/classnames": "^2.3.1",
