@@ -1,68 +1,52 @@
+import { BullModule, RegisterQueueOptions } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
-import { BullModule } from '@nestjs/bullmq';
-import { BullBoardModule } from '@bull-board/nestjs';
-import { ExpressAdapter } from '@bull-board/express';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
-import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
+import { ExpressAdapter } from '@bull-board/express';
+import { BullBoardModule } from '@bull-board/nestjs';
+
 import { QUEUES } from '@/bull-mq/consts';
-import { OutgoingWebhookQueueService } from '@/bull-mq/outgoing-webhook/outgoing-webhook-queue.service';
-import { REDIS_CONFIG } from '@/redis/const/redis-config';
+import { OutgoingWebhookQueueService } from '@/bull-mq/queues/outgoing-webhook-queue.service';
+import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { OutgoingWebhooksModule } from '@/webhooks/outgoing-webhooks/outgoing-webhooks.module';
-
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-function composeQueueAndDlqBoard(queue: (typeof QUEUES)[keyof typeof QUEUES]) {
-  const baseFeature = BullBoardModule.forFeature({
-    name: queue.name,
-    adapter: BullMQAdapter,
-  });
-
-  const dlqFeature =
-    'dlq' in queue
-      ? BullBoardModule.forFeature({
-          name: `${queue.name}-dlq`,
-          adapter: BullMQAdapter,
-        })
-      : null;
-
-  return dlqFeature ? [baseFeature, dlqFeature] : [baseFeature];
-}
-
-const composeInitiateQueueWithDlq = (queue: (typeof QUEUES)[keyof typeof QUEUES]) =>
-  [
-    {
-      name: queue.name,
-      ...queue.config,
-    },
-    'dlq' in queue && {
-      name: queue.dlq,
-    },
-  ].filter(Boolean);
 
 @Module({
   imports: [
     AppLoggerModule,
     OutgoingWebhooksModule,
+    // Register bull & init redis connection
     BullModule.forRootAsync({
-      useFactory: () => {
-        return {
-          connection: {
-            ...REDIS_CONFIG,
-          },
-        };
-      },
-    }),
-    BullModule.registerQueue(
-      ...Object.values(QUEUES).flatMap(queue => {
-        return composeInitiateQueueWithDlq(queue);
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        connection: {
+          host: configService.get('REDIS_HOST'),
+          port: configService.get('REDIS_PORT'),
+          password: configService.get('REDIS_PASSWORD'),
+        },
       }),
-    ),
+      inject: [ConfigService],
+    }),
+    // Register bull board module at /api/queues
     BullBoardModule.forRoot({
       route: '/queues',
       adapter: ExpressAdapter,
     }),
-    ...Object.values(QUEUES)
-      .map(queue => composeQueueAndDlqBoard(queue))
-      .flat(),
+    // Register queues and pass config to bull board forFeature
+    ...Object.values(QUEUES).flatMap(queue => {
+      const queues: Array<Omit<RegisterQueueOptions, 'name'> & { name: string }> = [
+        { name: queue.name, ...queue.config },
+      ];
+
+      if ('dlq' in queue) {
+        queues.push({ name: queue.dlq });
+      }
+
+      return queues.flatMap(queue => [
+        BullModule.registerQueue(queue),
+        BullBoardModule.forFeature({ name: queue.name, adapter: BullMQAdapter }),
+      ]);
+    }),
   ],
   providers: [OutgoingWebhookQueueService],
   exports: [BullModule, OutgoingWebhookQueueService],

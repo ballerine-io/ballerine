@@ -8,7 +8,7 @@ import { IWebhookEntityEventData } from './types';
 import { Webhook } from '@/events/get-webhooks';
 import { AnyRecord } from '@ballerine/common';
 import { env } from '@/env';
-import { OutgoingWebhookQueueService } from '@/bull-mq/outgoing-webhook/outgoing-webhook-queue.service';
+import { OutgoingWebhookQueueService } from '@/bull-mq/queues/outgoing-webhook-queue.service';
 import { OutgoingWebhooksService } from '@/webhooks/outgoing-webhooks/outgoing-webhooks.service';
 
 @common.Injectable()

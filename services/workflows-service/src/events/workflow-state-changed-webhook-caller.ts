@@ -10,7 +10,7 @@ import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { CustomerService } from '@/customer/customer.service';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { env } from '@/env';
-import { OutgoingWebhookQueueService } from '@/bull-mq/outgoing-webhook/outgoing-webhook-queue.service';
+import { OutgoingWebhookQueueService } from '@/bull-mq/queues/outgoing-webhook-queue.service';
 import { OutgoingWebhooksService } from '@/webhooks/outgoing-webhooks/outgoing-webhooks.service';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class WorkflowStateChangedWebhookCaller {
     private readonly logger: AppLoggerService,
     private readonly customerService: CustomerService,
     private readonly outgoingWebhookQueueService: OutgoingWebhookQueueService,
-    private readonly outgoingWebhooksService: OutgoingWebhooksService,
+    private readonly outgoingWebhookService: OutgoingWebhooksService,
   ) {
     this.#__axios = this.httpService.axiosRef;
 
@@ -109,7 +109,7 @@ export class WorkflowStateChangedWebhookCaller {
     }
 
     try {
-      const res = await this.outgoingWebhooksService.invokeWebhook(webhookArgs);
+      const res = await this.outgoingWebhookService.invokeWebhook(webhookArgs);
 
       this.logger.log('Webhook Result:', {
         status: res.status,

@@ -14,7 +14,7 @@ import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { env } from '@/env';
-import { OutgoingWebhookQueueService } from '@/bull-mq/outgoing-webhook/outgoing-webhook-queue.service';
+import { OutgoingWebhookQueueService } from '@/bull-mq/queues/outgoing-webhook-queue.service';
 
 @Injectable()
 export class WorkflowCompletedWebhookCaller {

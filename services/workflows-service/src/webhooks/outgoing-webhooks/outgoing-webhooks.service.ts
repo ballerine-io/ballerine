@@ -1,7 +1,17 @@
+import { AnyRecord, sign } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import axios, { Method, RawAxiosRequestHeaders } from 'axios';
-import { AnyRecord, isErrorWithMessage, sign } from '@ballerine/common';
+
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+
+type WebhookInvocationConfig = {
+  url: string;
+  method: Method;
+  headers?: Partial<RawAxiosRequestHeaders>;
+  body?: AnyRecord | string;
+  timeout?: number;
+  secret?: string;
+};
 
 @Injectable()
 export class OutgoingWebhooksService {
@@ -14,14 +24,7 @@ export class OutgoingWebhooksService {
     body,
     timeout,
     secret,
-  }: {
-    url: string;
-    method: Method;
-    headers?: Partial<RawAxiosRequestHeaders>;
-    body?: AnyRecord | string;
-    timeout?: number;
-    secret?: string;
-  }) {
+  }: WebhookInvocationConfig) {
     const headers: RawAxiosRequestHeaders = {
       Accept: 'application/json',
       'Content-Type': 'application/json',

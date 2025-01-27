@@ -8,7 +8,7 @@ import { WorkerListener } from 'bullmq/dist/esm/classes/worker';
 import { TJobPayloadMetadata } from '@/bull-mq/types';
 
 @Injectable()
-export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy, OnModuleInit {
+export abstract class BaseQueueWorkerService<T = unknown> implements OnModuleDestroy, OnModuleInit {
   protected queue?: Queue;
   protected worker?: Worker;
   protected connectionOptions: ConnectionOptions;
@@ -34,9 +34,7 @@ export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy
     const queueConfig = currentQueue[1];
     this.queue = new Queue(queueName, {
       connection: this.connectionOptions,
-      defaultJobOptions: {
-        ...queueConfig.config,
-      },
+      defaultJobOptions: queueConfig.config,
     });
 
     this.deadLetterQueue =
@@ -122,14 +120,14 @@ export abstract class BaseQueueWorkerService<T = any> implements OnModuleDestroy
     worker?.on(eventName, listener);
   }
 
-  protected setQueueListener<T extends keyof QueueListener<any, any, any>>({
+  protected setQueueListener<T extends keyof QueueListener<unknown, unknown, string>>({
     queue,
     eventName,
     listener,
   }: {
     queue: Queue | undefined;
     eventName: T;
-    listener: QueueListener<any, any, any>[T];
+    listener: QueueListener<unknown, unknown, string>[T];
   }) {
     queue?.removeAllListeners(eventName);
     queue?.on(eventName, listener);
