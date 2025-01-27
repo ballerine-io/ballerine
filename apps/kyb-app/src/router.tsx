@@ -1,4 +1,4 @@
-import { CollectionFlow } from '@/pages/CollectionFlow';
+import { CollectionFlowV1 } from '@/pages/CollectionFlow';
 import * as Sentry from '@sentry/react';
 import React from 'react';
 import {
@@ -10,6 +10,7 @@ import {
 } from 'react-router-dom';
 import { ErrorScreen } from './common/components/organisms/ErrorScreen/ErrorScreen';
 import { withCustomer } from './hocs/withCustomer';
+import { CollectionFlow } from './pages/CollectionFlow/CollectionFlow';
 import { GlobalProviders } from './pages/GlobalProviders';
 import { Root } from './pages/Root';
 import { SignUpPage } from './pages/SignUpPage';
@@ -36,7 +37,7 @@ export const router = sentryCreateBrowserRouter([
         children: [
           {
             path: '',
-            Component: withCustomer(CollectionFlow),
+            Component: withCustomer(CollectionFlowV1),
           },
           {
             path: 'collection-flow',

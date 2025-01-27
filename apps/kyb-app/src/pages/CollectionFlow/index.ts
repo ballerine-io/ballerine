@@ -1,1 +1,1 @@
-export * from './CollectionFlow';
+export * from './v1/CollectionFlowV1';

@@ -158,6 +158,7 @@ export interface UISchema {
     extensions: AnyObject;
   };
   uiOptions?: UIOptions;
+  version: number;
 }
 
 export * from './ui-schema.types';

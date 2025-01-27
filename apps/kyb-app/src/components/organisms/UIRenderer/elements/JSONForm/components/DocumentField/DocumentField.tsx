@@ -12,7 +12,7 @@ import { useUIElementErrors } from '@/components/organisms/UIRenderer/hooks/useU
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
 import { Document, UIElement } from '@/domains/collection-flow';
 import { fetchFile, uploadFile } from '@/domains/storage/storage.api';
-import { collectionFlowFileStorage } from '@/pages/CollectionFlow/collection-flow.file-storage';
+import { collectionFlowFileStorage } from '@/pages/CollectionFlow/v1/collection-flow.file-storage';
 import { findDocumentSchemaByTypeAndCategory } from '@ballerine/common';
 import { AnyObject, ErrorsList, RJSFInputProps } from '@ballerine/ui';
 import { HTTPError } from 'ky';
