@@ -1,4 +1,5 @@
 import get from 'lodash/get';
+import { replaceTagsWithIndexesInRule } from '../../../DynamicForm';
 import {
   ICommonValidator,
   IValidationError,
@@ -37,7 +38,13 @@ export const validate = <
       const value = formattedValueDestination ? get(context, formattedValueDestination) : context;
 
       for (const validator of validators) {
-        if (validator.applyWhen && !isShouldApplyValidation(validator.applyWhen, context)) {
+        if (
+          validator.applyWhen &&
+          !isShouldApplyValidation(
+            replaceTagsWithIndexesInRule([validator.applyWhen], stack)[0],
+            context,
+          )
+        ) {
           continue;
         }
 
