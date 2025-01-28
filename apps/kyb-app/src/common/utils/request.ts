@@ -4,7 +4,8 @@ import ky, { HTTPError } from 'ky';
 import { isExceptionWillBeHandled } from './helpers';
 
 export const request = ky.create({
-  prefixUrl: import.meta.env.VITE_API_URL || `${window.location.origin}/api/v1/`,
+  //@ts-ignore
+  prefixUrl: globalThis.env.VITE_API_URL || `${window.location.origin}/api/v1/`,
   retry: {
     limit: 1,
     statusCodes: [500, 408, 404, 404, 403, 401],
