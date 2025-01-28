@@ -46,7 +46,6 @@ import { BusinessReportService } from '@/business-report/business-report.service
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
 import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
-import { WebhookModule } from '@/webhooks/webhook.module';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
@@ -64,7 +63,6 @@ import { WebhookModule } from '@/webhooks/webhook.module';
     AlertDefinitionModule,
     RuleEngineModule,
     SecretsManagerModule,
-    WebhookModule,
   ],
   providers: [
     WorkflowDefinitionRepository,

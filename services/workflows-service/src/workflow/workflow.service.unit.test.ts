@@ -183,7 +183,6 @@ describe('WorkflowService', () => {
       testingModule.get(AppLoggerService),
       customerService,
       {} as any,
-      {} as any,
     );
 
     service = new WorkflowService(

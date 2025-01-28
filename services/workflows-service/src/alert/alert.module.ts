@@ -48,7 +48,6 @@ import { WebhookModule } from '@/webhooks/webhook.module';
     AlertService,
     AlertRepository,
     AlertDefinitionRepository,
-    WebhookModule,
     // TODO: Export to user module
     UserService,
     UserRepository,
