@@ -1,20 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import IORedis from 'ioredis';
 import * as Sentry from '@sentry/node';
-import { isAxiosError, RawAxiosRequestHeaders } from 'axios';
-import type { ConnectionOptions } from 'bullmq';
+import axios, { isAxiosError, RawAxiosRequestHeaders } from 'axios';
 
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { env } from '@/env';
 import { sign } from '@ballerine/common';
 import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
 import { RetryableQueue } from './retryable-queue';
-
-const REDIS_CONFIG: ConnectionOptions = {
-  host: env.REDIS_HOST || 'localhost',
-  port: env.REDIS_PORT || 7381,
-  ...(env.REDIS_PASSWORD ? { password: env.REDIS_PASSWORD } : {}),
-  ...(env.REDIS_DB ? { db: env.REDIS_DB } : {}),
-};
+import { ConnectionOptions } from 'bullmq';
 
 type BaseOutgoingWebhookPayload = {
   id: string;
@@ -112,13 +106,31 @@ export const alertWebhookFailure = (error: unknown) => {
 export class WebhookService {
   private readonly queues = new Map<string, RetryableQueue>();
 
-  constructor(private readonly logger: AppLoggerService, private httpService: HttpService) {
+  constructor(
+    private readonly logger: AppLoggerService,
+    private httpService: HttpService,
+    private configService: ConfigService,
+  ) {
     this.initializeQueues();
   }
 
   private initializeQueues() {
+    const connection: ConnectionOptions = {
+      host: this.configService.get('REDIS_HOST'),
+      port: this.configService.get('REDIS_PORT'),
+      password: this.configService.get('REDIS_PASSWORD'),
+      tls: {},
+    };
+
+    try {
+      const redis = new IORedis(connection);
+      redis.disconnect();
+    } catch (error) {
+      return;
+    }
+
     const outgoingWebhooks = new RetryableQueue<OutgoingWebhookJobData>('outgoing-webhooks', {
-      connection: REDIS_CONFIG,
+      connection,
       maxRetries: 3,
       handlers: {
         handleJob: async job => {
@@ -144,7 +156,7 @@ export class WebhookService {
     });
 
     const incomingWebhooks = new RetryableQueue<IncomingWebhookPayloads>('incoming-webhooks', {
-      connection: REDIS_CONFIG,
+      connection,
       maxRetries: 3,
       handlers: {
         handleJob: async job => {
@@ -196,11 +208,17 @@ export class WebhookService {
 
     const queue = this.queues.get('outgoing');
 
-    if (!queue) {
-      throw new Error('Outgoing queue not initialized');
+    if (queue) {
+      return await queue.queue.add(name, {
+        url,
+        method,
+        headers,
+        data,
+        timeout: timeout || 15000,
+      });
     }
 
-    return await queue.queue.add(name, {
+    return axios({
       url,
       method,
       headers,

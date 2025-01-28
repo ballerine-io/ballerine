@@ -46,10 +46,11 @@ export class RetryableQueue<T extends Record<string, unknown> = any> {
   }
 
   async shutdown(): Promise<void> {
-    await this.queue.pause();
-    await this.worker.close();
-
-    await this.dlq.pause();
-    await this.dlqWorker.close();
+    await Promise.all([
+      this.queue.close(),
+      this.worker.close(),
+      this.dlq.close(),
+      this.dlqWorker.close(),
+    ]);
   }
 }

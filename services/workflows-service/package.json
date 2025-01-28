@@ -100,6 +100,7 @@
     "helmet": "^6.0.1",
     "i18n-iso-countries": "^7.6.0",
     "i18next": "^22.4.9",
+    "ioredis": "^5.4.2",
     "is-what": "^4.1.15",
     "js-base64": "^3.7.6",
     "json-stable-stringify": "^1.1.1",
