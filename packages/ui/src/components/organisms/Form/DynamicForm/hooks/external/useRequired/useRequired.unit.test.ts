@@ -1,56 +1,87 @@
 import { renderHook } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { IFormElement } from '../../../types';
+import { describe, expect, it, vi } from 'vitest';
+import { useStack } from '../../../fields';
 import { checkIfRequired } from './helpers/check-if-required';
 import { useRequired } from './useRequired';
+
+vi.mock('../../../fields', () => ({
+  useStack: vi.fn(),
+}));
 
 vi.mock('./helpers/check-if-required', () => ({
   checkIfRequired: vi.fn(),
 }));
 
+const mockedUseStack = vi.mocked(useStack);
+const mockedCheckIfRequired = vi.mocked(checkIfRequired);
+
 describe('useRequired', () => {
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
+  it('should return isRequired value from checkIfRequired', () => {
+    const element = {
+      id: 'test',
+      element: 'test',
+      valueDestination: 'test',
+    };
+    const context = { someField: true };
+    const stack = [1, 2];
 
-  const mockElement = {
-    validate: [{ type: 'required' }],
-  } as IFormElement;
+    mockedUseStack.mockReturnValue({ stack });
+    mockedCheckIfRequired.mockReturnValue(true);
 
-  const mockContext = { someContext: 'value' };
+    const { result } = renderHook(() => useRequired(element, context));
 
-  it('should return the result from checkIfRequired', () => {
-    vi.mocked(checkIfRequired).mockReturnValue(true);
-
-    const { result } = renderHook(() => useRequired(mockElement, mockContext));
-
-    expect(checkIfRequired).toHaveBeenCalledWith(mockElement, mockContext);
     expect(result.current).toBe(true);
+    expect(mockedCheckIfRequired).toHaveBeenCalledWith(element, context, stack);
   });
 
   it('should memoize the result', () => {
-    vi.mocked(checkIfRequired).mockReturnValue(true);
+    const element = {
+      id: 'test',
+      element: 'test',
+      valueDestination: 'test',
+    };
+    const context = { someField: true };
+    const stack = [1, 2];
+
+    mockedUseStack.mockReturnValue({ stack });
+    mockedCheckIfRequired.mockReturnValue(true);
+
+    const { result, rerender } = renderHook(() => useRequired(element, context));
+
+    expect(mockedCheckIfRequired).toHaveBeenCalledTimes(1);
+
+    rerender();
+
+    expect(result.current).toBe(true);
+    expect(mockedCheckIfRequired).toHaveBeenCalledTimes(1);
+  });
+
+  it('should recalculate when dependencies change', () => {
+    const element = {
+      id: 'test',
+      element: 'test',
+      valueDestination: 'test',
+    };
+    const context = { someField: true };
+    const stack = [1, 2];
+
+    mockedUseStack.mockReturnValue({ stack });
+    mockedCheckIfRequired.mockReturnValue(true);
 
     const { result, rerender } = renderHook(
-      ([element, context]) => useRequired(element as IFormElement, context as object),
+      ({ element, context }) => useRequired(element, context),
       {
-        initialProps: [mockElement, mockContext],
+        initialProps: { element, context },
       },
     );
 
-    expect(checkIfRequired).toHaveBeenCalledTimes(1);
     expect(result.current).toBe(true);
+    expect(mockedCheckIfRequired).toHaveBeenCalledTimes(1);
 
-    // Rerender with same props
-    rerender([mockElement, mockContext]);
-    expect(checkIfRequired).toHaveBeenCalledTimes(1);
+    const newContext = { someField: false };
+    rerender({ element, context: newContext });
 
-    // Rerender with different element
-    rerender([{ ...mockElement, validate: [] }, mockContext]);
-    expect(checkIfRequired).toHaveBeenCalledTimes(2);
-
-    // Rerender with different context
-    rerender([mockElement, { ...mockContext, newValue: true }] as any);
-    expect(checkIfRequired).toHaveBeenCalledTimes(3);
+    expect(mockedCheckIfRequired).toHaveBeenCalledTimes(2);
+    expect(mockedCheckIfRequired).toHaveBeenLastCalledWith(element, newContext, stack);
   });
 });

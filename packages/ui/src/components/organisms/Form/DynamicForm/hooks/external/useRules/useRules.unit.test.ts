@@ -16,13 +16,12 @@ describe('useRules', () => {
     vi.clearAllMocks();
   });
 
-  it('should call replaceTagsWithIndexesInRule with empty array if rules are undefined', () => {
+  it('should not call replaceTagsWithIndexesInRule with empty array if rules are undefined', () => {
     mockedReplaceTagsWithIndexesInRule.mockReturnValue([]);
 
     const { result } = renderHook(() => useRules(undefined, undefined));
 
-    expect(mockedReplaceTagsWithIndexesInRule).toHaveBeenCalledWith([], undefined);
-    expect(mockedReplaceTagsWithIndexesInRule).toHaveBeenCalledTimes(1);
+    expect(mockedReplaceTagsWithIndexesInRule).not.toHaveBeenCalled();
     expect(result.current).toEqual([]);
   });
 

@@ -89,7 +89,7 @@ describe('useElement', () => {
       const { result } = renderHook(() => useElement(element));
 
       expect(result.current.hidden).toBe(false);
-      expect(useRules).toHaveBeenCalledWith(undefined, []);
+      expect(useRules).toHaveBeenCalledWith(undefined, undefined);
     });
 
     it('should return hidden false when hidden rules array is empty', () => {
@@ -101,7 +101,7 @@ describe('useElement', () => {
       const { result } = renderHook(() => useElement(element));
 
       expect(result.current.hidden).toBe(false);
-      expect(useRules).toHaveBeenCalledWith([], []);
+      expect(useRules).toHaveBeenCalledWith([], undefined);
     });
 
     it('should return hidden true when any hidden rule returns true', () => {
@@ -118,7 +118,7 @@ describe('useElement', () => {
       const { result } = renderHook(() => useElement(element));
 
       expect(result.current.hidden).toBe(true);
-      expect(useRules).toHaveBeenCalledWith(element.hidden, []);
+      expect(useRules).toHaveBeenCalledWith(element.hidden, undefined);
     });
 
     it('should return hidden false when all hidden rules return false', () => {
@@ -135,7 +135,7 @@ describe('useElement', () => {
       const { result } = renderHook(() => useElement(element));
 
       expect(result.current.hidden).toBe(false);
-      expect(useRules).toHaveBeenCalledWith(element.hidden, []);
+      expect(useRules).toHaveBeenCalledWith(element.hidden, undefined);
     });
 
     it('should pass combined values and metadata to useRuleEngine', () => {
@@ -151,13 +151,13 @@ describe('useElement', () => {
 
       renderHook(() => useElement(element));
 
-      expect(useRules).toHaveBeenCalledWith(element.hidden, []);
+      expect(useRules).toHaveBeenCalledWith(element.hidden, undefined);
       expect(useRuleEngine).toHaveBeenCalledWith(
         { someValue: 'test-value', someMetadata: 'test-metadata' },
         {
           rules: element.hidden,
           runOnInitialize: true,
-          executionDelay: 500,
+          executeRulesSync: true,
         },
       );
     });

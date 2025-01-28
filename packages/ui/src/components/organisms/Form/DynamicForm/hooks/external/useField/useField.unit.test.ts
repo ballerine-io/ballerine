@@ -209,15 +209,6 @@ describe('useField', () => {
     });
   });
 
-  describe('when stack is not provided', () => {
-    it('should use empty array as default stack', () => {
-      renderHook(() => useField(mockElement));
-
-      expect(useElementId).toHaveBeenCalledWith(mockElement, []);
-      expect(useValueDestination).toHaveBeenCalledWith(mockElement, []);
-    });
-  });
-
   describe('disabled state', () => {
     it('should be disabled when any rule returns true', () => {
       vi.mocked(useRuleEngine).mockReturnValue([
