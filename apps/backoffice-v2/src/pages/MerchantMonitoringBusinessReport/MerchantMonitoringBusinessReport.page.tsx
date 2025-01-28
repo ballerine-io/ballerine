@@ -272,8 +272,8 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
               </div>
               <div className={`text-sm`}>
                 <span className={`me-2 leading-6 text-slate-400`}>Created at</span>
-                {businessReport?.createdAt &&
-                  dayjs(new Date(businessReport?.createdAt)).format('HH:mm MMM Do, YYYY')}
+                {businessReport?.displayDate &&
+                  dayjs(new Date(businessReport?.displayDate)).format('HH:mm MMM Do, YYYY')}
               </div>
               <div className={`flex items-center space-x-2 text-sm`}>
                 <span className={`text-slate-400`}>Monitoring Status</span>

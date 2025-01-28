@@ -38,6 +38,7 @@ export type TCustomerFeaturesConfig = {
   name: keyof typeof FEATURE_LIST;
   enabled: boolean;
   options: FeaturesOptions;
+  disabledAt?: string;
 };
 
 export const CUSTOMER_FEATURES = {

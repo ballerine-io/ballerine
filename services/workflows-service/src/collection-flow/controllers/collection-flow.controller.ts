@@ -167,7 +167,7 @@ export class CollectionFlowController {
               ...director,
             };
           },
-        ),
+        ) || [],
       );
 
       const ubos = await Promise.all(
@@ -187,7 +187,7 @@ export class CollectionFlowController {
               ...ubo,
             };
           },
-        ),
+        ) || [],
       );
 
       await this.workflowService.event(
@@ -199,8 +199,8 @@ export class CollectionFlowController {
               entity: {
                 data: {
                   additionalInfo: {
-                    directors,
-                    ubos,
+                    directors: directors?.length ? directors : undefined,
+                    ubos: ubos?.length ? ubos : undefined,
                   },
                 },
               },
