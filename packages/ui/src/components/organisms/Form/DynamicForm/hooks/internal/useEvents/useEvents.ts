@@ -27,7 +27,7 @@ export const useEvents = (
         formattedId: formatId(element.id, stack || []),
       };
 
-      console.log(`Event ${eventName} triggered by ${eventElement.formattedId}`);
+      console.debug(`Event ${eventName} triggered by ${eventElement.formattedId}`);
       onEvent?.(eventName, eventElement);
     },
     [onEvent, element, stack],

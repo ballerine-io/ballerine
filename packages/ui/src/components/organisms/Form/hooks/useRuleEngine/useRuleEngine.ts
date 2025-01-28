@@ -33,7 +33,7 @@ export const useRuleEngine = <TRuleEngines = TRuleEngine>(
     if (!executeRulesSync) return [];
 
     const results = executeRules(context, rules);
-    console.log('Executed rules synchronously', results);
+    console.debug('Executed rules synchronously', results);
 
     return results;
   }, [rules, context, executeRulesSync]);
@@ -43,7 +43,7 @@ export const useRuleEngine = <TRuleEngines = TRuleEngine>(
       const results = executeRules(context, rules);
 
       if (results?.length) {
-        console.log('Executed rules asynchronously', results);
+        console.debug('Executed rules asynchronously', results);
       }
 
       setAsyncRuleEngineExecutionResults(results);

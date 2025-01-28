@@ -38,6 +38,8 @@ export const ValidatorProvider = <TValue extends object>({
     validationDelay,
   });
 
+  console.log('Validation errors', errors, schema);
+
   const context: IValidatorContext<TValue> = useMemo(
     () => ({ errors, values: value, isValid: checkIfValid(errors), validate }),
     [errors, value, validate],

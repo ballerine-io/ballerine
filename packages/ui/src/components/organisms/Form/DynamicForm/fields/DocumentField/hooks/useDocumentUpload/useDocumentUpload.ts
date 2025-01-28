@@ -25,7 +25,7 @@ export const useDocumentUpload = (
   const [isUploading, setIsUploading] = useState(false);
   const { metadata, values } = useDynamicForm();
 
-  const { onChange } = useField(element);
+  const { onChange } = useField(element, stack);
 
   const valuesRef = useRef(values);
 
