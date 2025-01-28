@@ -46,6 +46,7 @@ import { BusinessReportService } from '@/business-report/business-report.service
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
 import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
+import { WebhooksModule } from '@/webhooks/webhooks.module';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
@@ -54,6 +55,7 @@ import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
     forwardRef(() => AuthModule),
     HttpModule,
     ProjectModule,
+    WebhooksModule,
     PrismaModule,
     CustomerModule,
     forwardRef(() => BusinessReportModule),

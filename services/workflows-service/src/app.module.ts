@@ -1,56 +1,54 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { EventEmitterModule } from '@nestjs/event-emitter';
-import { MulterModule } from '@nestjs/platform-express';
-import { ScheduleModule } from '@nestjs/schedule';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { ClsModule } from 'nestjs-cls';
-import { z } from 'zod';
-
-import { AlertModule } from '@/alert/alert.module';
-import { BusinessReportModule } from '@/business-report/business-report.module';
-import { CaseManagementModule } from '@/case-management/case-management.module';
-import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
+import { UserModule } from './user/user.module';
 import { ACLModule } from '@/common/access-control/acl.module';
-import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
-import { FiltersModule } from '@/common/filters/filters.module';
-import { SessionAuthGuard } from '@/common/guards/session-auth.guard';
-import { initHttpModule } from '@/common/http-service/http-config.service';
-import { AxiosRequestErrorInterceptor } from '@/common/interceptors/axios-request-error.interceptor';
-import { AdminKeyMiddleware } from '@/common/middlewares/admin-key.middleware';
-import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
-import { RequestIdMiddleware } from '@/common/middlewares/request-id.middleware';
-import { UserSessionAuditMiddleware } from '@/common/middlewares/user-session-audit.middleware';
-import { multerFactory } from '@/common/multer';
-import { CustomerModule } from '@/customer/customer.module';
-import { DataMigrationModule } from '@/data-migration/data-migration.module';
-import { configs, env, serverEnvSchema } from '@/env';
-import { FilterModule } from '@/filter/filter.module';
-import { MetricsModule } from '@/metrics/metrics.module';
-import { NoteModule } from '@/note/note.module';
-import { NotionModule } from '@/notion/notion.module';
-import { ProjectModule } from '@/project/project.module';
-import { SalesforceModule } from '@/salesforce/salesforce.module';
-import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
-import { SentryModule } from '@/sentry/sentry.module';
-import { TransactionModule } from '@/transaction/transaction.module';
-import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
-import { CronModule } from '@/workflow/cron/cron.module';
-import { WorkflowModule } from '@/workflow/workflow.module';
-
 import { AuthModule } from './auth/auth.module';
-import { BusinessModule } from './business/business.module';
-import { hashKey } from './customer/api-key/utils';
-import { EndUserModule } from './end-user/end-user.module';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { RuleEngineModule } from './rule-engine/rule-engine.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { ServeStaticOptionsService } from './serve-static-options.service';
+import { EndUserModule } from './end-user/end-user.module';
+import { BusinessModule } from './business/business.module';
 import { StorageModule } from './storage/storage.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { FilterModule } from '@/filter/filter.module';
+import { configs, env, serverEnvSchema } from '@/env';
+import { SentryModule } from '@/sentry/sentry.module';
+import { RequestIdMiddleware } from '@/common/middlewares/request-id.middleware';
+import { AxiosRequestErrorInterceptor } from '@/common/interceptors/axios-request-error.interceptor';
+import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
+import { ClsModule } from 'nestjs-cls';
+import { FiltersModule } from '@/common/filters/filters.module';
+import { UserSessionAuditMiddleware } from '@/common/middlewares/user-session-audit.middleware';
+import { MetricsModule } from '@/metrics/metrics.module';
+import { CustomerModule } from '@/customer/customer.module';
+import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
+import { ProjectModule } from '@/project/project.module';
+import { AdminKeyMiddleware } from '@/common/middlewares/admin-key.middleware';
+import { SessionAuthGuard } from '@/common/guards/session-auth.guard';
+import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
+import { SalesforceModule } from '@/salesforce/salesforce.module';
+import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
+import { multerFactory } from '@/common/multer';
+import { initHttpModule } from '@/common/http-service/http-config.service';
+import { DataMigrationModule } from '@/data-migration/data-migration.module';
+import { CaseManagementModule } from '@/case-management/case-management.module';
+import { WorkflowModule } from '@/workflow/workflow.module';
+import { TransactionModule } from '@/transaction/transaction.module';
+import { AlertModule } from '@/alert/alert.module';
 import { SwaggerController } from './swagger/swagger.controller';
-import { UserModule } from './user/user.module';
-import { WebhookModule } from './webhooks/webhook.module';
+import { WebhooksModule } from '@/webhooks/webhooks.module';
+import { BusinessReportModule } from '@/business-report/business-report.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronModule } from '@/workflow/cron/cron.module';
+import z from 'zod';
+import { hashKey } from './customer/api-key/utils';
+import { RuleEngineModule } from './rule-engine/rule-engine.module';
+import { NotionModule } from '@/notion/notion.module';
+import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
+import { NoteModule } from '@/note/note.module';
 
 export const validate = async (config: Record<string, unknown>) => {
   const zodEnvSchema = z
@@ -93,7 +91,7 @@ export const validate = async (config: Record<string, unknown>) => {
     EventEmitterModule.forRoot(),
     UserModule,
     WorkflowModule,
-    WebhookModule,
+    WebhooksModule,
     NoteModule,
     UiDefinitionModule,
     StorageModule,

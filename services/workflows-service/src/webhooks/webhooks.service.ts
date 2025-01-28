@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import IORedis from 'ioredis';
-import * as Sentry from '@sentry/node';
-import axios, { isAxiosError, RawAxiosRequestHeaders } from 'axios';
-
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { sign } from '@ballerine/common';
 import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
-import { RetryableQueue } from './retryable-queue';
+import { Injectable } from '@nestjs/common';
+import * as Sentry from '@sentry/node';
+import axios, { isAxiosError, RawAxiosRequestHeaders } from 'axios';
 import { ConnectionOptions } from 'bullmq';
+import IORedis from 'ioredis';
+
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { env } from '@/env';
+import { RetryableQueue } from './retryable-queue';
 
 type BaseOutgoingWebhookPayload = {
   id: string;
@@ -103,76 +103,76 @@ export const alertWebhookFailure = (error: unknown) => {
 };
 
 @Injectable()
-export class WebhookService {
+export class WebhooksService {
   private readonly queues = new Map<string, RetryableQueue>();
 
   constructor(
     private readonly logger: AppLoggerService,
-    private httpService: HttpService,
-    private configService: ConfigService,
+    private readonly httpService: HttpService,
   ) {
     this.initializeQueues();
   }
 
   private initializeQueues() {
     const connection: ConnectionOptions = {
-      host: this.configService.get('REDIS_HOST'),
-      port: this.configService.get('REDIS_PORT'),
-      password: this.configService.get('REDIS_PASSWORD'),
+      host: env.REDIS_HOST,
+      port: env.REDIS_PORT,
+      password: env.REDIS_PASSWORD,
+      // Required workaround
       tls: {},
     };
 
-    try {
-      const redis = new IORedis(connection);
-      redis.disconnect();
-    } catch (error) {
+    if (!env.QUEUE_SYSTEM_ENABLED) {
       return;
     }
 
-    const outgoingWebhooks = new RetryableQueue<OutgoingWebhookJobData>('outgoing-webhooks', {
-      connection,
-      maxRetries: 3,
-      handlers: {
-        handleJob: async job => {
-          this.logger.log(`Processing outgoing webhook job ${job.id}`);
+    const redis = new IORedis({ ...connection, retryStrategy: () => null, connectTimeout: 5_000 });
 
-          const { url, method, headers, data, timeout } = job.data;
+    redis.on('connect', () => {
+      redis.disconnect();
 
-          return this.httpService.axiosRef.request({
-            url,
-            method,
-            headers,
-            data,
-            timeout,
-          });
+      const outgoingWebhooks = new RetryableQueue<OutgoingWebhookJobData>('outgoing-webhooks', {
+        connection,
+        maxRetries: 3,
+        handlers: {
+          handleJob: async job => {
+            this.logger.log(`Processing outgoing webhook job ${job.id}`);
+
+            return this.httpService.axiosRef.request(job.data);
+          },
+          handleDLQJob: async (job, err) => {
+            this.logger.log(`Processing outgoing webhook dead letter queue ${job.id}`);
+            console.log(err);
+            console.log(job.data);
+            // alertWebhookFailure(err);
+          },
         },
-        handleDLQJob: async (job, err) => {
-          this.logger.log(`Processing outgoing webhook dead letter queue ${job.id}`);
-          console.log(err);
-          console.log(job.data);
-          // alertWebhookFailure(err);
+      });
+
+      const incomingWebhooks = new RetryableQueue<IncomingWebhookPayloads>('incoming-webhooks', {
+        connection,
+        maxRetries: 3,
+        handlers: {
+          handleJob: async job => {
+            this.logger.log(`Processing incoming webhook job ${job.id}`);
+            console.log(job.data);
+          },
+          handleDLQJob: async (job, err) => {
+            this.logger.log(`Processing incoming webhook dead letter queue ${job.id}`);
+            console.log(err);
+            console.log(job.data);
+            // alertWebhookFailure(err);
+          },
         },
-      },
+      });
+
+      this.queues.set('outgoing', outgoingWebhooks);
+      this.queues.set('incoming', incomingWebhooks);
     });
 
-    const incomingWebhooks = new RetryableQueue<IncomingWebhookPayloads>('incoming-webhooks', {
-      connection,
-      maxRetries: 3,
-      handlers: {
-        handleJob: async job => {
-          this.logger.log(`Processing incoming webhook job ${job.id}`);
-          console.log(job.data);
-        },
-        handleDLQJob: async (job, err) => {
-          this.logger.log(`Processing incoming webhook dead letter queue ${job.id}`);
-          console.log(job.data);
-          // alertWebhookFailure(err);
-        },
-      },
+    redis.on('error', error => {
+      this.logger.error(`Failed to connect to Redis, continuing without queue support: ${error}`);
     });
-
-    this.queues.set('outgoing', outgoingWebhooks);
-    this.queues.set('incoming', incomingWebhooks);
   }
 
   async invokeWebhook<T extends keyof OutgoingWebhookPayloads>(
@@ -191,64 +191,45 @@ export class WebhookService {
       'Access-Control-Allow-Origin': '*',
       ...defaultHeaders,
     };
-    // const res = await this.#__axios.post(url, payload, {
-    //   headers: {
-    //     'X-Authorization': webhookSharedSecret,
-    //     'X-HMAC-Signature': sign({ payload, key: webhookSharedSecret }),
-    //   },
-    // });
 
     if (data && secret) {
       headers['X-Authorization'] = secret;
-      headers['X-HMAC-Signature'] = sign({
-        payload: data,
-        key: secret,
-      });
+      headers['X-HMAC-Signature'] = sign({ payload: data, key: secret });
     }
+
+    const requestData: OutgoingWebhookJobData = { url, method, headers, data, timeout };
 
     const queue = this.queues.get('outgoing');
 
     if (queue) {
-      return await queue.queue.add(name, {
-        url,
-        method,
-        headers,
-        data,
-        timeout: timeout || 15000,
-      });
+      return await queue.queue.add(name, requestData);
     }
 
-    return axios({
-      url,
-      method,
-      headers,
-      data,
-      timeout: timeout || 15000,
-    });
+    try {
+      return await axios(requestData);
+    } catch (error) {
+      const { id, state, entityId, correlationId, runtimeData } = data as Record<string, any>;
+
+      this.logger.error('Failed to send webhook', {
+        id,
+        message: isAxiosError(error)
+          ? error.response?.data ?? error.message
+          : (error as Error).message,
+        error,
+      });
+
+      this.logger.log('Webhook error data::  ', {
+        state: state,
+        entityId: entityId,
+        correlationId: correlationId,
+        id: runtimeData.id,
+      });
+
+      alertWebhookFailure(error);
+
+      return null;
+    }
   }
-
-  // async handleIncoming<T extends keyof IncomingWebhookPayloads>(
-  //   name: T,
-  //   options: {
-  //     data: IncomingWebhookPayloads[T];
-  //   },
-  // ) {
-  //   const {} = config;
-
-  //   const queue = this.queues.get('incoming');
-
-  //   if (!queue) {
-  //     throw new Error('Incoming queue not initialized');
-  //   }
-
-  //   return await queue.queue.add(name, {
-  //     url,
-  //     method,
-  //     headers,
-  //     data: body,
-  //     timeout: timeout || 15000,
-  //   } satisfies IncomingWebhookInvocationConfig<T>);
-  // }
 
   async onModuleDestroy() {
     await Promise.all(Array.from(this.queues.values()).map(queue => queue.shutdown()));

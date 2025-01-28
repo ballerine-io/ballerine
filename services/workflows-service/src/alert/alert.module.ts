@@ -19,7 +19,7 @@ import { ProjectModule } from '@/project/project.module';
 import { UserRepository } from '@/user/user.repository';
 import { AlertDefinitionModule } from '@/alert-definition/alert-definition.module';
 import { SentryModule } from '@/sentry/sentry.module';
-import { WebhookModule } from '@/webhooks/webhook.module';
+import { WebhooksModule } from '@/webhooks/webhooks.module';
 
 @Module({
   imports: [
@@ -28,7 +28,7 @@ import { WebhookModule } from '@/webhooks/webhook.module';
     PrismaModule,
     SentryModule,
     ProjectModule,
-    WebhookModule,
+    WebhooksModule,
     HttpModule.register({
       timeout: 5000,
       maxRedirects: 10,

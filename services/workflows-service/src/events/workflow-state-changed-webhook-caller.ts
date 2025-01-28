@@ -9,7 +9,7 @@ import { ExtractWorkflowEventData } from '@/workflow/types';
 import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { CustomerService } from '@/customer/customer.service';
 import type { TAuthenticationConfiguration } from '@/customer/types';
-import { WebhookService } from '@/webhooks/webhook.service';
+import { WebhooksService } from '@/webhooks/webhooks.service';
 
 @Injectable()
 export class WorkflowStateChangedWebhookCaller {
@@ -21,7 +21,7 @@ export class WorkflowStateChangedWebhookCaller {
     private configService: ConfigService,
     private readonly logger: AppLoggerService,
     private readonly customerService: CustomerService,
-    private readonly webhookService: WebhookService,
+    private readonly webhooksService: WebhooksService,
   ) {
     this.#__axios = this.httpService.axiosRef;
 
@@ -92,7 +92,7 @@ export class WorkflowStateChangedWebhookCaller {
       data: data.runtimeData.context,
     } as const;
 
-    await this.webhookService.invokeWebhook(payload.eventName, {
+    await this.webhooksService.invokeWebhook(payload.eventName, {
       data: payload,
       secret: webhookSharedSecret,
     });

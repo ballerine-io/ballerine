@@ -13,7 +13,7 @@ import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { ConfigService } from '@nestjs/config';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
-import { WebhookService } from '@/webhooks/webhook.service';
+import { WebhooksService } from '@/webhooks/webhooks.service';
 
 const getExtensionFromMimeType = (mimeType: string) => {
   const parts = mimeType?.split('/');
@@ -35,7 +35,7 @@ export class DocumentChangedWebhookCaller {
     workflowEventEmitter: WorkflowEventEmitterService,
     private readonly logger: AppLoggerService,
     private readonly customerService: CustomerService,
-    private readonly webhookService: WebhookService,
+    private readonly webhooksService: WebhooksService,
   ) {
     this.#__axios = this.httpService.axiosRef;
 
@@ -200,7 +200,7 @@ export class DocumentChangedWebhookCaller {
       data: data.updatedRuntimeData.context,
     } as const;
 
-    await this.webhookService.invokeWebhook(payload.eventName, {
+    await this.webhooksService.invokeWebhook(payload.eventName, {
       data: payload,
       secret: webhookSharedSecret,
     });

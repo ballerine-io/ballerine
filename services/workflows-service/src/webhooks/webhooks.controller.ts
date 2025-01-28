@@ -3,7 +3,8 @@ import * as swagger from '@nestjs/swagger';
 
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
-import { WebhookService } from './webhook.service';
+import { WebhooksService } from './webhooks.service';
+import { Public } from '@/common/decorators/public.decorator';
 
 const EntityType = {
   BUSINESS: 'business',
@@ -14,14 +15,15 @@ const EntityType = {
 @swagger.ApiTags('Internal Webhooks')
 @swagger.ApiExcludeController()
 @common.Controller('webhooks')
-export class WebhookController {
+export class WebhooksController {
   constructor(
-    private readonly webhooksService: WebhookService,
+    private readonly webhooksService: WebhooksService,
     private readonly logger: AppLoggerService,
   ) {}
 
-  @common.Post('/outgoing')
+  @common.Get('/outgoing')
   @common.HttpCode(200)
+  @Public()
   async testOutgoing() {
     // Something happens and we decide to send outgoing webhook call
     const secret = 'abcd';
