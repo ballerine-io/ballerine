@@ -31,7 +31,7 @@ export class BusinessReportService {
 
     if (businessReportsCount >= maxBusinessReports) {
       throw new BadRequestException(
-        `You have reached the maximum number of business reports allowed (${maxBusinessReports}).`,
+        `You've hit your reports limit. Talk to us to unlock additional features and continue effective risk management with Ballerine.`,
       );
     }
   }

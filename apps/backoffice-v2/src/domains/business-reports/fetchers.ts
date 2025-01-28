@@ -23,6 +23,7 @@ export const BusinessReportSchema = z
     reportType: z.enum([MERCHANT_REPORT_TYPES[0]!, ...MERCHANT_REPORT_TYPES.slice(1)]),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
+    displayDate: z.string().datetime(),
     riskScore: z.number().nullable(),
     status: z.enum([MERCHANT_REPORT_STATUSES[0]!, ...MERCHANT_REPORT_STATUSES.slice(1)]),
     parentCompanyName: z.string().nullable(),
