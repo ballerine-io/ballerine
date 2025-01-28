@@ -43,7 +43,7 @@ export const definition = {
       {
         name: 'update_end_user',
         pluginKind: 'api',
-        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/end-user}`,
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/end-user`,
         method: 'POST',
         headers: { Authorization: 'Bearer {query.token}' },
         stateNames: [],
@@ -65,7 +65,7 @@ export const definition = {
       {
         name: 'sync_workflow_runtime',
         pluginKind: 'api',
-        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/sync}`,
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/sync`,
         method: 'PUT',
         stateNames: [
           'personal_details',
@@ -80,11 +80,11 @@ export const definition = {
             {
               transformer: 'jmespath',
               mapping: `{
-              data: {
-                context: @,
-                endUser: entity.data.additionalInfo.mainRepresentative,
-                business: entity.data,
-                ballerineEntityId: entity.ballerineEntityId
+                data: {
+                  context: @,
+                  endUser: entity.data.additionalInfo.mainRepresentative,
+                  business: entity.data,
+                  ballerineEntityId: entity.ballerineEntityId
                 }
               }`,
             },
@@ -103,11 +103,11 @@ export const definition = {
             {
               transformer: 'jmespath',
               mapping: `{
-              data: {
-                context: @,
-                endUser: entity.data.additionalInfo.mainRepresentative,
-                business: entity.data,
-                ballerineEntityId: entity.ballerineEntityId
+                data: {
+                  context: @,
+                  endUser: entity.data.additionalInfo.mainRepresentative,
+                  business: entity.data,
+                  ballerineEntityId: entity.ballerineEntityId
                 }
               }`,
             },
