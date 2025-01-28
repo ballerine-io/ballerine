@@ -71,11 +71,6 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
 
   const handleSubmit = useCallback(
     async (values: CollectionFlowContext) => {
-      // const updatedContext = updateCollectionFlowState(
-      //   structuredClone(values),
-      //   stateApi.getState(),
-      // );
-
       helpers.setLoading(true);
       await sync(values);
       stateApi.setContext(values);
