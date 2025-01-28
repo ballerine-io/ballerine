@@ -1,46 +1,25 @@
-import { ConnectionOptions, Job, Queue, QueueListener, Worker } from 'bullmq';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { REDIS_CONFIG } from '@/redis/const/redis-config';
-import { env } from '@/env';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { QUEUES } from '@/bull-mq/consts';
+import { ConfigService } from '@nestjs/config';
+import { Job, Queue, QueueListener, Worker } from 'bullmq';
 import { WorkerListener } from 'bullmq/dist/esm/classes/worker';
+import { randomUUID } from 'node:crypto';
+
 import { TJobPayloadMetadata } from '@/bull-mq/types';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
 @Injectable()
 export abstract class BaseQueueWorkerService<T = unknown> implements OnModuleDestroy, OnModuleInit {
-  protected queue?: Queue;
   protected worker?: Worker;
-  protected connectionOptions: ConnectionOptions;
-  protected deadLetterQueue?: Queue | undefined;
 
-  protected constructor(protected queueName: string, protected readonly logger: AppLoggerService) {
-    this.connectionOptions = {
-      ...REDIS_CONFIG,
-    };
-
-    if (!env.QUEUE_SYSTEM_ENABLED) {
+  protected constructor(
+    protected readonly queue: Queue,
+    protected readonly deadLetterQueue: Queue,
+    protected readonly logger: AppLoggerService,
+    protected readonly configService: ConfigService,
+  ) {
+    if (!this.configService.get('QUEUE_SYSTEM_ENABLED')) {
       return;
     }
-
-    const currentQueue = Object.entries(QUEUES).find(
-      ([_, queueOptions]) => queueOptions.name === queueName,
-    );
-
-    if (!currentQueue) {
-      throw new Error(`Queue configuration of ${queueName} not found in QUEUES`);
-    }
-
-    const queueConfig = currentQueue[1];
-    this.queue = new Queue(queueName, {
-      connection: this.connectionOptions,
-      defaultJobOptions: queueConfig.config,
-    });
-
-    this.deadLetterQueue =
-      'dlq' in queueConfig
-        ? new Queue(queueConfig.dlq, { connection: this.connectionOptions })
-        : undefined;
 
     this.initializeWorker();
   }
@@ -48,12 +27,16 @@ export abstract class BaseQueueWorkerService<T = unknown> implements OnModuleDes
   abstract handleJob(job: Job<{ jobData: T; metadata: TJobPayloadMetadata }>): Promise<void>;
 
   async addJob(jobData: T, metadata: TJobPayloadMetadata = {}, jobOptions = {}): Promise<void> {
-    await this.queue?.add(this.queueName, { metadata, jobData }, jobOptions);
+    await this.queue?.add(randomUUID(), { metadata, jobData }, jobOptions);
   }
 
   protected initializeWorker() {
-    this.worker = new Worker(this.queueName, this.handleJob.bind(this), {
-      connection: this.connectionOptions,
+    this.worker = new Worker(this.queue.name, this.handleJob.bind(this), {
+      connection: {
+        host: this.configService.get('REDIS_HOST'),
+        port: this.configService.get('REDIS_PORT'),
+        password: this.configService.get('REDIS_PASSWORD'),
+      },
     });
 
     this.addWorkerListeners();
@@ -72,27 +55,11 @@ export abstract class BaseQueueWorkerService<T = unknown> implements OnModuleDes
     this.setWorkerListener({
       worker: this.worker,
       eventName: 'failed',
-      listener: async (job, error, prev) => {
-        const queueConfig =
-          Object.entries(QUEUES).find(
-            ([_, queueOptions]) => queueOptions.name === this.queueName,
-          )?.[1]?.config || QUEUES.DEFAULT.config;
+      listener: async job => {
+        if (!job?.opts.attempts || job.attemptsMade < job.opts.attempts) return;
 
-        const maxAllowedRetries = queueConfig.attempts;
-        const currentAttempts = job?.attemptsMade ?? 0;
-
-        if (currentAttempts >= maxAllowedRetries) {
-          if (this.deadLetterQueue) {
-            this.logger.error(`Job ${job?.id} failed permanently. Moving to DLQ.`);
-            await this.deadLetterQueue.add(`${this.queueName}-dlq`, job?.data);
-          }
-
-          this.logger.error(`Job ${job?.id} failed permanently. Max attempts reached.`);
-        } else {
-          this.logger.warn(
-            `Webhook job ${job?.id} failed. Attempt: ${currentAttempts}. Error: ${error.message}`,
-          );
-        }
+        this.logger.error(`Job ${job?.id} failed permanently. Moving to DLQ.`);
+        await this.deadLetterQueue.add(randomUUID(), job?.data);
       },
     });
   }
@@ -137,7 +104,7 @@ export abstract class BaseQueueWorkerService<T = unknown> implements OnModuleDes
     await this.queue?.pause();
     await Promise.all([this.worker?.close(), this.queue?.close()]);
 
-    this.logger.log(`Queue ${this.queueName} is paused and closed`);
+    this.logger.log(`Queue ${this.queue.name} is paused and closed`);
   }
 
   async onModuleInit() {
@@ -151,7 +118,7 @@ export abstract class BaseQueueWorkerService<T = unknown> implements OnModuleDes
       const isPausedAfterResume = await this.queue?.isPaused();
 
       if (isPausedAfterResume) {
-        this.logger.error(`Queue ${this.queueName} is still paused after trying to resume it`);
+        this.logger.error(`Queue ${this.queue.name} is still paused after trying to resume it`);
       }
     }
   }

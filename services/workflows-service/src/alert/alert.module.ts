@@ -52,7 +52,10 @@ import { OutgoingWebhooksModule } from '@/webhooks/outgoing-webhooks/outgoing-we
   ],
   controllers: [AlertControllerInternal, AlertControllerExternal],
   providers: [
-    WebhookHttpService,
+    {
+      provide: WebhookHttpService,
+      useExisting: HttpService,
+    },
     AlertService,
     AlertRepository,
     AlertDefinitionRepository,

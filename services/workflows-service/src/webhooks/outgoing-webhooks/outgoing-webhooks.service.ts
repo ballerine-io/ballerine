@@ -36,7 +36,7 @@ export class OutgoingWebhooksService {
       headers['X-HMAC-Signature'] = sign({ payload: body, key: secret });
     }
 
-    return await axios({
+    return axios({
       url,
       method,
       headers,

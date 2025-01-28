@@ -7,6 +7,7 @@ import { ExpressAdapter } from '@bull-board/express';
 import { BullBoardModule } from '@bull-board/nestjs';
 
 import { QUEUES } from '@/bull-mq/consts';
+import { IncomingWebhookQueueService } from '@/bull-mq/queues/incoming-webhook-queue.service';
 import { OutgoingWebhookQueueService } from '@/bull-mq/queues/outgoing-webhook-queue.service';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { OutgoingWebhooksModule } from '@/webhooks/outgoing-webhooks/outgoing-webhooks.module';
@@ -14,6 +15,7 @@ import { OutgoingWebhooksModule } from '@/webhooks/outgoing-webhooks/outgoing-we
 @Module({
   imports: [
     AppLoggerModule,
+    ConfigModule,
     OutgoingWebhooksModule,
     // Register bull & init redis connection
     BullModule.forRootAsync({
@@ -48,7 +50,7 @@ import { OutgoingWebhooksModule } from '@/webhooks/outgoing-webhooks/outgoing-we
       ]);
     }),
   ],
-  providers: [OutgoingWebhookQueueService],
-  exports: [BullModule, OutgoingWebhookQueueService],
+  providers: [OutgoingWebhookQueueService, IncomingWebhookQueueService],
+  exports: [OutgoingWebhookQueueService, IncomingWebhookQueueService],
 })
 export class BullMqModule {}

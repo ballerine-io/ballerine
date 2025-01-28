@@ -96,10 +96,6 @@ export const serverEnvSchema = {
   REDIS_HOST: z.string(),
   REDIS_PASSWORD: z.string().optional(),
   REDIS_PORT: z.string().transform(value => Number(value)),
-  REDIS_DB: z
-    .string()
-    .transform(value => Number(value))
-    .optional(),
   QUEUE_SYSTEM_ENABLED: z
     .string()
     .transform(value => value === 'true')
