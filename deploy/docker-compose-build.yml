@@ -78,11 +78,6 @@ services:
       - ${WORKFLOW_DASHBOARD_PORT}:80
     depends_on:
       - ballerine-workflow-service
-    environment:
-      VITE_DOMAIN: ${VITE_DOMAIN}
-      VITE_ENVIRONMENT_NAME: ${VITE_ENVIRONMENT_NAME}
-      VITE_IMAGE_LOGO_URL: ${VITE_IMAGE_LOGO_URL}
-      MODE: ${MODE}
     restart: on-failure
   ballerine-postgres:
     container_name: postgres
