@@ -1,9 +1,10 @@
 import { syncContext } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
-import { getCollectionFlowState, setStepCompletionState } from '@ballerine/common';
+import { getCollectionFlowState } from '@ballerine/common';
 import { act, renderHook } from '@testing-library/react';
 import { toast } from 'sonner';
 import { describe, expect, it, vi } from 'vitest';
+import { updateCollectionFlowState } from '../../helpers/update-collection-flow-state';
 import { useAppSync } from './useAppSync';
 
 vi.mock('@/domains/collection-flow', () => ({
@@ -18,7 +19,10 @@ vi.mock('sonner', () => ({
 
 vi.mock('@ballerine/common', () => ({
   getCollectionFlowState: vi.fn(),
-  setStepCompletionState: vi.fn(),
+}));
+
+vi.mock('../../helpers/update-collection-flow-state', () => ({
+  updateCollectionFlowState: vi.fn(),
 }));
 
 vi.mock('@/components/organisms/DynamicUI/StateManager/components/StateProvider', () => ({
@@ -33,6 +37,7 @@ describe('useAppSync', () => {
       status: 'pending',
       currentStep: 'test-step',
     });
+    vi.clearAllMocks();
   });
 
   it('should initialize with isSyncing false', () => {
@@ -62,16 +67,13 @@ describe('useAppSync', () => {
     });
 
     expect(result.current.isSyncing).toBe(true);
+    expect(updateCollectionFlowState).toHaveBeenCalledWith(mockContext, 'test-state');
 
     await act(async () => {
       await syncPromise;
     });
 
     expect(result.current.isSyncing).toBe(false);
-    expect(setStepCompletionState).toHaveBeenCalledWith(mockContext, {
-      stepName: 'test-state',
-      completed: true,
-    });
   });
 
   it('should handle errors and show toast message', async () => {
@@ -87,6 +89,7 @@ describe('useAppSync', () => {
       await result.current.sync(mockContext);
     });
 
+    expect(updateCollectionFlowState).toHaveBeenCalledWith(mockContext, 'test-state');
     expect(toast.error).toHaveBeenCalledWith('Failed to sync.');
     expect(consoleSpy).toHaveBeenCalledWith(mockError);
     expect(result.current.isSyncing).toBe(false);
@@ -102,7 +105,7 @@ describe('useAppSync', () => {
       await result.current.sync(mockContext);
     });
 
+    expect(updateCollectionFlowState).not.toHaveBeenCalled();
     expect(syncContext).not.toHaveBeenCalled();
-    expect(setStepCompletionState).not.toHaveBeenCalled();
   });
 });

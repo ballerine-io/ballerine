@@ -3,9 +3,10 @@ import { useState } from 'react';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { syncContext } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
-import { getCollectionFlowState, setStepCompletionState } from '@ballerine/common';
+import { getCollectionFlowState } from '@ballerine/common';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
+import { updateCollectionFlowState } from '../../helpers/update-collection-flow-state';
 
 export const useAppSync = () => {
   const [isSyncing, setIsSyncing] = useState(false);
@@ -20,12 +21,7 @@ export const useAppSync = () => {
       try {
         setIsSyncing(true);
 
-        setStepCompletionState(context, {
-          stepName: state,
-          completed: true,
-        });
-
-        // await new Promise(resolve => setTimeout(resolve, 5000));
+        updateCollectionFlowState(context, state);
 
         await syncContext(context);
       } catch (error) {
