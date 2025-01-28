@@ -479,6 +479,8 @@ model UiDefinition {
   workflowDefinition   WorkflowDefinition    @relation(fields: [workflowDefinitionId], references: [id])
   workflowRuntimeDatas WorkflowRuntimeData[]
 
+  version Int @default(1)
+
   @@index([name, projectId])
 }
 
@@ -822,8 +824,8 @@ model Alert {
   tags          String[]
   severity      AlertSeverity?
 
-  state         AlertState
-  decisionAt    DateTime?
+  state      AlertState
+  decisionAt DateTime?
 
   executionDetails Json
   additionalInfo   Json?
@@ -833,8 +835,8 @@ model Alert {
   assignedAt DateTime?
 
   dedupedAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   workflowRuntimeDataId String?
   workflowRuntimeData   WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id], onUpdate: Cascade, onDelete: NoAction)
@@ -843,9 +845,9 @@ model Alert {
   counterpartyId String?
   counterparty   Counterparty? @relation(fields: [counterpartyId], references: [id])
 
-  counterpartyOriginatorId String?
+  counterpartyOriginatorId  String?
   counterpartyBeneficiaryId String?
-  counterpartyOriginator   Counterparty? @relation(name: "counterpartyAlertOriginator", fields: [counterpartyOriginatorId], references: [id])
+  counterpartyOriginator    Counterparty? @relation(name: "counterpartyAlertOriginator", fields: [counterpartyOriginatorId], references: [id])
   counterpartyBeneficiary   Counterparty? @relation(name: "counterpartyAlertBeneficiary", fields: [counterpartyBeneficiaryId], references: [id])
 
   businessId String?
@@ -856,7 +858,6 @@ model Alert {
   @@index([alertDefinitionId])
   @@index([counterpartyId])
   @@index([createdAt(sort: Desc)])
-
   @@index([counterpartyOriginatorId])
   @@index([counterpartyBeneficiaryId])
 }
@@ -902,9 +903,9 @@ model Counterparty {
   benefitingTransactions  TransactionRecord[] @relation("BenefitingCounterparty")
   alerts                  Alert[]
 
-  alertsBenefiting                  Alert[] @relation("counterpartyAlertBeneficiary")
-  alertsOriginating                 Alert[] @relation("counterpartyAlertOriginator")
-  
+  alertsBenefiting  Alert[] @relation("counterpartyAlertBeneficiary")
+  alertsOriginating Alert[] @relation("counterpartyAlertOriginator")
+
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
 

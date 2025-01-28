@@ -14,12 +14,11 @@ import type { TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { AnyRecord, DefaultContextSchema, TCollectionFlowConfig } from '@ballerine/common';
+import { DefaultContextSchema, TCollectionFlowConfig } from '@ballerine/common';
 import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
 import { EndUser, Prisma, WorkflowRuntimeData } from '@prisma/client';
 import { randomUUID } from 'crypto';
-import get from 'lodash/get';
 
 @Injectable()
 export class CollectionFlowService {
@@ -86,6 +85,7 @@ export class CollectionFlowService {
       definition: uiDefinition.definition
         ? (uiDefinition.definition as unknown as UiDefDefinition)
         : undefined,
+      version: uiDefinition.version,
     };
   }
 

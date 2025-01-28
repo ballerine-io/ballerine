@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react';
-import dts from 'vite-plugin-dts';
 import fg from 'fast-glob';
 import tailwindcss from 'tailwindcss';
+import dts from 'vite-plugin-dts';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
@@ -37,7 +37,25 @@ export default defineConfig({
   },
   plugins: [react(), dts({ copyDtsFiles: true }), tailwindcss(), tsconfigPaths()],
   test: {
-    exclude: ['node_modules', 'dist'],
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/setupTests.ts'],
+    css: true,
+    environmentOptions: {
+      jsdom: {
+        resources: 'usable',
+        features: {
+          // Disable features you don't need
+          FetchExternalResources: false,
+          ProcessExternalResources: false,
+          SkipExternalResources: true,
+        },
+      },
+    },
+    // This needed for emblor and react-easy-sort to work during testing.
+    deps: {
+      inline: [/react-easy-sort/, /emblor/],
+    },
   },
   build: {
     outDir: 'dist',

@@ -53,6 +53,7 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
   testId,
   onChange,
   onBlur,
+  onFocus,
   props,
   textInputClassName,
 }) => {
@@ -119,6 +120,7 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
           {searchable ? (
             <CommandInput
               onBlur={onBlur}
+              onFocus={onFocus}
               placeholder={searchPlaceholder}
               className={ctw('placeholder:text-muted-foreground h-9', textInputClassName)}
             />
@@ -136,7 +138,7 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
                       option => option.label.toLocaleLowerCase() === label.toLocaleLowerCase(),
                     );
 
-                    onChange(option?.value || '', name);
+                    onChange(option?.value || undefined!, name);
                     setOpen(false);
                   }}
                 >

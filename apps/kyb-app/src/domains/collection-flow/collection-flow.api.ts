@@ -11,6 +11,7 @@ import {
   CollectionFlowConfig,
   CollectionFlowContext,
 } from '@/domains/collection-flow/types/flow-context.types';
+import get from 'lodash/get';
 import posthog from 'posthog-js';
 
 export const fetchUser = async (): Promise<TUser> => {
@@ -120,4 +121,19 @@ export const createEndUserRequest = async ({
   await request.post('collection-flow/no-user', {
     json: { email, firstName, lastName, additionalInfo },
   });
+};
+
+export const syncContext = async (context: CollectionFlowContext) => {
+  const result = await request.put('collection-flow/sync', {
+    json: {
+      data: {
+        context,
+        endUser: get(context, 'entity.data.additionalInfo.mainRepresentative'),
+        business: get(context, 'entity.data'),
+        ballerineEntityId: get(context, 'entity.ballerineEntityId'),
+      },
+    },
+  });
+
+  return result.json();
 };

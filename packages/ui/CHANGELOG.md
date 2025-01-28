@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.68
+
+### Patch Changes
+
+- Added Dynamic Form V2 & Validator
+
 ## 0.5.67
 
 ### Patch Changes
