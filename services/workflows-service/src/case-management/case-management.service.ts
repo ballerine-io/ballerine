@@ -67,7 +67,9 @@ export class CaseManagementService {
     const dataSchema =
       workflowDefinition.definition?.states[inputState]?.meta?.inputSchema?.dataSchema;
 
-    if (!dataSchema?.schema) return;
+    if (!dataSchema?.schema) {
+      return;
+    }
 
     const validate = ajv.compile(dataSchema.schema);
 
