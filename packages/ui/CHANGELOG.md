@@ -4,6 +4,7 @@
 
 ### Patch Changes
 
+- Param adjustmetns & bugfixes
 - Format ongoing summary in the UI
 
 ## 0.5.69
