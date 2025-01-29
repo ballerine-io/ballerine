@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.70
+
+### Patch Changes
+
+- Format ongoing summary in the UI
+
 ## 0.5.69
 
 ### Patch Changes
