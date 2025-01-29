@@ -1,8 +1,6 @@
 name: Packer build AWS AMI's 
 on: 
   workflow_dispatch:
-    branches:
-      - prod
 
 jobs:
   plan:
@@ -16,14 +14,14 @@ jobs:
       - name: Checkout to Git
         uses: actions/checkout@v2
 
-    - name: Assume Role
-      uses: ./
-      env:
-        ROLE_ARN: ${{ secrets.AWS_PACKER_ROLE }}
-        ROLE_SESSION_NAME: packersession
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        DURATION_SECONDS: 900
+      - name: Assume Role
+        uses: ./
+        env:
+          ROLE_ARN: ${{ secrets.AWS_PACKER_ROLE }}
+          ROLE_SESSION_NAME: packersession
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          DURATION_SECONDS: 900
 
       - name: Setup `packer`
         uses: hashicorp/setup-packer@main
