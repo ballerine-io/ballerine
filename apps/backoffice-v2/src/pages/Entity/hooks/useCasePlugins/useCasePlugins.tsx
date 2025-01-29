@@ -7,7 +7,7 @@ export const useCasePlugins = ({ workflow }: { workflow: TWorkflowById | undefin
     workflowDefinitionId: workflow?.workflowDefinition?.id ?? '',
   });
 
-  const plugins = useMemo(
+  return useMemo(
     () => [
       ...(workflowDefinition?.extensions?.apiPlugins ?? []),
       ...(workflowDefinition?.extensions?.childWorkflowPlugins ?? []),
@@ -15,6 +15,4 @@ export const useCasePlugins = ({ workflow }: { workflow: TWorkflowById | undefin
     ],
     [workflowDefinition],
   );
-
-  return plugins;
 };

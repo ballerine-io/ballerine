@@ -99,5 +99,7 @@ export const pluginsWhiteList = [
   'companySanctions',
   'merchantMonitoring',
   'merchantScreening',
+  'bankAccountVerification',
 ] as const;
+
 export const DEFAULT_PROCESS_TRACKER_PROCESSES = ['collection-flow', 'third-party', 'ubos'];
