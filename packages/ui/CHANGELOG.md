@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- version bump
+- Fixed options mapping at Multiselect
 
 ## 0.5.68
 
