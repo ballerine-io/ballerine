@@ -96,14 +96,14 @@ export const useDirectorBlock = ({
 
   const blocks = useMemo(() => {
     const { documents } = director;
-    const documentsWithoutImageUrl = documents.map(document => ({
+    const documentsWithoutImageUrl = documents?.map(document => ({
       ...document,
       pages: document?.pages?.map(({ imageUrl: _imageUrl, ...page }) => page),
     }));
-    const isDocumentRevision = documents.some(
+    const isDocumentRevision = documents?.some(
       document => document?.decision?.status === 'revision',
     );
-    const multiDocumentsBlocks = documents.flatMap(document => {
+    const multiDocumentsBlocks = documents?.flatMap(document => {
       const isDoneWithRevision = document?.decision?.status === 'revised';
       const additionalProperties = composePickableCategoryType(
         document.category,
@@ -438,7 +438,7 @@ export const useDirectorBlock = ({
               .buildFlat(),
           })
           .build()
-          .concat(multiDocumentsBlocks)
+          .concat(multiDocumentsBlocks ?? [])
           .concat(amlBlockWithSeparator)
           .flat(1),
         className: ctw({
