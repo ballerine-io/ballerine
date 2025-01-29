@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- version bump
+- Added Dynamic Form V2 & Validator
 
 ## 0.5.67
 

@@ -153,16 +153,12 @@ export const columns = [
     },
     header: 'Alert',
   }),
-  columnHelper.accessor('createdAt', {
+  columnHelper.accessor('displayDate', {
     cell: info => {
-      const createdAt = info.getValue();
-
-      if (!createdAt) {
-        return <TextWithNAFallback>{createdAt}</TextWithNAFallback>;
-      }
+      const displayDate = info.getValue();
 
       // Convert UTC time to local browser time
-      const localDateTime = dayjs.utc(createdAt).local();
+      const localDateTime = dayjs.utc(displayDate).local();
 
       const date = localDateTime.format('MMM DD, YYYY');
       const time = localDateTime.format('HH:mm');

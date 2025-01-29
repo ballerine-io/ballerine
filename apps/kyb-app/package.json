@@ -46,6 +46,7 @@
     "i18next-http-backend": "^2.1.1",
     "jmespath": "^0.16.0",
     "json-logic-js": "^2.0.2",
+    "jsonata": "^2.0.6",
     "ky": "^0.33.3",
     "lodash": "^4.17.21",
     "lucide-react": "^0.144.0",

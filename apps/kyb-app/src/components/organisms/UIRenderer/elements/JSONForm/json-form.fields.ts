@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { CheckboxList } from '@/components/organisms/UIRenderer/elements/JSONForm/components/CheckboxList';
 import { CountryPicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/CountryPicker';
 import { DocumentField } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField';

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
 import { findDocumentDefinitionById } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
 import { Document, UIElement, UIPage } from '@/domains/collection-flow';
