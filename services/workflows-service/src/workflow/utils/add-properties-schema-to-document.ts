@@ -14,8 +14,9 @@ const composePropertiesSchema = (
   properties: Object.fromEntries(
     Object.entries(documentSchemaForDocument?.propertiesSchema?.properties ?? {}).map(
       ([key, value]) => {
-        if (!isObject(value) || !Array.isArray(value.enum) || value.type !== 'string')
+        if (!isObject(value) || !Array.isArray(value.enum) || value.type !== 'string') {
           return [key, value];
+        }
 
         return [
           key,

@@ -265,7 +265,9 @@ export const getCountriesList = (): ICountry[] =>
   }));
 
 export const getCountryStates = (countryCode: string) => {
-  if (!countryCode) return [];
+  if (!countryCode) {
+    return [];
+  }
 
   return states.filter(
     state => state.countryCode.toLocaleLowerCase() === countryCode.toLocaleLowerCase(),

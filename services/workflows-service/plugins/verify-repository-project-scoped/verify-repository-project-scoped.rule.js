@@ -19,13 +19,17 @@ module.exports = {
 
     return {
       MethodDefinition: node => {
-        if (!isRepository || node.key.name === 'constructor') return;
+        if (!isRepository || node.key.name === 'constructor') {
+          return;
+        }
 
         const isUnscoped = UNSCOPED_METHOD_NAMES.some(name =>
           node.key.name.toLowerCase().includes(name),
         );
 
-        if (isUnscoped) return;
+        if (isUnscoped) {
+          return;
+        }
 
         const isProjectIdsIncluded = node.value.params.some(
           param => param.type === 'Identifier' && param.name.toLowerCase().includes('projectid'),

@@ -50,7 +50,9 @@ export class CollectionFlowController {
       [tokenScope.projectId],
     );
 
-    if (!activeWorkflow) throw new common.InternalServerErrorException('Workflow not found.');
+    if (!activeWorkflow) {
+      throw new common.InternalServerErrorException('Workflow not found.');
+    }
 
     try {
       const adapter = this.adapterManager.getAdapter(activeWorkflow.workflowDefinitionId);

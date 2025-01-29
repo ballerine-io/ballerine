@@ -84,7 +84,9 @@ export const FindAlertsSchema = z.object({
     .transform(value => {
       const [column = '', direction = ''] = value.split(':');
 
-      if (!column || !direction) throw new Error('Invalid orderBy');
+      if (!column || !direction) {
+        throw new Error('Invalid orderBy');
+      }
 
       return {
         [column]: direction,

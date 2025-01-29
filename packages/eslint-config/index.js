@@ -36,6 +36,10 @@ module.exports = {
         classPropertiesAllowed: false,
       },
     ],
+    curly: ['error', 'all'], // Enforce curly braces for all control statements
+    'brace-style': ['error', '1tbs', { allowSingleLine: false }], // Enforce one true brace style and disallow single-line blocks
+    'nonblock-statement-body-position': ['error', 'below'], // Enforce body on new line
+    'object-curly-newline': ['error', { multiline: true, consistent: true }], // Enforce consistent line breaks inside braces
     'newline-before-return': 'error',
     'padding-line-between-statements': [
       'error',
