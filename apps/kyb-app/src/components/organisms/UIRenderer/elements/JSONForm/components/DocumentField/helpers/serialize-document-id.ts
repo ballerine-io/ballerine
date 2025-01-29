@@ -4,5 +4,6 @@ export const serializeDocumentId = (baseId: string, index: number): string => {
 
 export const deserializeDocumentId = (id: string): string => {
   const result = id.replace(/\[index:\d+\]/g, '[{INDEX}]');
+
   return result;
 };

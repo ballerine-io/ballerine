@@ -7,7 +7,6 @@ interface CheckboxListOption {
 }
 
 export const CheckboxList = (props: WithTestId<RJSFInputProps>) => {
-  //@ts-nocheck
   const { uiSchema, formData = [], onChange, disabled, testId } = props;
 
   const options = useMemo(() => {

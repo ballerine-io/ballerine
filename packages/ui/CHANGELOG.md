@@ -1,5 +1,23 @@
 # @ballerine/ui
 
+## 0.5.70
+
+### Patch Changes
+
+- Format ongoing summary in the UI
+
+## 0.5.69
+
+### Patch Changes
+
+- Fixed options mapping at Multiselect
+
+## 0.5.68
+
+### Patch Changes
+
+- Added Dynamic Form V2 & Validator
+
 ## 0.5.67
 
 ### Patch Changes

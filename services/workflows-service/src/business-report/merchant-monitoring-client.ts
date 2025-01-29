@@ -50,6 +50,10 @@ const ReportSchema = z.object({
     .string()
     .datetime()
     .transform(value => new Date(value)),
+  displayDate: z
+    .string()
+    .datetime()
+    .transform(value => new Date(value)),
   data: z.record(z.string(), z.unknown()).nullish(),
 });
 
