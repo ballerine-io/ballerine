@@ -9,7 +9,7 @@ export default {
 
 const options = new Array(20)
   .fill(null)
-  .map((_, index) => ({ value: `item-${index}`, label: `Item-${index}` }));
+  .map((_, index) => ({ value: `item-${index}`, title: `Item-${index}` }));
 
 const DefaultComponent = () => {
   const [value, setValue] = useState<MultiSelectValue[]>([]);
@@ -17,7 +17,7 @@ const DefaultComponent = () => {
   const renderSelected: MultiSelectSelectedItemRenderer = useCallback((params, option) => {
     return (
       <Chip key={option.value} className="h-6">
-        <Chip.Label text={option.label} variant="secondary" />
+        <Chip.Label text={option.title} variant="secondary" />
         <Chip.UnselectButton
           {...params.unselectButtonProps}
           icon={<X className="hover:text-muted-foreground h-3 w-3 text-white" />}
@@ -46,7 +46,7 @@ const DisabledComponent = () => {
   const renderSelected: MultiSelectSelectedItemRenderer = useCallback((params, option) => {
     return (
       <Chip key={option.value} className="h-6">
-        <Chip.Label text={option.label} variant="secondary" />
+        <Chip.Label text={option.title} variant="secondary" />
         <Chip.UnselectButton
           {...params.unselectButtonProps}
           icon={<X className="hover:text-muted-foreground h-3 w-3 text-white" />}
