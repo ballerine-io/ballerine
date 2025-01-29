@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.69
+
+### Patch Changes
+
+- Fixed options mapping at Multiselect
+
 ## 0.5.68
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 import { MultiSelect, MultiSelectOption, MultiSelectValue } from '@/components/molecules';
 import { SelectedElementParams } from '@/components/molecules/inputs/MultiSelect/types';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
@@ -12,8 +12,13 @@ import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { MultiselectfieldSelectedItem } from './MultiselectFieldSelectedItem';
 
+export interface MultiselectFieldOption {
+  label: string;
+  value: any;
+}
+
 export interface IMultiselectFieldParams {
-  options: MultiSelectOption[];
+  options: MultiselectFieldOption[];
 }
 
 export const MultiselectField: TDynamicFormField<IMultiselectFieldParams> = ({ element }) => {
@@ -25,6 +30,12 @@ export const MultiselectField: TDynamicFormField<IMultiselectFieldParams> = ({ e
     element,
     stack,
   );
+
+  const multiselectOptions = useMemo(() => {
+    return (
+      element.params?.options?.map(option => ({ title: option.label, value: option.value })) || []
+    );
+  }, [element.params?.options]);
 
   const renderSelected = useCallback((params: SelectedElementParams, option: MultiSelectOption) => {
     return <MultiselectfieldSelectedItem option={option} params={params} />;
@@ -45,7 +56,7 @@ export const MultiselectField: TDynamicFormField<IMultiselectFieldParams> = ({ e
         onChange={handleChange}
         onBlur={onBlur}
         onFocus={onFocus}
-        options={element.params?.options || []}
+        options={multiselectOptions}
         renderSelected={renderSelected}
       />
       <FieldDescription element={element} />
