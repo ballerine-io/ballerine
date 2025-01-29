@@ -17,6 +17,7 @@ import { HTTPError } from 'ky';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { DocumentValueDestinationParser } from './helpers/document-value-destination-parser';
 import { serializeDocumentId } from './helpers/serialize-document-id';
 
 export interface DocumentFieldParams {
@@ -69,12 +70,10 @@ export const DocumentField = (
   const fileId = useMemo(() => {
     if (!Array.isArray(payload.documents)) return null;
 
-    //@ts-ignore
-    const parser = new DocumentValueDestinationParser(definition.valueDestination);
+    const parser = new DocumentValueDestinationParser(definition.valueDestination!);
     const documentsPath = parser.extractRootPath();
     const documentPagePath = parser.extractPagePath();
-    //@ts-ignore
-    const documents = (get(payload, documentsPath) as Document[]) || [];
+    const documents = (get(payload, documentsPath!) as Document[]) || [];
 
     const document = documents.find((document: Document) => {
       //@ts-ignore
