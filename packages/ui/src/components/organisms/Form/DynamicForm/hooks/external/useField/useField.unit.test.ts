@@ -196,6 +196,28 @@ describe('useField', () => {
       expect(mockSendEvent).toHaveBeenCalledWith('onBlur');
       expect(mockValidate).not.toHaveBeenCalled();
     });
+
+    it('should set touched state after validation delay', () => {
+      vi.mocked(useDynamicForm).mockReturnValue({
+        fieldHelpers: mockFieldHelpers,
+        values: {},
+        metadata: mockMetadata,
+        validationParams: {
+          validateOnBlur: true,
+          validationDelay: 100,
+        },
+      } as unknown as IDynamicFormContext<object>);
+
+      const { result } = renderHook(() => useField(mockElement, mockStack));
+
+      result.current.onBlur();
+
+      expect(mockSetTouched).not.toHaveBeenCalled();
+
+      vi.advanceTimersByTime(120);
+
+      expect(mockSetTouched).toHaveBeenCalledWith('test-field-1-2', true);
+    });
   });
 
   describe('onFocus', () => {
