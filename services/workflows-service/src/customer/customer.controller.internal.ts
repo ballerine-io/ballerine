@@ -34,7 +34,9 @@ export class CustomerControllerInternal {
   async find(@ProjectIds() projectIds: TProjectIds): Promise<TCustomerWithFeatures | null> {
     const projectId = projectIds?.[0];
 
-    if (!projectId) throw new NotFoundException('Customer not found');
+    if (!projectId) {
+      throw new NotFoundException('Customer not found');
+    }
 
     return this.service.getByProjectId(projectId, {
       select: {

@@ -26,18 +26,10 @@ import {
 } from '@prisma/client';
 import { createProject } from '@/test/helpers/create-project';
 import { TransactionModule } from '@/transaction/transaction.module';
-import { TransactionControllerExternal } from '@/transaction/transaction.controller.external';
 import { TransactionCreateDto } from '@/transaction/dtos/transaction-create.dto';
 import { generateBusiness, generateEndUser } from '../../scripts/generate-end-user';
 import { BulkStatus } from '@/alert/types';
-import { ProjectScopeService } from '@/project/project-scope.service';
-import { AlertRepository } from '@/alert/alert.repository';
-import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
-import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
-import { ConfigService } from '@nestjs/config';
 import { AlertService } from '@/alert/alert.service';
-import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
-import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
 import { AlertModule } from '@/alert/alert.module';
 
 const getBusinessCounterpartyData = (business?: Business) => {
