@@ -17,7 +17,7 @@ const addCustomFormats = (validator: Ajv) => {
     validate: (dateString: string) => {
       const inputDate = dayjs(dateString);
 
-      if (!inputDate) {
+      if (!inputDate.isValid()) {
         return false;
       }
 
