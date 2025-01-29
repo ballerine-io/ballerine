@@ -65,7 +65,9 @@ export const BusinessReportSummary: FunctionComponent<{
           <CardContent>
             <div>
               <h4 className={'mb-4 font-semibold'}>Ongoing Monitoring Summary</h4>
-              <TextWithNAFallback as={'p'}>{ongoingMonitoringSummary}</TextWithNAFallback>
+              <TextWithNAFallback as={'p'} className="whitespace-pre-wrap">
+                {ongoingMonitoringSummary}
+              </TextWithNAFallback>
             </div>
           </CardContent>
         )}
