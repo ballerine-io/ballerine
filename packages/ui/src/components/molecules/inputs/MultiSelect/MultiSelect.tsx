@@ -30,6 +30,7 @@ export interface MultiSelectProps {
   renderSelected: MultiSelectSelectedItemRenderer;
   onChange: (selected: MultiSelectValue[], inputName: string) => void;
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
+  onFocus?: (event: FocusEvent<HTMLInputElement>) => void;
 }
 
 export const MultiSelect = ({
@@ -43,6 +44,7 @@ export const MultiSelect = ({
   renderSelected,
   onChange,
   onBlur,
+  onFocus,
 }: MultiSelectProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
@@ -174,7 +176,10 @@ export const MultiSelect = ({
                   placeholder={searchPlaceholder}
                   style={{ border: 'none' }}
                   className={ctw('placeholder:text-muted-foreground h-6', textInputClassName)}
-                  onFocus={() => setOpen(true)}
+                  onFocus={event => {
+                    setOpen(true);
+                    onFocus?.(event);
+                  }}
                   onBlur={onBlur}
                   data-testid={testId ? `${testId}-search-input` : undefined}
                 />

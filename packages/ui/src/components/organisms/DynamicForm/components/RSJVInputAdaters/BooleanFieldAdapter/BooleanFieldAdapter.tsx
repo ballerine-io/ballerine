@@ -1,12 +1,14 @@
+import { useCallback } from 'react';
+
 import { ctw } from '@/common/utils/ctw';
 import { Checkbox } from '@/components/atoms';
 import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/types';
-import { useCallback } from 'react';
 
 export const BooleanFieldAdapter: RJSFInputAdapter<boolean> = ({
   id,
   formData,
   schema,
+  uiSchema,
   disabled,
   testId,
   onChange,
@@ -34,7 +36,7 @@ export const BooleanFieldAdapter: RJSFInputAdapter<boolean> = ({
         }}
         onBlur={handleBlur}
       />
-      <span>{schema.title}</span>
+      <span className={ctw(uiSchema?.className)}>{schema.title}</span>
     </label>
   );
 };

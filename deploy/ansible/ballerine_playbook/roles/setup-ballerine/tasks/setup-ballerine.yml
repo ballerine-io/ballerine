@@ -1,4 +1,5 @@
 ---
+
 - name: Replace VITE URL for backoffice
   lineinfile:
     path: '~/ballerine/apps/backoffice-v2/.env.example'
@@ -33,16 +34,4 @@
   ansible.builtin.template:
     src: templates/Caddyfile.j2
     dest: "{{ install_dir }}/deploy/caddy/Caddyfile"
-  when: vite_api_url != ""
-
-- name: Deploy Ballerine up locally
-  shell: docker-compose -f docker-compose-build.yml up -d
-  args:
-    chdir: "{{ install_dir }}/deploy"
-  when: vite_api_url == ""
-
-- name: Deploy Ballerine up remote
-  shell: docker-compose -f docker-compose-build-https.yml up -d
-  args:
-    chdir: "{{ install_dir }}/deploy"
   when: vite_api_url != ""

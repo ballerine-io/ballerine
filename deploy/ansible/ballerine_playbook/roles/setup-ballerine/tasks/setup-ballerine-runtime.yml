@@ -1,0 +1,39 @@
+- name: create runtime path folder
+  file:
+    dest: "{{ install_dir }}/scripts"
+    mode: 0755
+    recurse: yes
+    owner: "{{ cloud_user }}"
+    group: "{{ cloud_group }}"
+    state: directory
+
+- name: create boot script
+  template:
+    src: templates/boot.sh
+    dest: "{{ install_dir }}/scripts/boot.sh"
+    mode: 0755
+
+- name: create reboot entry job
+  cron:
+    name: "ballerine job"
+    special_time: reboot
+    user: "{{ cloud_user }}"
+    job: "{{ install_dir }}/scripts/boot.sh"
+
+- name: setup ssh key for ballerine user
+  copy:
+    src: templates/init-ssh.sh
+    dest: /var/lib/cloud/scripts/per-instance
+    mode: 0755
+    owner: "{{ cloud_user }}"
+    group: "{{ cloud_group }}"
+  become: true
+
+- name: setup ssh key for {{ default_user }} user
+  copy:
+    src: templates/init-ssh.sh
+    dest: /var/lib/cloud/scripts/per-instance
+    mode: 0755
+    owner: "{{ default_user }}"
+    group: "{{ cloud_group }}"
+  become: true

@@ -489,6 +489,8 @@ model UiDefinition {
   workflowDefinition   WorkflowDefinition    @relation(fields: [workflowDefinitionId], references: [id])
   workflowRuntimeDatas WorkflowRuntimeData[]
 
+  version Int @default(1)
+
   @@index([name, projectId])
 }
 
