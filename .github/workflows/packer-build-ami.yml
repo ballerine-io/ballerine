@@ -1,8 +1,6 @@
 name: Packer build AWS AMI's 
 on: 
   workflow_dispatch:
-    branches:
-      - prod
 
 jobs:
   plan:
