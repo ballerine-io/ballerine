@@ -11,7 +11,9 @@ export abstract class IParser {
 
     let match: RegExpExecArray | null = null;
 
-    if (!message) return {};
+    if (!message) {
+      return {};
+    }
 
     while ((match = pattern.exec(message))) {
       parseResult = resolver(parseResult, match);
