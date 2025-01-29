@@ -53,6 +53,12 @@ enum ApprovalState {
   NEW
 }
 
+enum Gender {
+  male
+  female
+  other
+}
+
 model EndUser {
   id              String  @id @default(cuid())
   isContactPerson Boolean @default(false)
@@ -71,6 +77,10 @@ model EndUser {
   dateOfBirth       DateTime?
   avatarUrl         String?
   nationalId        String?   @db.VarChar
+  gender            Gender?
+  nationality       String?   @db.VarChar
+  passportNumber    String?   @db.VarChar
+  address           Json?
   additionalInfo    Json?
   activeMonitorings Json      @default("[]")
   amlHits           Json      @default("[]")
