@@ -1,26 +1,26 @@
 import { AnyObject } from '@/common';
+import { useHttp } from '@/common/hooks/useHttp';
 import set from 'lodash/set';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { useDynamicForm } from '../../../../context';
 import { useElement, useField } from '../../../../hooks/external';
 import { useTaskRunner } from '../../../../providers/TaskRunner/hooks/useTaskRunner';
 import { ITask } from '../../../../providers/TaskRunner/types';
 import { IFormElement } from '../../../../types';
-import { formatString } from '../../../../utils/format-string';
 import { useStack } from '../../../FieldList/providers/StackProvider';
 import { IFileFieldParams } from '../../FileField';
-import { formatHeaders, uploadFile } from './helpers';
 
 export const useFileUpload = (
   element: IFormElement<string, IFileFieldParams>,
-  params: IFileFieldParams = {},
+  params: IFileFieldParams,
 ) => {
   const { uploadOn = 'change' } = params;
   const { stack } = useStack();
   const { id } = useElement(element, stack);
   const { addTask, removeTask } = useTaskRunner();
-  const [isUploading, setIsUploading] = useState(false);
   const { metadata } = useDynamicForm();
+
+  const { run, isLoading } = useHttp(element.params!.uploadSettings, metadata);
 
   const { onChange } = useField(element);
 
@@ -37,26 +37,15 @@ export const useFileUpload = (
         return;
       }
 
-      const uploadParams = {
-        ...uploadSettings,
-        method: uploadSettings?.method || 'POST',
-        headers: formatHeaders(uploadSettings?.headers || {}, metadata),
-        url: formatString(uploadSettings?.url || '', metadata),
-      };
-
       if (uploadOn === 'change') {
         try {
-          setIsUploading(true);
+          const formData = new FormData();
+          formData.append('file', e.target?.files?.[0] as File);
 
-          const result = await uploadFile(
-            e.target?.files?.[0] as File,
-            uploadParams as IFileFieldParams['uploadSettings'],
-          );
+          const result = await run(formData);
           onChange(result);
         } catch (error) {
           console.error('Failed to upload file.', error);
-        } finally {
-          setIsUploading(false);
         }
       }
 
@@ -65,11 +54,10 @@ export const useFileUpload = (
 
         const taskRun = async (context: AnyObject) => {
           try {
-            setIsUploading(true);
-            const result = await uploadFile(
-              e.target?.files?.[0] as File,
-              uploadParams as IFileFieldParams['uploadSettings'],
-            );
+            const formData = new FormData();
+            formData.append('file', e.target?.files?.[0] as File);
+
+            const result = await run(formData);
             set(context, element.valueDestination, result);
 
             return context;
@@ -77,8 +65,6 @@ export const useFileUpload = (
             console.error('Failed to upload file.', error);
 
             return context;
-          } finally {
-            setIsUploading(false);
           }
         };
 
@@ -90,11 +76,11 @@ export const useFileUpload = (
         addTask(task);
       }
     },
-    [uploadOn, params, metadata, addTask, removeTask, onChange, id, element],
+    [uploadOn, params, addTask, removeTask, onChange, id, element, run],
   );
 
   return {
-    isUploading,
+    isUploading: isLoading,
     handleChange,
   };
 };

@@ -17,7 +17,7 @@ import { useFileUpload } from './hooks/useFileUpload';
 
 export interface IFileFieldParams extends ICommonFieldParams {
   uploadOn?: 'change' | 'submit';
-  uploadSettings?: {
+  uploadSettings: {
     url: string;
     resultPath: string;
     headers?: Record<string, string>;
@@ -33,7 +33,7 @@ export const FileField: TDynamicFormField<IFileFieldParams> = ({ element }) => {
   const { placeholder = 'Choose file', acceptFileFormats = undefined } = element.params || {};
   const { handleChange, isUploading: disabledWhileUploading } = useFileUpload(
     element,
-    element.params,
+    element.params!,
   );
 
   const { stack } = useStack();
@@ -48,9 +48,13 @@ export const FileField: TDynamicFormField<IFileFieldParams> = ({ element }) => {
   }, [inputRef]);
 
   const file = useMemo(() => {
-    if (value instanceof File) return value;
+    if (value instanceof File) {
+      return value;
+    }
 
-    if (typeof value === 'string') return new File([], value);
+    if (typeof value === 'string') {
+      return new File([], value);
+    }
 
     return undefined;
   }, [value]);
