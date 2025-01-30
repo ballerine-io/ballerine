@@ -3,6 +3,10 @@ import '@ballerine/ui/dist/style.css';
 import * as Sentry from '@sentry/react';
 import { RouterProvider } from 'react-router-dom';
 import { Toaster } from 'sonner';
+import { version } from '../package.json';
+
+//@ts-ignore
+window.appVersion = version;
 
 export const App = () => {
   return (
