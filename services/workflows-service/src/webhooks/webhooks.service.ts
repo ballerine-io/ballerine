@@ -33,53 +33,15 @@ type OutgoingWebhookPayloads = {
     eventName: 'workflow.state.changed';
   };
   'workflow.context.document.changed': BaseOutgoingWebhookPayload;
-  'user-created-outgoing': { userId: string };
-  'website-validation-finished': { processId: string };
 };
 
 type OutgoingWebhookJobData = {
   url: string;
   method: string;
   headers?: RawAxiosRequestHeaders;
-  data?: OutgoingWebhookPayloads[keyof OutgoingWebhookPayloads];
+  data: OutgoingWebhookPayloads[keyof OutgoingWebhookPayloads];
   timeout?: number;
   secret?: string;
-};
-
-const outgoingWebhookConfigurationMap: Record<
-  keyof OutgoingWebhookPayloads,
-  { url: string; method: string; headers: RawAxiosRequestHeaders; timeout: number }
-> = {
-  'workflow.completed': {
-    url: 'https://example.com',
-    method: 'POST',
-    headers: {},
-    timeout: 15000,
-  },
-  'workflow.state.changed': {
-    url: 'https://example.com',
-    method: 'POST',
-    headers: {},
-    timeout: 15000,
-  },
-  'workflow.context.document.changed': {
-    url: 'https://example.com',
-    method: 'POST',
-    headers: {},
-    timeout: 15000,
-  },
-  'user-created-outgoing': {
-    url: 'https://example.com',
-    method: 'POST',
-    headers: {},
-    timeout: 15000,
-  },
-  'website-validation-finished': {
-    url: 'https://example.com',
-    method: 'POST',
-    headers: {},
-    timeout: 15000,
-  },
 };
 
 type IncomingWebhookPayloads = {
@@ -177,13 +139,9 @@ export class WebhooksService {
 
   async invokeWebhook<T extends keyof OutgoingWebhookPayloads>(
     name: T,
-    options: {
-      data: OutgoingWebhookPayloads[T];
-      secret?: string;
-    },
+    config: OutgoingWebhookJobData,
   ) {
-    const { url, method, headers: defaultHeaders, timeout } = outgoingWebhookConfigurationMap[name];
-    const { data, secret } = options;
+    const { url, method, headers: defaultHeaders, data, secret, timeout } = config;
 
     const headers: RawAxiosRequestHeaders = {
       Accept: 'application/json',
@@ -197,7 +155,13 @@ export class WebhooksService {
       headers['X-HMAC-Signature'] = sign({ payload: data, key: secret });
     }
 
-    const requestData: OutgoingWebhookJobData = { url, method, headers, data, timeout };
+    const requestData: OutgoingWebhookJobData = {
+      url,
+      method,
+      headers,
+      data,
+      timeout: timeout ?? 15_000,
+    };
 
     const queue = this.queues.get('outgoing');
 

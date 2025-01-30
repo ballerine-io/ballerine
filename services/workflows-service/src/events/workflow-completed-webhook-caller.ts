@@ -134,6 +134,8 @@ export class WorkflowCompletedWebhookCaller {
     } as const;
 
     await this.webhooksService.invokeWebhook(payload.eventName, {
+      url,
+      method: 'POST',
       data: payload,
       secret: webhookSharedSecret,
     });
@@ -169,6 +171,8 @@ export class WorkflowCompletedWebhookCaller {
       } as const;
 
       await this.webhooksService.invokeWebhook(payload.eventName, {
+        url,
+        method: 'POST',
         data: payload,
         secret: webhookSharedSecret,
       });

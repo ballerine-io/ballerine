@@ -41,7 +41,7 @@ export class RetryableQueue<T extends Record<string, unknown> = any> {
         );
       }
 
-      return await job.moveToDelayed(Date.now() + Math.pow(2, job.attemptsMade + 1) * 1000);
+      // return await job.moveToDelayed(Date.now() + Math.pow(2, job.attemptsMade + 1) * 1000);
     });
   }
 

@@ -94,11 +94,11 @@ export const serverEnvSchema = {
   IN_MEMORIES_SECRET_PRIVATE_KEY: z.string().optional(),
   IN_MEMORIES_SECRET_CONSUMER_KEY: z.string().optional(),
   REDIS_HOST: z.string(),
+  REDIS_PORT: z.coerce.number(),
   REDIS_PASSWORD: z.string().optional(),
-  REDIS_PORT: z.string().transform(value => Number(value)),
   QUEUE_SYSTEM_ENABLED: z
     .string()
-    .default('false')
+    .optional()
     .transform(value => value === 'true'),
 };
 

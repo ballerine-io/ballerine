@@ -27,8 +27,10 @@ export class WebhooksController {
   async testOutgoing() {
     // Something happens and we decide to send outgoing webhook call
     const secret = 'abcd';
-    await this.webhooksService.invokeWebhook('user-created-outgoing', {
-      data: { userId: 'random-id' },
+    await this.webhooksService.invokeWebhook('workflow.context.document.changed', {
+      url: 'https://example.com',
+      method: 'POST',
+      data: {} as any,
       secret,
     });
   }

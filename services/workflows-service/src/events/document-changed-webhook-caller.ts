@@ -201,6 +201,8 @@ export class DocumentChangedWebhookCaller {
     } as const;
 
     await this.webhooksService.invokeWebhook(payload.eventName, {
+      url,
+      method: 'POST',
       data: payload,
       secret: webhookSharedSecret,
     });

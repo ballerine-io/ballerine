@@ -93,6 +93,8 @@ export class WorkflowStateChangedWebhookCaller {
     } as const;
 
     await this.webhooksService.invokeWebhook(payload.eventName, {
+      url,
+      method: 'POST',
       data: payload,
       secret: webhookSharedSecret,
     });
