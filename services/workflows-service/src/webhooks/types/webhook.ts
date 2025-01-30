@@ -1,18 +1,50 @@
-export interface IWebhookEventData<T> {
-  eventName: string;
-  data: T;
-}
+import { RawAxiosRequestHeaders } from 'axios';
 
-export interface IWebhookEntityEventData<T> extends IWebhookEventData<T> {
-  entityId: string;
+export type BaseOutgoingWebhookPayload = {
+  id: string;
+  apiVersion: string;
+  timestamp: string;
+  workflowCreatedAt: Date;
+  workflowResolvedAt: Date | null;
+  workflowDefinitionId: string;
+  workflowRuntimeId: string;
+  ballerineEntityId: string;
   correlationId: string;
-}
+  environment: string | undefined;
+  data: Record<string, any>;
+};
 
-export type TWebhookEventData<T> = IWebhookEventData<T> | IWebhookEntityEventData<T>;
+export type OutgoingWebhookPayloads = {
+  'workflow.completed': BaseOutgoingWebhookPayload & {
+    eventName: 'workflow.completed';
+  };
+  'workflow.state.changed': BaseOutgoingWebhookPayload & {
+    eventName: 'workflow.state.changed';
+    state: string | null;
+  };
+  'workflow.context.document.changed': BaseOutgoingWebhookPayload & {
+    eventName: 'workflow.context.document.changed';
+    assignee: { id: string; firstName: string; lastName: string; email: string } | null;
+    assignedAt: Date | null;
+  };
+};
 
-export type TEventName<T> = TWebhookEventData<T>['eventName'] | (string & object);
+export type OutgoingWebhookJobData = {
+  url: string;
+  method: string;
+  headers?: RawAxiosRequestHeaders;
+  data: OutgoingWebhookPayloads[keyof OutgoingWebhookPayloads];
+  timeout?: number;
+  secret?: string;
+};
 
-export type ExtractWebhookEventData<T, TEvent extends TEventName<T>> = Omit<
-  Extract<TWebhookEventData<T>, { eventName: TEvent }>,
-  'eventName'
->;
+export type IncomingWebhookPayloads = {
+  'user-verification-completed': {
+    userId: string;
+    data: Record<string, any>;
+    metadata: Record<string, any>;
+  };
+  'other-incoming-event': {
+    someData: string;
+  };
+};
