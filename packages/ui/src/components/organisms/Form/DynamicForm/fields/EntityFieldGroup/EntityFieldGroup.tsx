@@ -1,7 +1,7 @@
+import { AnyObject } from '@/common';
 import { IHttpParams } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';
-import { Renderer } from '@/components/organisms/Renderer';
-import { TRendererSchema } from '@/components/organisms/Renderer/types';
+import { useMemo } from 'react';
 import { useDynamicForm } from '../../context';
 import { useElement, useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
@@ -11,14 +11,17 @@ import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { TDynamicFormField } from '../../types';
 import { IFieldListParams, useStack } from '../FieldList';
-import { useFieldList } from '../FieldList/hooks/useFieldList';
-import { StackProvider } from '../FieldList/providers/StackProvider';
+import { EntityFields } from './components/EntityFields';
+import { EntityDocument } from './fields/EntityDocument';
+import { useEntityFieldGroupList } from './hooks/useEntityFieldGroupList';
+import { IEntity } from './types';
 
 export interface IEntityFieldGroupParams extends IFieldListParams {
   httpsParams: {
     createEntity: IHttpParams;
     deleteEntity: IHttpParams;
   };
+  lockText?: string;
 }
 
 export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({ element }) => {
@@ -29,8 +32,18 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({ e
   const { stack } = useStack();
   const { id: fieldId, hidden } = useElement(element, stack);
   const { disabled } = useField(element, stack);
-  const { addButtonLabel = 'Add Item', removeButtonLabel = 'Remove' } = element.params || {};
-  const { items, addItem, removeItem } = useFieldList({ element });
+  const { addButtonLabel = 'Add Item' } = element.params || {};
+  const { items, addItem, removeItem } = useEntityFieldGroupList({ element });
+
+  const elementsOverride = useMemo(
+    () => ({
+      ...elementsMap,
+      documentfield: EntityDocument,
+    }),
+    [elementsMap],
+  );
+
+  console.log('override', elementsOverride);
 
   if (hidden) {
     return null;
@@ -38,29 +51,17 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({ e
 
   return (
     <div className="flex flex-col gap-4" data-testid={`${fieldId}-fieldlist`}>
-      {items.map((_: unknown, index: number) => {
+      {items.map((entity: IEntity, index: number) => {
         return (
-          <div
-            key={`${fieldId}-${index}`}
-            className="flex flex-col gap-2"
-            data-testid={`${fieldId}-fieldlist-item-${index}`}
-          >
-            <div className="flex flex-row justify-end">
-              <span
-                className="cursor-pointer font-bold"
-                onClick={() => removeItem(index)}
-                data-testid={`${fieldId}-fieldlist-item-remove-${index}`}
-              >
-                {removeButtonLabel}
-              </span>
-            </div>
-            <StackProvider stack={[...(stack || []), index]}>
-              <Renderer
-                elements={element.children || []}
-                schema={elementsMap as unknown as TRendererSchema}
-              />
-            </StackProvider>
-          </div>
+          <EntityFields
+            key={entity.__id}
+            index={index}
+            onRemoveClick={() => removeItem(entity.__id!)}
+            stack={stack}
+            fieldId={fieldId}
+            element={element}
+            elementsOverride={elementsOverride as AnyObject}
+          />
         );
       })}
       <div className="flex flex-row justify-end">

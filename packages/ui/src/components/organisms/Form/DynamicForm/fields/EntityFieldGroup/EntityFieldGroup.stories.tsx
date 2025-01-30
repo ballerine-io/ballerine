@@ -12,7 +12,7 @@ const initialContext = {
 const schema: Array<IFormElement<any, any>> = [
   {
     id: 'directors',
-    element: 'fieldlist',
+    element: 'entityfieldgroup',
     valueDestination: 'users',
     params: {
       label: 'Field List',
@@ -57,6 +57,14 @@ const schema: Array<IFormElement<any, any>> = [
           },
         ],
       },
+      {
+        id: 'document',
+        element: 'documentfield',
+        valueDestination: 'users[$0].document',
+        params: {
+          label: 'Document',
+        },
+      },
     ],
   },
   {
@@ -96,6 +104,6 @@ export default {
   component: EntityFieldGroup,
 };
 
-export const AutoDataInsertion = {
+export const Default = {
   render: () => <EntityFieldGroup />,
 };
