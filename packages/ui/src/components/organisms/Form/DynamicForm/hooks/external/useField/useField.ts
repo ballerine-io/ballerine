@@ -30,7 +30,9 @@ export const useField = <TValue>(element: IFormElement<any, any>, stack?: TDeept
   });
 
   const isDisabled = useMemo(() => {
-    if (!disabledRulesResult.length) return false;
+    if (!disabledRulesResult.length) {
+      return false;
+    }
 
     return disabledRulesResult.some(result => result.result === true);
   }, [disabledRulesResult]);
@@ -48,12 +50,20 @@ export const useField = <TValue>(element: IFormElement<any, any>, stack?: TDeept
 
   const onBlur = useCallback(() => {
     sendEvent('onBlur');
-    setTouched(fieldId, true);
 
     if (validationParams.validateOnBlur) {
       validate();
     }
-  }, [sendEvent, validationParams.validateOnBlur, validate, fieldId, setTouched]);
+
+    setTimeout(() => setTouched(fieldId, true), (validationParams.validationDelay || 0) + 20);
+  }, [
+    sendEvent,
+    validationParams.validateOnBlur,
+    validationParams.validationDelay,
+    validate,
+    fieldId,
+    setTouched,
+  ]);
 
   const onFocus = useCallback(() => {
     sendEvent('onFocus');
