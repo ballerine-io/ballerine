@@ -122,6 +122,9 @@ export const ubosFormJsonDefinition = {
           type: 'boolean',
           default: false,
         },
+        uiSchema: {
+          'ui:label': false,
+        },
       },
     },
     {
