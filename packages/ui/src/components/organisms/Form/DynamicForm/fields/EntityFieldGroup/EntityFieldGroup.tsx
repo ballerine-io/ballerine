@@ -1,5 +1,7 @@
+import { IHttpParams } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';
-import { Renderer, TRendererSchema } from '@/components/organisms/Renderer';
+import { Renderer } from '@/components/organisms/Renderer';
+import { TRendererSchema } from '@/components/organisms/Renderer/types';
 import { useDynamicForm } from '../../context';
 import { useElement, useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
@@ -8,23 +10,23 @@ import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { TDynamicFormField } from '../../types';
-import { useFieldList } from './hooks/useFieldList';
-import { StackProvider, useStack } from './providers/StackProvider';
+import { IFieldListParams, useStack } from '../FieldList';
+import { useFieldList } from '../FieldList/hooks/useFieldList';
+import { StackProvider } from '../FieldList/providers/StackProvider';
 
-export interface IFieldListParams {
-  // jsonata expression
-  defaultValue?: string;
-  addButtonLabel?: string;
-  removeButtonLabel?: string;
+export interface IEntityFieldGroupParams extends IFieldListParams {
+  httpsParams: {
+    createEntity: IHttpParams;
+    deleteEntity: IHttpParams;
+  };
 }
 
-export const FieldList: TDynamicFormField<IFieldListParams> = props => {
-  useMountEvent(props.element);
-  useUnmountEvent(props.element);
+export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({ element }) => {
+  useMountEvent(element);
+  useUnmountEvent(element);
 
   const { elementsMap } = useDynamicForm();
   const { stack } = useStack();
-  const { element } = props;
   const { id: fieldId, hidden } = useElement(element, stack);
   const { disabled } = useField(element, stack);
   const { addButtonLabel = 'Add Item', removeButtonLabel = 'Remove' } = element.params || {};
