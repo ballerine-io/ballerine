@@ -12,7 +12,8 @@ export type TBaseValidators =
   | 'pattern'
   | 'minimum'
   | 'maximum'
-  | 'format';
+  | 'format'
+  | 'document';
 
 export interface ICommonValidator<T = object, TValidatorType extends string = TBaseValidators> {
   type: TValidatorType;

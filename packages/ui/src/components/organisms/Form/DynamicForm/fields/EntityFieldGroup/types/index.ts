@@ -1,5 +1,6 @@
 export interface IEntity {
-  id: string;
+  id?: string;
   __id?: string;
   __isLocked?: boolean;
+  __isCreated?: boolean;
 }

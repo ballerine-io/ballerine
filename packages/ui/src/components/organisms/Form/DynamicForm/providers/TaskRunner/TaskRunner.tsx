@@ -22,7 +22,9 @@ export const TaskRunner = ({ children }: ITaskRunnerProps) => {
 
   const runTasks = useCallback(
     async <TContext extends AnyObject>(context: TContext) => {
-      if (isRunning) return context;
+      if (isRunning) {
+        return context;
+      }
 
       setIsRunning(true);
 
@@ -31,6 +33,8 @@ export const TaskRunner = ({ children }: ITaskRunnerProps) => {
       await tasksCompose(context);
 
       setIsRunning(false);
+
+      setTasks([]);
 
       return context;
     },

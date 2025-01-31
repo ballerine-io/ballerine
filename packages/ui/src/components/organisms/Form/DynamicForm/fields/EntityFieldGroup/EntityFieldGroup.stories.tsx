@@ -60,10 +60,23 @@ const schema: Array<IFormElement<any, any>> = [
       {
         id: 'document',
         element: 'documentfield',
-        valueDestination: 'users[$0].document',
+        valueDestination: 'users[$0].documents',
         params: {
           label: 'Document',
+          template: {
+            id: 'document',
+          },
         },
+        validate: [
+          {
+            type: 'document',
+            value: {
+              id: 'document',
+            },
+            message: 'Document is required',
+            considerRequired: true,
+          },
+        ],
       },
     ],
   },
