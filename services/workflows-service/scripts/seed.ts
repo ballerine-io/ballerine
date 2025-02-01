@@ -1009,7 +1009,7 @@ async function seed() {
 
   await seedTransactionsAlerts(client, {
     project: project1,
-    businessIds: businessRiskIds,
+    businessIds: businessIds,
     counterpartyIds: ids1
       .map(
         ({ counterpartyOriginatorId, counterpartyBeneficiaryId }) =>
