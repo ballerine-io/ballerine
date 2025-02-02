@@ -1018,10 +1018,10 @@ model DocumentFile {
   page       Int
 
   documentId String
-  document   Document @relation(fields: [documentId], references: [id])
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   fileId     String
-  file       File @relation(fields: [fileId], references: [id])
+  file       File @relation(fields: [fileId], references: [id], onDelete: Cascade)
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
