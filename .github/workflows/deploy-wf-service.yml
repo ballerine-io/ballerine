@@ -576,6 +576,12 @@ jobs:
             echo "DASHBOARD_UPDATED=false" >> "$GITHUB_ENV"
           fi
 
+      - name: Print Environment Variables
+        run: |
+          echo "BACKOFFICE_UPDATED=$BACKOFFICE_UPDATED"
+          echo "KYB_UPDATED=$KYB_UPDATED"
+          echo "DASHBOARD_UPDATED=$DASHBOARD_UPDATED"
+
   # TODO Deploy Backoffice trigger
   deploy-backoffice:
     needs: [check-db-sync-status,check-apps-changes]
