@@ -155,7 +155,6 @@ describe('useField', () => {
       result.current.onChange('new-value');
 
       expect(mockSetValue).toHaveBeenCalledWith('test-field-1-2', 'test.path[1][2]', 'new-value');
-      expect(mockSetTouched).toHaveBeenCalledWith('test-field-1-2', true);
       expect(mockSendEventAsync).toHaveBeenCalledWith('onChange');
     });
 
@@ -196,6 +195,28 @@ describe('useField', () => {
 
       expect(mockSendEvent).toHaveBeenCalledWith('onBlur');
       expect(mockValidate).not.toHaveBeenCalled();
+    });
+
+    it('should set touched state after validation delay', () => {
+      vi.mocked(useDynamicForm).mockReturnValue({
+        fieldHelpers: mockFieldHelpers,
+        values: {},
+        metadata: mockMetadata,
+        validationParams: {
+          validateOnBlur: true,
+          validationDelay: 100,
+        },
+      } as unknown as IDynamicFormContext<object>);
+
+      const { result } = renderHook(() => useField(mockElement, mockStack));
+
+      result.current.onBlur();
+
+      expect(mockSetTouched).not.toHaveBeenCalled();
+
+      vi.advanceTimersByTime(120);
+
+      expect(mockSetTouched).toHaveBeenCalledWith('test-field-1-2', true);
     });
   });
 
@@ -274,7 +295,7 @@ describe('useField', () => {
         {
           rules: mockElement.disable,
           runOnInitialize: true,
-          executionDelay: 500,
+          executionDelay: 100,
         },
       );
     });
@@ -296,7 +317,7 @@ describe('useField', () => {
         {
           rules: mockElement.disable,
           runOnInitialize: true,
-          executionDelay: 500,
+          executionDelay: 100,
         },
       );
     });

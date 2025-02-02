@@ -1,9 +1,22 @@
 # @ballerine/ui
 
+## 0.5.72
+
+### Patch Changes
+
+- Bump
+
+## 0.5.71
+
+### Patch Changes
+
+- Bump
+
 ## 0.5.70
 
 ### Patch Changes
 
+- Param adjustmetns & bugfixes
 - Format ongoing summary in the UI
 
 ## 0.5.69

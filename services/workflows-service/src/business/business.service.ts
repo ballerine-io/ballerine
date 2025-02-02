@@ -23,7 +23,6 @@ import {
 } from '@/common/utils/unified-api-client/unified-api-client';
 import { PrismaService } from '@/prisma/prisma.service';
 import { beginTransactionIfNotExistCurry } from '@/prisma/prisma.util';
-import { TCustomerConfig } from '@/customer/schemas/zod-schemas';
 
 @Injectable()
 export class BusinessService {

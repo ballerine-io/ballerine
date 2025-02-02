@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/ui",
   "private": false,
-  "version": "0.5.70",
+  "version": "0.5.72",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

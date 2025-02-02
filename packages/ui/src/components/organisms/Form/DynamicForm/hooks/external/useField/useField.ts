@@ -26,11 +26,13 @@ export const useField = <TValue>(element: IFormElement<any, any>, stack?: TDeept
   const disabledRulesResult = useRuleEngine(valuesAndMetadata, {
     rules: useRules(element.disable, stack),
     runOnInitialize: true,
-    executionDelay: 500,
+    executionDelay: 100,
   });
 
   const isDisabled = useMemo(() => {
-    if (!disabledRulesResult.length) return false;
+    if (!disabledRulesResult.length) {
+      return false;
+    }
 
     return disabledRulesResult.some(result => result.result === true);
   }, [disabledRulesResult]);
@@ -38,23 +40,30 @@ export const useField = <TValue>(element: IFormElement<any, any>, stack?: TDeept
   const onChange = useCallback(
     <TValue>(value: TValue, ignoreEvent = false) => {
       setValue(fieldId, valueDestination, value);
-      setTouched(fieldId, true);
 
       if (!ignoreEvent) {
         sendEventAsync('onChange');
       }
     },
-    [fieldId, valueDestination, setValue, setTouched, sendEventAsync],
+    [fieldId, valueDestination, setValue, sendEventAsync],
   );
 
   const onBlur = useCallback(() => {
     sendEvent('onBlur');
-    setTouched(fieldId, true);
 
     if (validationParams.validateOnBlur) {
       validate();
     }
-  }, [sendEvent, validationParams.validateOnBlur, validate, fieldId, setTouched]);
+
+    setTimeout(() => setTouched(fieldId, true), (validationParams.validationDelay || 0) + 20);
+  }, [
+    sendEvent,
+    validationParams.validateOnBlur,
+    validationParams.validationDelay,
+    validate,
+    fieldId,
+    setTouched,
+  ]);
 
   const onFocus = useCallback(() => {
     sendEvent('onFocus');

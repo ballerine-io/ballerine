@@ -6,6 +6,7 @@ import { ApiKeyService } from '@/customer/api-key/api-key.service';
 import { generateHashedKey } from '@/customer/api-key/utils';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import { PrismaService } from '@/prisma/prisma.service';
+import { env } from '@/env';
 
 @Injectable()
 export class CustomerService {
@@ -36,7 +37,9 @@ export class CustomerService {
         transaction,
       );
 
-      await retry(() => new UnifiedApiClient().createCustomer(customer));
+      if (env.SYNC_UNIFIED_API === 'true') {
+        await retry(() => new UnifiedApiClient().createCustomer(customer));
+      }
 
       return customer;
     });
@@ -69,7 +72,9 @@ export class CustomerService {
         transaction,
       )) as unknown as TCustomerWithFeatures;
 
-      await retry(() => new UnifiedApiClient().updateCustomer(id, customer));
+      if (env.SYNC_UNIFIED_API === 'true') {
+        await retry(() => new UnifiedApiClient().updateCustomer(id, customer));
+      }
 
       return customer;
     });
@@ -79,7 +84,9 @@ export class CustomerService {
     return await this.prisma.$transaction(async transaction => {
       await this.repository.deleteById(id, args, transaction);
 
-      await retry(() => new UnifiedApiClient().deleteCustomer(id));
+      if (env.SYNC_UNIFIED_API === 'true') {
+        await retry(() => new UnifiedApiClient().deleteCustomer(id));
+      }
     });
   }
 }
