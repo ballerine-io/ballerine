@@ -6,7 +6,7 @@
   "version": "0.4.0",
   "main": "index.js",
   "engines": {
-    "node": ">=18.0.0",
+    "node": ">=18.0.0, <22.0.0",
     "pnpm": ">=8.0.0"
   },
   "repository": {
@@ -61,7 +61,7 @@
     "workflow-builder:dev": "echo \"Error: no test specified\" && exit 1",
     "web-ui:dev": "echo \"Error: no test specified\" && exit 1",
     "commit": "git add . && git-cz",
-    "commit:auto": "git add . && node ./scripts/auto-commit.js",
+    "commit:auto": "node ./scripts/auto-commit.js",
     "prepare": "husky install",
     "changeset": "changeset",
     "version-packages": "changeset version",
