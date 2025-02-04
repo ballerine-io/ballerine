@@ -613,9 +613,7 @@ export class WorkflowRunner {
 
         this.#__currentState = state.value;
       })
-      .onEvent(event => {
-        logger.log('WORKFLOW CORE:: Event received', { event });
-      })
+      // .onEvent(event => {})
       .onChange(state => {
         logger.log('WORKFLOW CORE:: Context/State changed', { state });
       });
