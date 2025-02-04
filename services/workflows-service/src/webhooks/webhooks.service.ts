@@ -13,7 +13,7 @@ import { RetryableQueue } from './retryable-queue';
 import { BULLBOARD_INSTANCE_INJECTION_TOKEN, type BullBoardInjectedInstance } from './types/bull';
 import { type OutgoingWebhookJobData, type OutgoingWebhookPayloads } from './types/webhook';
 
-export const alertWebhookFailure = (errorPayload: Record<string, unknown>) => {
+const captureWebhookFailureWithSentry = (errorPayload: Record<string, unknown>) => {
   Sentry.captureException(
     new Error('Failed to send a webhook', {
       cause: errorPayload,
@@ -86,7 +86,11 @@ export class WebhooksService {
             error: job.data.error,
           });
 
-          alertWebhookFailure({ ...job.data.error, url: job.data.url, method: job.data.method });
+          captureWebhookFailureWithSentry({
+            ...job.data.error,
+            url: job.data.url,
+            method: job.data.method,
+          });
 
           // Process unsent data
           // ...
@@ -167,7 +171,7 @@ export class WebhooksService {
         correlationId,
       });
 
-      alertWebhookFailure(errorPayload);
+      captureWebhookFailureWithSentry(errorPayload);
     }
   }
 
