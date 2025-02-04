@@ -218,4 +218,50 @@ export class DocumentService {
       }) ?? [],
     );
   }
+
+  async reuploadDocumentFileById(
+    fileId: string,
+    workflowRuntimeDataId: string,
+    projectIds: TProjectId[],
+    file: Express.Multer.File,
+  ) {
+    if (!projectIds[0]) {
+      throw new BadRequestException('Project id is required');
+    }
+
+    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
+      workflowRuntimeDataId,
+      {},
+      projectIds,
+    );
+    const uploadedFile = await this.fileService.uploadNewFile(projectIds[0], workflowRuntimeData, {
+      ...file,
+      mimetype:
+        file.mimetype ||
+        (
+          await getFileMetadata({
+            file: file.originalname || '',
+            fileName: file.originalname || '',
+          })
+        )?.mimeType ||
+        '',
+    });
+
+    await this.documentFileService.updateById(fileId, {
+      file: {
+        connect: { id: uploadedFile.id },
+      },
+    });
+
+    const documents = await this.repository.findMany(projectIds, {
+      include: {
+        files: true,
+      },
+    });
+
+    return await this.fetchDocumentsFiles({
+      documents: documents as Array<Document & { files: DocumentFile[] }>,
+      format: 'signed-url',
+    });
+  }
 }

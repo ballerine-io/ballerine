@@ -165,6 +165,63 @@ export class DocumentControllerExternal {
     return await this.documentService.updateById(documentId, [projectId], data);
   }
 
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: getDiskStorage(),
+      limits: {
+        files: 1,
+      },
+      fileFilter,
+    }),
+    RemoveTempFileInterceptor,
+  )
+  @Post('/:workflowRuntimeDataId/:fileId')
+  @ApiResponse({
+    status: 200,
+    description: 'Document reuploaded successfully',
+    schema: Type.Array(Type.Record(Type.String(), Type.Any())),
+  })
+  @Validate({
+    request: [
+      {
+        type: 'param',
+        name: 'workflowRuntimeDataId',
+        schema: Type.String(),
+      },
+      {
+        type: 'param',
+        name: 'fileId',
+        schema: Type.String(),
+      },
+    ],
+    response: Type.Any(),
+  })
+  async reuploadDocumentFileById(
+    @Param('workflowRuntimeDataId') workflowRuntimeDataId: string,
+    @Param('fileId') fileId: string,
+    @UploadedFile(
+      new ParseFilePipeBuilder().addMaxSizeValidator({ maxSize: FILE_MAX_SIZE_IN_BYTE }).build({
+        fileIsRequired: true,
+        exceptionFactory: (error: string) => {
+          if (error.includes('expected size')) {
+            throw new UnprocessableEntityException(FILE_SIZE_EXCEEDED_MSG);
+          }
+
+          throw new UnprocessableEntityException(error);
+        },
+      }),
+    )
+    file: Express.Multer.File,
+    @CurrentProject() projectId: string,
+  ) {
+    return await this.documentService.reuploadDocumentFileById(
+      fileId,
+      workflowRuntimeDataId,
+      [projectId],
+      file,
+    );
+  }
+
   @Delete()
   @ApiResponse({
     status: 200,
