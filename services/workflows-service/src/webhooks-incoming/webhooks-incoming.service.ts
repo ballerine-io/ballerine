@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import * as Sentry from '@sentry/node';
-import { isAxiosError } from 'axios';
 
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CustomerService } from '@/customer/customer.service';
@@ -10,15 +8,6 @@ import { WebhooksService } from '@/webhooks/webhooks.service';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { IndividualAmlWebhookInput } from './types/individual-aml-webhook-input.dto';
-
-export const alertWebhookFailure = (error: unknown) => {
-  const errorToAlert = new Error('Failed to send a webhook', { cause: error });
-  const context = isAxiosError(error) ? { ...error } : {};
-
-  Sentry.captureException(errorToAlert, {
-    extra: context,
-  });
-};
 
 @Injectable()
 export class IncomingWebhooksService {
