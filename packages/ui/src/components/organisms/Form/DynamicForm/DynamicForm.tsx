@@ -39,10 +39,10 @@ export const DynamicFormV2 = forwardRef(
     });
     const touchedApi = useTouched(elements, valuesApi.values);
     const fieldHelpers = useFieldHelpers<TValues>({ valuesApi, touchedApi });
-    const { submit } = useSubmit({ values: valuesApi.values, onSubmit });
+    const { submit } = useSubmit<TValues>({ onSubmit });
 
     useImperativeHandle(ref, () => ({
-      submit,
+      submit: () => submit(valuesApi.values),
       validate: () => null,
       setValues: valuesApi.setValues,
       setTouched: touchedApi.setTouched,

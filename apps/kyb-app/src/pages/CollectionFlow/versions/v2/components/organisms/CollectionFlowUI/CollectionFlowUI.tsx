@@ -3,7 +3,7 @@ import './validator';
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider/hooks/useStateManagerContext';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
-import { DynamicFormV2, IFormElement, IFormRef } from '@ballerine/ui';
+import { DynamicFormV2, IDynamicFormValidationParams, IFormElement, IFormRef } from '@ballerine/ui';
 import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 import { usePluginsSubscribe } from './components/utility/PluginsRunner';
 import { usePlugins } from './components/utility/PluginsRunner/hooks/external/usePlugins';
@@ -20,10 +20,12 @@ interface ICollectionFlowUIProps<TValues = CollectionFlowContext> {
   isRevision?: boolean;
 }
 
-const validationParams = {
-  validateOnBlur: false,
+const validationParams: IDynamicFormValidationParams = {
+  validateOnChange: true,
+  validateOnBlur: true,
   abortEarly: false,
-  validationDelay: 500,
+  abortAfterFirstError: true,
+  validationDelay: 300,
 };
 
 export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
