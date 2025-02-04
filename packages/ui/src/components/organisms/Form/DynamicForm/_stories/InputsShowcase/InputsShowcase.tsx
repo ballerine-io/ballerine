@@ -14,7 +14,15 @@ const schema: Array<IFormElement<any, any>> = [
       placeholder: 'Enter text',
       description: 'This is a text field for entering any text value',
     },
-    validate: [],
+    validate: [
+      { type: 'required', value: {} },
+      {
+        type: 'minLength',
+        value: {
+          minLength: 10,
+        },
+      },
+    ],
   },
   {
     id: 'AutocompleteField',
@@ -30,6 +38,7 @@ const schema: Array<IFormElement<any, any>> = [
         { value: 'option3', label: 'Option 3' },
       ],
     },
+    validate: [{ type: 'required', value: {} }],
   },
   {
     id: 'CheckboxListField',
@@ -44,6 +53,7 @@ const schema: Array<IFormElement<any, any>> = [
         { value: 'option3', label: 'Option 3' },
       ],
     },
+    validate: [{ type: 'required', value: {} }],
   },
   {
     id: 'DateField',
@@ -53,6 +63,7 @@ const schema: Array<IFormElement<any, any>> = [
       label: 'Date Field',
       description: 'Select a date from the calendar',
     },
+    validate: [{ type: 'required', value: {} }],
   },
   {
     id: 'MultiselectField',
@@ -67,6 +78,7 @@ const schema: Array<IFormElement<any, any>> = [
         { value: 'option3', label: 'Option 3' },
       ],
     },
+    validate: [{ type: 'required', value: {} }],
   },
   {
     id: 'SelectField',
@@ -81,6 +93,7 @@ const schema: Array<IFormElement<any, any>> = [
         { value: 'option3', label: 'Option 3' },
       ],
     },
+    validate: [{ type: 'required', value: {} }],
   },
   {
     id: 'CheckboxField',
@@ -90,6 +103,7 @@ const schema: Array<IFormElement<any, any>> = [
       label: 'Checkbox Field',
       description: 'Toggle this checkbox for a yes/no selection',
     },
+    validate: [{ type: 'required', value: {} }],
   },
   {
     id: 'PhoneField',
@@ -100,6 +114,7 @@ const schema: Array<IFormElement<any, any>> = [
       description: 'Enter a phone number with country code selection',
       defaultCountry: 'il',
     },
+    validate: [{ type: 'required', value: {} }],
   },
   {
     id: 'RadioField',
@@ -114,6 +129,7 @@ const schema: Array<IFormElement<any, any>> = [
         { value: 'option3', label: 'Option 3' },
       ],
     },
+    validate: [{ type: 'required', value: {} }],
   },
   {
     id: 'TagsField',
@@ -123,6 +139,7 @@ const schema: Array<IFormElement<any, any>> = [
       label: 'Tags Field',
       description: 'Add multiple tags by typing and pressing enter',
     },
+    validate: [{ type: 'required', value: {} }],
   },
   {
     id: 'FileField',
@@ -133,6 +150,7 @@ const schema: Array<IFormElement<any, any>> = [
       placeholder: 'Select File',
       description: 'Upload a file from your device',
     },
+    validate: [{ type: 'required', value: {} }],
   },
   {
     id: 'DocumentField-1',
@@ -154,6 +172,7 @@ const schema: Array<IFormElement<any, any>> = [
         resultPath: 'filename',
       },
     },
+    validate: [{ type: 'required', value: {} }],
   },
   {
     id: 'DocumentField-2',
@@ -176,6 +195,7 @@ const schema: Array<IFormElement<any, any>> = [
         resultPath: 'filename',
       },
     },
+    validate: [{ type: 'required', value: {} }],
   },
   {
     id: 'FieldList',
@@ -185,6 +205,7 @@ const schema: Array<IFormElement<any, any>> = [
       label: 'Field List',
       description: 'A list of repeatable form fields that can be added or removed',
     },
+    validate: [{ type: 'required', value: {} }],
     children: [
       {
         id: 'Nested-TextField',
@@ -212,6 +233,7 @@ const schema: Array<IFormElement<any, any>> = [
     params: {
       label: 'Submit Button',
     },
+    validate: [{ type: 'required', value: {} }],
   },
 ];
 
@@ -228,6 +250,7 @@ export const InputsShowcaseComponent = () => {
             console.log('onSubmit');
           }}
           onChange={setContext}
+          validationParams={{ abortAfterFirstError: true }}
           // onEvent={console.log}
         />
       </div>
