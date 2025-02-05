@@ -11,52 +11,19 @@ import {
   WebsiteCredibility,
   WebsiteLineOfBusiness,
   WebsitesCompany,
-  createReportAdapter,
 } from '@/components';
+import { z } from 'zod';
+import { MERCHANT_REPORT_STATUSES, MERCHANT_REPORT_TYPES } from '../../constants';
+import { ReportSchema } from '@ballerine/common';
 
 type UseReportTabsProps = {
-  reportVersion: string;
   isOnboarding: boolean;
-  report: Record<PropertyKey, any>;
+  report: z.infer<typeof ReportSchema>;
   companyName: string;
   Link: ComponentProps<typeof BusinessReportSummary>['Link'];
 };
 
-export const useReportTabs = ({
-  reportVersion,
-  isOnboarding,
-  report,
-  companyName,
-  Link,
-}: UseReportTabsProps) => {
-  const adapter = createReportAdapter({
-    reportVersion,
-  });
-
-  const {
-    websitesCompanyAnalysis,
-    websiteCredibilityAnalysis,
-    adsAndSocialMediaAnalysis,
-    adsAndSocialMediaPresence,
-    websiteLineOfBusinessAnalysis,
-    ecosystemAnalysis,
-    summary,
-    ongoingMonitoringSummary,
-    riskScore,
-    riskLevels,
-    companyReputationAnalysis,
-    relatedAdsSummary,
-    lineOfBusinessDescription,
-    onlineReputationAnalysis,
-    pricingAnalysis,
-    websiteStructureAndContentEvaluation,
-    trafficAnalysis,
-    ecosystemMatches,
-    adsImages,
-    relatedAdsImages,
-    homepageScreenshotUrl,
-    formattedMcc,
-  } = adapter(report ?? {});
+export const useReportTabs = ({ isOnboarding, report, companyName, Link }: UseReportTabsProps) => {
   const riskIndicators = [
     {
       title: "Website's Company Analysis",

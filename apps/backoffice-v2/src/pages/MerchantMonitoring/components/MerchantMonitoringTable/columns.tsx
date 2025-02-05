@@ -15,10 +15,10 @@ import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/Indic
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import { ctw } from '@/common/utils/ctw/ctw';
 import {
+  getSeverityFromRiskScore,
   MERCHANT_REPORT_STATUSES_MAP,
   MERCHANT_REPORT_TYPES_MAP,
-} from '@/domains/business-reports/constants';
-import { getSeverityFromRiskScore } from '@ballerine/common';
+} from '@ballerine/common';
 import {
   Badge,
   CheckCircle,
@@ -47,7 +47,7 @@ const REPORT_TYPE_TO_SCAN_TYPE = {
 } as const;
 
 export const columns = [
-  columnHelper.accessor('companyName', {
+  columnHelper.accessor('data.companyName', {
     cell: info => {
       const companyName = info.getValue();
 
@@ -65,25 +65,25 @@ export const columns = [
     },
     header: 'Website',
   }),
-  columnHelper.accessor('riskScore', {
+  columnHelper.accessor('data.riskLevel', {
     cell: info => {
-      const riskScore = info.getValue();
-      const severity = getSeverityFromRiskScore(riskScore);
+      const riskLevel = info.getValue();
 
       return (
         <div className="flex items-center gap-2">
-          {!riskScore && riskScore !== 0 && <TextWithNAFallback className={'py-0.5'} />}
-          {(riskScore || riskScore === 0) && (
+          {riskLevel ? (
             <Badge
               className={ctw(
                 severityToClassName[
-                  (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
+                  (riskLevel.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
                 ],
                 'w-20 py-0.5 font-bold',
               )}
             >
-              {titleCase(severity ?? '')}
+              {titleCase(riskLevel)}
             </Badge>
+          ) : (
+            <TextWithNAFallback className={'py-0.5'} />
           )}
         </div>
       );
@@ -143,7 +143,7 @@ export const columns = [
     },
     header: 'Scan Type',
   }),
-  columnHelper.accessor('isAlert', {
+  columnHelper.accessor('data.isAlert', {
     cell: ({ getValue }) => {
       return getValue() ? (
         <WarningFilledSvg className={`d-6`} />

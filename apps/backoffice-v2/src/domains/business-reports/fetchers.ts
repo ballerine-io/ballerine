@@ -15,51 +15,19 @@ import {
   MERCHANT_REPORT_VERSIONS,
   MerchantReportType,
   MerchantReportVersion,
-} from '@/domains/business-reports/constants';
+  ReportSchema,
+} from '@ballerine/common';
 
-export const BusinessReportSchema = z
-  .object({
-    id: z.string(),
-    reportType: z.enum([MERCHANT_REPORT_TYPES[0]!, ...MERCHANT_REPORT_TYPES.slice(1)]),
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
-    displayDate: z.string().datetime(),
-    riskScore: z.number().nullable(),
-    status: z.enum([MERCHANT_REPORT_STATUSES[0]!, ...MERCHANT_REPORT_STATUSES.slice(1)]),
-    parentCompanyName: z.string().nullable(),
-    merchantId: z.string(),
-    workflowVersion: z.enum([MERCHANT_REPORT_VERSIONS[0]!, ...MERCHANT_REPORT_VERSIONS.slice(1)]),
-    isAlert: z.boolean().nullish(),
-    companyName: z.string().nullish(),
-    monitoringStatus: z.boolean(),
-    website: z.object({
-      id: z.string(),
-      url: z.string().url(),
-      createdAt: z
-        .string()
-        .datetime()
-        .transform(value => new Date(value)),
-      updatedAt: z
-        .string()
-        .datetime()
-        .transform(value => new Date(value)),
-    }),
-    data: z.record(z.string(), z.unknown()).nullish(),
-  })
-  .transform(data => ({
-    ...data,
-    status:
-      data.status === MERCHANT_REPORT_STATUSES_MAP.failed
-        ? MERCHANT_REPORT_STATUSES_MAP['quality-control']
-        : data.status,
-    companyName:
-      data?.companyName ??
-      (data?.data?.websiteCompanyAnalysis as UnknownRecord | undefined)?.companyName ??
-      data?.parentCompanyName,
-    website: data?.website.url,
-    data: data.status === 'completed' ? data?.data : null,
-    riskScore: data.status === 'completed' ? data?.riskScore : null,
-  }));
+export const BusinessReportSchema = ReportSchema.transform(data => ({
+  ...data,
+  status:
+    data.status === MERCHANT_REPORT_STATUSES_MAP.failed
+      ? MERCHANT_REPORT_STATUSES_MAP['quality-control']
+      : data.status,
+  website: data.website.url,
+  riskLevel: data.status === MERCHANT_REPORT_STATUSES_MAP.completed ? data.riskLevel : null,
+  data: data.status === MERCHANT_REPORT_STATUSES_MAP.completed ? data?.data : null,
+}));
 
 export const BusinessReportsSchema = z.object({
   data: z.array(BusinessReportSchema),

@@ -41,9 +41,9 @@ import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
 import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { MERCHANT_REPORT_STATUSES_MAP } from '@/domains/business-reports/constants';
 import { Notes } from '@/domains/notes/Notes';
 import { useMerchantMonitoringBusinessReportLogic } from '@/pages/MerchantMonitoringBusinessReport/hooks/useMerchantMonitoringBusinessReportLogic/useMerchantMonitoringBusinessReportLogic';
+import { MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
 
 const DialogDropdownItem = forwardRef<
   React.ElementRef<typeof DropdownMenuItem>,

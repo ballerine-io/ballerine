@@ -11,15 +11,15 @@ import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { safeUrl } from '@/common/utils/safe-url/safe-url';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
-import {
-  MERCHANT_REPORT_STATUSES_MAP,
-  MERCHANT_REPORT_TYPES_MAP,
-} from '@/domains/business-reports/constants';
 import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
 import { useCreateNoteMutation } from '@/domains/notes/hooks/mutations/useCreateNoteMutation/useCreateNoteMutation';
 import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
 import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
-import { isObject } from '@ballerine/common';
+import {
+  isObject,
+  MERCHANT_REPORT_STATUSES_MAP,
+  MERCHANT_REPORT_TYPES_MAP,
+} from '@ballerine/common';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const ZodDeboardingSchema = z
@@ -90,11 +90,11 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
   });
 
   const onSubmit: SubmitHandler<z.infer<typeof ZodDeboardingSchema>> = async (data, e) => {
-    if (!businessReport?.merchantId) {
-      throw new Error('Merchant ID is missing');
+    if (!businessReport?.business.id) {
+      throw new Error('Business ID is missing');
     }
 
-    return turnOffMonitoringMutation.mutate(businessReport.merchantId);
+    return turnOffMonitoringMutation.mutate(businessReport.business.id);
   };
 
   const { mutateAsync: mutateCreateNote } = useCreateNoteMutation({ disableToast: true });
@@ -103,7 +103,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     onSuccess: () => {
       void mutateCreateNote({
         content: 'Monitoring turned on',
-        entityId: businessReport?.merchantId ?? '',
+        entityId: businessReport?.business.id ?? '',
         entityType: 'Business',
         noteableId: businessReport?.id ?? '',
         noteableType: 'Report',
@@ -133,7 +133,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
         .join(' ');
       void mutateCreateNote({
         content,
-        entityId: businessReport?.merchantId ?? '',
+        entityId: businessReport?.business.id ?? '',
         entityType: 'Business',
         noteableId: businessReport?.id ?? '',
         noteableType: 'Report',

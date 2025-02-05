@@ -9,10 +9,7 @@ import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
 import { useWebsiteMonitoringBusinessReportTab } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/hooks/useWebsiteMonitoringBusinessReportTab/useWebsiteMonitoringBusinessReportTab';
 import { BusinessReportSummary } from '@ballerine/ui';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
-import {
-  MERCHANT_REPORT_TYPES,
-  MERCHANT_REPORT_TYPES_MAP,
-} from '@/domains/business-reports/constants';
+import { MERCHANT_REPORT_TYPES_MAP } from '@ballerine/common';
 
 export const WebsiteMonitoringBusinessReportTab = ({
   businessReport,

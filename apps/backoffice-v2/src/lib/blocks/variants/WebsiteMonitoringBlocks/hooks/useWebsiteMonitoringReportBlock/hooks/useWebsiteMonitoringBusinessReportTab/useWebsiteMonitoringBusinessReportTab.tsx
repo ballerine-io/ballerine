@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 import { createReportAdapter, useReportTabs } from '@ballerine/ui';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
 import { UnknownRecord } from 'type-fest';
-import { MERCHANT_REPORT_TYPES_MAP } from '@/domains/business-reports/constants';
+import { MERCHANT_REPORT_TYPES_MAP } from '@ballerine/common';
 
 export const useWebsiteMonitoringBusinessReportTab = ({
   businessReport,
