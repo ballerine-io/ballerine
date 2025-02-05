@@ -204,7 +204,7 @@
     "vite-plugin-mkcert": "^1.16.0",
     "vite-plugin-top-level-await": "^1.4.4",
     "vite-tsconfig-paths": "^5.0.1",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.9"
   },
   "peerDependencies": {
     "react": "^17.0.0",
