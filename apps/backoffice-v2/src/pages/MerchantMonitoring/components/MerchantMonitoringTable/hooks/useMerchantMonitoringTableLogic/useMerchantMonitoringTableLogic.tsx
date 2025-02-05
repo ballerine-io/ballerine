@@ -1,9 +1,10 @@
-import { Link, useLocation } from 'react-router-dom';
-import type { Cell as ReactTableCellType } from '@tanstack/react-table';
-import { useLocale } from '@/common/hooks/useLocale/useLocale';
-import React, { useCallback } from 'react';
-import { TBusinessReports } from '@/domains/business-reports/fetchers';
 import { IDataTableProps } from '@ballerine/ui';
+import { useCallback } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { MERCHANT_REPORT_STATUSES_MAP } from '@/domains/business-reports/constants';
+import { TBusinessReports } from '@/domains/business-reports/fetchers';
 
 export const useMerchantMonitoringTableLogic = () => {
   const { pathname, search } = useLocation();
@@ -15,14 +16,11 @@ export const useMerchantMonitoringTableLogic = () => {
     );
   }, [pathname, search]);
 
-  const Cell: IDataTableProps<TBusinessReports>['CellContentWrapper'] = ({
+  const Cell: IDataTableProps<TBusinessReports['data'][number]>['CellContentWrapper'] = ({
     cell,
     children,
-  }: {
-    cell: ReactTableCellType<TBusinessReports['data'][number], any>;
-    children: React.ReactNode;
   }) => {
-    if (cell.row.original.status === 'completed') {
+    if (cell.row.original.status === MERCHANT_REPORT_STATUSES_MAP.completed) {
       return (
         <Link
           to={`/${locale}/merchant-monitoring/${cell.row.id}`}
@@ -37,7 +35,5 @@ export const useMerchantMonitoringTableLogic = () => {
     return children;
   };
 
-  return {
-    Cell,
-  };
+  return { Cell };
 };

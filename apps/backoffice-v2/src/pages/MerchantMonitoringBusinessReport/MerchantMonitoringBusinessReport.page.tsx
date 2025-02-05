@@ -108,14 +108,18 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
   // so instead we show a fallback UI.
   if (
     !isFetchingBusinessReport &&
-    businessReport?.status !== MERCHANT_REPORT_STATUSES_MAP['completed']
+    businessReport?.status &&
+    businessReport.status !== MERCHANT_REPORT_STATUSES_MAP['completed']
   ) {
     let supplementalText = '';
 
-    if (businessReport?.status === MERCHANT_REPORT_STATUSES_MAP['in-progress']) {
+    if (
+      [
+        MERCHANT_REPORT_STATUSES_MAP['in-progress'],
+        MERCHANT_REPORT_STATUSES_MAP['quality-control'],
+      ].includes(businessReport.status)
+    ) {
       supplementalText = 'It is currently being processed by our system.';
-    } else if (businessReport?.status === MERCHANT_REPORT_STATUSES_MAP['quality-control']) {
-      supplementalText = 'It is currently being reviewed by our quality control team.';
     }
 
     return (
