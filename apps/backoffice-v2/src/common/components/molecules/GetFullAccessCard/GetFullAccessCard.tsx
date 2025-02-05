@@ -12,7 +12,11 @@ export const GetFullAccessCard = () => {
 
   const { data: customer, isLoading } = useCustomerQuery();
 
-  if (env.VITE_ENVIRONMENT_NAME === 'production' || isLoading || customer?.config?.hasFullAccess) {
+  if (
+    env.VITE_ENVIRONMENT_NAME === 'production' ||
+    isLoading ||
+    !customer?.config?.showFullAccessPopup
+  ) {
     return null;
   }
 
