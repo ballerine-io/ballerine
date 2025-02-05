@@ -308,13 +308,13 @@ export class WorkflowService {
       const service = createWorkflow({
         runtimeId: workflow.id,
         // @ts-expect-error - error from Prisma types fix
-        definition: workflow.workflowDefinition.definition,
+        definition: workflow.workflowDefinition?.definition,
         // Might want to change to type string in `createWorkflow` or add a type for `workflowDefinition` of 'statechart-json' | 'bpmn-json'
-        definitionType: workflow.workflowDefinition.definitionType as 'statechart-json',
+        definitionType: workflow.workflowDefinition?.definitionType as 'statechart-json',
         workflowContext: {
           machineContext: workflow.context,
           // @ts-expect-error - error from Prisma types fix
-          state: workflow.state ?? workflow.workflowDefinition.definition?.initial,
+          state: workflow.state ?? workflow.workflowDefinition?.definition?.initial,
         },
       });
 

@@ -12,19 +12,12 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiBearerAuth,
-  ApiResponse,
-  ApiOkResponse,
-  ApiForbiddenResponse,
-} from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiResponse, ApiForbiddenResponse } from '@nestjs/swagger';
 import { DocumentService } from './document.service';
 import {
   CreateDocumentSchema,
   DeleteDocumentsSchema,
   UpdateDocumentSchema,
-  DocumentInputDataForTrackerSchema,
 } from './dtos/document.dto';
 import { Validate } from 'ballerine-nestjs-typebox';
 import { type Static, Type } from '@sinclair/typebox';
@@ -36,7 +29,6 @@ import { FILE_MAX_SIZE_IN_BYTE, FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/sto
 import { DocumentFileJsonSchema } from '@/document-file/dtos/document-file.dto';
 import z from 'zod';
 import type { TProjectId } from '@/types';
-import { DocumentTrackerModel } from '@/document/document.model';
 
 @ApiBearerAuth()
 @ApiTags('Documents')
@@ -197,7 +189,7 @@ export class DocumentControllerExternal {
     return await this.documentService.deleteByIds(ids, [projectId]);
   }
 
-  @Post('tracker/:workflowRuntimeId/:workflowDefinitionId')
+  @Get('tracker/:workflowDefinitionId/:workflowRuntimeDataId')
   @ApiForbiddenResponse()
   @HttpCode(200)
   @ApiResponse({
@@ -213,21 +205,22 @@ export class DocumentControllerExternal {
         schema: Type.String(),
       },
       {
-        type: 'body',
-        schema: Type.Array(DocumentInputDataForTrackerSchema),
+        type: 'param',
+        name: 'workflowRuntimeDataId',
+        schema: Type.String(),
       },
     ],
     response: Type.Any(),
   })
   async getDocumentsByWorkflowId(
     @Param('workflowDefinitionId') workflowDefinitionId: string,
-    @Body() documents: Array<Static<typeof DocumentInputDataForTrackerSchema>>,
+    @Param('workflowRuntimeDataId') workflowRuntimeDataId: string,
     @CurrentProject() projectId: TProjectId,
   ) {
     return await this.documentService.getDocumentsByWorkflowId(
       projectId,
       workflowDefinitionId,
-      documents,
+      workflowRuntimeDataId,
     );
   }
 }

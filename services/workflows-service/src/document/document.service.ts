@@ -1,18 +1,19 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DocumentRepository } from './document.repository';
-import { Document, DocumentFile, Prisma } from '@prisma/client';
+import { Document, DocumentFile, Prisma, WorkflowRuntimeData } from '@prisma/client';
 import { PrismaTransactionClient, TProjectId } from '@/types';
 import { DocumentFileService } from '@/document-file/document-file.service';
 import { StorageService } from '@/storage/storage.service';
 import { FileService } from '@/providers/file/file.service';
 import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 import { Static } from '@sinclair/typebox';
-import { CreateDocumentSchema, DocumentInputDataForTrackerSchema } from './dtos/document.dto';
+import { CreateDocumentSchema } from './dtos/document.dto';
 import { CreateDocumentFileSchema } from '@/document-file/dtos/document-file.dto';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { isObject, getDocumentId, isType } from '@ballerine/common';
+import { isObject, isType, getDocumentId } from '@ballerine/common';
 import z from 'zod';
+import { TParsedDocuments, EntitySchema, DocumentTrackerResponseSchema } from './types';
 
 @Injectable()
 export class DocumentService {
@@ -226,7 +227,7 @@ export class DocumentService {
   async getDocumentsByWorkflowId(
     projectId: TProjectId,
     workflowDefinitionId: string,
-    documents: Array<Static<typeof DocumentInputDataForTrackerSchema>>,
+    workflowRuntimeDataId: string,
   ) {
     const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
       workflowDefinitionId,
@@ -240,74 +241,222 @@ export class DocumentService {
 
     const uiSchema = uiDefinition.uiSchema as { elements: Array<Record<string, any>> };
 
-    const uiDocumentFields = this.findDocumentFields(uiSchema);
+    const parsedUIDocuments = this.parseDocumentsFromUISchema(uiSchema.elements);
 
-    const trackedDocuments = uiDocumentFields.map(uiElement => {
-      console.log(uiElement.params.template);
-      const uiId = getDocumentId(
+    const workflowData = (await this.workflowService.getWorkflowRuntimeDataById(
+      workflowRuntimeDataId,
+      {
+        select: {
+          context: true,
+          childWorkflowsRuntimeData: true,
+        },
+      },
+      [projectId],
+    )) as WorkflowRuntimeData & {
+      childWorkflowsRuntimeData: WorkflowRuntimeData[];
+    };
+
+    const entities = {
+      business: {
+        entityType: 'business',
+        id: workflowData.context.entity.ballerineEntityId,
+        companyName: workflowData.context.entity.data.companyName,
+      },
+      directors: (
+        workflowData.context.entity.data.additionalInfo.directors as Array<{
+          ballerineEntityId: string;
+          firstName: string;
+          lastName: string;
+        }>
+      ).map(director => ({
+        entityType: 'director',
+        id: director.ballerineEntityId,
+        firstName: director.firstName,
+        lastName: director.lastName,
+      })),
+      ubos: workflowData.childWorkflowsRuntimeData.map(childWorkflow => ({
+        entityType: 'ubo',
+        id: childWorkflow.endUserId ?? '',
+        firstName: childWorkflow.context.entity.data.firstName,
+        lastName: childWorkflow.context.entity.data.lastName,
+      })),
+    } as const satisfies {
+      business: z.infer<typeof EntitySchema>;
+      directors: Array<z.infer<typeof EntitySchema>>;
+      ubos: Array<z.infer<typeof EntitySchema>>;
+    };
+
+    const allDocuments = await this.repository.findMany([projectId], {
+      where: {
+        workflowRuntimeDataId,
+      },
+    });
+
+    const entitiesWithDocuments = {
+      business: {
+        ...entities.business,
+        documents: allDocuments.filter(doc => doc.businessId === entities.business.id),
+      },
+      ubos: entities.ubos.map(ubo => ({
+        ...ubo,
+        documents: allDocuments.filter(doc => doc.endUserId === ubo.id),
+      })),
+      directors: entities.directors.map(director => ({
+        ...director,
+        documents: allDocuments.filter(doc => doc.endUserId === director.id),
+      })),
+    };
+
+    const matchDocument = (doc: Document, expectedDoc: TParsedDocuments['business'][number]) =>
+      getDocumentId(
         {
-          type: uiElement.params.template.type,
-          category: uiElement.params.template.category,
-          issuer: { country: uiElement.params.template.issuer.country },
-          version: uiElement.params.template.version,
+          type: doc.type,
+          category: doc.category,
+          issuer: { country: doc.issuingCountry },
+          version: doc.version,
+        },
+        false,
+      ) ===
+      getDocumentId(
+        {
+          type: expectedDoc.type,
+          category: expectedDoc.category,
+          issuer: { country: expectedDoc.issuingCountry },
+          version: expectedDoc.version,
         },
         false,
       );
 
-      const inputDocument = documents.find(
-        doc =>
-          getDocumentId(
-            {
-              type: doc.type,
-              category: doc.category,
-              issuer: { country: doc.issuingCountry },
-              version: doc.version,
-            },
-            false,
-          ) === uiId,
-      );
-
-      if (!inputDocument) {
-        return {
-          type: uiElement.params.template.type,
-          category: uiElement.params.template.category,
-          issuingCountry: uiElement.params.template.issuer.country,
-          version: uiElement.params.template.version,
-          status: 'unprovided',
-          decision: null,
-        };
-      }
-
-      return {
-        ...inputDocument,
-        status: inputDocument.status ?? 'unprovided',
-        decision: inputDocument.decision ?? null,
-      };
+    const createDocumentResponse = <T extends z.infer<typeof EntitySchema>>(
+      matchingDocument: Document | undefined,
+      expectedDoc: TParsedDocuments['business'][number],
+      entity: T,
+    ) => ({
+      documentId: matchingDocument?.id ?? null,
+      status: matchingDocument?.status ?? 'unprovided',
+      decision: matchingDocument?.decision ?? null,
+      properties: expectedDoc,
+      entity,
     });
 
-    return trackedDocuments;
+    const result: z.output<typeof DocumentTrackerResponseSchema> = {
+      business: parsedUIDocuments.business.map(expectedDoc => {
+        const matchingDocument = entitiesWithDocuments.business.documents.find(doc =>
+          matchDocument(doc, expectedDoc),
+        );
+
+        return createDocumentResponse(matchingDocument, expectedDoc, entities.business);
+      }),
+      individuals: {
+        ubos: entitiesWithDocuments.ubos.flatMap(ubo =>
+          parsedUIDocuments.individuals.ubos.map(expectedDoc =>
+            createDocumentResponse(
+              ubo.documents.find(doc => matchDocument(doc, expectedDoc)),
+              expectedDoc,
+              {
+                entityType: 'ubo' as const,
+                id: ubo.id,
+                firstName: ubo.firstName,
+                lastName: ubo.lastName,
+              },
+            ),
+          ),
+        ),
+        directors: entitiesWithDocuments.directors.flatMap(director =>
+          parsedUIDocuments.individuals.directors.map(expectedDoc =>
+            createDocumentResponse(
+              director.documents.find(doc => matchDocument(doc, expectedDoc)),
+              expectedDoc,
+              {
+                entityType: 'director' as const,
+                id: director.id,
+                firstName: director.firstName,
+                lastName: director.lastName,
+              },
+            ),
+          ),
+        ),
+      },
+    };
+
+    return result;
   }
 
-  private findDocumentFields(node: Record<string, any>) {
-    const results = [];
-    const stack = [node];
+  private parseDocumentsFromUISchema(uiSchema: Array<Record<string, any>>): TParsedDocuments {
+    const result: TParsedDocuments = {
+      business: [],
+      individuals: {
+        ubos: [],
+        directors: [],
+      },
+    };
 
-    while (stack.length) {
-      const current = stack.pop();
-
-      if (current?.element === 'documentfield') {
-        results.push(current);
+    const processElement = (element: Record<string, any>) => {
+      if (isType(z.array(z.record(z.string(), z.any())))(element?.elements)) {
+        element.elements.forEach(processElement);
       }
 
-      if (isType(z.array(z.record(z.string(), z.any())))(current?.elements)) {
-        stack.push(...(current?.elements ?? []));
+      if (isType(z.array(z.record(z.string(), z.any())))(element?.children)) {
+        element.children.forEach(processElement);
       }
 
-      if (isType(z.array(z.record(z.string(), z.any())))(current?.children)) {
-        stack.push(...(current?.children ?? []));
+      if (element.element !== 'documentfield') {
+        return;
       }
-    }
 
-    return results;
+      const template = element.params.template;
+
+      const parsedDocument = z
+        .object({
+          type: z.string(),
+          id: z.string(),
+          category: z.string(),
+          issuer: z.object({
+            country: z.string(),
+          }),
+          issuingVersion: z.number(),
+          version: z.string(),
+          entityType: z.enum(['business', 'ubo', 'director']).default('business'),
+        })
+        .transform(({ entityType, type, id, category, issuer, issuingVersion, version }) => ({
+          entityType,
+          type,
+          templateId: id,
+          category,
+          issuingCountry: issuer.country,
+          issuingVersion: issuingVersion.toString(),
+          version,
+        }))
+        .safeParse(template);
+
+      if (!parsedDocument.success) {
+        return;
+      }
+
+      if (!element.valueDestination) {
+        return;
+      }
+
+      const isUboDocument =
+        element.valueDestination.includes('.ubo') &&
+        element.valueDestination.includes('.documents');
+      const isDirectorDocument =
+        element.valueDestination.includes('.director') &&
+        element.valueDestination.includes('.documents');
+
+      if (isUboDocument) {
+        parsedDocument.data.entityType = 'ubo';
+        result.individuals.ubos.push(parsedDocument.data);
+      } else if (isDirectorDocument) {
+        parsedDocument.data.entityType = 'director';
+        result.individuals.directors.push(parsedDocument.data);
+      } else {
+        result.business.push(parsedDocument.data);
+      }
+    };
+
+    uiSchema.forEach(processElement);
+
+    return result;
   }
 }

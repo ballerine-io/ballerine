@@ -24,12 +24,3 @@ export const UpdateDocumentSchema = Type.Partial(DocumentSchema);
 export const DeleteDocumentsSchema = Type.Object({
   ids: Type.Array(Type.String()),
 });
-
-export const DocumentInputDataForTrackerSchema = Type.Pick(DocumentSchema, [
-  'category',
-  'type',
-  'issuingCountry',
-  'version',
-  'status',
-  'decision',
-]);
