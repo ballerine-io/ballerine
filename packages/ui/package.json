@@ -121,6 +121,6 @@
     "vite": "^5.3.5",
     "vite-plugin-dts": "^4.0.1",
     "vite-tsconfig-paths": "^5.0.1",
-    "vitest": "^0.33.0"
+    "vitest": "^0.25.0"
   }
 }

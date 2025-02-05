@@ -93,7 +93,7 @@
     "vite": "4.5.3",
     "vite-plugin-dts": "^1.6.6",
     "vite-plugin-html": "^3.2.0",
-    "vitest": "^0.24.5"
+    "vitest": "^0.25.0"
   },
   "dependencies": {
     "@ballerine/common": "0.9.70",
