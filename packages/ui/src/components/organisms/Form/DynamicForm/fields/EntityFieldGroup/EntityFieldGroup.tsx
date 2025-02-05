@@ -14,18 +14,34 @@ import { TDynamicFormField } from '../../types';
 import { IFieldListParams, useStack } from '../FieldList';
 import { EntityFieldGroupDocument } from './components/EntityFieldGroupDocument';
 import { EntityFields } from './components/EntityFields';
+import { getEntityGroupValueDestination } from './helpers/get-entity-group-value-destination';
 import { useEntityFieldGroupList } from './hooks/useEntityFieldGroupList';
+import { EntityFieldGroupTypeProvider } from './providers/EntityFieldGroupTypeProvider';
 import { IEntity } from './types';
 
+export type TEntityFieldGroupType = 'director' | 'ubo';
 export interface IEntityFieldGroupParams extends IFieldListParams {
   httpsParams: {
     createEntity: IHttpParams;
     deleteEntity: IHttpParams;
   };
   lockText?: string;
+  type: TEntityFieldGroupType;
 }
 
-export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({ element }) => {
+export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
+  element: _element,
+}) => {
+  const element = useMemo(
+    () => ({
+      ..._element,
+      valueDestination: getEntityGroupValueDestination(
+        _element.params?.type as TEntityFieldGroupType,
+      ),
+    }),
+    [_element],
+  );
+
   useMountEvent(element);
   useUnmountEvent(element);
 
@@ -49,33 +65,35 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({ e
   }
 
   return (
-    <div className="flex flex-col gap-4" data-testid={`${fieldId}-fieldlist`}>
-      {items?.map((entity: IEntity, index: number) => {
-        return (
-          <EntityFields
-            key={entity.id}
-            entityId={entity.__id!}
-            entities={items}
-            entity={entity}
-            index={index}
-            onRemoveClick={() => removeItem(entity.__id!)}
-            stack={stack}
-            fieldId={fieldId}
-            element={element}
-            elementsOverride={elementsOverride as AnyObject}
-            isRemovingEntity={isRemovingEntity}
-          />
-        );
-      })}
-      <div className="flex flex-row justify-end">
-        <Button onClick={addItem} disabled={disabled}>
-          {addButtonLabel}
-        </Button>
+    <EntityFieldGroupTypeProvider entityFieldGroupType={element.params?.type}>
+      <div className="flex flex-col gap-4" data-testid={`${fieldId}-fieldlist`}>
+        {items?.map((entity: IEntity, index: number) => {
+          return (
+            <EntityFields
+              key={entity.id}
+              entityId={entity.__id!}
+              entities={items}
+              entity={entity}
+              index={index}
+              onRemoveClick={() => removeItem(entity.__id!)}
+              stack={stack}
+              fieldId={fieldId}
+              element={element}
+              elementsOverride={elementsOverride as AnyObject}
+              isRemovingEntity={isRemovingEntity}
+            />
+          );
+        })}
+        <div className="flex flex-row justify-end">
+          <Button onClick={addItem} disabled={disabled}>
+            {addButtonLabel}
+          </Button>
+        </div>
+        <FieldDescription element={element} />
+        <FieldPriorityReason element={element} />
+        <FieldErrors element={element} />
+        <Toaster />
       </div>
-      <FieldDescription element={element} />
-      <FieldPriorityReason element={element} />
-      <FieldErrors element={element} />
-      <Toaster />
-    </div>
+    </EntityFieldGroupTypeProvider>
   );
 };

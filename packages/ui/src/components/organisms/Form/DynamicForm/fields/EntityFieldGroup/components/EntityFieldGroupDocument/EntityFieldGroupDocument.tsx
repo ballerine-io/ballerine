@@ -18,11 +18,30 @@ import { createOrUpdateFileIdOrFileInDocuments } from '../../../DocumentField/ho
 import { getFileOrFileIdFromDocumentsList } from '../../../DocumentField/hooks/useDocumentUpload/helpers/get-file-or-fileid-from-documents-list';
 import { removeDocumentFromListByTemplateId } from '../../../DocumentField/hooks/useDocumentUpload/helpers/remove-document-from-list-by-template-id';
 import { useStack } from '../../../FieldList';
+import { TEntityFieldGroupType } from '../../EntityFieldGroup';
+import { useEntityFieldGroupType } from '../../providers/EntityFieldGroupTypeProvider';
+import { getEntityFieldGroupDocumentValueDestination } from './helpers/get-entity-field-group-document-value-destination';
+
+export interface IEntityFieldGroupDocumentParams extends IDocumentFieldParams {
+  type: TEntityFieldGroupType;
+}
 
 export const EntityFieldGroupDocument: TDynamicFormElement<
   'documentfield',
-  IDocumentFieldParams
-> = ({ element }) => {
+  IEntityFieldGroupDocumentParams
+> = ({ element: _element }) => {
+  const { entityFieldGroupType } = useEntityFieldGroupType();
+
+  const element = useMemo(
+    () => ({
+      ..._element,
+      valueDestination: getEntityFieldGroupDocumentValueDestination(
+        entityFieldGroupType || (_element.params?.type as TEntityFieldGroupType),
+      ),
+    }),
+    [_element, entityFieldGroupType],
+  );
+
   useMountEvent(element);
   useUnmountEvent(element);
 
