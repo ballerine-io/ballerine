@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.73
+
+### Patch Changes
+
+- Trim number values in traffic sources piechart
+
 ## 0.5.72
 
 ### Patch Changes
