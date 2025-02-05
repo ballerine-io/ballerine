@@ -21,6 +21,7 @@ import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNote
 import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
 import { isObject } from '@ballerine/common';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
 const ZodDeboardingSchema = z
   .object({
@@ -196,6 +197,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
   }, [navigate]);
 
   const websiteWithNoProtocol = safeUrl(businessReport?.website)?.hostname;
+  const locale = useLocale();
 
   return {
     onNavigateBack,
@@ -215,5 +217,6 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     onSubmit,
     deboardingReasonOptions,
     isFetchingBusinessReport,
+    locale,
   };
 };
