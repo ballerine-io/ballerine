@@ -68,7 +68,9 @@ export class BusinessService {
         tx,
       )) as unknown as BusinessPayload;
 
-      await retry(() => this.unifiedApiClient.createOrUpdateBusiness(businessPayload));
+      if (env.SYNC_UNIFIED_API === 'true') {
+        await retry(() => this.unifiedApiClient.createOrUpdateBusiness(businessPayload));
+      }
 
       return business;
     });
@@ -141,7 +143,9 @@ export class BusinessService {
         tx,
       )) as unknown as BusinessPayload;
 
-      await retry(() => this.unifiedApiClient.createOrUpdateBusiness(businessPayload));
+      if (env.SYNC_UNIFIED_API === 'true') {
+        await retry(() => this.unifiedApiClient.createOrUpdateBusiness(businessPayload));
+      }
 
       return business;
     });
