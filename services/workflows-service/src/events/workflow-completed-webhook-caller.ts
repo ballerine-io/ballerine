@@ -42,13 +42,6 @@ export class WorkflowCompletedWebhookCaller {
   }
 
   async handleWorkflowEvent(data: ExtractWorkflowEventData<'workflow.completed'>) {
-    this.logger.log('handleWorkflowEvent:: ', {
-      state: data.state,
-      entityId: data.entityId,
-      correlationId: data.correlationId,
-      id: data.runtimeData.id,
-    });
-
     const customer = await this.customerService.getByProjectId(data.runtimeData.projectId, {
       select: {
         authenticationConfiguration: true,
