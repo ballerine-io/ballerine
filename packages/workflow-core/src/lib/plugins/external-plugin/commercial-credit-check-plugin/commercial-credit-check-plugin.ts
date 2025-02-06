@@ -88,7 +88,7 @@ export class CommercialCreditCheckPlugin extends ApiPlugin {
         );
       }
 
-      if (validatedPayload.data.businessType === 'individual') {
+      if (validatedPayload.data.businessType === 'sole_proprietorship') {
         return this.successAction
           ? this.returnSuccessResponse(this.successAction, {
               name: this.name,
