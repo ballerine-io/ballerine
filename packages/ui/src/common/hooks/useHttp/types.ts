@@ -3,4 +3,5 @@ export interface IHttpParams {
   resultPath: string;
   headers?: Record<string, string>;
   method?: 'POST' | 'PUT' | 'GET' | 'DELETE';
+  timeout?: number;
 }

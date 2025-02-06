@@ -1,4 +1,5 @@
-import { useCallback, useState } from 'react';
+import { useHttp } from '@/common/hooks/useHttp';
+import { useCallback } from 'react';
 import { toast } from 'sonner';
 import { useDynamicForm } from '../../../../context';
 import { useField } from '../../../../hooks/external';
@@ -6,7 +7,6 @@ import { IFormElement } from '../../../../types';
 import { useStack } from '../../../FieldList';
 import { IEntityFieldGroupParams } from '../../EntityFieldGroup';
 import { IEntity } from '../../types';
-import { delay } from '../../utils/delay';
 
 export interface IUseFieldListProps {
   element: IFormElement<string, IEntityFieldGroupParams>;
@@ -17,12 +17,10 @@ export const useEntityFieldGroupList = ({ element }: IUseFieldListProps) => {
   const { onChange, value } = useField<IEntity[] | undefined>(element, stack);
   const { metadata } = useDynamicForm();
 
-  // const { run: deleteEntity, isLoading } = useHttp(
-  //   element.params!.httpsParams?.deleteEntity,
-  //   metadata,
-  // );
-
-  const [isRemovingEntity, setIsRemovingEntity] = useState(false);
+  const { run: deleteEntity, isLoading } = useHttp(
+    element.params!.httpParams?.deleteEntity,
+    metadata,
+  );
 
   const addItem = useCallback(async () => {
     const initialEntity = {
@@ -37,17 +35,11 @@ export const useEntityFieldGroupList = ({ element }: IUseFieldListProps) => {
         return;
       }
 
-      // const entity = value.find(entity => entity.__id === id);
+      const entity = value.find(entity => entity.__id === id);
 
-      // if (entity?.id) {
-      if (true) {
+      if (entity?.id) {
         try {
-          // ENTITY DELETION
-          // await deleteEntity({ id: entity.id });
-
-          setIsRemovingEntity(true);
-          await delay(1000);
-          setIsRemovingEntity(false);
+          await deleteEntity({}, { params: { entityId: entity.id } });
         } catch (error) {
           toast.error('Failed to delete entity.');
 
@@ -60,12 +52,12 @@ export const useEntityFieldGroupList = ({ element }: IUseFieldListProps) => {
       const newValue = value.filter(entity => entity.__id !== id);
       onChange(newValue);
     },
-    [value, onChange],
+    [value, deleteEntity, onChange],
   );
 
   return {
     items: value,
-    isRemovingEntity,
+    isRemovingEntity: isLoading,
     addItem,
     removeItem,
   };
