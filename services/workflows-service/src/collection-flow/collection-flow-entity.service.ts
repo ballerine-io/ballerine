@@ -20,7 +20,7 @@ export class CollectionFlowEntityService {
     entity: EntityCreateDto,
     projectId: TProjectId,
   ) {
-    await this.prismaService.$transaction(async transaction => {
+    return await this.prismaService.$transaction(async transaction => {
       const workflowRuntimeData =
         await this.workflowService.getWorkflowRuntimeDataByIdAndLockUnscoped({
           id: workflowId,
@@ -54,10 +54,18 @@ export class CollectionFlowEntityService {
   }
 
   async deleteEntity(entityId: string) {
-    await this.prismaService.endUser.delete({
-      where: {
-        id: entityId,
-      },
+    return await this.prismaService.$transaction(async transaction => {
+      await transaction.endUsersOnBusinesses.deleteMany({
+        where: {
+          endUserId: entityId,
+        },
+      });
+
+      await transaction.endUser.delete({
+        where: {
+          id: entityId,
+        },
+      });
     });
   }
 }
