@@ -47,7 +47,7 @@ const REPORT_TYPE_TO_SCAN_TYPE = {
 } as const;
 
 export const columns = [
-  columnHelper.accessor('data.companyName', {
+  columnHelper.accessor('companyName', {
     cell: info => {
       const companyName = info.getValue();
 
@@ -65,7 +65,7 @@ export const columns = [
     },
     header: 'Website',
   }),
-  columnHelper.accessor('data.riskLevel', {
+  columnHelper.accessor('riskLevel', {
     cell: info => {
       const riskLevel = info.getValue();
 
@@ -143,7 +143,7 @@ export const columns = [
     },
     header: 'Scan Type',
   }),
-  columnHelper.accessor('data.isAlert', {
+  columnHelper.accessor('isAlert', {
     cell: ({ getValue }) => {
       return getValue() ? (
         <WarningFilledSvg className={`d-6`} />

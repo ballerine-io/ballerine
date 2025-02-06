@@ -154,10 +154,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
   });
 
   const { tabs } = useReportTabs({
-    reportVersion: businessReport?.workflowVersion,
-    isOnboarding: businessReport?.reportType === MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1,
-    report: businessReport?.data ?? {},
-    companyName: businessReport?.companyName,
+    report: businessReport ?? {},
     Link: RiskIndicatorLink,
   });
 

@@ -133,7 +133,7 @@ export class MerchantMonitoringClient {
 
   public async findById({ id, customerId }: { id: string; customerId: string }) {
     try {
-      const response = await axios.get(`${env.UNIFIED_API_URL}/merchants/analysis/${id}/`, {
+      const response = await axios.get(`${env.UNIFIED_API_URL}/merchants/analysis/${id}`, {
         params: {
           customerId,
         },

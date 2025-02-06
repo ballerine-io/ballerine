@@ -1,5 +1,5 @@
 import React, { ComponentProps, FunctionComponent } from 'react';
-import { getSeverityFromRiskScore, Severity, SeverityType } from '@ballerine/common';
+import { getSeverityFromRiskScore, RiskIndicatorRiskLevel, Severity, SeverityType } from '@ballerine/common';
 import { ctw, severityToClassName } from '@/common';
 import { toTitleCase } from 'string-ts';
 import { Badge, Card, CardContent, CardHeader, RiskIndicatorsSummary } from '@/components';
@@ -9,18 +9,12 @@ export const BusinessReportSummary: FunctionComponent<{
   summary: string;
   isOnboarding: boolean;
   ongoingMonitoringSummary?: string;
-  riskLevels: {
-    legalRisk: SeverityType;
-    chargebackRisk: SeverityType;
-    reputationRisk: SeverityType;
-    transactionLaunderingRisk: SeverityType;
-  };
-  riskIndicators: Array<{
+  riskIndicators: ReadonlyArray<{
     title: string;
     search: string;
-    violations: Array<{
-      label: string;
-      severity: string;
+    riskIndicators: Array<{
+      name?: string | null;
+      riskLevel?: RiskIndicatorRiskLevel|null;
     }> | null;
   }>;
   riskScore: number;
@@ -31,7 +25,6 @@ export const BusinessReportSummary: FunctionComponent<{
   summary,
   ongoingMonitoringSummary,
   isOnboarding,
-  riskLevels,
   riskScore,
   homepageScreenshotUrl,
   Link,

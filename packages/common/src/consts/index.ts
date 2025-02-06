@@ -208,3 +208,11 @@ export type MerchantReportRiskLevel = (typeof MERCHANT_REPORT_RISK_LEVELS)[numbe
 export const MERCHANT_REPORT_RISK_LEVELS_MAP = Object.fromEntries(
   MERCHANT_REPORT_RISK_LEVELS.map(level => [level, level]),
 ) as Record<MerchantReportRiskLevel, MerchantReportRiskLevel>;
+
+export const RISK_INDICATOR_RISK_LEVELS = ['positive', 'moderate', 'high', 'critical'] as const;
+
+export type RiskIndicatorRiskLevel = (typeof RISK_INDICATOR_RISK_LEVELS)[number];
+
+export const RISK_INDICATOR_RISK_LEVELS_MAP = Object.fromEntries(
+  RISK_INDICATOR_RISK_LEVELS.map(level => [level, level]),
+) as Record<RiskIndicatorRiskLevel, RiskIndicatorRiskLevel>;

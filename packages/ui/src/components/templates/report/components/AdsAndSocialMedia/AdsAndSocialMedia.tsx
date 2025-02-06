@@ -1,9 +1,5 @@
 import { ctw } from '@/common';
 import { buttonVariants, Card, Image, TextWithNAFallback } from '@/components';
-import {
-  toAdsImages,
-  toSocialMediaPresence,
-} from '@/components/templates/report/adapters/report-adapter';
 import { AdsProviders } from '@/components/templates/report/constants';
 import {
   BanIcon,
@@ -25,21 +21,22 @@ import { z } from 'zod';
 import { FacebookIcon } from './icons/FacebookIcon';
 import { InstagramIcon } from './icons/InstagramIcon';
 import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
+import { FacebookPageSchema, InstagramPageSchema, ReportSchema } from '@ballerine/common';
 
 const socialMediaMapper: {
   facebook: {
     icon: ReactNode;
-    fields: Record<
-      Exclude<keyof AdsAndSocialMediaProps['mediaPresence']['facebook'], 'page' | 'id'>,
+    fields: Partial<Record<
+    keyof z.infer<typeof FacebookPageSchema>,
       { icon: ReactNode; label: string }
-    >;
+    >>;
   };
   instagram: {
     icon: ReactNode;
-    fields: Record<
-      Exclude<keyof AdsAndSocialMediaProps['mediaPresence']['instagram'], 'page' | 'userName'>,
+    fields: Partial<Record<
+    keyof z.infer<typeof InstagramPageSchema>,
       { icon: ReactNode; label: string }
-    >;
+    >>;
   };
 } = {
   facebook: {
@@ -59,7 +56,7 @@ const socialMediaMapper: {
   instagram: {
     icon: <InstagramIcon className="h-8 w-8" />,
     fields: {
-      isBusinessAccount: {
+      isBusinessProfile: {
         icon: <BriefcaseIcon className="h-5 w-5 text-gray-500" />,
         label: 'Business Profile',
       },
@@ -84,20 +81,9 @@ const cleanLink = (link: string) => {
   return `${hostname.startsWith('www.') ? hostname.slice(4) : hostname}${pathname}`;
 };
 
-// TODO: this component can be further decoupled to re-use for social media data and ads data.
-// Also empty state can be decoupled.
-type AdsAndSocialMediaProps = {
-  mediaPresence: ReturnType<typeof toSocialMediaPresence>;
-  adsImages: ReturnType<typeof toAdsImages>;
-
-  violations?: Array<{ label: string; severity: string }>;
-  relatedAdsSummary?: string;
-  relatedAdsImages?: Array<{ src: string; link: string }>;
-};
-export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
-  mediaPresence,
-  adsImages,
-  relatedAdsImages,
+export const AdsAndSocialMedia = (pages: {
+  facebook: z.infer<typeof FacebookPageSchema> | null;
+  instagram: z.infer<typeof InstagramPageSchema> | null;
 }) => (
   <div className="space-y-6 px-4">
     <div>
@@ -118,14 +104,23 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
 
       <div className="flex w-full flex-col gap-4">
         {AdsProviders.map(toLowerCase).map(provider => {
-          const { page, ...rest } = mediaPresence[provider] ?? {};
-          const { src, link } = adsImages[provider] ?? {};
+          const page = pages[provider];
 
-          // || because empty string is not a valid case
-          const idValue = ('id' in rest ? rest.id : rest.userName) || null;
+          if (!page) {
+            return <Card key={provider} className={ctw('shadow-l w-full p-4 opacity-60')}>
+              <div className="flex flex-row items-center gap-2 font-semibold">
+                {socialMediaMapper[provider].icon}
+                <h4 className="text-xl">{capitalize(provider)}</h4>
+              </div>
+            </Card>
+          }
+
+          const {screenshotUrl, url, ...rest} = page;
+
+          const idValue = 'username' in rest ? rest.username : rest.id;
 
           return (
-            <Card key={provider} className={ctw('shadow-l w-full p-4', !page && 'opacity-60')}>
+            <Card key={provider} className={ctw('shadow-l w-full p-4')}>
               <div className="flex flex-row items-center gap-2 font-semibold">
                 {socialMediaMapper[provider].icon}
                 <h4 className="text-xl">{capitalize(provider)}</h4>
@@ -141,9 +136,9 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
                           buttonVariants({ variant: 'browserLink' }),
                           'ml-2 p-0 text-base',
                         )}
-                        href={link}
+                        href={url}
                       >
-                        {cleanLink(link)}
+                        {cleanLink(url)}
                       </a>
                     </div>
                     {idValue !== null && (
@@ -193,11 +188,11 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
                       className:
                         'h-[unset] w-1/3 cursor-pointer !p-0 !text-[#14203D] underline decoration-[1.5px]',
                     })}
-                    href={link}
+                    href={url}
                   >
                     <Image
-                      key={src}
-                      src={src}
+                      key={screenshotUrl}
+                      src={screenshotUrl}
                       alt={`${capitalize(provider)} image`}
                       role="link"
                       className="h-auto max-h-96 w-auto"
@@ -215,24 +210,5 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
         })}
       </div>
     </div>
-
-    {/* <div>
-      <h3 className="mb-2 text-base font-bold">Ads</h3>
-      <Card
-        className={ctw(
-          'flex w-full justify-between p-4 shadow-lg',
-          relatedAdsImages && relatedAdsImages.length > 0 ? 'opacity-100' : 'opacity-60',
-        )}
-      >
-        {relatedAdsImages ? (
-          <>The ads should be displayed here</>
-        ) : (
-          <div className="flex items-center gap-2 text-gray-400">
-            <BanIcon className="h-5 w-5" />
-            <span className="text-sm">No ads detected.</span>
-          </div>
-        )}
-      </Card>
-    </div> */}
   </div>
 );

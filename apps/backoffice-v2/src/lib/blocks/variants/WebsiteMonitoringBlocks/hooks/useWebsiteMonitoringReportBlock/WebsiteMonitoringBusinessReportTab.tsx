@@ -19,14 +19,9 @@ export const WebsiteMonitoringBusinessReportTab = ({
   const {
     activeMonitoringTab,
     riskIndicators,
-    riskLevels,
-    riskScore,
     tabs,
-    summary,
-    ongoingMonitoringSummary,
     getUpdatedSearchParamsWithActiveMonitoringTab,
     search,
-    homepageScreenshotUrl,
   } = useWebsiteMonitoringBusinessReportTab({
     businessReport,
   });
@@ -34,13 +29,12 @@ export const WebsiteMonitoringBusinessReportTab = ({
   return (
     <div className={'grid gap-y-4'}>
       <BusinessReportSummary
-        summary={summary}
+        summary={businessReport.data!.summary!}
         isOnboarding={businessReport.reportType === MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1}
-        ongoingMonitoringSummary={ongoingMonitoringSummary}
-        riskLevels={riskLevels}
+        ongoingMonitoringSummary={businessReport.data!.ongoingMonitoringSummary!}
         riskIndicators={riskIndicators}
-        riskScore={riskScore}
-        homepageScreenshotUrl={homepageScreenshotUrl}
+        riskScore={businessReport.data!.riskScore!}
+        homepageScreenshotUrl={businessReport.data!.homepageScreenshotUrl}
         Link={RiskIndicatorLink}
       />
       <Tabs defaultValue={activeMonitoringTab} className="w-full" key={activeMonitoringTab}>

@@ -3,9 +3,10 @@ import {
   MERCHANT_REPORT_RISK_LEVELS,
   MERCHANT_REPORT_STATUSES,
   MERCHANT_REPORT_TYPES,
+  RISK_INDICATOR_RISK_LEVELS,
 } from '../consts';
 
-const FacebookPageSchema = z.object({
+export const FacebookPageSchema = z.object({
   id: z.string(),
   url: z.string(),
   name: z.string(),
@@ -18,7 +19,7 @@ const FacebookPageSchema = z.object({
   screenshotUrl: z.string().url(),
 });
 
-const InstagramPageSchema = z.object({
+export const InstagramPageSchema = z.object({
   id: z.string(),
   url: z.string(),
   username: z.string(),
@@ -42,6 +43,7 @@ const RiskIndicatorSchema = z
       .nullish(),
     explanation: z.string().nullish(),
     quoteFromSource: z.string().nullish(),
+    riskLevel: z.enum(RISK_INDICATOR_RISK_LEVELS).nullish(),
   })
   .passthrough();
 
@@ -79,24 +81,18 @@ export const ReportSchema = z
       id: z.string(),
       unsubscribedMonitoringAt: z.string().datetime().nullable(),
     }),
+    companyName: z.string().nullish(),
+    riskLevel: z.enum(MERCHANT_REPORT_RISK_LEVELS).nullish(),
+    isAlert: z.boolean().nullish(),
     data: z
       .object({
         lineOfBusiness: z.string().nullish(),
         companyName: z.string().nullish(),
         mcc: z.string().nullish(),
         mccDescription: z.string().nullish(),
-        bounceRate: z
-          .string()
-          .nullish()
-          .transform(value => (typeof value === 'string' ? Number(value) : null)),
-        timeOnSite: z
-          .string()
-          .nullish()
-          .transform(value => (typeof value === 'string' ? Number(value) : null)),
-        pagesPerVisit: z
-          .string()
-          .nullish()
-          .transform(value => (typeof value === 'string' ? Number(value) : null)),
+        bounceRate: z.string().nullish(),
+        timeOnSite: z.string().nullish(),
+        pagesPerVisit: z.string().nullish(),
         trafficSources: z.record(z.string(), z.number()).nullish(),
         monthlyVisits: z.record(z.string(), z.number()).nullish(),
         facebookPage: FacebookPageSchema.nullish(),
@@ -112,11 +108,12 @@ export const ReportSchema = z
         isAlert: z.boolean().nullish(),
         summary: z.string().nullish(),
         ongoingMonitoringSummary: z.string().nullish(),
-        riskScore: z.number().nullish(),
+        riskScore: z.coerce.number().nullish(),
         riskLevel: z.enum(MERCHANT_REPORT_RISK_LEVELS).nullish(),
         isWebsiteOffline: z.boolean().nullish(),
       })
       .passthrough()
-      .nullable(),
+      .nullable()
+      .default({}),
   })
   .passthrough();
