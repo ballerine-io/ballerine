@@ -124,9 +124,9 @@ export const Default = {
 
 const ubosSchema: Array<IFormElement<any, any>> = [
   {
-    id: 'directors',
+    id: 'ubos',
     element: 'entityfieldgroup',
-    valueDestination: 'users',
+    valueDestination: 'entity.data.additionalInfo.ubos',
     params: {
       label: 'Field List',
       description: 'A list of repeatable form fields that can be added or removed',
@@ -135,12 +135,53 @@ const ubosSchema: Array<IFormElement<any, any>> = [
         "lastName": lastName
       }`,
       type: 'ubo',
+      httpParams: {
+        createEntity: {
+          httpParams: {
+            url: '{apiUrl}collection-flow/entity',
+            method: 'POST',
+            headers: {
+              Authorization: 'Bearer {token}',
+            },
+            resultPath: 'entityId',
+          },
+          transform: `{
+            "firstName": entity.firstName,
+            "lastName": entity.lastName,
+            "email": entity.email,
+            "phone": entity.phone,
+            "country": entity.country,
+            "dateOfBirth": entity.dateOfBirth,
+            "nationality": entity.nationality,
+            "passportNumber": entity.passportNumber,
+            "address": entity.street & ", " & entity.city & ", " & entity.country,
+            "nationalId": entity.nationalId,
+            "isAuthorizedSignatory": entity.isAuthorizedSignatory,
+            "city": entity.city,
+            "additionalInfo": {
+              "fullAddress": entity.street & ", " & entity.city & ", " & entity.country,
+              "companyName": context.entity.data.companyName,
+              "customerCompany": context.collectionFlow.additionalInformation.customerCompany,
+              "placeOfBirth": entity.placeOfBirth,
+              "percentageOfOwnership": entity.ownershipPercentage,
+              "role": entity.role
+            }
+          }`,
+        },
+        deleteEntity: {
+          url: '{apiUrl}collection-flow/entity/{entityId}',
+          method: 'DELETE',
+          headers: {
+            Authorization: 'Bearer {token}',
+          },
+        },
+      },
     },
     children: [
       {
         id: 'user-name',
         element: 'textfield',
-        valueDestination: 'users[$0].firstName',
+        valueDestination: 'entity.data.additionalInfo.ubos[$0].firstName',
         params: {
           label: 'Text Field',
           placeholder: 'Enter text',
@@ -157,7 +198,7 @@ const ubosSchema: Array<IFormElement<any, any>> = [
       {
         id: 'user-lastname',
         element: 'textfield',
-        valueDestination: 'users[$0].lastName',
+        valueDestination: 'entity.data.additionalInfo.ubos[$0].lastName',
         params: {
           label: 'Last Name',
           placeholder: 'Enter last name',
@@ -172,25 +213,177 @@ const ubosSchema: Array<IFormElement<any, any>> = [
         ],
       },
       {
-        id: 'document',
-        element: 'documentfield',
-        valueDestination: 'users[$0].documents',
+        id: 'user-email',
+        element: 'textfield',
+        valueDestination: 'entity.data.additionalInfo.ubos[$0].email',
         params: {
-          label: 'Document',
-          template: {
-            id: 'document',
-          },
+          label: 'Email',
+          placeholder: 'Enter email',
         },
         validate: [
           {
-            type: 'document',
+            type: 'required',
+            value: {},
+            message: 'Email is required',
+          },
+          {
+            type: 'format',
             value: {
-              id: 'document',
+              format: 'email',
             },
-            message: 'Document is required',
-            considerRequired: true,
+            message: 'Invalid email',
           },
         ],
+      },
+      {
+        id: 'percentage-of-ownership',
+        element: 'textfield',
+        valueDestination: 'entity.data.additionalInfo.ubos[$0].percentageOfOwnership',
+        params: {
+          label: 'Percentage of Ownership',
+          placeholder: 'Enter percentage of ownership',
+          valueType: 'number',
+        },
+        validate: [
+          {
+            type: 'required',
+            value: {},
+            message: 'Percentage of ownership is required',
+          },
+          {
+            type: 'minimum',
+            value: {
+              minimum: 0,
+            },
+            message: 'Percentage of ownership must be greater than 0',
+          },
+          {
+            type: 'maximum',
+            value: {
+              maximum: 100,
+            },
+            message: 'Percentage of ownership must be less than 100',
+          },
+        ],
+      },
+      {
+        id: 'role',
+        element: 'textfield',
+        valueDestination: 'entity.data.additionalInfo.ubos[$0].role',
+        params: {
+          label: 'Role',
+          placeholder: 'Enter role',
+        },
+        validate: [
+          {
+            type: 'required',
+            value: {},
+            message: 'Role is required',
+          },
+        ],
+      },
+      {
+        id: 'phone-number',
+        element: 'phonefield',
+        valueDestination: 'entity.data.additionalInfo.ubos[$0].phone',
+        params: {
+          label: 'Phone Number',
+          placeholder: 'Enter phone number',
+        },
+        validate: [
+          {
+            type: 'required',
+            value: {},
+            message: 'Phone number is required',
+          },
+        ],
+      },
+      {
+        id: 'passport-number',
+        element: 'textfield',
+        valueDestination: 'entity.data.additionalInfo.ubos[$0].passportNumber',
+        params: {
+          label: 'Passport Number',
+          placeholder: 'Enter passport number',
+        },
+        validate: [
+          {
+            type: 'required',
+            value: {},
+            message: 'Passport number is required',
+          },
+        ],
+      },
+      {
+        id: 'date-of-birth',
+        element: 'datefield',
+        valueDestination: 'entity.data.additionalInfo.ubos[$0].dateOfBirth',
+        params: {
+          label: 'Date of Birth',
+          placeholder: 'Enter date of birth',
+        },
+        validate: [
+          {
+            type: 'required',
+            value: {},
+            message: 'Date of birth is required',
+          },
+        ],
+      },
+      {
+        id: 'place-of-birth',
+        element: 'textfield',
+        valueDestination: 'entity.data.additionalInfo.ubos[$0].placeOfBirth',
+        params: {
+          label: 'Place of Birth',
+          placeholder: 'Enter place of birth',
+        },
+        validate: [
+          {
+            type: 'required',
+            value: {},
+            message: 'Place of birth is required',
+          },
+        ],
+      },
+      {
+        id: 'country',
+        element: 'textfield',
+        valueDestination: 'entity.data.additionalInfo.ubos[$0].country',
+        params: {
+          label: 'Country',
+          placeholder: 'Enter country',
+        },
+        validate: [
+          {
+            type: 'required',
+            value: {},
+            message: 'Country is required',
+          },
+        ],
+      },
+      {
+        id: 'street',
+        element: 'textfield',
+        valueDestination: 'entity.data.additionalInfo.ubos[$0].street',
+        params: {
+          label: 'Street',
+          placeholder: 'Enter street',
+        },
+        validate: [
+          {
+            type: 'required',
+            value: {},
+            message: 'Street is required',
+          },
+        ],
+      },
+    ],
+    validate: [
+      {
+        type: 'required',
+        value: {},
+        message: 'At least one UBO is required',
       },
     ],
   },
@@ -201,11 +394,38 @@ const ubosSchema: Array<IFormElement<any, any>> = [
     params: {
       label: 'Submit Button',
     },
+    disable: [
+      // Disable the submit button if there are entities that not created
+      {
+        engine: 'json-logic',
+        value: {
+          some: [{ var: 'entity.data.additionalInfo.ubos' }, { '!': { '!!': { var: 'id' } } }],
+        },
+      },
+    ],
   },
 ];
 
+const initialUbosContext = {
+  entity: {
+    data: {
+      companyName: 'Company Name',
+    },
+  },
+  collectionFlow: {
+    additionalInformation: {
+      customerCompany: 'Customer Company',
+    },
+  },
+};
+
+const metadata = {
+  apiUrl: 'http://localhost:3000/api/v1/',
+  token: 'TOKEN',
+};
+
 export const UbosFieldGroup = () => {
-  const [context, setContext] = useState<AnyObject>(initialContext);
+  const [context, setContext] = useState<AnyObject>(initialUbosContext);
 
   return (
     <div className="flex h-screen w-full flex-row flex-nowrap gap-4">
@@ -217,6 +437,14 @@ export const UbosFieldGroup = () => {
             console.log('onSubmit');
           }}
           onChange={setContext}
+          metadata={metadata}
+          validationParams={{
+            validateOnChange: true,
+            validateOnBlur: true,
+            abortEarly: false,
+            abortAfterFirstError: true,
+            validationDelay: 300,
+          }}
           // onEvent={console.log}
         />
       </div>

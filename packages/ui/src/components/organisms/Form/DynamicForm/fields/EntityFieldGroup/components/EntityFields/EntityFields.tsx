@@ -1,20 +1,23 @@
 import { AnyObject } from '@/common';
+import { useHttp } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';
 import { formatValueDestination, TDeepthLevelStack } from '@/components/organisms/Form/Validator';
 import { Renderer, TRendererSchema } from '@/components/organisms/Renderer';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import { Check, Loader2, Trash2Icon, X } from 'lucide-react';
-import { FunctionComponent, useCallback, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
+import { useDynamicForm } from '../../../../context';
 import { useTaskRunner } from '../../../../providers/TaskRunner/hooks/useTaskRunner';
 import { ITask } from '../../../../providers/TaskRunner/types';
 import { IFormElement } from '../../../../types';
 import { StackProvider } from '../../../FieldList/providers/StackProvider';
+import { IEntityFieldGroupParams } from '../../EntityFieldGroup';
 import { IEntity } from '../../types';
-import { delay } from '../../utils/delay';
 import { useChildrenDisabledOnLock } from './hooks/useChildrenDisabledOnLock';
 import { useEntityLock } from './hooks/useEntityLock';
+import { transform } from './utils/transform';
 
 interface IEntityFieldsProps {
   stack: TDeepthLevelStack;
@@ -22,7 +25,7 @@ interface IEntityFieldsProps {
   entityId: string;
   entities: IEntity[];
   entity: IEntity;
-  element: IFormElement<any, any>;
+  element: IFormElement<any, IEntityFieldGroupParams>;
   elementsOverride: TRendererSchema;
   isRemovingEntity?: boolean;
   index: number;
@@ -41,12 +44,11 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
   entities,
   onRemoveClick,
 }) => {
-  // const { metadata } = useDynamicForm();
-  // const { run: createEntity, isLoading: isCreatingEntity } = useHttp(
-  //   element.params!.httpsParams?.createEntity,
-  //   metadata,
-  // );
-  const [isCreatingEntity, setIsCreatingEntity] = useState(false);
+  const { metadata } = useDynamicForm();
+  const { run: createEntity, isLoading: isCreatingEntity } = useHttp(
+    element.params!.httpParams?.createEntity.httpParams,
+    metadata,
+  );
   const {
     lockText = 'This entity will be created on submission.',
     createdText = 'Entity created',
@@ -67,35 +69,45 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
             const documentFieldDefinitons =
               element.children?.filter(child => child.element === 'documentfield') || [];
 
-            // Entities with documents
-            const entitiesWithDocuments = entities.map((entity: IEntity, index: number) => {
-              const entityWithDocument = { ...entity } as Record<string, any>;
+            // Boilerplate, will be used for documents upload
+            // // Entities with documents
+            // const entitiesWithDocuments = entities.map((entity: IEntity, index: number) => {
+            //   const entityWithDocument = { ...entity } as Record<string, any>;
 
-              documentFieldDefinitons.forEach(documentDefinition => {
-                const documentDestination = formatValueDestination(
-                  documentDefinition.valueDestination,
-                  [...(stack || []), index],
-                );
+            //   documentFieldDefinitons.forEach(documentDefinition => {
+            //     const documentDestination = formatValueDestination(
+            //       documentDefinition.valueDestination,
+            //       [...(stack || []), index],
+            //     );
 
-                const documentFile = get(context, documentDestination);
+            //     const documentFile = get(context, documentDestination);
 
-                entityWithDocument[(documentDefinition.params as any).template.id] = documentFile;
-              });
+            //     entityWithDocument[(documentDefinition.params as any).template.id] = documentFile;
+            //   });
 
-              return entityWithDocument;
-            });
+            //   return entityWithDocument;
+            // });
 
-            // ENTITY CREATION HERE
-            setIsCreatingEntity(true);
-            await delay(1000);
-            setIsCreatingEntity(false);
+            const entityToCreate = element.params?.httpParams?.createEntity?.transform
+              ? await transform(
+                  context,
+                  lockedEntity,
+                  element.params!.httpParams?.createEntity.transform,
+                )
+              : lockedEntity;
 
+            const createPayload = {
+              entityType: element.params?.type,
+              entity: entityToCreate,
+            };
+
+            const createdEntityId = await createEntity(createPayload);
             // UI Update
             const updatedEntities = entities.map((entity: IEntity) => {
               if (entity.__id === lockedEntity.__id) {
                 const newEntity = {
                   ...entity,
-                  id: `${entity.__id}-${crypto.randomUUID()}`,
+                  id: createdEntityId,
                 };
 
                 newEntity.__isCreated = true;
@@ -121,7 +133,7 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
 
       addTask(task);
     },
-    [addTask, stack, element],
+    [addTask, stack, element, createEntity],
   );
 
   const removeEntityOnUnlockTask = useCallback(

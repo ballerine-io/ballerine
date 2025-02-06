@@ -9,15 +9,29 @@ export const useHttp = (params: IHttpParams, metadata: AnyObject) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const runRequest = useCallback(
-    async (requestPayload?: any) => {
+    async (
+      requestPayload?: any,
+      other?: {
+        params?: AnyObject;
+      },
+    ) => {
       setIsLoading(true);
       setResponseError(null);
 
       try {
-        const response = await request(params, metadata, requestPayload);
+        const response = await request(
+          {
+            ...params,
+            url: params.url,
+          },
+          metadata,
+          requestPayload,
+          other?.params,
+        );
 
         return params.resultPath ? get(response, params.resultPath) : response;
       } catch (error) {
+        console.error(error);
         setResponseError(error as Error);
       } finally {
         setIsLoading(false);
