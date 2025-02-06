@@ -31,8 +31,7 @@ export interface IEntityFieldGroupParams extends IFieldListParams {
     deleteEntity: IHttpParams;
     uploadDocument: IHttpParams;
   };
-  lockText?: string;
-  createdText?: string;
+  createEntityText?: string;
   type: TEntityFieldGroupType;
 }
 
@@ -55,7 +54,7 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
   const { elementsMap } = useDynamicForm();
   const { stack } = useStack();
   const { id: fieldId, hidden } = useElement(element, stack);
-  const { disabled } = useField(element, stack);
+  const { disabled, onChange } = useField(element, stack);
   const { addButtonLabel = 'Add Item' } = element.params || {};
   const { items, isRemovingEntity, addItem, removeItem } = useEntityFieldGroupList({ element });
 
@@ -79,7 +78,6 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
             <EntityFields
               key={entity.id}
               entityId={entity.__id!}
-              entities={items}
               entity={entity}
               index={index}
               onRemoveClick={() => removeItem(entity.__id!)}
@@ -88,6 +86,7 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
               element={element}
               elementsOverride={elementsOverride as AnyObject}
               isRemovingEntity={isRemovingEntity}
+              onChange={onChange}
             />
           );
         })}

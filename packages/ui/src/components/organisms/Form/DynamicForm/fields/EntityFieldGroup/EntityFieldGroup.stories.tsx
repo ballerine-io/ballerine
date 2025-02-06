@@ -440,8 +440,8 @@ const initialUbosContext = {
 
 const metadata = {
   apiUrl: 'http://localhost:3000/api/v1/',
-  token: 'token',
-  workflowId: 'workflowId',
+  token: '8ec91e21-38fd-4f60-8957-002787b8c46a',
+  workflowId: 'cm6teyzqb0004tl9bul1fsc78',
 };
 
 export const UbosFieldGroup = () => {

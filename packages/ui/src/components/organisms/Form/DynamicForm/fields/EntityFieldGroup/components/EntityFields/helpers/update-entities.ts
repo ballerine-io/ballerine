@@ -8,8 +8,6 @@ export const updateEntities = (entitiesList: IEntity[], updatedEntity: IEntity) 
         id: updatedEntity.id,
       };
 
-      newEntity.__isCreated = true;
-
       return newEntity;
     }
 

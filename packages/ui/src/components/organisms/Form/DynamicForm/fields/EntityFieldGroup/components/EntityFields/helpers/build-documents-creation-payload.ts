@@ -33,7 +33,8 @@ export const buildDocumentsCreationPayload = (
   const { workflowId, entityId, stack } = dependencies;
   const documentPayload: IDocumentCreationResult[] = [];
 
-  documentElements.forEach((documentElement: IFormElement<any, IDocumentFieldParams>, index) => {
+  for (let index = 0; index < documentElements.length; index++) {
+    const documentElement = documentElements[index]!;
     const documentDestination = formatValueDestination(documentElement.valueDestination, [
       ...(stack || []),
       index,
@@ -41,15 +42,17 @@ export const buildDocumentsCreationPayload = (
 
     const documentFile = get(context, documentDestination);
 
-    const payload = new FormData();
+    if (!documentFile) {
+      continue;
+    }
 
     if (!documentElement?.params?.template) {
       console.warn('No template found for document field', documentElement);
-
-      return;
+      continue;
     }
 
     const { template } = documentElement.params;
+    const payload = new FormData();
 
     payload.append('category', template?.category as string);
     payload.append('type', template?.type as string);
@@ -77,7 +80,7 @@ export const buildDocumentsCreationPayload = (
       payload,
       valueDestination: documentDestination,
     });
-  });
+  }
 
   return documentPayload;
 };
