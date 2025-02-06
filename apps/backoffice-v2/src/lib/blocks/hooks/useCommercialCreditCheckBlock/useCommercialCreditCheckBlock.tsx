@@ -1,39 +1,11 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 
 export const useCommercialCreditCheckBlock = ({ pluginsOutput }) => {
-  const getCell = useCallback(() => {
-    if (Object.keys(pluginsOutput?.commercialCreditCheck?.data ?? {}).length) {
-      return {
-        id: 'nested-details',
-        type: 'details',
-        hideSeparator: true,
-        value: {
-          data: Object.entries(pluginsOutput.commercialCreditCheck.data).map(([title, value]) => ({
-            title,
-            value,
-          })),
-        },
-        props: {
-          config: {
-            sort: { predefinedOrder: ['CommercialName', 'RegNumber'] },
-          },
-        },
-      } satisfies Extract<
-        Parameters<ReturnType<typeof createBlocksTyped>['addCell']>[0],
-        {
-          type: 'details';
-        }
-      >;
-    }
-  }, [pluginsOutput]);
-
   return useMemo(() => {
-    const cell = getCell();
-
-    if (!cell) {
-      return [];
+    if (Object.keys(pluginsOutput?.commercialCreditCheck?.data ?? {}).length === 0) {
+      return;
     }
 
     return createBlocksTyped()
@@ -55,9 +27,31 @@ export const useCommercialCreditCheckBlock = ({ pluginsOutput }) => {
               className: 'mb-4',
             },
           })
-          .addCell(cell)
+          .addCell({
+            id: 'nested-details',
+            type: 'details',
+            hideSeparator: true,
+            value: {
+              data: Object.entries(pluginsOutput.commercialCreditCheck.data).map(
+                ([title, value]) => ({
+                  title,
+                  value,
+                }),
+              ),
+            },
+            props: {
+              config: {
+                sort: { predefinedOrder: ['CommercialName', 'RegNumber'] },
+              },
+            },
+          } satisfies Extract<
+            Parameters<ReturnType<typeof createBlocksTyped>['addCell']>[0],
+            {
+              type: 'details';
+            }
+          >)
           .buildFlat(),
       })
       .build();
-  }, [getCell]);
+  }, [pluginsOutput.commercialCreditCheck.data]);
 };

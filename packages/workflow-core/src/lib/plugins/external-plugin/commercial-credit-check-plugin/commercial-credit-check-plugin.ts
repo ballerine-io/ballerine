@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import merge from 'lodash.merge';
 import { invariant } from 'outvariant';
 import { isErrorWithMessage, ProcessStatus } from '@ballerine/common';
 
@@ -13,14 +14,17 @@ const CommercialCreditCheckPluginPayloadSchema = z.object({
   clientId: z.string().min(1),
   vendor: z.enum(['experian']),
   businessType: z.string().min(1),
-  registrationNumber: z.union([z.string(), z.undefined()]),
+  legalForm: z.string().min(1),
+  companyRegistrationNumber: z.union([z.string(), z.undefined()]),
+  registeredCharityNumber: z.union([z.string(), z.undefined()]),
 });
 
 type TCommercialCreditCheckPluginPayload = {
   clientId: PluginPayloadProperty;
-  vendor: PluginPayloadProperty;
-  businessType: PluginPayloadProperty;
-  registrationNumber: PluginPayloadProperty<string | undefined>;
+  businessType?: PluginPayloadProperty;
+  legalForm?: PluginPayloadProperty;
+  companyRegistrationNumber?: PluginPayloadProperty<string | undefined>;
+  registeredCharityNumber?: PluginPayloadProperty<string | undefined>;
 };
 
 const CommercialCreditCheckResponseSchema = z.record(z.string(), z.unknown());
@@ -43,6 +47,26 @@ export class CommercialCreditCheckPlugin extends ApiPlugin {
     super(commercialCreditCheckPluginParams);
 
     this.payload = payload;
+
+    merge(this.payload, {
+      vendor: pluginParams.vendor || 'experian',
+      businessType: {
+        __type: 'path',
+        value: 'entity.data.businessType',
+      },
+      legalForm: {
+        __type: 'path',
+        value: 'entity.data.legalForm',
+      },
+      companyRegistrationNumber: {
+        __type: 'path',
+        value: 'entity.data.registrationNumber',
+      },
+      registeredCharityNumber: {
+        __type: 'path',
+        value: 'entity.data.additionalInfo.registeredCharityNumber',
+      },
+    });
   }
 
   async invoke(context: TContext) {
