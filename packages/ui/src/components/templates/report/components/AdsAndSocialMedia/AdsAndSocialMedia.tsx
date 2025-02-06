@@ -26,17 +26,15 @@ import { FacebookPageSchema, InstagramPageSchema, ReportSchema } from '@ballerin
 const socialMediaMapper: {
   facebook: {
     icon: ReactNode;
-    fields: Partial<Record<
-    keyof z.infer<typeof FacebookPageSchema>,
-      { icon: ReactNode; label: string }
-    >>;
+    fields: Partial<
+      Record<keyof z.infer<typeof FacebookPageSchema>, { icon: ReactNode; label: string }>
+    >;
   };
   instagram: {
     icon: ReactNode;
-    fields: Partial<Record<
-    keyof z.infer<typeof InstagramPageSchema>,
-      { icon: ReactNode; label: string }
-    >>;
+    fields: Partial<
+      Record<keyof z.infer<typeof InstagramPageSchema>, { icon: ReactNode; label: string }>
+    >;
   };
 } = {
   facebook: {
@@ -107,15 +105,17 @@ export const AdsAndSocialMedia = (pages: {
           const page = pages[provider];
 
           if (!page) {
-            return <Card key={provider} className={ctw('shadow-l w-full p-4 opacity-60')}>
-              <div className="flex flex-row items-center gap-2 font-semibold">
-                {socialMediaMapper[provider].icon}
-                <h4 className="text-xl">{capitalize(provider)}</h4>
-              </div>
-            </Card>
+            return (
+              <Card key={provider} className={ctw('shadow-l w-full p-4 opacity-60')}>
+                <div className="flex flex-row items-center gap-2 font-semibold">
+                  {socialMediaMapper[provider].icon}
+                  <h4 className="text-xl">{capitalize(provider)}</h4>
+                </div>
+              </Card>
+            );
           }
 
-          const {screenshotUrl, url, ...rest} = page;
+          const { screenshotUrl, url, ...rest } = page;
 
           const idValue = 'username' in rest ? rest.username : rest.id;
 

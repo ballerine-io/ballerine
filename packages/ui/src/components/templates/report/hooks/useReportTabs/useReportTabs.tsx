@@ -58,7 +58,7 @@ export const useReportTabs = ({ report, Link }: UseReportTabsProps) => {
     search: string;
     riskIndicators: Array<{
       name?: string | null;
-      riskLevel?: RiskIndicatorRiskLevel|null;
+      riskLevel?: RiskIndicatorRiskLevel | null;
     }> | null;
   }>;
 
@@ -71,8 +71,8 @@ export const useReportTabs = ({ report, Link }: UseReportTabsProps) => {
           <ContentTooltip
             description={
               <p>
-                Provides a concise overview of the merchant&apos;s risk level, integrating
-                various factors into a clear summary for informed decisions.
+                Provides a concise overview of the merchant&apos;s risk level, integrating various
+                factors into a clear summary for informed decisions.
               </p>
             }
             props={{
@@ -165,7 +165,7 @@ export const useReportTabs = ({ report, Link }: UseReportTabsProps) => {
     value: string;
     label: ReactNode | ReactNode[];
     content: ReactNode | ReactNode[];
-  }>
+  }>;
 
   return {
     tabs,
