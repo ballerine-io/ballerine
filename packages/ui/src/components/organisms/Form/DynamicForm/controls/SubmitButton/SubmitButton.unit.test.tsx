@@ -79,7 +79,7 @@ describe('SubmitButton', () => {
       isValid: true,
       errors: {},
       values: {},
-      validate: vi.fn(),
+      validate: vi.fn().mockResolvedValue([]),
     } as unknown as IValidatorContext<object>);
     vi.mocked(useEvents).mockReturnValue({
       sendEvent: mockSendEvent,
@@ -149,7 +149,7 @@ describe('SubmitButton', () => {
       isValid: true,
       errors: [],
       values: {},
-      validate: vi.fn(),
+      validate: vi.fn().mockResolvedValue([]),
     });
 
     render(<SubmitButton element={mockElement} />);
@@ -244,7 +244,7 @@ describe('SubmitButton', () => {
       isValid: true,
       errors: [],
       values: {},
-      validate: vi.fn(),
+      validate: vi.fn().mockResolvedValue([]),
     } as unknown as IValidatorContext<object>);
 
     render(<SubmitButton element={mockElement} />);
