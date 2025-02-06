@@ -140,7 +140,7 @@ export class CommercialCreditCheckPlugin extends ApiPlugin {
 
       if (this.successAction) {
         return this.returnSuccessResponse(this.successAction, {
-          ...parsedResponse,
+          ...parsedResponse.data,
           name: this.name,
           status: ProcessStatus.SUCCESS,
         });
