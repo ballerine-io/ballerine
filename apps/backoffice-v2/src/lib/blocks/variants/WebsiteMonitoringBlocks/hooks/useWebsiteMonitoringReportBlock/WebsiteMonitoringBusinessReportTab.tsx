@@ -30,7 +30,6 @@ export const WebsiteMonitoringBusinessReportTab = ({
     <div className={'grid gap-y-4'}>
       <BusinessReportSummary
         summary={businessReport.data!.summary!}
-        isOnboarding={businessReport.reportType === MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1}
         ongoingMonitoringSummary={businessReport.data!.ongoingMonitoringSummary!}
         riskIndicators={riskIndicators}
         riskScore={businessReport.data!.riskScore!}

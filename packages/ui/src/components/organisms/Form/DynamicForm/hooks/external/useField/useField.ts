@@ -48,22 +48,15 @@ export const useField = <TValue>(element: IFormElement<any, any>, stack?: TDeept
     [fieldId, valueDestination, setValue, sendEventAsync],
   );
 
-  const onBlur = useCallback(() => {
+  const onBlur = useCallback(async () => {
     sendEvent('onBlur');
 
     if (validationParams.validateOnBlur) {
       validate();
     }
 
-    setTimeout(() => setTouched(fieldId, true), (validationParams.validationDelay || 0) + 20);
-  }, [
-    sendEvent,
-    validationParams.validateOnBlur,
-    validationParams.validationDelay,
-    validate,
-    fieldId,
-    setTouched,
-  ]);
+    await setTouched(fieldId, true);
+  }, [sendEvent, validationParams.validateOnBlur, validate, fieldId, setTouched]);
 
   const onFocus = useCallback(() => {
     sendEvent('onFocus');

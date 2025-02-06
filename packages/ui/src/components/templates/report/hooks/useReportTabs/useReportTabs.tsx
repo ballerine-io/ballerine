@@ -90,7 +90,6 @@ export const useReportTabs = ({ report, Link }: UseReportTabsProps) => {
           <BusinessReportSummary
             summary={report.data?.summary ?? ''}
             isOnboarding={true}
-            ongoingMonitoringSummary={report.data?.ongoingMonitoringSummary ?? ''}
             riskScore={report.data?.riskScore ?? 0}
             riskIndicators={riskIndicators}
             Link={Link}
