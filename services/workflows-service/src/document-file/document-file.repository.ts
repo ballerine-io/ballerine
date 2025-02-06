@@ -47,17 +47,15 @@ export class DocumentFileRepository {
 
   async updateById(
     id: string,
-    projectIds: TProjectId[],
-    data: Prisma.DocumentFileUncheckedUpdateManyInput,
-    args?: Prisma.DocumentFileUpdateManyArgs,
+    data: Prisma.DocumentFileUpdateInput,
+    args?: Prisma.DocumentFileUpdateArgs,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
-    return transaction.documentFile.updateMany({
+    return transaction.documentFile.update({
       ...args,
       where: {
         ...args?.where,
         id,
-        projectId: { in: projectIds },
       },
       data,
     });

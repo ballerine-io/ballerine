@@ -1,7 +1,7 @@
 export const ubosFormJsonDefinition = {
   type: 'json-form',
-  name: 'company-ownership-contacts-form',
-  valueDestination: 'entity.data.additionalInfo.contacts',
+  name: 'company-ownership-ubos-form-p2',
+  valueDestination: 'entity.data.additionalInfo.ubos',
   options: {
     description: 'text.companyOwnership.page.description',
     jsonFormDefinition: {
@@ -23,7 +23,7 @@ export const ubosFormJsonDefinition = {
       ],
     },
     uiSchema: {
-      titleTemplate: 'text.companyOwnership.contactIndex',
+      titleTemplate: 'text.companyOwnership.uboIndex',
     },
   },
   elements: [
