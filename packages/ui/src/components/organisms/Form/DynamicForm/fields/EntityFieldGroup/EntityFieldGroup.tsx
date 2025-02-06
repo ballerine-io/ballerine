@@ -20,12 +20,18 @@ import { EntityFieldGroupTypeProvider } from './providers/EntityFieldGroupTypePr
 import { IEntity } from './types';
 
 export type TEntityFieldGroupType = 'director' | 'ubo';
+
+export interface ICreateEntityParams {
+  httpParams: IHttpParams;
+  transform?: string;
+}
 export interface IEntityFieldGroupParams extends IFieldListParams {
-  httpsParams: {
-    createEntity: IHttpParams;
+  httpParams: {
+    createEntity: ICreateEntityParams;
     deleteEntity: IHttpParams;
   };
   lockText?: string;
+  createdText?: string;
   type: TEntityFieldGroupType;
 }
 

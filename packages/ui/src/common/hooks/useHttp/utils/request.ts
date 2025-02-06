@@ -6,10 +6,16 @@ import { formatHeaders } from './format-headers';
 
 export type TReuqestParams = Omit<IHttpParams, 'resultPath'>;
 
-export const request = async (request: TReuqestParams, metadata: AnyObject = {}, data?: any) => {
-  const { url, headers = {}, method } = request;
+export const request = async (
+  request: TReuqestParams,
+  metadata: AnyObject = {},
+  data?: any,
+  params?: AnyObject,
+) => {
+  const { url: _url, headers = {}, method, timeout = 5000 } = request;
 
-  const formattedUrl = formatString(url, metadata);
+  const formattedUrl = formatString(_url, { ...metadata, ...params });
+
   const formattedHeaders = formatHeaders(headers, metadata);
 
   try {
@@ -18,6 +24,7 @@ export const request = async (request: TReuqestParams, metadata: AnyObject = {},
       method,
       headers: formattedHeaders,
       data,
+      timeout,
     });
 
     return response.data;
