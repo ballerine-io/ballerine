@@ -120,7 +120,9 @@ export class StorageService {
   }
 
   private __getAbsoluteFilePAth(filePath: string) {
-    if (!path.isAbsolute(filePath)) return filePath;
+    if (!path.isAbsolute(filePath)) {
+      return filePath;
+    }
 
     const rootDir = path.parse(os.homedir()).root;
 

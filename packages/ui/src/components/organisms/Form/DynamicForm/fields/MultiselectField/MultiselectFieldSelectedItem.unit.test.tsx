@@ -1,4 +1,4 @@
-import { MultiSelectOption } from '@/components/molecules/inputs/MultiSelect';
+import { MultiSelectOption } from '@/components/molecules';
 import { SelectedElementParams } from '@/components/molecules/inputs/MultiSelect/types';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
@@ -6,7 +6,7 @@ import { MultiselectfieldSelectedItem } from './MultiselectFieldSelectedItem';
 
 describe('MultiselectfieldSelectedItem', () => {
   const mockOption: MultiSelectOption = {
-    label: 'Test Option',
+    title: 'Test Option',
     value: 'test-value',
   };
 

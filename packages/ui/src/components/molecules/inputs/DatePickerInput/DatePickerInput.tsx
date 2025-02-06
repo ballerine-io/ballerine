@@ -168,6 +168,8 @@ export const DatePickerInput = ({
               ),
               inputProps: {
                 'data-test-id': testId,
+                onBlur: onBlur,
+                onFocus: onFocus,
               },
               InputProps: {
                 className: 'focus:outline-none',

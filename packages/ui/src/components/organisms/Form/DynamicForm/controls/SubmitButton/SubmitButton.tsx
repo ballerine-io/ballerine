@@ -21,15 +21,16 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
   const { fieldHelpers, values, submit } = useDynamicForm();
   const { runTasks, isRunning } = useTaskRunner();
   const { sendEvent } = useEvents(element);
+  const { validate, isValid } = useValidator();
 
   const { touchAllFields } = fieldHelpers;
-
-  const { isValid, errors } = useValidator();
 
   const { disableWhenFormIsInvalid = false, text = 'Submit' } = element.params || {};
 
   const disabled = useMemo(() => {
-    if (disableWhenFormIsInvalid && !isValid) return true;
+    if (disableWhenFormIsInvalid && !isValid) {
+      return true;
+    }
 
     return _disabled;
   }, [disableWhenFormIsInvalid, isValid, _disabled]);
@@ -39,9 +40,12 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
 
     touchAllFields();
 
+    const validationResult = await validate();
+    const isValid = validationResult?.length === 0;
+
     if (!isValid) {
       console.log(`Submit button clicked but form is invalid`);
-      console.log('Validation errors', errors);
+      console.log('Validation errors', validationResult);
 
       return;
     }
@@ -52,10 +56,9 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
 
     fieldHelpers.setValues(updatedContext);
 
-    submit();
-
+    submit(updatedContext);
     sendEvent('onSubmit');
-  }, [submit, isValid, touchAllFields, runTasks, sendEvent, errors, onClick, values, fieldHelpers]);
+  }, [submit, touchAllFields, runTasks, sendEvent, onClick, values, fieldHelpers, validate]);
 
   return (
     <Button

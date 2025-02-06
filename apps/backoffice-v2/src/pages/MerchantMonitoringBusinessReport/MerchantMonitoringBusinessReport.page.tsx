@@ -11,17 +11,22 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  TextArea,
   Skeleton,
+  TextArea,
   TextWithNAFallback,
 } from '@ballerine/ui';
 import dayjs from 'dayjs';
-import { ChevronLeft } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, FileQuestion } from 'lucide-react';
 import React, { forwardRef, FunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { titleCase } from 'string-ts';
 
 import { Button } from '@/common/components/atoms/Button/Button';
+import { Card } from '@/common/components/atoms/Card/Card';
+import { CardContent } from '@/common/components/atoms/Card/Card.Content';
+import { CardFooter } from '@/common/components/atoms/Card/Card.Footer';
+import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
+import { CardTitle } from '@/common/components/atoms/Card/Card.Title';
 import { Select } from '@/common/components/atoms/Select/Select';
 import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
 import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
@@ -95,7 +100,54 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     onSubmit,
     deboardingReasonOptions,
     isFetchingBusinessReport,
+    locale,
   } = useMerchantMonitoringBusinessReportLogic();
+
+  // User should never really get in here, unless he manually sets the id in the URL.
+  // We don't want to prevent backend from sending data for reports that have not been completed yet,
+  // so instead we show a fallback UI.
+  if (
+    !isFetchingBusinessReport &&
+    businessReport?.status &&
+    businessReport.status !== MERCHANT_REPORT_STATUSES_MAP['completed']
+  ) {
+    let supplementalText = '';
+
+    if (
+      [
+        MERCHANT_REPORT_STATUSES_MAP['in-progress'],
+        MERCHANT_REPORT_STATUSES_MAP['quality-control'],
+      ].includes(businessReport.status)
+    ) {
+      supplementalText = 'It is currently being processed by our system.';
+    }
+
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Card className="mx-auto w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mb-4 flex justify-center">
+              <FileQuestion className="h-16 w-16 text-muted-foreground" />
+            </div>
+            <CardTitle className="text-2xl font-bold">Report Not Ready</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-center text-muted-foreground">
+              This report is not available yet. {supplementalText}
+            </p>
+          </CardContent>
+          <CardFooter className="flex justify-center">
+            <Link to={`/${locale}/merchant-monitoring`}>
+              <Button variant="outline" className="flex items-center gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Back to All Reports
+              </Button>
+            </Link>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider

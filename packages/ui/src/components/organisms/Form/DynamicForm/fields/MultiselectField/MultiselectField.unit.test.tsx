@@ -12,7 +12,11 @@ import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
-import { IMultiselectFieldParams, MultiselectField } from './MultiselectField';
+import {
+  IMultiselectFieldParams,
+  MultiselectField,
+  MultiselectFieldOption,
+} from './MultiselectField';
 import { MultiselectfieldSelectedItem } from './MultiselectFieldSelectedItem';
 
 vi.mock('./MultiselectFieldSelectedItem', () => ({
@@ -77,7 +81,7 @@ vi.mock('../FieldList/providers/StackProvider', () => ({
 }));
 
 describe('MultiselectField', () => {
-  const mockOptions: MultiSelectOption[] = [
+  const mockOptions: MultiselectFieldOption[] = [
     { label: 'Option 1', value: 'opt1' },
     { label: 'Option 2', value: 'opt2' },
     { label: 'Option 3', value: 'opt3' },
@@ -141,7 +145,9 @@ describe('MultiselectField', () => {
     const multiselect = vi.mocked(MultiSelect).mock.calls[0]![0];
     expect(multiselect.value).toEqual(['opt1']);
     expect(multiselect.disabled).toBe(false);
-    expect(multiselect.options).toEqual(mockOptions);
+    expect(multiselect.options).toEqual(
+      mockOptions.map(option => ({ title: option.label, value: option.value })),
+    );
     expect(multiselect.onBlur).toBe(mockOnBlur);
     expect(multiselect.onFocus).toBe(mockOnFocus);
   });
@@ -186,7 +192,7 @@ describe('MultiselectField', () => {
 
     const multiselect = vi.mocked(MultiSelect).mock.calls[0]![0];
     const mockParams: SelectedElementParams = { unselectButtonProps: { onClick: vi.fn() } as any };
-    const mockOption: MultiSelectOption = { label: 'Test', value: 'test' };
+    const mockOption: MultiSelectOption = { title: 'Test', value: 'test' };
 
     const result = multiselect.renderSelected(mockParams, mockOption);
     expect(result.type).toBe(MultiselectfieldSelectedItem);
