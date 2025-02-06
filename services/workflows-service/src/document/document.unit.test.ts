@@ -32,7 +32,6 @@ describe('DocumentService', () => {
 
         // Act
         const result = documentService['parseDocumentsFromUISchema'](uiSchema);
-        console.log(result);
 
         // Assert
         expect(result.business).toHaveLength(1);
