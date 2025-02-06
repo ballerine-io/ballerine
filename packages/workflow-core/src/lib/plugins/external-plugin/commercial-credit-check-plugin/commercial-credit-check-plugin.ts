@@ -129,12 +129,18 @@ export class CommercialCreditCheckPlugin extends ApiPlugin {
         );
       }
 
-      const res = await apiResponse.json();
-      const responseBody = CommercialCreditCheckResponseSchema.parse(res);
+      const response = await apiResponse.json();
+      const parsedResponse = CommercialCreditCheckResponseSchema.safeParse(response);
+
+      if (!parsedResponse.success) {
+        return this.returnErrorResponse(
+          `${this.pluginName} - Invalid response: ${JSON.stringify(parsedResponse.error)}`,
+        );
+      }
 
       if (this.successAction) {
         return this.returnSuccessResponse(this.successAction, {
-          ...responseBody,
+          ...parsedResponse,
           name: this.name,
           status: ProcessStatus.SUCCESS,
         });
