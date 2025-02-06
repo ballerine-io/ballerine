@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsObject, IsOptional, IsString } from 'class-validator';
+import { BusinessPosition } from '@prisma/client';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-export class EndUserCreateDto {
+export class EntityCreateDto {
   @ApiProperty({
     required: true,
     type: String,
@@ -15,12 +17,6 @@ export class EndUserCreateDto {
   })
   @IsString()
   lastName!: string;
-
-  @ApiProperty({
-    type: String,
-  })
-  @IsString()
-  correlationId!: string;
 
   @IsOptional()
   @ApiProperty({
@@ -58,13 +54,16 @@ export class EndUserCreateDto {
   dateOfBirth?: string;
 
   @IsOptional()
-  @ApiProperty({
-    type: String,
-  })
-  @IsString()
-  avatarUrl?: string;
-
-  @IsOptional()
   @IsObject()
   additionalInfo?: Record<string, any>;
+}
+
+export class CreateEntityInputDto {
+  @IsString()
+  entityType!: BusinessPosition;
+
+  @IsObject()
+  @ValidateNested()
+  @Type(() => EntityCreateDto)
+  entity!: EntityCreateDto;
 }
