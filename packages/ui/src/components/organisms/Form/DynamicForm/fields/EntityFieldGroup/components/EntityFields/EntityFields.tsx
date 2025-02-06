@@ -15,9 +15,11 @@ import { IFormElement } from '../../../../types';
 import { StackProvider } from '../../../FieldList/providers/StackProvider';
 import { IEntityFieldGroupParams } from '../../EntityFieldGroup';
 import { IEntity } from '../../types';
+import { buildDocumentsCreationPayload } from './helpers/build-documents-creation-payload';
+import { buildEntityCreationPayload } from './helpers/build-entity-for-creation';
+import { updateEntities } from './helpers/update-entities';
 import { useChildrenDisabledOnLock } from './hooks/useChildrenDisabledOnLock';
 import { useEntityLock } from './hooks/useEntityLock';
-import { transform } from './utils/transform';
 
 interface IEntityFieldsProps {
   stack: TDeepthLevelStack;
@@ -49,6 +51,11 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
     element.params!.httpParams?.createEntity.httpParams,
     metadata,
   );
+  const { run: uploadDocument, isLoading: isUploadingDocument } = useHttp(
+    element.params!.httpParams?.uploadDocument,
+    metadata,
+  );
+
   const {
     lockText = 'This entity will be created on submission.',
     createdText = 'Entity created',
@@ -62,78 +69,67 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
         id: lockedEntity.__id!,
         element: element,
         run: async (context: AnyObject) => {
+          const entitiesDestination = formatValueDestination(element.valueDestination, stack);
+
+          const createEntityPayload = await buildEntityCreationPayload(
+            element,
+            lockedEntity,
+            context,
+          );
+
+          let createdEntityId: string;
+
           try {
-            const entitiesDestination = formatValueDestination(element.valueDestination, stack);
-            // Accessing entities list
-            const entities = get(context, entitiesDestination, []);
-            const documentFieldDefinitons =
-              element.children?.filter(child => child.element === 'documentfield') || [];
-
-            // Boilerplate, will be used for documents upload
-            // // Entities with documents
-            // const entitiesWithDocuments = entities.map((entity: IEntity, index: number) => {
-            //   const entityWithDocument = { ...entity } as Record<string, any>;
-
-            //   documentFieldDefinitons.forEach(documentDefinition => {
-            //     const documentDestination = formatValueDestination(
-            //       documentDefinition.valueDestination,
-            //       [...(stack || []), index],
-            //     );
-
-            //     const documentFile = get(context, documentDestination);
-
-            //     entityWithDocument[(documentDefinition.params as any).template.id] = documentFile;
-            //   });
-
-            //   return entityWithDocument;
-            // });
-
-            const entityToCreate = element.params?.httpParams?.createEntity?.transform
-              ? await transform(
-                  context,
-                  lockedEntity,
-                  element.params!.httpParams?.createEntity.transform,
-                )
-              : lockedEntity;
-
-            const createPayload = {
-              entityType: element.params?.type,
-              entity: entityToCreate,
-            };
-
-            const createdEntityId = await createEntity(createPayload);
-            // UI Update
-            const updatedEntities = entities.map((entity: IEntity) => {
-              if (entity.__id === lockedEntity.__id) {
-                const newEntity = {
-                  ...entity,
-                  id: createdEntityId,
-                };
-
-                newEntity.__isCreated = true;
-
-                return newEntity;
-              }
-
-              return entity;
-            });
-            set(context, entitiesDestination, updatedEntities);
-            toast.success('Entity created successfully.');
-            // Modify and return context here after creation
-
-            return context;
+            createdEntityId = await createEntity(createEntityPayload);
           } catch (error) {
+            console.error(error);
             toast.error('Failed to create entity.');
+            throw error;
+          }
+
+          const entities = get(context, entitiesDestination, []);
+
+          // UI Update
+          const updatedEntities = updateEntities(entities, lockedEntity);
+          set(context, entitiesDestination, updatedEntities);
+
+          const documentsCreationPayload = await buildDocumentsCreationPayload(
+            element,
+            lockedEntity,
+            context,
+            {
+              entityId: createdEntityId,
+              workflowId: metadata.workflowId as string,
+              stack: stack,
+            },
+          );
+
+          const documentUploadPromises = documentsCreationPayload.map(async document => {
+            const documentId = await uploadDocument(document.payload);
+
+            set(context, document.valueDestination, documentId);
+
+            return documentId;
+          });
+
+          try {
+            await Promise.all(documentUploadPromises);
+          } catch (error) {
             console.error(error);
 
-            return context;
+            toast.error('Failed to upload documents.');
+            throw error;
           }
+
+          toast.success('Entity created successfully.');
+
+          return context;
         },
       };
 
       addTask(task);
     },
-    [addTask, stack, element, createEntity],
+    [addTask, stack, element, createEntity, uploadDocument, metadata],
   );
 
   const removeEntityOnUnlockTask = useCallback(

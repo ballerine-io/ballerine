@@ -175,6 +175,14 @@ const ubosSchema: Array<IFormElement<any, any>> = [
             Authorization: 'Bearer {token}',
           },
         },
+        uploadDocument: {
+          url: '{apiUrl}external/documents',
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer {token}',
+          },
+          resultPath: 'id',
+        },
       },
     },
     children: [
@@ -378,6 +386,25 @@ const ubosSchema: Array<IFormElement<any, any>> = [
           },
         ],
       },
+      {
+        id: 'document',
+        element: 'documentfield',
+        valueDestination: 'entity.data.additionalInfo.ubos[$0].documents',
+        params: {
+          label: 'Document',
+          template: {
+            id: 'document',
+            category: 'proof_of_address',
+            type: 'general_document',
+            issuingVersion: 1,
+            version: 1,
+            issuer: {
+              country: 'ZZ',
+            },
+            properties: {},
+          },
+        },
+      },
     ],
     validate: [
       {
@@ -394,15 +421,7 @@ const ubosSchema: Array<IFormElement<any, any>> = [
     params: {
       label: 'Submit Button',
     },
-    disable: [
-      // Disable the submit button if there are entities that not created
-      {
-        engine: 'json-logic',
-        value: {
-          some: [{ var: 'entity.data.additionalInfo.ubos' }, { '!': { '!!': { var: 'id' } } }],
-        },
-      },
-    ],
+    disable: [],
   },
 ];
 
@@ -421,7 +440,8 @@ const initialUbosContext = {
 
 const metadata = {
   apiUrl: 'http://localhost:3000/api/v1/',
-  token: 'TOKEN',
+  token: 'token',
+  workflowId: 'workflowId',
 };
 
 export const UbosFieldGroup = () => {

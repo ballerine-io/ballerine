@@ -29,6 +29,7 @@ export interface IEntityFieldGroupParams extends IFieldListParams {
   httpParams: {
     createEntity: ICreateEntityParams;
     deleteEntity: IHttpParams;
+    uploadDocument: IHttpParams;
   };
   lockText?: string;
   createdText?: string;
