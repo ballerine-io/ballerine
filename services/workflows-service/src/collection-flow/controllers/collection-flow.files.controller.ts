@@ -21,6 +21,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiExcludeController } from '@nestjs/swagger';
 import type { Response } from 'express';
 import * as errors from '../../errors';
+import { FileService } from '@/providers/file/file.service';
+import { WorkflowService } from '@/workflow/workflow.service';
 
 @UseTokenAuthGuard()
 @ApiExcludeController()
@@ -29,6 +31,8 @@ export class CollectionFlowFilesController {
   constructor(
     protected readonly storageService: StorageService,
     protected readonly collectionFlowService: CollectionFlowService,
+    protected readonly fileService: FileService,
+    protected readonly workflowService: WorkflowService,
   ) {}
 
   // curl -v -F "file=@/<path>/a.jpg" http://localhost:3000/api/v1/collection-flow/files
@@ -59,22 +63,24 @@ export class CollectionFlowFilesController {
     file: Express.Multer.File,
     @TokenScope() tokenScope: ITokenScope,
   ) {
-    return this.collectionFlowService.uploadNewFile(
-      tokenScope.projectId,
+    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
       tokenScope.workflowRuntimeDataId,
-      {
-        ...file,
-        mimetype:
-          file.mimetype ||
-          (
-            await getFileMetadata({
-              file: file.originalname || '',
-              fileName: file.originalname || '',
-            })
-          )?.mimeType ||
-          '',
-      },
+      {},
+      [tokenScope.projectId],
     );
+
+    return this.fileService.uploadNewFile(tokenScope.projectId, workflowRuntimeData, {
+      ...file,
+      mimetype:
+        file.mimetype ||
+        (
+          await getFileMetadata({
+            file: file.originalname || '',
+            fileName: file.originalname || '',
+          })
+        )?.mimeType ||
+        '',
+    });
   }
 
   @Get('/:id')

@@ -10,7 +10,7 @@ import { StorageService } from '@/storage/storage.service';
 import type { TProjectId } from '@/types';
 import { getDocumentId, isErrorWithMessage, isType } from '@ballerine/common';
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import * as fs from 'fs/promises';
 import { Base64 } from 'js-base64';
@@ -20,6 +20,8 @@ import { z } from 'zod';
 import { TFileServiceProvider } from './types';
 import { TLocalFilePath, TRemoteFileConfig, TS3BucketConfig } from './types/files-types';
 import { IStreamableFileProvider } from './types/interfaces';
+import { CustomerService } from '@/customer/customer.service';
+import { WorkflowRuntimeData } from '@prisma/client';
 
 @Injectable()
 export class FileService {
@@ -27,6 +29,7 @@ export class FileService {
     private readonly storageService: StorageService,
     protected readonly logger: AppLoggerService,
     protected readonly httpService: HttpService,
+    protected readonly customerService: CustomerService,
   ) {}
 
   async copyFromSourceToDestination(
@@ -354,5 +357,38 @@ export class FileService {
     });
 
     return persistedFile;
+  }
+
+  async uploadNewFile(
+    projectId: string,
+    workflowRuntimeData: WorkflowRuntimeData,
+    file: Express.Multer.File,
+  ) {
+    // upload file into a customer folder
+    const customer = await this.customerService.getByProjectId(projectId);
+
+    const entityId = workflowRuntimeData.businessId || workflowRuntimeData.endUserId;
+
+    if (!entityId) {
+      throw new NotFoundException("Workflow doesn't exists");
+    }
+
+    // Remove file extension (get everything before the last dot)
+    const nameWithoutExtension = (file.originalname || randomUUID()).replace(/\.[^.]+$/, '');
+    // Remove non characters
+    const alphabeticOnlyName = nameWithoutExtension.replace(/\W/g, '');
+
+    return await this.copyToDestinationAndCreate(
+      {
+        id: alphabeticOnlyName,
+        uri: file.path,
+        provider: 'file-system',
+        fileName: file.originalname,
+      },
+      entityId,
+      projectId,
+      customer.name,
+      { shouldDownloadFromSource: false },
+    );
   }
 }
