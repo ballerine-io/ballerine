@@ -150,7 +150,6 @@ describe('DynamicFormV2', () => {
   it('should pass correct props to useSubmit', () => {
     render(<DynamicFormV2 {...mockProps} />);
     expect(useSubmit).toHaveBeenCalledWith({
-      values: mockProps.values,
       onSubmit: mockProps.onSubmit,
     });
   });
@@ -278,11 +277,12 @@ describe('DynamicFormV2', () => {
       vi.mocked(useFieldHelpers).mockReturnValue(fieldHelpersMock);
     });
 
-    it('should expose submit method through ref', () => {
+    it('should call submit method through ref', () => {
       const ref = { current: null as IFormRef<any> | null };
       render(<DynamicFormV2 {...mockProps} ref={ref} />);
 
-      expect(ref.current).toHaveProperty('submit', submitMock.submit);
+      ref.current?.submit();
+      expect(submitMock.submit).toHaveBeenCalledWith(valuesMock.values);
     });
 
     it('should expose validate method through ref', () => {

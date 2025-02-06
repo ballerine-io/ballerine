@@ -38,11 +38,13 @@ const CustomerSchema = z.object({
       isMerchantMonitoringEnabled: z.boolean().default(false),
       isExample: z.boolean().default(false),
       isDemo: z.boolean().default(false),
+      showFullAccessPopup: z.boolean().default(false),
     })
     .nullable()
     .default({
       isMerchantMonitoringEnabled: false,
       isExample: false,
+      showFullAccessPopup: false,
     }),
 });
 

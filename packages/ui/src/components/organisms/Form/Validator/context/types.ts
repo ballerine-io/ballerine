@@ -4,5 +4,5 @@ export interface IValidatorContext<TValues> {
   errors: IValidationError[];
   values: TValues;
   isValid: boolean;
-  validate: () => void;
+  validate: () => Promise<IValidationError[]>;
 }

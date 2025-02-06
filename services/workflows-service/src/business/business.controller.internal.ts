@@ -82,13 +82,9 @@ export class BusinessControllerInternal {
       },
     })) as BusinessPayload[];
 
-    if (env.SYNC_UNIFIED_API === 'true') {
-      const unifiedApiClient = new UnifiedApiClient();
+    const unifiedApiClient = new UnifiedApiClient();
 
-      return businesses.map(business => unifiedApiClient.formatBusiness(business));
-    }
-
-    return [];
+    return businesses.map(business => unifiedApiClient.formatBusiness(business));
   }
 
   @common.Get(':id')

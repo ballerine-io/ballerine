@@ -2,16 +2,15 @@ import { useCallback } from 'react';
 
 export interface IUseSubmitParams<TValues extends object> {
   onSubmit?: (values: TValues) => void;
-  values: TValues;
 }
 
-export const useSubmit = <TValues extends object>({
-  onSubmit,
-  values,
-}: IUseSubmitParams<TValues>) => {
-  const submit = useCallback(() => {
-    onSubmit?.(values);
-  }, [onSubmit, values]);
+export const useSubmit = <TValues extends object>({ onSubmit }: IUseSubmitParams<TValues>) => {
+  const submit = useCallback(
+    (values: TValues) => {
+      onSubmit?.(values);
+    },
+    [onSubmit],
+  );
 
   return { submit };
 };
