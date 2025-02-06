@@ -1,13 +1,30 @@
+import dayjs from 'dayjs';
+import uniqBy from 'lodash/uniqBy';
+import ajvErrors from 'ajv-errors';
+import { AnyObject } from '@ballerine/ui';
+import Ajv, { ErrorObject } from 'ajv/dist/2019';
+import addFormats, { FormatName } from 'ajv-formats';
+
+import { Rule, UIElement } from '@/domains/collection-flow';
 import {
   ErrorField,
   RuleEngine,
 } from '@/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
-import { Rule, UIElement } from '@/domains/collection-flow';
-import { AnyObject } from '@ballerine/ui';
-import ajvErrors from 'ajv-errors';
-import addFormats, { FormatName } from 'ajv-formats';
-import Ajv, { ErrorObject } from 'ajv/dist/2019';
-import uniqBy from 'lodash/uniqBy';
+
+const addCustomFormats = (validator: Ajv) => {
+  validator.addFormat('non-past-date', {
+    type: 'string',
+    validate: (dateString: string) => {
+      const inputDate = dayjs(dateString);
+
+      if (!inputDate.isValid()) {
+        return false;
+      }
+
+      return inputDate.startOf('day').valueOf() >= dayjs().startOf('day').valueOf();
+    },
+  });
+};
 
 export class JsonSchemaRuleEngine implements RuleEngine {
   static ALLOWED_FORMATS: FormatName[] = ['email', 'uri', 'date', 'date-time'];
@@ -18,11 +35,15 @@ export class JsonSchemaRuleEngine implements RuleEngine {
   // @ts-ignore
   validate(context: unknown, rule: Rule, definition: UIElement<AnyObject>) {
     const validator = new Ajv({ allErrors: true, useDefaults: true });
+
     addFormats(validator, {
       formats: JsonSchemaRuleEngine.ALLOWED_FORMATS,
       keywords: true,
     });
+
     ajvErrors(validator, { singleError: true });
+
+    addCustomFormats(validator);
 
     const validationResult = validator.validate(rule.value, context);
 
@@ -37,15 +58,17 @@ export class JsonSchemaRuleEngine implements RuleEngine {
 
   test(context: unknown, rule: Rule) {
     const validator = new Ajv({ allErrors: true, useDefaults: true, $data: true });
+
     addFormats(validator, {
       formats: ['email', 'uri', 'date', 'date-time'],
       keywords: true,
     });
+
     ajvErrors(validator, { singleError: true });
 
-    const validationResult = validator.validate(rule.value, context);
+    addCustomFormats(validator);
 
-    return validationResult;
+    return validator.validate(rule.value, context);
   }
 
   private extractErrorsWithFields(validator: Ajv, definition: UIElement<AnyObject>) {

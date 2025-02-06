@@ -10,6 +10,7 @@ import {
 import { createValidationError } from '../create-validation-error';
 import { formatValueDestination } from '../format-value-destination';
 import { getValidator } from '../get-validator';
+import { AbortAfterFirstErrorException } from './exceptions';
 import { isShouldApplyValidation } from './helpers';
 import { IValidateParams } from './types';
 
@@ -21,7 +22,7 @@ export const validate = <
   schema: Array<IValidationSchema<TValidatorTypeExtends>>,
   params: IValidateParams = {},
 ): IValidationError[] => {
-  const { abortEarly = false } = params;
+  const { abortEarly = false, abortAfterFirstError = false } = params;
 
   const validationErrors: IValidationError[] = [];
 
@@ -29,43 +30,56 @@ export const validate = <
     schema: Array<IValidationSchema<TValidatorTypeExtends>>,
     stack: TDeepthLevelStack = [],
   ) => {
-    schema.forEach(schema => {
-      const { validators = [], children, valueDestination, id } = schema;
+    for (let i = 0; i < schema.length; i++) {
+      const { validators = [], children, valueDestination, id } = schema[i]!;
       const formattedValueDestination = valueDestination
         ? formatValueDestination(valueDestination, stack)
         : '';
 
       const value = formattedValueDestination ? get(context, formattedValueDestination) : context;
 
-      for (const validator of validators) {
-        if (
-          validator.applyWhen &&
-          !isShouldApplyValidation(
-            replaceTagsWithIndexesInRule([validator.applyWhen], stack)[0],
-            context,
-          )
-        ) {
+      try {
+        for (const validator of validators) {
+          if (
+            validator.applyWhen &&
+            !isShouldApplyValidation(
+              replaceTagsWithIndexesInRule([validator.applyWhen], stack)[0],
+              context,
+            )
+          ) {
+            continue;
+          }
+
+          const validate = getValidator(validator);
+
+          try {
+            validate(value, validator as unknown as ICommonValidator);
+          } catch (exception) {
+            const error = createValidationError({
+              id,
+              invalidValue: value,
+              message: (exception as Error).message,
+              stack,
+            });
+
+            validationErrors.push(error);
+
+            if (abortAfterFirstError) {
+              throw new AbortAfterFirstErrorException();
+            }
+
+            // Validation of all schema will be stopped if at least one error is found
+            if (abortEarly) {
+              throw validationErrors;
+            }
+          }
+        }
+      } catch (exception) {
+        if (exception instanceof AbortAfterFirstErrorException) {
           continue;
         }
 
-        const validate = getValidator(validator);
-
-        try {
-          validate(value, validator as unknown as ICommonValidator);
-        } catch (exception) {
-          const error = createValidationError({
-            id,
-            invalidValue: value,
-            message: (exception as Error).message,
-            stack,
-          });
-
-          validationErrors.push(error);
-
-          if (abortEarly) {
-            throw validationErrors;
-          }
-        }
+        throw exception;
       }
 
       if (children?.length && Array.isArray(value)) {
@@ -73,7 +87,7 @@ export const validate = <
           run(children as Array<IValidationSchema<TValidatorTypeExtends>>, [...stack, index]);
         });
       }
-    });
+    }
   };
 
   try {

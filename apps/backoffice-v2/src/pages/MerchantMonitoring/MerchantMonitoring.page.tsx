@@ -25,6 +25,7 @@ import { t } from 'i18next';
 import { MultiSelect } from '@/common/components/atoms/MultiSelect/MultiSelect';
 import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
 import { Separator } from '@/common/components/atoms/Separator/Separator';
+import { GetFullAccessCard } from '@/common/components/molecules/GetFullAccessCard/GetFullAccessCard';
 
 export const MerchantMonitoring: FunctionComponent = () => {
   const {
@@ -277,6 +278,8 @@ export const MerchantMonitoring: FunctionComponent = () => {
           />
         </div>
       </div>
+
+      <GetFullAccessCard />
     </div>
   );
 };

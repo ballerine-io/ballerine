@@ -17,9 +17,13 @@ export const mergeSubscriptions = (
   customerSubscriptions: TCustomerSubscription['subscriptions'],
   workflowSubscriptions: TCustomerSubscription['subscriptions'],
 ): TCustomerSubscription['subscriptions'] => {
-  if (!workflowSubscriptions?.length) return customerSubscriptions ?? [];
+  if (!workflowSubscriptions?.length) {
+    return customerSubscriptions ?? [];
+  }
 
-  if (!customerSubscriptions?.length) return workflowSubscriptions ?? [];
+  if (!customerSubscriptions?.length) {
+    return workflowSubscriptions ?? [];
+  }
 
   const workflowEvents = workflowSubscriptions.flatMap(sub => sub.events);
 

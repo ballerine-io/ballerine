@@ -15,13 +15,19 @@ export class CustomerRepository {
   }
 
   async validateApiKey(apiKey?: string) {
-    if (apiKey === undefined) return;
+    if (apiKey === undefined) {
+      return;
+    }
 
-    if (apiKey.length < 4) throw new Error('Invalid API key');
+    if (apiKey.length < 4) {
+      throw new Error('Invalid API key');
+    }
 
     const customerApiAlreadyExists = await this.findByApiKey(apiKey);
 
-    if (customerApiAlreadyExists) throw new Error('API key already exists');
+    if (customerApiAlreadyExists) {
+      throw new Error('API key already exists');
+    }
   }
 
   async findMany<T extends Prisma.CustomerFindManyArgs>(

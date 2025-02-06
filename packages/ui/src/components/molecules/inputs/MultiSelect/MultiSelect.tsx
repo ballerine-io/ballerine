@@ -5,12 +5,12 @@ import { UnselectButtonProps } from '@/components/molecules/inputs/MultiSelect/c
 import { SelectedElementParams } from '@/components/molecules/inputs/MultiSelect/types';
 import { ClickAwayListener } from '@mui/material';
 import keyBy from 'lodash/keyBy';
-import { FocusEvent, useCallback, useMemo, useRef, useState } from 'react';
+import { FocusEvent, FocusEventHandler, useCallback, useMemo, useRef, useState } from 'react';
 
 export type MultiSelectValue = string | number;
 
 export interface MultiSelectOption {
-  label: string;
+  title: string;
   value: MultiSelectValue;
 }
 
@@ -50,7 +50,9 @@ export const MultiSelect = ({
   const [open, setOpen] = useState(false);
 
   const selected = useMemo(() => {
-    if (!value) return [];
+    if (!value) {
+      return [];
+    }
 
     const optionsMap = keyBy(options, 'value');
 
@@ -118,13 +120,15 @@ export const MultiSelect = ({
       .filter(option => !selectedMap[option.value as Exclude<PropertyKey, symbol>])
       .filter(option =>
         inputValue
-          ? option.label?.toLocaleLowerCase().includes(inputValue.toLocaleLowerCase())
+          ? option.title?.toLocaleLowerCase().includes(inputValue.toLocaleLowerCase())
           : true,
       );
   }, [options, selected, inputValue]);
 
   const handleOutsidePopupClick = useCallback(() => {
-    if (open) setOpen(false);
+    if (open) {
+      setOpen(false);
+    }
   }, [open]);
 
   const buildUnselectButtonProps = useCallback(
@@ -158,7 +162,12 @@ export const MultiSelect = ({
                 { 'pointer-events-none opacity-50': disabled },
               )}
             >
-              <div className="flex flex-wrap gap-2 px-2">
+              <div
+                className="flex flex-wrap gap-2 px-2"
+                tabIndex={0}
+                onFocus={onFocus as FocusEventHandler<HTMLDivElement>}
+                onBlur={onBlur as FocusEventHandler<HTMLDivElement>}
+              >
                 {selected.map(option => {
                   return renderSelected(
                     {
@@ -203,7 +212,7 @@ export const MultiSelect = ({
                         className={'cursor-pointer'}
                         data-testid={testId ? `${testId}-option` : undefined}
                       >
-                        {option.label}
+                        {option.title}
                       </CommandItem>
                     );
                   })}

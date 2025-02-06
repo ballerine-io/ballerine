@@ -1,7 +1,14 @@
 import { CaretSortIcon } from '@radix-ui/react-icons';
 import clsx from 'clsx';
 import { CheckIcon } from 'lucide-react';
-import React, { FocusEvent, FunctionComponent, useCallback, useMemo, useState } from 'react';
+import React, {
+  FocusEvent,
+  FocusEventHandler,
+  FunctionComponent,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
 
 import { ctw } from '@/common';
 import {
@@ -101,6 +108,9 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
             props?.trigger?.className,
           )}
           disabled={disabled}
+          tabIndex={0}
+          onFocus={onFocus as FocusEventHandler<HTMLButtonElement>}
+          onBlur={onBlur as FocusEventHandler<HTMLButtonElement>}
           data-testid={testId ? `${testId}-trigger` : undefined}
         >
           <span className="flex-1 truncate text-left">
@@ -114,7 +124,6 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
         align={props?.content?.align || 'center'}
         style={{ width: 'var(--radix-popover-trigger-width)' }}
         className={clsx('p-2', props?.content?.className)}
-        onBlur={onBlur}
       >
         <Command className="w-full">
           {searchable ? (

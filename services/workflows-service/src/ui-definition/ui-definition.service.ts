@@ -131,7 +131,9 @@ export class UiDefinitionService {
   getTranslationServiceResources(
     uiDefinition: UiDefinition & { locales?: unknown },
   ): ITranslationServiceResource[] | undefined {
-    if (!uiDefinition.locales) return undefined;
+    if (!uiDefinition.locales) {
+      return undefined;
+    }
 
     return Object.entries(uiDefinition.locales).map(([language, resource]) => ({
       language,

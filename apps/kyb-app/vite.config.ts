@@ -1,15 +1,17 @@
-import * as childProcess from 'child_process';
-import react from '@vitejs/plugin-react';
-import * as path from 'path';
 import { sentryVitePlugin, SentryVitePluginOptions } from '@sentry/vite-plugin';
+import react from '@vitejs/plugin-react';
+import * as childProcess from 'child_process';
 import * as fs from 'fs';
+import * as path from 'path';
 import tailwindcss from 'tailwindcss';
 import { PluginOption } from 'vite';
-import { defineConfig } from 'vitest/config';
 import checker from 'vite-plugin-checker';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import terminal from 'vite-plugin-terminal';
 import topLevelAwait from 'vite-plugin-top-level-await';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vitest/config';
+import { version } from './package.json';
+
 interface PackageJson {
   name: string;
   version: string;
@@ -73,6 +75,13 @@ export default defineConfig({
   },
   build: {
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        entryFileNames: `assets/[name]-${version}.[hash].js`,
+        chunkFileNames: `assets/[name]-${version}.[hash].js`,
+        assetFileNames: `assets/[name]-${version}.[hash].[ext]`,
+      },
+    },
   },
   plugins,
   test: {

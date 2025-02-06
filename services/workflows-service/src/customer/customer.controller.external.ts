@@ -52,7 +52,9 @@ export class CustomerControllerExternal {
   async getByCurrentProjectId(
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<TCustomerWithFeatures | null> {
-    if (!currentProjectId) throw new NotFoundException('Customer not found');
+    if (!currentProjectId) {
+      throw new NotFoundException('Customer not found');
+    }
 
     return this.service.getByProjectId(currentProjectId, {
       select: {

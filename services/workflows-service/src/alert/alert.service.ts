@@ -24,7 +24,6 @@ import { DedupeWindow, TDedupeStrategy, TExecutionDetails } from './types';
 import { computeHash } from '@ballerine/common';
 import { convertTimeUnitToMilliseconds } from '@/data-analytics/utils';
 import { DataInvestigationService } from '@/data-analytics/data-investigation.service';
-import { equals } from 'class-validator';
 
 const DEFAULT_DEDUPE_STRATEGIES = {
   cooldownTimeframeInMinutes: 60 * 24,

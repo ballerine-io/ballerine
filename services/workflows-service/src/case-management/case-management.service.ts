@@ -67,7 +67,9 @@ export class CaseManagementService {
     const dataSchema =
       workflowDefinition.definition?.states[inputState]?.meta?.inputSchema?.dataSchema;
 
-    if (!dataSchema?.schema) return;
+    if (!dataSchema?.schema) {
+      return;
+    }
 
     const validate = ajv.compile(dataSchema.schema);
 
@@ -109,20 +111,16 @@ export class CaseManagementService {
             firstName: ubo.firstName,
             lastName: ubo.lastName,
             email: ubo.email,
-            nationalId: ubo.nationalId,
             percentageOfOwnership: ubo.ownershipPercentage ?? ubo.percentageOfOwnership,
             role: ubo.role,
             phoneNumber: ubo.phone,
             isAuthorizedSignatory: ubo.isAuthorizedSignatory,
-            passportNumber: ubo.passportNumber,
-            dateOfBirth: ubo.dateOfBirth,
-            placeOfBirth: ubo.placeOfBirth,
             country: ubo.country,
             city: ubo.city,
             street: ubo.street,
+            sourceOfWealth: ubo.sourceOfWealth,
+            sourceOfFunds: ubo.sourceOfFunds,
             additionalInfo: {
-              fullAddress: ubo.fullAddress,
-              nationality: ubo.nationality,
               companyName: workflowRuntimeData.context.entity.data.companyName,
               customerCompany:
                 workflowRuntimeData.context.collectionFlow.additionalInformation.customerCompany,

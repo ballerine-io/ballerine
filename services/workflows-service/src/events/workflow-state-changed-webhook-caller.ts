@@ -35,13 +35,6 @@ export class WorkflowStateChangedWebhookCaller {
   }
 
   async handleWorkflowEvent(data: ExtractWorkflowEventData<'workflow.state.changed'>) {
-    this.logger.log('handleWorkflowEvent:: ', {
-      state: data.state,
-      entityId: data.entityId,
-      correlationId: data.correlationId,
-      id: data.runtimeData.id,
-    });
-
     const customer = await this.customerService.getByProjectId(data.runtimeData.projectId, {
       select: {
         authenticationConfiguration: true,
