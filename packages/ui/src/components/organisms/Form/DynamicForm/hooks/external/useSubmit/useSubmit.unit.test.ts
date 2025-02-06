@@ -13,7 +13,6 @@ describe('useSubmit', () => {
   const setup = (params = {}) => {
     return renderHook(() =>
       useSubmit({
-        values: mockValues,
         onSubmit: mockOnSubmit,
         ...params,
       }),
@@ -34,7 +33,7 @@ describe('useSubmit', () => {
   it('should call onSubmit with values when submit is called', () => {
     const { result } = setup();
 
-    result.current.submit();
+    result.current.submit(mockValues);
 
     expect(mockOnSubmit).toHaveBeenCalledTimes(1);
     expect(mockOnSubmit).toHaveBeenCalledWith(mockValues);
@@ -43,7 +42,7 @@ describe('useSubmit', () => {
   it('should not throw when onSubmit is not provided', () => {
     const { result } = setup({ onSubmit: undefined });
 
-    expect(() => result.current.submit()).not.toThrow();
+    expect(() => result.current.submit(mockValues)).not.toThrow();
   });
 
   it('should memoize submit function', () => {

@@ -4,10 +4,10 @@ import { checkIfValid } from './helpers';
 import { useValidate } from './hooks/internal/useValidate';
 import { IValidatorRef, useValidatorRef } from './hooks/internal/useValidatorRef';
 import { IValidationSchema } from './types';
+import { IValidateParams } from './utils/validate/types';
 
-export interface IValidationParams {
+export interface IValidationParams extends IValidateParams {
   validateOnChange?: boolean;
-  validateSync?: boolean;
   validationDelay?: number;
   abortEarly?: boolean;
 }
@@ -25,20 +25,18 @@ export const ValidatorProvider = <TValue extends object>({
   schema,
   value,
   validateOnChange,
-  validateSync,
   abortEarly,
   validationDelay,
+  abortAfterFirstError,
   ref,
 }: IValidatorProviderProps<TValue>) => {
   useValidatorRef(ref);
   const { errors, validate } = useValidate(value, schema, {
     abortEarly,
-    validateSync,
     validateOnChange,
     validationDelay,
+    abortAfterFirstError,
   });
-
-  console.log('Validation errors', errors, schema);
 
   const context: IValidatorContext<TValue> = useMemo(
     () => ({ errors, values: value, isValid: checkIfValid(errors), validate }),

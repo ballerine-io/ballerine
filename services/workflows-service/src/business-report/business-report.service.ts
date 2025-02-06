@@ -111,13 +111,17 @@ export class BusinessReportService {
 
     const businessReportsCount = await this.count({ customerId });
 
-    if (businessReportsCount + businessReportsRequests.length > maxBusinessReports) {
+    if (
+      isNumber(maxBusinessReports) &&
+      maxBusinessReports > 0 &&
+      businessReportsCount + businessReportsRequests.length > maxBusinessReports
+    ) {
       const reportsLeft = maxBusinessReports - businessReportsCount;
 
-      throw new UnprocessableEntityException(
-        `Batch size is too large, there are too many reports (${reportsLeft} report${
+      throw new BadRequestException(
+        `This batch will exceed your reports limit. You have ${reportsLeft} report${
           reportsLeft > 1 ? 's' : ''
-        } left from a qouta of ${maxBusinessReports})`,
+        } remaining from a quota of ${maxBusinessReports}. Talk to us to unlock additional features and continue effective risk management with Ballerine.`,
       );
     }
 
