@@ -77,7 +77,9 @@ export const WebsiteCredibility: FunctionComponent<{
 }) => {
   // TODO: Ideally should happen on backend
   const trafficSources = useMemo(() => {
-    if (!trafficAnalysis?.trafficSources?.length) return [];
+    if (!trafficAnalysis?.trafficSources?.length) {
+      return [];
+    }
 
     const values = trafficAnalysis.trafficSources.map(({ label, value }) => ({
       label,
@@ -89,9 +91,11 @@ export const WebsiteCredibility: FunctionComponent<{
     const existingOtherIdx = values.findIndex(({ label }) => label === 'other');
 
     if (existingOtherIdx > -1) {
-      values[existingOtherIdx]!.value = values[existingOtherIdx]!.value + remainder;
+      values[existingOtherIdx]!.value = Number(
+        (values[existingOtherIdx]!.value + remainder).toFixed(2),
+      );
     } else if (remainder > 0) {
-      values.push({ label: 'other', value: remainder });
+      values.push({ label: 'other', value: Number(remainder.toFixed(2)) });
     }
 
     return values;

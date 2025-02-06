@@ -179,7 +179,7 @@ describe('useField', () => {
       expect(mockValidate).toHaveBeenCalled();
     });
 
-    it('should not validate when validateOnBlur is false', () => {
+    it('should not validate when validateOnBlur is false', async () => {
       vi.mocked(useDynamicForm).mockReturnValue({
         fieldHelpers: mockFieldHelpers,
         values: {},
@@ -191,13 +191,13 @@ describe('useField', () => {
 
       const { result } = renderHook(() => useField(mockElement, mockStack));
 
-      result.current.onBlur();
+      await result.current.onBlur();
 
       expect(mockSendEvent).toHaveBeenCalledWith('onBlur');
       expect(mockValidate).not.toHaveBeenCalled();
     });
 
-    it('should set touched state after validation delay', () => {
+    it('should set touched state after validation delay', async () => {
       vi.mocked(useDynamicForm).mockReturnValue({
         fieldHelpers: mockFieldHelpers,
         values: {},
@@ -210,9 +210,9 @@ describe('useField', () => {
 
       const { result } = renderHook(() => useField(mockElement, mockStack));
 
-      result.current.onBlur();
-
       expect(mockSetTouched).not.toHaveBeenCalled();
+
+      await result.current.onBlur();
 
       vi.advanceTimersByTime(120);
 
