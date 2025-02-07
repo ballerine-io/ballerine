@@ -66,6 +66,12 @@ export class CollectionFlowEntityService {
           id: entityId,
         },
       });
+
+      await transaction.document.deleteMany({
+        where: {
+          endUserId: entityId,
+        },
+      });
     });
   }
 }

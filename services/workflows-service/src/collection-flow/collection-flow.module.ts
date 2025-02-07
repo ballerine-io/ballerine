@@ -42,6 +42,7 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { CollectionFlowEntityService } from './collection-flow-entity.service';
 import { CollectionFlowEntityController } from './controllers/collection-flow.entity.controller';
+import { DocumentModule } from '@/document/document.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { CollectionFlowEntityController } from './controllers/collection-flow.en
     DataAnalyticsModule,
     RuleEngineModule,
     WorkflowModule,
+    DocumentModule
   ],
   controllers: [
     CollectionFlowController,

@@ -1,4 +1,5 @@
 import { AnyObject, ctw } from '@/common';
+import { IHttpParams } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';
 import { Input } from '@/components/atoms/Input';
 import { createTestId } from '@/components/organisms/Renderer/utils/create-test-id';
@@ -26,7 +27,7 @@ export interface IDocumentTemplate {
   issuer: {
     country: string;
   };
-  version: string;
+  version: number;
   issuingVersion: number;
   properties: AnyObject;
 }
@@ -37,6 +38,10 @@ export interface IDocumentFieldParams extends IFileFieldParams {
   pageProperty?: string;
   documentType: string;
   documentVariant: string;
+  httpParams: {
+    createDocument: IHttpParams;
+    deleteDocument: IHttpParams;
+  };
 }
 
 export const DOCUMENT_FIELD_TYPE = 'documentfield';

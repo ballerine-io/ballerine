@@ -9,6 +9,7 @@ import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useDynamicForm } from '../../../../context';
 import { IFormElement } from '../../../../types';
+import { createOrUpdateFileIdOrFileInDocuments } from '../../../DocumentField/hooks/useDocumentUpload/helpers/create-or-update-fileid-or-file-in-documents';
 import { StackProvider } from '../../../FieldList/providers/StackProvider';
 import { IEntityFieldGroupParams } from '../../EntityFieldGroup';
 import { IEntity } from '../../types';
@@ -84,7 +85,7 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
     const updatedEntities = updateEntities(entities, createdEntity);
     set(context, entitiesDestination, updatedEntities);
 
-    const documentsCreationPayload = await buildDocumentsCreationPayload(element, entity, context, {
+    const documentsCreationPayload = await buildDocumentsCreationPayload(element, context, {
       entityId: createdEntityId,
       workflowId: metadata.workflowId as string,
       stack: stack,
@@ -93,7 +94,14 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
     const documentUploadPromises = documentsCreationPayload.map(async document => {
       const documentId = await uploadDocument(document.payload);
 
-      set(context, document.valueDestination, documentId);
+      const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
+        get(context, document.valueDestination, []),
+        document.documentDefinition,
+        documentId,
+      );
+
+      set(context, document.valueDestination, updatedDocuments);
+      debugger;
 
       return documentId;
     });

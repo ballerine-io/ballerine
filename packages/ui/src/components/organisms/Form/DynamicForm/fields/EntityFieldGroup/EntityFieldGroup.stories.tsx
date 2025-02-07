@@ -176,7 +176,7 @@ const ubosSchema: Array<IFormElement<any, any>> = [
           },
         },
         uploadDocument: {
-          url: '{apiUrl}external/documents',
+          url: '{apiUrl}collection-flow/files',
           method: 'POST',
           headers: {
             Authorization: 'Bearer {token}',
@@ -403,6 +403,17 @@ const ubosSchema: Array<IFormElement<any, any>> = [
             },
             properties: {},
           },
+          documentType: 'document',
+          documentVariant: 'front',
+          httpParams: {
+            deleteDocument: {
+              url: '{apiUrl}collection-flow/files',
+              method: 'DELETE',
+              headers: {
+                Authorization: 'Bearer {token}',
+              },
+            },
+          },
         },
       },
     ],
@@ -440,8 +451,8 @@ const initialUbosContext = {
 
 const metadata = {
   apiUrl: 'http://localhost:3000/api/v1/',
-  token: '8ec91e21-38fd-4f60-8957-002787b8c46a',
-  workflowId: 'cm6teyzqb0004tl9bul1fsc78',
+  token: 'e3a69aa3-c1ad-42f3-87ac-5105cff81a94',
+  workflowId: 'cm6ufmpme0004tl7sqoxwlah4',
 };
 
 export const UbosFieldGroup = () => {
