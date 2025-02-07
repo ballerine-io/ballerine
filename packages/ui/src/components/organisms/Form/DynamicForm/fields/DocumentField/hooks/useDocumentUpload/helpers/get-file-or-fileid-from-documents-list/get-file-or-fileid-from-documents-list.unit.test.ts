@@ -1,6 +1,6 @@
 import { IFormElement } from '@/components/organisms/Form/DynamicForm/types';
 import { describe, expect, it } from 'vitest';
-import { IDocumentFieldParams } from '../../../../DocumentField';
+import { IDocumentFieldParams, IDocumentTemplate } from '../../../../DocumentField';
 import { getFileOrFileIdFromDocumentsList } from './get-file-or-fileid-from-documents-list';
 
 describe('getFileOrFileIdFromDocumentsList', () => {
@@ -11,11 +11,32 @@ describe('getFileOrFileIdFromDocumentsList', () => {
     params: {
       template: {
         id: 'doc-1',
-        pages: [],
+        category: 'test',
+        type: 'test',
+        issuer: {
+          country: 'test',
+        },
+        version: 1,
+        issuingVersion: 1,
+        properties: {
+          pages: [],
+        },
       },
       pageIndex: 0,
       pageProperty: 'ballerineFileId',
-    },
+      documentType: 'test',
+      documentVariant: 'test',
+      httpParams: {
+        createDocument: {
+          url: '',
+          resultPath: '',
+        },
+        deleteDocument: {
+          url: '',
+          resultPath: '',
+        },
+      },
+    } as unknown as IDocumentFieldParams,
   };
 
   it('should return undefined when documentsList is empty', () => {
@@ -24,27 +45,45 @@ describe('getFileOrFileIdFromDocumentsList', () => {
   });
 
   it('should return undefined when document with matching template id is not found', () => {
-    const documentsList = [
+    const documentsList: IDocumentTemplate[] = [
       {
         id: 'different-doc',
-        pages: [],
+        category: 'test',
+        type: 'test',
+        issuer: {
+          country: 'test',
+        },
+        version: 1,
+        issuingVersion: 1,
+        properties: {
+          pages: [],
+        },
       },
-    ] as Array<IDocumentFieldParams['template']>;
+    ];
     const result = getFileOrFileIdFromDocumentsList(documentsList, mockElement);
     expect(result).toBeUndefined();
   });
 
   it('should return file id when matching document is found', () => {
-    const documentsList = [
+    const documentsList: IDocumentTemplate[] = [
       {
         id: 'doc-1',
-        pages: [
-          {
-            ballerineFileId: 'file-123',
-          },
-        ],
+        category: 'test',
+        type: 'test',
+        issuer: {
+          country: 'test',
+        },
+        version: 1,
+        issuingVersion: 1,
+        properties: {
+          pages: [
+            {
+              ballerineFileId: 'file-123',
+            },
+          ],
+        },
       },
-    ] as unknown as Array<IDocumentFieldParams['template']>;
+    ];
     const result = getFileOrFileIdFromDocumentsList(documentsList, mockElement);
     expect(result).toBe('file-123');
   });
@@ -56,16 +95,25 @@ describe('getFileOrFileIdFromDocumentsList', () => {
       valueDestination: 'documents',
     };
 
-    const documentsList = [
+    const documentsList: IDocumentTemplate[] = [
       {
-        id: undefined,
-        pages: [
-          {
-            ballerineFileId: 'file-123',
-          },
-        ],
+        id: 'doc-1',
+        category: 'test',
+        type: 'test',
+        issuer: {
+          country: 'test',
+        },
+        version: 1,
+        issuingVersion: 1,
+        properties: {
+          pages: [
+            {
+              ballerineFileId: 'file-123',
+            },
+          ],
+        },
       },
-    ] as unknown as Array<IDocumentFieldParams['template']>;
+    ];
 
     const result = getFileOrFileIdFromDocumentsList(documentsList, elementWithoutParams);
     expect(result).toBe('file-123');
@@ -80,17 +128,35 @@ describe('getFileOrFileIdFromDocumentsList', () => {
         pageIndex: 1,
         template: {
           id: 'doc-1',
-          pages: [{ customFileId: 'file-1' }, { customFileId: 'file-2' }],
+          category: 'test',
+          type: 'test',
+          issuer: {
+            country: 'test',
+          },
+          version: 1,
+          issuingVersion: 1,
+          properties: {
+            pages: [{ customFileId: 'file-1' }, { customFileId: 'file-2' }],
+          },
         },
       },
     } as unknown as IFormElement<'documentfield', IDocumentFieldParams>;
 
-    const documentsList = [
+    const documentsList: IDocumentTemplate[] = [
       {
         id: 'doc-1',
-        pages: [{ customFileId: 'file-1' }, { customFileId: 'file-2' }],
+        category: 'test',
+        type: 'test',
+        issuer: {
+          country: 'test',
+        },
+        version: 1,
+        issuingVersion: 1,
+        properties: {
+          pages: [{ customFileId: 'file-1' }, { customFileId: 'file-2' }],
+        },
       },
-    ] as unknown as Array<IDocumentFieldParams['template']>;
+    ];
 
     const result = getFileOrFileIdFromDocumentsList(documentsList, customElement);
     expect(result).toBe('file-2');

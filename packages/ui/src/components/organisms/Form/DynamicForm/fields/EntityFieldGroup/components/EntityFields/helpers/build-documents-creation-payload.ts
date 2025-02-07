@@ -8,7 +8,6 @@ import { getFileOrFileIdFromDocumentsList } from '../../../../DocumentField/hook
 import { IEntityFieldGroupParams } from '../../../EntityFieldGroup';
 
 interface IDocumentCreationDependencies {
-  workflowId: string;
   entityId: string;
   stack: TDeepthLevelStack;
 }
@@ -33,35 +32,39 @@ export const buildDocumentsCreationPayload = (
 
   const { entityId, stack } = dependencies;
   const documentPayload: IDocumentCreationResult[] = [];
+  const entities = get(context, element.valueDestination, []);
 
-  for (let index = 0; index < documentElements.length; index++) {
-    const documentElement = documentElements[index]!;
-    const documentDestination = formatValueDestination(documentElement.valueDestination, [
-      ...(stack || []),
-      index,
-    ]);
+  // Outer loop for correct index calculation
+  for (let entityIndex = 0; entityIndex < entities.length; entityIndex++) {
+    // Inner loop for document elements, each entity can have multiple document fields
+    for (const documentElement of documentElements) {
+      if (!documentElement?.params?.template) {
+        console.warn('No template found for document field', documentElement);
+        continue;
+      }
 
-    const documentFile = getFileOrFileIdFromDocumentsList(
-      get(context, documentDestination),
-      documentElement,
-    );
+      const documentDestination = formatValueDestination(documentElement.valueDestination, [
+        ...(stack || []),
+        entityIndex,
+      ]);
 
-    if (!documentFile || !(documentFile instanceof File)) {
-      continue;
+      const documentFile = getFileOrFileIdFromDocumentsList(
+        get(context, documentDestination),
+        documentElement,
+      );
+
+      if (!documentFile || !(documentFile instanceof File)) {
+        continue;
+      }
+
+      const payload = buildDocumentFormData(documentElement, { entityId }, documentFile);
+
+      documentPayload.push({
+        payload,
+        documentDefinition: documentElement,
+        valueDestination: documentDestination,
+      });
     }
-
-    if (!documentElement?.params?.template) {
-      console.warn('No template found for document field', documentElement);
-      continue;
-    }
-
-    const payload = buildDocumentFormData(documentElement, { entityId }, documentFile);
-
-    documentPayload.push({
-      payload,
-      documentDefinition: documentElement,
-      valueDestination: documentDestination,
-    });
   }
 
   return documentPayload;

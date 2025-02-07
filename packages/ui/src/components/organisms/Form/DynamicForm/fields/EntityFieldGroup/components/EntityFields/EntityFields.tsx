@@ -12,6 +12,8 @@ import { IFormElement } from '../../../../types';
 import { createOrUpdateFileIdOrFileInDocuments } from '../../../DocumentField/hooks/useDocumentUpload/helpers/create-or-update-fileid-or-file-in-documents';
 import { StackProvider } from '../../../FieldList/providers/StackProvider';
 import { IEntityFieldGroupParams } from '../../EntityFieldGroup';
+import { useEntitySync } from '../../hooks/useEntitySync';
+import { EntityFieldProvider } from '../../providers/EntityFieldProvider';
 import { IEntity } from '../../types';
 import { buildDocumentsCreationPayload } from './helpers/build-documents-creation-payload';
 import { buildEntityCreationPayload } from './helpers/build-entity-for-creation';
@@ -56,6 +58,7 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
   const { createEntityText = 'Create' } = element.params || {};
 
   const isValid = useEntityFieldsIsValid(element, index);
+  const { isSyncing } = useEntitySync(element, entity, stack, isValid);
 
   const createEntityAndUploadDocuments = useCallback(async () => {
     setIsCreatingEntity(true);
@@ -73,9 +76,8 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
     } catch (error) {
       console.error(error);
       toast.error('Failed to create entity.');
-      throw error;
-    } finally {
       setIsCreatingEntity(false);
+      throw error;
     }
 
     const entities = get(context, entitiesDestination, []);
@@ -87,7 +89,6 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
 
     const documentsCreationPayload = await buildDocumentsCreationPayload(element, context, {
       entityId: createdEntityId,
-      workflowId: metadata.workflowId as string,
       stack: stack,
     });
 
@@ -101,7 +102,6 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
       );
 
       set(context, document.valueDestination, updatedDocuments);
-      debugger;
 
       return documentId;
     });
@@ -114,56 +114,59 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
       console.error(error);
 
       toast.error('Failed to upload documents.');
-      throw error;
-    } finally {
       setIsCreatingEntity(false);
+      throw error;
     }
 
-    toast.success('Entity created successfully.');
-  }, [stack, element, values, createEntity, uploadDocument, metadata, entity, onChange]);
+    setIsCreatingEntity(false);
 
-  const childrens = useChildrenDisabledOnLock(element, false);
+    toast.success('Entity created successfully.');
+  }, [stack, element, values, createEntity, uploadDocument, entity, onChange]);
+
+  const childrens = useChildrenDisabledOnLock(element, isCreatingEntity);
 
   const isShouldRenderLoading = useMemo(() => {
-    return isRemovingEntity || isCreatingEntity;
-  }, [isRemovingEntity, isCreatingEntity]);
+    return isRemovingEntity || isCreatingEntity || isSyncing;
+  }, [isRemovingEntity, isCreatingEntity, isSyncing]);
 
   return (
-    <div
-      key={`${fieldId}-${entityId}`}
-      className="flex flex-col gap-2"
-      data-testid={`${fieldId}-fieldlist-item-${entityId}`}
-    >
-      <div className="flex flex-row justify-between">
-        <Button
-          variant="outline"
-          onClick={createEntityAndUploadDocuments}
-          disabled={entity?.id ? true : isCreatingEntity || !isValid}
-        >
-          {createEntityText}
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          disabled={isShouldRenderLoading}
-          onClick={isShouldRenderLoading ? undefined : onRemoveClick}
-        >
-          {isShouldRenderLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Trash2Icon
-              className="w-4 h-4 cursor-pointer font-bold"
-              data-testid={`${fieldId}-fieldlist-item-remove-${entityId}`}
-            />
-          )}
-        </Button>
+    <EntityFieldProvider isSyncing={isSyncing} entityFieldGroupType={element.params?.type}>
+      <div
+        key={`${fieldId}-${entityId}`}
+        className="flex flex-col gap-2"
+        data-testid={`${fieldId}-fieldlist-item-${entityId}`}
+      >
+        <div className="flex flex-row justify-between">
+          <Button
+            variant="outline"
+            onClick={createEntityAndUploadDocuments}
+            disabled={entity?.id ? true : isCreatingEntity || !isValid}
+          >
+            {createEntityText}
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            disabled={isShouldRenderLoading}
+            onClick={isShouldRenderLoading ? undefined : onRemoveClick}
+          >
+            {isShouldRenderLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Trash2Icon
+                className="w-4 h-4 cursor-pointer font-bold"
+                data-testid={`${fieldId}-fieldlist-item-remove-${entityId}`}
+              />
+            )}
+          </Button>
+        </div>
+        <StackProvider stack={[...(stack || []), index]}>
+          <Renderer
+            elements={childrens || []}
+            schema={elementsOverride as unknown as TRendererSchema}
+          />
+        </StackProvider>
       </div>
-      <StackProvider stack={[...(stack || []), index]}>
-        <Renderer
-          elements={childrens || []}
-          schema={elementsOverride as unknown as TRendererSchema}
-        />
-      </StackProvider>
-    </div>
+    </EntityFieldProvider>
   );
 };

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DOCUMENT_FIELD_TYPE, IDocumentFieldParams } from '../../../../fields';
+import { DOCUMENT_FIELD_TYPE, IDocumentFieldParams, IDocumentTemplate } from '../../../../fields';
 import { TBaseFields } from '../../../../repositories';
 import { IFormElement } from '../../../../types';
 import { documentFieldValueCleaner } from './documentfield-value-cleaner';
@@ -12,9 +12,11 @@ describe('documentFieldValueCleaner', () => {
     params: {
       template: {
         id: 'template-1',
-        pages: [],
-      },
-    },
+      } as IDocumentTemplate,
+      documentType: 'document',
+      documentVariant: 'variant',
+      httpParams: {} as IDocumentFieldParams['httpParams'],
+    } as IDocumentFieldParams,
   };
 
   it('should return undefined if value is not an array', () => {

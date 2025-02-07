@@ -1,5 +1,6 @@
 import { TEntityFieldGroupType } from '../../EntityFieldGroup';
 
-export interface IEntityFieldGroupTypeContext {
+export interface IEntityFieldProviderContext {
   entityFieldGroupType?: TEntityFieldGroupType;
+  isSyncing: boolean;
 }

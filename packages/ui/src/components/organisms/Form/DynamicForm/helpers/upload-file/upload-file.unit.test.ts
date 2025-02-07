@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import axios from 'axios';
+import { IDocumentFieldParams } from '../../fields';
 import { uploadFile } from './upload-file';
 
 vi.mock('axios');
@@ -16,9 +17,9 @@ describe('uploadFile', () => {
   };
 
   it('should throw error if no params provided', async () => {
-    await expect(uploadFile(mockFile, undefined)).rejects.toThrow(
-      'Upload settings are required to upload a file',
-    );
+    await expect(
+      uploadFile(mockFile, {} as IDocumentFieldParams['uploadSettings']),
+    ).rejects.toThrow('Upload settings are required to upload a file');
   });
 
   it('should upload file successfully and return result from specified path', async () => {
