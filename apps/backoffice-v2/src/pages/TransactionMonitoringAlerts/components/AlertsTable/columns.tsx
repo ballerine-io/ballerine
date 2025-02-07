@@ -32,8 +32,8 @@ export const columns = [
         return <TextWithNAFallback>{dataTimestamp}</TextWithNAFallback>;
       }
 
-      const date = dayjs(dataTimestamp).format('MMM DD, YYYY');
-      const time = dayjs(dataTimestamp).format('hh:mm');
+      const date = dayjs(dataTimestamp).local().format('MMM DD, YYYY');
+      const time = dayjs(dataTimestamp).local().format('hh:mm');
 
       return (
         <div className={`flex flex-col space-y-0.5`}>
@@ -52,8 +52,8 @@ export const columns = [
         return <TextWithNAFallback>{updatedAt}</TextWithNAFallback>;
       }
 
-      const date = dayjs(updatedAt).format('MMM DD, YYYY');
-      const time = dayjs(updatedAt).format('hh:mm');
+      const date = dayjs(updatedAt).utc(true).format('MMM DD, YYYY');
+      const time = dayjs(updatedAt).utc(false).format('hh:mm');
 
       return (
         <div className={`flex flex-col space-y-0.5`}>
