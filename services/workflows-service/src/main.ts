@@ -94,14 +94,26 @@ const main = async () => {
 
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ limit: '50mb', extended: true }));
+
+  const cookieSessionConfig = {
+    name: 'session',
+    httpOnly: env.SESSION_SECURE_COOKIE,
+    secure: env.SESSION_SECURE_COOKIE,
+    sameSite: env.SESSION_SAME_SITE,
+    maxAge: 1000 * 60 * env.SESSION_EXPIRATION_IN_MINUTES,
+  };
+
+  logger.log(`Cookie session config`, { cookieSessionConfig });
+
+  if (env.SESSION_SECURE_PROXY) {
+    // Trust the first proxy (ALB)
+    app.getHttpAdapter().getInstance().set('trust proxy', 1);
+  }
+
   app.use(
     cookieSession({
-      name: 'session',
+      ...cookieSessionConfig,
       keys: [env.SESSION_SECRET],
-      httpOnly: env.ENVIRONMENT_NAME === 'production',
-      secure: false,
-      sameSite: env.ENVIRONMENT_NAME === 'production' ? 'strict' : false,
-      maxAge: 1000 * 60 * env.SESSION_EXPIRATION_IN_MINUTES,
     }),
   );
 

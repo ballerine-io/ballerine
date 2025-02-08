@@ -20,11 +20,17 @@ fi
 # Generate a new bcrypt salt using Node.js and TypeScript
 cd $WF_FOLDER
 secret_value=$(npx tsx "$WF_FOLDER/scripts/generate-salt.ts")
+encryption_key_value=$(npx tsx "$WF_FOLDER/scripts/generate-encryption-key.ts")
 cd $PARENT_DIR
 
 # Check if secret_value is empty
 if [[ -z "$secret_value" ]]; then
     echo "Error: Unable to generate salt. Exiting..."
+    exit 1
+fi
+
+if [[ -z "$encryption_key_value" ]]; then
+    echo "Error: Unable to generate encryption key. Exiting..."
     exit 1
 fi
 
@@ -52,9 +58,15 @@ update_env_file() {
   for file in "$env_file" "$env_example_file" "$deploy_env_file"; do
     grep -v '^HASHING_KEY_SECRET_BASE64=' "$file" > "${file}.tmp" && mv "${file}.tmp" "$file"
     echo -e "HASHING_KEY_SECRET_BASE64=$sanitized_value" >> "$file"
+
+    grep -v '^SESSION_ENCRYPTION_SECRET=' "$file" > "${file}.tmp" && mv "${file}.tmp" "$file"
+    echo -e "SESSION_ENCRYPTION_SECRET=$encryption_key_value" >> "$file"
+
   done
   
   echo "HASHING_KEY_SECRET_BASE64 has been set in the .env file with value: $adjusted_value"
+  echo "SESSION_ENCRYPTION_SECRET has been set in the .env file with value: $encryption_key_value"
+
 }
 
 # Detect the operating system
