@@ -22,6 +22,48 @@ export const serverEnvSchema = {
   BCRYPT_SALT: z.coerce.number().int().nonnegative().or(z.string()),
   PORT: z.coerce.number(),
   DB_URL: z.string().url(),
+
+  SESSION_ENCRYPTION_SECRET: z.string(),
+  SESSION_SAME_SITE: z
+    .union([
+      z.literal('strict'),
+      z.literal('lax'),
+      z.literal('none'),
+      z.literal('true'),
+      z.literal('false'),
+      z.boolean(),
+    ])
+    .transform(val => {
+      if (val === 'true') {
+        return true;
+      }
+
+      if (val === 'false') {
+        return false;
+      }
+
+      return val;
+    })
+    .default(false),
+
+  SESSION_HTTP_ONLY: z
+    .union([z.literal('true'), z.literal('false'), z.boolean()])
+    .transform(val => {
+      return val === 'true';
+    })
+    .default(false),
+
+  SESSION_SECURE_COOKIE: z
+    .union([z.literal('true'), z.literal('false'), z.boolean()])
+    .transform((val: unknown) => val === 'true')
+    .default(false),
+
+  SESSION_SECURE_PROXY: z
+    .union([z.literal('true'), z.literal('false'), z.boolean()])
+    .transform(val => {
+      return val === 'true';
+    })
+    .default(false),
   SESSION_SECRET: z.string(),
   HASHING_KEY_SECRET: z.string().optional(),
   HASHING_KEY_SECRET_BASE64: z.string().refine(Base64.isValid).optional(),
