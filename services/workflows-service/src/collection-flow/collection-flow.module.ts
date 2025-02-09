@@ -57,7 +57,7 @@ import { DocumentModule } from '@/document/document.module';
     DataAnalyticsModule,
     RuleEngineModule,
     WorkflowModule,
-    DocumentModule
+    DocumentModule,
   ],
   controllers: [
     CollectionFlowController,
