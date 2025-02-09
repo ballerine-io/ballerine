@@ -3,7 +3,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useHttp } from './useHttp';
 import { request } from './utils/request';
 
-vi.mock('./utils/request');
+vi.mock('./utils/request', () => ({
+  request: vi.fn(),
+}));
 
 describe('useHttp', () => {
   const mockParams = {
@@ -42,7 +44,15 @@ describe('useHttp', () => {
 
     const response = await result.current.run();
 
-    expect(request).toHaveBeenCalledWith(mockParams, mockMetadata, undefined);
+    expect(request).toHaveBeenCalledWith(
+      {
+        ...mockParams,
+        url: mockParams.url,
+      },
+      mockMetadata,
+      undefined,
+      undefined,
+    );
     expect(response).toEqual(['item1', 'item2']);
     expect(result.current.isLoading).toBe(false);
     expect(result.current.error).toBeNull();
@@ -56,7 +66,15 @@ describe('useHttp', () => {
 
     await result.current.run(payload);
 
-    expect(request).toHaveBeenCalledWith(mockParams, mockMetadata, payload);
+    expect(request).toHaveBeenCalledWith(
+      {
+        ...mockParams,
+        url: mockParams.url,
+      },
+      mockMetadata,
+      payload,
+      undefined,
+    );
   });
 
   it('should handle request without resultPath', async () => {
@@ -81,7 +99,7 @@ describe('useHttp', () => {
 
     const { result, rerender } = renderHook(() => useHttp(mockParams, mockMetadata));
 
-    await result.current.run();
+    await expect(result.current.run()).rejects.toThrow('Test error');
 
     rerender();
 
@@ -101,10 +119,31 @@ describe('useHttp', () => {
 
     const promise = result.current.run();
     rerender();
+
     expect(result.current.isLoading).toBe(true);
 
     await promise;
+
     rerender();
     expect(result.current.isLoading).toBe(false);
+  });
+
+  it('should handle request with additional params', async () => {
+    vi.mocked(request).mockResolvedValueOnce(mockResponse);
+    const additionalParams = { page: 1 };
+
+    const { result } = renderHook(() => useHttp(mockParams, mockMetadata));
+
+    await result.current.run(undefined, { params: additionalParams });
+
+    expect(request).toHaveBeenCalledWith(
+      {
+        ...mockParams,
+        url: mockParams.url,
+      },
+      mockMetadata,
+      undefined,
+      additionalParams,
+    );
   });
 });

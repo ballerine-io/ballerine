@@ -33,6 +33,8 @@ export const useHttp = (params: IHttpParams, metadata: AnyObject) => {
       } catch (error) {
         console.error(error);
         setResponseError(error as Error);
+
+        throw error;
       } finally {
         setIsLoading(false);
       }

@@ -97,6 +97,7 @@ model EndUser {
   project                  Project                    @relation(fields: [projectId], references: [id])
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
   Counterparty             Counterparty[]
+  documents                Document[]
 
   @@unique([projectId, correlationId])
   @@index([endUserType])
@@ -148,7 +149,7 @@ model Business {
   shareholderStructure    Json? // Information about the ownership structure, including shareholders and their ownership percentages
   numberOfEmployees       Int? // Number of employees working for the business entity
   businessPurpose         String? // Brief description of the business entity's purpose or main activities
-  documents               Json? // Collection of documents required for the KYB process, e.g., registration documents, financial statements
+  documents               Document[] // Collection of documents required for the KYB process, e.g., registration documents, financial statements
   avatarUrl               String?
   additionalInfo          Json?
   bankInformation         Json?
@@ -282,6 +283,7 @@ model WorkflowRuntimeData {
   childWorkflowsRuntimeData WorkflowRuntimeData[]      @relation("ParentChild")
   WorkflowRuntimeDataToken  WorkflowRuntimeDataToken[]
   alerts                    Alert[]
+  documents                 Document[]
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
@@ -311,6 +313,8 @@ model File {
   fileNameInBucket String?
   createdAt        DateTime @default(now())
   createdBy        String   @default("SYSTEM")
+
+  documentFiles DocumentFile[]
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
@@ -419,6 +423,8 @@ model Project {
   SalesforceIntegration    SalesforceIntegration?
   workflowDefinitions      WorkflowDefinition[]
   uiDefinitions            UiDefinition[]
+  documents                Document[]
+  documentFiles            DocumentFile[]
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
   TransactionRecord        TransactionRecord[]
   AlertDefinition          AlertDefinition[]
@@ -954,4 +960,82 @@ model BusinessReport {
   @@index([riskScore])
   @@index([type])
   @@index([batchId])
+}
+
+model Document {
+  id             String           @id @default(cuid())
+
+  category       String
+  type           String
+
+  issuingVersion String
+  issuingCountry String
+  version        Int
+  status         DocumentStatus
+  decision       DocumentDecision?
+  properties     Json
+
+  files DocumentFile[]
+
+  businessId String?
+  business   Business? @relation(fields: [businessId], references: [id])
+
+  endUserId String?
+  endUser   EndUser? @relation(fields: [endUserId], references: [id])
+
+  workflowRuntimeDataId String?
+  workflowRuntimeData   WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id])
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([businessId])
+  @@index([endUserId])
+  @@index([workflowRuntimeDataId])
+}
+
+enum DocumentStatus {
+  provided
+  unprovided
+  requested
+}
+
+enum DocumentDecision {
+  approved
+  rejected
+  revisions
+}
+
+enum DocumentFileType {
+  selfie
+  document
+  other
+}
+
+enum DocumentFileVariant {
+  front
+  back
+  other
+}
+
+model DocumentFile {
+  id         String             @id @default(cuid())
+  type       DocumentFileType
+  variant    DocumentFileVariant
+  page       Int
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  fileId     String
+  file       File @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+
+  @@index([documentId])
+  @@index([fileId])
 }

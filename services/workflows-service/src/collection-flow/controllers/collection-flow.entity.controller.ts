@@ -1,9 +1,9 @@
 import { TokenScope, type ITokenScope } from '@/common/decorators/token-scope.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
-import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post, Put } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { CollectionFlowEntityService } from '../collection-flow-entity.service';
-import { CreateEntityInputDto } from '../dto/create-entity-input.dto';
+import { CreateEntityInputDto, EntityCreateDto } from '../dto/create-entity-input.dto';
 
 @UseTokenAuthGuard()
 @ApiExcludeController()
@@ -21,6 +21,11 @@ export class CollectionFlowEntityController {
       entity,
       tokenScope.projectId,
     );
+  }
+
+  @Put(':entityId')
+  async updateEntity(@Param('entityId') entityId: string, @Body() body: EntityCreateDto) {
+    return this.collectionFlowEntityService.updateEntity(entityId, body);
   }
 
   @Delete(':entityId')

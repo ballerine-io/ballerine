@@ -11,9 +11,12 @@ export const getFileOrFileIdFromDocumentsList = (
 
   const documentIndex = documentsList?.findIndex(document => document.id === template?.id);
 
-  if (documentIndex === -1) return undefined;
+  if (documentIndex === -1) {
+    return undefined;
+  }
 
   const filePath = composePathToFileId(documentIndex, pageProperty, pageIndex);
+  console.log('filePath', filePath);
   const fileOrFileId = get(documentsList, filePath, undefined);
 
   return fileOrFileId;

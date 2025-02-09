@@ -1,8 +1,8 @@
 import { useContext } from 'react';
-import { EntityFieldGroupTypeContext } from '../../../entity-field-group-type.context';
+import { EntityFieldContext } from '../../../entity-field-group-type.context';
 
 export const useEntityFieldGroupType = () => {
-  const context = useContext(EntityFieldGroupTypeContext);
+  const context = useContext(EntityFieldContext);
 
   if (!context) {
     throw new Error('useEntityFieldGroupType must be used within a EntityFieldGroupTypeProvider');

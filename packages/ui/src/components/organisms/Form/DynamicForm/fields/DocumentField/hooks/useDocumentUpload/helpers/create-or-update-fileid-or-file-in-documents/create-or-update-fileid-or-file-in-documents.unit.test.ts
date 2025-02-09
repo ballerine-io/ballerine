@@ -18,7 +18,7 @@ describe('createOrUpdateFileIdOrFileInDocuments', () => {
       template: mockTemplate,
       pageIndex: 0,
       pageProperty: 'ballerineFileId',
-    },
+    } as unknown as IDocumentFieldParams,
   };
 
   it('should create new document when documents array is empty', () => {
@@ -104,7 +104,7 @@ describe('createOrUpdateFileIdOrFileInDocuments', () => {
       params: {
         template: mockTemplate,
       },
-    };
+    } as unknown as IFormElement<'documentfield', IDocumentFieldParams>;
 
     const result = createOrUpdateFileIdOrFileInDocuments(
       [],

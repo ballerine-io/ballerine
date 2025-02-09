@@ -1,4 +1,5 @@
-import { ctw } from '@/common';
+import { AnyObject, ctw } from '@/common';
+import { IHttpParams } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';
 import { Input } from '@/components/atoms/Input';
 import { createTestId } from '@/components/organisms/Renderer/utils/create-test-id';
@@ -19,15 +20,29 @@ import { useDocumentUpload } from './hooks/useDocumentUpload';
 import { getFileOrFileIdFromDocumentsList } from './hooks/useDocumentUpload/helpers/get-file-or-fileid-from-documents-list';
 import { removeDocumentFromListByTemplateId } from './hooks/useDocumentUpload/helpers/remove-document-from-list-by-template-id';
 
-export interface IDocumentFieldParams<
-  TTemplate extends { id: string; pages: Array<{ [key: string]: string }> } = {
-    id: string;
-    pages: [];
-  },
-> extends IFileFieldParams {
-  template: TTemplate;
+export interface IDocumentTemplate {
+  id: string;
+  category: string;
+  type: string;
+  issuer: {
+    country: string;
+  };
+  version: number;
+  issuingVersion: number;
+  properties: AnyObject;
+  pages: AnyObject[];
+}
+
+export interface IDocumentFieldParams extends IFileFieldParams {
+  template: IDocumentTemplate;
   pageIndex?: number;
   pageProperty?: string;
+  documentType: string;
+  documentVariant: string;
+  httpParams: {
+    createDocument: IHttpParams;
+    deleteDocument: IHttpParams;
+  };
 }
 
 export const DOCUMENT_FIELD_TYPE = 'documentfield';
