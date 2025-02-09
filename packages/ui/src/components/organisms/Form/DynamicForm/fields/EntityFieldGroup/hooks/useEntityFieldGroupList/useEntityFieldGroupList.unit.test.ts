@@ -46,6 +46,12 @@ describe('useEntityFieldGroupList', () => {
       run: vi.fn(),
       isLoading: false,
     } as unknown as ReturnType<typeof useHttp>);
+
+    Object.defineProperty(window, 'crypto', {
+      value: {
+        randomUUID: vi.fn(),
+      },
+    });
   });
 
   it('should initialize with empty array if no value provided', () => {
@@ -61,15 +67,13 @@ describe('useEntityFieldGroupList', () => {
     } as unknown as ReturnType<typeof useField>);
 
     const mockUUID = '123-456';
-    const cryptoSpy = vi.spyOn(crypto, 'randomUUID');
-    cryptoSpy.mockReturnValue(mockUUID as any);
+    vi.mocked(window.crypto.randomUUID).mockReturnValue(mockUUID);
 
     const { result } = renderHook(() => useEntityFieldGroupList({ element: mockElement }));
 
     await result.current.addItem();
 
     expect(mockOnChange).toHaveBeenCalledWith([{ __id: mockUUID }]);
-    cryptoSpy.mockRestore();
   });
 
   describe('when entity is not created', () => {
