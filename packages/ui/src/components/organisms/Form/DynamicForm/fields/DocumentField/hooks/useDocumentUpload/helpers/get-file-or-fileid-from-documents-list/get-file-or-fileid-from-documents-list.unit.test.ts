@@ -54,10 +54,9 @@ describe('getFileOrFileIdFromDocumentsList', () => {
           country: 'test',
         },
         version: 1,
+        pages: [],
         issuingVersion: 1,
-        properties: {
-          pages: [],
-        },
+        properties: {},
       },
     ];
     const result = getFileOrFileIdFromDocumentsList(documentsList, mockElement);
