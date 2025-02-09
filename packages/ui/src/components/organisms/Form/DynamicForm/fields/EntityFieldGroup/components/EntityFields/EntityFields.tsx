@@ -1,3 +1,4 @@
+import { AnyObject } from '@/common';
 import { useHttp } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';
 import { formatValueDestination, TDeepthLevelStack } from '@/components/organisms/Form/Validator';
@@ -67,7 +68,16 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
 
     const entitiesDestination = formatValueDestination(element.valueDestination, stack);
 
-    const createEntityPayload = await buildEntityCreationPayload(element, entity, context);
+    let createEntityPayload: AnyObject;
+
+    try {
+      createEntityPayload = await buildEntityCreationPayload(element, entity, context);
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to build entity creation payload.');
+      setIsCreatingEntity(false);
+      throw error;
+    }
 
     let createdEntityId: string;
 

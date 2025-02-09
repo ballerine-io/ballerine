@@ -20,7 +20,7 @@ export const useFileUpload = (
   const { addTask, removeTask } = useTaskRunner();
   const { metadata } = useDynamicForm();
 
-  const { run, isLoading } = useHttp(element.params!.uploadSettings, metadata);
+  const { run, isLoading } = useHttp(element.params!.httpParams!.createDocument || {}, metadata);
 
   const { onChange } = useField(element);
 
@@ -28,9 +28,9 @@ export const useFileUpload = (
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       removeTask(id);
 
-      const { uploadSettings } = params;
+      const { createDocument } = params?.httpParams || {};
 
-      if (!uploadSettings) {
+      if (!createDocument) {
         onChange(e.target?.files?.[0] as File);
         console.log('Failed to upload, no upload settings provided');
 
