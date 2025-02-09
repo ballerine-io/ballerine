@@ -8,6 +8,7 @@ import { OverallRiskLevel } from '@/common/components/molecules/OverallRiskLevel
 import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
 import { RiskIndicatorsSummary, toRiskLabels } from '@ballerine/ui';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
+import { DocumentTracker } from '@/common/components/molecules/DocumentTracker/DocumentTracker';
 
 export const CaseOverview = ({ processes }: { processes: string[] }) => {
   const { search } = useLocation();
@@ -65,6 +66,7 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
         />
       )}
       <ProcessTracker workflow={workflow} plugins={plugins} processes={processes} />
+      <DocumentTracker workflow={workflow} plugins={plugins} processes={processes} />
       {workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled && (
         <RiskIndicatorsSummary riskIndicators={riskIndicators} Link={RiskIndicatorLink} />
       )}
