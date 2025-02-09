@@ -1,6 +1,9 @@
-import { deserializeDocumentId } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/serialize-document-id';
 import { UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
+
+const deserializeDocumentId = (id: string) => {
+  return id;
+};
 
 export const findDefinitionByName = (
   name: string,

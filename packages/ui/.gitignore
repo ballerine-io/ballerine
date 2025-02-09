@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 vite.config.ts.timestamp-*.mjs
 tsconfig.tsbuildinfo
+./src/main.tsx

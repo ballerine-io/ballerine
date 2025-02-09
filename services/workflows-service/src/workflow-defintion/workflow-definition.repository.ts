@@ -159,6 +159,7 @@ export class WorkflowDefinitionRepository {
     if (workflowDefinition?.isPublic) {
       throw new Error('Cannot delete public workflow definition templates');
     }
+
     return await this.prisma.workflowDefinition.delete(
       this.scopeService.scopeDelete(
         {
