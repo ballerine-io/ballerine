@@ -5,7 +5,7 @@ import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-block
 export const useBankAccountVerificationBlock = ({ pluginsOutput }) => {
   return useMemo(() => {
     if (
-      Object.keys(pluginsOutput?.bankAccountVerification?.data.clientResponsePayload ?? {})
+      Object.keys(pluginsOutput?.bankAccountVerification?.data?.clientResponsePayload ?? {})
         .length === 0
     ) {
       return [];
@@ -65,7 +65,7 @@ export const useBankAccountVerificationBlock = ({ pluginsOutput }) => {
       })
       .build();
   }, [
-    pluginsOutput?.bankAccountVerification?.data.clientResponsePayload,
-    pluginsOutput?.bankAccountVerification?.data.responseHeader.overallResponse,
+    pluginsOutput?.bankAccountVerification?.data?.clientResponsePayload,
+    pluginsOutput?.bankAccountVerification?.data?.responseHeader?.overallResponse,
   ]);
 };
