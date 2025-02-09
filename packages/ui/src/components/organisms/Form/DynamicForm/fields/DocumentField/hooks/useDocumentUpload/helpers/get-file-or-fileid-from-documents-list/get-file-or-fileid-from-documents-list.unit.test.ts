@@ -75,13 +75,12 @@ describe('getFileOrFileIdFromDocumentsList', () => {
         },
         version: 1,
         issuingVersion: 1,
-        properties: {
-          pages: [
-            {
-              ballerineFileId: 'file-123',
-            },
-          ],
-        },
+        pages: [
+          {
+            ballerineFileId: 'file-123',
+          },
+        ],
+        properties: {},
       },
     ];
     const result = getFileOrFileIdFromDocumentsList(documentsList, mockElement);
@@ -93,7 +92,14 @@ describe('getFileOrFileIdFromDocumentsList', () => {
       id: 'test-doc',
       element: 'documentfield',
       valueDestination: 'documents',
-    };
+      params: {
+        template: {
+          id: 'doc-1',
+          category: 'test',
+          type: 'test',
+        } as IDocumentTemplate,
+      },
+    } as unknown as IFormElement<'documentfield', IDocumentFieldParams>;
 
     const documentsList: IDocumentTemplate[] = [
       {
@@ -105,13 +111,12 @@ describe('getFileOrFileIdFromDocumentsList', () => {
         },
         version: 1,
         issuingVersion: 1,
-        properties: {
-          pages: [
-            {
-              ballerineFileId: 'file-123',
-            },
-          ],
-        },
+        properties: {},
+        pages: [
+          {
+            ballerineFileId: 'file-123',
+          },
+        ],
       },
     ];
 
@@ -152,9 +157,8 @@ describe('getFileOrFileIdFromDocumentsList', () => {
         },
         version: 1,
         issuingVersion: 1,
-        properties: {
-          pages: [{ customFileId: 'file-1' }, { customFileId: 'file-2' }],
-        },
+        properties: {},
+        pages: [{ customFileId: 'file-1' }, { customFileId: 'file-2' }],
       },
     ];
 

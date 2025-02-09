@@ -17,6 +17,8 @@ describe('uploadFile', () => {
   };
 
   it('should throw error if no params provided', async () => {
+    mockedAxios.mockRejectedValueOnce(new Error('Upload settings are required to upload a file'));
+
     await expect(
       uploadFile(mockFile, {} as IDocumentFieldParams['uploadSettings']),
     ).rejects.toThrow('Upload settings are required to upload a file');

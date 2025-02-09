@@ -30,6 +30,7 @@ export interface IDocumentTemplate {
   version: number;
   issuingVersion: number;
   properties: AnyObject;
+  pages: any[];
 }
 
 export interface IDocumentFieldParams extends IFileFieldParams {
