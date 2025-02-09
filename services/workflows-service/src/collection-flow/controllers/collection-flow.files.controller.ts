@@ -58,27 +58,6 @@ export class CollectionFlowFilesController {
     description: 'Document created successfully',
     schema: Type.Array(Type.Record(Type.String(), Type.Any())),
   })
-  // TODO: Fix, Validate removes token scope from request
-  // @Validate({
-  //   request: [
-  //     {
-  //       type: 'query',
-  //       schema: Type.Any(),
-  //       name: 'token',
-  //     },
-  //     {
-  //       type: 'body',
-  //       schema: Type.Composite([
-  //         Type.Omit(CreateDocumentSchema, ['properties', 'workflowRuntimeDataId']),
-  //         Type.Object({
-  //           metadata: Type.String(),
-  //           properties: Type.String(),
-  //         }),
-  //       ]),
-  //     },
-  //   ],
-  //   response: Type.Any(),
-  // })
   async createDocument(
     @TokenScope() tokenScope: ITokenScope,
     @Body()
@@ -134,16 +113,6 @@ export class CollectionFlowFilesController {
     description: 'Documents deleted successfully',
     schema: Type.Array(Type.Record(Type.String(), Type.Any())),
   })
-  // TODO: Fix, Validate removes token scope from request
-  // @Validate({
-  //   request: [
-  //     {
-  //       type: 'body',
-  //       schema: DeleteDocumentsSchema,
-  //     },
-  //   ],
-  //   response: Type.Any(),
-  // })
   async deleteDocumentsByIds(
     @TokenScope() tokenScope: ITokenScope,
     @Body() { ids }: Static<typeof DeleteDocumentsSchema>,
