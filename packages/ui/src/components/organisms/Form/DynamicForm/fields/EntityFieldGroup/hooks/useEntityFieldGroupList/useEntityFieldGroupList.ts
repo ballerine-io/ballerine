@@ -1,4 +1,5 @@
 import { useHttp } from '@/common/hooks/useHttp';
+import jsonata from 'jsonata';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
 import { useDynamicForm } from '../../../../context';
@@ -15,7 +16,7 @@ export interface IUseFieldListProps {
 export const useEntityFieldGroupList = ({ element }: IUseFieldListProps) => {
   const { stack } = useStack();
   const { onChange, value } = useField<IEntity[] | undefined>(element, stack);
-  const { metadata } = useDynamicForm();
+  const { metadata, values } = useDynamicForm();
 
   const { run: deleteEntity, isLoading } = useHttp(
     element.params!.httpParams?.deleteEntity,
@@ -23,11 +24,27 @@ export const useEntityFieldGroupList = ({ element }: IUseFieldListProps) => {
   );
 
   const addItem = useCallback(async () => {
-    const initialEntity = {
+    let initialValue = {
       __id: crypto.randomUUID(),
     };
-    onChange([...(value || []), initialEntity]);
-  }, [value, onChange]);
+    const expression = element.params?.defaultValue;
+
+    if (!expression) {
+      console.log('Default value is missing for', element.id);
+      onChange([...(value || []), initialValue]);
+
+      return;
+    }
+
+    const result = await jsonata(expression).evaluate(values);
+
+    initialValue = {
+      ...initialValue,
+      ...result,
+    };
+
+    onChange([...(value || []), initialValue]);
+  }, [value, values, onChange, element.params?.defaultValue, element.id]);
 
   const removeItem = useCallback(
     async (id: string) => {

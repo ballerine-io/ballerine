@@ -44,6 +44,7 @@ export class CollectionFlowService {
     context: WorkflowRuntimeData['context'],
     language: string,
     projectIds: TProjectIds,
+    tokenScope: ITokenScope,
     args?: Prisma.UiDefinitionFindFirstOrThrowArgs,
   ): Promise<FlowConfigurationModel> {
     const workflowDefinition = await this.workflowService.getWorkflowDefinitionById(
@@ -57,6 +58,12 @@ export class CollectionFlowService {
       'collection_flow' as const,
       projectIds,
       args,
+    );
+
+    const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
+      tokenScope.workflowRuntimeDataId,
+      {},
+      projectIds,
     );
 
     const translationService = new TranslationService(
@@ -84,6 +91,10 @@ export class CollectionFlowService {
         ? (uiDefinition.definition as unknown as UiDefDefinition)
         : undefined,
       version: uiDefinition.version,
+      metadata: {
+        businessId: workflowRuntimeData.businessId,
+        entityId: tokenScope.endUserId,
+      },
     };
   }
 
