@@ -5,7 +5,7 @@ import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-block
 export const useCommercialCreditCheckBlock = ({ pluginsOutput }) => {
   return useMemo(() => {
     if (Object.keys(pluginsOutput?.commercialCreditCheck?.data ?? {}).length === 0) {
-      return;
+      return [];
     }
 
     return createBlocksTyped()
@@ -53,5 +53,5 @@ export const useCommercialCreditCheckBlock = ({ pluginsOutput }) => {
           .buildFlat(),
       })
       .build();
-  }, [pluginsOutput.commercialCreditCheck.data]);
+  }, [pluginsOutput?.commercialCreditCheck?.data]);
 };
