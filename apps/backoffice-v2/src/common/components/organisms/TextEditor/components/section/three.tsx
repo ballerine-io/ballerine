@@ -79,7 +79,7 @@ const MemoizedColorButton = React.memo<{
     <Tooltip>
       <TooltipTrigger asChild>
         <ToggleGroupItem
-          className="size-7 relative rounded-md p-0"
+          className="relative size-7 rounded-md p-0"
           value={color.cssVar}
           aria-label={label}
           style={{ backgroundColor: color.cssVar }}
@@ -89,7 +89,7 @@ const MemoizedColorButton = React.memo<{
           }}
         >
           {isSelected && (
-            <CheckIcon className="size-6 absolute inset-0 m-auto" style={{ color: inverse }} />
+            <CheckIcon className="absolute inset-0 m-auto size-6" style={{ color: inverse }} />
           )}
         </ToggleGroupItem>
       </TooltipTrigger>
