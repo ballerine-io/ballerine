@@ -19,13 +19,15 @@ export const request = async (
   const formattedHeaders = formatHeaders(headers, metadata);
 
   try {
-    const response = await axios({
+    const config = {
       url: formattedUrl,
       method,
       headers: formattedHeaders,
       data,
       timeout,
-    });
+    };
+
+    const response = await axios(config);
 
     return response.data;
   } catch (error) {

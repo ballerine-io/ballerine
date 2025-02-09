@@ -175,6 +175,52 @@ const ubosSchema: Array<IFormElement<any, any>> = [
             Authorization: 'Bearer {token}',
           },
         },
+        updateEntity: {
+          httpParams: {
+            url: '{apiUrl}collection-flow/entity/{entityId}',
+            method: 'PUT',
+            headers: {
+              Authorization: 'Bearer {token}',
+            },
+          },
+          transform: `{
+            "firstName": entity.firstName,
+            "lastName": entity.lastName,
+            "email": entity.email,
+            "phone": entity.phone,
+            "country": entity.country,
+            "dateOfBirth": entity.dateOfBirth,
+            "nationality": entity.nationality,
+            "passportNumber": entity.passportNumber,
+            "address": entity.street & ", " & entity.city & ", " & entity.country,
+            "nationalId": entity.nationalId,
+            "isAuthorizedSignatory": entity.isAuthorizedSignatory,
+            "city": entity.city,
+            "additionalInfo": {
+              "fullAddress": entity.street & ", " & entity.city & ", " & entity.country,
+              "companyName": context.entity.data.companyName,
+              "customerCompany": context.collectionFlow.additionalInformation.customerCompany,
+              "placeOfBirth": entity.placeOfBirth,
+              "percentageOfOwnership": entity.ownershipPercentage,
+              "role": entity.role
+            }
+          }`,
+        },
+        uploadDocument: {
+          url: '{apiUrl}collection-flow/files',
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer {token}',
+          },
+          resultPath: 'id',
+        },
+        deleteDocument: {
+          url: '{apiUrl}collection-flow/files/{documentId}',
+          method: 'DELETE',
+          headers: {
+            Authorization: 'Bearer {token}',
+          },
+        },
       },
     },
     children: [
@@ -378,6 +424,36 @@ const ubosSchema: Array<IFormElement<any, any>> = [
           },
         ],
       },
+      {
+        id: 'document',
+        element: 'documentfield',
+        valueDestination: 'entity.data.additionalInfo.ubos[$0].documents',
+        params: {
+          label: 'Document',
+          template: {
+            id: 'document',
+            category: 'proof_of_address',
+            type: 'general_document',
+            issuingVersion: 1,
+            version: 1,
+            issuer: {
+              country: 'ZZ',
+            },
+            properties: {},
+          },
+          documentType: 'document',
+          documentVariant: 'front',
+          httpParams: {
+            deleteDocument: {
+              url: '{apiUrl}collection-flow/files',
+              method: 'DELETE',
+              headers: {
+                Authorization: 'Bearer {token}',
+              },
+            },
+          },
+        },
+      },
     ],
     validate: [
       {
@@ -394,15 +470,7 @@ const ubosSchema: Array<IFormElement<any, any>> = [
     params: {
       label: 'Submit Button',
     },
-    disable: [
-      // Disable the submit button if there are entities that not created
-      {
-        engine: 'json-logic',
-        value: {
-          some: [{ var: 'entity.data.additionalInfo.ubos' }, { '!': { '!!': { var: 'id' } } }],
-        },
-      },
-    ],
+    disable: [],
   },
 ];
 
@@ -421,7 +489,8 @@ const initialUbosContext = {
 
 const metadata = {
   apiUrl: 'http://localhost:3000/api/v1/',
-  token: 'TOKEN',
+  token: 'e3a69aa3-c1ad-42f3-87ac-5105cff81a94',
+  workflowId: 'cm6ufmpme0004tl7sqoxwlah4',
 };
 
 export const UbosFieldGroup = () => {

@@ -1,10 +1,13 @@
 import { ctw } from '@/common';
+import { IHttpParams, useHttp } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';
 import { Input } from '@/components/atoms/Input';
 import { createTestId } from '@/components/organisms/Renderer/utils/create-test-id';
 import get from 'lodash/get';
+import set from 'lodash/set';
 import { Upload, XCircle } from 'lucide-react';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useDynamicForm } from '../../../../context';
 import { useField } from '../../../../hooks/external';
 import { useMountEvent } from '../../../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../../../hooks/internal/useUnmountEvent';
@@ -19,7 +22,7 @@ import { getFileOrFileIdFromDocumentsList } from '../../../DocumentField/hooks/u
 import { removeDocumentFromListByTemplateId } from '../../../DocumentField/hooks/useDocumentUpload/helpers/remove-document-from-list-by-template-id';
 import { useStack } from '../../../FieldList';
 import { TEntityFieldGroupType } from '../../EntityFieldGroup';
-import { useEntityFieldGroupType } from '../../providers/EntityFieldGroupTypeProvider';
+import { useEntityField } from '../../providers/EntityFieldProvider';
 import { getEntityFieldGroupDocumentValueDestination } from './helpers/get-entity-field-group-document-value-destination';
 
 export interface IEntityFieldGroupDocumentParams extends IDocumentFieldParams {
@@ -30,7 +33,14 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
   'documentfield',
   IEntityFieldGroupDocumentParams
 > = ({ element: _element }) => {
-  const { entityFieldGroupType } = useEntityFieldGroupType();
+  const { metadata, values, fieldHelpers } = useDynamicForm();
+  const { entityFieldGroupType, isSyncing } = useEntityField();
+
+  const valuesRef = useRef(values);
+
+  useEffect(() => {
+    valuesRef.current = values;
+  }, [values]);
 
   const element = useMemo(
     () => ({
@@ -40,6 +50,11 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
       ),
     }),
     [_element, entityFieldGroupType],
+  );
+
+  const { run: deleteDocument, isLoading: isDeletingDocument } = useHttp(
+    (element.params?.httpParams?.deleteDocument as IHttpParams) || {},
+    metadata,
   );
 
   useMountEvent(element);
@@ -82,11 +97,19 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
     inputRef.current?.click();
   }, [inputRef]);
 
-  const clearFileAndInput = useCallback(() => {
+  const clearFileAndInput = useCallback(async () => {
     if (!element.params?.template?.id) {
       console.warn('Template id is migging in element', element);
 
       return;
+    }
+
+    const fileIdOrFile = getFileOrFileIdFromDocumentsList(documentsList, element);
+
+    if (typeof fileIdOrFile === 'string') {
+      await deleteDocument({
+        ids: [fileIdOrFile],
+      });
     }
 
     const updatedDocuments = removeDocumentFromListByTemplateId(
@@ -99,7 +122,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
     if (inputRef.current) {
       inputRef.current.value = '';
     }
-  }, [documentsList, element, onChange]);
+  }, [documentsList, element, deleteDocument, onChange]);
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,9 +132,14 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
         element,
         e.target.files?.[0] as File,
       );
+
+      set(valuesRef.current, element.valueDestination, updatedDocuments);
+
+      fieldHelpers.setValues(structuredClone(valuesRef.current));
+
       onChange(updatedDocuments);
     },
-    [onChange],
+    [onChange, fieldHelpers, valuesRef, element, documentsList],
   );
 
   return (
@@ -119,7 +147,9 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
       <div
         className={ctw(
           'relative flex h-[56px] flex-row items-center gap-3 rounded-[16px] border bg-white px-4',
-          { 'pointer-events-none opacity-50': disabled },
+          {
+            'pointer-events-none opacity-50': disabled || isDeletingDocument || isSyncing,
+          },
         )}
         onClick={focusInputOnContainerClick}
         data-testid={createTestId(element, stack)}
@@ -136,7 +166,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
             className="h-[28px] w-[28px] rounded-full"
             onClick={e => {
               e.stopPropagation();
-              clearFileAndInput();
+              void clearFileAndInput();
             }}
           >
             <div className="rounded-full bg-white">

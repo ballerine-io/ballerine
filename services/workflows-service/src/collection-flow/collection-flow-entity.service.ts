@@ -53,6 +53,23 @@ export class CollectionFlowEntityService {
     });
   }
 
+  async updateEntity(entityId: string, entity: EntityCreateDto) {
+    return await this.prismaService.$transaction(async transaction => {
+      const endUser = await transaction.endUser.update({
+        where: {
+          id: entityId,
+        },
+        data: {
+          ...entity,
+        },
+      });
+
+      return {
+        entityId: endUser.id,
+      };
+    });
+  }
+
   async deleteEntity(entityId: string) {
     return await this.prismaService.$transaction(async transaction => {
       await transaction.endUsersOnBusinesses.deleteMany({
@@ -64,6 +81,12 @@ export class CollectionFlowEntityService {
       await transaction.endUser.delete({
         where: {
           id: entityId,
+        },
+      });
+
+      await transaction.document.deleteMany({
+        where: {
+          endUserId: entityId,
         },
       });
     });

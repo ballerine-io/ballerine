@@ -1,35 +1,37 @@
-import { AnyObject } from '@/common';
 import { useHttp } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';
 import { formatValueDestination, TDeepthLevelStack } from '@/components/organisms/Form/Validator';
 import { Renderer, TRendererSchema } from '@/components/organisms/Renderer';
 import get from 'lodash/get';
 import set from 'lodash/set';
-import { Check, Loader2, Trash2Icon, X } from 'lucide-react';
-import { FunctionComponent, useCallback, useMemo } from 'react';
+import { Loader2, Trash2Icon } from 'lucide-react';
+import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useDynamicForm } from '../../../../context';
-import { useTaskRunner } from '../../../../providers/TaskRunner/hooks/useTaskRunner';
-import { ITask } from '../../../../providers/TaskRunner/types';
 import { IFormElement } from '../../../../types';
+import { createOrUpdateFileIdOrFileInDocuments } from '../../../DocumentField/hooks/useDocumentUpload/helpers/create-or-update-fileid-or-file-in-documents';
 import { StackProvider } from '../../../FieldList/providers/StackProvider';
 import { IEntityFieldGroupParams } from '../../EntityFieldGroup';
+import { useEntitySync } from '../../hooks/useEntitySync';
+import { EntityFieldProvider } from '../../providers/EntityFieldProvider';
 import { IEntity } from '../../types';
+import { buildDocumentsCreationPayload } from './helpers/build-documents-creation-payload';
+import { buildEntityCreationPayload } from './helpers/build-entity-for-creation';
+import { updateEntities } from './helpers/update-entities';
 import { useChildrenDisabledOnLock } from './hooks/useChildrenDisabledOnLock';
-import { useEntityLock } from './hooks/useEntityLock';
-import { transform } from './utils/transform';
+import { useEntityFieldsIsValid } from './hooks/useIsEntityFieldsValid';
 
 interface IEntityFieldsProps {
   stack: TDeepthLevelStack;
   fieldId: string;
   entityId: string;
-  entities: IEntity[];
   entity: IEntity;
   element: IFormElement<any, IEntityFieldGroupParams>;
   elementsOverride: TRendererSchema;
   isRemovingEntity?: boolean;
   index: number;
   onRemoveClick: () => void;
+  onChange: (entities: IEntity[]) => void;
 }
 
 export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
@@ -41,166 +43,130 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
   elementsOverride,
   isRemovingEntity,
   index,
-  entities,
   onRemoveClick,
+  onChange,
 }) => {
-  const { metadata } = useDynamicForm();
-  const { run: createEntity, isLoading: isCreatingEntity } = useHttp(
+  const { metadata, values } = useDynamicForm();
+  const [isCreatingEntity, setIsCreatingEntity] = useState(false);
+
+  const { run: createEntity } = useHttp(
     element.params!.httpParams?.createEntity.httpParams,
     metadata,
   );
-  const {
-    lockText = 'This entity will be created on submission.',
-    createdText = 'Entity created',
-  } = element.params || {};
+  const { run: uploadDocument } = useHttp(element.params!.httpParams?.uploadDocument, metadata);
 
-  const { addTask, removeTask } = useTaskRunner();
+  const { createEntityText = 'Create' } = element.params || {};
 
-  const createEntityOnLockTask = useCallback(
-    async (lockedEntity: IEntity) => {
-      const task: ITask = {
-        id: lockedEntity.__id!,
-        element: element,
-        run: async (context: AnyObject) => {
-          try {
-            const entitiesDestination = formatValueDestination(element.valueDestination, stack);
-            // Accessing entities list
-            const entities = get(context, entitiesDestination, []);
-            const documentFieldDefinitons =
-              element.children?.filter(child => child.element === 'documentfield') || [];
+  const isValid = useEntityFieldsIsValid(element, index);
+  const { isSyncing } = useEntitySync(element, entity, stack, isValid);
 
-            // Boilerplate, will be used for documents upload
-            // // Entities with documents
-            // const entitiesWithDocuments = entities.map((entity: IEntity, index: number) => {
-            //   const entityWithDocument = { ...entity } as Record<string, any>;
+  const createEntityAndUploadDocuments = useCallback(async () => {
+    setIsCreatingEntity(true);
 
-            //   documentFieldDefinitons.forEach(documentDefinition => {
-            //     const documentDestination = formatValueDestination(
-            //       documentDefinition.valueDestination,
-            //       [...(stack || []), index],
-            //     );
+    const context = values;
 
-            //     const documentFile = get(context, documentDestination);
+    const entitiesDestination = formatValueDestination(element.valueDestination, stack);
 
-            //     entityWithDocument[(documentDefinition.params as any).template.id] = documentFile;
-            //   });
+    const createEntityPayload = await buildEntityCreationPayload(element, entity, context);
 
-            //   return entityWithDocument;
-            // });
+    let createdEntityId: string;
 
-            const entityToCreate = element.params?.httpParams?.createEntity?.transform
-              ? await transform(
-                  context,
-                  lockedEntity,
-                  element.params!.httpParams?.createEntity.transform,
-                )
-              : lockedEntity;
+    try {
+      createdEntityId = await createEntity(createEntityPayload);
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to create entity.');
+      setIsCreatingEntity(false);
+      throw error;
+    }
 
-            const createPayload = {
-              entityType: element.params?.type,
-              entity: entityToCreate,
-            };
+    const entities = get(context, entitiesDestination, []);
+    const createdEntity = { ...entity, id: createdEntityId };
 
-            const createdEntityId = await createEntity(createPayload);
-            // UI Update
-            const updatedEntities = entities.map((entity: IEntity) => {
-              if (entity.__id === lockedEntity.__id) {
-                const newEntity = {
-                  ...entity,
-                  id: createdEntityId,
-                };
+    // UI Update
+    const updatedEntities = updateEntities(entities, createdEntity);
+    set(context, entitiesDestination, updatedEntities);
 
-                newEntity.__isCreated = true;
+    const documentsCreationPayload = await buildDocumentsCreationPayload(element, context, {
+      entityId: createdEntityId,
+      stack: stack,
+    });
 
-                return newEntity;
-              }
+    const documentUploadPromises = documentsCreationPayload.map(async document => {
+      const documentId = await uploadDocument(document.payload);
 
-              return entity;
-            });
-            set(context, entitiesDestination, updatedEntities);
-            toast.success('Entity created successfully.');
-            // Modify and return context here after creation
+      const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
+        get(context, document.valueDestination, []),
+        document.documentDefinition,
+        documentId,
+      );
 
-            return context;
-          } catch (error) {
-            toast.error('Failed to create entity.');
-            console.error(error);
+      set(context, document.valueDestination, updatedDocuments);
 
-            return context;
-          }
-        },
-      };
+      return documentId;
+    });
 
-      addTask(task);
-    },
-    [addTask, stack, element, createEntity],
-  );
+    try {
+      await Promise.all(documentUploadPromises);
 
-  const removeEntityOnUnlockTask = useCallback(
-    async (entity: IEntity) => {
-      removeTask(entity.__id!);
-    },
-    [removeTask],
-  );
+      onChange(updatedEntities);
+    } catch (error) {
+      console.error(error);
 
-  const handleRemoval = useCallback(() => {
-    removeTask(entityId);
-    onRemoveClick();
-  }, [removeTask, entityId, onRemoveClick]);
+      toast.error('Failed to upload documents.');
+      setIsCreatingEntity(false);
+      throw error;
+    }
 
-  const { isLocked, lockEntity, unlockEntity } = useEntityLock(
-    entities,
-    entityId,
-    element,
-    stack,
-    createEntityOnLockTask,
-    removeEntityOnUnlockTask,
-  );
-  const childrens = useChildrenDisabledOnLock(element, isLocked);
+    setIsCreatingEntity(false);
+
+    toast.success('Entity created successfully.');
+  }, [stack, element, values, createEntity, uploadDocument, entity, onChange]);
+
+  const childrens = useChildrenDisabledOnLock(element, isCreatingEntity);
 
   const isShouldRenderLoading = useMemo(() => {
-    return isRemovingEntity || isCreatingEntity;
-  }, [isRemovingEntity, isCreatingEntity]);
+    return isRemovingEntity || isCreatingEntity || isSyncing;
+  }, [isRemovingEntity, isCreatingEntity, isSyncing]);
 
   return (
-    <div
-      key={`${fieldId}-${entityId}`}
-      className="flex flex-col gap-2"
-      data-testid={`${fieldId}-fieldlist-item-${entityId}`}
-    >
-      <div className="flex flex-row justify-between">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={isLocked ? unlockEntity : lockEntity}
-          disabled={isCreatingEntity || entity?.__isCreated}
-        >
-          {isLocked ? <X /> : <Check className="w-4 h-4 cursor-pointer font-bold" />}
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          disabled={isShouldRenderLoading}
-          onClick={isShouldRenderLoading ? undefined : handleRemoval}
-        >
-          {isShouldRenderLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Trash2Icon
-              className="w-4 h-4 cursor-pointer font-bold"
-              data-testid={`${fieldId}-fieldlist-item-remove-${entityId}`}
-            />
-          )}
-        </Button>
+    <EntityFieldProvider isSyncing={isSyncing} entityFieldGroupType={element.params?.type}>
+      <div
+        key={`${fieldId}-${entityId}`}
+        className="flex flex-col gap-2"
+        data-testid={`${fieldId}-fieldlist-item-${entityId}`}
+      >
+        <div className="flex flex-row justify-between">
+          <Button
+            variant="outline"
+            onClick={createEntityAndUploadDocuments}
+            disabled={entity?.id ? true : isCreatingEntity || !isValid}
+          >
+            {createEntityText}
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            disabled={isShouldRenderLoading}
+            onClick={isShouldRenderLoading ? undefined : onRemoveClick}
+          >
+            {isShouldRenderLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Trash2Icon
+                className="w-4 h-4 cursor-pointer font-bold"
+                data-testid={`${fieldId}-fieldlist-item-remove-${entityId}`}
+              />
+            )}
+          </Button>
+        </div>
+        <StackProvider stack={[...(stack || []), index]}>
+          <Renderer
+            elements={childrens || []}
+            schema={elementsOverride as unknown as TRendererSchema}
+          />
+        </StackProvider>
       </div>
-      {isLocked && !entity?.__isCreated && <p className="text-xs text-green-400">{lockText}</p>}
-      {entity?.__isCreated && <p className="text-xs text-green-400">{createdText}</p>}
-      <StackProvider stack={[...(stack || []), index]}>
-        <Renderer
-          elements={childrens || []}
-          schema={elementsOverride as unknown as TRendererSchema}
-        />
-      </StackProvider>
-    </div>
+    </EntityFieldProvider>
   );
 };

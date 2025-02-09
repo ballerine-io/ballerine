@@ -16,7 +16,7 @@ import { createOrUpdateFileIdOrFileInDocuments } from './helpers/create-or-updat
 
 export const useDocumentUpload = (
   element: IFormElement<'documentfield', IDocumentFieldParams>,
-  params: IDocumentFieldParams<any>,
+  params: IDocumentFieldParams,
 ) => {
   const { uploadOn = 'change' } = params;
   const { stack } = useStack();

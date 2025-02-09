@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { FileRepository } from './storage.repository';
 import { IFileIds } from './types';
 import { File, Prisma } from '@prisma/client';
@@ -18,6 +18,7 @@ import { z } from 'zod';
 import { HttpService } from '@nestjs/axios';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { readFileSync } from 'fs';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class StorageService {

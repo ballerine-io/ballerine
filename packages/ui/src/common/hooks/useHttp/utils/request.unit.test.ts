@@ -44,6 +44,7 @@ describe('request', () => {
       method: 'GET',
       headers: { Authorization: 'Bearer 12345' },
       data: undefined,
+      timeout: 5000,
     });
     expect(result).toEqual({ result: 'success' });
   });
@@ -68,6 +69,7 @@ describe('request', () => {
       method: 'POST',
       headers: {},
       data: { foo: 'bar' },
+      timeout: 5000,
     });
     expect(result).toEqual({ result: 'success' });
   });

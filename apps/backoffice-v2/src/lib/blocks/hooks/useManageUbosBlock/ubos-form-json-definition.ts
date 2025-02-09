@@ -24,7 +24,7 @@ export const ubosFormJsonDefinition = {
       ],
     },
     uiSchema: {
-      titleTemplate: 'text.companyOwnership.contactIndex',
+      titleTemplate: 'text.companyOwnership.uboIndex',
     },
   },
   elements: [

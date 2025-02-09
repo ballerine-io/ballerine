@@ -7,7 +7,6 @@ import { type ITokenScope } from '@/common/decorators/token-scope.decorator';
 import { CustomerService } from '@/customer/customer.service';
 import { TCustomerWithFeatures } from '@/customer/types';
 import { EndUserService } from '@/end-user/end-user.service';
-import { NotFoundException } from '@/errors';
 import { FileService } from '@/providers/file/file.service';
 import { TranslationService } from '@/providers/translation/translation.service';
 import type { TProjectId, TProjectIds } from '@/types';
@@ -18,7 +17,6 @@ import { DefaultContextSchema, TCollectionFlowConfig } from '@ballerine/common';
 import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
 import { EndUser, Prisma, WorkflowRuntimeData } from '@prisma/client';
-import { randomUUID } from 'crypto';
 
 @Injectable()
 export class CollectionFlowService {
@@ -204,41 +202,6 @@ export class CollectionFlowService {
       },
       [tokenScope.projectId],
       tokenScope.projectId,
-    );
-  }
-
-  async uploadNewFile(projectId: string, workflowRuntimeDataId: string, file: Express.Multer.File) {
-    // upload file into a customer folder
-    const customer = await this.customerService.getByProjectId(projectId);
-
-    const runtimeDataId = await this.workflowService.getWorkflowRuntimeDataById(
-      workflowRuntimeDataId,
-      {},
-      [projectId],
-    );
-
-    const entityId = runtimeDataId.businessId || runtimeDataId.endUserId;
-
-    if (!entityId) {
-      throw new NotFoundException("Workflow doesn't exists");
-    }
-
-    // Remove file extension (get everything before the last dot)
-    const nameWithoutExtension = (file.originalname || randomUUID()).replace(/\.[^.]+$/, '');
-    // Remove non characters
-    const alphabeticOnlyName = nameWithoutExtension.replace(/\W/g, '');
-
-    return await this.fileService.copyToDestinationAndCreate(
-      {
-        id: alphabeticOnlyName,
-        uri: file.path,
-        provider: 'file-system',
-        fileName: file.originalname,
-      },
-      entityId,
-      projectId,
-      customer.name,
-      { shouldDownloadFromSource: false },
     );
   }
 
