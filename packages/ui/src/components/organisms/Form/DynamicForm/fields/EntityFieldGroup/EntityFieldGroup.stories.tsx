@@ -215,7 +215,7 @@ const ubosSchema: Array<IFormElement<any, any>> = [
           resultPath: 'id',
         },
         deleteDocument: {
-          url: '{apiUrl}collection-flow/files/{documentId}',
+          url: '{apiUrl}collection-flow/files',
           method: 'DELETE',
           headers: {
             Authorization: 'Bearer {token}',
@@ -490,7 +490,6 @@ const initialUbosContext = {
 const metadata = {
   apiUrl: 'http://localhost:3000/api/v1/',
   token: 'e3a69aa3-c1ad-42f3-87ac-5105cff81a94',
-  workflowId: 'cm6ufmpme0004tl7sqoxwlah4',
 };
 
 export const UbosFieldGroup = () => {

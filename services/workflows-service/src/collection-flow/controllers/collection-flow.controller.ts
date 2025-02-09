@@ -95,6 +95,7 @@ export class CollectionFlowController {
       workflow.context,
       params.language,
       [tokenScope.projectId],
+      tokenScope,
       workflow.uiDefinitionId ? { where: { id: workflow.uiDefinitionId } } : {},
     );
   }
