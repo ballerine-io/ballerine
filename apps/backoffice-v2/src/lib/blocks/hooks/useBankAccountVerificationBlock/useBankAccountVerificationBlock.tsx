@@ -8,7 +8,7 @@ export const useBankAccountVerificationBlock = ({ pluginsOutput }) => {
       Object.keys(pluginsOutput?.bankAccountVerification?.data.clientResponsePayload ?? {})
         .length === 0
     ) {
-      return;
+      return [];
     }
 
     const data = {
@@ -65,7 +65,7 @@ export const useBankAccountVerificationBlock = ({ pluginsOutput }) => {
       })
       .build();
   }, [
-    pluginsOutput.bankAccountVerification.data.clientResponsePayload,
-    pluginsOutput.bankAccountVerification.data.responseHeader.overallResponse,
+    pluginsOutput?.bankAccountVerification?.data.clientResponsePayload,
+    pluginsOutput?.bankAccountVerification?.data.responseHeader.overallResponse,
   ]);
 };
