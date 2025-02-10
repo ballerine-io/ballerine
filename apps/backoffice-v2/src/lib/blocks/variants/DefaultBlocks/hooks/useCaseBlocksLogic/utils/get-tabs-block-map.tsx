@@ -54,6 +54,9 @@ export const getTabsToBlocksMap = ({
     customDataBlock,
     amlWithContainerBlock,
     merchantScreeningBlock,
+    manageUbosBlock,
+    bankAccountVerificationBlock,
+    commercialCreditCheckBlock,
   ] = blocks;
 
   const defaultTabsMap = {
@@ -75,6 +78,8 @@ export const getTabsToBlocksMap = ({
       ...kybRegistryInfoBlock,
       ...companySanctionsBlock,
       ...bankingDetailsBlock,
+      ...bankAccountVerificationBlock,
+      ...commercialCreditCheckBlock,
     ],
     [Tab.STORE_INFO]: [
       ...storeInfoBlock,
@@ -86,6 +91,7 @@ export const getTabsToBlocksMap = ({
       ...ubosUserProvidedBlock,
       ...ubosRegistryProvidedBlock,
       ...amlWithContainerBlock,
+      ...manageUbosBlock,
       ...(createKycBlocks(blocksCreationParams?.workflow as TWorkflowById) || []),
     ],
     [Tab.ASSOCIATED_COMPANIES]: [

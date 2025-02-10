@@ -2,6 +2,7 @@ import React, { FunctionComponent } from 'react';
 import { ctw } from '@/common';
 import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
 import { Card, CardContent, CardHeader } from '@/components';
+import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
 
 export const WebsiteLineOfBusiness: FunctionComponent<{
   violations: Array<{
@@ -16,13 +17,39 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
 }> = ({ violations, description, formattedMcc }) => {
   return (
     <div className={'space-y-8'}>
-      <h3 className={'col-span-full text-lg font-bold'}>Website Line of Business Analysis</h3>
+      <div>
+        <ContentTooltip
+          description={<p>Reviews the company&apos;s industry and market segment.</p>}
+          props={{
+            tooltipContent: {
+              align: 'center',
+            },
+          }}
+        >
+          <h3 className={'col-span-full text-lg font-bold'}>Website Line of Business Analysis</h3>
+        </ContentTooltip>
+      </div>
+
       <RiskIndicators violations={violations} />
       <Card>
         <CardHeader className={'pt-4 font-bold'}>Line of Business Summary</CardHeader>
         <CardContent className={'flex flex-col space-y-4'}>
           <div>
-            <h4 className={'mb-4 font-semibold'}>LOB Description</h4>
+            <ContentTooltip
+              description={
+                <p>
+                  Details the company&apos;s primary activities and services, helping identify
+                  industry-specific risks.
+                </p>
+              }
+              props={{
+                tooltipContent: {
+                  align: 'center',
+                },
+              }}
+            >
+              <h4 className={'mb-4 font-semibold'}>LOB Description</h4>
+            </ContentTooltip>
             <p
               className={ctw({
                 'text-slate-400': !description,
@@ -32,8 +59,22 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
             </p>
           </div>
           {formattedMcc && (
-            <div className={'flex flex-col'}>
-              <h4 className={'mb-4 font-semibold'}>MCC Classification</h4>
+            <div>
+              <ContentTooltip
+                description={
+                  <p>
+                    Categorizes the business by Merchant Category Code to ensure appropriate
+                    classification and risk profiling per card brand regulations.
+                  </p>
+                }
+                props={{
+                  tooltipContent: {
+                    align: 'center',
+                  },
+                }}
+              >
+                <h4 className={'mb-4 font-semibold'}>MCC Classification</h4>
+              </ContentTooltip>
               <p>{formattedMcc}</p>
             </div>
           )}
@@ -41,7 +82,20 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
       </Card>
       {!!violations.length && (
         <Card>
-          <CardHeader className={'pt-4 font-bold'}>Content Violations Summary</CardHeader>
+          <div>
+            <ContentTooltip
+              description={<p>Checks the website for breaches of card brand regulations.</p>}
+              props={{
+                tooltipContent: {
+                  align: 'center',
+                },
+              }}
+            >
+              <CardHeader className={'p-0 py-6 pl-6 font-bold'}>
+                Content Violations Summary
+              </CardHeader>
+            </ContentTooltip>
+          </div>
           <CardContent className={'flex flex-col space-y-4'}>
             <h4 className={'font-semibold'}>Findings</h4>
             {violations.map(violation => (

@@ -19,7 +19,7 @@ export const BlockCell: FunctionComponent<IBlockCellProps> = ({ value, props }) 
   }
 
   return (
-    <Card className={ctw('me-4 shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)]', props?.className)}>
+    <Card className={ctw('shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)]', props?.className)}>
       <CardContent
         className={ctw(
           'grid gap-2',

@@ -1,10 +1,13 @@
-import { z } from 'zod';
-import { apiClient } from '@/common/api-client/api-client';
-import { Method } from '@/common/enums';
-import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import qs from 'qs';
-import { toast } from 'sonner';
+import { z } from 'zod';
 import { t } from 'i18next';
+import { toast } from 'sonner';
+import { UnknownRecord } from 'type-fest';
+
+import { Method } from '@/common/enums';
+import { apiClient } from '@/common/api-client/api-client';
+import { TReportStatusValue, TRiskLevel } from '@/pages/MerchantMonitoring/schemas';
+import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import {
   MERCHANT_REPORT_STATUSES,
   MERCHANT_REPORT_STATUSES_MAP,
@@ -13,7 +16,6 @@ import {
   MerchantReportType,
   MerchantReportVersion,
 } from '@/domains/business-reports/constants';
-import { UnknownRecord } from 'type-fest';
 
 export const BusinessReportSchema = z
   .object({
@@ -21,13 +23,15 @@ export const BusinessReportSchema = z
     reportType: z.enum([MERCHANT_REPORT_TYPES[0]!, ...MERCHANT_REPORT_TYPES.slice(1)]),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
+    displayDate: z.string().datetime(),
     riskScore: z.number().nullable(),
     status: z.enum([MERCHANT_REPORT_STATUSES[0]!, ...MERCHANT_REPORT_STATUSES.slice(1)]),
     parentCompanyName: z.string().nullable(),
     merchantId: z.string(),
     workflowVersion: z.enum([MERCHANT_REPORT_VERSIONS[0]!, ...MERCHANT_REPORT_VERSIONS.slice(1)]),
-    isAlert: z.boolean().nullable(),
+    isAlert: z.boolean().nullish(),
     companyName: z.string().nullish(),
+    monitoringStatus: z.boolean(),
     website: z.object({
       id: z.string(),
       url: z.string().url(),
@@ -63,6 +67,10 @@ export const BusinessReportsSchema = z.object({
   totalPages: z.number().nonnegative(),
 });
 
+export const BusinessReportsCountSchema = z.object({
+  count: z.number(),
+});
+
 export type TBusinessReport = z.infer<typeof BusinessReportSchema>;
 
 export type TBusinessReports = z.infer<typeof BusinessReportsSchema>;
@@ -84,29 +92,39 @@ export const fetchLatestBusinessReport = async ({
   return handleZodError(error, data);
 };
 
-export const fetchBusinessReports = async ({
-  reportType,
-  ...params
-}: {
-  reportType: MerchantReportType;
-  page: {
+type BusinessReportsParams = {
+  reportType?: MerchantReportType;
+  riskLevels?: TRiskLevel[];
+  statuses?: TReportStatusValue[];
+  findings?: string[];
+  from?: string;
+  to?: string;
+  page?: {
     number: number;
     size: number;
   };
-  orderBy: string;
-}) => {
-  const queryParams = qs.stringify(
-    {
-      ...params,
-      type: reportType,
-    },
-    { encode: false },
-  );
+  orderBy?: string;
+};
+export const fetchBusinessReports = async (params: BusinessReportsParams) => {
+  const queryParams = qs.stringify(params, { encode: false });
 
   const [data, error] = await apiClient({
     endpoint: `../external/business-reports/?${queryParams}`,
     method: Method.GET,
     schema: BusinessReportsSchema,
+    timeout: 30_000,
+  });
+
+  return handleZodError(error, data);
+};
+
+export const countBusinessReports = async (params: BusinessReportsParams) => {
+  const queryParams = qs.stringify(params, { encode: false });
+
+  const [data, error] = await apiClient({
+    endpoint: `../external/business-reports/count/?${queryParams}`,
+    method: Method.GET,
+    schema: BusinessReportsCountSchema,
     timeout: 30_000,
   });
 
@@ -201,7 +219,7 @@ export const createBusinessReportBatch = async ({
     schema: z.object({ batchId: z.string() }),
     body: formData,
     isFormData: true,
-    timeout: 30_000,
+    timeout: 300_000,
   });
 
   return handleZodError(error, batchId);

@@ -196,7 +196,9 @@ export class HookCallbackHandlerService {
       currentProjectId,
     ]);
 
-    if (!business) throw new BadRequestException('Business not found.');
+    if (!business) {
+      throw new BadRequestException('Business not found.');
+    }
 
     // const currentReportId = reportId as string;
     //
@@ -313,7 +315,9 @@ export class HookCallbackHandlerService {
         documentPage => documentPage.uri === base64PDFString,
       );
 
-      if (!pdfReportDocument?.ballerineFileId) return;
+      if (!pdfReportDocument?.ballerineFileId) {
+        return;
+      }
 
       pdfReportBallerineFileId = pdfReportDocument.ballerineFileId;
     });
@@ -363,7 +367,11 @@ export class HookCallbackHandlerService {
     // @ts-expect-error - we don't validate `context` is an object
     this.setNestedProperty(context, attributePath, result);
     // @ts-expect-error - we don't validate `context` is an object
-    context.documents = persistedDocuments;
+    context.documents = [
+      // @ts-expect-error - we don't validate `context` is an object
+      ...context.documents,
+      ...persistedDocuments,
+    ];
 
     return context;
   }

@@ -28,6 +28,10 @@ export const entitiesUpdate = async ({
   if (ubos && Array.isArray(ubos)) {
     promises.push(
       ...ubos.map(async ubo => {
+        if ('ballerineEntityId' in ubo && ubo.ballerineEntityId) {
+          return;
+        }
+
         const { id: endUserId } = await endUserService.create({
           data: {
             email: ubo.email,
@@ -58,6 +62,10 @@ export const entitiesUpdate = async ({
   if (directors && Array.isArray(directors)) {
     promises.push(
       ...directors.map(async director => {
+        if ('ballerineEntityId' in director && director.ballerineEntityId) {
+          return;
+        }
+
         const { id: endUserId } = await endUserService.create({
           data: {
             email: director.email,

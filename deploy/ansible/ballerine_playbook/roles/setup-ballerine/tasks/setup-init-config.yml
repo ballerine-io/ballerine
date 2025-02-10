@@ -1,0 +1,25 @@
+---
+- name: deploy cloud init config file
+  template: src=templates/cloud-config.cfg dest=/etc/cloud/cloud.cfg.d/defaults.cfg
+  become: true
+
+- name: create group ballerine
+  group: name={{ cloud_user }} state=present
+  become: true
+
+- name: create user ballerine
+  user: name={{ cloud_user }} groups={{ cloud_group }}
+  become: true
+
+- name: create user {{ default_user }}
+  user: name={{ default_user }} groups={{ cloud_group }}
+  become: true
+
+- name: add sudoers group for user {{ cloud_user }}
+  copy:
+    content: 'ballerine ALL=(ALL) NOPASSWD: ALL'
+    dest: /etc/sudoers.d/ballerine
+    mode: 0440
+    owner: root
+    group: root
+  become: true

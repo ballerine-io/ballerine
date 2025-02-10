@@ -32,7 +32,9 @@ export class UserSessionAuditMiddleware implements NestMiddleware {
     lastUpdate: Date | null,
     updateIntervalInMs: number = this.UPDATE_INTERVAL,
   ) {
-    if (!lastUpdate) return true;
+    if (!lastUpdate) {
+      return true;
+    }
 
     const now = Date.now();
     const pastDate = Number(new Date(lastUpdate));

@@ -1,9 +1,10 @@
+import { countryCodes } from '@ballerine/common';
+import { State } from 'country-state-city';
 import isoCountries from 'i18n-iso-countries';
 import enCountries from 'i18n-iso-countries/langs/en.json';
 import cnCountries from 'i18n-iso-countries/langs/zh.json';
 import nationalities from 'i18n-nationality';
 import enNationalities from 'i18n-nationality/langs/en.json';
-import { State } from 'country-state-city';
 import { TFunction } from 'i18next';
 
 isoCountries.registerLocale(enCountries);
@@ -21,11 +22,10 @@ const unsupportedNationalities = {
 
 export const getCountries = (lang = 'en') => {
   const language = languageConversionMap[lang as keyof typeof languageConversionMap] ?? lang;
-  const countries = isoCountries.getNames(language, { select: 'official' });
 
-  return Object.entries(countries).map(([isoCode, title]) => ({
+  return countryCodes.map(isoCode => ({
     const: isoCode,
-    title,
+    title: isoCountries.getName(isoCode?.toLocaleUpperCase(), language),
   }));
 };
 

@@ -1,20 +1,26 @@
-import { Button } from '@/common/components/atoms/Button/Button';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { ctw } from '@/common/utils/ctw/ctw';
+import { omitPropsFromObjectWhitelist } from '@/common/utils/omit-props-from-object-whitelist/omit-props-from-object-whitelist';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
+import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { useAddressBlock } from '@/lib/blocks/hooks/useAddressBlock/useAddressBlock';
 import { useAssociatedCompaniesInformationBlock } from '@/lib/blocks/hooks/useAssociatedCompaniesInformationBlock/useAssociatedCompaniesInformationBlock';
 import { associatedCompanyAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-adapter';
+import { associatedCompanyToWorkflowAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-to-workflow-adapter';
 import {
   motionButtonProps,
   useAssociatedCompaniesBlock,
 } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 import { useBankingDetailsBlock } from '@/lib/blocks/hooks/useBankingDetailsBlock/useBankingDetailsBlock';
 import { useCaseInfoBlock } from '@/lib/blocks/hooks/useCaseInfoBlock/useCaseInfoBlock';
+import { useCaseOverviewBlock } from '@/lib/blocks/hooks/useCaseOverviewBlock/useCaseOverviewBlock';
 import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctionsBlock/useCompanySanctionsBlock';
-import { useDirectorsBlocks } from '@/lib/blocks/hooks/useDirectorsBlocks';
 import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
 import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
@@ -25,6 +31,8 @@ import { useKybRegistryInfoBlock } from '@/lib/blocks/hooks/useKybRegistryInfoBl
 import { useMainContactBlock } from '@/lib/blocks/hooks/useMainContactBlock/useMainContactBlock';
 import { useMainRepresentativeBlock } from '@/lib/blocks/hooks/useMainRepresentativeBlock/useMainRepresentativeBlock';
 import { useMapBlock } from '@/lib/blocks/hooks/useMapBlock/useMapBlock';
+import { useMerchantScreeningBlock } from '@/lib/blocks/hooks/useMerchantScreeningBlock/useMerchantScreeningBlock';
+import { useObjectEntriesBlock } from '@/lib/blocks/hooks/useObjectEntriesBlock/useObjectEntriesBlock';
 import { useProcessingDetailsBlock } from '@/lib/blocks/hooks/useProcessingDetailsBlock/useProcessingDetailsBlock';
 import { useRegistryInfoBlock } from '@/lib/blocks/hooks/useRegistryInfoBlock/useRegistryInfoBlock';
 import { useStoreInfoBlock } from '@/lib/blocks/hooks/useStoreInfoBlock/useStoreInfoBlock';
@@ -33,25 +41,24 @@ import { useUbosUserProvidedBlock } from '@/lib/blocks/hooks/useUbosUserProvided
 import { useWebsiteBasicRequirementBlock } from '@/lib/blocks/hooks/useWebsiteBasicRequirementBlock/useWebsiteBasicRequirementBlock';
 import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
 import { useCaseBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/useCaseBlocks';
+import { useWebsiteMonitoringReportBlock } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/useWebsiteMonitoringReportBlock';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
+import { getAddressDeep } from '@/pages/Entity/hooks/useEntityLogic/utils/get-address-deep/get-address-deep';
 import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 import { Send } from 'lucide-react';
-import React, { useCallback, useMemo } from 'react';
-import { toast } from 'sonner';
-import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
-import { useWebsiteMonitoringReportBlock } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/useWebsiteMonitoringReportBlock';
-import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { useAddressBlock } from '@/lib/blocks/hooks/useAddressBlock/useAddressBlock';
-import { getAddressDeep } from '@/pages/Entity/hooks/useEntityLogic/utils/get-address-deep/get-address-deep';
-import { useCaseOverviewBlock } from '@/lib/blocks/hooks/useCaseOverviewBlock/useCaseOverviewBlock';
-import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
+import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { omitPropsFromObjectWhitelist } from '@/common/utils/omit-props-from-object-whitelist/omit-props-from-object-whitelist';
-import { useObjectEntriesBlock } from '@/lib/blocks/hooks/useObjectEntriesBlock/useObjectEntriesBlock';
-import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';
-import { associatedCompanyToWorkflowAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-to-workflow-adapter';
-import { useMerchantScreeningBlock } from '@/lib/blocks/hooks/useMerchantScreeningBlock/useMerchantScreeningBlock';
+import { useManageUbosBlock } from '@/lib/blocks/hooks/useManageUbosBlock/useManageUbosBlock';
+import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
+import { Button } from '@ballerine/ui';
+import { toast } from 'sonner';
+import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
+import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
+import { directorAdapter } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/helpers';
+import { createDirectorsBlocks } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/create-directors-blocks';
+import { useBankAccountVerificationBlock } from '@/lib/blocks/hooks/useBankAccountVerificationBlock/useBankAccountVerificationBlock';
+import { useCommercialCreditCheckBlock } from '@/lib/blocks/hooks/useCommercialCreditCheckBlock/useCommercialCreditCheckBlock';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 
@@ -92,35 +99,11 @@ export const useDefaultBlocksLogic = () => {
       },
     [mutateRevisionTaskById],
   );
-  const onReuploadNeededDirectors = useCallback(
-    ({
-        workflowId,
-        documentId,
-        reason,
-      }: Pick<
-        Parameters<typeof mutateRevisionTaskById>[0],
-        'workflowId' | 'documentId' | 'reason'
-      >) =>
-      () => {
-        if (!documentId) {
-          toast.error('Invalid task id');
 
-          return;
-        }
-
-        mutateRevisionTaskById({
-          workflowId,
-          documentId,
-          reason,
-          contextUpdateMethod: 'director',
-        });
-      },
-    [mutateRevisionTaskById],
-  );
   const {
     store,
     bank: bankDetails,
-    ubos: ubosUserProvided = [],
+    ubos: _ubosUserProvided,
     directors: directorsUserProvided = [],
     mainRepresentative,
     mainContact,
@@ -129,9 +112,7 @@ export const useDefaultBlocksLogic = () => {
     ...entityDataAdditionalInfo
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
   const { website: websiteBasicRequirement, processingDetails, ...storeInfo } = store ?? {};
-  const kycChildWorkflows = workflow?.childWorkflows?.filter(
-    childWorkflow => childWorkflow?.context?.entity?.type === 'individual',
-  );
+
   const kybChildWorkflows = workflow?.childWorkflows?.filter(
     childWorkflow => childWorkflow?.context?.entity?.type === 'business',
   );
@@ -192,6 +173,14 @@ export const useDefaultBlocksLogic = () => {
   const kybRegistryInfoBlock = useKybRegistryInfoBlock({
     pluginsOutput: workflow?.context?.pluginsOutput,
     workflow,
+  });
+
+  const bankAccountVerificationBlock = useBankAccountVerificationBlock({
+    pluginsOutput: workflow?.context?.pluginsOutput,
+  });
+
+  const commercialCreditCheckBlock = useCommercialCreditCheckBlock({
+    pluginsOutput: workflow?.context?.pluginsOutput,
   });
 
   const parentDocumentBlocks = useDocumentBlocks({
@@ -297,6 +286,33 @@ export const useDefaultBlocksLogic = () => {
 
   const companySanctionsBlock = useCompanySanctionsBlock(companySanctions);
 
+  const childWorkflowToUboAdapter = (childWorkflow: TWorkflowById) => {
+    return {
+      name: [
+        childWorkflow?.context?.entity?.data?.firstName,
+        childWorkflow?.context?.entity?.data?.lastName,
+      ]
+        .filter(Boolean)
+        .join(' '),
+      nationality: childWorkflow?.context?.entity?.data?.additionalInfo?.nationality,
+      email: childWorkflow?.context?.entity?.data?.email,
+      identityNumber: childWorkflow?.context?.entity?.data?.nationalId,
+      percentageOfOwnership:
+        childWorkflow?.context?.entity?.data?.percentageOfOwnership ??
+        childWorkflow?.context?.entity?.data?.ownershipPercentage ??
+        childWorkflow?.context?.entity?.data?.additionalInfo?.percentageOfOwnership ??
+        childWorkflow?.context?.entity?.data?.additionalInfo?.ownershipPercentage,
+      address: childWorkflow?.context?.entity?.data?.additionalInfo?.fullAddress,
+    } satisfies Parameters<typeof useUbosUserProvidedBlock>[0][number];
+  };
+
+  const ubosUserProvided = useMemo(() => {
+    return (
+      workflow?.childWorkflows
+        ?.filter(childWorkflow => childWorkflow?.context?.entity?.variant === 'ubo')
+        ?.map(childWorkflowToUboAdapter) ?? []
+    );
+  }, [workflow?.childWorkflows]);
   const ubosUserProvidedBlock = useUbosUserProvidedBlock(ubosUserProvided);
 
   const ubosRegistryProvidedBlock = useUbosRegistryProvidedBlock({
@@ -308,14 +324,78 @@ export const useDefaultBlocksLogic = () => {
     isRequestTimedOut: workflow?.context?.pluginsOutput?.ubo?.isRequestTimedOut,
   });
 
+  const manageUbosBlock = useManageUbosBlock({
+    create: {
+      ...workflow?.workflowDefinition?.config?.ubos?.create,
+      enabled: workflow?.workflowDefinition?.config?.ubos?.create?.enabled ?? false,
+    },
+  });
+
   const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
 
-  const directorsDocumentsBlocks = useDirectorsBlocks({
+  const { mutate: mutateRemoveDecisionTaskById } = useRemoveDecisionTaskByIdMutation(workflow?.id);
+  const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
+    useApproveTaskByIdMutation(workflow?.id);
+
+  const onMutateRevisionTaskByIdDirectors = useCallback(
+    ({
+        workflowId,
+        directorId,
+        documentId,
+        reason,
+      }: Pick<
+        Parameters<typeof mutateRevisionTaskById>[0],
+        'workflowId' | 'directorId' | 'documentId' | 'reason'
+      >) =>
+      () => {
+        if (!documentId) {
+          toast.error('Invalid task id');
+
+          return;
+        }
+
+        mutateRevisionTaskById({
+          workflowId,
+          directorId,
+          documentId,
+          reason,
+          contextUpdateMethod: 'director',
+        });
+      },
+    [mutateRevisionTaskById],
+  );
+
+  const onMutateApproveTaskByIdDirectors = useCallback(
+    ({ directorId, documentId }: { directorId: string; documentId: string }) =>
+      mutateApproveTaskById({ directorId, documentId, contextUpdateMethod: 'director' }),
+    [mutateApproveTaskById],
+  );
+  const onMutateRemoveDecisionTaskByIdDirectors = useCallback(
+    ({ directorId, documentId }: { directorId: string; documentId: string }) =>
+      mutateRemoveDecisionTaskById({ directorId, documentId, contextUpdateMethod: 'director' }),
+    [mutateRemoveDecisionTaskById],
+  );
+
+  const directors = workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
+    directorAdapter(directorsDocumentPagesResults),
+  );
+  const revisionReasons =
+    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+      ({ enum: enum_ }) => !!enum_,
+    )?.enum ?? [];
+  const directorsDocumentsBlocks = createDirectorsBlocks({
+    workflowId: workflow?.id ?? '',
+    onReuploadNeeded: onMutateRevisionTaskByIdDirectors,
+    onRemoveDecision: onMutateRemoveDecisionTaskByIdDirectors,
+    onApprove: onMutateApproveTaskByIdDirectors,
+    directors,
+    tags: workflow?.tags ?? [],
+    revisionReasons,
+    isEditable: caseState.writeEnabled,
+    isApproveDisabled: isLoadingApproveTaskById,
+    isLoadingDocuments: directorsStorageFilesQueryResult?.some(file => file?.isLoading),
+    // Remove once callToActionLegacy is removed
     workflow,
-    documentFiles: directorsStorageFilesQueryResult,
-    documentImages: directorsDocumentPagesResults,
-    onReuploadNeeded: onReuploadNeededDirectors,
-    isLoadingReuploadNeeded,
   });
 
   const directorsRegistryProvidedBlock =
@@ -433,13 +513,17 @@ export const useDefaultBlocksLogic = () => {
     inquiredMatchedMerchants:
       workflow?.context?.pluginsOutput?.merchantScreening?.processed?.inquiredMatchedMerchants ??
       [],
+    merchantScreeningInput:
+      workflow?.context?.pluginsInput?.merchantScreening?.requestPayload || {},
     logoUrl: workflow?.context?.pluginsOutput?.merchantScreening?.logoUrl,
     rawData: workflow?.context?.pluginsOutput?.merchantScreening?.raw,
     checkDate: workflow?.context?.pluginsOutput?.merchantScreening?.processed?.checkDate,
   });
 
   const allBlocks = useMemo(() => {
-    if (!workflow?.context?.entity) return [];
+    if (!workflow?.context?.entity) {
+      return [];
+    }
 
     return [
       websiteMonitoringBlock,
@@ -470,6 +554,9 @@ export const useDefaultBlocksLogic = () => {
       customDataBlock,
       amlWithContainerBlock,
       merchantScreeningBlock,
+      manageUbosBlock,
+      bankAccountVerificationBlock,
+      commercialCreditCheckBlock,
     ];
   }, [
     associatedCompaniesBlock,
@@ -501,6 +588,9 @@ export const useDefaultBlocksLogic = () => {
     amlWithContainerBlock,
     merchantScreeningBlock,
     workflow?.context?.entity,
+    manageUbosBlock,
+    bankAccountVerificationBlock,
+    commercialCreditCheckBlock,
   ]);
 
   const { blocks, tabs } = useCaseBlocks({

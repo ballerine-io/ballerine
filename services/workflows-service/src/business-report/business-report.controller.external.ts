@@ -6,7 +6,6 @@ import {
   Query,
   Res,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
@@ -23,19 +22,26 @@ import {
   BusinessReportListRequestParamDto,
   BusinessReportListResponseDto,
   ListBusinessReportsSchema,
-} from '@/business-report/business-report-list.dto';
+} from '@/business-report/dtos/business-report-list.dto';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
-import { CreateBusinessReportDto } from '@/business-report/dto/create-business-report.dto';
+import { CreateBusinessReportDto } from '@/business-report/dtos/create-business-report.dto';
 import { Business } from '@prisma/client';
-import { BusinessReportDto } from '@/business-report/business-report.dto';
+import { BusinessReportDto } from '@/business-report/dtos/business-report.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { fileFilter } from '@/storage/file-filter';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
-import { CreateBusinessReportBatchBodyDto } from '@/business-report/dto/create-business-report-batch-body.dto';
+import { CreateBusinessReportBatchBodyDto } from '@/business-report/dtos/create-business-report-batch-body.dto';
 import type { Response } from 'express';
 import { PrismaService } from '@/prisma/prisma.service';
-import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
+import { BusinessReportFindingsListResponseDto } from '@/business-report/dtos/business-report-findings.dto';
+import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
+import {
+  BusinessReportMetricsRequestQueryDto,
+  BusinessReportsMetricsQuerySchema,
+} from '@/business-report/dtos/business-report-metrics.dto';
+import { BusinessReportMetricsDto } from './dtos/business-report-metrics-dto';
+import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Business Reports')
@@ -46,7 +52,8 @@ export class BusinessReportControllerExternal {
     protected readonly logger: AppLoggerService,
     protected readonly customerService: CustomerService,
     protected readonly businessService: BusinessService,
-    private readonly prisma: PrismaService,
+    private readonly prismaService: PrismaService,
+    private readonly merchantMonitoringClient: MerchantMonitoringClient,
   ) {}
 
   @common.Get('/latest')
@@ -74,18 +81,98 @@ export class BusinessReportControllerExternal {
   @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
   async listBusinessReports(
     @CurrentProject() currentProjectId: TProjectId,
-    @Query() { businessId, page, search }: BusinessReportListRequestParamDto,
+    @Query()
+    {
+      businessId,
+      page,
+      search,
+      from,
+      to,
+      reportType,
+      riskLevels,
+      statuses,
+      findings,
+      isAlert,
+    }: BusinessReportListRequestParamDto,
   ) {
-    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
+    const { id: customerId, features } = await this.customerService.getByProjectId(
+      currentProjectId,
+    );
 
-    return await this.businessReportService.findMany({
+    const { data, totalPages, totalItems } = await this.businessReportService.findMany({
       withoutUnpublishedOngoingReports: true,
-      limit: page.size,
-      page: page.number,
-      customerId: customerId,
+      ...(page ? { limit: page.size, page: page.number } : {}),
+      customerId,
+      from,
+      to,
+      riskLevels,
+      statuses,
+      findings,
+      isAlert,
+      ...(reportType ? { reportType } : {}),
       ...(businessId ? { businessId } : {}),
       ...(search ? { searchQuery: search } : {}),
     });
+
+    const merchantIds = data.map(report => report.merchantId);
+    const businesses = await this.businessService.list(
+      { where: { id: { in: merchantIds } }, select: { id: true, metadata: true } },
+      [currentProjectId],
+    );
+
+    const reports = await Promise.all(
+      data.map(async report => {
+        const business = businesses.find(business => business.id === report.merchantId);
+
+        const metadata = business?.metadata as {
+          featureConfig?: TCustomerWithFeatures['features'];
+        };
+
+        const isOngoingEnabledForBusiness =
+          metadata?.featureConfig?.[FEATURE_LIST.ONGOING_MERCHANT_REPORT]?.enabled;
+
+        return {
+          ...report,
+          monitoringStatus:
+            (isOngoingEnabledForBusiness ||
+              (isOngoingEnabledForBusiness === undefined &&
+                features?.ONGOING_MERCHANT_REPORT?.options?.runByDefault)) ??
+            false,
+        };
+      }),
+    );
+
+    return {
+      totalPages,
+      totalItems,
+      data: reports,
+    };
+  }
+
+  @common.Get('/findings')
+  @swagger.ApiOkResponse({ type: BusinessReportFindingsListResponseDto })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async listFindings() {
+    return await this.merchantMonitoringClient.listFindings();
+  }
+
+  @common.Get('/metrics')
+  @swagger.ApiOkResponse({ type: BusinessReportMetricsDto })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @common.UsePipes(new ZodValidationPipe(BusinessReportsMetricsQuerySchema, 'query'))
+  async getMetrics(
+    @CurrentProject() currentProjectId: TProjectId,
+    @Query() { from, to }: BusinessReportMetricsRequestQueryDto,
+  ) {
+    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
+
+    const merchantMonitoringMetrics = await this.merchantMonitoringClient.getMetrics({
+      customerId,
+      from,
+      to,
+    });
+
+    return merchantMonitoringMetrics;
   }
 
   @common.Post()
@@ -154,23 +241,6 @@ export class BusinessReportControllerExternal {
     });
   }
 
-  @common.Get('/sync')
-  @UseGuards(AdminAuthGuard)
-  @swagger.ApiOkResponse({ type: [String] })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiExcludeEndpoint()
-  async list() {
-    return await this.prisma.businessReport.findMany({
-      include: {
-        project: {
-          include: {
-            customer: true,
-          },
-        },
-      },
-    });
-  }
-
   @common.Get(':id')
   @swagger.ApiOkResponse({ type: BusinessReportDto })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -179,9 +249,32 @@ export class BusinessReportControllerExternal {
     @CurrentProject() currentProjectId: TProjectId,
     @Param('id') id: string,
   ) {
-    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
+    const { id: customerId, features } = await this.customerService.getByProjectId(
+      currentProjectId,
+    );
 
-    return await this.businessReportService.findById({ id, customerId });
+    const report = await this.businessReportService.findById({ id, customerId });
+    const business = await this.businessService.getById(
+      report.merchantId,
+      { select: { metadata: true } },
+      [currentProjectId],
+    );
+
+    const metadata = business?.metadata as {
+      featureConfig?: TCustomerWithFeatures['features'];
+    };
+
+    const isOngoingEnabledForBusiness =
+      metadata?.featureConfig?.[FEATURE_LIST.ONGOING_MERCHANT_REPORT]?.enabled;
+
+    return {
+      ...report,
+      monitoringStatus:
+        (isOngoingEnabledForBusiness ||
+          (isOngoingEnabledForBusiness === undefined &&
+            features?.ONGOING_MERCHANT_REPORT?.options?.runByDefault)) ??
+        false,
+    };
   }
 
   @swagger.ApiExcludeEndpoint()

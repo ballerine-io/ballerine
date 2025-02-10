@@ -7,9 +7,11 @@ import { workflowsQueryKeys } from '../../../query-keys';
 
 export const useUpdateDocumentByIdMutation = ({
   workflowId,
+  directorId,
   documentId,
 }: {
   workflowId: string;
+  directorId?: string;
   documentId: string;
 }) => {
   const queryClient = useQueryClient();
@@ -29,6 +31,7 @@ export const useUpdateDocumentByIdMutation = ({
         workflowId,
         documentId,
         body: {
+          directorId,
           document,
         },
         contextUpdateMethod,

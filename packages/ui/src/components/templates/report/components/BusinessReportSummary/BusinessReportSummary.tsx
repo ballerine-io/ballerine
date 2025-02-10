@@ -63,43 +63,49 @@ export const BusinessReportSummary: FunctionComponent<{
           <CardContent>
             <div>
               <h4 className={'mb-4 font-semibold'}>Ongoing Monitoring Summary</h4>
-              <TextWithNAFallback as={'p'}>{ongoingMonitoringSummary}</TextWithNAFallback>
+              <TextWithNAFallback as={'p'} className="whitespace-pre-wrap">
+                {ongoingMonitoringSummary}
+              </TextWithNAFallback>
             </div>
           </CardContent>
         )}
         <CardContent>
           <div>
-            <h4 className={'mb-4 font-semibold'}>Merchant Risk Summary</h4>
+            <h4 className={'mb-4 font-semibold'}>
+              {ongoingMonitoringSummary && 'Onboarding '}Merchant Risk Summary
+            </h4>
             <TextWithNAFallback as={'p'}>{summary}</TextWithNAFallback>
           </div>
         </CardContent>
       </Card>
+
       {homepageScreenshotUrl && (
         <Card className={'col-span-2 overflow-hidden'}>
-          <a
-            href={homepageScreenshotUrl}
-            target={'_blank'}
-            rel={'noreferrer'}
-            className={'flex h-full min-h-[300px] w-full flex-col'}
-            title={'Click to view full screenshot'}
-          >
-            <span className="relative grow">
+          <div className={'relative flex h-full flex-col'}>
+            <a
+              href={homepageScreenshotUrl}
+              target={'_blank'}
+              rel={'noreferrer'}
+              className={'relative flex-1 overflow-y-auto'}
+              title={'Click to view full screenshot'}
+            >
               <img
                 src={homepageScreenshotUrl}
                 alt={'Homepage Screenshot'}
-                className={'absolute inset-0 h-full w-full object-cover object-top'}
+                className={'absolute inset-0 h-auto w-full object-cover object-top'}
               />
-              <div
-                className={
-                  'bottom-right-4 absolute rounded border border-white bg-black p-1 text-xs text-white'
-                }
-              >
-                Click to view full screenshot
-              </div>
-            </span>
-          </a>
+            </a>
+            <div
+              className={
+                'top-left-4 absolute rounded border border-white bg-black p-1 text-xs text-white'
+              }
+            >
+              Click to view full screenshot or scroll to explore
+            </div>
+          </div>
         </Card>
       )}
+
       <RiskIndicatorsSummary riskIndicators={riskIndicators} Link={Link} />
     </div>
   );

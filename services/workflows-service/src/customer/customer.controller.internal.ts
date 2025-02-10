@@ -1,18 +1,22 @@
 import * as common from '@nestjs/common';
 import { NotFoundException, UseGuards } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
-import { CustomerService } from '@/customer/customer.service';
-import { CustomerModel } from '@/customer/customer.model';
-import { InputJsonValue, type TProjectIds } from '@/types';
-import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TCustomerWithFeatures } from '@/customer/types';
-import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
-import { CustomerCreateDto } from '@/customer/dtos/customer-create';
-import { ConfigSchema } from '@/workflow/schemas/zod-schemas';
 import { Customer, Prisma } from '@prisma/client';
+import { merge } from 'lodash';
 import { randomUUID } from 'node:crypto';
-import { createDemoMockData } from '../../scripts/workflows/workflow-runtime';
+
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
+import { CustomerModel } from '@/customer/customer.model';
+import { CustomerService } from '@/customer/customer.service';
+import { CustomerCreateDto } from '@/customer/dtos/customer-create';
+import { TCustomerWithFeatures } from '@/customer/types';
 import { PrismaService } from '@/prisma/prisma.service';
+import { InputJsonValue, type TProjectIds } from '@/types';
+import { ConfigSchema } from '@/workflow/schemas/zod-schemas';
+import { createDemoMockData } from '../../scripts/workflows/workflow-runtime';
+import { CustomerUpdateDto } from './dtos/customer-update';
+import { cleanUndefinedValues } from '@/common/utils/clean-undefined-values';
 
 @swagger.ApiExcludeController()
 @common.Controller('internal/customers')
@@ -34,7 +38,9 @@ export class CustomerControllerInternal {
   async find(@ProjectIds() projectIds: TProjectIds): Promise<TCustomerWithFeatures | null> {
     const projectId = projectIds?.[0];
 
-    if (!projectId) throw new NotFoundException('Customer not found');
+    if (!projectId) {
+      throw new NotFoundException('Customer not found');
+    }
 
     return this.service.getByProjectId(projectId, {
       select: {
@@ -103,5 +109,26 @@ export class CustomerControllerInternal {
       ...createdCustomer,
       apiKey,
     };
+  }
+
+  @common.Put(':id')
+  @UseGuards(AdminAuthGuard)
+  @swagger.ApiCreatedResponse({ type: [CustomerUpdateDto] })
+  @swagger.ApiForbiddenResponse()
+  async edit(@common.Param('id') id: string, @common.Body() payload: CustomerUpdateDto) {
+    const { config, ...customer } = payload;
+
+    const existingCustomer = await this.service.getById(id);
+
+    if (!existingCustomer) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    return this.service.updateById(id, {
+      data: cleanUndefinedValues({
+        ...(config && { config: merge(existingCustomer.config, ConfigSchema.parse(config)) }),
+        ...customer,
+      }),
+    });
   }
 }

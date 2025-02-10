@@ -255,6 +255,10 @@ export class WorkflowService {
     const childWorkflowSelectArgs = {
       select: { ...args?.select, ...allEntities },
       include: args?.include,
+      where: {
+        // @ts-expect-error - dynamically typed for all queries
+        deletedAt: args?.where?.deletedAt ?? null,
+      },
     };
     const workflow = (await this.workflowRuntimeDataRepository.findById(
       id,
@@ -672,7 +676,9 @@ export class WorkflowService {
     orderBy: string | undefined,
     orderDirection: SortOrder | undefined,
   ): object {
-    if (!orderBy && !orderDirection) return {};
+    if (!orderBy && !orderDirection) {
+      return {};
+    }
 
     if (orderBy === 'assignee') {
       return {
@@ -816,10 +822,12 @@ export class WorkflowService {
   async updateDocumentDecisionById(
     {
       workflowId,
+      directorId,
       documentId,
       documentsUpdateContextMethod,
     }: {
       workflowId: string;
+      directorId?: string;
       documentId: string;
       documentsUpdateContextMethod?: 'base' | 'director';
     },
@@ -899,6 +907,7 @@ export class WorkflowService {
               : document?.type,
         },
         documentsUpdateContextMethod,
+        directorId,
       );
 
       document = this.getDocuments(updatedContext, documentsUpdateContextMethod)?.find(
@@ -920,6 +929,7 @@ export class WorkflowService {
       const updatedWorkflow = await this.updateDocumentById(
         {
           workflowId,
+          directorId,
           documentId,
           validateDocumentSchema,
           documentsUpdateContextMethod: documentsUpdateContextMethod,
@@ -945,11 +955,13 @@ export class WorkflowService {
       documentId,
       validateDocumentSchema = true,
       documentsUpdateContextMethod,
+      directorId,
     }: {
       workflowId: string;
       documentId: string;
       validateDocumentSchema?: boolean;
       documentsUpdateContextMethod?: 'base' | 'director';
+      directorId?: string;
     },
     data: DefaultContextSchema['documents'][number] & { propertiesSchema?: object },
     projectId: TProjectId,
@@ -1007,6 +1019,7 @@ export class WorkflowService {
               runtimeData.context,
               documentSchema,
               documentsUpdateContextMethod,
+              directorId,
             ),
             arrayMergeOption:
               documentsUpdateContextMethod === 'director'
@@ -1075,6 +1088,7 @@ export class WorkflowService {
     context: WorkflowRuntimeData['context'],
     updatePayload: any,
     method: 'base' | 'director' = 'base',
+    directorId?: string,
   ): WorkflowRuntimeData['context'] {
     switch (method) {
       case 'base':
@@ -1084,7 +1098,7 @@ export class WorkflowService {
         };
 
       case 'director':
-        return this.updateDirectorDocument(context, updatePayload);
+        return this.updateDirectorDocument(context, updatePayload, directorId);
 
       default:
         return context;
@@ -1108,8 +1122,15 @@ export class WorkflowService {
   private updateDirectorDocument(
     context: WorkflowRuntimeData['context'],
     documentUpdatePayload: any,
+    directorId: string | undefined,
   ): WorkflowRuntimeData['context'] {
-    const directorsDocuments = this.getDirectorsDocuments(context);
+    if (!directorId) {
+      throw new BadRequestException('Attempted to update director document without a director id');
+    }
+
+    const directorsDocuments = this.getDirectorsDocuments(context, directorId);
+
+    this.logger.log('directorsDocuments', { directorsDocuments });
 
     directorsDocuments.forEach(document => {
       if (document?.id === documentUpdatePayload?.id) {
@@ -1122,9 +1143,19 @@ export class WorkflowService {
     return context;
   }
 
-  private getDirectorsDocuments(context: WorkflowRuntimeData['context']): any[] {
+  private getDirectorsDocuments(
+    context: WorkflowRuntimeData['context'],
+    directorId?: string,
+  ): any[] {
     return (
       this.getDirectors(context)
+        .filter(director => {
+          if (!directorId) {
+            return true;
+          }
+
+          return director.ballerineEntityId === directorId;
+        })
         .map(director => director.additionalInfo?.documents)
         .filter(Boolean)
         .flat() || ([] as any[])
@@ -1193,9 +1224,13 @@ export class WorkflowService {
 
         // @ts-ignore
         data?.context?.documents?.forEach(({ propertiesSchema, ...document }) => {
-          if (document?.decision?.status !== 'approve') return;
+          if (document?.decision?.status !== 'approve') {
+            return;
+          }
 
-          if (!Object.keys(propertiesSchema ?? {})?.length) return;
+          if (!Object.keys(propertiesSchema ?? {})?.length) {
+            return;
+          }
 
           const validatePropertiesSchema = ajv.compile(propertiesSchema ?? {}); // we shouldn't rely on schema from the client, add to tech debt
           const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
@@ -1756,7 +1791,9 @@ export class WorkflowService {
   ) {
     return await Promise.all(
       document?.pages?.map(async documentPage => {
-        if (documentPage.ballerineFileId) return documentPage;
+        if (documentPage.ballerineFileId) {
+          return documentPage;
+        }
 
         const documentId = document.id! || getDocumentId(document, false);
 
@@ -1916,7 +1953,9 @@ export class WorkflowService {
     workflowDefinition: WorkflowDefinition,
     context: DefaultContextSchema,
   ) {
-    if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) return;
+    if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) {
+      return;
+    }
 
     // @ts-expect-error - error from Prisma types fix
     const validate = ajv.compile(workflowDefinition?.contextSchema?.schema); // TODO: fix type
@@ -1932,7 +1971,9 @@ export class WorkflowService {
       ),
     });
 
-    if (isValid) return;
+    if (isValid) {
+      return;
+    }
 
     this.sentry.captureException(new Error('Workflow definition context validation failed'));
     this.logger.error('Workflow definition context validation failed', {
@@ -2376,7 +2417,9 @@ export class WorkflowService {
             childWorkflowCallback.persistenceStates.includes(childRuntimeState)
           ) || isFinal;
 
-        if (!isPersistableState) return;
+        if (!isPersistableState) {
+          return;
+        }
 
         const parentContext = await this.generateParentContextWithInjectedChildContext(
           childrenOfSameDefinition,
@@ -2424,7 +2467,9 @@ export class WorkflowService {
         }
       });
 
-    if (!callbackTransformations?.length) return;
+    if (!callbackTransformations?.length) {
+      return;
+    }
 
     await Promise.all(callbackTransformations);
   }
@@ -2470,11 +2515,13 @@ export class WorkflowService {
   }
 
   private initiateTransformer(transformer: SerializableTransformer): Transformer {
-    if (transformer.transformer === 'jmespath')
+    if (transformer.transformer === 'jmespath') {
       return new JmespathTransformer(transformer.mapping as string);
+    }
 
-    if (transformer.transformer === 'helper')
+    if (transformer.transformer === 'helper') {
       return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
+    }
 
     throw new Error(`No transformer found for ${transformer.transformer}`);
   }
@@ -2502,7 +2549,9 @@ export class WorkflowService {
     projectId: TProjectId,
     customerName: string,
   ) {
-    if (!documents?.length) return documents;
+    if (!documents?.length) {
+      return documents;
+    }
 
     const documentsWithPersistedImages = await Promise.all(
       documents?.map(async document => {
@@ -2740,10 +2789,10 @@ export class WorkflowService {
       const businessContextToEntityAdapter = (data: Static<typeof BusinessDataSchema>) =>
         ({
           companyName: data.companyName,
-        } satisfies Parameters<typeof this.entityRepository.business.updateById>[1]['data']);
+        } satisfies Parameters<typeof this.businessService.updateById>[1]['data']);
 
       if (workflowRuntimeData.businessId && context.entity?.data) {
-        await this.entityRepository.business.updateById(workflowRuntimeData.businessId, {
+        await this.businessService.updateById(workflowRuntimeData.businessId, {
           data: businessContextToEntityAdapter(
             context.entity.data as Static<typeof BusinessDataSchema>,
           ),

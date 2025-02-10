@@ -86,6 +86,14 @@
     "empty_extraction": "Unable to extract the document's relevant fields.",
     "error": "Failed to perform OCR on the document."
   },
+  "business_monitoring_off": {
+    "success": "Merchant monitoring has been turned off successfully.",
+    "error": "Error occurred while turning merchant monitoring off."
+  },
+  "business_monitoring_on": {
+    "success": "Merchant monitoring has been turned on successfully.",
+    "error": "Error occurred while turning merchant monitoring on."
+  },
   "business_report_creation": {
     "success": "Merchant check created successfully.",
     "error": "Error occurred while creating a merchant check.",
@@ -104,5 +112,13 @@
   "update_details": {
     "success": "Details updated successfully.",
     "error": "Error occurred while updating details."
+  },
+  "ubo_created": {
+    "success": "UBO successfully added",
+    "error": "Error adding UBO"
+  },
+  "ubo_deleted": {
+    "success": "UBO successfully removed",
+    "error": "Error removing UBO"
   }
 }

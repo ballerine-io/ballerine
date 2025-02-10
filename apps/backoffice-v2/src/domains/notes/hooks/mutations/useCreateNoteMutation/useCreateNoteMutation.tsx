@@ -9,8 +9,10 @@ import { TNoteableType } from '@/domains/notes/types';
 
 export const useCreateNoteMutation = ({
   onSuccess,
+  disableToast = false,
 }: {
   onSuccess?: <TData>(data: TData) => void;
+  disableToast: boolean;
 }) => {
   const queryClient = useQueryClient();
 
@@ -41,7 +43,9 @@ export const useCreateNoteMutation = ({
     onSuccess: data => {
       void queryClient.invalidateQueries();
 
-      toast.success(t(`toast:note_created.success`));
+      if (!disableToast) {
+        toast.success(t(`toast:note_created.success`));
+      }
 
       onSuccess?.(data);
     },

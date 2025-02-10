@@ -399,10 +399,9 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createCollectionFlowUrl(
-    @common.Body()
-    { workflowRuntimeDataId }: CreateCollectionFlowUrlDto,
+    @common.Body() { workflowRuntimeDataId }: CreateCollectionFlowUrlDto,
   ) {
-    const result = await this.workflowTokenService.findFirstByWorkflowruntimeDataIdUnscoped(
+    const result = await this.workflowTokenService.findFirstByWorkflowRuntimeDataIdUnscoped(
       workflowRuntimeDataId,
     );
 

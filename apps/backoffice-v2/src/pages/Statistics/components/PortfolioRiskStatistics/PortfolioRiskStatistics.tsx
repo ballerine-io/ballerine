@@ -1,11 +1,13 @@
-import React, { FunctionComponent } from 'react';
-import { Card } from '@/common/components/atoms/Card/Card';
-import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
-import { CardContent } from '@/common/components/atoms/Card/Card.Content';
+import { buttonVariants, WarningFilledSvg } from '@ballerine/ui';
+import { FunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
 import { Cell, Pie, PieChart } from 'recharts';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { Button } from '@/common/components/atoms/Button/Button';
-import { TrendingDown, TrendingUp } from 'lucide-react';
+import { titleCase } from 'string-ts';
+import { z } from 'zod';
+
+import { Card } from '@/common/components/atoms/Card/Card';
+import { CardContent } from '@/common/components/atoms/Card/Card.Content';
+import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import {
   Table,
   TableBody,
@@ -14,40 +16,41 @@ import {
   TableHeader,
   TableRow,
 } from '@/common/components/atoms/Table';
-import { titleCase } from 'string-ts';
+import { ctw } from '@/common/utils/ctw/ctw';
+import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
 import { usePortfolioRiskStatisticsLogic } from '@/pages/Statistics/components/PortfolioRiskStatistics/hooks/usePortfolioRiskStatisticsLogic/usePortfolioRiskStatisticsLogic';
-import { z } from 'zod';
-import { HomeMetricsOutputSchema } from '@/domains/metrics/hooks/queries/useHomeMetricsQuery/useHomeMetricsQuery';
 
 export const PortfolioRiskStatistics: FunctionComponent<
-  z.infer<typeof HomeMetricsOutputSchema>
-> = ({ riskIndicators, reports, cases }) => {
+  Pick<z.infer<typeof MetricsResponseSchema>, 'riskLevelCounts' | 'violationCounts'> & {
+    userSelectedDate: Date;
+  }
+> = ({ riskLevelCounts, violationCounts, userSelectedDate }) => {
   const {
     riskLevelToFillColor,
     parent,
     widths,
     riskLevelToBackgroundColor,
-    filters,
-    totalRiskIndicators,
-    riskIndicatorsSorting,
-    onSortRiskIndicators,
     filteredRiskIndicators,
+    locale,
+    navigate,
+    alertedReports,
+    from,
+    to,
   } = usePortfolioRiskStatisticsLogic({
-    riskIndicators,
-    reports,
-    cases,
+    userSelectedDate,
+    violationCounts,
   });
 
   return (
     <div>
-      <h5 className={'mb-4 font-bold'}>Portfolio Risk Statistics</h5>
+      <h3 className={'mb-4 text-xl font-bold'}>Portfolio Risk Statistics</h3>
       <div className={'grid grid-cols-3 gap-6'}>
         <div className={'min-h-[27.5rem] rounded-xl bg-[#F6F6F6] p-2'}>
           <Card className={'flex h-full flex-col px-3'}>
-            <CardHeader className={'pb-1'}>Portfolio Risk</CardHeader>
+            <CardHeader className={'pb-1 font-bold'}>Merchant Monitoring Risk</CardHeader>
             <CardContent>
               <p className={'mb-8 text-slate-400'}>
-                Risk levels of approved merchants from completed onboarding flows.
+                Risk levels of all merchant monitoring reports.
               </p>
               <div className={'flex flex-col items-center space-y-4 pt-3'}>
                 <PieChart width={184} height={184}>
@@ -58,13 +61,13 @@ export const PortfolioRiskStatistics: FunctionComponent<
                     dominantBaseline="middle"
                     className={'text-lg font-bold'}
                   >
-                    {Object.values(cases.approved).reduce((acc, curr) => acc + curr, 0)}
+                    {Object.values(riskLevelCounts).reduce((acc, curr) => acc + curr, 0)}
                   </text>
                   <text x={92} y={102} textAnchor="middle" dominantBaseline="middle">
-                    Merchants
+                    Reports
                   </text>
                   <Pie
-                    data={Object.entries(cases.approved).map(([riskLevel, value]) => ({
+                    data={Object.entries(riskLevelCounts).map(([riskLevel, value]) => ({
                       name: `${titleCase(riskLevel)} Risk`,
                       value,
                     }))}
@@ -82,206 +85,102 @@ export const PortfolioRiskStatistics: FunctionComponent<
                         key={riskLevel}
                         className={ctw(
                           riskLevelToFillColor[riskLevel as keyof typeof riskLevelToFillColor],
-                          'outline-none',
+                          'cursor-pointer outline-none',
                         )}
+                        onClick={() =>
+                          navigate(
+                            `/${locale}/merchant-monitoring?riskLevels[0]=${riskLevel}&from=${from}&to=${to}`,
+                          )
+                        }
                       />
                     ))}
                   </Pie>
                 </PieChart>
                 <ul className={'flex w-full max-w-sm flex-col space-y-2'}>
-                  {Object.entries(cases.approved).map(([riskLevel, value]) => (
-                    <li
-                      key={riskLevel}
-                      className={'flex items-center space-x-4 border-b py-1 text-xs'}
-                    >
-                      <span
-                        className={ctw(
-                          'flex h-2 w-2 rounded-full',
-                          riskLevelToBackgroundColor[
-                            riskLevel as keyof typeof riskLevelToBackgroundColor
-                          ],
-                        )}
-                      />
-                      <div className={'flex w-full justify-between'}>
-                        <span className={'text-slate-500'}>{titleCase(riskLevel)} Risk</span>
-                        <span>{value}</span>
-                      </div>
-                    </li>
-                  ))}
+                  {Object.entries(riskLevelCounts)
+                    .reverse()
+                    .map(([riskLevel, value]) => (
+                      <li
+                        key={riskLevel}
+                        className={'flex items-center space-x-4 border-b py-1 text-xs'}
+                      >
+                        <span
+                          className={ctw(
+                            'flex h-2 w-2 rounded-full',
+                            riskLevelToBackgroundColor[
+                              riskLevel as keyof typeof riskLevelToBackgroundColor
+                            ],
+                          )}
+                        />
+                        <div className={'flex w-full justify-between'}>
+                          <span className={'text-slate-500'}>{titleCase(riskLevel)} Risk</span>
+                          <span>{value}</span>
+                        </div>
+                      </li>
+                    ))}
                 </ul>
               </div>
             </CardContent>
           </Card>
         </div>
-        <div className={'grid grid-cols-2 gap-3'}>
-          {filters?.map(filter => {
-            const totalRisk = Object.values(filter.riskLevels).reduce((acc, curr) => acc + curr, 0);
-
-            return (
-              <div
-                key={filter.name}
-                className={'col-span-full min-h-[13.125rem] rounded-xl bg-[#F6F6F6] p-2'}
-              >
-                <Card className={'flex h-full flex-col px-3'}>
-                  <CardHeader className={'pb-1'}>{filter.name} Risk</CardHeader>
-                  <CardContent>
-                    <p className={'mb-8 text-slate-400'}>{filter.description}</p>
-                    <div className={'flex items-center space-x-5 pt-3'}>
-                      <PieChart width={104} height={104}>
-                        <text
-                          x={52}
-                          y={44}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          className={ctw('font-bold', {
-                            'text-sm': totalRisk?.toString().length >= 5,
-                          })}
-                        >
-                          {totalRisk}
-                        </text>
-                        <text
-                          x={52}
-                          y={60}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          className={'text-xs'}
-                        >
-                          {filter.entityPlural}
-                        </text>
-                        <Pie
-                          data={Object.entries(filter?.riskLevels ?? {}).map(
-                            ([riskLevel, value]) => ({
-                              name: `${titleCase(riskLevel)} Risk`,
-                              value,
-                            }),
-                          )}
-                          cx={47}
-                          cy={47}
-                          innerRadius={43}
-                          outerRadius={52}
-                          fill="#8884d8"
-                          paddingAngle={5}
-                          dataKey="value"
-                          cornerRadius={9999}
-                        >
-                          {Object.keys(riskLevelToFillColor).map(riskLevel => (
-                            <Cell
-                              key={riskLevel}
-                              className={ctw(
-                                riskLevelToFillColor[
-                                  riskLevel as keyof typeof riskLevelToFillColor
-                                ],
-                                'outline-none',
-                              )}
-                            />
-                          ))}
-                        </Pie>
-                      </PieChart>
-                      <ul className={'w-full max-w-sm'}>
-                        {Object.entries(filter?.riskLevels ?? {}).map(([riskLevel, value]) => {
-                          return (
-                            <li key={riskLevel} className={'flex items-center space-x-4  text-xs'}>
-                              <span
-                                className={ctw(
-                                  'flex h-2 w-2 rounded-full',
-                                  riskLevelToBackgroundColor[
-                                    riskLevel as keyof typeof riskLevelToBackgroundColor
-                                  ],
-                                )}
-                              />
-                              <div className={'flex w-full justify-between'}>
-                                <span className={'text-slate-500'}>
-                                  {titleCase(riskLevel)} Risk
-                                </span>
-                                {value}
-                              </div>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            );
-          })}
-        </div>
         <div className={'min-h-[10.125rem] rounded-xl bg-[#F6F6F6] p-2'}>
           <Card className={'flex h-full flex-col px-3'}>
-            <CardHeader className={'pb-1'}>Risk Indicators</CardHeader>
+            <CardHeader className={'pb-2 font-bold'}>Top 10 Content Violations</CardHeader>
             <CardContent>
-              <div className={'mb-7 flex items-end space-x-2'}>
-                <span className={'text-3xl font-semibold'}>
-                  {Intl.NumberFormat().format(totalRiskIndicators)}
-                </span>
-                <span className={'text-sm leading-7 text-slate-500'}>Total indicators</span>
-              </div>
-              <div className={'mb-6'}>
-                <Button
-                  variant={'ghost'}
-                  className={ctw(
-                    'gap-x-2 rounded-none border-b border-b-slate-400 text-slate-400',
-                    {
-                      'border-b-[rgb(0,122,255)] text-[rgb(0,122,255)] hover:text-[rgb(0,122,255)]':
-                        riskIndicatorsSorting === 'desc',
-                    },
-                  )}
-                  onClick={onSortRiskIndicators('desc')}
-                >
-                  <TrendingUp />
-                  Highest First
-                </Button>
-                <Button
-                  variant={'ghost'}
-                  className={ctw(
-                    'gap-x-2 rounded-none border-b border-b-slate-400 text-slate-400',
-                    {
-                      'border-b-[rgb(0,122,255)] text-[rgb(0,122,255)] hover:text-[rgb(0,122,255)]':
-                        riskIndicatorsSorting === 'asc',
-                    },
-                  )}
-                  onClick={onSortRiskIndicators('asc')}
-                >
-                  <TrendingDown />
-                  Lowest First
-                </Button>
-              </div>
               <Table>
                 <TableHeader className={'[&_tr]:border-b-0'}>
                   <TableRow className={'hover:bg-[unset]'}>
                     <TableHead className={'h-0 ps-0 font-bold text-foreground'}>
                       Indicator
                     </TableHead>
-                    <TableHead className={'h-0 ps-0 font-bold text-foreground'}>Amount</TableHead>
+                    <TableHead className={'h-0 px-0 font-bold text-foreground'}>Amount</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody ref={parent}>
-                  {filteredRiskIndicators.map(({ name, count }, index) => (
+                  {filteredRiskIndicators.map(({ name, count, id }, index) => (
                     <TableRow key={name} className={'border-b-0 hover:bg-[unset]'}>
-                      <TableCell
-                        className={ctw('pb-0 ps-0', {
-                          'pt-2': index !== 0,
-                        })}
-                      >
-                        <div className={'h-full'}>
-                          <div
-                            className={`rounded bg-blue-200 p-1 transition-all`}
-                            style={{
-                              width: `${widths[index]}%`,
-                            }}
-                          >
-                            {titleCase(name ?? '')}
-                          </div>
-                          {/*<span className={'relative z-50 ms-4'}>{titleCase(name ?? '')}</span>*/}
-                        </div>
+                      <TableCell className={ctw('pb-0 ps-0', index !== 0 && 'pt-2')}>
+                        <Link
+                          to={`/${locale}/merchant-monitoring?findings[0]=${id}&from=${from}&to=${to}`}
+                          className={`block h-full cursor-pointer rounded bg-blue-200 p-1 transition-all`}
+                          style={{ width: `${widths[index]}%` }}
+                        >
+                          {titleCase(name ?? '')}
+                        </Link>
                       </TableCell>
-                      <TableCell className={'pb-0 ps-0'}>
+                      <TableCell className={'!px-0 pb-0'}>
                         {Intl.NumberFormat().format(count)}
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
+            </CardContent>
+          </Card>
+        </div>
+        <div className={'self-start rounded-xl bg-[#F6F6F6] p-2'}>
+          <Card className={'flex h-full flex-col px-3'}>
+            <CardHeader className={'pb-2 font-bold'}>Unresolved Monitoring Alerts</CardHeader>
+            <CardContent>
+              <div className={'flex justify-between'}>
+                <div className={'flex items-center space-x-1'}>
+                  <WarningFilledSvg className={'mt-1 d-10'} />
+                  <span className={'text-3xl font-semibold'}>
+                    {Intl.NumberFormat().format(alertedReports)}
+                  </span>
+                </div>
+                <Link
+                  to={`/${locale}/merchant-monitoring?from=${from}&to=${to}&isAlert=Alerted`}
+                  className={ctw(
+                    buttonVariants({
+                      variant: 'link',
+                    }),
+                    'h-[unset] cursor-pointer !p-0 !text-blue-500',
+                  )}
+                >
+                  View
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </div>

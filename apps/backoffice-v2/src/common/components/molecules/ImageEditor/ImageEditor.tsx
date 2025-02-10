@@ -1,5 +1,6 @@
 import { FunctionComponentWithChildren } from '@/common/types';
 import { ctw } from '@/common/utils/ctw/ctw';
+import { isCsv } from '@/common/utils/is-csv/is-csv';
 import { isPdf } from '@/common/utils/is-pdf/is-pdf';
 import { ComponentProps } from 'react';
 import ReactCrop, { Crop } from 'react-image-crop';
@@ -30,7 +31,7 @@ export const ImageEditor: FunctionComponentWithChildren<IImageEditorProps> = ({
       <TransformComponent
         wrapperClass={`d-full max-w-[600px] max-h-[600px] h-full`}
         contentClass={ctw({
-          'hover:cursor-move': !isPdf(image),
+          'hover:cursor-move': !isPdf(image) && !isCsv(image),
         })}
         wrapperStyle={{
           width: '100%',
@@ -41,15 +42,15 @@ export const ImageEditor: FunctionComponentWithChildren<IImageEditorProps> = ({
         contentStyle={{
           width: '100%',
           height: '100%',
-          display: !isPdf(image) ? 'block' : 'flex',
+          display: !isPdf(image) && !isCsv(image) ? 'block' : 'flex',
         }}
       >
         <ReactCrop
           crop={crop}
           onChange={onCrop}
-          disabled={!isCropping || isPdf(image) || isRotatedOrTransformed}
+          disabled={!isCropping || isPdf(image) || isCsv(image) || isRotatedOrTransformed}
           className={ctw('h-full w-full overflow-hidden [&>div]:!w-full', {
-            'flex flex-row [&>div]:min-h-[600px]': isPdf(image),
+            'flex flex-row [&>div]:min-h-[600px]': isPdf(image) || isCsv(image),
           })}
         >
           <div

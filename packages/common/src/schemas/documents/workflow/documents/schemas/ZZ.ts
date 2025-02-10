@@ -231,7 +231,11 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: {},
+      propertiesSchema: Type.Object({
+        address: Type.Optional(Type.String()),
+        name: Type.Optional(Type.String()),
+        issueDate: Type.Optional(Type.String({ format: 'date' })),
+      }),
     },
     {
       category: 'general_documents',

@@ -9,20 +9,16 @@ import { TCustomerWithFeatures } from '@/customer/types';
 import { EndUserService } from '@/end-user/end-user.service';
 import { NotFoundException } from '@/errors';
 import { FileService } from '@/providers/file/file.service';
-import {
-  ITranslationServiceResource,
-  TranslationService,
-} from '@/providers/translation/translation.service';
+import { TranslationService } from '@/providers/translation/translation.service';
 import type { TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { AnyRecord, DefaultContextSchema, TCollectionFlowConfig } from '@ballerine/common';
+import { DefaultContextSchema, TCollectionFlowConfig } from '@ballerine/common';
 import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
-import { EndUser, Prisma, UiDefinition, WorkflowRuntimeData } from '@prisma/client';
+import { EndUser, Prisma, WorkflowRuntimeData } from '@prisma/client';
 import { randomUUID } from 'crypto';
-import get from 'lodash/get';
 
 @Injectable()
 export class CollectionFlowService {
@@ -43,33 +39,6 @@ export class CollectionFlowService {
 
   async getUser(endUserId: string, projectId: TProjectId): Promise<EndUser> {
     return await this.endUserService.getById(endUserId, {}, [projectId]);
-  }
-
-  traverseUiSchema(
-    uiSchema: Record<string, unknown>,
-    context: WorkflowRuntimeData['context'],
-    language: string,
-    _translationService: TranslationService,
-  ) {
-    for (const key in uiSchema) {
-      if (typeof uiSchema[key] === 'object' && uiSchema[key] !== null) {
-        // If the property is an object (including arrays), recursively traverse it
-        // @ts-expect-error - error from Prisma types fix
-        this.traverseUiSchema(uiSchema[key], context, language, _translationService);
-      } else if (typeof uiSchema[key] === 'string') {
-        const options: AnyRecord = {};
-
-        if (uiSchema.labelVariables) {
-          Object.entries(uiSchema.labelVariables).forEach(([key, value]) => {
-            options[key] = get(context, value);
-          });
-        }
-
-        uiSchema[key] = _translationService.translate(uiSchema[key] as string, language, options);
-      }
-    }
-
-    return uiSchema;
   }
 
   async getFlowConfiguration(
@@ -93,7 +62,7 @@ export class CollectionFlowService {
     );
 
     const translationService = new TranslationService(
-      this.getTranslationServiceResources(uiDefinition),
+      this.uiDefinitionService.getTranslationServiceResources(uiDefinition),
     );
 
     await translationService.init();
@@ -104,7 +73,7 @@ export class CollectionFlowService {
       uiOptions: uiDefinition.uiOptions,
       uiSchema: {
         // @ts-expect-error - error from Prisma types fix
-        elements: this.traverseUiSchema(
+        elements: this.uiDefinitionService.traverseUiSchema(
           // @ts-expect-error - error from Prisma types fix
           uiDefinition.uiSchema.elements,
           context,
@@ -116,18 +85,8 @@ export class CollectionFlowService {
       definition: uiDefinition.definition
         ? (uiDefinition.definition as unknown as UiDefDefinition)
         : undefined,
+      version: uiDefinition.version,
     };
-  }
-
-  private getTranslationServiceResources(
-    uiDefinition: UiDefinition & { locales?: unknown },
-  ): ITranslationServiceResource[] | undefined {
-    if (!uiDefinition.locales) return undefined;
-
-    return Object.entries(uiDefinition.locales).map(([language, resource]) => ({
-      language,
-      resource,
-    }));
   }
 
   // async updateFlowConfiguration(

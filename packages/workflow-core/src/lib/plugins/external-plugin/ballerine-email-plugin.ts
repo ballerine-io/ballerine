@@ -3,7 +3,7 @@ import { logger } from '../../logger';
 import { IApiPluginParams } from './types';
 import { ApiPlugin } from './api-plugin';
 import { ApiEmailTemplates } from './vendor-consts';
-import { BallerineApiPlugin, IBallerineApiPluginParams } from './ballerine-plugin';
+import { BallerineApiPlugin, IBallerineApiPluginParams } from './ballerine-api-plugin';
 
 export interface IBallerineEmailPluginParams {
   pluginKind: 'template-email';

@@ -1,5 +1,161 @@
 # @ballerine/backoffice-v2
 
+## 0.7.98
+
+### Patch Changes
+
+- @ballerine/workflow-browser-sdk@0.6.90
+- @ballerine/workflow-node-sdk@0.6.90
+
+## 0.7.97
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.70
+  - @ballerine/workflow-browser-sdk@0.6.89
+  - @ballerine/workflow-node-sdk@0.6.89
+
+## 0.7.96
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.69
+  - @ballerine/workflow-browser-sdk@0.6.88
+  - @ballerine/workflow-node-sdk@0.6.88
+
+## 0.7.95
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/workflow-browser-sdk@0.6.87
+  - @ballerine/workflow-node-sdk@0.6.87
+  - @ballerine/blocks@0.2.34
+  - @ballerine/common@0.9.68
+  - @ballerine/ui@0.5.67
+  - @ballerine/react-pdf-toolkit@1.2.67
+
+## 0.7.94
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/react-pdf-toolkit@1.2.66
+  - @ballerine/workflow-browser-sdk@0.6.86
+  - @ballerine/workflow-node-sdk@0.6.86
+  - @ballerine/blocks@0.2.33
+  - @ballerine/common@0.9.67
+  - @ballerine/ui@0.5.66
+
+## 0.7.93
+
+### Patch Changes
+
+- version bump
+  s Please enter a summary for your changes.
+- Updated dependencies
+  - @ballerine/react-pdf-toolkit@1.2.62
+  - @ballerine/workflow-browser-sdk@0.6.85
+  - @ballerine/workflow-node-sdk@0.6.85
+  - @ballerine/blocks@0.2.32
+  - @ballerine/common@0.9.66
+  - @ballerine/ui@0.5.62
+
+## 0.7.92
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/blocks@0.2.31
+  - @ballerine/common@0.9.65
+  - @ballerine/react-pdf-toolkit@1.2.60
+  - @ballerine/ui@0.5.60
+  - @ballerine/workflow-browser-sdk@0.6.84
+  - @ballerine/workflow-node-sdk@0.6.84
+
+## 0.7.91
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.64
+  - @ballerine/workflow-browser-sdk@0.6.83
+  - @ballerine/workflow-node-sdk@0.6.83
+
+## 0.7.90
+
+### Patch Changes
+
+- Fixed issue with browser back button on merchant report page
+
+## 0.7.89
+
+### Patch Changes
+
+- Adds interactivity to the homepage charts
+- Updated dependencies
+  - @ballerine/ui@0.5.59
+  - @ballerine/react-pdf-toolkit@1.2.59
+
+## 0.7.88
+
+### Patch Changes
+
+- Updated traffic-related stats in the "Website credibility" tab.
+- Updated dependencies
+  - @ballerine/react-pdf-toolkit@1.2.57
+  - @ballerine/ui@0.5.57
+
+## 0.7.87
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.63
+  - @ballerine/workflow-browser-sdk@0.6.82
+  - @ballerine/workflow-node-sdk@0.6.82
+
+## 0.7.86
+
+### Patch Changes
+
+- @ballerine/workflow-browser-sdk@0.6.81
+- @ballerine/workflow-node-sdk@0.6.81
+
+## 0.7.85
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.61
+  - @ballerine/workflow-browser-sdk@0.6.80
+  - @ballerine/workflow-node-sdk@0.6.80
+
+## 0.7.84
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.60
+  - @ballerine/ui@0.5.54
+  - @ballerine/workflow-browser-sdk@0.6.79
+  - @ballerine/react-pdf-toolkit@1.2.54
+  - @ballerine/workflow-node-sdk@0.6.79
+
+## 0.7.83
+
+### Patch Changes
+
+- added command.loading
+- Updated dependencies
+  - @ballerine/ui@0.5.53
+  - @ballerine/react-pdf-toolkit@1.2.53
+
 ## 0.7.82
 
 ### Patch Changes

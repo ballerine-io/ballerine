@@ -1,5 +1,72 @@
 # @ballerine/common
 
+## 0.9.70
+
+### Patch Changes
+
+- updated packages
+
+## 0.9.69
+
+### Patch Changes
+
+- updated common and core
+
+## 0.9.68
+
+### Patch Changes
+
+- version bump
+
+## 0.9.67
+
+### Patch Changes
+
+- version bump
+
+## 0.9.66
+
+### Patch Changes
+
+- version bump
+  s Please enter a summary for your changes.
+
+## 0.9.65
+
+### Patch Changes
+
+- bump
+
+## 0.9.64
+
+### Patch Changes
+
+- bump
+
+## 0.9.63
+
+### Patch Changes
+
+- version bump
+
+## 0.9.62
+
+### Patch Changes
+
+- Updated risk evaluation schema
+
+## 0.9.61
+
+### Patch Changes
+
+- Fixed withQualityControl in plugins
+
+## 0.9.60
+
+### Patch Changes
+
+- Updated button with disabled state
+
 ## 0.9.59
 
 ### Patch Changes

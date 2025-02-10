@@ -14,7 +14,7 @@ import {
   useAssociatedCompaniesBlock,
 } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 import { useCaseInfoBlock } from '@/lib/blocks/hooks/useCaseInfoBlock/useCaseInfoBlock';
-import { useDirectorsBlocks } from '@/lib/blocks/hooks/useDirectorsBlocks';
+import { createDirectorsBlocks } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/create-directors-blocks';
 import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
 import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
@@ -28,6 +28,11 @@ import { useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { associatedCompanyToWorkflowAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-to-workflow-adapter';
+import { getDocumentsByCountry } from '@ballerine/common';
+import { extractCountryCodeFromDocuments } from '@/pages/Entity/hooks/useEntityLogic/utils';
+import { directorAdapter } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/helpers';
+import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
+import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 
 export const useKybExampleBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
@@ -106,39 +111,6 @@ export const useKybExampleBlocksLogic = () => {
       },
     [mutateRevisionTaskById],
   );
-  const onReuploadNeededDirectors = useCallback(
-    ({
-        workflowId,
-        documentId,
-        reason,
-      }: Pick<
-        Parameters<typeof mutateRevisionTaskById>[0],
-        'workflowId' | 'documentId' | 'reason'
-      >) =>
-      () => {
-        if (!documentId) {
-          toast.error('Invalid task id');
-
-          return;
-        }
-
-        mutateRevisionTaskById({
-          workflowId,
-          documentId,
-          reason,
-          contextUpdateMethod: 'director',
-        });
-        window.open(
-          `${workflow?.context?.metadata?.collectionFlowUrl}/?token=${workflow?.context?.metadata?.token}`,
-          '_blank',
-        );
-      },
-    [
-      mutateRevisionTaskById,
-      workflow?.context?.metadata?.collectionFlowUrl,
-      workflow?.context?.metadata?.token,
-    ],
-  );
 
   // Blocks
   const businessInformation = useCaseInfoBlock({
@@ -195,12 +167,78 @@ export const useKybExampleBlocksLogic = () => {
   const directorsRegistryProvidedBlock =
     useDirectorsRegistryProvidedBlock(directorsRegistryProvided);
   const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
-  const directorsBlock = useDirectorsBlocks({
+
+  const { mutate: mutateRemoveDecisionTaskById } = useRemoveDecisionTaskByIdMutation(workflow?.id);
+  const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
+    useApproveTaskByIdMutation(workflow?.id);
+
+  const onMutateRevisionTaskByIdDirectors = useCallback(
+    ({
+        directorId,
+        workflowId,
+        documentId,
+        reason,
+      }: Pick<
+        Parameters<typeof mutateRevisionTaskById>[0],
+        'directorId' | 'workflowId' | 'documentId' | 'reason'
+      >) =>
+      () => {
+        if (!documentId) {
+          toast.error('Invalid task id');
+
+          return;
+        }
+
+        mutateRevisionTaskById({
+          directorId,
+          workflowId,
+          documentId,
+          reason,
+          contextUpdateMethod: 'director',
+        });
+        window.open(
+          `${workflow?.context?.metadata?.collectionFlowUrl}/?token=${workflow?.context?.metadata?.token}`,
+          '_blank',
+        );
+      },
+    [
+      mutateRevisionTaskById,
+      workflow?.context?.metadata?.collectionFlowUrl,
+      workflow?.context?.metadata?.token,
+    ],
+  );
+  const onMutateApproveTaskByIdDirectors = useCallback(
+    ({ directorId, documentId }: { directorId: string; documentId: string }) =>
+      mutateApproveTaskById({ directorId, documentId, contextUpdateMethod: 'director' }),
+    [mutateApproveTaskById],
+  );
+  const onMutateRemoveDecisionTaskByIdDirectors = useCallback(
+    ({ directorId, documentId }: { directorId: string; documentId: string }) =>
+      mutateRemoveDecisionTaskById({ directorId, documentId, contextUpdateMethod: 'director' }),
+    [mutateRemoveDecisionTaskById],
+  );
+
+  const directors = workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
+    directorAdapter(directorsDocumentPagesResults),
+  );
+  const revisionReasons =
+    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+      ({ enum: enum_ }) => !!enum_,
+    )?.enum ?? [];
+
+  const directorsBlock = createDirectorsBlocks({
+    workflowId: workflow?.id ?? '',
+    onReuploadNeeded: onMutateRevisionTaskByIdDirectors,
+    onRemoveDecision: onMutateRemoveDecisionTaskByIdDirectors,
+    onApprove: onMutateApproveTaskByIdDirectors,
+    directors,
+    tags: workflow?.tags ?? [],
+    revisionReasons,
+    isEditable: caseState.writeEnabled,
+    isApproveDisabled: isLoadingApproveTaskById,
+    isLoadingDocuments: directorsStorageFilesQueryResult?.some(file => file?.isLoading),
+    // Remove once callToActionLegacy is removed
     workflow,
-    documentFiles: directorsStorageFilesQueryResult,
-    documentImages: directorsDocumentPagesResults,
-    onReuploadNeeded: onReuploadNeededDirectors,
-    isLoadingReuploadNeeded,
   });
 
   const kybChildWorkflows = workflow?.childWorkflows?.filter(

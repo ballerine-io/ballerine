@@ -16,7 +16,7 @@
 
   <a href="https://docs.ballerine.com/">Documentation</a>
     ·
-   <a href="https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw">Slack</a>
+   <a href="https://join.slack.com/t/ballerine-oss/shared_invite/zt-1il7txerq-K0YrXtlzMttGgD3XXYxlfw">Slack</a>
     ·
     <a href="https://www.ballerine.com/">Website</a>
     ·
@@ -77,7 +77,7 @@ We believe in enabling companies to manage user  identity  and risk according to
 **Getting started**
 To set up a local environment, follow these steps:
 1. #### Install prerequisites:
-   - Node.js ([Install NVM](https://github.com/nvm-sh/nvm), then install node "nvm install --lts")
+   - Node.js ([Install NVM](https://github.com/nvm-sh/nvm), then install node "nvm install 21")
    - Latest PNPM version ([Install PNPM](https://pnpm.io/installation))
    - Docker and docker compose ([Docker](https://docs.docker.com/desktop), [Docker Compose](https://docs.docker.com/compose/install))
 
@@ -143,7 +143,7 @@ Once the process is complete,  _2 tabs_   will open in your browser:
 We appreciate all types of contributions and believe that an active community is the secret to a rich and stable product.
 Here are some of the ways you can contribute:
 
--   Give us feedback in our  [Slack community](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw)
+-   Give us feedback in our  [Slack community](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1il7txerq-K0YrXtlzMttGgD3XXYxlfw)
 -   Help with bugs and features on [our Issues page](https://github.com/ballerine-io/ballerine/issues)
 -   Submit a  [feature request](https://github.com/ballerine-io/ballerine/issues/new?assignees=&labels=enhancement%2C+feature&template=feature_request.md)  or  [bug report](https://github.com/ballerine-io/ballerine/issues/new?assignees=&labels=bug&template=bug_report.md)
 
