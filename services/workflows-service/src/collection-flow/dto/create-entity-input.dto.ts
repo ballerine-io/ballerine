@@ -1,62 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
 import { BusinessPosition } from '@prisma/client';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsObject, IsString, ValidateNested } from 'class-validator';
 
-export class EntityCreateDto {
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  firstName!: string;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  lastName!: string;
-
-  @IsOptional()
-  @ApiProperty({
-    type: String,
-  })
-  @IsString()
-  email?: string;
-
-  @IsOptional()
-  @ApiProperty({
-    type: Boolean,
-  })
-  @IsBoolean()
-  isContactPerson?: boolean;
-
-  @IsOptional()
-  @ApiProperty({
-    type: String,
-  })
-  @IsString()
-  phone?: string;
-
-  @IsOptional()
-  @ApiProperty({
-    type: String,
-  })
-  @IsString()
-  country?: string;
-
-  @IsOptional()
-  @ApiProperty({
-    type: String,
-  })
-  @IsString()
-  dateOfBirth?: string;
-
-  @IsOptional()
-  @IsObject()
-  additionalInfo?: Record<string, any>;
-}
+export class EntityCreateDto extends EndUserCreateDto {}
 
 export class CreateEntityInputDto {
   @IsString()
