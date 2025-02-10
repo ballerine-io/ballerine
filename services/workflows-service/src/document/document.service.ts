@@ -269,7 +269,7 @@ export class DocumentService {
     });
   }
 
-  async getDocumentsByWorkflowId(
+  async getDocumentTrackerByWorkflowId(
     projectId: TProjectId,
     workflowDefinitionId: string,
     workflowRuntimeDataId: string,
@@ -281,7 +281,13 @@ export class DocumentService {
     );
 
     if (!isObject(uiDefinition.uiSchema)) {
-      return [];
+      return {
+        business: [],
+        individuals: {
+          ubos: [],
+          directors: [],
+        },
+      };
     }
 
     const uiSchema = uiDefinition.uiSchema as { elements: Array<Record<string, any>> };
@@ -352,17 +358,11 @@ export class DocumentService {
       })),
     };
 
-    const matchDocument = (doc: Document, expectedDoc: TParsedDocuments['business'][number]) =>
-      getDocumentId(
-        {
-          type: doc.type,
-          category: doc.category,
-          issuer: { country: doc.issuingCountry },
-          version: doc.version,
-        },
-        false,
-      ) ===
-      getDocumentId(
+    const isMatchingDocument = (
+      doc: Document,
+      expectedDoc: TParsedDocuments['business'][number],
+    ): boolean => {
+      const expectedDocId = getDocumentId(
         {
           type: expectedDoc.type,
           category: expectedDoc.category,
@@ -371,6 +371,18 @@ export class DocumentService {
         },
         false,
       );
+      const actualDocId = getDocumentId(
+        {
+          type: doc.type,
+          category: doc.category,
+          issuer: { country: doc.issuingCountry },
+          version: doc.version,
+        },
+        false,
+      );
+
+      return expectedDocId === actualDocId;
+    };
 
     const createDocumentResponse = <T extends z.infer<typeof EntitySchema>>(
       matchingDocument: Document | undefined,
@@ -387,7 +399,7 @@ export class DocumentService {
     const result: z.output<typeof DocumentTrackerResponseSchema> = {
       business: parsedUIDocuments.business.map(expectedDoc => {
         const matchingDocument = entitiesWithDocuments.business.documents.find(doc =>
-          matchDocument(doc, expectedDoc),
+          isMatchingDocument(doc, expectedDoc),
         );
 
         return createDocumentResponse(matchingDocument, expectedDoc, entities.business);
@@ -396,7 +408,7 @@ export class DocumentService {
         ubos: entitiesWithDocuments.ubos.flatMap(ubo =>
           parsedUIDocuments.individuals.ubos.map(expectedDoc =>
             createDocumentResponse(
-              ubo.documents.find(doc => matchDocument(doc, expectedDoc)),
+              ubo.documents.find(doc => isMatchingDocument(doc, expectedDoc)),
               expectedDoc,
               {
                 entityType: 'ubo' as const,
@@ -410,7 +422,7 @@ export class DocumentService {
         directors: entitiesWithDocuments.directors.flatMap(director =>
           parsedUIDocuments.individuals.directors.map(expectedDoc =>
             createDocumentResponse(
-              director.documents.find(doc => matchDocument(doc, expectedDoc)),
+              director.documents.find(doc => isMatchingDocument(doc, expectedDoc)),
               expectedDoc,
               {
                 entityType: 'director' as const,

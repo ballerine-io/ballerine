@@ -274,7 +274,7 @@ export class DocumentControllerExternal {
     @Param('workflowRuntimeDataId') workflowRuntimeDataId: string,
     @CurrentProject() projectId: TProjectId,
   ) {
-    return await this.documentService.getDocumentsByWorkflowId(
+    return await this.documentService.getDocumentTrackerByWorkflowId(
       projectId,
       workflowDefinitionId,
       workflowRuntimeDataId,
