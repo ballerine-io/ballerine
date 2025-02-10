@@ -74,6 +74,97 @@ describe('validate', () => {
       });
     });
 
+    describe('abort at first error', () => {
+      it('should return only first error for each field when abortAtFirstError is true', () => {
+        const testValue = {
+          name: null,
+          age: 25,
+        };
+
+        const schema = [
+          {
+            id: 'name',
+            valueDestination: 'name',
+            validators: [
+              { type: 'required', message: 'Name is required.', value: {} },
+              {
+                type: 'minLength',
+                message: 'Name must be at least 2 chars',
+                value: { minLength: 2 },
+              },
+            ],
+          },
+          {
+            id: 'age',
+            valueDestination: 'age',
+            validators: [
+              {
+                type: 'maximum',
+                message: 'Age must be 20 or less',
+                value: { maximum: 20 },
+              },
+              {
+                type: 'minimum',
+                message: 'Age must be at least 18',
+                value: { minimum: 18 },
+              },
+            ],
+          },
+        ] as IValidationSchema[];
+
+        const errors = validate(testValue, schema, { abortAfterFirstError: true });
+
+        expect(errors.length).toBe(2);
+        expect(errors?.[0]?.message).toEqual(['Name is required.']);
+        expect(errors?.[1]?.message).toEqual(['Age must be 20 or less']);
+      });
+
+      it('should return all errors for each field when abortAtFirstError is false', () => {
+        const testValue = {
+          name: '',
+          age: 25,
+        };
+
+        const schema = [
+          {
+            id: 'name',
+            valueDestination: 'name',
+            validators: [
+              { type: 'required', message: 'Name is required.', value: {} },
+              {
+                type: 'minLength',
+                message: 'Name must be at least 2 chars',
+                value: { minLength: 2 },
+              },
+            ],
+          },
+          {
+            id: 'age',
+            valueDestination: 'age',
+            validators: [
+              {
+                type: 'maximum',
+                message: 'Age must be 20 or less',
+                value: { maximum: 20 },
+              },
+              {
+                type: 'minimum',
+                message: 'Age must be at least 18',
+                value: { minimum: 18 },
+              },
+            ],
+          },
+        ] as IValidationSchema[];
+
+        const errors = validate(testValue, schema, { abortAfterFirstError: false });
+
+        expect(errors.length).toBe(3);
+        expect(errors?.[0]?.message).toEqual(['Name is required.']);
+        expect(errors?.[1]?.message).toEqual(['Name must be at least 2 chars']);
+        expect(errors?.[2]?.message).toEqual(['Age must be 20 or less']);
+      });
+    });
+
     describe('plain objects', () => {
       describe('will be valid', () => {
         const requiredCase = [
@@ -817,7 +908,9 @@ describe('validate', () => {
 
       it('even number validator', () => {
         const evenNumberValidator = (value: number, _: ICommonValidator) => {
-          if (typeof value !== 'number') return true;
+          if (typeof value !== 'number') {
+            return true;
+          }
 
           if (value % 2 !== 0) {
             throw new Error('Number is not even');
