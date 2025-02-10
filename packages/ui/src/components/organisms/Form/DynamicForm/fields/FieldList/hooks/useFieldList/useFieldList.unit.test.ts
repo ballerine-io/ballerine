@@ -36,6 +36,12 @@ describe('useFieldList', () => {
     } as unknown as ReturnType<typeof useField>);
     vi.mocked(useDynamicForm).mockReturnValue({
       values: mockValues,
+      touched: {},
+      elementsMap: {},
+      fieldHelpers: {},
+      submit: vi.fn(),
+      metadata: {},
+      context: {},
     } as any);
   });
 
@@ -103,7 +109,7 @@ describe('useFieldList', () => {
   it('should not remove item if value is not an array', () => {
     vi.mocked(useField).mockReturnValue({
       onChange: mockOnChange,
-      value: 'not-an-array' as any,
+      value: 'not-an-array',
       touched: false,
       onBlur: vi.fn(),
     } as unknown as ReturnType<typeof useField>);
