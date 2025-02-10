@@ -48,9 +48,13 @@ export const FileField: TDynamicFormField<IFileFieldParams> = ({ element }) => {
   }, [inputRef]);
 
   const file = useMemo(() => {
-    if (value instanceof File) return value;
+    if (value instanceof File) {
+      return value;
+    }
 
-    if (typeof value === 'string') return new File([], value);
+    if (typeof value === 'string') {
+      return new File([], value);
+    }
 
     return undefined;
   }, [value]);
@@ -71,6 +75,9 @@ export const FileField: TDynamicFormField<IFileFieldParams> = ({ element }) => {
           { 'pointer-events-none opacity-50': disabled || disabledWhileUploading },
         )}
         onClick={focusInputOnContainerClick}
+        tabIndex={0}
+        onFocus={onFocus}
+        onBlur={onBlur}
         data-testid={createTestId(element, stack)}
       >
         <div className="flex gap-3 text-[#007AFF]">
@@ -100,8 +107,6 @@ export const FileField: TDynamicFormField<IFileFieldParams> = ({ element }) => {
           accept={acceptFileFormats}
           disabled={disabled || disabledWhileUploading}
           onChange={handleChange}
-          onBlur={onBlur}
-          onFocus={onFocus}
           ref={inputRef}
           className="hidden"
         />

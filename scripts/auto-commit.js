@@ -35,22 +35,16 @@ async function generateCommitMessage(diff) {
             "- Don't capitalize first letter\n" +
             '- No period at the end\n' +
             '- Keep first line under 72 chars\n' +
-            '- All lines must not exceed 100 chars, including the roast - the roast shouldnt be longer than 100 chars\n' +
+            '- All lines must not exceed 100 chars\n' +
             '- Must have blank line between title and body\n\n' +
             'After analyzing the diff:\n' +
             '1. Write a concise conventional commit message\n' +
-            '2. Add a brief description if needed\n' +
-            '3. Include a humorous roast that relates to the code changes (add TWO line breaks before the roast)\n\n' +
+            '2. Add a brief description if needed\n\n' +
             'Example format:\n' +
             'feat(api): implement user authentication\n\n' +
             '- Add JWT token validation\n' +
             '- Set up refresh token rotation\n\n\n' +
-            '(Your authentication is so weak, even a commented-out password would be more secure)\n\n' +
-            'Example roasts based on code:\n' +
-            '(Your error handling is like a try-catch block that only catches compliments)\n' +
-            '(These variable names are so cryptic, they could qualify as a new encryption algorithm)\n' +
-            '(Your function has more nested callbacks than a family tree in Alabama)\n' +
-            '(This API integration is held together by console.logs and prayers)',
+            '(Your authentication is so weak, even a commented-out password would be more secure)\n\n',
         },
         {
           role: 'user',

@@ -1,4 +1,6 @@
 import { createContext } from 'react';
 import { IDynamicFormContext } from './types';
 
-export const DynamicFormContext = createContext({} as IDynamicFormContext<object>);
+export const DynamicFormContext = createContext<IDynamicFormContext<any>>(
+  {} as IDynamicFormContext<any>,
+);

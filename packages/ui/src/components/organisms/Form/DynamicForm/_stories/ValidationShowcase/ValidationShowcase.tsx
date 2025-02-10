@@ -6,7 +6,8 @@ import { IDynamicFormValidationParams } from '../../types';
 import { schema } from './schema';
 
 const validationParams: IDynamicFormValidationParams = {
-  validateOnBlur: false,
+  validateOnBlur: true,
+  validateOnChange: false,
 };
 
 export const ValidationShowcaseComponent = () => {
