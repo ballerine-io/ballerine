@@ -99,7 +99,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
 
   const clearFileAndInput = useCallback(async () => {
     if (!element.params?.template?.id) {
-      console.warn('Template id is migging in element', element);
+      console.warn('Template id is missing in element', element);
 
       return;
     }
