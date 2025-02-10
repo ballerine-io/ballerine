@@ -1,3 +1,4 @@
+import { sleep } from '@ballerine/common';
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useHttp } from './useHttp';
@@ -108,12 +109,7 @@ describe('useHttp', () => {
   });
 
   it('should set loading state during request', async () => {
-    vi.mocked(request).mockImplementationOnce(
-      () =>
-        new Promise(resolve => {
-          setTimeout(() => resolve(mockResponse), 100);
-        }),
-    );
+    vi.mocked(request).mockImplementationOnce(() => sleep(1000));
 
     const { result, rerender } = renderHook(() => useHttp(mockParams, mockMetadata));
 
