@@ -4,17 +4,17 @@ import { HelpCircle } from 'lucide-react';
 
 import { useDocumentTracker } from './hooks/useDocumentTracker/useDocumentTracker';
 import { Icon } from './constants';
-import { IProcessTrackerProps } from './interfaces';
+import { IDocumentTrackerProps } from './interfaces';
 
-export const DocumentTracker: FunctionComponent<IProcessTrackerProps> = ({
+export const DocumentTracker: FunctionComponent<IDocumentTrackerProps> = ({
   plugins,
   workflow,
-  processes,
+  documents,
 }) => {
   const { uncollapsedItemValue, onValueChange, trackedProcesses } = useDocumentTracker({
     plugins,
     workflow,
-    processes,
+    documents,
   });
 
   return (
@@ -31,27 +31,19 @@ export const DocumentTracker: FunctionComponent<IProcessTrackerProps> = ({
                 <ul className={`flex flex-col space-y-2`}>
                   <li className={`flex items-center gap-x-2`}>
                     {Icon.INDICATOR}
-                    Process not started
+                    Not yet provided
                   </li>
                   <li className={`flex items-center gap-x-2`}>
                     {Icon.CLOCK}
-                    Process started
+                    Provided
                   </li>
                   <li className={`flex items-center gap-x-2`}>
                     {Icon.CHECK}
-                    Process complete
-                  </li>
-                  <li className={`flex items-center gap-x-2`}>
-                    {Icon.MINUS}
-                    <span className={`text-slate-400/40 line-through`}>Process cancelled</span>
+                    Marked as requested
                   </li>
                   <li className={`flex items-center gap-x-2`}>
                     {Icon.X}
-                    Process failed
-                  </li>
-                  <li className={`flex items-center gap-x-2`}>
-                    {Icon.REFRESH}
-                    Re-do process started
+                    Requested
                   </li>
                 </ul>
               </HoverCardContent>

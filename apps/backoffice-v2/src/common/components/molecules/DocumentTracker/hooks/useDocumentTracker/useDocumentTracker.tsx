@@ -1,20 +1,10 @@
-import { tagToAccordionCardItem } from '@/common/components/molecules/ProcessTracker/constants';
-import { IUseProcessTrackerLogicParams } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTracker/interfaces';
-import { processTrackersMap } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTracker/process-tracker-adapters';
-import { IProcessTracker } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTracker/process-tracker-adapters/process-tracker.abstract';
+import { tagToAccordionCardItem } from '@/common/components/molecules/DocumentTracker/constants';
+import { IUseDocumentTrackerLogicParams } from '@/common/components/molecules/DocumentTracker/hooks/useDocumentTracker/interfaces';
+import { processTrackersMap } from '@/common/components/molecules/DocumentTracker/adapters';
+import { IDocumentTracker } from '@/common/components/molecules/DocumentTracker/adapters/document-tracker.abstract';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-export const useDocumentTracker = ({
-  plugins,
-  workflow,
-  processes,
-}: IUseProcessTrackerLogicParams) => {
-  const tags = useMemo(() => workflow?.tags || [], [workflow]);
-  const tag = useMemo(
-    () => tags?.find(tag => tagToAccordionCardItem[tag as keyof typeof tagToAccordionCardItem]),
-    [tags],
-  );
-
+export const useDocumentTracker = ({ plugins, documents }: IUseDocumentTrackerLogicParams) => {
   const [uncollapsedItemValue, setUncollapsedItemValue] = useState<string>();
   const onValueChange = useCallback((value: string) => {
     setUncollapsedItemValue(value);
@@ -23,18 +13,18 @@ export const useDocumentTracker = ({
   const processTrackers = useMemo(
     () =>
       processes.reduce((list, processName) => {
-        const ProcessTracker = processTrackersMap[processName as keyof typeof processTrackersMap];
+        const DocumentTracker = processTrackersMap[processName as keyof typeof processTrackersMap];
 
-        if (!ProcessTracker) {
+        if (!DocumentTracker) {
           console.warn(`${processName} is unsupported.`);
 
           return list;
         }
 
-        list.push(new ProcessTracker(workflow, plugins));
+        list.push(new DocumentTracker(workflow, plugins));
 
         return list;
-      }, [] as IProcessTracker[]),
+      }, [] as IDocumentTracker[]),
     [workflow, plugins, processes],
   );
 

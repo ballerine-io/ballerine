@@ -32,6 +32,7 @@ const DocumentsTrackerSchema = z.object({
   }),
 });
 
+export type TrackedDocument = z.infer<typeof DocumentTrackerItemSchema>;
 export type DocumentsTracker = z.infer<typeof DocumentsTrackerSchema>;
 
 export const fetchDocumentsTrackerItems = async ({

@@ -1,7 +1,8 @@
+import { TrackedDocument } from '@/domains/documents/hooks/fetchers';
 import { TWorkflowDefinitionById } from '@/domains/workflow-definitions/fetchers';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 
-export interface IProcessTrackerProps {
+export interface IDocumentTrackerProps {
   workflow: TWorkflowById;
   plugins: Array<
     | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['apiPlugins']>[number]
@@ -10,5 +11,5 @@ export interface IProcessTrackerProps {
       >[number]
     | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['commonPlugins']>[number]
   >;
-  processes: string[];
+  documents: TrackedDocument[];
 }
