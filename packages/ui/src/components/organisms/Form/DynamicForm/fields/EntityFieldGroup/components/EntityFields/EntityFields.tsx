@@ -103,17 +103,25 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
     });
 
     const documentUploadPromises = documentsCreationPayload.map(async document => {
-      const documentId = await uploadDocument(document.payload);
+      try {
+        const documentId = await uploadDocument(document.payload);
 
-      const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
-        get(context, document.valueDestination, []),
-        document.documentDefinition,
-        documentId,
-      );
+        const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
+          get(context, document.valueDestination, []),
+          document.documentDefinition,
+          documentId,
+        );
 
-      set(context, document.valueDestination, updatedDocuments);
+        set(context, document.valueDestination, updatedDocuments);
 
-      return documentId;
+        return documentId;
+      } catch (error) {
+        toast.error(`Failed to upload document.`, {
+          description: (error as Error).message,
+        });
+
+        return null;
+      }
     });
 
     try {
