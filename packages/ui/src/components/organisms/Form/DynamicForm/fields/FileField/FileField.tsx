@@ -37,7 +37,7 @@ export const FileField: TDynamicFormField<IFileFieldParams> = ({ element }) => {
     element.params!,
   );
   const { run: deleteDocument, isLoading: isDeletingDocument } = useHttp(
-    element.params!.httpParams!.deleteDocument || {},
+    (element.params?.httpParams?.deleteDocument || {}) as IHttpParams,
     metadata,
   );
 
