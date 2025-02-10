@@ -92,17 +92,25 @@ export const useEntitySync = (
 
         // Updating documents
         const documentUploadPromises = documentsCreationPayload.map(async document => {
-          const documentId = await uploadDocument(document.payload);
+          try {
+            const documentId = await uploadDocument(document.payload);
 
-          const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
-            get(contextRef.current, document.valueDestination, []),
-            document.documentDefinition,
-            documentId,
-          );
+            const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
+              get(contextRef.current, document.valueDestination, []),
+              document.documentDefinition,
+              documentId,
+            );
 
-          set(contextRef.current, document.valueDestination, updatedDocuments);
+            set(contextRef.current, document.valueDestination, updatedDocuments);
 
-          return documentId;
+            return documentId;
+          } catch (error) {
+            toast.error(`Failed to upload document.`, {
+              description: (error as Error).message,
+            });
+
+            return null;
+          }
         });
 
         await Promise.all(documentUploadPromises);
