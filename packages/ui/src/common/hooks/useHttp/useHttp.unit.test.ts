@@ -42,18 +42,11 @@ describe('useHttp', () => {
     vi.mocked(request).mockResolvedValueOnce(mockResponse);
 
     const { result } = renderHook(() => useHttp(mockParams, mockMetadata));
+    const { resultPath, ...requestParams } = mockParams;
 
     const response = await result.current.run();
 
-    expect(request).toHaveBeenCalledWith(
-      {
-        ...mockParams,
-        url: mockParams.url,
-      },
-      mockMetadata,
-      undefined,
-      undefined,
-    );
+    expect(request).toHaveBeenCalledWith(requestParams, mockMetadata, undefined, undefined);
     expect(response).toEqual(['item1', 'item2']);
     expect(result.current.isLoading).toBe(false);
     expect(result.current.error).toBeNull();
@@ -64,18 +57,11 @@ describe('useHttp', () => {
     const payload = { test: 'payload' };
 
     const { result } = renderHook(() => useHttp(mockParams, mockMetadata));
+    const { resultPath, ...requestParams } = mockParams;
 
     await result.current.run(payload);
 
-    expect(request).toHaveBeenCalledWith(
-      {
-        ...mockParams,
-        url: mockParams.url,
-      },
-      mockMetadata,
-      payload,
-      undefined,
-    );
+    expect(request).toHaveBeenCalledWith(requestParams, mockMetadata, payload, undefined);
   });
 
   it('should handle request without resultPath', async () => {
@@ -129,17 +115,10 @@ describe('useHttp', () => {
     const additionalParams = { page: 1 };
 
     const { result } = renderHook(() => useHttp(mockParams, mockMetadata));
+    const { resultPath, ...requestParams } = mockParams;
 
     await result.current.run(undefined, { params: additionalParams });
 
-    expect(request).toHaveBeenCalledWith(
-      {
-        ...mockParams,
-        url: mockParams.url,
-      },
-      mockMetadata,
-      undefined,
-      additionalParams,
-    );
+    expect(request).toHaveBeenCalledWith(requestParams, mockMetadata, undefined, additionalParams);
   });
 });

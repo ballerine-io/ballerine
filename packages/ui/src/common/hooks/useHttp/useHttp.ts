@@ -19,17 +19,11 @@ export const useHttp = (params: IHttpParams, metadata: AnyObject) => {
       setResponseError(null);
 
       try {
-        const response = await request(
-          {
-            ...params,
-            url: params.url,
-          },
-          metadata,
-          requestPayload,
-          other?.params,
-        );
+        const { resultPath, ...requestParams } = params;
 
-        return params.resultPath ? get(response, params.resultPath) : response;
+        const response = await request(requestParams, metadata, requestPayload, other?.params);
+
+        return resultPath ? get(response, resultPath) : response;
       } catch (error) {
         console.error(error);
         setResponseError(error as Error);
