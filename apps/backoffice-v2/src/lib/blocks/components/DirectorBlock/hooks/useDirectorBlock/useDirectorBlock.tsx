@@ -65,7 +65,6 @@ export const useDirectorBlock = ({
       version: string;
       pages: Array<{
         type: string;
-        imageUrl: string;
         metadata: {
           side: string;
         };
@@ -75,6 +74,13 @@ export const useDirectorBlock = ({
       };
       properties: Record<PropertyKey, any>;
       propertiesSchema: Record<PropertyKey, any>;
+      details: Array<{
+        id: string;
+        title: string;
+        fileType: string;
+        fileName: string;
+        imageUrl: string;
+      }>;
     }>;
   };
   tags: string[];
@@ -94,12 +100,16 @@ export const useDirectorBlock = ({
     vendor: director?.aml?.vendor ?? '',
   });
 
+  const isDocumentsV2 = workflow?.workflowDefinition?.config?.isDocumentsV2;
   const blocks = useMemo(() => {
     const { documents } = director;
-    const documentsWithoutImageUrl = documents?.map(document => ({
-      ...document,
-      pages: document?.pages?.map(({ imageUrl: _imageUrl, ...page }) => page),
-    }));
+    const documentsWithoutImageUrl = isDocumentsV2
+      ? documents
+      : documents?.map(({ details: _details, ...document }) => ({
+          ...document,
+          pages: document?.pages?.map(({ imageUrl: _imageUrl, ...page }) => page),
+        }));
+
     const isDocumentRevision = documents?.some(
       document => document?.decision?.status === 'revision',
     );
@@ -388,16 +398,7 @@ export const useDirectorBlock = ({
                       type: 'multiDocuments',
                       isLoading: isLoadingDocuments,
                       value: {
-                        data:
-                          document?.pages?.map(({ type, metadata, imageUrl }) => ({
-                            title: `${valueOrNA(
-                              toTitleCase(document.category ?? ''),
-                            )} - ${valueOrNA(toTitleCase(document.type ?? ''))}${
-                              metadata?.side ? ` - ${metadata?.side}` : ''
-                            }`,
-                            imageUrl,
-                            fileType: type,
-                          })) ?? [],
+                        data: document?.details,
                       },
                     })
                     .buildFlat(),

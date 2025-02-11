@@ -26,7 +26,7 @@ import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-fil
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { FILE_MAX_SIZE_IN_BYTE, FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/storage/file-filter';
 import { DocumentFileJsonSchema } from '@/document-file/dtos/document-file.dto';
-import z from 'zod';
+import * as z from 'zod';
 
 @ApiBearerAuth()
 @ApiTags('Documents')

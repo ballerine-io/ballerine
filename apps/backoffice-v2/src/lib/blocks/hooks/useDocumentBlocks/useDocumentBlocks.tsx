@@ -1,6 +1,9 @@
+import { apiClient } from '@/common/api-client/api-client';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { Method } from '@/common/enums';
 import { checkIsIndividual } from '@/common/utils/check-is-individual/check-is-individual';
 import { ctw } from '@/common/utils/ctw/ctw';
+import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useDocumentOcr } from '@/domains/entities/hooks/mutations/useDocumentOcr/useDocumentOcr';
 import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
@@ -16,19 +19,142 @@ import { checkCanRevision } from '@/lib/blocks/hooks/useDocumentBlocks/utils/che
 import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
 import { motionBadgeProps } from '@/lib/blocks/motion-badge-props';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
+import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import {
   composePickableCategoryType,
   extractCountryCodeFromDocuments,
   isExistingSchemaForDocument,
 } from '@/pages/Entity/hooks/useEntityLogic/utils';
-import { selectWorkflowDocuments } from '@/pages/Entity/selectors/selectWorkflowDocuments';
 import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
-import { CommonWorkflowStates, StateTag, valueOrNA } from '@ballerine/common';
+import { CommonWorkflowStates, StateTag, TDocument, valueOrNA } from '@ballerine/common';
 import { Button, TextArea } from '@ballerine/ui';
+import { createQueryKeys } from '@lukemorales/query-key-factory';
+import { useQuery } from '@tanstack/react-query';
 import { X } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useCallback, useMemo } from 'react';
-import { toTitleCase } from 'string-ts';
+import { titleCase, toTitleCase } from 'string-ts';
+import { z } from 'zod';
+
+const getDocuments = async ({ entityId, workflowId }: { entityId: string; workflowId: string }) => {
+  const [documents, error] = await apiClient({
+    method: Method.GET,
+    endpoint: `../external/documents/${entityId}/${workflowId}`,
+    schema: z.any(),
+    timeout: 40_000,
+  });
+
+  return handleZodError(error, documents);
+};
+
+const documentsQueryKeys = createQueryKeys('documents', {
+  list: ({ entityId, workflowId }: { entityId: string; workflowId: string }) => ({
+    queryKey: [{ entityId, workflowId }],
+    queryFn: () => getDocuments({ entityId, workflowId }),
+  }),
+});
+
+const useDocumentsQuery = ({ workflowId, entityId }: { workflowId: string; entityId: string }) => {
+  return useQuery({
+    ...documentsQueryKeys.list({ workflowId, entityId }),
+    enabled: !!workflowId && !!entityId,
+  });
+};
+
+export const useDocumentsAdapter = ({
+  entityId,
+  documents: passedDocuments,
+}: {
+  entityId: string;
+  documents: TDocument[];
+}) => {
+  const { data: workflow } = useCurrentCaseQuery();
+  const { data: documentsV2, isLoading: isLoadingDocumentsV2 } = useDocumentsQuery({
+    workflowId: workflow?.id ?? '',
+    entityId,
+  });
+  const { isDocumentsV2 } = workflow?.workflowDefinition?.config ?? {};
+  const generateDocumentTitle = ({
+    category,
+    type,
+    variant,
+  }: {
+    category: string;
+    type: string;
+    variant: string;
+  }) => {
+    return [valueOrNA(titleCase(category ?? '')), valueOrNA(titleCase(type ?? '')), variant].join(
+      ' - ',
+    );
+  };
+  const documentPages = useMemo(() => {
+    if (isDocumentsV2) {
+      return [];
+    }
+
+    return (
+      passedDocuments?.flatMap(({ pages }) =>
+        pages?.map(({ ballerineFileId }) => ballerineFileId),
+      ) ?? []
+    );
+  }, [passedDocuments, isDocumentsV2]);
+  const storageFilesQueryResult = useStorageFilesQuery(documentPages);
+  const documentPagesResults = useDocumentPageImages(passedDocuments, storageFilesQueryResult);
+  const getDocuments = () => {
+    if (isDocumentsV2) {
+      return documentsV2?.map(document => ({
+        ...document,
+        details:
+          document?.files?.map(({ mimeType, fileName, variant, fileId, imageUrl }) => {
+            const title = generateDocumentTitle({
+              category: document?.category ?? '',
+              type: document?.type ?? '',
+              variant,
+            });
+
+            return {
+              id: fileId,
+              title,
+              fileType: mimeType,
+              fileName,
+              imageUrl,
+            };
+          }) ?? [],
+      }));
+    }
+
+    return passedDocuments?.map((document, documentIndex) => ({
+      ...document,
+      details:
+        document?.pages?.map(({ type, fileName, metadata, ballerineFileId }, pageIndex) => {
+          const title = generateDocumentTitle({
+            category: document?.category ?? '',
+            type: document?.type ?? '',
+            variant: metadata?.side,
+          });
+
+          return {
+            id: ballerineFileId,
+            title,
+            fileType: type,
+            fileName,
+            imageUrl: documentPagesResults?.[documentIndex]?.[pageIndex],
+          };
+        }) ?? [],
+    }));
+  };
+
+  const documents = getDocuments();
+
+  const issuerCountryCode = extractCountryCodeFromDocuments(documents ?? []);
+  const documentsSchemas = getDocumentsSchemas(issuerCountryCode, workflow);
+
+  return {
+    documents,
+    documentsSchemas,
+    isLoading: isLoadingDocumentsV2 || storageFilesQueryResult?.some(({ isLoading }) => isLoading),
+  };
+};
 
 export const useDocumentBlocks = ({
   workflow,
@@ -67,15 +193,14 @@ export const useDocumentBlocks = ({
     };
   };
 }) => {
-  const issuerCountryCode = extractCountryCodeFromDocuments(workflow?.context?.documents);
-  const documentsSchemas = getDocumentsSchemas(issuerCountryCode, workflow);
-  const documents = useMemo(() => selectWorkflowDocuments(workflow), [workflow]);
-  const documentPages = useMemo(
-    () => documents?.flatMap(({ pages }) => pages?.map(({ ballerineFileId }) => ballerineFileId)),
-    [documents],
-  );
-  const storageFilesQueryResult = useStorageFilesQuery(documentPages);
-  const documentPagesResults = useDocumentPageImages(documents, storageFilesQueryResult);
+  const {
+    documents,
+    documentsSchemas,
+    isLoading: isLoadingDocuments,
+  } = useDocumentsAdapter({
+    documents: workflow?.context?.documents ?? [],
+    entityId: workflow?.context?.entity?.ballerineEntityId ?? '',
+  });
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id);
@@ -110,7 +235,7 @@ export const useDocumentBlocks = ({
 
   return (
     documents?.flatMap(
-      ({ id, type: docType, category, properties, propertiesSchema, decision }, docIndex) => {
+      ({ id, type: docType, category, properties, propertiesSchema, decision }) => {
         const additionalProperties = isExistingSchemaForDocument(documentsSchemas ?? [])
           ? composePickableCategoryType(
               category,
@@ -363,7 +488,7 @@ export const useDocumentBlocks = ({
                 : [],
             },
             workflowId: workflow?.id,
-            documents: workflow?.context?.documents,
+            documents,
           })
           .cellAt(0, 0);
 
@@ -470,7 +595,7 @@ export const useDocumentBlocks = ({
                 },
                 workflowId: workflow?.id,
                 isSaveDisabled: isLoadingOCRDocument,
-                documents: workflow?.context?.documents,
+                documents,
               })
               .addCell(decisionCell)
               .build()
@@ -483,22 +608,11 @@ export const useDocumentBlocks = ({
           .addCell({
             type: 'multiDocuments',
             value: {
-              isLoading: storageFilesQueryResult?.some(({ isLoading }) => isLoading),
+              isLoading: isLoadingDocuments,
               onOcrPressed: () => mutateOCRDocument({ documentId: id }),
               isDocumentEditable: caseState.writeEnabled,
               isLoadingOCR: isLoadingOCRDocument,
-              data:
-                documents?.[docIndex]?.pages?.map(
-                  ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({
-                    id: ballerineFileId,
-                    title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
-                      toTitleCase(docType ?? ''),
-                    )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                    imageUrl: documentPagesResults?.[docIndex]?.[pageIndex],
-                    fileType: type,
-                    fileName,
-                  }),
-                ) ?? [],
+              data: documents?.flatMap(document => document?.details),
             },
           })
           .cellAt(0, 0);

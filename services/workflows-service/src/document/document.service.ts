@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DocumentRepository } from './document.repository';
-import { Document, DocumentFile, Prisma } from '@prisma/client';
+import { Document, DocumentFile, File, Prisma, WorkflowDefinition } from '@prisma/client';
 import { PrismaTransactionClient, TProjectId } from '@/types';
 import { DocumentFileService } from '@/document-file/document-file.service';
 import { StorageService } from '@/storage/storage.service';
@@ -10,6 +10,8 @@ import { Static } from '@sinclair/typebox';
 import { CreateDocumentSchema } from './dtos/document.dto';
 import { CreateDocumentFileSchema } from '@/document-file/dtos/document-file.dto';
 import { WorkflowService } from '@/workflow/workflow.service';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { addPropertiesSchemaToDocument } from '@/workflow/utils/add-properties-schema-to-document';
 
 @Injectable()
 export class DocumentService {
@@ -19,6 +21,7 @@ export class DocumentService {
     protected readonly fileService: FileService,
     protected readonly workflowService: WorkflowService,
     protected readonly storageService: StorageService,
+    protected readonly logger: AppLoggerService,
   ) {}
 
   async create(
@@ -107,6 +110,46 @@ export class DocumentService {
     return await this.getByEntityIdAndWorkflowId(entityId, data.workflowRuntimeDataId, [projectId]);
   }
 
+  async formatDocuments({
+    documents,
+    documentSchema,
+  }: {
+    documents: Array<Document & { files: DocumentFile[] }>;
+    documentSchema: WorkflowDefinition['documentsSchema'];
+  }) {
+    const documentsWithFiles = await this.fetchDocumentsFiles({
+      documents,
+      format: 'signed-url',
+    });
+    const typedDocuments = documentsWithFiles as Array<
+      Omit<(typeof documentsWithFiles)[number], 'files'> & {
+        files: Array<(typeof documentsWithFiles)[number]['files'][number] & { file: File }>;
+      }
+    >;
+
+    return typedDocuments.map(({ files, ...document }) => {
+      const documentWithPropertiesSchema = addPropertiesSchemaToDocument(
+        // @ts-expect-error -- the function expects properties not used by the function.
+        {
+          ...document,
+          issuer: {
+            country: document.issuingCountry,
+          },
+        },
+        documentSchema,
+      );
+
+      return {
+        ...document,
+        files: files.map(({ file, ...fileData }) => ({
+          ...fileData,
+          fileName: file.fileName,
+        })),
+        propertiesSchema: documentWithPropertiesSchema.propertiesSchema,
+      };
+    });
+  }
+
   async getByEntityIdAndWorkflowId(
     entityId: string,
     workflowRuntimeDataId: string,
@@ -114,25 +157,18 @@ export class DocumentService {
     args?: Omit<Prisma.DocumentFindManyArgs, 'where'>,
     transaction?: PrismaTransactionClient,
   ) {
-    const documents = await this.repository.findByEntityIdAndWorkflowId(
+    const documents = await this.repository.findByEntityIdAndWorkflowIdWithFiles(
       entityId,
       workflowRuntimeDataId,
       projectIds,
-      {
-        ...args,
-        include: {
-          ...args?.include,
-          files: true,
-        },
-      },
+      args,
       transaction,
     );
-    const documentsWithFiles = await this.fetchDocumentsFiles({
-      documents: documents as Array<Document & { files: DocumentFile[] }>,
-      format: 'signed-url',
-    });
 
-    return documentsWithFiles;
+    return this.formatDocuments({
+      documents,
+      documentSchema: null,
+    });
   }
 
   async updateById(
@@ -144,21 +180,12 @@ export class DocumentService {
   ) {
     await this.repository.updateById(id, projectIds, data, args, transaction);
 
-    const documents = await this.repository.findMany(
-      projectIds,
-      {
-        include: {
-          files: true,
-        },
-      },
-      transaction,
-    );
-    const documentsWithFiles = await this.fetchDocumentsFiles({
-      documents: documents as Array<Document & { files: DocumentFile[] }>,
-      format: 'signed-url',
-    });
+    const documents = await this.repository.findManyWithFiles(projectIds);
 
-    return documentsWithFiles;
+    return this.formatDocuments({
+      documents,
+      documentSchema: null,
+    });
   }
 
   async deleteByIds(
@@ -169,21 +196,12 @@ export class DocumentService {
   ) {
     await this.repository.deleteByIds(ids, projectIds, args, transaction);
 
-    const documents = await this.repository.findMany(
-      projectIds,
-      {
-        include: {
-          files: true,
-        },
-      },
-      transaction,
-    );
-    const documentsWithFiles = await this.fetchDocumentsFiles({
-      documents: documents as Array<Document & { files: DocumentFile[] }>,
-      format: 'signed-url',
-    });
+    const documents = await this.repository.findManyWithFiles(projectIds);
 
-    return documentsWithFiles;
+    return this.formatDocuments({
+      documents,
+      documentSchema: null,
+    });
   }
 
   async fetchDocumentsFiles({
@@ -206,7 +224,7 @@ export class DocumentService {
             return {
               ...file,
               mimeType: uploadedFile.mimeType,
-              signedUrl: uploadedFile.signedUrl,
+              imageUrl: uploadedFile.signedUrl,
             };
           }) ?? [],
         );
@@ -253,15 +271,11 @@ export class DocumentService {
       },
     });
 
-    const documents = await this.repository.findMany(projectIds, {
-      include: {
-        files: true,
-      },
-    });
+    const documents = await this.repository.findManyWithFiles(projectIds);
 
-    return await this.fetchDocumentsFiles({
-      documents: documents as Array<Document & { files: DocumentFile[] }>,
-      format: 'signed-url',
+    return this.formatDocuments({
+      documents,
+      documentSchema: null,
     });
   }
 }

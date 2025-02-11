@@ -23,6 +23,7 @@ export type WorkflowDefinitionConfigTheme = z.infer<typeof WorkflowDefinitionCon
 export const WorkflowDefinitionConfigSchema = z
   .object({
     enableManualCreation: z.boolean().default(false),
+    isDocumentsV2: z.boolean().default(true),
     isManualCreation: z.boolean().default(false),
     isAssociatedCompanyKybEnabled: z.boolean().default(false),
     isCaseOverviewEnabled: z.boolean().default(false),

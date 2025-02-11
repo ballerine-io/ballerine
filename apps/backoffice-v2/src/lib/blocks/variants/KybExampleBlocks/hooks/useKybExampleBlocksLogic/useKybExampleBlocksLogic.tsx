@@ -59,19 +59,6 @@ export const useKybExampleBlocksLogic = () => {
       position,
     }));
   }, [workflow?.context?.pluginsOutput?.directors?.data]);
-  const directorsDocuments = useMemo(() => selectDirectorsDocuments(workflow), [workflow]);
-  const directorDocumentPages = useMemo(
-    () =>
-      directorsDocuments.flatMap(({ pages }) =>
-        pages?.map(({ ballerineFileId }) => ballerineFileId),
-      ),
-    [directorsDocuments],
-  );
-  const directorsStorageFilesQueryResult = useStorageFilesQuery(directorDocumentPages);
-  const directorsDocumentPagesResults: string[][] = useDocumentPageImages(
-    directorsDocuments,
-    directorsStorageFilesQueryResult,
-  );
 
   const { mutate: mutateEvent, isLoading: isLoadingEvent } = useEventMutation();
   const onClose = useCallback(
@@ -218,9 +205,8 @@ export const useKybExampleBlocksLogic = () => {
     [mutateRemoveDecisionTaskById],
   );
 
-  const directors = workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
-    directorAdapter(directorsDocumentPagesResults),
-  );
+  const directors =
+    workflow?.context?.entity?.data?.additionalInfo?.directors?.map(directorAdapter);
   const revisionReasons =
     workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
       ({ enum: enum_ }) => !!enum_,
@@ -236,7 +222,6 @@ export const useKybExampleBlocksLogic = () => {
     revisionReasons,
     isEditable: caseState.writeEnabled,
     isApproveDisabled: isLoadingApproveTaskById,
-    isLoadingDocuments: directorsStorageFilesQueryResult?.some(file => file?.isLoading),
     // Remove once callToActionLegacy is removed
     workflow,
   });

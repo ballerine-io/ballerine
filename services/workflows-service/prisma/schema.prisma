@@ -989,7 +989,6 @@ model Document {
 
 enum DocumentStatus {
   provided
-  unprovided
   requested
 }
 

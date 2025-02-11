@@ -4,7 +4,6 @@ import { ctw } from '@/common/utils/ctw/ctw';
 import { omitPropsFromObjectWhitelist } from '@/common/utils/omit-props-from-object-whitelist/omit-props-from-object-whitelist';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
-import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';
@@ -23,8 +22,10 @@ import { useCaseOverviewBlock } from '@/lib/blocks/hooks/useCaseOverviewBlock/us
 import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctionsBlock/useCompanySanctionsBlock';
 import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
 import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
-import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
-import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
+import {
+  useDocumentBlocks,
+  useDocumentsAdapter,
+} from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
 import { useDocumentReviewBlocks } from '@/lib/blocks/hooks/useDocumentReviewBlocks/useDocumentReviewBlocks';
 import { useKYCBusinessInformationBlock } from '@/lib/blocks/hooks/useKYCBusinessInformationBlock/useKYCBusinessInformationBlock';
 import { useKybRegistryInfoBlock } from '@/lib/blocks/hooks/useKybRegistryInfoBlock/useKybRegistryInfoBlock';
@@ -45,7 +46,6 @@ import { useWebsiteMonitoringReportBlock } from '@/lib/blocks/variants/WebsiteMo
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { getAddressDeep } from '@/pages/Entity/hooks/useEntityLogic/utils/get-address-deep/get-address-deep';
-import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 import { Send } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -124,21 +124,6 @@ export const useDefaultBlocksLogic = () => {
     [workflow?.context?.pluginsOutput],
   );
 
-  const directorsDocuments = useMemo(() => selectDirectorsDocuments(workflow), [workflow]);
-  const directorDocumentPages = useMemo(
-    () =>
-      directorsDocuments.flatMap(({ pages }) =>
-        pages?.map(({ ballerineFileId }) => ballerineFileId),
-      ),
-    [directorsDocuments],
-  );
-
-  const directorsStorageFilesQueryResult = useStorageFilesQuery(directorDocumentPages);
-  const directorsDocumentPagesResults: string[][] = useDocumentPageImages(
-    directorsDocuments,
-    directorsStorageFilesQueryResult,
-  );
-
   const companySanctions = workflow?.context?.pluginsOutput?.companySanctions?.data?.map(
     sanction => ({
       sources: sanction?.entity?.sources,
@@ -162,10 +147,15 @@ export const useDefaultBlocksLogic = () => {
     }),
   );
 
+  const { documents } = useDocumentsAdapter({
+    documents: workflow?.context?.documents ?? [],
+    entityId: workflow?.context?.entity?.ballerineEntityId ?? '',
+  });
+
   const registryInfoBlock = useRegistryInfoBlock({
     registryInfo,
     workflowId: workflow?.id,
-    documents: workflow?.context?.documents,
+    documents,
   });
 
   const kybRegistryInfoBlock = useKybRegistryInfoBlock({
@@ -366,9 +356,8 @@ export const useDefaultBlocksLogic = () => {
     [mutateRemoveDecisionTaskById],
   );
 
-  const directors = workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
-    directorAdapter(directorsDocumentPagesResults),
-  );
+  const directors =
+    workflow?.context?.entity?.data?.additionalInfo?.directors?.map(directorAdapter);
   const revisionReasons =
     workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
       ({ enum: enum_ }) => !!enum_,
@@ -383,7 +372,6 @@ export const useDefaultBlocksLogic = () => {
     revisionReasons,
     isEditable: caseState.writeEnabled,
     isApproveDisabled: isLoadingApproveTaskById,
-    isLoadingDocuments: directorsStorageFilesQueryResult?.some(file => file?.isLoading),
     // Remove once callToActionLegacy is removed
     workflow,
   });
