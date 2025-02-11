@@ -63,6 +63,7 @@ export const ConfigSchema = z
     maxBusinessReports: z.number().nonnegative().optional(),
     isMerchantMonitoringEnabled: z.boolean().optional(),
     showFullAccessPopup: z.boolean().optional(),
+    demoAccount: z.boolean().optional(),
     uiOptions: z
       .object({
         redirectUrls: z
