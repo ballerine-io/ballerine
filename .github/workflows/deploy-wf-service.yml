@@ -285,7 +285,7 @@ jobs:
       - name: Check Prisma Migrate Status
         id: prisma-status
         run: |
-          ARGOCD_API_URL="${{ secrets.ARGOCD_SERVER }}/api/v1/applications/test-wf-service/resource?name=test-wf-service-prisma-migrate&appNamespace=argocd&namespace=default&resourceName=test-wf-service-prisma-migrate&version=v1&kind=Job&group=batch"
+          ARGOCD_API_URL="${{ secrets.ARGOCD_SERVER }}/api/v1/applications/test-wf-service/resource?name=test-wf-service-prisma-migrate&appNamespace=argocd&namespace=wf-migration-jobs&resourceName=test-wf-service-prisma-migrate&version=v1&kind=Job&group=batch"
 
           TARGET_IMAGE_TAG="${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}"
           TOKEN=$(curl -k --insecure -s -X POST "${{ secrets.ARGOCD_SERVER }}/api/v1/session" \
@@ -351,11 +351,11 @@ jobs:
       - name: Check Prisma Migrate Status
         id: prisma-status
         run: |
-          ARGOCD_API_URL="${{ secrets.ARGOCD_SERVER }}/api/v1/applications/test-wf-service/resource?name=test-wf-service&appNamespace=argocd&namespace=default&resourceName=wf-service&version=v1&kind=Deployment&group=apps"
+          ARGOCD_API_URL="${{ secrets.ARGOCD_SERVER }}/api/v1/applications/test-wf-service/resource?name=test-wf-service&appNamespace=argocd&namespace=wf-migration-jobs&resourceName=wf-service&version=v1&kind=Deployment&group=apps"
 
           TARGET_IMAGE_TAG="${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}"
 
-          # while true; do
+          while true; do
               # Fetch job status from ArgoCD API
               RESPONSE=$(curl -s -k -H "Authorization: Bearer ${{env.ARGOCD_TOKEN}}" "$ARGOCD_API_URL")
           #    echo $RESPONSE
@@ -385,29 +385,21 @@ jobs:
               echo "Image: $IMAGE"
               echo "Image Tag: $IMAGE_TAG"
 
-              echo "PRISMA_JOB_STATUS=$STATUS" >> "$GITHUB_OUTPUT"
-              echo "PRISMA_JOB_REASON=$REASON" >> "$GITHUB_OUTPUT"
+              # Nested condition to check Image Tag and Job Completion
+              if [[ "$IMAGE_TAG" == "$TARGET_IMAGE_TAG" ]]; then
+                  if [[ "$REASON" == "NewReplicaSetAvailable" && "$STATUS" == "True" ]]; then
+                      echo "✅ Deployment has been successful with the correct image tag: $IMAGE_TAG"
+                      break
+                  else
+                      echo "⏳ Replicaset is still getting updated... Waiting for completion."
+                  fi
+              else
+                  echo "🚨 Image tag mismatch! Expected: $TARGET_IMAGE_TAG, Found: $IMAGE_TAG"
+              fi
 
-          #     # Nested condition to check Image Tag and Job Completion
-          #     if [[ "$IMAGE_TAG" == "$TARGET_IMAGE_TAG" ]]; then
-          #         if [[ "$REASON" == "NewReplicaSetAvailable" && "$STATUS" == "True" ]]; then
-          #             echo "✅ Deployment has been successful with the correct image tag: $IMAGE_TAG"
-          #             break
-          #         else
-          #             echo "⏳ Replicaset is still getting updated... Waiting for completion."
-          #         fi
-          #     else
-          #         echo "🚨 Image tag mismatch! Expected: $TARGET_IMAGE_TAG, Found: $IMAGE_TAG"
-          #     fi
-
-          #     # Wait before the next check
-          #     sleep 10
-          # done
-
-      - name: status-output
-        run: |
-          echo "PRISMA_JOB_STATUS = ${{ steps.prisma-status.outputs.PRISMA_JOB_STATUS }}"
-          echo "PRISMA_JOB_REASON = ${{ steps.prisma-status.outputs.PRISMA_JOB_REASON }}"
+              # Wait before the next check
+              sleep 10
+          done
 
 
   # TODO Check DB Migrate Status
@@ -423,7 +415,7 @@ jobs:
       - name: Check Prisma Migrate Status
         id: prisma-status
         run: |
-          ARGOCD_API_URL="${{ secrets.ARGOCD_SERVER }}/api/v1/applications/test-wf-service/resource?name=test-wf-service-db-data-migrations&appNamespace=argocd&namespace=default&resourceName=test-wf-service-db-data-migrations&version=v1&kind=Job&group=batch"
+          ARGOCD_API_URL="${{ secrets.ARGOCD_SERVER }}/api/v1/applications/test-wf-service/resource?name=test-wf-service-db-data-migrations&appNamespace=argocd&namespace=wf-migration-jobs&resourceName=test-wf-service-db-data-migrations&version=v1&kind=Job&group=batch"
 
           TARGET_IMAGE_TAG="${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}"
           while true; do
@@ -485,7 +477,7 @@ jobs:
       - name: Check Prisma Migrate Status
         id: prisma-status
         run: |
-          ARGOCD_API_URL="${{ secrets.ARGOCD_SERVER }}/api/v1/applications/test-wf-service/resource?name=test-wf-service-db-data-sync&appNamespace=argocd&namespace=default&resourceName=test-wf-service-db-data-sync&version=v1&kind=Job&group=batch"
+          ARGOCD_API_URL="${{ secrets.ARGOCD_SERVER }}/api/v1/applications/test-wf-service/resource?name=test-wf-service-db-data-sync&appNamespace=argocd&namespace=wf-migration-jobs&resourceName=test-wf-service-db-data-sync&version=v1&kind=Job&group=batch"
 
           TARGET_IMAGE_TAG="${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}"
           while true; do
