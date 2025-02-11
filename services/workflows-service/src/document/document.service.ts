@@ -312,7 +312,7 @@ export class DocumentService {
         companyName: workflowData.context.entity.data.companyName,
       },
       directors: (
-        workflowData.context.entity.data.additionalInfo.directors as Array<{
+        (workflowData.context.entity.data.additionalInfo.directors ?? []) as Array<{
           ballerineEntityId: string;
           firstName: string;
           lastName: string;
