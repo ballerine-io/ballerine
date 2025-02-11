@@ -1,4 +1,5 @@
 import { useHttp } from '@/common/hooks/useHttp';
+import { isAxiosError } from 'axios';
 import jsonata from 'jsonata';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
@@ -58,11 +59,13 @@ export const useEntityFieldGroupList = ({ element }: IUseFieldListProps) => {
         try {
           await deleteEntity({}, { params: { entityId: entity.id } });
         } catch (error) {
-          toast.error('Failed to delete entity.');
+          debugger;
+
+          if (!isAxiosError((error as any).response) && (error as any).response.status === 400) {
+            toast.error('Failed to delete entity.');
+          }
 
           console.error(error);
-
-          return;
         }
       }
 
