@@ -166,7 +166,7 @@ export interface UISchema {
   version: number;
   metadata: {
     businessId: string;
-  }
+  };
 }
 
 export * from './ui-schema.types';
