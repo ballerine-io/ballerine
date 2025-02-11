@@ -22,8 +22,6 @@ export const serverEnvSchema = {
   BCRYPT_SALT: z.coerce.number().int().nonnegative().or(z.string()),
   PORT: z.coerce.number(),
   DB_URL: z.string().url(),
-
-  SESSION_ENCRYPTION_SECRET: z.string(),
   SESSION_SAME_SITE: z
     .union([
       z.literal('strict'),
