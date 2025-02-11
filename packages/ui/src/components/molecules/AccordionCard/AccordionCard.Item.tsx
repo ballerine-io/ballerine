@@ -50,17 +50,19 @@ export const AccordionCardItem: FunctionComponent<AccordionCardItemProps> = ({
               </li>
             )}
             {isNonEmptyArray(subitems) &&
-              subitems.map(({ leftIcon, text, rightIcon }, index) => (
-                <li
-                  className={ctw(`flex items-center gap-x-2`, liProps?.className)}
-                  key={typeof text === 'string' ? `${text}-${index}` : index}
-                  {...liProps}
-                >
-                  {leftIcon}
-                  {text}
-                  {rightIcon}
-                </li>
-              ))}
+              subitems.map(({ leftIcon, text, rightIcon, itemClassName }, index) => {
+                return (
+                  <li
+                    {...liProps}
+                    className={ctw(`flex items-center gap-x-2`, itemClassName, liProps?.className)}
+                    key={typeof text === 'string' ? `${text}-${index}` : index}
+                  >
+                    {leftIcon}
+                    {text}
+                    {rightIcon}
+                  </li>
+                );
+              })}
           </ul>
         </ScrollArea>
       </AccordionContent>

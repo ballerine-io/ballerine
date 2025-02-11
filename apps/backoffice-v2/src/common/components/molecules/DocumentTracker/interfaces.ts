@@ -1,4 +1,3 @@
-import { TrackedDocument } from '@/domains/documents/hooks/fetchers';
 import { TWorkflowDefinitionById } from '@/domains/workflow-definitions/fetchers';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 
@@ -11,5 +10,5 @@ export interface IDocumentTrackerProps {
       >[number]
     | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['commonPlugins']>[number]
   >;
-  documents: TrackedDocument[];
+  documentTypes: string[];
 }

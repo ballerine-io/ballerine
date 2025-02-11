@@ -4,18 +4,12 @@ import { useLocation } from 'react-router-dom';
 import { titleCase } from 'string-ts';
 import { documentsQueryKey } from '@/domains/documents/hooks/query-keys';
 
-export const useDocumentsTrackerItemsQuery = ({
-  workflowDefinitionId,
-  workflowRuntimeDataId,
-}: {
-  workflowDefinitionId: string;
-  workflowRuntimeDataId: string;
-}) => {
+export const useDocumentsTrackerItemsQuery = ({ workflowId }: { workflowId: string }) => {
   const isAuthenticated = useIsAuthenticated();
   const { search, pathname } = useLocation();
 
   return useQuery({
-    ...documentsQueryKey.trackerItems({ workflowDefinitionId, workflowRuntimeDataId }),
+    ...documentsQueryKey.trackerItems({ workflowId }),
     enabled: isAuthenticated,
     select: data => {
       return {
