@@ -12,7 +12,7 @@ export const useWebsiteMonitoringBusinessReportTab = ({
 }: {
   businessReport: TBusinessReport;
 }) => {
-  const { tabs: tabsWithSummary, riskIndicators: originalRiskIndicators } = useReportTabs({
+  const { tabs: tabsWithSummary, sectionsSummary: originalSectionsSummary } = useReportTabs({
     report: businessReport ?? {},
     Link: RiskIndicatorLink,
   });
@@ -29,10 +29,10 @@ export const useWebsiteMonitoringBusinessReportTab = ({
     },
     [],
   );
-  const riskIndicators = originalRiskIndicators?.map(riskIndicator => ({
-    ...riskIndicator,
+  const riskIndicators = originalSectionsSummary?.map(section => ({
+    ...section,
     search: getUpdatedSearchParamsWithActiveMonitoringTab({
-      tab: riskIndicator.search.split('=')[1] ?? '',
+      tab: section.search.split('=')[1] ?? '',
       search,
     }),
   }));

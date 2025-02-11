@@ -10,11 +10,11 @@ export const FacebookPageSchema = z.object({
   id: z.string(),
   url: z.string(),
   name: z.string(),
-  email: z.string().nullable(),
+  email: z.string().nullish(),
   likes: z.number(),
-  address: z.string().nullable(),
-  categories: z.array(z.string()),
-  phoneNumber: z.string().nullable(),
+  address: z.string().nullish(),
+  categories: z.array(z.string()).nullish(),
+  phoneNumber: z.string().nullish(),
   creationDate: z.string(),
   screenshotUrl: z.string().url(),
 });
@@ -23,15 +23,15 @@ export const InstagramPageSchema = z.object({
   id: z.string(),
   url: z.string(),
   username: z.string(),
-  biography: z.string().nullable(),
+  biography: z.string().nullish(),
   followers: z.number(),
-  categories: z.array(z.string()),
+  categories: z.array(z.string()).nullish(),
   isVerified: z.boolean(),
   screenshotUrl: z.string().url(),
   isBusinessProfile: z.boolean(),
 });
 
-const RiskIndicatorSchema = z
+export const RiskIndicatorSchema = z
   .object({
     id: z.string(),
     name: z.string().nullish(),
@@ -42,12 +42,13 @@ const RiskIndicatorSchema = z
       })
       .nullish(),
     explanation: z.string().nullish(),
+    reason: z.string().nullish(),
     quoteFromSource: z.string().nullish(),
     riskLevel: z.enum(RISK_INDICATOR_RISK_LEVELS).nullish(),
   })
   .passthrough();
 
-const EcosystemRecordSchema = z.object({
+export const EcosystemRecordSchema = z.object({
   domain: z.string(),
   relatedNode: z.string(),
   relatedNodeType: z.string(),

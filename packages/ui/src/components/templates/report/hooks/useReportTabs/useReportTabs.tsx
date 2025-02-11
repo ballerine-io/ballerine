@@ -14,7 +14,8 @@ import {
 } from '@/components';
 import { z } from 'zod';
 import { MERCHANT_REPORT_STATUSES, MERCHANT_REPORT_TYPES } from '../../constants';
-import { ReportSchema, RiskIndicatorRiskLevel } from '@ballerine/common';
+import { ReportSchema, RiskIndicatorRiskLevel, RiskIndicatorSchema } from '@ballerine/common';
+import { getUniqueRiskIndicators } from '@/common';
 
 type UseReportTabsProps = {
   report: z.infer<typeof ReportSchema>;
@@ -22,16 +23,21 @@ type UseReportTabsProps = {
 };
 
 export const useReportTabs = ({ report, Link }: UseReportTabsProps) => {
-  const riskIndicators = [
+  const sectionsSummary = [
     {
       title: "Website's Company Analysis",
       search: '?activeTab=websitesCompany',
-      riskIndicators: report.data?.companyReputationRiskIndicators ?? [],
+      riskIndicators: getUniqueRiskIndicators(report.data?.companyReputationRiskIndicators ?? []),
     },
     {
       title: 'Website Credibility Analysis',
       search: '?activeTab=websiteCredibility',
-      riskIndicators: report.data?.websiteReputationRiskIndicators ?? [],
+      riskIndicators: getUniqueRiskIndicators([
+        ...(report.data?.websiteReputationRiskIndicators ?? []),
+        ...(report.data?.pricingRiskIndicators ?? []),
+        ...(report.data?.websiteStructureRiskIndicators ?? []),
+        ...(report.data?.trafficRiskIndicators ?? []),
+      ]),
     },
     {
       title: 'Social Media Analysis',
@@ -41,7 +47,7 @@ export const useReportTabs = ({ report, Link }: UseReportTabsProps) => {
     {
       title: 'Website Line of Business Analysis',
       search: '?activeTab=websiteLineOfBusiness',
-      riskIndicators: report.data?.contentRiskIndicators ?? [],
+      riskIndicators: getUniqueRiskIndicators(report.data?.contentRiskIndicators ?? []),
     },
     {
       title: 'Ecosystem Analysis',
@@ -56,10 +62,7 @@ export const useReportTabs = ({ report, Link }: UseReportTabsProps) => {
   ] as const satisfies ReadonlyArray<{
     title: string;
     search: string;
-    riskIndicators: Array<{
-      name?: string | null;
-      riskLevel?: RiskIndicatorRiskLevel | null;
-    }> | null;
+    riskIndicators: z.infer<typeof RiskIndicatorSchema>[] | null;
   }>;
 
   const tabs = [
@@ -89,57 +92,60 @@ export const useReportTabs = ({ report, Link }: UseReportTabsProps) => {
 
           <BusinessReportSummary
             summary={report.data?.summary ?? ''}
-            isOnboarding={true}
-            riskScore={report.data?.riskScore ?? 0}
-            riskIndicators={riskIndicators}
+            riskLevel={report.data?.riskLevel!}
+            sections={sectionsSummary}
             Link={Link}
             homepageScreenshotUrl={report.data?.homePageScreenshotUrl ?? ''}
           />
         </>
       ),
     },
-    // {
-    //   label: "Website's Company",
-    //   value: 'websitesCompany',
-    //   content: (
-    //     <WebsitesCompany
-    //       companyName={companyName ?? ''}
-    //       companyReputationAnalysis={companyReputationAnalysis ?? []}
-    //       violations={websitesCompanyAnalysis ?? []}
-    //     />
-    //   ),
-    // },
-    // {
-    //   label: 'Website Line of Business',
-    //   value: 'websiteLineOfBusiness',
-    //   content: (
-    //     <WebsiteLineOfBusiness
-    //       violations={websiteLineOfBusinessAnalysis ?? []}
-    //       description={lineOfBusinessDescription}
-    //       formattedMcc={formattedMcc}
-    //     />
-    //   ),
-    // },
-    // {
-    //   label: 'Website Credibility',
-    //   value: 'websiteCredibility',
-    //   content: (
-    //     <WebsiteCredibility
-    //       violations={websiteCredibilityAnalysis ?? []}
-    //       onlineReputationAnalysis={onlineReputationAnalysis ?? []}
-    //       pricingAnalysis={pricingAnalysis}
-    //       websiteStructureAndContentEvaluation={websiteStructureAndContentEvaluation}
-    //       trafficAnalysis={trafficAnalysis}
-    //     />
-    //   ),
-    // },
-    // {
-    //   label: 'Ecosystem',
-    //   value: 'ecosystem',
-    //   content: (
-    //     <Ecosystem violations={ecosystemAnalysis ?? []} matches={ecosystemMatches ?? []} />
-    //   ),
-    // },
+    {
+      label: "Website's Company",
+      value: 'websitesCompany',
+      content: (
+        <WebsitesCompany
+          companyName={report.data?.companyName ?? ''}
+          riskIndicators={report.data?.companyReputationRiskIndicators ?? []}
+        />
+      ),
+    },
+    {
+      label: 'Website Line of Business',
+      value: 'websiteLineOfBusiness',
+      content: (
+        <WebsiteLineOfBusiness
+          lineOfBusinessDescription={report.data?.lineOfBusiness ?? null}
+          riskIndicators={report.data?.contentRiskIndicators ?? []}
+          mcc={report.data?.mcc ?? null}
+          mccDescription={report.data?.mccDescription ?? null}
+        />
+      ),
+    },
+    {
+      label: 'Website Credibility',
+      value: 'websiteCredibility',
+      content: (
+        <WebsiteCredibility
+          trafficData={{
+            trafficSources: report.data?.trafficSources,
+            monthlyVisits: report.data?.monthlyVisits,
+            pagesPerVisit: report.data?.pagesPerVisit,
+            timeOnSite: report.data?.timeOnSite,
+            bounceRate: report.data?.bounceRate,
+          }}
+          websiteReputationRiskIndicators={report.data?.websiteReputationRiskIndicators ?? []}
+          pricingRiskIndicators={report.data?.pricingRiskIndicators ?? []}
+          websiteStructureRiskIndicators={report.data?.websiteStructureRiskIndicators ?? []}
+          trafficRiskIndicators={report.data?.trafficRiskIndicators ?? []}
+        />
+      ),
+    },
+    {
+      label: 'Ecosystem',
+      value: 'ecosystem',
+      content: <Ecosystem data={report.data?.ecosystem ?? []} />,
+    },
     {
       label: 'Social Media',
       value: 'adsAndSocialMedia',
@@ -168,6 +174,6 @@ export const useReportTabs = ({ report, Link }: UseReportTabsProps) => {
 
   return {
     tabs,
-    riskIndicators,
+    sectionsSummary,
   };
 };

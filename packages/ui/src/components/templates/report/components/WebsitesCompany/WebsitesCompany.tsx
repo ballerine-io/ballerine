@@ -1,21 +1,16 @@
 import React, { FunctionComponent } from 'react';
-import { ctw } from '@/common';
+import { ctw, getUniqueRiskIndicators } from '@/common';
 import { Card, CardContent, CardHeader } from '@/components';
 import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
 import { BallerineLink } from '@/components/atoms/BallerineLink/BallerineLink';
 import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
+import { RiskIndicatorSchema } from '@ballerine/common';
+import { z } from 'zod';
 
 export const WebsitesCompany: FunctionComponent<{
   companyName: string;
-  companyReputationAnalysis: Array<{
-    label: string;
-    url: string;
-  }>;
-  violations: Array<{
-    label: string;
-    severity: string;
-  }>;
-}> = ({ companyName, companyReputationAnalysis, violations }) => {
+  riskIndicators: z.infer<typeof RiskIndicatorSchema>[];
+}> = ({ companyName, riskIndicators }) => {
   return (
     <div className={'space-y-8'}>
       <div>
@@ -39,27 +34,27 @@ export const WebsitesCompany: FunctionComponent<{
         </ContentTooltip>
       </div>
 
-      <RiskIndicators violations={violations} />
+      <RiskIndicators riskIndicators={riskIndicators} />
       <Card>
         <CardHeader className={'pt-4 font-bold'}>Company Reputation Analysis</CardHeader>
         <CardContent>
           <ol
             className={ctw({
-              'ps-4': !!companyReputationAnalysis?.length,
+              'ps-4': !!riskIndicators?.length,
             })}
           >
-            {!!companyReputationAnalysis?.length &&
-              companyReputationAnalysis.map(({ label, url }) => (
-                <li key={label} className={'list-decimal'}>
-                  {label}
-                  {!!url && (
+            {!!riskIndicators?.length &&
+              riskIndicators.map(({ description, sourceUrl }) => (
+                <li className={'list-decimal'}>
+                  {description}
+                  {!!sourceUrl && (
                     <span className={'ms-4'}>
-                      (<BallerineLink href={url}>source</BallerineLink>)
+                      (<BallerineLink href={sourceUrl}>source</BallerineLink>)
                     </span>
                   )}
                 </li>
               ))}
-            {!companyReputationAnalysis?.length && (
+            {!riskIndicators?.length && (
               <li>No indications of negative company reputation were detected.</li>
             )}
           </ol>

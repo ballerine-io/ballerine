@@ -3,18 +3,14 @@ import { ctw } from '@/common';
 import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
 import { Card, CardContent, CardHeader } from '@/components';
 import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
-
+import { RiskIndicatorSchema } from '@ballerine/common';
+import { z } from 'zod';
 export const WebsiteLineOfBusiness: FunctionComponent<{
-  violations: Array<{
-    label: string;
-    severity: string;
-    explanation: string;
-    screenshotUrl: string;
-    sourceUrl: string;
-  }>;
-  description: string;
-  formattedMcc: string | null;
-}> = ({ violations, description, formattedMcc }) => {
+  riskIndicators: z.infer<typeof RiskIndicatorSchema>[];
+  lineOfBusinessDescription: string | null;
+  mcc: string | null;
+  mccDescription: string | null;
+}> = ({ riskIndicators, lineOfBusinessDescription, mcc, mccDescription }) => {
   return (
     <div className={'space-y-8'}>
       <div>
@@ -30,7 +26,7 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
         </ContentTooltip>
       </div>
 
-      <RiskIndicators violations={violations} />
+      <RiskIndicators riskIndicators={riskIndicators} />
       <Card>
         <CardHeader className={'pt-4 font-bold'}>Line of Business Summary</CardHeader>
         <CardContent className={'flex flex-col space-y-4'}>
@@ -52,13 +48,13 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
             </ContentTooltip>
             <p
               className={ctw({
-                'text-slate-400': !description,
+                'text-slate-400': !lineOfBusinessDescription,
               })}
             >
-              {description || 'Not provided'}
+              {lineOfBusinessDescription || 'Not provided'}
             </p>
           </div>
-          {formattedMcc && (
+          {mcc && mccDescription && (
             <div>
               <ContentTooltip
                 description={
@@ -75,12 +71,14 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
               >
                 <h4 className={'mb-4 font-semibold'}>MCC Classification</h4>
               </ContentTooltip>
-              <p>{formattedMcc}</p>
+              <p>
+                {mcc} - {mccDescription}
+              </p>
             </div>
           )}
         </CardContent>
       </Card>
-      {!!violations.length && (
+      {!!riskIndicators.length && (
         <Card>
           <div>
             <ContentTooltip
@@ -98,21 +96,21 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
           </div>
           <CardContent className={'flex flex-col space-y-4'}>
             <h4 className={'font-semibold'}>Findings</h4>
-            {violations.map(violation => (
-              <div key={violation.label} className={'flex flex-col space-y-2'}>
-                <h5 className={'font-semibold'}>{violation.label}</h5>
-                {violation.explanation && <p>{violation.explanation}</p>}
-                {violation.screenshotUrl && (
+            {riskIndicators.map(riskIndicator => (
+              <div className={'flex flex-col space-y-2'}>
+                <h5 className={'font-semibold'}>{riskIndicator.name}</h5>
+                {riskIndicator.explanation && <p>{riskIndicator.explanation}</p>}
+                {typeof riskIndicator.screenshot?.screenshotUrl === 'string' && (
                   <a
-                    href={violation.screenshotUrl}
+                    href={riskIndicator.screenshot.screenshotUrl}
                     target={'_blank'}
                     rel={'noreferrer'}
                     className={'relative w-1/2'}
                     title={'Click to view full screenshot'}
                   >
                     <img
-                      src={violation.screenshotUrl}
-                      alt={`${violation.label} screenshot of the website`}
+                      src={riskIndicator.screenshot.screenshotUrl}
+                      alt={`${riskIndicator.name} screenshot of the website`}
                       className={'h-auto max-h-[400px] w-full object-cover object-top'}
                     />
                     <div
@@ -124,17 +122,19 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
                     </div>
                   </a>
                 )}
-                <div className={'text-sm italic'}>
-                  Source:{' '}
-                  <a
-                    href={violation.sourceUrl}
-                    target={'_blank'}
-                    rel={'noreferrer'}
-                    className={'link text-blue-500'}
-                  >
-                    {violation.sourceUrl}
-                  </a>
-                </div>
+                {riskIndicator.sourceUrl && (
+                  <div className={'text-sm italic'}>
+                    Source:{' '}
+                    <a
+                      href={riskIndicator.sourceUrl}
+                      target={'_blank'}
+                      rel={'noreferrer'}
+                      className={'link text-blue-500'}
+                    >
+                      {riskIndicator.sourceUrl}
+                    </a>
+                  </div>
+                )}
               </div>
             ))}
           </CardContent>

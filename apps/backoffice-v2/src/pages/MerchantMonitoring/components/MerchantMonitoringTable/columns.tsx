@@ -72,14 +72,7 @@ export const columns = [
       return (
         <div className="flex items-center gap-2">
           {riskLevel ? (
-            <Badge
-              className={ctw(
-                severityToClassName[
-                  (riskLevel.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
-                ],
-                'w-20 py-0.5 font-bold',
-              )}
-            >
+            <Badge className={ctw(severityToClassName[riskLevel], 'w-20 py-0.5 font-bold')}>
               {titleCase(riskLevel)}
             </Badge>
           ) : (
