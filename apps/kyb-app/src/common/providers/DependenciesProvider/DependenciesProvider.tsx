@@ -1,7 +1,7 @@
+import { LoadingScreen } from '@/common/components/molecules/LoadingScreen';
 import { InvalidAccessTokenError } from '@/common/errors/invalid-access-token';
 import { useCustomerQuery } from '@/hooks/useCustomerQuery';
 import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
-import { LoadingScreen } from '@/pages/CollectionFlow/components/atoms/LoadingScreen';
 import { HTTPError } from 'ky';
 import { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { getJsonErrors, isShouldIgnoreErrors } from './helpers';

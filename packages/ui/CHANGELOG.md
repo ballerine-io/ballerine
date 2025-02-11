@@ -1,5 +1,48 @@
 # @ballerine/ui
 
+## 0.5.74
+
+### Patch Changes
+
+- Removed isOnboarding prop in favor of using ongoing monitoring summary presence as an indicator to the conditional merchant risk summary heading
+
+## 0.5.73
+
+### Patch Changes
+
+- Trim number values in traffic sources piechart
+
+## 0.5.72
+
+### Patch Changes
+
+- Bump
+
+## 0.5.71
+
+### Patch Changes
+
+- Bump
+
+## 0.5.70
+
+### Patch Changes
+
+- Param adjustmetns & bugfixes
+- Format ongoing summary in the UI
+
+## 0.5.69
+
+### Patch Changes
+
+- Fixed options mapping at Multiselect
+
+## 0.5.68
+
+### Patch Changes
+
+- Added Dynamic Form V2 & Validator
+
 ## 0.5.67
 
 ### Patch Changes

@@ -6,11 +6,16 @@ export type UboToEntityAdapter = (ubo: Record<string, any>) => {
     firstName: string;
     lastName: string;
     email: string;
-    nationalId: string;
     percentageOfOwnership: number;
+    role: string;
+    phoneNumber: string;
+    isAuthorizedSignatory: boolean;
+    country: string;
+    city: string;
+    street: string;
+    sourceOfWealth: string;
+    sourceOfFunds: string;
     additionalInfo: {
-      fullAddress: string;
-      nationality: string;
       companyName: string;
       customerCompany: string;
     };

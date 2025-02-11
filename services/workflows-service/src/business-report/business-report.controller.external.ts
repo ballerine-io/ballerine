@@ -6,7 +6,6 @@ import {
   Query,
   Res,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
@@ -35,7 +34,6 @@ import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-fil
 import { CreateBusinessReportBatchBodyDto } from '@/business-report/dtos/create-business-report-batch-body.dto';
 import type { Response } from 'express';
 import { PrismaService } from '@/prisma/prisma.service';
-import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { BusinessReportFindingsListResponseDto } from '@/business-report/dtos/business-report-findings.dto';
 import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
 import {
@@ -166,17 +164,7 @@ export class BusinessReportControllerExternal {
     @CurrentProject() currentProjectId: TProjectId,
     @Query() { from, to }: BusinessReportMetricsRequestQueryDto,
   ) {
-    const { id: customerId, features } = await this.customerService.getByProjectId(
-      currentProjectId,
-    );
-
-    const { totalActiveMerchants, addedMerchantsCount, unmonitoredMerchants } =
-      await this.businessService.getMerchantMonitoringMetrics({
-        projectIds: [currentProjectId],
-        features,
-        from,
-        to,
-      });
+    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
 
     const merchantMonitoringMetrics = await this.merchantMonitoringClient.getMetrics({
       customerId,
@@ -184,12 +172,7 @@ export class BusinessReportControllerExternal {
       to,
     });
 
-    return {
-      ...merchantMonitoringMetrics,
-      totalActiveMerchants,
-      addedMerchantsCount,
-      removedMerchantsCount: unmonitoredMerchants,
-    };
+    return merchantMonitoringMetrics;
   }
 
   @common.Post()
@@ -255,23 +238,6 @@ export class BusinessReportControllerExternal {
       workflowVersion,
       withQualityControl,
       customerId,
-    });
-  }
-
-  @common.Get('/sync')
-  @UseGuards(AdminAuthGuard)
-  @swagger.ApiOkResponse({ type: [String] })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiExcludeEndpoint()
-  async list() {
-    return await this.prismaService.businessReport.findMany({
-      include: {
-        project: {
-          include: {
-            customer: true,
-          },
-        },
-      },
     });
   }
 

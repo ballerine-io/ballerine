@@ -15,7 +15,9 @@ export class AuthService {
     const user = await this.userService.getByEmailUnscoped(email);
 
     if (user && (await this.passwordService.compare(password, user.password))) {
-      if (user?.status !== UserStatus.Active) throw new UnauthorizedException('Unauthorized');
+      if (user?.status !== UserStatus.Active) {
+        throw new UnauthorizedException('Unauthorized');
+      }
 
       const { id, firstName, lastName, roles } = user;
       const roleList = roles as string[];

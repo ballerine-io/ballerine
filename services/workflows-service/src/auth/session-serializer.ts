@@ -61,7 +61,9 @@ export class SessionSerializer extends PassportSerializer {
 
       return done(null, authenticatedEntity);
     } catch (err) {
-      if (!isRecordNotFoundError(err)) throw err;
+      if (!isRecordNotFoundError(err)) {
+        throw err;
+      }
 
       return done(null, null);
     }

@@ -1,0 +1,41 @@
+name: Packer build AWS AMI's 
+on: 
+  workflow_dispatch:
+
+jobs:
+  plan:
+    environment: Terraform
+    defaults:
+      run:
+        working-directory: /home/runner/work/ballerine/deploy/aws_ami
+    runs-on: ubuntu-latest
+    name: Packer build Artifacts
+    steps:
+      - name: Checkout to Git
+        uses: actions/checkout@v2
+
+      - name: Assume Role
+        uses: ./
+        env:
+          ROLE_ARN: ${{ secrets.AWS_PACKER_ROLE }}
+          ROLE_SESSION_NAME: packersession
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          DURATION_SECONDS: 900
+
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: 1.8.7
+
+      - name: Run `packer init`
+        id: init
+        run: "packer init template.json.pkr.hcl"
+
+      - name: Run `packer validate`
+        id: validate
+        run: "packer validate template.json.pkr.hcl"
+
+      - name: Build AWS AMIs
+        run: "packer build template.json.pkr.hcl"
