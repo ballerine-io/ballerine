@@ -3,7 +3,6 @@ module.exports = {
     node: true,
   },
   parserOptions: {
-    tsconfigRootDir: __dirname,
     project: './tsconfig.json',
   },
   extends: ['plugin:import/recommended', 'plugin:import/typescript', '@ballerine/eslint-config'],
@@ -21,7 +20,6 @@ module.exports = {
   rules: {
     'import/no-cycle': 'error',
     'ballerine/verify-repository-project-scoped': 'error',
-    '@typescript-eslint/no-empty-function': 'off',
   },
   plugins: ['ballerine'],
 };

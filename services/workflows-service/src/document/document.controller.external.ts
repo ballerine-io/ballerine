@@ -108,6 +108,37 @@ export class DocumentControllerExternal {
     });
   }
 
+  @Get('tracker/:workflowId')
+  @ApiForbiddenResponse()
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Documents retrieved successfully',
+    schema: Type.Object({
+      business: Type.Array(Type.Record(Type.String(), Type.Any())),
+      individuals: Type.Object({
+        ubos: Type.Array(Type.Record(Type.String(), Type.Any())),
+        directors: Type.Array(Type.Record(Type.String(), Type.Any())),
+      }),
+    }),
+  })
+  @Validate({
+    request: [
+      {
+        type: 'param',
+        name: 'workflowId',
+        schema: Type.String(),
+      },
+    ],
+    response: Type.Any(),
+  })
+  async getDocumentsByWorkflowId(
+    @Param('workflowId') workflowId: string,
+    @CurrentProject() projectId: TProjectId,
+  ) {
+    return await this.documentService.getDocumentTrackerByWorkflowId(projectId, workflowId);
+  }
+
   @Get('/:entityId/:workflowRuntimeDataId')
   @ApiResponse({
     status: 200,
@@ -244,36 +275,5 @@ export class DocumentControllerExternal {
     @CurrentProject() projectId: string,
   ) {
     return await this.documentService.deleteByIds(ids, [projectId]);
-  }
-
-  @Get('tracker/:workflowId')
-  @ApiForbiddenResponse()
-  @HttpCode(200)
-  @ApiResponse({
-    status: 200,
-    description: 'Documents retrieved successfully',
-    schema: Type.Object({
-      business: Type.Array(Type.Record(Type.String(), Type.Any())),
-      individuals: Type.Object({
-        ubos: Type.Array(Type.Record(Type.String(), Type.Any())),
-        directors: Type.Array(Type.Record(Type.String(), Type.Any())),
-      }),
-    }),
-  })
-  @Validate({
-    request: [
-      {
-        type: 'param',
-        name: 'workflowId',
-        schema: Type.String(),
-      },
-    ],
-    response: Type.Any(),
-  })
-  async getDocumentsByWorkflowId(
-    @Param('workflowId') workflowId: string,
-    @CurrentProject() projectId: TProjectId,
-  ) {
-    return await this.documentService.getDocumentTrackerByWorkflowId(projectId, workflowId);
   }
 }
