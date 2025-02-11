@@ -355,7 +355,7 @@ jobs:
 
           TARGET_IMAGE_TAG="${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}"
 
-          while true; do
+          # while true; do
               # Fetch job status from ArgoCD API
               RESPONSE=$(curl -s -k -H "Authorization: Bearer ${{env.ARGOCD_TOKEN}}" "$ARGOCD_API_URL")
           #    echo $RESPONSE
@@ -385,21 +385,29 @@ jobs:
               echo "Image: $IMAGE"
               echo "Image Tag: $IMAGE_TAG"
 
-              # Nested condition to check Image Tag and Job Completion
-              if [[ "$IMAGE_TAG" == "$TARGET_IMAGE_TAG" ]]; then
-                  if [[ "$REASON" == "NewReplicaSetAvailable" && "$STATUS" == "True" ]]; then
-                      echo "✅ Deployment has been successful with the correct image tag: $IMAGE_TAG"
-                      break
-                  else
-                      echo "⏳ Replicaset is still getting updated... Waiting for completion."
-                  fi
-              else
-                  echo "🚨 Image tag mismatch! Expected: $TARGET_IMAGE_TAG, Found: $IMAGE_TAG"
-              fi
+              echo "PRISMA_JOB_STATUS=$STATUS" >> "$GITHUB_OUTPUT"
+              echo "PRISMA_JOB_REASON=$REASON" >> "$GITHUB_OUTPUT"
 
-              # Wait before the next check
-              sleep 10
-          done
+          #     # Nested condition to check Image Tag and Job Completion
+          #     if [[ "$IMAGE_TAG" == "$TARGET_IMAGE_TAG" ]]; then
+          #         if [[ "$REASON" == "NewReplicaSetAvailable" && "$STATUS" == "True" ]]; then
+          #             echo "✅ Deployment has been successful with the correct image tag: $IMAGE_TAG"
+          #             break
+          #         else
+          #             echo "⏳ Replicaset is still getting updated... Waiting for completion."
+          #         fi
+          #     else
+          #         echo "🚨 Image tag mismatch! Expected: $TARGET_IMAGE_TAG, Found: $IMAGE_TAG"
+          #     fi
+
+          #     # Wait before the next check
+          #     sleep 10
+          # done
+
+      - name: status-output
+        run: |
+          echo "PRISMA_JOB_STATUS = ${{ steps.prisma-status.outputs.PRISMA_JOB_STATUS }}"
+          echo "PRISMA_JOB_REASON = ${{ steps.prisma-status.outputs.PRISMA_JOB_REASON }}"
 
 
   # TODO Check DB Migrate Status
