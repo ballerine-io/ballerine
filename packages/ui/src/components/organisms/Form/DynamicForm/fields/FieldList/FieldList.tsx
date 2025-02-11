@@ -1,5 +1,6 @@
 import { Button } from '@/components/atoms';
 import { Renderer, TRendererSchema } from '@/components/organisms/Renderer';
+import { FocusEventHandler } from 'react';
 import { useDynamicForm } from '../../context';
 import { useElement, useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
@@ -28,14 +29,22 @@ export const FieldList: TDynamicFormField<IFieldListParams> = props => {
   const { stack } = useStack();
   const { element } = props;
   const { id: fieldId, hidden } = useElement(element, stack);
-  const { disabled } = useField(element, stack);
+  const { disabled, onFocus, onBlur } = useField(element, stack);
   const { addButtonLabel = 'Add Item', removeButtonLabel = 'Remove' } = element.params || {};
   const { items, addItem, removeItem } = useFieldList({ element });
 
-  if (hidden) return null;
+  if (hidden) {
+    return null;
+  }
 
   return (
-    <div className="flex flex-col gap-4" data-testid={`${fieldId}-fieldlist`}>
+    <div
+      className="flex flex-col gap-4"
+      data-testid={`${fieldId}-fieldlist`}
+      tabIndex={0}
+      onFocus={onFocus as FocusEventHandler<HTMLDivElement>}
+      onBlur={onBlur as FocusEventHandler<HTMLDivElement>}
+    >
       {items.map((_: unknown, index: number) => {
         return (
           <div
