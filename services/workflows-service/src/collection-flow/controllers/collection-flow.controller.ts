@@ -155,7 +155,15 @@ export class CollectionFlowController {
 
       const directors = await Promise.all(
         workflowRuntimeData.context.entity.data.additionalInfo.directors?.map(
-          async (director: { firstName: string; lastName: string; email: string }) => {
+          async (director: { id?: string; firstName: string; lastName: string; email: string }) => {
+            // If ID is present then entity been created in KYB
+            if (director.id) {
+              return {
+                ballerineEntityId: director.id,
+                ...director,
+              };
+            }
+
             const { id } = await this.endUserService.create({
               data: {
                 firstName: director.firstName,
@@ -175,7 +183,15 @@ export class CollectionFlowController {
 
       const ubos = await Promise.all(
         workflowRuntimeData.context.entity.data.additionalInfo.ubos?.map(
-          async (ubo: { firstName: string; lastName: string; email: string }) => {
+          async (ubo: { id?: string; firstName: string; lastName: string; email: string }) => {
+            // If ID is present then entity been created in KYB
+            if (ubo.id) {
+              return {
+                ballerineEntityId: ubo.id,
+                ...ubo,
+              };
+            }
+
             const { id } = await this.endUserService.create({
               data: {
                 firstName: ubo.firstName,
