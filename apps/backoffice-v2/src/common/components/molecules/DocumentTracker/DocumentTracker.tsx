@@ -12,12 +12,13 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@ballerine/ui';
-import { HelpCircle, SendIcon } from 'lucide-react';
-import { FunctionComponent } from 'react';
+import { HelpCircle, Loader2, SendIcon } from 'lucide-react';
+import { FunctionComponent, memo } from 'react';
 
-import { Icon } from './constants';
+import { DocumentsTrackerData, TrackedDocument } from '@/domains/documents/hooks/schemas/document';
 import { useDocumentTracker } from './hooks/useDocumentTracker';
 import { IDocumentTrackerProps } from './interfaces';
+import { Icon } from './constants';
 
 export const DocumentTracker: FunctionComponent<IDocumentTrackerProps> = ({
   plugins,
@@ -26,31 +27,15 @@ export const DocumentTracker: FunctionComponent<IDocumentTrackerProps> = ({
   const {
     documents,
     isLoadingDocuments,
-    selectedIdsToRequest,
     getSubItems,
+    selectedIdsToRequest,
     onRequestDocuments,
     open,
     onOpenChange,
   } = useDocumentTracker({ plugins, workflow });
 
-  if (!documents || isLoadingDocuments) {
-    return null;
-  }
-
-  // Feature flag
-  // const { data: customer, isLoading: isLoadingCustomer } = useCustomerQuery();
-
-  // if (isLoadingCustomer) {
-  //   return <Loader2 />;
-  // }
-
-  // if (!isLoadingCustomer && !customer?.features?.isDocumentOcrEnabled) {
-  //   return null
-  // }
-
   return (
     <div className={`max-w-xs`}>
-      {/* <AccordionCard value={uncollapsedItemValue} onValueChange={onValueChange}> */}
       <AccordionCard>
         <AccordionCard.Title
           className={`flex-row items-center justify-between`}
@@ -121,23 +106,61 @@ export const DocumentTracker: FunctionComponent<IDocumentTrackerProps> = ({
           Documents
         </AccordionCard.Title>
         <AccordionCard.Content>
-          <AccordionCard.Item
-            title="Company documents"
-            value="company-documents"
-            ulProps={{ className: 'space-y-0' }}
-            // liProps={{ className: 'gap-x-0' }}
-            subitems={documents.business.map(getSubItems)}
-          />
-
-          <AccordionCard.Item
-            title="Individual's documents"
-            value="individual-documents"
-            subitems={documents.individuals.ubos
-              .concat(documents.individuals.directors)
-              .map(getSubItems)}
+          <AccordionContent
+            documents={documents}
+            isLoading={isLoadingDocuments}
+            getSubItems={getSubItems}
           />
         </AccordionCard.Content>
       </AccordionCard>
     </div>
   );
 };
+
+type AccordionContentProps = {
+  documents: DocumentsTrackerData | null | undefined;
+  isLoading: boolean;
+  getSubItems: (
+    doc: TrackedDocument,
+  ) => Parameters<typeof AccordionCard.Item>[number]['subitems'][number];
+};
+const AccordionContent = memo(({ documents, isLoading, getSubItems }: AccordionContentProps) => {
+  if (isLoading) {
+    return (
+      <div className="flex h-20 animate-spin items-center justify-center">
+        <Loader2 className="d-6" />
+      </div>
+    );
+  }
+
+  if (
+    !documents ||
+    (!documents.business.length &&
+      !documents.individuals.ubos.length &&
+      !documents.individuals.directors.length)
+  ) {
+    return (
+      <div className="flex h-20 items-center justify-center text-sm">No documents available</div>
+    );
+  }
+
+  return (
+    <>
+      <AccordionCard.Item
+        title="Company documents"
+        value="company-documents"
+        ulProps={{ className: 'space-y-0' }}
+        subitems={documents.business.map(getSubItems)}
+      />
+
+      <AccordionCard.Item
+        title="Individual's documents"
+        value="individual-documents"
+        subitems={[...documents.individuals.ubos, ...documents.individuals.directors].map(
+          getSubItems,
+        )}
+      />
+    </>
+  );
+});
+AccordionContent.displayName = 'AccordionContent';

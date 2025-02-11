@@ -1,5 +1,5 @@
 import { ctw } from '@ballerine/ui';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { titleCase } from 'string-ts';
 
 import { useRequestDocumentsMutation } from '@/domains/documents/hooks/mutations/useRequestDocumentsMutation';
@@ -37,47 +37,50 @@ export const useDocumentTracker = ({ plugins, workflow }: IUseDocumentTrackerLog
 
   const onRequestDocuments = () => requestDocuments({ documentIds: selectedIdsToRequest });
 
-  const getSubItems = (doc: TrackedDocument) => {
-    const { documentId, status } = doc;
+  const getSubItems = useCallback(
+    (doc: TrackedDocument) => {
+      const { documentId, status } = doc;
 
-    if (!documentId) {
+      if (!documentId) {
+        return {
+          leftIcon: null,
+          text: 'Document ID is missing',
+          itemClassName: 'p-1',
+        };
+      }
+
       return {
-        leftIcon: null,
-        text: 'Document ID is missing',
-        itemClassName: 'p-1',
+        leftIcon: (
+          <button
+            className={ctw('cursor-default', status === 'unprovided' && 'cursor-pointer')}
+            role="button"
+            onClick={() => {
+              if (selectedIdsToRequest.includes(documentId)) {
+                setSelectedIdsToRequest(prev => prev.filter(id => id !== documentId));
+              }
+
+              if (status === 'unprovided') {
+                setSelectedIdsToRequest(prev => [...prev, documentId]);
+              }
+            }}
+          >
+            {selectedIdsToRequest.includes(documentId) ? Icon.MARKED : documentStatusToIcon[status]}
+          </button>
+        ),
+        text: titleCase(doc.properties.category),
+        itemClassName: selectedIdsToRequest.includes(documentId)
+          ? 'bg-warning/20 rounded-md p-1'
+          : 'p-1',
       };
-    }
-
-    return {
-      leftIcon: (
-        <button
-          className={ctw('cursor-default', status === 'unprovided' && 'cursor-pointer')}
-          role="button"
-          onClick={() => {
-            if (selectedIdsToRequest.includes(documentId)) {
-              setSelectedIdsToRequest(prev => prev.filter(id => id !== documentId));
-            }
-
-            if (status === 'unprovided') {
-              setSelectedIdsToRequest(prev => [...prev, documentId]);
-            }
-          }}
-        >
-          {selectedIdsToRequest.includes(documentId) ? Icon.MARKED : documentStatusToIcon[status]}
-        </button>
-      ),
-      text: titleCase(doc.properties.category),
-      itemClassName: selectedIdsToRequest.includes(documentId)
-        ? 'bg-warning/20 rounded-md p-1'
-        : 'p-1',
-    };
-  };
+    },
+    [selectedIdsToRequest],
+  );
 
   return {
     documents,
     isLoadingDocuments,
-    selectedIdsToRequest,
     getSubItems,
+    selectedIdsToRequest,
     onRequestDocuments,
     open,
     onOpenChange,
