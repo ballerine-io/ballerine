@@ -67,7 +67,9 @@ describe('useEntityFieldGroupList', () => {
     } as unknown as ReturnType<typeof useField>);
 
     const mockUUID = '123-456';
-    vi.mocked(window.crypto.randomUUID).mockReturnValue(mockUUID);
+    vi.mocked(window.crypto.randomUUID).mockReturnValue(
+      mockUUID as `${string}-${string}-${string}-${string}-${string}`,
+    );
 
     const { result } = renderHook(() => useEntityFieldGroupList({ element: mockElement }));
 
