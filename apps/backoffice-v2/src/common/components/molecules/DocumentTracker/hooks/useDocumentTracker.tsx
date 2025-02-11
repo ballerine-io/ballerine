@@ -1,9 +1,11 @@
 import { ctw } from '@ballerine/ui';
+import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { titleCase } from 'string-ts';
 
 import { useRequestDocumentsMutation } from '@/domains/documents/hooks/mutations/useRequestDocumentsMutation';
 import { useDocumentsTrackerItemsQuery } from '@/domains/documents/hooks/queries/useDocumentsTrackerItemsQuery';
+import { documentsQueryKey } from '@/domains/documents/hooks/query-keys';
 import { TrackedDocument } from '@/domains/documents/hooks/schemas/document';
 import { TWorkflowDefinitionById } from '@/domains/workflow-definitions/fetchers';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
@@ -28,10 +30,14 @@ export const useDocumentTracker = ({ plugins, workflow }: IUseDocumentTrackerLog
   const [open, onOpenChange] = useState(false);
   const [selectedIdsToRequest, setSelectedIdsToRequest] = useState<string[]>([]);
 
+  const queryClient = useQueryClient();
   const { mutate: requestDocuments } = useRequestDocumentsMutation({
     onSuccess: () => {
       setSelectedIdsToRequest([]);
       onOpenChange(false);
+      void queryClient.invalidateQueries(
+        documentsQueryKey.trackerItems({ workflowId: workflow.id }),
+      );
     },
   });
 
