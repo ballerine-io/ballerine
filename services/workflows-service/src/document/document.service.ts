@@ -14,12 +14,10 @@ import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { isObject, isType, getDocumentId } from '@ballerine/common';
 import z from 'zod';
 import { TParsedDocuments, EntitySchema, DocumentTrackerResponseSchema } from './types';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
 @Injectable()
 export class DocumentService {
   constructor(
-    protected readonly logger: AppLoggerService,
     protected readonly repository: DocumentRepository,
     protected readonly documentFileService: DocumentFileService,
     protected readonly fileService: FileService,
