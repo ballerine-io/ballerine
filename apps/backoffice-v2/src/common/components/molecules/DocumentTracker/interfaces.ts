@@ -10,5 +10,4 @@ export interface IDocumentTrackerProps {
       >[number]
     | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['commonPlugins']>[number]
   >;
-  documentTypes: string[];
 }
