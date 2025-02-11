@@ -271,8 +271,6 @@ export class TransactionEntityMapper {
 
     if (errors.length > 0) {
       throw new ValidationError(errors as any);
-    } else {
-      console.log('validation succeed');
     }
 
     return originalDto;
