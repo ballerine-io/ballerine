@@ -139,6 +139,29 @@ export class DocumentControllerExternal {
     return await this.documentService.getDocumentTrackerByWorkflowId(projectId, workflowId);
   }
 
+  @Post('request')
+  @ApiForbiddenResponse()
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Documents requested successfully',
+  })
+  @Validate({
+    request: [
+      {
+        type: 'body',
+        schema: Type.Object({ documentIds: Type.Array(Type.String()) }),
+      },
+    ],
+    response: Type.Any(),
+  })
+  async requestDocuments(
+    @Body() { documentIds }: { documentIds: string[] },
+    @CurrentProject() projectId: TProjectId,
+  ) {
+    return await this.documentService.requestDocumentsByIds(projectId, documentIds);
+  }
+
   @Get('/:entityId/:workflowRuntimeDataId')
   @ApiResponse({
     status: 200,
