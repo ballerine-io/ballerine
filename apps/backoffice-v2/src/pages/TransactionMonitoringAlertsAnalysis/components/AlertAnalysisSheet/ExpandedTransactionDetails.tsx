@@ -57,7 +57,6 @@ export const ExpandedTransactionDetails = ({ transaction }: IExpandedTransaction
             <CopyToClipboardButton textToCopy={transaction.transactionCorrelationId} />
           </div>
           <TextWithNAFallback>{`${dayjs(transaction.transactionDate)
-            .local()
             .format('MMM DD, YYYY')} ${dayjs(transaction.transactionDate)
             .local()
             .format('hh:mm')}`}</TextWithNAFallback>
