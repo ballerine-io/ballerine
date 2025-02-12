@@ -12,8 +12,6 @@ import { TDynamicFormField } from '../../types';
 import { useFieldList } from './hooks/useFieldList';
 import { StackProvider, useStack } from './providers/StackProvider';
 
-export type TFieldListValueType<T extends { _id: string }> = T[];
-
 export interface IFieldListParams {
   // jsonata expression
   defaultValue?: string;
