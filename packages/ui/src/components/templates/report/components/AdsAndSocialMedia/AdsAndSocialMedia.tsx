@@ -124,7 +124,7 @@ export const AdsAndSocialMedia = (pages: {
       <h3 className="mb-2 text-base font-bold">Social Media</h3>
 
       <div className="flex w-full flex-col gap-4">
-        {AdsProviders.map(toLowerCase).map(provider => {
+        {AdsProviders.map(provider => {
           const page = pages[provider];
 
           if (!page) {
@@ -216,13 +216,15 @@ export const AdsAndSocialMedia = (pages: {
                   })}
                   href={url}
                 >
-                  <Image
-                    key={screenshotUrl}
-                    src={screenshotUrl}
-                    alt={`${capitalize(provider)} image`}
-                    role="link"
-                    className="h-auto max-h-96 w-auto"
-                  />
+                  {screenshotUrl && (
+                    <Image
+                      key={screenshotUrl}
+                      src={screenshotUrl}
+                      alt={`${capitalize(provider)} image`}
+                      role="link"
+                      className="h-auto max-h-96 w-auto"
+                    />
+                  )}
                 </a>
               </div>
             </Card>

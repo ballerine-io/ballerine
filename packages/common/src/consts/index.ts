@@ -183,7 +183,7 @@ export type MerchantReportStatus = (typeof MERCHANT_REPORT_STATUSES)[number];
 
 export const MERCHANT_REPORT_STATUSES_MAP = Object.fromEntries(
   MERCHANT_REPORT_STATUSES.map(status => [status, status]),
-) as Record<MerchantReportStatus, MerchantReportStatus>;
+) as { [K in MerchantReportStatus]: K };
 
 export const MERCHANT_REPORT_TYPES = ['MERCHANT_REPORT_T1', 'ONGOING_MERCHANT_REPORT_T1'] as const;
 
@@ -191,7 +191,7 @@ export type MerchantReportType = (typeof MERCHANT_REPORT_TYPES)[number];
 
 export const MERCHANT_REPORT_TYPES_MAP = Object.fromEntries(
   MERCHANT_REPORT_TYPES.map(type => [type, type]),
-) as Record<MerchantReportType, MerchantReportType>;
+) as { [K in MerchantReportType]: K };
 
 export const MERCHANT_REPORT_VERSIONS = ['1', '2', '3'] as const;
 
@@ -199,7 +199,7 @@ export type MerchantReportVersion = (typeof MERCHANT_REPORT_VERSIONS)[number];
 
 export const MERCHANT_REPORT_VERSIONS_MAP = Object.fromEntries(
   MERCHANT_REPORT_VERSIONS.map(version => [version, version]),
-) as Record<MerchantReportVersion, MerchantReportVersion>;
+) as { [K in MerchantReportVersion]: K };
 
 export const MERCHANT_REPORT_RISK_LEVELS = ['low', 'medium', 'high', 'critical'] as const;
 
@@ -207,7 +207,7 @@ export type MerchantReportRiskLevel = (typeof MERCHANT_REPORT_RISK_LEVELS)[numbe
 
 export const MERCHANT_REPORT_RISK_LEVELS_MAP = Object.fromEntries(
   MERCHANT_REPORT_RISK_LEVELS.map(level => [level, level]),
-) as Record<MerchantReportRiskLevel, MerchantReportRiskLevel>;
+) as { [K in MerchantReportRiskLevel]: K };
 
 export const RISK_INDICATOR_RISK_LEVELS = ['positive', 'moderate', 'critical'] as const;
 
@@ -215,4 +215,4 @@ export type RiskIndicatorRiskLevel = (typeof RISK_INDICATOR_RISK_LEVELS)[number]
 
 export const RISK_INDICATOR_RISK_LEVELS_MAP = Object.fromEntries(
   RISK_INDICATOR_RISK_LEVELS.map(level => [level, level]),
-) as Record<RiskIndicatorRiskLevel, RiskIndicatorRiskLevel>;
+) as { [K in RiskIndicatorRiskLevel]: K };

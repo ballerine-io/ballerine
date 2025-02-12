@@ -73,11 +73,11 @@ export const WebsiteCredibility: FunctionComponent<{
 }) => {
   // TODO: Ideally should happen on backend
   const trafficSources = useMemo(() => {
-    if (!trafficData.trafficSources?.length) {
+    if (!Object.keys(trafficData.trafficSources ?? {}).length) {
       return [];
     }
 
-    const values = Object.entries(trafficData.trafficSources)
+    const values = Object.entries(trafficData.trafficSources ?? {})
       .map(([label, value]) => ({
         label,
         value: Number((value * 100).toFixed(2)),
@@ -211,7 +211,7 @@ export const WebsiteCredibility: FunctionComponent<{
           >
             {!!websiteReputationRiskIndicators?.length &&
               websiteReputationRiskIndicators.map(({ reason, sourceUrl }) => (
-                <li className="list-decimal">
+                <li key={reason} className="list-decimal">
                   {reason}
                   {!!sourceUrl && (
                     <span className="ms-4">

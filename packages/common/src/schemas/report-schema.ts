@@ -8,7 +8,7 @@ import {
 
 export const FacebookPageSchema = z.object({
   id: z.string(),
-  url: z.string().nullish(),
+  url: z.string(),
   name: z.string().nullish(),
   email: z.string().nullish(),
   likes: z.number().nullish(),

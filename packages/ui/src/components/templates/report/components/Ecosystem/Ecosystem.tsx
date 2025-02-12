@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react';
 import { Card, CardContent, CardHeader } from '@/components';
 import { EcosystemTable } from '@/components/templates/report/components/Ecosystem/components/EcosystemTable/EcosystemTable';
 import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
-import { EcosystemRecordSchema } from '@/schemas/report-schema';
+import { EcosystemRecordSchema } from '@ballerine/common';
 import { z } from 'zod';
 
 export const Ecosystem: FunctionComponent<{

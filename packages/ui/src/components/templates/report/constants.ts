@@ -1,8 +1,8 @@
 import { ObjectValues } from '@ballerine/common';
 
 export const AdsProvider = {
-  FACEBOOK: 'FACEBOOK',
-  INSTAGRAM: 'INSTAGRAM',
+  FACEBOOK: 'facebook',
+  INSTAGRAM: 'instagram',
 } as const;
 
 export const AdsProviders = [

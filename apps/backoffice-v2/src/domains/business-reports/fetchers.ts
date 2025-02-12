@@ -13,17 +13,20 @@ import {
   MERCHANT_REPORT_STATUSES_MAP,
   MERCHANT_REPORT_TYPES,
   MERCHANT_REPORT_VERSIONS,
+  MerchantReportStatus,
   MerchantReportType,
   MerchantReportVersion,
   ReportSchema,
 } from '@ballerine/common';
 
+const statusOverrides = {
+  [MERCHANT_REPORT_STATUSES_MAP.failed]: MERCHANT_REPORT_STATUSES_MAP['in-progress'],
+  [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: MERCHANT_REPORT_STATUSES_MAP['in-progress'],
+} as const satisfies Partial<Record<MerchantReportStatus, MerchantReportStatus>>;
+
 export const BusinessReportSchema = ReportSchema.transform(data => ({
   ...data,
-  status:
-    data.status === MERCHANT_REPORT_STATUSES_MAP.failed
-      ? MERCHANT_REPORT_STATUSES_MAP['quality-control']
-      : data.status,
+  status: data.status in statusOverrides ? statusOverrides[data.status] : data.status,
   website: data.website.url,
   riskLevel: data.status === MERCHANT_REPORT_STATUSES_MAP.completed ? data.riskLevel : null,
   data: data.status === MERCHANT_REPORT_STATUSES_MAP.completed ? data?.data : null,

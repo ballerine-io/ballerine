@@ -2,6 +2,7 @@ import React, { ComponentProps, FunctionComponent } from 'react';
 import {
   getSeverityFromRiskScore,
   MERCHANT_REPORT_RISK_LEVELS_MAP,
+  MerchantReportRiskLevel,
   RiskIndicatorRiskLevel,
   Severity,
   SeverityType,
@@ -21,7 +22,7 @@ export const BusinessReportSummary: FunctionComponent<{
     search: string;
     riskIndicators: z.infer<typeof RiskIndicatorSchema>[] | null;
   }>;
-  riskLevel: string;
+  riskLevel: MerchantReportRiskLevel;
   homepageScreenshotUrl: string | null;
   Link: ComponentProps<typeof RiskIndicatorsSummary>['Link'];
 }> = ({ sections, summary, ongoingMonitoringSummary, riskLevel, homepageScreenshotUrl, Link }) => {
