@@ -1,5 +1,5 @@
+import { DocumentDecision, DocumentStatus } from '@prisma/client';
 import { Type } from '@sinclair/typebox';
-import { DocumentStatus, DocumentDecision } from '@prisma/client';
 
 export const DocumentSchema = Type.Object({
   id: Type.String(),
