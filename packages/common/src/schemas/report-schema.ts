@@ -8,27 +8,27 @@ import {
 
 export const FacebookPageSchema = z.object({
   id: z.string(),
-  url: z.string(),
-  name: z.string(),
+  url: z.string().nullish(),
+  name: z.string().nullish(),
   email: z.string().nullish(),
-  likes: z.number(),
+  likes: z.number().nullish(),
   address: z.string().nullish(),
   categories: z.array(z.string()).nullish(),
   phoneNumber: z.string().nullish(),
-  creationDate: z.string(),
-  screenshotUrl: z.string().url(),
+  creationDate: z.string().nullish(),
+  screenshotUrl: z.string().url().nullish(),
 });
 
 export const InstagramPageSchema = z.object({
   id: z.string(),
   url: z.string(),
-  username: z.string(),
+  username: z.string().nullish(),
   biography: z.string().nullish(),
-  followers: z.number(),
+  followers: z.number().nullish(),
   categories: z.array(z.string()).nullish(),
-  isVerified: z.boolean(),
-  screenshotUrl: z.string().url(),
-  isBusinessProfile: z.boolean(),
+  isVerified: z.boolean().nullish(),
+  screenshotUrl: z.string().url().nullish(),
+  isBusinessProfile: z.boolean().nullish(),
 });
 
 export const RiskIndicatorSchema = z
@@ -45,6 +45,7 @@ export const RiskIndicatorSchema = z
     reason: z.string().nullish(),
     quoteFromSource: z.string().nullish(),
     riskLevel: z.enum(RISK_INDICATOR_RISK_LEVELS).nullish(),
+    pricingViolationExamples: z.array(z.string()).nullish(),
   })
   .passthrough();
 

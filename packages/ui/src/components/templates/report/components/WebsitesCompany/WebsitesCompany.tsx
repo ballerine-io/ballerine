@@ -44,9 +44,9 @@ export const WebsitesCompany: FunctionComponent<{
             })}
           >
             {!!riskIndicators?.length &&
-              riskIndicators.map(({ description, sourceUrl }) => (
-                <li className={'list-decimal'}>
-                  {description}
+              riskIndicators.map(({ reason, sourceUrl }) => (
+                <li key={reason} className={'list-decimal'}>
+                  {reason}
                   {!!sourceUrl && (
                     <span className={'ms-4'}>
                       (<BallerineLink href={sourceUrl}>source</BallerineLink>)

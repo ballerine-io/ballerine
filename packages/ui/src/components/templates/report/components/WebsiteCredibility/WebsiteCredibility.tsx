@@ -73,10 +73,16 @@ export const WebsiteCredibility: FunctionComponent<{
 }) => {
   // TODO: Ideally should happen on backend
   const trafficSources = useMemo(() => {
-    const values = Object.entries(trafficData.trafficSources ?? {}).map(([label, value]) => ({
-      label,
-      value: Number(value.toFixed(2)),
-    }));
+    if (!trafficData.trafficSources?.length) {
+      return [];
+    }
+
+    const values = Object.entries(trafficData.trafficSources)
+      .map(([label, value]) => ({
+        label,
+        value: Number((value * 100).toFixed(2)),
+      }))
+      .sort((a, b) => b.value - a.value);
 
     const remainder = 100 - values.reduce((acc, item) => acc + item.value, 0);
 
@@ -93,17 +99,31 @@ export const WebsiteCredibility: FunctionComponent<{
     return values;
   }, [trafficData.trafficSources]);
 
-  const engagements = [
-    { label: 'Time on site', value: trafficData.timeOnSite },
-    {
-      label: 'Page per visit',
-      value:
-        typeof trafficData.pagesPerVisit === 'string'
-          ? parseFloat(trafficData.pagesPerVisit).toFixed(2)
-          : trafficData.pagesPerVisit,
-    },
-    { label: 'Bounce rate', value: trafficData.bounceRate },
-  ];
+  const engagements = (
+    [
+      {
+        label: 'Time on site',
+        value:
+          typeof trafficData.timeOnSite === 'string'
+            ? parseFloat(trafficData.timeOnSite).toFixed(2)
+            : trafficData.timeOnSite,
+      },
+      {
+        label: 'Page per visit',
+        value:
+          typeof trafficData.pagesPerVisit === 'string'
+            ? parseFloat(trafficData.pagesPerVisit).toFixed(2)
+            : trafficData.pagesPerVisit,
+      },
+      {
+        label: 'Bounce rate',
+        value:
+          typeof trafficData.bounceRate === 'string'
+            ? (parseFloat(trafficData.bounceRate) * 100).toFixed(2)
+            : trafficData.bounceRate,
+      },
+    ] as const
+  ).filter(({ value }) => typeof value === 'string');
 
   let minVisitors = 0;
   let maxVisitors = 0;
@@ -269,7 +289,7 @@ export const WebsiteCredibility: FunctionComponent<{
                       tickLine={false}
                       axisLine={false}
                       tickMargin={8}
-                      tickFormatter={value => dayjs(value, 'MMMM YYYY').format('MMM YYYY')}
+                      tickFormatter={value => dayjs(value).format('MMM YYYY')}
                     />
                     <YAxis
                       ticks={[
@@ -405,14 +425,15 @@ export const WebsiteCredibility: FunctionComponent<{
                 {engagements.length > 0 ? (
                   engagements
                     .filter(
-                      (obj): obj is { label: string; value: string } =>
-                        typeof obj.value === 'string',
+                      (
+                        obj,
+                      ): obj is Readonly<{
+                        value: string;
+                        label: keyof typeof engagementMetricsMapper;
+                      }> => typeof obj.value === 'string',
                     )
                     .map(({ label, value }) => {
-                      const { suffix, description, shouldRound } =
-                        engagementMetricsMapper[label as keyof typeof engagementMetricsMapper] ??
-                        {};
-                      const floatValue = parseFloat(value);
+                      const { suffix, description } = engagementMetricsMapper[label];
 
                       return (
                         <div key={label} className="basis-1/3">
@@ -437,9 +458,7 @@ export const WebsiteCredibility: FunctionComponent<{
                           </div>
 
                           <p>
-                            <span className="font-bold">
-                              {shouldRound ? Math.round(floatValue) : floatValue}
-                            </span>
+                            <span className="font-bold">{value}</span>
                             <span className={ctw(suffix === '%' && 'font-bold')}>{suffix}</span>
                           </p>
                         </div>
@@ -518,7 +537,11 @@ export const WebsiteCredibility: FunctionComponent<{
             })}
           >
             {!!pricingRiskIndicators?.length &&
-              pricingRiskIndicators.map(({ reason }) => <li className="list-decimal">{reason}</li>)}
+              pricingRiskIndicators.map(({ pricingViolationExamples }) =>
+                pricingViolationExamples?.map(example => (
+                  <li className="list-decimal">{example}</li>
+                )),
+              )}
             {!pricingRiskIndicators?.length && (
               <li>
                 No indications of suspicious pricing or anomalies in the website’s pricing were

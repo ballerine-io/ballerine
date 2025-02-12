@@ -15,25 +15,31 @@ import {
   ThumbsUpIcon,
   UsersIcon,
 } from 'lucide-react';
-import { FunctionComponent, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { capitalize, toLowerCase } from 'string-ts';
 import { z } from 'zod';
 import { FacebookIcon } from './icons/FacebookIcon';
 import { InstagramIcon } from './icons/InstagramIcon';
 import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
-import { FacebookPageSchema, InstagramPageSchema, ReportSchema } from '@ballerine/common';
+import { FacebookPageSchema, InstagramPageSchema } from '@ballerine/common';
 
 const socialMediaMapper: {
   facebook: {
     icon: ReactNode;
     fields: Partial<
-      Record<keyof z.infer<typeof FacebookPageSchema>, { icon: ReactNode; label: string }>
+      Record<
+        keyof z.infer<typeof FacebookPageSchema>,
+        { icon: ReactNode; label: string; toDisplay?: (value: unknown) => string }
+      >
     >;
   };
   instagram: {
     icon: ReactNode;
     fields: Partial<
-      Record<keyof z.infer<typeof InstagramPageSchema>, { icon: ReactNode; label: string }>
+      Record<
+        keyof z.infer<typeof InstagramPageSchema>,
+        { icon: ReactNode; label: string; toDisplay?: (value: unknown) => string }
+      >
     >;
   };
 } = {
@@ -57,8 +63,25 @@ const socialMediaMapper: {
       isBusinessProfile: {
         icon: <BriefcaseIcon className="h-5 w-5 text-gray-500" />,
         label: 'Business Profile',
+        toDisplay: value => {
+          if (typeof value !== 'boolean') {
+            return 'N/A';
+          }
+
+          return value ? 'Yes' : 'No';
+        },
       },
-      isVerified: { icon: <CheckIcon className="h-5 w-5 text-gray-500" />, label: 'Verified' },
+      isVerified: {
+        icon: <CheckIcon className="h-5 w-5 text-gray-500" />,
+        label: 'Verified',
+        toDisplay: value => {
+          if (typeof value !== 'boolean') {
+            return 'N/A';
+          }
+
+          return value ? 'Yes' : 'No';
+        },
+      },
       followers: { icon: <UsersIcon className="h-5 w-5 text-gray-500" />, label: 'Followers' },
       categories: {
         icon: <TagIcon className="h-5 w-5 text-gray-500" />,
@@ -111,6 +134,10 @@ export const AdsAndSocialMedia = (pages: {
                   {socialMediaMapper[provider].icon}
                   <h4 className="text-xl">{capitalize(provider)}</h4>
                 </div>
+                <div className="my-4 flex items-center gap-2 text-gray-400">
+                  <BanIcon className="h-5 w-5" />
+                  <span className="text-sm">No {capitalize(provider)} profile detected.</span>
+                </div>
               </Card>
             );
           }
@@ -126,85 +153,78 @@ export const AdsAndSocialMedia = (pages: {
                 <h4 className="text-xl">{capitalize(provider)}</h4>
               </div>
 
-              {page ? (
-                <div className="flex justify-between gap-4">
-                  <div className="w-2/3 min-w-0 grow-0">
-                    <div className="flex items-center">
-                      <LinkIcon className="h-5 w-5 text-gray-400" />
-                      <a
-                        className={ctw(
-                          buttonVariants({ variant: 'browserLink' }),
-                          'ml-2 p-0 text-base',
-                        )}
-                        href={url}
-                      >
-                        {cleanLink(url)}
-                      </a>
+              <div className="flex justify-between gap-4">
+                <div className="w-2/3 min-w-0 grow-0">
+                  <div className="flex items-center">
+                    <LinkIcon className="h-5 w-5 text-gray-400" />
+                    <a
+                      className={ctw(
+                        buttonVariants({ variant: 'browserLink' }),
+                        'ml-2 p-0 text-base',
+                      )}
+                      href={url}
+                    >
+                      {cleanLink(url)}
+                    </a>
+                  </div>
+                  {idValue !== null && (
+                    <span className="text-sm text-gray-400">
+                      {'username' in rest ? `@${idValue}` : `ID ${idValue}`}
+                    </span>
+                  )}
+
+                  <div className="mt-8 flex gap-6">
+                    <div className="flex flex-col gap-4">
+                      {Object.entries(socialMediaMapper[provider].fields).map(
+                        ([, { icon, label }]) => (
+                          <div key={label} className="flex items-center gap-4 whitespace-nowrap">
+                            {icon}
+                            <span className="font-semibold">{label}</span>
+                          </div>
+                        ),
+                      )}
                     </div>
-                    {idValue !== null && (
-                      <span className="text-sm text-gray-400">
-                        {'id' in rest ? `ID ${idValue}` : `@${idValue}`}
-                      </span>
-                    )}
 
-                    <div className="mt-8 flex gap-6">
-                      <div className="flex flex-col gap-4">
-                        {Object.entries(socialMediaMapper[provider].fields).map(
-                          ([, { icon, label }]) => (
-                            <div key={label} className="flex items-center gap-4 whitespace-nowrap">
-                              {icon}
-                              <span className="font-semibold">{label}</span>
-                            </div>
-                          ),
-                        )}
-                      </div>
+                    <div className="flex min-w-0 flex-col gap-4">
+                      {Object.entries(socialMediaMapper[provider].fields).map(
+                        ([field, { label, toDisplay }]) => {
+                          const value = rest[field as keyof typeof rest];
 
-                      <div className="flex min-w-0 flex-col gap-4">
-                        {Object.entries(socialMediaMapper[provider].fields).map(
-                          ([field, { label }]) => {
-                            const value = rest[field as keyof typeof rest];
-
-                            return (
-                              <TextWithNAFallback
-                                key={label}
-                                className={ctw(
-                                  'max-w-full overflow-hidden text-ellipsis',
-                                  !value && 'text-gray-400',
-                                  label !== 'Biography' && 'whitespace-nowrap',
-                                )}
-                              >
-                                {value}
-                              </TextWithNAFallback>
-                            );
-                          },
-                        )}
-                      </div>
+                          return (
+                            <TextWithNAFallback
+                              key={label}
+                              className={ctw(
+                                'max-w-full overflow-hidden text-ellipsis',
+                                !value && 'text-gray-400',
+                                label !== 'Biography' && 'whitespace-nowrap',
+                              )}
+                            >
+                              {toDisplay?.(value) ?? value}
+                            </TextWithNAFallback>
+                          );
+                        },
+                      )}
                     </div>
                   </div>
+                </div>
 
-                  <a
-                    className={buttonVariants({
-                      variant: 'link',
-                      className:
-                        'h-[unset] w-1/3 cursor-pointer !p-0 !text-[#14203D] underline decoration-[1.5px]',
-                    })}
-                    href={url}
-                  >
-                    <Image
-                      key={screenshotUrl}
-                      src={screenshotUrl}
-                      alt={`${capitalize(provider)} image`}
-                      role="link"
-                      className="h-auto max-h-96 w-auto"
-                    />
-                  </a>
-                </div>
-              ) : (
-                <div className="my-4 flex items-center gap-2 text-gray-400">
-                  <BanIcon className="h-5 w-5" />
-                  <span className="text-sm">No {capitalize(provider)} profile detected.</span>
-                </div>
-              )}
+                <a
+                  className={buttonVariants({
+                    variant: 'link',
+                    className:
+                      'h-[unset] w-1/3 cursor-pointer !p-0 !text-[#14203D] underline decoration-[1.5px]',
+                  })}
+                  href={url}
+                >
+                  <Image
+                    key={screenshotUrl}
+                    src={screenshotUrl}
+                    alt={`${capitalize(provider)} image`}
+                    role="link"
+                    className="h-auto max-h-96 w-auto"
+                  />
+                </a>
+              </div>
             </Card>
           );
         })}
