@@ -59,10 +59,8 @@ export const useEntityFieldGroupList = ({ element }: IUseFieldListProps) => {
         try {
           await deleteEntity({}, { params: { entityId: entity.id } });
         } catch (error) {
-          debugger;
-
           if (!isAxiosError((error as any).response) && (error as any).response.status === 400) {
-            toast.error('Failed to delete entity.');
+            toast.error(`Failed to delete ${element.params?.type || 'end-user'}.`);
           }
 
           console.error(error);
@@ -72,7 +70,7 @@ export const useEntityFieldGroupList = ({ element }: IUseFieldListProps) => {
       const newValue = value.filter(entity => entity.__id !== id);
       onChange(newValue);
     },
-    [value, deleteEntity, onChange],
+    [value, element, deleteEntity, onChange],
   );
 
   return {

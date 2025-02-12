@@ -85,7 +85,7 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
       createdEntityId = await createEntity(createEntityPayload);
     } catch (error) {
       console.error(error);
-      toast.error('Failed to create entity.');
+      toast.error(`Failed to create ${element.params?.type || 'end-user'}.`);
       setIsCreatingEntity(false);
       throw error;
     }
@@ -130,7 +130,7 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
 
     setIsCreatingEntity(false);
 
-    toast.success('Entity created successfully.');
+    toast.success(`${element.params?.type || 'End-user'} created successfully.`);
   }, [stack, element, values, createEntity, uploadDocument, entity, onChange]);
 
   const childrens = useChildrenDisabledOnLock(element, isCreatingEntity);
