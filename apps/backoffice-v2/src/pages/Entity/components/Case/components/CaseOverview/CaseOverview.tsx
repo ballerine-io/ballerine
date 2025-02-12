@@ -28,14 +28,7 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
       workflow?.context?.pluginsOutput?.risk_evaluation?.riskIndicatorsByDomain ??
       {},
   )?.map(([domain, riskIndicators]) => {
-    const getTab = (domain: string) => {
-      if (domain.toLowerCase() === 'ubos') {
-        return 'ubos';
-      }
-
-      return camelCase(domain);
-    };
-    const tab = getTab(domain);
+    const tab = camelCase(domain.toLowerCase());
     const isValidCaseTab = CaseTabs.includes(tab);
 
     return {
