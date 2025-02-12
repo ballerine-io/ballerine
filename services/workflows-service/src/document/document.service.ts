@@ -269,13 +269,9 @@ export class DocumentService {
     });
   }
 
-  async getDocumentTrackerByWorkflowId(
-    projectId: TProjectId,
-    workflowDefinitionId: string,
-    workflowRuntimeDataId: string,
-  ) {
-    const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
-      workflowDefinitionId,
+  async getDocumentTrackerByWorkflowId(projectId: TProjectId, workflowId: string) {
+    const uiDefinition = await this.uiDefinitionService.getByRuntimeId(
+      workflowId,
       'collection_flow',
       [projectId],
     );
@@ -295,7 +291,7 @@ export class DocumentService {
     const parsedUIDocuments = this.parseDocumentsFromUISchema(uiSchema.elements);
 
     const workflowData = (await this.workflowService.getWorkflowRuntimeDataById(
-      workflowRuntimeDataId,
+      workflowId,
       {
         select: {
           context: true,
@@ -314,7 +310,7 @@ export class DocumentService {
         companyName: workflowData.context.entity.data.companyName,
       },
       directors: (
-        workflowData.context.entity.data.additionalInfo.directors as Array<{
+        (workflowData.context.entity.data.additionalInfo.directors ?? []) as Array<{
           ballerineEntityId: string;
           firstName: string;
           lastName: string;
@@ -339,7 +335,7 @@ export class DocumentService {
 
     const allDocuments = await this.repository.findMany([projectId], {
       where: {
-        workflowRuntimeDataId,
+        workflowRuntimeDataId: workflowId,
       },
     });
 
@@ -437,6 +433,17 @@ export class DocumentService {
     };
 
     return result;
+  }
+
+  async requestDocumentsByIds(projectId: TProjectId, documentIds: string[]) {
+    // TODO call email flow for given documents
+
+    const documents = await this.repository.updateMany([projectId], {
+      where: { id: { in: documentIds } },
+      data: { status: 'requested' },
+    });
+
+    return { message: 'Documents requested successfully', count: documents.count };
   }
 
   private parseDocumentsFromUISchema(uiSchema: Array<Record<string, any>>): TParsedDocuments {

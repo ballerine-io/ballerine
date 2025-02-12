@@ -50,6 +50,20 @@ export class DocumentRepository {
     });
   }
 
+  async updateMany(
+    projectIds: TProjectId[],
+    args: { data: Prisma.DocumentUpdateManyArgs['data'] } & Partial<Prisma.DocumentUpdateManyArgs>,
+    transaction: PrismaTransactionClient = this.prismaService,
+  ) {
+    return await transaction.document.updateMany({
+      ...args,
+      where: {
+        ...args?.where,
+        projectId: { in: projectIds },
+      },
+    });
+  }
+
   async updateById(
     id: string,
     projectIds: TProjectId[],

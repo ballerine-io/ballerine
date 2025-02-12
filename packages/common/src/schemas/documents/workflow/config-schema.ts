@@ -59,6 +59,7 @@ export const WorkflowConfigSchema = Type.Object({
   subscriptions,
   isAssociatedCompanyKybEnabled: Type.Optional(Type.Boolean()),
   isCaseOverviewEnabled: Type.Optional(Type.Boolean()),
+  isDocumentTrackerEnabled: Type.Optional(Type.Boolean()),
   isCaseRiskOverviewEnabled: Type.Optional(Type.Boolean()),
   isLegacyReject: Type.Optional(Type.Boolean()),
   isLockedDocumentCategoryAndType: Type.Optional(Type.Boolean()),

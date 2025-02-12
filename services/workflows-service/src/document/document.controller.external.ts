@@ -108,6 +108,60 @@ export class DocumentControllerExternal {
     });
   }
 
+  @Get('tracker/:workflowId')
+  @ApiForbiddenResponse()
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Documents retrieved successfully',
+    schema: Type.Object({
+      business: Type.Array(Type.Record(Type.String(), Type.Any())),
+      individuals: Type.Object({
+        ubos: Type.Array(Type.Record(Type.String(), Type.Any())),
+        directors: Type.Array(Type.Record(Type.String(), Type.Any())),
+      }),
+    }),
+  })
+  @Validate({
+    request: [
+      {
+        type: 'param',
+        name: 'workflowId',
+        schema: Type.String(),
+      },
+    ],
+    response: Type.Any(),
+  })
+  async getDocumentsByWorkflowId(
+    @Param('workflowId') workflowId: string,
+    @CurrentProject() projectId: TProjectId,
+  ) {
+    return await this.documentService.getDocumentTrackerByWorkflowId(projectId, workflowId);
+  }
+
+  @Post('request-upload')
+  @ApiForbiddenResponse()
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Documents requested successfully',
+  })
+  @Validate({
+    request: [
+      {
+        type: 'body',
+        schema: Type.Object({ documentIds: Type.Array(Type.String()) }),
+      },
+    ],
+    response: Type.Any(),
+  })
+  async requestDocuments(
+    @Body() { documentIds }: { documentIds: string[] },
+    @CurrentProject() projectId: TProjectId,
+  ) {
+    return await this.documentService.requestDocumentsByIds(projectId, documentIds);
+  }
+
   @Get('/:entityId/:workflowRuntimeDataId')
   @ApiResponse({
     status: 200,
@@ -244,40 +298,5 @@ export class DocumentControllerExternal {
     @CurrentProject() projectId: string,
   ) {
     return await this.documentService.deleteByIds(ids, [projectId]);
-  }
-
-  @Get('tracker/:workflowDefinitionId/:workflowRuntimeDataId')
-  @ApiForbiddenResponse()
-  @HttpCode(200)
-  @ApiResponse({
-    status: 200,
-    description: 'Documents retrieved successfully',
-    schema: Type.Array(Type.Record(Type.String(), Type.Any())),
-  })
-  @Validate({
-    request: [
-      {
-        type: 'param',
-        name: 'workflowDefinitionId',
-        schema: Type.String(),
-      },
-      {
-        type: 'param',
-        name: 'workflowRuntimeDataId',
-        schema: Type.String(),
-      },
-    ],
-    response: Type.Any(),
-  })
-  async getDocumentsByWorkflowId(
-    @Param('workflowDefinitionId') workflowDefinitionId: string,
-    @Param('workflowRuntimeDataId') workflowRuntimeDataId: string,
-    @CurrentProject() projectId: TProjectId,
-  ) {
-    return await this.documentService.getDocumentTrackerByWorkflowId(
-      projectId,
-      workflowDefinitionId,
-      workflowRuntimeDataId,
-    );
   }
 }
