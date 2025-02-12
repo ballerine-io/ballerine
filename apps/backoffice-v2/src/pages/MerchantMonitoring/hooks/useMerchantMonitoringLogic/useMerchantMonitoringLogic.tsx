@@ -210,6 +210,6 @@ export const useMerchantMonitoringLogic = () => {
     onDatesChange,
     onIsAlertChange,
     onClearAllFilters,
-    showAlertColumn: true,
+    isDemo: customer?.config?.isDemo || false,
   };
 };

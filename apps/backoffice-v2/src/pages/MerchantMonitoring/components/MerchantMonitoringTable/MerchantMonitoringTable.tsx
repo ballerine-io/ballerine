@@ -6,10 +6,10 @@ import { UrlDataTable } from '@/common/components/organisms/UrlDataTable/UrlData
 
 export const MerchantMonitoringTable: FunctionComponent<{
   data: TBusinessReports['data'];
-  showAlertColumn: boolean;
-}> = ({ data, showAlertColumn }) => {
+  isDemo: boolean;
+}> = ({ data, isDemo }) => {
   const { Cell } = useMerchantMonitoringTableLogic();
-  const columns = useColumns({ showAlertColumn });
+  const columns = useColumns({ isDemo });
 
   return (
     <UrlDataTable
