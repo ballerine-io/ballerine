@@ -139,7 +139,7 @@ export class DocumentControllerExternal {
     return await this.documentService.getDocumentTrackerByWorkflowId(projectId, workflowId);
   }
 
-  @Post('request')
+  @Post('request-upload')
   @ApiForbiddenResponse()
   @HttpCode(200)
   @ApiResponse({

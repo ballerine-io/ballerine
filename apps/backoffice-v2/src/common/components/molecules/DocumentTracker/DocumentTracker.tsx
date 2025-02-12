@@ -18,12 +18,8 @@ import { FunctionComponent, memo } from 'react';
 import { DocumentsTrackerData, TrackedDocument } from '@/domains/documents/hooks/schemas/document';
 import { Icon } from './constants';
 import { useDocumentTracker } from './hooks/useDocumentTracker';
-import { IDocumentTrackerProps } from './interfaces';
 
-export const DocumentTracker: FunctionComponent<IDocumentTrackerProps> = ({
-  plugins,
-  workflow,
-}) => {
+export const DocumentTracker: FunctionComponent<{ workflowId: string }> = ({ workflowId }) => {
   const {
     documents,
     isLoadingDocuments,
@@ -32,7 +28,7 @@ export const DocumentTracker: FunctionComponent<IDocumentTrackerProps> = ({
     onRequestDocuments,
     open,
     onOpenChange,
-  } = useDocumentTracker({ plugins, workflow });
+  } = useDocumentTracker({ workflowId });
 
   return (
     <div className={`max-w-xs`}>

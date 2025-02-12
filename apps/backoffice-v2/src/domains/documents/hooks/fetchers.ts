@@ -15,7 +15,7 @@ export const fetchDocumentsTrackerItems = async ({ workflowId }: { workflowId: s
 
 export const requestDocumentsUpload = async (body: { documentIds: string[] }) => {
   const [documentsTrackerItems, error] = await apiClient({
-    endpoint: '../external/documents/request',
+    endpoint: '../external/documents/request-upload',
     method: Method.POST,
     body,
     schema: DocumentsTrackerSchema,

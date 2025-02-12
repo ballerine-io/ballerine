@@ -7,24 +7,11 @@ import { useRequestDocumentsMutation } from '@/domains/documents/hooks/mutations
 import { useDocumentsTrackerItemsQuery } from '@/domains/documents/hooks/queries/useDocumentsTrackerItemsQuery';
 import { documentsQueryKey } from '@/domains/documents/hooks/query-keys';
 import { TrackedDocument } from '@/domains/documents/hooks/schemas/document';
-import { TWorkflowDefinitionById } from '@/domains/workflow-definitions/fetchers';
-import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { documentStatusToIcon, Icon } from '../constants';
 
-export interface IUseDocumentTrackerLogicParams {
-  plugins: Array<
-    | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['apiPlugins']>[number]
-    | NonNullable<
-        NonNullable<TWorkflowDefinitionById['extensions']>['childWorkflowPlugins']
-      >[number]
-    | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['commonPlugins']>[number]
-  >;
-  workflow: TWorkflowById;
-}
-
-export const useDocumentTracker = ({ plugins, workflow }: IUseDocumentTrackerLogicParams) => {
+export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
   const { data: documents, isLoading: isLoadingDocuments } = useDocumentsTrackerItemsQuery({
-    workflowId: workflow.id,
+    workflowId,
   });
 
   const [open, onOpenChange] = useState(false);
@@ -35,9 +22,7 @@ export const useDocumentTracker = ({ plugins, workflow }: IUseDocumentTrackerLog
     onSuccess: () => {
       setSelectedIdsToRequest([]);
       onOpenChange(false);
-      void queryClient.invalidateQueries(
-        documentsQueryKey.trackerItems({ workflowId: workflow.id }),
-      );
+      void queryClient.invalidateQueries(documentsQueryKey.trackerItems({ workflowId }));
     },
   });
 
@@ -59,7 +44,7 @@ export const useDocumentTracker = ({ plugins, workflow }: IUseDocumentTrackerLog
         leftIcon: (
           <button
             className={ctw('cursor-default', status === 'unprovided' && 'cursor-pointer')}
-            role="button"
+            type="button"
             onClick={() => {
               if (selectedIdsToRequest.includes(documentId)) {
                 setSelectedIdsToRequest(prev => prev.filter(id => id !== documentId));

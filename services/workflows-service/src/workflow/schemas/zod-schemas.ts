@@ -6,7 +6,7 @@ export const ConfigSchema = z
   .object({
     isAssociatedCompanyKybEnabled: z.boolean().optional(),
     isCaseOverviewEnabled: z.boolean().optional(),
-    isDocumentTrackingEnabled: z.boolean().optional(),
+    isDocumentTrackerEnabled: z.boolean().optional(),
     isCaseRiskOverviewEnabled: z.boolean().optional(),
     isLegacyReject: z.boolean().optional(),
     isLockedDocumentCategoryAndType: z.boolean().optional(),
