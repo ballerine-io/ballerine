@@ -73,6 +73,7 @@
     "react-json-view": "^1.21.3",
     "react-phone-input-2": "^2.15.1",
     "recharts": "^2.7.2",
+    "sonner": "^1.4.3",
     "string-ts": "^1.2.0",
     "tailwind-merge": "^1.10.0",
     "zod": "^3.23.4"

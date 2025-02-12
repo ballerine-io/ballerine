@@ -15,6 +15,7 @@ const schema: Array<IFormElement<any, any>> = [
       uploadSettings: {
         url: 'http://localhost:3000/upload',
         resultPath: 'filename',
+        method: 'POST',
       },
     },
   },
@@ -28,6 +29,7 @@ const schema: Array<IFormElement<any, any>> = [
       uploadSettings: {
         url: 'http://localhost:3000/upload-protected',
         resultPath: 'filename',
+        method: 'POST',
         headers: {
           Authorization: '{token}',
         },
@@ -45,6 +47,7 @@ const schema: Array<IFormElement<any, any>> = [
       uploadSettings: {
         url: 'http://localhost:3000/upload',
         resultPath: 'filename',
+        method: 'POST',
       },
       template: {
         id: 'document-1',
@@ -63,6 +66,7 @@ const schema: Array<IFormElement<any, any>> = [
       uploadSettings: {
         url: 'http://localhost:3000/upload',
         resultPath: 'filename',
+        method: 'POST',
       },
       template: {
         id: 'document-2',
