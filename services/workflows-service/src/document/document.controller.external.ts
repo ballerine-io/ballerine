@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   ParseFilePipeBuilder,
   Patch,
@@ -11,7 +12,7 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiResponse, ApiForbiddenResponse } from '@nestjs/swagger';
 import { DocumentService } from './document.service';
 import {
   CreateDocumentSchema,
@@ -27,6 +28,7 @@ import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { FILE_MAX_SIZE_IN_BYTE, FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/storage/file-filter';
 import { DocumentFileJsonSchema } from '@/document-file/dtos/document-file.dto';
 import z from 'zod';
+import type { TProjectId } from '@/types';
 
 @ApiBearerAuth()
 @ApiTags('Documents')
@@ -104,6 +106,60 @@ export class DocumentControllerExternal {
       file,
       projectId,
     });
+  }
+
+  @Get('tracker/:workflowId')
+  @ApiForbiddenResponse()
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Documents retrieved successfully',
+    schema: Type.Object({
+      business: Type.Array(Type.Record(Type.String(), Type.Any())),
+      individuals: Type.Object({
+        ubos: Type.Array(Type.Record(Type.String(), Type.Any())),
+        directors: Type.Array(Type.Record(Type.String(), Type.Any())),
+      }),
+    }),
+  })
+  @Validate({
+    request: [
+      {
+        type: 'param',
+        name: 'workflowId',
+        schema: Type.String(),
+      },
+    ],
+    response: Type.Any(),
+  })
+  async getDocumentsByWorkflowId(
+    @Param('workflowId') workflowId: string,
+    @CurrentProject() projectId: TProjectId,
+  ) {
+    return await this.documentService.getDocumentTrackerByWorkflowId(projectId, workflowId);
+  }
+
+  @Post('request-upload')
+  @ApiForbiddenResponse()
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Documents requested successfully',
+  })
+  @Validate({
+    request: [
+      {
+        type: 'body',
+        schema: Type.Object({ documentIds: Type.Array(Type.String()) }),
+      },
+    ],
+    response: Type.Any(),
+  })
+  async requestDocuments(
+    @Body() { documentIds }: { documentIds: string[] },
+    @CurrentProject() projectId: TProjectId,
+  ) {
+    return await this.documentService.requestDocumentsByIds(projectId, documentIds);
   }
 
   @Get('/:entityId/:workflowRuntimeDataId')
