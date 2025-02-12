@@ -4,7 +4,7 @@ import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.de
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
 import { DocumentFileJsonSchema } from '@/document-file/dtos/document-file.dto';
 import { DocumentService } from '@/document/document.service';
-import { CreateDocumentSchema, DeleteDocumentsSchema } from '@/document/dtos/document.dto';
+import { DeleteDocumentsSchema } from '@/document/dtos/document.dto';
 import { FileService } from '@/providers/file/file.service';
 import { FILE_MAX_SIZE_IN_BYTE, FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/storage/file-filter';
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
@@ -29,6 +29,7 @@ import { Type, type Static } from '@sinclair/typebox';
 import type { Response } from 'express';
 import z from 'zod';
 import * as errors from '../../errors';
+import { CollectionFlowDocumentSchema } from '../dto/create-collection-flow-document.schema';
 
 @UseTokenAuthGuard()
 @ApiExcludeController()
@@ -61,7 +62,7 @@ export class CollectionFlowFilesController {
   async createDocument(
     @TokenScope() tokenScope: ITokenScope,
     @Body()
-    data: Omit<Static<typeof CreateDocumentSchema>, 'properties'> & {
+    data: Omit<Static<typeof CollectionFlowDocumentSchema>, 'properties'> & {
       metadata: string;
       properties: string;
     },
@@ -90,14 +91,13 @@ export class CollectionFlowFilesController {
       }, z.record(z.string(), z.unknown()))
       .parse(data.properties);
 
-    data.workflowRuntimeDataId = tokenScope.workflowRuntimeDataId;
-
     // FormData returns version as a string
     // Manually converting to number to avoid validation errors
     data.version = Number(data.version);
 
     const documentsCreationResults = await this.documentService.create({
       ...data,
+      workflowRuntimeDataId: tokenScope.workflowRuntimeDataId,
       properties,
       metadata,
       file,
