@@ -165,7 +165,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
               onClick={onNavigateBack}
               className={'mb-6 flex items-center space-x-px pe-3 ps-1 font-semibold'}
             >
-              <ChevronLeft size={18} /> <span>Back</span>
+              <ChevronLeft size={18} /> <span>View All Reports</span>
             </Button>
             <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
               <DropdownMenuTrigger asChild>
