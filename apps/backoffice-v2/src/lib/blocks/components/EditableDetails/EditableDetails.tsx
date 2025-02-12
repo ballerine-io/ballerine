@@ -8,6 +8,7 @@ import {
   useCallback,
   useEffect,
   useState,
+  useMemo,
 } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toTitleCase } from 'string-ts';
@@ -125,13 +126,16 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
 
     return isDecisionComponent && !!value && NEGATIVE_VALUE_INDICATOR.includes(value.toLowerCase());
   };
-  const defaultValues = data?.reduce((acc, curr) => {
-    acc[curr.title] = curr.value;
+  const formValues = useMemo(() => {
+    return data?.reduce((acc, curr) => {
+      acc[curr.title] = curr.value;
 
-    return acc;
-  }, {});
+      return acc;
+    }, {});
+  }, [data]);
+
   const form = useForm({
-    defaultValues,
+    values: formValues,
   });
   const { mutate: mutateUpdateWorkflowById } = useUpdateDocumentByIdMutation({
     directorId,
@@ -249,11 +253,6 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     data,
   });
 
-  // Ensures that the form is reset when the data changes from other instances of `useUpdateWorkflowByIdMutation` i.e. in `useCaseCallToActionLogic`.
-  useEffect(() => {
-    form.reset(defaultValues);
-  }, [form.reset, data]);
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className={`flex h-full flex-col`}>
@@ -281,7 +280,9 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
               const originalValue = form.watch(title);
 
               const displayValue = (value: unknown) => {
-                if (isEditable) return originalValue;
+                if (isEditable) {
+                  return originalValue;
+                }
 
                 return isNullish(value) || value === '' ? 'N/A' : value;
               };
@@ -299,7 +300,9 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                   control={form.control}
                   name={title}
                   render={({ field }) => {
-                    if (isDecisionComponent && !value) return null;
+                    if (isDecisionComponent && !value) {
+                      return null;
+                    }
 
                     const isInput = [
                       !checkIsUrl(value) || isEditable,
