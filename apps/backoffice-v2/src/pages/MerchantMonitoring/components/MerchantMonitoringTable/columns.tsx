@@ -47,7 +47,11 @@ const REPORT_TYPE_TO_SCAN_TYPE = {
   [MERCHANT_REPORT_TYPES_MAP.ONGOING_MERCHANT_REPORT_T1]: SCAN_TYPES.MONITORING,
 } as const;
 
-export const useColumns = ({ isDemo = false }) => {
+export const useColumns = ({
+  isDemoAccount,
+}: {
+  isDemoAccount: boolean;
+}): ColumnDef<TBusinessReport>[] => {
   return useMemo(() => {
     const columns = [
       columnHelper.accessor('companyName', {
@@ -157,7 +161,7 @@ export const useColumns = ({ isDemo = false }) => {
         header: 'Alert',
         meta: {
           conditional: true,
-          showColumn: !isDemo,
+          showColumn: !isDemoAccount,
         },
       }),
       columnHelper.accessor('displayDate', {
@@ -247,5 +251,5 @@ export const useColumns = ({ isDemo = false }) => {
 
       return true;
     });
-  }, [isDemo]);
+  }, [isDemoAccount]);
 };
