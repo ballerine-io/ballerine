@@ -166,7 +166,7 @@ export const useDefaultBlocksLogic = () => {
 
   const registryInfoBlock = useRegistryInfoBlock({
     registryInfo,
-    workflowId: workflow?.id,
+    workflowId: workflow?.id || '',
     documents: workflow?.context?.documents,
   });
 
@@ -176,10 +176,12 @@ export const useDefaultBlocksLogic = () => {
   });
 
   const bankAccountVerificationBlock = useBankAccountVerificationBlock({
+    workflowId: workflow?.id || '',
     pluginsOutput: workflow?.context?.pluginsOutput,
   });
 
   const commercialCreditCheckBlock = useCommercialCreditCheckBlock({
+    workflowId: workflow?.id || '',
     pluginsOutput: workflow?.context?.pluginsOutput,
   });
 
