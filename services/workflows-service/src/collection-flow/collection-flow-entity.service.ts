@@ -29,7 +29,7 @@ export class CollectionFlowEntityService {
 
       if (!workflowRuntimeData.businessId) {
         throw new BadRequestException(
-          `Attempted to create a Entity to a parent workflow without a business`,
+          `Attempted to create an end-user for a workflow without a business`,
         );
       }
 
