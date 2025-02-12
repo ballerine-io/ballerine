@@ -62,24 +62,9 @@ export const useReportTabs = ({ reportVersion, report, companyName, Link }: UseR
       violations: websiteCredibilityAnalysis,
     },
     {
-      title: 'Social Media Analysis',
-      search: '?activeTab=adsAndSocialMedia',
-      violations: null,
-    },
-    {
       title: 'Website Line of Business Analysis',
       search: '?activeTab=websiteLineOfBusiness',
       violations: websiteLineOfBusinessAnalysis ?? [],
-    },
-    {
-      title: 'Ecosystem Analysis',
-      search: '?activeTab=ecosystem',
-      violations: null,
-    },
-    {
-      title: 'Transactions Analysis',
-      search: '?activeTab=transactions',
-      violations: null,
     },
   ] as const satisfies ReadonlyArray<{
     title: string;
