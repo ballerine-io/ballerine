@@ -210,5 +210,6 @@ export const useMerchantMonitoringLogic = () => {
     onDatesChange,
     onIsAlertChange,
     onClearAllFilters,
+    showAlertColumn: true,
   };
 };

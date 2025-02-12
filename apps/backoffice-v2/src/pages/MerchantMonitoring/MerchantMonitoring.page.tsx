@@ -64,6 +64,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
     multiselectProps,
     isClearAllButtonVisible,
     onIsAlertChange,
+    showAlertColumn,
   } = useMerchantMonitoringLogic();
 
   return (
@@ -258,7 +259,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
           </div>
         )}
         {!isLoadingBusinessReports && isNonEmptyArray(businessReports) && (
-          <MerchantMonitoringTable data={businessReports} />
+          <MerchantMonitoringTable data={businessReports} showAlertColumn={showAlertColumn} />
         )}
         {!isLoadingBusinessReports && Array.isArray(businessReports) && !businessReports.length && (
           <NoBusinessReports />
