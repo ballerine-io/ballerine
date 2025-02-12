@@ -124,8 +124,8 @@ describe('useEntityFieldGroupList', () => {
 
       const mockOnChange = vi.fn();
       const mockEntities = [
-        { __id: '1', id: '1', name: 'Entity 1' },
-        { __id: '2', id: '2', name: 'Entity 2' },
+        { __id: '1', ballerineEntityId: '1', name: 'Entity 1' },
+        { __id: '2', ballerineEntityId: '2', name: 'Entity 2' },
       ];
 
       vi.mocked(useField).mockReturnValue({
@@ -139,7 +139,9 @@ describe('useEntityFieldGroupList', () => {
 
       expect(deleteEntitySpy).toHaveBeenCalledWith({}, { params: { entityId: '1' } });
 
-      expect(mockOnChange).toHaveBeenCalledWith([{ id: '2', __id: '2', name: 'Entity 2' }]);
+      expect(mockOnChange).toHaveBeenCalledWith([
+        { ballerineEntityId: '2', __id: '2', name: 'Entity 2' },
+      ]);
     });
   });
 });
