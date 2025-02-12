@@ -11,6 +11,7 @@ export type AccordionCardItemProps = ComponentProps<typeof ShadCNAccordionItem> 
     leftIcon?: ReactNode | ReactNode[];
     text: ReactNode | ReactNode[];
     rightIcon?: ReactNode | ReactNode[];
+    itemClassName?: string;
   }>;
   accordionTriggerProps?: ComponentProps<typeof AccordionTrigger>;
   accordionContentProps?: ComponentProps<typeof AccordionContent>;

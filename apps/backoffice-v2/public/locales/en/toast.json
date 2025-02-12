@@ -120,5 +120,9 @@
   "ubo_deleted": {
     "success": "UBO successfully removed",
     "error": "Error removing UBO"
+  },
+  "request_documents": {
+    "success": "Documents requested successfully.",
+    "error": "Error occurred while requesting documents."
   }
 }

@@ -51,7 +51,7 @@ export class UiDefinitionService {
     runtimeId: string,
     uiContext: keyof typeof UiDefinitionContext,
     projectIds: TProjectIds,
-    args: Omit<Prisma.UiDefinitionFindFirstOrThrowArgs, 'where'>,
+    args?: Omit<Prisma.UiDefinitionFindFirstOrThrowArgs, 'where'>,
   ) {
     const runtime = await this.workflowRuntimeRepository.findById(runtimeId, {}, projectIds);
 

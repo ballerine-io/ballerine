@@ -6,9 +6,10 @@ import { PrismaModule } from '@/prisma/prisma.module';
 import { DocumentFileModule } from '@/document-file/document-file.module';
 import { FileModule } from '@/providers/file/file.module';
 import { WorkflowModule } from '@/workflow/workflow.module';
+import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
 
 @Module({
-  imports: [PrismaModule, DocumentFileModule, FileModule, WorkflowModule],
+  imports: [PrismaModule, DocumentFileModule, FileModule, WorkflowModule, UiDefinitionModule],
   controllers: [DocumentControllerExternal],
   providers: [DocumentService, DocumentRepository],
   exports: [DocumentService],
