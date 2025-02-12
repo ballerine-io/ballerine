@@ -1,0 +1,82 @@
+name: Under Testing - Build and Deploy Backoffice Application
+
+on:
+  # push:
+  #   paths:
+  #     # Run this pipeline only if there are changes in specified path
+  #     - 'apps/backoffice-v2/**'
+  #   branches:
+  #   - "dev"
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: 'Choose Environment'
+        required: true
+        default: 'dev'
+        options:
+          - 'dev'
+          - 'sb'
+          - 'prod'
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        description: 'Environment'
+        required: true
+        default: 'dev'
+
+jobs:
+  build:
+    name: Build Backoffice App
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'push' && github.ref_name || inputs.environment }}
+    steps:
+      # Trigger a webhook
+      - name: Trigger Build webhook
+        run: |
+          # curl -X POST -d {} "${{ secrets.BACKOFFICE_WEBHOOK_URL }}" -H "Content-Type:application/json"
+          response=$(curl -s -w "\n%{http_code}" -X POST -d {} "${{ secrets.BACKOFFICE_WEBHOOK_URL }}" -H "Content-Type:application/json")
+          status_code=$(echo "$response" | tail -n 1)
+          if [ "$status_code" -lt 200 ] || [ "$status_code" -ge 300 ]; then
+            echo "Error: Webhook request failed with status $status_code"
+            echo "Response: $(echo "$response" | head -n -1)"
+            exit 1
+          fi
+
+  send-to-slack:
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: ${{ needs.build.result == 'success' }}
+    environment: ${{ github.event_name == 'push' && github.ref_name || inputs.environment }}
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Send alert to Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
+          slack-message: "Back-office Build initialized in ${{ github.event_name == 'push' && github.ref_name || inputs.environment }}."
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}
+
+  on-failure:
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: failure()
+    environment: ${{ github.event_name == 'push' && github.ref_name || inputs.environment }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Send alert to Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
+          slack-message: "Backoffice Build job failed in ${{ github.event_name == 'push' && github.ref_name || inputs.environment }}."
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}
