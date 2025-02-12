@@ -102,7 +102,7 @@ export const columns = [
               size={18}
               className={`stroke-background`}
               containerProps={{
-                className: 'me-3 bg-success mt-px',
+                className: 'bg-success',
               }}
             />
           ) : (
