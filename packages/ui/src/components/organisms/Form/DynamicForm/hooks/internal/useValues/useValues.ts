@@ -1,3 +1,4 @@
+import { isObject } from '@ballerine/common';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import { useCallback, useState } from 'react';
@@ -39,7 +40,7 @@ export const useValues = <TValues extends object>({
             newParentValue = [...parentValue];
           }
 
-          if (typeof parentValue === 'object' && !Array.isArray(parentValue)) {
+          if (isObject(parentValue)) {
             newParentValue = { ...parentValue };
           }
 
