@@ -3,37 +3,42 @@ import { TEntityFieldGroupType } from '../EntityFieldGroup';
 import { getEntityGroupValueDestination } from './get-entity-group-value-destination';
 
 describe('getEntityGroupValueDestination', () => {
-  it('should return correct destination path for director type', () => {
-    // Arrange
-    const type: TEntityFieldGroupType = 'director';
-    const expectedPath = 'entity.data.additionalInfo.directors';
+  describe('when getting destination path for director type', () => {
+    it('should return path to directors in entity additional info', () => {
+      // Arrange
+      const type: TEntityFieldGroupType = 'director';
+      const expectedPath = 'entity.data.additionalInfo.directors';
 
-    // Act
-    const result = getEntityGroupValueDestination(type);
+      // When
+      const result = getEntityGroupValueDestination(type);
 
-    // Assert
-    expect(result).toBe(expectedPath);
+      // Then
+      expect(result).toBe(expectedPath);
+    });
   });
 
-  it('should return correct destination path for ubo type', () => {
-    // Arrange
-    const type: TEntityFieldGroupType = 'ubo';
-    const expectedPath = 'entity.data.additionalInfo.ubos';
+  describe('when getting destination path for UBO type', () => {
+    it('should return path to UBOs in entity additional info', () => {
+      // Arrange
+      const type: TEntityFieldGroupType = 'ubo';
+      const expectedPath = 'entity.data.additionalInfo.ubos';
 
-    // Act
-    const result = getEntityGroupValueDestination(type);
+      // When
+      const result = getEntityGroupValueDestination(type);
 
-    // Assert
-    expect(result).toBe(expectedPath);
+      // Then
+      expect(result).toBe(expectedPath);
+    });
   });
 
-  it('should throw error for invalid entity group type', () => {
-    // Arrange
-    const invalidType = 'invalid' as TEntityFieldGroupType;
+  describe('when getting destination path for invalid type', () => {
+    it('should throw error with invalid type message', () => {
+      // Arrange
+      const invalidType = 'invalid' as TEntityFieldGroupType;
+      const expectedError = 'Invalid entity group type: invalid';
 
-    // Act & Assert
-    expect(() => getEntityGroupValueDestination(invalidType)).toThrow(
-      'Invalid entity group type: invalid',
-    );
+      // When/Then
+      expect(() => getEntityGroupValueDestination(invalidType)).toThrow(expectedError);
+    });
   });
 });
