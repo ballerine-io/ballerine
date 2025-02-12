@@ -38,17 +38,15 @@ describe('DocumentService', () => {
         const businessDoc = result.business[0];
         expect(businessDoc).toBeDefined();
 
-        if (businessDoc) {
-          expect(businessDoc).toEqual({
-            entityType: 'business',
-            type: 'bank_statement',
-            templateId: 'bank-statement-document',
-            category: 'financial_information',
-            issuingCountry: 'ZZ',
-            issuingVersion: '1',
-            version: '1',
-          });
-        }
+        expect(businessDoc).toEqual({
+          entityType: 'business',
+          type: 'bank_statement',
+          templateId: 'bank-statement-document',
+          category: 'financial_information',
+          issuingCountry: 'ZZ',
+          issuingVersion: '1',
+          version: '1',
+        });
       });
 
       it('should parse business documents with explicit business destination', () => {
@@ -79,17 +77,15 @@ describe('DocumentService', () => {
         const businessDoc = result.business[0];
         expect(businessDoc).toBeDefined();
 
-        if (businessDoc) {
-          expect(businessDoc).toEqual({
-            entityType: 'business',
-            type: 'general_document',
-            templateId: 'proof-of-address-document',
-            category: 'proof_of_address',
-            issuingCountry: 'ZZ',
-            issuingVersion: '1',
-            version: '1',
-          });
-        }
+        expect(businessDoc).toEqual({
+          entityType: 'business',
+          type: 'general_document',
+          templateId: 'proof-of-address-document',
+          category: 'proof_of_address',
+          issuingCountry: 'ZZ',
+          issuingVersion: '1',
+          version: '1',
+        });
       });
     });
 
@@ -122,17 +118,15 @@ describe('DocumentService', () => {
         const uboDoc = result.individuals.ubos[0];
         expect(uboDoc).toBeDefined();
 
-        if (uboDoc) {
-          expect(uboDoc).toEqual({
-            entityType: 'ubo',
-            type: 'general_document',
-            templateId: 'proof-of-address-document',
-            category: 'proof_of_address',
-            issuingCountry: 'ZZ',
-            issuingVersion: '1',
-            version: '1',
-          });
-        }
+        expect(uboDoc).toEqual({
+          entityType: 'ubo',
+          type: 'general_document',
+          templateId: 'proof-of-address-document',
+          category: 'proof_of_address',
+          issuingCountry: 'ZZ',
+          issuingVersion: '1',
+          version: '1',
+        });
       });
 
       it('should handle multiple UBO documents for different UBOs', () => {
@@ -179,10 +173,8 @@ describe('DocumentService', () => {
         expect(firstUbo).toBeDefined();
         expect(secondUbo).toBeDefined();
 
-        if (firstUbo && secondUbo) {
-          expect(firstUbo.issuingCountry).toBe('US');
-          expect(secondUbo.issuingCountry).toBe('UK');
-        }
+        expect(firstUbo?.issuingCountry).toBe('US');
+        expect(secondUbo?.issuingCountry).toBe('UK');
       });
     });
 
@@ -221,9 +213,7 @@ describe('DocumentService', () => {
         const businessDoc = result.business[0];
         expect(businessDoc).toBeDefined();
 
-        if (businessDoc) {
-          expect(businessDoc.templateId).toBe('pci-certification-document');
-        }
+        expect(businessDoc?.templateId).toBe('pci-certification-document');
       });
 
       it('should handle documents with validation rules', () => {
@@ -264,9 +254,7 @@ describe('DocumentService', () => {
         const businessDoc = result.business[0];
         expect(businessDoc).toBeDefined();
 
-        if (businessDoc) {
-          expect(businessDoc.templateId).toBe('proof-of-address-document');
-        }
+        expect(businessDoc?.templateId).toBe('proof-of-address-document');
       });
     });
 
@@ -325,9 +313,7 @@ describe('DocumentService', () => {
         const businessDoc = result.business[0];
         expect(businessDoc).toBeDefined();
 
-        if (businessDoc) {
-          expect(businessDoc.templateId).toBe('nested-doc');
-        }
+        expect(businessDoc?.templateId).toBe('nested-doc');
       });
 
       it('should ignore document fields without template params', () => {

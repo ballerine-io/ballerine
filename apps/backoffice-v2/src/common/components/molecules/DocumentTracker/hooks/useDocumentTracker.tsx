@@ -5,7 +5,7 @@ import { titleCase } from 'string-ts';
 
 import { useRequestDocumentsMutation } from '@/domains/documents/hooks/mutations/useRequestDocumentsMutation';
 import { useDocumentsTrackerItemsQuery } from '@/domains/documents/hooks/queries/useDocumentsTrackerItemsQuery';
-import { documentsQueryKey } from '@/domains/documents/hooks/query-keys';
+import { documentsQueryKeys } from '@/domains/documents/hooks/query-keys';
 import { TrackedDocument } from '@/domains/documents/hooks/schemas/document';
 import { documentStatusToIcon, Icon } from '../constants';
 
@@ -22,7 +22,7 @@ export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
     onSuccess: () => {
       setSelectedIdsToRequest([]);
       onOpenChange(false);
-      void queryClient.invalidateQueries(documentsQueryKey.trackerItems({ workflowId }));
+      void queryClient.invalidateQueries(documentsQueryKeys.trackerItems({ workflowId }));
     },
   });
 

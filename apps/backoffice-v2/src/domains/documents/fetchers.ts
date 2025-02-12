@@ -1,7 +1,7 @@
 import { apiClient } from '@/common/api-client/api-client';
 import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
-import { DocumentsTrackerSchema } from './schemas/document';
+import { DocumentsTrackerSchema } from './hooks/schemas/document';
 
 export const fetchDocumentsTrackerItems = async ({ workflowId }: { workflowId: string }) => {
   const [documentsTrackerItems, error] = await apiClient({

@@ -276,7 +276,11 @@ export class DocumentService {
       [projectId],
     );
 
-    if (!isObject(uiDefinition.uiSchema)) {
+    const uiSchemaValidation = z
+      .object({ elements: z.array(z.record(z.string(), z.any())) })
+      .safeParse(uiDefinition.uiSchema);
+
+    if (!uiSchemaValidation.success) {
       return {
         business: [],
         individuals: {
@@ -286,7 +290,7 @@ export class DocumentService {
       };
     }
 
-    const uiSchema = uiDefinition.uiSchema as { elements: Array<Record<string, any>> };
+    const uiSchema = uiSchemaValidation.data;
 
     const parsedUIDocuments = this.parseDocumentsFromUISchema(uiSchema.elements);
 
