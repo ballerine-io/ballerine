@@ -247,4 +247,17 @@ export class WorkflowDefinitionRepository {
     `,
     );
   }
+
+  async findByWorkflowRuntimeDataId(workflowRuntimeDataId: string, projectIds: TProjectIds) {
+    return await this.prisma.workflowDefinition.findFirst({
+      where: {
+        workflowRuntimeData: {
+          some: {
+            id: workflowRuntimeDataId,
+          },
+        },
+        projectId: { in: projectIds },
+      },
+    });
+  }
 }

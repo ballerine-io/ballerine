@@ -12,6 +12,7 @@ import { CreateDocumentFileSchema } from '@/document-file/dtos/document-file.dto
 import { WorkflowService } from '@/workflow/workflow.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { addPropertiesSchemaToDocument } from '@/workflow/utils/add-properties-schema-to-document';
+import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 
 @Injectable()
 export class DocumentService {
@@ -22,6 +23,7 @@ export class DocumentService {
     protected readonly workflowService: WorkflowService,
     protected readonly storageService: StorageService,
     protected readonly logger: AppLoggerService,
+    protected readonly workflowDefinitionService: WorkflowDefinitionService,
   ) {}
 
   async create(
@@ -71,7 +73,13 @@ export class DocumentService {
       [projectId],
     );
 
-    const uploadedFile = await this.fileService.uploadNewFile(projectId, workflowRuntimeData, {
+    const workflowEntityId = workflowRuntimeData.endUserId || workflowRuntimeData.businessId;
+
+    if (!workflowEntityId) {
+      throw new BadRequestException('Workflow does not have an end user or business id');
+    }
+
+    const uploadedFile = await this.fileService.uploadNewFile(projectId, workflowEntityId, {
       ...file,
       mimetype:
         file.mimetype ||
@@ -165,9 +173,20 @@ export class DocumentService {
       transaction,
     );
 
+    const workflowDefinition = await this.workflowDefinitionService.getByWorkflowRuntimeDataId(
+      workflowRuntimeDataId,
+      projectIds,
+    );
+
+    if (!workflowDefinition) {
+      throw new BadRequestException(
+        `Workflow definition for a workflow with an id of "${workflowRuntimeDataId}" not found`,
+      );
+    }
+
     return this.formatDocuments({
       documents,
-      documentSchema: null,
+      documentSchema: workflowDefinition.documentsSchema,
     });
   }
 
@@ -184,6 +203,7 @@ export class DocumentService {
 
     return this.formatDocuments({
       documents,
+      // Would have to have a separate workflow definition for each document
       documentSchema: null,
     });
   }
@@ -200,6 +220,7 @@ export class DocumentService {
 
     return this.formatDocuments({
       documents,
+      // Would have to have a separate workflow definition for each document
       documentSchema: null,
     });
   }
@@ -252,7 +273,14 @@ export class DocumentService {
       {},
       projectIds,
     );
-    const uploadedFile = await this.fileService.uploadNewFile(projectIds[0], workflowRuntimeData, {
+
+    const workflowEntityId = workflowRuntimeData.endUserId || workflowRuntimeData.businessId;
+
+    if (!workflowEntityId) {
+      throw new BadRequestException('Workflow does not have an end user or business id');
+    }
+
+    const uploadedFile = await this.fileService.uploadNewFile(projectIds[0], workflowEntityId, {
       ...file,
       mimetype:
         file.mimetype ||
@@ -273,9 +301,20 @@ export class DocumentService {
 
     const documents = await this.repository.findManyWithFiles(projectIds);
 
+    const workflowDefinition = await this.workflowDefinitionService.getByWorkflowRuntimeDataId(
+      workflowRuntimeDataId,
+      projectIds,
+    );
+
+    if (!workflowDefinition) {
+      throw new BadRequestException(
+        `Workflow definition for a workflow with an id of "${workflowRuntimeDataId}" not found`,
+      );
+    }
+
     return this.formatDocuments({
       documents,
-      documentSchema: null,
+      documentSchema: workflowDefinition.documentsSchema,
     });
   }
 }

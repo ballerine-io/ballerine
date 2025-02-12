@@ -7,6 +7,7 @@ import { FILE_MAX_SIZE_IN_BYTE, FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/sto
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { StorageService } from '@/storage/storage.service';
 import {
+  BadRequestException,
   Controller,
   Get,
   Param,
@@ -69,7 +70,13 @@ export class CollectionFlowFilesController {
       [tokenScope.projectId],
     );
 
-    return this.fileService.uploadNewFile(tokenScope.projectId, workflowRuntimeData, {
+    const workflowEntityId = workflowRuntimeData.endUserId || workflowRuntimeData.businessId;
+
+    if (!workflowEntityId) {
+      throw new BadRequestException('Workflow does not have an end user or business id');
+    }
+
+    return this.fileService.uploadNewFile(tokenScope.projectId, workflowEntityId, {
       ...file,
       mimetype:
         file.mimetype ||
