@@ -24,10 +24,10 @@ export const useEntitySync = (
   isValid: boolean,
 ) => {
   const [isSyncing, setIsSyncing] = useState(false);
-  const { values, metadata, fieldHelpers } = useDynamicForm();
+  const { values, metadata } = useDynamicForm();
   const { run: uploadDocument } = useHttp(element.params!.httpParams?.uploadDocument, metadata);
   const contextRef = useRef(values);
-  const { value, onChange } = useField(element, stack);
+  const { onChange } = useField(element, stack);
 
   const prevEntityRef = useRef(entity);
 
@@ -52,8 +52,8 @@ export const useEntitySync = (
         return;
       }
 
-      const { id: _, ...prevEntity } = prevEntityRef.current || {};
-      const { id: __, ...currentEntity } = entity || {};
+      const { ballerineEntityId: _, ...prevEntity } = prevEntityRef.current || {};
+      const { ballerineEntityId: __, ...currentEntity } = entity || {};
 
       if (isEqual(prevEntity, currentEntity)) {
         return;
@@ -69,7 +69,7 @@ export const useEntitySync = (
             entity,
             element.params?.httpParams?.updateEntity.transform as string,
           ),
-          { params: { entityId: entity.id } },
+          { params: { entityId: entity.ballerineEntityId } },
         );
 
         prevEntityRef.current = entity;
@@ -85,7 +85,7 @@ export const useEntitySync = (
           element,
           contextRef.current,
           {
-            entityId: entity.id!,
+            entityId: entity.ballerineEntityId!,
             stack: stack,
           },
         );
@@ -121,10 +121,11 @@ export const useEntitySync = (
   );
 
   useEffect(() => {
-    if (!entity?.id) {
+    if (!entity?.ballerineEntityId) {
       return;
     }
 
+    console.log('entity', entity);
     void debouncedSync(entity);
   }, [entity, debouncedSync]);
 

@@ -5,7 +5,7 @@ export const updateEntities = (entitiesList: IEntity[], updatedEntity: IEntity) 
     if (entity.__id === updatedEntity.__id) {
       const newEntity = {
         ...entity,
-        id: updatedEntity.id,
+        ballerineEntityId: updatedEntity.ballerineEntityId,
       };
 
       return newEntity;

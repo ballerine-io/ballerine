@@ -1,4 +1,4 @@
 export interface IEntity {
-  id?: string;
+  ballerineEntityId?: string;
   __id?: string;
 }

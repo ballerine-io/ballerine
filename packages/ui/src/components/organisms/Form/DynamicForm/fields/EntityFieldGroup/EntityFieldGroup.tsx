@@ -82,7 +82,7 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
       {items?.map((entity: IEntity, index: number) => {
         return (
           <EntityFields
-            key={entity.id}
+            key={entity.__id}
             entityId={entity.__id!}
             entity={entity}
             index={index}

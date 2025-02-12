@@ -91,7 +91,7 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
     }
 
     const entities = get(context, entitiesDestination, []);
-    const createdEntity = { ...entity, id: createdEntityId };
+    const createdEntity: IEntity = { ...entity, ballerineEntityId: createdEntityId };
 
     // UI Update
     const updatedEntities = updateEntities(entities, createdEntity);
@@ -150,7 +150,7 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
           <Button
             variant="outline"
             onClick={createEntityAndUploadDocuments}
-            disabled={entity?.id ? true : isCreatingEntity || !isValid}
+            disabled={entity?.ballerineEntityId ? true : isCreatingEntity || !isValid}
           >
             {createEntityText}
           </Button>
@@ -161,10 +161,10 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
             onClick={isShouldRenderLoading ? undefined : onRemoveClick}
           >
             {isShouldRenderLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Trash2Icon
-                className="w-4 h-4 cursor-pointer font-bold"
+                className="h-4 w-4 cursor-pointer font-bold"
                 data-testid={`${fieldId}-fieldlist-item-remove-${entityId}`}
               />
             )}

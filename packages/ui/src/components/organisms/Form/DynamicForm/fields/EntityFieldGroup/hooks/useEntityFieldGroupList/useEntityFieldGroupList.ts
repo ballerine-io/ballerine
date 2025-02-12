@@ -55,9 +55,9 @@ export const useEntityFieldGroupList = ({ element }: IUseFieldListProps) => {
 
       const entity = value.find(entity => entity.__id === id);
 
-      if (entity?.id) {
+      if (entity?.ballerineEntityId) {
         try {
-          await deleteEntity({}, { params: { entityId: entity.id } });
+          await deleteEntity({}, { params: { entityId: entity.ballerineEntityId } });
         } catch (error) {
           if (!isAxiosError((error as any).response) && (error as any).response.status === 400) {
             toast.error(`Failed to delete ${element.params?.type || 'end-user'}.`);
