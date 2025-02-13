@@ -1,6 +1,5 @@
 import { Crown } from 'lucide-react';
-import { ComponentProps, ReactNode, useMemo } from 'react';
-import { Writable } from 'type-fest';
+import { ComponentProps, ReactNode } from 'react';
 import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
 
 import {
@@ -13,8 +12,7 @@ import {
   WebsitesCompany,
 } from '@/components';
 import { z } from 'zod';
-import { MERCHANT_REPORT_STATUSES, MERCHANT_REPORT_TYPES } from '../../constants';
-import { ReportSchema, RiskIndicatorRiskLevel, RiskIndicatorSchema } from '@ballerine/common';
+import { ReportSchema, RiskIndicatorSchema } from '@ballerine/common';
 import { getUniqueRiskIndicators } from '@/common';
 
 type UseReportTabsProps = {
