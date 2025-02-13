@@ -127,3 +127,25 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
   from: z.string().date().optional(),
   to: z.string().date().optional(),
 });
+
+const URL_REGEX =
+  /((https?):\/\/)?([a-zA-Z0-9-_]+\.)+[a-zA-Z0-9]+(\.[a-z]{2})?(\/[a-zA-Z0-9_#-]+)*(\/)?(\?[a-zA-Z0-9_-]+=[a-zA-Z0-9_-]+(&[a-zA-Z0-9_-]+=[a-zA-Z0-9_-]+)*)?(#[a-zA-Z0-9_-]+)?/;
+
+export type CreateBusinessReportDialogInput = z.input<typeof CreateBusinessReportDialogSchema>;
+export const CreateBusinessReportDialogSchema = z.object({
+  websiteUrl: z.string().regex(URL_REGEX, {
+    message: 'Invalid website URL',
+  }),
+  companyName: z
+    .string({
+      invalid_type_error: 'Company name must be a string',
+    })
+    .max(255)
+    .optional(),
+  businessCorrelationId: z
+    .string({
+      invalid_type_error: 'Business ID must be a string',
+    })
+    .max(255)
+    .optional(),
+});
