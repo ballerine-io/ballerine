@@ -34,9 +34,6 @@ backoffice:
     pullPolicy: Always
     pullSecrets: ""
     tag: "dev"
-  livenessProbe: {}
-  readinessProbe: {}
-  startupProbe: {}
   envFrom:
   - configMapRef:
       name: backoffice # Change according to the corresponding nameOverride.
@@ -83,9 +80,6 @@ headlessexample:
   envFrom:
   - configMapRef:
       name: headlessexample # Change according to the corresponding nameOverride.
-  livenessProbe: {}
-  readinessProbe: {}
-  startupProbe: {}
   ingress:
     enabled: true
     className: "nginx"
@@ -126,9 +120,6 @@ kybapp:
     pullPolicy: Always
     pullSecrets: ""
     tag: "dev"
-  livenessProbe: {}
-  readinessProbe: {}
-  startupProbe: {}
   envFrom:
   - configMapRef:
       name: kybapp # Change according to the corresponding nameOverride.
@@ -175,9 +166,6 @@ workflowsdashboard:
   envFrom:
   - configMapRef:
       name: workflowsdashboard # Change according to the corresponding nameOverride.
-  livenessProbe: {}
-  readinessProbe: {}
-  startupProbe: {}
   ingress:
     enabled: true
     className: "nginx"
@@ -230,42 +218,6 @@ workflowService:
     image:
       tag: ""
       command: []
-  # prismaMigrate:
-  #   enabled: true
-  #   image:
-  #     command:
-  #       - dumb-init
-  #       - npm
-  #       - run
-  #       - db:migrate-up
-  #     tag: dev
-  #   envFrom:
-  #     - secretRef:
-  #         name: wf-dev-secret-manager
-  # dbMigrate:
-  #   enabled: true
-  #   image:
-  #     command:
-  #       - dumb-init
-  #       - npm
-  #       - run
-  #       - db:data-migration:migrate
-  #     tag: dev
-  #   envFrom:
-  #     - secretRef:
-  #         name: wf-dev-secret-manager
-  # dataSync:
-  #   enabled: true
-  #   image:
-  #     command:
-  #       - dumb-init
-  #       - npm
-  #       - run
-  #       - db:data-sync
-  #     tag: dev
-  #   envFrom:
-  #     - secretRef:
-  #         name: wf-dev-secret-manager
   serviceAccount:
     create: true
     automount: true
