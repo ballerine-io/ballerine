@@ -50,7 +50,7 @@ export const RiskIndicators: FunctionComponent<{
                   className: 'me-3 bg-success mt-px',
                 }}
               />
-              No Violations Detected
+              No Risk Detected
             </li>
           )}
         </ul>

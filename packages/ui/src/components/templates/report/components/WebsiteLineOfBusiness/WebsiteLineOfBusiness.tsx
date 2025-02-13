@@ -5,8 +5,9 @@ import { Card, CardContent, CardHeader } from '@/components';
 import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
 import { RiskIndicatorSchema } from '@ballerine/common';
 import { z } from 'zod';
+
 export const WebsiteLineOfBusiness: FunctionComponent<{
-  riskIndicators: z.infer<typeof RiskIndicatorSchema>[];
+  riskIndicators: Array<z.infer<typeof RiskIndicatorSchema>>;
   lineOfBusinessDescription: string | null;
   mcc: string | null;
   mccDescription: string | null;
@@ -97,7 +98,7 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
           <CardContent className={'flex flex-col space-y-4'}>
             <h4 className={'font-semibold'}>Findings</h4>
             {riskIndicators.map(riskIndicator => (
-              <div className={'flex flex-col space-y-2'}>
+              <div key={riskIndicator.name} className={'flex flex-col space-y-2'}>
                 <h5 className={'font-semibold'}>{riskIndicator.name}</h5>
                 {riskIndicator.explanation && <p>{riskIndicator.explanation}</p>}
                 {typeof riskIndicator.screenshot?.screenshotUrl === 'string' && (

@@ -539,7 +539,9 @@ export const WebsiteCredibility: FunctionComponent<{
             {!!pricingRiskIndicators?.length &&
               pricingRiskIndicators.map(({ pricingViolationExamples }) =>
                 pricingViolationExamples?.map(example => (
-                  <li className="list-decimal">{example}</li>
+                  <li key={example} className="list-decimal">
+                    {example}
+                  </li>
                 )),
               )}
             {!pricingRiskIndicators?.length && (
