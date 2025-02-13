@@ -40,6 +40,7 @@ const CustomerSchema = z.object({
       isDemo: z.boolean().default(false),
       showFullAccessPopup: z.boolean().default(false),
       isDemoAccount: z.boolean().default(false),
+      maxBusinessReports: z.number().default(0),
     })
     .nullable()
     .default({
@@ -47,6 +48,7 @@ const CustomerSchema = z.object({
       isExample: false,
       showFullAccessPopup: false,
       isDemoAccount: false,
+      maxBusinessReports: 0,
     }),
 });
 

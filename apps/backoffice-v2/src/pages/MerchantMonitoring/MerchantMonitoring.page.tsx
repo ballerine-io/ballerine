@@ -1,31 +1,32 @@
-import { FunctionComponent } from 'react';
 import { isNonEmptyArray } from '@ballerine/common';
-import { UrlPagination } from '@/common/components/molecules/UrlPagination/UrlPagination';
-import { useMerchantMonitoringLogic } from '@/pages/MerchantMonitoring/hooks/useMerchantMonitoringLogic/useMerchantMonitoringLogic';
-import { NoBusinessReports } from '@/pages/MerchantMonitoring/components/NoBusinessReports/NoBusinessReports';
-import { MerchantMonitoringTable } from '@/pages/MerchantMonitoring/components/MerchantMonitoringTable/MerchantMonitoringTable';
-import { buttonVariants } from '@/common/components/atoms/Button/Button';
-import { Loader2, Plus, SlidersHorizontal, Table2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { Search } from '@/common/components/molecules/Search';
 import {
-  Button,
-  DropdownMenuTrigger,
-  DropdownMenu,
-  Skeleton,
-  DropdownMenuContent,
-  DropdownMenuCheckboxItem,
   Badge,
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  Skeleton,
 } from '@ballerine/ui';
-import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provider';
-import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
-import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
-import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
 import { t } from 'i18next';
+import { Loader2, Plus, SlidersHorizontal } from 'lucide-react';
+import { FunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
+
+import { Button, buttonVariants } from '@/common/components/atoms/Button/Button';
 import { MultiSelect } from '@/common/components/atoms/MultiSelect/MultiSelect';
-import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
 import { Separator } from '@/common/components/atoms/Separator/Separator';
+import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
+import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
+import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provider';
+import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
+import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
 import { GetFullAccessCard } from '@/common/components/molecules/GetFullAccessCard/GetFullAccessCard';
+import { Search } from '@/common/components/molecules/Search';
+import { UrlPagination } from '@/common/components/molecules/UrlPagination/UrlPagination';
+import { CreateMerchantReportDialog } from '@/pages/MerchantMonitoring/components/CreateMerchantReportDialog/CreateMerchantReportDialog';
+import { MerchantMonitoringTable } from '@/pages/MerchantMonitoring/components/MerchantMonitoringTable/MerchantMonitoringTable';
+import { NoBusinessReports } from '@/pages/MerchantMonitoring/components/NoBusinessReports/NoBusinessReports';
+import { useMerchantMonitoringLogic } from '@/pages/MerchantMonitoring/hooks/useMerchantMonitoringLogic/useMerchantMonitoringLogic';
 
 export const MerchantMonitoring: FunctionComponent = () => {
   const {
@@ -84,7 +85,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
                     to={`/${locale}/merchant-monitoring/upload-multiple-merchants`}
                     aria-disabled={!createBusinessReportBatch?.enabled}
                   >
-                    <Table2 />
+                    <Plus />
                     <span>Upload Multiple Merchants</span>
                   </Link>
                 </div>
@@ -98,21 +99,26 @@ export const MerchantMonitoring: FunctionComponent = () => {
           </TooltipProvider>
           <TooltipProvider delayDuration={0}>
             <Tooltip>
-              <TooltipTrigger className={`flex items-center`} asChild>
-                <div>
-                  <Link
-                    className={buttonVariants({
-                      variant: 'outline',
-                      className:
-                        'flex items-center justify-start gap-2 font-semibold aria-disabled:pointer-events-none aria-disabled:opacity-50',
-                    })}
-                    to={`/${locale}/merchant-monitoring/create-check`}
+              <TooltipTrigger className={`flex items-center`}>
+                {createBusinessReport?.enabled ? (
+                  <CreateMerchantReportDialog>
+                    <Button
+                      className={`flex items-center gap-2 bg-purple-600 font-semibold text-white hover:bg-purple-500 aria-disabled:pointer-events-none aria-disabled:opacity-50`}
+                      aria-disabled={!createBusinessReport?.enabled}
+                    >
+                      <Plus />
+                      <span>Create a report</span>
+                    </Button>
+                  </CreateMerchantReportDialog>
+                ) : (
+                  <Button
+                    className={`flex items-center gap-2 bg-purple-600 font-semibold text-white hover:bg-purple-500 aria-disabled:pointer-events-none aria-disabled:opacity-50`}
                     aria-disabled={!createBusinessReport?.enabled}
                   >
                     <Plus />
-                    <span>Create Merchant Check</span>
-                  </Link>
-                </div>
+                    <span>Create a report</span>
+                  </Button>
+                )}
               </TooltipTrigger>
               {!createBusinessReport?.enabled && (
                 <TooltipContent side={'left'} align={'start'}>
