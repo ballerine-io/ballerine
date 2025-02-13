@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.72
+
+### Patch Changes
+
+- Update ReportSchema
+
 ## 0.9.71
 
 ### Patch Changes

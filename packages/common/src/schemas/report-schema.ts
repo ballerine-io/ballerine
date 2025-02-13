@@ -71,12 +71,19 @@ export const ReportSchema = z
       .string()
       .datetime()
       .transform(value => new Date(value)),
+    publishedAt: z
+      .string()
+      .datetime()
+      .nullable()
+      .transform(value => (value ? new Date(value) : null)),
     status: z.enum([MERCHANT_REPORT_STATUSES[0]!, ...MERCHANT_REPORT_STATUSES.slice(1)]),
     monitoringStatus: z.boolean().nullish(),
     website: z.object({
       url: z.string().url(),
     }),
     customer: z.object({
+      id: z.string(),
+      displayName: z.string(),
       ongoingMonitoringEnabled: z.boolean(),
     }),
     business: z.object({
