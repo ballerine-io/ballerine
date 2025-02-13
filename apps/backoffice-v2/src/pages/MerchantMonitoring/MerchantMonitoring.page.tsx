@@ -5,7 +5,7 @@ import { useMerchantMonitoringLogic } from '@/pages/MerchantMonitoring/hooks/use
 import { NoBusinessReports } from '@/pages/MerchantMonitoring/components/NoBusinessReports/NoBusinessReports';
 import { MerchantMonitoringTable } from '@/pages/MerchantMonitoring/components/MerchantMonitoringTable/MerchantMonitoringTable';
 import { buttonVariants } from '@/common/components/atoms/Button/Button';
-import { Loader2, Plus, SlidersHorizontal, Table2 } from 'lucide-react';
+import { Layers, Loader2, Plus, SlidersHorizontal } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Search } from '@/common/components/molecules/Search';
 import {
@@ -21,7 +21,6 @@ import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provi
 import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
 import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
-import { ContentTooltip } from '@ballerine/ui';
 import { t } from 'i18next';
 import { MultiSelect } from '@/common/components/atoms/MultiSelect/MultiSelect';
 import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
@@ -86,8 +85,8 @@ export const MerchantMonitoring: FunctionComponent = () => {
                     to={`/${locale}/merchant-monitoring/upload-multiple-merchants`}
                     aria-disabled={!createBusinessReportBatch?.enabled || isDemoAccount}
                   >
-                    <Table2 />
-                    <span>Upload Multiple Merchants</span>
+                    <Layers />
+                    <span>Batch Actions</span>
                   </Link>
                 </div>
               </TooltipTrigger>
@@ -108,18 +107,17 @@ export const MerchantMonitoring: FunctionComponent = () => {
           <TooltipProvider delayDuration={0}>
             <Tooltip>
               <TooltipTrigger className={`flex items-center`} asChild>
-                <div>
+                <div className=" text-white">
                   <Link
                     className={buttonVariants({
-                      variant: 'outline',
                       className:
-                        'flex items-center justify-start gap-2 font-semibold aria-disabled:pointer-events-none aria-disabled:opacity-50',
+                        'flex items-center justify-start gap-2 bg-[#584EC5] font-semibold hover:bg-[#5B3FAC66] hover:shadow-lg aria-disabled:pointer-events-none aria-disabled:opacity-50',
                     })}
                     to={`/${locale}/merchant-monitoring/create-check`}
                     aria-disabled={!createBusinessReport?.enabled}
                   >
                     <Plus />
-                    <span>Create Merchant Check</span>
+                    <span>Create a Report</span>
                   </Link>
                 </div>
               </TooltipTrigger>
