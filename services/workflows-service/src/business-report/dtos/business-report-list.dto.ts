@@ -5,6 +5,7 @@ import { IsArray, IsOptional, IsString } from 'class-validator';
 import { PageDto } from '@/common/dto';
 import {
   MERCHANT_REPORT_RISK_LEVELS,
+  MERCHANT_REPORT_RISK_LEVELS_MAP,
   MERCHANT_REPORT_STATUSES_MAP,
   MERCHANT_REPORT_TYPES_MAP,
   type MerchantReportType,
@@ -72,10 +73,10 @@ export const ListBusinessReportsSchema = z.object({
   riskLevels: z
     .array(
       z.enum([
-        MERCHANT_REPORT_RISK_LEVELS.low,
-        MERCHANT_REPORT_RISK_LEVELS.medium,
-        MERCHANT_REPORT_RISK_LEVELS.high,
-        MERCHANT_REPORT_RISK_LEVELS.critical,
+        MERCHANT_REPORT_RISK_LEVELS_MAP.low,
+        MERCHANT_REPORT_RISK_LEVELS_MAP.medium,
+        MERCHANT_REPORT_RISK_LEVELS_MAP.high,
+        MERCHANT_REPORT_RISK_LEVELS_MAP.critical,
       ]),
     )
     .optional(),
