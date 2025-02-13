@@ -1,33 +1,30 @@
 import React, { ComponentProps, FunctionComponent } from 'react';
 import { RiskIndicator } from '@/components/molecules/RiskIndicator/RiskIndicator';
 import { Card, CardContent, CardHeader } from '@/components/atoms';
+import { RiskIndicatorSchema } from '@ballerine/common';
+import { z } from 'zod';
 
 export const RiskIndicatorsSummary: FunctionComponent<{
-  riskIndicators: Array<{
+  sections: ReadonlyArray<{
     title: string;
     search: string;
-    violations: Array<{
-      label: string;
-      severity: string;
-    }> | null;
+    riskIndicators: z.infer<typeof RiskIndicatorSchema>[] | null;
   }>;
   Link: ComponentProps<typeof RiskIndicator>['Link'];
-}> = ({ riskIndicators, Link }) => {
+}> = ({ sections, Link }) => {
   return (
     <Card className={'col-span-full'}>
       <CardHeader className={'pt-4 font-bold'}>Risk Indicators</CardHeader>
       <CardContent className={'grid grid-cols-2 gap-4 xl:grid-cols-3'}>
-        {!!riskIndicators?.length &&
-          riskIndicators?.map(riskIndicator => (
-            <RiskIndicator
-              key={riskIndicator.title}
-              title={riskIndicator.title}
-              search={riskIndicator.search}
-              violations={riskIndicator.violations}
-              Link={Link}
-            />
-          ))}
-        {!riskIndicators?.length && <p>No risk indicators detected.</p>}
+        {sections.map(section => (
+          <RiskIndicator
+            key={section.title}
+            title={section.title}
+            search={section.search}
+            riskIndicators={section.riskIndicators}
+            Link={Link}
+          />
+        ))}
       </CardContent>
     </Card>
   );

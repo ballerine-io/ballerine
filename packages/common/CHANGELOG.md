@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.71
+
+### Patch Changes
+
+- Uses the new report shape
+
 ## 0.9.70
 
 ### Patch Changes

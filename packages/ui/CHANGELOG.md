@@ -1,5 +1,13 @@
 # @ballerine/ui
 
+## 0.5.75
+
+### Patch Changes
+
+- Uses the new report shape
+- Updated dependencies
+  - @ballerine/common@0.9.71
+
 ## 0.5.74
 
 ### Patch Changes
