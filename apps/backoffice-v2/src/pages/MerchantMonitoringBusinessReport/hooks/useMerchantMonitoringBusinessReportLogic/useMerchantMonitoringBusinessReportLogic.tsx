@@ -19,6 +19,7 @@ import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessR
 import { isObject } from '@ballerine/common';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 
 const ZodDeboardingSchema = z
   .object({
@@ -65,6 +66,7 @@ const deboardingReasonOptions = [
 
 export const useMerchantMonitoringBusinessReportLogic = () => {
   const { businessReportId } = useParams();
+  const { data: customer } = useCustomerQuery();
   const { data: businessReport, isFetching: isFetchingBusinessReport } = useBusinessReportByIdQuery(
     { id: businessReportId ?? '' },
   );
@@ -214,5 +216,6 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     deboardingReasonOptions,
     isFetchingBusinessReport,
     locale,
+    isDemoAccount: customer?.config?.isDemo || false,
   };
 };

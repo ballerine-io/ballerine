@@ -14,6 +14,7 @@ import {
   Skeleton,
   TextArea,
   TextWithNAFallback,
+  ContentTooltip,
 } from '@ballerine/ui';
 import dayjs from 'dayjs';
 import { ArrowLeft, ChevronLeft, FileQuestion } from 'lucide-react';
@@ -101,6 +102,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     deboardingReasonOptions,
     isFetchingBusinessReport,
     locale,
+    isDemoAccount,
   } = useMerchantMonitoringBusinessReportLogic();
 
   // User should never really get in here, unless he manually sets the id in the URL.
@@ -198,6 +200,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
                     }
                     open={isDeboardModalOpen}
                     onOpenChange={setIsDeboardModalOpen}
+                    disabled={isDemoAccount}
                   >
                     <DialogHeader>
                       <DialogTitle>Confirm Deboarding</DialogTitle>
@@ -268,25 +271,58 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
                       </form>
                     </Form>
                   </DialogDropdownItem>
-                ) : (
-                  <Button
-                    onClick={() => {
-                      if (!businessReport?.merchantId) {
-                        throw new Error('Merchant ID is missing');
-                      }
-
-                      turnOngoingMonitoringOn(businessReport.merchantId, {
-                        onSuccess: () => {
-                          setIsDeboardModalOpen(false);
-                          setIsDropdownOpen(false);
-                        },
-                      });
+                ) : isDemoAccount ? (
+                  <ContentTooltip
+                    props={{
+                      tooltipTrigger: {
+                        className: '!px-0 !py-0',
+                      },
+                      tooltipContent: {
+                        align: 'center',
+                      },
                     }}
-                    variant={'ghost'}
-                    className="justify-start"
+                    description={
+                      <p>
+                        This feature is not available for trial accounts.
+                        <br />
+                        Talk to us to get full access.
+                      </p>
+                    }
                   >
-                    Turn Monitoring On
-                  </Button>
+                    <DropdownMenuItem className="p-0">
+                      <Button
+                        onClick={() => {
+                          return;
+                        }}
+                        variant={'ghost'}
+                        className="w-full justify-start"
+                        disabled={true}
+                      >
+                        Turn Monitoring On
+                      </Button>
+                    </DropdownMenuItem>
+                  </ContentTooltip>
+                ) : (
+                  <DropdownMenuItem>
+                    <Button
+                      onClick={() => {
+                        if (!businessReport?.merchantId) {
+                          throw new Error('Merchant ID is missing');
+                        }
+
+                        turnOngoingMonitoringOn(businessReport.merchantId, {
+                          onSuccess: () => {
+                            setIsDeboardModalOpen(false);
+                            setIsDropdownOpen(false);
+                          },
+                        });
+                      }}
+                      variant={'ghost'}
+                      className="justify-start"
+                    >
+                      Turn Monitoring On
+                    </Button>
+                  </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
             </DropdownMenu>

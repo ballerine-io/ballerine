@@ -21,6 +21,7 @@ import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provi
 import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
 import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
+import { ContentTooltip } from '@ballerine/ui';
 import { t } from 'i18next';
 import { MultiSelect } from '@/common/components/atoms/MultiSelect/MultiSelect';
 import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
@@ -83,16 +84,23 @@ export const MerchantMonitoring: FunctionComponent = () => {
                         'flex items-center justify-start gap-2 font-semibold aria-disabled:pointer-events-none aria-disabled:opacity-50',
                     })}
                     to={`/${locale}/merchant-monitoring/upload-multiple-merchants`}
-                    aria-disabled={!createBusinessReportBatch?.enabled}
+                    aria-disabled={!createBusinessReportBatch?.enabled || isDemoAccount}
                   >
                     <Table2 />
                     <span>Upload Multiple Merchants</span>
                   </Link>
                 </div>
               </TooltipTrigger>
-              {!createBusinessReportBatch?.enabled && (
+              {!createBusinessReportBatch?.enabled && !isDemoAccount && (
                 <TooltipContent side={'left'} align={'start'}>
                   {t('business_report_creation.is_disabled')}
+                </TooltipContent>
+              )}
+              {isDemoAccount && (
+                <TooltipContent side={'left'} align={'start'}>
+                  This feature is not available for trial accounts.
+                  <br />
+                  Talk to us to get full access.
                 </TooltipContent>
               )}
             </Tooltip>
