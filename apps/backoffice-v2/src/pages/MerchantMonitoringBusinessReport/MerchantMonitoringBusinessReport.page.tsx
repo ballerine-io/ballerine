@@ -381,7 +381,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
       <Notes
         notes={notes ?? []}
         noteData={{
-          entityId: businessReport?.merchantId || '',
+          entityId: businessReport?.business.id || '',
           entityType: `Business`,
           noteableId: businessReport?.id || '',
           noteableType: `Report`,
