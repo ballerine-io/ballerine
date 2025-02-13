@@ -8,7 +8,7 @@ import {
   MERCHANT_REPORT_STATUSES_MAP,
   MERCHANT_REPORT_TYPES_MAP,
   type MerchantReportType,
-} from '@/business-report/constants';
+} from '@ballerine/common';
 import { BusinessReportDto } from '@/business-report/dtos/business-report.dto';
 
 export class BusinessReportListRequestParamDto {

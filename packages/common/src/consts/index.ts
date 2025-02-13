@@ -176,6 +176,7 @@ export const MERCHANT_REPORT_STATUSES = [
   'in-progress',
   'completed',
   'quality-control',
+  'in-review',
   'failed',
 ] as const;
 

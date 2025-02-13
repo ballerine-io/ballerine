@@ -1,5 +1,13 @@
 # @ballerine/ui
 
+## 0.5.76
+
+### Patch Changes
+
+- used only one constant from common
+- Updated dependencies
+  - @ballerine/common@0.9.74
+
 ## 0.5.75
 
 ### Patch Changes
