@@ -3,15 +3,8 @@ import { z } from 'zod';
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import { env } from '@/env';
 import { CountryCode } from '@/common/countries';
-import {
-  MERCHANT_REPORT_STATUSES,
-  MERCHANT_REPORT_TYPES,
-  MERCHANT_REPORT_VERSIONS,
-  MerchantReportType,
-  MerchantReportVersion,
-} from '@/business-report/constants';
+import { MerchantReportType, MerchantReportVersion, ReportSchema } from '@ballerine/common';
 import * as errors from '@/errors';
-import { ReportSchema } from '@ballerine/common';
 
 const CreateReportResponseSchema = z.object({});
 

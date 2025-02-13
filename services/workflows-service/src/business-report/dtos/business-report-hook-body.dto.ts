@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsString, MinLength } from 'class-validator';
-import { MERCHANT_REPORT_TYPES, type MerchantReportType } from '@/business-report/constants';
+import { MERCHANT_REPORT_TYPES, type MerchantReportType } from '@ballerine/common';
 
 export class BusinessReportHookBodyDto {
   @ApiProperty({

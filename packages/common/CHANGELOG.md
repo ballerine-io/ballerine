@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.74
+
+### Patch Changes
+
+- used only one constant from common
+
 ## 0.9.73
 
 ### Patch Changes
