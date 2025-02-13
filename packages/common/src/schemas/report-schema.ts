@@ -74,7 +74,7 @@ export const ReportSchema = z
     publishedAt: z
       .string()
       .datetime()
-      .nullable()
+      .nullish()
       .transform(value => (value ? new Date(value) : null)),
     status: z.enum([MERCHANT_REPORT_STATUSES[0]!, ...MERCHANT_REPORT_STATUSES.slice(1)]),
     monitoringStatus: z.boolean().nullish(),
