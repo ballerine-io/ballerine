@@ -271,11 +271,11 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
                 ) : (
                   <Button
                     onClick={() => {
-                      if (!businessReport?.merchantId) {
-                        throw new Error('Merchant ID is missing');
+                      if (!businessReport?.business.id) {
+                        throw new Error('Business ID is missing');
                       }
 
-                      turnOngoingMonitoringOn(businessReport.merchantId, {
+                      turnOngoingMonitoringOn(businessReport.business.id, {
                         onSuccess: () => {
                           setIsDeboardModalOpen(false);
                           setIsDropdownOpen(false);
