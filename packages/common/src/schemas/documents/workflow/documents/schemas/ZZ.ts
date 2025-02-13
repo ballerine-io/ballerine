@@ -238,6 +238,14 @@ export const getUniversalDocuments = (): TDocument[] => {
       }),
     },
     {
+      category: 'pci-certification',
+      type: 'general-document',
+      issuer: { country: 'ZZ' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({}),
+    },
+    {
       category: 'general_documents',
       type: 'supplementary_document',
       issuer: { country: 'ZZ' },
