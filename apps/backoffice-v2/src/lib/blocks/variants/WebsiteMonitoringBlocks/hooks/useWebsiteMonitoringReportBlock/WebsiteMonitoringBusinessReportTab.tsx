@@ -9,6 +9,7 @@ import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
 import { useWebsiteMonitoringBusinessReportTab } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/hooks/useWebsiteMonitoringBusinessReportTab/useWebsiteMonitoringBusinessReportTab';
 import { BusinessReportSummary } from '@ballerine/ui';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
+import { MERCHANT_REPORT_TYPES_MAP } from '@ballerine/common';
 
 export const WebsiteMonitoringBusinessReportTab = ({
   businessReport,
@@ -18,14 +19,9 @@ export const WebsiteMonitoringBusinessReportTab = ({
   const {
     activeMonitoringTab,
     riskIndicators,
-    riskLevels,
-    riskScore,
     tabs,
-    summary,
-    ongoingMonitoringSummary,
     getUpdatedSearchParamsWithActiveMonitoringTab,
     search,
-    homepageScreenshotUrl,
   } = useWebsiteMonitoringBusinessReportTab({
     businessReport,
   });
@@ -33,12 +29,11 @@ export const WebsiteMonitoringBusinessReportTab = ({
   return (
     <div className={'grid gap-y-4'}>
       <BusinessReportSummary
-        summary={summary}
-        ongoingMonitoringSummary={ongoingMonitoringSummary}
-        riskLevels={riskLevels}
+        summary={businessReport.data!.summary!}
+        ongoingMonitoringSummary={businessReport.data!.ongoingMonitoringSummary!}
         riskIndicators={riskIndicators}
-        riskScore={riskScore}
-        homepageScreenshotUrl={homepageScreenshotUrl}
+        riskScore={businessReport.data!.riskScore!}
+        homepageScreenshotUrl={businessReport.data!.homepageScreenshotUrl}
         Link={RiskIndicatorLink}
       />
       <Tabs defaultValue={activeMonitoringTab} className="w-full" key={activeMonitoringTab}>

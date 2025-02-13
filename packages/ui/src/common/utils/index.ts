@@ -4,3 +4,5 @@ export * from './check-is-booleanish-record';
 export * from './check-is-date';
 export * from './ctw';
 export * from './format-date';
+export * from './to-risk-indicators';
+export * from './get-unique-risk-indicators';

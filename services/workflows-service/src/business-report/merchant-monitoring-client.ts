@@ -11,51 +11,9 @@ import {
   MerchantReportVersion,
 } from '@/business-report/constants';
 import * as errors from '@/errors';
+import { ReportSchema } from '@ballerine/common';
 
 const CreateReportResponseSchema = z.object({});
-
-const ReportSchema = z.object({
-  id: z.string(),
-  websiteId: z.string(),
-  merchantId: z.string(),
-  reportType: z.enum([MERCHANT_REPORT_TYPES[0]!, ...MERCHANT_REPORT_TYPES.slice(1)]),
-  workflowVersion: z.enum([MERCHANT_REPORT_VERSIONS[0]!, ...MERCHANT_REPORT_VERSIONS.slice(1)]),
-  parentCompanyName: z.string().nullable(),
-  status: z.enum([MERCHANT_REPORT_STATUSES[0]!, ...MERCHANT_REPORT_STATUSES.slice(1)]),
-  metadata: z
-    .object({
-      workflowRuntimeDataId: z.string().optional(),
-    })
-    .nullable(),
-  riskScore: z.number().nullable(),
-  isAlert: z.boolean().nullable(),
-  companyName: z.string().nullish(),
-  website: z.object({
-    id: z.string(),
-    url: z.string().url(),
-    createdAt: z
-      .string()
-      .datetime()
-      .transform(value => new Date(value)),
-    updatedAt: z
-      .string()
-      .datetime()
-      .transform(value => new Date(value)),
-  }),
-  createdAt: z
-    .string()
-    .datetime()
-    .transform(value => new Date(value)),
-  updatedAt: z
-    .string()
-    .datetime()
-    .transform(value => new Date(value)),
-  displayDate: z
-    .string()
-    .datetime()
-    .transform(value => new Date(value)),
-  data: z.record(z.string(), z.unknown()).nullish(),
-});
 
 const FindManyReportsResponseSchema = z.object({
   totalItems: z.number(),

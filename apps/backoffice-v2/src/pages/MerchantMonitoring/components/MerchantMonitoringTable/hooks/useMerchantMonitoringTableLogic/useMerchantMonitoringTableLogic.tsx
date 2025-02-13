@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
-import { MERCHANT_REPORT_STATUSES_MAP } from '@/domains/business-reports/constants';
+import { MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
 import { TBusinessReports } from '@/domains/business-reports/fetchers';
 
 export const useMerchantMonitoringTableLogic = () => {
