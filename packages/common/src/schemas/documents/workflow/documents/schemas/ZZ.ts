@@ -123,6 +123,19 @@ export const getUniversalDocuments = (): TDocument[] => {
       }),
     },
     {
+      category: 'financial_information',
+      type: 'transaction_data_last_12_months',
+      issuer: { country: 'ZZ' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.Optional(Type.String()),
+        from: Type.Optional(Type.String({ format: 'date' })),
+        to: Type.Optional(Type.String({ format: 'date' })),
+        totalTransactions: Type.Optional(Type.Number()),
+      }),
+    },
+    {
       category: 'proof_of_location',
       type: 'front_door_photo',
       issuer: { country: 'ZZ' },
