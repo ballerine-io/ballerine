@@ -42,12 +42,6 @@ spec:
               envFrom:
               {{- toYaml . | nindent 14 }}
               {{- end }}
-              livenessProbe:
-                {{- toYaml .Values.backoffice.livenessProbe | nindent 16 }}
-              readinessProbe:
-                {{- toYaml .Values.backoffice.readinessProbe | nindent 16 }}
-              startupProbe:
-                {{- toYaml .Values.backoffice.startupProbe | nindent 16 }}
             {{- if .Values.backoffice.image.pullSecrets}}
             imagePullSecrets:
               - name: {{ .Values.backoffice.image.pullSecrets }}

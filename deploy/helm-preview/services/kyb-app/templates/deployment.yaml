@@ -42,12 +42,6 @@ spec:
               envFrom:
               {{- toYaml . | nindent 14 }}
               {{- end }}
-              livenessProbe:
-                {{- toYaml .Values.kybapp.livenessProbe | nindent 16 }}
-              readinessProbe:
-                {{- toYaml .Values.kybapp.readinessProbe | nindent 16 }}
-              startupProbe:
-                {{- toYaml .Values.kybapp.startupProbe | nindent 16 }}
             {{- if .Values.kybapp.image.pullSecrets}}
             imagePullSecrets:
               - name: {{ .Values.kybapp.image.pullSecrets }}
