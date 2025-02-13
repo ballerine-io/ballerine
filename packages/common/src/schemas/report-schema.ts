@@ -83,6 +83,7 @@ export const ReportSchema = z
       id: z.string(),
       unsubscribedMonitoringAt: z.string().datetime().nullable(),
     }),
+    metadata: z.record(z.string(), z.unknown()).nullish(),
     companyName: z.string().nullish(),
     riskLevel: z.enum(MERCHANT_REPORT_RISK_LEVELS).nullish(),
     isAlert: z.boolean().nullish(),
