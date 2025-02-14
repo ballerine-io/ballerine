@@ -38,7 +38,7 @@ import { RuleEngineService } from '@/rule-engine/rule-engine.service';
 import { NotionService } from '@/notion/notion.service';
 import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
-import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
+import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 
 describe('WorkflowService', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
