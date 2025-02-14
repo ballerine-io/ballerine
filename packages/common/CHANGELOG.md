@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.75
+
+### Patch Changes
+
+- Added ZZ Documents
+
 ## 0.9.74
 
 ### Patch Changes
