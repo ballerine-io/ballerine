@@ -58,7 +58,7 @@ export const ExpandedTransactionDetails = ({ transaction }: IExpandedTransaction
           </div>
           <TextWithNAFallback>{`${dayjs(transaction.transactionDate).format(
             'MMM DD, YYYY',
-          )} ${dayjs(transaction.transactionDate).format('hh:mm')}`}</TextWithNAFallback>
+          )} ${dayjs(transaction.transactionDate).local().format('hh:mm')}`}</TextWithNAFallback>
           <TextWithNAFallback>{titleCase(transaction.transactionStatus ?? '')}</TextWithNAFallback>
           <TextWithNAFallback>{titleCase(transaction.transactionType ?? '')}</TextWithNAFallback>
           <TextWithNAFallback>

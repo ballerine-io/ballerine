@@ -15,10 +15,10 @@ import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/Indic
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import { ctw } from '@/common/utils/ctw/ctw';
 import {
+  getSeverityFromRiskScore,
   MERCHANT_REPORT_STATUSES_MAP,
   MERCHANT_REPORT_TYPES_MAP,
-} from '@/domains/business-reports/constants';
-import { getSeverityFromRiskScore } from '@ballerine/common';
+} from '@ballerine/common';
 import {
   Badge,
   CheckCircle,
@@ -65,25 +65,18 @@ export const columns = [
     },
     header: 'Website',
   }),
-  columnHelper.accessor('riskScore', {
+  columnHelper.accessor('riskLevel', {
     cell: info => {
-      const riskScore = info.getValue();
-      const severity = getSeverityFromRiskScore(riskScore);
+      const riskLevel = info.getValue();
 
       return (
         <div className="flex items-center gap-2">
-          {!riskScore && riskScore !== 0 && <TextWithNAFallback className={'py-0.5'} />}
-          {(riskScore || riskScore === 0) && (
-            <Badge
-              className={ctw(
-                severityToClassName[
-                  (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
-                ],
-                'w-20 py-0.5 font-bold',
-              )}
-            >
-              {titleCase(severity ?? '')}
+          {riskLevel ? (
+            <Badge className={ctw(severityToClassName[riskLevel], 'w-20 py-0.5 font-bold')}>
+              {titleCase(riskLevel)}
             </Badge>
+          ) : (
+            <TextWithNAFallback className={'py-0.5'} />
           )}
         </div>
       );
@@ -109,7 +102,7 @@ export const columns = [
               size={18}
               className={`stroke-background`}
               containerProps={{
-                className: 'me-3 bg-success mt-px',
+                className: 'bg-success',
               }}
             />
           ) : (

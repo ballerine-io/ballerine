@@ -1,0 +1,101 @@
+---
+description: Workflow Service Rules
+globs: ["services/workflows-service/**/*.{ts}"]
+---
+### Code Organization & Structure
+
+1. All service-related code must be organized in feature modules (e.g., workflow, alert, transaction)
+2. Each feature module should contain separate files for:
+   - Service implementation (.service.ts)
+   - Controller implementation (.controller.ts)
+   - Integration tests (.intg.test.ts)
+   - Unit tests (.unit.test.ts)
+   - DTOs and types (.types.ts)
+
+### Import Guidelines
+
+1. Imports must be organized in the following order with a blank line between groups:
+   - Node.js built-in modules
+   - External npm packages
+   - Internal modules (using @/ alias)
+   - Relative imports
+2. Circular dependencies are strictly prohibited
+3. Use the @/ alias for internal imports instead of relative paths
+4. Only import what is needed using named imports
+
+### TypeScript Usage
+
+1. Always define explicit return types for functions and methods
+2. Use interfaces for object types rather than type aliases where possible
+3. Avoid using the `any` type - use `unknown` if type is truly uncertain
+4. Use type assertions with 'as' syntax rather than angle brackets
+5. Make class member accessibility explicit (public/private/protected)
+6. Use TypeScript "as const" for fixed sets of values
+
+### Service Implementation
+
+1. Services must use the @Injectable() decorator
+2. Service names must end with 'Service' suffix
+3. Dependency injection should be done through constructor parameters
+4. Services should handle their own error cases using custom exception classes
+5. Use dependency injection tokens in SCREAMING_SNAKE_CASE format
+
+### Testing Standards
+
+1. Test files must follow the naming pattern: *.test.ts for unit tests and *.intg.test.ts for integration tests
+2. Each test suite should have a clear describe block indicating the module/function being tested
+3. Use 'it' rather than 'test' for test cases
+4. Mock external dependencies in unit tests
+5. Integration tests should use test databases/containers
+6. Test file location should mirror the source file structure
+7. Use AAA pattern test structure
+
+### Error Handling
+
+1. Use custom exception classes extending from base NestJS exceptions
+2. Error messages should be descriptive and consistent
+3. Always include relevant context in error objects
+4. Log errors appropriately using the logging service
+5. Handle async errors using try/catch blocks
+
+### Documentation
+
+1. Include examples in documentation for complex operations
+2. Keep documentation up to date with code changes
+
+### Database Operations
+
+1. Use the PrismaService for database operations
+2. Wrap database operations in transactions when multiple operations need to be atomic
+3. Use proper error handling for database operations
+4. Include proper database indexes for frequently queried fields
+5. Always use scope service or add a filter on projectIds in queries
+
+### API Design
+
+1. Use appropriate HTTP methods for operations (GET, POST, PUT, DELETE)
+2. Use meaningful route paths that reflect the resource hierarchy
+3. Include proper Swagger documentation for all endpoints
+4. Return consistent response structures
+
+### Logging
+
+1. Use the provided logging service rather than console.log
+2. Include appropriate context with all log messages
+3. Use proper log levels (debug, info, warn, error)
+4. Include request IDs in logs for traceability
+
+### Configuration Management
+
+1. Use environment variables for configuration
+2. Validate environment variables at startup
+3. Use proper typing for configuration objects
+4. Keep sensitive information in secrets management
+
+### Performance Considerations
+
+1. Implement pagination for list endpoints
+2. Use proper indexing for database queries
+3. Implement caching where appropriate
+4. Handle large datasets efficiently
+

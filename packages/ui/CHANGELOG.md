@@ -1,5 +1,27 @@
 # @ballerine/ui
 
+## 0.5.77
+
+### Patch Changes
+
+- RiskIndicatorsSummary default value
+
+## 0.5.76
+
+### Patch Changes
+
+- used only one constant from common
+- Updated dependencies
+  - @ballerine/common@0.9.74
+
+## 0.5.75
+
+### Patch Changes
+
+- Uses the new report shape
+- Updated dependencies
+  - @ballerine/common@0.9.71
+
 ## 0.5.74
 
 ### Patch Changes

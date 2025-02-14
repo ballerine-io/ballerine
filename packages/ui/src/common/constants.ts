@@ -1,24 +1,17 @@
-import { SeverityType } from '@ballerine/common';
-import { ComponentProps } from 'react';
-import { Badge } from '@/components';
+import { MERCHANT_REPORT_RISK_LEVELS_MAP, MerchantReportRiskLevel } from '@ballerine/common';
 
-type SeverityToClassName = Record<
-  Uppercase<SeverityType> | 'DEFAULT',
-  ComponentProps<typeof Badge>['className']
->;
+type SeverityToClassName = Record<MerchantReportRiskLevel, string>;
 
 export const severityToTextClassName = {
-  HIGH: 'text-destructive',
-  MEDIUM: 'text-orange-300',
-  LOW: 'text-success',
-  CRITICAL: 'text-background',
-  DEFAULT: 'text-background',
+  [MERCHANT_REPORT_RISK_LEVELS_MAP.high]: 'text-destructive',
+  [MERCHANT_REPORT_RISK_LEVELS_MAP.medium]: 'text-orange-300',
+  [MERCHANT_REPORT_RISK_LEVELS_MAP.low]: 'text-success',
+  [MERCHANT_REPORT_RISK_LEVELS_MAP.critical]: 'text-background',
 } as const satisfies SeverityToClassName;
 
 export const severityToClassName = {
-  HIGH: `bg-destructive/20 ${severityToTextClassName.HIGH}`,
-  MEDIUM: `bg-orange-100 ${severityToTextClassName.MEDIUM}`,
-  LOW: `bg-success/20 ${severityToTextClassName.LOW}`,
-  CRITICAL: `bg-destructive ${severityToTextClassName.CRITICAL}`,
-  DEFAULT: `bg-foreground ${severityToTextClassName.DEFAULT}`,
+  [MERCHANT_REPORT_RISK_LEVELS_MAP.high]: `bg-destructive/20 ${severityToTextClassName.high}`,
+  [MERCHANT_REPORT_RISK_LEVELS_MAP.medium]: `bg-orange-100 ${severityToTextClassName.medium}`,
+  [MERCHANT_REPORT_RISK_LEVELS_MAP.low]: `bg-success/20 ${severityToTextClassName.low}`,
+  [MERCHANT_REPORT_RISK_LEVELS_MAP.critical]: `bg-destructive ${severityToTextClassName.critical}`,
 } as const satisfies SeverityToClassName;
