@@ -15,7 +15,7 @@ export const GetFullAccessCard = () => {
   if (
     env.VITE_ENVIRONMENT_NAME === 'production' ||
     isLoading ||
-    !customer?.config?.showFullAccessPopup
+    !customer?.config?.demoAccessDetails?.showFullAccessPopup
   ) {
     return null;
   }
