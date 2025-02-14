@@ -1,9 +1,5 @@
 import { ctw } from '@/common';
 import { buttonVariants, Card, Image, TextWithNAFallback } from '@/components';
-import {
-  toAdsImages,
-  toSocialMediaPresence,
-} from '@/components/templates/report/adapters/report-adapter';
 import { AdsProviders } from '@/components/templates/report/constants';
 import {
   BanIcon,
@@ -19,26 +15,31 @@ import {
   ThumbsUpIcon,
   UsersIcon,
 } from 'lucide-react';
-import { FunctionComponent, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { capitalize, toLowerCase } from 'string-ts';
 import { z } from 'zod';
 import { FacebookIcon } from './icons/FacebookIcon';
 import { InstagramIcon } from './icons/InstagramIcon';
 import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
+import { FacebookPageSchema, InstagramPageSchema } from '@ballerine/common';
 
 const socialMediaMapper: {
   facebook: {
     icon: ReactNode;
-    fields: Record<
-      Exclude<keyof AdsAndSocialMediaProps['mediaPresence']['facebook'], 'page' | 'id'>,
-      { icon: ReactNode; label: string }
+    fields: Partial<
+      Record<
+        keyof z.infer<typeof FacebookPageSchema>,
+        { icon: ReactNode; label: string; toDisplay?: (value: unknown) => string }
+      >
     >;
   };
   instagram: {
     icon: ReactNode;
-    fields: Record<
-      Exclude<keyof AdsAndSocialMediaProps['mediaPresence']['instagram'], 'page' | 'userName'>,
-      { icon: ReactNode; label: string }
+    fields: Partial<
+      Record<
+        keyof z.infer<typeof InstagramPageSchema>,
+        { icon: ReactNode; label: string; toDisplay?: (value: unknown) => string }
+      >
     >;
   };
 } = {
@@ -59,11 +60,28 @@ const socialMediaMapper: {
   instagram: {
     icon: <InstagramIcon className="h-8 w-8" />,
     fields: {
-      isBusinessAccount: {
+      isBusinessProfile: {
         icon: <BriefcaseIcon className="h-5 w-5 text-gray-500" />,
         label: 'Business Profile',
+        toDisplay: value => {
+          if (typeof value !== 'boolean') {
+            return 'N/A';
+          }
+
+          return value ? 'Yes' : 'No';
+        },
       },
-      isVerified: { icon: <CheckIcon className="h-5 w-5 text-gray-500" />, label: 'Verified' },
+      isVerified: {
+        icon: <CheckIcon className="h-5 w-5 text-gray-500" />,
+        label: 'Verified',
+        toDisplay: value => {
+          if (typeof value !== 'boolean') {
+            return 'N/A';
+          }
+
+          return value ? 'Yes' : 'No';
+        },
+      },
       followers: { icon: <UsersIcon className="h-5 w-5 text-gray-500" />, label: 'Followers' },
       categories: {
         icon: <TagIcon className="h-5 w-5 text-gray-500" />,
@@ -84,20 +102,9 @@ const cleanLink = (link: string) => {
   return `${hostname.startsWith('www.') ? hostname.slice(4) : hostname}${pathname}`;
 };
 
-// TODO: this component can be further decoupled to re-use for social media data and ads data.
-// Also empty state can be decoupled.
-type AdsAndSocialMediaProps = {
-  mediaPresence: ReturnType<typeof toSocialMediaPresence>;
-  adsImages: ReturnType<typeof toAdsImages>;
-
-  violations?: Array<{ label: string; severity: string }>;
-  relatedAdsSummary?: string;
-  relatedAdsImages?: Array<{ src: string; link: string }>;
-};
-export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
-  mediaPresence,
-  adsImages,
-  relatedAdsImages,
+export const AdsAndSocialMedia = (pages: {
+  facebook: z.infer<typeof FacebookPageSchema> | null;
+  instagram: z.infer<typeof InstagramPageSchema> | null;
 }) => (
   <div className="space-y-6 px-4">
     <div>
@@ -117,122 +124,113 @@ export const AdsAndSocialMedia: FunctionComponent<AdsAndSocialMediaProps> = ({
       <h3 className="mb-2 text-base font-bold">Social Media</h3>
 
       <div className="flex w-full flex-col gap-4">
-        {AdsProviders.map(toLowerCase).map(provider => {
-          const { page, ...rest } = mediaPresence[provider] ?? {};
-          const { src, link } = adsImages[provider] ?? {};
+        {AdsProviders.map(provider => {
+          const page = pages[provider];
 
-          // || because empty string is not a valid case
-          const idValue = ('id' in rest ? rest.id : rest.userName) || null;
+          if (!page) {
+            return (
+              <Card key={provider} className={ctw('shadow-l w-full p-4 opacity-60')}>
+                <div className="flex flex-row items-center gap-2 font-semibold">
+                  {socialMediaMapper[provider].icon}
+                  <h4 className="text-xl">{capitalize(provider)}</h4>
+                </div>
+                <div className="my-4 flex items-center gap-2 text-gray-400">
+                  <BanIcon className="h-5 w-5" />
+                  <span className="text-sm">No {capitalize(provider)} profile detected.</span>
+                </div>
+              </Card>
+            );
+          }
+
+          const { screenshotUrl, url, ...rest } = page;
+
+          const idValue = 'username' in rest ? rest.username : rest.id;
 
           return (
-            <Card key={provider} className={ctw('shadow-l w-full p-4', !page && 'opacity-60')}>
+            <Card key={provider} className={ctw('shadow-l w-full p-4')}>
               <div className="flex flex-row items-center gap-2 font-semibold">
                 {socialMediaMapper[provider].icon}
                 <h4 className="text-xl">{capitalize(provider)}</h4>
               </div>
 
-              {page ? (
-                <div className="flex justify-between gap-4">
-                  <div className="w-2/3 min-w-0 grow-0">
-                    <div className="flex items-center">
-                      <LinkIcon className="h-5 w-5 text-gray-400" />
-                      <a
-                        className={ctw(
-                          buttonVariants({ variant: 'browserLink' }),
-                          'ml-2 p-0 text-base',
-                        )}
-                        href={link}
-                      >
-                        {cleanLink(link)}
-                      </a>
+              <div className="flex justify-between gap-4">
+                <div className="w-2/3 min-w-0 grow-0">
+                  <div className="flex items-center">
+                    <LinkIcon className="h-5 w-5 text-gray-400" />
+                    <a
+                      className={ctw(
+                        buttonVariants({ variant: 'browserLink' }),
+                        'ml-2 p-0 text-base',
+                      )}
+                      href={url}
+                    >
+                      {cleanLink(url)}
+                    </a>
+                  </div>
+                  {idValue !== null && (
+                    <span className="text-sm text-gray-400">
+                      {'username' in rest ? `@${idValue}` : `ID ${idValue}`}
+                    </span>
+                  )}
+
+                  <div className="mt-8 flex gap-6">
+                    <div className="flex flex-col gap-4">
+                      {Object.entries(socialMediaMapper[provider].fields).map(
+                        ([, { icon, label }]) => (
+                          <div key={label} className="flex items-center gap-4 whitespace-nowrap">
+                            {icon}
+                            <span className="font-semibold">{label}</span>
+                          </div>
+                        ),
+                      )}
                     </div>
-                    {idValue !== null && (
-                      <span className="text-sm text-gray-400">
-                        {'id' in rest ? `ID ${idValue}` : `@${idValue}`}
-                      </span>
-                    )}
 
-                    <div className="mt-8 flex gap-6">
-                      <div className="flex flex-col gap-4">
-                        {Object.entries(socialMediaMapper[provider].fields).map(
-                          ([, { icon, label }]) => (
-                            <div key={label} className="flex items-center gap-4 whitespace-nowrap">
-                              {icon}
-                              <span className="font-semibold">{label}</span>
-                            </div>
-                          ),
-                        )}
-                      </div>
+                    <div className="flex min-w-0 flex-col gap-4">
+                      {Object.entries(socialMediaMapper[provider].fields).map(
+                        ([field, { label, toDisplay }]) => {
+                          const value = rest[field as keyof typeof rest];
 
-                      <div className="flex min-w-0 flex-col gap-4">
-                        {Object.entries(socialMediaMapper[provider].fields).map(
-                          ([field, { label }]) => {
-                            const value = rest[field as keyof typeof rest];
-
-                            return (
-                              <TextWithNAFallback
-                                key={label}
-                                className={ctw(
-                                  'max-w-full overflow-hidden text-ellipsis',
-                                  !value && 'text-gray-400',
-                                  label !== 'Biography' && 'whitespace-nowrap',
-                                )}
-                              >
-                                {value}
-                              </TextWithNAFallback>
-                            );
-                          },
-                        )}
-                      </div>
+                          return (
+                            <TextWithNAFallback
+                              key={label}
+                              className={ctw(
+                                'max-w-full overflow-hidden text-ellipsis',
+                                !value && 'text-gray-400',
+                                label !== 'Biography' && 'whitespace-nowrap',
+                              )}
+                            >
+                              {toDisplay?.(value) ?? value}
+                            </TextWithNAFallback>
+                          );
+                        },
+                      )}
                     </div>
                   </div>
+                </div>
 
-                  <a
-                    className={buttonVariants({
-                      variant: 'link',
-                      className:
-                        'h-[unset] w-1/3 cursor-pointer !p-0 !text-[#14203D] underline decoration-[1.5px]',
-                    })}
-                    href={link}
-                  >
+                <a
+                  className={buttonVariants({
+                    variant: 'link',
+                    className:
+                      'h-[unset] w-1/3 cursor-pointer !p-0 !text-[#14203D] underline decoration-[1.5px]',
+                  })}
+                  href={url}
+                >
+                  {screenshotUrl && (
                     <Image
-                      key={src}
-                      src={src}
+                      key={screenshotUrl}
+                      src={screenshotUrl}
                       alt={`${capitalize(provider)} image`}
                       role="link"
                       className="h-auto max-h-96 w-auto"
                     />
-                  </a>
-                </div>
-              ) : (
-                <div className="my-4 flex items-center gap-2 text-gray-400">
-                  <BanIcon className="h-5 w-5" />
-                  <span className="text-sm">No {capitalize(provider)} profile detected.</span>
-                </div>
-              )}
+                  )}
+                </a>
+              </div>
             </Card>
           );
         })}
       </div>
     </div>
-
-    {/* <div>
-      <h3 className="mb-2 text-base font-bold">Ads</h3>
-      <Card
-        className={ctw(
-          'flex w-full justify-between p-4 shadow-lg',
-          relatedAdsImages && relatedAdsImages.length > 0 ? 'opacity-100' : 'opacity-60',
-        )}
-      >
-        {relatedAdsImages ? (
-          <>The ads should be displayed here</>
-        ) : (
-          <div className="flex items-center gap-2 text-gray-400">
-            <BanIcon className="h-5 w-5" />
-            <span className="text-sm">No ads detected.</span>
-          </div>
-        )}
-      </Card>
-    </div> */}
   </div>
 );

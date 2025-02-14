@@ -1,5 +1,35 @@
 # @ballerine/common
 
+## 0.9.75
+
+### Patch Changes
+
+- Added ZZ Documents
+
+## 0.9.74
+
+### Patch Changes
+
+- used only one constant from common
+
+## 0.9.73
+
+### Patch Changes
+
+- Fix ReportSchema
+
+## 0.9.72
+
+### Patch Changes
+
+- Update ReportSchema
+
+## 0.9.71
+
+### Patch Changes
+
+- Uses the new report shape
+
 ## 0.9.70
 
 ### Patch Changes
