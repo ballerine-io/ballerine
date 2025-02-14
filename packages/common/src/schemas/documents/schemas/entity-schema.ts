@@ -22,7 +22,7 @@ export const IndividualDataSchema = Type.Object({
 export const BusinessDataSchema = Type.Object({
   correlationId: Type.Optional(Type.Union([Type.String(), Type.Null()])),
   businessType: Type.Optional(Type.Union([Type.String(), Type.Null()])),
-  companyName: Type.String({ maxLength: 255 }),
+  companyName: Type.String({ minLength: 2, maxLength: 100 }),
   registrationNumber: Type.Optional(Type.Union([Type.String(), Type.Null()])),
   legalForm: Type.Optional(Type.Union([Type.String(), Type.Null()])),
   country: Type.Optional(
