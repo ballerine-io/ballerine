@@ -4,21 +4,19 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { useCreateBusinessReportMutation } from '@/domains/business-reports/hooks/mutations/useCreateBusinessReportMutation/useCreateBusinessReportMutation';
-import { useBusinessReportsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportsQuery/useBusinessReportsQuery';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import {
   CreateBusinessReportDialogInput,
   CreateBusinessReportDialogSchema,
 } from '../../../schemas';
+import dayjs from 'dayjs';
 
 export const useCreateMerchantReportDialogLogic = () => {
   const { data: customer } = useCustomerQuery();
-  const { data: businessReports } = useBusinessReportsQuery({});
 
-  const reportsLeft =
-    customer?.config?.maxBusinessReports && businessReports?.totalItems
-      ? customer.config.maxBusinessReports - businessReports?.totalItems
-      : 0;
+  const { totalReports, maxBusinessReports, expiresAt } = customer?.config?.demoAccessDetails ?? {};
+  const reportsLeft = maxBusinessReports && totalReports ? maxBusinessReports - totalReports : null;
+  const demoDaysLeft = expiresAt ? dayjs(expiresAt * 1000).diff(dayjs(), 'days') : null;
 
   const form = useForm({
     defaultValues: {
@@ -53,6 +51,7 @@ export const useCreateMerchantReportDialogLogic = () => {
     toggleOpen,
     showSuccess,
     reportsLeft,
+    demoDaysLeft,
     isSubmitting,
     onSubmit,
   };

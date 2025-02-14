@@ -10,9 +10,11 @@ import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { ApiKeyService } from '@/customer/api-key/api-key.service';
 import { ApiKeyRepository } from '@/customer/api-key/api-key.repository';
+import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 
 @Module({
   providers: [
+    MerchantMonitoringClient,
     WorkflowTokenRepository,
     WorkflowTokenService,
     TokenAuthGuard,
