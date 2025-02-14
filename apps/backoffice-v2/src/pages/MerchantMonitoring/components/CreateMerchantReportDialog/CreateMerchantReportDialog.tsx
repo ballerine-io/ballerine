@@ -13,19 +13,20 @@ import { FormItem } from '@/common/components/organisms/Form/Form.Item';
 import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
 import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
 import { useCreateMerchantReportDialogLogic } from './hooks/useCreateMerchantReportDialogLogic';
+import { BusinessReportsLeftCard } from '@/domains/business-reports/components/BusinessReportsLeftCard/BusinessReportsLeftCard';
 
 type CreateMerchantReportDialogProps = {
   children: React.ReactNode;
 };
 
 export const CreateMerchantReportDialog = ({ children }: CreateMerchantReportDialogProps) => {
-  const { form, open, toggleOpen, showSuccess, isSubmitting, onSubmit, reportsLeft } =
+  const { form, open, toggleOpen, showSuccess, isSubmitting, onSubmit, demoDaysLeft, reportsLeft } =
     useCreateMerchantReportDialogLogic();
 
   return (
     <Dialog open={open} onOpenChange={toggleOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="px-0">
+      <DialogContent className="px-0 sm:max-w-xl">
         <DialogHeader className="block font-medium sm:text-center">
           <h2 className={`text-2xl font-bold`}>Create a Web Presence Report</h2>
           <p>Try out Ballerine&apos;s Web Presence Report!</p>
@@ -38,6 +39,7 @@ export const CreateMerchantReportDialog = ({ children }: CreateMerchantReportDia
             form={form}
             onSubmit={onSubmit}
             isSubmitting={isSubmitting}
+            demoDaysLeft={demoDaysLeft}
             reportsLeft={reportsLeft}
           />
         )}
@@ -67,30 +69,24 @@ const CreateMerchantReportDialogSuccessContent = () => {
 
 type CreateMerchantReportDialogFormContentProps = Pick<
   ReturnType<typeof useCreateMerchantReportDialogLogic>,
-  'form' | 'onSubmit' | 'isSubmitting' | 'reportsLeft'
+  'form' | 'onSubmit' | 'isSubmitting' | 'demoDaysLeft' | 'reportsLeft'
 >;
 const CreateMerchantReportDialogFormContent = ({
   form,
   onSubmit,
   isSubmitting,
+  demoDaysLeft,
   reportsLeft,
 }: CreateMerchantReportDialogFormContentProps) => {
-  const noReportsLeft = reportsLeft <= 0;
+  const noReportsLeft = reportsLeft && reportsLeft <= 0;
 
   return (
     <div>
-      <div className="mx-6 mt-6 rounded-md border border-gray-200 bg-gray-50 px-4 py-2 text-center font-medium">
-        {noReportsLeft ? (
-          <span className="text-destructive">You don&apos;t have any reports left!</span>
-        ) : (
-          <span>
-            You have <span className="font-bold">{reportsLeft} free reports</span> left to create.
-            {/* FIXME: Where to get data for this? */}
-            {/* ,available for <span className="font-bold">{14} days</span> */}
-          </span>
-        )}
-      </div>
-
+      <BusinessReportsLeftCard
+        reportsLeft={reportsLeft}
+        demoDaysLeft={demoDaysLeft}
+        className="mx-6 mt-6"
+      />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="relative">
           {noReportsLeft && (

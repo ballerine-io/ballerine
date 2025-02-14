@@ -10,6 +10,8 @@ declare module '@prisma/client' {
   import type { TCustomerConfig, TCustomerSubscription } from '@/customer/schemas/zod-schemas';
   export * from '@prisma/client/index';
 
+  // FIXME: this is a problem
+
   export type WorkflowRuntimeData = Omit<_WorkflowRuntimeData, 'context'> & {
     context: any;
     config: WorkflowConfig | any;

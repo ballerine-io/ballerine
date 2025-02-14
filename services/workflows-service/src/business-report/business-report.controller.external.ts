@@ -35,7 +35,7 @@ import { CreateBusinessReportBatchBodyDto } from '@/business-report/dtos/create-
 import type { Response } from 'express';
 import { PrismaService } from '@/prisma/prisma.service';
 import { BusinessReportFindingsListResponseDto } from '@/business-report/dtos/business-report-findings.dto';
-import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
+import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 import {
   BusinessReportMetricsRequestQueryDto,
   BusinessReportsMetricsQuerySchema,
