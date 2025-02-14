@@ -57,6 +57,8 @@ import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/muta
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { directorAdapter } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/helpers';
 import { createDirectorsBlocks } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/create-directors-blocks';
+import { useBankAccountVerificationBlock } from '@/lib/blocks/hooks/useBankAccountVerificationBlock/useBankAccountVerificationBlock';
+import { useCommercialCreditCheckBlock } from '@/lib/blocks/hooks/useCommercialCreditCheckBlock/useCommercialCreditCheckBlock';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 
@@ -164,13 +166,23 @@ export const useDefaultBlocksLogic = () => {
 
   const registryInfoBlock = useRegistryInfoBlock({
     registryInfo,
-    workflowId: workflow?.id,
+    workflowId: workflow?.id || '',
     documents: workflow?.context?.documents,
   });
 
   const kybRegistryInfoBlock = useKybRegistryInfoBlock({
     pluginsOutput: workflow?.context?.pluginsOutput,
     workflow,
+  });
+
+  const bankAccountVerificationBlock = useBankAccountVerificationBlock({
+    workflowId: workflow?.id || '',
+    pluginsOutput: workflow?.context?.pluginsOutput,
+  });
+
+  const commercialCreditCheckBlock = useCommercialCreditCheckBlock({
+    workflowId: workflow?.id || '',
+    pluginsOutput: workflow?.context?.pluginsOutput,
   });
 
   const parentDocumentBlocks = useDocumentBlocks({
@@ -511,7 +523,9 @@ export const useDefaultBlocksLogic = () => {
   });
 
   const allBlocks = useMemo(() => {
-    if (!workflow?.context?.entity) return [];
+    if (!workflow?.context?.entity) {
+      return [];
+    }
 
     return [
       websiteMonitoringBlock,
@@ -543,6 +557,8 @@ export const useDefaultBlocksLogic = () => {
       amlWithContainerBlock,
       merchantScreeningBlock,
       manageUbosBlock,
+      bankAccountVerificationBlock,
+      commercialCreditCheckBlock,
     ];
   }, [
     associatedCompaniesBlock,
@@ -575,6 +591,8 @@ export const useDefaultBlocksLogic = () => {
     merchantScreeningBlock,
     workflow?.context?.entity,
     manageUbosBlock,
+    bankAccountVerificationBlock,
+    commercialCreditCheckBlock,
   ]);
 
   const { blocks, tabs } = useCaseBlocks({
