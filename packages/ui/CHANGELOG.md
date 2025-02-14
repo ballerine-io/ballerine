@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.77
+
+### Patch Changes
+
+- RiskIndicatorsSummary default value
+
 ## 0.5.76
 
 ### Patch Changes
