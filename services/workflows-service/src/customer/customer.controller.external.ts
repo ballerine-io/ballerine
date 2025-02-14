@@ -1,6 +1,12 @@
-import { CustomerSubscriptionSchema } from './schemas/zod-schemas';
+import { CustomerSubscriptionSchema, TDemoAccessDetails } from './schemas/zod-schemas';
 import * as common from '@nestjs/common';
-import { NotFoundException, Request, UseGuards, UsePipes } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  Request,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { CustomerService } from '@/customer/customer.service';
 import { Customer } from '@prisma/client';
@@ -49,14 +55,17 @@ export class CustomerControllerExternal {
   @common.Get('/by-current-project-id')
   @swagger.ApiOkResponse({ type: [CustomerModel] })
   @swagger.ApiForbiddenResponse()
-  async getByCurrentProjectId(
-    @CurrentProject() currentProjectId: TProjectId,
-  ): Promise<TCustomerWithFeatures | null> {
+  async getByCurrentProjectId(@CurrentProject() currentProjectId: TProjectId): Promise<
+    | (Omit<TCustomerWithFeatures, 'config'> & {
+        config: TCustomerWithFeatures['config'] & { demoAccessDetails: TDemoAccessDetails };
+      })
+    | null
+  > {
     if (!currentProjectId) {
       throw new NotFoundException('Customer not found');
     }
 
-    return this.service.getByProjectId(currentProjectId, {
+    const customer = await this.service.getByProjectId(currentProjectId, {
       select: {
         id: true,
         name: true,
@@ -68,7 +77,23 @@ export class CustomerControllerExternal {
         customerStatus: true,
         config: true,
         features: true,
+        createdAt: true,
       },
     });
+
+    if (!customer) {
+      throw new BadRequestException('Customer not found');
+    }
+
+    const demoAccessDetails = await this.service.getDemoAccessDetails(customer);
+
+    if (demoAccessDetails) {
+      customer.config = {
+        ...customer.config,
+        demoAccessDetails,
+      };
+    }
+
+    return customer;
   }
 }

@@ -38,17 +38,19 @@ const CustomerSchema = z.object({
       isMerchantMonitoringEnabled: z.boolean().default(false),
       isExample: z.boolean().default(false),
       isDemo: z.boolean().default(false),
-      showFullAccessPopup: z.boolean().default(false),
-      isDemoAccount: z.boolean().default(false),
-      maxBusinessReports: z.number().default(0),
+      demoAccessDetails: z
+        .object({
+          expiresAt: z.number().optional(),
+          showFullAccessPopup: z.boolean().optional(),
+          totalReports: z.number(),
+          maxBusinessReports: z.number(),
+        })
+        .optional(),
     })
     .nullable()
     .default({
       isMerchantMonitoringEnabled: false,
       isExample: false,
-      showFullAccessPopup: false,
-      isDemoAccount: false,
-      maxBusinessReports: 0,
     }),
 });
 
