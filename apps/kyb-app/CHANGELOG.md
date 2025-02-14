@@ -1,5 +1,11 @@
 # kyb-app
 
+## 0.3.130
+
+### Patch Changes
+
+- Bump
+
 ## 0.3.129
 
 ### Patch Changes
