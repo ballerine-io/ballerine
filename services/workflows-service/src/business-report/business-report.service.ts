@@ -10,7 +10,7 @@ import { randomUUID } from 'crypto';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isNumber } from 'lodash';
 import { CountryCode } from '@/common/countries';
-import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
+import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 import { MerchantReportType, MerchantReportVersion } from '@ballerine/common';
 
 @Injectable()
