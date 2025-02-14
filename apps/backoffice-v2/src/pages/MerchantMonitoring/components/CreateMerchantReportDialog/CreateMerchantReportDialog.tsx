@@ -78,7 +78,8 @@ const CreateMerchantReportDialogFormContent = ({
   demoDaysLeft,
   reportsLeft,
 }: CreateMerchantReportDialogFormContentProps) => {
-  const noReportsLeft = reportsLeft && reportsLeft <= 0;
+  const shouldDisableForm =
+    (reportsLeft && reportsLeft <= 0) || (demoDaysLeft && demoDaysLeft <= 0);
 
   return (
     <div>
@@ -89,7 +90,7 @@ const CreateMerchantReportDialogFormContent = ({
       />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="relative">
-          {noReportsLeft && (
+          {shouldDisableForm && (
             <div className="absolute right-0 top-0 h-full w-full bg-white opacity-70" />
           )}
 
@@ -106,7 +107,7 @@ const CreateMerchantReportDialogFormContent = ({
                         placeholder="www.example.com"
                         autoFocus
                         {...field}
-                        disabled={noReportsLeft || isSubmitting}
+                        disabled={shouldDisableForm || isSubmitting}
                       />
                     </FormControl>
                     <FormMessage />
@@ -123,7 +124,7 @@ const CreateMerchantReportDialogFormContent = ({
                       <Input
                         placeholder="ACME Corp."
                         {...field}
-                        disabled={noReportsLeft || isSubmitting}
+                        disabled={shouldDisableForm || isSubmitting}
                       />
                     </FormControl>
                     <FormMessage />
@@ -140,7 +141,7 @@ const CreateMerchantReportDialogFormContent = ({
                       <Input
                         placeholder="q1w2e3r4t5y6u7i8o9p0"
                         {...field}
-                        disabled={noReportsLeft || isSubmitting}
+                        disabled={shouldDisableForm || isSubmitting}
                       />
                     </FormControl>
                     <FormMessage />
@@ -156,7 +157,7 @@ const CreateMerchantReportDialogFormContent = ({
             className={
               'mx-6 ml-auto flex items-center gap-1.5 px-6 font-bold aria-disabled:pointer-events-none aria-disabled:opacity-50'
             }
-            disabled={noReportsLeft || isSubmitting}
+            disabled={shouldDisableForm || isSubmitting}
           >
             {isSubmitting && <Loader2 className="animate-spin d-6" />}
             Get a Report
