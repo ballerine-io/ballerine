@@ -55,6 +55,8 @@ export const getTabsToBlocksMap = ({
     amlWithContainerBlock,
     merchantScreeningBlock,
     manageUbosBlock,
+    bankAccountVerificationBlock,
+    commercialCreditCheckBlock,
   ] = blocks;
 
   const defaultTabsMap = {
@@ -76,6 +78,8 @@ export const getTabsToBlocksMap = ({
       ...kybRegistryInfoBlock,
       ...companySanctionsBlock,
       ...bankingDetailsBlock,
+      ...bankAccountVerificationBlock,
+      ...commercialCreditCheckBlock,
     ],
     [Tab.STORE_INFO]: [
       ...storeInfoBlock,

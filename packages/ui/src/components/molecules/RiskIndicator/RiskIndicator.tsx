@@ -1,21 +1,23 @@
 import { CheckCircle } from '@/components/atoms/CheckCircle/CheckCircle';
 import React, { FunctionComponent } from 'react';
-import { isNonEmptyArray, Severity } from '@ballerine/common';
+import {
+  isNonEmptyArray,
+  RISK_INDICATOR_RISK_LEVELS_MAP,
+  RiskIndicatorSchema,
+} from '@ballerine/common';
 import { ctw } from '@/common';
 import { WarningFilledSvg } from '@/components/atoms/WarningFilledSvg/WarningFilledSvg';
+import { z } from 'zod';
 
 export const RiskIndicator = ({
   title,
   search,
-  violations,
+  riskIndicators,
   Link,
 }: {
   title: string;
   search: string | undefined;
-  violations: Array<{
-    label: string;
-    severity: string;
-  }> | null;
+  riskIndicators: z.infer<typeof RiskIndicatorSchema>[] | null;
   Link: FunctionComponent<{
     search: string;
   }>;
@@ -27,21 +29,21 @@ export const RiskIndicator = ({
         {search && <Link search={search} />}
       </h3>
       <ul className="list-inside list-disc">
-        {!!violations &&
-          isNonEmptyArray(violations) &&
-          violations.map(violation => (
-            <li key={violation.label} className="flex list-none items-center text-slate-500">
-              {violation.severity !== Severity.LOW && (
+        {!!riskIndicators &&
+          isNonEmptyArray(riskIndicators) &&
+          riskIndicators.map(riskIndicator => (
+            <li key={riskIndicator.name} className="flex list-none items-center text-slate-500">
+              {riskIndicator.riskLevel !== RISK_INDICATOR_RISK_LEVELS_MAP.positive && (
                 <WarningFilledSvg
                   className={ctw('me-3 mt-px', {
                     '[&>:not(:first-child)]:stroke-background text-slate-300':
-                      violation.severity === Severity.MEDIUM,
+                      riskIndicator.riskLevel === RISK_INDICATOR_RISK_LEVELS_MAP.moderate,
                   })}
                   width={'20'}
                   height={'20'}
                 />
               )}
-              {violation.severity === Severity.LOW && (
+              {riskIndicator.riskLevel === RISK_INDICATOR_RISK_LEVELS_MAP.positive && (
                 <CheckCircle
                   size={18}
                   className={`stroke-background`}
@@ -50,10 +52,10 @@ export const RiskIndicator = ({
                   }}
                 />
               )}
-              {violation.label}
+              {riskIndicator.name}
             </li>
           ))}
-        {Array.isArray(violations) && !violations.length && (
+        {Array.isArray(riskIndicators) && !riskIndicators.length && (
           <li className="flex list-none items-center text-slate-500">
             <CheckCircle
               size={18}
@@ -62,7 +64,7 @@ export const RiskIndicator = ({
                 className: 'me-3 bg-success mt-px',
               }}
             />
-            No Violations Detected
+            No Risk Detected
           </li>
         )}
       </ul>

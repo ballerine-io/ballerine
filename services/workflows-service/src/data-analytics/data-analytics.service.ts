@@ -1,4 +1,4 @@
-import { MERCHANT_REPORT_TYPES_MAP, MerchantReportType } from '@/business-report/constants';
+import { MERCHANT_REPORT_TYPES_MAP, MerchantReportType } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';

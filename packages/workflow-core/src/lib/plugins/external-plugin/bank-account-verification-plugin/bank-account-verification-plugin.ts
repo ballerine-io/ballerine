@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import merge from 'lodash.merge';
 import { invariant } from 'outvariant';
 import { isErrorWithMessage, ProcessStatus } from '@ballerine/common';
 
@@ -43,32 +44,33 @@ const BankAccountVerificationPluginPayloadSchema = z.object({
 
 type TBankAccountVerificationPluginPayload = {
   clientId: PluginPayloadProperty;
-  vendor: PluginPayloadProperty;
-  data: {
-    address: {
-      streetNumber: PluginPayloadProperty;
-      street: PluginPayloadProperty;
-      city: PluginPayloadProperty;
-      postcode: PluginPayloadProperty;
-    };
-    bankAccountDetails: {
-      sortCode: PluginPayloadProperty;
-      bankAccountNumber: PluginPayloadProperty;
-    } & (
-      | {
-          holder: {
-            firstName: PluginPayloadProperty;
-            middleName: PluginPayloadProperty<string | undefined>;
-            lastName: PluginPayloadProperty;
-          };
-        }
-      | ({ bankAccountName: PluginPayloadProperty } & (
+  address?: {
+    streetNumber: PluginPayloadProperty;
+    street: PluginPayloadProperty;
+    city: PluginPayloadProperty;
+    postcode: PluginPayloadProperty;
+  };
+  bankAccountDetails?: {
+    sortCode: PluginPayloadProperty;
+    bankAccountNumber: PluginPayloadProperty;
+  } & (
+    | {
+        holder: {
+          firstName: PluginPayloadProperty;
+          middleName: PluginPayloadProperty<string | undefined>;
+          lastName: PluginPayloadProperty;
+        };
+      }
+    | {
+        holder: { bankAccountName: PluginPayloadProperty } & (
           | { companyRegistrationNumber: PluginPayloadProperty }
           | { registeredCharityNumber: PluginPayloadProperty }
-        ))
-    );
-  };
+        );
+      }
+  );
 };
+
+const BankAccountVerificationResponseSchema = z.record(z.string(), z.unknown());
 
 export class BankAccountVerificationPlugin extends ApiPlugin {
   public static pluginType = 'http';
@@ -88,13 +90,71 @@ export class BankAccountVerificationPlugin extends ApiPlugin {
     super(bankAccountVerificationPluginParams);
 
     this.payload = payload;
+
+    merge(this.payload, {
+      vendor: pluginParams.vendor || 'experian',
+      address: {
+        streetNumber: {
+          __type: 'path',
+          value: 'entity.data.address.streetNumber',
+        },
+        street: {
+          __type: 'path',
+          value: 'entity.data.address.street',
+        },
+        city: {
+          __type: 'path',
+          value: 'entity.data.address.city',
+        },
+        postcode: {
+          __type: 'path',
+          value: 'entity.data.address.postcode',
+        },
+      },
+      bankAccountDetails: {
+        holder: {
+          bankAccountName: {
+            __type: 'path',
+            value: 'entity.data.bankInformation.bankAccountName',
+          },
+          companyRegistrationNumber: {
+            __type: 'path',
+            value: 'entity.data.registrationNumber',
+          },
+          registeredCharityNumber: {
+            __type: 'path',
+            value: 'entity.data.additionalInfo.registeredCharityNumber',
+          },
+          firstName: {
+            __type: 'path',
+            value: 'entity.data.bankInformation.bankAccountHolder.firstName',
+          },
+          middleName: {
+            __type: 'path',
+            value: 'entity.data.bankInformation.bankAccountHolder.middleName',
+          },
+          lastName: {
+            __type: 'path',
+            value: 'entity.data.bankInformation.bankAccountHolder.lastName',
+          },
+        },
+        sortCode: {
+          __type: 'path',
+          value: 'entity.data.bankInformation.sortCode',
+        },
+        bankAccountNumber: {
+          __type: 'path',
+          value: 'entity.data.bankInformation.accountNumber',
+        },
+      },
+    });
   }
 
   async invoke(context: TContext) {
     const env = validateEnv(this.pluginName);
 
     try {
-      const url = `${env.UNIFIED_API_URL}/bank-account-verification/commercial`;
+      const url = `${env.UNIFIED_API_URL}/bank-account-verification`;
 
       const payload = getPayloadPropertiesValue({
         properties: this.payload,
@@ -141,12 +201,18 @@ export class BankAccountVerificationPlugin extends ApiPlugin {
         );
       }
 
-      const res = await apiResponse.json();
-      const responseBody = z.record(z.string(), z.unknown()).parse(res);
+      const response = await apiResponse.json();
+      const parsedResponse = BankAccountVerificationResponseSchema.safeParse(response);
+
+      if (!parsedResponse.success) {
+        return this.returnErrorResponse(
+          `${this.pluginName} - Invalid response: ${JSON.stringify(parsedResponse.error)}`,
+        );
+      }
 
       if (this.successAction) {
         return this.returnSuccessResponse(this.successAction, {
-          ...responseBody,
+          ...parsedResponse.data,
           name: this.name,
           status: ProcessStatus.SUCCESS,
         });

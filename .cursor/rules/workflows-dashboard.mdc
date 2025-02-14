@@ -1,0 +1,168 @@
+---
+description: Rules and best practices for workflows-dashboard React TypeScript development
+globs: ["apps/workflows-dashboard/**/*.{ts,tsx}"]
+---
+
+# Workflows Dashboard Development Rules
+
+## Component Structure
+- Use functional components with TypeScript
+- Follow feature-based architecture
+- Implement container/presenter pattern
+- Use compound components when needed
+- Keep components focused and small
+
+```typescript
+// Container component
+export const DataContainer: FunctionComponent = () => {
+  const logic = useDataLogic();
+  return <DataPresenter {...logic} />;
+};
+
+// Presenter component
+export const DataPresenter: FunctionComponent<DataPresenterProps> = (props) => {
+  return <div>...</div>;
+};
+```
+
+## Hooks and Business Logic
+- Separate business logic into hooks
+- Use custom hooks for reusable logic
+- Follow the `use` prefix convention
+- Keep hooks single-purpose
+- Place hooks in feature directories
+
+```typescript
+export const useWorkflowLogic = () => {
+  // Workflow-specific logic
+  return {
+    // Hook return values
+  };
+};
+```
+
+## State Management
+- Use React Query for API state
+- Implement Context for shared state
+- Use local state for UI elements
+- Follow flux architecture
+- Keep state normalized
+
+## TypeScript Usage
+- Use strict mode
+- Define clear interfaces
+- Use type inference
+- Export types separately
+- Use discriminated unions
+
+## Dashboard Components
+- Use data visualization libraries
+- Implement proper loading states
+- Handle empty states
+- Show error states
+- Use proper grid layouts
+
+## Data Handling
+- Use React Query for data fetching
+- Implement proper caching
+- Handle loading states
+- Show error messages
+- Type API responses
+
+## Workflow Management
+- Implement clear workflow states
+- Handle transitions properly
+- Show progress indicators
+- Validate workflow steps
+- Handle edge cases
+
+## Error Handling
+- Use error boundaries
+- Show user-friendly errors
+- Log errors appropriately
+- Implement fallbacks
+- Handle async errors
+
+## Performance
+- Optimize renders
+- Use virtualization for lists
+- Implement code splitting
+- Use lazy loading
+- Monitor performance
+
+## Testing
+- Write unit tests
+- Test workflows thoroughly
+- Use integration tests
+- Mock API responses
+- Test error states
+
+## File Organization
+- Use feature folders
+- Keep related files together
+- Use clear naming
+- Implement barrel exports
+- Follow consistent structure
+
+## Styling
+- Use Tailwind CSS
+- Follow design system
+- Use CSS variables
+- Keep styles maintainable
+- Use CSS modules when needed
+
+## Forms
+- Use React Hook Form
+- Implement validation
+- Show feedback
+- Handle submissions
+- Use controlled inputs
+
+## Documentation
+- Document complex logic
+- Write clear comments
+- Keep docs updated
+- Use JSDoc
+- Document APIs
+
+## Code Quality
+- Follow ESLint rules
+- Use consistent style
+- Write clear code
+- Keep it maintainable
+- Review regularly
+
+## Accessibility
+- Follow WCAG
+- Use semantic HTML
+- Add ARIA labels
+- Test keyboard nav
+- Support screen readers
+
+## Security
+- Validate inputs
+- Handle auth properly
+- Protect sensitive data
+- Follow best practices
+- Use secure APIs
+
+## Best Practices
+- Follow React patterns
+- Keep code DRY
+- Handle edge cases
+- Write clean code
+- Review regularly
+
+## Dashboard Specific
+- Use proper charts
+- Show clear metrics
+- Implement filters
+- Handle large datasets
+- Support sorting
+
+## Workflow Visualization
+- Show clear status
+- Use proper icons
+- Implement transitions
+- Show progress
+- Handle errors 
