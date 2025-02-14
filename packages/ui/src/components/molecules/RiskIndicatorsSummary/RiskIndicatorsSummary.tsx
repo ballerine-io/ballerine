@@ -1,17 +1,17 @@
-import React, { ComponentProps, FunctionComponent } from 'react';
-import { RiskIndicator } from '@/components/molecules/RiskIndicator/RiskIndicator';
 import { Card, CardContent, CardHeader } from '@/components/atoms';
+import { RiskIndicator } from '@/components/molecules/RiskIndicator/RiskIndicator';
 import { RiskIndicatorSchema } from '@ballerine/common';
+import { ComponentProps, FunctionComponent } from 'react';
 import { z } from 'zod';
 
 export const RiskIndicatorsSummary: FunctionComponent<{
   sections: ReadonlyArray<{
     title: string;
     search: string;
-    riskIndicators: z.infer<typeof RiskIndicatorSchema>[] | null;
+    riskIndicators: Array<z.infer<typeof RiskIndicatorSchema>> | null;
   }>;
   Link: ComponentProps<typeof RiskIndicator>['Link'];
-}> = ({ sections, Link }) => {
+}> = ({ sections = [], Link }) => {
   return (
     <Card className={'col-span-full'}>
       <CardHeader className={'pt-4 font-bold'}>Risk Indicators</CardHeader>
