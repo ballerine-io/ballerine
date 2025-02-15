@@ -18,8 +18,29 @@ import {
   Skeleton,
   TextArea,
   TextWithNAFallback,
+  BusinessReport,
 } from '@ballerine/ui';
 
+import { Button } from '@/common/components/atoms/Button/Button';
+import { Card } from '@/common/components/atoms/Card/Card';
+import { CardContent } from '@/common/components/atoms/Card/Card.Content';
+import { CardFooter } from '@/common/components/atoms/Card/Card.Footer';
+import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
+import { CardTitle } from '@/common/components/atoms/Card/Card.Title';
+import { Select } from '@/common/components/atoms/Select/Select';
+import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
+import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
+import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
+import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
+import { NotesButton } from '@/common/components/molecules/NotesButton/NotesButton';
+import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
+import { Form } from '@/common/components/organisms/Form/Form';
+import { FormControl } from '@/common/components/organisms/Form/Form.Control';
+import { FormField } from '@/common/components/organisms/Form/Form.Field';
+import { FormItem } from '@/common/components/organisms/Form/Form.Item';
+import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
+import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
+import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { Notes } from '@/domains/notes/Notes';
 import { Card } from '@/common/components/atoms/Card/Card';
@@ -86,8 +107,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     onNavigateBack,
     websiteWithNoProtocol,
     businessReport,
-    tabs,
-    activeTab,
+    statusToBadgeData,
     notes,
     isNotesOpen,
     turnOngoingMonitoringOn,
@@ -328,41 +348,22 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
               <NotesButton numberOfNotes={notes?.length} />
             </div>
           )}
-          <Tabs defaultValue={activeTab} className="w-full" key={activeTab}>
-            <TabsList className={'mb-4'}>
-              {tabs.map(tab => (
-                <TabsTrigger key={tab.value} value={tab.value} asChild>
-                  <Link
-                    to={{
-                      search: `?activeTab=${tab.value}`,
-                    }}
-                  >
-                    {tab.label}
-                  </Link>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            <ScrollArea orientation={'vertical'} className={'h-[65vh] 2xl:h-[75vh]'}>
-              {isFetchingBusinessReport ? (
-                <>
-                  <Skeleton className="h-6 w-72" />
-                  <Skeleton className="mt-6 h-4 w-40" />
+          <ScrollArea orientation={'vertical'} className={'h-[65vh] 2xl:h-[75vh]'}>
+            {isFetchingBusinessReport ? (
+              <>
+                <Skeleton className="h-6 w-72" />
+                <Skeleton className="mt-6 h-4 w-40" />
 
-                  <div className="mt-6 flex h-[24rem] w-full flex-nowrap gap-8">
-                    <Skeleton className="w-2/3" />
-                    <Skeleton className="w-1/3" />
-                  </div>
-                  <Skeleton className="mt-6 h-[16rem]" />
-                </>
-              ) : (
-                tabs.map(tab => (
-                  <TabsContent key={tab.value} value={tab.value}>
-                    {tab.content}
-                  </TabsContent>
-                ))
-              )}
-            </ScrollArea>
-          </Tabs>
+                <div className="mt-6 flex h-[24rem] w-full flex-nowrap gap-8">
+                  <Skeleton className="w-2/3" />
+                  <Skeleton className="w-1/3" />
+                </div>
+                <Skeleton className="mt-6 h-[16rem]" />
+              </>
+            ) : (
+              <BusinessReport />
+            )}
+          </ScrollArea>
         </section>
       </SidebarInset>
       <Notes
