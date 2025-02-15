@@ -1,49 +1,46 @@
-import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
-import { ComponentProps } from 'react';
-
 import {
   AdsAndSocialMedia,
   BusinessReportSummary,
+  ContentTooltip,
+  getUniqueRiskIndicators,
   Transactions,
   WebsiteCredibility,
   WebsiteLineOfBusiness,
   WebsitesCompany,
-} from '@/components';
+} from '@ballerine/ui';
 import { ReportSchema, RiskIndicatorSchema } from '@ballerine/common';
 import { z } from 'zod';
 
 type BusinessReportProps = {
   report: z.infer<typeof ReportSchema>;
-  Link: ComponentProps<typeof BusinessReportSummary>['Link'];
 };
 
 export const BusinessReport = ({ report }: BusinessReportProps) => {
   const sectionsSummary = [
     {
       title: 'Company Analysis',
-      riskIndicators: report.data?.companyReputationRiskIndicators ?? [],
+      riskIndicators: getUniqueRiskIndicators(report.data?.companyReputationRiskIndicators ?? []),
     },
     {
       title: 'Credibility Analysis',
-      riskIndicators: [
+      riskIndicators: getUniqueRiskIndicators([
         ...(report.data?.websiteReputationRiskIndicators ?? []),
         ...(report.data?.pricingRiskIndicators ?? []),
         ...(report.data?.websiteStructureRiskIndicators ?? []),
         ...(report.data?.trafficRiskIndicators ?? []),
-      ],
+      ]),
     },
     {
       title: 'Line of Business Analysis',
-      riskIndicators: report.data?.contentRiskIndicators ?? [],
+      riskIndicators: getUniqueRiskIndicators(report.data?.contentRiskIndicators ?? []),
     },
   ] as const satisfies ReadonlyArray<{
     title: string;
-    // search: string;
-    riskIndicators: z.infer<typeof RiskIndicatorSchema>[] | null;
+    riskIndicators: Array<z.infer<typeof RiskIndicatorSchema>>;
   }>;
 
   return (
-    <div>
+    <>
       <ContentTooltip
         description={
           <p>
@@ -66,7 +63,7 @@ export const BusinessReport = ({ report }: BusinessReportProps) => {
       <BusinessReportSummary
         summary={report.data?.summary ?? ''}
         ongoingMonitoringSummary={report.data?.ongoingMonitoringSummary ?? ''}
-        riskLevel={report.data?.riskLevel!}
+        riskLevel={report.data?.riskLevel ?? null}
         sections={sectionsSummary}
         homepageScreenshotUrl={report.data?.homePageScreenshotUrl ?? ''}
       />
@@ -103,6 +100,6 @@ export const BusinessReport = ({ report }: BusinessReportProps) => {
       />
 
       <Transactions />
-    </div>
+    </>
   );
 };
