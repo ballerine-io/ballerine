@@ -1,27 +1,22 @@
-import { ParsedBooleanSchema, useReportTabs } from '@ballerine/ui';
+import { ParsedBooleanSchema } from '@ballerine/ui';
 import { t } from 'i18next';
 import { capitalize } from 'lodash-es';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { safeUrl } from '@/common/utils/safe-url/safe-url';
-import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
 import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
 import { useCreateNoteMutation } from '@/domains/notes/hooks/mutations/useCreateNoteMutation/useCreateNoteMutation';
 import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
 import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
-import {
-  isObject,
-  MERCHANT_REPORT_STATUSES_MAP,
-  MERCHANT_REPORT_TYPES_MAP,
-} from '@ballerine/common';
+import { isObject, MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
 const ZodDeboardingSchema = z
   .object({
@@ -154,21 +149,8 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     },
   });
 
-  const { tabs } = useReportTabs({
-    report: businessReport ?? {},
-    Link: RiskIndicatorLink,
-  });
-
-  const tabsValues = useMemo(() => tabs.map(tab => tab.value), [tabs]);
-
   const MerchantMonitoringBusinessReportSearchSchema = z.object({
     isNotesOpen: ParsedBooleanSchema.catch(false),
-    activeTab: z
-      .enum(
-        // @ts-expect-error - zod doesn't like we are using `Array.prototype.map`
-        tabsValues,
-      )
-      .catch(tabsValues[0]!),
   });
 
   const [{ activeTab, isNotesOpen }] = useZodSearchParams(
@@ -201,7 +183,6 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     websiteWithNoProtocol,
     businessReport,
     statusToBadgeData,
-    tabs,
     notes,
     activeTab,
     isNotesOpen,
