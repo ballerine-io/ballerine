@@ -14,7 +14,6 @@ import {
   Skeleton,
   TextArea,
   TextWithNAFallback,
-  BusinessReport,
 } from '@ballerine/ui';
 import dayjs from 'dayjs';
 import { ArrowLeft, ChevronLeft, FileQuestion } from 'lucide-react';
@@ -46,6 +45,7 @@ import { ctw } from '@/common/utils/ctw/ctw';
 import { Notes } from '@/domains/notes/Notes';
 import { useMerchantMonitoringBusinessReportLogic } from '@/pages/MerchantMonitoringBusinessReport/hooks/useMerchantMonitoringBusinessReportLogic/useMerchantMonitoringBusinessReportLogic';
 import { MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
+import { BusinessReport } from '@/domains/business-reports/components/BusinessReport/BusinessReport';
 
 const DialogDropdownItem = forwardRef<
   React.ElementRef<typeof DropdownMenuItem>,
@@ -336,22 +336,22 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
               <NotesButton numberOfNotes={notes?.length} />
             </div>
           )}
-          <ScrollArea orientation={'vertical'} className={'h-[65vh] 2xl:h-[75vh]'}>
-            {isFetchingBusinessReport ? (
-              <>
-                <Skeleton className="h-6 w-72" />
-                <Skeleton className="mt-6 h-4 w-40" />
+          {/* <ScrollArea orientation={'vertical'} className={'h-[65vh] 2xl:h-[75vh]'}> */}
+          {isFetchingBusinessReport ? (
+            <>
+              <Skeleton className="h-6 w-72" />
+              <Skeleton className="mt-6 h-4 w-40" />
 
-                <div className="mt-6 flex h-[24rem] w-full flex-nowrap gap-8">
-                  <Skeleton className="w-2/3" />
-                  <Skeleton className="w-1/3" />
-                </div>
-                <Skeleton className="mt-6 h-[16rem]" />
-              </>
-            ) : (
-              <BusinessReport />
-            )}
-          </ScrollArea>
+              <div className="mt-6 flex h-[24rem] w-full flex-nowrap gap-8">
+                <Skeleton className="w-2/3" />
+                <Skeleton className="w-1/3" />
+              </div>
+              <Skeleton className="mt-6 h-[16rem]" />
+            </>
+          ) : (
+            <BusinessReport report={businessReport} />
+          )}
+          {/* </ScrollArea> */}
         </section>
       </SidebarInset>
       <Notes

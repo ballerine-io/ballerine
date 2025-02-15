@@ -246,8 +246,9 @@ export const WebsiteCredibility: FunctionComponent<{
           </ContentTooltip>
         </div>
 
-        <CardContent className="flex h-[30rem] w-full gap-4 px-4 pb-4 pt-0">
-          <Card className="flex h-full w-3/5 flex-col">
+        <CardContent className="flex 2xl:h-[30rem] w-full gap-4 px-4 pb-4 pt-0">
+          <Card className="flex 2xl:h-full 2xl:w-3/5 w-full h-[30rem] flex-col">
+            {/* <Card className="flex h-full w-3/5 flex-col"> */}
             <CardHeader className="px-6 pb-2 pt-4 font-bold">
               Estimated Monthly Visitors
               <CardDescription className="text-muted-foreground text-sm font-normal">
@@ -354,8 +355,10 @@ export const WebsiteCredibility: FunctionComponent<{
             </CardFooter>
           </Card>
 
-          <div className="flex h-full w-2/5 flex-col gap-4">
-            <Card className="h-1/2 w-full">
+          <div className="flex 2xl:h-full h-[30rem] w-full flex-col gap-4 2xl:w-2/5">
+            {/* <div className="flex h-full w-2/5 flex-col gap-4"> */}
+            <Card className="h-full 2xl:h-1/2 w-1/2 2xl:w-full">
+              {/* <Card className="h-1/2 w-full"> */}
               <CardHeader className="px-6 pb-2 pt-4 font-bold">Traffic Sources</CardHeader>
 
               <CardContent className="mt-auto h-4/5 w-full p-2">
@@ -417,8 +420,8 @@ export const WebsiteCredibility: FunctionComponent<{
               </CardContent>
             </Card>
 
-            {/* <Card className="h-full 2xl:h-1/2 w-1/2 2xl:w-full"> */}
-            <Card className="h-1/2 w-full">
+            <Card className="h-full 2xl:h-1/2 w-1/2 2xl:w-full">
+              {/* <Card className="h-1/2 w-full"> */}
               <CardHeader className="px-6 pb-2 pt-4 font-bold">Engagement</CardHeader>
 
               <CardContent className="flex h-3/5 items-center gap-6 px-4 py-2">
