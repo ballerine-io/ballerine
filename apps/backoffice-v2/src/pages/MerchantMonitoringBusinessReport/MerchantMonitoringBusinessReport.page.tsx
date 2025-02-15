@@ -14,6 +14,7 @@ import {
   Skeleton,
   TextArea,
   TextWithNAFallback,
+  BusinessReport,
 } from '@ballerine/ui';
 import dayjs from 'dayjs';
 import { ArrowLeft, ChevronLeft, FileQuestion } from 'lucide-react';
@@ -41,10 +42,6 @@ import { FormItem } from '@/common/components/organisms/Form/Form.Item';
 import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
 import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
 import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
-import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
-import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
-import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
-import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { Notes } from '@/domains/notes/Notes';
 import { useMerchantMonitoringBusinessReportLogic } from '@/pages/MerchantMonitoringBusinessReport/hooks/useMerchantMonitoringBusinessReportLogic/useMerchantMonitoringBusinessReportLogic';
@@ -87,8 +84,6 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     websiteWithNoProtocol,
     businessReport,
     statusToBadgeData,
-    tabs,
-    activeTab,
     notes,
     isNotesOpen,
     turnOngoingMonitoringOn,
@@ -341,41 +336,22 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
               <NotesButton numberOfNotes={notes?.length} />
             </div>
           )}
-          <Tabs defaultValue={activeTab} className="w-full" key={activeTab}>
-            <TabsList className={'mb-4'}>
-              {tabs.map(tab => (
-                <TabsTrigger key={tab.value} value={tab.value} asChild>
-                  <Link
-                    to={{
-                      search: `?activeTab=${tab.value}`,
-                    }}
-                  >
-                    {tab.label}
-                  </Link>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            <ScrollArea orientation={'vertical'} className={'h-[65vh] 2xl:h-[75vh]'}>
-              {isFetchingBusinessReport ? (
-                <>
-                  <Skeleton className="h-6 w-72" />
-                  <Skeleton className="mt-6 h-4 w-40" />
+          <ScrollArea orientation={'vertical'} className={'h-[65vh] 2xl:h-[75vh]'}>
+            {isFetchingBusinessReport ? (
+              <>
+                <Skeleton className="h-6 w-72" />
+                <Skeleton className="mt-6 h-4 w-40" />
 
-                  <div className="mt-6 flex h-[24rem] w-full flex-nowrap gap-8">
-                    <Skeleton className="w-2/3" />
-                    <Skeleton className="w-1/3" />
-                  </div>
-                  <Skeleton className="mt-6 h-[16rem]" />
-                </>
-              ) : (
-                tabs.map(tab => (
-                  <TabsContent key={tab.value} value={tab.value}>
-                    {tab.content}
-                  </TabsContent>
-                ))
-              )}
-            </ScrollArea>
-          </Tabs>
+                <div className="mt-6 flex h-[24rem] w-full flex-nowrap gap-8">
+                  <Skeleton className="w-2/3" />
+                  <Skeleton className="w-1/3" />
+                </div>
+                <Skeleton className="mt-6 h-[16rem]" />
+              </>
+            ) : (
+              <BusinessReport />
+            )}
+          </ScrollArea>
         </section>
       </SidebarInset>
       <Notes
