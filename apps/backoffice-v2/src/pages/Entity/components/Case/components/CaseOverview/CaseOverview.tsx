@@ -67,7 +67,7 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
       )}
       <ProcessTracker workflow={workflow} plugins={plugins} processes={processes} />
       {workflow?.workflowDefinition?.config?.isDocumentTrackerEnabled && (
-        <DocumentTracker workflow={workflow} plugins={plugins} />
+        <DocumentTracker workflowId={workflow?.id} />
       )}
       {workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled && (
         <RiskIndicatorsSummary riskIndicators={riskIndicators} Link={RiskIndicatorLink} />
