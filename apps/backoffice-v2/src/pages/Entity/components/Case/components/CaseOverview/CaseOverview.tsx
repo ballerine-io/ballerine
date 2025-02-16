@@ -8,6 +8,8 @@ import { OverallRiskLevel } from '@/common/components/molecules/OverallRiskLevel
 import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
 import { RiskIndicatorsSummary, toRiskLabels } from '@ballerine/ui';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
+import { RiskIndicatorSchema } from '@ballerine/common';
+import { z } from 'zod';
 
 export const CaseOverview = ({ processes }: { processes: string[] }) => {
   const { search } = useLocation();
@@ -38,16 +40,14 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
             tab: tab,
           })
         : undefined,
-      violations: toRiskLabels(riskIndicators),
+      riskIndicators:
+        riskIndicators && Array.isArray(riskIndicators)
+          ? riskIndicators.map((riskIndicator: z.infer<typeof RiskIndicatorSchema>) => ({
+              name: riskIndicator.name,
+            }))
+          : [],
     };
-  }) satisfies Array<{
-    title: string;
-    search: string | undefined;
-    violations: Array<{
-      label: string;
-      severity: string;
-    }>;
-  }>;
+  });
 
   if (!workflow?.workflowDefinition?.config?.isCaseOverviewEnabled) {
     return;
@@ -66,7 +66,7 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
       )}
       <ProcessTracker workflow={workflow} plugins={plugins} processes={processes} />
       {workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled && (
-        <RiskIndicatorsSummary riskIndicators={riskIndicators} Link={RiskIndicatorLink} />
+        <RiskIndicatorsSummary sections={riskIndicators} Link={RiskIndicatorLink} />
       )}
     </div>
   );
