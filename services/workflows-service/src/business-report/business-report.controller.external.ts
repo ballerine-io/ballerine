@@ -56,9 +56,30 @@ export class BusinessReportControllerExternal {
     private readonly merchantMonitoringClient: MerchantMonitoringClient,
   ) {}
 
+  @swagger.ApiOperation({
+    summary: 'Get latest business report',
+    description:
+      'Retrieves the most recent business report for a given business ID and report type',
+  })
+  @swagger.ApiQuery({
+    name: 'businessId',
+    required: true,
+    description: 'ID of the business to get report for',
+  })
+  @swagger.ApiQuery({
+    name: 'type',
+    required: true,
+    description: 'Type of report to retrieve',
+  })
   @common.Get('/latest')
-  @swagger.ApiOkResponse({ type: [String] })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiOkResponse({
+    description: 'Latest report retrieved successfully',
+    type: [String],
+  })
+  @swagger.ApiForbiddenResponse({
+    description: 'Forbidden access',
+    type: errors.ForbiddenException,
+  })
   @swagger.ApiExcludeEndpoint()
   async getLatestBusinessReport(
     @CurrentProject() currentProjectId: TProjectId,
@@ -75,9 +96,29 @@ export class BusinessReportControllerExternal {
     return latestReport ?? {};
   }
 
+  @swagger.ApiOperation({
+    summary: 'List business reports',
+    description: 'Get a paginated list of business reports with optional filters',
+  })
+  @swagger.ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Pagination parameters',
+  })
+  @swagger.ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Search term to filter reports',
+  })
   @common.Get()
-  @swagger.ApiOkResponse({ type: BusinessReportListResponseDto })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiOkResponse({
+    description: 'Reports retrieved successfully',
+    type: BusinessReportListResponseDto,
+  })
+  @swagger.ApiForbiddenResponse({
+    description: 'Forbidden access',
+    type: errors.ForbiddenException,
+  })
   @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
   async listBusinessReports(
     @CurrentProject() currentProjectId: TProjectId,
@@ -131,16 +172,46 @@ export class BusinessReportControllerExternal {
     };
   }
 
+  @swagger.ApiOperation({
+    summary: 'List findings',
+    description: 'Get a list of all possible findings for business reports',
+  })
   @common.Get('/findings')
-  @swagger.ApiOkResponse({ type: BusinessReportFindingsListResponseDto })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiOkResponse({
+    description: 'Findings retrieved successfully',
+    type: BusinessReportFindingsListResponseDto,
+  })
+  @swagger.ApiForbiddenResponse({
+    description: 'Forbidden access',
+    type: errors.ForbiddenException,
+  })
   async listFindings() {
     return await this.merchantMonitoringClient.listFindings();
   }
 
+  @swagger.ApiOperation({
+    summary: 'Get business report metrics',
+    description: 'Get aggregated metrics about business reports within a date range',
+  })
+  @swagger.ApiQuery({
+    name: 'from',
+    required: false,
+    description: 'Start date for metrics calculation',
+  })
+  @swagger.ApiQuery({
+    name: 'to',
+    required: false,
+    description: 'End date for metrics calculation',
+  })
   @common.Get('/metrics')
-  @swagger.ApiOkResponse({ type: BusinessReportMetricsDto })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiOkResponse({
+    description: 'Metrics retrieved successfully',
+    type: BusinessReportMetricsDto,
+  })
+  @swagger.ApiForbiddenResponse({
+    description: 'Forbidden access',
+    type: errors.ForbiddenException,
+  })
   @common.UsePipes(new ZodValidationPipe(BusinessReportsMetricsQuerySchema, 'query'))
   async getMetrics(
     @CurrentProject() currentProjectId: TProjectId,
@@ -157,9 +228,25 @@ export class BusinessReportControllerExternal {
     return merchantMonitoringMetrics;
   }
 
+  @swagger.ApiOperation({
+    summary: 'Create business report',
+    description: 'Create a new business report for a merchant',
+  })
+  @swagger.ApiBody({
+    type: CreateBusinessReportDto,
+    description: 'Business report creation parameters',
+  })
   @common.Post()
-  @swagger.ApiOkResponse({})
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiOkResponse({
+    description: 'Business report created successfully',
+  })
+  @swagger.ApiForbiddenResponse({
+    description: 'Forbidden access',
+    type: errors.ForbiddenException,
+  })
+  @swagger.ApiBadRequestResponse({
+    description: 'Invalid request parameters',
+  })
   async createBusinessReport(
     @Body()
     {
@@ -223,9 +310,23 @@ export class BusinessReportControllerExternal {
     });
   }
 
+  @swagger.ApiOperation({
+    summary: 'Get business report by ID',
+    description: 'Retrieve a specific business report by its ID',
+  })
+  @swagger.ApiParam({
+    name: 'id',
+    description: 'ID of the business report to retrieve',
+  })
   @common.Get(':id')
-  @swagger.ApiOkResponse({ type: BusinessReportDto })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiOkResponse({
+    description: 'Business report retrieved successfully',
+    type: BusinessReportDto,
+  })
+  @swagger.ApiForbiddenResponse({
+    description: 'Forbidden access',
+    type: errors.ForbiddenException,
+  })
   @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
   async getBusinessReportById(
     @CurrentProject() currentProjectId: TProjectId,
@@ -244,9 +345,37 @@ export class BusinessReportControllerExternal {
     };
   }
 
+  @swagger.ApiOperation({
+    summary: 'Create batch business reports',
+    description: 'Create multiple business reports from an uploaded file',
+  })
+  @swagger.ApiConsumes('multipart/form-data')
+  @swagger.ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Excel/CSV file containing merchant data',
+        },
+        type: {
+          type: 'string',
+          description: 'Type of business reports to create',
+        },
+        workflowVersion: {
+          type: 'string',
+          description: 'Version of the workflow to use',
+        },
+      },
+    },
+  })
   @swagger.ApiExcludeEndpoint()
   @common.Post('/upload-batch')
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiForbiddenResponse({
+    description: 'Forbidden access',
+    type: errors.ForbiddenException,
+  })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileInterceptor('file', {
