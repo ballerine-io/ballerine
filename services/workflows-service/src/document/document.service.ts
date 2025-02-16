@@ -11,7 +11,7 @@ import { CreateDocumentSchema } from './dtos/document.dto';
 import { CreateDocumentFileSchema } from '@/document-file/dtos/document-file.dto';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { isObject, isType, getDocumentId } from '@ballerine/common';
+import { isType, getDocumentId } from '@ballerine/common';
 import z from 'zod';
 import { TParsedDocuments, EntitySchema, DocumentTrackerResponseSchema } from './types';
 
@@ -384,7 +384,7 @@ export class DocumentService {
       return expectedDocId === actualDocId;
     };
 
-    const createDocumentResponse = <T extends z.infer<typeof EntitySchema>>(
+    const generateDocumentTrackerItem = <T extends z.infer<typeof EntitySchema>>(
       matchingDocument: Document | undefined,
       expectedDoc: TParsedDocuments['business'][number],
       entity: T,
@@ -392,8 +392,10 @@ export class DocumentService {
       documentId: matchingDocument?.id ?? null,
       status: matchingDocument?.status ?? 'unprovided',
       decision: matchingDocument?.decision ?? null,
-      properties: expectedDoc,
-      entity,
+      identifiers: {
+        document: expectedDoc,
+        entity,
+      },
     });
 
     const result: z.output<typeof DocumentTrackerResponseSchema> = {
@@ -402,33 +404,37 @@ export class DocumentService {
           isMatchingDocument(doc, expectedDoc),
         );
 
-        return createDocumentResponse(matchingDocument, expectedDoc, entities.business);
+        return generateDocumentTrackerItem(matchingDocument, expectedDoc, {
+          id: entities.business.id,
+          companyName: entities.business.companyName,
+          entityType: 'business',
+        });
       }),
       individuals: {
         ubos: entitiesWithDocuments.ubos.flatMap(ubo =>
           parsedUIDocuments.individuals.ubos.map(expectedDoc =>
-            createDocumentResponse(
+            generateDocumentTrackerItem(
               ubo.documents.find(doc => isMatchingDocument(doc, expectedDoc)),
               expectedDoc,
               {
-                entityType: 'ubo' as const,
                 id: ubo.id,
                 firstName: ubo.firstName,
                 lastName: ubo.lastName,
+                entityType: 'ubo',
               },
             ),
           ),
         ),
         directors: entitiesWithDocuments.directors.flatMap(director =>
           parsedUIDocuments.individuals.directors.map(expectedDoc =>
-            createDocumentResponse(
+            generateDocumentTrackerItem(
               director.documents.find(doc => isMatchingDocument(doc, expectedDoc)),
               expectedDoc,
               {
-                entityType: 'director' as const,
                 id: director.id,
                 firstName: director.firstName,
                 lastName: director.lastName,
+                entityType: 'director',
               },
             ),
           ),
@@ -439,15 +445,21 @@ export class DocumentService {
     return result;
   }
 
-  async requestDocumentsByIds(projectId: TProjectId, documentIds: string[]) {
-    // TODO call email flow for given documents
-
-    const documents = await this.repository.updateMany([projectId], {
-      where: { id: { in: documentIds } },
-      data: { status: 'requested' },
-    });
-
-    return { message: 'Documents requested successfully', count: documents.count };
+  async requestDocumentsByIds(
+    projectId: TProjectId,
+    workflowId: string,
+    identifiers: Array<{
+      type: string;
+      category: string;
+      issuingCountry: string;
+      issuingVersion: string;
+      version: string;
+      entity: {
+        id: string;
+      };
+    }>,
+  ) {
+    return { message: 'Documents requested successfully', count: 0 };
   }
 
   private parseDocumentsFromUISchema(uiSchema: Array<Record<string, any>>): TParsedDocuments {

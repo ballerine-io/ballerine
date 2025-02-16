@@ -30,6 +30,22 @@ import { DocumentFileJsonSchema } from '@/document-file/dtos/document-file.dto';
 import z from 'zod';
 import type { TProjectId } from '@/types';
 
+const RequestUploadSchema = Type.Object({
+  workflowId: Type.String(),
+  identifiers: Type.Array(
+    Type.Object({
+      type: Type.String(),
+      category: Type.String(),
+      issuingCountry: Type.String(),
+      issuingVersion: Type.String(),
+      version: Type.String(),
+      entity: Type.Object({
+        id: Type.String(),
+      }),
+    }),
+  ),
+});
+
 @ApiBearerAuth()
 @ApiTags('Documents')
 @Controller('external/documents')
@@ -150,16 +166,16 @@ export class DocumentControllerExternal {
     request: [
       {
         type: 'body',
-        schema: Type.Object({ documentIds: Type.Array(Type.String()) }),
+        schema: RequestUploadSchema,
       },
     ],
     response: Type.Any(),
   })
   async requestDocuments(
-    @Body() { documentIds }: { documentIds: string[] },
+    @Body() { workflowId, identifiers }: Static<typeof RequestUploadSchema>,
     @CurrentProject() projectId: TProjectId,
   ) {
-    return await this.documentService.requestDocumentsByIds(projectId, documentIds);
+    return await this.documentService.requestDocumentsByIds(projectId, workflowId, identifiers);
   }
 
   @Get('/:entityId/:workflowRuntimeDataId')

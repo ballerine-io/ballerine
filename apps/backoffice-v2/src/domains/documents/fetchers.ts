@@ -13,7 +13,21 @@ export const fetchDocumentsTrackerItems = async ({ workflowId }: { workflowId: s
   return handleZodError(error, documentsTrackerItems);
 };
 
-export const requestDocumentsUpload = async (body: { documentIds: string[] }) => {
+export const requestDocumentsUpload = async (body: {
+  workflowId: string;
+  identifiers: Array<{
+    document: {
+      type: string;
+      category: string;
+      issuingCountry: string;
+      issuingVersion: string;
+      version: string;
+    };
+    entity: {
+      id: string;
+    };
+  }>;
+}) => {
   const [documentsTrackerItems, error] = await apiClient({
     endpoint: '../external/documents/request-upload',
     method: Method.POST,

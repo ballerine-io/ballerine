@@ -45,8 +45,10 @@ const DocumentTrackerDocumentSchema = z.object({
   documentId: z.string().nullable(),
   status: z.nativeEnum(DocumentStatus),
   decision: z.nativeEnum(DocumentDecision).nullable(),
-  properties: ParsedUIDocumentSchema.omit({ entityType: true }),
-  entity: EntitySchema,
+  identifiers: z.object({
+    document: ParsedUIDocumentSchema.omit({ entityType: true }),
+    entity: EntitySchema,
+  }),
 });
 
 export const DocumentTrackerResponseSchema = z.object({
