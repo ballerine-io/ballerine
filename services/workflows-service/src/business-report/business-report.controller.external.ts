@@ -155,30 +155,12 @@ export class BusinessReportControllerExternal {
       ...(search ? { searchQuery: search } : {}),
     });
 
-    const merchantIds = data.map(report => report.merchantId);
-    const businesses = await this.businessService.list(
-      { where: { id: { in: merchantIds } }, select: { id: true, metadata: true } },
-      [currentProjectId],
-    );
-
     const reports = await Promise.all(
       data.map(async report => {
-        const business = businesses.find(business => business.id === report.merchantId);
-
-        const metadata = business?.metadata as {
-          featureConfig?: TCustomerWithFeatures['features'];
-        };
-
-        const isOngoingEnabledForBusiness =
-          metadata?.featureConfig?.[FEATURE_LIST.ONGOING_MERCHANT_REPORT]?.enabled;
-
         return {
           ...report,
           monitoringStatus:
-            (isOngoingEnabledForBusiness ||
-              (isOngoingEnabledForBusiness === undefined &&
-                features?.ONGOING_MERCHANT_REPORT?.options?.runByDefault)) ??
-            false,
+            report.customer.ongoingMonitoringEnabled && !report.business.unsubscribedMonitoringAt,
         };
       }),
     );
@@ -355,26 +337,11 @@ export class BusinessReportControllerExternal {
     );
 
     const report = await this.businessReportService.findById({ id, customerId });
-    const business = await this.businessService.getById(
-      report.merchantId,
-      { select: { metadata: true } },
-      [currentProjectId],
-    );
-
-    const metadata = business?.metadata as {
-      featureConfig?: TCustomerWithFeatures['features'];
-    };
-
-    const isOngoingEnabledForBusiness =
-      metadata?.featureConfig?.[FEATURE_LIST.ONGOING_MERCHANT_REPORT]?.enabled;
 
     return {
       ...report,
       monitoringStatus:
-        (isOngoingEnabledForBusiness ||
-          (isOngoingEnabledForBusiness === undefined &&
-            features?.ONGOING_MERCHANT_REPORT?.options?.runByDefault)) ??
-        false,
+        report.customer.ongoingMonitoringEnabled && !report.business.unsubscribedMonitoringAt,
     };
   }
 

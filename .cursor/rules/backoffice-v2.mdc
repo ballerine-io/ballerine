@@ -1,0 +1,146 @@
+---
+description: Rules and best practices for backoffice-v2 React TypeScript development
+globs: ["apps/backoffice-v2/**/*.{ts,tsx}"]
+---
+
+# Backoffice V2 Development Rules
+
+## Component Architecture
+- Use functional components with TypeScript
+- Implement smart/dumb component pattern
+- Place components in feature-based directories
+- Use compound components for complex UIs
+- Follow atomic design principles
+
+```typescript
+export const MyComponent: FunctionComponent<Props> = () => {
+  return <div>...</div>;
+};
+
+// Compound component example
+MyComponent.SubComponent = ({ children }) => {
+  return <div>{children}</div>;
+};
+```
+
+## Hooks and Logic
+- Separate business logic into custom hooks
+- Place hooks in dedicated `hooks` directories
+- Use the `use` prefix for all hooks
+- Implement hook composition pattern
+- Keep hooks focused and reusable
+
+```typescript
+// Logic hook example
+export const useComponentLogic = () => {
+  // Business logic
+  return {
+    // Hook return values
+  };
+};
+```
+
+## State Management
+- Use React Query for server state
+- Use Context for shared state
+- Implement state machines for complex flows
+- Use local state for UI-only state
+- Follow unidirectional data flow
+
+## TypeScript Best Practices
+- Use strict TypeScript configuration
+- Define interfaces for all props
+- Use discriminated unions for state
+- Leverage type inference
+- Export types from separate files
+
+## UI Components
+- Use Radix UI for accessible components
+- Implement proper ARIA attributes
+- Follow consistent styling patterns
+- Use composition over inheritance
+- Keep components small and focused
+
+## Forms and Validation
+- Use React Hook Form for forms
+- Implement Zod for validation
+- Handle form submission states
+- Show validation feedback
+- Use controlled inputs when needed
+
+## Data Fetching
+- Use React Query for API calls
+- Implement proper loading states
+- Handle error states gracefully
+- Cache responses appropriately
+- Type API responses
+
+## Error Handling
+- Use error boundaries
+- Implement fallback UI
+- Handle async errors
+- Show user-friendly messages
+- Log errors appropriately
+
+## Performance
+- Use React.memo wisely
+- Implement proper code splitting
+- Use lazy loading for routes
+- Optimize re-renders
+- Profile performance regularly
+
+## Testing
+- Write unit tests for components
+- Test custom hooks independently
+- Use React Testing Library
+- Mock external dependencies
+- Maintain good coverage
+
+## File Structure
+- Follow feature-based organization
+- Use index files for exports
+- Keep related files together
+- Use consistent naming
+- Implement barrel exports
+
+## Styling
+- Use Tailwind CSS
+- Follow utility-first approach
+- Use CSS variables for theming
+- Keep styles maintainable
+- Use CSS modules when needed
+
+## Documentation
+- Document complex logic
+- Write clear component docs
+- Document hook usage
+- Keep docs up to date
+- Use JSDoc when helpful
+
+## Code Quality
+- Follow ESLint rules
+- Use consistent formatting
+- Write clear variable names
+- Keep functions pure
+- Use meaningful types
+
+## Security
+- Validate user input
+- Implement proper authentication
+- Handle sensitive data carefully
+- Follow security best practices
+- Use HTTPS for API calls
+
+## Accessibility
+- Follow WCAG guidelines
+- Use semantic HTML
+- Test with screen readers
+- Ensure keyboard navigation
+- Provide proper focus management
+
+## Best Practices
+- Follow React patterns
+- Keep code DRY
+- Handle edge cases
+- Write maintainable code
+- Review code regularly 
