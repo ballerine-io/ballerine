@@ -125,9 +125,7 @@ export const columns = [
         <TextWithNAFallback
           as={Badge}
           className={ctw(
-            severityToClassName[
-              (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
-            ],
+            severityToClassName[(severity as keyof typeof severityToClassName) ?? 'DEFAULT'],
             'w-20 py-0.5 font-bold',
           )}
         >

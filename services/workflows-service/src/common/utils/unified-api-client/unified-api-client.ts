@@ -118,6 +118,6 @@ export class UnifiedApiClient {
   }
 
   public shouldUpdateBusiness(business: BusinessPayload) {
-    return business.project.customer.config?.isMerchantMonitoringEnabled;
+    return business.project.customer.config?.disableBusinessSyncToUnifiedApi !== true;
   }
 }
