@@ -33,7 +33,6 @@ import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
 import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
 import { NotesButton } from '@/common/components/molecules/NotesButton/NotesButton';
-import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
 import { Form } from '@/common/components/organisms/Form/Form';
 import { FormControl } from '@/common/components/organisms/Form/Form.Control';
 import { FormField } from '@/common/components/organisms/Form/Form.Field';
