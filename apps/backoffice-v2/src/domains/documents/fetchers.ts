@@ -1,7 +1,8 @@
 import { apiClient } from '@/common/api-client/api-client';
 import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
-import { DocumentsTrackerSchema } from './hooks/schemas/document';
+import { DocumentsTrackerSchema, RequestDocumentsSchema } from './hooks/schemas/document';
+import { z } from 'zod';
 
 export const fetchDocumentsTrackerItems = async ({ workflowId }: { workflowId: string }) => {
   const [documentsTrackerItems, error] = await apiClient({
@@ -13,26 +14,12 @@ export const fetchDocumentsTrackerItems = async ({ workflowId }: { workflowId: s
   return handleZodError(error, documentsTrackerItems);
 };
 
-export const requestDocumentsUpload = async (body: {
-  workflowId: string;
-  identifiers: Array<{
-    document: {
-      type: string;
-      category: string;
-      issuingCountry: string;
-      issuingVersion: string;
-      version: string;
-    };
-    entity: {
-      id: string;
-    };
-  }>;
-}) => {
+export const requestDocumentsUpload = async (body: z.infer<typeof RequestDocumentsSchema>) => {
   const [documentsTrackerItems, error] = await apiClient({
     endpoint: '../external/documents/request-upload',
     method: Method.POST,
     body,
-    schema: DocumentsTrackerSchema,
+    schema: RequestDocumentsSchema,
   });
 
   return handleZodError(error, documentsTrackerItems);

@@ -1,6 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DocumentRepository } from './document.repository';
-import { Document, DocumentFile, Prisma, WorkflowRuntimeData } from '@prisma/client';
+import {
+  Document,
+  DocumentFile,
+  DocumentStatus,
+  Prisma,
+  WorkflowRuntimeData,
+} from '@prisma/client';
 import { PrismaTransactionClient, TProjectId } from '@/types';
 import { DocumentFileService } from '@/document-file/document-file.service';
 import { StorageService } from '@/storage/storage.service';
@@ -448,7 +454,7 @@ export class DocumentService {
   async requestDocumentsByIds(
     projectId: TProjectId,
     workflowId: string,
-    identifiers: Array<{
+    documents: Array<{
       type: string;
       category: string;
       issuingCountry: string;
@@ -456,10 +462,29 @@ export class DocumentService {
       version: string;
       entity: {
         id: string;
+        type: 'business' | 'ubo' | 'director';
       };
     }>,
   ) {
-    return { message: 'Documents requested successfully', count: 0 };
+    const documentsToCreate = documents.map(document => ({
+      category: document.category,
+      type: document.type,
+      issuingVersion: document.issuingVersion,
+      issuingCountry: document.issuingCountry,
+      version: parseInt(document.version),
+      status: DocumentStatus.requested,
+      properties: {},
+      projectId: projectId,
+      workflowRuntimeDataId: workflowId,
+      businessId: document.entity.type === 'business' ? document.entity.id : undefined,
+      endUserId: ['ubo', 'director'].includes(document.entity.type)
+        ? document.entity.id
+        : undefined,
+    }));
+
+    const createdDocuments = await this.repository.createMany(documentsToCreate);
+
+    return { message: 'Documents requested successfully', count: createdDocuments.count };
   }
 
   private parseDocumentsFromUISchema(uiSchema: Array<Record<string, any>>): TParsedDocuments {
