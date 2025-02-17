@@ -8,7 +8,9 @@ export class UnknownArgumentParser extends IParser {
   pattern = new RegExp(/Unknown arg `(.+?)` in (.+?) for type (.+?)\./, 'gi');
 
   parse(): IParserResult {
-    if (!this.message) return {};
+    if (!this.message) {
+      return {};
+    }
 
     return this.execPattern(this.pattern, (result, match) => {
       const [_, fieldName, failedOnPath, type] = match;

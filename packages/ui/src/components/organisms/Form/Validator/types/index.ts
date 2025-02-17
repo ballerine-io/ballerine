@@ -1,3 +1,5 @@
+import { IUseValidateParams } from '../hooks/internal/useValidate';
+
 export type TBaseValidationRules = 'json-logic';
 
 export interface IValidationRule {
@@ -12,7 +14,8 @@ export type TBaseValidators =
   | 'pattern'
   | 'minimum'
   | 'maximum'
-  | 'format';
+  | 'format'
+  | 'document';
 
 export interface ICommonValidator<T = object, TValidatorType extends string = TBaseValidators> {
   type: TValidatorType;
@@ -53,3 +56,5 @@ export type TValidator<
 > = (value: T, validator: ICommonValidator<TValidatorParams, TValidatorType>) => void;
 
 export type TDeepthLevelStack = number[] | undefined;
+
+export type TValidationParams = IUseValidateParams;

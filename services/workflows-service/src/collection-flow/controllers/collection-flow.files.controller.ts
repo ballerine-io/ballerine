@@ -1,14 +1,20 @@
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
 import { TokenScope, type ITokenScope } from '@/common/decorators/token-scope.decorator';
-import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
+import { DocumentFileJsonSchema } from '@/document-file/dtos/document-file.dto';
+import { DocumentService } from '@/document/document.service';
+import { DeleteDocumentsSchema } from '@/document/dtos/document.dto';
+import { FileService } from '@/providers/file/file.service';
 import { FILE_MAX_SIZE_IN_BYTE, FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/storage/file-filter';
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { StorageService } from '@/storage/storage.service';
+import { WorkflowService } from '@/workflow/workflow.service';
 import {
+  Body,
   BadRequestException,
   Controller,
+  Delete,
   Get,
   Param,
   ParseFilePipeBuilder,
@@ -19,11 +25,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiExcludeController } from '@nestjs/swagger';
+import { ApiExcludeController, ApiResponse } from '@nestjs/swagger';
+import { Type, type Static } from '@sinclair/typebox';
 import type { Response } from 'express';
+import z from 'zod';
 import * as errors from '../../errors';
-import { FileService } from '@/providers/file/file.service';
-import { WorkflowService } from '@/workflow/workflow.service';
+import { CollectionFlowDocumentSchema } from '../dto/create-collection-flow-document.schema';
 
 @UseTokenAuthGuard()
 @ApiExcludeController()
@@ -34,9 +41,9 @@ export class CollectionFlowFilesController {
     protected readonly collectionFlowService: CollectionFlowService,
     protected readonly fileService: FileService,
     protected readonly workflowService: WorkflowService,
+    protected readonly documentService: DocumentService,
   ) {}
 
-  // curl -v -F "file=@/<path>/a.jpg" http://localhost:3000/api/v1/collection-flow/files
   @UseInterceptors(
     FileInterceptor('file', {
       storage: getDiskStorage(),
@@ -47,8 +54,19 @@ export class CollectionFlowFilesController {
     }),
     RemoveTempFileInterceptor,
   )
-  @Post('')
-  async uploadFile(
+  @Post()
+  @ApiResponse({
+    status: 200,
+    description: 'Document created successfully',
+    schema: Type.Array(Type.Record(Type.String(), Type.Any())),
+  })
+  async createDocument(
+    @TokenScope() tokenScope: ITokenScope,
+    @Body()
+    data: Omit<Static<typeof CollectionFlowDocumentSchema>, 'properties'> & {
+      metadata: string;
+      properties: string;
+    },
     @UploadedFile(
       new ParseFilePipeBuilder().addMaxSizeValidator({ maxSize: FILE_MAX_SIZE_IN_BYTE }).build({
         fileIsRequired: true,
@@ -62,32 +80,45 @@ export class CollectionFlowFilesController {
       }),
     )
     file: Express.Multer.File,
-    @TokenScope() tokenScope: ITokenScope,
   ) {
-    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
-      tokenScope.workflowRuntimeDataId,
-      {},
-      [tokenScope.projectId],
-    );
+    const metadata = DocumentFileJsonSchema.parse(data.metadata);
+    const properties = z
+      .preprocess(value => {
+        if (typeof value !== 'string') {
+          return value;
+        }
 
-    const workflowEntityId = workflowRuntimeData.endUserId || workflowRuntimeData.businessId;
+        return JSON.parse(value);
+      }, z.record(z.string(), z.unknown()))
+      .parse(data.properties);
 
-    if (!workflowEntityId) {
-      throw new BadRequestException('Workflow does not have an end user or business id');
-    }
+    // FormData returns version as a string
+    // Manually converting to number to avoid validation errors
+    data.version = Number(data.version);
 
-    return this.fileService.uploadNewFile(tokenScope.projectId, workflowEntityId, {
-      ...file,
-      mimetype:
-        file.mimetype ||
-        (
-          await getFileMetadata({
-            file: file.originalname || '',
-            fileName: file.originalname || '',
-          })
-        )?.mimeType ||
-        '',
+    const documentsCreationResults = await this.documentService.create({
+      ...data,
+      workflowRuntimeDataId: tokenScope.workflowRuntimeDataId,
+      properties,
+      metadata,
+      file,
+      projectId: tokenScope.projectId,
     });
+
+    return documentsCreationResults[0];
+  }
+
+  @Delete()
+  @ApiResponse({
+    status: 200,
+    description: 'Documents deleted successfully',
+    schema: Type.Array(Type.Record(Type.String(), Type.Any())),
+  })
+  async deleteDocumentsByIds(
+    @TokenScope() tokenScope: ITokenScope,
+    @Body() { ids }: Static<typeof DeleteDocumentsSchema>,
+  ) {
+    return await this.documentService.deleteByIds(ids, [tokenScope.projectId]);
   }
 
   @Get('/:id')

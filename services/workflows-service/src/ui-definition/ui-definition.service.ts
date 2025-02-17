@@ -51,7 +51,7 @@ export class UiDefinitionService {
     runtimeId: string,
     uiContext: keyof typeof UiDefinitionContext,
     projectIds: TProjectIds,
-    args: Omit<Prisma.UiDefinitionFindFirstOrThrowArgs, 'where'>,
+    args?: Omit<Prisma.UiDefinitionFindFirstOrThrowArgs, 'where'>,
   ) {
     const runtime = await this.workflowRuntimeRepository.findById(runtimeId, {}, projectIds);
 
@@ -131,7 +131,9 @@ export class UiDefinitionService {
   getTranslationServiceResources(
     uiDefinition: UiDefinition & { locales?: unknown },
   ): ITranslationServiceResource[] | undefined {
-    if (!uiDefinition.locales) return undefined;
+    if (!uiDefinition.locales) {
+      return undefined;
+    }
 
     return Object.entries(uiDefinition.locales).map(([language, resource]) => ({
       language,

@@ -7,6 +7,7 @@ export const ConfigSchema = z
     isDocumentsV2: z.boolean().optional(),
     isAssociatedCompanyKybEnabled: z.boolean().optional(),
     isCaseOverviewEnabled: z.boolean().optional(),
+    isDocumentTrackerEnabled: z.boolean().optional(),
     isCaseRiskOverviewEnabled: z.boolean().optional(),
     isLegacyReject: z.boolean().optional(),
     isLockedDocumentCategoryAndType: z.boolean().optional(),
@@ -63,6 +64,7 @@ export const ConfigSchema = z
     hasUboOngoingMonitoring: z.boolean().optional(),
     maxBusinessReports: z.number().nonnegative().optional(),
     isMerchantMonitoringEnabled: z.boolean().optional(),
+    showFullAccessPopup: z.boolean().optional(),
     uiOptions: z
       .object({
         redirectUrls: z

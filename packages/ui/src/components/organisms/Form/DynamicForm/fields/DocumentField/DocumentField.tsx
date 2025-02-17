@@ -1,9 +1,11 @@
-import { ctw } from '@/common';
+import { AnyObject, ctw } from '@/common';
+import { IHttpParams, useHttp } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';
 import { Input } from '@/components/atoms/Input';
 import { createTestId } from '@/components/organisms/Renderer/utils/create-test-id';
 import { Upload, XCircle } from 'lucide-react';
 import { useCallback, useMemo, useRef } from 'react';
+import { useDynamicForm } from '../../context';
 import { useElement, useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
@@ -19,22 +21,44 @@ import { useDocumentUpload } from './hooks/useDocumentUpload';
 import { getFileOrFileIdFromDocumentsList } from './hooks/useDocumentUpload/helpers/get-file-or-fileid-from-documents-list';
 import { removeDocumentFromListByTemplateId } from './hooks/useDocumentUpload/helpers/remove-document-from-list-by-template-id';
 
-export interface IDocumentFieldParams<
-  TTemplate extends { id: string; pages: Array<{ [key: string]: string }> } = {
-    id: string;
-    pages: [];
-  },
-> extends IFileFieldParams {
-  template: TTemplate;
+export interface IDocumentTemplate {
+  id: string;
+  category: string;
+  type: string;
+  issuer: {
+    country: string;
+  };
+  version: number;
+  issuingVersion: number;
+  properties: AnyObject;
+  pages: AnyObject[];
+}
+
+export interface IDocumentFieldParams extends IFileFieldParams {
+  template: IDocumentTemplate;
   pageIndex?: number;
   pageProperty?: string;
+  documentType: string;
+  documentVariant: string;
+  httpParams: {
+    createDocument: IHttpParams;
+    deleteDocument: IHttpParams;
+  };
 }
 
 export const DOCUMENT_FIELD_TYPE = 'documentfield';
 
 export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element }) => {
+  const { metadata } = useDynamicForm();
+
   useMountEvent(element);
   useUnmountEvent(element);
+
+  const { run: deleteDocument, isLoading: isDeletingDocument } = useHttp(
+    (element.params?.httpParams?.deleteDocument || {}) as IHttpParams,
+    metadata,
+  );
+
   const { handleChange, isUploading: disabledWhileUploading } = useDocumentUpload(
     element as IFormElement<'documentfield', IDocumentFieldParams>,
     element.params || ({} as IDocumentFieldParams),
@@ -69,14 +93,18 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
   }, [inputRef]);
 
   const file = useMemo(() => {
-    if (value instanceof File) return value;
+    if (value instanceof File) {
+      return value;
+    }
 
-    if (typeof value === 'string') return new File([], value);
+    if (typeof value === 'string') {
+      return new File([], value);
+    }
 
     return undefined;
   }, [value]);
 
-  const clearFileAndInput = useCallback(() => {
+  const clearFileAndInput = useCallback(async () => {
     if (!element.params?.template?.id) {
       console.warn('Template id is migging in element', element);
 
@@ -88,23 +116,35 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
       element.params?.template?.id as string,
     );
 
+    const documentId = value;
+
+    if (typeof documentId === 'string') {
+      await deleteDocument({ ids: [documentId] });
+    }
+
     onChange(updatedDocuments);
     removeTask(id);
 
     if (inputRef.current) {
       inputRef.current.value = '';
     }
-  }, [documentsList, element, onChange, id, removeTask]);
+  }, [documentsList, element, onChange, id, removeTask, value, deleteDocument]);
 
   return (
     <FieldLayout element={element}>
       <div
         className={ctw(
           'relative flex h-[56px] flex-row items-center gap-3 rounded-[16px] border bg-white px-4',
-          { 'pointer-events-none opacity-50': disabled || disabledWhileUploading },
+          {
+            'pointer-events-none opacity-50':
+              disabled || disabledWhileUploading || isDeletingDocument,
+          },
         )}
         onClick={focusInputOnContainerClick}
         data-testid={createTestId(element, stack)}
+        tabIndex={0}
+        onFocus={onFocus}
+        onBlur={onBlur}
       >
         <div className="flex gap-3 text-[#007AFF]">
           <Upload />
@@ -116,9 +156,9 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
             variant="ghost"
             size="icon"
             className="h-[28px] w-[28px] rounded-full"
-            onClick={e => {
+            onClick={async e => {
               e.stopPropagation();
-              clearFileAndInput();
+              await clearFileAndInput();
             }}
           >
             <div className="rounded-full bg-white">
@@ -133,8 +173,6 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
           accept={acceptFileFormats}
           disabled={disabled || disabledWhileUploading}
           onChange={handleChange}
-          onBlur={onBlur}
-          onFocus={onFocus}
           ref={inputRef}
           className="hidden"
         />

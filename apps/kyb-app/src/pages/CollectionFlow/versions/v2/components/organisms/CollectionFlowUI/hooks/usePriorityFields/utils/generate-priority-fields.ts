@@ -24,7 +24,7 @@ export const generatePriorityFields = (
       // Extracting revision reason fro documents isnt common so we handling it explicitly
       if (isDocumentFieldDefinition(element)) {
         const documents = get(context, formatValueDestination(element.valueDestination, stack));
-        const document = documents.find(
+        const document = documents?.find(
           (doc: TDocument) => doc.id === element.params?.template?.id,
         );
 

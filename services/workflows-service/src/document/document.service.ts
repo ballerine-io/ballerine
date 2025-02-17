@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DocumentRepository } from './document.repository';
-import { Document, DocumentFile, File, Prisma, WorkflowDefinition } from '@prisma/client';
+import { Document, DocumentFile, Prisma, WorkflowRuntimeData } from '@prisma/client';
 import { PrismaTransactionClient, TProjectId } from '@/types';
 import { DocumentFileService } from '@/document-file/document-file.service';
 import { StorageService } from '@/storage/storage.service';
@@ -10,9 +10,10 @@ import { Static } from '@sinclair/typebox';
 import { CreateDocumentSchema } from './dtos/document.dto';
 import { CreateDocumentFileSchema } from '@/document-file/dtos/document-file.dto';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { addPropertiesSchemaToDocument } from '@/workflow/utils/add-properties-schema-to-document';
-import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { isType, getDocumentId } from '@ballerine/common';
+import z from 'zod';
+import { TParsedDocuments, EntitySchema, DocumentTrackerResponseSchema } from './types';
 
 @Injectable()
 export class DocumentService {
@@ -22,8 +23,7 @@ export class DocumentService {
     protected readonly fileService: FileService,
     protected readonly workflowService: WorkflowService,
     protected readonly storageService: StorageService,
-    protected readonly logger: AppLoggerService,
-    protected readonly workflowDefinitionService: WorkflowDefinitionService,
+    protected readonly uiDefinitionService: UiDefinitionService,
   ) {}
 
   async create(
@@ -316,5 +316,276 @@ export class DocumentService {
       documents,
       documentSchema: workflowDefinition.documentsSchema,
     });
+  }
+
+  async getDocumentTrackerByWorkflowId(projectId: TProjectId, workflowId: string) {
+    const uiDefinition = await this.uiDefinitionService.getByRuntimeId(
+      workflowId,
+      'collection_flow',
+      [projectId],
+    );
+
+    const uiSchemaValidation = z
+      .object({ elements: z.array(z.record(z.string(), z.any())) })
+      .safeParse(uiDefinition.uiSchema);
+
+    if (!uiSchemaValidation.success) {
+      return {
+        business: [],
+        individuals: {
+          ubos: [],
+          directors: [],
+        },
+      };
+    }
+
+    const uiSchema = uiSchemaValidation.data;
+
+    const parsedUIDocuments = this.parseDocumentsFromUISchema(uiSchema.elements);
+
+    const workflowData = (await this.workflowService.getWorkflowRuntimeDataById(
+      workflowId,
+      {
+        select: {
+          context: true,
+          childWorkflowsRuntimeData: true,
+        },
+      },
+      [projectId],
+    )) as WorkflowRuntimeData & {
+      childWorkflowsRuntimeData: WorkflowRuntimeData[];
+    };
+
+    const entities = {
+      business: {
+        entityType: 'business',
+        id: workflowData.context.entity.ballerineEntityId,
+        companyName: workflowData.context.entity.data.companyName,
+      },
+      directors: (
+        (workflowData.context.entity.data.additionalInfo.directors ?? []) as Array<{
+          ballerineEntityId: string;
+          firstName: string;
+          lastName: string;
+        }>
+      ).map(director => ({
+        entityType: 'director',
+        id: director.ballerineEntityId,
+        firstName: director.firstName,
+        lastName: director.lastName,
+      })),
+      ubos: workflowData.childWorkflowsRuntimeData.map(childWorkflow => ({
+        entityType: 'ubo',
+        id: childWorkflow.endUserId ?? '',
+        firstName: childWorkflow.context.entity.data.firstName,
+        lastName: childWorkflow.context.entity.data.lastName,
+      })),
+    } as const satisfies {
+      business: z.infer<typeof EntitySchema>;
+      directors: Array<z.infer<typeof EntitySchema>>;
+      ubos: Array<z.infer<typeof EntitySchema>>;
+    };
+
+    const allDocuments = await this.repository.findMany([projectId], {
+      where: {
+        workflowRuntimeDataId: workflowId,
+      },
+    });
+
+    const entitiesWithDocuments = {
+      business: {
+        ...entities.business,
+        documents: allDocuments.filter(doc => doc.businessId === entities.business.id),
+      },
+      ubos: entities.ubos.map(ubo => ({
+        ...ubo,
+        documents: allDocuments.filter(doc => doc.endUserId === ubo.id),
+      })),
+      directors: entities.directors.map(director => ({
+        ...director,
+        documents: allDocuments.filter(doc => doc.endUserId === director.id),
+      })),
+    };
+
+    const isMatchingDocument = (
+      doc: Document,
+      expectedDoc: TParsedDocuments['business'][number],
+    ): boolean => {
+      const expectedDocId = getDocumentId(
+        {
+          type: expectedDoc.type,
+          category: expectedDoc.category,
+          issuer: { country: expectedDoc.issuingCountry },
+          version: expectedDoc.version,
+        },
+        false,
+      );
+      const actualDocId = getDocumentId(
+        {
+          type: doc.type,
+          category: doc.category,
+          issuer: { country: doc.issuingCountry },
+          version: doc.version,
+        },
+        false,
+      );
+
+      return expectedDocId === actualDocId;
+    };
+
+    const generateDocumentTrackerItem = <T extends z.infer<typeof EntitySchema>>(
+      matchingDocument: Document | undefined,
+      expectedDoc: TParsedDocuments['business'][number],
+      entity: T,
+    ) => ({
+      documentId: matchingDocument?.id ?? null,
+      status: matchingDocument?.status ?? 'unprovided',
+      decision: matchingDocument?.decision ?? null,
+      identifiers: {
+        document: expectedDoc,
+        entity,
+      },
+    });
+
+    const result: z.output<typeof DocumentTrackerResponseSchema> = {
+      business: parsedUIDocuments.business.map(expectedDoc => {
+        const matchingDocument = entitiesWithDocuments.business.documents.find(doc =>
+          isMatchingDocument(doc, expectedDoc),
+        );
+
+        return generateDocumentTrackerItem(matchingDocument, expectedDoc, {
+          id: entities.business.id,
+          companyName: entities.business.companyName,
+          entityType: 'business',
+        });
+      }),
+      individuals: {
+        ubos: entitiesWithDocuments.ubos.flatMap(ubo =>
+          parsedUIDocuments.individuals.ubos.map(expectedDoc =>
+            generateDocumentTrackerItem(
+              ubo.documents.find(doc => isMatchingDocument(doc, expectedDoc)),
+              expectedDoc,
+              {
+                id: ubo.id,
+                firstName: ubo.firstName,
+                lastName: ubo.lastName,
+                entityType: 'ubo',
+              },
+            ),
+          ),
+        ),
+        directors: entitiesWithDocuments.directors.flatMap(director =>
+          parsedUIDocuments.individuals.directors.map(expectedDoc =>
+            generateDocumentTrackerItem(
+              director.documents.find(doc => isMatchingDocument(doc, expectedDoc)),
+              expectedDoc,
+              {
+                id: director.id,
+                firstName: director.firstName,
+                lastName: director.lastName,
+                entityType: 'director',
+              },
+            ),
+          ),
+        ),
+      },
+    };
+
+    return result;
+  }
+
+  async requestDocumentsByIds(
+    projectId: TProjectId,
+    workflowId: string,
+    identifiers: Array<{
+      type: string;
+      category: string;
+      issuingCountry: string;
+      issuingVersion: string;
+      version: string;
+      entity: {
+        id: string;
+      };
+    }>,
+  ) {
+    return { message: 'Documents requested successfully', count: 0 };
+  }
+
+  private parseDocumentsFromUISchema(uiSchema: Array<Record<string, any>>): TParsedDocuments {
+    const result: TParsedDocuments = {
+      business: [],
+      individuals: {
+        ubos: [],
+        directors: [],
+      },
+    };
+
+    const processElement = (element: Record<string, any>) => {
+      if (isType(z.array(z.record(z.string(), z.any())))(element?.elements)) {
+        element.elements.forEach(processElement);
+      }
+
+      if (isType(z.array(z.record(z.string(), z.any())))(element?.children)) {
+        element.children.forEach(processElement);
+      }
+
+      if (element.element !== 'documentfield') {
+        return;
+      }
+
+      const template = element.params.template;
+
+      const parsedDocument = z
+        .object({
+          type: z.string(),
+          id: z.string(),
+          category: z.string(),
+          issuer: z.object({
+            country: z.string(),
+          }),
+          issuingVersion: z.number(),
+          version: z.string(),
+          entityType: z.enum(['business', 'ubo', 'director']).default('business'),
+        })
+        .transform(({ entityType, type, id, category, issuer, issuingVersion, version }) => ({
+          entityType,
+          type,
+          templateId: id,
+          category,
+          issuingCountry: issuer.country,
+          issuingVersion: issuingVersion.toString(),
+          version,
+        }))
+        .safeParse(template);
+
+      if (!parsedDocument.success) {
+        return;
+      }
+
+      if (!element.valueDestination) {
+        return;
+      }
+
+      const isUboDocument =
+        element.valueDestination.includes('.ubo') &&
+        element.valueDestination.includes('.documents');
+      const isDirectorDocument =
+        element.valueDestination.includes('.director') &&
+        element.valueDestination.includes('.documents');
+
+      if (isUboDocument) {
+        parsedDocument.data.entityType = 'ubo';
+        result.individuals.ubos.push(parsedDocument.data);
+      } else if (isDirectorDocument) {
+        parsedDocument.data.entityType = 'director';
+        result.individuals.directors.push(parsedDocument.data);
+      } else {
+        result.business.push(parsedDocument.data);
+      }
+    };
+
+    uiSchema.forEach(processElement);
+
+    return result;
   }
 }

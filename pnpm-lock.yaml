@@ -82,7 +82,7 @@ importers:
         specifier: ^1.2.67
         version: link:../../packages/react-pdf-toolkit
       '@ballerine/ui':
-        specifier: ^0.5.67
+        specifier: ^0.5.73
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.6.89
@@ -536,7 +536,7 @@ importers:
         specifier: ^0.9.70
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.5.68
+        specifier: 0.5.74
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.6.89
@@ -1519,7 +1519,7 @@ importers:
         specifier: ^1.1.32
         version: link:../config
       '@ballerine/ui':
-        specifier: 0.5.68
+        specifier: 0.5.74
         version: link:../ui
       '@react-pdf/renderer':
         specifier: ^3.1.14
@@ -1880,6 +1880,9 @@ importers:
       recharts:
         specifier: ^2.7.2
         version: 2.9.3(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)
+      sonner:
+        specifier: ^1.4.3
+        version: 1.4.3(react-dom@18.2.0)(react@18.2.0)
       string-ts:
         specifier: ^1.2.0
         version: 1.2.0
@@ -3376,7 +3379,7 @@ packages:
     engines: {node: '>=18.14.1'}
     dependencies:
       ci-info: 3.9.0
-      debug: 4.3.6
+      debug: 4.4.0
       dlv: 1.1.3
       dset: 3.1.3
       is-docker: 3.0.0
@@ -4860,7 +4863,7 @@ packages:
       '@babel/traverse': 7.23.7
       '@babel/types': 7.23.6
       convert-source-map: 2.0.0
-      debug: 4.3.6
+      debug: 4.4.0
       gensync: 1.0.0-beta.2
       json5: 2.2.3
       semver: 6.3.1
@@ -5031,7 +5034,7 @@ packages:
       '@babel/core': 7.17.9
       '@babel/helper-compilation-targets': 7.22.15
       '@babel/helper-plugin-utils': 7.22.5
-      debug: 4.3.6
+      debug: 4.4.0
       lodash.debounce: 4.0.8
       resolve: 1.22.8
       semver: 6.3.1
@@ -7355,7 +7358,7 @@ packages:
       '@babel/helper-split-export-declaration': 7.22.6
       '@babel/parser': 7.23.6
       '@babel/types': 7.23.6
-      debug: 4.3.6
+      debug: 4.4.0
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
@@ -9490,7 +9493,7 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dependencies:
       ajv: 6.12.6
-      debug: 4.3.6
+      debug: 4.4.0
       espree: 9.6.1
       globals: 13.23.0
       ignore: 5.3.0
@@ -9507,7 +9510,7 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dependencies:
       ajv: 6.12.6
-      debug: 4.3.6
+      debug: 4.4.0
       espree: 9.6.1
       globals: 13.23.0
       ignore: 5.3.0
@@ -9523,7 +9526,7 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dependencies:
       ajv: 6.12.6
-      debug: 4.3.6
+      debug: 4.4.0
       espree: 9.6.1
       globals: 13.23.0
       ignore: 5.3.0
@@ -9702,7 +9705,7 @@ packages:
     engines: {node: '>=10.10.0'}
     dependencies:
       '@humanwhocodes/object-schema': 1.2.1
-      debug: 4.3.6
+      debug: 4.4.0
       minimatch: 3.1.2
     transitivePeerDependencies:
       - supports-color
@@ -9713,7 +9716,7 @@ packages:
     engines: {node: '>=10.10.0'}
     dependencies:
       '@humanwhocodes/object-schema': 2.0.1
-      debug: 4.3.6
+      debug: 4.4.0
       minimatch: 3.1.2
     transitivePeerDependencies:
       - supports-color
@@ -10550,7 +10553,7 @@ packages:
       '@open-draft/until': 1.0.3
       '@types/debug': 4.1.12
       '@xmldom/xmldom': 0.8.10
-      debug: 4.3.6
+      debug: 4.4.0
       headers-polyfill: 3.2.5
       outvariant: 1.4.3
       strict-event-emitter: 0.2.8
@@ -17149,7 +17152,7 @@ packages:
       vite: ^4.0.0
     dependencies:
       '@sveltejs/vite-plugin-svelte': 2.5.2(svelte@3.59.2)(vite@4.5.3)
-      debug: 4.3.6
+      debug: 4.4.0
       svelte: 3.59.2
       vite: 4.5.3(@types/node@20.9.2)
     transitivePeerDependencies:
@@ -19706,7 +19709,7 @@ packages:
     dependencies:
       '@typescript-eslint/typescript-estree': 5.62.0(typescript@4.9.5)
       '@typescript-eslint/utils': 5.62.0(eslint@8.22.0)(typescript@4.9.5)
-      debug: 4.3.6
+      debug: 4.4.0
       eslint: 8.22.0
       tsutils: 3.21.0(typescript@4.9.5)
       typescript: 4.9.5
@@ -19726,7 +19729,7 @@ packages:
     dependencies:
       '@typescript-eslint/typescript-estree': 5.62.0(typescript@5.5.4)
       '@typescript-eslint/utils': 5.62.0(eslint@8.22.0)(typescript@5.5.4)
-      debug: 4.3.6
+      debug: 4.4.0
       eslint: 8.22.0
       tsutils: 3.21.0(typescript@5.5.4)
       typescript: 5.5.4
@@ -19746,7 +19749,7 @@ packages:
     dependencies:
       '@typescript-eslint/typescript-estree': 5.62.0(typescript@4.9.3)
       '@typescript-eslint/utils': 5.62.0(eslint@8.54.0)(typescript@4.9.3)
-      debug: 4.3.6
+      debug: 4.4.0
       eslint: 8.54.0
       tsutils: 3.21.0(typescript@4.9.3)
       typescript: 4.9.3
@@ -19766,7 +19769,7 @@ packages:
     dependencies:
       '@typescript-eslint/typescript-estree': 5.62.0(typescript@4.9.5)
       '@typescript-eslint/utils': 5.62.0(eslint@8.54.0)(typescript@4.9.5)
-      debug: 4.3.6
+      debug: 4.4.0
       eslint: 8.54.0
       tsutils: 3.21.0(typescript@4.9.5)
       typescript: 4.9.5
@@ -19786,7 +19789,7 @@ packages:
     dependencies:
       '@typescript-eslint/typescript-estree': 5.62.0(typescript@5.1.6)
       '@typescript-eslint/utils': 5.62.0(eslint@8.54.0)(typescript@5.1.6)
-      debug: 4.3.6
+      debug: 4.4.0
       eslint: 8.54.0
       tsutils: 3.21.0(typescript@5.1.6)
       typescript: 5.1.6
@@ -19806,7 +19809,7 @@ packages:
     dependencies:
       '@typescript-eslint/typescript-estree': 5.62.0(typescript@5.5.4)
       '@typescript-eslint/utils': 5.62.0(eslint@8.54.0)(typescript@5.5.4)
-      debug: 4.3.6
+      debug: 4.4.0
       eslint: 8.54.0
       tsutils: 3.21.0(typescript@5.5.4)
       typescript: 5.5.4
@@ -19826,7 +19829,7 @@ packages:
     dependencies:
       '@typescript-eslint/typescript-estree': 6.11.0(typescript@5.5.4)
       '@typescript-eslint/utils': 6.11.0(eslint@8.53.0)(typescript@5.5.4)
-      debug: 4.3.6
+      debug: 4.4.0
       eslint: 8.53.0
       ts-api-utils: 1.0.3(typescript@5.5.4)
       typescript: 5.5.4
@@ -19846,7 +19849,7 @@ packages:
     dependencies:
       '@typescript-eslint/typescript-estree': 6.14.0(typescript@5.2.2)
       '@typescript-eslint/utils': 6.14.0(eslint@8.55.0)(typescript@5.2.2)
-      debug: 4.3.6
+      debug: 4.4.0
       eslint: 8.55.0
       ts-api-utils: 1.0.3(typescript@5.2.2)
       typescript: 5.2.2
@@ -19890,7 +19893,7 @@ packages:
     dependencies:
       '@typescript-eslint/types': 4.33.0
       '@typescript-eslint/visitor-keys': 4.33.0
-      debug: 4.3.6
+      debug: 4.4.0
       globby: 11.1.0
       is-glob: 4.0.3
       semver: 7.5.4
@@ -19911,7 +19914,7 @@ packages:
     dependencies:
       '@typescript-eslint/types': 4.33.0
       '@typescript-eslint/visitor-keys': 4.33.0
-      debug: 4.3.6
+      debug: 4.4.0
       globby: 11.1.0
       is-glob: 4.0.3
       semver: 7.5.4
@@ -19932,7 +19935,7 @@ packages:
     dependencies:
       '@typescript-eslint/types': 5.62.0
       '@typescript-eslint/visitor-keys': 5.62.0
-      debug: 4.3.6
+      debug: 4.4.0
       globby: 11.1.0
       is-glob: 4.0.3
       semver: 7.5.4
@@ -19953,7 +19956,7 @@ packages:
     dependencies:
       '@typescript-eslint/types': 5.62.0
       '@typescript-eslint/visitor-keys': 5.62.0
-      debug: 4.3.6
+      debug: 4.4.0
       globby: 11.1.0
       is-glob: 4.0.3
       semver: 7.5.4
@@ -19974,7 +19977,7 @@ packages:
     dependencies:
       '@typescript-eslint/types': 5.62.0
       '@typescript-eslint/visitor-keys': 5.62.0
-      debug: 4.3.6
+      debug: 4.4.0
       globby: 11.1.0
       is-glob: 4.0.3
       semver: 7.5.4
@@ -19995,7 +19998,7 @@ packages:
     dependencies:
       '@typescript-eslint/types': 5.62.0
       '@typescript-eslint/visitor-keys': 5.62.0
-      debug: 4.3.6
+      debug: 4.4.0
       globby: 11.1.0
       is-glob: 4.0.3
       semver: 7.5.4
@@ -20016,7 +20019,7 @@ packages:
     dependencies:
       '@typescript-eslint/types': 6.11.0
       '@typescript-eslint/visitor-keys': 6.11.0
-      debug: 4.3.6
+      debug: 4.4.0
       globby: 11.1.0
       is-glob: 4.0.3
       semver: 7.5.4
@@ -20037,7 +20040,7 @@ packages:
     dependencies:
       '@typescript-eslint/types': 6.14.0
       '@typescript-eslint/visitor-keys': 6.14.0
-      debug: 4.3.6
+      debug: 4.4.0
       globby: 11.1.0
       is-glob: 4.0.3
       semver: 7.5.4
@@ -20058,7 +20061,7 @@ packages:
     dependencies:
       '@typescript-eslint/types': 6.21.0
       '@typescript-eslint/visitor-keys': 6.21.0
-      debug: 4.3.6
+      debug: 4.4.0
       globby: 11.1.0
       is-glob: 4.0.3
       minimatch: 9.0.3
@@ -21170,7 +21173,7 @@ packages:
     resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
     engines: {node: '>= 6.0.0'}
     dependencies:
-      debug: 4.3.6
+      debug: 4.4.0
     transitivePeerDependencies:
       - supports-color
 
@@ -21637,7 +21640,7 @@ packages:
       '@typescript-eslint/scope-manager': 5.62.0
       '@typescript-eslint/types': 5.62.0
       astrojs-compiler-sync: 0.3.3(@astrojs/compiler@1.8.2)
-      debug: 4.3.6
+      debug: 4.4.0
       eslint-visitor-keys: 3.4.3
       espree: 9.6.1
       semver: 7.5.4
@@ -24472,7 +24475,7 @@ packages:
     resolution: {integrity: sha512-f0ReSURdM3pcKPNS30mxOHSbaFLcknGmQjwSfmbcdOw1XWKXVhukM3NJHhr7NpY9BIyyWQb0EBo3KQvvuU5egQ==}
     engines: {node: '>= 8.0'}
     dependencies:
-      debug: 4.3.6
+      debug: 4.4.0
       readable-stream: 3.6.2
       split-ca: 1.0.1
       ssh2: 1.14.0
@@ -24734,7 +24737,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-easy-sort: 1.6.0(react-dom@18.2.0)(react@18.2.0)
-      tailwind-merge: 2.6.0
+      tailwind-merge: 3.0.1
       tsup: 6.7.0(postcss@8.4.41)(ts-node@10.9.1)(typescript@5.1.6)
     transitivePeerDependencies:
       - '@swc/core'
@@ -24761,7 +24764,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-easy-sort: 1.6.0(react-dom@18.2.0)(react@18.2.0)
-      tailwind-merge: 2.6.0
+      tailwind-merge: 3.0.1
       tsup: 6.7.0(postcss@8.4.41)(ts-node@10.9.1)(typescript@5.5.4)
     transitivePeerDependencies:
       - '@swc/core'
@@ -25143,7 +25146,7 @@ packages:
     peerDependencies:
       esbuild: '>=0.12 <1'
     dependencies:
-      debug: 4.3.6
+      debug: 4.4.0
       esbuild: 0.18.20
     transitivePeerDependencies:
       - supports-color
@@ -26709,7 +26712,7 @@ packages:
     engines: {node: '>= 10.17.0'}
     hasBin: true
     dependencies:
-      debug: 4.3.6
+      debug: 4.4.0
       get-stream: 5.2.0
       yauzl: 2.10.0
     optionalDependencies:
@@ -28202,7 +28205,7 @@ packages:
     dependencies:
       '@tootallnate/once': 2.0.0
       agent-base: 6.0.2
-      debug: 4.3.6
+      debug: 4.4.0
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -28230,7 +28233,7 @@ packages:
     engines: {node: '>= 6'}
     dependencies:
       agent-base: 6.0.2
-      debug: 4.3.6
+      debug: 4.4.0
     transitivePeerDependencies:
       - supports-color
 
@@ -29083,7 +29086,7 @@ packages:
     resolution: {integrity: sha512-n3s8EwkdFIJCG3BPKBYvskgXGoy88ARzvegkitk60NxRdwltLOTaH7CUiMRXvwYorl0Q712iEjcWB+fK/MrWVw==}
     engines: {node: '>=10'}
     dependencies:
-      debug: 4.3.6
+      debug: 4.4.0
       istanbul-lib-coverage: 3.2.2
       source-map: 0.6.1
     transitivePeerDependencies:
@@ -30287,6 +30290,7 @@ packages:
 
   /lodash.get@4.4.2:
     resolution: {integrity: sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==}
+    deprecated: This package is deprecated. Use the optional chaining (?.) operator instead.
 
   /lodash.groupby@4.6.0:
     resolution: {integrity: sha512-5dcWxm23+VAoz+awKmBaiBvzox8+RqMgFhi7UvX9DHZr2HdxHXM/Wrf8cfKpsW37RNrvtPn6hSwNqurSILbmJw==}
@@ -32219,7 +32223,7 @@ packages:
     resolution: {integrity: sha512-96yVFal0c/W1lG7mmfRe7eO+hovrhJYd2obzzOZ90f6fjpeU/XNvd9cYHZKZAQJumDfhXgoTpkpJ9pvMj+hqHw==}
     engines: {node: '>= 10.13'}
     dependencies:
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.4.0
       json-stringify-safe: 5.0.1
       propagate: 2.0.1
     transitivePeerDependencies:
@@ -33801,7 +33805,7 @@ packages:
     engines: {node: '>=8.16.0'}
     dependencies:
       '@types/mime-types': 2.1.4
-      debug: 4.3.6
+      debug: 4.4.0
       extract-zip: 1.7.0
       https-proxy-agent: 4.0.0
       mime: 2.6.0
@@ -36403,7 +36407,7 @@ packages:
     dependencies:
       component-emitter: 1.3.1
       cookiejar: 2.1.4
-      debug: 4.3.6
+      debug: 4.4.0
       fast-safe-stringify: 2.1.1
       form-data: 4.0.0
       formidable: 2.1.2
@@ -36600,8 +36604,8 @@ packages:
     resolution: {integrity: sha512-3mFKyCo/MBcgyOTlrY8T7odzZFx+w+qKSMAmdFzRvqBfLlSigU6TZnlFHK0lkMwj9Bj8OYU+9yW9lmGuS0QEnQ==}
     dev: false
 
-  /tailwind-merge@2.6.0:
-    resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
+  /tailwind-merge@3.0.1:
+    resolution: {integrity: sha512-AvzE8FmSoXC7nC+oU5GlQJbip2UO7tmOhOfQyOmPhrStOGXHU08j8mZEHZ4BmCqY5dWTCo4ClWkNyRNx1wpT0g==}
     dev: false
 
   /tailwindcss-animate@1.0.5(tailwindcss@3.3.5):
@@ -38540,7 +38544,7 @@ packages:
     hasBin: true
     dependencies:
       cac: 6.7.14
-      debug: 4.3.6
+      debug: 4.4.0
       mlly: 1.4.2
       pathe: 1.1.1
       picocolors: 1.0.0
@@ -38564,7 +38568,7 @@ packages:
     hasBin: true
     dependencies:
       cac: 6.7.14
-      debug: 4.3.6
+      debug: 4.4.0
       mlly: 1.4.2
       pathe: 1.1.1
       picocolors: 1.0.0
@@ -38586,7 +38590,7 @@ packages:
     hasBin: true
     dependencies:
       cac: 6.7.14
-      debug: 4.3.6
+      debug: 4.4.0
       mlly: 1.4.2
       pathe: 1.1.1
       picocolors: 1.0.0

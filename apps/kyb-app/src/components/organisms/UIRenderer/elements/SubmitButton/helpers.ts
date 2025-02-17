@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { ARRAY_VALUE_INDEX_PLACEHOLDER } from '@/common/consts/consts';
 import { DocumentFieldParams } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField';
 import { UIElement, UIPage } from '@/domains/collection-flow';
