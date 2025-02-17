@@ -18,8 +18,12 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { CollectionFlowStatusesEnum, getCollectionFlowState } from '@ballerine/common';
 import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import * as common from '@nestjs/common';
-import { ApiExcludeController } from '@nestjs/swagger';
+import { ApiExcludeController, ApiResponse } from '@nestjs/swagger';
 import { CollectionFlowMissingException } from '../exceptions/collection-flow-missing.exception';
+import { Validate } from 'ballerine-nestjs-typebox';
+import { Type } from '@sinclair/typebox';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { DocumentService } from '@/document/document.service';
 
 @UseTokenAuthGuard()
 @ApiExcludeController()
@@ -31,6 +35,7 @@ export class CollectionFlowController {
     protected readonly adapterManager: WorkflowAdapterManager,
     protected readonly collectionFlowService: CollectionFlowService,
     protected readonly endUserService: EndUserService,
+    protected readonly documentService: DocumentService,
   ) {}
 
   @common.Get('/customer')
@@ -311,5 +316,36 @@ export class CollectionFlowController {
       [tokenScope.projectId],
       tokenScope.projectId,
     );
+  }
+
+  @common.Get('documents/:entityId/:workflowRuntimeDataId')
+  @ApiResponse({
+    status: 200,
+    description: 'Documents retrieved successfully',
+    schema: Type.Array(Type.Record(Type.String(), Type.Any())),
+  })
+  @Validate({
+    request: [
+      {
+        type: 'param',
+        name: 'entityId',
+        schema: Type.String(),
+      },
+      {
+        type: 'param',
+        name: 'workflowRuntimeDataId',
+        schema: Type.String(),
+      },
+    ],
+    response: Type.Any(),
+  })
+  async getDocumentsByEntityIdAndWorkflowId(
+    @common.Param('entityId') entityId: string,
+    @common.Param('workflowRuntimeDataId') workflowRuntimeDataId: string,
+    @CurrentProject() projectId: string,
+  ) {
+    return await this.documentService.getByEntityIdAndWorkflowId(entityId, workflowRuntimeDataId, [
+      projectId,
+    ]);
   }
 }
