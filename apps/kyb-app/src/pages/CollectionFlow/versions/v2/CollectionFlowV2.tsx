@@ -27,6 +27,7 @@ import { useAdditionalWorkflowContext } from '../v1/hooks/useAdditionalWorkflowC
 import { CollectionFlowUI } from './components/organisms/CollectionFlowUI';
 import { PluginsRunner } from './components/organisms/CollectionFlowUI/components/utility/PluginsRunner';
 import { useRevisionStates } from './hooks/useRevisionStates';
+import { useDocumentsQuery } from './components/organisms/CollectionFlowUI/hooks/useDocumentsQuery/useDocumentsQuery';
 
 const isCompleted = (state: string) => state === 'completed' || state === 'finish';
 const isFailed = (state: string) => state === 'failed';
@@ -39,6 +40,15 @@ export const CollectionFlowV2 = withSessionProtected(() => {
   const { t } = useTranslation();
   const { themeDefinition } = useTheme();
   const additionalContext = useAdditionalWorkflowContext();
+
+  const { data: documents } = useDocumentsQuery({
+    entityId:
+      collectionFlowData?.context?.entity &&
+      'ballerineEntityId' in collectionFlowData.context.entity
+        ? collectionFlowData.context.entity.ballerineEntityId
+        : '',
+    workflowRuntimeDataId: collectionFlowData?.workflowRuntimeDataId,
+  });
 
   const elements = schema?.uiSchema?.elements as unknown as Array<UIPage<'v2'>>;
   const definition = schema?.definition.definition;

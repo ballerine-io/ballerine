@@ -30,7 +30,7 @@ export const generatePriorityFields = (
 
         if (!document) continue;
 
-        const reason = document.decision?.status;
+        const reason = document.decision?.revisionReason;
 
         if (!reason) continue;
 
