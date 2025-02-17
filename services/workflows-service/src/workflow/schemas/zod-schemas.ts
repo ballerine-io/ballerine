@@ -64,6 +64,8 @@ export const ConfigSchema = z
     isMerchantMonitoringEnabled: z.boolean().optional(),
     showFullAccessPopup: z.boolean().optional(),
     isDemoAccount: z.boolean().optional(),
+    withQualityControl: z.boolean().optional(),
+    disableBusinessSyncToUnifiedApi: z.boolean().optional(),
     uiOptions: z
       .object({
         redirectUrls: z
