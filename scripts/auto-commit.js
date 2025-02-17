@@ -75,7 +75,7 @@ async function generateCommitMessage(diff) {
 async function main() {
   try {
     // Get git diff
-    const diff = execSync('git diff --cached').toString();
+    const diff = execSync('git diff --cached -- . ":(exclude)pnpm-lock.yaml"').toString();
 
     if (!diff) {
       console.error('No staged changes found. Please stage your changes using git add');

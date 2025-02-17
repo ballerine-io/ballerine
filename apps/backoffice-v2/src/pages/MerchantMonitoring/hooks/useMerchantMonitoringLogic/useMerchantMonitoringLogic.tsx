@@ -78,9 +78,7 @@ export const useMerchantMonitoringLogic = () => {
     statuses: statuses
       ?.map(status => REPORT_STATUS_LABEL_TO_VALUE_MAP[status])
       .flatMap(status =>
-        status === 'in-progress'
-          ? ['in-progress', 'quality-control', 'failed']
-          : [status],
+        status === 'in-progress' ? ['in-progress', 'quality-control', 'failed'] : [status],
       ),
     from,
     to: to ? dayjs(to).add(1, 'day').format('YYYY-MM-DD') : undefined,
