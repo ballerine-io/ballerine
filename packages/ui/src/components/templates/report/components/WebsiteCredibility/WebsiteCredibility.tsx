@@ -166,23 +166,6 @@ export const WebsiteCredibility: FunctionComponent<{
 
   return (
     <div className="space-y-8">
-      <div>
-        <ContentTooltip
-          description={
-            <p>
-              Evaluates the trustworthiness of the website, based on various factors, including its
-              security measures, design, and user feedback.
-            </p>
-          }
-          props={{
-            tooltipContent: {
-              align: 'center',
-            },
-          }}
-        >
-          <h3 className="col-span-full text-lg font-bold">Website Credibility Analysis</h3>
-        </ContentTooltip>
-      </div>
       <RiskIndicators riskIndicators={aggregatedRiskIndicators} />
       <Card>
         <div>
@@ -246,7 +229,7 @@ export const WebsiteCredibility: FunctionComponent<{
           </ContentTooltip>
         </div>
 
-        <CardContent className="flex flex-col 2xl:flex-row h-auto 2xl:h-[30rem] w-full gap-4 px-4 pb-4 pt-0">
+        <CardContent className="flex flex-col 2xl:!flex-row h-auto 2xl:!h-[30rem] w-full gap-4 px-4 pb-4 pt-0">
           <Card className="flex flex-col w-full h-[30rem] 2xl:h-full 2xl:w-3/5">
             <CardHeader className="px-6 pb-2 pt-4 font-bold">
               Estimated Monthly Visitors
@@ -255,83 +238,83 @@ export const WebsiteCredibility: FunctionComponent<{
               </CardDescription>
             </CardHeader>
 
-            {/* <CardContent className="h-full p-2"> */}
-            {Object.entries(trafficData.monthlyVisits ?? {}).length > 0 ? (
-              <ChartContainer
-                className="h-[20rem] w-[95%] 2xl:w-full"
-                config={{
-                  visitors: {
-                    label: 'Visited',
-                    color: '#007aff',
-                  },
-                }}
-              >
-                <AreaChart
-                  accessibilityLayer
-                  data={Object.entries(trafficData.monthlyVisits ?? {}).map(([month, value]) => ({
-                    month,
-                    visitors: value,
-                  }))}
-                  margin={{
-                    left: 12,
-                    right: 12,
+            <CardContent className="h-full p-2">
+              {Object.entries(trafficData.monthlyVisits ?? {}).length > 0 ? (
+                <ChartContainer
+                  className="h-[20rem] w-[95%] 2xl:w-full"
+                  config={{
+                    visitors: {
+                      label: 'Visited',
+                      color: '#007aff',
+                    },
                   }}
                 >
-                  <defs>
-                    <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#007aff" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#007aff" stopOpacity={0.1} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid vertical={false} />
-                  <XAxis
-                    dataKey="month"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={8}
-                    tickFormatter={value => dayjs(value).format('MMM YYYY')}
-                  />
-                  <YAxis
-                    ticks={[
-                      minVisitors,
-                      Math.trunc(visitorsTotalArea / 4),
-                      Math.trunc(visitorsTotalArea / 2),
-                      Math.trunc((3 * visitorsTotalArea) / 4),
-                      maxVisitors,
-                    ]}
-                    domain={[minVisitors - (maxVisitors * 1.2 - maxVisitors), maxVisitors * 1.2]}
-                    tickFormatter={value =>
-                      Intl.NumberFormat('en', { notation: 'compact' }).format(value)
-                    }
-                  />
-                  <ChartTooltip
-                    cursor={false}
-                    content={
-                      <ChartTooltipContent
-                        indicator="dot"
-                        valueRender={value => (
-                          <span className="text-foreground ml-4 font-mono font-medium tabular-nums">
-                            {Intl.NumberFormat('en').format(Number(value))}
-                          </span>
-                        )}
-                      />
-                    }
-                  />
-                  <Area
-                    dataKey="visitors"
-                    type="natural"
-                    fill="url(#colorVisitors)"
-                    fillOpacity={0.4}
-                    stroke="#007aff"
-                  />
-                </AreaChart>
-              </ChartContainer>
-            ) : (
-              <div className="flex h-full w-full items-center justify-center">
-                <p>No Monthly Visitors Data Available</p>
-              </div>
-            )}
-            {/* </CardContent> */}
+                  <AreaChart
+                    accessibilityLayer
+                    data={Object.entries(trafficData.monthlyVisits ?? {}).map(([month, value]) => ({
+                      month,
+                      visitors: value,
+                    }))}
+                    margin={{
+                      left: 12,
+                      right: 12,
+                    }}
+                  >
+                    <defs>
+                      <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#007aff" stopOpacity={0.8} />
+                        <stop offset="95%" stopColor="#007aff" stopOpacity={0.1} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                      dataKey="month"
+                      tickLine={false}
+                      axisLine={false}
+                      tickMargin={8}
+                      tickFormatter={value => dayjs(value).format('MMM YYYY')}
+                    />
+                    <YAxis
+                      ticks={[
+                        minVisitors,
+                        Math.trunc(visitorsTotalArea / 4),
+                        Math.trunc(visitorsTotalArea / 2),
+                        Math.trunc((3 * visitorsTotalArea) / 4),
+                        maxVisitors,
+                      ]}
+                      domain={[minVisitors - (maxVisitors * 1.2 - maxVisitors), maxVisitors * 1.2]}
+                      tickFormatter={value =>
+                        Intl.NumberFormat('en', { notation: 'compact' }).format(value)
+                      }
+                    />
+                    <ChartTooltip
+                      cursor={false}
+                      content={
+                        <ChartTooltipContent
+                          indicator="dot"
+                          valueRender={value => (
+                            <span className="text-foreground ml-4 font-mono font-medium tabular-nums">
+                              {Intl.NumberFormat('en').format(Number(value))}
+                            </span>
+                          )}
+                        />
+                      }
+                    />
+                    <Area
+                      dataKey="visitors"
+                      type="natural"
+                      fill="url(#colorVisitors)"
+                      fillOpacity={0.4}
+                      stroke="#007aff"
+                    />
+                  </AreaChart>
+                </ChartContainer>
+              ) : (
+                <div className="flex h-full w-full items-center justify-center">
+                  <p>No Monthly Visitors Data Available</p>
+                </div>
+              )}
+            </CardContent>
             <CardFooter>
               <div className="flex w-full items-start gap-2 text-sm">
                 <div className="grid gap-2">
@@ -355,7 +338,7 @@ export const WebsiteCredibility: FunctionComponent<{
           </Card>
 
           <div className="flex 2xl:flex-col w-full h-[15rem] 2xl:w-2/5 2xl:h-full gap-4">
-            <Card className="w-1/2 h-full 2xl:w-full 2xl:h-1/2">
+            <Card className="w-1/2 h-full 2xl:!w-full 2xl:!h-1/2">
               <CardHeader className="px-6 pb-2 pt-4 font-bold">Traffic Sources</CardHeader>
 
               <CardContent className="mt-auto h-4/5 w-full p-2">
@@ -417,8 +400,7 @@ export const WebsiteCredibility: FunctionComponent<{
               </CardContent>
             </Card>
 
-            <Card className="h-full w-1/2 2xl:w-full 2xl:h-1/2">
-              {/* <Card className="h-1/2 w-full"> */}
+            <Card className="h-full w-1/2 2xl:!w-full 2xl:!h-1/2">
               <CardHeader className="px-6 pb-2 pt-4 font-bold">Engagement</CardHeader>
 
               <CardContent className="flex h-3/5 items-center gap-6 px-4 py-2">

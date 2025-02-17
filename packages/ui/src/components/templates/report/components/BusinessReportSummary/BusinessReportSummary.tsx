@@ -14,15 +14,22 @@ import { TextWithNAFallback } from '@/components/atoms/TextWithNAFallback';
 export const BusinessReportSummary: FunctionComponent<{
   summary: string;
   ongoingMonitoringSummary?: string;
-  sections: ReadonlyArray<{
+  riskIndicators: ReadonlyArray<{
     title: string;
     search?: string;
-    riskIndicators: Array<z.infer<typeof RiskIndicatorSchema>> | null;
+    indicators: Array<z.infer<typeof RiskIndicatorSchema>> | null;
   }>;
   riskLevel: MerchantReportRiskLevel | null;
   homepageScreenshotUrl: string | null;
   Link?: ComponentProps<typeof RiskIndicatorsSummary>['Link'];
-}> = ({ sections, summary, ongoingMonitoringSummary, riskLevel, homepageScreenshotUrl, Link }) => {
+}> = ({
+  riskIndicators,
+  summary,
+  ongoingMonitoringSummary,
+  riskLevel,
+  homepageScreenshotUrl,
+  Link,
+}) => {
   return (
     <div className={'grid grid-cols-5 gap-8'}>
       <Card className={!homepageScreenshotUrl ? 'col-span-full' : 'col-span-3'}>
@@ -91,7 +98,7 @@ export const BusinessReportSummary: FunctionComponent<{
         </Card>
       )}
 
-      <RiskIndicatorsSummary sections={sections} Link={Link} />
+      <RiskIndicatorsSummary sections={riskIndicators} Link={Link} />
     </div>
   );
 };

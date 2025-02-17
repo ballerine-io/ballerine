@@ -13,27 +13,6 @@ export const WebsitesCompany: FunctionComponent<{
 }> = ({ companyName, riskIndicators }) => {
   return (
     <div className={'space-y-8'}>
-      <div>
-        <ContentTooltip
-          description={
-            <p>
-              Evaluates the company&apos;s reputation using customer feedback, reviews, and media
-              coverage. Identifies trust issues and potential red flags.
-            </p>
-          }
-          props={{
-            tooltipContent: {
-              align: 'center',
-            },
-          }}
-        >
-          <h3 className={'text-lg font-bold'}>
-            Website&apos;s Company Analysis
-            {companyName && companyName !== `N/A` && ` - ${companyName}`}
-          </h3>
-        </ContentTooltip>
-      </div>
-
       <RiskIndicators riskIndicators={riskIndicators} />
       <Card>
         <CardHeader className={'pt-4 font-bold'}>Company Reputation Analysis</CardHeader>
