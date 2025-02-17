@@ -6,7 +6,10 @@ import { titleCase } from 'string-ts';
 import { useRequestDocumentsMutation } from '@/domains/documents/hooks/mutations/useRequestDocumentsMutation';
 import { useDocumentsTrackerItemsQuery } from '@/domains/documents/hooks/queries/useDocumentsTrackerItemsQuery';
 import { documentsQueryKeys } from '@/domains/documents/hooks/query-keys';
-import { TrackedDocument } from '@/domains/documents/hooks/schemas/document';
+import {
+  TrackedDocument,
+  DocumentTrackerItemSchema,
+} from '@/domains/documents/hooks/schemas/document';
 import { documentStatusToIcon, Icon } from '../constants';
 import { z } from 'zod';
 
@@ -18,18 +21,7 @@ export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
 
   const [open, onOpenChange] = useState(false);
   const [selectedIdsToRequest, setSelectedIdsToRequest] = useState<
-    Array<{
-      document: {
-        type: string;
-        category: string;
-        issuingCountry: string;
-        issuingVersion: string;
-        version: string;
-      };
-      entity: {
-        id: string;
-      };
-    }>
+    Array<z.infer<typeof DocumentTrackerItemSchema>['identifiers']>
   >([]);
 
   const queryClient = useQueryClient();
@@ -42,7 +34,21 @@ export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
   });
 
   const onRequestDocuments = () =>
-    requestDocuments({ workflowId, identifiers: selectedIdsToRequest });
+    requestDocuments({
+      workflowId,
+      documents: selectedIdsToRequest.map(identifier => ({
+        type: identifier.document.type,
+        category: identifier.document.category,
+        issuingCountry: identifier.document.issuingCountry,
+        issuingVersion: identifier.document.issuingVersion,
+        version: identifier.document.version,
+        templateId: identifier.document.type,
+        entity: {
+          id: identifier.entity.id,
+          type: identifier.entity.entityType,
+        },
+      })),
+    });
 
   const getSubItems = useCallback(
     (documentTrackerItem: TrackedDocument) => {

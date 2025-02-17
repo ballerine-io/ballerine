@@ -50,3 +50,16 @@ export const DocumentsTrackerSchema = z.object({
     directors: z.array(DocumentTrackerItemSchema),
   }),
 });
+
+export const RequestDocumentsSchema = z.object({
+  workflowId: z.string(),
+  documents: z.array(
+    z.object({
+      ...DocumentTrackerItemSchema.shape.identifiers.shape.document.shape,
+      entity: z.object({
+        id: z.string(),
+        type: z.enum([EntityType.BUSINESS, EntityType.UBO, EntityType.DIRECTOR]),
+      }),
+    }),
+  ),
+});

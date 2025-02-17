@@ -32,7 +32,7 @@ import type { TProjectId } from '@/types';
 
 const RequestUploadSchema = Type.Object({
   workflowId: Type.String(),
-  identifiers: Type.Array(
+  documents: Type.Array(
     Type.Object({
       type: Type.String(),
       category: Type.String(),
@@ -41,6 +41,7 @@ const RequestUploadSchema = Type.Object({
       version: Type.String(),
       entity: Type.Object({
         id: Type.String(),
+        type: Type.Union([Type.Literal('business'), Type.Literal('ubo'), Type.Literal('director')]),
       }),
     }),
   ),
@@ -172,10 +173,10 @@ export class DocumentControllerExternal {
     response: Type.Any(),
   })
   async requestDocuments(
-    @Body() { workflowId, identifiers }: Static<typeof RequestUploadSchema>,
+    @Body() { workflowId, documents }: Static<typeof RequestUploadSchema>,
     @CurrentProject() projectId: TProjectId,
   ) {
-    return await this.documentService.requestDocumentsByIds(projectId, workflowId, identifiers);
+    return await this.documentService.requestDocumentsByIds(projectId, workflowId, documents);
   }
 
   @Get('/:entityId/:workflowRuntimeDataId')
