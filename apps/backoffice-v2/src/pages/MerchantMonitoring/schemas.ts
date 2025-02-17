@@ -52,13 +52,11 @@ export const RISK_LEVEL_FILTER = {
   })),
 };
 
-export const REPORT_STATUS_LABELS = ['In Progress', 'Quality Control', 'Ready for Review'] as const;
+export const REPORT_STATUS_LABELS = ['In Progress', 'Ready for Review'] as const;
 
 export const REPORT_STATUS_LABEL_TO_VALUE_MAP = {
   'In Progress': 'in-progress',
-  'Quality Control': 'quality-control',
   'Ready for Review': 'completed',
-  Failed: 'failed',
 } as const;
 
 export type TReportStatusLabel = (typeof REPORT_STATUS_LABELS)[number];

@@ -33,8 +33,8 @@ export const columns = [
   columnHelper.accessor('transactionDate', {
     cell: info => {
       const dateValue = info.getValue();
-      const date = dayjs(dateValue).format('MMM DD, YYYY');
-      const time = dayjs(dateValue).format('hh:mm');
+      const date = dayjs(dateValue).local().format('MMM DD, YYYY');
+      const time = dayjs(dateValue).local().format('hh:mm');
 
       return (
         <div className={`flex flex-col space-y-0.5`}>

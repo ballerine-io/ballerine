@@ -6,8 +6,10 @@ import { CaseTabs, TabToLabel } from '@/common/hooks/useSearchParamsByEntity/val
 import { camelCase, titleCase } from 'string-ts';
 import { OverallRiskLevel } from '@/common/components/molecules/OverallRiskLevel/OverallRiskLevel';
 import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
-import { RiskIndicatorsSummary, toRiskLabels } from '@ballerine/ui';
+import { RiskIndicatorsSummary } from '@ballerine/ui';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
+import { RiskIndicatorSchema } from '@ballerine/common';
+import { z } from 'zod';
 import { DocumentTracker } from '@/common/components/molecules/DocumentTracker/DocumentTracker';
 
 export const CaseOverview = ({ processes }: { processes: string[] }) => {
@@ -29,7 +31,7 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
       workflow?.context?.pluginsOutput?.risk_evaluation?.riskIndicatorsByDomain ??
       {},
   )?.map(([domain, riskIndicators]) => {
-    const tab = camelCase(domain);
+    const tab = camelCase(domain.toLowerCase());
     const isValidCaseTab = CaseTabs.includes(tab);
 
     return {
@@ -39,16 +41,14 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
             tab: tab,
           })
         : undefined,
-      violations: toRiskLabels(riskIndicators),
+      riskIndicators:
+        riskIndicators && Array.isArray(riskIndicators)
+          ? riskIndicators.map((riskIndicator: z.infer<typeof RiskIndicatorSchema>) => ({
+              name: riskIndicator.name,
+            }))
+          : [],
     };
-  }) satisfies Array<{
-    title: string;
-    search: string | undefined;
-    violations: Array<{
-      label: string;
-      severity: string;
-    }>;
-  }>;
+  });
 
   if (!workflow?.workflowDefinition?.config?.isCaseOverviewEnabled) {
     return;
@@ -70,7 +70,7 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
         <DocumentTracker workflow={workflow} plugins={plugins} />
       )}
       {workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled && (
-        <RiskIndicatorsSummary riskIndicators={riskIndicators} Link={RiskIndicatorLink} />
+        <RiskIndicatorsSummary sections={riskIndicators} Link={RiskIndicatorLink} />
       )}
     </div>
   );

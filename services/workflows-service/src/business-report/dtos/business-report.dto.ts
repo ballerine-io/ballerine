@@ -6,7 +6,7 @@ import {
   type MerchantReportStatus,
   type MerchantReportType,
   type MerchantReportVersion,
-} from '@/business-report/constants';
+} from '@ballerine/common';
 
 export class WebsiteDto {
   @ApiProperty({ type: String })

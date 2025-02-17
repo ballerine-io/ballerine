@@ -7,7 +7,7 @@ import {
   MERCHANT_REPORT_VERSIONS_MAP,
   type MerchantReportType,
   type MerchantReportVersion,
-} from '@/business-report/constants';
+} from '@ballerine/common';
 import { Transform } from 'class-transformer';
 
 export class CreateBusinessReportDto {
