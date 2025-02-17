@@ -32,8 +32,8 @@ export const columns = [
         return <TextWithNAFallback>{dataTimestamp}</TextWithNAFallback>;
       }
 
-      const date = dayjs(dataTimestamp).format('MMM DD, YYYY');
-      const time = dayjs(dataTimestamp).format('hh:mm');
+      const date = dayjs(dataTimestamp).local().format('MMM DD, YYYY');
+      const time = dayjs(dataTimestamp).local().format('hh:mm');
 
       return (
         <div className={`flex flex-col space-y-0.5`}>
@@ -52,8 +52,8 @@ export const columns = [
         return <TextWithNAFallback>{updatedAt}</TextWithNAFallback>;
       }
 
-      const date = dayjs(updatedAt).format('MMM DD, YYYY');
-      const time = dayjs(updatedAt).format('hh:mm');
+      const date = dayjs(updatedAt).local().format('MMM DD, YYYY');
+      const time = dayjs(updatedAt).local().format('hh:mm');
 
       return (
         <div className={`flex flex-col space-y-0.5`}>
@@ -125,9 +125,7 @@ export const columns = [
         <TextWithNAFallback
           as={Badge}
           className={ctw(
-            severityToClassName[
-              (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
-            ],
+            severityToClassName[(severity as keyof typeof severityToClassName) ?? 'DEFAULT'],
             'w-20 py-0.5 font-bold',
           )}
         >
