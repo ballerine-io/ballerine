@@ -2,17 +2,11 @@ import React, { FunctionComponent } from 'react';
 import { columns } from '@/components/templates/report/components/Ecosystem/components/EcosystemTable/columns';
 import { DataTable } from '@/components/organisms/DataTable/DataTable';
 import { ColumnDef } from '@tanstack/react-table';
+import { z } from 'zod';
+import { EcosystemRecordSchema } from '@ballerine/common';
 
 export const EcosystemTable: FunctionComponent<{
-  data: Array<{
-    matchedName: string;
-    relatedNodeType: string;
-    relatedNode: string;
-    indicators: {
-      label: string;
-      severity: string;
-    };
-  }>;
+  data: z.infer<typeof EcosystemRecordSchema>[];
 }> = ({ data }) => {
   return (
     <DataTable

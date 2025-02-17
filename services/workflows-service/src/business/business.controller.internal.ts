@@ -71,11 +71,13 @@ export class BusinessControllerInternal {
         },
       },
       where: {
-        project: {
-          customer: {
-            config: {
-              path: ['isMerchantMonitoringEnabled'],
-              equals: true,
+        NOT: {
+          project: {
+            customer: {
+              config: {
+                path: ['disableBusinessSyncToUnifiedApi'],
+                equals: true,
+              },
             },
           },
         },

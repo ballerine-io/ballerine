@@ -5,13 +5,9 @@ import { TextWithNAFallback } from '@/components/atoms/TextWithNAFallback';
 import { BallerineLink } from '@/components/atoms/BallerineLink';
 
 const columnHelper = createColumnHelper<{
-  matchedName: string;
+  domain: string;
   relatedNodeType: string;
   relatedNode: string;
-  indicators: {
-    label: string;
-    severity: string;
-  };
 }>();
 
 export const columns = [
@@ -24,10 +20,10 @@ export const columns = [
     },
     header: 'Match',
   }),
-  columnHelper.accessor('matchedName', {
+  columnHelper.accessor('domain', {
     header: 'Matched Name',
     cell: info => {
-      const matchedName = info.getValue();
+      const domain = info.getValue();
       const addProtocolIfMissing = (url: string) => {
         if (url.startsWith('http://') || url.startsWith('https://')) {
           return url;
@@ -35,13 +31,13 @@ export const columns = [
 
         return `http://${url}`;
       };
-      const matchedNameWithProtocol = addProtocolIfMissing(matchedName);
+      const domainWithProtocol = addProtocolIfMissing(domain);
 
-      if (checkIsUrl(matchedNameWithProtocol)) {
-        return <BallerineLink href={matchedNameWithProtocol}>{matchedName}</BallerineLink>;
+      if (checkIsUrl(domainWithProtocol)) {
+        return <BallerineLink href={domainWithProtocol}>{domain}</BallerineLink>;
       }
 
-      return <TextWithNAFallback>{matchedName}</TextWithNAFallback>;
+      return <TextWithNAFallback>{domain}</TextWithNAFallback>;
     },
   }),
   columnHelper.accessor('relatedNodeType', {
