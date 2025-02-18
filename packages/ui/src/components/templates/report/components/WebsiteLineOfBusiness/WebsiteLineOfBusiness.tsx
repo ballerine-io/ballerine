@@ -13,7 +13,7 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
   mccDescription: string | null;
 }> = ({ riskIndicators, lineOfBusinessDescription, mcc, mccDescription }) => {
   return (
-    <div className={'space-y-8'}>
+    <div className={'space-y-6'}>
       <RiskIndicators riskIndicators={riskIndicators} />
       <Card>
         <CardHeader className={'pt-4 font-bold'}>Line of Business Summary</CardHeader>

@@ -1,48 +1,26 @@
 import { ReportSchema } from '@ballerine/common';
-import {
-  AdsAndSocialMedia,
-  BusinessReportSummary,
-  ContentTooltip,
-  getUniqueRiskIndicators,
-  Transactions,
-  useReportSections,
-  WebsiteCredibility,
-  WebsiteLineOfBusiness,
-  WebsitesCompany,
-} from '@ballerine/ui';
-import { AlertTriangle } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { ContentTooltip, useReportSections } from '@ballerine/ui';
+import { AlertTriangle, ArrowLeftToLine, ArrowRightToLine, Crown, List } from 'lucide-react'; // Import List icon
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { z } from 'zod';
+
+import { Button } from '@/common/components/atoms/Button/Button';
+import { ctw } from '@/common/utils/ctw/ctw';
 
 type BusinessReportProps = {
   report: z.infer<typeof ReportSchema>;
 };
 
-const getSectionRiskIndicators = (report: z.infer<typeof ReportSchema>) => [
-  {
-    title: 'Company Analysis',
-    riskIndicators: getUniqueRiskIndicators(report.data?.companyReputationRiskIndicators ?? []),
-  },
-  {
-    title: 'Credibility Analysis',
-    riskIndicators: getUniqueRiskIndicators([
-      ...(report.data?.websiteReputationRiskIndicators ?? []),
-      ...(report.data?.pricingRiskIndicators ?? []),
-      ...(report.data?.websiteStructureRiskIndicators ?? []),
-      ...(report.data?.trafficRiskIndicators ?? []),
-    ]),
-  },
-  {
-    title: 'Line of Business Analysis',
-    riskIndicators: getUniqueRiskIndicators(report.data?.contentRiskIndicators ?? []),
-  },
-];
-
-export const BusinessReport = ({ report }: BusinessReportProps) => {
-  const { sections } = useReportSections({ report });
+const BusinessReportSectionsObserver = ({
+  sections,
+  sectionRefs,
+  isSidebarOpen,
+  setIsSidebarOpen,
+}: Pick<ReturnType<typeof useReportSections>, 'sections' | 'sectionRefs'> & {
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: Dispatch<SetStateAction<boolean>>;
+}) => {
   const [activeSection, setActiveSection] = useState<string>(sections[0]!.id);
-  const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const parentRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const observerCallback: IntersectionObserverCallback = entries => {
@@ -71,100 +49,96 @@ export const BusinessReport = ({ report }: BusinessReportProps) => {
   };
 
   return (
-    <div ref={parentRef} className="flex w-full gap-2">
-      <div className="w-4/5">
-        <div id="summary" ref={el => (sectionRefs.current['summary'] = el)}>
-          <ContentTooltip
-            description={
-              <p>
-                Provides a concise overview of the merchant&apos;s risk level, integrating various
-                factors into a clear summary for informed decisions.
-              </p>
-            }
-            props={{
-              tooltipContent: { className: 'max-w-[400px] whitespace-normal' },
-              tooltipTrigger: { className: 'col-span-full text-lg font-bold' },
-            }}
-          >
-            <h3 className="mb-8 text-lg font-bold">Summary</h3>
-          </ContentTooltip>
-          <BusinessReportSummary
-            summary={report.data?.summary ?? ''}
-            ongoingMonitoringSummary={report.data?.ongoingMonitoringSummary ?? ''}
-            riskLevel={report.data?.riskLevel ?? null}
-            sections={getSectionRiskIndicators(report)}
-            homepageScreenshotUrl={report.data?.homePageScreenshotUrl ?? ''}
-          />
-        </div>
-
-        <div id="company" ref={el => (sectionRefs.current['company'] = el)}>
-          <WebsitesCompany
-            companyName={report.data?.companyName ?? ''}
-            riskIndicators={report.data?.companyReputationRiskIndicators ?? []}
-          />
-        </div>
-
-        <div id="line-of-business" ref={el => (sectionRefs.current['line-of-business'] = el)}>
-          <WebsiteLineOfBusiness
-            lineOfBusinessDescription={report.data?.lineOfBusiness ?? null}
-            riskIndicators={report.data?.contentRiskIndicators ?? []}
-            mcc={report.data?.mcc ?? null}
-            mccDescription={report.data?.mccDescription ?? null}
-          />
-        </div>
-
-        <div id="credibility" ref={el => (sectionRefs.current['credibility'] = el)}>
-          <WebsiteCredibility
-            trafficData={{
-              trafficSources: report.data?.trafficSources,
-              monthlyVisits: report.data?.monthlyVisits,
-              pagesPerVisit: report.data?.pagesPerVisit,
-              timeOnSite: report.data?.timeOnSite,
-              bounceRate: report.data?.bounceRate,
-            }}
-            websiteReputationRiskIndicators={report.data?.websiteReputationRiskIndicators ?? []}
-            pricingRiskIndicators={report.data?.pricingRiskIndicators ?? []}
-            websiteStructureRiskIndicators={report.data?.websiteStructureRiskIndicators ?? []}
-            trafficRiskIndicators={report.data?.trafficRiskIndicators ?? []}
-          />
-        </div>
-
-        <div
-          id="ads-and-social-media"
-          ref={el => (sectionRefs.current['ads-and-social-media'] = el)}
+    <nav
+      aria-label="Report Scroll Tracker"
+      className={ctw(
+        'sticky top-0 h-screen overflow-hidden p-4 transition-all duration-300',
+        isSidebarOpen ? 'w-60' : 'w-16', // Adjust width for collapsed state
+      )}
+    >
+      <div className="mb-4 flex items-center">
+        {isSidebarOpen && <h2 className="text-lg font-bold">Sections</h2>}
+        <Button
+          variant="secondary"
+          size="icon"
+          className="ml-auto d-7"
+          onClick={() => setIsSidebarOpen(prev => !prev)}
         >
-          <AdsAndSocialMedia
-            facebook={report.data?.facebookPage ?? null}
-            instagram={report.data?.instagramPage ?? null}
-          />
-        </div>
-
-        <div id="transactions" ref={el => (sectionRefs.current['transactions'] = el)}>
-          <Transactions />
-        </div>
+          {isSidebarOpen ? (
+            <ArrowRightToLine className="d-5" />
+          ) : (
+            <ArrowLeftToLine className="d-5" />
+          )}
+        </Button>
       </div>
 
-      <nav
-        aria-label="Report Scroll Tracker"
-        className="sticky top-0 h-screen w-1/5 overflow-y-auto bg-gray-100 p-4"
-      >
-        <ul>
-          {sections.map(section => (
-            <li
+      <ul className="space-y-3">
+        {sections.map(section => (
+          <li
+            key={section.id}
+            className={ctw(
+              'mb-2 flex cursor-pointer items-center gap-2 text-slate-500',
+              activeSection === section.id && 'font-bold text-slate-900',
+              !isSidebarOpen && 'pl-2',
+            )}
+            onClick={() => scrollToSection(section.id)}
+          >
+            {section.Icon && <section.Icon className="d-5" />}
+            <span className={isSidebarOpen ? 'block' : 'hidden'}>
+              {section.label ?? section.title}
+            </span>
+            {section.hasViolations && isSidebarOpen && (
+              <AlertTriangle className="ml-auto inline-block fill-warning text-white d-5" />
+            )}
+            {section.isPremium && isSidebarOpen && (
+              <Crown className="ml-auto mr-0.5 inline-block text-slate-400 d-4" />
+            )}
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+};
+
+export const BusinessReport = ({ report }: BusinessReportProps) => {
+  const { sections, sectionRefs, parentRef } = useReportSections({ report });
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  return (
+    <div ref={parentRef} className={`flex transition-all duration-300`}>
+      <div className={`flex-1 overflow-y-visible transition-all duration-300`}>
+        {sections.map(section => {
+          const titleContent = (
+            <div className="mb-6 mt-8 flex items-center gap-2 text-lg font-bold">
+              {section.Icon && <section.Icon className="d-6" />}
+              <span>{section.title}</span>
+            </div>
+          );
+
+          return (
+            <div
               key={section.id}
-              className={`mb-2 cursor-pointer ${
-                activeSection === section.id ? 'font-bold text-blue-600' : ''
-              }`}
-              onClick={() => scrollToSection(section.id)}
+              id={section.id}
+              ref={el => (sectionRefs.current[section.id] = el)}
             >
-              {section.title}
-              {section.hasViolations && (
-                <AlertTriangle className="ml-2 inline-block text-red-500" size={16} />
+              {section.description ? (
+                <ContentTooltip description={section.description}>{titleContent}</ContentTooltip>
+              ) : (
+                <>{titleContent}</>
               )}
-            </li>
-          ))}
-        </ul>
-      </nav>
+
+              {section.Component}
+            </div>
+          );
+        })}
+      </div>
+
+      <BusinessReportSectionsObserver
+        sections={sections}
+        sectionRefs={sectionRefs}
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+      />
     </div>
   );
 };
