@@ -12,7 +12,7 @@ export type DemoAccessWrapperProps = {
   children: ReactNode;
 } & Omit<ExperienceBallerineCardProps, 'className'>;
 export const DemoAccessWrapper = ({ children, ...props }: DemoAccessWrapperProps) => {
-  if (env.VITE_ENVIRONMENT_NAME !== 'sandbox') {
+  if (env.VITE_ENVIRONMENT_NAME === 'sandbox') {
     return <div className="mt-6 space-y-10">{children}</div>;
   }
 
