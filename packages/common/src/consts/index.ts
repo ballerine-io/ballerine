@@ -174,9 +174,10 @@ export const URL_PATTERN =
 export const MERCHANT_REPORT_STATUSES = [
   'draft',
   'in-progress',
-  'completed',
   'quality-control',
-  'in-review',
+  'pending-review',
+  'under-review',
+  'completed',
   'failed',
 ] as const;
 

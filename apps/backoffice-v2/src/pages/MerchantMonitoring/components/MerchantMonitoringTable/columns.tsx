@@ -1,24 +1,3 @@
-import dayjs from 'dayjs';
-import timezone from 'dayjs/plugin/timezone';
-import utc from 'dayjs/plugin/utc';
-
-// Add these plugins to dayjs
-dayjs.extend(utc);
-dayjs.extend(timezone);
-
-import { TBusinessReport } from '@/domains/business-reports/fetchers';
-import { createColumnHelper } from '@tanstack/react-table';
-import { titleCase } from 'string-ts';
-
-import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
-import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
-import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
-import { ctw } from '@/common/utils/ctw/ctw';
-import {
-  getSeverityFromRiskScore,
-  MERCHANT_REPORT_STATUSES_MAP,
-  MERCHANT_REPORT_TYPES_MAP,
-} from '@ballerine/common';
 import {
   Badge,
   CheckCircle,
@@ -27,18 +6,31 @@ import {
   TextWithNAFallback,
   WarningFilledSvg,
 } from '@ballerine/ui';
+import React from 'react';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import { Minus } from 'lucide-react';
+import { titleCase } from 'string-ts';
+import timezone from 'dayjs/plugin/timezone';
+import { createColumnHelper } from '@tanstack/react-table';
+import { MERCHANT_REPORT_TYPES_MAP } from '@ballerine/common';
+
+// Add these plugins to dayjs
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+import { ctw } from '@/common/utils/ctw/ctw';
+import { TBusinessReport } from '@/domains/business-reports/fetchers';
+import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
+import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
+import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
+import { MerchantMonitoringReportStatus } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringReportStatus';
 
 const columnHelper = createColumnHelper<TBusinessReport>();
 
 const SCAN_TYPES = {
   ONBOARDING: 'Onboarding',
   MONITORING: 'Monitoring',
-} as const;
-
-const REPORT_STATUS_TO_DISPLAY_STATUS = {
-  [MERCHANT_REPORT_STATUSES_MAP.completed]: 'Ready for Review',
-  [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: 'Quality Control',
 } as const;
 
 const REPORT_TYPE_TO_SCAN_TYPE = {
@@ -93,7 +85,7 @@ export const columns = [
             <p>This merchant is {!value && 'not '}subscribed to recurring ongoing monitoring</p>
           }
           props={{
-            tooltipTrigger: { className: 'flex w-full justify-center' },
+            tooltipTrigger: { className: 'flex w-full justify-start' },
             tooltipContent: { align: 'center', side: 'top' },
           }}
         >
@@ -207,20 +199,7 @@ export const columns = [
     cell: info => {
       const status = info.getValue();
 
-      return (
-        <TextWithNAFallback
-          className={ctw('font-semibold', {
-            'text-slate-400': status === MERCHANT_REPORT_STATUSES_MAP.completed,
-            'text-destructive': status === MERCHANT_REPORT_STATUSES_MAP.failed,
-          })}
-        >
-          {titleCase(
-            REPORT_STATUS_TO_DISPLAY_STATUS[
-              status as keyof typeof REPORT_STATUS_TO_DISPLAY_STATUS
-            ] ?? status,
-          )}
-        </TextWithNAFallback>
-      );
+      return <MerchantMonitoringReportStatus status={status} />;
     },
     header: 'Status',
   }),

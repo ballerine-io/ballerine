@@ -20,7 +20,13 @@ export const useMerchantMonitoringTableLogic = () => {
     cell,
     children,
   }) => {
-    if (cell.row.original.status === MERCHANT_REPORT_STATUSES_MAP.completed) {
+    if (
+      [
+        MERCHANT_REPORT_STATUSES_MAP['pending-review'],
+        MERCHANT_REPORT_STATUSES_MAP['under-review'],
+        MERCHANT_REPORT_STATUSES_MAP.completed,
+      ].includes(cell.row.original.status)
+    ) {
       return (
         <Link
           to={`/${locale}/merchant-monitoring/${cell.row.id}`}
