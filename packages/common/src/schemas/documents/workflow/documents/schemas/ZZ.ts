@@ -95,6 +95,22 @@ export const getUniversalDocuments = (): TDocument[] => {
       propertiesSchema: Type.Object({}),
     },
     {
+      category: 'proof_of_ownership',
+      type: 'company_address_document',
+      issuer: { country: 'ZZ' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({}),
+    },
+    {
+      category: 'proof_of_ownership',
+      type: 'website_compliance_document',
+      issuer: { country: 'ZZ' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({}),
+    },
+    {
       category: 'financial_documents',
       type: 'audited_financials_or_business_plan',
       issuer: { country: 'ZZ' },
