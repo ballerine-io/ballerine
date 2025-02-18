@@ -1,5 +1,13 @@
+import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
+import { DocumentFileService } from '@/document-file/document-file.service';
+import { CreateDocumentFileSchema } from '@/document-file/dtos/document-file.dto';
+import { FileService } from '@/providers/file/file.service';
+import { StorageService } from '@/storage/storage.service';
+import { PrismaTransactionClient, TProjectId } from '@/types';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { WorkflowService } from '@/workflow/workflow.service';
+import { getDocumentId, isType } from '@ballerine/common';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { DocumentRepository } from './document.repository';
 import {
   Document,
   DocumentFile,
@@ -7,19 +15,11 @@ import {
   Prisma,
   WorkflowRuntimeData,
 } from '@prisma/client';
-import { PrismaTransactionClient, TProjectId } from '@/types';
-import { DocumentFileService } from '@/document-file/document-file.service';
-import { StorageService } from '@/storage/storage.service';
-import { FileService } from '@/providers/file/file.service';
-import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 import { Static } from '@sinclair/typebox';
-import { CreateDocumentSchema } from './dtos/document.dto';
-import { CreateDocumentFileSchema } from '@/document-file/dtos/document-file.dto';
-import { WorkflowService } from '@/workflow/workflow.service';
-import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { isType, getDocumentId } from '@ballerine/common';
 import z from 'zod';
-import { TParsedDocuments, EntitySchema, DocumentTrackerResponseSchema } from './types';
+import { DocumentRepository } from './document.repository';
+import { CreateDocumentSchema } from './dtos/document.dto';
+import { DocumentTrackerResponseSchema, EntitySchema, TParsedDocuments } from './types';
 
 @Injectable()
 export class DocumentService {
@@ -116,6 +116,14 @@ export class DocumentService {
     const entityId = getEntityId();
 
     return await this.getByEntityIdAndWorkflowId(entityId, data.workflowRuntimeDataId, [projectId]);
+  }
+
+  async getDocumentsByIds(documentIds: string[], projectId: TProjectId) {
+    return await this.repository.findMany([projectId], {
+      where: {
+        id: { in: documentIds },
+      },
+    });
   }
 
   async getByEntityIdAndWorkflowId(

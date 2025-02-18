@@ -1,52 +1,50 @@
+import { IDocumentRecord, UIPage, UISchema } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import {
-  formatId,
   formatValueDestination,
+  getDocumentObjectFromDocumentsList,
   getFieldDefinitionsFromSchema,
-  IDocumentTemplate,
+  getFileOrFileIdFromDocumentsList,
   IFormElement,
-  IPriorityField,
   isDocumentFieldDefinition,
   TBaseFields,
   TDeepthLevelStack,
 } from '@ballerine/ui';
 import get from 'lodash/get';
 
-export const generatePriorityFields = (
-  elements: Array<IFormElement<any, any>>,
+export const assignDocumentStatusesToDocumentsInContext = (
   context: CollectionFlowContext,
-): IPriorityField[] | undefined => {
-  const fieldElements = getFieldDefinitionsFromSchema(elements);
-  const priorityFields: IPriorityField[] = [];
+  uiSchema: UISchema,
+  documents: IDocumentRecord[],
+) => {
+  const documentsMap = documents.reduce((acc, document) => {
+    acc[document.id] = document;
+
+    return acc;
+  }, {} as Record<string, IDocumentRecord>);
+
+  console.log('documentsMap', documentsMap);
 
   const run = (elements: Array<IFormElement<TBaseFields, any>>, stack: TDeepthLevelStack = []) => {
     for (const element of elements) {
-      // Extracting revision reason fro documents isnt common so we handling it explicitly
       if (isDocumentFieldDefinition(element)) {
         const documents = get(context, formatValueDestination(element.valueDestination, stack));
-        const document = documents?.find(
-          (doc: IDocumentTemplate) => doc.id === element.params?.template?.id,
-        );
+        const document = getDocumentObjectFromDocumentsList(documents || [], element);
 
         if (!document) {
           continue;
         }
 
-        const reason =
-          document.status === 'requested' ? 'Requested' : document.decision?.revisionReason;
+        const fileOrFileId = getFileOrFileIdFromDocumentsList(documents || [], element);
 
-        if (!reason || document.status !== 'requested') {
+        if (fileOrFileId instanceof File) {
           continue;
         }
 
-        priorityFields.push({
-          id: formatId(element.id, stack),
-          reason,
-        });
-      }
+        const documentFileId = fileOrFileId as string;
 
-      // TODO: Implement extracting priority fields from other elements
-      // TODO: Discuss with team where revision reasons will be stored for other elements
+        document.status = documentsMap?.[documentFileId]?.status;
+      }
 
       if (Array.isArray(element.children) && element.children.length > 0) {
         const value = get(context, formatValueDestination(element.valueDestination, stack));
@@ -62,7 +60,11 @@ export const generatePriorityFields = (
     }
   };
 
-  run(fieldElements);
+  (uiSchema.uiSchema.elements as unknown as Array<UIPage<'v2'>>).forEach(
+    (element: UIPage<'v2'>) => {
+      run(getFieldDefinitionsFromSchema(element.elements) as Array<IFormElement<TBaseFields, any>>);
+    },
+  );
 
-  return priorityFields.length ? priorityFields : undefined;
+  return context;
 };

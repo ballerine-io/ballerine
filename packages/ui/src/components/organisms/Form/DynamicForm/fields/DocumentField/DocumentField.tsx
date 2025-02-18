@@ -23,6 +23,8 @@ import { getDocumentObjectFromDocumentsList } from './hooks/useDocumentUpload/he
 import { getFileOrFileIdFromDocumentsList } from './hooks/useDocumentUpload/helpers/get-file-or-fileid-from-documents-list';
 import { removeDocumentFromListByTemplateId } from './hooks/useDocumentUpload/helpers/remove-document-from-list-by-template-id';
 
+export type TDocumentStatus = 'requested' | 'provided' | 'unprovided';
+export type TDocumentDecision = 'approved' | 'rejected' | 'revisions';
 export interface IDocumentTemplate {
   id: string;
   category: string;
@@ -34,6 +36,8 @@ export interface IDocumentTemplate {
   issuingVersion: number;
   properties: AnyObject;
   pages: AnyObject[];
+  status?: TDocumentStatus;
+  decision?: TDocumentDecision;
 }
 
 export interface IDocumentFieldParams extends IFileFieldParams {
