@@ -94,6 +94,7 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
       | 'business.website'
       | 'business.companyName'
       | 'business.country'
+      | 'riskScore'
     >)
     .catch('createdAt'),
   selected: BooleanishRecordSchema.optional(),
@@ -126,6 +127,10 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
     .catch('All'),
   from: z.string().date().optional(),
   to: z.string().date().optional(),
+  isCreating: z
+    .string()
+    .transform(value => (value === 'true' ? true : false))
+    .optional(),
 });
 
 const URL_REGEX =

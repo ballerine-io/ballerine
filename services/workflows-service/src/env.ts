@@ -94,6 +94,7 @@ export const serverEnvSchema = {
   IN_MEMORIES_SECRET_PRIVATE_KEY: z.string().optional(),
   IN_MEMORIES_SECRET_CONSUMER_KEY: z.string().optional(),
   SYNC_UNIFIED_API: z.string().optional().default('true'),
+  DEFAULT_DEMO_DURATION_DAYS: z.number().optional().default(14),
 };
 
 if (!process.env['ENVIRONMENT_NAME'] || process.env['ENVIRONMENT_NAME'] === 'local') {

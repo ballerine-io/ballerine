@@ -69,6 +69,10 @@ module.exports = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        'wp-primary': {
+          DEFAULT: 'hsl(var(--web-presence-primary))',
+          foreground: 'hsl(var(--web-presence-primary-foreground))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
