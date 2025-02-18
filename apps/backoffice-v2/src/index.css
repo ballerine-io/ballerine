@@ -76,6 +76,9 @@
     --warning: 25 100% 71%;
     --warning-foreground: 25 100% 71%;
 
+    --web-presence-primary: 245 51% 54%; /* #584ec5 */
+    --web-presence-primary-foreground: 100 100% 100%; /* #ffffff */
+
     --ring: 215 20.2% 65.1%;
 
     --radius: 0.5rem;
@@ -152,6 +155,15 @@
 
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
+
+    --success: 148 100% 37%;
+    --success-foreground: 148 100% 37%;
+
+    --warning: 25 100% 71%;
+    --warning-foreground: 25 100% 71%;
+
+    --web-presence-primary: 245 51% 54%; /* #584ec5 */
+    --web-presence-primary-foreground: 100 100% 100%; /* #ffffff */
 
     --ring: 216 34% 17%;
 
