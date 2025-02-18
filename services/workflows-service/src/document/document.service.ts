@@ -6,7 +6,12 @@ import { StorageService } from '@/storage/storage.service';
 import { PrismaTransactionClient, TProjectId } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { getDocumentId, isType } from '@ballerine/common';
+import {
+  CollectionFlowStatusesEnum,
+  getDocumentId,
+  isType,
+  setCollectionFlowStatus,
+} from '@ballerine/common';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   Document,
@@ -19,6 +24,7 @@ import { Static } from '@sinclair/typebox';
 import z from 'zod';
 import { DocumentRepository } from './document.repository';
 import { CreateDocumentSchema } from './dtos/document.dto';
+import { addRequestedDocumentToEntityDocuments } from './helpers/add-requested-document-to-entity-documents';
 import { DocumentTrackerResponseSchema, EntitySchema, TParsedDocuments } from './types';
 
 @Injectable()
@@ -490,9 +496,65 @@ export class DocumentService {
         : undefined,
     }));
 
-    const createdDocuments = await this.repository.createMany(documentsToCreate);
+    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
+      workflowId,
+      {
+        select: {
+          workflowDefinition: true,
+          context: true,
+        },
+      },
+      [projectId],
+    );
 
-    return { message: 'Documents requested successfully', count: createdDocuments.count };
+    const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
+      workflowRuntimeData.workflowDefinitionId,
+      'collection_flow',
+      [projectId],
+    );
+
+    const createdDocuments = await Promise.all(
+      documentsToCreate.map(doc => this.repository.create(doc)),
+    );
+
+    const contextWithDocuments = createdDocuments.reduce((context, document) => {
+      const createdDocument = document;
+
+      if (!createdDocument) {
+        return context;
+      }
+
+      return addRequestedDocumentToEntityDocuments(
+        context,
+        document.type as 'business' | 'ubo' | 'director',
+        uiDefinition,
+        {
+          id: createdDocument.id,
+          status: DocumentStatus.requested,
+          decision: null,
+          version: createdDocument.version.toString(),
+          type: createdDocument.type,
+          category: createdDocument.category,
+          issuingCountry: createdDocument.issuingCountry,
+          issuingVersion: createdDocument.issuingVersion,
+        },
+      );
+    }, workflowRuntimeData.context);
+
+    const contextWithRevision = setCollectionFlowStatus(
+      contextWithDocuments,
+      CollectionFlowStatusesEnum.revision,
+    );
+
+    await this.workflowService.updateWorkflowRuntimeData(
+      workflowId,
+      {
+        context: contextWithRevision,
+      },
+      projectId,
+    );
+
+    return { message: 'Documents requested successfully', count: createdDocuments.length };
   }
 
   private parseDocumentsFromUISchema(uiSchema: Array<Record<string, any>>): TParsedDocuments {
