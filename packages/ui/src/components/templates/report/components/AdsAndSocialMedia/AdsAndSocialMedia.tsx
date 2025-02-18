@@ -1,6 +1,4 @@
-import { ctw } from '@/common';
-import { buttonVariants, Card, Image, TextWithNAFallback } from '@/components';
-import { AdsProviders } from '@/components/templates/report/constants';
+import { FacebookPageSchema, InstagramPageSchema } from '@ballerine/common';
 import {
   BanIcon,
   BriefcaseIcon,
@@ -16,12 +14,14 @@ import {
   UsersIcon,
 } from 'lucide-react';
 import { ReactNode } from 'react';
-import { capitalize, toLowerCase } from 'string-ts';
+import { capitalize } from 'string-ts';
 import { z } from 'zod';
+
+import { ctw } from '@/common';
+import { buttonVariants, Card, Image, TextWithNAFallback } from '@/components';
+import { AdsProviders } from '@/components/templates/report/constants';
 import { FacebookIcon } from './icons/FacebookIcon';
 import { InstagramIcon } from './icons/InstagramIcon';
-import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
-import { FacebookPageSchema, InstagramPageSchema } from '@ballerine/common';
 
 const socialMediaMapper: {
   facebook: {

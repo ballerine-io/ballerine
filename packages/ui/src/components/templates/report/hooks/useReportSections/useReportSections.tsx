@@ -8,7 +8,7 @@ import {
   SearchCheck,
   ThumbsUp,
 } from 'lucide-react';
-import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { z } from 'zod';
 
 import { getUniqueRiskIndicators } from '@/common';
