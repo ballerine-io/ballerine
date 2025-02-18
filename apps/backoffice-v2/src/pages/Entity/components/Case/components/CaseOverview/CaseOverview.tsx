@@ -30,7 +30,7 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
       workflow?.context?.pluginsOutput?.risk_evaluation?.riskIndicatorsByDomain ??
       {},
   )?.map(([domain, riskIndicators]) => {
-    const tab = camelCase(domain);
+    const tab = camelCase(domain.toLowerCase());
     const isValidCaseTab = CaseTabs.includes(tab);
 
     return {
