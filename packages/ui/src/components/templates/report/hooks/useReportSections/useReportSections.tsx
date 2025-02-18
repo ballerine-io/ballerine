@@ -34,7 +34,7 @@ type BusinessReportSection = {
   isPremium?: boolean;
 };
 
-export const useReportSections = ({ report }: { report: z.infer<typeof ReportSchema> }) => {
+export const useReportSections = (report: z.infer<typeof ReportSchema>) => {
   const {
     homePageScreenshotUrl,
     riskLevel,
@@ -184,34 +184,5 @@ export const useReportSections = ({ report }: { report: z.infer<typeof ReportSch
     [report.data],
   );
 
-  const [activeSection, setActiveSection] = useState<string>(sections[0]!.id);
-
-  const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const parentRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const observerCallback: IntersectionObserverCallback = entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting && activeSection !== entry.target.id) {
-          setActiveSection(entry.target.id);
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(observerCallback, {
-      threshold: 0.1,
-    });
-
-    Object.values(sectionRefs.current).forEach(ref => {
-      if (ref) observer.observe(ref);
-    });
-
-    return () => observer.disconnect();
-  }, [activeSection]);
-
-  const scrollToSection = (sectionId: string) => {
-    sectionRefs.current[sectionId]?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  return { sections, activeSection, sectionRefs, parentRef, scrollToSection };
+  return { sections };
 };
