@@ -152,7 +152,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
       }}
     >
       <SidebarInset>
-        <section className="flex h-full flex-col px-6 pb-6 pt-4">
+        <section className="flex h-full flex-col px-6 pt-4">
           <div className={`flex justify-between`}>
             <Button
               variant={'ghost'}
@@ -335,8 +335,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
               <NotesButton numberOfNotes={notes?.length} />
             </div>
           )}
-          {/* <ScrollArea orientation={'vertical'} className={'h-[65vh] 2xl:h-[75vh]'}> */}
-          {isFetchingBusinessReport ? (
+          {isFetchingBusinessReport || !businessReport ? (
             <>
               <Skeleton className="h-6 w-72" />
               <Skeleton className="mt-6 h-4 w-40" />
@@ -350,7 +349,6 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
           ) : (
             <BusinessReport report={businessReport} />
           )}
-          {/* </ScrollArea> */}
         </section>
       </SidebarInset>
       <Notes

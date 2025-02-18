@@ -105,10 +105,8 @@ const cleanLink = (link: string) => {
 export const AdsAndSocialMedia = (pages: {
   facebook: z.infer<typeof FacebookPageSchema> | null;
   instagram: z.infer<typeof InstagramPageSchema> | null;
-}) => (
-  <div>
-    <h3 className="mb-2 text-base font-bold">Social Media</h3>
-
+}) => {
+  return (
     <div className="flex w-full flex-col gap-4">
       {AdsProviders.map(provider => {
         const page = pages[provider];
@@ -217,5 +215,5 @@ export const AdsAndSocialMedia = (pages: {
         );
       })}
     </div>
-  </div>
-);
+  );
+};

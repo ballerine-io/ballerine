@@ -103,10 +103,7 @@ export const useReportTabs = ({ report, Link }: UseReportTabsProps) => {
       label: "Website's Company",
       value: 'websitesCompany',
       content: (
-        <WebsitesCompany
-          companyName={report.data?.companyName ?? ''}
-          riskIndicators={report.data?.companyReputationRiskIndicators ?? []}
-        />
+        <WebsitesCompany riskIndicators={report.data?.companyReputationRiskIndicators ?? []} />
       ),
     },
     {
