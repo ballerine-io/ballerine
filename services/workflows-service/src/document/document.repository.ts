@@ -18,6 +18,14 @@ export class DocumentRepository {
     });
   }
 
+  async createMany(
+    data: Prisma.DocumentCreateManyInput[],
+    args?: Prisma.DocumentCreateManyArgs,
+    transaction: PrismaTransactionClient = this.prismaService,
+  ) {
+    return transaction.document.createMany({ ...args, data });
+  }
+
   async findMany(
     projectIds: TProjectId[],
     args?: Prisma.DocumentFindManyArgs,

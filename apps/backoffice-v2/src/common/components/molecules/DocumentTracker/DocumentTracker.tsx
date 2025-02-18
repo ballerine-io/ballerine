@@ -13,7 +13,7 @@ import {
   HoverCardTrigger,
 } from '@ballerine/ui';
 import { HelpCircle, Loader2, SendIcon } from 'lucide-react';
-import { FunctionComponent, memo } from 'react';
+import { FunctionComponent, memo, useMemo } from 'react';
 
 import { DocumentsTrackerData, TrackedDocument } from '@/domains/documents/hooks/schemas/document';
 import { Icon } from './constants';
@@ -21,7 +21,7 @@ import { useDocumentTracker } from './hooks/useDocumentTracker';
 
 export const DocumentTracker: FunctionComponent<{ workflowId: string }> = ({ workflowId }) => {
   const {
-    documents,
+    documentTrackerItems,
     isLoadingDocuments,
     getSubItems,
     selectedIdsToRequest,
@@ -103,7 +103,7 @@ export const DocumentTracker: FunctionComponent<{ workflowId: string }> = ({ wor
         </AccordionCard.Title>
         <AccordionCard.Content>
           <AccordionContent
-            documents={documents}
+            documentTrackerItems={documentTrackerItems}
             isLoading={isLoadingDocuments}
             getSubItems={getSubItems}
           />
@@ -114,49 +114,70 @@ export const DocumentTracker: FunctionComponent<{ workflowId: string }> = ({ wor
 };
 
 type AccordionContentProps = {
-  documents: DocumentsTrackerData | null | undefined;
+  documentTrackerItems: DocumentsTrackerData | null | undefined;
   isLoading: boolean;
   getSubItems: (
     doc: TrackedDocument,
   ) => Parameters<typeof AccordionCard.Item>[number]['subitems'][number];
 };
-const AccordionContent = memo(({ documents, isLoading, getSubItems }: AccordionContentProps) => {
-  if (isLoading) {
-    return (
-      <div className="flex h-20 animate-spin items-center justify-center">
-        <Loader2 className="d-6" />
-      </div>
+const AccordionContent = memo(
+  ({ documentTrackerItems, isLoading, getSubItems }: AccordionContentProps) => {
+    const businessSubitems = useMemo(
+      () => documentTrackerItems?.business.map(getSubItems).filter(Boolean) ?? [],
+      [documentTrackerItems?.business, getSubItems],
     );
-  }
-
-  if (
-    !documents ||
-    (!documents.business.length &&
-      !documents.individuals.ubos.length &&
-      !documents.individuals.directors.length)
-  ) {
-    return (
-      <div className="flex h-20 items-center justify-center text-sm">No documents available</div>
+    const individualsSubitems = useMemo(
+      () =>
+        [
+          ...(documentTrackerItems?.individuals.ubos ?? []),
+          ...(documentTrackerItems?.individuals.directors ?? []),
+        ]
+          .map(getSubItems)
+          .filter(Boolean),
+      [
+        documentTrackerItems?.individuals.ubos,
+        documentTrackerItems?.individuals.directors,
+        getSubItems,
+      ],
     );
-  }
 
-  return (
-    <>
-      <AccordionCard.Item
-        title="Company documents"
-        value="company-documents"
-        ulProps={{ className: 'space-y-0' }}
-        subitems={documents.business.map(getSubItems)}
-      />
+    if (isLoading) {
+      return (
+        <div className="flex h-20 animate-spin items-center justify-center">
+          <Loader2 className="d-6" />
+        </div>
+      );
+    }
 
-      <AccordionCard.Item
-        title="Individual's documents"
-        value="individual-documents"
-        subitems={[...documents.individuals.ubos, ...documents.individuals.directors].map(
-          getSubItems,
-        )}
-      />
-    </>
-  );
-});
+    if (
+      !documentTrackerItems ||
+      [
+        !documentTrackerItems.business.length,
+        !documentTrackerItems.individuals.ubos.length,
+        !documentTrackerItems.individuals.directors.length,
+      ].every(Boolean)
+    ) {
+      return (
+        <div className="flex h-20 items-center justify-center text-sm">No documents available</div>
+      );
+    }
+
+    return (
+      <>
+        <AccordionCard.Item
+          title="Company documents"
+          value="company-documents"
+          ulProps={{ className: 'space-y-0' }}
+          subitems={businessSubitems}
+        />
+
+        <AccordionCard.Item
+          title="Individual's documents"
+          value="individual-documents"
+          subitems={individualsSubitems}
+        />
+      </>
+    );
+  },
+);
 AccordionContent.displayName = 'AccordionContent';
