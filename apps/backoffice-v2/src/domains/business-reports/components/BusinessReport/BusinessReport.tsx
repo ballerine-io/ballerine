@@ -1,7 +1,7 @@
 import { ReportSchema } from '@ballerine/common';
 import { ContentTooltip, useReportSections } from '@ballerine/ui';
 import { AlertTriangle, ArrowLeftToLine, ArrowRightToLine, Crown, List } from 'lucide-react'; // Import List icon
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 
 import { Button } from '@/common/components/atoms/Button/Button';
@@ -101,7 +101,10 @@ const BusinessReportSectionsObserver = ({
 };
 
 export const BusinessReport = ({ report }: BusinessReportProps) => {
-  const { sections, sectionRefs, parentRef } = useReportSections({ report });
+  const { sections } = useReportSections(report);
+  const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const parentRef = useRef<HTMLDivElement | null>(null);
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
