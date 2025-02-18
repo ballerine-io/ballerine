@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { SlidersHorizontal } from 'lucide-react';
-import { ComponentProps, useCallback, useEffect, useMemo } from 'react';
+import { ComponentProps, ReactNode, useCallback, useEffect, useMemo } from 'react';
 
 import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
@@ -20,9 +20,15 @@ import {
   RISK_LEVEL_FILTER,
   STATUS_LEVEL_FILTER,
 } from '@/pages/MerchantMonitoring/schemas';
+import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useToggle } from '@/common/hooks/useToggle/useToggle';
+import { CreateMerchantReportDialog } from '../../components/CreateMerchantReportDialog/CreateMerchantReportDialog';
+import { getDemoStateErrorText } from '@/common/components/molecules/DemoAccessCards/getDemoStateErrorText';
 
 const useDefaultDateRange = () => {
-  const [{ from, to }, setSearchParams] = useZodSearchParams(MerchantMonitoringSearchSchema);
+  const [{ from, to }, setSearchParams] = useZodSearchParams(MerchantMonitoringSearchSchema, {
+    replace: true,
+  });
 
   useEffect(() => {
     if (from || to) {
@@ -40,6 +46,22 @@ export const useMerchantMonitoringLogic = () => {
   const locale = useLocale();
   const { data: customer } = useCustomerQuery();
 
+  const demoError = getDemoStateErrorText({
+    reportsLeft: customer?.config?.demoAccessDetails?.reportsLeft,
+    demoDaysLeft: customer?.config?.demoAccessDetails?.demoDaysLeft,
+  });
+  const createBusinessReport = {
+    ...customer?.features?.createBusinessReport,
+    enabled: customer?.features?.createBusinessReport?.enabled && !demoError,
+  };
+  const createBusinessReportBatch = {
+    ...customer?.features?.createBusinessReportBatch,
+    enabled: customer?.features?.createBusinessReportBatch?.enabled && !demoError,
+  };
+
+  const { data: session } = useAuthenticatedUserQuery();
+  const { firstName, fullName, avatarUrl } = session?.user || {};
+
   const { search, debouncedSearch, onSearch } = useSearch();
 
   const [
@@ -55,9 +77,20 @@ export const useMerchantMonitoringLogic = () => {
       to,
       findings,
       isAlert,
+      isCreating,
     },
     setSearchParams,
   ] = useZodSearchParams(MerchantMonitoringSearchSchema, { replace: true });
+
+  const [open, toggleOpenBase] = useToggle(isCreating ?? false);
+  const toggleOpen = () => {
+    toggleOpenBase();
+
+    // Just remove it as it's only intended to be used once for the links that include it explicitly
+    if (isCreating) {
+      setSearchParams({ isCreating: undefined });
+    }
+  };
 
   const { findings: findingsOptions, isLoading: isLoadingFindings } = useFindings();
 
@@ -75,6 +108,7 @@ export const useMerchantMonitoringLogic = () => {
     sortDir,
     findings,
     riskLevels: riskLevels ?? [],
+    // TODO: fix type
     statuses: statuses
       ?.map(status => REPORT_STATUS_LABEL_TO_VALUE_MAP[status])
       .flatMap(status =>
@@ -176,12 +210,19 @@ export const useMerchantMonitoringLogic = () => {
 
   useDefaultDateRange();
 
+  const CreateReportButtonWrapper = customer?.features?.createBusinessReport?.enabled
+    ? ({ children }: { children: ReactNode }) => (
+        <CreateMerchantReportDialog open={open} toggleOpen={toggleOpen}>
+          {children}
+        </CreateMerchantReportDialog>
+      )
+    : ({ children }: { children: ReactNode }) => <>{children}</>;
+
   return {
     totalPages: data?.totalPages || 0,
     totalItems: Intl.NumberFormat(locale).format(data?.totalItems || 0),
-    demoAccessDetails: customer?.config?.demoAccessDetails,
-    createBusinessReport: customer?.features?.createBusinessReport,
-    createBusinessReportBatch: customer?.features?.createBusinessReportBatch,
+    createBusinessReport,
+    createBusinessReportBatch,
     businessReports: data?.data || [],
     isLoadingBusinessReports,
     isLoadingFindings,
@@ -213,5 +254,10 @@ export const useMerchantMonitoringLogic = () => {
     onDatesChange,
     onIsAlertChange,
     onClearAllFilters,
+    firstName,
+    fullName,
+    avatarUrl,
+    CreateReportButtonWrapper,
+    toggleOpen,
   };
 };

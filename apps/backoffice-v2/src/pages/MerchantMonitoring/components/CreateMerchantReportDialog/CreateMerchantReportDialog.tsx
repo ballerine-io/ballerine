@@ -16,12 +16,18 @@ import { useCreateMerchantReportDialogLogic } from './hooks/useCreateMerchantRep
 import { BusinessReportsLeftCard } from '@/domains/business-reports/components/BusinessReportsLeftCard/BusinessReportsLeftCard';
 
 type CreateMerchantReportDialogProps = {
+  open?: boolean;
+  toggleOpen?: () => void;
   children: React.ReactNode;
 };
 
-export const CreateMerchantReportDialog = ({ children }: CreateMerchantReportDialogProps) => {
-  const { form, open, toggleOpen, showSuccess, isSubmitting, onSubmit, demoDaysLeft, reportsLeft } =
-    useCreateMerchantReportDialogLogic();
+export const CreateMerchantReportDialog = ({
+  open,
+  toggleOpen,
+  children,
+}: CreateMerchantReportDialogProps) => {
+  const { form, showSuccess, isSubmitting, onSubmit, reportsLeft, demoDaysLeft } =
+    useCreateMerchantReportDialogLogic({ open, toggleOpen });
 
   return (
     <Dialog open={open} onOpenChange={toggleOpen}>

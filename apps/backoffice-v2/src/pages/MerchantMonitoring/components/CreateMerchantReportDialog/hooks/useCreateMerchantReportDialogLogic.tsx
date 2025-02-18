@@ -2,21 +2,24 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { useCreateBusinessReportMutation } from '@/domains/business-reports/hooks/mutations/useCreateBusinessReportMutation/useCreateBusinessReportMutation';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import {
   CreateBusinessReportDialogInput,
   CreateBusinessReportDialogSchema,
 } from '../../../schemas';
-import dayjs from 'dayjs';
+import { useToggle } from '@/common/hooks/useToggle/useToggle';
 
-export const useCreateMerchantReportDialogLogic = () => {
+type UseCreateMerchantReportDialogLogicProps = {
+  open?: boolean;
+  toggleOpen?: () => void;
+};
+export const useCreateMerchantReportDialogLogic = ({
+  open: propsOpen,
+  toggleOpen: propsToggleOpen,
+}: UseCreateMerchantReportDialogLogicProps) => {
   const { data: customer } = useCustomerQuery();
-
-  const { totalReports, maxBusinessReports, expiresAt } = customer?.config?.demoAccessDetails ?? {};
-  const reportsLeft = maxBusinessReports && totalReports ? maxBusinessReports - totalReports : null;
-  const demoDaysLeft = expiresAt ? dayjs(expiresAt * 1000).diff(dayjs(), 'days') : null;
+  const { reportsLeft, demoDaysLeft } = customer?.config?.demoAccessDetails ?? {};
 
   const form = useForm({
     defaultValues: {
@@ -26,7 +29,14 @@ export const useCreateMerchantReportDialogLogic = () => {
     },
     resolver: zodResolver(CreateBusinessReportDialogSchema),
   });
-  const [open, toggleOpen] = useToggle(false);
+  const [open, toggleOpenBase] = useToggle(propsOpen ?? false);
+  const toggleOpen = () => {
+    toggleOpenBase();
+
+    if (propsToggleOpen) {
+      propsToggleOpen();
+    }
+  };
   const [showSuccess, setShowSuccess] = useState(false);
   const { mutate: mutateCreateBusinessReport, isLoading: isSubmitting } =
     useCreateBusinessReportMutation({ disableToast: true });
@@ -47,12 +57,12 @@ export const useCreateMerchantReportDialogLogic = () => {
 
   return {
     form,
-    open,
-    toggleOpen,
     showSuccess,
-    reportsLeft,
-    demoDaysLeft,
     isSubmitting,
     onSubmit,
+    open,
+    toggleOpen,
+    reportsLeft,
+    demoDaysLeft,
   };
 };
