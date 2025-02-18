@@ -4,7 +4,7 @@ import get from 'lodash/get';
 import set from 'lodash/set';
 import { useCallback, useEffect, useRef } from 'react';
 import { useDynamicForm } from '../../../../context';
-import { useElement, useField } from '../../../../hooks/external';
+import { useElementId, useField } from '../../../../hooks/external';
 import { useTaskRunner } from '../../../../providers/TaskRunner/hooks/useTaskRunner';
 import { ITask } from '../../../../providers/TaskRunner/types';
 import { IFormElement } from '../../../../types';
@@ -19,7 +19,7 @@ export const useDocumentUpload = (
 ) => {
   const { uploadOn = 'change' } = params;
   const { stack } = useStack();
-  const { id } = useElement(element, stack);
+  const id = useElementId(element, stack);
   const { addTask, removeTask } = useTaskRunner();
   const { metadata, values } = useDynamicForm();
   const { run: uploadDocument, isLoading: isUploading } = useHttp(

@@ -68,7 +68,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
 
   const { params } = element;
   const { placeholder = 'Choose file', acceptFileFormats = undefined } = params || {};
-  const { removeTask } = useTaskRunner();
+  const { removeTask, getTaskById, isRunning } = useTaskRunner();
   const { documentState, updateState } = useDocumentState(
     element as IFormElement<'documentfield', IDocumentFieldParams>,
   );
@@ -82,6 +82,8 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
     onBlur,
     onFocus,
   } = useField<Array<IDocumentFieldParams['template']> | undefined>(element, stack, documentState);
+
+  const task = useMemo(() => getTaskById(id), [getTaskById, id]);
 
   const document = useMemo(() => {
     return getDocumentObjectFromDocumentsList(
@@ -154,7 +156,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
           'relative flex h-[56px] flex-row items-center gap-3 rounded-[16px] border bg-white px-4',
           {
             'pointer-events-none opacity-50':
-              disabled || disabledWhileUploading || isDeletingDocument,
+              disabled || disabledWhileUploading || isDeletingDocument || (task && isRunning),
           },
         )}
         onClick={focusInputOnContainerClick}
