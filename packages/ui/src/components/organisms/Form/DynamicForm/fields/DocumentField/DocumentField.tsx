@@ -38,6 +38,9 @@ export interface IDocumentTemplate {
   pages: AnyObject[];
   status?: TDocumentStatus;
   decision?: TDocumentDecision;
+
+  // Document ID from the backend
+  _id?: string;
 }
 
 export interface IDocumentFieldParams extends IFileFieldParams {
