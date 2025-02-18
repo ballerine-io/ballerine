@@ -1,12 +1,12 @@
-import React, { FunctionComponent } from 'react';
-import { Card, CardContent, CardHeader } from '@/components';
-import { EcosystemTable } from '@/components/templates/report/components/Ecosystem/components/EcosystemTable/EcosystemTable';
-import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
-import { EcosystemRecordSchema } from '@ballerine/common';
+import { FunctionComponent } from 'react';
 import { z } from 'zod';
 
+import { Card, CardContent, CardHeader } from '@/components';
+import { EcosystemTable } from '@/components/templates/report/components/Ecosystem/components/EcosystemTable/EcosystemTable';
+import { EcosystemRecordSchema } from '@ballerine/common';
+
 export const Ecosystem: FunctionComponent<{
-  data: z.infer<typeof EcosystemRecordSchema>[];
+  data: Array<z.infer<typeof EcosystemRecordSchema>>;
 }> = ({ data }) => {
   return (
     <div className={'space-y-6'}>
