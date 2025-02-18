@@ -10,7 +10,11 @@ import { TCustomerWithFeatures } from '@/customer/types';
 import { env } from '@/env';
 import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 import { PrismaService } from '@/prisma/prisma.service';
-import { TDemoAccessDetails } from './schemas/zod-schemas';
+import {
+  DemoAccessDetailsSchema,
+  TDemoAccessDetails,
+  TDemoAccessDetailsInput,
+} from './schemas/zod-schemas';
 
 @Injectable()
 export class CustomerService {
@@ -22,23 +26,28 @@ export class CustomerService {
   ) {}
 
   async getDemoAccessDetails(customer: TCustomerWithFeatures): Promise<TDemoAccessDetails | null> {
-    const { id: customerId, config, createdAt } = customer;
+    const { id: customerId, config } = customer;
 
-    if (!config || !config.isDemoAccount || !createdAt) {
+    if (!config || !config.isDemoAccount) {
       return null;
+    }
+
+    if (!config.expiresAt) {
+      config.expiresAt = dayjs().add(env.DEFAULT_DEMO_DURATION_DAYS, 'days').unix();
+      await this.updateById(customerId, { data: { config } });
     }
 
     const businessReportsCount = await this.merchantMonitoringClient.count({
       customerId,
     });
 
-    return {
+    const demoDetails: TDemoAccessDetailsInput = {
       totalReports: businessReportsCount,
       maxBusinessReports: config.maxBusinessReports ?? 10,
-      showFullAccessPopup: config.showFullAccessPopup ?? false,
-      // FIXME: should count from the first login date / should be passed on creation ?
-      expiresAt: dayjs(createdAt).add(14, 'days').unix(),
+      expiresAt: config.expiresAt,
     };
+
+    return DemoAccessDetailsSchema.parse(demoDetails);
   }
 
   async create(args: Parameters<CustomerRepository['create']>[0]) {
