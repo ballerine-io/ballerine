@@ -1,10 +1,11 @@
-import React, { FunctionComponent } from 'react';
+import { RiskIndicatorSchema } from '@ballerine/common';
+import { FunctionComponent } from 'react';
+import { z } from 'zod';
+
 import { ctw } from '@/common';
-import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
 import { Card, CardContent, CardHeader } from '@/components';
 import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
-import { RiskIndicatorSchema } from '@ballerine/common';
-import { z } from 'zod';
+import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
 
 export const WebsiteLineOfBusiness: FunctionComponent<{
   riskIndicators: Array<z.infer<typeof RiskIndicatorSchema>>;
