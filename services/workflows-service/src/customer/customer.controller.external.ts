@@ -16,7 +16,7 @@ import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { CustomerSubscriptionDto } from './dtos/customer-config-create.dto';
 import { ValidationError } from '@/errors';
-import { TCustomerWithFeatures } from '@/customer/types';
+import { TDemoCustomer } from '@/customer/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @swagger.ApiTags('Customers')
@@ -55,12 +55,9 @@ export class CustomerControllerExternal {
   @common.Get('/by-current-project-id')
   @swagger.ApiOkResponse({ type: [CustomerModel] })
   @swagger.ApiForbiddenResponse()
-  async getByCurrentProjectId(@CurrentProject() currentProjectId: TProjectId): Promise<
-    | (Omit<TCustomerWithFeatures, 'config'> & {
-        config: TCustomerWithFeatures['config'] & { demoAccessDetails: TDemoAccessDetails };
-      })
-    | null
-  > {
+  async getByCurrentProjectId(
+    @CurrentProject() currentProjectId: TProjectId,
+  ): Promise<TDemoCustomer> {
     if (!currentProjectId) {
       throw new NotFoundException('Customer not found');
     }
