@@ -8,13 +8,11 @@ export type TCustomerSubscription = z.infer<typeof CustomerSubscriptionSchema>;
 const CustomerConfigSchema = z.object({
   ongoingWorkflowDefinitionId: z.string().optional(),
   isDemo: z.boolean().default(false).optional(),
-  isDemoAccount: z.boolean().default(false).optional(),
   hideCreateMerchantMonitoringButton: z.boolean().default(true).optional(),
   isMerchantMonitoringEnabled: z.boolean().default(false).optional(),
   maxBusinessReports: z.number().default(10).optional(),
   withQualityControl: z.boolean().default(true).optional(),
   disableBusinessSyncToUnifiedApi: z.boolean().default(false).nullish(),
-  showFullAccessPopup: z.boolean().default(false).nullish(),
   isDemoAccount: z.boolean().default(false).nullish(),
 });
 
@@ -23,7 +21,6 @@ export type TCustomerConfig = z.infer<typeof CustomerConfigSchema>;
 const DemoAccessDetailsSchema = z.object({
   totalReports: z.number(),
   expiresAt: z.number().optional(),
-  showFullAccessPopup: z.boolean().optional(),
   maxBusinessReports: z.number().default(10).optional(),
 });
 
