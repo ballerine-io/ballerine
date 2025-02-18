@@ -1,10 +1,12 @@
 import { FunctionComponent, lazy, useState } from 'react';
-import { Providers } from '../../common/components/templates/Providers/Providers';
-import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
-import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
-import Chatbot from '@/domains/chat/chatbot-opengpt';
-import { env } from '@/common/env/env';
 import { Outlet } from 'react-router-dom';
+
+import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
+import { WelcomeModal } from '@/common/components/molecules/WelcomeModal/WelcomeModal';
+import { Providers } from '@/common/components/templates/Providers/Providers';
+import { env } from '@/common/env/env';
+import Chatbot from '@/domains/chat/chatbot-opengpt';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
@@ -45,9 +47,7 @@ export const Root: FunctionComponent = () => {
     <Providers>
       <Outlet />
       <ChatbotLayout />
-      {/*<Suspense>*/}
-      {/*  <ReactQueryDevtools  />*/}
-      {/*</Suspense>*/}
+      <WelcomeModal />
     </Providers>
   );
 };
