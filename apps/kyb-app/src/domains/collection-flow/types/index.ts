@@ -175,4 +175,6 @@ export interface IDocumentRecord {
   id: string;
   status: TDocumentStatus;
   decision: TDocumentDecision;
+  type: string;
+  category: string;
 }

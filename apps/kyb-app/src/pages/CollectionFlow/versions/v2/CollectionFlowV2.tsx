@@ -93,8 +93,6 @@ export const CollectionFlowV2 = withSessionProtected(() => {
     setLogoLoaded(false);
   }, [customer?.logoImageUri]);
 
-  console.log('collectionFlowContext', collectionFlowContext);
-
   if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.approved) {
     return <Approved />;
   }

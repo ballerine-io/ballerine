@@ -27,7 +27,8 @@ export const getDocumentIdsFromContext = (context: CollectionFlowContext, uiSche
           continue;
         }
 
-        const documentId = getFileOrFileIdFromDocumentsList(documents || [], element);
+        const documentId =
+          getFileOrFileIdFromDocumentsList(documents || [], element) || document._id;
 
         if (!documentId || documentId instanceof File) {
           continue;

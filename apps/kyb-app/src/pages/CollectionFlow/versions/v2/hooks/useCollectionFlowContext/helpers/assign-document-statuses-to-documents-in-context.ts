@@ -15,15 +15,13 @@ import get from 'lodash/get';
 export const assignDocumentStatusesToDocumentsInContext = (
   context: CollectionFlowContext,
   uiSchema: UISchema,
-  documents: IDocumentRecord[],
+  createdDocuments: IDocumentRecord[],
 ) => {
-  const documentsMap = documents.reduce((acc, document) => {
+  const documentsMap = createdDocuments.reduce((acc, document) => {
     acc[document.id] = document;
 
     return acc;
   }, {} as Record<string, IDocumentRecord>);
-
-  console.log('documentsMap', documentsMap);
 
   const run = (elements: Array<IFormElement<TBaseFields, any>>, stack: TDeepthLevelStack = []) => {
     for (const element of elements) {
@@ -43,7 +41,9 @@ export const assignDocumentStatusesToDocumentsInContext = (
 
         const documentFileId = fileOrFileId as string;
 
-        document.status = documentsMap?.[documentFileId]?.status;
+        document.status = documentFileId
+          ? documentsMap?.[documentFileId]?.status
+          : documentsMap?.[document._id!]?.status;
       }
 
       if (Array.isArray(element.children) && element.children.length > 0) {
