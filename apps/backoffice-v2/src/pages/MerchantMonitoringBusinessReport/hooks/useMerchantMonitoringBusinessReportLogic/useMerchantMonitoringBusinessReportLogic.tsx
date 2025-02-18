@@ -147,10 +147,9 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     isNotesOpen: ParsedBooleanSchema.catch(false),
   });
 
-  const [{ activeTab, isNotesOpen }] = useZodSearchParams(
-    MerchantMonitoringBusinessReportSearchSchema,
-    { replace: true },
-  );
+  const [{ isNotesOpen }] = useZodSearchParams(MerchantMonitoringBusinessReportSearchSchema, {
+    replace: true,
+  });
 
   const navigate = useNavigate();
 
@@ -178,7 +177,6 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     businessReport,
     statusToBadgeData,
     notes,
-    activeTab,
     isNotesOpen,
     turnOngoingMonitoringOn: turnOnMonitoringMutation.mutate,
     isDeboardModalOpen,

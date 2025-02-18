@@ -1,18 +1,17 @@
-import React, { FunctionComponent } from 'react';
-import { ctw, getUniqueRiskIndicators } from '@/common';
-import { Card, CardContent, CardHeader } from '@/components';
-import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
-import { BallerineLink } from '@/components/atoms/BallerineLink/BallerineLink';
-import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
 import { RiskIndicatorSchema } from '@ballerine/common';
+import { FunctionComponent } from 'react';
 import { z } from 'zod';
 
+import { ctw } from '@/common';
+import { Card, CardContent, CardHeader } from '@/components';
+import { BallerineLink } from '@/components/atoms/BallerineLink/BallerineLink';
+import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
+
 export const WebsitesCompany: FunctionComponent<{
-  companyName: string;
-  riskIndicators: z.infer<typeof RiskIndicatorSchema>[];
-}> = ({ companyName, riskIndicators }) => {
+  riskIndicators: Array<z.infer<typeof RiskIndicatorSchema>>;
+}> = ({ riskIndicators }) => {
   return (
-    <div className={'space-y-8'}>
+    <div className={'space-y-6'}>
       <RiskIndicators riskIndicators={riskIndicators} />
       <Card>
         <CardHeader className={'pt-4 font-bold'}>Company Reputation Analysis</CardHeader>

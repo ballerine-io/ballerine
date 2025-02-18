@@ -31,7 +31,7 @@ export const BusinessReportSummary: FunctionComponent<{
   Link,
 }) => {
   return (
-    <div className={'grid grid-cols-5 gap-8'}>
+    <div className={'grid grid-cols-5 gap-y-6 gap-x-8'}>
       <Card className={!homepageScreenshotUrl ? 'col-span-full' : 'col-span-3'}>
         <CardHeader className={'pt-4 font-bold'}>
           <span className={'mb-1'}>Overall Risk Level</span>
