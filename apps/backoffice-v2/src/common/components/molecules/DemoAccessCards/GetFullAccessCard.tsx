@@ -13,7 +13,7 @@ export type GetFullAccessCardProps = {
 export const GetFullAccessCard = ({ className }: GetFullAccessCardProps) => {
   const { data: customer, isLoading } = useCustomerQuery();
 
-  if (env.VITE_ENVIRONMENT_NAME === 'production' || isLoading || !customer?.config?.isDemoAccount) {
+  if (isLoading || !customer?.config?.isDemoAccount) {
     return null;
   }
 
