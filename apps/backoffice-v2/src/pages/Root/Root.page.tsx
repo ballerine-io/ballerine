@@ -5,6 +5,7 @@ import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader
 import Chatbot from '@/domains/chat/chatbot-opengpt';
 import { env } from '@/common/env/env';
 import { Outlet } from 'react-router-dom';
+import { PostHogPageView } from './components/PostHogRootEvents';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
@@ -44,6 +45,7 @@ export const Root: FunctionComponent = () => {
   return (
     <Providers>
       <Outlet />
+      <PostHogPageView />
       <ChatbotLayout />
       {/*<Suspense>*/}
       {/*  <ReactQueryDevtools  />*/}
