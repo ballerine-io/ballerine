@@ -38,12 +38,14 @@ const CustomerSchema = z.object({
       isMerchantMonitoringEnabled: z.boolean().default(false),
       isExample: z.boolean().default(false),
       isDemo: z.boolean().default(false),
+      isDemoAccount: z.boolean().default(false),
       demoAccessDetails: z
         .object({
-          expiresAt: z.number().optional(),
-          showFullAccessPopup: z.boolean().optional(),
           totalReports: z.number(),
-          maxBusinessReports: z.number(),
+          expiresAt: z.number().nullish(),
+          maxBusinessReports: z.number().default(10).nullish(),
+          reportsLeft: z.number().nullish(),
+          demoDaysLeft: z.number().nullish(),
         })
         .optional(),
     })

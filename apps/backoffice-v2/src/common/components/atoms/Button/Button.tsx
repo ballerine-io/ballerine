@@ -19,6 +19,9 @@ export const buttonVariants = cva(
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'underline-offset-4 hover:underline text-primary',
+        'wp-primary': 'bg-wp-primary text-wp-primary-foreground hover:bg-wp-primary/90',
+        'wp-outline':
+          'border border-wp-primary text-wp-primary hover:bg-wp-primary hover:text-wp-primary-foreground',
       },
       size: {
         default: 'h-10 py-2 px-4',
