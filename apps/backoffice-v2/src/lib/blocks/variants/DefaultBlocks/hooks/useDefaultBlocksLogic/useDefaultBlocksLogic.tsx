@@ -57,6 +57,7 @@ import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/muta
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { directorAdapter } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/helpers';
 import { createDirectorsBlocks } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/create-directors-blocks';
+import { useReviseDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useReviseDocumentByIdMutation/useReviseDocumentByIdMutation';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 
@@ -72,15 +73,18 @@ export const useDefaultBlocksLogic = () => {
     workflow?.context?.entity?.type === 'business';
   const { mutate: mutateRevisionTaskById, isLoading: isLoadingReuploadNeeded } =
     useRevisionTaskByIdMutation();
+  const { mutate: mutateReviseDocumentById, isLoading: isLoadingReviseDocumentById } =
+    useReviseDocumentByIdMutation();
   const onReuploadNeeded = useCallback(
     ({
         workflowId,
         documentId,
         reason,
+        comment,
       }: Pick<
         Parameters<typeof mutateRevisionTaskById>[0],
         'workflowId' | 'documentId' | 'reason'
-      >) =>
+      > & { comment?: string }) =>
       () => {
         if (!documentId) {
           toast.error('Invalid task id');
@@ -88,14 +92,28 @@ export const useDefaultBlocksLogic = () => {
           return;
         }
 
-        mutateRevisionTaskById({
-          workflowId,
-          documentId,
-          reason,
-          contextUpdateMethod: 'base',
-        });
+        if (workflow?.workflowDefinition?.config?.isDocumentsV2) {
+          mutateReviseDocumentById({
+            documentId,
+            decisionReason: reason,
+            comment,
+          });
+        }
+
+        if (!workflow?.workflowDefinition?.config?.isDocumentsV2) {
+          mutateRevisionTaskById({
+            workflowId,
+            documentId,
+            reason,
+            contextUpdateMethod: 'base',
+          });
+        }
       },
-    [mutateRevisionTaskById],
+    [
+      workflow?.workflowDefinition?.config?.isDocumentsV2,
+      mutateReviseDocumentById,
+      mutateRevisionTaskById,
+    ],
   );
 
   const {
@@ -170,7 +188,7 @@ export const useDefaultBlocksLogic = () => {
     caseState,
     withEntityNameInHeader: false,
     onReuploadNeeded,
-    isLoadingReuploadNeeded,
+    isLoadingReuploadNeeded: isLoadingReuploadNeeded || isLoadingReviseDocumentById,
     dialog: {
       reupload: {
         Description: () => (
@@ -570,7 +588,7 @@ export const useDefaultBlocksLogic = () => {
     config: workflow?.workflowDefinition?.config,
     blocks: allBlocks,
     onReuploadNeeded,
-    isLoadingReuploadNeeded,
+    isLoadingReuploadNeeded: isLoadingReuploadNeeded || isLoadingReviseDocumentById,
     activeTab,
   });
   const availableTabs = useMemo(() => tabs.filter(tab => !tab.hidden), [tabs]);
@@ -588,7 +606,7 @@ export const useDefaultBlocksLogic = () => {
   return {
     blocks,
     onReuploadNeeded,
-    isLoadingReuploadNeeded,
+    isLoadingReuploadNeeded: isLoadingReuploadNeeded || isLoadingReviseDocumentById,
     isLoading,
     activeTab,
     getUpdatedSearchParamsWithActiveTab,

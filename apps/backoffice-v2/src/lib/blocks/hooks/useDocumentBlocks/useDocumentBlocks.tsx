@@ -5,6 +5,7 @@ import { checkIsIndividual } from '@/common/utils/check-is-individual/check-is-i
 import { ctw } from '@/common/utils/ctw/ctw';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { useApproveDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useApproveDocumentByIdMutation/useApproveDocumentByIdMutation';
+import { useRejectDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useRejectDocumentByIdMutation/useRejectDocumentByIdMutation';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useDocumentOcr } from '@/domains/entities/hooks/mutations/useDocumentOcr/useDocumentOcr';
 import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
@@ -216,6 +217,7 @@ export const useDocumentBlocks = ({
   });
 
   const { isLoading: isLoadingRejectTaskById } = useRejectTaskByIdMutation(workflow?.id);
+  const { isLoading: isLoadingRejectDocumentById } = useRejectDocumentByIdMutation();
 
   const { comment, onClearComment, onCommentChange } = useCommentInputLogic();
   const onMutateApproveTaskById = useCallback(
@@ -234,7 +236,7 @@ export const useDocumentBlocks = ({
         }
 
         if (workflow?.workflowDefinition?.config?.isDocumentsV2) {
-          mutateApproveDocumentById({ documentId: taskId, comment });
+          mutateApproveDocumentById({ documentId: taskId, decisionReason: '', comment });
         }
 
         onClearComment();
@@ -277,7 +279,7 @@ export const useDocumentBlocks = ({
           noAction,
           workflow,
           decision,
-          isLoadingReject: isLoadingRejectTaskById,
+          isLoadingReject: isLoadingRejectTaskById || isLoadingRejectDocumentById,
         });
         const canApprove = checkCanApprove({
           caseState,

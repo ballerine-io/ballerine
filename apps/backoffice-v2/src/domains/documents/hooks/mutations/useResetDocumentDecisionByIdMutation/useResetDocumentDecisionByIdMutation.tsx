@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { Action } from '../../../../../common/enums';
 import { updateDocumentDecisionById } from '@/domains/documents/fetchers';
 
-export const useApproveDocumentByIdMutation = () => {
+export const useResetDocumentDecisionByIdMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -20,7 +20,7 @@ export const useApproveDocumentByIdMutation = () => {
       updateDocumentDecisionById({
         documentId,
         data: {
-          decision: Action.APPROVE,
+          decision: null,
           decisionReason,
           comment,
         },
