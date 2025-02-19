@@ -8,6 +8,7 @@ import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowService } from '@/workflow/workflow.service';
 import {
   CollectionFlowStatusesEnum,
+  CommonWorkflowEvent,
   getDocumentId,
   isType,
   setCollectionFlowStatus,
@@ -613,6 +614,16 @@ export class DocumentService {
       {
         context: contextWithRevision,
       },
+      projectId,
+    );
+
+    await this.workflowService.event(
+      {
+        id: workflowId,
+        name: CommonWorkflowEvent.REVISION,
+        payload: {},
+      },
+      [projectId],
       projectId,
     );
 
