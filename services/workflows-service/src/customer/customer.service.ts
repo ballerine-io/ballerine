@@ -32,11 +32,6 @@ export class CustomerService {
       return null;
     }
 
-    if (!config.expiresAt) {
-      config.expiresAt = dayjs().add(env.DEFAULT_DEMO_DURATION_DAYS, 'days').unix();
-      await this.updateById(customerId, { data: { config } });
-    }
-
     const businessReportsCount = await this.merchantMonitoringClient.count({
       customerId,
     });
@@ -46,6 +41,14 @@ export class CustomerService {
       maxBusinessReports: config.maxBusinessReports ?? 10,
       expiresAt: config.expiresAt,
     };
+
+    if (!demoDetails.expiresAt) {
+      const expiresAt = dayjs().add(env.DEFAULT_DEMO_DURATION_DAYS, 'days').unix();
+      await this.updateById(customerId, { data: { config: { ...config, expiresAt } } });
+
+      demoDetails.seenWelcomeModal = false;
+      demoDetails.expiresAt = expiresAt;
+    }
 
     return DemoAccessDetailsSchema.parse(demoDetails);
   }
