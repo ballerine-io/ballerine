@@ -6,12 +6,10 @@ describe('generatePriorityFields', () => {
     documents: [
       {
         id: 'doc1',
-        decision: {
-          revisionReason: 'needs_review',
-        },
+        decisionReason: 'needs_review',
       },
     ],
-  } as CollectionFlowContext;
+  } as unknown as CollectionFlowContext;
 
   const mockElements = [
     {
@@ -49,9 +47,7 @@ describe('generatePriorityFields', () => {
           documents: [
             {
               id: 'nested-doc-1',
-              decision: {
-                revisionReason: 'needs_review',
-              },
+              decisionReason: 'needs_review',
             },
           ],
         },
@@ -93,13 +89,13 @@ describe('generatePriorityFields', () => {
     ]);
   });
 
-  it('should generate priority document field only if document has revision reason', () => {
+  it('should generate priority document field only if document has decision reason', () => {
     const context = {
       ...mockContext,
       documents: [
         {
           id: 'doc1',
-          decision: {}, // No revision reason
+          // No decision reason
         },
       ],
     } as CollectionFlowContext;
