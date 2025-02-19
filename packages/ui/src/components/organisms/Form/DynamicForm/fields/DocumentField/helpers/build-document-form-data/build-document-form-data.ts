@@ -23,6 +23,7 @@ export const buildDocumentFormData = (
   payload.append('status', 'provided');
   payload.append('properties', JSON.stringify(template.properties || {}));
   payload.append('issuingCountry', template?.issuer?.country as string);
+  payload.append('decisionReason', '');
 
   if (checkIfDocumentRequested(document)) {
     payload.append('documentId', document._id);
