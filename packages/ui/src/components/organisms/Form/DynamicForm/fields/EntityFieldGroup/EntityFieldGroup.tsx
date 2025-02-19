@@ -1,7 +1,10 @@
 import { AnyObject } from '@/common';
-import { IHttpParams } from '@/common/hooks/useHttp';
+import { IHttpParams, useHttp } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';
-import { useMemo } from 'react';
+import get from 'lodash/get';
+import set from 'lodash/set';
+import { Trash2Icon } from 'lucide-react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Toaster } from 'sonner';
 import { useDynamicForm } from '../../context';
 import { useElement, useField } from '../../hooks/external';
@@ -10,10 +13,17 @@ import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
+import { useTaskRunner } from '../../providers/TaskRunner/hooks/useTaskRunner';
+import { ITask } from '../../providers/TaskRunner/types';
 import { TDynamicFormField } from '../../types';
+import { createOrUpdateFileIdOrFileInDocuments } from '../DocumentField/hooks/useDocumentUpload/helpers/create-or-update-fileid-or-file-in-documents';
 import { IFieldListParams, useStack } from '../FieldList';
 import { EntityFieldGroupDocument } from './components/EntityFieldGroupDocument';
 import { EntityFields } from './components/EntityFields';
+import { buildDocumentsCreationPayload } from './components/EntityFields/helpers/build-documents-creation-payload';
+import { buildEntityCreationPayload } from './components/EntityFields/helpers/build-entity-for-creation';
+import { buildEntityUpdatePayload } from './components/EntityFields/helpers/build-entity-for-update';
+import { updateEntities } from './components/EntityFields/helpers/update-entities';
 import { getEntityGroupValueDestination } from './helpers/get-entity-group-value-destination';
 import { useEntityFieldGroupList } from './hooks/useEntityFieldGroupList';
 import { IEntity } from './types';
@@ -58,13 +68,23 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
   useMountEvent(element);
   useUnmountEvent(element);
 
-  const { elementsMap } = useDynamicForm();
+  const { elementsMap, metadata } = useDynamicForm();
   const { stack } = useStack();
   const { id: fieldId, hidden } = useElement(element, stack);
-  const { disabled, onChange } = useField(element, stack);
+  const { disabled, value, onChange } = useField<IEntity[]>(element, stack);
   const { addButtonLabel = 'Add Item' } = element.params || {};
   const { items, isRemovingEntity, addItem, removeItem } = useEntityFieldGroupList({ element });
+  const { run: createEntity } = useHttp(
+    element.params!.httpParams?.createEntity.httpParams,
+    metadata,
+  );
+  const { run: updateEntity } = useHttp(
+    element.params!.httpParams?.updateEntity.httpParams,
+    metadata,
+  );
 
+  const { run: uploadDocument } = useHttp(element.params!.httpParams?.uploadDocument, metadata);
+  const { addTask, removeTask } = useTaskRunner();
   const elementsOverride = useMemo(
     () => ({
       ...elementsMap,
@@ -72,6 +92,78 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
     }),
     [elementsMap],
   );
+
+  const createEntitiesCreationTaskOnChange = useCallback(async () => {
+    const TASK_ID = element.id;
+    removeTask(TASK_ID);
+
+    try {
+      const taskRun = async (context: AnyObject) => {
+        const entities = get(context, element.valueDestination, []) as IEntity[];
+
+        const entitiesToProcess = await Promise.all(
+          entities.map(entity =>
+            entity.ballerineEntityId
+              ? buildEntityUpdatePayload(element, entity, context)
+              : buildEntityCreationPayload(element, entity, context),
+          ),
+        );
+        const createdEntitiesIds: string[] = await Promise.all(
+          entitiesToProcess.map(entity =>
+            entity.ballerineEntityId
+              ? updateEntity(entity.entity, {
+                  params: { entityId: entity.ballerineEntityId },
+                })
+              : createEntity(entity),
+          ),
+        );
+
+        const documentsCreationPayload = buildDocumentsCreationPayload(
+          element,
+          createdEntitiesIds,
+          context,
+          stack,
+        );
+
+        await Promise.all(
+          documentsCreationPayload.map(async documentData => {
+            const documentId = await uploadDocument(documentData.payload);
+
+            const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
+              get(context, documentData.valueDestination, []),
+              documentData.documentDefinition,
+              documentId,
+            );
+
+            set(context, documentData.valueDestination, updatedDocuments);
+
+            return documentId;
+          }),
+        );
+
+        const updatedEntities = updateEntities(entities, createdEntitiesIds);
+        set(context, element.valueDestination, updatedEntities);
+
+        onChange(updatedEntities);
+
+        return context;
+      };
+
+      const task: ITask = {
+        id: TASK_ID,
+        element,
+        run: taskRun,
+      };
+
+      addTask(task);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [onChange, element, createEntity, uploadDocument, stack, removeTask, addTask, updateEntity]);
+
+  useEffect(() => {
+    void createEntitiesCreationTaskOnChange();
+  }, [value, createEntitiesCreationTaskOnChange]);
 
   if (hidden) {
     return null;
@@ -81,19 +173,29 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
     <div className="flex flex-col gap-4" data-testid={`${fieldId}-fieldlist`}>
       {items?.map((entity: IEntity, index: number) => {
         return (
-          <EntityFields
-            key={entity.__id}
-            entityId={entity.__id!}
-            entity={entity}
-            index={index}
-            onRemoveClick={() => removeItem(entity.__id!)}
-            stack={stack}
-            fieldId={fieldId}
-            element={element}
-            elementsOverride={elementsOverride as AnyObject}
-            isRemovingEntity={isRemovingEntity}
-            onChange={onChange}
-          />
+          <div className="flex flex-col gap-4" key={entity.__id}>
+            <EntityFields
+              entityId={entity.__id!}
+              index={index}
+              stack={stack}
+              fieldId={fieldId}
+              element={element}
+              elementsOverride={elementsOverride as AnyObject}
+            />
+            <div className="flex flex-row justify-start">
+              <Button
+                variant="outline"
+                size="icon"
+                disabled={isRemovingEntity}
+                onClick={isRemovingEntity ? undefined : () => removeItem(entity.__id!)}
+              >
+                <Trash2Icon
+                  className="h-4 w-4 cursor-pointer font-bold"
+                  data-testid={`${fieldId}-fieldlist-item-remove-${entity.__id}`}
+                />
+              </Button>
+            </div>
+          </div>
         );
       })}
       <div className="flex flex-row justify-end">

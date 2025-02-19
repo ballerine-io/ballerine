@@ -1,16 +1,10 @@
 import { IEntity } from '../../../types';
 
-export const updateEntities = (entitiesList: IEntity[], updatedEntity: IEntity) => {
-  return entitiesList.map(entity => {
-    if (entity.__id === updatedEntity.__id) {
-      const newEntity = {
-        ...entity,
-        ballerineEntityId: updatedEntity.ballerineEntityId,
-      };
-
-      return newEntity;
-    }
-
-    return entity;
+export const updateEntities = (entitiesList: IEntity[], createdEntityIds: string[]) => {
+  return entitiesList.map((entity, index) => {
+    return {
+      ...entity,
+      ballerineEntityId: createdEntityIds[index],
+    };
   });
 };
