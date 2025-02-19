@@ -1,6 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DocumentRepository } from './document.repository';
-import { Document, DocumentFile, Prisma, WorkflowRuntimeData } from '@prisma/client';
+import {
+  Document,
+  DocumentFile,
+  DocumentStatus,
+  Prisma,
+  WorkflowRuntimeData,
+} from '@prisma/client';
 import { PrismaTransactionClient, TProjectId } from '@/types';
 import { DocumentFileService } from '@/document-file/document-file.service';
 import { StorageService } from '@/storage/storage.service';
@@ -11,7 +17,7 @@ import { CreateDocumentSchema } from './dtos/document.dto';
 import { CreateDocumentFileSchema } from '@/document-file/dtos/document-file.dto';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { isObject, isType, getDocumentId } from '@ballerine/common';
+import { isType, getDocumentId } from '@ballerine/common';
 import z from 'zod';
 import { TParsedDocuments, EntitySchema, DocumentTrackerResponseSchema } from './types';
 
@@ -384,7 +390,7 @@ export class DocumentService {
       return expectedDocId === actualDocId;
     };
 
-    const createDocumentResponse = <T extends z.infer<typeof EntitySchema>>(
+    const generateDocumentTrackerItem = <T extends z.infer<typeof EntitySchema>>(
       matchingDocument: Document | undefined,
       expectedDoc: TParsedDocuments['business'][number],
       entity: T,
@@ -392,8 +398,10 @@ export class DocumentService {
       documentId: matchingDocument?.id ?? null,
       status: matchingDocument?.status ?? 'unprovided',
       decision: matchingDocument?.decision ?? null,
-      properties: expectedDoc,
-      entity,
+      identifiers: {
+        document: expectedDoc,
+        entity,
+      },
     });
 
     const result: z.output<typeof DocumentTrackerResponseSchema> = {
@@ -402,33 +410,37 @@ export class DocumentService {
           isMatchingDocument(doc, expectedDoc),
         );
 
-        return createDocumentResponse(matchingDocument, expectedDoc, entities.business);
+        return generateDocumentTrackerItem(matchingDocument, expectedDoc, {
+          id: entities.business.id,
+          companyName: entities.business.companyName,
+          entityType: 'business',
+        });
       }),
       individuals: {
         ubos: entitiesWithDocuments.ubos.flatMap(ubo =>
           parsedUIDocuments.individuals.ubos.map(expectedDoc =>
-            createDocumentResponse(
+            generateDocumentTrackerItem(
               ubo.documents.find(doc => isMatchingDocument(doc, expectedDoc)),
               expectedDoc,
               {
-                entityType: 'ubo' as const,
                 id: ubo.id,
                 firstName: ubo.firstName,
                 lastName: ubo.lastName,
+                entityType: 'ubo',
               },
             ),
           ),
         ),
         directors: entitiesWithDocuments.directors.flatMap(director =>
           parsedUIDocuments.individuals.directors.map(expectedDoc =>
-            createDocumentResponse(
+            generateDocumentTrackerItem(
               director.documents.find(doc => isMatchingDocument(doc, expectedDoc)),
               expectedDoc,
               {
-                entityType: 'director' as const,
                 id: director.id,
                 firstName: director.firstName,
                 lastName: director.lastName,
+                entityType: 'director',
               },
             ),
           ),
@@ -439,15 +451,40 @@ export class DocumentService {
     return result;
   }
 
-  async requestDocumentsByIds(projectId: TProjectId, documentIds: string[]) {
-    // TODO call email flow for given documents
+  async requestDocumentsByIds(
+    projectId: TProjectId,
+    workflowId: string,
+    documents: Array<{
+      type: string;
+      category: string;
+      issuingCountry: string;
+      issuingVersion: string;
+      version: string;
+      entity: {
+        id: string;
+        type: 'business' | 'ubo' | 'director';
+      };
+    }>,
+  ) {
+    const documentsToCreate = documents.map(document => ({
+      category: document.category,
+      type: document.type,
+      issuingVersion: document.issuingVersion,
+      issuingCountry: document.issuingCountry,
+      version: parseInt(document.version),
+      status: DocumentStatus.requested,
+      properties: {},
+      projectId: projectId,
+      workflowRuntimeDataId: workflowId,
+      businessId: document.entity.type === 'business' ? document.entity.id : undefined,
+      endUserId: ['ubo', 'director'].includes(document.entity.type)
+        ? document.entity.id
+        : undefined,
+    }));
 
-    const documents = await this.repository.updateMany([projectId], {
-      where: { id: { in: documentIds } },
-      data: { status: 'requested' },
-    });
+    const createdDocuments = await this.repository.createMany(documentsToCreate);
 
-    return { message: 'Documents requested successfully', count: documents.count };
+    return { message: 'Documents requested successfully', count: createdDocuments.count };
   }
 
   private parseDocumentsFromUISchema(uiSchema: Array<Record<string, any>>): TParsedDocuments {
