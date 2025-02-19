@@ -23,6 +23,17 @@ export const CreateDocumentSchema = Type.Omit(DocumentSchema, ['id', 'projectId'
 
 export const UpdateDocumentSchema = Type.Partial(DocumentSchema);
 
+export const UpdateDocumentDecisionSchema = Type.Composite([
+  Type.Pick(DocumentSchema, ['decisionReason', 'comment']),
+  Type.Object({
+    decision: Type.Union([
+      Type.Literal('approve'),
+      Type.Literal('reject'),
+      Type.Literal('revision'),
+    ]),
+  }),
+]);
+
 export const DeleteDocumentsSchema = Type.Object({
   ids: Type.Array(Type.String()),
 });

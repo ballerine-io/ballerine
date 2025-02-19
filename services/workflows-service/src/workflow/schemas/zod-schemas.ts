@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 export const ConfigSchema = z
   .object({
+    isDocumentsV2: z.boolean().optional(),
     isAssociatedCompanyKybEnabled: z.boolean().optional(),
     isCaseOverviewEnabled: z.boolean().optional(),
     isDocumentTrackerEnabled: z.boolean().optional(),

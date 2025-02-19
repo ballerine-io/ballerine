@@ -996,15 +996,20 @@ export class WorkflowService {
         id: documentId,
       };
 
-      const documentSchema = addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);
-      const propertiesSchema = documentSchema?.propertiesSchema ?? {};
+      const documentWithPropertiesSchema = addPropertiesSchemaToDocument(
+        document,
+        workflowDef.documentsSchema,
+      );
+      const propertiesSchema = documentWithPropertiesSchema?.propertiesSchema ?? {};
 
       if (Object.keys(propertiesSchema)?.length && validateDocumentSchema) {
         const propertiesSchemaForValidation = propertiesSchema;
 
         const validatePropertiesSchema = ajv.compile(propertiesSchemaForValidation);
 
-        const isValidPropertiesSchema = validatePropertiesSchema(documentSchema?.properties);
+        const isValidPropertiesSchema = validatePropertiesSchema(
+          documentWithPropertiesSchema?.properties,
+        );
 
         if (!isValidPropertiesSchema && document.type === documentToUpdate.type) {
           throw ValidationError.fromAjvError(validatePropertiesSchema.errors!);
@@ -1018,7 +1023,7 @@ export class WorkflowService {
           payload: {
             newContext: this.updateDocumentInContext(
               runtimeData.context,
-              documentSchema,
+              documentWithPropertiesSchema,
               documentsUpdateContextMethod,
               directorId,
             ),

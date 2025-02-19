@@ -14,19 +14,30 @@ import {
   setCollectionFlowStatus,
 } from '@ballerine/common';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { DocumentRepository } from './document.repository';
 import {
   Document,
   DocumentFile,
   DocumentStatus,
+  File,
   Prisma,
+  WorkflowDefinition,
   WorkflowRuntimeData,
 } from '@prisma/client';
 import { Static } from '@sinclair/typebox';
-import z from 'zod';
-import { DocumentRepository } from './document.repository';
+import * as z from 'zod';
 import { CreateDocumentSchema, UpdateDocumentSchema } from './dtos/document.dto';
 import { addRequestedDocumentToEntityDocuments } from './helpers/add-requested-document-to-entity-documents';
-import { DocumentTrackerResponseSchema, EntitySchema, TParsedDocuments } from './types';
+import {
+  DocumentTrackerDocumentSchema,
+  DocumentTrackerResponseSchema,
+  EntitySchema,
+  TParsedDocuments,
+} from './types';
+import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
+import { addPropertiesSchemaToDocument } from '@/workflow/utils/add-properties-schema-to-document';
+import { ajv } from '@/common/ajv/ajv.validator';
+import { ValidationError } from '@/errors';
 
 @Injectable()
 export class DocumentService {
@@ -37,6 +48,7 @@ export class DocumentService {
     protected readonly workflowService: WorkflowService,
     protected readonly storageService: StorageService,
     protected readonly uiDefinitionService: UiDefinitionService,
+    protected readonly workflowDefinitionService: WorkflowDefinitionService,
   ) {}
 
   async create(
@@ -68,13 +80,9 @@ export class DocumentService {
       throw new BadRequestException('Workflow runtime data id is required');
     }
 
-    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
-      data.workflowRuntimeDataId,
-      {},
-      [projectId],
-    );
+    const entityId = this.getEntityId(data);
 
-    const uploadedFile = await this.fileService.uploadNewFile(projectId, workflowRuntimeData, {
+    const uploadedFile = await this.fileService.uploadNewFile(projectId, entityId, {
       ...file,
       mimetype:
         file.mimetype ||
@@ -108,8 +116,6 @@ export class DocumentService {
       transaction,
     );
 
-    const entityId = this.getEntityId(data);
-
     return await this.getByEntityIdAndWorkflowId(entityId, data.workflowRuntimeDataId, [projectId]);
   }
 
@@ -128,25 +134,29 @@ export class DocumentService {
     args?: Omit<Prisma.DocumentFindManyArgs, 'where'>,
     transaction?: PrismaTransactionClient,
   ) {
-    const documents = await this.repository.findByEntityIdAndWorkflowId(
+    const documents = await this.repository.findByEntityIdAndWorkflowIdWithFiles(
       entityId,
       workflowRuntimeDataId,
       projectIds,
-      {
-        ...args,
-        include: {
-          ...args?.include,
-          files: true,
-        },
-      },
+      args,
       transaction,
     );
-    const documentsWithFiles = await this.fetchDocumentsFiles({
-      documents: documents as Array<Document & { files: DocumentFile[] }>,
-      format: 'signed-url',
-    });
 
-    return documentsWithFiles;
+    const workflowDefinition = await this.workflowDefinitionService.getByWorkflowRuntimeDataId(
+      workflowRuntimeDataId,
+      projectIds,
+    );
+
+    if (!workflowDefinition) {
+      throw new BadRequestException(
+        `Workflow definition for a workflow with an id of "${workflowRuntimeDataId}" not found`,
+      );
+    }
+
+    return this.formatDocuments({
+      documents,
+      documentSchema: workflowDefinition.documentsSchema,
+    });
   }
 
   async updateByIdWithFile(
@@ -180,13 +190,9 @@ export class DocumentService {
 
     const { documentId, ...documentData } = data;
 
-    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
-      data.workflowRuntimeDataId,
-      {},
-      [projectId],
-    );
+    const entityId = this.getEntityId(data);
 
-    const uploadedFile = await this.fileService.uploadNewFile(projectId, workflowRuntimeData, {
+    const uploadedFile = await this.fileService.uploadNewFile(projectId, entityId, {
       ...file,
       mimetype:
         file.mimetype ||
@@ -210,13 +216,21 @@ export class DocumentService {
       transaction,
     );
 
+    const workflowDefinition = await this.workflowDefinitionService.getByWorkflowRuntimeDataId(
+      data.workflowRuntimeDataId,
+      [projectId],
+    );
     await this.repository.updateById(data.documentId, [projectId], {
       ...documentData,
       ...(documentData.businessId && { businessId: documentData.businessId }),
       ...(documentData.endUserId && { endUserId: documentData.endUserId }),
     });
 
-    const entityId = this.getEntityId(data);
+    if (!workflowDefinition) {
+      throw new BadRequestException(
+        `Workflow definition for a workflow with an id of "${data.workflowRuntimeDataId}" not found`,
+      );
+    }
 
     return await this.getByEntityIdAndWorkflowId(entityId, data.workflowRuntimeDataId, [projectId]);
   }
@@ -230,21 +244,95 @@ export class DocumentService {
   ) {
     await this.repository.updateById(id, projectIds, data, args, transaction);
 
-    const documents = await this.repository.findMany(
+    const documents = await this.repository.findManyWithFiles(projectIds);
+
+    return this.formatDocuments({
+      documents,
+      // Would have to have a separate workflow definition for each document
+      documentSchema: null,
+    });
+  }
+
+  async updateDocumentDecisionById(
+    id: string,
+    projectIds: TProjectId[],
+    data: {
+      decision: 'approve' | 'reject' | 'revision' | null;
+    } & Pick<Prisma.DocumentUpdateInput, 'decisionReason' | 'comment'>,
+    args?: Prisma.DocumentUpdateManyArgs,
+    transaction?: PrismaTransactionClient,
+  ) {
+    const document = await this.repository.findById(id, projectIds);
+
+    if (!document) {
+      throw new BadRequestException(`Document with an id of "${id}" was not found`);
+    }
+
+    if (!document.workflowRuntimeDataId) {
+      throw new BadRequestException(`Attempted to update decision for a document with no workflow`);
+    }
+
+    const workflowDefinition = await this.workflowDefinitionService.getByWorkflowRuntimeDataId(
+      document.workflowRuntimeDataId,
       projectIds,
+    );
+
+    if (!workflowDefinition) {
+      throw new BadRequestException(
+        `Workflow definition for a workflow with an id of "${document.workflowRuntimeDataId}" was not found`,
+      );
+    }
+
+    const documentWithPropertiesSchema = addPropertiesSchemaToDocument(
+      // @ts-expect-error -- the function expects properties not used by the function.
       {
-        include: {
-          files: true,
+        ...document,
+        issuer: {
+          country: document.issuingCountry,
         },
       },
+      workflowDefinition.documentsSchema,
+    );
+    const propertiesSchema = documentWithPropertiesSchema.propertiesSchema ?? {};
+    const shouldValidateDocument =
+      data.decision === 'approve' && Object.keys(propertiesSchema)?.length;
+
+    if (shouldValidateDocument) {
+      const validatePropertiesSchema = ajv.compile(propertiesSchema);
+      const isValidPropertiesSchema = validatePropertiesSchema(
+        documentWithPropertiesSchema?.properties,
+      );
+
+      if (!isValidPropertiesSchema) {
+        throw ValidationError.fromAjvError(validatePropertiesSchema.errors ?? []);
+      }
+    }
+
+    const Status = {
+      approve: 'approved',
+      reject: 'rejected',
+      revision: 'revisions',
+    } as const;
+
+    const decision = data.decision ? Status[data.decision] : null;
+
+    await this.repository.updateById(
+      id,
+      projectIds,
+      {
+        ...data,
+        decision,
+      },
+      args,
       transaction,
     );
-    const documentsWithFiles = await this.fetchDocumentsFiles({
-      documents: documents as Array<Document & { files: DocumentFile[] }>,
-      format: 'signed-url',
-    });
 
-    return documentsWithFiles;
+    const documents = await this.repository.findManyWithFiles(projectIds);
+
+    return this.formatDocuments({
+      documents,
+      documentSchema: workflowDefinition.documentsSchema,
+    });
   }
 
   async deleteByIds(
@@ -255,21 +343,13 @@ export class DocumentService {
   ) {
     await this.repository.deleteByIds(ids, projectIds, args, transaction);
 
-    const documents = await this.repository.findMany(
-      projectIds,
-      {
-        include: {
-          files: true,
-        },
-      },
-      transaction,
-    );
-    const documentsWithFiles = await this.fetchDocumentsFiles({
-      documents: documents as Array<Document & { files: DocumentFile[] }>,
-      format: 'signed-url',
-    });
+    const documents = await this.repository.findManyWithFiles(projectIds);
 
-    return documentsWithFiles;
+    return this.formatDocuments({
+      documents,
+      // Would have to have a separate workflow definition for each document
+      documentSchema: null,
+    });
   }
 
   async fetchDocumentsFiles({
@@ -304,6 +384,7 @@ export class DocumentService {
       }) ?? [],
     );
   }
+
   async reuploadDocumentFileById(
     fileId: string,
     workflowRuntimeDataId: string,
@@ -319,7 +400,14 @@ export class DocumentService {
       {},
       projectIds,
     );
-    const uploadedFile = await this.fileService.uploadNewFile(projectIds[0], workflowRuntimeData, {
+
+    const workflowEntityId = workflowRuntimeData.endUserId || workflowRuntimeData.businessId;
+
+    if (!workflowEntityId) {
+      throw new BadRequestException('Workflow does not have an end user or business id');
+    }
+
+    const uploadedFile = await this.fileService.uploadNewFile(projectIds[0], workflowEntityId, {
       ...file,
       mimetype:
         file.mimetype ||
@@ -338,15 +426,22 @@ export class DocumentService {
       },
     });
 
-    const documents = await this.repository.findMany(projectIds, {
-      include: {
-        files: true,
-      },
-    });
+    const documents = await this.repository.findManyWithFiles(projectIds);
 
-    return await this.fetchDocumentsFiles({
-      documents: documents as Array<Document & { files: DocumentFile[] }>,
-      format: 'signed-url',
+    const workflowDefinition = await this.workflowDefinitionService.getByWorkflowRuntimeDataId(
+      workflowRuntimeDataId,
+      projectIds,
+    );
+
+    if (!workflowDefinition) {
+      throw new BadRequestException(
+        `Workflow definition for a workflow with an id of "${workflowRuntimeDataId}" not found`,
+      );
+    }
+
+    return this.formatDocuments({
+      documents,
+      documentSchema: workflowDefinition.documentsSchema,
     });
   }
 
@@ -465,19 +560,20 @@ export class DocumentService {
       return expectedDocId === actualDocId;
     };
 
-    const generateDocumentTrackerItem = <T extends z.infer<typeof EntitySchema>>(
+    const generateDocumentTrackerItem = <TEntity extends z.infer<typeof EntitySchema>>(
       matchingDocument: Document | undefined,
       expectedDoc: TParsedDocuments['business'][number],
-      entity: T,
-    ) => ({
-      documentId: matchingDocument?.id ?? null,
-      status: matchingDocument?.status ?? 'unprovided',
-      decision: matchingDocument?.decision ?? null,
-      identifiers: {
-        document: expectedDoc,
-        entity,
-      },
-    });
+      entity: TEntity,
+    ) =>
+      ({
+        documentId: matchingDocument?.id ?? null,
+        status: matchingDocument?.status ?? 'unprovided',
+        decision: matchingDocument?.decision ?? null,
+        identifiers: {
+          document: expectedDoc,
+          entity,
+        },
+      } satisfies z.output<typeof DocumentTrackerDocumentSchema>);
 
     const result: z.output<typeof DocumentTrackerResponseSchema> = {
       business: parsedUIDocuments.business.map(expectedDoc => {
@@ -718,5 +814,45 @@ export class DocumentService {
     }
 
     throw new BadRequestException('Business or end user id is required');
+  }
+
+  async formatDocuments({
+    documents,
+    documentSchema,
+  }: {
+    documents: Array<Document & { files: DocumentFile[] }>;
+    documentSchema: WorkflowDefinition['documentsSchema'];
+  }) {
+    const documentsWithFiles = await this.fetchDocumentsFiles({
+      documents,
+      format: 'signed-url',
+    });
+    const typedDocuments = documentsWithFiles as Array<
+      Omit<(typeof documentsWithFiles)[number], 'files'> & {
+        files: Array<(typeof documentsWithFiles)[number]['files'][number] & { file: File }>;
+      }
+    >;
+
+    return typedDocuments.map(({ files, ...document }) => {
+      const documentWithPropertiesSchema = addPropertiesSchemaToDocument(
+        // @ts-expect-error -- the function expects properties not used by the function.
+        {
+          ...document,
+          issuer: {
+            country: document.issuingCountry,
+          },
+        },
+        documentSchema,
+      );
+
+      return {
+        ...document,
+        files: files.map(({ file, ...fileData }) => ({
+          ...fileData,
+          fileName: file.fileName,
+        })),
+        propertiesSchema: documentWithPropertiesSchema.propertiesSchema,
+      };
+    });
   }
 }
