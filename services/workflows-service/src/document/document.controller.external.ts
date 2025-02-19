@@ -16,14 +16,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiForbiddenResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { type Static, Type } from '@sinclair/typebox';
 import { Validate } from 'ballerine-nestjs-typebox';
-import { z } from 'zod';
 
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
 import { DocumentFileJsonSchema } from '@/document-file/dtos/document-file.dto';
 import { FILE_MAX_SIZE_IN_BYTE, FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/storage/file-filter';
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
-import type { TProjectId } from '@/types';
 import { DocumentService } from './document.service';
 import {
   CreateDocumentSchema,
@@ -31,14 +29,6 @@ import {
   UpdateDocumentDecisionSchema,
   UpdateDocumentSchema,
 } from './dtos/document.dto';
-import { Validate } from 'ballerine-nestjs-typebox';
-import { type Static, Type } from '@sinclair/typebox';
-import { CurrentProject } from '@/common/decorators/current-project.decorator';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
-import { getDiskStorage } from '@/storage/get-file-storage-manager';
-import { FILE_MAX_SIZE_IN_BYTE, FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/storage/file-filter';
-import { DocumentFileJsonSchema } from '@/document-file/dtos/document-file.dto';
 import * as z from 'zod';
 import type { TProjectId } from '@/types';
 
