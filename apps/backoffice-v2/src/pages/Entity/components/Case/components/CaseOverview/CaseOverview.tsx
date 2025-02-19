@@ -56,7 +56,7 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 xl:grid-cols-3 2xl:grid-cols-3">
+    <div className="grid grid-cols-2 gap-4 xl:grid-cols-3 2xl:grid-cols-4">
       {workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled && (
         <OverallRiskLevel
           riskScore={

@@ -359,15 +359,9 @@ export class FileService {
     return persistedFile;
   }
 
-  async uploadNewFile(
-    projectId: string,
-    workflowRuntimeData: WorkflowRuntimeData,
-    file: Express.Multer.File,
-  ) {
+  async uploadNewFile(projectId: string, entityId: string, file: Express.Multer.File) {
     // upload file into a customer folder
     const customer = await this.customerService.getByProjectId(projectId);
-
-    const entityId = workflowRuntimeData.businessId || workflowRuntimeData.endUserId;
 
     if (!entityId) {
       throw new NotFoundException("Workflow doesn't exists");

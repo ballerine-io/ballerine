@@ -16,20 +16,21 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiForbiddenResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { type Static, Type } from '@sinclair/typebox';
 import { Validate } from 'ballerine-nestjs-typebox';
-import { z } from 'zod';
 
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
 import { DocumentFileJsonSchema } from '@/document-file/dtos/document-file.dto';
 import { FILE_MAX_SIZE_IN_BYTE, FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/storage/file-filter';
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
-import type { TProjectId } from '@/types';
 import { DocumentService } from './document.service';
 import {
   CreateDocumentSchema,
   DeleteDocumentsSchema,
+  UpdateDocumentDecisionSchema,
   UpdateDocumentSchema,
 } from './dtos/document.dto';
+import * as z from 'zod';
+import type { TProjectId } from '@/types';
 
 const RequestUploadSchema = Type.Object({
   workflowId: Type.String(),
@@ -238,6 +239,34 @@ export class DocumentControllerExternal {
     @CurrentProject() projectId: string,
   ) {
     return await this.documentService.updateById(documentId, [projectId], data);
+  }
+
+  @Patch('/:documentId/decision')
+  @ApiResponse({
+    status: 200,
+    description: 'Document decision updated successfully',
+    schema: Type.Array(Type.Record(Type.String(), Type.Any())),
+  })
+  @Validate({
+    request: [
+      {
+        type: 'param',
+        name: 'documentId',
+        schema: Type.String(),
+      },
+      {
+        type: 'body',
+        schema: UpdateDocumentDecisionSchema,
+      },
+    ],
+    response: Type.Any(),
+  })
+  async updateDocumentDecisionById(
+    @Param('documentId') documentId: string,
+    @Body() data: Static<typeof UpdateDocumentDecisionSchema>,
+    @CurrentProject() projectId: string,
+  ) {
+    return await this.documentService.updateDocumentDecisionById(documentId, [projectId], data);
   }
 
   @UseInterceptors(

@@ -33,6 +33,7 @@ import { extractCountryCodeFromDocuments } from '@/pages/Entity/hooks/useEntityL
 import { directorAdapter } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/helpers';
 import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
+import { useReviseDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useReviseDocumentByIdMutation/useReviseDocumentByIdMutation';
 
 export const useKybExampleBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
@@ -59,19 +60,6 @@ export const useKybExampleBlocksLogic = () => {
       position,
     }));
   }, [workflow?.context?.pluginsOutput?.directors?.data]);
-  const directorsDocuments = useMemo(() => selectDirectorsDocuments(workflow), [workflow]);
-  const directorDocumentPages = useMemo(
-    () =>
-      directorsDocuments.flatMap(({ pages }) =>
-        pages?.map(({ ballerineFileId }) => ballerineFileId),
-      ),
-    [directorsDocuments],
-  );
-  const directorsStorageFilesQueryResult = useStorageFilesQuery(directorDocumentPages);
-  const directorsDocumentPagesResults: string[][] = useDocumentPageImages(
-    directorsDocuments,
-    directorsStorageFilesQueryResult,
-  );
 
   const { mutate: mutateEvent, isLoading: isLoadingEvent } = useEventMutation();
   const onClose = useCallback(
@@ -86,6 +74,8 @@ export const useKybExampleBlocksLogic = () => {
   );
   const { mutate: mutateRevisionTaskById, isLoading: isLoadingReuploadNeeded } =
     useRevisionTaskByIdMutation();
+  const { mutate: mutateReviseDocumentById, isLoading: isLoadingReviseDocumentById } =
+    useReviseDocumentByIdMutation();
   const onReuploadNeeded = useCallback(
     ({
         workflowId,
@@ -102,14 +92,27 @@ export const useKybExampleBlocksLogic = () => {
           return;
         }
 
-        mutateRevisionTaskById({
-          workflowId,
-          documentId,
-          reason,
-          contextUpdateMethod: 'base',
-        });
+        if (workflow?.workflowDefinition?.config?.isDocumentsV2) {
+          mutateReviseDocumentById({
+            documentId,
+            decisionReason: reason,
+          });
+        }
+
+        if (!workflow?.workflowDefinition?.config?.isDocumentsV2) {
+          mutateRevisionTaskById({
+            workflowId,
+            documentId,
+            reason,
+            contextUpdateMethod: 'base',
+          });
+        }
       },
-    [mutateRevisionTaskById],
+    [
+      workflow?.workflowDefinition?.config?.isDocumentsV2,
+      mutateReviseDocumentById,
+      mutateRevisionTaskById,
+    ],
   );
 
   // Blocks
@@ -128,7 +131,7 @@ export const useKybExampleBlocksLogic = () => {
     withEntityNameInHeader: false,
     caseState,
     onReuploadNeeded,
-    isLoadingReuploadNeeded,
+    isLoadingReuploadNeeded: isLoadingReuploadNeeded || isLoadingReviseDocumentById,
     // TODO - Remove `CallToActionLegacy` and revisit this object.
     dialog: {
       reupload: {
@@ -218,9 +221,8 @@ export const useKybExampleBlocksLogic = () => {
     [mutateRemoveDecisionTaskById],
   );
 
-  const directors = workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
-    directorAdapter(directorsDocumentPagesResults),
-  );
+  const directors =
+    workflow?.context?.entity?.data?.additionalInfo?.directors?.map(directorAdapter);
   const revisionReasons =
     workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
       ({ enum: enum_ }) => !!enum_,
@@ -236,7 +238,6 @@ export const useKybExampleBlocksLogic = () => {
     revisionReasons,
     isEditable: caseState.writeEnabled,
     isApproveDisabled: isLoadingApproveTaskById,
-    isLoadingDocuments: directorsStorageFilesQueryResult?.some(file => file?.isLoading),
     // Remove once callToActionLegacy is removed
     workflow,
   });
@@ -338,7 +339,7 @@ export const useKybExampleBlocksLogic = () => {
     workflowId: workflow?.id,
     parentMachine: workflow?.context?.parentMachine,
     onReuploadNeeded,
-    isLoadingReuploadNeeded,
+    isLoadingReuploadNeeded: isLoadingReuploadNeeded || isLoadingReviseDocumentById,
     isLoading,
   };
 };

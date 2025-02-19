@@ -41,9 +41,12 @@ export const EntitySchema = z.discriminatedUnion('entityType', [
   }),
 ]);
 
-const DocumentTrackerDocumentSchema = z.object({
+export const DocumentTrackerDocumentSchema = z.object({
   documentId: z.string().nullable(),
-  status: z.nativeEnum(DocumentStatus),
+  status: z.nativeEnum({
+    ...DocumentStatus,
+    unprovided: 'unprovided',
+  }),
   decision: z.nativeEnum(DocumentDecision).nullable(),
   identifiers: z.object({
     document: ParsedUIDocumentSchema.omit({ entityType: true }),

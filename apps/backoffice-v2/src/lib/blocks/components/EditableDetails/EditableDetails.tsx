@@ -142,6 +142,11 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     workflowId,
     documentId: valueId,
   });
+  const { mutate: mutateUpdateDocumentByIdV2 } = useUpdateDocumentByIdMutation({
+    directorId,
+    workflowId,
+    documentId: valueId,
+  });
   const onMutateTaskDecisionById = ({
     document,
     action,
