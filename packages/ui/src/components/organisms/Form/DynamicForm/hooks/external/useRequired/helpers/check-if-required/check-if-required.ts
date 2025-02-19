@@ -1,3 +1,4 @@
+import { contextBuilders } from '@/components/organisms/Form/DynamicForm/context-builders';
 import { executeRules } from '@/components/organisms/Form/hooks/useRuleEngine/utils/execute-rules';
 import { TDeepthLevelStack } from '@/components/organisms/Form/Validator';
 import { IFormElement } from '../../../../../types';
@@ -13,17 +14,21 @@ export const checkIfRequired = (
   const requiredLikeValidators = validate.filter(
     validator => validator.type === 'required' || validator.considerRequired,
   );
+  const contextBuilder = contextBuilders[element.element];
 
   const isRequired = requiredLikeValidators.length
     ? requiredLikeValidators.some(validator => {
         const { applyWhen } = validator;
+        const elementContext = contextBuilder?.(context, { element }, stack);
         const shouldValidate = applyWhen
-          ? executeRules(context, [...replaceTagsWithIndexesInRule([applyWhen], stack)]).every(
-              result => result.result,
-            )
+          ? executeRules({ ...context, ...elementContext }, [
+              ...replaceTagsWithIndexesInRule([applyWhen], stack),
+            ]).every(result => result.result)
           : true;
 
-        if (!shouldValidate) return false;
+        if (!shouldValidate) {
+          return false;
+        }
 
         return true;
       })

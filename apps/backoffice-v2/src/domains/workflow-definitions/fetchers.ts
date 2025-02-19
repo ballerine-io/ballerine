@@ -27,7 +27,7 @@ export const WorkflowDefinitionConfigSchema = z
     isAssociatedCompanyKybEnabled: z.boolean().default(false),
     isCaseOverviewEnabled: z.boolean().default(false),
     isCaseRiskOverviewEnabled: z.boolean().default(false),
-    isDocumentTrackerEnabled: z.boolean().default(false),
+    isDocumentTrackerEnabled: z.boolean().default(true),
     theme: WorkflowDefinitionConfigThemeSchema.default({
       type: WorkflowDefinitionConfigThemeEnum.KYB,
     }),

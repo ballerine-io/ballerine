@@ -1,6 +1,7 @@
 import { request } from '@/common/utils/request';
 import {
   DocumentConfiguration,
+  IDocumentRecord,
   TCustomer,
   TFlowConfiguration,
   TFlowStep,
@@ -136,4 +137,14 @@ export const syncContext = async (context: CollectionFlowContext) => {
   });
 
   return result.json();
+};
+
+export const fetchDocumentsByIds = async (ids: string[]) => {
+  const result = await request.get('collection-flow/files', {
+    searchParams: {
+      ids: ids.join(','),
+    },
+  });
+
+  return result.json<IDocumentRecord[]>();
 };
