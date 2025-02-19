@@ -12,6 +12,7 @@ import { StorageService } from '@/storage/storage.service';
 import { WorkflowService } from '@/workflow/workflow.service';
 import {
   Body,
+  BadRequestException,
   Controller,
   Delete,
   Get,
@@ -29,7 +30,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiExcludeController, ApiResponse } from '@nestjs/swagger';
 import { Type, type Static } from '@sinclair/typebox';
 import type { Response } from 'express';
-import z from 'zod';
+import * as z from 'zod';
 import * as errors from '../../errors';
 import { CollectionFlowDocumentSchema } from '../dto/create-collection-flow-document.schema';
 import { GetDocumentsByIdsDto } from '../dto/get-documents-by-ids.dto';

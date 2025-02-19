@@ -16,15 +16,14 @@ import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDec
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { Button } from '@ballerine/ui';
-import { toTitleCase } from 'string-ts';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
-import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { generateEditableDetailsV2Fields } from '@/common/components/organisms/EditableDetailsV2/utils/generate-editable-details-v2-fields';
 import { useUpdateContextAndSyncEntityMutation } from '@/domains/workflows/hooks/mutations/useUpdateContextAndSyncEntity/useUpdateContextAndSyncEntity';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
+import { useDocumentsAdapter } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
 
 const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -41,23 +40,11 @@ export const useKycBlock = ({
   parentWorkflowId: string;
 }) => {
   const { noAction } = useCaseDecision();
-  const results: string[][] = [];
   const kycSessionKeys = Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {});
 
-  const docsData = useStorageFilesQuery(
-    childWorkflow?.context?.documents?.flatMap(({ pages }) =>
-      pages?.map(({ ballerineFileId }) => ballerineFileId),
-    ),
-  );
-
-  childWorkflow?.context?.documents?.forEach((document, docIndex) => {
-    document?.pages?.forEach((page, pageIndex: number) => {
-      if (!results[docIndex]) {
-        results[docIndex] = [];
-      }
-
-      results[docIndex][pageIndex] = docsData?.shift()?.data;
-    });
+  const { documents, isLoading: isLoadingDocuments } = useDocumentsAdapter({
+    entityId: childWorkflow?.context?.entity?.ballerineEntityId ?? '',
+    documents: childWorkflow?.context?.documents ?? [],
   });
 
   const decision = kycSessionKeys?.length
@@ -173,22 +160,11 @@ export const useKycBlock = ({
               })),
             },
             workflowId: childWorkflow?.id,
-            documents: childWorkflow?.context?.documents,
+            documents,
           })
           .cellAt(0, 0),
       ) ?? []
     : [];
-
-  const documents = childWorkflow?.context?.documents?.flatMap(
-    (document, docIndex) =>
-      document?.pages?.map(({ type, metadata, data }, pageIndex) => ({
-        title: `${valueOrNA(toTitleCase(document?.category ?? ''))} - ${valueOrNA(
-          toTitleCase(document?.type ?? ''),
-        )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-        imageUrl: results[docIndex][pageIndex],
-        fileType: type,
-      })) ?? [],
-  );
 
   const { mutate: mutateApproveCase, isLoading: isLoadingApproveCase } =
     useApproveCaseAndDocumentsMutation({
@@ -470,7 +446,7 @@ export const useKycBlock = ({
           ),
         },
         workflowId: childWorkflow?.id,
-        documents: childWorkflow?.context?.documents,
+        documents,
       })
       .build()
       .flat(1);
@@ -586,7 +562,7 @@ export const useKycBlock = ({
                             data: decision,
                           },
                           workflowId: childWorkflow?.id,
-                          documents: childWorkflow?.context?.documents,
+                          documents,
                         })
                         .build()
                         .flat(1)
@@ -611,8 +587,8 @@ export const useKycBlock = ({
             .addCell({
               type: 'multiDocuments',
               value: {
-                isLoading: docsData?.some(({ isLoading }) => isLoading),
-                data: documents,
+                isLoading: isLoadingDocuments,
+                data: documents?.flatMap(document => document?.details),
               },
             })
             .build()

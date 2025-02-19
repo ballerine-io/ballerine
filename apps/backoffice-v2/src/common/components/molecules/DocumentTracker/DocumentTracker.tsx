@@ -33,7 +33,7 @@ export const DocumentTracker: FunctionComponent<{ workflowId: string }> = ({ wor
 
   return (
     <div className={`max-w-xs`}>
-      <AccordionCard>
+      <AccordionCard className={`h-full`}>
         <AccordionCard.Title
           className={`flex-row items-center justify-between`}
           rightChildren={
@@ -106,7 +106,7 @@ export const DocumentTracker: FunctionComponent<{ workflowId: string }> = ({ wor
           Documents
         </AccordionCard.Title>
         <AccordionCard.Content>
-          <AccordionContent
+          <DocumentTrackerItems
             documentTrackerItems={documentTrackerItems}
             isLoading={isLoadingDocuments}
             getSubItems={getSubItems}
@@ -124,7 +124,7 @@ type AccordionContentProps = {
     doc: TrackedDocument,
   ) => Parameters<typeof AccordionCard.Item>[number]['subitems'][number];
 };
-const AccordionContent = memo(
+const DocumentTrackerItems = memo(
   ({ documentTrackerItems, isLoading, getSubItems }: AccordionContentProps) => {
     const businessSubitems = useMemo(
       () => documentTrackerItems?.business.map(getSubItems).filter(Boolean) ?? [],
@@ -171,7 +171,7 @@ const AccordionContent = memo(
         <AccordionCard.Item
           title="Company documents"
           value="company-documents"
-          ulProps={{ className: 'space-y-0' }}
+          ulProps={{ className: '[&>li]:py-0' }}
           subitems={businessSubitems}
         />
 
@@ -184,4 +184,4 @@ const AccordionContent = memo(
     );
   },
 );
-AccordionContent.displayName = 'AccordionContent';
+DocumentTrackerItems.displayName = 'DocumentTrackerItems';

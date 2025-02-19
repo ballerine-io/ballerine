@@ -24,3 +24,24 @@ export const requestDocumentsUpload = async (body: z.infer<typeof RequestDocumen
 
   return handleZodError(error, documentsTrackerItems);
 };
+
+export const updateDocumentDecisionById = async ({
+  documentId,
+  data,
+}: {
+  documentId: string;
+  data: {
+    decision: 'approve' | 'reject' | 'revision' | null;
+    decisionReason?: string;
+    comment?: string;
+  };
+}) => {
+  const [documents, error] = await apiClient({
+    endpoint: `../external/documents/${documentId}/decision`,
+    method: Method.PATCH,
+    body: data,
+    schema: z.any(),
+  });
+
+  return handleZodError(error, documents);
+};

@@ -3,7 +3,7 @@ import { convertCsvToPdfBase64String } from '../../../../../../common/utils/conv
 import { IDocumentsProps } from '../../interfaces';
 
 export const convertCsvDocumentsToPdf = (documents: IDocumentsProps['documents']) => {
-  return documents.map(document => {
+  return documents?.map(document => {
     if (isCsv(document)) {
       return { ...document, imageUrl: convertCsvToPdfBase64String(document.imageUrl) };
     }

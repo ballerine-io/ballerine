@@ -14,7 +14,6 @@ export const createDirectorsBlocks = ({
   revisionReasons,
   isEditable,
   isApproveDisabled,
-  isLoadingDocuments,
   workflow,
 }: Omit<ComponentProps<typeof DirectorBlock>, 'director' | 'documentSchemas'> & {
   directors: Array<ComponentProps<typeof DirectorBlock>['director']>;
@@ -47,7 +46,6 @@ export const createDirectorsBlocks = ({
           isEditable={isEditable}
           isApproveDisabled={isApproveDisabled}
           documentSchemas={documentSchemas}
-          isLoadingDocuments={isLoadingDocuments}
           workflow={workflow}
         />
       ),
