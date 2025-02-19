@@ -17,7 +17,7 @@ import { CreateDocumentSchema } from './dtos/document.dto';
 import { CreateDocumentFileSchema } from '@/document-file/dtos/document-file.dto';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { isType, getDocumentId } from '@ballerine/common';
+import { isType, getDocumentId, CommonWorkflowEvent } from '@ballerine/common';
 import z from 'zod';
 import { TParsedDocuments, EntitySchema, DocumentTrackerResponseSchema } from './types';
 
@@ -483,6 +483,16 @@ export class DocumentService {
     }));
 
     const createdDocuments = await this.repository.createMany(documentsToCreate);
+
+    await this.workflowService.event(
+      {
+        id: workflowId,
+        name: CommonWorkflowEvent.REVISION,
+        payload: {},
+      },
+      [projectId],
+      projectId,
+    );
 
     return { message: 'Documents requested successfully', count: createdDocuments.count };
   }

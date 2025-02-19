@@ -28,6 +28,7 @@ export const DocumentTracker: FunctionComponent<{ workflowId: string }> = ({ wor
     onRequestDocuments,
     open,
     onOpenChange,
+    isRequestButtonDisabled,
   } = useDocumentTracker({ workflowId });
 
   return (
@@ -38,8 +39,11 @@ export const DocumentTracker: FunctionComponent<{ workflowId: string }> = ({ wor
           rightChildren={
             selectedIdsToRequest.length > 0 ? (
               <Dialog open={open} onOpenChange={onOpenChange}>
-                <DialogTrigger>
-                  <Button className="h-7 bg-warning px-2 text-sm">
+                <DialogTrigger disabled={isRequestButtonDisabled}>
+                  <Button
+                    className="h-7 bg-warning px-2 text-sm"
+                    disabled={isRequestButtonDisabled}
+                  >
                     <SendIcon className="mr-1.5 d-4" />
                     <span className="whitespace-nowrap">
                       Request{' '}
