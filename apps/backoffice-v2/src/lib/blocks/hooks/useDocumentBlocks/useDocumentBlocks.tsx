@@ -104,8 +104,12 @@ export const useDocumentsAdapter = ({
   const documentPagesResults = useDocumentPageImages(passedDocuments, storageFilesQueryResult);
   const getDocuments = () => {
     if (isDocumentsV2) {
-      return documentsV2?.map(document => ({
+      return documentsV2?.map(({ decision, decisionReason, ...document }) => ({
         ...document,
+        decision: {
+          status: decision,
+          reason: decisionReason,
+        },
         details:
           document?.files?.map(({ mimeType, fileName, variant, fileId, imageUrl }) => {
             const title = generateDocumentTitle({
