@@ -22,19 +22,20 @@ export type TCustomerConfig = z.infer<typeof CustomerConfigSchema>;
 export const DemoAccessDetailsSchema = z
   .object({
     totalReports: z.number(),
-    expiresAt: z.number().nullish(),
-    maxBusinessReports: z.number().default(10).nullish(),
+    expiresAt: z.number(),
+    seenWelcomeModal: z.boolean().optional(),
+    maxBusinessReports: z.number().optional(),
   })
   .transform(data => {
-    const { totalReports, expiresAt, maxBusinessReports } = data;
-    const reportsLeft =
-      maxBusinessReports && totalReports ? maxBusinessReports - totalReports : null;
-    const demoDaysLeft = expiresAt ? dayjs(expiresAt * 1000).diff(dayjs(), 'days') : null;
+    const { totalReports, expiresAt, maxBusinessReports = 10, seenWelcomeModal = true } = data;
+    const reportsLeft = maxBusinessReports - totalReports;
+    const demoDaysLeft = dayjs(expiresAt * 1000).diff(dayjs(), 'days');
 
     return {
       totalReports,
       expiresAt,
       maxBusinessReports,
+      seenWelcomeModal,
       reportsLeft,
       demoDaysLeft,
     };

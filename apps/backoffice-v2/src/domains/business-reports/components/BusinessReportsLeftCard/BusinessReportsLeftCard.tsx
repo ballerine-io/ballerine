@@ -28,7 +28,7 @@ export const BusinessReportsLeftCard = ({
     active: (
       <span>
         You have <span className="font-bold">{reportsLeft} free reports</span> left to create,
-        available for <span className="font-bold">{demoDaysLeft} days.</span>
+        available for <span className="font-bold">{demoDaysLeft} days</span>
       </span>
     ),
   };
