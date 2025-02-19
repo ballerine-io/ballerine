@@ -1,7 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { CaseTabs, TabToLabel } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 import { camelCase, titleCase } from 'string-ts';
 import { OverallRiskLevel } from '@/common/components/molecules/OverallRiskLevel/OverallRiskLevel';
@@ -55,7 +55,7 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 xl:grid-cols-3 2xl:grid-cols-3">
+    <div className="grid grid-cols-2 gap-4 xl:grid-cols-3 2xl:grid-cols-4">
       {workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled && (
         <OverallRiskLevel
           riskScore={

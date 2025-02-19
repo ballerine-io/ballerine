@@ -4,7 +4,7 @@ import { t } from 'i18next';
 import { toast } from 'sonner';
 
 import { HttpError } from '@/common/errors/http-error';
-import { requestDocumentsUpload } from '../../fetchers';
+import { requestDocumentsUpload } from '@/domains/documents/fetchers';
 
 export const useRequestDocumentsMutation = (options?: {
   onSuccess?: <TData>(data: TData) => void;

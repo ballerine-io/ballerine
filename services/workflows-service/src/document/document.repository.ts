@@ -62,6 +62,22 @@ export class DocumentRepository {
     });
   }
 
+  async findById(
+    id: string,
+    projectIds: TProjectId[],
+    args?: Prisma.DocumentFindFirstArgs,
+    transaction: PrismaTransactionClient = this.prismaService,
+  ) {
+    return await transaction.document.findFirst({
+      ...args,
+      where: {
+        ...args?.where,
+        id,
+        projectId: { in: projectIds },
+      },
+    });
+  }
+
   async findByEntityIdAndWorkflowId(
     entityId: string,
     workflowRuntimeDataId: string,

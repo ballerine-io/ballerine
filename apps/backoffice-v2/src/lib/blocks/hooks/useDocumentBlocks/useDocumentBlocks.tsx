@@ -4,6 +4,7 @@ import { Method } from '@/common/enums';
 import { checkIsIndividual } from '@/common/utils/check-is-individual/check-is-individual';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
+import { useApproveDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useApproveDocumentByIdMutation/useApproveDocumentByIdMutation';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useDocumentOcr } from '@/domains/entities/hooks/mutations/useDocumentOcr/useDocumentOcr';
 import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
@@ -204,6 +205,8 @@ export const useDocumentBlocks = ({
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id);
+  const { mutate: mutateApproveDocumentById, isLoading: isLoadingApproveDocumentById } =
+    useApproveDocumentByIdMutation();
   const {
     mutate: mutateOCRDocument,
     isLoading: isLoadingOCRDocument,
@@ -226,10 +229,22 @@ export const useDocumentBlocks = ({
         comment?: string;
       }) =>
       () => {
-        mutateApproveTaskById({ documentId: taskId, contextUpdateMethod, comment });
+        if (!workflow?.workflowDefinition?.config?.isDocumentsV2) {
+          mutateApproveTaskById({ documentId: taskId, contextUpdateMethod, comment });
+        }
+
+        if (workflow?.workflowDefinition?.config?.isDocumentsV2) {
+          mutateApproveDocumentById({ documentId: taskId, comment });
+        }
+
         onClearComment();
       },
-    [mutateApproveTaskById, onClearComment],
+    [
+      mutateApproveDocumentById,
+      mutateApproveTaskById,
+      onClearComment,
+      workflow?.workflowDefinition?.config?.isDocumentsV2,
+    ],
   );
   const { mutate: onMutateRemoveDecisionById } = useRemoveDecisionTaskByIdMutation(workflow?.id);
 
@@ -269,7 +284,7 @@ export const useDocumentBlocks = ({
           noAction,
           workflow,
           decision,
-          isLoadingApprove: isLoadingApproveTaskById,
+          isLoadingApprove: isLoadingApproveTaskById || isLoadingApproveDocumentById,
         });
         const getDecisionStatusOrAction = (isDocumentRevision: boolean) => {
           const badgeClassNames = 'text-sm font-bold';

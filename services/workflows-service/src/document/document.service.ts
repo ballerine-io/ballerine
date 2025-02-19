@@ -1,6 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DocumentRepository } from './document.repository';
-import { Document, DocumentFile, Prisma, WorkflowRuntimeData } from '@prisma/client';
+import {
+  Document,
+  DocumentFile,
+  File,
+  Prisma,
+  WorkflowDefinition,
+  WorkflowRuntimeData,
+} from '@prisma/client';
 import { PrismaTransactionClient, TProjectId } from '@/types';
 import { DocumentFileService } from '@/document-file/document-file.service';
 import { StorageService } from '@/storage/storage.service';
@@ -12,8 +19,17 @@ import { CreateDocumentFileSchema } from '@/document-file/dtos/document-file.dto
 import { WorkflowService } from '@/workflow/workflow.service';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { isType, getDocumentId } from '@ballerine/common';
-import z from 'zod';
-import { TParsedDocuments, EntitySchema, DocumentTrackerResponseSchema } from './types';
+import * as z from 'zod';
+import {
+  TParsedDocuments,
+  EntitySchema,
+  DocumentTrackerResponseSchema,
+  DocumentTrackerDocumentSchema,
+} from './types';
+import { addPropertiesSchemaToDocument } from '@/workflow/utils/add-properties-schema-to-document';
+import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
+import { ajv } from '@/common/ajv/ajv.validator';
+import { ValidationError } from '@/errors';
 
 @Injectable()
 export class DocumentService {
@@ -24,6 +40,7 @@ export class DocumentService {
     protected readonly workflowService: WorkflowService,
     protected readonly storageService: StorageService,
     protected readonly uiDefinitionService: UiDefinitionService,
+    protected readonly workflowDefinitionService: WorkflowDefinitionService,
   ) {}
 
   async create(
@@ -205,6 +222,88 @@ export class DocumentService {
       documents,
       // Would have to have a separate workflow definition for each document
       documentSchema: null,
+    });
+  }
+
+  async updateDocumentDecisionById(
+    id: string,
+    projectIds: TProjectId[],
+    data: {
+      decision: 'approve' | 'reject' | 'revision' | null;
+    } & Pick<Prisma.DocumentUpdateInput, 'decisionReason' | 'comment'>,
+    args?: Prisma.DocumentUpdateManyArgs,
+    transaction?: PrismaTransactionClient,
+  ) {
+    const document = await this.repository.findById(id, projectIds);
+
+    if (!document) {
+      throw new BadRequestException(`Document with an id of "${id}" was not found`);
+    }
+
+    if (!document.workflowRuntimeDataId) {
+      throw new BadRequestException(`Attempted to update decision for a document with no workflow`);
+    }
+
+    const workflowDefinition = await this.workflowDefinitionService.getByWorkflowRuntimeDataId(
+      document.workflowRuntimeDataId,
+      projectIds,
+    );
+
+    if (!workflowDefinition) {
+      throw new BadRequestException(
+        `Workflow definition for a workflow with an id of "${document.workflowRuntimeDataId}" was not found`,
+      );
+    }
+
+    const documentWithPropertiesSchema = addPropertiesSchemaToDocument(
+      // @ts-expect-error -- the function expects properties not used by the function.
+      {
+        ...document,
+        issuer: {
+          country: document.issuingCountry,
+        },
+      },
+      workflowDefinition.documentsSchema,
+    );
+    const propertiesSchema = documentWithPropertiesSchema.propertiesSchema ?? {};
+    const shouldValidateDocument =
+      data.decision === 'approve' && Object.keys(propertiesSchema)?.length;
+
+    if (shouldValidateDocument) {
+      const validatePropertiesSchema = ajv.compile(propertiesSchema);
+      const isValidPropertiesSchema = validatePropertiesSchema(
+        documentWithPropertiesSchema?.properties,
+      );
+
+      if (!isValidPropertiesSchema) {
+        throw ValidationError.fromAjvError(validatePropertiesSchema.errors ?? []);
+      }
+    }
+
+    const Status = {
+      approve: 'approved',
+      reject: 'rejected',
+      revision: 'revisions',
+    } as const;
+
+    const decision = data.decision ? Status[data.decision] : null;
+
+    await this.repository.updateById(
+      id,
+      projectIds,
+      {
+        ...data,
+        decision,
+      },
+      args,
+      transaction,
+    );
+
+    const documents = await this.repository.findManyWithFiles(projectIds);
+
+    return this.formatDocuments({
+      documents,
+      documentSchema: workflowDefinition.documentsSchema,
     });
   }
 
@@ -433,19 +532,20 @@ export class DocumentService {
       return expectedDocId === actualDocId;
     };
 
-    const generateDocumentTrackerItem = <T extends z.infer<typeof EntitySchema>>(
+    const generateDocumentTrackerItem = <TEntity extends z.infer<typeof EntitySchema>>(
       matchingDocument: Document | undefined,
       expectedDoc: TParsedDocuments['business'][number],
-      entity: T,
-    ) => ({
-      documentId: matchingDocument?.id ?? null,
-      status: matchingDocument?.status ?? 'unprovided',
-      decision: matchingDocument?.decision ?? null,
-      identifiers: {
-        document: expectedDoc,
-        entity,
-      },
-    });
+      entity: TEntity,
+    ) =>
+      ({
+        documentId: matchingDocument?.id ?? null,
+        status: matchingDocument?.status ?? 'unprovided',
+        decision: matchingDocument?.decision ?? null,
+        identifiers: {
+          document: expectedDoc,
+          entity,
+        },
+      } satisfies z.output<typeof DocumentTrackerDocumentSchema>);
 
     const result: z.output<typeof DocumentTrackerResponseSchema> = {
       business: parsedUIDocuments.business.map(expectedDoc => {

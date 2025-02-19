@@ -10,6 +10,8 @@ export const DocumentSchema = Type.Object({
   version: Type.Integer(),
   status: Type.Enum(DocumentStatus),
   decision: Type.Optional(Type.Enum(DocumentDecision)),
+  decisionReason: Type.Optional(Type.String()),
+  comment: Type.Optional(Type.String()),
   properties: Type.Record(Type.String(), Type.Any()),
   businessId: Type.Optional(Type.String()),
   endUserId: Type.Optional(Type.String()),
@@ -20,6 +22,17 @@ export const DocumentSchema = Type.Object({
 export const CreateDocumentSchema = Type.Omit(DocumentSchema, ['id', 'projectId']);
 
 export const UpdateDocumentSchema = Type.Partial(DocumentSchema);
+
+export const UpdateDocumentDecisionSchema = Type.Composite([
+  Type.Pick(DocumentSchema, ['decisionReason', 'comment']),
+  Type.Object({
+    decision: Type.Union([
+      Type.Literal('approve'),
+      Type.Literal('reject'),
+      Type.Literal('revision'),
+    ]),
+  }),
+]);
 
 export const DeleteDocumentsSchema = Type.Object({
   ids: Type.Array(Type.String()),

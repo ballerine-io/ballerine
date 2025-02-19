@@ -17,6 +17,7 @@ import { DocumentService } from './document.service';
 import {
   CreateDocumentSchema,
   DeleteDocumentsSchema,
+  UpdateDocumentDecisionSchema,
   UpdateDocumentSchema,
 } from './dtos/document.dto';
 import { Validate } from 'ballerine-nestjs-typebox';
@@ -235,6 +236,34 @@ export class DocumentControllerExternal {
     @CurrentProject() projectId: string,
   ) {
     return await this.documentService.updateById(documentId, [projectId], data);
+  }
+
+  @Patch('/:documentId/decision')
+  @ApiResponse({
+    status: 200,
+    description: 'Document decision updated successfully',
+    schema: Type.Array(Type.Record(Type.String(), Type.Any())),
+  })
+  @Validate({
+    request: [
+      {
+        type: 'param',
+        name: 'documentId',
+        schema: Type.String(),
+      },
+      {
+        type: 'body',
+        schema: UpdateDocumentDecisionSchema,
+      },
+    ],
+    response: Type.Any(),
+  })
+  async updateDocumentDecisionById(
+    @Param('documentId') documentId: string,
+    @Body() data: Static<typeof UpdateDocumentDecisionSchema>,
+    @CurrentProject() projectId: string,
+  ) {
+    return await this.documentService.updateDocumentDecisionById(documentId, [projectId], data);
   }
 
   @UseInterceptors(
