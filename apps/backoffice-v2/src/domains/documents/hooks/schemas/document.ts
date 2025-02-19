@@ -24,6 +24,7 @@ export const DocumentTrackerItemSchema = z.object({
       templateId: z.string(),
       category: z.string(),
       issuingCountry: z.string(),
+      decisionReason: z.string().optional(),
       issuingVersion: z.string(),
       version: z.string(),
     }),
@@ -49,4 +50,17 @@ export const DocumentsTrackerSchema = z.object({
     ubos: z.array(DocumentTrackerItemSchema),
     directors: z.array(DocumentTrackerItemSchema),
   }),
+});
+
+export const RequestDocumentsSchema = z.object({
+  workflowId: z.string(),
+  documents: z.array(
+    z.object({
+      ...DocumentTrackerItemSchema.shape.identifiers.shape.document.shape,
+      entity: z.object({
+        id: z.string(),
+        type: z.enum([EntityType.BUSINESS, EntityType.UBO, EntityType.DIRECTOR]),
+      }),
+    }),
+  ),
 });

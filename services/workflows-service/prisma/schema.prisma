@@ -963,10 +963,10 @@ model BusinessReport {
 }
 
 model Document {
-  id             String           @id @default(cuid())
+  id String @id @default(cuid())
 
-  category       String
-  type           String
+  category String
+  type     String
 
   issuingVersion String
   issuingCountry String
@@ -1023,16 +1023,16 @@ enum DocumentFileVariant {
 }
 
 model DocumentFile {
-  id         String             @id @default(cuid())
-  type       DocumentFileType
-  variant    DocumentFileVariant
-  page       Int
+  id      String              @id @default(cuid())
+  type    DocumentFileType
+  variant DocumentFileVariant
+  page    Int
 
   documentId String
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
-  fileId     String
-  file       File @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  fileId String
+  file   File   @relation(fields: [fileId], references: [id], onDelete: Cascade)
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id])

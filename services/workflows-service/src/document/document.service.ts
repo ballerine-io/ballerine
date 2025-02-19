@@ -1,9 +1,24 @@
+import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
+import { DocumentFileService } from '@/document-file/document-file.service';
+import { CreateDocumentFileSchema } from '@/document-file/dtos/document-file.dto';
+import { FileService } from '@/providers/file/file.service';
+import { StorageService } from '@/storage/storage.service';
+import { PrismaTransactionClient, TProjectId } from '@/types';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { WorkflowService } from '@/workflow/workflow.service';
+import {
+  CollectionFlowStatusesEnum,
+  CommonWorkflowEvent,
+  getDocumentId,
+  isType,
+  setCollectionFlowStatus,
+} from '@ballerine/common';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DocumentRepository } from './document.repository';
 import {
   Document,
   DocumentFile,
-  File,
+  DocumentStatus,
   Prisma,
   WorkflowDefinition,
   WorkflowRuntimeData,
@@ -14,22 +29,11 @@ import { StorageService } from '@/storage/storage.service';
 import { FileService } from '@/providers/file/file.service';
 import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 import { Static } from '@sinclair/typebox';
-import { CreateDocumentSchema } from './dtos/document.dto';
-import { CreateDocumentFileSchema } from '@/document-file/dtos/document-file.dto';
-import { WorkflowService } from '@/workflow/workflow.service';
-import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { isType, getDocumentId } from '@ballerine/common';
-import * as z from 'zod';
-import {
-  TParsedDocuments,
-  EntitySchema,
-  DocumentTrackerResponseSchema,
-  DocumentTrackerDocumentSchema,
-} from './types';
-import { addPropertiesSchemaToDocument } from '@/workflow/utils/add-properties-schema-to-document';
-import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
-import { ajv } from '@/common/ajv/ajv.validator';
-import { ValidationError } from '@/errors';
+import z from 'zod';
+import { DocumentRepository } from './document.repository';
+import { CreateDocumentSchema, UpdateDocumentSchema } from './dtos/document.dto';
+import { addRequestedDocumentToEntityDocuments } from './helpers/add-requested-document-to-entity-documents';
+import { DocumentTrackerResponseSchema, EntitySchema, TParsedDocuments } from './types';
 
 @Injectable()
 export class DocumentService {
@@ -90,13 +94,7 @@ export class DocumentService {
       [projectId],
     );
 
-    const workflowEntityId = workflowRuntimeData.endUserId || workflowRuntimeData.businessId;
-
-    if (!workflowEntityId) {
-      throw new BadRequestException('Workflow does not have an end user or business id');
-    }
-
-    const uploadedFile = await this.fileService.uploadNewFile(projectId, workflowEntityId, {
+    const uploadedFile = await this.fileService.uploadNewFile(projectId, workflowRuntimeData, {
       ...file,
       mimetype:
         file.mimetype ||
@@ -130,48 +128,16 @@ export class DocumentService {
       transaction,
     );
 
-    const entityId = getEntityId();
+    const entityId = this.getEntityId(data);
 
     return await this.getByEntityIdAndWorkflowId(entityId, data.workflowRuntimeDataId, [projectId]);
   }
 
-  async formatDocuments({
-    documents,
-    documentSchema,
-  }: {
-    documents: Array<Document & { files: DocumentFile[] }>;
-    documentSchema: WorkflowDefinition['documentsSchema'];
-  }) {
-    const documentsWithFiles = await this.fetchDocumentsFiles({
-      documents,
-      format: 'signed-url',
-    });
-    const typedDocuments = documentsWithFiles as Array<
-      Omit<(typeof documentsWithFiles)[number], 'files'> & {
-        files: Array<(typeof documentsWithFiles)[number]['files'][number] & { file: File }>;
-      }
-    >;
-
-    return typedDocuments.map(({ files, ...document }) => {
-      const documentWithPropertiesSchema = addPropertiesSchemaToDocument(
-        // @ts-expect-error -- the function expects properties not used by the function.
-        {
-          ...document,
-          issuer: {
-            country: document.issuingCountry,
-          },
-        },
-        documentSchema,
-      );
-
-      return {
-        ...document,
-        files: files.map(({ file, ...fileData }) => ({
-          ...fileData,
-          fileName: file.fileName,
-        })),
-        propertiesSchema: documentWithPropertiesSchema.propertiesSchema,
-      };
+  async getDocumentsByIds(documentIds: string[], projectId: TProjectId) {
+    return await this.repository.findMany([projectId], {
+      where: {
+        id: { in: documentIds },
+      },
     });
   }
 
@@ -205,6 +171,87 @@ export class DocumentService {
       documents,
       documentSchema: workflowDefinition.documentsSchema,
     });
+  }
+
+  async updateByIdWithFile(
+    {
+      file,
+      metadata,
+      projectId,
+      ...data
+    }: Static<typeof UpdateDocumentSchema> & {
+      documentId: string;
+      file: Express.Multer.File;
+      metadata: Omit<
+        Static<typeof CreateDocumentFileSchema>,
+        'documentId' | 'fileId' | 'projectId'
+      >;
+      projectId: string;
+    },
+    transaction?: PrismaTransactionClient,
+  ) {
+    if (!data.businessId && !data.endUserId) {
+      throw new BadRequestException('Business or end user id is required');
+    }
+
+    if (data.businessId && data.endUserId) {
+      throw new BadRequestException('Business and end user id cannot be set at the same time');
+    }
+
+    if (!data.workflowRuntimeDataId) {
+      throw new BadRequestException('Workflow runtime data id is required');
+    }
+
+    const { documentId, ...documentData } = data;
+
+    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
+      data.workflowRuntimeDataId,
+      {},
+      [projectId],
+    );
+
+    const uploadedFile = await this.fileService.uploadNewFile(projectId, workflowRuntimeData, {
+      ...file,
+      mimetype:
+        file.mimetype ||
+        (
+          await getFileMetadata({
+            file: file.originalname || '',
+            fileName: file.originalname || '',
+          })
+        )?.mimeType ||
+        '',
+    });
+
+    await this.documentFileService.create(
+      {
+        documentId: documentId,
+        fileId: uploadedFile.id,
+        projectId,
+        ...metadata,
+      },
+      undefined,
+      transaction,
+    );
+
+    const workflowDefinition = await this.workflowDefinitionService.getByWorkflowRuntimeDataId(
+      workflowRuntimeDataId,
+      projectIds,
+    );
+    await this.repository.updateById(data.documentId, [projectId], {
+      ...documentData,
+      ...(documentData.businessId && { businessId: documentData.businessId }),
+      ...(documentData.endUserId && { endUserId: documentData.endUserId }),
+    });
+
+    if (!workflowDefinition) {
+      throw new BadRequestException(
+        `Workflow definition for a workflow with an id of "${workflowRuntimeDataId}" not found`,
+      );
+    }
+    const entityId = this.getEntityId(data);
+
+    return await this.getByEntityIdAndWorkflowId(entityId, data.workflowRuntimeDataId, [projectId]);
   }
 
   async updateById(
@@ -344,7 +391,7 @@ export class DocumentService {
             return {
               ...file,
               mimeType: uploadedFile.mimeType,
-              imageUrl: uploadedFile.signedUrl,
+              signedUrl: uploadedFile.signedUrl,
             };
           }) ?? [],
         );
@@ -597,18 +644,105 @@ export class DocumentService {
   async requestDocumentsByIds(
     projectId: TProjectId,
     workflowId: string,
-    identifiers: Array<{
+    documents: Array<{
       type: string;
       category: string;
+      decisionReason?: string;
       issuingCountry: string;
       issuingVersion: string;
       version: string;
       entity: {
         id: string;
+        type: 'business' | 'ubo' | 'director';
       };
     }>,
   ) {
-    return { message: 'Documents requested successfully', count: 0 };
+    const documentsToCreate = documents.map(document => ({
+      category: document.category,
+      type: document.type,
+      decisionReason: document.decisionReason,
+      issuingVersion: document.issuingVersion,
+      issuingCountry: document.issuingCountry,
+      version: parseInt(document.version),
+      status: DocumentStatus.requested,
+      properties: {},
+      projectId: projectId,
+      workflowRuntimeDataId: workflowId,
+      businessId: document.entity.type === 'business' ? document.entity.id : undefined,
+      endUserId: ['ubo', 'director'].includes(document.entity.type)
+        ? document.entity.id
+        : undefined,
+    }));
+
+    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
+      workflowId,
+      {
+        select: {
+          workflowDefinition: true,
+          context: true,
+        },
+      },
+      [projectId],
+    );
+
+    const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
+      workflowRuntimeData.workflowDefinitionId,
+      'collection_flow',
+      [projectId],
+    );
+
+    const createdDocuments = await Promise.all(
+      documentsToCreate.map(doc => this.repository.create(doc)),
+    );
+
+    const contextWithDocuments = createdDocuments.reduce((context, document) => {
+      const createdDocument = document;
+
+      if (!createdDocument) {
+        return context;
+      }
+
+      return addRequestedDocumentToEntityDocuments(
+        context,
+        document.type as 'business' | 'ubo' | 'director',
+        uiDefinition,
+        {
+          id: createdDocument.id,
+          status: DocumentStatus.requested,
+          decision: null,
+          version: createdDocument.version.toString(),
+          type: createdDocument.type,
+          category: createdDocument.category,
+          issuingCountry: createdDocument.issuingCountry,
+          issuingVersion: createdDocument.issuingVersion,
+        },
+      );
+    }, workflowRuntimeData.context);
+
+    const contextWithRevision = setCollectionFlowStatus(
+      contextWithDocuments,
+      CollectionFlowStatusesEnum.revision,
+    );
+
+    await this.workflowService.updateWorkflowRuntimeData(
+      workflowId,
+      {
+        context: contextWithRevision,
+      },
+      projectId,
+    );
+
+    await this.workflowService.event(
+      {
+        id: workflowId,
+        name: CommonWorkflowEvent.REVISION,
+        payload: {},
+      },
+      [projectId],
+      projectId,
+    );
+
+    return { message: 'Documents requested successfully', count: createdDocuments.length };
   }
 
   private parseDocumentsFromUISchema(uiSchema: Array<Record<string, any>>): TParsedDocuments {
@@ -687,5 +821,17 @@ export class DocumentService {
     uiSchema.forEach(processElement);
 
     return result;
+  }
+
+  private getEntityId(data: { businessId?: string; endUserId?: string }) {
+    if (data.businessId) {
+      return data.businessId;
+    }
+
+    if (data.endUserId) {
+      return data.endUserId;
+    }
+
+    throw new BadRequestException('Business or end user id is required');
   }
 }

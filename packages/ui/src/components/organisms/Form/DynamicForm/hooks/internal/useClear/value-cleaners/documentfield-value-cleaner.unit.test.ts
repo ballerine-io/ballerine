@@ -59,7 +59,7 @@ describe('documentFieldValueCleaner', () => {
     const result = await documentFieldValueCleaner(documents, mockElement);
 
     expect(result).toEqual([{ id: 'template-2' }, { id: 'template-3' }]);
-    expect(request).toHaveBeenCalledWith(mockElement.params!.httpParams.deleteDocument, undefined);
+    expect(request).toHaveBeenCalledWith(mockElement.params!.httpParams?.deleteDocument, undefined);
   });
 
   it('should not call delete API if file is instance of File', async () => {

@@ -1,9 +1,9 @@
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
-import { TDocument } from '@ballerine/common';
 import {
   formatId,
   formatValueDestination,
   getFieldDefinitionsFromSchema,
+  IDocumentTemplate,
   IFormElement,
   IPriorityField,
   isDocumentFieldDefinition,
@@ -23,16 +23,19 @@ export const generatePriorityFields = (
     for (const element of elements) {
       // Extracting revision reason fro documents isnt common so we handling it explicitly
       if (isDocumentFieldDefinition(element)) {
-        const documents = get(context, formatValueDestination(element.valueDestination, stack));
+        const documents = get(
+          context,
+          formatValueDestination(element.valueDestination, stack),
+        ) as IDocumentTemplate[];
         const document = documents?.find(
-          (doc: TDocument) => doc.id === element.params?.template?.id,
+          (doc: IDocumentTemplate) => doc.id === element.params?.template?.id,
         );
 
-        if (!document) continue;
+        const reason = document?.decisionReason;
 
-        const reason = document.decision?.status;
-
-        if (!reason) continue;
+        if (!reason) {
+          continue;
+        }
 
         priorityFields.push({
           id: formatId(element.id, stack),
@@ -46,7 +49,9 @@ export const generatePriorityFields = (
       if (Array.isArray(element.children) && element.children.length > 0) {
         const value = get(context, formatValueDestination(element.valueDestination, stack));
 
-        if (!value) continue;
+        if (!value) {
+          continue;
+        }
 
         value?.forEach((_: unknown, index: number) => {
           run(element.children as Array<IFormElement<any, any>>, [...stack, index]);

@@ -46,7 +46,7 @@ jobs:
         run: |
           SANITIZED_BRANCH_NAME=$(echo -n "${{ steps.clean-ref.outputs.ref }}" | tr "/" "-")
           echo "Sanitized branch name: $SANITIZED_BRANCH_NAME"
-          TRIMMED_BRANCH_NAME=$(echo -n "$SANITIZED_BRANCH_NAME" | cut -c 1-7)
+          TRIMMED_BRANCH_NAME=$(echo -n "$SANITIZED_BRANCH_NAME" | cut -c 1-7 | sed 's/[-/]$//')
           echo "sanitized_env_name=$SANITIZED_BRANCH_NAME" >> $GITHUB_OUTPUT;
           echo "trimmed_env_name=$TRIMMED_BRANCH_NAME" >> $GITHUB_OUTPUT;
         
@@ -88,7 +88,7 @@ jobs:
       image_name: backoffice
       ref: ${{ needs.deploy-dev-pr-environment.outputs.ref }}
       tag: ${{ needs.deploy-dev-pr-environment.outputs.env_name }}
-      file: 'apps/backoffice-v2/Dockerfile.preview'
+      file: 'apps/backoffice-v2/Dockerfile'
 
   build-kyb:
     needs: [deploy-dev-pr-environment]
@@ -99,7 +99,7 @@ jobs:
       image_name: kyb-app
       ref: ${{ needs.deploy-dev-pr-environment.outputs.ref }}
       tag: ${{ needs.deploy-dev-pr-environment.outputs.env_name }}
-      file: 'apps/kyb-app/Dockerfile.preview'
+      file: 'apps/kyb-app/Dockerfile'
 
   build-dashboard:
     needs: [deploy-dev-pr-environment]
@@ -110,7 +110,7 @@ jobs:
       image_name: workflows-dashboard
       ref: ${{ needs.deploy-dev-pr-environment.outputs.ref }}
       tag: ${{ needs.deploy-dev-pr-environment.outputs.env_name }}
-      file: 'apps/workflows-dashboard/Dockerfile.preview'
+      file: 'apps/workflows-dashboard/Dockerfile'
   
   build-unified-api:
     runs-on: ubuntu-latest

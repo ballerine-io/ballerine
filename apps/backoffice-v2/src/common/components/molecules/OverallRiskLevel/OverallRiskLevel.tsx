@@ -35,7 +35,7 @@ export const OverallRiskLevel: FunctionComponent<{
             className={ctw(
               {
                 [severityToTextClassName[
-                  (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
+                  (severity as keyof typeof severityToClassName) ?? 'DEFAULT'
                 ]]: riskScore || riskScore === 0,
               },
               {
@@ -50,9 +50,7 @@ export const OverallRiskLevel: FunctionComponent<{
           {(riskScore || riskScore === 0) && (
             <Badge
               className={ctw(
-                severityToClassName[
-                  (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
-                ],
+                severityToClassName[(severity as keyof typeof severityToClassName) ?? 'DEFAULT'],
                 {
                   'text-background': severity === Severity.CRITICAL,
                 },

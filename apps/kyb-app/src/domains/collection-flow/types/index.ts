@@ -1,7 +1,7 @@
 import { ITheme } from '@/common/types/settings';
 import { Action, Rule, UIElement } from '@/domains/collection-flow/types/ui-schema.types';
 import { IPlugin } from '@/pages/CollectionFlow/versions/v2/components/organisms/CollectionFlowUI/components/utility/PluginsRunner/types';
-import { AnyObject, IFormElement } from '@ballerine/ui';
+import { AnyObject, IFormElement, TDocumentDecision, TDocumentStatus } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { CollectionFlowConfig } from './flow-context.types';
 
@@ -170,3 +170,12 @@ export interface UISchema {
 }
 
 export * from './ui-schema.types';
+
+export interface IDocumentRecord {
+  id: string;
+  status: TDocumentStatus;
+  decision: TDocumentDecision;
+  type: string;
+  category: string;
+  decisionReason?: string;
+}

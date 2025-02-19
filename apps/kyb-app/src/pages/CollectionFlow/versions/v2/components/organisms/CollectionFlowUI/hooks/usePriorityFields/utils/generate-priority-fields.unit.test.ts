@@ -6,12 +6,10 @@ describe('generatePriorityFields', () => {
     documents: [
       {
         id: 'doc1',
-        decision: {
-          status: 'revision',
-        },
+        decisionReason: 'needs_review',
       },
     ],
-  } as CollectionFlowContext;
+  } as unknown as CollectionFlowContext;
 
   const mockElements = [
     {
@@ -37,7 +35,7 @@ describe('generatePriorityFields', () => {
     expect(result).toEqual([
       {
         id: 'document-1',
-        reason: 'revision',
+        reason: 'needs_review',
       },
     ]);
   });
@@ -49,9 +47,7 @@ describe('generatePriorityFields', () => {
           documents: [
             {
               id: 'nested-doc-1',
-              decision: {
-                status: 'revision',
-              },
+              decisionReason: 'needs_review',
             },
           ],
         },
@@ -88,17 +84,18 @@ describe('generatePriorityFields', () => {
     expect(result).toEqual([
       {
         id: 'document-0',
-        reason: 'revision',
+        reason: 'needs_review',
       },
     ]);
   });
 
-  it('should generate priority document field only if document has decision', () => {
+  it('should generate priority document field only if document has decision reason', () => {
     const context = {
       ...mockContext,
       documents: [
         {
           id: 'doc1',
+          // No decision reason
         },
       ],
     } as CollectionFlowContext;

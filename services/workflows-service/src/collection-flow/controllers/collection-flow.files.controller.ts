@@ -19,6 +19,8 @@ import {
   Param,
   ParseFilePipeBuilder,
   Post,
+  Put,
+  Query,
   Res,
   UnprocessableEntityException,
   UploadedFile,
@@ -28,9 +30,11 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiExcludeController, ApiResponse } from '@nestjs/swagger';
 import { Type, type Static } from '@sinclair/typebox';
 import type { Response } from 'express';
-import z from 'zod';
+import * as z from 'zod';
 import * as errors from '../../errors';
 import { CollectionFlowDocumentSchema } from '../dto/create-collection-flow-document.schema';
+import { GetDocumentsByIdsDto } from '../dto/get-documents-by-ids.dto';
+import { UpdateCollectionFlowDocumentSchema } from '../dto/update-collection-flow-document.schema';
 
 @UseTokenAuthGuard()
 @ApiExcludeController()
@@ -43,6 +47,14 @@ export class CollectionFlowFilesController {
     protected readonly workflowService: WorkflowService,
     protected readonly documentService: DocumentService,
   ) {}
+
+  @Get()
+  async getDocuments(
+    @TokenScope() tokenScope: ITokenScope,
+    @Query() { ids }: GetDocumentsByIdsDto,
+  ) {
+    return this.documentService.getDocumentsByIds(ids, tokenScope.projectId);
+  }
 
   @UseInterceptors(
     FileInterceptor('file', {
@@ -105,7 +117,71 @@ export class CollectionFlowFilesController {
       projectId: tokenScope.projectId,
     });
 
-    return documentsCreationResults[0];
+    return documentsCreationResults.at(-1);
+  }
+
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: getDiskStorage(),
+      limits: {
+        files: 1,
+      },
+      fileFilter,
+    }),
+    RemoveTempFileInterceptor,
+  )
+  @Put()
+  @ApiResponse({
+    status: 200,
+    description: 'Document updated successfully',
+    schema: Type.Array(Type.Record(Type.String(), Type.Any())),
+  })
+  async updateDocument(
+    @TokenScope() tokenScope: ITokenScope,
+    @Body()
+    data: Omit<Static<typeof UpdateCollectionFlowDocumentSchema>, 'properties'> & {
+      metadata: string;
+      properties: string;
+    },
+    @UploadedFile(
+      new ParseFilePipeBuilder().addMaxSizeValidator({ maxSize: FILE_MAX_SIZE_IN_BYTE }).build({
+        fileIsRequired: true,
+        exceptionFactory: (error: string) => {
+          if (error.includes('expected size')) {
+            throw new UnprocessableEntityException(FILE_SIZE_EXCEEDED_MSG);
+          }
+
+          throw new UnprocessableEntityException(error);
+        },
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    const metadata = DocumentFileJsonSchema.parse(data.metadata);
+    const properties = z
+      .preprocess(value => {
+        if (typeof value !== 'string') {
+          return value;
+        }
+
+        return JSON.parse(value);
+      }, z.record(z.string(), z.unknown()))
+      .parse(data.properties);
+
+    // FormData returns version as a string
+    // Manually converting to number to avoid validation errors
+    data.version = Number(data.version);
+
+    const documentsUpdateResults = await this.documentService.updateByIdWithFile({
+      ...data,
+      workflowRuntimeDataId: tokenScope.workflowRuntimeDataId,
+      properties,
+      metadata,
+      file,
+      projectId: tokenScope.projectId,
+    });
+
+    return documentsUpdateResults.at(-1);
   }
 
   @Delete()

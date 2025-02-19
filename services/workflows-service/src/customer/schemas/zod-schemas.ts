@@ -12,6 +12,9 @@ const CustomerConfigSchema = z.object({
   isMerchantMonitoringEnabled: z.boolean().default(false).optional(),
   maxBusinessReports: z.number().default(10).optional(),
   withQualityControl: z.boolean().default(true).optional(),
+  disableBusinessSyncToUnifiedApi: z.boolean().default(false).nullish(),
+  showFullAccessPopup: z.boolean().default(false).nullish(),
+  isDemoAccount: z.boolean().default(false).nullish(),
 });
 
 export type TCustomerConfig = z.infer<typeof CustomerConfigSchema>;

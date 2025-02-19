@@ -1,14 +1,17 @@
-import { useLocation } from 'react-router-dom';
-import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
-import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
+import { RiskIndicatorSchema } from '@ballerine/common';
+import { RiskIndicatorsSummary } from '@ballerine/ui';
 import { useCallback } from 'react';
-import { CaseTabs, TabToLabel } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
+import { useLocation } from 'react-router-dom';
 import { camelCase, titleCase } from 'string-ts';
+import { z } from 'zod';
+
+import { DocumentTracker } from '@/common/components/molecules/DocumentTracker/DocumentTracker';
 import { OverallRiskLevel } from '@/common/components/molecules/OverallRiskLevel/OverallRiskLevel';
 import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
-import { RiskIndicatorsSummary, toRiskLabels } from '@ballerine/ui';
+import { CaseTabs, TabToLabel } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
-import { DocumentTracker } from '@/common/components/molecules/DocumentTracker/DocumentTracker';
+import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
+import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 
 export const CaseOverview = ({ processes }: { processes: string[] }) => {
   const { search } = useLocation();
@@ -29,7 +32,7 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
       workflow?.context?.pluginsOutput?.risk_evaluation?.riskIndicatorsByDomain ??
       {},
   )?.map(([domain, riskIndicators]) => {
-    const tab = camelCase(domain);
+    const tab = camelCase(domain.toLowerCase());
     const isValidCaseTab = CaseTabs.includes(tab);
 
     return {
@@ -39,16 +42,14 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
             tab: tab,
           })
         : undefined,
-      violations: toRiskLabels(riskIndicators),
+      riskIndicators:
+        riskIndicators && Array.isArray(riskIndicators)
+          ? riskIndicators.map((riskIndicator: z.infer<typeof RiskIndicatorSchema>) => ({
+              name: riskIndicator.name,
+            }))
+          : [],
     };
-  }) satisfies Array<{
-    title: string;
-    search: string | undefined;
-    violations: Array<{
-      label: string;
-      severity: string;
-    }>;
-  }>;
+  });
 
   if (!workflow?.workflowDefinition?.config?.isCaseOverviewEnabled) {
     return;
@@ -70,7 +71,7 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
         <DocumentTracker workflowId={workflow?.id} />
       )}
       {workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled && (
-        <RiskIndicatorsSummary riskIndicators={riskIndicators} Link={RiskIndicatorLink} />
+        <RiskIndicatorsSummary sections={riskIndicators} Link={RiskIndicatorLink} />
       )}
     </div>
   );
