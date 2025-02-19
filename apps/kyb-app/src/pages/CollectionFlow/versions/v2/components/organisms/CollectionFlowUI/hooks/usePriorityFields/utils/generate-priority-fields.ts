@@ -32,10 +32,11 @@ export const generatePriorityFields = (
           continue;
         }
 
+        console.log('document', document);
         const reason =
           document.status === 'requested' ? 'Requested' : document.decision?.revisionReason;
 
-        if (!reason || document.status !== 'requested') {
+        if (!reason) {
           continue;
         }
 
