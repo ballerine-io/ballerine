@@ -5,14 +5,28 @@ export const EnvSchema = z.object({
   VITE_ENVIRONMENT_NAME: z.enum(['development', 'production', 'sandbox', 'local']),
   VITE_API_URL: z.string().url().default('https://api-dev.ballerine.io/v2'),
   VITE_API_KEY: z.string(),
-  VITE_AUTH_ENABLED: z.preprocess(
-    value => (typeof value === 'string' ? JSON.parse(value) : value),
-    z.boolean().default(true),
-  ),
-  VITE_MOCK_SERVER: z.preprocess(
-    value => (typeof value === 'string' ? JSON.parse(value) : value),
-    z.boolean().default(true),
-  ),
+  VITE_AUTH_ENABLED: z.preprocess(value => {
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return false;
+      }
+    }
+
+    return value;
+  }, z.boolean().default(true)),
+  VITE_MOCK_SERVER: z.preprocess(value => {
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return false;
+      }
+    }
+
+    return value;
+  }, z.boolean().default(true)),
   VITE_POLLING_INTERVAL: z.coerce
     .number()
     .transform(v => v * 1000)
