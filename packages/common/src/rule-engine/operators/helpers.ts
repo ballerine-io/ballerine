@@ -48,7 +48,9 @@ export abstract class BaseOperator<TDataValue = Primitive, TConditionValue = Pri
     const isPathComparison =
       !OPERATORS_WITHOUT_PATH_COMPARISON.includes(
         rule.operator as (typeof OPERATORS_WITHOUT_PATH_COMPARISON)[number],
-      ) && 'isPathComparison' in rule;
+      ) &&
+      'isPathComparison' in rule &&
+      rule.isPathComparison;
 
     if (!isPathComparison) {
       if (value === undefined || value === null) {
