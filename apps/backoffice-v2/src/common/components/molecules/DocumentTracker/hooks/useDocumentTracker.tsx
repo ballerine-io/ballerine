@@ -93,6 +93,8 @@ const MarkIcon = ({ found, status, onMarkChange }: MarkIconProps) => {
     </Dialog>
   );
 };
+import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
+import { CommonWorkflowStates } from '@ballerine/common';
 
 export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
   const { data: documentTrackerItems, isLoading: isLoadingDocuments } =
@@ -111,6 +113,7 @@ export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
       void queryClient.invalidateQueries(documentsQueryKeys.trackerItems({ workflowId }));
     },
   });
+  const { data: workflow } = useCurrentCaseQuery();
 
   const onRequestDocuments = () =>
     requestDocuments({
@@ -187,5 +190,8 @@ export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
     onRequestDocuments,
     open,
     onOpenChange,
+    isRequestButtonDisabled: !workflow?.nextEvents?.some(event =>
+      [CommonWorkflowStates.REVISION, CommonWorkflowStates.MANUAL_REVIEW].includes(event),
+    ),
   };
 };

@@ -8,6 +8,7 @@ import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowService } from '@/workflow/workflow.service';
 import {
   CollectionFlowStatusesEnum,
+  CommonWorkflowEvent,
   getDocumentId,
   isType,
   setCollectionFlowStatus,
@@ -23,9 +24,9 @@ import {
 import { Static } from '@sinclair/typebox';
 import z from 'zod';
 import { DocumentRepository } from './document.repository';
-import { CreateDocumentSchema } from './dtos/document.dto';
 import { addRequestedDocumentToEntityDocuments } from './helpers/add-requested-document-to-entity-documents';
 import { DocumentTrackerResponseSchema, EntitySchema, TParsedDocuments } from './types';
+import { CreateDocumentSchema } from '@/document/dtos/document.dto';
 
 @Injectable()
 export class DocumentService {
@@ -553,6 +554,16 @@ export class DocumentService {
       {
         context: contextWithRevision,
       },
+      projectId,
+    );
+
+    await this.workflowService.event(
+      {
+        id: workflowId,
+        name: CommonWorkflowEvent.REVISION,
+        payload: {},
+      },
+      [projectId],
       projectId,
     );
 
