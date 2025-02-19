@@ -531,6 +531,7 @@ export class DocumentService {
     documents: Array<{
       type: string;
       category: string;
+      decisionReason?: string;
       issuingCountry: string;
       issuingVersion: string;
       version: string;
@@ -543,6 +544,7 @@ export class DocumentService {
     const documentsToCreate = documents.map(document => ({
       category: document.category,
       type: document.type,
+      decisionReason: document.decisionReason,
       issuingVersion: document.issuingVersion,
       issuingCountry: document.issuingCountry,
       version: parseInt(document.version),

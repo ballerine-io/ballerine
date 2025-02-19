@@ -92,7 +92,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: Type.Object({}),
+      propertiesSchema: {},
     },
     {
       category: 'proof_of_ownership',
@@ -100,7 +100,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: Type.Object({}),
+      propertiesSchema: {},
     },
     {
       category: 'proof_of_ownership',
@@ -108,7 +108,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: Type.Object({}),
+      propertiesSchema: {},
     },
     {
       category: 'financial_documents',
@@ -116,7 +116,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: Type.Object({}),
+      propertiesSchema: {},
     },
     {
       category: 'corporate_authorization_and_delegation_documents',
@@ -124,7 +124,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: Type.Object({}),
+      propertiesSchema: {},
     },
     {
       category: 'corporate_governance_and_legal_fillings',
@@ -132,7 +132,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: Type.Object({}),
+      propertiesSchema: {},
     },
     {
       category: 'regulatory_compliance_certification',
@@ -140,7 +140,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: Type.Object({}),
+      propertiesSchema: {},
     },
 
     {
@@ -313,7 +313,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: Type.Object({}),
+      propertiesSchema: {},
     },
     {
       category: 'general_documents',
