@@ -10,6 +10,8 @@ export const DocumentSchema = Type.Object({
   version: Type.Integer(),
   status: Type.Enum(DocumentStatus),
   decision: Type.Optional(Type.Enum(DocumentDecision)),
+  decisionReason: Type.Optional(Type.String()),
+  comment: Type.Optional(Type.String()),
   properties: Type.Record(Type.String(), Type.Any()),
   businessId: Type.Optional(Type.String()),
   endUserId: Type.Optional(Type.String()),
