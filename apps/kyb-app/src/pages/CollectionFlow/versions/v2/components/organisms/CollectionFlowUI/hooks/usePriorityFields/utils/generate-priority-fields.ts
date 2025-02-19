@@ -23,18 +23,15 @@ export const generatePriorityFields = (
     for (const element of elements) {
       // Extracting revision reason fro documents isnt common so we handling it explicitly
       if (isDocumentFieldDefinition(element)) {
-        const documents = get(context, formatValueDestination(element.valueDestination, stack));
+        const documents = get(
+          context,
+          formatValueDestination(element.valueDestination, stack),
+        ) as IDocumentTemplate[];
         const document = documents?.find(
           (doc: IDocumentTemplate) => doc.id === element.params?.template?.id,
         );
 
-        if (!document) {
-          continue;
-        }
-
-        console.log('document', document);
-        const reason =
-          document.status === 'requested' ? 'Requested' : document.decision?.revisionReason;
+        const reason = document?.decisionReason;
 
         if (!reason) {
           continue;

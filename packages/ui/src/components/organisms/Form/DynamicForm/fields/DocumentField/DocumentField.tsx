@@ -38,6 +38,7 @@ export interface IDocumentTemplate {
   pages: AnyObject[];
   status?: TDocumentStatus;
   decision?: TDocumentDecision;
+  decisionReason?: string;
 
   // Document ID from the backend
   _id?: string;
