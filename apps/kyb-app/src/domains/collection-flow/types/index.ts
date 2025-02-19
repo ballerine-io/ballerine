@@ -177,4 +177,5 @@ export interface IDocumentRecord {
   decision: TDocumentDecision;
   type: string;
   category: string;
+  decisionReason?: string;
 }
