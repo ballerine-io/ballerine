@@ -372,7 +372,7 @@ export class DocumentService {
             return {
               ...file,
               mimeType: uploadedFile.mimeType,
-              signedUrl: uploadedFile.signedUrl,
+              imageUrl: uploadedFile.signedUrl,
             };
           }) ?? [],
         );
