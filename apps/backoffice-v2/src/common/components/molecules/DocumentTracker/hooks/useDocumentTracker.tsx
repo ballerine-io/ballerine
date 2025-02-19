@@ -6,16 +6,23 @@ import { titleCase } from 'string-ts';
 import { useRequestDocumentsMutation } from '@/domains/documents/hooks/mutations/useRequestDocumentsMutation';
 import { useDocumentsTrackerItemsQuery } from '@/domains/documents/hooks/queries/useDocumentsTrackerItemsQuery';
 import { documentsQueryKeys } from '@/domains/documents/hooks/query-keys';
-import { TrackedDocument } from '@/domains/documents/hooks/schemas/document';
+import {
+  TrackedDocument,
+  DocumentTrackerItemSchema,
+} from '@/domains/documents/hooks/schemas/document';
 import { documentStatusToIcon, Icon } from '../constants';
+import { z } from 'zod';
 
 export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
-  const { data: documents, isLoading: isLoadingDocuments } = useDocumentsTrackerItemsQuery({
-    workflowId,
-  });
+  const { data: documentTrackerItems, isLoading: isLoadingDocuments } =
+    useDocumentsTrackerItemsQuery({
+      workflowId,
+    });
 
   const [open, onOpenChange] = useState(false);
-  const [selectedIdsToRequest, setSelectedIdsToRequest] = useState<string[]>([]);
+  const [selectedIdsToRequest, setSelectedIdsToRequest] = useState<
+    Array<z.infer<typeof DocumentTrackerItemSchema>['identifiers']>
+  >([]);
 
   const queryClient = useQueryClient();
   const { mutate: requestDocuments } = useRequestDocumentsMutation({
@@ -26,19 +33,36 @@ export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
     },
   });
 
-  const onRequestDocuments = () => requestDocuments({ documentIds: selectedIdsToRequest });
+  const onRequestDocuments = () =>
+    requestDocuments({
+      workflowId,
+      documents: selectedIdsToRequest.map(identifier => ({
+        type: identifier.document.type,
+        category: identifier.document.category,
+        issuingCountry: identifier.document.issuingCountry,
+        issuingVersion: identifier.document.issuingVersion,
+        version: identifier.document.version,
+        templateId: identifier.document.type,
+        entity: {
+          id: identifier.entity.id,
+          type: identifier.entity.entityType,
+        },
+      })),
+    });
 
   const getSubItems = useCallback(
-    (doc: TrackedDocument) => {
-      const { documentId, status } = doc;
-
-      if (!documentId) {
-        return {
-          leftIcon: null,
-          text: 'Document ID is missing',
-          itemClassName: 'p-1',
-        };
-      }
+    (documentTrackerItem: TrackedDocument) => {
+      const { identifiers, status } = documentTrackerItem;
+      const compareIdentifiers = (identifiersA: any, identifiersB: any) => {
+        return [
+          identifiersA.document.type === identifiersB.document.type,
+          identifiersA.document.category === identifiersB.document.category,
+          identifiersA.document.issuingCountry === identifiersB.document.issuingCountry,
+          identifiersA.document.issuingVersion === identifiersB.document.issuingVersion,
+          identifiersA.document.version === identifiersB.document.version,
+          identifiersA.entity.id === identifiersB.entity.id,
+        ].every(Boolean);
+      };
 
       return {
         leftIcon: (
@@ -46,29 +70,46 @@ export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
             className={ctw('cursor-default', status === 'unprovided' && 'cursor-pointer')}
             type="button"
             onClick={() => {
-              if (selectedIdsToRequest.includes(documentId)) {
-                setSelectedIdsToRequest(prev => prev.filter(id => id !== documentId));
+              if (
+                selectedIdsToRequest.find(selectedIdentifiers =>
+                  compareIdentifiers(selectedIdentifiers, identifiers),
+                )
+              ) {
+                setSelectedIdsToRequest(prev =>
+                  prev.filter(
+                    selectedIdentifiers => !compareIdentifiers(selectedIdentifiers, identifiers),
+                  ),
+                );
+
+                return;
               }
 
               if (status === 'unprovided') {
-                setSelectedIdsToRequest(prev => [...prev, documentId]);
+                setSelectedIdsToRequest(prev => [...prev, identifiers]);
               }
             }}
           >
-            {selectedIdsToRequest.includes(documentId) ? Icon.MARKED : documentStatusToIcon[status]}
+            {selectedIdsToRequest.find(selectedIdentifiers =>
+              compareIdentifiers(selectedIdentifiers, identifiers),
+            ) && Icon.MARKED}
+            {!selectedIdsToRequest.find(selectedIdentifiers =>
+              compareIdentifiers(selectedIdentifiers, identifiers),
+            ) && documentStatusToIcon[status]}
           </button>
         ),
-        text: titleCase(doc.properties.category),
-        itemClassName: selectedIdsToRequest.includes(documentId)
-          ? 'bg-warning/20 rounded-md p-1'
-          : 'p-1',
+        text: titleCase(documentTrackerItem.identifiers.document.category ?? 'N/A'),
+        itemClassName: ctw('p-1', {
+          'bg-warning/20 rounded-md': selectedIdsToRequest.find(selectedIdentifiers =>
+            compareIdentifiers(selectedIdentifiers, identifiers),
+          ),
+        }),
       };
     },
     [selectedIdsToRequest],
   );
 
   return {
-    documents,
+    documentTrackerItems,
     isLoadingDocuments,
     getSubItems,
     selectedIdsToRequest,
