@@ -7,11 +7,6 @@ import { buildDocumentFormData } from '../../../../DocumentField/helpers/build-d
 import { getFileOrFileIdFromDocumentsList } from '../../../../DocumentField/hooks/useDocumentUpload/helpers/get-file-or-fileid-from-documents-list';
 import { IEntityFieldGroupParams } from '../../../EntityFieldGroup';
 
-interface IDocumentCreationDependencies {
-  entityId: string;
-  stack: TDeepthLevelStack;
-}
-
 export interface IDocumentCreationResult {
   payload: FormData;
   documentDefinition: IFormElement<any, IDocumentFieldParams>;
@@ -20,8 +15,9 @@ export interface IDocumentCreationResult {
 
 export const buildDocumentsCreationPayload = (
   element: IFormElement<any, IEntityFieldGroupParams>,
+  entityIds: string[],
   context: AnyObject,
-  dependencies: IDocumentCreationDependencies,
+  stack: TDeepthLevelStack,
 ): IDocumentCreationResult[] => {
   const documentElements = (element.children?.filter(child => child.element === 'documentfield') ||
     []) as Array<IFormElement<any, IDocumentFieldParams>>;
@@ -30,12 +26,12 @@ export const buildDocumentsCreationPayload = (
     return [];
   }
 
-  const { entityId, stack } = dependencies;
   const documentPayload: IDocumentCreationResult[] = [];
-  const entities = get(context, element.valueDestination, []);
 
   // Outer loop for correct index calculation
-  for (let entityIndex = 0; entityIndex < entities.length; entityIndex++) {
+  for (let entityIndex = 0; entityIndex < entityIds.length; entityIndex++) {
+    const entityId = entityIds[entityIndex];
+
     // Inner loop for document elements, each entity can have multiple document fields
     for (const documentElement of documentElements) {
       if (!documentElement?.params?.template) {
