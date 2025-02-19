@@ -1,10 +1,12 @@
-import { AnyObject } from '@/common';
 import { IFormElement } from '@/components/organisms/Form/DynamicForm/types';
-import { IEntityFieldGroupParams, TEntityFieldGroupType } from '../../../EntityFieldGroup';
+import { IEntityFieldGroupParams } from '../../../EntityFieldGroup';
+
+import { AnyObject } from '@/common';
+import { TEntityFieldGroupType } from '../../../EntityFieldGroup';
 import { IEntity } from '../../../types';
 import { transform } from '../utils/transform';
 
-export const buildEntityCreationPayload = async (
+export const buildEntityUpdatePayload = async (
   element: IFormElement<any, IEntityFieldGroupParams>,
   entity: IEntity,
   context: AnyObject,
@@ -16,6 +18,6 @@ export const buildEntityCreationPayload = async (
   return {
     entity: entityToCreate,
     entityType: element.params?.type as TEntityFieldGroupType,
-    ballerineEntityId: undefined,
+    ballerineEntityId: entity.ballerineEntityId,
   };
 };
