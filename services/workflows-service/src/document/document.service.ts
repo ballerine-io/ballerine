@@ -124,14 +124,6 @@ export class DocumentService {
     return await this.getByEntityIdAndWorkflowId(entityId, data.workflowRuntimeDataId, [projectId]);
   }
 
-  async getDocumentsByIds(documentIds: string[], projectId: TProjectId) {
-    return await this.repository.findMany([projectId], {
-      where: {
-        id: { in: documentIds },
-      },
-    });
-  }
-
   async getByEntityIdAndWorkflowId(
     entityId: string,
     workflowRuntimeDataId: string,
