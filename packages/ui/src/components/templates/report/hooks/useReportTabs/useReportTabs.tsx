@@ -21,16 +21,20 @@ type UseReportTabsProps = {
 };
 
 export const useReportTabs = ({ report, Link }: UseReportTabsProps) => {
-  const sectionsSummary = [
+  const sectionsSummary: ReadonlyArray<{
+    title: string;
+    search: string;
+    indicators: Array<z.infer<typeof RiskIndicatorSchema>> | null;
+  }> = [
     {
       title: "Website's Company Analysis",
       search: '?activeTab=websitesCompany',
-      riskIndicators: getUniqueRiskIndicators(report.data?.companyReputationRiskIndicators ?? []),
+      indicators: getUniqueRiskIndicators(report.data?.companyReputationRiskIndicators ?? []),
     },
     {
       title: 'Website Credibility Analysis',
       search: '?activeTab=websiteCredibility',
-      riskIndicators: getUniqueRiskIndicators([
+      indicators: getUniqueRiskIndicators([
         ...(report.data?.websiteReputationRiskIndicators ?? []),
         ...(report.data?.pricingRiskIndicators ?? []),
         ...(report.data?.websiteStructureRiskIndicators ?? []),
@@ -40,28 +44,24 @@ export const useReportTabs = ({ report, Link }: UseReportTabsProps) => {
     {
       title: 'Social Media Analysis',
       search: '?activeTab=adsAndSocialMedia',
-      riskIndicators: null,
+      indicators: null,
     },
     {
       title: 'Website Line of Business Analysis',
       search: '?activeTab=websiteLineOfBusiness',
-      riskIndicators: getUniqueRiskIndicators(report.data?.contentRiskIndicators ?? []),
+      indicators: getUniqueRiskIndicators(report.data?.contentRiskIndicators ?? []),
     },
     {
       title: 'Ecosystem Analysis',
       search: '?activeTab=ecosystem',
-      riskIndicators: null,
+      indicators: null,
     },
     {
       title: 'Transactions Analysis',
       search: '?activeTab=transactions',
-      riskIndicators: null,
+      indicators: null,
     },
-  ] as const satisfies ReadonlyArray<{
-    title: string;
-    search: string;
-    riskIndicators: z.infer<typeof RiskIndicatorSchema>[] | null;
-  }>;
+  ] as const;
 
   const tabs = [
     {
@@ -91,8 +91,8 @@ export const useReportTabs = ({ report, Link }: UseReportTabsProps) => {
           <BusinessReportSummary
             summary={report.data?.summary ?? ''}
             ongoingMonitoringSummary={report.data?.ongoingMonitoringSummary ?? ''}
-            riskLevel={report.data?.riskLevel!}
-            sections={sectionsSummary}
+            riskLevel={report.data?.riskLevel ?? null}
+            riskIndicators={sectionsSummary}
             Link={Link}
             homepageScreenshotUrl={report.data?.homePageScreenshotUrl ?? ''}
           />
@@ -103,10 +103,7 @@ export const useReportTabs = ({ report, Link }: UseReportTabsProps) => {
       label: "Website's Company",
       value: 'websitesCompany',
       content: (
-        <WebsitesCompany
-          companyName={report.data?.companyName ?? ''}
-          riskIndicators={report.data?.companyReputationRiskIndicators ?? []}
-        />
+        <WebsitesCompany riskIndicators={report.data?.companyReputationRiskIndicators ?? []} />
       ),
     },
     {

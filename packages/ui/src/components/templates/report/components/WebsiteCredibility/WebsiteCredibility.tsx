@@ -56,10 +56,10 @@ const engagementMetricsMapper = {
 const PIE_COLORS = ['#007aff', '#65afff', '#98cafe', '#cde4ff', '#f0f9ff'];
 
 export const WebsiteCredibility: FunctionComponent<{
-  websiteReputationRiskIndicators: z.infer<typeof RiskIndicatorSchema>[];
-  pricingRiskIndicators: z.infer<typeof RiskIndicatorSchema>[];
-  websiteStructureRiskIndicators: z.infer<typeof RiskIndicatorSchema>[];
-  trafficRiskIndicators: z.infer<typeof RiskIndicatorSchema>[];
+  websiteReputationRiskIndicators: Array<z.infer<typeof RiskIndicatorSchema>>;
+  pricingRiskIndicators: Array<z.infer<typeof RiskIndicatorSchema>>;
+  websiteStructureRiskIndicators: Array<z.infer<typeof RiskIndicatorSchema>>;
+  trafficRiskIndicators: Array<z.infer<typeof RiskIndicatorSchema>>;
   trafficData: Pick<
     NonNullable<z.infer<typeof ReportSchema>['data']>,
     'trafficSources' | 'monthlyVisits' | 'pagesPerVisit' | 'timeOnSite' | 'bounceRate'
@@ -165,24 +165,7 @@ export const WebsiteCredibility: FunctionComponent<{
   ];
 
   return (
-    <div className="space-y-8">
-      <div>
-        <ContentTooltip
-          description={
-            <p>
-              Evaluates the trustworthiness of the website, based on various factors, including its
-              security measures, design, and user feedback.
-            </p>
-          }
-          props={{
-            tooltipContent: {
-              align: 'center',
-            },
-          }}
-        >
-          <h3 className="col-span-full text-lg font-bold">Website Credibility Analysis</h3>
-        </ContentTooltip>
-      </div>
+    <div className="space-y-6">
       <RiskIndicators riskIndicators={aggregatedRiskIndicators} />
       <Card>
         <div>
@@ -228,26 +211,24 @@ export const WebsiteCredibility: FunctionComponent<{
       </Card>
 
       <Card>
-        <div>
-          <ContentTooltip
-            description={
-              <p>
-                Analyzes visitor volume and sources to gauge popularity and detect red flags in
-                expected merchant behavior.
-              </p>
-            }
-            props={{
-              tooltipContent: {
-                align: 'center',
-              },
-            }}
-          >
-            <CardHeader className="p-0 py-6 pl-6 font-bold">Traffic Analysis</CardHeader>
-          </ContentTooltip>
-        </div>
+        <ContentTooltip
+          description={
+            <p>
+              Analyzes visitor volume and sources to gauge popularity and detect red flags in
+              expected merchant behavior.
+            </p>
+          }
+          props={{
+            tooltipContent: {
+              align: 'center',
+            },
+          }}
+        >
+          <CardHeader className="p-0 py-6 pl-6 font-bold">Traffic Analysis</CardHeader>
+        </ContentTooltip>
 
-        <CardContent className="flex h-[30rem] w-full gap-4 px-4 pb-4 pt-0">
-          <Card className="flex h-full w-3/5 flex-col">
+        <CardContent className="flex flex-col 2xl:!flex-row h-auto 2xl:!h-[30rem] w-full gap-4 px-4 pb-4 pt-0">
+          <Card className="flex flex-col w-full h-[30rem] 2xl:h-full 2xl:w-3/5">
             <CardHeader className="px-6 pb-2 pt-4 font-bold">
               Estimated Monthly Visitors
               <CardDescription className="text-muted-foreground text-sm font-normal">
@@ -255,10 +236,10 @@ export const WebsiteCredibility: FunctionComponent<{
               </CardDescription>
             </CardHeader>
 
-            <CardContent className="h-full p-2">
+            <CardContent className="h-full p-2 relative">
               {Object.entries(trafficData.monthlyVisits ?? {}).length > 0 ? (
                 <ChartContainer
-                  className="h-[20rem] w-full"
+                  className="h-[20rem] w-[95%] 2xl:w-full"
                   config={{
                     visitors: {
                       label: 'Visited',
@@ -354,24 +335,23 @@ export const WebsiteCredibility: FunctionComponent<{
             </CardFooter>
           </Card>
 
-          <div className="flex h-full w-2/5 flex-col gap-4">
-            <Card className="h-1/2 w-full">
+          <div className="flex 2xl:flex-col w-full h-[15rem] 2xl:w-2/5 2xl:h-full gap-4">
+            <Card className="w-1/2 h-full 2xl:!w-full 2xl:!h-1/2">
               <CardHeader className="px-6 pb-2 pt-4 font-bold">Traffic Sources</CardHeader>
 
               <CardContent className="mt-auto h-4/5 w-full p-2">
                 {trafficSources.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="90%" height="100%">
                     <PieChart>
                       <Pie
                         data={trafficSources}
                         dataKey="value"
                         nameKey="label"
-                        cx="40%"
-                        cy="50%"
                         innerRadius={40}
                         outerRadius={60}
                         startAngle={90}
                         endAngle={450}
+                        width="50%"
                         className="focus:outline-none"
                       >
                         {trafficSources.map((_, index) => (
@@ -387,7 +367,7 @@ export const WebsiteCredibility: FunctionComponent<{
                         layout="vertical"
                         align="right"
                         verticalAlign="middle"
-                        wrapperStyle={{ width: '55%', maxHeight: '100%' }}
+                        wrapperStyle={{ width: '50%', maxHeight: '100%' }}
                         content={({ payload }) => (
                           <div className="flex flex-col space-y-1 pr-4">
                             {payload?.map((entry, index) => (
@@ -417,8 +397,7 @@ export const WebsiteCredibility: FunctionComponent<{
               </CardContent>
             </Card>
 
-            {/* <Card className="h-full 2xl:h-1/2 w-1/2 2xl:w-full"> */}
-            <Card className="h-1/2 w-full">
+            <Card className="h-full w-1/2 2xl:!w-full 2xl:!h-1/2">
               <CardHeader className="px-6 pb-2 pt-4 font-bold">Engagement</CardHeader>
 
               <CardContent className="flex h-3/5 items-center gap-6 px-4 py-2">

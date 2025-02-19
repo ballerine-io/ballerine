@@ -13,20 +13,7 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
   mccDescription: string | null;
 }> = ({ riskIndicators, lineOfBusinessDescription, mcc, mccDescription }) => {
   return (
-    <div className={'space-y-8'}>
-      <div>
-        <ContentTooltip
-          description={<p>Reviews the company&apos;s industry and market segment.</p>}
-          props={{
-            tooltipContent: {
-              align: 'center',
-            },
-          }}
-        >
-          <h3 className={'col-span-full text-lg font-bold'}>Website Line of Business Analysis</h3>
-        </ContentTooltip>
-      </div>
-
+    <div className={'space-y-6'}>
       <RiskIndicators riskIndicators={riskIndicators} />
       <Card>
         <CardHeader className={'pt-4 font-bold'}>Line of Business Summary</CardHeader>

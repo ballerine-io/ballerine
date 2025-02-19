@@ -33,7 +33,6 @@ import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
 import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
 import { NotesButton } from '@/common/components/molecules/NotesButton/NotesButton';
-import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
 import { Form } from '@/common/components/organisms/Form/Form';
 import { FormControl } from '@/common/components/organisms/Form/Form.Control';
 import { FormField } from '@/common/components/organisms/Form/Form.Field';
@@ -41,14 +40,11 @@ import { FormItem } from '@/common/components/organisms/Form/Form.Item';
 import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
 import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
 import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
-import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
-import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
-import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
-import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { Notes } from '@/domains/notes/Notes';
 import { useMerchantMonitoringBusinessReportLogic } from '@/pages/MerchantMonitoringBusinessReport/hooks/useMerchantMonitoringBusinessReportLogic/useMerchantMonitoringBusinessReportLogic';
 import { MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
+import { BusinessReport } from '@/domains/business-reports/components/BusinessReport/BusinessReport';
 
 const DialogDropdownItem = forwardRef<
   React.ElementRef<typeof DropdownMenuItem>,
@@ -87,8 +83,6 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     websiteWithNoProtocol,
     businessReport,
     statusToBadgeData,
-    tabs,
-    activeTab,
     notes,
     isNotesOpen,
     turnOngoingMonitoringOn,
@@ -158,7 +152,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
       }}
     >
       <SidebarInset>
-        <section className="flex h-full flex-col px-6 pb-6 pt-4">
+        <section className="flex h-full flex-col px-6 pt-4">
           <div className={`flex justify-between`}>
             <Button
               variant={'ghost'}
@@ -341,41 +335,20 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
               <NotesButton numberOfNotes={notes?.length} />
             </div>
           )}
-          <Tabs defaultValue={activeTab} className="w-full" key={activeTab}>
-            <TabsList className={'mb-4'}>
-              {tabs.map(tab => (
-                <TabsTrigger key={tab.value} value={tab.value} asChild>
-                  <Link
-                    to={{
-                      search: `?activeTab=${tab.value}`,
-                    }}
-                  >
-                    {tab.label}
-                  </Link>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            <ScrollArea orientation={'vertical'} className={'h-[65vh] 2xl:h-[75vh]'}>
-              {isFetchingBusinessReport ? (
-                <>
-                  <Skeleton className="h-6 w-72" />
-                  <Skeleton className="mt-6 h-4 w-40" />
+          {isFetchingBusinessReport || !businessReport ? (
+            <>
+              <Skeleton className="h-6 w-72" />
+              <Skeleton className="mt-6 h-4 w-40" />
 
-                  <div className="mt-6 flex h-[24rem] w-full flex-nowrap gap-8">
-                    <Skeleton className="w-2/3" />
-                    <Skeleton className="w-1/3" />
-                  </div>
-                  <Skeleton className="mt-6 h-[16rem]" />
-                </>
-              ) : (
-                tabs.map(tab => (
-                  <TabsContent key={tab.value} value={tab.value}>
-                    {tab.content}
-                  </TabsContent>
-                ))
-              )}
-            </ScrollArea>
-          </Tabs>
+              <div className="mt-6 flex h-[24rem] w-full flex-nowrap gap-8">
+                <Skeleton className="w-2/3" />
+                <Skeleton className="w-1/3" />
+              </div>
+              <Skeleton className="mt-6 h-[16rem]" />
+            </>
+          ) : (
+            <BusinessReport report={businessReport} />
+          )}
         </section>
       </SidebarInset>
       <Notes
