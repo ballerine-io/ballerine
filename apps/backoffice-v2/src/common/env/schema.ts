@@ -38,10 +38,17 @@ export const EnvSchema = z.object({
     .or(z.literal(false))
     .catch(undefined),
   VITE_IMAGE_LOGO_URL: z.string().optional(),
-  VITE_FETCH_SIGNED_URL: z.preprocess(
-    value => (typeof value === 'string' ? JSON.parse(value) : value),
-    z.boolean().default(true),
-  ),
+  VITE_FETCH_SIGNED_URL: z.preprocess(value => {
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return true;
+      }
+    }
+
+    return value;
+  }, z.boolean().default(true)),
   VITE_POSTHOG_KEY: z.string().optional(),
   VITE_POSTHOG_HOST: z.string().optional(),
   VITE_SENTRY_DSN: z.string().optional(),
