@@ -973,7 +973,6 @@ model Document {
   version        Int
   status         DocumentStatus
   decision       DocumentDecision?
-  decisionReason String?
   comment        String?
   properties     Json
 
