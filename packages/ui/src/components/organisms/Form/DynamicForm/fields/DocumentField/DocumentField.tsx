@@ -17,6 +17,7 @@ import { useTaskRunner } from '../../providers/TaskRunner/hooks/useTaskRunner';
 import { IFormElement, TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { IFileFieldParams } from '../FileField';
+import { DEFAULT_DELETION_PARAMS } from './defaults';
 import { useDocumentState } from './hooks/useDocumentState';
 import { useDocumentUpload } from './hooks/useDocumentUpload';
 import { getDocumentObjectFromDocumentsList } from './hooks/useDocumentUpload/helpers/get-document-object-from-documents-list';
@@ -43,15 +44,16 @@ export interface IDocumentTemplate {
   _id?: string;
 }
 
-export interface IDocumentFieldParams extends IFileFieldParams {
+export interface IDocumentFieldParams extends Omit<IFileFieldParams, 'httpParams'> {
   template: IDocumentTemplate;
   pageIndex?: number;
   pageProperty?: string;
   documentType: string;
   documentVariant: string;
-  httpParams: {
-    createDocument: IHttpParams;
-    deleteDocument: IHttpParams;
+  httpParams?: {
+    createDocument?: IHttpParams;
+    deleteDocument?: IHttpParams;
+    updateDocument?: IHttpParams;
   };
 }
 
@@ -64,7 +66,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
   useUnmountEvent(element);
 
   const { run: deleteDocument, isLoading: isDeletingDocument } = useHttp(
-    (element.params?.httpParams?.deleteDocument || {}) as IHttpParams,
+    (element.params?.httpParams?.deleteDocument || DEFAULT_DELETION_PARAMS) as IHttpParams,
     metadata,
   );
 

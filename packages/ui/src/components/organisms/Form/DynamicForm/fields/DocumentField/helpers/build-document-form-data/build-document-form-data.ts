@@ -1,10 +1,12 @@
 import { IFormElement } from '../../../../types';
-import { IDocumentFieldParams } from '../../DocumentField';
+import { IDocumentFieldParams, IDocumentTemplate } from '../../DocumentField';
+import { checkIfDocumentRequested } from '../../hooks/useDocumentUpload/helpers/check-if-document-requested';
 
 export const buildDocumentFormData = (
   element: IFormElement<'documentfield', IDocumentFieldParams>,
   { entityId, businessId }: { entityId?: string; businessId?: string },
   file: File,
+  document?: IDocumentTemplate,
 ) => {
   if (!element.params) {
     throw new Error('Document field params are required');
@@ -21,6 +23,10 @@ export const buildDocumentFormData = (
   payload.append('status', 'provided');
   payload.append('properties', JSON.stringify(template.properties || {}));
   payload.append('issuingCountry', template?.issuer?.country as string);
+
+  if (checkIfDocumentRequested(document)) {
+    payload.append('documentId', document._id);
+  }
 
   if (entityId) {
     payload.append('endUserId', entityId);
