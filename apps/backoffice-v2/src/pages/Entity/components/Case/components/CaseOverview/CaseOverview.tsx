@@ -1,16 +1,17 @@
+import { RiskIndicatorSchema } from '@ballerine/common';
+import { RiskIndicatorsSummary } from '@ballerine/ui';
+import { useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
-import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
-import React, { useCallback } from 'react';
-import { CaseTabs, TabToLabel } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 import { camelCase, titleCase } from 'string-ts';
+import { z } from 'zod';
+
+import { DocumentTracker } from '@/common/components/molecules/DocumentTracker/DocumentTracker';
 import { OverallRiskLevel } from '@/common/components/molecules/OverallRiskLevel/OverallRiskLevel';
 import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
-import { RiskIndicatorsSummary } from '@ballerine/ui';
+import { CaseTabs, TabToLabel } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
-import { RiskIndicatorSchema } from '@ballerine/common';
-import { z } from 'zod';
-import { DocumentTracker } from '@/common/components/molecules/DocumentTracker/DocumentTracker';
+import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
+import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 
 export const CaseOverview = ({ processes }: { processes: string[] }) => {
   const { search } = useLocation();
