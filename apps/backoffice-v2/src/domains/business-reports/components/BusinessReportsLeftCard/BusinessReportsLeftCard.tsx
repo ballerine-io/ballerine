@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 
 import { ctw } from '@/common/utils/ctw/ctw';
+import { isNumber } from 'lodash-es';
 
 export type BusinessReportsLeftCardProps = {
   reportsLeft: number | null | undefined;
@@ -13,16 +14,13 @@ export const BusinessReportsLeftCard = ({
   demoDaysLeft,
   className,
 }: BusinessReportsLeftCardProps) => {
-  if (
-    reportsLeft === null ||
-    demoDaysLeft === null ||
-    reportsLeft === undefined ||
-    demoDaysLeft === undefined
-  ) {
-    return null;
-  }
+  let state: 'expired' | 'noReports' | 'active' = 'active';
 
-  const state = demoDaysLeft <= 0 ? 'expired' : reportsLeft <= 0 ? 'noReports' : 'active';
+  if (isNumber(demoDaysLeft) && demoDaysLeft <= 0) {
+    state = 'expired';
+  } else if (isNumber(reportsLeft) && reportsLeft <= 0) {
+    state = 'noReports';
+  }
 
   const messages: Record<string, ReactNode> = {
     expired: <span className="text-destructive">Your demo account has expired!</span>,
