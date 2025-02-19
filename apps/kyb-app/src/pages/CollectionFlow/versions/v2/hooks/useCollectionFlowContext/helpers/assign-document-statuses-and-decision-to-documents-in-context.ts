@@ -12,7 +12,7 @@ import {
 } from '@ballerine/ui';
 import get from 'lodash/get';
 
-export const assignDocumentStatusesToDocumentsInContext = (
+export const assignDocumentStatusesAndDecisionToDocumentsInContext = (
   context: CollectionFlowContext,
   uiSchema: UISchema,
   createdDocuments: IDocumentRecord[],
@@ -44,6 +44,9 @@ export const assignDocumentStatusesToDocumentsInContext = (
         document.status = documentFileId
           ? documentsMap?.[documentFileId]?.status
           : documentsMap?.[document._id!]?.status;
+        document.decisionReason = documentFileId
+          ? documentsMap?.[documentFileId]?.decisionReason
+          : documentsMap?.[document._id!]?.decisionReason;
       }
 
       if (Array.isArray(element.children) && element.children.length > 0) {
