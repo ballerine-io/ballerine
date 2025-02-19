@@ -1,3 +1,4 @@
+import { AnyObject } from '@/common';
 import { IUseValidateParams } from '../hooks/internal/useValidate';
 
 export type TBaseValidationRules = 'json-logic';
@@ -38,6 +39,8 @@ export interface IValidationSchema<
   valueDestination?: string;
   validators: TValidators<TValidatorTypeExtends, TValue>;
   children?: IValidationSchema[];
+  metadata?: AnyObject;
+  getThisContext?: (context: AnyObject, metadata: AnyObject, stack: TDeepthLevelStack) => AnyObject;
 }
 
 export interface IValidationError {

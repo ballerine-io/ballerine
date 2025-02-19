@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
 import { PrismaTransactionClient, TProjectId } from '@/types';
+import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class DocumentRepository {

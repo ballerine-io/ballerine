@@ -7,7 +7,16 @@ describe('convertFormElementsToValidationSchema', () => {
   const case1 = [
     [{ id: '1', valueDestination: 'test', validate: [], element: 'textinput' }] as IFormElement[],
     [
-      { id: '1', valueDestination: 'test', validators: [], children: undefined },
+      {
+        id: '1',
+        valueDestination: 'test',
+        validators: [],
+        children: undefined,
+        metadata: {
+          element: { id: '1', valueDestination: 'test', validate: [], element: 'textinput' },
+        },
+        getThisContext: undefined,
+      },
     ] as IValidationSchema[],
   ] as const;
 
@@ -59,17 +68,37 @@ describe('convertFormElementsToValidationSchema', () => {
         id: 'fieldlist',
         valueDestination: 'test',
         validators: [{ type: 'required' }],
+        metadata: {
+          element: expect.any(Object),
+        },
+        getThisContext: undefined,
         children: [
-          { id: 'textinput', valueDestination: 'test', validators: [{ type: 'required' }] },
+          {
+            id: 'textinput',
+            valueDestination: 'test',
+            validators: [{ type: 'required' }],
+            metadata: {
+              element: expect.any(Object),
+            },
+            getThisContext: undefined,
+          },
           {
             id: 'nested-fieldlist',
             valueDestination: 'test',
             validators: [{ type: 'required' }],
+            metadata: {
+              element: expect.any(Object),
+            },
+            getThisContext: undefined,
             children: [
               {
                 id: 'nested-textinput',
                 valueDestination: 'test',
                 validators: [{ type: 'required' }],
+                metadata: {
+                  element: expect.any(Object),
+                },
+                getThisContext: undefined,
               },
             ],
           },
@@ -87,6 +116,7 @@ describe('convertFormElementsToValidationSchema', () => {
             id: 'field',
             valueDestination: 'test',
             validate: [{ type: 'required' }],
+            element: 'textinput',
           },
           {
             id: 'nestedmore',
@@ -95,6 +125,7 @@ describe('convertFormElementsToValidationSchema', () => {
                 id: 'nestedmore2',
                 valueDestination: 'test',
                 validate: [{ type: 'required' }],
+                element: 'textinput',
               },
             ],
           },
@@ -114,6 +145,7 @@ describe('convertFormElementsToValidationSchema', () => {
                             id: 'level5',
                             valueDestination: 'test',
                             validate: [{ type: 'required' }],
+                            element: 'textinput',
                           },
                         ],
                       },
@@ -127,16 +159,32 @@ describe('convertFormElementsToValidationSchema', () => {
       },
     ] as IFormElement[],
     [
-      { id: 'field', valueDestination: 'test', validators: [{ type: 'required' }] },
+      {
+        id: 'field',
+        valueDestination: 'test',
+        validators: [{ type: 'required' }],
+        metadata: {
+          element: expect.any(Object),
+        },
+        getThisContext: undefined,
+      },
       {
         id: 'nestedmore2',
         valueDestination: 'test',
         validators: [{ type: 'required' }],
+        metadata: {
+          element: expect.any(Object),
+        },
+        getThisContext: undefined,
       },
       {
         id: 'level5',
         valueDestination: 'test',
         validators: [{ type: 'required' }],
+        metadata: {
+          element: expect.any(Object),
+        },
+        getThisContext: undefined,
       },
     ] as const,
   ] as const;
@@ -180,16 +228,28 @@ describe('convertFormElementsToValidationSchema', () => {
       {
         id: 'fieldlist',
         valueDestination: 'test',
+        metadata: {
+          element: expect.any(Object),
+        },
+        getThisContext: undefined,
         children: [
           {
             id: 'textinput',
             valueDestination: 'test[$0]',
+            metadata: {
+              element: expect.any(Object),
+            },
+            getThisContext: undefined,
           },
         ],
       },
       {
         id: 'testfield-2',
         valueDestination: 'test',
+        metadata: {
+          element: expect.any(Object),
+        },
+        getThisContext: undefined,
       },
     ] as const,
   ] as const;

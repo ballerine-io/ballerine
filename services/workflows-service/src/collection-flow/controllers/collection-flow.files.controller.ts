@@ -18,6 +18,7 @@ import {
   Param,
   ParseFilePipeBuilder,
   Post,
+  Query,
   Res,
   UnprocessableEntityException,
   UploadedFile,
@@ -30,6 +31,7 @@ import type { Response } from 'express';
 import z from 'zod';
 import * as errors from '../../errors';
 import { CollectionFlowDocumentSchema } from '../dto/create-collection-flow-document.schema';
+import { GetDocumentsByIdsDto } from '../dto/get-documents-by-ids.dto';
 
 @UseTokenAuthGuard()
 @ApiExcludeController()
@@ -42,6 +44,14 @@ export class CollectionFlowFilesController {
     protected readonly workflowService: WorkflowService,
     protected readonly documentService: DocumentService,
   ) {}
+
+  @Get()
+  async getDocuments(
+    @TokenScope() tokenScope: ITokenScope,
+    @Query() { ids }: GetDocumentsByIdsDto,
+  ) {
+    return this.documentService.getDocumentsByIds(ids, tokenScope.projectId);
+  }
 
   @UseInterceptors(
     FileInterceptor('file', {
@@ -104,7 +114,7 @@ export class CollectionFlowFilesController {
       projectId: tokenScope.projectId,
     });
 
-    return documentsCreationResults[0];
+    return documentsCreationResults.at(-1);
   }
 
   @Delete()
