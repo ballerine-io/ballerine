@@ -107,7 +107,7 @@ export const useDocumentsAdapter = ({
       return documentsV2?.map(({ decision, decisionReason, ...document }) => ({
         ...document,
         decision: {
-          status: decision,
+          status: decision === 'revisions' ? 'revision' : decision,
           reason: decisionReason,
         },
         details:
