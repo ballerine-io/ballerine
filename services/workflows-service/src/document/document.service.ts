@@ -23,7 +23,7 @@ import {
 import { Static } from '@sinclair/typebox';
 import z from 'zod';
 import { DocumentRepository } from './document.repository';
-import { CreateDocumentSchema } from './dtos/document.dto';
+import { CreateDocumentSchema, UpdateDocumentSchema } from './dtos/document.dto';
 import { addRequestedDocumentToEntityDocuments } from './helpers/add-requested-document-to-entity-documents';
 import { DocumentTrackerResponseSchema, EntitySchema, TParsedDocuments } from './types';
 
@@ -67,18 +67,6 @@ export class DocumentService {
       throw new BadRequestException('Workflow runtime data id is required');
     }
 
-    const getEntityId = () => {
-      if (data.businessId) {
-        return data.businessId;
-      }
-
-      if (data.endUserId) {
-        return data.endUserId;
-      }
-
-      throw new BadRequestException('Business or end user id is required');
-    };
-
     const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
       data.workflowRuntimeDataId,
       {},
@@ -119,7 +107,7 @@ export class DocumentService {
       transaction,
     );
 
-    const entityId = getEntityId();
+    const entityId = this.getEntityId(data);
 
     return await this.getByEntityIdAndWorkflowId(entityId, data.workflowRuntimeDataId, [projectId]);
   }
@@ -158,6 +146,78 @@ export class DocumentService {
     });
 
     return documentsWithFiles;
+  }
+
+  async updateByIdWithFile(
+    {
+      file,
+      metadata,
+      projectId,
+      ...data
+    }: Static<typeof UpdateDocumentSchema> & {
+      documentId: string;
+      file: Express.Multer.File;
+      metadata: Omit<
+        Static<typeof CreateDocumentFileSchema>,
+        'documentId' | 'fileId' | 'projectId'
+      >;
+      projectId: string;
+    },
+    transaction?: PrismaTransactionClient,
+  ) {
+    if (!data.businessId && !data.endUserId) {
+      throw new BadRequestException('Business or end user id is required');
+    }
+
+    if (data.businessId && data.endUserId) {
+      throw new BadRequestException('Business and end user id cannot be set at the same time');
+    }
+
+    if (!data.workflowRuntimeDataId) {
+      throw new BadRequestException('Workflow runtime data id is required');
+    }
+
+    const { documentId, ...documentData } = data;
+
+    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
+      data.workflowRuntimeDataId,
+      {},
+      [projectId],
+    );
+
+    const uploadedFile = await this.fileService.uploadNewFile(projectId, workflowRuntimeData, {
+      ...file,
+      mimetype:
+        file.mimetype ||
+        (
+          await getFileMetadata({
+            file: file.originalname || '',
+            fileName: file.originalname || '',
+          })
+        )?.mimeType ||
+        '',
+    });
+
+    await this.documentFileService.create(
+      {
+        documentId: documentId,
+        fileId: uploadedFile.id,
+        projectId,
+        ...metadata,
+      },
+      undefined,
+      transaction,
+    );
+
+    await this.repository.updateById(data.documentId, [projectId], {
+      ...documentData,
+      ...(documentData.businessId && { businessId: documentData.businessId }),
+      ...(documentData.endUserId && { endUserId: documentData.endUserId }),
+    });
+
+    const entityId = this.getEntityId(data);
+
+    return await this.getByEntityIdAndWorkflowId(entityId, data.workflowRuntimeDataId, [projectId]);
   }
 
   async updateById(
@@ -633,5 +693,17 @@ export class DocumentService {
     uiSchema.forEach(processElement);
 
     return result;
+  }
+
+  private getEntityId(data: { businessId?: string; endUserId?: string }) {
+    if (data.businessId) {
+      return data.businessId;
+    }
+
+    if (data.endUserId) {
+      return data.endUserId;
+    }
+
+    throw new BadRequestException('Business or end user id is required');
   }
 }
