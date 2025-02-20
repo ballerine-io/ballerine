@@ -37,7 +37,6 @@ spec:
             - name: {{ .Values.workflowsdashboard.nameOverride }}
               image: "{{ .Values.workflowsdashboard.image.registry }}/{{ .Values.workflowsdashboard.image.repository }}:{{ .Values.workflowsdashboard.image.tag }}"
               imagePullPolicy: {{ .Values.workflowsdashboard.image.pullPolicy }}
-              command: {{ .Values.workflowsdashboard.image.command | toYaml | nindent 14 }}
               {{- with .Values.workflowsdashboard.envFrom }}
               envFrom:
               {{- toYaml . | nindent 14 }}
