@@ -27,9 +27,7 @@ export const validateRule = (rule: Rule, data: any): RuleResult => {
   const extractedValue = operator.extractValue(data, rule);
 
   const isPathComparison =
-    isObject(extractedValue) &&
-    extractedValue?.value !== undefined &&
-    extractedValue?.comparisonValue !== undefined;
+    isObject(extractedValue) && 'value' in extractedValue && 'comparisonValue' in extractedValue;
 
   const { value, comparisonValue } = isPathComparison
     ? extractedValue
