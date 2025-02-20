@@ -1,60 +1,52 @@
-import React, { ComponentProps, FunctionComponent } from 'react';
-import { getSeverityFromRiskScore, Severity, SeverityType } from '@ballerine/common';
-import { ctw, severityToClassName } from '@/common';
+import {
+  MERCHANT_REPORT_RISK_LEVELS_MAP,
+  MerchantReportRiskLevel,
+  RiskIndicatorSchema,
+} from '@ballerine/common';
+import { ComponentProps, FunctionComponent } from 'react';
 import { toTitleCase } from 'string-ts';
+import { z } from 'zod';
+
+import { ctw, severityToClassName } from '@/common';
 import { Badge, Card, CardContent, CardHeader, RiskIndicatorsSummary } from '@/components';
 import { TextWithNAFallback } from '@/components/atoms/TextWithNAFallback';
 
 export const BusinessReportSummary: FunctionComponent<{
   summary: string;
   ongoingMonitoringSummary?: string;
-  riskLevels: {
-    legalRisk: SeverityType;
-    chargebackRisk: SeverityType;
-    reputationRisk: SeverityType;
-    transactionLaunderingRisk: SeverityType;
-  };
-  riskIndicators: Array<{
+  riskIndicators: ReadonlyArray<{
     title: string;
-    search: string;
-    violations: Array<{
-      label: string;
-      severity: string;
-    }> | null;
+    search?: string;
+    indicators: Array<z.infer<typeof RiskIndicatorSchema>> | null;
   }>;
-  riskScore: number;
+  riskLevel: MerchantReportRiskLevel | null;
   homepageScreenshotUrl: string | null;
-  Link: ComponentProps<typeof RiskIndicatorsSummary>['Link'];
+  Link?: ComponentProps<typeof RiskIndicatorsSummary>['Link'];
 }> = ({
   riskIndicators,
   summary,
   ongoingMonitoringSummary,
-  riskLevels,
-  riskScore,
+  riskLevel,
   homepageScreenshotUrl,
   Link,
 }) => {
-  const severity = getSeverityFromRiskScore(riskScore);
-
   return (
-    <div className={'grid grid-cols-5 gap-8'}>
+    <div className={'grid grid-cols-5 gap-x-8 gap-y-6'}>
       <Card className={!homepageScreenshotUrl ? 'col-span-full' : 'col-span-3'}>
         <CardHeader className={'pt-4 font-bold'}>
           <span className={'mb-1'}>Overall Risk Level</span>
           <div className="flex items-center space-x-2">
-            {(riskScore || riskScore === 0) && (
+            {riskLevel && (
               <Badge
                 className={ctw(
-                  severityToClassName[
-                    (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
-                  ],
+                  severityToClassName[riskLevel],
                   {
-                    'text-background': severity === Severity.CRITICAL,
+                    'text-background': riskLevel === MERCHANT_REPORT_RISK_LEVELS_MAP.critical,
                   },
                   'min-w-20 rounded-lg font-bold',
                 )}
               >
-                {toTitleCase(severity ?? '')} Risk
+                {toTitleCase(riskLevel)} Risk
               </Badge>
             )}
           </div>
@@ -106,7 +98,7 @@ export const BusinessReportSummary: FunctionComponent<{
         </Card>
       )}
 
-      <RiskIndicatorsSummary riskIndicators={riskIndicators} Link={Link} />
+      <RiskIndicatorsSummary sections={riskIndicators} Link={Link} />
     </div>
   );
 };

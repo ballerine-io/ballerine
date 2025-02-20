@@ -1,46 +1,19 @@
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
+import { z } from 'zod';
+
 import { Card, CardContent, CardHeader } from '@/components';
 import { EcosystemTable } from '@/components/templates/report/components/Ecosystem/components/EcosystemTable/EcosystemTable';
-import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
+import { EcosystemRecordSchema } from '@ballerine/common';
 
 export const Ecosystem: FunctionComponent<{
-  violations: Array<{
-    label: string;
-    severity: string;
-  }>;
-  matches: Array<{
-    matchedName: string;
-    relatedNodeType: string;
-    relatedNode: string;
-    indicators: {
-      label: string;
-      severity: string;
-    };
-  }>;
-}> = ({ violations, matches }) => {
+  data: Array<z.infer<typeof EcosystemRecordSchema>>;
+}> = ({ data }) => {
   return (
-    <div className={'space-y-8'}>
-      <div>
-        <ContentTooltip
-          description={
-            <p>
-              Explores the merchant&apos;s broader activity, including related websites and
-              affiliations, for a comprehensive risk assessment.
-            </p>
-          }
-          props={{
-            tooltipContent: {
-              align: 'center',
-            },
-          }}
-        >
-          <h3 className={'col-span-full text-lg font-bold'}>Ecosystem Analysis</h3>
-        </ContentTooltip>
-      </div>
+    <div className={'space-y-6'}>
       <Card>
-        <CardHeader className={'pt-4 font-bold'}>Ecosystem</CardHeader>
+        <CardHeader className={'pt-4 font-bold'}>Ecosystem Analysis</CardHeader>
         <CardContent>
-          <EcosystemTable data={matches} />
+          <EcosystemTable data={data} />
         </CardContent>
       </Card>
     </div>

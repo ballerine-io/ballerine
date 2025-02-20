@@ -14,7 +14,6 @@ import {
   Skeleton,
   TextArea,
   TextWithNAFallback,
-  ContentTooltip,
 } from '@ballerine/ui';
 import dayjs from 'dayjs';
 import { ArrowLeft, ChevronLeft, FileQuestion } from 'lucide-react';
@@ -34,7 +33,6 @@ import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
 import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
 import { NotesButton } from '@/common/components/molecules/NotesButton/NotesButton';
-import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
 import { Form } from '@/common/components/organisms/Form/Form';
 import { FormControl } from '@/common/components/organisms/Form/Form.Control';
 import { FormField } from '@/common/components/organisms/Form/Form.Field';
@@ -42,14 +40,11 @@ import { FormItem } from '@/common/components/organisms/Form/Form.Item';
 import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
 import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
 import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
-import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
-import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
-import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
-import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { MERCHANT_REPORT_STATUSES_MAP } from '@/domains/business-reports/constants';
 import { Notes } from '@/domains/notes/Notes';
 import { useMerchantMonitoringBusinessReportLogic } from '@/pages/MerchantMonitoringBusinessReport/hooks/useMerchantMonitoringBusinessReportLogic/useMerchantMonitoringBusinessReportLogic';
+import { MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
+import { BusinessReport } from '@/domains/business-reports/components/BusinessReport/BusinessReport';
 
 const DialogDropdownItem = forwardRef<
   React.ElementRef<typeof DropdownMenuItem>,
@@ -88,8 +83,6 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     websiteWithNoProtocol,
     businessReport,
     statusToBadgeData,
-    tabs,
-    activeTab,
     notes,
     isNotesOpen,
     turnOngoingMonitoringOn,
@@ -102,7 +95,6 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     deboardingReasonOptions,
     isFetchingBusinessReport,
     locale,
-    isDemoAccount,
   } = useMerchantMonitoringBusinessReportLogic();
 
   // User should never really get in here, unless he manually sets the id in the URL.
@@ -160,179 +152,144 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
       }}
     >
       <SidebarInset>
-        <section className="flex h-full flex-col px-6 pb-6 pt-4">
+        <section className="flex h-full flex-col px-6 pt-4">
           <div className={`flex justify-between`}>
             <Button
               variant={'ghost'}
               onClick={onNavigateBack}
               className={'mb-6 flex items-center space-x-px pe-3 ps-1 font-semibold'}
             >
-              <ChevronLeft size={18} /> <span>View All Reports</span>
+              <ChevronLeft size={18} /> <span>Back</span>
             </Button>
+            <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={
+                    'px-2 py-0 text-xs aria-disabled:pointer-events-none aria-disabled:opacity-50'
+                  }
+                >
+                  Options
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent
+                align="end"
+                onEscapeKeyDown={e => {
+                  if (isDeboardModalOpen) {
+                    e.preventDefault();
+                  }
+
+                  setIsDeboardModalOpen(false);
+                }}
+              >
+                {businessReport?.monitoringStatus === true ? (
+                  <DialogDropdownItem
+                    triggerChildren={
+                      <Button variant={'ghost'} className="justify-start">
+                        Turn Monitoring Off
+                      </Button>
+                    }
+                    open={isDeboardModalOpen}
+                    onOpenChange={setIsDeboardModalOpen}
+                  >
+                    <DialogHeader>
+                      <DialogTitle>Confirm Deboarding</DialogTitle>
+                      <DialogDescription>
+                        Are you sure you want to deboard this merchant (turn the monitoring off)?
+                      </DialogDescription>
+                    </DialogHeader>
+
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <FormField
+                          control={form.control}
+                          name="reason"
+                          render={({ field }) => (
+                            <FormItem>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormLabel>Reason</FormLabel>
+
+                                <FormControl>
+                                  <SelectTrigger className="h-9 w-full border-input p-1 shadow-sm">
+                                    <SelectValue placeholder="Select a reason" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <FormMessage />
+                                <SelectContent>
+                                  {deboardingReasonOptions?.map((option, index) => {
+                                    return (
+                                      <SelectItem key={index} value={option}>
+                                        {option}
+                                      </SelectItem>
+                                    );
+                                  })}
+                                </SelectContent>
+                              </Select>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="userReason"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Additional details</FormLabel>
+
+                              <FormControl>
+                                <TextArea {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <DialogFooter className="mt-6 flex justify-end space-x-4">
+                          <Button
+                            type="button"
+                            onClick={() => {
+                              setIsDeboardModalOpen(false);
+                            }}
+                            variant="ghost"
+                          >
+                            Cancel
+                          </Button>
+                          <Button type="submit" variant="destructive">
+                            Turn Off
+                          </Button>
+                        </DialogFooter>
+                      </form>
+                    </Form>
+                  </DialogDropdownItem>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      if (!businessReport?.business.id) {
+                        throw new Error('Business ID is missing');
+                      }
+
+                      turnOngoingMonitoringOn(businessReport.business.id, {
+                        onSuccess: () => {
+                          setIsDeboardModalOpen(false);
+                          setIsDropdownOpen(false);
+                        },
+                      });
+                    }}
+                    variant={'ghost'}
+                    className="justify-start"
+                  >
+                    Turn Monitoring On
+                  </Button>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           {isFetchingBusinessReport ? (
             <Skeleton className="h-6 w-32" />
           ) : (
-            <TextWithNAFallback as={'h2'} className="flex justify-between pb-4 text-2xl font-bold">
+            <TextWithNAFallback as={'h2'} className="pb-4 text-2xl font-bold">
               {websiteWithNoProtocol}
-              <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={
-                      'px-2 py-0 text-xs aria-disabled:pointer-events-none aria-disabled:opacity-50'
-                    }
-                  >
-                    Options
-                  </Button>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent
-                  align="end"
-                  onEscapeKeyDown={e => {
-                    if (isDeboardModalOpen) {
-                      e.preventDefault();
-                    }
-
-                    setIsDeboardModalOpen(false);
-                  }}
-                >
-                  {businessReport?.monitoringStatus === true ? (
-                    <DialogDropdownItem
-                      triggerChildren={
-                        <Button variant={'ghost'} className="justify-start">
-                          Turn Monitoring Off
-                        </Button>
-                      }
-                      open={isDeboardModalOpen}
-                      onOpenChange={setIsDeboardModalOpen}
-                      disabled={isDemoAccount}
-                    >
-                      <DialogHeader>
-                        <DialogTitle>Confirm Deboarding</DialogTitle>
-                        <DialogDescription>
-                          Are you sure you want to deboard this merchant (turn the monitoring off)?
-                        </DialogDescription>
-                      </DialogHeader>
-
-                      <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                          <FormField
-                            control={form.control}
-                            name="reason"
-                            render={({ field }) => (
-                              <FormItem>
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                  <FormLabel>Reason</FormLabel>
-
-                                  <FormControl>
-                                    <SelectTrigger className="h-9 w-full border-input p-1 shadow-sm">
-                                      <SelectValue placeholder="Select a reason" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <FormMessage />
-                                  <SelectContent>
-                                    {deboardingReasonOptions?.map((option, index) => {
-                                      return (
-                                        <SelectItem key={index} value={option}>
-                                          {option}
-                                        </SelectItem>
-                                      );
-                                    })}
-                                  </SelectContent>
-                                </Select>
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={form.control}
-                            name="userReason"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Additional details</FormLabel>
-
-                                <FormControl>
-                                  <TextArea {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <DialogFooter className="mt-6 flex justify-end space-x-4">
-                            <Button
-                              type="button"
-                              onClick={() => {
-                                setIsDeboardModalOpen(false);
-                              }}
-                              variant="ghost"
-                            >
-                              Cancel
-                            </Button>
-                            <Button type="submit" variant="destructive">
-                              Turn Off
-                            </Button>
-                          </DialogFooter>
-                        </form>
-                      </Form>
-                    </DialogDropdownItem>
-                  ) : isDemoAccount ? (
-                    <ContentTooltip
-                      props={{
-                        tooltipTrigger: {
-                          className: '!px-0 !py-0',
-                        },
-                        tooltipContent: {
-                          align: 'center',
-                          className: 'bg-primary',
-                        },
-                      }}
-                      description={
-                        <p>
-                          This feature is not available for trial accounts.
-                          <br />
-                          Talk to us to get full access.
-                        </p>
-                      }
-                    >
-                      <DropdownMenuItem className="p-0">
-                        <Button
-                          onClick={() => {
-                            return;
-                          }}
-                          variant={'ghost'}
-                          className="w-full justify-start"
-                          disabled={true}
-                        >
-                          Turn Monitoring On
-                        </Button>
-                      </DropdownMenuItem>
-                    </ContentTooltip>
-                  ) : (
-                    <DropdownMenuItem>
-                      <Button
-                        onClick={() => {
-                          if (!businessReport?.merchantId) {
-                            throw new Error('Merchant ID is missing');
-                          }
-
-                          turnOngoingMonitoringOn(businessReport.merchantId, {
-                            onSuccess: () => {
-                              setIsDeboardModalOpen(false);
-                              setIsDropdownOpen(false);
-                            },
-                          });
-                        }}
-                        variant={'ghost'}
-                        className="justify-start"
-                      >
-                        Turn Monitoring On
-                      </Button>
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
             </TextWithNAFallback>
           )}
           {isFetchingBusinessReport ? (
@@ -378,47 +335,26 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
               <NotesButton numberOfNotes={notes?.length} />
             </div>
           )}
-          <Tabs defaultValue={activeTab} className="w-full" key={activeTab}>
-            <TabsList className={'mb-4'}>
-              {tabs.map(tab => (
-                <TabsTrigger key={tab.value} value={tab.value} asChild>
-                  <Link
-                    to={{
-                      search: `?activeTab=${tab.value}`,
-                    }}
-                  >
-                    {tab.label}
-                  </Link>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            <ScrollArea orientation={'vertical'} className={'h-[65vh] 2xl:h-[75vh]'}>
-              {isFetchingBusinessReport ? (
-                <>
-                  <Skeleton className="h-6 w-72" />
-                  <Skeleton className="mt-6 h-4 w-40" />
+          {isFetchingBusinessReport || !businessReport ? (
+            <>
+              <Skeleton className="h-6 w-72" />
+              <Skeleton className="mt-6 h-4 w-40" />
 
-                  <div className="mt-6 flex h-[24rem] w-full flex-nowrap gap-8">
-                    <Skeleton className="w-2/3" />
-                    <Skeleton className="w-1/3" />
-                  </div>
-                  <Skeleton className="mt-6 h-[16rem]" />
-                </>
-              ) : (
-                tabs.map(tab => (
-                  <TabsContent key={tab.value} value={tab.value}>
-                    {tab.content}
-                  </TabsContent>
-                ))
-              )}
-            </ScrollArea>
-          </Tabs>
+              <div className="mt-6 flex h-[24rem] w-full flex-nowrap gap-8">
+                <Skeleton className="w-2/3" />
+                <Skeleton className="w-1/3" />
+              </div>
+              <Skeleton className="mt-6 h-[16rem]" />
+            </>
+          ) : (
+            <BusinessReport report={businessReport} />
+          )}
         </section>
       </SidebarInset>
       <Notes
         notes={notes ?? []}
         noteData={{
-          entityId: businessReport?.merchantId || '',
+          entityId: businessReport?.business.id || '',
           entityType: `Business`,
           noteableId: businessReport?.id || '',
           noteableType: `Report`,
