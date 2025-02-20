@@ -17,6 +17,7 @@ import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNote
 import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
 import { isObject, MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 
 const ZodDeboardingSchema = z
   .object({
@@ -63,6 +64,7 @@ const deboardingReasonOptions = [
 
 export const useMerchantMonitoringBusinessReportLogic = () => {
   const { businessReportId } = useParams();
+  const { data: customer } = useCustomerQuery();
   const { data: businessReport, isFetching: isFetchingBusinessReport } = useBusinessReportByIdQuery(
     { id: businessReportId ?? '' },
   );
@@ -194,5 +196,6 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     deboardingReasonOptions,
     isFetchingBusinessReport,
     locale,
+    isDemoAccount: customer?.config?.isDemoAccount || false,
   };
 };

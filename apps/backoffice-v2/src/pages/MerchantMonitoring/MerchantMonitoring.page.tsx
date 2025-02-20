@@ -107,11 +107,11 @@ export const MerchantMonitoring: FunctionComponent = () => {
           <TooltipProvider delayDuration={0}>
             <Tooltip>
               <TooltipTrigger className={`flex items-center`} asChild>
-                <div className=" text-white">
+                <div className="text-white">
                   <Link
                     className={buttonVariants({
                       className:
-                        'flex items-center justify-start gap-2 bg-[#584EC5] font-semibold hover:bg-[#5B3FAC66] hover:shadow-lg aria-disabled:pointer-events-none aria-disabled:opacity-50',
+                        'flex items-center justify-start gap-2 !bg-[#584EC5] font-semibold hover:!bg-[#5B3FAC66] hover:shadow-lg aria-disabled:pointer-events-none aria-disabled:opacity-50',
                     })}
                     to={`/${locale}/merchant-monitoring/create-check`}
                     aria-disabled={!createBusinessReport?.enabled}

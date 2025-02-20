@@ -212,6 +212,6 @@ export const useMerchantMonitoringLogic = () => {
     onDatesChange,
     onIsAlertChange,
     onClearAllFilters,
-    isDemoAccount: customer?.config?.isDemo || false,
+    isDemoAccount: customer?.config?.isDemoAccount || false,
   };
 };
