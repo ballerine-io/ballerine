@@ -31,3 +31,9 @@ export const OperationHelpers = {
   [OPERATION.NOT_IN]: NOT_IN,
   [OPERATION.AML_CHECK]: AML_CHECK,
 } as const;
+
+export const OPERATORS_WITHOUT_PATH_COMPARISON = [
+  OPERATION.AML_CHECK,
+  OPERATION.BETWEEN,
+  OPERATION.LAST_YEAR,
+] as const;

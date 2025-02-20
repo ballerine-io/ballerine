@@ -8,6 +8,7 @@ import {
   OPERATOR,
   RuleSchema,
   ValidationFailedError,
+  isObject,
 } from '@ballerine/common';
 
 export const validateRule = (rule: Rule, data: any): RuleResult => {
@@ -23,11 +24,17 @@ export const validateRule = (rule: Rule, data: any): RuleResult => {
     throw new OperatorNotFoundError(rule.operator);
   }
 
-  const value = operator.extractValue(data, rule);
+  const extractedValue = operator.extractValue(data, rule);
+
+  const isPathComparison =
+    isObject(extractedValue) && 'value' in extractedValue && 'comparisonValue' in extractedValue;
+
+  const { value, comparisonValue } = isPathComparison
+    ? extractedValue
+    : { value: extractedValue, comparisonValue: rule.value };
 
   try {
-    // @ts-expect-error - rule
-    const result = operator.execute(value, rule.value);
+    const result = operator.execute(value, comparisonValue);
 
     return { status: result ? 'PASSED' : 'FAILED', error: undefined };
   } catch (error) {
