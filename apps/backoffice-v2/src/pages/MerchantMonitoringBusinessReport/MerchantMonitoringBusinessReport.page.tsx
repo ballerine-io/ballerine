@@ -49,7 +49,7 @@ import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sid
 import { MerchantMonitoringReportStatus } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringReportStatus';
 import { useMerchantMonitoringBusinessReportLogic } from '@/pages/MerchantMonitoringBusinessReport/hooks/useMerchantMonitoringBusinessReportLogic/useMerchantMonitoringBusinessReportLogic';
 
-const DialogDropdownItem = forwardRef<
+export const DialogDropdownItem = forwardRef<
   React.ElementRef<typeof DropdownMenuItem>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuItem> & {
     triggerChildren: React.ReactNode;
@@ -78,6 +78,7 @@ const DialogDropdownItem = forwardRef<
     </Dialog>
   );
 });
+
 DialogDropdownItem.displayName = 'DialogDropdownItem';
 
 export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
@@ -306,7 +307,11 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
             <div className={`flex items-center space-x-8 pb-4`}>
               <div className={`flex items-center`}>
                 <span className={`me-4 text-sm leading-6 text-slate-400`}>Status</span>
-                <MerchantMonitoringReportStatus status={businessReport?.status} />
+                <MerchantMonitoringReportStatus
+                  reportId={businessReport?.id}
+                  status={businessReport?.status}
+                  businessId={businessReport?.business.id}
+                />
               </div>
               <div className={`text-sm`}>
                 <span className={`me-2 leading-6 text-slate-400`}>Created at</span>

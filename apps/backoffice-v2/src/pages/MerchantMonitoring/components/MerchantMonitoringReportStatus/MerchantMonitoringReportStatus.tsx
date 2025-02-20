@@ -1,127 +1,205 @@
-import { titleCase } from 'string-ts';
-import React, { ElementRef, forwardRef } from 'react';
+import { z } from 'zod';
+import React, { ComponentProps } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
 import {
-  Badge,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  TextArea,
 } from '@ballerine/ui';
 
-import { ctw } from '@/common/utils/ctw/ctw';
+import { Form } from '@/common/components/organisms/Form/Form';
 import { Button } from '@/common/components/atoms/Button/Button';
+import { FormItem } from '@/common/components/organisms/Form/Form.Item';
+import { FormField } from '@/common/components/organisms/Form/Form.Field';
+import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
+import { FormControl } from '@/common/components/organisms/Form/Form.Control';
+import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
+import { useUpdateReportStatusMutation } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/hooks/useUpdateReportStatusMutation/useUpdateReportStatusMutation';
+import {
+  MerchantMonitoringStatusBadge,
+  statusToData,
+} from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringStatusBadge';
+import { useToggle } from '@/common/hooks/useToggle/useToggle';
+import { useCreateNoteMutation } from '@/domains/notes/hooks/mutations/useCreateNoteMutation/useCreateNoteMutation';
+import { DialogDropdownItem } from '@/pages/MerchantMonitoringBusinessReport/MerchantMonitoringBusinessReport.page';
+import { MerchantMonitoringStatusButton } from './MerchantMonitoringReportStatusButton';
 
-const reportInProgressData = {
-  variant: 'gray',
-  title: 'Scan in progress',
-  text: '',
-};
-
-const statusToData = {
-  [MERCHANT_REPORT_STATUSES_MAP['in-progress']]: reportInProgressData,
-  [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: reportInProgressData,
-  [MERCHANT_REPORT_STATUSES_MAP['pending-review']]: {
-    variant: 'gray',
-    title: 'Pending Review',
-    text: 'The review process has not yet started',
-  },
-  [MERCHANT_REPORT_STATUSES_MAP['under-review']]: {
-    variant: 'info',
-    title: 'Under Review',
-    text: 'The merchant is currently being assessed',
-  },
-  [MERCHANT_REPORT_STATUSES_MAP.completed]: {
-    variant: 'success',
-    title: 'Review Completed',
-    text: 'The assessment of this merchant is finalized',
-  },
-} as const;
-
-const statusesToSelect = [
+const selectableStatuses = [
   MERCHANT_REPORT_STATUSES_MAP['pending-review'],
   MERCHANT_REPORT_STATUSES_MAP['under-review'],
   MERCHANT_REPORT_STATUSES_MAP.completed,
 ];
 
-const BadgeElement = forwardRef<ElementRef<typeof Badge>, { status: keyof typeof statusToData }>(
-  ({ status, ...props }, ref) => {
-    const reportIsInProgress = [
-      MERCHANT_REPORT_STATUSES_MAP['in-progress'],
-      MERCHANT_REPORT_STATUSES_MAP['quality-control'],
-    ].includes(status);
-
-    return (
-      <Badge
-        {...props}
-        ref={ref}
-        variant={statusToData[status].variant}
-        className={ctw(`h-6 space-x-1 text-sm font-medium hover:shadow-[0_0_2px_rgba(0,0,0,0.3)]`, {
-          'cursor-pointer': !reportIsInProgress,
-          'cursor-not-allowed bg-[#E3E2E0] text-[#32302C]/60 ': reportIsInProgress,
-          'bg-[#D3E5EF] text-[#183347]': status === MERCHANT_REPORT_STATUSES_MAP['under-review'],
-          'bg-[#DBEDDB] text-[#1C3829]': status === MERCHANT_REPORT_STATUSES_MAP['completed'],
-        })}
-      >
-        <span
-          className={ctw(`rounded-full d-2`, {
-            'bg-[#91918E]': reportIsInProgress,
-            'bg-[#5B97BD]': status === MERCHANT_REPORT_STATUSES_MAP['under-review'],
-            'bg-[#6C9B7D]': status === MERCHANT_REPORT_STATUSES_MAP['completed'],
-          })}
-        >
-          &nbsp;
-        </span>
-        <span>{statusToData[status].title ?? titleCase(status ?? '')}</span>
-      </Badge>
-    );
-  },
-);
-
-BadgeElement.displayName = 'BadgeElement';
+const MerchantMonitoringCompletedStatusFormSchema = z.object({
+  text: z.string().optional(),
+});
 
 export const MerchantMonitoringReportStatus = ({
   status,
+  reportId,
+  businessId,
+  onClick,
 }: {
+  reportId?: string;
+  businessId?: string;
   status?: keyof typeof statusToData;
+  onClick?: ComponentProps<typeof Button>['onClick'];
 }) => {
-  if (!status) {
+  const { mutateAsync: mutateCreateNote } = useCreateNoteMutation({ disableToast: true });
+
+  const { mutate: mutateUpdateReportStatus, isLoading } = useUpdateReportStatusMutation();
+
+  const formDefaultValues = {
+    text: '',
+  } satisfies z.infer<typeof MerchantMonitoringCompletedStatusFormSchema>;
+
+  const form = useForm({
+    resolver: zodResolver(MerchantMonitoringCompletedStatusFormSchema),
+    defaultValues: formDefaultValues,
+  });
+
+  const [isCompleteReviewModalOpen, setIsCompleteReviewModalOpen] = useToggle(false);
+
+  const onSubmit: SubmitHandler<
+    z.infer<typeof MerchantMonitoringCompletedStatusFormSchema>
+  > = async ({ text }) => {
+    mutateUpdateReportStatus({ reportId, status: MERCHANT_REPORT_STATUSES_MAP.completed, text });
+
+    const content = `Status changed to 'Review Completed' ${text ? ` with details: ${text}` : ''}`;
+
+    void mutateCreateNote({
+      content,
+      entityId: businessId ?? '',
+      entityType: 'Business',
+      noteableId: reportId ?? '',
+      noteableType: 'Report',
+      parentNoteId: null,
+    });
+
+    setIsCompleteReviewModalOpen(false);
+    form.reset();
+  };
+
+  if (!status || !reportId) {
     return null;
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        className={`flex items-center`}
-        disabled={[
-          MERCHANT_REPORT_STATUSES_MAP['in-progress'],
-          MERCHANT_REPORT_STATUSES_MAP['quality-control'],
-        ].includes(status)}
-      >
-        <BadgeElement status={status} />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="center" className={`space-y-2 p-4`}>
-        {statusesToSelect.map(status => (
-          <DropdownMenuItem
-            key={status}
-            className="flex w-full cursor-pointer items-center px-8 py-1"
-            asChild
-          >
-            <Button
-              variant={'status'}
-              className="flex h-16 w-80 flex-col items-start justify-center space-y-1 px-4 py-2"
-              onClick={() => {
-                console.log(status);
-              }}
-            >
-              <BadgeElement status={status} />
-              <span className={`text-xs font-semibold leading-5 text-[#94A3B8]`}>
-                {statusToData[status].text}
-              </span>
-            </Button>
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          className={`flex items-center focus-visible:outline-none`}
+          disabled={
+            isLoading ||
+            [
+              MERCHANT_REPORT_STATUSES_MAP['in-progress'],
+              MERCHANT_REPORT_STATUSES_MAP['quality-control'],
+              MERCHANT_REPORT_STATUSES_MAP['completed'],
+            ].includes(status)
+          }
+        >
+          <MerchantMonitoringStatusBadge disabled={isLoading} status={status} />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="start"
+          className={`space-y-2 p-4`}
+          onEscapeKeyDown={e => {
+            if (isCompleteReviewModalOpen) {
+              e.preventDefault();
+            }
+
+            setIsCompleteReviewModalOpen(false);
+          }}
+        >
+          {selectableStatuses.map(selectableStatus =>
+            selectableStatus === MERCHANT_REPORT_STATUSES_MAP.completed ? (
+              <DialogDropdownItem
+                key={selectableStatus}
+                className="flex w-full cursor-pointer items-center p-0"
+                triggerChildren={
+                  <MerchantMonitoringStatusButton disabled={isLoading} status={selectableStatus} />
+                }
+                open={isCompleteReviewModalOpen}
+                onOpenChange={() => {
+                  const activeElement = document.activeElement as HTMLElement;
+
+                  if (activeElement) {
+                    activeElement.blur();
+                  }
+
+                  setIsCompleteReviewModalOpen();
+                }}
+              >
+                <DialogHeader>
+                  <DialogTitle>Confirm Review Completion</DialogTitle>
+                  <DialogDescription>
+                    Please provide any relevant details or findings regarding the review. This can
+                    include notes or conclusions drawn from the investigation.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <FormField
+                      name="text"
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Additional details</FormLabel>
+
+                          <FormControl>
+                            <TextArea {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <DialogFooter className="mt-6 flex justify-end space-x-4">
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          setIsCompleteReviewModalOpen(false);
+                        }}
+                        variant="ghost"
+                      >
+                        Cancel
+                      </Button>
+                      <Button type="submit" variant="destructive">
+                        Complete Review
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </DialogDropdownItem>
+            ) : (
+              <DropdownMenuItem
+                key={selectableStatus}
+                className="flex w-full cursor-pointer items-center p-0"
+              >
+                <MerchantMonitoringStatusButton
+                  status={selectableStatus}
+                  disabled={selectableStatus === status || isLoading}
+                  onClick={e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    mutateUpdateReportStatus({ reportId, status: selectableStatus });
+                  }}
+                />
+              </DropdownMenuItem>
+            ),
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 };

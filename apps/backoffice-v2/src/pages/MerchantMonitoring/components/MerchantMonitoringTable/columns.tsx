@@ -25,6 +25,7 @@ import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/Indic
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
 import { MerchantMonitoringReportStatus } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringReportStatus';
+import { statusToData } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringStatusBadge';
 
 const columnHelper = createColumnHelper<TBusinessReport>();
 
@@ -197,9 +198,19 @@ export const columns = [
   }),
   columnHelper.accessor('status', {
     cell: info => {
-      const status = info.getValue();
+      const status = info.getValue() as keyof typeof statusToData;
 
-      return <MerchantMonitoringReportStatus status={status} />;
+      return (
+        <MerchantMonitoringReportStatus
+          status={status}
+          reportId={info.row.original.id}
+          businessId={info.row.original.business?.id}
+          onClick={e => {
+            console.log('in new onClick');
+            e.stopPropagation();
+          }}
+        />
+      );
     },
     header: 'Status',
   }),

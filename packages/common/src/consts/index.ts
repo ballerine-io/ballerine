@@ -187,6 +187,11 @@ export const MERCHANT_REPORT_STATUSES_MAP = Object.fromEntries(
   MERCHANT_REPORT_STATUSES.map(status => [status, status]),
 ) as { [K in MerchantReportStatus]: K };
 
+export type UpdateableReportStatus =
+  | (typeof MERCHANT_REPORT_STATUSES_MAP)['completed']
+  | (typeof MERCHANT_REPORT_STATUSES_MAP)['pending-review']
+  | (typeof MERCHANT_REPORT_STATUSES_MAP)['under-review'];
+
 export const MERCHANT_REPORT_TYPES = ['MERCHANT_REPORT_T1', 'ONGOING_MERCHANT_REPORT_T1'] as const;
 
 export type MerchantReportType = (typeof MERCHANT_REPORT_TYPES)[number];
