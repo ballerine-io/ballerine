@@ -58,6 +58,7 @@ export class MerchantMonitoringClient {
     compareToReportId,
     withQualityControl,
     workflowRuntimeDataId,
+    requestedByUserId,
   }: {
     websiteUrl: string;
     countryCode?: CountryCode;
@@ -69,6 +70,7 @@ export class MerchantMonitoringClient {
     compareToReportId?: string;
     withQualityControl?: boolean;
     workflowRuntimeDataId?: string;
+    requestedByUserId: string | undefined;
   }) {
     const response = await this.axios.post(`merchants/analysis`, {
       websiteUrl,
@@ -81,6 +83,7 @@ export class MerchantMonitoringClient {
       merchantId: businessId,
       callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${businessId}`,
       metadata: {
+        requestedByUserId,
         ...(workflowRuntimeDataId && { workflowRuntimeDataId }),
       },
       customerId,
