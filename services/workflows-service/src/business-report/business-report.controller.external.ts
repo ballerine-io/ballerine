@@ -16,7 +16,7 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CustomerService } from '@/customer/customer.service';
 import { BusinessService } from '@/business/business.service';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
-import type { TProjectId } from '@/types';
+import type { AuthenticatedEntity, TProjectId } from '@/types';
 import { GetLatestBusinessReportDto } from '@/business-report/get-latest-business-report.dto';
 import {
   BusinessReportListRequestParamDto,
@@ -32,7 +32,7 @@ import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { fileFilter } from '@/storage/file-filter';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
 import { CreateBusinessReportBatchBodyDto } from '@/business-report/dtos/create-business-report-batch-body.dto';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import { PrismaService } from '@/prisma/prisma.service';
 import { BusinessReportFindingsListResponseDto } from '@/business-report/dtos/business-report-findings.dto';
 import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
@@ -42,6 +42,8 @@ import {
 } from '@/business-report/dtos/business-report-metrics.dto';
 import { BusinessReportMetricsDto } from './dtos/business-report-metrics-dto';
 import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
+import { UserData } from '@/user/user-data.decorator';
+import { UserInfo } from '@/user/user-info';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Business Reports')
@@ -258,6 +260,7 @@ export class BusinessReportControllerExternal {
       workflowVersion,
     }: CreateBusinessReportDto,
     @CurrentProject() currentProjectId: TProjectId,
+    @UserData() user: AuthenticatedEntity,
   ) {
     const { id: customerId, config } = await this.customerService.getByProjectId(currentProjectId);
 
@@ -307,6 +310,7 @@ export class BusinessReportControllerExternal {
       workflowVersion,
       withQualityControl,
       customerId,
+      requestedByUserId: user.user?.id,
     });
   }
 

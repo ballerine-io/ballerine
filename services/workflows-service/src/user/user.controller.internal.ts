@@ -1,5 +1,5 @@
 import * as common from '@nestjs/common';
-import { UseGuards } from '@nestjs/common';
+import { NotFoundException, UseGuards } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UserModel } from './user.model';
@@ -15,6 +15,21 @@ import { UserStatus } from '@prisma/client';
 @swagger.ApiExcludeController()
 export class UserControllerInternal {
   constructor(protected readonly service: UserService) {}
+
+  @common.Get(':id')
+  @UseGuards(AdminAuthGuard)
+  @swagger.ApiOkResponse({ type: UserModel })
+  @swagger.ApiForbiddenResponse()
+  @swagger.ApiNotFoundResponse()
+  async get(@common.Param('id') id: string) {
+    const user = await this.service.getByIdUnscoped(id, {});
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
+  }
 
   @common.Get()
   @swagger.ApiQuery({ name: 'projectId', type: String })

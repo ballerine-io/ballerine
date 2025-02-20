@@ -50,6 +50,7 @@ export class BusinessReportService {
     compareToReportId,
     withQualityControl,
     customerId,
+    requestedByUserId,
   }: {
     reportType: MerchantReportType;
     business: Pick<Business, 'id' | 'correlationId'>;
@@ -60,6 +61,7 @@ export class BusinessReportService {
     workflowVersion: MerchantReportVersion;
     withQualityControl: boolean;
     customerId: string;
+    requestedByUserId: string | undefined;
   }) {
     await this.merchantMonitoringClient.create({
       reportType,
@@ -69,6 +71,7 @@ export class BusinessReportService {
       workflowVersion,
       withQualityControl,
       parentCompanyName: merchantName,
+      requestedByUserId,
       ...(countryCode && { countryCode }),
       ...(compareToReportId && { compareToReportId }),
     });
