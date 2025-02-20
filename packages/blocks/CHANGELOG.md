@@ -1,5 +1,13 @@
 # @ballerine/blocks
 
+## 0.2.35-demo-200225.0
+
+### Patch Changes
+
+- bmp
+- Updated dependencies
+  - @ballerine/common@0.9.76-demo-200225.0
+
 ## 0.2.34
 
 ### Patch Changes

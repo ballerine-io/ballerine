@@ -1,5 +1,11 @@
 # @ballerine/eslint-config
 
+## 1.1.33-demo-200225.0
+
+### Patch Changes
+
+- bmp
+
 ## 1.1.32
 
 ### Patch Changes
