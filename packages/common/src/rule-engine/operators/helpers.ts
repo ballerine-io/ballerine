@@ -14,7 +14,7 @@ import { z, ZodSchema } from 'zod';
 import { BetweenSchema, LastYearsSchema, PrimitiveArraySchema, PrimitiveSchema } from './schemas';
 
 import { ValidationFailedError, DataValueNotFoundError } from '../errors';
-import { OperationHelpers } from './constants';
+import { OperationHelpers, OPERATORS_WITHOUT_PATH_COMPARISON } from './constants';
 import { Rule } from '@/rule-engine';
 import { EndUserAmlHitsSchema } from '@/schemas';
 
@@ -40,11 +40,30 @@ export abstract class BaseOperator<TDataValue = Primitive, TConditionValue = Pri
   extractValue(data: unknown, rule: Rule) {
     const value = get(data, rule.key);
 
-    if (value === undefined || value === null) {
-      throw new DataValueNotFoundError(rule.key);
+    const isPathComparison =
+      !OPERATORS_WITHOUT_PATH_COMPARISON.includes(
+        rule.operator as (typeof OPERATORS_WITHOUT_PATH_COMPARISON)[number],
+      ) &&
+      'isPathComparison' in rule &&
+      rule.isPathComparison;
+
+    if (!isPathComparison) {
+      if (value === undefined || value === null) {
+        throw new DataValueNotFoundError(rule.key);
+      }
+
+      return value;
     }
 
-    return value;
+    const comparisonValueAsPath = rule.value as string;
+
+    const evaluatedComparisonValue = get(data, comparisonValueAsPath);
+
+    if (evaluatedComparisonValue === undefined || evaluatedComparisonValue === null) {
+      throw new DataValueNotFoundError(comparisonValueAsPath);
+    }
+
+    return { value, comparisonValue: evaluatedComparisonValue };
   }
 
   execute(dataValue: TDataValue, conditionValue: TConditionValue) {

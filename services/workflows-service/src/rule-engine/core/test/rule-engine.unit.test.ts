@@ -26,6 +26,7 @@ describe('Rule Engine', () => {
           key: 'country',
           operator: OPERATION.EQUALS,
           value: 'US',
+          isPathComparison: false,
         },
         {
           operator: OPERATOR.AND,
@@ -34,6 +35,7 @@ describe('Rule Engine', () => {
               key: 'name',
               operator: OPERATION.EQUALS,
               value: 'John',
+              isPathComparison: false,
             },
             {
               operator: OPERATOR.OR,
@@ -42,11 +44,13 @@ describe('Rule Engine', () => {
                   key: 'age',
                   operator: OPERATION.GT,
                   value: 40,
+                  isPathComparison: false,
                 },
                 {
                   key: 'age',
                   operator: OPERATION.LTE,
                   value: 35,
+                  isPathComparison: false,
                 },
               ],
             },
@@ -73,6 +77,7 @@ describe('Rule Engine', () => {
           key: 'nonexistent',
           operator: OPERATION.EQUALS,
           value: 'US',
+          isPathComparison: false,
         },
       ],
     };
@@ -95,6 +100,7 @@ describe('Rule Engine', () => {
           operator: 'UNKNOWN',
           // @ts-ignore - intentionally using an unknown operator
           value: 'US',
+          isPathComparison: false,
         },
       ],
     };
@@ -141,6 +147,7 @@ describe('Rule Engine', () => {
           key: 'country',
           operator: OPERATION.EQUALS,
           value: 'CA',
+          isPathComparison: false,
         },
       ],
     };
@@ -220,6 +227,7 @@ describe('Rule Engine', () => {
           key: '',
           operator: OPERATION.EQUALS,
           value: 'US',
+          isPathComparison: false,
         },
       ],
     };
@@ -232,6 +240,7 @@ describe('Rule Engine', () => {
         "error": [DataValueNotFoundError: Field  is missing or null],
         "message": "Field  is missing or null",
         "rule": {
+          "isPathComparison": false,
           "key": "",
           "operator": "EQUALS",
           "value": "US",
@@ -493,6 +502,7 @@ describe('Rule Engine', () => {
             key: 'pluginsOutput.companySanctions.data.length',
             operator: OPERATION.NOT_EQUALS,
             value: 0,
+            isPathComparison: false,
           },
         ],
       };
@@ -506,6 +516,7 @@ describe('Rule Engine', () => {
         {
           "error": undefined,
           "rule": {
+            "isPathComparison": false,
             "key": "pluginsOutput.companySanctions.data.length",
             "operator": "NOT_EQUALS",
             "value": 0,
@@ -526,6 +537,7 @@ describe('Rule Engine', () => {
         {
           "error": undefined,
           "rule": {
+            "isPathComparison": false,
             "key": "pluginsOutput.companySanctions.data.length",
             "operator": "NOT_EQUALS",
             "value": 0,
@@ -545,6 +557,7 @@ describe('Rule Engine', () => {
             key: 'entity.data.country',
             operator: OPERATION.IN,
             value: ['IL', 'AF', 'US', 'GB'],
+            isPathComparison: false,
           },
         ],
       };
@@ -558,6 +571,7 @@ describe('Rule Engine', () => {
         {
           "error": undefined,
           "rule": {
+            "isPathComparison": false,
             "key": "entity.data.country",
             "operator": "IN",
             "value": [
@@ -583,6 +597,7 @@ describe('Rule Engine', () => {
         {
           "error": undefined,
           "rule": {
+            "isPathComparison": false,
             "key": "entity.data.country",
             "operator": "IN",
             "value": [
@@ -607,6 +622,7 @@ describe('Rule Engine', () => {
             key: 'country',
             operator: OPERATION.IN_CASE_INSENSITIVE,
             value: ['us', 'ca'],
+            isPathComparison: false,
           },
         ],
       };
@@ -633,6 +649,7 @@ describe('Rule Engine', () => {
             key: 'countries',
             operator: OPERATION.IN_CASE_INSENSITIVE,
             value: ['us', 'ca'],
+            isPathComparison: false,
           },
         ],
       };
@@ -661,6 +678,7 @@ describe('Rule Engine', () => {
             key: 'entity.data.country',
             operator: OPERATION.NOT_IN,
             value: ['IL', 'CA', 'US', 'GB'],
+            isPathComparison: false,
           },
         ],
       };
@@ -674,6 +692,7 @@ describe('Rule Engine', () => {
         {
           "error": undefined,
           "rule": {
+            "isPathComparison": false,
             "key": "entity.data.country",
             "operator": "NOT_IN",
             "value": [
@@ -699,6 +718,7 @@ describe('Rule Engine', () => {
         {
           "error": undefined,
           "rule": {
+            "isPathComparison": false,
             "key": "entity.data.country",
             "operator": "NOT_IN",
             "value": [
@@ -1032,6 +1052,71 @@ describe('Rule Engine', () => {
               "operator": "GTE",
               "value": 1,
             },
+          },
+          "status": "FAILED",
+        }
+      `);
+    });
+  });
+
+  describe('Path comparison', () => {
+    it('should compare values from two different paths', () => {
+      const ruleSetExample: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'pluginsOutput.businessInformation.data[0].companyName',
+            operator: OPERATION.NOT_EQUALS,
+            value: 'entity.data.companyName',
+            isPathComparison: true,
+          },
+        ],
+      };
+
+      const engine = RuleEngine(ruleSetExample);
+      const result = engine.run(context);
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": undefined,
+          "rule": {
+            "isPathComparison": true,
+            "key": "pluginsOutput.businessInformation.data[0].companyName",
+            "operator": "NOT_EQUALS",
+            "value": "entity.data.companyName",
+          },
+          "status": "PASSED",
+        }
+      `);
+    });
+
+    it('should handle invalid paths', () => {
+      const ruleSetExample: RuleSet = {
+        operator: OPERATOR.AND,
+        rules: [
+          {
+            key: 'pluginsOutput.businessInformation.data[0].companyName',
+            operator: OPERATION.NOT_EQUALS,
+            value: 'entity.invalid.path',
+            isPathComparison: true,
+          },
+        ],
+      };
+
+      const engine = RuleEngine(ruleSetExample);
+      const result = engine.run(context);
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchInlineSnapshot(`
+        {
+          "error": [DataValueNotFoundError: Field entity.invalid.path is missing or null],
+          "message": "Field entity.invalid.path is missing or null",
+          "rule": {
+            "isPathComparison": true,
+            "key": "pluginsOutput.businessInformation.data[0].companyName",
+            "operator": "NOT_EQUALS",
+            "value": "entity.invalid.path",
           },
           "status": "FAILED",
         }
