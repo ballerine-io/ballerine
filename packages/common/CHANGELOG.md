@@ -1,16 +1,10 @@
 # @ballerine/common
 
-## 0.9.77
+## 0.9.76-demo-200225.0
 
 ### Patch Changes
 
-- version bump
-
-## 0.9.76
-
-### Patch Changes
-
-- version bump
+- bmp
 
 ## 0.9.75
 
