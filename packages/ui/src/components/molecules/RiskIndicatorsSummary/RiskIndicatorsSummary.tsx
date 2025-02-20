@@ -16,7 +16,7 @@ export const RiskIndicatorsSummary: FunctionComponent<{
     <Card className={'col-span-full'}>
       <CardHeader className={'pt-4 font-bold'}>Risk Indicators</CardHeader>
       <CardContent className={'grid grid-cols-2 gap-4 xl:grid-cols-3'}>
-        {sections.length > 0 &&
+        {sections.length > 0 ?
           sections.map(section => (
             <RiskIndicator
               key={section.title}
@@ -25,8 +25,9 @@ export const RiskIndicatorsSummary: FunctionComponent<{
               riskIndicators={section.riskIndicators}
               Link={Link}
             />
-          ))}
-        {sections.length === 0 && <p>No risk indicators detected.</p>}
+          )) : (
+          <p>No risk indicators detected.</p>
+        )}
       </CardContent>
     </Card>
   );
