@@ -37,7 +37,6 @@ spec:
             - name: {{ .Values.backoffice.nameOverride }}
               image: "{{ .Values.backoffice.image.registry }}/{{ .Values.backoffice.image.repository }}:{{ .Values.backoffice.image.tag }}"
               imagePullPolicy: {{ .Values.backoffice.image.pullPolicy }}
-              command: {{ .Values.backoffice.image.command | toYaml | nindent 14 }}
               {{- with .Values.backoffice.envFrom }}
               envFrom:
               {{- toYaml . | nindent 14 }}

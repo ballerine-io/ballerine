@@ -37,7 +37,6 @@ spec:
             - name: {{ .Values.kybapp.nameOverride }}
               image: "{{ .Values.kybapp.image.registry }}/{{ .Values.kybapp.image.repository }}:{{ .Values.kybapp.image.tag }}"
               imagePullPolicy: {{ .Values.kybapp.image.pullPolicy }}
-              command: {{ .Values.kybapp.image.command | toYaml | nindent 14 }}
               {{- with .Values.kybapp.envFrom }}
               envFrom:
               {{- toYaml . | nindent 14 }}
