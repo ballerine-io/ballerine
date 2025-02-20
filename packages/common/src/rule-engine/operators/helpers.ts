@@ -14,8 +14,8 @@ import { z, ZodSchema } from 'zod';
 import { BetweenSchema, LastYearsSchema, PrimitiveArraySchema, PrimitiveSchema } from './schemas';
 
 import { ValidationFailedError, DataValueNotFoundError } from '../errors';
-import { OperationHelpers } from './constants';
-import { OPERATION, Rule } from '@/rule-engine';
+import { OperationHelpers, OPERATORS_WITHOUT_PATH_COMPARISON } from './constants';
+import { Rule } from '@/rule-engine';
 import { EndUserAmlHitsSchema } from '@/schemas';
 
 export abstract class BaseOperator<TDataValue = Primitive, TConditionValue = Primitive> {
@@ -39,11 +39,6 @@ export abstract class BaseOperator<TDataValue = Primitive, TConditionValue = Pri
 
   extractValue(data: unknown, rule: Rule) {
     const value = get(data, rule.key);
-    const OPERATORS_WITHOUT_PATH_COMPARISON = [
-      OPERATION.AML_CHECK,
-      OPERATION.BETWEEN,
-      OPERATION.LAST_YEAR,
-    ] as const;
 
     const isPathComparison =
       !OPERATORS_WITHOUT_PATH_COMPARISON.includes(

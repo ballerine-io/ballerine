@@ -8,6 +8,7 @@ import {
   OPERATOR,
   RuleSchema,
   ValidationFailedError,
+  isObject,
 } from '@ballerine/common';
 
 export const validateRule = (rule: Rule, data: any): RuleResult => {
@@ -26,9 +27,9 @@ export const validateRule = (rule: Rule, data: any): RuleResult => {
   const extractedValue = operator.extractValue(data, rule);
 
   const isPathComparison =
-    typeof extractedValue === 'object' &&
-    'value' in extractedValue &&
-    'comparisonValue' in extractedValue;
+    isObject(extractedValue) &&
+    extractedValue?.value !== undefined &&
+    extractedValue?.comparisonValue !== undefined;
 
   const { value, comparisonValue } = isPathComparison
     ? extractedValue
