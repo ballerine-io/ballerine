@@ -68,8 +68,12 @@ export const FieldList: TDynamicFormField<IFieldListParams> = props => {
           </div>
         );
       })}
-      <div className="flex flex-row justify-end">
-        <Button onClick={addItem} disabled={disabled}>
+      <div className="flex flex-row justify-start">
+        <Button
+          onClick={addItem}
+          disabled={disabled}
+          className="bg-white border border-gray-200 text-[hsl(var(--muted-foreground))] shadow-sm hover:bg-gray-50"
+        >
           {addButtonLabel}
         </Button>
       </div>
