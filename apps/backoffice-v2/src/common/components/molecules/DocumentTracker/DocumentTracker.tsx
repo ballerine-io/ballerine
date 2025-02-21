@@ -15,7 +15,7 @@ import {
 import { HelpCircle, Loader2, SendIcon } from 'lucide-react';
 import { FunctionComponent, memo, useMemo } from 'react';
 
-import { DocumentsTrackerData, TrackedDocument } from '@/domains/documents/hooks/schemas/document';
+import { TDocumentsTrackerItem, TrackedDocument } from '@/domains/documents/schemas';
 import { Icon } from './constants';
 import { useDocumentTracker } from './hooks/useDocumentTracker';
 
@@ -118,7 +118,7 @@ export const DocumentTracker: FunctionComponent<{ workflowId: string }> = ({ wor
 };
 
 type AccordionContentProps = {
-  documentTrackerItems: DocumentsTrackerData | null | undefined;
+  documentTrackerItems: TDocumentsTrackerItem | null | undefined;
   isLoading: boolean;
   getSubItems: (
     doc: TrackedDocument,

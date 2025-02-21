@@ -21,7 +21,15 @@ export const DocumentSchema = Type.Object({
 
 export const CreateDocumentSchema = Type.Omit(DocumentSchema, ['id', 'projectId']);
 
-export const UpdateDocumentSchema = Type.Partial(DocumentSchema);
+export const UpdateDocumentSchema = Type.Partial(
+  Type.Omit(DocumentSchema, [
+    'id',
+    'projectId',
+    'workflowRuntimeDataId',
+    'businessId',
+    'endUserId',
+  ]),
+);
 
 export const UpdateDocumentDecisionSchema = Type.Composite([
   Type.Pick(DocumentSchema, ['decisionReason', 'comment']),

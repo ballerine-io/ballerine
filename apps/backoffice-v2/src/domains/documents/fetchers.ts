@@ -1,7 +1,7 @@
 import { apiClient } from '@/common/api-client/api-client';
 import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
-import { DocumentsTrackerSchema, RequestDocumentsSchema } from './hooks/schemas/document';
+import { DocumentsTrackerSchema, RequestDocumentsSchema } from './schemas';
 import { z } from 'zod';
 
 export const fetchDocumentsTrackerItems = async ({ workflowId }: { workflowId: string }) => {
@@ -38,6 +38,27 @@ export const updateDocumentDecisionById = async ({
 }) => {
   const [documents, error] = await apiClient({
     endpoint: `../external/documents/${documentId}/decision`,
+    method: Method.PATCH,
+    body: data,
+    schema: z.any(),
+  });
+
+  return handleZodError(error, documents);
+};
+
+export const updateDocumentById = async ({
+  documentId,
+  data,
+}: {
+  documentId: string;
+  data: {
+    type: string;
+    category: string;
+    properties: Record<PropertyKey, unknown>;
+  };
+}) => {
+  const [documents, error] = await apiClient({
+    endpoint: `../external/documents/${documentId}`,
     method: Method.PATCH,
     body: data,
     schema: z.any(),

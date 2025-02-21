@@ -20,12 +20,8 @@ export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
         },
         workflowId: workflow?.id,
         documents: workflow?.context?.documents,
-      } satisfies Extract<
-        Parameters<ReturnType<typeof createBlocksTyped>['addCell']>[0],
-        {
-          type: 'details';
-        }
-      >;
+        isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
+      };
     }
 
     const message =

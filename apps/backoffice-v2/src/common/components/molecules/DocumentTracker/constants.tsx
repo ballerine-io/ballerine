@@ -5,7 +5,7 @@ import { ReactNode } from 'react';
 import { ClockCircle } from '@/common/components/atoms/ClockCircle/ClockCircle';
 import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
 import { XCircle } from '@/common/components/atoms/XCircle/XCircle';
-import { TrackedDocument } from '@/domains/documents/hooks/schemas/document';
+import { TrackedDocument } from '@/domains/documents/schemas';
 
 export const Icon = {
   CHECK: (

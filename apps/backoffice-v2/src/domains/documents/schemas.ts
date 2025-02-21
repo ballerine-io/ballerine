@@ -1,8 +1,6 @@
 import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
 import { z } from 'zod';
 
-export type TrackedDocument = z.infer<typeof DocumentTrackerItemSchema>;
-
 export const EndUserSchema = ObjectWithIdSchema.extend({
   firstName: z.string(),
   lastName: z.string(),
@@ -43,7 +41,8 @@ export const DocumentTrackerItemSchema = z.object({
   }),
 });
 
-export type DocumentsTrackerData = z.infer<typeof DocumentsTrackerSchema>;
+export type TDocumentsTrackerItem = z.infer<typeof DocumentsTrackerSchema>;
+
 export const DocumentsTrackerSchema = z.object({
   business: z.array(DocumentTrackerItemSchema),
   individuals: z.object({
@@ -64,3 +63,5 @@ export const RequestDocumentsSchema = z.object({
     }),
   ),
 });
+
+export type RequestDocumentsInput = z.infer<typeof RequestDocumentsSchema>;

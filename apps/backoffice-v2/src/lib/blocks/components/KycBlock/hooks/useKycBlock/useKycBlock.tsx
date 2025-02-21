@@ -161,6 +161,7 @@ export const useKycBlock = ({
             },
             workflowId: childWorkflow?.id,
             documents,
+            isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
           })
           .cellAt(0, 0),
       ) ?? []
@@ -447,6 +448,7 @@ export const useKycBlock = ({
         },
         workflowId: childWorkflow?.id,
         documents,
+        isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
       })
       .build()
       .flat(1);
@@ -563,6 +565,7 @@ export const useKycBlock = ({
                           },
                           workflowId: childWorkflow?.id,
                           documents,
+                          isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
                         })
                         .build()
                         .flat(1)

@@ -535,6 +535,7 @@ export const useDocumentBlocks = ({
             },
             workflowId: workflow?.id,
             documents,
+            isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
           })
           .cellAt(0, 0);
 
@@ -642,6 +643,7 @@ export const useDocumentBlocks = ({
                 workflowId: workflow?.id,
                 isSaveDisabled: isLoadingOCRDocument,
                 documents,
+                isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
               })
               .addCell(decisionCell)
               .build()

@@ -186,11 +186,13 @@ export const useDefaultBlocksLogic = () => {
   const bankAccountVerificationBlock = useBankAccountVerificationBlock({
     workflowId: workflow?.id || '',
     pluginsOutput: workflow?.context?.pluginsOutput,
+    isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
   });
 
   const commercialCreditCheckBlock = useCommercialCreditCheckBlock({
     workflowId: workflow?.id || '',
     pluginsOutput: workflow?.context?.pluginsOutput,
+    isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
   });
 
   const parentDocumentBlocks = useDocumentBlocks({
