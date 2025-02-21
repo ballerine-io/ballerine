@@ -5,5 +5,6 @@ export const UpdateCollectionFlowDocumentSchema = Type.Composite([
   CollectionFlowDocumentSchema,
   Type.Object({
     documentId: Type.String(),
+    decisionReason: Type.Optional(Type.String()),
   }),
 ]);

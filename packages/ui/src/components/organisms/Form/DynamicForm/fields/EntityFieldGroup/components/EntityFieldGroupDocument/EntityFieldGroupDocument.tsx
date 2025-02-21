@@ -4,9 +4,8 @@ import { Button } from '@/components/atoms';
 import { Input } from '@/components/atoms/Input';
 import { createTestId } from '@/components/organisms/Renderer/utils/create-test-id';
 import get from 'lodash/get';
-import set from 'lodash/set';
 import { Upload, XCircle } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { useDynamicForm } from '../../../../context';
 import { useField } from '../../../../hooks/external';
 import { useMountEvent } from '../../../../hooks/internal/useMountEvent';
@@ -23,6 +22,7 @@ import { removeDocumentFromListByTemplateId } from '../../../DocumentField/hooks
 import { useStack } from '../../../FieldList';
 import { TEntityFieldGroupType } from '../../EntityFieldGroup';
 import { useEntityField } from '../../providers/EntityFieldProvider';
+import { DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_REMOVAL_PARAMS } from './defaults';
 import { getEntityFieldGroupDocumentValueDestination } from './helpers/get-entity-field-group-document-value-destination';
 
 export interface IEntityFieldGroupDocumentParams extends IDocumentFieldParams {
@@ -33,14 +33,8 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
   'documentfield',
   IEntityFieldGroupDocumentParams
 > = ({ element: _element }) => {
-  const { metadata, values, fieldHelpers } = useDynamicForm();
+  const { metadata } = useDynamicForm();
   const { entityFieldGroupType, isSyncing } = useEntityField();
-
-  const valuesRef = useRef(values);
-
-  useEffect(() => {
-    valuesRef.current = values;
-  }, [values]);
 
   const element = useMemo(
     () => ({
@@ -53,7 +47,8 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
   );
 
   const { run: deleteDocument, isLoading: isDeletingDocument } = useHttp(
-    (element.params?.httpParams?.deleteDocument as IHttpParams) || {},
+    (element.params?.httpParams?.deleteDocument as IHttpParams) ||
+      DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_REMOVAL_PARAMS,
     metadata,
   );
 
@@ -125,7 +120,13 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
   }, [documentsList, element, deleteDocument, onChange]);
 
   const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (typeof value === 'string') {
+        await deleteDocument({
+          ids: [value],
+        });
+      }
+
       const documents = get(documentsList || [], element.valueDestination);
       const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
         documents,
@@ -133,13 +134,9 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
         e.target.files?.[0] as File,
       );
 
-      set(valuesRef.current, element.valueDestination, updatedDocuments);
-
-      fieldHelpers.setValues(structuredClone(valuesRef.current));
-
       onChange(updatedDocuments);
     },
-    [onChange, fieldHelpers, valuesRef, element, documentsList],
+    [onChange, value, element, documentsList, deleteDocument],
   );
 
   return (
