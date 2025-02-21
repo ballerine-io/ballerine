@@ -30,6 +30,7 @@ export const UpdateDocumentDecisionSchema = Type.Composite([
       Type.Literal('approve'),
       Type.Literal('reject'),
       Type.Literal('revision'),
+      Type.Null(),
     ]),
   }),
 ]);

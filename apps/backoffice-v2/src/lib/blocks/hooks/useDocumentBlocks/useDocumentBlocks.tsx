@@ -6,6 +6,7 @@ import { ctw } from '@/common/utils/ctw/ctw';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { useApproveDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useApproveDocumentByIdMutation/useApproveDocumentByIdMutation';
 import { useRejectDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useRejectDocumentByIdMutation/useRejectDocumentByIdMutation';
+import { useRemoveDocumentDecisionByIdMutation } from '@/domains/documents/hooks/mutations/useRemoveDocumentDecisionByIdMutation/useRemoveDocumentDecisionByIdMutation';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useDocumentOcr } from '@/domains/entities/hooks/mutations/useDocumentOcr/useDocumentOcr';
 import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
@@ -252,7 +253,31 @@ export const useDocumentBlocks = ({
       workflow?.workflowDefinition?.config?.isDocumentsV2,
     ],
   );
-  const { mutate: onMutateRemoveDecisionById } = useRemoveDecisionTaskByIdMutation(workflow?.id);
+  const { mutate: mutateRemoveTaskDecisionById } = useRemoveDecisionTaskByIdMutation(workflow?.id);
+  const { mutate: mutateRemoveDocumentDecisionById } = useRemoveDocumentDecisionByIdMutation();
+
+  const onMutateRemoveDecisionById = useCallback(
+    ({
+      documentId,
+      contextUpdateMethod,
+    }: {
+      documentId: string;
+      contextUpdateMethod: 'base' | 'director';
+    }) => {
+      if (workflow?.workflowDefinition?.config?.isDocumentsV2) {
+        mutateRemoveDocumentDecisionById({ documentId });
+
+        return;
+      }
+
+      mutateRemoveTaskDecisionById({ documentId, contextUpdateMethod });
+    },
+    [
+      mutateRemoveDocumentDecisionById,
+      mutateRemoveTaskDecisionById,
+      workflow?.workflowDefinition?.config?.isDocumentsV2,
+    ],
+  );
 
   return (
     documents?.flatMap(
