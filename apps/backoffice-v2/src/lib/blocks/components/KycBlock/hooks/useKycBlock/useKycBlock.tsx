@@ -39,6 +39,11 @@ export const useKycBlock = ({
   childWorkflow: NonNullable<TWorkflowById['childWorkflows']>[number];
   parentWorkflowId: string;
 }) => {
+  const filterId = useFilterId();
+  const { data: parentWorkflow } = useWorkflowByIdQuery({
+    workflowId: parentWorkflowId,
+    filterId,
+  });
   const { noAction } = useCaseDecision();
   const kycSessionKeys = Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {});
 
@@ -161,7 +166,7 @@ export const useKycBlock = ({
             },
             workflowId: childWorkflow?.id,
             documents,
-            isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
+            isDocumentsV2: !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
           })
           .cellAt(0, 0),
       ) ?? []
@@ -175,11 +180,6 @@ export const useKycBlock = ({
     workflowId: childWorkflow?.id,
   });
   const onMutateApproveCase = useCallback(() => mutateApproveCase(), [mutateApproveCase]);
-  const filterId = useFilterId();
-  const { data: parentWorkflow } = useWorkflowByIdQuery({
-    workflowId: parentWorkflowId,
-    filterId,
-  });
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, parentWorkflow);
   const isDisabled =
@@ -448,7 +448,7 @@ export const useKycBlock = ({
         },
         workflowId: childWorkflow?.id,
         documents,
-        isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
+        isDocumentsV2: !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
       })
       .build()
       .flat(1);
@@ -565,7 +565,8 @@ export const useKycBlock = ({
                           },
                           workflowId: childWorkflow?.id,
                           documents,
-                          isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
+                          isDocumentsV2:
+                            !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
                         })
                         .build()
                         .flat(1)

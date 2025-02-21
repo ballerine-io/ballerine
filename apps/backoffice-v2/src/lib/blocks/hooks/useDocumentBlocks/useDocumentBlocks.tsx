@@ -10,7 +10,7 @@ import { useRemoveDocumentDecisionByIdMutation } from '@/domains/documents/hooks
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useDocumentOcr } from '@/domains/entities/hooks/mutations/useDocumentOcr/useDocumentOcr';
 import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
-import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
+import { useRemoveTaskDecisionByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveTaskDecisionByIdMutation/useRemoveTaskDecisionByIdMutation';
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
@@ -105,11 +105,14 @@ export const useDocumentsAdapter = ({
   const documentPagesResults = useDocumentPageImages(passedDocuments, storageFilesQueryResult);
   const getDocuments = () => {
     if (isDocumentsV2) {
-      return documentsV2?.map(({ decision, decisionReason, ...document }) => ({
+      return documentsV2?.map(({ decision, decisionReason, issuingCountry, ...document }) => ({
         ...document,
         decision: {
           status: decision === 'revisions' ? 'revision' : decision,
           reason: decisionReason,
+        },
+        issuer: {
+          country: issuingCountry,
         },
         details:
           document?.files?.map(({ mimeType, fileName, variant, fileId, imageUrl }) => {
@@ -253,7 +256,7 @@ export const useDocumentBlocks = ({
       workflow?.workflowDefinition?.config?.isDocumentsV2,
     ],
   );
-  const { mutate: mutateRemoveTaskDecisionById } = useRemoveDecisionTaskByIdMutation(workflow?.id);
+  const { mutate: mutateRemoveTaskDecisionById } = useRemoveTaskDecisionByIdMutation(workflow?.id);
   const { mutate: mutateRemoveDocumentDecisionById } = useRemoveDocumentDecisionByIdMutation();
 
   const onMutateRemoveDecisionById = useCallback(

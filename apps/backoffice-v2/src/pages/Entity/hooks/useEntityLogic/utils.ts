@@ -68,8 +68,8 @@ export const isExistingSchemaForDocument = (documentsSchemas: TDocument[]) => {
 
 export const extractCountryCodeFromDocuments = (documents: TDocument[]) => {
   return documents?.find(document => {
-    return !!document?.issuingCountry;
-  })?.issuingCountry;
+    return !!document?.issuer?.country;
+  })?.issuer?.country;
 };
 
 export const omitPropsFromObject = <

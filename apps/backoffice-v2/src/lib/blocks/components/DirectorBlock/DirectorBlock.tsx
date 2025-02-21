@@ -3,6 +3,8 @@ import { cells } from '../../create-blocks-typed/create-blocks-typed';
 import { useEndUserByIdQuery } from '@/domains/individuals/queries/useEndUserByIdQuery/useEndUserByIdQuery';
 import { useDirectorBlock } from './hooks/useDirectorBlock/useDirectorBlock';
 import { useDocumentsAdapter } from '../../hooks/useDocumentBlocks/useDocumentBlocks';
+import { extractCountryCodeFromDocuments } from '@/pages/Entity/hooks/useEntityLogic/utils';
+import { getDocumentsByCountry } from '@ballerine/common';
 
 export const DirectorBlock = ({
   workflowId,
@@ -14,9 +16,11 @@ export const DirectorBlock = ({
   revisionReasons,
   isEditable,
   isApproveDisabled,
-  documentSchemas,
   workflow,
-}: Omit<Parameters<typeof useDirectorBlock>[0], 'director' | 'isLoadingDocuments'> & {
+}: Omit<
+  Parameters<typeof useDirectorBlock>[0],
+  'director' | 'isLoadingDocuments' | 'documentSchemas'
+> & {
   director: Omit<Parameters<typeof useDirectorBlock>[0]['director'], 'aml'>;
 }) => {
   const { data: endUser } = useEndUserByIdQuery({ id: director.id });
@@ -32,6 +36,14 @@ export const DirectorBlock = ({
       hits: endUser?.amlHits,
     },
   };
+
+  const issuerCountryCode = extractCountryCodeFromDocuments(directorWithAml.documents);
+  const documentSchemas = issuerCountryCode ? getDocumentsByCountry(issuerCountryCode) : [];
+
+  if (!Array.isArray(documentSchemas) || !documentSchemas.length) {
+    console.warn(`No document schema found for issuer country code of "${issuerCountryCode}".`);
+  }
+
   const directorBlock = useDirectorBlock({
     workflowId,
     onReuploadNeeded,
