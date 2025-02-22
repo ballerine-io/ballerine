@@ -1000,6 +1000,7 @@ model Document {
 }
 
 enum DocumentStatus {
+  unprovided
   provided
   requested
 }
