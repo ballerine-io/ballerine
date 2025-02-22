@@ -813,11 +813,19 @@ export class DocumentService {
             }
 
             if (entityType === 'ubo') {
-              result.individuals.ubos.push({ ...parsedDocument, ballerineEntityId });
+              result.individuals.ubos.push({
+                ...parsedDocument,
+                entityType,
+                ballerineEntityId,
+              });
             }
 
             if (entityType === 'director') {
-              result.individuals.directors.push({ ...parsedDocument, ballerineEntityId });
+              result.individuals.directors.push({
+                ...parsedDocument,
+                entityType,
+                ballerineEntityId,
+              });
             }
           }
 

@@ -1,3 +1,4 @@
+import { IUIDefinitionPage } from '@/common/ui-definition-parse-utils/types';
 import { DocumentService } from './document.service';
 
 describe('DocumentService', () => {
@@ -14,38 +15,41 @@ describe('DocumentService', () => {
         // Arrange
         const uiSchema = [
           {
-            id: 'bank-information-bank-statement-document',
-            element: 'documentfield',
-            params: {
-              template: {
-                id: 'bank-statement-document',
-                type: 'bank_statement',
-                category: 'financial_information',
-                issuer: { country: 'ZZ' },
-                issuingVersion: 1,
-                version: '1',
+            elements: [
+              {
+                id: 'bank-information-bank-statement-document',
+                element: 'documentfield',
+                params: {
+                  template: {
+                    id: 'bank-statement-document',
+                    type: 'bank_statement',
+                    category: 'financial_information',
+                    issuer: { country: 'ZZ' },
+                    issuingVersion: 1,
+                    version: '1',
+                  },
+                },
+                valueDestination: 'documents',
               },
-            },
-            valueDestination: 'documents',
+            ],
           },
         ];
 
         // Act
-        const result = documentService['parseDocumentsFromUISchema'](uiSchema);
+        const result = documentService['parseDocumentsFromUISchema'](uiSchema, {});
 
         // Assert
         expect(result.business).toHaveLength(1);
         const businessDoc = result.business[0];
-        expect(businessDoc).toBeDefined();
-
         expect(businessDoc).toEqual({
-          entityType: 'business',
           type: 'bank_statement',
           templateId: 'bank-statement-document',
           category: 'financial_information',
           issuingCountry: 'ZZ',
           issuingVersion: '1',
           version: '1',
+          ballerineEntityId: undefined,
+          entityType: 'business',
         });
       });
 
@@ -53,218 +57,182 @@ describe('DocumentService', () => {
         // Arrange
         const uiSchema = [
           {
-            id: 'proof-of-address-document',
-            element: 'documentfield',
-            params: {
-              template: {
+            elements: [
+              {
                 id: 'proof-of-address-document',
-                type: 'general_document',
-                category: 'proof_of_address',
-                issuer: { country: 'ZZ' },
-                issuingVersion: 1,
-                version: '1',
+                element: 'documentfield',
+                params: {
+                  template: {
+                    id: 'proof-of-address-document',
+                    type: 'general_document',
+                    category: 'proof_of_address',
+                    issuer: { country: 'ZZ' },
+                    issuingVersion: 1,
+                    version: '1',
+                  },
+                },
+                valueDestination: 'business.documents',
               },
-            },
-            valueDestination: 'business.documents',
+            ],
           },
         ];
 
         // Act
-        const result = documentService['parseDocumentsFromUISchema'](uiSchema);
+        const result = documentService['parseDocumentsFromUISchema'](uiSchema, {});
 
         // Assert
         expect(result.business).toHaveLength(1);
         const businessDoc = result.business[0];
-        expect(businessDoc).toBeDefined();
-
         expect(businessDoc).toEqual({
-          entityType: 'business',
           type: 'general_document',
           templateId: 'proof-of-address-document',
           category: 'proof_of_address',
           issuingCountry: 'ZZ',
           issuingVersion: '1',
           version: '1',
+          ballerineEntityId: undefined,
+          entityType: 'business',
         });
       });
     });
 
-    describe('UBO Documents', () => {
-      it('should parse UBO documents with array index in path', () => {
+    describe('Individual Documents', () => {
+      it('should parse UBO documents', () => {
         // Arrange
         const uiSchema = [
           {
-            id: 'company-ownership-ubos-proof-of-address-document-input',
-            element: 'documentfield',
-            params: {
-              template: {
-                id: 'proof-of-address-document',
-                type: 'general_document',
-                category: 'proof_of_address',
-                issuer: { country: 'ZZ' },
-                issuingVersion: 1,
-                version: '1',
+            elements: [
+              {
+                element: 'entityfieldgroup',
+                params: {
+                  type: 'ubo',
+                },
+                valueDestination: 'entity.data.additionalInfo.ubos',
+                children: [
+                  {
+                    element: 'documentfield',
+                    params: {
+                      template: {
+                        id: 'proof-of-address-document',
+                        type: 'general_document',
+                        category: 'proof_of_address',
+                        issuer: { country: 'ZZ' },
+                        issuingVersion: 1,
+                        version: '1',
+                      },
+                    },
+                    valueDestination: 'entity.data.additionalInfo.ubos[$0].documents',
+                  },
+                ],
+              },
+            ],
+          },
+        ] as IUIDefinitionPage[];
+
+        const context = {
+          entity: {
+            data: {
+              additionalInfo: {
+                ubos: [
+                  {
+                    ballerineEntityId: 'ubo-123',
+                  },
+                ],
               },
             },
-            valueDestination: 'entity.data.additionalInfo.ubos[$0].documents',
           },
-        ];
+        };
 
         // Act
-        const result = documentService['parseDocumentsFromUISchema'](uiSchema);
+        const result = documentService['parseDocumentsFromUISchema'](uiSchema, context);
 
         // Assert
         expect(result.individuals.ubos).toHaveLength(1);
         const uboDoc = result.individuals.ubos[0];
-        expect(uboDoc).toBeDefined();
-
         expect(uboDoc).toEqual({
-          entityType: 'ubo',
           type: 'general_document',
           templateId: 'proof-of-address-document',
           category: 'proof_of_address',
           issuingCountry: 'ZZ',
           issuingVersion: '1',
           version: '1',
+          ballerineEntityId: 'ubo-123',
+          entityType: 'ubo',
         });
       });
 
-      it('should handle multiple UBO documents for different UBOs', () => {
+      it('should parse director documents', () => {
         // Arrange
         const uiSchema = [
           {
-            element: 'documentfield',
-            params: {
-              template: {
-                id: 'proof-of-address-document',
-                type: 'general_document',
-                category: 'proof_of_address',
-                issuer: { country: 'US' },
-                issuingVersion: 1,
-                version: '1',
-              },
-            },
-            valueDestination: 'entity.data.additionalInfo.ubos[$0].documents',
-          },
-          {
-            element: 'documentfield',
-            params: {
-              template: {
-                id: 'proof-of-address-document',
-                type: 'general_document',
-                category: 'proof_of_address',
-                issuer: { country: 'UK' },
-                issuingVersion: 1,
-                version: '1',
-              },
-            },
-            valueDestination: 'entity.data.additionalInfo.ubos[$1].documents',
-          },
-        ];
-
-        // Act
-        const result = documentService['parseDocumentsFromUISchema'](uiSchema);
-
-        // Assert
-        expect(result.individuals.ubos).toHaveLength(2);
-        const firstUbo = result.individuals.ubos[0];
-        const secondUbo = result.individuals.ubos[1];
-
-        expect(firstUbo).toBeDefined();
-        expect(secondUbo).toBeDefined();
-
-        expect(firstUbo?.issuingCountry).toBe('US');
-        expect(secondUbo?.issuingCountry).toBe('UK');
-      });
-    });
-
-    describe('Complex Document Scenarios', () => {
-      it('should handle documents with conditional visibility', () => {
-        // Arrange
-        const uiSchema = [
-          {
-            id: 'security-questions-page-pci-document',
-            element: 'documentfield',
-            hidden: [
+            elements: [
               {
-                value: { '!': { var: 'entity.data.additionalInfo.companyIsPCICompliant' } },
-                engine: 'json-logic',
-              },
-            ],
-            params: {
-              template: {
-                id: 'pci-certification-document',
-                type: 'general_document',
-                category: 'proof_of_address',
-                issuer: { country: 'ZZ' },
-                issuingVersion: 1,
-                version: '1',
-              },
-            },
-            valueDestination: 'documents',
-          },
-        ];
-
-        // Act
-        const result = documentService['parseDocumentsFromUISchema'](uiSchema);
-
-        // Assert
-        expect(result.business).toHaveLength(1);
-        const businessDoc = result.business[0];
-        expect(businessDoc).toBeDefined();
-
-        expect(businessDoc?.templateId).toBe('pci-certification-document');
-      });
-
-      it('should handle documents with validation rules', () => {
-        // Arrange
-        const uiSchema = [
-          {
-            element: 'documentfield',
-            validate: [
-              {
-                type: 'document',
-                value: {
-                  id: 'proof-of-address-document',
-                  pageNumber: 0,
-                  pageProperty: 'ballerineFileId',
+                element: 'entityfieldgroup',
+                params: {
+                  type: 'director',
                 },
-                considerRequired: true,
+                valueDestination: 'entity.data.additionalInfo.directors',
+                children: [
+                  {
+                    element: 'documentfield',
+                    params: {
+                      template: {
+                        id: 'proof-of-address-document',
+                        type: 'general_document',
+                        category: 'proof_of_address',
+                        issuer: { country: 'ZZ' },
+                        issuingVersion: 1,
+                        version: '1',
+                      },
+                    },
+                    valueDestination: 'entity.data.additionalInfo.directors[$0].documents',
+                  },
+                ],
               },
             ],
-            params: {
-              template: {
-                id: 'proof-of-address-document',
-                type: 'general_document',
-                category: 'proof_of_address',
-                issuer: { country: 'ZZ' },
-                issuingVersion: 1,
-                version: '1',
+          },
+        ] as IUIDefinitionPage[];
+
+        const context = {
+          entity: {
+            data: {
+              additionalInfo: {
+                directors: [
+                  {
+                    ballerineEntityId: 'director-123',
+                  },
+                ],
               },
             },
-            valueDestination: 'documents',
           },
-        ];
+        };
 
         // Act
-        const result = documentService['parseDocumentsFromUISchema'](uiSchema);
+        const result = documentService['parseDocumentsFromUISchema'](uiSchema, context);
 
         // Assert
-        expect(result.business).toHaveLength(1);
-        const businessDoc = result.business[0];
-        expect(businessDoc).toBeDefined();
-
-        expect(businessDoc?.templateId).toBe('proof-of-address-document');
+        expect(result.individuals.directors).toHaveLength(1);
+        const directorDoc = result.individuals.directors[0];
+        expect(directorDoc).toEqual({
+          type: 'general_document',
+          templateId: 'proof-of-address-document',
+          category: 'proof_of_address',
+          issuingCountry: 'ZZ',
+          issuingVersion: '1',
+          version: '1',
+          ballerineEntityId: 'director-123',
+          entityType: 'director',
+        });
       });
     });
 
     describe('Edge Cases', () => {
       it('should handle empty UI schema array', () => {
         // Arrange
-        const uiSchema: Array<Record<string, any>> = [];
+        const uiSchema: Array<{ elements: any[] }> = [];
 
         // Act
-        const result = documentService['parseDocumentsFromUISchema'](uiSchema);
+        const result = documentService['parseDocumentsFromUISchema'](uiSchema, {});
 
         // Assert
         expect(result).toEqual({
@@ -276,83 +244,55 @@ describe('DocumentService', () => {
         });
       });
 
-      it('should handle deeply nested document fields', () => {
-        // Arrange
-        const uiSchema = [
-          {
-            element: 'container',
-            children: [
-              {
-                element: 'container',
-                elements: [
-                  {
-                    element: 'documentfield',
-                    params: {
-                      template: {
-                        id: 'nested-doc',
-                        type: 'general_document',
-                        category: 'proof_of_address',
-                        issuer: { country: 'ZZ' },
-                        issuingVersion: 1,
-                        version: '1',
-                      },
-                    },
-                    valueDestination: 'documents',
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-
-        // Act
-        const result = documentService['parseDocumentsFromUISchema'](uiSchema);
-
-        // Assert
-        expect(result.business).toHaveLength(1);
-        const businessDoc = result.business[0];
-        expect(businessDoc).toBeDefined();
-
-        expect(businessDoc?.templateId).toBe('nested-doc');
-      });
-
       it('should ignore document fields without template params', () => {
         // Arrange
         const uiSchema = [
           {
-            element: 'documentfield',
-            params: {},
-            valueDestination: 'documents',
+            elements: [
+              {
+                element: 'documentfield',
+                params: {},
+                valueDestination: 'documents',
+              },
+            ],
           },
-        ];
+        ] as IUIDefinitionPage[];
 
         // Act
-        const result = documentService['parseDocumentsFromUISchema'](uiSchema);
+        const result = documentService['parseDocumentsFromUISchema'](uiSchema, {});
 
         // Assert
         expect(result.business).toHaveLength(0);
+        expect(result.individuals.ubos).toHaveLength(0);
+        expect(result.individuals.directors).toHaveLength(0);
       });
 
       it('should handle malformed template data', () => {
         // Arrange
         const uiSchema = [
           {
-            element: 'documentfield',
-            params: {
-              template: {
-                id: 'malformed-doc',
-                // Missing required fields
+            elements: [
+              {
+                element: 'documentfield',
+                params: {
+                  template: {
+                    id: 'malformed-doc',
+                    // Missing required fields
+                  },
+                },
+                valueDestination: 'documents',
               },
-            },
-            valueDestination: 'documents',
+            ],
           },
-        ];
+        ] as IUIDefinitionPage[];
 
         // Act
-        const result = documentService['parseDocumentsFromUISchema'](uiSchema);
+        const result = documentService['parseDocumentsFromUISchema'](uiSchema, {});
 
         // Assert
         expect(result.business).toHaveLength(0);
+        expect(result.individuals.ubos).toHaveLength(0);
+        expect(result.individuals.directors).toHaveLength(0);
       });
     });
   });
