@@ -26,6 +26,7 @@ import { buildEntityUpdatePayload } from './components/EntityFields/helpers/buil
 import { updateEntities } from './components/EntityFields/helpers/update-entities';
 import { getEntityGroupValueDestination } from './helpers/get-entity-group-value-destination';
 import { useEntityFieldGroupList } from './hooks/useEntityFieldGroupList';
+import { EntityFieldProvider } from './providers/EntityFieldProvider';
 import { IEntity } from './types';
 
 export type TEntityFieldGroupType = 'director' | 'ubo';
@@ -74,11 +75,11 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
   const { disabled, value, onChange } = useField<IEntity[]>(element, stack);
   const { addButtonLabel = 'Add Item' } = element.params || {};
   const { items, isRemovingEntity, addItem, removeItem } = useEntityFieldGroupList({ element });
-  const { run: createEntity } = useHttp(
+  const { run: createEntity, isLoading: isCreatingEntity } = useHttp(
     element.params!.httpParams?.createEntity.httpParams,
     metadata,
   );
-  const { run: updateEntity } = useHttp(
+  const { run: updateEntity, isLoading: isUpdatingEntity } = useHttp(
     element.params!.httpParams?.updateEntity.httpParams,
     metadata,
   );
@@ -173,29 +174,36 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
     <div className="flex flex-col gap-4" data-testid={`${fieldId}-fieldlist`}>
       {items?.map((entity: IEntity, index: number) => {
         return (
-          <div className="flex flex-col gap-4" key={entity.__id}>
-            <EntityFields
-              entityId={entity.__id!}
-              index={index}
-              stack={stack}
-              fieldId={fieldId}
-              element={element}
-              elementsOverride={elementsOverride as AnyObject}
-            />
-            <div className="flex flex-row justify-start">
-              <Button
-                variant="outline"
-                size="icon"
-                disabled={isRemovingEntity}
-                onClick={isRemovingEntity ? undefined : () => removeItem(entity.__id!)}
-              >
-                <Trash2Icon
-                  className="h-4 w-4 cursor-pointer font-bold"
-                  data-testid={`${fieldId}-fieldlist-item-remove-${entity.__id}`}
-                />
-              </Button>
+          <EntityFieldProvider
+            key={entity.__id || entity.ballerineEntityId}
+            entityId={entity.ballerineEntityId}
+            entityFieldGroupType={element.params?.type as TEntityFieldGroupType}
+            isSyncing={isCreatingEntity || isUpdatingEntity}
+          >
+            <div className="flex flex-col gap-4">
+              <EntityFields
+                entityId={entity.__id!}
+                index={index}
+                stack={stack}
+                fieldId={fieldId}
+                element={element}
+                elementsOverride={elementsOverride as AnyObject}
+              />
+              <div className="flex flex-row justify-start">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  disabled={isRemovingEntity}
+                  onClick={isRemovingEntity ? undefined : () => removeItem(entity.__id!)}
+                >
+                  <Trash2Icon
+                    className="h-4 w-4 cursor-pointer font-bold"
+                    data-testid={`${fieldId}-fieldlist-item-remove-${entity.__id}`}
+                  />
+                </Button>
+              </div>
             </div>
-          </div>
+          </EntityFieldProvider>
         );
       })}
       <div className="flex flex-row justify-end">
