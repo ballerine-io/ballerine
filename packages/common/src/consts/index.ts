@@ -174,9 +174,10 @@ export const URL_PATTERN =
 export const MERCHANT_REPORT_STATUSES = [
   'draft',
   'in-progress',
-  'completed',
   'quality-control',
-  'in-review',
+  'pending-review',
+  'under-review',
+  'completed',
   'failed',
 ] as const;
 
@@ -185,6 +186,17 @@ export type MerchantReportStatus = (typeof MERCHANT_REPORT_STATUSES)[number];
 export const MERCHANT_REPORT_STATUSES_MAP = Object.fromEntries(
   MERCHANT_REPORT_STATUSES.map(status => [status, status]),
 ) as { [K in MerchantReportStatus]: K };
+
+export type UpdateableReportStatus =
+  | (typeof MERCHANT_REPORT_STATUSES_MAP)['completed']
+  | (typeof MERCHANT_REPORT_STATUSES_MAP)['pending-review']
+  | (typeof MERCHANT_REPORT_STATUSES_MAP)['under-review'];
+
+export const UPDATEABLE_REPORT_STATUSES = [
+  MERCHANT_REPORT_STATUSES_MAP['pending-review'],
+  MERCHANT_REPORT_STATUSES_MAP['under-review'],
+  MERCHANT_REPORT_STATUSES_MAP.completed,
+] as const;
 
 export const MERCHANT_REPORT_TYPES = ['MERCHANT_REPORT_T1', 'ONGOING_MERCHANT_REPORT_T1'] as const;
 
