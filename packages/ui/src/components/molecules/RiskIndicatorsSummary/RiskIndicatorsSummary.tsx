@@ -16,15 +16,19 @@ export const RiskIndicatorsSummary: FunctionComponent<{
     <Card className={'col-span-full'}>
       <CardHeader className={'pt-4 font-bold'}>Risk Indicators</CardHeader>
       <CardContent className={'grid grid-cols-2 gap-4 xl:grid-cols-3'}>
-        {sections.map(section => (
-          <RiskIndicator
-            key={section.title}
-            title={section.title}
-            search={section.search}
-            riskIndicators={section.riskIndicators}
-            Link={Link}
-          />
-        ))}
+        {sections.length > 0 ? (
+          sections.map(section => (
+            <RiskIndicator
+              key={section.title}
+              title={section.title}
+              search={section.search}
+              riskIndicators={section.riskIndicators}
+              Link={Link}
+            />
+          ))
+        ) : (
+          <p>No risk indicators detected.</p>
+        )}
       </CardContent>
     </Card>
   );
