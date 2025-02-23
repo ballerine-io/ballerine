@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
 import React, { forwardRef, FunctionComponent } from 'react';
-import { MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
+import { MERCHANT_REPORT_STATUSES_MAP, UPDATEABLE_REPORT_STATUSES } from '@ballerine/common';
 import { ArrowLeft, ChevronLeft, FileQuestion } from 'lucide-react';
 import {
   Dialog,
@@ -108,11 +108,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
   if (
     !isFetchingBusinessReport &&
     businessReport?.status &&
-    ![
-      MERCHANT_REPORT_STATUSES_MAP['pending-review'],
-      MERCHANT_REPORT_STATUSES_MAP['under-review'],
-      MERCHANT_REPORT_STATUSES_MAP.completed,
-    ].includes(businessReport?.status)
+    !UPDATEABLE_REPORT_STATUSES.includes(businessReport?.status)
   ) {
     let supplementalText = '';
 

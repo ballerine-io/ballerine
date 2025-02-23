@@ -2,7 +2,7 @@ import { z } from 'zod';
 import React, { useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
+import { MERCHANT_REPORT_STATUSES_MAP, UPDATEABLE_REPORT_STATUSES } from '@ballerine/common';
 import {
   Dialog,
   DialogContent,
@@ -17,6 +17,7 @@ import {
   TextArea,
 } from '@ballerine/ui';
 
+import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { Form } from '@/common/components/organisms/Form/Form';
 import { Button } from '@/common/components/atoms/Button/Button';
 import { FormItem } from '@/common/components/organisms/Form/Form.Item';
@@ -31,13 +32,6 @@ import {
   MerchantMonitoringStatusBadge,
   statusToData,
 } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringStatusBadge';
-import { useToggle } from '@/common/hooks/useToggle/useToggle';
-
-const selectableStatuses = [
-  MERCHANT_REPORT_STATUSES_MAP['pending-review'],
-  MERCHANT_REPORT_STATUSES_MAP['under-review'],
-  MERCHANT_REPORT_STATUSES_MAP.completed,
-];
 
 const MerchantMonitoringCompletedStatusFormSchema = z.object({
   text: z.string().optional(),
@@ -126,7 +120,7 @@ export const MerchantMonitoringReportStatus = ({
             closeCompleteReviewModal();
           }}
         >
-          {selectableStatuses.map(selectableStatus => (
+          {UPDATEABLE_REPORT_STATUSES.map(selectableStatus => (
             <DropdownMenuItem
               key={selectableStatus}
               className="flex w-full cursor-pointer items-center p-0"
