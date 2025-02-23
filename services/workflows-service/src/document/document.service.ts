@@ -1,20 +1,30 @@
+import { ajv } from '@/common/ajv/ajv.validator';
 import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
+import { formatValueDestination } from '@/common/ui-definition-parse-utils/format-value-destination';
+import { getFieldDefinitionsFromSchema } from '@/common/ui-definition-parse-utils/get-field-definitions-from-ui-schema';
+import {
+  IFormElement,
+  IUIDefinitionPage,
+  TDeepthLevelStack,
+} from '@/common/ui-definition-parse-utils/types';
 import { DocumentFileService } from '@/document-file/document-file.service';
 import { CreateDocumentFileSchema } from '@/document-file/dtos/document-file.dto';
+import { ValidationError } from '@/errors';
 import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
 import { PrismaTransactionClient, TProjectId } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
+import { addPropertiesSchemaToDocument } from '@/workflow/utils/add-properties-schema-to-document';
 import { WorkflowService } from '@/workflow/workflow.service';
 import {
+  AnyRecord,
   CollectionFlowStatusesEnum,
   CommonWorkflowEvent,
   getDocumentId,
-  isType,
   setCollectionFlowStatus,
 } from '@ballerine/common';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { DocumentRepository } from './document.repository';
 import {
   Document,
   DocumentFile,
@@ -25,19 +35,19 @@ import {
   WorkflowRuntimeData,
 } from '@prisma/client';
 import { Static } from '@sinclair/typebox';
+import { get } from 'lodash';
 import * as z from 'zod';
+import { DocumentRepository } from './document.repository';
 import { CreateDocumentSchema, UpdateDocumentSchema } from './dtos/document.dto';
-import { addRequestedDocumentToEntityDocuments } from './helpers/add-requested-document-to-entity-documents';
+import { addRequestedDocumentToBusinessEntityDocuments } from './helpers/add-requested-document-to-business-entity-documents';
+import { addRequestedDocumentToIndividualDocuments } from './helpers/add-requested-document-to-individuals-documents';
+import { parseDocumentDefinition } from './helpers/parse-document-definition';
 import {
   DocumentTrackerDocumentSchema,
   DocumentTrackerResponseSchema,
   EntitySchema,
   TParsedDocuments,
 } from './types';
-import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
-import { addPropertiesSchemaToDocument } from '@/workflow/utils/add-properties-schema-to-document';
-import { ajv } from '@/common/ajv/ajv.validator';
-import { ValidationError } from '@/errors';
 
 @Injectable()
 export class DocumentService {
@@ -468,8 +478,6 @@ export class DocumentService {
 
     const uiSchema = uiSchemaValidation.data;
 
-    const parsedUIDocuments = this.parseDocumentsFromUISchema(uiSchema.elements);
-
     const workflowData = (await this.workflowService.getWorkflowRuntimeDataById(
       workflowId,
       {
@@ -482,6 +490,11 @@ export class DocumentService {
     )) as WorkflowRuntimeData & {
       childWorkflowsRuntimeData: WorkflowRuntimeData[];
     };
+
+    const parsedUIDocuments = this.parseDocumentsFromUISchema(
+      uiSchema.elements as IUIDefinitionPage[],
+      workflowData.context,
+    );
 
     const entities = {
       business: {
@@ -588,34 +601,46 @@ export class DocumentService {
         });
       }),
       individuals: {
-        ubos: entitiesWithDocuments.ubos.flatMap(ubo =>
-          parsedUIDocuments.individuals.ubos.map(expectedDoc =>
-            generateDocumentTrackerItem(
-              ubo.documents.find(doc => isMatchingDocument(doc, expectedDoc)),
-              expectedDoc,
-              {
-                id: ubo.id,
-                firstName: ubo.firstName,
-                lastName: ubo.lastName,
-                entityType: 'ubo',
-              },
-            ),
-          ),
-        ),
-        directors: entitiesWithDocuments.directors.flatMap(director =>
-          parsedUIDocuments.individuals.directors.map(expectedDoc =>
-            generateDocumentTrackerItem(
-              director.documents.find(doc => isMatchingDocument(doc, expectedDoc)),
-              expectedDoc,
-              {
-                id: director.id,
-                firstName: director.firstName,
-                lastName: director.lastName,
-                entityType: 'director',
-              },
-            ),
-          ),
-        ),
+        ubos: parsedUIDocuments.individuals.ubos.map(parsedDocument => {
+          const { ballerineEntityId } = parsedDocument;
+          const ubo = entitiesWithDocuments.ubos.find(ubo => ubo.id === ballerineEntityId);
+
+          if (!ubo) {
+            throw new Error('Ubo not found');
+          }
+
+          const matchingDocument = ubo.documents.find(doc =>
+            isMatchingDocument(doc, parsedDocument),
+          );
+
+          return generateDocumentTrackerItem(matchingDocument, parsedDocument, {
+            id: ubo.id,
+            firstName: ubo.firstName,
+            lastName: ubo.lastName,
+            entityType: 'ubo',
+          });
+        }),
+        directors: parsedUIDocuments.individuals.directors.map(parsedDocument => {
+          const { ballerineEntityId } = parsedDocument;
+          const director = entitiesWithDocuments.directors.find(
+            director => director.id === ballerineEntityId,
+          );
+
+          if (!director) {
+            throw new Error('Director not found');
+          }
+
+          const matchingDocument = director.documents.find(doc =>
+            isMatchingDocument(doc, parsedDocument),
+          );
+
+          return generateDocumentTrackerItem(matchingDocument, parsedDocument, {
+            id: director.id,
+            firstName: director.firstName,
+            lastName: director.lastName,
+            entityType: 'director',
+          });
+        }),
       },
     };
 
@@ -653,6 +678,7 @@ export class DocumentService {
       endUserId: ['ubo', 'director'].includes(document.entity.type)
         ? document.entity.id
         : undefined,
+      entityType: document.entity.type,
     }));
 
     const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
@@ -673,7 +699,15 @@ export class DocumentService {
     );
 
     const createdDocuments = await Promise.all(
-      documentsToCreate.map(doc => this.repository.create(doc)),
+      documentsToCreate.map(async ({ entityType, ...doc }) => {
+        const createdDocument = await this.repository.create(doc);
+
+        return {
+          ...createdDocument,
+          entityType,
+          entityId: entityType === 'business' ? undefined : createdDocument.endUserId,
+        };
+      }),
     );
 
     const contextWithDocuments = createdDocuments.reduce((context, document) => {
@@ -683,21 +717,31 @@ export class DocumentService {
         return context;
       }
 
-      return addRequestedDocumentToEntityDocuments(
-        context,
-        document.type as 'business' | 'ubo' | 'director',
-        uiDefinition,
-        {
-          id: createdDocument.id,
-          status: DocumentStatus.requested,
-          decision: null,
-          version: createdDocument.version.toString(),
-          type: createdDocument.type,
-          category: createdDocument.category,
-          issuingCountry: createdDocument.issuingCountry,
-          issuingVersion: createdDocument.issuingVersion,
-        },
-      );
+      const documentToInsert = {
+        id: createdDocument.id,
+        status: DocumentStatus.requested,
+        decision: null,
+        version: createdDocument.version.toString(),
+        type: createdDocument.type,
+        category: createdDocument.category,
+        issuingCountry: createdDocument.issuingCountry,
+        issuingVersion: createdDocument.issuingVersion,
+        entityId: createdDocument.entityId as string | undefined,
+      };
+
+      return document.entityType === 'business'
+        ? addRequestedDocumentToBusinessEntityDocuments(
+            context,
+            document.entityType as 'business' | 'ubo' | 'director',
+            uiDefinition,
+            documentToInsert,
+          )
+        : addRequestedDocumentToIndividualDocuments(
+            context,
+            document.entityType as 'ubo' | 'director',
+            uiDefinition,
+            documentToInsert,
+          );
     }, workflowRuntimeData.context);
 
     const contextWithRevision = setCollectionFlowStatus(
@@ -726,7 +770,10 @@ export class DocumentService {
     return { message: 'Documents requested successfully', count: createdDocuments.length };
   }
 
-  private parseDocumentsFromUISchema(uiSchema: Array<Record<string, any>>): TParsedDocuments {
+  private parseDocumentsFromUISchema(
+    uiSchema: IUIDefinitionPage[],
+    context: AnyRecord,
+  ): TParsedDocuments {
     const result: TParsedDocuments = {
       business: [],
       individuals: {
@@ -735,71 +782,80 @@ export class DocumentService {
       },
     };
 
-    const processElement = (element: Record<string, any>) => {
-      if (isType(z.array(z.record(z.string(), z.any())))(element?.elements)) {
-        element.elements.forEach(processElement);
-      }
+    uiSchema.forEach(page => {
+      // Extracting only field element definitions from the page
+      const fieldElements = getFieldDefinitionsFromSchema(page.elements);
 
-      if (isType(z.array(z.record(z.string(), z.any())))(element?.children)) {
-        element.children.forEach(processElement);
-      }
-
-      if (element.element !== 'documentfield') {
-        return;
-      }
-
-      const template = element.params.template;
-
-      const parsedDocument = z
-        .object({
-          type: z.string(),
-          id: z.string(),
-          category: z.string(),
-          issuer: z.object({
-            country: z.string(),
-          }),
-          issuingVersion: z.number(),
-          version: z.string(),
-          entityType: z.enum(['business', 'ubo', 'director']).default('business'),
-        })
-        .transform(({ entityType, type, id, category, issuer, issuingVersion, version }) => ({
+      const run = (
+        elements: Array<IFormElement<any>>,
+        stack: TDeepthLevelStack,
+        {
+          ballerineEntityId,
           entityType,
-          type,
-          templateId: id,
-          category,
-          issuingCountry: issuer.country,
-          issuingVersion: issuingVersion.toString(),
-          version,
-        }))
-        .safeParse(template);
+        }: { entityType?: 'ubo' | 'director' | 'business'; ballerineEntityId?: string },
+      ) => {
+        for (const element of elements) {
+          // Extracting revision reason fro documents isnt common so we handling it explicitly
+          if (element.element === 'documentfield') {
+            const parsedDocument = parseDocumentDefinition(element);
 
-      if (!parsedDocument.success) {
-        return;
-      }
+            if (!parsedDocument) {
+              continue;
+            }
 
-      if (!element.valueDestination) {
-        return;
-      }
+            if (!entityType) {
+              result.business.push(parsedDocument);
+              continue;
+            }
 
-      const isUboDocument =
-        element.valueDestination.includes('.ubo') &&
-        element.valueDestination.includes('.documents');
-      const isDirectorDocument =
-        element.valueDestination.includes('.director') &&
-        element.valueDestination.includes('.documents');
+            if (!ballerineEntityId) {
+              throw new Error('Ballerine entity id is missing on');
+            }
 
-      if (isUboDocument) {
-        parsedDocument.data.entityType = 'ubo';
-        result.individuals.ubos.push(parsedDocument.data);
-      } else if (isDirectorDocument) {
-        parsedDocument.data.entityType = 'director';
-        result.individuals.directors.push(parsedDocument.data);
-      } else {
-        result.business.push(parsedDocument.data);
-      }
-    };
+            if (entityType === 'ubo') {
+              result.individuals.ubos.push({
+                ...parsedDocument,
+                entityType,
+                ballerineEntityId,
+              });
+            }
 
-    uiSchema.forEach(processElement);
+            if (entityType === 'director') {
+              result.individuals.directors.push({
+                ...parsedDocument,
+                entityType,
+                ballerineEntityId,
+              });
+            }
+          }
+
+          if (element.element === 'entityfieldgroup') {
+            const entityType = element.params.type;
+
+            const value = get(
+              context,
+              formatValueDestination(element.valueDestination, stack),
+              [],
+            ) as Array<{ ballerineEntityId: string }>;
+
+            if (!value) {
+              continue;
+            }
+
+            if (Array.isArray(element.children) && element.children.length > 0) {
+              value?.forEach((entity: { ballerineEntityId: string }, index: number) => {
+                run(element.children as Array<IFormElement<any>>, [...stack, index], {
+                  entityType,
+                  ballerineEntityId: entity.ballerineEntityId,
+                });
+              });
+            }
+          }
+        }
+      };
+
+      run(fieldElements, [], {});
+    });
 
     return result;
   }

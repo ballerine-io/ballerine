@@ -2,7 +2,10 @@ import { AnyObject } from '@/common';
 import { IFormElement } from '@/components/organisms/Form/DynamicForm/types';
 import { formatValueDestination, TDeepthLevelStack } from '@/components/organisms/Form/Validator';
 import { get } from 'lodash';
-import { IDocumentFieldParams } from '../../../../DocumentField';
+import {
+  getDocumentObjectFromDocumentsList,
+  IDocumentFieldParams,
+} from '../../../../DocumentField';
 import { buildDocumentFormData } from '../../../../DocumentField/helpers/build-document-form-data';
 import { getFileOrFileIdFromDocumentsList } from '../../../../DocumentField/hooks/useDocumentUpload/helpers/get-file-or-fileid-from-documents-list';
 import { IEntityFieldGroupParams } from '../../../EntityFieldGroup';
@@ -44,10 +47,16 @@ export const buildDocumentsCreationPayload = (
         entityIndex,
       ]);
 
-      const documentFile = getFileOrFileIdFromDocumentsList(
-        get(context, documentDestination),
-        documentElement,
-      );
+      const documentsList = get(context, documentDestination, []);
+
+      const document = getDocumentObjectFromDocumentsList(documentsList, documentElement);
+
+      // Document already created
+      if (document?._id) {
+        continue;
+      }
+
+      const documentFile = getFileOrFileIdFromDocumentsList(documentsList, documentElement);
 
       if (!documentFile || !(documentFile instanceof File)) {
         continue;
