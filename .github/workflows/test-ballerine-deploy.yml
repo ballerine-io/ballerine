@@ -1,6 +1,7 @@
 name: Test Ballerine Deploy
 
 on:
+  workflow_dispatch:
   push:
     branches: [ dev ]
 
