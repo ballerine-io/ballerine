@@ -21,7 +21,9 @@ jobs:
 
     - name: Start containers
       run: |
-        cd deploy/ballerine
+        sudo apt-get update
+        sudo apt-get install docker-compose
+        cd deploy
         docker-compose up -d
       
     - name: Wait for containers to be healthy
