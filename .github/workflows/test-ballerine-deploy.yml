@@ -1,0 +1,60 @@
+name: Test Ballerine Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ dev ]
+
+jobs:
+  test-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+      with:
+        platforms: 'arm64,arm'
+
+    - name: Start containers
+      run: |
+        sudo apt-get update
+        sudo apt-get install docker-compose
+        cd deploy
+        docker-compose up -d
+      
+    - name: Wait for containers to be healthy
+      run: |
+        cd deploy
+        timeout=180  # 3 minutes timeout
+        elapsed=0
+        interval=10
+        
+        while [ $elapsed -lt $timeout ]; do
+          if docker-compose ps | grep -q "healthy"; then
+            unhealthy_count=$(docker-compose ps | grep -c "unhealthy" || true)
+            if [ $unhealthy_count -eq 0 ]; then
+              echo "All containers are healthy!"
+              exit 0
+            fi
+          fi
+          
+          echo "Waiting for containers to be healthy... ($elapsed seconds elapsed)"
+          sleep $interval
+          elapsed=$((elapsed + interval))
+        done
+        
+        echo "Timeout reached. Some containers are not healthy."
+        docker-compose ps
+        docker-compose logs
+        exit 1
+    
+    - name: Clean up
+      if: always()
+      run: |
+        cd deploy
+        docker-compose down -v
