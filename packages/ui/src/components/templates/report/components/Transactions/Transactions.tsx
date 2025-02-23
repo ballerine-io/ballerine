@@ -1,5 +1,5 @@
 import { ArrowRight } from 'lucide-react';
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 
 import { Image } from '@/components';
 import { PremiumFeature } from '@/components/molecules/PremiumFeature';
