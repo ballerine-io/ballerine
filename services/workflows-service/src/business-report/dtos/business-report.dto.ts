@@ -6,7 +6,7 @@ import {
   type MerchantReportStatus,
   type MerchantReportType,
   type MerchantReportVersion,
-} from '@/business-report/constants';
+} from '@ballerine/common';
 
 export class WebsiteDto {
   @ApiProperty({ type: String })
@@ -61,6 +61,9 @@ export class BusinessReportDto {
 
   @ApiProperty({ type: String })
   updatedAt!: string;
+
+  @ApiProperty({ type: Boolean })
+  monitoringStatus!: boolean;
 
   @ApiProperty({ type: Object })
   data!: Record<string, unknown>;

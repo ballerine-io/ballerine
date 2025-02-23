@@ -5,12 +5,10 @@ import { useHomeLogic } from '@/common/hooks/useHomeLogic/useHomeLogic';
 import { t } from 'i18next';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
 import { WelcomeCard } from '@/pages/Home/components/WelcomeCard/WelcomeCard';
+import { GetFullAccessCard } from '@/common/components/molecules/GetFullAccessCard/GetFullAccessCard';
 
 export const Home: FunctionComponent = () => {
   const {
-    onDateRangeChange,
-    from,
-    to,
     firstName,
     fullName,
     avatarUrl,
@@ -56,12 +54,13 @@ export const Home: FunctionComponent = () => {
         {/*    </TabsTrigger>*/}
         {/*  </TabsList>*/}
         {/*  <TabsContent value={defaultTabValue}>*/}
-        {/*    <Outlet />*/}
         {/*  </TabsContent>*/}
         {/*</Tabs>*/}
         {(isDemo || isExample) && <Outlet />}
         {!isDemo && !isExample && <WelcomeCard />}
       </div>
+
+      <GetFullAccessCard />
     </div>
   );
 };

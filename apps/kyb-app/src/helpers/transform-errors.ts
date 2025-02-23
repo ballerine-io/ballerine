@@ -3,9 +3,16 @@ import { RJSFValidationError } from '@rjsf/utils';
 
 export const transformRJSFErrors = (errors: RJSFValidationError[]): RJSFValidationError[] => {
   return errors.map(error => {
-    console.log('error', error);
-    if (error.name === 'minLength' || error.name === 'required') {
+    if (error.name === 'required') {
       error.message = 'This field is required.';
+    }
+
+    if (error.name === 'minLength') {
+      error.message = `This field must be at least ${error.params.limit} characters long.`;
+    }
+
+    if (error.name === 'maxLength') {
+      error.message = `This field must be at most ${error.params.limit} characters long.`;
     }
 
     if (

@@ -13,56 +13,33 @@ import {
   MERCHANT_REPORT_STATUSES_MAP,
   MERCHANT_REPORT_TYPES,
   MERCHANT_REPORT_VERSIONS,
+  MerchantReportStatus,
   MerchantReportType,
   MerchantReportVersion,
-} from '@/domains/business-reports/constants';
+  ReportSchema,
+} from '@ballerine/common';
 
-export const BusinessReportSchema = z
-  .object({
-    id: z.string(),
-    reportType: z.enum([MERCHANT_REPORT_TYPES[0]!, ...MERCHANT_REPORT_TYPES.slice(1)]),
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
-    riskScore: z.number().nullable(),
-    status: z.enum([MERCHANT_REPORT_STATUSES[0]!, ...MERCHANT_REPORT_STATUSES.slice(1)]),
-    parentCompanyName: z.string().nullable(),
-    merchantId: z.string(),
-    workflowVersion: z.enum([MERCHANT_REPORT_VERSIONS[0]!, ...MERCHANT_REPORT_VERSIONS.slice(1)]),
-    isAlert: z.boolean().nullable(),
-    companyName: z.string().nullish(),
-    website: z.object({
-      id: z.string(),
-      url: z.string().url(),
-      createdAt: z
-        .string()
-        .datetime()
-        .transform(value => new Date(value)),
-      updatedAt: z
-        .string()
-        .datetime()
-        .transform(value => new Date(value)),
-    }),
-    data: z.record(z.string(), z.unknown()).nullish(),
-  })
-  .transform(data => ({
-    ...data,
-    status:
-      data.status === MERCHANT_REPORT_STATUSES_MAP.failed
-        ? MERCHANT_REPORT_STATUSES_MAP['quality-control']
-        : data.status,
-    companyName:
-      data?.companyName ??
-      (data?.data?.websiteCompanyAnalysis as UnknownRecord | undefined)?.companyName ??
-      data?.parentCompanyName,
-    website: data?.website.url,
-    data: data.status === 'completed' ? data?.data : null,
-    riskScore: data.status === 'completed' ? data?.riskScore : null,
-  }));
+const statusOverrides = {
+  [MERCHANT_REPORT_STATUSES_MAP.failed]: MERCHANT_REPORT_STATUSES_MAP['in-progress'],
+  [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: MERCHANT_REPORT_STATUSES_MAP['in-progress'],
+} as const satisfies Partial<Record<MerchantReportStatus, MerchantReportStatus>>;
+
+export const BusinessReportSchema = ReportSchema.transform(data => ({
+  ...data,
+  status: data.status in statusOverrides ? statusOverrides[data.status] : data.status,
+  website: data.website.url,
+  riskLevel: data.status === MERCHANT_REPORT_STATUSES_MAP.completed ? data.riskLevel : null,
+  data: data.status === MERCHANT_REPORT_STATUSES_MAP.completed ? data?.data : null,
+}));
 
 export const BusinessReportsSchema = z.object({
   data: z.array(BusinessReportSchema),
   totalItems: z.number().nonnegative(),
   totalPages: z.number().nonnegative(),
+});
+
+export const BusinessReportsCountSchema = z.object({
+  count: z.number(),
 });
 
 export type TBusinessReport = z.infer<typeof BusinessReportSchema>;
@@ -86,25 +63,39 @@ export const fetchLatestBusinessReport = async ({
   return handleZodError(error, data);
 };
 
-export const fetchBusinessReports = async (params: {
+type BusinessReportsParams = {
   reportType?: MerchantReportType;
-  riskLevels: TRiskLevel[];
-  statuses: TReportStatusValue[];
-  findings: string[];
+  riskLevels?: TRiskLevel[];
+  statuses?: TReportStatusValue[];
+  findings?: string[];
   from?: string;
   to?: string;
-  page: {
+  page?: {
     number: number;
     size: number;
   };
-  orderBy: string;
-}) => {
+  orderBy?: string;
+};
+export const fetchBusinessReports = async (params: BusinessReportsParams) => {
   const queryParams = qs.stringify(params, { encode: false });
 
   const [data, error] = await apiClient({
     endpoint: `../external/business-reports/?${queryParams}`,
     method: Method.GET,
     schema: BusinessReportsSchema,
+    timeout: 30_000,
+  });
+
+  return handleZodError(error, data);
+};
+
+export const countBusinessReports = async (params: BusinessReportsParams) => {
+  const queryParams = qs.stringify(params, { encode: false });
+
+  const [data, error] = await apiClient({
+    endpoint: `../external/business-reports/count/?${queryParams}`,
+    method: Method.GET,
+    schema: BusinessReportsCountSchema,
     timeout: 30_000,
   });
 

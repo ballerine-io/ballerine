@@ -62,6 +62,10 @@ export const ConfigSchema = z
     hasUboOngoingMonitoring: z.boolean().optional(),
     maxBusinessReports: z.number().nonnegative().optional(),
     isMerchantMonitoringEnabled: z.boolean().optional(),
+    showFullAccessPopup: z.boolean().optional(),
+    isDemoAccount: z.boolean().optional(),
+    withQualityControl: z.boolean().optional(),
+    disableBusinessSyncToUnifiedApi: z.boolean().optional(),
     uiOptions: z
       .object({
         redirectUrls: z

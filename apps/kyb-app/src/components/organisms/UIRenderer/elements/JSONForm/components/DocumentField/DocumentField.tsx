@@ -3,8 +3,6 @@ import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateMa
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { useUIElementToolsLogic } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/hooks/useUIElementToolsLogic';
 import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
-import { DocumentValueDestinationParser } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/document-value-destination-parser';
-import { serializeDocumentId } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/serialize-document-id';
 import { FileUploaderField } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField';
 import { useFileRepository } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileRepository';
 import { UploadFileFn } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading/types';
@@ -12,16 +10,19 @@ import { useUIElementErrors } from '@/components/organisms/UIRenderer/hooks/useU
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
 import { Document, UIElement } from '@/domains/collection-flow';
 import { fetchFile, uploadFile } from '@/domains/storage/storage.api';
-import { collectionFlowFileStorage } from '@/pages/CollectionFlow/collection-flow.file-storage';
+import { collectionFlowFileStorage } from '@/pages/CollectionFlow/versions/v1/collection-flow.file-storage';
 import { findDocumentSchemaByTypeAndCategory } from '@ballerine/common';
 import { AnyObject, ErrorsList, RJSFInputProps } from '@ballerine/ui';
 import { HTTPError } from 'ky';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { DocumentValueDestinationParser } from './helpers/document-value-destination-parser';
+import { serializeDocumentId } from './helpers/serialize-document-id';
 
 export interface DocumentFieldParams {
   documentData: Partial<Document>;
+  acceptFileFormats?: string;
 }
 
 export const DocumentField = (
@@ -69,12 +70,10 @@ export const DocumentField = (
   const fileId = useMemo(() => {
     if (!Array.isArray(payload.documents)) return null;
 
-    //@ts-ignore
-    const parser = new DocumentValueDestinationParser(definition.valueDestination);
+    const parser = new DocumentValueDestinationParser(definition.valueDestination!);
     const documentsPath = parser.extractRootPath();
     const documentPagePath = parser.extractPagePath();
-    //@ts-ignore
-    const documents = (get(payload, documentsPath) as Document[]) || [];
+    const documents = (get(payload, documentsPath!) as Document[]) || [];
 
     const document = documents.find((document: Document) => {
       //@ts-ignore
@@ -243,6 +242,7 @@ export const DocumentField = (
         onBlur={onBlur as () => void}
         testId={definition.name}
         onChange={handleChange}
+        acceptFileFormats={definition.options.acceptFileFormats}
       />
       {!!warnings.length && <ErrorsList errors={warnings.map(err => err.message)} />}
       {isTouched && !!validationErrors.length && (

@@ -5,10 +5,11 @@ import { IsArray, IsOptional, IsString } from 'class-validator';
 import { PageDto } from '@/common/dto';
 import {
   MERCHANT_REPORT_RISK_LEVELS,
+  MERCHANT_REPORT_RISK_LEVELS_MAP,
   MERCHANT_REPORT_STATUSES_MAP,
   MERCHANT_REPORT_TYPES_MAP,
   type MerchantReportType,
-} from '@/business-report/constants';
+} from '@ballerine/common';
 import { BusinessReportDto } from '@/business-report/dtos/business-report.dto';
 
 export class BusinessReportListRequestParamDto {
@@ -20,8 +21,9 @@ export class BusinessReportListRequestParamDto {
   @ApiProperty({ type: String, required: false })
   search?: string;
 
+  @IsOptional()
   @ApiProperty({ type: PageDto })
-  page!: PageDto;
+  page?: PageDto;
 
   @IsOptional()
   @IsString()
@@ -50,6 +52,8 @@ export class BusinessReportListRequestParamDto {
   @ApiProperty({ type: [String], required: false })
   statuses?: Array<'failed' | 'quality-control' | 'completed' | 'in-progress'>;
 
+  isAlert?: boolean;
+
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
@@ -69,10 +73,10 @@ export const ListBusinessReportsSchema = z.object({
   riskLevels: z
     .array(
       z.enum([
-        MERCHANT_REPORT_RISK_LEVELS.low,
-        MERCHANT_REPORT_RISK_LEVELS.medium,
-        MERCHANT_REPORT_RISK_LEVELS.high,
-        MERCHANT_REPORT_RISK_LEVELS.critical,
+        MERCHANT_REPORT_RISK_LEVELS_MAP.low,
+        MERCHANT_REPORT_RISK_LEVELS_MAP.medium,
+        MERCHANT_REPORT_RISK_LEVELS_MAP.high,
+        MERCHANT_REPORT_RISK_LEVELS_MAP.critical,
       ]),
     )
     .optional(),
@@ -88,10 +92,15 @@ export const ListBusinessReportsSchema = z.object({
     .optional(),
   findings: z.array(z.string()).optional(),
   search: z.string().optional(),
-  page: z.object({
-    number: z.coerce.number().int().positive(),
-    size: z.coerce.number().int().positive().max(100),
-  }),
+  isAlert: z
+    .preprocess(value => (typeof value === 'string' ? JSON.parse(value) : value), z.boolean())
+    .optional(),
+  page: z
+    .object({
+      number: z.coerce.number().int().positive(),
+      size: z.coerce.number().int().positive().max(100),
+    })
+    .optional(),
 });
 
 export class BusinessReportListResponseDto {

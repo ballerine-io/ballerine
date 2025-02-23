@@ -62,7 +62,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
         />
         <CaseOptions />
       </div>
-      <div className={`min-h-20 flex justify-between gap-4`}>
+      <div className={`flex min-h-20 justify-between gap-4`}>
         <div className={`flex flex-col space-y-3`}>
           <div className={`flex space-x-4`}>
             <Avatar

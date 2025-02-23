@@ -10,6 +10,7 @@ export const Details: FunctionComponent<ExtractCellProps<'details'>> = ({
   value,
   hideSeparator,
   contextUpdateMethod,
+  directorId,
   workflowId,
   documents = [],
   onSubmit,
@@ -34,10 +35,11 @@ export const Details: FunctionComponent<ExtractCellProps<'details'>> = ({
     >
       <EditableDetails
         workflowId={workflowId}
+        directorId={directorId}
         id={id}
-        valueId={value?.id}
+        valueId={value.id}
         documents={documents}
-        title={value?.title}
+        title={value.title}
         data={sortedData}
         isSaveDisabled={isSaveDisabled}
         contextUpdateMethod={contextUpdateMethod}

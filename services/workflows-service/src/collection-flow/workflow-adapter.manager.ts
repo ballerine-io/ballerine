@@ -12,7 +12,9 @@ export class WorkflowAdapterManager {
   getAdapter(type: string) {
     const adapter = this.adapters[type];
 
-    if (!adapter) throw new UnsupportedFlowTypeException();
+    if (!adapter) {
+      throw new UnsupportedFlowTypeException();
+    }
 
     return adapter;
   }

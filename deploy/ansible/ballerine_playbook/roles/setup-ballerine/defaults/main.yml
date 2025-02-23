@@ -3,6 +3,10 @@
 docker_edition: 'ce'
 docker_package: 'docker-{{ docker_edition }}'
 docker_package_state: present
+default_user: ubuntu
+
+cloud_user: ballerine
+cloud_group: ballerine
 
 # Service options.
 docker_service_state: started

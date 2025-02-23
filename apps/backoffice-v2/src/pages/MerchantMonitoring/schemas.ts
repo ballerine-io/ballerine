@@ -2,11 +2,24 @@ import { z } from 'zod';
 import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 import { TBusinessReport } from '@/domains/business-reports/fetchers';
 import { BooleanishRecordSchema } from '@ballerine/ui';
+import dayjs from 'dayjs';
 
 export const REPORT_TYPE_TO_DISPLAY_TEXT = {
   All: 'All',
   MERCHANT_REPORT_T1: 'Onboarding',
   ONGOING_MERCHANT_REPORT_T1: 'Monitoring',
+} as const;
+
+export const IS_ALERT_TO_DISPLAY_TEXT = {
+  All: 'All',
+  true: 'Alerted',
+  false: 'Not Alerted',
+} as const;
+
+export const DISPLAY_TEXT_TO_IS_ALERT = {
+  All: 'All',
+  Alerted: true,
+  'Not Alerted': false,
 } as const;
 
 export const DISPLAY_TEXT_TO_MERCHANT_REPORT_TYPE = {
@@ -39,13 +52,11 @@ export const RISK_LEVEL_FILTER = {
   })),
 };
 
-export const REPORT_STATUS_LABELS = ['In Progress', 'Quality Control', 'Ready for Review'] as const;
+export const REPORT_STATUS_LABELS = ['In Progress', 'Ready for Review'] as const;
 
 export const REPORT_STATUS_LABEL_TO_VALUE_MAP = {
   'In Progress': 'in-progress',
-  'Quality Control': 'quality-control',
   'Ready for Review': 'completed',
-  Failed: 'failed',
 } as const;
 
 export type TReportStatusLabel = (typeof REPORT_STATUS_LABELS)[number];
@@ -87,12 +98,12 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
     .catch('createdAt'),
   selected: BooleanishRecordSchema.optional(),
   reportType: z
-    .enum([
-      ...(Object.values(REPORT_TYPE_TO_DISPLAY_TEXT) as [
+    .enum(
+      Object.values(REPORT_TYPE_TO_DISPLAY_TEXT) as [
         (typeof REPORT_TYPE_TO_DISPLAY_TEXT)['All'],
         ...Array<(typeof REPORT_TYPE_TO_DISPLAY_TEXT)[keyof typeof REPORT_TYPE_TO_DISPLAY_TEXT]>,
-      ]),
-    ])
+      ],
+    )
     .catch('All'),
   riskLevels: z
     .array(z.enum(RISK_LEVELS.map(riskLevel => riskLevel) as [TRiskLevel, ...TRiskLevel[]]))
@@ -105,6 +116,14 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
     )
     .catch([]),
   findings: z.array(z.string()).catch([]),
+  isAlert: z
+    .enum(
+      Object.values(IS_ALERT_TO_DISPLAY_TEXT) as [
+        (typeof IS_ALERT_TO_DISPLAY_TEXT)['All'],
+        ...Array<(typeof IS_ALERT_TO_DISPLAY_TEXT)[keyof typeof IS_ALERT_TO_DISPLAY_TEXT]>,
+      ],
+    )
+    .catch('All'),
   from: z.string().date().optional(),
   to: z.string().date().optional(),
 });

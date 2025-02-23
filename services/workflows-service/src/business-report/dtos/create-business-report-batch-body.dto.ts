@@ -5,7 +5,7 @@ import {
   MERCHANT_REPORT_VERSIONS_MAP,
   type MerchantReportType,
   type MerchantReportVersion,
-} from '@/business-report/constants';
+} from '@ballerine/common';
 
 export class CreateBusinessReportBatchBodyDto {
   @ApiProperty({

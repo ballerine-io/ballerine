@@ -1,4 +1,4 @@
-import { MERCHANT_REPORT_TYPES_MAP, MerchantReportType } from '@/business-report/constants';
+import { MERCHANT_REPORT_TYPES_MAP, MerchantReportType } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
@@ -289,7 +289,7 @@ export class DataAnalyticsService {
       );
     }
 
-    if (paymentMethods.length) {
+    if (!isEmpty(paymentMethods)) {
       const methodCondition = excludePaymentMethods ? `NOT IN` : `IN`;
 
       conditions.push(
@@ -487,7 +487,7 @@ export class DataAnalyticsService {
       Prisma.sql`"tr"."transactionDate" <= NOW()`,
     ];
 
-    if (Array.isArray(paymentMethods.length)) {
+    if (!isEmpty(paymentMethods)) {
       conditions.push(Prisma.sql`"paymentMethod" IN (${Prisma.join([...paymentMethods])})`);
     }
 
@@ -813,7 +813,7 @@ AND a.activeDaysTransactions > ((a.lastTransactionsCount - a.activeDaysTransacti
       conditions.push(Prisma.sql`"transactionDirection"::text = ${direction}`);
     }
 
-    if (paymentMethods.length) {
+    if (!isEmpty(paymentMethods)) {
       const methodCondition = excludePaymentMethods ? `NOT IN` : `IN`;
 
       conditions.push(

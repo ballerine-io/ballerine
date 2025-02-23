@@ -1,5 +1,131 @@
 # @ballerine/ui
 
+## 0.5.78
+
+### Patch Changes
+
+- add empty state to risk indicators
+
+## 0.5.77
+
+### Patch Changes
+
+- RiskIndicatorsSummary default value
+
+## 0.5.76
+
+### Patch Changes
+
+- used only one constant from common
+- Updated dependencies
+  - @ballerine/common@0.9.74
+
+## 0.5.75
+
+### Patch Changes
+
+- Uses the new report shape
+- Updated dependencies
+  - @ballerine/common@0.9.71
+
+## 0.5.74
+
+### Patch Changes
+
+- Removed isOnboarding prop in favor of using ongoing monitoring summary presence as an indicator to the conditional merchant risk summary heading
+
+## 0.5.73
+
+### Patch Changes
+
+- Trim number values in traffic sources piechart
+
+## 0.5.72
+
+### Patch Changes
+
+- Bump
+
+## 0.5.71
+
+### Patch Changes
+
+- Bump
+
+## 0.5.70
+
+### Patch Changes
+
+- Param adjustmetns & bugfixes
+- Format ongoing summary in the UI
+
+## 0.5.69
+
+### Patch Changes
+
+- Fixed options mapping at Multiselect
+
+## 0.5.68
+
+### Patch Changes
+
+- Added Dynamic Form V2 & Validator
+
+## 0.5.67
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.68
+
+## 0.5.66
+
+### Patch Changes
+
+- Fixed Date Picker popup flickering
+
+## 0.5.65
+
+### Patch Changes
+
+- Added scroll persistence on data table
+
+## 0.5.64
+
+### Patch Changes
+
+- Fixed graph cut off issue
+
+## 0.5.63
+
+### Patch Changes
+
+- Export ContentTooltip component
+
+## 0.5.62
+
+### Patch Changes
+
+- version bump
+  s Please enter a summary for your changes.
+- Updated dependencies
+  - @ballerine/common@0.9.66
+
+## 0.5.61
+
+### Patch Changes
+
+- Fix display when traffic sources list is empty
+
+## 0.5.60
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.65
+
 ## 0.5.59
 
 ### Patch Changes
