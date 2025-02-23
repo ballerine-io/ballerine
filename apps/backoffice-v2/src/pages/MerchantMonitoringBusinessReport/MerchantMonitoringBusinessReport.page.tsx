@@ -1,5 +1,9 @@
+import dayjs from 'dayjs';
+import { Link } from 'react-router-dom';
+import React, { forwardRef, FunctionComponent } from 'react';
+import { MERCHANT_REPORT_STATUSES_MAP, UPDATEABLE_REPORT_STATUSES } from '@ballerine/common';
+import { ArrowLeft, ChevronLeft, FileQuestion } from 'lucide-react';
 import {
-  Badge,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -15,42 +19,37 @@ import {
   TextArea,
   TextWithNAFallback,
 } from '@ballerine/ui';
-import dayjs from 'dayjs';
-import { ArrowLeft, ChevronLeft, FileQuestion } from 'lucide-react';
-import React, { forwardRef, FunctionComponent } from 'react';
-import { Link } from 'react-router-dom';
-import { titleCase } from 'string-ts';
 
-import { Button } from '@/common/components/atoms/Button/Button';
-import { Card } from '@/common/components/atoms/Card/Card';
-import { CardContent } from '@/common/components/atoms/Card/Card.Content';
-import { CardFooter } from '@/common/components/atoms/Card/Card.Footer';
-import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
-import { CardTitle } from '@/common/components/atoms/Card/Card.Title';
-import { Select } from '@/common/components/atoms/Select/Select';
-import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
-import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
-import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
-import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
-import { NotesButton } from '@/common/components/molecules/NotesButton/NotesButton';
-import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
-import { Form } from '@/common/components/organisms/Form/Form';
-import { FormControl } from '@/common/components/organisms/Form/Form.Control';
-import { FormField } from '@/common/components/organisms/Form/Form.Field';
-import { FormItem } from '@/common/components/organisms/Form/Form.Item';
-import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
-import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
-import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
-import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
-import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
-import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
-import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { Notes } from '@/domains/notes/Notes';
+import { Card } from '@/common/components/atoms/Card/Card';
+import { Form } from '@/common/components/organisms/Form/Form';
+import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
+import { Button } from '@/common/components/atoms/Button/Button';
+import { Select } from '@/common/components/atoms/Select/Select';
+import { CardTitle } from '@/common/components/atoms/Card/Card.Title';
+import { FormItem } from '@/common/components/organisms/Form/Form.Item';
+import { CardFooter } from '@/common/components/atoms/Card/Card.Footer';
+import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
+import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
+import { FormField } from '@/common/components/organisms/Form/Form.Field';
+import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
+import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
+import { CardContent } from '@/common/components/atoms/Card/Card.Content';
+import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
+import { FormControl } from '@/common/components/organisms/Form/Form.Control';
+import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
+import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
+import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
+import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
+import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
+import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
+import { NotesButton } from '@/common/components/molecules/NotesButton/NotesButton';
+import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
+import { MerchantMonitoringReportStatus } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringReportStatus';
 import { useMerchantMonitoringBusinessReportLogic } from '@/pages/MerchantMonitoringBusinessReport/hooks/useMerchantMonitoringBusinessReportLogic/useMerchantMonitoringBusinessReportLogic';
-import { MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
 
-const DialogDropdownItem = forwardRef<
+export const DialogDropdownItem = forwardRef<
   React.ElementRef<typeof DropdownMenuItem>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuItem> & {
     triggerChildren: React.ReactNode;
@@ -79,6 +78,7 @@ const DialogDropdownItem = forwardRef<
     </Dialog>
   );
 });
+
 DialogDropdownItem.displayName = 'DialogDropdownItem';
 
 export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
@@ -86,7 +86,6 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     onNavigateBack,
     websiteWithNoProtocol,
     businessReport,
-    statusToBadgeData,
     tabs,
     activeTab,
     notes,
@@ -109,7 +108,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
   if (
     !isFetchingBusinessReport &&
     businessReport?.status &&
-    businessReport.status !== MERCHANT_REPORT_STATUSES_MAP['completed']
+    !UPDATEABLE_REPORT_STATUSES.includes(businessReport?.status)
   ) {
     let supplementalText = '';
 
@@ -304,23 +303,11 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
             <div className={`flex items-center space-x-8 pb-4`}>
               <div className={`flex items-center`}>
                 <span className={`me-4 text-sm leading-6 text-slate-400`}>Status</span>
-                <Badge
-                  variant={
-                    statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]
-                      ?.variant
-                  }
-                  className={ctw(`text-sm font-bold`, {
-                    'bg-info/20 text-info':
-                      businessReport?.status === MERCHANT_REPORT_STATUSES_MAP.completed,
-                    'bg-violet-500/20 text-violet-500': [
-                      MERCHANT_REPORT_STATUSES_MAP['in-progress'],
-                      MERCHANT_REPORT_STATUSES_MAP['quality-control'],
-                    ].includes(businessReport?.status ?? ''),
-                  })}
-                >
-                  {statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]
-                    ?.text ?? titleCase(businessReport?.status ?? '')}
-                </Badge>
+                <MerchantMonitoringReportStatus
+                  reportId={businessReport?.id}
+                  status={businessReport?.status}
+                  businessId={businessReport?.business.id}
+                />
               </div>
               <div className={`text-sm`}>
                 <span className={`me-2 leading-6 text-slate-400`}>Created at</span>
