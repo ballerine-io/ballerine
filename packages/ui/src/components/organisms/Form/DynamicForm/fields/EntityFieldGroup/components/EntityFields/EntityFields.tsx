@@ -4,7 +4,6 @@ import { FunctionComponent } from 'react';
 import { IFormElement } from '../../../../types';
 import { StackProvider } from '../../../FieldList/providers/StackProvider';
 import { IEntityFieldGroupParams } from '../../EntityFieldGroup';
-import { EntityFieldProvider } from '../../providers/EntityFieldProvider';
 
 interface IEntityFieldsProps {
   stack: TDeepthLevelStack;
@@ -24,19 +23,17 @@ export const EntityFields: FunctionComponent<IEntityFieldsProps> = ({
   index,
 }) => {
   return (
-    <EntityFieldProvider isSyncing={false} entityFieldGroupType={element.params?.type}>
-      <div
-        key={`${fieldId}-${entityId}`}
-        className="flex flex-col gap-2"
-        data-testid={`${fieldId}-fieldlist-item-${entityId}`}
-      >
-        <StackProvider stack={[...(stack || []), index]}>
-          <Renderer
-            elements={element.children || []}
-            schema={elementsOverride as unknown as TRendererSchema}
-          />
-        </StackProvider>
-      </div>
-    </EntityFieldProvider>
+    <div
+      key={`${fieldId}-${entityId}`}
+      className="flex flex-col gap-2"
+      data-testid={`${fieldId}-fieldlist-item-${entityId}`}
+    >
+      <StackProvider stack={[...(stack || []), index]}>
+        <Renderer
+          elements={element.children || []}
+          schema={elementsOverride as unknown as TRendererSchema}
+        />
+      </StackProvider>
+    </div>
   );
 };

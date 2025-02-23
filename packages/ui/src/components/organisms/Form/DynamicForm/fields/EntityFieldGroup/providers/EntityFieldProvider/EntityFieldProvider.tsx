@@ -10,13 +10,15 @@ export const EntityFieldProvider = ({
   children,
   entityFieldGroupType,
   isSyncing,
+  entityId,
 }: IEntityFieldProviderProps) => {
   const context = useMemo(
     () => ({
       entityFieldGroupType,
       isSyncing,
+      entityId,
     }),
-    [entityFieldGroupType, isSyncing],
+    [entityFieldGroupType, isSyncing, entityId],
   );
 
   return <EntityFieldContext.Provider value={context}>{children}</EntityFieldContext.Provider>;

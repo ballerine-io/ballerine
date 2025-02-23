@@ -17,11 +17,11 @@ import { useRequestDocumentsMutation } from '@/domains/documents/hooks/mutations
 import { useDocumentsTrackerItemsQuery } from '@/domains/documents/hooks/queries/useDocumentsTrackerItemsQuery';
 import { documentsQueryKeys } from '@/domains/documents/hooks/query-keys';
 import { DocumentTrackerItemSchema, TDocumentsTrackerItem } from '@/domains/documents/schemas';
-import { DialogClose } from '@radix-ui/react-dialog';
-import { documentStatusToIcon, Icon } from '../constants';
-import z from 'zod';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { CommonWorkflowStates } from '@ballerine/common';
+import { DialogClose } from '@radix-ui/react-dialog';
+import z from 'zod';
+import { documentStatusToIcon, Icon } from '../constants';
 
 type MarkIconProps = {
   found: boolean;
@@ -170,7 +170,16 @@ export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
 
       return {
         leftIcon: <MarkButton found={found} status={status} onMarkChange={onMarkChange} />,
-        text: titleCase(documentTrackerItem.identifiers.document.category ?? 'N/A'),
+        text: (
+          <div className="flex flex-col space-y-0.5">
+            <div className="text-sm font-medium text-gray-900">
+              {titleCase(documentTrackerItem.identifiers.document.category ?? 'N/A')}
+            </div>
+            <div className="text-xs text-gray-500">
+              {titleCase(documentTrackerItem.identifiers.document.type ?? 'N/A')}
+            </div>
+          </div>
+        ),
         itemClassName: ctw('p-1', {
           'bg-warning/20 rounded-md': found,
         }),

@@ -1,5 +1,5 @@
+import { DocumentDecision, DocumentStatus } from '@prisma/client';
 import { z } from 'zod';
-import { DocumentStatus, DocumentDecision } from '@prisma/client';
 
 const ParsedUIDocumentSchema = z.object({
   entityType: z.enum(['business', 'ubo', 'director']),
@@ -12,12 +12,15 @@ const ParsedUIDocumentSchema = z.object({
 });
 
 type TParsedDocument = z.infer<typeof ParsedUIDocumentSchema>;
+export type TParsedDocumentWithEntityId = TParsedDocument & {
+  ballerineEntityId: string;
+};
 
 export type TParsedDocuments = {
   business: TParsedDocument[];
   individuals: {
-    ubos: TParsedDocument[];
-    directors: TParsedDocument[];
+    ubos: TParsedDocumentWithEntityId[];
+    directors: TParsedDocumentWithEntityId[];
   };
 };
 
