@@ -168,12 +168,11 @@ export class CollectionFlowFilesController {
       }, z.record(z.string(), z.unknown()))
       .parse(data.properties);
 
-    // FormData returns version as a string
-    // Manually converting to number to avoid validation errors
-    data.version = Number(data.version);
-
     const documentsUpdateResults = await this.documentService.updateByIdWithFile({
       ...data,
+      // FormData returns version as a string
+      // Manually converting to number to avoid validation errors
+      version: Number(data.version),
       workflowRuntimeDataId: tokenScope.workflowRuntimeDataId,
       properties,
       metadata,

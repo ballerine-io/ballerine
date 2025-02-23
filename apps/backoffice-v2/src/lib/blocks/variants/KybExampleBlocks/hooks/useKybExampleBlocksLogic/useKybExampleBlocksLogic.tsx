@@ -4,7 +4,6 @@ import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
-import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useAssociatedCompaniesInformationBlock } from '@/lib/blocks/hooks/useAssociatedCompaniesInformationBlock/useAssociatedCompaniesInformationBlock';
@@ -18,22 +17,20 @@ import { createDirectorsBlocks } from '@/lib/blocks/components/DirectorBlock/hoo
 import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
 import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
-import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
 import { useMainRepresentativeBlock } from '@/lib/blocks/hooks/useMainRepresentativeBlock/useMainRepresentativeBlock';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
-import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 import { ExternalLink, Send } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { associatedCompanyToWorkflowAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-to-workflow-adapter';
-import { getDocumentsByCountry } from '@ballerine/common';
-import { extractCountryCodeFromDocuments } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { directorAdapter } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/helpers';
-import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
+import { useRemoveTaskDecisionByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveTaskDecisionByIdMutation/useRemoveTaskDecisionByIdMutation';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useReviseDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useReviseDocumentByIdMutation/useReviseDocumentByIdMutation';
+import { useRemoveDocumentDecisionByIdMutation } from '@/domains/documents/hooks/mutations/useRemoveDocumentDecisionByIdMutation/useRemoveDocumentDecisionByIdMutation';
+import { useApproveDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useApproveDocumentByIdMutation/useApproveDocumentByIdMutation';
 
 export const useKybExampleBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
@@ -171,9 +168,15 @@ export const useKybExampleBlocksLogic = () => {
     useDirectorsRegistryProvidedBlock(directorsRegistryProvided);
   const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
 
-  const { mutate: mutateRemoveDecisionTaskById } = useRemoveDecisionTaskByIdMutation(workflow?.id);
+  const { mutate: mutateRemoveTaskDecisionById } = useRemoveTaskDecisionByIdMutation(workflow?.id);
+  const {
+    mutate: mutateRemoveDocumentDecisionById,
+    isLoading: isLoadingRemoveDocumentDecisionById,
+  } = useRemoveDocumentDecisionByIdMutation(workflow?.id);
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id);
+  const { mutate: mutateApproveDocumentById, isLoading: isLoadingApproveDocumentById } =
+    useApproveDocumentByIdMutation(workflow?.id);
 
   const onMutateRevisionTaskByIdDirectors = useCallback(
     ({
@@ -192,33 +195,67 @@ export const useKybExampleBlocksLogic = () => {
           return;
         }
 
-        mutateRevisionTaskById({
-          directorId,
-          workflowId,
-          documentId,
-          reason,
-          contextUpdateMethod: 'director',
-        });
+        if (workflow?.workflowDefinition?.config?.isDocumentsV2) {
+          mutateReviseDocumentById({
+            documentId,
+            decisionReason: reason,
+          });
+        }
+
+        if (!workflow?.workflowDefinition?.config?.isDocumentsV2) {
+          mutateRevisionTaskById({
+            directorId,
+            workflowId,
+            documentId,
+            reason,
+            contextUpdateMethod: 'director',
+          });
+        }
+
         window.open(
           `${workflow?.context?.metadata?.collectionFlowUrl}/?token=${workflow?.context?.metadata?.token}`,
           '_blank',
         );
       },
     [
+      mutateReviseDocumentById,
       mutateRevisionTaskById,
       workflow?.context?.metadata?.collectionFlowUrl,
       workflow?.context?.metadata?.token,
+      workflow?.workflowDefinition?.config?.isDocumentsV2,
     ],
   );
   const onMutateApproveTaskByIdDirectors = useCallback(
-    ({ directorId, documentId }: { directorId: string; documentId: string }) =>
-      mutateApproveTaskById({ directorId, documentId, contextUpdateMethod: 'director' }),
-    [mutateApproveTaskById],
+    ({ directorId, documentId }: { directorId: string; documentId: string }) => {
+      if (workflow?.workflowDefinition?.config?.isDocumentsV2) {
+        mutateApproveDocumentById({ documentId });
+
+        return;
+      }
+
+      mutateApproveTaskById({ directorId, documentId, contextUpdateMethod: 'director' });
+    },
+    [
+      mutateApproveDocumentById,
+      mutateApproveTaskById,
+      workflow?.workflowDefinition?.config?.isDocumentsV2,
+    ],
   );
-  const onMutateRemoveDecisionTaskByIdDirectors = useCallback(
-    ({ directorId, documentId }: { directorId: string; documentId: string }) =>
-      mutateRemoveDecisionTaskById({ directorId, documentId, contextUpdateMethod: 'director' }),
-    [mutateRemoveDecisionTaskById],
+  const onMutateRemoveTaskDecisionByIdDirectors = useCallback(
+    ({ directorId, documentId }: { directorId: string; documentId: string }) => {
+      if (workflow?.workflowDefinition?.config?.isDocumentsV2) {
+        mutateRemoveDocumentDecisionById({ documentId });
+
+        return;
+      }
+
+      mutateRemoveTaskDecisionById({ directorId, documentId, contextUpdateMethod: 'director' });
+    },
+    [
+      mutateRemoveTaskDecisionById,
+      mutateRemoveDocumentDecisionById,
+      workflow?.workflowDefinition?.config?.isDocumentsV2,
+    ],
   );
 
   const directors =
@@ -231,7 +268,7 @@ export const useKybExampleBlocksLogic = () => {
   const directorsBlock = createDirectorsBlocks({
     workflowId: workflow?.id ?? '',
     onReuploadNeeded: onMutateRevisionTaskByIdDirectors,
-    onRemoveDecision: onMutateRemoveDecisionTaskByIdDirectors,
+    onRemoveDecision: onMutateRemoveTaskDecisionByIdDirectors,
     onApprove: onMutateApproveTaskByIdDirectors,
     directors,
     tags: workflow?.tags ?? [],

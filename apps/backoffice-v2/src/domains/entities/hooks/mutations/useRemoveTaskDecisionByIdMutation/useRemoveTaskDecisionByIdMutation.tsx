@@ -5,7 +5,7 @@ import { TWorkflowById, updateWorkflowDecision } from '../../../../workflows/fet
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 
-export const useRemoveDecisionTaskByIdMutation = (workflowId: string) => {
+export const useRemoveTaskDecisionByIdMutation = (workflowId: string) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
   const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });

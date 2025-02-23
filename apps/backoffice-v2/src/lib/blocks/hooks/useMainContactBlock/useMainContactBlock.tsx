@@ -38,6 +38,7 @@ export const useMainContactBlock = ({ mainContact, workflow }) => {
             workflowId: workflow?.id,
             documents: workflow?.context?.documents,
             hideSeparator: true,
+            isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
           })
           .build()
           .flat(1),

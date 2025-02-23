@@ -177,6 +177,9 @@ export class DocumentService {
       ...data
     }: Static<typeof UpdateDocumentSchema> & {
       documentId: string;
+      workflowRuntimeDataId: string;
+      businessId?: string;
+      endUserId?: string;
       file: Express.Multer.File;
       metadata: Omit<
         Static<typeof CreateDocumentFileSchema>,
@@ -252,14 +255,56 @@ export class DocumentService {
     args?: Prisma.DocumentUpdateManyArgs,
     transaction?: PrismaTransactionClient,
   ) {
+    const document = await this.repository.findById(id, projectIds);
+
+    if (!document) {
+      throw new BadRequestException(`Document with an id of "${id}" was not found`);
+    }
+
+    if (!document.workflowRuntimeDataId) {
+      throw new BadRequestException(`Attempted to update decision for a document with no workflow`);
+    }
+
+    const workflowDefinition = await this.workflowDefinitionService.getByWorkflowRuntimeDataId(
+      document.workflowRuntimeDataId,
+      projectIds,
+    );
+
+    if (!workflowDefinition) {
+      throw new BadRequestException(
+        `Workflow definition for a workflow with an id of "${document.workflowRuntimeDataId}" was not found`,
+      );
+    }
+
+    const documentWithPropertiesSchema = addPropertiesSchemaToDocument(
+      // @ts-expect-error -- the function expects properties not used by the function.
+      {
+        ...document,
+        issuer: {
+          country: document.issuingCountry,
+        },
+      },
+      workflowDefinition.documentsSchema,
+    );
+    const propertiesSchema = documentWithPropertiesSchema.propertiesSchema ?? {};
+    const shouldValidateDocument = data.properties && Object.keys(propertiesSchema)?.length;
+
+    if (shouldValidateDocument) {
+      const validatePropertiesSchema = ajv.compile(propertiesSchema);
+      const isValidPropertiesSchema = validatePropertiesSchema(data.properties);
+
+      if (!isValidPropertiesSchema) {
+        throw ValidationError.fromAjvError(validatePropertiesSchema.errors ?? []);
+      }
+    }
+
     await this.repository.updateById(id, projectIds, data, args, transaction);
 
     const documents = await this.repository.findManyWithFiles(projectIds);
 
     return this.formatDocuments({
       documents,
-      // Would have to have a separate workflow definition for each document
-      documentSchema: null,
+      documentSchema: workflowDefinition.documentsSchema,
     });
   }
 

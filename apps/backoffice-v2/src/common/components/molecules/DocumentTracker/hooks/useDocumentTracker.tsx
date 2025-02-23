@@ -13,13 +13,10 @@ import { DialogFooter } from '@/common/components/organisms/Dialog/Dialog.Footer
 import { DialogHeader } from '@/common/components/organisms/Dialog/Dialog.Header';
 import { DialogTitle } from '@/common/components/organisms/Dialog/Dialog.Title';
 import { DialogTrigger } from '@/common/components/organisms/Dialog/Dialog.Trigger';
-import { useRequestDocumentsMutation } from '@/domains/documents/hooks/mutations/useRequestDocumentsMutation';
+import { useRequestDocumentsMutation } from '@/domains/documents/hooks/mutations/useRequestDocumentsMutation/useRequestDocumentsMutation';
 import { useDocumentsTrackerItemsQuery } from '@/domains/documents/hooks/queries/useDocumentsTrackerItemsQuery';
 import { documentsQueryKeys } from '@/domains/documents/hooks/query-keys';
-import {
-  DocumentTrackerItemSchema,
-  TrackedDocument,
-} from '@/domains/documents/hooks/schemas/document';
+import { DocumentTrackerItemSchema, TDocumentsTrackerItem } from '@/domains/documents/schemas';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { CommonWorkflowStates } from '@ballerine/common';
 import { DialogClose } from '@radix-ui/react-dialog';
@@ -28,25 +25,25 @@ import { documentStatusToIcon, Icon } from '../constants';
 
 type MarkIconProps = {
   found: boolean;
-  status: TrackedDocument['status'];
+  status: TDocumentsTrackerItem['business'][number]['status'];
   onMarkChange: (reason?: string) => void;
 };
 
-const MarkIcon = ({ found, status, onMarkChange }: MarkIconProps) => {
+const MarkButton = ({ found, status, onMarkChange }: MarkIconProps) => {
   const [reasonValue, setReasonValue] = useState('');
   const buttonIcon = found ? Icon.MARKED : documentStatusToIcon[status];
 
-  if (status !== 'unprovided') {
+  if (found || status !== 'unprovided') {
     return (
-      <button className="cursor-default" type="button">
-        {buttonIcon}
-      </button>
-    );
-  }
-
-  if (found) {
-    return (
-      <button className="cursor-pointer" type="button" onClick={() => onMarkChange()}>
+      <button
+        type="button"
+        className={ctw({
+          'cursor-default': status !== 'unprovided',
+          'cursor-pointer': found,
+        })}
+        disabled={!found}
+        onClick={() => onMarkChange()}
+      >
         {buttonIcon}
       </button>
     );
@@ -134,7 +131,7 @@ export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
     });
 
   const getSubItems = useCallback(
-    (documentTrackerItem: TrackedDocument) => {
+    (documentTrackerItem: TDocumentsTrackerItem['business'][number]) => {
       const { identifiers, status } = documentTrackerItem;
       const compareIdentifiers = (
         identifiersA: z.infer<typeof DocumentTrackerItemSchema>['identifiers'],
@@ -172,7 +169,7 @@ export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
       };
 
       return {
-        leftIcon: <MarkIcon found={found} status={status} onMarkChange={onMarkChange} />,
+        leftIcon: <MarkButton found={found} status={status} onMarkChange={onMarkChange} />,
         text: (
           <div className="flex flex-col space-y-0.5">
             <div className="text-sm font-medium text-gray-900">

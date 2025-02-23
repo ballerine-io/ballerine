@@ -33,6 +33,7 @@ import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
 import { IEditableDetails } from './interfaces';
 import { isValidDatetime } from '../../../../common/utils/is-valid-datetime';
 import dayjs from 'dayjs';
+import { useUpdateDocumentByIdMutation as useUpdateDocumentByIdV2Mutation } from '@/domains/documents/hooks/mutations/useUpdateDocumentById/useUpdateDocumentById';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
@@ -108,6 +109,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   isSaveDisabled,
   contextUpdateMethod = 'base',
   onSubmit: onSubmitCallback,
+  isDocumentsV2,
 }) => {
   const [formData, setFormData] = useState(data);
   const POSITIVE_VALUE_INDICATOR = ['approved'];
@@ -142,12 +144,8 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     workflowId,
     documentId: valueId,
   });
-  const { mutate: mutateUpdateDocumentByIdV2 } = useUpdateDocumentByIdMutation({
-    directorId,
-    workflowId,
-    documentId: valueId,
-  });
-  const onMutateTaskDecisionById = ({
+  const { mutate: mutateUpdateDocumentByIdV2 } = useUpdateDocumentByIdV2Mutation();
+  const onMutateDocumentPropertiesById = ({
     document,
     action,
     contextUpdateMethod,
@@ -155,12 +153,26 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     document: AnyRecord;
     action: Parameters<typeof mutateUpdateWorkflowById>[0]['action'];
     contextUpdateMethod: 'base' | 'director';
-  }) =>
+  }) => {
+    if (isDocumentsV2) {
+      mutateUpdateDocumentByIdV2({
+        documentId: valueId,
+        data: {
+          type: document.type,
+          category: document.category,
+          properties: document.properties,
+        },
+      });
+
+      return;
+    }
+
     mutateUpdateWorkflowById({
       document,
       action,
       contextUpdateMethod,
     });
+  };
   const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = formData => {
     const document = documents?.find(document => document?.id === valueId);
     const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
@@ -201,12 +213,12 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
       ...document,
       type: formData.type,
       category: formData.category,
-      properties: properties,
+      properties,
     };
 
-    onSubmitCallback && onSubmitCallback(newDocument);
+    onSubmitCallback?.(newDocument);
 
-    return onMutateTaskDecisionById({
+    return onMutateDocumentPropertiesById({
       document: newDocument,
       action: 'update_document_properties',
       contextUpdateMethod,

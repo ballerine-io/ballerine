@@ -53,13 +53,15 @@ import { useManageUbosBlock } from '@/lib/blocks/hooks/useManageUbosBlock/useMan
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { Button } from '@ballerine/ui';
 import { toast } from 'sonner';
-import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
+import { useRemoveTaskDecisionByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveTaskDecisionByIdMutation/useRemoveTaskDecisionByIdMutation';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { directorAdapter } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/helpers';
 import { createDirectorsBlocks } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/create-directors-blocks';
 import { useBankAccountVerificationBlock } from '@/lib/blocks/hooks/useBankAccountVerificationBlock/useBankAccountVerificationBlock';
 import { useCommercialCreditCheckBlock } from '@/lib/blocks/hooks/useCommercialCreditCheckBlock/useCommercialCreditCheckBlock';
 import { useReviseDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useReviseDocumentByIdMutation/useReviseDocumentByIdMutation';
+import { useApproveDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useApproveDocumentByIdMutation/useApproveDocumentByIdMutation';
+import { useRemoveDocumentDecisionByIdMutation } from '@/domains/documents/hooks/mutations/useRemoveDocumentDecisionByIdMutation/useRemoveDocumentDecisionByIdMutation';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 
@@ -100,16 +102,16 @@ export const useDefaultBlocksLogic = () => {
             decisionReason: reason,
             comment,
           });
+
+          return;
         }
 
-        if (!workflow?.workflowDefinition?.config?.isDocumentsV2) {
-          mutateRevisionTaskById({
-            workflowId,
-            documentId,
-            reason,
-            contextUpdateMethod: 'base',
-          });
-        }
+        mutateRevisionTaskById({
+          workflowId,
+          documentId,
+          reason,
+          contextUpdateMethod: 'base',
+        });
       },
     [
       workflow?.workflowDefinition?.config?.isDocumentsV2,
@@ -186,11 +188,13 @@ export const useDefaultBlocksLogic = () => {
   const bankAccountVerificationBlock = useBankAccountVerificationBlock({
     workflowId: workflow?.id || '',
     pluginsOutput: workflow?.context?.pluginsOutput,
+    isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
   });
 
   const commercialCreditCheckBlock = useCommercialCreditCheckBlock({
     workflowId: workflow?.id || '',
     pluginsOutput: workflow?.context?.pluginsOutput,
+    isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
   });
 
   const parentDocumentBlocks = useDocumentBlocks({
@@ -343,20 +347,26 @@ export const useDefaultBlocksLogic = () => {
 
   const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
 
-  const { mutate: mutateRemoveDecisionTaskById } = useRemoveDecisionTaskByIdMutation(workflow?.id);
+  const { mutate: mutateRemoveTaskDecisionById } = useRemoveTaskDecisionByIdMutation(workflow?.id);
+  const {
+    mutate: mutateRemoveDocumentDecisionById,
+    isLoading: isLoadingRemoveDocumentDecisionById,
+  } = useRemoveDocumentDecisionByIdMutation(workflow?.id);
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id);
+  const { mutate: mutateApproveDocumentById, isLoading: isLoadingApproveDocumentById } =
+    useApproveDocumentByIdMutation(workflow?.id);
 
-  const onMutateRevisionTaskByIdDirectors = useCallback(
+  const onReuploadNeededDirectors = useCallback(
     ({
         workflowId,
-        directorId,
         documentId,
         reason,
+        comment,
       }: Pick<
         Parameters<typeof mutateRevisionTaskById>[0],
-        'workflowId' | 'directorId' | 'documentId' | 'reason'
-      >) =>
+        'workflowId' | 'documentId' | 'reason'
+      > & { comment?: string }) =>
       () => {
         if (!documentId) {
           toast.error('Invalid task id');
@@ -364,26 +374,61 @@ export const useDefaultBlocksLogic = () => {
           return;
         }
 
+        if (workflow?.workflowDefinition?.config?.isDocumentsV2) {
+          mutateReviseDocumentById({
+            documentId,
+            decisionReason: reason,
+            comment,
+          });
+
+          return;
+        }
+
         mutateRevisionTaskById({
           workflowId,
-          directorId,
           documentId,
           reason,
           contextUpdateMethod: 'director',
         });
       },
-    [mutateRevisionTaskById],
+    [
+      workflow?.workflowDefinition?.config?.isDocumentsV2,
+      mutateReviseDocumentById,
+      mutateRevisionTaskById,
+    ],
   );
 
   const onMutateApproveTaskByIdDirectors = useCallback(
-    ({ directorId, documentId }: { directorId: string; documentId: string }) =>
-      mutateApproveTaskById({ directorId, documentId, contextUpdateMethod: 'director' }),
-    [mutateApproveTaskById],
+    ({ directorId, documentId }: { directorId: string; documentId: string }) => {
+      if (workflow?.workflowDefinition?.config?.isDocumentsV2) {
+        mutateApproveDocumentById({ documentId });
+
+        return;
+      }
+
+      mutateApproveTaskById({ directorId, documentId, contextUpdateMethod: 'director' });
+    },
+    [
+      mutateApproveDocumentById,
+      mutateApproveTaskById,
+      workflow?.workflowDefinition?.config?.isDocumentsV2,
+    ],
   );
-  const onMutateRemoveDecisionTaskByIdDirectors = useCallback(
-    ({ directorId, documentId }: { directorId: string; documentId: string }) =>
-      mutateRemoveDecisionTaskById({ directorId, documentId, contextUpdateMethod: 'director' }),
-    [mutateRemoveDecisionTaskById],
+  const onMutateRemoveTaskDecisionByIdDirectors = useCallback(
+    ({ directorId, documentId }: { directorId: string; documentId: string }) => {
+      if (workflow?.workflowDefinition?.config?.isDocumentsV2) {
+        mutateRemoveDocumentDecisionById({ documentId });
+
+        return;
+      }
+
+      mutateRemoveTaskDecisionById({ directorId, documentId, contextUpdateMethod: 'director' });
+    },
+    [
+      mutateRemoveTaskDecisionById,
+      mutateRemoveDocumentDecisionById,
+      workflow?.workflowDefinition?.config?.isDocumentsV2,
+    ],
   );
 
   const directors =
@@ -394,14 +439,14 @@ export const useDefaultBlocksLogic = () => {
     )?.enum ?? [];
   const directorsDocumentsBlocks = createDirectorsBlocks({
     workflowId: workflow?.id ?? '',
-    onReuploadNeeded: onMutateRevisionTaskByIdDirectors,
-    onRemoveDecision: onMutateRemoveDecisionTaskByIdDirectors,
+    onReuploadNeeded: onReuploadNeededDirectors,
+    onRemoveDecision: onMutateRemoveTaskDecisionByIdDirectors,
     onApprove: onMutateApproveTaskByIdDirectors,
     directors,
     tags: workflow?.tags ?? [],
     revisionReasons,
     isEditable: caseState.writeEnabled,
-    isApproveDisabled: isLoadingApproveTaskById,
+    isApproveDisabled: isLoadingApproveTaskById || isLoadingApproveDocumentById,
     // Remove once callToActionLegacy is removed
     workflow,
   });

@@ -6,10 +6,11 @@ import { ctw } from '@/common/utils/ctw/ctw';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { useApproveDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useApproveDocumentByIdMutation/useApproveDocumentByIdMutation';
 import { useRejectDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useRejectDocumentByIdMutation/useRejectDocumentByIdMutation';
+import { useRemoveDocumentDecisionByIdMutation } from '@/domains/documents/hooks/mutations/useRemoveDocumentDecisionByIdMutation/useRemoveDocumentDecisionByIdMutation';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useDocumentOcr } from '@/domains/entities/hooks/mutations/useDocumentOcr/useDocumentOcr';
 import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
-import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
+import { useRemoveTaskDecisionByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveTaskDecisionByIdMutation/useRemoveTaskDecisionByIdMutation';
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
@@ -104,11 +105,14 @@ export const useDocumentsAdapter = ({
   const documentPagesResults = useDocumentPageImages(passedDocuments, storageFilesQueryResult);
   const getDocuments = () => {
     if (isDocumentsV2) {
-      return documentsV2?.map(({ decision, decisionReason, ...document }) => ({
+      return documentsV2?.map(({ decision, decisionReason, issuingCountry, ...document }) => ({
         ...document,
         decision: {
           status: decision === 'revisions' ? 'revision' : decision,
           reason: decisionReason,
+        },
+        issuer: {
+          country: issuingCountry,
         },
         details:
           document?.files?.map(({ mimeType, fileName, variant, fileId, imageUrl }) => {
@@ -252,7 +256,31 @@ export const useDocumentBlocks = ({
       workflow?.workflowDefinition?.config?.isDocumentsV2,
     ],
   );
-  const { mutate: onMutateRemoveDecisionById } = useRemoveDecisionTaskByIdMutation(workflow?.id);
+  const { mutate: mutateRemoveTaskDecisionById } = useRemoveTaskDecisionByIdMutation(workflow?.id);
+  const { mutate: mutateRemoveDocumentDecisionById } = useRemoveDocumentDecisionByIdMutation();
+
+  const onMutateRemoveDecisionById = useCallback(
+    ({
+      documentId,
+      contextUpdateMethod,
+    }: {
+      documentId: string;
+      contextUpdateMethod: 'base' | 'director';
+    }) => {
+      if (workflow?.workflowDefinition?.config?.isDocumentsV2) {
+        mutateRemoveDocumentDecisionById({ documentId });
+
+        return;
+      }
+
+      mutateRemoveTaskDecisionById({ documentId, contextUpdateMethod });
+    },
+    [
+      mutateRemoveDocumentDecisionById,
+      mutateRemoveTaskDecisionById,
+      workflow?.workflowDefinition?.config?.isDocumentsV2,
+    ],
+  );
 
   return (
     documents?.flatMap(
@@ -510,6 +538,7 @@ export const useDocumentBlocks = ({
             },
             workflowId: workflow?.id,
             documents,
+            isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
           })
           .cellAt(0, 0);
 
@@ -617,6 +646,7 @@ export const useDocumentBlocks = ({
                 workflowId: workflow?.id,
                 isSaveDisabled: isLoadingOCRDocument,
                 documents,
+                isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
               })
               .addCell(decisionCell)
               .build()

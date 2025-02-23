@@ -141,6 +141,7 @@ export const useDirectorBlock = ({
           workflowId,
           // Otherwise imageUrl will be saved into the document.
           documents: documentsWithoutImageUrl,
+          isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
         })
         .cellAt(0, 0);
 
@@ -386,6 +387,7 @@ export const useDirectorBlock = ({
                       // Otherwise imageUrl will be saved into the document.
                       documents: documentsWithoutImageUrl,
                       workflowId,
+                      isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
                     })
                     .addCell(decisionCell)
                     .buildFlat(),

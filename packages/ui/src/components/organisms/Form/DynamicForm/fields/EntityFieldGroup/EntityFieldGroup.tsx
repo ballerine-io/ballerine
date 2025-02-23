@@ -210,7 +210,7 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
         <Button
           onClick={addItem}
           disabled={disabled}
-          className="bg-white border border-gray-200 text-[hsl(var(--muted-foreground))] shadow-sm hover:bg-gray-50"
+          className="border border-gray-200 bg-white text-[hsl(var(--muted-foreground))] shadow-sm hover:bg-gray-50"
         >
           {addButtonLabel}
         </Button>
