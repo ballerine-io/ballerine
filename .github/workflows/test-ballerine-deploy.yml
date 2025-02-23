@@ -28,6 +28,7 @@ jobs:
       
     - name: Wait for containers to be healthy
       run: |
+        cd deploy
         timeout=180  # 3 minutes timeout
         elapsed=0
         interval=10
@@ -53,4 +54,6 @@ jobs:
     
     - name: Clean up
       if: always()
-      run: docker-compose down
+      run: |
+        cd deploy
+        docker-compose down -v
