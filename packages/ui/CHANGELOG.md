@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.78
+
+### Patch Changes
+
+- add empty state to risk indicators
+
 ## 0.5.77
 
 ### Patch Changes
