@@ -1,10 +1,16 @@
-import { Injectable } from '@nestjs/common';
 import { z } from 'zod';
+import { Injectable } from '@nestjs/common';
 import axios, { AxiosError, AxiosInstance } from 'axios';
+import {
+  MerchantReportType,
+  MerchantReportVersion,
+  ReportSchema,
+  UpdateableReportStatus,
+} from '@ballerine/common';
+
 import { env } from '@/env';
-import { CountryCode } from '@/common/countries';
-import { MerchantReportType, MerchantReportVersion, ReportSchema } from '@ballerine/common';
 import * as errors from '@/errors';
+import { CountryCode } from '@/common/countries';
 
 const CreateReportResponseSchema = z.object({});
 
@@ -234,6 +240,21 @@ export class MerchantMonitoringClient {
     });
 
     return response.data ?? [];
+  }
+
+  public async updateStatus({
+    status,
+    reportId,
+    customerId,
+  }: {
+    reportId: string;
+    customerId: string;
+    status: UpdateableReportStatus;
+  }) {
+    await this.axios.put(`merchants/analysis/${reportId}/status`, {
+      status,
+      customerId,
+    });
   }
 
   public async getMetrics({

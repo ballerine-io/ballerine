@@ -1,9 +1,9 @@
-import { IDataTableProps } from '@ballerine/ui';
 import { useCallback } from 'react';
+import { IDataTableProps } from '@ballerine/ui';
 import { Link, useLocation } from 'react-router-dom';
+import { UPDATEABLE_REPORT_STATUSES } from '@ballerine/common';
 
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
-import { MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
 import { TBusinessReports } from '@/domains/business-reports/fetchers';
 
 export const useMerchantMonitoringTableLogic = () => {
@@ -20,19 +20,17 @@ export const useMerchantMonitoringTableLogic = () => {
     cell,
     children,
   }) => {
-    if (cell.row.original.status === MERCHANT_REPORT_STATUSES_MAP.completed) {
-      return (
-        <Link
-          to={`/${locale}/merchant-monitoring/${cell.row.id}`}
-          className={`d-full flex p-1`}
-          onClick={onClick}
-        >
-          {children}
-        </Link>
-      );
-    }
-
-    return children;
+    return UPDATEABLE_REPORT_STATUSES.includes(cell.row.original.status) ? (
+      <Link
+        to={`/${locale}/merchant-monitoring/${cell.row.id}`}
+        className={`d-full flex p-1`}
+        onClick={onClick}
+      >
+        {children}
+      </Link>
+    ) : (
+      children
+    );
   };
 
   return { Cell };

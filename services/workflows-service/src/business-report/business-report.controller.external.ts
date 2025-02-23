@@ -41,7 +41,7 @@ import {
   BusinessReportsMetricsQuerySchema,
 } from '@/business-report/dtos/business-report-metrics.dto';
 import { BusinessReportMetricsDto } from './dtos/business-report-metrics-dto';
-import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
+import { BusinessReportStatusUpdateRequestParamsDto } from '@/business-report/dtos/business-report-status-update.dto';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Business Reports')
@@ -219,13 +219,52 @@ export class BusinessReportControllerExternal {
   ) {
     const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
 
-    const merchantMonitoringMetrics = await this.merchantMonitoringClient.getMetrics({
+    return await this.merchantMonitoringClient.getMetrics({
       customerId,
       from,
       to,
     });
+  }
 
-    return merchantMonitoringMetrics;
+  @swagger.ApiOperation({
+    summary: 'Update business report status',
+    description: 'Update the status of a business report',
+  })
+  @swagger.ApiParam({
+    name: 'reportId',
+    required: true,
+    description: 'The ID of the report to update',
+  })
+  @swagger.ApiParam({
+    name: 'status',
+    required: true,
+    description: 'The status to update to',
+  })
+  @swagger.ApiOkResponse({
+    description: 'Report status updated successfully',
+  })
+  @swagger.ApiForbiddenResponse({
+    description: 'Forbidden access',
+    type: errors.ForbiddenException,
+  })
+  @common.Put('/:reportId/status/:status')
+  async updateStatus(
+    @CurrentProject() currentProjectId: TProjectId,
+    @Param('reportId') reportId: BusinessReportStatusUpdateRequestParamsDto['reportId'],
+    @Param('status') status: BusinessReportStatusUpdateRequestParamsDto['status'],
+  ) {
+    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
+
+    await this.merchantMonitoringClient.updateStatus({
+      status,
+      reportId,
+      customerId,
+    });
+
+    return {
+      status,
+      reportId,
+    };
   }
 
   @swagger.ApiOperation({

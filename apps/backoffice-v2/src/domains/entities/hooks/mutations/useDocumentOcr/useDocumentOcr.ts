@@ -3,12 +3,9 @@ import { fetchWorkflowDocumentOCRResult } from '@/domains/workflows/fetchers';
 import { toast } from 'sonner';
 import { t } from 'i18next';
 import { workflowsQueryKeys } from '@/domains/workflows/query-keys';
-import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { isEmptyObject } from '@ballerine/common';
 
 export const useDocumentOcr = ({ workflowId }: { workflowId: string }) => {
-  const filterId = useFilterId();
-  const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -18,7 +15,7 @@ export const useDocumentOcr = ({ workflowId }: { workflowId: string }) => {
         documentId,
       });
     },
-    onSuccess: (data, variables) => {
+    onSuccess: data => {
       void queryClient.invalidateQueries(workflowsQueryKeys._def);
 
       if (

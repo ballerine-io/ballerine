@@ -105,6 +105,10 @@
     "error": "Error occurred while creating merchant checks.",
     "is_example": "Please contact Ballerine at oss@ballerine.com for access to this feature."
   },
+  "business_report_status_update": {
+    "success": "Merchant check status updated successfully.",
+    "error": "Error occurred while updating merchant check status."
+  },
   "note_created": {
     "success": "Note added successfully.",
     "error": "Error occurred while adding note."

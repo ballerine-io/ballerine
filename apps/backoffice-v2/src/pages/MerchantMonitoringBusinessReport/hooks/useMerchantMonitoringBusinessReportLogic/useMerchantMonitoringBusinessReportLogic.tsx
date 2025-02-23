@@ -1,27 +1,23 @@
-import { ParsedBooleanSchema, useReportTabs } from '@ballerine/ui';
+import { z } from 'zod';
 import { t } from 'i18next';
+import { toast } from 'sonner';
 import { capitalize } from 'lodash-es';
+import { isObject } from '@ballerine/common';
 import { useCallback, useMemo } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'sonner';
-import { z } from 'zod';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { ParsedBooleanSchema, useReportTabs } from '@ballerine/ui';
 
+import { safeUrl } from '@/common/utils/safe-url/safe-url';
 import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
-import { safeUrl } from '@/common/utils/safe-url/safe-url';
-import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
-import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
-import { useCreateNoteMutation } from '@/domains/notes/hooks/mutations/useCreateNoteMutation/useCreateNoteMutation';
 import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
+import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
+import { useCreateNoteMutation } from '@/domains/notes/hooks/mutations/useCreateNoteMutation/useCreateNoteMutation';
+import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
 import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
-import {
-  isObject,
-  MERCHANT_REPORT_STATUSES_MAP,
-  MERCHANT_REPORT_TYPES_MAP,
-} from '@ballerine/common';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
 const ZodDeboardingSchema = z
   .object({
@@ -47,16 +43,6 @@ const ZodDeboardingSchema = z
       return { message: 'Invalid Input' };
     },
   );
-
-const statusToBadgeData = {
-  [MERCHANT_REPORT_STATUSES_MAP.completed]: { variant: 'info', text: 'Manual Review' },
-  [MERCHANT_REPORT_STATUSES_MAP['in-progress']]: { variant: 'violet', text: 'In-progress' },
-  [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: {
-    variant: 'violet',
-    text: 'Quality Control',
-  },
-  [MERCHANT_REPORT_STATUSES_MAP['failed']]: { variant: 'destructive', text: 'Failed' },
-} as const;
 
 const deboardingReasonOptions = [
   'Fraudulent Activity Detected',
@@ -200,7 +186,6 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     onNavigateBack,
     websiteWithNoProtocol,
     businessReport,
-    statusToBadgeData,
     tabs,
     notes,
     activeTab,

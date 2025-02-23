@@ -2,17 +2,13 @@ import qs from 'qs';
 import { z } from 'zod';
 import { t } from 'i18next';
 import { toast } from 'sonner';
-import { UnknownRecord } from 'type-fest';
 
 import { Method } from '@/common/enums';
 import { apiClient } from '@/common/api-client/api-client';
 import { TReportStatusValue, TRiskLevel } from '@/pages/MerchantMonitoring/schemas';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import {
-  MERCHANT_REPORT_STATUSES,
   MERCHANT_REPORT_STATUSES_MAP,
-  MERCHANT_REPORT_TYPES,
-  MERCHANT_REPORT_VERSIONS,
   MerchantReportStatus,
   MerchantReportType,
   MerchantReportVersion,
