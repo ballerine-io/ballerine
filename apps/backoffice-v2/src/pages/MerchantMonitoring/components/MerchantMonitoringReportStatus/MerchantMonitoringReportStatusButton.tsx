@@ -13,10 +13,11 @@ export const MerchantMonitoringStatusButton = ({
   disabled = false,
 }: ComponentProps<typeof Button> & { disabled?: boolean; status: keyof typeof statusToData }) => (
   <Button
+    type={`button`}
     onClick={e => {
-      if (disabled) {
-        e.stopPropagation();
+      e.stopPropagation();
 
+      if (disabled) {
         return;
       }
 

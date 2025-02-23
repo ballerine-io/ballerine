@@ -45,16 +45,15 @@ export const MerchantMonitoringStatusBadge = forwardRef<
       {...props}
       ref={ref}
       variant={statusToData[status].variant}
-      className={ctw(`h-6 cursor-pointer space-x-1 text-sm font-medium`, {
-        'cursor-not-allowed': disabled,
-        'hover:shadow-[0_0_2px_rgba(0,0,0,0.3)]': !disabled,
+      className={ctw(`h-6 space-x-1 text-sm font-medium`, {
+        '!cursor-not-allowed bg-destructive': disabled,
+        'cursor-pointer hover:shadow-[0_0_2px_rgba(0,0,0,0.3)]': !disabled,
         'cursor-not-allowed bg-[#E3E2E0] text-[#32302C]/40 ': isReportInProgress,
         'bg-[#E3E2E0] text-[#32302C]': status === MERCHANT_REPORT_STATUSES_MAP['pending-review'],
         'text-[#32302C]/40': status === MERCHANT_REPORT_STATUSES_MAP['pending-review'] && disabled,
         'bg-[#D3E5EF] text-[#183347]': status === MERCHANT_REPORT_STATUSES_MAP['under-review'],
         'text-[#183347]/40': status === MERCHANT_REPORT_STATUSES_MAP['under-review'] && disabled,
         'bg-[#DBEDDB] text-[#1C3829]': status === MERCHANT_REPORT_STATUSES_MAP['completed'],
-        'text-[#1C3829]/40': status === MERCHANT_REPORT_STATUSES_MAP['completed'] && disabled,
       })}
     >
       <span

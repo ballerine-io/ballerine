@@ -197,6 +197,9 @@ export const columns = [
     header: 'Report ID',
   }),
   columnHelper.accessor('status', {
+    meta: {
+      useWrapper: true,
+    },
     cell: info => {
       const status = info.getValue() as keyof typeof statusToData;
 
@@ -205,10 +208,6 @@ export const columns = [
           status={status}
           reportId={info.row.original.id}
           businessId={info.row.original.business?.id}
-          onClick={e => {
-            console.log('in new onClick');
-            e.stopPropagation();
-          }}
         />
       );
     },
