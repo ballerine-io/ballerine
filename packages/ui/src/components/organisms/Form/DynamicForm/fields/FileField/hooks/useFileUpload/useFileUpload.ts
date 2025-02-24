@@ -7,6 +7,7 @@ import { useElement, useField } from '../../../../hooks/external';
 import { useTaskRunner } from '../../../../providers/TaskRunner/hooks/useTaskRunner';
 import { ITask } from '../../../../providers/TaskRunner/types';
 import { IFormElement } from '../../../../types';
+import { DEFAULT_CREATION_PARAMS } from '../../../DocumentField/defaults';
 import { useStack } from '../../../FieldList/providers/StackProvider';
 import { IFileFieldParams } from '../../FileField';
 
@@ -20,7 +21,10 @@ export const useFileUpload = (
   const { addTask, removeTask } = useTaskRunner();
   const { metadata } = useDynamicForm();
 
-  const { run, isLoading } = useHttp(element.params!.httpParams!.createDocument || {}, metadata);
+  const { run, isLoading } = useHttp(
+    element.params?.httpParams?.createDocument || DEFAULT_CREATION_PARAMS,
+    metadata,
+  );
 
   const { onChange } = useField(element);
 
