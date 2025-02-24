@@ -171,13 +171,14 @@ const DocumentTrackerItems = memo(
         <AccordionCard.Item
           title="Company documents"
           value="company-documents"
-          ulProps={{ className: '[&>li]:py-0' }}
+          liProps={{ className: 'py-0 pe-4 group' }}
           subitems={businessSubitems}
         />
 
         <AccordionCard.Item
           title="Individual's documents"
           value="individual-documents"
+          liProps={{ className: 'py-0 pe-4 group' }}
           subitems={individualsSubitems}
         />
       </>

@@ -5,7 +5,7 @@ import { ReactNode } from 'react';
 import { ClockCircle } from '@/common/components/atoms/ClockCircle/ClockCircle';
 import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
 import { XCircle } from '@/common/components/atoms/XCircle/XCircle';
-import { TrackedDocument } from '@/domains/documents/schemas';
+import { TDocumentsTrackerItem } from '@/domains/documents/schemas';
 
 export const Icon = {
   CHECK: (
@@ -47,7 +47,10 @@ export const Icon = {
   MARKED: <FilePlus2Icon className="stroke-warning" size={16.5} />,
 } as const;
 
-export const documentStatusToIcon: Record<TrackedDocument['status'], ReactNode> = {
+export const documentStatusToIcon: Record<
+  TDocumentsTrackerItem['business'][number]['status'],
+  ReactNode
+> = {
   unprovided: Icon.INDICATOR,
   provided: Icon.CHECK,
   requested: Icon.REQUESTED,

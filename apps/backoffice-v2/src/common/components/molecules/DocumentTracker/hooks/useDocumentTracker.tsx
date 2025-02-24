@@ -1,4 +1,10 @@
-import { ctw } from '@ballerine/ui';
+import {
+  ctw,
+  DropdownMenuItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenu,
+} from '@ballerine/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { titleCase } from 'string-ts';
@@ -22,41 +28,49 @@ import { CommonWorkflowStates } from '@ballerine/common';
 import { DialogClose } from '@radix-ui/react-dialog';
 import z from 'zod';
 import { documentStatusToIcon, Icon } from '../constants';
+import { FilePlus2, MoreVertical, Upload } from 'lucide-react';
 
-type MarkIconProps = {
-  found: boolean;
-  status: TDocumentsTrackerItem['business'][number]['status'];
+type DocumentTrackerItemOptionsProps = {
   onMarkChange: (reason?: string) => void;
+  isDisabled: boolean;
 };
 
-const MarkButton = ({ found, status, onMarkChange }: MarkIconProps) => {
+const DocumentTrackerItemOptions = ({
+  onMarkChange,
+  isDisabled,
+}: DocumentTrackerItemOptionsProps) => {
   const [reasonValue, setReasonValue] = useState('');
-  const buttonIcon = found ? Icon.MARKED : documentStatusToIcon[status];
-
-  if (found || status !== 'unprovided') {
-    return (
-      <button
-        type="button"
-        className={ctw({
-          'cursor-default': status !== 'unprovided',
-          'cursor-pointer': found,
-        })}
-        disabled={!found}
-        onClick={() => onMarkChange()}
-      >
-        {buttonIcon}
-      </button>
-    );
-  }
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <button className="cursor-pointer" type="button">
-          {buttonIcon}
-        </button>
-      </DialogTrigger>
-
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className="invisible ms-auto text-muted-foreground d-5 focus-visible:visible group-hover:visible aria-disabled:pointer-events-none aria-disabled:cursor-not-allowed aria-disabled:bg-background aria-disabled:opacity-50 data-[state=open]:visible"
+            aria-disabled={isDisabled}
+          >
+            <MoreVertical size={16} />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="px-0">
+          <DropdownMenuItem className="w-full px-8 py-1" asChild>
+            <DialogTrigger asChild>
+              <Button type="button" variant={'ghost'} className="justify-start px-2">
+                <FilePlus2 size={16} className="me-2" />
+                Request from client
+              </Button>
+            </DialogTrigger>
+          </DropdownMenuItem>
+          <DropdownMenuItem className={`w-full px-8 py-1`} asChild>
+            <Button type="button" variant={'ghost'} className="justify-start px-2">
+              <Upload size={16} className="me-2" />
+              Upload
+            </Button>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       <DialogContent className="px-16 py-12 sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="mb-4 text-2xl">Request document from the client</DialogTitle>
@@ -147,14 +161,14 @@ export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
         ].every(Boolean);
       };
 
-      const foundIndex = selectedIdsToRequest.findIndex(selectedIdentifiers =>
+      const selectedIndex = selectedIdsToRequest.findIndex(selectedIdentifiers =>
         compareIdentifiers(selectedIdentifiers, identifiers),
       );
-      const found = foundIndex > -1;
+      const isSelected = selectedIndex > -1;
 
       const onMarkChange = (reason?: string) => {
-        if (found) {
-          return setSelectedIdsToRequest(prev => prev.toSpliced(foundIndex, 1));
+        if (isSelected) {
+          return setSelectedIdsToRequest(prev => prev.toSpliced(selectedIndex, 1));
         }
 
         if (status !== 'unprovided') {
@@ -169,7 +183,13 @@ export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
       };
 
       return {
-        leftIcon: <MarkButton found={found} status={status} onMarkChange={onMarkChange} />,
+        leftIcon: selectedIndex === -1 ? documentStatusToIcon[status] : Icon.MARKED,
+        rightIcon: (
+          <DocumentTrackerItemOptions
+            isDisabled={isSelected || status !== 'unprovided'}
+            onMarkChange={onMarkChange}
+          />
+        ),
         text: (
           <div className="flex flex-col space-y-0.5">
             <div className="text-sm font-medium text-gray-900">
@@ -181,7 +201,7 @@ export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
           </div>
         ),
         itemClassName: ctw('p-1', {
-          'bg-warning/20 rounded-md': found,
+          'bg-warning/20 rounded-md': isSelected,
         }),
       };
     },
