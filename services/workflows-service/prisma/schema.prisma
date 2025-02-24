@@ -927,6 +927,8 @@ model Counterparty {
 enum BusinessReportStatus {
   new
   in_progress
+  under_review
+  pending_review
   completed
 }
 
