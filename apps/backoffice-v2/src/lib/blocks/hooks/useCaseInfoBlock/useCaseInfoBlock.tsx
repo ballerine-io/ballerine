@@ -27,8 +27,13 @@ export const useCaseInfoBlock = ({
   return useMemo(() => {
     const entityDetails = [
       ...Object.entries(omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {}),
+      ...Object.entries(
+        Object.keys(entity?.data?.additionalInfo?.mainRepresentative ?? {}).length
+          ? { entity: entity?.data?.additionalInfo?.mainRepresentative }
+          : {},
+      ),
       ...Object.entries(omitPropsFromObject(entityDataAdditionalInfo ?? {}, 'ubos')),
-      ...Object.entries(omitPropsFromObject(entity?.data?.address ?? {}, 'address')),
+      ...Object.entries(entity?.data?.address ? { address: entity?.data?.address } : {}),
     ];
 
     if (Object.keys(entityDetails ?? {}).length === 0) {
