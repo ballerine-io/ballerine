@@ -4,9 +4,8 @@ import { IsArray, IsOptional, IsString } from 'class-validator';
 
 import { PageDto } from '@/common/dto';
 import {
-  MERCHANT_REPORT_RISK_LEVELS,
   MERCHANT_REPORT_RISK_LEVELS_MAP,
-  MERCHANT_REPORT_STATUSES_MAP,
+  MERCHANT_REPORT_STATUSES,
   MERCHANT_REPORT_TYPES_MAP,
   type MerchantReportType,
 } from '@ballerine/common';
@@ -80,16 +79,7 @@ export const ListBusinessReportsSchema = z.object({
       ]),
     )
     .optional(),
-  statuses: z
-    .array(
-      z.enum([
-        MERCHANT_REPORT_STATUSES_MAP.failed,
-        MERCHANT_REPORT_STATUSES_MAP.completed,
-        MERCHANT_REPORT_STATUSES_MAP['in-progress'],
-        MERCHANT_REPORT_STATUSES_MAP['quality-control'],
-      ]),
-    )
-    .optional(),
+  statuses: z.array(z.enum(MERCHANT_REPORT_STATUSES)).optional(),
   findings: z.array(z.string()).optional(),
   search: z.string().optional(),
   isAlert: z
