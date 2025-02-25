@@ -16,6 +16,7 @@ export interface IFieldListParams {
   // jsonata expression
   defaultValue?: string;
   addButtonLabel?: string;
+  itemIndexLabel?: string;
   removeButtonLabel?: string;
 }
 
@@ -28,7 +29,11 @@ export const FieldList: TDynamicFormField<IFieldListParams> = props => {
   const { element } = props;
   const { id: fieldId, hidden } = useElement(element, stack);
   const { disabled, onFocus, onBlur } = useField(element, stack);
-  const { addButtonLabel = 'Add Item', removeButtonLabel = 'Remove' } = element.params || {};
+  const {
+    addButtonLabel = 'Add Item',
+    removeButtonLabel = 'Remove',
+    itemIndexLabel = 'ITEM {INDEX}',
+  } = element.params || {};
   const { items, addItem, removeItem } = useFieldList({ element });
 
   if (hidden) {
@@ -50,9 +55,14 @@ export const FieldList: TDynamicFormField<IFieldListParams> = props => {
             className="flex flex-col gap-2"
             data-testid={`${fieldId}-fieldlist-item-${index}`}
           >
-            <div className="flex flex-row justify-end">
+            <div className="flex flex-row items-center justify-between">
+              <span className="text-sm font-bold">
+                {itemIndexLabel.replace('{INDEX}', (index + 1).toString())}
+              </span>
               <span
-                className="cursor-pointer font-bold"
+                role="button"
+                tabIndex={0}
+                className="cursor-pointer text-sm"
                 onClick={() => removeItem(index)}
                 data-testid={`${fieldId}-fieldlist-item-remove-${index}`}
               >
@@ -72,9 +82,9 @@ export const FieldList: TDynamicFormField<IFieldListParams> = props => {
         <Button
           onClick={addItem}
           disabled={disabled}
-          className="border border-gray-200 bg-white text-[hsl(var(--muted-foreground))] shadow-sm hover:bg-gray-50"
+          className="border border-gray-200 bg-white text-[hsl(var(--muted-foreground))] shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:bg-gray-50 hover:shadow-[0_1px_2px_0_rgb(0_0_0_/_0.1)]"
         >
-          {addButtonLabel}
+          {`+ ${addButtonLabel}`}
         </Button>
       </div>
       <FieldDescription element={element} />
