@@ -58,9 +58,6 @@ describe('useFinalSubmission', () => {
       extensions: {},
     },
     version: 1,
-    metadata: {
-      businessId: 'test-business-id',
-    },
   };
   const mockSteps = ['welcome', 'verification', 'completed'];
   const mockSendEvent = vi.fn();
