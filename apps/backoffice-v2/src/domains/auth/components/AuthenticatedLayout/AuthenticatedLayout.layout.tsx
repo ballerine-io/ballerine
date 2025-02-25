@@ -1,8 +1,9 @@
-import { FunctionComponent } from 'react';
+import type { FunctionComponent } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
-import { Header } from '@/common/components/organisms/Header';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
+import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
+import { AppSidebar } from './components/AppSidebar';
 import { useAuthenticatedLayoutLogic } from './hooks/useAuthenticatedLayoutLogic/useAuthenticatedLayoutLogic';
 
 export const AuthenticatedLayout: FunctionComponent = () => {
@@ -26,36 +27,17 @@ export const AuthenticatedLayout: FunctionComponent = () => {
   }
 
   return (
-    <div className="drawer drawer-mobile">
-      <input id="app-drawer" type="checkbox" className="drawer-toggle" />
-      <div className={`drawer-content`}>
-        <main className={`h-full`}>
-          <Outlet />
-        </main>
-      </div>
-      <div className={`drawer-side w-[250px]`}>
-        <label htmlFor="app-drawer" className="drawer-overlay"></label>
-        <Header />
-      </div>
-      <label
-        htmlFor="app-drawer"
-        className="btn btn-square drawer-button fixed z-50 bottom-right-6 lg:hidden"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="h-6 w-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-          />
-        </svg>
-      </label>
-    </div>
+    <SidebarProvider
+      style={{
+        '--sidebar-width-mobile': '12rem',
+        '--sidebar-width': '18rem',
+        '--sidebar-width-xl': '24rem',
+      }}
+    >
+      <AppSidebar />
+      <SidebarInset className="overflow-x-hidden">
+        <Outlet />
+      </SidebarInset>
+    </SidebarProvider>
   );
 };
