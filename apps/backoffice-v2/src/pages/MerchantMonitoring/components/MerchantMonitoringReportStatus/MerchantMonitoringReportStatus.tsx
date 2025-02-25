@@ -188,9 +188,7 @@ export const MerchantMonitoringReportStatus = ({
               <Button type="button" onClick={closeCompleteReviewModal} variant="ghost">
                 Cancel
               </Button>
-              <Button type="submit" variant="default">
-                Complete Review
-              </Button>
+              <Button type="submit">Complete Review</Button>
             </DialogFooter>
           </form>
         </Form>
