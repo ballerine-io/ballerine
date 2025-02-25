@@ -22,7 +22,7 @@ export const useHomeLogic = () => {
       return;
     }
 
-    navigate(`/${locale}/home/statistics`);
+    navigate(`/${locale}/home/statistics`, { replace: true });
   }, [pathname, locale, navigate]);
 
   return {
