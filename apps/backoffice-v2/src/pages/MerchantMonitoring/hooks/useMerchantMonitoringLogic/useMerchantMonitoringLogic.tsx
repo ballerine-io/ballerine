@@ -92,6 +92,12 @@ export const useMerchantMonitoringLogic = () => {
     }
   };
 
+  useEffect(() => {
+    if (isCreating) {
+      toggleOpenBase();
+    }
+  }, [isCreating, toggleOpenBase]);
+
   const { findings: findingsOptions, isLoading: isLoadingFindings } = useFindings();
 
   const { data, isLoading: isLoadingBusinessReports } = useBusinessReportsQuery({

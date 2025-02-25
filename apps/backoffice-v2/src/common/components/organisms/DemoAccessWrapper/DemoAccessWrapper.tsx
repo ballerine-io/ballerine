@@ -18,9 +18,9 @@ export const DemoAccessWrapper = ({ children, ...props }: DemoAccessWrapperProps
 
   return (
     <div className="space-y-10">
-      <div className="flex gap-4 px-6 pt-6">
-        <ExperienceBallerineCard {...props} className="w-1/2" />
-        <GetFullAccessCard className="w-1/2" />
+      <div className="flex flex-col gap-4 px-6 pt-6 xl:flex-row">
+        <ExperienceBallerineCard {...props} className="w-full xl:w-1/2" />
+        <GetFullAccessCard className="w-full xl:w-1/2" />
       </div>
 
       <Separator />

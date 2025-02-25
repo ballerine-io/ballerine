@@ -23,18 +23,14 @@ export const GetFullAccessCard = ({ className }: GetFullAccessCardProps) => {
         'relative overflow-hidden rounded-md border border-wp-primary px-6 py-4',
         className,
       )}
-      style={{
-        background:
-          'linear-gradient(120deg, rgba(88, 78, 197, 0.22) 0%, rgba(255, 255, 255, 0.1) 30%, rgba(255, 255, 255, 0.1) 85%, rgba(88, 78, 197, 0.22) 92%)',
-      }}
     >
-      <div className="!w-2/3 shrink-0 space-y-4 xl:w-1/2">
+      <div className="shrink-0 space-y-4">
         <div className="flex items-center gap-2">
           <CrownIcon className="rounded-full bg-wp-primary/30 p-[6px] font-bold text-wp-primary d-7" />
           <span className="text-lg font-medium">Get Full Access / Learn More</span>
         </div>
 
-        <p className="leading-relaxed">
+        <p className="w-3/5 leading-relaxed 2xl:w-1/2">
           Get unlimited access to Ballerine, for smarter onboarding and monitoring decisions.
         </p>
 
@@ -46,9 +42,17 @@ export const GetFullAccessCard = ({ className }: GetFullAccessCardProps) => {
         </Button>
       </div>
 
-      <div className="absolute -right-16 top-1/3 -z-10">
+      <div className="absolute -right-24 top-12 2xl:-right-4 2xl:top-6">
         <img src={dashboardImage} alt="Dashboard image" className="h-full" />
       </div>
+
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            'linear-gradient(135deg, rgba(88, 78, 197, 0.22) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, rgba(88, 78, 197, 0.22) 92%)',
+        }}
+      />
     </div>
   );
 };
