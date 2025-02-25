@@ -129,7 +129,6 @@ export const CollectionFlowV2 = withSessionProtected(() => {
               }}
             >
               {() => {
-                // Temp state, has to be resolved to success or failure by plugins
                 if (state === 'done') {
                   return <LoadingScreen />;
                 }
