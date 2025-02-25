@@ -1,7 +1,7 @@
-import { valueOrNA } from '@ballerine/common';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
+import { valueOrNA } from '@ballerine/common';
 import { useMemo } from 'react';
 import { toTitleCase } from 'string-ts';
 
@@ -28,6 +28,7 @@ export const useCaseInfoBlock = ({
     const entityDetails = [
       ...Object.entries(omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {}),
       ...Object.entries(omitPropsFromObject(entityDataAdditionalInfo ?? {}, 'ubos')),
+      ...Object.entries(omitPropsFromObject(entity?.data?.address ?? {}, 'address')),
     ];
 
     if (Object.keys(entityDetails ?? {}).length === 0) {
