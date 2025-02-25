@@ -5,7 +5,7 @@ import { useMerchantMonitoringLogic } from '@/pages/MerchantMonitoring/hooks/use
 import { NoBusinessReports } from '@/pages/MerchantMonitoring/components/NoBusinessReports/NoBusinessReports';
 import { MerchantMonitoringTable } from '@/pages/MerchantMonitoring/components/MerchantMonitoringTable/MerchantMonitoringTable';
 import { buttonVariants } from '@/common/components/atoms/Button/Button';
-import { Loader2, Plus, SlidersHorizontal, Table2 } from 'lucide-react';
+import { Layers, Loader2, Plus, SlidersHorizontal } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Search } from '@/common/components/molecules/Search';
 import {
@@ -64,6 +64,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
     multiselectProps,
     isClearAllButtonVisible,
     onIsAlertChange,
+    isDemoAccount,
   } = useMerchantMonitoringLogic();
 
   return (
@@ -82,16 +83,23 @@ export const MerchantMonitoring: FunctionComponent = () => {
                         'flex items-center justify-start gap-2 font-semibold aria-disabled:pointer-events-none aria-disabled:opacity-50',
                     })}
                     to={`/${locale}/merchant-monitoring/upload-multiple-merchants`}
-                    aria-disabled={!createBusinessReportBatch?.enabled}
+                    aria-disabled={!createBusinessReportBatch?.enabled || isDemoAccount}
                   >
-                    <Table2 />
-                    <span>Upload Multiple Merchants</span>
+                    <Layers />
+                    <span>Batch Actions</span>
                   </Link>
                 </div>
               </TooltipTrigger>
-              {!createBusinessReportBatch?.enabled && (
+              {!createBusinessReportBatch?.enabled && !isDemoAccount && (
                 <TooltipContent side={'left'} align={'start'}>
                   {t('business_report_creation.is_disabled')}
+                </TooltipContent>
+              )}
+              {isDemoAccount && (
+                <TooltipContent side={'left'} align={'start'}>
+                  This feature is not available for trial accounts.
+                  <br />
+                  Talk to us to get full access.
                 </TooltipContent>
               )}
             </Tooltip>
@@ -99,18 +107,17 @@ export const MerchantMonitoring: FunctionComponent = () => {
           <TooltipProvider delayDuration={0}>
             <Tooltip>
               <TooltipTrigger className={`flex items-center`} asChild>
-                <div>
+                <div className="text-white">
                   <Link
                     className={buttonVariants({
-                      variant: 'outline',
                       className:
-                        'flex items-center justify-start gap-2 font-semibold aria-disabled:pointer-events-none aria-disabled:opacity-50',
+                        'flex items-center justify-start gap-2 !bg-[#584EC5] font-semibold hover:!bg-[#5B3FAC66] hover:shadow-lg aria-disabled:pointer-events-none aria-disabled:opacity-50',
                     })}
                     to={`/${locale}/merchant-monitoring/create-check`}
                     aria-disabled={!createBusinessReport?.enabled}
                   >
                     <Plus />
-                    <span>Create Merchant Check</span>
+                    <span>Create a Report</span>
                   </Link>
                 </div>
               </TooltipTrigger>
@@ -258,7 +265,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
           </div>
         )}
         {!isLoadingBusinessReports && isNonEmptyArray(businessReports) && (
-          <MerchantMonitoringTable data={businessReports} />
+          <MerchantMonitoringTable data={businessReports} isDemoAccount={isDemoAccount} />
         )}
         {!isLoadingBusinessReports && Array.isArray(businessReports) && !businessReports.length && (
           <NoBusinessReports />

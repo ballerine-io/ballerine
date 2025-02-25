@@ -1,5 +1,6 @@
 import {
   Badge,
+  ContentTooltip,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -95,6 +96,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     deboardingReasonOptions,
     isFetchingBusinessReport,
     locale,
+    isDemoAccount,
   } = useMerchantMonitoringBusinessReportLogic();
 
   // User should never really get in here, unless he manually sets the id in the URL.
@@ -159,7 +161,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
               onClick={onNavigateBack}
               className={'mb-6 flex items-center space-x-px pe-3 ps-1 font-semibold'}
             >
-              <ChevronLeft size={18} /> <span>Back</span>
+              <ChevronLeft size={18} /> <span>View All Reports</span>
             </Button>
             <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
               <DropdownMenuTrigger asChild>
