@@ -68,7 +68,12 @@ export const MerchantMonitoringReportStatus = ({
   > = async ({ text }) => {
     mutateUpdateReportStatus({ reportId, status: MERCHANT_REPORT_STATUSES_MAP.completed, text });
 
-    const content = `Status changed to 'Review Completed' ${text ? ` with details: ${text}` : ''}`;
+    const content = `
+      <div class="flex flex-col">
+        <span class="text-xs leading-6 text-slate-500">Status changed to <span class="font-semibold">'Review Completed'</span>
+        ${text ? ` with details:</span><div class="text-sm">${text}</div>` : '</span>'}
+      </div>
+    `;
 
     void mutateCreateNote({
       content,
@@ -169,7 +174,10 @@ export const MerchantMonitoringReportStatus = ({
                   <FormLabel>Additional details</FormLabel>
 
                   <FormControl>
-                    <TextArea {...field} />
+                    <TextArea
+                      {...field}
+                      placeholder="Add additional details that will be saved in the report's notes section"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -180,9 +188,7 @@ export const MerchantMonitoringReportStatus = ({
               <Button type="button" onClick={closeCompleteReviewModal} variant="ghost">
                 Cancel
               </Button>
-              <Button type="submit" variant="destructive">
-                Complete Review
-              </Button>
+              <Button type="submit">Complete Review</Button>
             </DialogFooter>
           </form>
         </Form>

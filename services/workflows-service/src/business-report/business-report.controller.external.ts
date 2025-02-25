@@ -33,7 +33,6 @@ import { fileFilter } from '@/storage/file-filter';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
 import { CreateBusinessReportBatchBodyDto } from '@/business-report/dtos/create-business-report-batch-body.dto';
 import type { Response } from 'express';
-import { PrismaService } from '@/prisma/prisma.service';
 import { BusinessReportFindingsListResponseDto } from '@/business-report/dtos/business-report-findings.dto';
 import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
 import {
@@ -52,7 +51,6 @@ export class BusinessReportControllerExternal {
     protected readonly logger: AppLoggerService,
     protected readonly customerService: CustomerService,
     protected readonly businessService: BusinessService,
-    private readonly prismaService: PrismaService,
     private readonly merchantMonitoringClient: MerchantMonitoringClient,
   ) {}
 
@@ -136,9 +134,7 @@ export class BusinessReportControllerExternal {
       isAlert,
     }: BusinessReportListRequestParamDto,
   ) {
-    const { id: customerId, features } = await this.customerService.getByProjectId(
-      currentProjectId,
-    );
+    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
 
     const { data, totalPages, totalItems } = await this.businessReportService.findMany({
       withoutUnpublishedOngoingReports: true,
@@ -371,9 +367,7 @@ export class BusinessReportControllerExternal {
     @CurrentProject() currentProjectId: TProjectId,
     @Param('id') id: string,
   ) {
-    const { id: customerId, features } = await this.customerService.getByProjectId(
-      currentProjectId,
-    );
+    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
 
     const report = await this.businessReportService.findById({ id, customerId });
 
