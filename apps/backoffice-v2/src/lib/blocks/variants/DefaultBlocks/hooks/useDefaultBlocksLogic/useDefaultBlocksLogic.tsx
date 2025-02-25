@@ -140,7 +140,7 @@ export const useDefaultBlocksLogic = () => {
       omitPropsFromObjectWhitelist({
         object: workflow?.context?.pluginsOutput,
         whitelist: registryInfoWhitelist,
-      }),
+      }) ?? {},
     [workflow?.context?.pluginsOutput],
   );
 

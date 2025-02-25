@@ -45,7 +45,9 @@ export const OverallRiskLevel: FunctionComponent<{
             )}
             checkFalsy={false}
           >
-            {Math.min(riskScore ?? 0, 100)}
+            {typeof riskScore === 'number' && !Number.isNaN(riskScore)
+              ? Math.min(riskScore, 100)
+              : null}
           </TextWithNAFallback>
           {(riskScore || riskScore === 0) && (
             <Badge
