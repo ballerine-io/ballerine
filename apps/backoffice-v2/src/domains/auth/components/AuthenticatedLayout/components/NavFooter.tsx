@@ -60,22 +60,18 @@ export const NavFooter = () => {
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem className="mt-auto flex flex-col space-y-2 px-4">
-        <div className="flex items-center">
-          <UserAvatar
-            fullName={fullName}
-            className="mr-2 d-6"
-            avatarUrl={session?.user?.avatarUrl}
-          />
+      <SidebarMenuItem className="mb-2 mt-auto flex flex-col space-y-2 px-2 group-data-[collapsible=icon]:px-0">
+        <SidebarMenuButton className="-ml-0.5 flex h-9 items-center gap-x-2 rounded-md text-sm font-medium normal-case">
+          <UserAvatar fullName={fullName} avatarUrl={session?.user?.avatarUrl} />
           <div className="text-sm">{fullName}</div>
-        </div>
-        <button
-          className="btn btn-ghost btn-block ml-1 justify-start gap-x-2 px-0 text-sm font-medium normal-case hover:bg-transparent"
+        </SidebarMenuButton>
+        <SidebarMenuButton
+          className="flex h-9 items-center gap-x-2 rounded-md py-0 text-sm font-medium normal-case"
           onClick={onSignOut}
         >
           <LogOutSvg className="h-4 w-4" />
           Log out
-        </button>
+        </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>
   );
