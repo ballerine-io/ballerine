@@ -273,7 +273,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
             </div>
           )}
           {!isLoadingBusinessReports && isNonEmptyArray(businessReports) && (
-            <MerchantMonitoringTable data={businessReports} />
+            <MerchantMonitoringTable data={businessReports} isDemoAccount={isDemoAccount} />
           )}
           {!isLoadingBusinessReports &&
             Array.isArray(businessReports) &&
