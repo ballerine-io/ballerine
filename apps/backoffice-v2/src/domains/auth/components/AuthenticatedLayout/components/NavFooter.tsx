@@ -30,41 +30,38 @@ export const NavFooter = () => {
     [session?.user?.firstName, session?.user?.lastName],
   );
 
-  if (isCustomerLoading || !customer) {
-    return null;
-  }
-
-  if (customer.config?.demoAccessDetails) {
-    return (
-      <SidebarMenuButton asChild>
-        <NavItem
-          navItem={{
-            text: 'Configurations',
-            icon: Settings2Icon,
-            premium: {
-              caption: 'Configure your risk tools to perform according to your risk appetite',
-              checkList: [
-                'Assign risk weights',
-                'Align with your policies',
-                'Request new categories',
-              ],
-            },
-            key: 'nav-item-documents-verifications',
-          }}
-          className="mb-6 cursor-default hover:bg-inherit hover:text-slate-400"
-          linkClassName="cursor-default"
-        />
-      </SidebarMenuButton>
-    );
-  }
-
   return (
     <SidebarMenu>
+      {customer?.config?.isDemoAccount && (
+        <SidebarMenuItem>
+          <SidebarMenuButton asChild>
+            <NavItem
+              navItem={{
+                text: 'Configurations',
+                icon: Settings2Icon,
+                premium: {
+                  caption: 'Configure your risk tools to perform according to your risk appetite',
+                  checkList: [
+                    'Assign risk weights',
+                    'Align with your policies',
+                    'Request new categories',
+                  ],
+                },
+                key: 'nav-item-documents-verifications',
+              }}
+              className="mb-6 cursor-default hover:bg-inherit hover:text-slate-400"
+              linkClassName="cursor-default"
+            />
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      )}
+
       <SidebarMenuItem className="mb-2 mt-auto flex flex-col space-y-2 px-2 group-data-[collapsible=icon]:px-0">
         <SidebarMenuButton className="-ml-0.5 flex h-9 items-center gap-x-2 rounded-md text-sm font-medium normal-case">
           <UserAvatar fullName={fullName} avatarUrl={session?.user?.avatarUrl} />
           <div className="text-sm">{fullName}</div>
         </SidebarMenuButton>
+
         <SidebarMenuButton
           className="flex h-9 items-center gap-x-2 rounded-md py-0 text-sm font-medium normal-case"
           onClick={onSignOut}

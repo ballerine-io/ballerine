@@ -68,12 +68,8 @@ export const ExperienceBallerineCard = ({
   className,
   onClick,
 }: ExperienceBallerineCardProps) => {
-  const { data: customer, isLoading } = useCustomerQuery();
+  const { data: customer } = useCustomerQuery();
   const locale = useLocale();
-
-  if (env.VITE_ENVIRONMENT_NAME === 'production' || isLoading || !customer?.config?.isDemoAccount) {
-    return null;
-  }
 
   const { reportsLeft, demoDaysLeft } = customer?.config?.demoAccessDetails ?? {};
   const error = getDemoStateErrorText({ reportsLeft, demoDaysLeft });
