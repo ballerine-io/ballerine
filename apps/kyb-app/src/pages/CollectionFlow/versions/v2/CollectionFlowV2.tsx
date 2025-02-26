@@ -175,7 +175,14 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                       ) : null}
                                     </div>
                                     <div>
-                                      {customer?.displayName && (
+                                      {themeDefinition.settings.contactInformation ? (
+                                        <div
+                                          className="text-sm"
+                                          dangerouslySetInnerHTML={{
+                                            __html: themeDefinition.settings.contactInformation,
+                                          }}
+                                        />
+                                      ) : customer?.displayName ? (
                                         <div>
                                           {
                                             t('contact', {
@@ -183,7 +190,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                             }) as string
                                           }
                                         </div>
-                                      )}
+                                      ) : null}
                                       {themeDefinition.ui?.poweredBy !== false && (
                                         <div className="flex flex-col">
                                           <div className="border-b pb-12" />
