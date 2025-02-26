@@ -34,7 +34,7 @@ export const NavMain: FunctionComponent<{ className?: string }> = ({ className }
                       className={ctw('p-0', {
                         'bg-background text-primary': isActiveFilterGroup,
                       })}
-                      linkClassName="p-3 group-data-[collapsible=icon]:p-0"
+                      linkClassName="p-2 group-data-[collapsible=icon]:p-0"
                     />
                   </CollapsibleTrigger>
                   <CollapsibleContent>
@@ -65,7 +65,7 @@ export const NavMain: FunctionComponent<{ className?: string }> = ({ className }
                 className={ctw('p-0', {
                   'bg-background text-primary': navItem.href && pathname.includes(navItem.href),
                 })}
-                linkClassName="p-3 group-data-[collapsible=icon]:p-0"
+                linkClassName="p-2 group-data-[collapsible=icon]:p-0"
               />
             </SidebarMenuItem>
           );

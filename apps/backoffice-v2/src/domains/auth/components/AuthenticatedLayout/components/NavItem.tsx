@@ -106,7 +106,7 @@ const NavItem = forwardRef<
       className={ctw(
         'flex h-auto items-center gap-x-2 rounded-md text-sm font-bold capitalize text-slate-400 2xl:text-base',
         'group-data-[collapsible=icon]:h-9',
-        'hover:bg-slate-200 hover:text-primary',
+        'duration-50 transition-colors hover:bg-slate-200 hover:text-primary',
         {
           'active:bg-primary-foreground active:text-primary': !premium,
           'group-data-[collapsible=icon]:hidden': 'children' in navItem,
