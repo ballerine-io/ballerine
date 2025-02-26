@@ -32,6 +32,7 @@ import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
 import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
 import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
+import { Separator } from '@/common/components/atoms/Separator/Separator';
 import { NotesButton } from '@/common/components/molecules/NotesButton/NotesButton';
 import { Form } from '@/common/components/organisms/Form/Form';
 import { FormControl } from '@/common/components/organisms/Form/Form.Control';
@@ -40,14 +41,12 @@ import { FormItem } from '@/common/components/organisms/Form/Form.Item';
 import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
 import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
 import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
+import { BALLERINE_CALENDLY_LINK } from '@/common/constants';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { BusinessReport } from '@/domains/business-reports/components/BusinessReport/BusinessReport';
 import { Notes } from '@/domains/notes/Notes';
 import { MerchantMonitoringReportStatus } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringReportStatus';
 import { useMerchantMonitoringBusinessReportLogic } from '@/pages/MerchantMonitoringBusinessReport/hooks/useMerchantMonitoringBusinessReportLogic/useMerchantMonitoringBusinessReportLogic';
-import { env } from '@/common/env/env';
-import { Separator } from '@/common/components/atoms/Separator/Separator';
-import { R } from 'msw/lib/glossary-de6278a9';
 
 export const DialogDropdownItem = forwardRef<
   React.ElementRef<typeof DropdownMenuItem>,
@@ -341,7 +340,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
               <div className="space-x-6 text-sm">
                 <span>Get a guided walkthrough of the report</span>
                 <Button asChild variant="wp-primary" className="justify-start space-x-2" size="sm">
-                  <a href={env.VITE_BALLERINE_CALENDLY} target="_blank" rel="noreferrer">
+                  <a href={BALLERINE_CALENDLY_LINK} target="_blank" rel="noreferrer">
                     <span>Book a quick call</span>
                     <ArrowRightIcon className="d-4" />
                   </a>
