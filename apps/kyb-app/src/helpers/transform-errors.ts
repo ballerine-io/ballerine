@@ -50,6 +50,10 @@ export const transformRJSFErrors = (errors: RJSFValidationError[]): RJSFValidati
       error.message = 'Please provide valid email address.';
     }
 
+    if (error.params?.format === 'minAge18') {
+      error.message = 'You must be at least 18 years old to apply.';
+    }
+
     return error;
   });
 };
