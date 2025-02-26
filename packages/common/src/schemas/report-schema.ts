@@ -88,6 +88,7 @@ export const ReportSchema = z
     }),
     business: z.object({
       id: z.string(),
+      correlationId: z.string().nullish(),
       unsubscribedMonitoringAt: z.string().datetime().nullable(),
     }),
     metadata: z.record(z.string(), z.unknown()).nullish(),
