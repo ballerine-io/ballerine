@@ -8,26 +8,10 @@ export const useRedirectUrls = () => {
   const { data } = useUISchemasQuery(useLanguage());
   const { config } = useStateManagerContext();
 
-  const uiOptions: UIOptions | null = useMemo(() => {
-    // Config has priority over uiOptions in data
-    if (config?.uiOptions?.redirectUrls) {
-      return config.uiOptions;
-    }
-
-    if (data?.uiOptions?.redirectUrls) {
-      return data.uiOptions;
-    }
-
-    return null;
-  }, [data, config]);
-
-  const redirectUrls: UIOptions['redirectUrls'] | null = useMemo(() => {
-    if (!uiOptions) {
-      return null;
-    }
-
-    return uiOptions.redirectUrls;
-  }, [uiOptions]);
+  const redirectUrls: UIOptions['redirectUrls'] | null = useMemo(
+    () => config?.uiOptions?.redirectUrls ?? data?.uiOptions?.redirectUrls ?? null,
+    [data, config],
+  );
 
   return redirectUrls;
 };

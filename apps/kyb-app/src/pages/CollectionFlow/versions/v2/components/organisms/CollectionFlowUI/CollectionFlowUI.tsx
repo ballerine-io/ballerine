@@ -74,7 +74,6 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
 
   const handleSubmit = useCallback(
     async (values: CollectionFlowContext) => {
-      await sync(values);
       stateApi.setContext(values);
 
       if (isFinalSubmissionAvailable) {
