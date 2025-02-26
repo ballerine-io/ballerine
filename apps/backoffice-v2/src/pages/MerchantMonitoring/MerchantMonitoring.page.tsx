@@ -8,7 +8,7 @@ import {
   Skeleton,
 } from '@ballerine/ui';
 import { t } from 'i18next';
-import { Loader2, Plus, SlidersHorizontal } from 'lucide-react';
+import { Layers, Loader2, Plus, SlidersHorizontal } from 'lucide-react';
 import { FunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -69,6 +69,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
     avatarUrl,
     CreateReportButtonWrapper,
     toggleOpen,
+    isDemoAccount,
   } = useMerchantMonitoringLogic();
 
   return (
@@ -93,16 +94,23 @@ export const MerchantMonitoring: FunctionComponent = () => {
                           'flex items-center justify-start gap-2 font-semibold aria-disabled:pointer-events-none aria-disabled:opacity-50',
                       })}
                       to={`/${locale}/merchant-monitoring/upload-multiple-merchants`}
-                      aria-disabled={!createBusinessReportBatch?.enabled}
+                      aria-disabled={!createBusinessReportBatch?.enabled || isDemoAccount}
                     >
-                      <Plus />
-                      <span>Upload Multiple Merchants</span>
+                      <Layers />
+                      <span>Batch Actions</span>
                     </Link>
                   </div>
                 </TooltipTrigger>
-                {!createBusinessReportBatch?.enabled && (
+                {!createBusinessReportBatch?.enabled && !isDemoAccount && (
                   <TooltipContent side={'left'} align={'start'}>
                     {t('business_report_creation.is_disabled')}
+                  </TooltipContent>
+                )}
+                {isDemoAccount && (
+                  <TooltipContent side={'left'} align={'start'}>
+                    This feature is not available for trial accounts.
+                    <br />
+                    Talk to us to get full access.
                   </TooltipContent>
                 )}
               </Tooltip>
@@ -265,7 +273,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
             </div>
           )}
           {!isLoadingBusinessReports && isNonEmptyArray(businessReports) && (
-            <MerchantMonitoringTable data={businessReports} />
+            <MerchantMonitoringTable data={businessReports} isDemoAccount={isDemoAccount} />
           )}
           {!isLoadingBusinessReports &&
             Array.isArray(businessReports) &&

@@ -1,13 +1,15 @@
 import React, { FunctionComponent } from 'react';
 import { TBusinessReports } from '@/domains/business-reports/fetchers';
-import { columns } from '@/pages/MerchantMonitoring/components/MerchantMonitoringTable/columns';
+import { useColumns } from '@/pages/MerchantMonitoring/components/MerchantMonitoringTable/columns';
 import { useMerchantMonitoringTableLogic } from '@/pages/MerchantMonitoring/components/MerchantMonitoringTable/hooks/useMerchantMonitoringTableLogic/useMerchantMonitoringTableLogic';
 import { UrlDataTable } from '@/common/components/organisms/UrlDataTable/UrlDataTable';
 
 export const MerchantMonitoringTable: FunctionComponent<{
   data: TBusinessReports['data'];
-}> = ({ data }) => {
+  isDemoAccount: boolean;
+}> = ({ data, isDemoAccount }) => {
   const { Cell } = useMerchantMonitoringTableLogic();
+  const columns = useColumns({ isDemoAccount });
 
   return (
     <UrlDataTable

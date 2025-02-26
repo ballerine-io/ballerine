@@ -265,5 +265,6 @@ export const useMerchantMonitoringLogic = () => {
     avatarUrl,
     CreateReportButtonWrapper,
     toggleOpen,
+    isDemoAccount: customer?.config?.isDemoAccount || false,
   };
 };
