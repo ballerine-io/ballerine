@@ -207,6 +207,7 @@ describe('useFinalSubmission', () => {
 
     // Assert
     expect(finalSubmissionRequest).toHaveBeenCalledTimes(1);
+    expect(mockSendEvent).toHaveBeenCalledWith('NEXT');
     expect(mockSendEvent).toHaveBeenCalledWith('FAILURE');
     expect(mockTrackEvent).toHaveBeenCalledWith(CollectionFlowEvents.FLOW_FAILED);
   });

@@ -55,6 +55,7 @@ export const useFinalSubmission = <TValues extends object = CollectionFlowContex
         await stateApi.sendEvent('COMPLETED');
         trackEvent(CollectionFlowEvents.FLOW_COMPLETED);
       } catch (error) {
+        await stateApi.sendEvent('NEXT');
         await stateApi.sendEvent('FAILURE');
         trackEvent(CollectionFlowEvents.FLOW_FAILED);
       }
