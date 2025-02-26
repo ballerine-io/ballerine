@@ -46,7 +46,7 @@ const BusinessReportSectionsObserver = ({
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [sectionRefs]);
 
   const scrollToSection = (sectionId: string) => {
     sectionRefs.current[sectionId]?.scrollIntoView({ behavior: 'smooth' });
