@@ -1,16 +1,5 @@
-import dayjs from 'dayjs';
-import { Link } from 'react-router-dom';
-import React, { forwardRef, FunctionComponent } from 'react';
 import { MERCHANT_REPORT_STATUSES_MAP, UPDATEABLE_REPORT_STATUSES } from '@ballerine/common';
-import { ArrowLeft, ChevronLeft, FileQuestion } from 'lucide-react';
 import {
-<<<<<<< HEAD
-||||||| 589d8d95b
-  Badge,
-=======
-  Badge,
-  ContentTooltip,
->>>>>>> origin/bal3550b
   Dialog,
   DialogContent,
   DialogDescription,
@@ -26,6 +15,10 @@ import {
   TextArea,
   TextWithNAFallback,
 } from '@ballerine/ui';
+import dayjs from 'dayjs';
+import { ArrowLeft, ChevronLeft, FileQuestion } from 'lucide-react';
+import React, { forwardRef, FunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
 
 import { Button } from '@/common/components/atoms/Button/Button';
 import { Card } from '@/common/components/atoms/Card/Card';
@@ -47,35 +40,10 @@ import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
 import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
 import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
 import { ctw } from '@/common/utils/ctw/ctw';
+import { BusinessReport } from '@/domains/business-reports/components/BusinessReport/BusinessReport';
 import { Notes } from '@/domains/notes/Notes';
-import { Card } from '@/common/components/atoms/Card/Card';
-import { Form } from '@/common/components/organisms/Form/Form';
-import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
-import { Button } from '@/common/components/atoms/Button/Button';
-import { Select } from '@/common/components/atoms/Select/Select';
-import { CardTitle } from '@/common/components/atoms/Card/Card.Title';
-import { FormItem } from '@/common/components/organisms/Form/Form.Item';
-import { CardFooter } from '@/common/components/atoms/Card/Card.Footer';
-import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
-import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
-import { FormField } from '@/common/components/organisms/Form/Form.Field';
-import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
-import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
-import { CardContent } from '@/common/components/atoms/Card/Card.Content';
-import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
-import { FormControl } from '@/common/components/organisms/Form/Form.Control';
-import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
-import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
-import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
-import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
-import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
-import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
-import { NotesButton } from '@/common/components/molecules/NotesButton/NotesButton';
-import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
 import { MerchantMonitoringReportStatus } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringReportStatus';
 import { useMerchantMonitoringBusinessReportLogic } from '@/pages/MerchantMonitoringBusinessReport/hooks/useMerchantMonitoringBusinessReportLogic/useMerchantMonitoringBusinessReportLogic';
-import { MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
-import { BusinessReport } from '@/domains/business-reports/components/BusinessReport/BusinessReport';
 
 export const DialogDropdownItem = forwardRef<
   React.ElementRef<typeof DropdownMenuItem>,
