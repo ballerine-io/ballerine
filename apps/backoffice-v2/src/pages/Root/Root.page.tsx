@@ -7,6 +7,7 @@ import { Providers } from '@/common/components/templates/Providers/Providers';
 import { env } from '@/common/env/env';
 import Chatbot from '@/domains/chat/chatbot-opengpt';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
+import { useMobileWarning } from './hooks/useMobileWarning/useMobileWarning';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
@@ -43,6 +44,8 @@ const ChatbotLayout: FunctionComponent = () => {
 };
 
 export const Root: FunctionComponent = () => {
+  useMobileWarning();
+
   return (
     <Providers>
       <Outlet />
