@@ -11,12 +11,12 @@ import {
 import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { env } from '@/common/env/env';
+import { BALLERINE_CALENDLY_LINK } from '@/common/constants';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { TRoute, TRouteWithChildren } from '@/domains/auth/components/AuthenticatedLayout/types';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { useFiltersQuery } from '@/domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
-import { TRoute, TRouteWithChildren } from '../../types';
 
 export const useSidebarItems = () => {
   const { data: filters } = useFiltersQuery();
@@ -42,7 +42,7 @@ export const useSidebarItems = () => {
     [filterId, pathname],
   );
 
-  const navItems: TRoute[] = customer?.config?.demoAccessDetails
+  const navItems: TRoute[] = customer?.config?.isDemoAccount
     ? [
         {
           text: 'Home',
@@ -66,7 +66,7 @@ export const useSidebarItems = () => {
               'Validate existence and status',
               'Identify key stakeholders',
             ],
-            href: env.VITE_BALLERINE_CALENDLY ?? 'mailto:Sales@ballerine.com',
+            href: BALLERINE_CALENDLY_LINK ?? 'mailto:Sales@ballerine.com',
           },
           key: 'nav-item-kyb-ubos',
         },
@@ -80,7 +80,7 @@ export const useSidebarItems = () => {
               'Biometric and liveness checks',
               'Global coverage',
             ],
-            href: env.VITE_BALLERINE_CALENDLY ?? 'mailto:Sales@ballerine.com',
+            href: BALLERINE_CALENDLY_LINK ?? 'mailto:Sales@ballerine.com',
           },
           key: 'nav-item-identity-verification',
         },
@@ -94,7 +94,7 @@ export const useSidebarItems = () => {
               'Sanctions, PEPs, & adverse media',
               'Customizable preferences',
             ],
-            href: env.VITE_BALLERINE_CALENDLY ?? 'mailto:Sales@ballerine.com',
+            href: BALLERINE_CALENDLY_LINK ?? 'mailto:Sales@ballerine.com',
           },
           key: 'nav-item-sanctions-screening',
         },
@@ -108,7 +108,7 @@ export const useSidebarItems = () => {
               'Works in every language',
               'Detect faults and fakes',
             ],
-            href: env.VITE_BALLERINE_CALENDLY ?? 'mailto:Sales@ballerine.com',
+            href: BALLERINE_CALENDLY_LINK ?? 'mailto:Sales@ballerine.com',
           },
           key: 'nav-item-documents-verifications',
         },

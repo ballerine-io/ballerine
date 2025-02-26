@@ -1,8 +1,8 @@
 import { ctw } from '@ballerine/ui';
 import { ArrowRightIcon, CrownIcon } from 'lucide-react';
 
-import { env } from '@/common/env/env';
 import { Button } from '@/common/components/atoms/Button/Button';
+import { BALLERINE_CALENDLY_LINK } from '@/common/constants';
 import dashboardImage from './dashboard.png';
 
 export type GetFullAccessCardProps = {
@@ -28,7 +28,7 @@ export const GetFullAccessCard = ({ className }: GetFullAccessCardProps) => {
         </p>
 
         <Button asChild variant="wp-primary" className="justify-start space-x-2 text-base">
-          <a href={env.VITE_BALLERINE_CALENDLY} target="_blank" rel="noreferrer">
+          <a href={BALLERINE_CALENDLY_LINK} target="_blank" rel="noreferrer">
             <span>Book a quick call</span>
             <ArrowRightIcon className="d-4" />
           </a>
