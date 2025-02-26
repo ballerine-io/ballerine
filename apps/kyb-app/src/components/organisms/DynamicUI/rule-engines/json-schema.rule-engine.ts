@@ -51,32 +51,6 @@ const addCustomFormats = (validator: Ajv) => {
       return age >= requiredAge;
     },
   });
-
-  // Add specific format for minAge18 for backward compatibility
-  validator.addFormat('minAge18', {
-    type: 'string',
-    validate: (dateString: string) => {
-      const inputDate = dayjs(dateString);
-
-      if (!inputDate.isValid()) {
-        return false;
-      }
-
-      const today = dayjs();
-      const birthDate = dayjs(dateString);
-
-      // Calculate age
-      let age = today.year() - birthDate.year();
-      const monthDiff = today.month() - birthDate.month();
-
-      // Adjust age if birthday hasn't occurred yet this year
-      if (monthDiff < 0 || (monthDiff === 0 && today.date() < birthDate.date())) {
-        age--;
-      }
-
-      return age >= 18;
-    },
-  });
 };
 
 export class JsonSchemaRuleEngine implements RuleEngine {
