@@ -27,7 +27,7 @@ export const AppSidebar = ({ ...props }: ComponentProps<typeof Sidebar>) => {
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain className="group-data-[collapsible=icon]:mt-24" />
+        <NavMain className="group-data-[collapsible=icon]:mt-24 2xl:mt-12 group-data-[collapsible=icon]:2xl:mt-36" />
       </SidebarContent>
 
       <SidebarFooter>
