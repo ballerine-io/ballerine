@@ -14,11 +14,7 @@ import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboard
 import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import { ctw } from '@/common/utils/ctw/ctw';
-import {
-  getSeverityFromRiskScore,
-  MERCHANT_REPORT_STATUSES_MAP,
-  MERCHANT_REPORT_TYPES_MAP,
-} from '@ballerine/common';
+import { MERCHANT_REPORT_STATUSES_MAP, MERCHANT_REPORT_TYPES_MAP } from '@ballerine/common';
 import {
   Badge,
   CheckCircle,
@@ -27,7 +23,7 @@ import {
   TextWithNAFallback,
   WarningFilledSvg,
 } from '@ballerine/ui';
-import { Minus } from 'lucide-react';
+import { ReportSchema } from '@ballerine/common';
 
 const columnHelper = createColumnHelper<TBusinessReport>();
 
@@ -136,16 +132,55 @@ export const columns = [
     },
     header: 'Scan Type',
   }),
-  columnHelper.accessor('isAlert', {
+  columnHelper.accessor('data.contentViolations', {
     cell: ({ getValue }) => {
-      return getValue() ? (
-        <WarningFilledSvg className={`d-6`} />
-      ) : (
-        <Minus className={`text-[#D9D9D9] d-6`} />
+      const violations = getValue() as NonNullable<TBusinessReport['data']>['contentViolations'];
+
+      if (!violations?.length) {
+        return null;
+      }
+
+      return (
+        <ContentTooltip
+          description={
+            <>
+              <p className="mb-4 text-lg font-bold">Violations</p>
+
+              {violations.map((violation, index) => (
+                <div key={index} className="space-x-1 text-sm">
+                  <WarningFilledSvg className="inline-block d-5" />
+                  <span className="text-slate-500">{violation.name}</span>
+                </div>
+              ))}
+            </>
+          }
+          props={{
+            tooltipTrigger: { className: 'mx-auto pr-0' },
+            tooltipContent: {
+              align: 'center',
+              side: 'top',
+              className: 'bg-background text-primary',
+            },
+          }}
+        >
+          <div className="flex items-center justify-center rounded-full bg-warning/20 text-xs font-bold text-warning d-5">
+            {violations.length}
+          </div>
+        </ContentTooltip>
       );
     },
-    header: 'Alert',
+    header: 'Violations',
   }),
+  // columnHelper.accessor('isAlert', {
+  //   cell: ({ getValue }) => {
+  //     return getValue() ? (
+  //       <WarningFilledSvg className={`d-6`} />
+  //     ) : (
+  //       <Minus className={`text-[#D9D9D9] d-6`} />
+  //     );
+  //   },
+  //   header: 'Alert',
+  // }),
   columnHelper.accessor('displayDate', {
     cell: info => {
       const displayDate = info.getValue();
