@@ -1,6 +1,7 @@
 import { FunctionComponent, lazy, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
+import { BallerineLogo } from '@/common/components/atoms/icons';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
 import { WelcomeModal } from '@/common/components/molecules/WelcomeModal/WelcomeModal';
 import { Providers } from '@/common/components/templates/Providers/Providers';
@@ -44,7 +45,16 @@ const ChatbotLayout: FunctionComponent = () => {
 };
 
 export const Root: FunctionComponent = () => {
-  useMobileWarning();
+  const { isMobile } = useMobileWarning();
+
+  if (isMobile) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-8 text-center">
+        <BallerineLogo />
+        <h2>If you’re on a mobile device, please switch to a desktop for the best experience.</h2>
+      </div>
+    );
+  }
 
   return (
     <Providers>

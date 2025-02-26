@@ -31,7 +31,7 @@ export const AuthenticatedLayout: FunctionComponent = () => {
       style={{
         '--sidebar-width-mobile': '12rem',
         '--sidebar-width': '18rem',
-        '--sidebar-width-xl': '24rem',
+        '--sidebar-width-xl': '21rem',
       }}
     >
       <AppSidebar />
