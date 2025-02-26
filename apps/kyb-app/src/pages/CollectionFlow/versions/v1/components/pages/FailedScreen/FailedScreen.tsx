@@ -1,22 +1,10 @@
 import { useCustomer } from '@/components/providers/CustomerProvider';
-import { useFlowTracking } from '@/hooks/useFlowTracking';
-import { CollectionFlowEvents } from '@/hooks/useFlowTracking/enums';
-import { useUIOptionsRedirect } from '@/hooks/useUIOptionsRedirect';
 import { Card } from '@ballerine/ui';
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const FailedScreen = () => {
   const { t } = useTranslation();
   const { customer } = useCustomer();
-
-  const { trackEvent } = useFlowTracking();
-
-  useEffect(() => {
-    trackEvent(CollectionFlowEvents.FLOW_FAILED);
-  }, []);
-
-  useUIOptionsRedirect('failure');
 
   return (
     <div className="flex h-full items-center justify-center">
