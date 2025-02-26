@@ -20,7 +20,7 @@ export const AppSidebar = ({ ...props }: ComponentProps<typeof Sidebar>) => {
       {...props}
     >
       {/* TODO: choose one of the ways to collapse, if needed, either trigger btn or rail component */}
-      <SidebarTrigger className="group-data-[collapsible=icon]:h-123 absolute right-2 top-2 z-10" />
+      <SidebarTrigger className="absolute right-2 top-2 z-10" />
 
       <SidebarHeader>
         <NavLogo className="h-24 group-data-[collapsible=icon]:hidden" />

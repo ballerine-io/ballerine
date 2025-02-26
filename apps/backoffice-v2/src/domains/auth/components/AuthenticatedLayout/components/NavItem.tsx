@@ -1,5 +1,6 @@
 import {
   CollapsibleTrigger,
+  ContentTooltip,
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
@@ -15,16 +16,18 @@ import { TRouteWithOptionalIcon, TRouteWithoutChildren } from '../types';
 
 const PremiumNavItemHoverCard = ({
   premiumProps,
+  navItemTitle,
+  children,
 }: {
   premiumProps: NonNullable<TRouteWithoutChildren['premium']>;
+  navItemTitle?: string;
+  children: ReactNode;
 }) => {
   const { caption, checkList, videoLink } = premiumProps;
 
   return (
-    <HoverCard openDelay={0}>
-      <HoverCardTrigger className="ml-auto mr-1 cursor-default">
-        <CrownIcon className="stroke-[#968FDE] d-4 2xl:d-5" />
-      </HoverCardTrigger>
+    <HoverCard openDelay={0} closeDelay={0}>
+      <HoverCardTrigger asChild>{children}</HoverCardTrigger>
       <HoverCardContent
         side="right"
         align="start"
@@ -40,6 +43,18 @@ const PremiumNavItemHoverCard = ({
 
           <CrownIcon className="absolute right-0 top-0 -translate-y-1/3 translate-x-1/3 rounded-full bg-[#584EC5] stroke-primary-foreground p-1.5 d-8" />
         </div>
+
+        {navItemTitle && (
+          <p
+            className={ctw(
+              '2xl:text-md text-sm font-medium text-slate-800',
+              'hidden group-data-[collapsible=icon]:block',
+            )}
+          >
+            {navItemTitle}
+          </p>
+        )}
+
         <p className="text-xs text-slate-600 2xl:text-sm">{caption}</p>
         <div className="space-y-2">
           {checkList.map((checkListItem, index) => (
@@ -57,7 +72,7 @@ const PremiumNavItemHoverCard = ({
   );
 };
 
-const baseNavItemWrapperClassName = 'flex items-center gap-x-2 w-full';
+const baseNavItemWrapperClassName = 'flex items-center gap-x-2 w-full cursor-default';
 const NavItemWrapper = ({
   navItem,
   children,
@@ -67,19 +82,26 @@ const NavItemWrapper = ({
   children: ReactNode;
   className?: string;
 }) => {
+  let NavItemElement = (
+    <div className={ctw(baseNavItemWrapperClassName, className)}>{children}</div>
+  );
+
   if ('href' in navItem && navItem.href) {
-    return (
-      <NavLink to={navItem.href} className={ctw(baseNavItemWrapperClassName, className)}>
+    NavItemElement = (
+      <NavLink
+        to={navItem.href}
+        className={ctw(baseNavItemWrapperClassName, 'cursor-pointer', className)}
+      >
         {children}
       </NavLink>
     );
   }
 
   if (navItem.premium?.href) {
-    return (
+    NavItemElement = (
       <a
         href={navItem.premium.href}
-        className={ctw(baseNavItemWrapperClassName, className)}
+        className={ctw(baseNavItemWrapperClassName, 'cursor-pointer', className)}
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -88,7 +110,15 @@ const NavItemWrapper = ({
     );
   }
 
-  return <div className={ctw(baseNavItemWrapperClassName, className)}>{children}</div>;
+  if (navItem.premium) {
+    return (
+      <PremiumNavItemHoverCard premiumProps={navItem.premium} navItemTitle={navItem.text}>
+        {NavItemElement}
+      </PremiumNavItemHoverCard>
+    );
+  }
+
+  return NavItemElement;
 };
 
 const NavItem = forwardRef<
@@ -101,31 +131,45 @@ const NavItem = forwardRef<
   const { text, premium } = navItem;
 
   return (
-    <SidebarMenuButton
-      ref={ref}
-      className={ctw(
-        'flex h-auto items-center gap-x-2 rounded-md text-sm font-bold capitalize text-slate-400 2xl:text-base',
-        'group-data-[collapsible=icon]:h-9',
-        'duration-50 transition-colors hover:bg-slate-200 hover:text-primary',
-        {
-          'active:bg-primary-foreground active:text-primary': !premium,
-          'group-data-[collapsible=icon]:hidden': 'children' in navItem,
+    <ContentTooltip
+      description={navItem.text}
+      props={{
+        tooltipContent: {
+          className: ctw(
+            'p-1 mb-1 group-data-[collapsible=icon]:block hidden',
+            premium && '!hidden',
+          ),
         },
-        className,
-      )}
-      {...props}
+        tooltipTrigger: { asChild: true, className: 'pr-0 text-sm' },
+      }}
     >
-      <NavItemWrapper navItem={navItem} className={linkClassName}>
-        {'icon' in navItem && navItem.icon && (
-          <navItem.icon className="shrink-0 d-5 group-data-[collapsible=icon]:d-4" />
+      <SidebarMenuButton
+        ref={ref}
+        className={ctw(
+          'flex h-auto w-full items-center gap-x-2 rounded-md text-sm font-bold capitalize text-slate-400 2xl:text-base',
+          'group-data-[collapsible=icon]:h-9',
+          'duration-50 transition-colors hover:bg-slate-200 hover:text-primary',
+          {
+            'active:bg-primary-foreground active:text-primary': !premium,
+            'group-data-[collapsible=icon]:hidden': 'children' in navItem,
+          },
+          className,
         )}
-        {text}
-        {'children' in navItem && (
-          <ChevronRightIcon className="ml-auto transition-transform duration-200 d-4 group-data-[state=open]/collapsible:rotate-90" />
-        )}
-      </NavItemWrapper>
-      {premium && <PremiumNavItemHoverCard premiumProps={premium} />}
-    </SidebarMenuButton>
+        {...props}
+      >
+        <NavItemWrapper navItem={navItem} className={linkClassName}>
+          {'icon' in navItem && navItem.icon && (
+            <navItem.icon className="shrink-0 d-5 group-data-[collapsible=icon]:-ml-0.5" />
+          )}
+          {text}
+          {'children' in navItem && (
+            <ChevronRightIcon className="ml-auto transition-transform duration-200 d-4 group-data-[state=open]/collapsible:rotate-90" />
+          )}
+
+          {premium && <CrownIcon className="ml-auto stroke-[#968FDE] d-4 2xl:d-5" />}
+        </NavItemWrapper>
+      </SidebarMenuButton>
+    </ContentTooltip>
   );
 });
 NavItem.displayName = 'NavItem';

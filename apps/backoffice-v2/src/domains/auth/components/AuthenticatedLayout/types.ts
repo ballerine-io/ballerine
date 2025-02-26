@@ -1,8 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
-import type { ReactNode } from 'react';
 
 export type TRouteBase = {
-  text: ReactNode | ReactNode[];
+  text: string;
   key: string;
   disableActiveStyles?: boolean;
   premium?: {
