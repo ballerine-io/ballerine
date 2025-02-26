@@ -79,7 +79,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
       avatarUrl={avatarUrl}
       onClick={toggleOpen}
     >
-      <div className="flex h-full flex-col space-y-4 px-6 pb-6">
+      <div className="space-y-4 px-6 pb-6">
         <div className={`flex justify-between pb-2`}>
           <h1 className="text-2xl font-bold">Web Presence</h1>
           <div className={`flex space-x-3`}>
@@ -211,41 +211,43 @@ export const MerchantMonitoring: FunctionComponent = () => {
             onSelect={handleFilterChange(FINDINGS_FILTER.accessor)}
             onClearSelect={handleFilterClear(FINDINGS_FILTER.accessor)}
           />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className={`h-8 space-x-2.5 p-2 font-normal`}>
-                <SlidersHorizontal className="d-4" />
-                <span>Monitoring Alerts</span>
-                {isAlert !== 'All' && (
-                  <>
-                    <Separator orientation="vertical" className="mx-2 h-4" />
-                    <div className="hidden space-x-1 lg:flex">
-                      <Badge
-                        key={`${isAlert}-badge`}
-                        variant="secondary"
-                        className="rounded-sm px-1 text-xs font-normal"
-                      >
-                        {isAlert}
-                      </Badge>
-                    </div>
-                  </>
-                )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align={`start`}>
-              {Object.entries(IS_ALERT_TO_DISPLAY_TEXT).map(([value, label]) => (
-                <DropdownMenuCheckboxItem
-                  key={label}
-                  checked={isAlert === label}
-                  onCheckedChange={() =>
-                    onIsAlertChange(value as keyof typeof IS_ALERT_TO_DISPLAY_TEXT)
-                  }
-                >
-                  {label}
-                </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {!isDemoAccount && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className={`h-8 space-x-2.5 p-2 font-normal`}>
+                  <SlidersHorizontal className="d-4" />
+                  <span>Monitoring Alerts</span>
+                  {isAlert !== 'All' && (
+                    <>
+                      <Separator orientation="vertical" className="mx-2 h-4" />
+                      <div className="hidden space-x-1 lg:flex">
+                        <Badge
+                          key={`${isAlert}-badge`}
+                          variant="secondary"
+                          className="rounded-sm px-1 text-xs font-normal"
+                        >
+                          {isAlert}
+                        </Badge>
+                      </div>
+                    </>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align={`start`}>
+                {Object.entries(IS_ALERT_TO_DISPLAY_TEXT).map(([value, label]) => (
+                  <DropdownMenuCheckboxItem
+                    key={label}
+                    checked={isAlert === label}
+                    onCheckedChange={() =>
+                      onIsAlertChange(value as keyof typeof IS_ALERT_TO_DISPLAY_TEXT)
+                    }
+                  >
+                    {label}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           {isClearAllButtonVisible && (
             <Button
               variant={`ghost`}
@@ -266,7 +268,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
             </Badge>
           )}
         </div>
-        <div className="flex w-full flex-1 flex-col gap-6 overflow-auto">
+        <div className="space-y-6">
           {isLoadingBusinessReports && (
             <div className={`flex h-full w-full items-center justify-center`}>
               <Loader2 className={`animate-spin d-[60px]`} />
