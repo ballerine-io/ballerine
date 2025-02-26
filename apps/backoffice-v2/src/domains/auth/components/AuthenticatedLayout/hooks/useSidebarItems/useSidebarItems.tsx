@@ -60,11 +60,11 @@ export const useSidebarItems = () => {
           text: 'KYB & UBOs',
           icon: BuildingIcon,
           premium: {
-            caption: 'Extract data, classify, validate and verify documents.',
+            caption: 'Verify businesses, activity, and ownership to stay compliant.',
             checkList: [
-              'All types of documents',
-              'Works in every language',
-              'Detect faults and fakes',
+              'Retrieve company registry data',
+              'Validate existence and status',
+              'Identify key stakeholders',
             ],
             href: env.VITE_BALLERINE_CALENDLY ?? 'mailto:Sales@ballerine.com',
           },
@@ -74,11 +74,11 @@ export const useSidebarItems = () => {
           text: 'Identity Verification',
           icon: UserRoundSearchIcon,
           premium: {
-            caption: 'Extract data, classify, validate and verify documents.',
+            caption: 'Authenticate individuals quickly, using highest standards.',
             checkList: [
-              'All types of documents',
-              'Works in every language',
-              'Detect faults and fakes',
+              'Validate government-issued IDs',
+              'Biometric and liveness checks',
+              'Global coverage',
             ],
             href: env.VITE_BALLERINE_CALENDLY ?? 'mailto:Sales@ballerine.com',
           },
@@ -88,11 +88,11 @@ export const useSidebarItems = () => {
           text: 'Sanctions Screening',
           icon: GavelIcon,
           premium: {
-            caption: 'Extract data, classify, validate and verify documents.',
+            caption: 'Screen entities against global watchlists.',
             checkList: [
-              'All types of documents',
-              'Works in every language',
-              'Detect faults and fakes',
+              'Real-time sanctions checks',
+              'Sanctions, PEPs, & adverse media',
+              'Customizable preferences',
             ],
             href: env.VITE_BALLERINE_CALENDLY ?? 'mailto:Sales@ballerine.com',
           },
