@@ -273,12 +273,12 @@ export const MerchantMonitoring: FunctionComponent = () => {
             </div>
           )}
           {!isLoadingBusinessReports && isNonEmptyArray(businessReports) && (
-            <MerchantMonitoringTable data={businessReports} isDemoAccount={isDemoAccount} />
+            <MerchantMonitoringTable data={businessReports} />
           )}
           {!isLoadingBusinessReports &&
             Array.isArray(businessReports) &&
             !businessReports.length && <NoBusinessReports />}
-          <div className={`mt-auto flex items-center gap-x-2`}>
+          <div className={`flex items-center gap-x-2`}>
             <div className={`flex h-full w-[12ch] items-center text-sm`}>
               {!isLoadingBusinessReports && `Page ${page} of ${totalPages || 1}`}
               {isLoadingBusinessReports && <Skeleton className={`h-5 w-full`} />}
