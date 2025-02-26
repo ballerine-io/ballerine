@@ -3,7 +3,7 @@ import { ParsedBooleanSchema } from '@ballerine/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { t } from 'i18next';
 import { capitalize } from 'lodash-es';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -168,6 +168,12 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
 
   const websiteWithNoProtocol = safeUrl(businessReport?.website)?.hostname;
   const locale = useLocale();
+
+  // Default SPA behavior preserves scroll position on navigation (react-router-dom)
+  // We want the business report page to always scroll to the top on navigation to avoid confusing the user
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
 
   return {
     onNavigateBack,
