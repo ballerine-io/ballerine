@@ -68,7 +68,7 @@ export const columns = [
       const riskLevel = info.getValue();
 
       return (
-        <div className="flex items-center gap-2">
+        <div className="mx-auto flex items-center justify-center gap-2">
           {riskLevel ? (
             <Badge className={ctw(severityToClassName[riskLevel], 'w-20 py-0.5 font-bold')}>
               {titleCase(riskLevel)}
@@ -79,7 +79,7 @@ export const columns = [
         </div>
       );
     },
-    header: 'Risk Level',
+    header: () => <p className="text-center">Risk Level</p>,
   }),
   columnHelper.accessor('monitoringStatus', {
     cell: ({ getValue }) => {
@@ -121,6 +121,7 @@ export const columns = [
       <ContentTooltip
         description={<p>Indicates whether the merchant is subscribed to ongoing monitoring</p>}
         props={{
+          tooltipTrigger: { className: 'mx-auto' },
           tooltipContent: { align: 'center', side: 'top' },
         }}
       >
