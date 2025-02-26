@@ -2,8 +2,7 @@ import { ctw } from '@ballerine/ui';
 import { ArrowRightIcon, CrownIcon } from 'lucide-react';
 
 import { env } from '@/common/env/env';
-import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
-import { Button } from '../../atoms/Button/Button';
+import { Button } from '@/common/components/atoms/Button/Button';
 import dashboardImage from './dashboard.png';
 
 export type GetFullAccessCardProps = {
@@ -11,12 +10,6 @@ export type GetFullAccessCardProps = {
 };
 
 export const GetFullAccessCard = ({ className }: GetFullAccessCardProps) => {
-  const { data: customer, isLoading } = useCustomerQuery();
-
-  if (isLoading || !customer?.config?.isDemoAccount) {
-    return null;
-  }
-
   return (
     <div
       className={ctw(
