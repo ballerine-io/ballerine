@@ -87,23 +87,25 @@ export const columns = [
             tooltipContent: { align: 'center', side: 'top' },
           }}
         >
-          {value ? (
-            <CheckCircle
-              size={18}
-              className={`stroke-background`}
-              containerProps={{
-                className: 'bg-success',
-              }}
-            />
-          ) : (
-            <IndicatorCircle
-              size={18}
-              className={`stroke-transparent`}
-              containerProps={{
-                className: 'bg-slate-500/20',
-              }}
-            />
-          )}
+          <div className="mx-auto">
+            {value ? (
+              <CheckCircle
+                size={18}
+                className={`stroke-background`}
+                containerProps={{
+                  className: 'bg-success',
+                }}
+              />
+            ) : (
+              <IndicatorCircle
+                size={18}
+                className={`stroke-transparent`}
+                containerProps={{
+                  className: 'bg-slate-500/20',
+                }}
+              />
+            )}
+          </div>
         </ContentTooltip>
       );
     },
