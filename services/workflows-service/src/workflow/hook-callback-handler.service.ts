@@ -22,16 +22,6 @@ import { AlertService } from '@/alert/alert.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { z } from 'zod';
 
-export const ReportWithRiskScoreSchema = z
-  .object({
-    summary: z
-      .object({
-        riskScore: z.number(),
-      })
-      .passthrough(),
-  })
-  .passthrough();
-
 const removeLastKeyFromPath = (path: string) => {
   return path?.split('.')?.slice(0, -1)?.join('.');
 };
@@ -189,8 +179,7 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
 
     const { context } = workflowRuntime;
-    const { reportData: unvalidatedReportData, base64Pdf, reportId, reportType } = data;
-    const reportData = ReportWithRiskScoreSchema.parse(unvalidatedReportData);
+    const { reportData, base64Pdf, reportId, reportType } = data;
 
     const business = await this.businessService.getByCorrelationId(context.entity.id, [
       currentProjectId,
@@ -217,7 +206,7 @@ export class HookCallbackHandlerService {
     return setPluginStatus({
       resultDestinationPath,
       context: workflowRuntime.context,
-      data: reportData,
+      data: reportData as Record<string, unknown>,
       ignoreLastKey: false,
       status: ProcessStatus.SUCCESS,
     });
