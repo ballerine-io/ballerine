@@ -1,20 +1,3 @@
-import dayjs from 'dayjs';
-import timezone from 'dayjs/plugin/timezone';
-import utc from 'dayjs/plugin/utc';
-
-// Add these plugins to dayjs
-dayjs.extend(utc);
-dayjs.extend(timezone);
-
-import { TBusinessReport } from '@/domains/business-reports/fetchers';
-import { createColumnHelper } from '@tanstack/react-table';
-import { titleCase } from 'string-ts';
-
-import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
-import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
-import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { MERCHANT_REPORT_STATUSES_MAP, MERCHANT_REPORT_TYPES_MAP } from '@ballerine/common';
 import {
   Badge,
   CheckCircle,
@@ -23,7 +6,26 @@ import {
   TextWithNAFallback,
   WarningFilledSvg,
 } from '@ballerine/ui';
-import { ReportSchema } from '@ballerine/common';
+import React from 'react';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import { Minus } from 'lucide-react';
+import { titleCase } from 'string-ts';
+import timezone from 'dayjs/plugin/timezone';
+import { createColumnHelper } from '@tanstack/react-table';
+import { MERCHANT_REPORT_TYPES_MAP } from '@ballerine/common';
+
+// Add these plugins to dayjs
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+import { ctw } from '@/common/utils/ctw/ctw';
+import { TBusinessReport } from '@/domains/business-reports/fetchers';
+import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
+import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
+import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
+import { MerchantMonitoringReportStatus } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringReportStatus';
+import { statusToData } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringStatusBadge';
 
 const columnHelper = createColumnHelper<TBusinessReport>();
 
@@ -175,6 +177,10 @@ export const columns = [
   //     );
   //   },
   //   header: 'Alert',
+  //   meta: {
+  //     conditional: true,
+  //     showColumn: !isDemoAccount,
+  //   },
   // }),
   columnHelper.accessor('displayDate', {
     cell: info => {

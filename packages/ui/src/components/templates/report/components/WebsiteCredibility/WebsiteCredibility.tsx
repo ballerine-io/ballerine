@@ -227,8 +227,8 @@ export const WebsiteCredibility: FunctionComponent<{
           <CardHeader className="p-0 py-6 pl-6 font-bold">Traffic Analysis</CardHeader>
         </ContentTooltip>
 
-        <CardContent className="flex flex-col 2xl:!flex-row h-auto 2xl:!h-[30rem] w-full gap-4 px-4 pb-4 pt-0">
-          <Card className="flex flex-col w-full h-[30rem] 2xl:h-full 2xl:w-3/5">
+        <CardContent className="flex h-auto w-full flex-col gap-4 px-4 pb-4 pt-0 2xl:!h-[30rem] 2xl:!flex-row">
+          <Card className="flex h-[30rem] w-full flex-col 2xl:h-full 2xl:w-3/5">
             <CardHeader className="px-6 pb-2 pt-4 font-bold">
               Estimated Monthly Visitors
               <CardDescription className="text-muted-foreground text-sm font-normal">
@@ -236,7 +236,7 @@ export const WebsiteCredibility: FunctionComponent<{
               </CardDescription>
             </CardHeader>
 
-            <CardContent className="h-full p-2 relative">
+            <CardContent className="relative h-full p-2">
               {Object.entries(trafficData.monthlyVisits ?? {}).length > 0 ? (
                 <ChartContainer
                   className="h-[20rem] w-[95%] 2xl:w-full"
@@ -335,8 +335,8 @@ export const WebsiteCredibility: FunctionComponent<{
             </CardFooter>
           </Card>
 
-          <div className="flex 2xl:flex-col w-full h-[15rem] 2xl:w-2/5 2xl:h-full gap-4">
-            <Card className="w-1/2 h-full 2xl:!w-full 2xl:!h-1/2">
+          <div className="flex h-[15rem] w-full gap-4 2xl:h-full 2xl:w-2/5 2xl:flex-col">
+            <Card className="h-full w-1/2 2xl:!h-1/2 2xl:!w-full">
               <CardHeader className="px-6 pb-2 pt-4 font-bold">Traffic Sources</CardHeader>
 
               <CardContent className="mt-auto h-4/5 w-full p-2">
@@ -397,7 +397,7 @@ export const WebsiteCredibility: FunctionComponent<{
               </CardContent>
             </Card>
 
-            <Card className="h-full w-1/2 2xl:!w-full 2xl:!h-1/2">
+            <Card className="h-full w-1/2 2xl:!h-1/2 2xl:!w-full">
               <CardHeader className="px-6 pb-2 pt-4 font-bold">Engagement</CardHeader>
 
               <CardContent className="flex h-3/5 items-center gap-6 px-4 py-2">
