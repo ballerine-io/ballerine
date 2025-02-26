@@ -92,16 +92,7 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
       'riskLevel',
       'status',
       'reportType',
-    ] as const satisfies ReadonlyArray<
-      | Extract<
-          keyof NonNullable<TBusinessReport>,
-          'createdAt' | 'updatedAt' | 'riskLevel' | 'status' | 'reportType'
-        >
-      | 'business.website'
-      | 'business.companyName'
-      | 'business.country'
-      | 'riskScore'
-    >)
+    ])
     .catch('createdAt'),
   selected: BooleanishRecordSchema.optional(),
   reportType: z
