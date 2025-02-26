@@ -252,6 +252,24 @@ export const useColumns = ({ isDemoAccount = false }) => {
         },
         header: 'Report ID',
       }),
+      columnHelper.accessor('business.correlationId', {
+        cell: info => {
+          // eslint-disable-next-line react-hooks/rules-of-hooks -- ESLint doesn't like `cell` not being `Cell`.
+          const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
+          const merchantId = info.getValue() ?? info.row.original.business?.id;
+
+          return (
+            <div className={`flex w-full max-w-[12ch] items-center space-x-2`}>
+              <TextWithNAFallback style={{ ...styles, width: '70%' }} ref={ref}>
+                {merchantId}
+              </TextWithNAFallback>
+
+              <CopyToClipboardButton textToCopy={merchantId ?? ''} />
+            </div>
+          );
+        },
+        header: 'Merchant ID',
+      }),
       columnHelper.accessor('status', {
         meta: {
           useWrapper: true,
