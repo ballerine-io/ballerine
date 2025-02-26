@@ -154,9 +154,11 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                   <div className="flex h-full flex-1 flex-col">
                                     <div className="flex justify-between gap-8 pb-10">
                                       <AppShell.Navigation />
-                                      <div className="flex w-full justify-end">
-                                        <AppShell.LanguagePicker />
-                                      </div>
+                                      {schema?.uiOptions?.disableLanguageSelection ? null : (
+                                        <div className="flex w-full justify-end">
+                                          <AppShell.LanguagePicker />
+                                        </div>
+                                      )}
                                     </div>
                                     <div className="pb-10">
                                       {customer?.logoImageUri && (

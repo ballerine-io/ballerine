@@ -830,6 +830,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             transformer: 'jmespath',
             mapping: `{
               ${options.dataMapping || ''}
+              context: @,
               companyName: data.companyName,
               customerName: metadata.customerName,
               collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),

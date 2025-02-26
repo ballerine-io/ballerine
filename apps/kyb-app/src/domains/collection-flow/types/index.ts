@@ -148,6 +148,7 @@ export interface UIOptions {
     success?: string;
     failure?: string;
   };
+  disableLanguageSelection?: boolean;
 }
 
 export interface UISchema {
