@@ -1,27 +1,23 @@
+import { isObject } from '@ballerine/common';
 import { ParsedBooleanSchema } from '@ballerine/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { t } from 'i18next';
-import { toast } from 'sonner';
 import { capitalize } from 'lodash-es';
 import { useCallback } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useLocale } from '@/common/hooks/useLocale/useLocale';
-import { ParsedBooleanSchema, useReportTabs } from '@ballerine/ui';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { safeUrl } from '@/common/utils/safe-url/safe-url';
 import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { useCreateNoteMutation } from '@/domains/notes/hooks/mutations/useCreateNoteMutation/useCreateNoteMutation';
 import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
-import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
-import { useCreateNoteMutation } from '@/domains/notes/hooks/mutations/useCreateNoteMutation/useCreateNoteMutation';
-import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
 import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
-import { isObject, MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 
 const ZodDeboardingSchema = z
   .object({
@@ -177,7 +173,6 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     onNavigateBack,
     websiteWithNoProtocol,
     businessReport,
-    statusToBadgeData,
     notes,
     isNotesOpen,
     turnOngoingMonitoringOn: turnOnMonitoringMutation.mutate,

@@ -1,3 +1,4 @@
+import { MERCHANT_REPORT_TYPES_MAP } from '@ballerine/common';
 import {
   Badge,
   CheckCircle,
@@ -6,26 +7,22 @@ import {
   TextWithNAFallback,
   WarningFilledSvg,
 } from '@ballerine/ui';
-import React from 'react';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import { Minus } from 'lucide-react';
-import { titleCase } from 'string-ts';
-import timezone from 'dayjs/plugin/timezone';
 import { createColumnHelper } from '@tanstack/react-table';
-import { MERCHANT_REPORT_TYPES_MAP } from '@ballerine/common';
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+import { titleCase } from 'string-ts';
 
-// Add these plugins to dayjs
-dayjs.extend(utc);
-dayjs.extend(timezone);
-
-import { ctw } from '@/common/utils/ctw/ctw';
-import { TBusinessReport } from '@/domains/business-reports/fetchers';
+import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
 import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
-import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
+import { ctw } from '@/common/utils/ctw/ctw';
+import { TBusinessReport } from '@/domains/business-reports/fetchers';
 import { MerchantMonitoringReportStatus } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringReportStatus';
 import { statusToData } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringStatusBadge';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const columnHelper = createColumnHelper<TBusinessReport>();
 

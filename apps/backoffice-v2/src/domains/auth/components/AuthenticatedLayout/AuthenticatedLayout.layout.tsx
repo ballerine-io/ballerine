@@ -35,7 +35,7 @@ export const AuthenticatedLayout: FunctionComponent = () => {
       }}
     >
       <AppSidebar />
-      <SidebarInset className="overflow-x-hidden">
+      <SidebarInset className="overflow-hidden">
         <Outlet />
       </SidebarInset>
     </SidebarProvider>

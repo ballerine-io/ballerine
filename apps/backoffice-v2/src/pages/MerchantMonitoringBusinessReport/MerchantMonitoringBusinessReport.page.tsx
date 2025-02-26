@@ -82,7 +82,6 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     onNavigateBack,
     websiteWithNoProtocol,
     businessReport,
-    statusToBadgeData,
     notes,
     isNotesOpen,
     turnOngoingMonitoringOn,
