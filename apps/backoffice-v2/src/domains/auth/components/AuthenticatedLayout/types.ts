@@ -3,7 +3,6 @@ import type { LucideIcon } from 'lucide-react';
 export type TRouteBase = {
   text: string;
   key: string;
-  disableActiveStyles?: boolean;
   premium?: {
     caption: string;
     checkList: string[];

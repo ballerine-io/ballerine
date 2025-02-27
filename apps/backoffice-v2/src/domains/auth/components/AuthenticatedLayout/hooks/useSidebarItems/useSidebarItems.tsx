@@ -110,8 +110,7 @@ export const useSidebarItems = () => {
         {
           text: 'Full Onboarding (Example)',
           icon: MonitorDotIcon,
-          href: `/${locale}/merchant-monitoring?isCreating=true`,
-          disableActiveStyles: true,
+          href: `/${locale}/case-management/entities`,
           key: 'nav-item-full-onboarding',
         },
       ]
@@ -127,7 +126,7 @@ export const useSidebarItems = () => {
               {
                 text: 'Web Presence',
                 icon: MonitorDotIcon,
-                href: `/en/merchant-monitoring`,
+                href: `/${locale}/merchant-monitoring`,
                 key: 'nav-item-merchant-monitoring',
               },
             ]
@@ -148,11 +147,6 @@ export const useSidebarItems = () => {
           text: 'Individuals',
           icon: UsersIcon,
           children: [
-            // {
-            //   text: 'Profiles',
-            //   href: `/en/profiles/individuals`,
-            //   key: 'nav-item-profile-individuals',
-            // },
             ...(individualsFilters?.map(({ id, name }) => ({
               filterId: id,
               text: name,

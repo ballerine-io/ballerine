@@ -1,12 +1,14 @@
-import { ctw } from '@/common/utils/ctw/ctw';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@ballerine/ui';
 import type { FunctionComponent } from 'react';
 
-import { SidebarGroup } from '@/common/components/organisms/Sidebar/Sidebar.Group';
-import { SidebarMenu } from '@/common/components/organisms/Sidebar/Sidebar.Menu';
-import { SidebarMenuItem } from '@/common/components/organisms/Sidebar/Sidebar.MenuItem';
-import { SidebarMenuSub } from '@/common/components/organisms/Sidebar/Sidebar.MenuSub';
-import { SidebarMenuSubItem } from '@/common/components/organisms/Sidebar/Sidebar.MenuSubItem';
+import {
+  SidebarGroup,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+} from '@/common/components/organisms/Sidebar/Sidebar';
+import { ctw } from '@/common/utils/ctw/ctw';
 import { useSidebarItems } from '../hooks/useSidebarItems/useSidebarItems';
 import { NavItem } from './NavItem';
 

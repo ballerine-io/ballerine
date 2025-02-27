@@ -51,16 +51,24 @@ export const useColumns = ({ isDemoAccount = false }) => {
           const companyName = info.getValue();
 
           return (
-            <TextWithNAFallback className={`ms-4 font-semibold`}>{companyName}</TextWithNAFallback>
+            <TextWithNAFallback className="ms-4 inline-block w-32 truncate font-semibold">
+              {companyName}
+            </TextWithNAFallback>
           );
         },
         header: 'Company Name',
       }),
       columnHelper.accessor('website', {
-        cell: info => {
-          const website = info.getValue();
+        cell: ({ getValue }) => {
+          const website = getValue()
+            .replace(/(^\w+:|^)\/\//, '')
+            .replace(/\/$/, '');
 
-          return <TextWithNAFallback>{website}</TextWithNAFallback>;
+          return (
+            <TextWithNAFallback className="inline-block w-32 truncate">
+              {website}
+            </TextWithNAFallback>
+          );
         },
         header: 'Website',
       }),

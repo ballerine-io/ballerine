@@ -5,7 +5,6 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
   SidebarTrigger,
 } from '@/common/components/organisms/Sidebar/Sidebar';
 import { NavFooter } from './NavFooter';
@@ -19,8 +18,7 @@ export const AppSidebar = ({ ...props }: ComponentProps<typeof Sidebar>) => {
       className="bg-[#F4F6FD] px-2 group-data-[collapsible=icon]:px-0"
       {...props}
     >
-      {/* TODO: choose one of the ways to collapse, if needed, either trigger btn or rail component */}
-      <SidebarTrigger className="absolute right-2 top-2 z-10" />
+      <SidebarTrigger className="absolute right-2 top-2 z-10 d-6 group-data-[collapsible=icon]:right-3" />
 
       <SidebarHeader>
         <NavLogo className="h-24 group-data-[collapsible=icon]:hidden" />
@@ -33,8 +31,6 @@ export const AppSidebar = ({ ...props }: ComponentProps<typeof Sidebar>) => {
       <SidebarFooter>
         <NavFooter />
       </SidebarFooter>
-
-      <SidebarRail />
     </Sidebar>
   );
 };

@@ -1,6 +1,8 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { CircleCheck } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { Button } from '@/common/components/atoms/Button/Button';
 import { Separator } from '@/common/components/atoms/Separator/Separator';
 import { Dialog } from '@/common/components/organisms/Dialog/Dialog';
@@ -22,6 +24,7 @@ const benefits = [
 export const WelcomeModal = () => {
   const [open, toggleOpen] = useToggle(true);
   const { data: customer, isLoading: isLoadingCustomer } = useCustomerQuery();
+  const locale = useLocale();
 
   if (isLoadingCustomer || customer?.config?.demoAccessDetails?.seenWelcomeModal !== false) {
     return null;
@@ -64,7 +67,9 @@ export const WelcomeModal = () => {
 
         <DialogFooter className="px-6">
           <DialogClose asChild>
-            <Button className="text-md rounded-lg font-bold">Get Started</Button>
+            <Link to={`${locale}/merchant-monitoring?isCreating=true`}>
+              <Button className="text-md rounded-lg font-bold">Get Started</Button>
+            </Link>
           </DialogClose>
         </DialogFooter>
       </DialogContent>
