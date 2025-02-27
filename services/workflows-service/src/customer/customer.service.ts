@@ -34,6 +34,7 @@ export class CustomerService {
 
     const businessReportsCount = await this.merchantMonitoringClient.count({
       customerId,
+      noExample: true,
     });
 
     const demoDetails: TDemoAccessDetailsInput = {
