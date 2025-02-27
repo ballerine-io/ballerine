@@ -980,6 +980,7 @@ export class DocumentService {
 
       return {
         ...document,
+        decision: document.decision,
         files: files.map(({ file, ...fileData }) => ({
           ...fileData,
           fileName: file.fileName,
