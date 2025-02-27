@@ -7,7 +7,7 @@ import {
   TextWithNAFallback,
   WarningFilledSvg,
 } from '@ballerine/ui';
-import { createColumnHelper } from '@tanstack/react-table';
+import { createColumnHelper, RowData } from '@tanstack/react-table';
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
@@ -27,6 +27,14 @@ import { statusToData } from '@/pages/MerchantMonitoring/components/MerchantMoni
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
+// https://tanstack.com/table/v8/docs/api/core/column-def#meta
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    conditional?: true;
+    showColumn?: boolean;
+  }
+}
+
 const columnHelper = createColumnHelper<TBusinessReport>();
 
 const SCAN_TYPES = {
@@ -38,11 +46,6 @@ const REPORT_TYPE_TO_SCAN_TYPE = {
   [MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1]: SCAN_TYPES.ONBOARDING,
   [MERCHANT_REPORT_TYPES_MAP.ONGOING_MERCHANT_REPORT_T1]: SCAN_TYPES.MONITORING,
 } as const;
-
-type MerchantMonitoringTableColumnsMeta = {
-  conditional?: true;
-  showColumn?: boolean;
-};
 
 export const useColumns = ({ isDemoAccount = false }) => {
   return useMemo(() => {
@@ -198,11 +201,9 @@ export const useColumns = ({ isDemoAccount = false }) => {
         },
         header: () => <p className="text-center">Alert</p>,
         meta: {
-          // @ts-ignore -- as per https://github.com/TanStack/table/discussions/4072, there is
-          // currently no proper way to augment the meta type
           conditional: true,
           showColumn: !isDemoAccount,
-        } satisfies MerchantMonitoringTableColumnsMeta,
+        },
       }),
       columnHelper.accessor('displayDate', {
         cell: info => {
@@ -281,7 +282,7 @@ export const useColumns = ({ isDemoAccount = false }) => {
     ];
 
     return columns.filter(column => {
-      const meta = column.meta as MerchantMonitoringTableColumnsMeta | undefined;
+      const meta = column.meta;
 
       if (meta?.conditional) {
         return meta.showColumn;
