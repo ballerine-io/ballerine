@@ -1,5 +1,5 @@
 import { IFormElement } from '@/components/organisms/Form/DynamicForm/types';
-import { IDocumentFieldParams } from '../../../../DocumentField';
+import { IDocumentFieldParams, IDocumentTemplate } from '../../../../DocumentField';
 
 export const getDocumentObjectFromDocumentsList = (
   documentsList: Array<IDocumentFieldParams['template']> = [],
@@ -13,5 +13,5 @@ export const getDocumentObjectFromDocumentsList = (
     return undefined;
   }
 
-  return documentsList[documentIndex];
+  return documentsList[documentIndex] as IDocumentTemplate<any> | undefined;
 };
