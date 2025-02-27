@@ -280,6 +280,7 @@ export const useColumns = ({ isDemoAccount = false }) => {
           return (
             <MerchantMonitoringReportStatus
               status={status}
+              className="pr-1"
               reportId={info.row.original.id}
               businessId={info.row.original.business?.id}
             />

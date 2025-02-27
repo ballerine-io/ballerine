@@ -18,6 +18,7 @@ export const buttonVariants = cva(
         outline: 'border border-input hover:bg-accent hover:text-accent-foreground',
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
+        status: 'focus-visible:ring-0 focus-visible:ring-offset-0 focus:!bg-[#F4F6FD] bg-[#F4F6FD]',
         link: 'underline-offset-4 hover:underline text-primary',
         'wp-primary': 'bg-wp-primary text-wp-primary-foreground hover:bg-wp-primary/90',
         'wp-outline':
