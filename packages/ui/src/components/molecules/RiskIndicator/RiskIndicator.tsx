@@ -1,13 +1,14 @@
-import { CheckCircle } from '@/components/atoms/CheckCircle/CheckCircle';
-import React, { FunctionComponent } from 'react';
 import {
   isNonEmptyArray,
   RISK_INDICATOR_RISK_LEVELS_MAP,
   RiskIndicatorSchema,
 } from '@ballerine/common';
-import { ctw } from '@/common';
-import { WarningFilledSvg } from '@/components/atoms/WarningFilledSvg/WarningFilledSvg';
 import { z } from 'zod';
+import { FunctionComponent } from 'react';
+
+import { ctw } from '@/common';
+import { CheckCircle } from '@/components/atoms/CheckCircle/CheckCircle';
+import { WarningFilledSvg } from '@/components/atoms/WarningFilledSvg/WarningFilledSvg';
 
 export const RiskIndicator = ({
   title,
@@ -16,17 +17,15 @@ export const RiskIndicator = ({
   Link,
 }: {
   title: string;
-  search: string | undefined;
-  riskIndicators: z.infer<typeof RiskIndicatorSchema>[] | null;
-  Link: FunctionComponent<{
-    search: string;
-  }>;
+  search?: string;
+  riskIndicators: Array<z.infer<typeof RiskIndicatorSchema>> | null;
+  Link?: FunctionComponent<{ search: string }>;
 }) => {
   return (
     <div>
       <h3 className="mb-3 space-x-4 font-bold text-slate-500">
         <span>{title}</span>
-        {search && <Link search={search} />}
+        {search && Link && <Link search={search} />}
       </h3>
       <ul className="list-inside list-disc">
         {!!riskIndicators &&

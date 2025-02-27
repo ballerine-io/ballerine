@@ -30,6 +30,7 @@ export const BusinessReportSchema = ReportSchema.transform(data => {
     website: data.website.url,
     riskLevel: isReportReady ? data.riskLevel : null,
     data: isReportReady ? data?.data : null,
+    isExample: data.metadata?.isExample ?? false,
   };
 });
 

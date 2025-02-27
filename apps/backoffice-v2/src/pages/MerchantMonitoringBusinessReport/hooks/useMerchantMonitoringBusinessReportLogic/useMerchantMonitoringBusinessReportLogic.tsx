@@ -1,20 +1,23 @@
 import { z } from 'zod';
+import dayjs from 'dayjs';
+import jsPDF from 'jspdf';
 import { t } from 'i18next';
 import { toast } from 'sonner';
+import html2canvas from 'html2canvas';
 import { capitalize } from 'lodash-es';
 import { isObject } from '@ballerine/common';
-import { useCallback, useMemo } from 'react';
+import { ParsedBooleanSchema } from '@ballerine/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useCallback, useEffect, useRef } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useLocale } from '@/common/hooks/useLocale/useLocale';
-import { ParsedBooleanSchema, useReportTabs } from '@ballerine/ui';
 
 import { safeUrl } from '@/common/utils/safe-url/safe-url';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
-import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
 import { useCreateNoteMutation } from '@/domains/notes/hooks/mutations/useCreateNoteMutation/useCreateNoteMutation';
 import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
 import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
@@ -54,6 +57,7 @@ const deboardingReasonOptions = [
 
 export const useMerchantMonitoringBusinessReportLogic = () => {
   const { businessReportId } = useParams();
+  const { data: customer } = useCustomerQuery();
   const { data: businessReport, isFetching: isFetchingBusinessReport } = useBusinessReportByIdQuery(
     { id: businessReportId ?? '' },
   );
@@ -76,7 +80,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     defaultValues: formDefaultValues,
   });
 
-  const onSubmit: SubmitHandler<z.infer<typeof ZodDeboardingSchema>> = async (data, e) => {
+  const onSubmit: SubmitHandler<z.infer<typeof ZodDeboardingSchema>> = async () => {
     if (!businessReport?.business.id) {
       throw new Error('Business ID is missing');
     }
@@ -140,27 +144,13 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     },
   });
 
-  const { tabs } = useReportTabs({
-    report: businessReport ?? {},
-    Link: RiskIndicatorLink,
-  });
-
-  const tabsValues = useMemo(() => tabs.map(tab => tab.value), [tabs]);
-
   const MerchantMonitoringBusinessReportSearchSchema = z.object({
     isNotesOpen: ParsedBooleanSchema.catch(false),
-    activeTab: z
-      .enum(
-        // @ts-expect-error - zod doesn't like we are using `Array.prototype.map`
-        tabsValues,
-      )
-      .catch(tabsValues[0]!),
   });
 
-  const [{ activeTab, isNotesOpen }] = useZodSearchParams(
-    MerchantMonitoringBusinessReportSearchSchema,
-    { replace: true },
-  );
+  const [{ isNotesOpen }] = useZodSearchParams(MerchantMonitoringBusinessReportSearchSchema, {
+    replace: true,
+  });
 
   const navigate = useNavigate();
 
@@ -182,13 +172,73 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
   const websiteWithNoProtocol = safeUrl(businessReport?.website)?.hostname;
   const locale = useLocale();
 
+  // Default SPA behavior preserves scroll position on navigation (react-router-dom)
+  // We want the business report page to always scroll to the top on navigation to avoid confusing the user
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
+  const [isGeneratingPDF, toggleIsGeneratingPDF] = useToggle(false);
+
+  const reportRef = useRef<HTMLDivElement>(null);
+
+  const generateCustomPDF = useCallback(async () => {
+    if (!reportRef.current) {
+      return;
+    }
+
+    toggleIsGeneratingPDF();
+
+    try {
+      const element = reportRef.current;
+
+      const wrapper = document.createElement('div');
+      wrapper.style.padding = '0 20px';
+      wrapper.style.boxSizing = 'border-box';
+
+      wrapper.appendChild(element.cloneNode(true));
+      document.body.appendChild(wrapper);
+
+      wrapper.style.width = `${element.scrollWidth}px`;
+
+      const canvas = await html2canvas(wrapper, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        windowWidth: wrapper.scrollWidth,
+        windowHeight: wrapper.scrollHeight,
+      });
+
+      document.body.removeChild(wrapper);
+
+      const imageData = canvas.toDataURL('image/jpeg', 0.8); // Use JPEG with 80% quality for smaller file size
+
+      const aspectRatio = canvas.height / canvas.width;
+      const pdfWidth = 210; // A4 width in mm
+      const pdfHeight = pdfWidth * aspectRatio;
+
+      const pdf = new jsPDF({
+        unit: 'mm',
+        orientation: 'portrait',
+        format: [pdfWidth, pdfHeight],
+      });
+
+      // Add the image to cover entire page
+      pdf.addImage(imageData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+
+      pdf.save(`${websiteWithNoProtocol || 'business'}-report-${dayjs().format('YYYY-MM-DD')}.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
+
+    toggleIsGeneratingPDF();
+  }, [toggleIsGeneratingPDF, websiteWithNoProtocol]);
+
   return {
     onNavigateBack,
     websiteWithNoProtocol,
     businessReport,
-    tabs,
     notes,
-    activeTab,
     isNotesOpen,
     turnOngoingMonitoringOn: turnOnMonitoringMutation.mutate,
     isDeboardModalOpen,
@@ -200,5 +250,9 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     deboardingReasonOptions,
     isFetchingBusinessReport,
     locale,
+    isDemoAccount: customer?.config?.isDemoAccount ?? false,
+    reportRef,
+    generateCustomPDF,
+    isGeneratingPDF,
   };
 };
