@@ -45,11 +45,12 @@ export const NavMain: FunctionComponent<{ className?: string }> = ({ className }
                         <SidebarMenuSubItem key={subItem.key}>
                           <NavItem
                             navItem={subItem}
-                            className={ctw({
+                            className={ctw('p-0', {
                               'font-semibold text-[#20232E]': subItem.filterId === filterId,
                               'text-[#8990AC] aria-[current=page]:font-normal':
                                 subItem.filterId && subItem.filterId !== filterId,
                             })}
+                            linkClassName="p-2"
                           />
                         </SidebarMenuSubItem>
                       ))}
