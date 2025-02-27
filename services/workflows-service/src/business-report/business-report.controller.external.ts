@@ -294,7 +294,19 @@ export class BusinessReportControllerExternal {
     }: CreateBusinessReportDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const { id: customerId, config } = await this.customerService.getByProjectId(currentProjectId);
+    const customer = await this.customerService.getByProjectId(currentProjectId);
+    const { id: customerId, config } = customer;
+    const demoDetails = await this.customerService.getDemoAccessDetails(customer);
+
+    if (demoDetails) {
+      if (demoDetails.demoDaysLeft <= 0) {
+        throw new BadRequestException('Your demo account has expired');
+      }
+
+      if (demoDetails.reportsLeft <= 0) {
+        throw new BadRequestException('You have reached the maximum number of reports');
+      }
+    }
 
     const { maxBusinessReports, withQualityControl } = config || {};
     await this.businessReportService.checkBusinessReportsLimit(maxBusinessReports, customerId);
@@ -424,6 +436,10 @@ export class BusinessReportControllerExternal {
     @CurrentProject() currentProjectId: TProjectId,
   ) {
     const { id: customerId, config } = await this.customerService.getByProjectId(currentProjectId);
+
+    if (config?.isDemoAccount) {
+      throw new BadRequestException("You don't have access to this feature");
+    }
 
     const { maxBusinessReports, withQualityControl } = config || {};
     await this.businessReportService.checkBusinessReportsLimit(maxBusinessReports, customerId);

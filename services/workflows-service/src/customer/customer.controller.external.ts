@@ -1,4 +1,4 @@
-import { CustomerSubscriptionSchema, TDemoAccessDetails } from './schemas/zod-schemas';
+import { CustomerSubscriptionSchema } from './schemas/zod-schemas';
 import * as common from '@nestjs/common';
 import {
   BadRequestException,
