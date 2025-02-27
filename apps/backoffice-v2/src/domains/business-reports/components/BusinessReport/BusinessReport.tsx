@@ -4,9 +4,6 @@ import { AlertTriangle, ArrowLeftToLine, ArrowRightToLine, Crown } from 'lucide-
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 
-import { Button } from '@/common/components/atoms/Button/Button';
-import { ctw } from '@/common/utils/ctw/ctw';
-
 type BusinessReportProps = {
   report: z.infer<typeof ReportSchema>;
 };

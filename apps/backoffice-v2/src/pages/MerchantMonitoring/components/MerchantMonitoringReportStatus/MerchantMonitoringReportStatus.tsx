@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { MERCHANT_REPORT_STATUSES_MAP, UPDATEABLE_REPORT_STATUSES } from '@ballerine/common';
 import {
+  ctw,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -40,9 +41,11 @@ const MerchantMonitoringCompletedStatusFormSchema = z.object({
 export const MerchantMonitoringReportStatus = ({
   status,
   reportId,
+  className,
   businessId,
 }: {
   reportId?: string;
+  className?: string;
   businessId?: string;
   status?: keyof typeof statusToData;
 }) => {
@@ -109,7 +112,7 @@ export const MerchantMonitoringReportStatus = ({
       <DropdownMenu open={isStatusDropdownOpen} onOpenChange={toggleStatusDropdownOpen}>
         <DropdownMenuTrigger
           disabled={disabled}
-          className={`flex items-center focus-visible:outline-none`}
+          className={ctw(`flex items-center pr-1 focus-visible:outline-none`, className)}
         >
           <MerchantMonitoringStatusBadge disabled={disabled} status={status} />
         </DropdownMenuTrigger>

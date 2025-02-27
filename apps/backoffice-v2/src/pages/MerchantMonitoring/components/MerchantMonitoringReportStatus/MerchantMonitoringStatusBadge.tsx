@@ -1,9 +1,10 @@
+import React from 'react';
 import { Badge } from '@ballerine/ui';
 import { titleCase } from 'string-ts';
-import React, { ElementRef, forwardRef } from 'react';
 import { MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
 
 import { ctw } from '@/common/utils/ctw/ctw';
+import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 
 const reportInProgressData = {
   variant: 'gray',
@@ -31,24 +32,29 @@ export const statusToData = {
   },
 } as const;
 
-export const MerchantMonitoringStatusBadge = forwardRef<
-  ElementRef<typeof Badge>,
-  { status: keyof typeof statusToData; disabled?: boolean }
->(({ status, disabled = false, ...props }, ref) => {
+export const MerchantMonitoringStatusBadge = ({
+  status,
+  disabled = false,
+  ...props
+}: {
+  status: keyof typeof statusToData;
+  disabled?: boolean;
+}) => {
   const isReportInProgress = [
     MERCHANT_REPORT_STATUSES_MAP['in-progress'],
     MERCHANT_REPORT_STATUSES_MAP['quality-control'],
   ].includes(status);
 
+  const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
+
   return (
     <Badge
       {...props}
-      ref={ref}
       variant={statusToData[status].variant}
       className={ctw(`h-6 space-x-1 text-sm font-medium`, {
-        '!cursor-not-allowed bg-destructive': disabled,
+        '!cursor-not-allowed': disabled,
+        ' bg-[#E3E2E0] text-[#32302C]/40 ': isReportInProgress,
         'cursor-pointer hover:shadow-[0_0_2px_rgba(0,0,0,0.3)]': !disabled,
-        'cursor-not-allowed bg-[#E3E2E0] text-[#32302C]/40 ': isReportInProgress,
         'bg-[#E3E2E0] text-[#32302C]': status === MERCHANT_REPORT_STATUSES_MAP['pending-review'],
         'text-[#32302C]/40': status === MERCHANT_REPORT_STATUSES_MAP['pending-review'] && disabled,
         'bg-[#D3E5EF] text-[#183347]': status === MERCHANT_REPORT_STATUSES_MAP['under-review'],
@@ -66,9 +72,11 @@ export const MerchantMonitoringStatusBadge = forwardRef<
       >
         &nbsp;
       </span>
-      <span>{statusToData[status].title ?? titleCase(status ?? '')}</span>
+      <span ref={ref} style={{ ...styles, width: '90%' }}>
+        {statusToData[status].title ?? titleCase(status ?? '')}
+      </span>
     </Badge>
   );
-});
+};
 
 MerchantMonitoringStatusBadge.displayName = 'MerchantMonitoringStatusBadge';
