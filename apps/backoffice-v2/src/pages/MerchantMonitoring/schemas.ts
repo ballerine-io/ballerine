@@ -1,7 +1,8 @@
-import { z } from 'zod';
-import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
-import { TBusinessReport } from '@/domains/business-reports/fetchers';
 import { BooleanishRecordSchema } from '@ballerine/ui';
+import { z } from 'zod';
+
+import { URL_REGEX } from '@/common/constants';
+import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 
 export const REPORT_TYPE_TO_DISPLAY_TEXT = {
   All: 'All',
@@ -129,9 +130,6 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
     .transform(value => (value === 'true' ? true : false))
     .optional(),
 });
-
-const URL_REGEX =
-  /((https?):\/\/)?([a-zA-Z0-9-_]+\.)+[a-zA-Z0-9]+(\.[a-z]{2})?(\/[a-zA-Z0-9_#-]+)*(\/)?(\?[a-zA-Z0-9_-]+=[a-zA-Z0-9_-]+(&[a-zA-Z0-9_-]+=[a-zA-Z0-9_-]+)*)?(#[a-zA-Z0-9_-]+)?/;
 
 export type CreateBusinessReportDialogInput = z.input<typeof CreateBusinessReportDialogSchema>;
 export const CreateBusinessReportDialogSchema = z.object({

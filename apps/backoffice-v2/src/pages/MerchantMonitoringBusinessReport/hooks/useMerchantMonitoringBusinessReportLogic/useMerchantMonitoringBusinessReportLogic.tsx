@@ -191,6 +191,6 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     deboardingReasonOptions,
     isFetchingBusinessReport,
     locale,
-    isDemoAccount: customer?.config?.isDemoAccount || false,
+    isDemoAccount: customer?.config?.isDemoAccount ?? false,
   };
 };

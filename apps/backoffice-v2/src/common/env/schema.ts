@@ -40,5 +40,4 @@ export const EnvSchema = z.object({
   }, z.custom<RegExp>(value => value instanceof RegExp).optional()),
   VITE_SAOLA_API_KEY: z.string().optional(),
   VITE_BOTPRESS_CLIENT_ID: z.string().default('8f29c89d-ec0e-494d-b18d-6c3590b28be6'),
-  VITE_BALLERINE_CALENDLY: z.string().optional(),
 });
