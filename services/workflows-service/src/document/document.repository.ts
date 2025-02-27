@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { DocumentFile, Document, Prisma, File } from '@prisma/client';
 import { PrismaTransactionClient, TProjectId } from '@/types';
@@ -134,6 +134,43 @@ export class DocumentRepository {
       },
       data,
     });
+  }
+
+  async findByIdWithFiles(
+    id: string,
+    projectIds: TProjectId[],
+    args?: Prisma.DocumentFindFirstArgs,
+    transaction: PrismaTransactionClient = this.prismaService,
+  ) {
+    if (!id) {
+      throw new BadRequestException('Document ID is required');
+    }
+
+    const documentWithFiles = await transaction.document.findFirst({
+      ...args,
+      where: {
+        ...args?.where,
+        id,
+        projectId: { in: projectIds },
+      },
+      include: {
+        files: {
+          include: {
+            file: true,
+          },
+        },
+      },
+    });
+
+    if (!documentWithFiles) {
+      return null;
+    }
+
+    const documentWithFilesAsArray = [documentWithFiles];
+
+    assertIsDocumentWithFiles(documentWithFilesAsArray, this.logger);
+
+    return documentWithFilesAsArray[0];
   }
 
   async findByEntityIdAndWorkflowIdWithFiles(

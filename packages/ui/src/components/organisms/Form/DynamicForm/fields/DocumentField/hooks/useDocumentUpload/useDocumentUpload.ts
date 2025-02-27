@@ -12,7 +12,10 @@ import { useStack } from '../../../FieldList/providers/StackProvider';
 import { DEFAULT_CREATION_PARAMS, DEFAULT_UPDATE_PARAMS } from '../../defaults';
 import { IDocumentFieldParams } from '../../DocumentField';
 import { buildDocumentFormData } from '../../helpers/build-document-form-data';
-import { checkIfDocumentRequested } from './helpers/check-if-document-requested';
+import {
+  checkIfDocumentInRevision,
+  checkIfDocumentRequested,
+} from './helpers/check-if-document-requested';
 import { createOrUpdateFileIdOrFileInDocuments } from './helpers/create-or-update-fileid-or-file-in-documents';
 import { getDocumentObjectFromDocumentsList } from './helpers/get-document-object-from-documents-list';
 
@@ -58,7 +61,8 @@ export const useDocumentUpload = (
           const document = getDocumentObjectFromDocumentsList(documents, element);
 
           const isDocumentRequested = checkIfDocumentRequested(document);
-
+          const isDocumentInRevision = checkIfDocumentInRevision(document);
+          const isDocumentRequestedOrInRevision = isDocumentRequested || isDocumentInRevision;
           const documentUploadPayload = buildDocumentFormData(
             element,
             { businessId: metadata.businessId as string },
@@ -66,7 +70,7 @@ export const useDocumentUpload = (
             document,
           );
 
-          const result = isDocumentRequested
+          const result = isDocumentRequestedOrInRevision
             ? await updateDocument(documentUploadPayload)
             : await uploadDocument(documentUploadPayload);
 
@@ -98,6 +102,8 @@ export const useDocumentUpload = (
             const document = getDocumentObjectFromDocumentsList(documents, element);
 
             const isDocumentRequested = checkIfDocumentRequested(document);
+            const isDocumentInRevision = checkIfDocumentInRevision(document);
+            const isDocumentRequestedOrInRevision = isDocumentRequested || isDocumentInRevision;
             const documentUploadPayload = buildDocumentFormData(
               element,
               { businessId: metadata.businessId as string },
@@ -105,7 +111,7 @@ export const useDocumentUpload = (
               document,
             );
 
-            const result = isDocumentRequested
+            const result = isDocumentRequestedOrInRevision
               ? await updateDocument(documentUploadPayload)
               : await uploadDocument(documentUploadPayload);
 
@@ -135,7 +141,6 @@ export const useDocumentUpload = (
     },
     [
       uploadOn,
-      params,
       metadata,
       addTask,
       removeTask,

@@ -12,7 +12,6 @@ import { StorageService } from '@/storage/storage.service';
 import { WorkflowService } from '@/workflow/workflow.service';
 import {
   Body,
-  BadRequestException,
   Controller,
   Delete,
   Get,
@@ -35,6 +34,8 @@ import * as errors from '../../errors';
 import { CollectionFlowDocumentSchema } from '../dto/create-collection-flow-document.schema';
 import { GetDocumentsByIdsDto } from '../dto/get-documents-by-ids.dto';
 import { UpdateCollectionFlowDocumentSchema } from '../dto/update-collection-flow-document.schema';
+import { DocumentDecision, DocumentStatus } from '@prisma/client';
+import { isObject } from '@ballerine/common';
 
 @UseTokenAuthGuard()
 @ApiExcludeController()
@@ -42,7 +43,6 @@ import { UpdateCollectionFlowDocumentSchema } from '../dto/update-collection-flo
 export class CollectionFlowFilesController {
   constructor(
     protected readonly storageService: StorageService,
-    protected readonly collectionFlowService: CollectionFlowService,
     protected readonly fileService: FileService,
     protected readonly workflowService: WorkflowService,
     protected readonly documentService: DocumentService,
@@ -167,6 +167,29 @@ export class CollectionFlowFilesController {
         return JSON.parse(value);
       }, z.record(z.string(), z.unknown()))
       .parse(data.properties);
+
+    const document = await this.documentService.getDocumentById(data.id, tokenScope.projectId);
+
+    if (document?.decision === DocumentDecision.revisions) {
+      const newDocument = await this.documentService.create({
+        type: document.type,
+        category: document.category,
+        issuingVersion: document.issuingVersion,
+        issuingCountry: document.issuingCountry,
+        version: document.version + 1,
+        status: DocumentStatus.provided,
+        properties: isObject(document.properties) ? document.properties : {},
+        metadata,
+        comment: document.comment ?? undefined,
+        file,
+        projectId: tokenScope.projectId,
+        workflowRuntimeDataId: tokenScope.workflowRuntimeDataId,
+        ...(document.businessId && { businessId: document.businessId }),
+        ...(document.endUserId && { endUserId: document.endUserId }),
+      });
+
+      return newDocument;
+    }
 
     const documentsUpdateResults = await this.documentService.updateByIdWithFile({
       ...data,

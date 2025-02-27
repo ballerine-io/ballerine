@@ -7,6 +7,4 @@ export const checkIfDocumentRequested = (
 
 export const checkIfDocumentInRevision = (
   document?: IDocumentTemplate,
-): document is IDocumentTemplate & { _id: string } =>
-  //@ts-expect-error TODO: Add revision status
-  Boolean(document?.status === 'revision' && document?._id);
+): document is IDocumentTemplate & { _id: string } => Boolean(document?.decision === 'revisions');

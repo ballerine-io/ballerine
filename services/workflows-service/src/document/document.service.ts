@@ -129,6 +129,36 @@ export class DocumentService {
     return await this.getByEntityIdAndWorkflowId(entityId, data.workflowRuntimeDataId, [projectId]);
   }
 
+  async getDocumentById(documentId: string, projectId: TProjectId) {
+    const document = await this.repository.findByIdWithFiles(documentId, [projectId]);
+
+    if (!document) {
+      throw new BadRequestException(`Document with an id of "${documentId}" was not found`);
+    }
+
+    if (!document.workflowRuntimeDataId) {
+      throw new BadRequestException(`Document with an id of "${documentId}" has no workflow`);
+    }
+
+    const workflowDefinition = await this.workflowDefinitionService.getByWorkflowRuntimeDataId(
+      document.workflowRuntimeDataId,
+      [projectId],
+    );
+
+    if (!workflowDefinition) {
+      throw new BadRequestException(
+        `Workflow definition for a workflow with an id of "${document.workflowRuntimeDataId}" not found`,
+      );
+    }
+
+    const formattedDocuments = await this.formatDocuments({
+      documents: [document],
+      documentSchema: workflowDefinition.documentsSchema,
+    });
+
+    return formattedDocuments[0];
+  }
+
   async getDocumentsByIds(documentIds: string[], projectId: TProjectId) {
     return await this.repository.findMany([projectId], {
       where: {
@@ -163,10 +193,12 @@ export class DocumentService {
       );
     }
 
-    return this.formatDocuments({
+    const formattedDocuments = await this.formatDocuments({
       documents,
       documentSchema: workflowDefinition.documentsSchema,
     });
+
+    return this.getLatestDocumentVersions(formattedDocuments);
   }
 
   async updateByIdWithFile(
@@ -954,6 +986,38 @@ export class DocumentService {
         })),
         propertiesSchema: documentWithPropertiesSchema.propertiesSchema,
       };
+    });
+  }
+
+  async getLatestDocumentVersions(documents: Array<Document & { files: DocumentFile[] }>) {
+    const documentsByType = documents.reduce((acc, document) => {
+      const documentId = getDocumentId(
+        {
+          type: document.type,
+          category: document.category,
+          issuingCountry: document.issuingCountry,
+          version: document.version,
+        },
+        false,
+      );
+
+      if (!acc[documentId]) {
+        acc[documentId] = [];
+      }
+
+      acc[documentId]?.push(document);
+
+      return acc;
+    }, {} as Record<string, Document[]>);
+
+    return Object.values(documentsByType).map(docs => {
+      return docs.reduce((acc, curr) => {
+        if (!acc) {
+          return curr;
+        }
+
+        return (curr.version || 0) > (acc.version || 0) ? curr : acc;
+      });
     });
   }
 }

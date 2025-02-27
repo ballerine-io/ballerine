@@ -47,6 +47,13 @@ export const assignDocumentStatusesAndDecisionToDocumentsInContext = (
         document.decisionReason = documentFileId
           ? documentsMap?.[documentFileId]?.decisionReason
           : documentsMap?.[document._id!]?.decisionReason;
+        document.decision = documentFileId
+          ? documentsMap?.[documentFileId]?.decision
+          : documentsMap?.[document._id!]?.decision;
+        // @ts-expect-error -- Temp
+        document.id = documentFileId
+          ? documentsMap?.[documentFileId]?.id
+          : documentsMap?.[document._id!]?.id;
       }
 
       if (Array.isArray(element.children) && element.children.length > 0) {
