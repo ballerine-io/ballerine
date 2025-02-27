@@ -33,6 +33,7 @@ export const AuthenticatedLayout: FunctionComponent = () => {
         '--sidebar-width': '18rem',
         '--sidebar-width-xl': '21rem',
       }}
+      defaultOpen={window ? window.innerWidth >= 1366 : true}
     >
       <AppSidebar />
       <SidebarInset>

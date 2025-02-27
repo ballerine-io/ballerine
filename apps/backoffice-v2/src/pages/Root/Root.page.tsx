@@ -6,9 +6,9 @@ import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader
 import { WelcomeModal } from '@/common/components/molecules/WelcomeModal/WelcomeModal';
 import { Providers } from '@/common/components/templates/Providers/Providers';
 import { env } from '@/common/env/env';
+import { useMobileBreakpoint } from '@/common/hooks/useMobileBreakpoint/useMobileBreakpoint';
 import Chatbot from '@/domains/chat/chatbot-opengpt';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
-import { useMobileWarning } from './hooks/useMobileWarning/useMobileWarning';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
@@ -45,7 +45,7 @@ const ChatbotLayout: FunctionComponent = () => {
 };
 
 export const Root: FunctionComponent = () => {
-  const { isMobile } = useMobileWarning();
+  const { isMobile } = useMobileBreakpoint();
 
   if (isMobile) {
     return (

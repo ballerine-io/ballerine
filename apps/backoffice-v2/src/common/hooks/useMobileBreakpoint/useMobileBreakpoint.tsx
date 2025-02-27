@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export const useMobileWarning = () => {
+export const useMobileBreakpoint = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {

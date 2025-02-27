@@ -1,7 +1,7 @@
 import { ReportSchema } from '@ballerine/common';
 import { ContentTooltip, useReportSections } from '@ballerine/ui';
 import { AlertTriangle, ArrowLeftToLine, ArrowRightToLine, Crown } from 'lucide-react';
-import { Dispatch, MutableRefObject, SetStateAction, useEffect, useRef, useState } from 'react';
+import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 
 import { Button } from '@/common/components/atoms/Button/Button';
@@ -14,16 +14,13 @@ type BusinessReportProps = {
 const BusinessReportSectionsObserver = ({
   sections,
   sectionRefs,
-  isSidebarOpen,
-  setIsSidebarOpen,
 }: {
   sections: ReturnType<typeof useReportSections>['sections'];
   sectionRefs: MutableRefObject<{
     [key: string]: HTMLDivElement | null;
   }>;
-  isSidebarOpen: boolean;
-  setIsSidebarOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window ? window.innerWidth >= 1600 : true);
   const [activeSection, setActiveSection] = useState<string>(sections[0]!.id);
 
   useEffect(() => {
@@ -56,12 +53,12 @@ const BusinessReportSectionsObserver = ({
     <nav
       aria-label="Report Scroll Tracker"
       className={ctw(
-        'sticky top-0 h-screen overflow-hidden p-4 transition-all duration-300',
-        isSidebarOpen ? 'w-60' : 'w-16', // Adjust width for collapsed state
+        'sticky top-0 h-screen overflow-hidden p-4 text-sm transition-all duration-300',
+        isSidebarOpen ? 'w-60' : 'w-16',
       )}
     >
       <div className="mb-4 flex items-center">
-        {isSidebarOpen && <h2 className="text-lg font-bold">Sections</h2>}
+        {isSidebarOpen && <h2 className="text-base font-bold">Sections</h2>}
         <Button
           variant="secondary"
           size="icon"
@@ -78,26 +75,34 @@ const BusinessReportSectionsObserver = ({
 
       <ul className="space-y-3">
         {sections.map(section => (
-          <li
+          <ContentTooltip
             key={section.id}
-            className={ctw(
-              'mb-2 flex cursor-pointer items-center gap-2 text-slate-500',
-              activeSection === section.id && 'font-bold text-slate-900',
-              !isSidebarOpen && 'pl-2',
-            )}
-            onClick={() => scrollToSection(section.id)}
+            description={section.label ?? section.title}
+            props={{
+              tooltipTrigger: { asChild: true, className: 'pr-0 text-sm' },
+              tooltipContent: { className: ctw('p-1', isSidebarOpen && 'hidden') },
+            }}
           >
-            {section.Icon && <section.Icon className="d-5" />}
-            <span className={isSidebarOpen ? 'block' : 'hidden'}>
-              {section.label ?? section.title}
-            </span>
-            {section.hasViolations && isSidebarOpen && (
-              <AlertTriangle className="ml-auto inline-block fill-warning text-white d-5" />
-            )}
-            {section.isPremium && isSidebarOpen && (
-              <Crown className="ml-auto mr-0.5 inline-block text-slate-400 d-4" />
-            )}
-          </li>
+            <li
+              className={ctw(
+                'mb-2 flex cursor-pointer items-center gap-2 text-slate-500',
+                activeSection === section.id && 'font-bold text-slate-900',
+                !isSidebarOpen && 'pl-2',
+              )}
+              onClick={() => scrollToSection(section.id)}
+            >
+              {section.Icon && <section.Icon className="d-5" />}
+              <span className={isSidebarOpen ? 'block' : 'hidden'}>
+                {section.label ?? section.title}
+              </span>
+              {section.hasViolations && isSidebarOpen && (
+                <AlertTriangle className="ml-auto inline-block fill-warning text-white d-5" />
+              )}
+              {section.isPremium && isSidebarOpen && (
+                <Crown className="ml-auto mr-0.5 inline-block text-slate-400 d-4" />
+              )}
+            </li>
+          </ContentTooltip>
         ))}
       </ul>
     </nav>
@@ -107,12 +112,9 @@ const BusinessReportSectionsObserver = ({
 export const BusinessReport = ({ report }: BusinessReportProps) => {
   const { sections } = useReportSections(report);
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const parentRef = useRef<HTMLDivElement | null>(null);
-
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
-    <div ref={parentRef} className={`flex transition-all duration-300`}>
+    <div className={`flex transition-all duration-300`}>
       <div className={`flex-1 overflow-y-visible transition-all duration-300`}>
         {sections.map(section => {
           const titleContent = (
@@ -140,12 +142,7 @@ export const BusinessReport = ({ report }: BusinessReportProps) => {
         })}
       </div>
 
-      <BusinessReportSectionsObserver
-        sections={sections}
-        sectionRefs={sectionRefs}
-        isSidebarOpen={isSidebarOpen}
-        setIsSidebarOpen={setIsSidebarOpen}
-      />
+      <BusinessReportSectionsObserver sections={sections} sectionRefs={sectionRefs} />
     </div>
   );
 };

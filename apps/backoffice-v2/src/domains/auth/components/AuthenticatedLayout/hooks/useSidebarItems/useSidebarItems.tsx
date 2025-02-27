@@ -11,7 +11,6 @@ import {
 import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { BALLERINE_CALENDLY_LINK } from '@/common/constants';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { TRoute, TRouteWithChildren } from '@/domains/auth/components/AuthenticatedLayout/types';
@@ -66,7 +65,6 @@ export const useSidebarItems = () => {
               'Validate existence and status',
               'Identify key stakeholders',
             ],
-            // href: BALLERINE_CALENDLY_LINK ?? 'mailto:Sales@ballerine.com',
           },
           key: 'nav-item-kyb-ubos',
         },
@@ -80,7 +78,6 @@ export const useSidebarItems = () => {
               'Biometric and liveness checks',
               'Global coverage',
             ],
-            // href: BALLERINE_CALENDLY_LINK ?? 'mailto:Sales@ballerine.com',
           },
           key: 'nav-item-identity-verification',
         },
@@ -94,7 +91,6 @@ export const useSidebarItems = () => {
               'Sanctions, PEPs, & adverse media',
               'Customizable preferences',
             ],
-            // href: BALLERINE_CALENDLY_LINK ?? 'mailto:Sales@ballerine.com',
           },
           key: 'nav-item-sanctions-screening',
         },
@@ -108,7 +104,6 @@ export const useSidebarItems = () => {
               'Works in every language',
               'Detect faults and fakes',
             ],
-            // href: BALLERINE_CALENDLY_LINK ?? 'mailto:Sales@ballerine.com',
           },
           key: 'nav-item-documents-verifications',
         },

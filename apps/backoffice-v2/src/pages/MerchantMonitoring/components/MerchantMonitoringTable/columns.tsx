@@ -139,10 +139,8 @@ export const useColumns = ({ isDemoAccount = false }) => {
         header: 'Scan Type',
       }),
       columnHelper.accessor('data.contentViolations', {
-        cell: ({ getValue }) => {
-          const violations = getValue() as NonNullable<
-            TBusinessReport['data']
-          >['contentViolations'];
+        cell: ({ row }) => {
+          const violations = row.original.data?.contentViolations ?? [];
 
           if (!violations?.length) {
             return null;
@@ -152,7 +150,7 @@ export const useColumns = ({ isDemoAccount = false }) => {
             <ContentTooltip
               description={
                 <>
-                  <p className="mb-4 text-lg font-bold">Violations</p>
+                  <p className="mb-4 text-base font-bold">Violations</p>
 
                   {violations.map((violation, index) => (
                     <div key={index} className="space-x-1 text-sm">
