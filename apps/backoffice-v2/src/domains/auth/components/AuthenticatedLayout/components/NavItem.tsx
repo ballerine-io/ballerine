@@ -1,6 +1,5 @@
 import {
   CollapsibleTrigger,
-  ContentTooltip,
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
@@ -10,7 +9,7 @@ import { ChevronRightIcon, CircleCheckIcon, CrownIcon } from 'lucide-react';
 import { forwardRef, type ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
 
-import { SidebarMenuButton } from '@/common/components/organisms/Sidebar/Sidebar.MenuButton';
+import { SidebarMenuButton } from '@/common/components/organisms/Sidebar/Sidebar';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { TRouteWithOptionalIcon, TRouteWithoutChildren } from '../types';
 
@@ -136,9 +135,11 @@ const NavItem = forwardRef<
       className={ctw(
         'flex h-auto w-full items-center gap-x-2 rounded-md text-sm font-bold capitalize text-slate-400 2xl:text-base',
         'group-data-[collapsible=icon]:h-9 group-data-[collapsible=icon]:!p-0',
-        'duration-50 transition-colors hover:bg-slate-200 hover:text-primary',
+        'duration-50 transition-colors',
         {
-          'active:bg-primary-foreground active:text-primary': !premium,
+          'text-slate-400/60': premium,
+          'hover:bg-slate-200 hover:text-primary active:bg-primary-foreground active:text-primary':
+            !premium,
           'group-data-[collapsible=icon]:hidden': 'children' in navItem,
         },
         className,

@@ -21,11 +21,7 @@ export const useMerchantMonitoringTableLogic = () => {
     children,
   }) => {
     return UPDATEABLE_REPORT_STATUSES.includes(cell.row.original.status) ? (
-      <Link
-        to={`/${locale}/merchant-monitoring/${cell.row.id}`}
-        className={`d-full flex p-1`}
-        onClick={onClick}
-      >
+      <Link to={`/${locale}/merchant-monitoring/${cell.row.id}`} onClick={onClick}>
         {children}
       </Link>
     ) : (

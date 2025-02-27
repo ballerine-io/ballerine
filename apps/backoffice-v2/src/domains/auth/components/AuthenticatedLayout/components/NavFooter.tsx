@@ -3,9 +3,11 @@ import { useCallback, useMemo } from 'react';
 
 import { LogOutSvg } from '@/common/components/atoms/icons';
 import { UserAvatar } from '@/common/components/atoms/UserAvatar/UserAvatar';
-import { SidebarMenu } from '@/common/components/organisms/Sidebar/Sidebar.Menu';
-import { SidebarMenuButton } from '@/common/components/organisms/Sidebar/Sidebar.MenuButton';
-import { SidebarMenuItem } from '@/common/components/organisms/Sidebar/Sidebar.MenuItem';
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from '@/common/components/organisms/Sidebar/Sidebar';
 import { useAuthContext } from '@/domains/auth/context/AuthProvider/hooks/useAuthContext/useAuthContext';
 import { useSignOutMutation } from '@/domains/auth/hooks/mutations/useSignOutMutation/useSignOutMutation';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
@@ -49,8 +51,7 @@ export const NavFooter = () => {
                 },
                 key: 'nav-item-documents-verifications',
               }}
-              className="mb-6 cursor-default hover:bg-inherit hover:text-slate-400"
-              linkClassName="cursor-default"
+              className="mb-6 group-data-[collapsible=icon]:!px-0"
             />
           </SidebarMenuButton>
         </SidebarMenuItem>
