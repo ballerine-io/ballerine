@@ -444,29 +444,90 @@ export const getMockWorkflowContext = async (
           data: {
             edges: [
               {
-                id: 'uboNode202410231626591457620385->uboNode202410231626590478591628',
-                data: {
-                  sharePercentage: 100,
-                },
-                source: 'uboNode202410231626591457620385',
-                target: 'uboNode202410231626590478591628',
+                id: 'TechSolutions->OffshoreHoldings',
+                data: { sharePercentage: 60 },
+                source: 'TechSolutions',
+                target: 'OffshoreHoldings',
+              },
+              {
+                id: 'TechSolutions->VentureCapital',
+                data: { sharePercentage: 40 },
+                source: 'TechSolutions',
+                target: 'VentureCapital',
+              },
+              {
+                id: 'OffshoreHoldings->CaymanFinancial',
+                data: { sharePercentage: 75 },
+                source: 'OffshoreHoldings',
+                target: 'CaymanFinancial',
+              },
+              {
+                id: 'OffshoreHoldings->JohnDoe',
+                data: { sharePercentage: 25 },
+                source: 'OffshoreHoldings',
+                target: 'JohnDoe',
+              },
+              {
+                id: 'VentureCapital->AliceSmith',
+                data: { sharePercentage: 100 },
+                source: 'VentureCapital',
+                target: 'AliceSmith',
+              },
+              {
+                id: 'CaymanFinancial->ShellInvestments',
+                data: { sharePercentage: 50 },
+                source: 'CaymanFinancial',
+                target: 'ShellInvestments',
+              },
+              {
+                id: 'CaymanFinancial->ViktorOrlov',
+                data: { sharePercentage: 50 },
+                source: 'CaymanFinancial',
+                target: 'ViktorOrlov',
+              },
+              {
+                id: 'ShellInvestments->SamsonBartoletti',
+                data: { sharePercentage: 100 },
+                source: 'ShellInvestments',
+                target: 'SamsonBartoletti',
+              },
+              {
+                id: 'ShellInvestments->DaynaHoppe',
+                data: { sharePercentage: 100 },
+                source: 'ShellInvestments',
+                target: 'DaynaHoppe',
+              },
+              {
+                id: 'ShellInvestments->ValerieHowe',
+                data: { sharePercentage: 100 },
+                source: 'ShellInvestments',
+                target: 'ValerieHowe',
               },
             ],
             nodes: [
+              { id: 'TechSolutions', data: { name: 'Tech Solutions Ltd', type: 'COMPANY' } },
               {
-                id: 'uboNode202410231626591457620385',
-                data: {
-                  name: 'Tech Solutions Ltd',
-                  type: 'COMPANY',
-                },
+                id: 'OffshoreHoldings',
+                data: { name: 'Offshore Holdings Ltd', type: 'COMPANY' },
               },
               {
-                id: 'uboNode202410231626590478591628',
-                data: {
-                  name: 'John Doe',
-                  type: 'PERSON',
-                },
+                id: 'VentureCapital',
+                data: { name: 'Venture Capital Partners', type: 'COMPANY' },
               },
+              {
+                id: 'CaymanFinancial',
+                data: { name: 'Cayman Financial Services', type: 'COMPANY' },
+              },
+              { id: 'JohnDoe', data: { name: 'John Doe', type: 'PERSON' } },
+              { id: 'AliceSmith', data: { name: 'Alice Smith', type: 'PERSON' } },
+              {
+                id: 'ShellInvestments',
+                data: { name: 'Shell Investments LLC', type: 'COMPANY' },
+              },
+              { id: 'ViktorOrlov', data: { name: 'Viktor Orlov', type: 'PERSON' } },
+              { id: 'SamsonBartoletti', data: { name: 'Samson Bartoletti', type: 'PERSON' } },
+              { id: 'DaynaHoppe', data: { name: 'Dayna Hoppe', type: 'PERSON' } },
+              { id: 'ValerieHowe', data: { name: 'Valerie Howe', type: 'PERSON' } },
             ],
           },
           name: 'ubo',
