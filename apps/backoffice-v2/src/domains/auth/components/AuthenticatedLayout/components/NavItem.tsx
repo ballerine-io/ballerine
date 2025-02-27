@@ -81,16 +81,19 @@ const NavItemWrapper = ({
   children: ReactNode;
   className?: string;
 }) => {
-  const location = useLocation();
-  const isCurrent = 'href' in navItem && navItem.href ? location.pathname === navItem.href : false;
-
   let NavItemElement = (
-    <div className={ctw(baseNavItemWrapperClassName, isCurrent && 'cursor-pointer', className)}>
+    <div
+      className={ctw(
+        baseNavItemWrapperClassName,
+        { 'cursor-pointer': 'children' in navItem },
+        className,
+      )}
+    >
       {children}
     </div>
   );
 
-  if ('href' in navItem && navItem.href && !isCurrent) {
+  if ('href' in navItem && navItem.href) {
     NavItemElement = (
       <NavLink
         to={navItem.href}
