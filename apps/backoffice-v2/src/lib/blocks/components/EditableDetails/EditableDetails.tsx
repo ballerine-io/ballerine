@@ -353,8 +353,17 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                           <Select
                             key={keyFactory(field.value, title, `select`, id)}
                             disabled={!isEditable}
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
+                            onValueChange={value => {
+                              field.onChange(value.split(':')[2]);
+                            }}
+                            defaultValue={keyFactory(
+                              'select',
+                              valueId,
+                              field.value,
+                              dropdownOptions
+                                ?.findIndex(option => option.value === field.value)
+                                ?.toString(),
+                            )}
                           >
                             <FormControl>
                               <SelectTrigger className="w-full">
@@ -363,17 +372,15 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                             </FormControl>
                             <SelectContent>
                               {dropdownOptions?.map(({ label, value }, index) => {
+                                const selectKey = keyFactory(
+                                  'select',
+                                  valueId,
+                                  value,
+                                  index?.toString(),
+                                );
+
                                 return (
-                                  <SelectItem
-                                    key={keyFactory(
-                                      id,
-                                      valueId,
-                                      label,
-                                      index?.toString(),
-                                      `select-item`,
-                                    )}
-                                    value={value}
-                                  >
+                                  <SelectItem key={selectKey} value={selectKey}>
                                     {label}
                                   </SelectItem>
                                 );
