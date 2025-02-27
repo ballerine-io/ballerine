@@ -1,13 +1,5 @@
 # @ballerine/ui
 
-## 0.5.78-demo-200225.0
-
-### Patch Changes
-
-- bmp
-- Updated dependencies
-  - @ballerine/common@0.9.76-demo-200225.0
-
 ## 0.5.77
 
 ### Patch Changes
