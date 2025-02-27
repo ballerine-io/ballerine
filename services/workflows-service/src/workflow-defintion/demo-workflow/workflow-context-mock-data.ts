@@ -1,0 +1,2109 @@
+import { TDefaultSchemaDocumentPage } from '@ballerine/common';
+import { randomUUID } from 'crypto';
+
+export const getMockWorkflowContext = async (
+  customerName: string,
+  generateDocumentPage: ({
+    uri,
+    metadata,
+  }: {
+    uri: string;
+    metadata?: Extract<
+      TDefaultSchemaDocumentPage,
+      {
+        uri: string;
+      }
+    >['metadata'];
+  }) => Promise<{
+    provider: string;
+    uri: string;
+    type: string;
+    ballerineFileId: string;
+    metadata: { side?: string | undefined; pageNumber?: string | undefined } | undefined;
+  }>,
+) => {
+  return [
+    {
+      customData: {
+        [`${customerName}RiskAssessmentScore`]: 82,
+        verificationStatus: 'Pending',
+        riskCategory: 'High',
+        lastReviewDate: '2024-10-31',
+        nextReviewDue: '2025-10-31',
+        notes: `Risk assessment was conducted under ${customerName}'s audit guidelines.`,
+        amlChecksPassed: false,
+        fraudRisk: 'High',
+        complianceOfficer: 'Jane Smith',
+        remarks: `Further checks are required as per ${customerName}'s compliance framework.`,
+        annualRevenue: '20M USD',
+        debtToEquityRatio: 0.7,
+        [`${customerName}DebtReview`]: 'Moderate',
+      },
+      id: 'e7869864213',
+      data: {
+        companyName: 'Tech Solutions Ltd',
+        additionalInfo: {
+          mainRepresentative: {
+            email: 'david+98429862f@ballerine.com',
+            lastName: 'guy',
+            firstName: 'david',
+          },
+        },
+      },
+      type: 'business',
+      state: 'business_address_information',
+      entity: {
+        id: 'e7869864213',
+        data: {
+          country: 'UK',
+          companyName: 'Tech Solutions Ltd',
+          businessType: 'Local Company - PRIVATE LIMITED COMPANY',
+          additionalInfo: {
+            associatedCompanies: [
+              {
+                companyName: 'Tech Innovations Ltd',
+                registrationNumber: 'TI123456',
+                country: 'USA',
+                additionalInfo: {
+                  associationRelationship: 'Member',
+                  mainRepresentative: {
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    email: 'john.doe@techinnovations.com',
+                  },
+                  headquarters: {
+                    streetAddress: '123 Innovation Drive',
+                    city: 'Silicon Valley',
+                    state: 'CA',
+                    postalCode: '94043',
+                  },
+                },
+              },
+              {
+                companyName: 'Green Solutions Inc',
+                registrationNumber: 'GS789101',
+                country: 'Canada',
+                additionalInfo: {
+                  associationRelationship: 'Partner',
+                  mainRepresentative: {
+                    firstName: 'Lisa',
+                    lastName: 'White',
+                    email: 'lisa.white@greensolutions.com',
+                  },
+                  headquarters: {
+                    streetAddress: '789 Eco Lane',
+                    city: 'Vancouver',
+                    province: 'BC',
+                    postalCode: 'V5K 0A1',
+                  },
+                },
+              },
+              {
+                companyName: 'Global Tech Ventures',
+                registrationNumber: 'GT112233',
+                country: 'UK',
+                additionalInfo: {
+                  associationRelationship: 'Affiliate',
+                  mainRepresentative: {
+                    firstName: 'Mark',
+                    lastName: 'Brown',
+                    email: 'mark.brown@globaltechventures.com',
+                  },
+                  headquarters: {
+                    streetAddress: '101 Tech Park',
+                    city: 'London',
+                    postalCode: 'EC1A 1BB',
+                  },
+                },
+              },
+            ],
+            directors: [
+              {
+                email: 'ballerine@mailsac.com',
+                lastName: 'Mueller',
+                firstName: 'Kian',
+                nationalId: '9204469328432',
+                additionalInfo: {
+                  documents: [
+                    {
+                      id: 'directors:passport-document-[index:0]',
+                      type: 'passport',
+                      pages: [
+                        await generateDocumentPage({
+                          uri: 'https://cdn.ballerine.io/merch-ss/canada%20license%20front.png',
+                          metadata: { side: 'front' },
+                        }),
+                      ],
+                      issuer: {
+                        country: 'ZZ',
+                      },
+                      version: '1',
+                      category: 'proof_of_identity',
+                      decision: {},
+                      properties: {},
+                      issuingVersion: 1,
+                      propertiesSchema: {
+                        type: 'object',
+                        properties: {
+                          lastName: {
+                            type: 'string',
+                          },
+                          firstName: {
+                            type: 'string',
+                          },
+                          documentNumber: {
+                            type: 'string',
+                          },
+                        },
+                      },
+                    },
+                    {
+                      id: 'directors:passport-selfie-[index:0]',
+                      type: 'selfie',
+                      pages: [
+                        await generateDocumentPage({
+                          uri: 'https://cdn.ballerine.io/merch-ss/Armenia_selfie.png',
+                          metadata: { side: 'face' },
+                        }),
+                      ],
+                      issuer: {
+                        country: 'ZZ',
+                      },
+                      version: '1',
+                      category: 'proof_of_identity_ownership',
+                      decision: {},
+                      properties: {},
+                      issuingVersion: 1,
+                      propertiesSchema: {
+                        type: 'object',
+                        properties: {
+                          lastName: {
+                            type: 'string',
+                          },
+                          firstName: {
+                            type: 'string',
+                          },
+                          documentNumber: {
+                            type: 'string',
+                          },
+                        },
+                      },
+                    },
+                  ],
+                  companyName: 'Powlowski - Nolan',
+                  fullAddress: '71949 Greenville Road Apt. 192',
+                  nationality: 'IO',
+                  customerCompany: 'ClipsPay',
+                  __isGeneratedAutomatically: true,
+                },
+              },
+            ],
+            ubos: [
+              {
+                email: 'nitzan+98429862f@ballerine.com',
+                lastName: 'guy',
+                firstName: 'david',
+                additionalInfo: {
+                  role: 'CEO',
+                  companyName: 'Tech Solutions Ltd',
+                  dateOfBirth: '1990-01-01T22:00:00.000Z',
+                  customerCompany: 'Tech Solutions Ltd',
+                  __isGeneratedAutomatically: true,
+                },
+              },
+            ],
+            industry: 'Information Technology',
+            annualVolume: 1000000,
+            headquarters: {
+              city: 'London',
+              street: 'Tech Street',
+              country: 'UK',
+              postalCode: 'SW1A 1AA',
+              streetNumber: 1,
+            },
+            businessModel: 'Software Development',
+            imShareholder: true,
+            openCorporate: {
+              vat: 'GB123456789',
+              name: 'Tech Solutions Ltd',
+              companyType: 'Local Company - PRIVATE LIMITED COMPANY',
+              companyNumber: '12345678',
+              currentStatus: 'Live Company',
+              jurisdictionCode: 'uk',
+              incorporationDate: '2010-01-01',
+            },
+            companyWebsite: 'www.techsolutions.com',
+            bank: {
+              name: 'Tech Bank',
+              country: 'UK',
+              holderName: 'Tech Solutions Ltd',
+              accountNumber: '74231865',
+            },
+            store: {
+              dba: 'asdasd',
+              website: {
+                mainWebsite: 'https://google.com',
+                productPrice: 98,
+                contactDetails: '17 Frishman',
+                productQuantity: 100,
+                websiteLanguage: 'hebrew',
+                productDescription: 'We offer E-Books',
+              },
+              industry: 'Digital Downloads',
+              products: 'E-Books',
+              established: '2023-08-31T21:00:00.000Z',
+              websiteUrls: 'https://google.com',
+              hasMobileApp: false,
+              hasActiveWebsite: true,
+              processingDetails: {
+                mainCategory: ['B2C'],
+                businessModel: ['Direct Purchase'],
+                isSpikeInSales: false,
+                monthlySalesVolume: 5000000,
+                averageTicketAmount: 25,
+                monthlyTransactions: 500,
+              },
+            },
+            transactionValue: 10000,
+            mainRepresentative: {
+              email: 'nitzan+98429862f@ballerine.com',
+              lastName: 'guy',
+              firstName: 'nitzan',
+              ballerineEntityId: 'cm2llwsm60005xl306njsjh0e',
+            },
+            dateOfEstablishment: '2010-01-01T22:00:00.000Z',
+          },
+          numberOfEmployees: 50,
+          registrationNumber: '12345678',
+          taxIdentificationNumber: 'GB123456789',
+        },
+        type: 'business',
+        ballerineEntityId: 'cm2llwsez0001xl30hj6vv49w',
+      },
+      metadata: {
+        token: 'dd228d09-6e3f-4471-a4b4-14845fe83c8e',
+        customerId: 'ballerinedemo_ongoing_monitoring',
+        customerName: 'Ballerine Demo',
+        collectionFlowUrl: 'https://collection-dev.ballerine.io',
+        customerNormalizedName: 'ballerinedemo_ongoing_monitoring',
+      },
+      documents: [
+        {
+          id: 'document-certificate-of-registration',
+          type: 'bank_statement',
+          pages: [
+            await generateDocumentPage({
+              uri: 'https://cdn.ballerine.io/merch-ss/Bank%20Statement3.jpeg',
+            }),
+          ],
+          issuer: {
+            country: 'GH',
+          },
+          version: '1',
+          category: 'business_document',
+          decision: {},
+          properties: {},
+          issuingVersion: 1,
+          propertiesSchema: {
+            type: 'object',
+            required: ['businessName', 'taxIdNumber', 'registrationNumber', 'issueDate'],
+            properties: {
+              issueDate: {
+                type: 'string',
+                format: 'date',
+                formatMaximum: '2024-10-29',
+              },
+              taxIdNumber: {
+                type: 'string',
+                pattern: '^[a-zA-Z0-9]*$',
+              },
+              businessName: {
+                type: 'string',
+              },
+              registrationNumber: {
+                type: 'string',
+                pattern: '^[a-zA-Z0-9]*$',
+              },
+            },
+          },
+        },
+        {
+          id: 'document-proof-of-address',
+          type: 'certificate_of_incorporation',
+          pages: [
+            await generateDocumentPage({
+              uri: 'https://cdn.ballerine.io/merch-ss/COI1.jpeg',
+            }),
+          ],
+          issuer: {
+            country: 'ZZ',
+          },
+          version: '1',
+          category: 'proof_of_registration',
+          decision: {},
+          properties: {
+            nationalIdNumber: 'GHA-123456789-0',
+            docNumber: 'A987654321',
+            userAddress: '15 Tech Avenue, Accra, Ghana',
+            physicalAddress: 'Unit 5, Innovation Park, Accra, Ghana',
+            amountDue: 2500.75,
+            issuingDate: '2024-09-30',
+          },
+          issuingVersion: 1,
+          propertiesSchema: {
+            type: 'object',
+            properties: {
+              amountDue: {
+                type: 'number',
+              },
+              docNumber: {
+                type: 'string',
+                pattern: '^[a-zA-Z0-9]*$',
+              },
+              issuingDate: {
+                type: 'string',
+                format: 'date',
+              },
+              userAddress: {
+                type: 'string',
+              },
+              physicalAddress: {
+                type: 'string',
+              },
+              nationalIdNumber: {
+                type: 'string',
+                pattern: '^$|^GB-\\d{9}-\\d{1}$',
+              },
+            },
+          },
+        },
+        {
+          id: 'document-proof-of-address',
+          type: 'water_bill',
+          pages: [
+            await generateDocumentPage({
+              uri: 'https://cdn.ballerine.io/merch-ss/utility%20bill2.jpeg',
+            }),
+          ],
+          issuer: {
+            country: 'GH',
+          },
+          version: '1',
+          category: 'proof_of_address',
+          decision: {},
+          properties: {},
+          issuingVersion: 1,
+          propertiesSchema: {
+            type: 'object',
+            properties: {},
+          },
+        },
+      ],
+      collectionFlow: {
+        state: {
+          steps: [
+            {
+              stepName: 'company_information',
+              isCompleted: true,
+            },
+            {
+              stepName: 'business_address_information',
+              isCompleted: true,
+            },
+            {
+              stepName: 'company_activity',
+              isCompleted: true,
+            },
+            {
+              stepName: 'bank_information',
+              isCompleted: true,
+            },
+            {
+              stepName: 'company_ownership',
+              isCompleted: true,
+            },
+            {
+              stepName: 'company_documents',
+              isCompleted: true,
+            },
+          ],
+          status: 'completed',
+          currentStep: 'company_documents',
+        },
+        config: {
+          apiUrl: 'https://api-dev.ballerine.io',
+        },
+        additionalInformation: {
+          customerCompany: 'Ballerine Demo',
+        },
+      },
+      customerName: 'Tech Solutions Ltd',
+      pluginsOutput: {
+        ubo: {
+          code: 200,
+          data: {
+            edges: [
+              {
+                id: 'uboNode202410231626591457620385->uboNode202410231626590478591628',
+                data: {
+                  sharePercentage: 100,
+                },
+                source: 'uboNode202410231626591457620385',
+                target: 'uboNode202410231626590478591628',
+              },
+            ],
+            nodes: [
+              {
+                id: 'uboNode202410231626591457620385',
+                data: {
+                  name: 'Tech Solutions Ltd',
+                  type: 'COMPANY',
+                },
+              },
+              {
+                id: 'uboNode202410231626590478591628',
+                data: {
+                  name: 'John Doe',
+                  type: 'PERSON',
+                },
+              },
+            ],
+          },
+          name: 'ubo',
+          status: 'SUCCESS',
+          orderId: 'ubo202410231626591961979300',
+          invokedAt: 1729672019867,
+        },
+        invitation: {},
+        riskEvaluation: {
+          success: true,
+          riskScore: 63,
+          rulesResults: [
+            {
+              id: 'store-info-high-risk-sector',
+              domain: 'Store Info',
+              result: [
+                {
+                  rule: {
+                    key: 'entity.data.additionalInfo.industry',
+                    value: ['Information Technology', 'Software Development'],
+                    operator: 'IN',
+                  },
+                  status: 'PASSED',
+                },
+              ],
+              ruleSet: {
+                rules: [
+                  {
+                    key: 'entity.data.additionalInfo.industry',
+                    value: ['Information Technology', 'Software Development'],
+                    operator: 'IN',
+                  },
+                ],
+                operator: 'and',
+              },
+              indicator: 'High risk sector',
+              maxRiskScore: 98,
+              minRiskScore: 60,
+              baseRiskScore: 60,
+              additionalRiskScore: 8,
+            },
+            {
+              id: 'comp-info-establish-date',
+              domain: 'Company Information',
+              result: [
+                {
+                  rule: {
+                    key: 'pluginsOutput.businessInformation.data[0].establishDate',
+                    value: {
+                      years: 10,
+                    },
+                    operator: 'LAST_YEAR',
+                  },
+                  status: 'PASSED',
+                },
+              ],
+              ruleSet: {
+                rules: [
+                  {
+                    key: 'pluginsOutput.businessInformation.data[0].establishDate',
+                    value: {
+                      years: 10,
+                    },
+                    operator: 'LAST_YEAR',
+                  },
+                ],
+                operator: 'and',
+              },
+              indicator: 'Newly registered company',
+              maxRiskScore: 98,
+              minRiskScore: 30,
+              baseRiskScore: 30,
+              additionalRiskScore: 3,
+            },
+          ],
+          riskIndicatorsByDomain: {
+            'Store Info': [
+              {
+                name: 'High risk sector',
+                domain: 'Store Info',
+              },
+            ],
+            'Company Information': [
+              {
+                name: 'Newly registered company',
+                domain: 'Company Information',
+              },
+            ],
+          },
+        },
+        companySanctions: {
+          data: [
+            {
+              entity: {
+                name: 'Tech Solutions Ltd',
+                places: [
+                  {
+                    city: 'London',
+                    type: 'Headquarters',
+                    address: '1 Tech Street',
+                    country: 'UK',
+                    location: 'Central London',
+                  },
+                ],
+                sources: [
+                  {
+                    url: 'https://news.techupdates.com/article-tech-solutions',
+                    dates: ['2024-02-15', '2024-03-01'],
+                    categories: ['financial report', 'compliance notice'],
+                  },
+                ],
+                category: 'Information Technology',
+                countries: ['UK', 'Germany'],
+                enterDate: '2024-02-01',
+                categories: ['software', 'consulting'],
+                identities: ['Legal', 'Financial'],
+                otherNames: [
+                  {
+                    name: 'Tech Innovations Ltd',
+                    type: 'Former Name',
+                  },
+                ],
+                generalInfo: {
+                  website: 'https://techsolutions.com',
+                  nationality: 'British',
+                  alternateTitle: 'Tech Solutions Global',
+                  businessDescription: 'Software development and IT consulting services',
+                },
+                subcategory: 'Software Development',
+                descriptions: [
+                  {
+                    description1: 'Leading provider of software solutions in Europe.',
+                    description2: 'Specializes in B2B software products and services.',
+                    description3: 'Known for high standards in security and innovation.',
+                  },
+                ],
+                lastReviewed: '2024-10-31',
+                officialLists: [
+                  {
+                    keyword: 'Sanctioned',
+                    isCurrent: 'true',
+                    description: 'Listed for due diligence and compliance monitoring',
+                  },
+                ],
+                linkedCompanies: [
+                  {
+                    name: 'Tech Innovations Subsidiary Ltd.',
+                    categories: ['software development'],
+                    description: 'Subsidiary focusing on cloud solutions',
+                    subcategories: ['cloud computing'],
+                  },
+                ],
+                primaryLocation: 'London, UK',
+                linkedIndividuals: [
+                  {
+                    lastName: 'Smith',
+                    firstName: 'Alice',
+                    middleName: 'Marie',
+                    description: 'CEO and primary shareholder',
+                    subcategories: ['executive team', 'board'],
+                    otherCategories: ['leadership', 'ownership'],
+                  },
+                ],
+                furtherInformation: [
+                  'Connected with other leading tech firms in Europe',
+                  'Subject to regular compliance checks in financial markets',
+                ],
+                originalScriptNames: ['Tech Solutions Ltd'],
+              },
+              matchedFields: ['name', 'countries', 'category'],
+            },
+          ],
+          name: 'companySanctions',
+          status: 'SUCCESS',
+          invokedAt: 1729672019301,
+        },
+        merchantMonitoring: {
+          data: {
+            summary: {
+              summary:
+                "Tech Solutions Ltd's website has been assigned a risk score of 63, indicating moderate risk. This assessment is primarily due to significant structural deficiencies identified on the website, including the absence of critical pages such as Terms and Conditions, Privacy Policy, About Us, and Contact Us. These omissions suggest a lack of transparency and potential non-compliance with regulations, which are considerable risk factors for transaction laundering by indicating the possibility of a shell company set up for illicit activities. Despite these concerns, there is no evidence to classify the company as involved in fraudulent activities, and no violations were found in the social analysis and ads, company name analysis, or ecosystem analysis. The absence of product information or reputation data limits a comprehensive risk analysis, but the structural issues alone are sufficient to warrant a moderate risk rating.",
+              website: {
+                url: 'https://www.techsolutions.com/',
+              },
+              riskScore: 63,
+              riskLevels: {
+                legalRisk: 'moderate',
+                chargebackRisk: 'moderate',
+                reputationRisk: 'moderate',
+                transactionLaunderingRisk: 'moderate',
+              },
+              creationDate: 1729672029079,
+              recommendations: [],
+              riskIndicatorsByDomain: {
+                tldViolations: [
+                  {
+                    id: 'website-structure-missing-terms-and-conditions-(t&c)',
+                    name: 'Missing Terms and Conditions (T&C)',
+                    domain: 'website structure',
+                    reason: 'The website does not have a Terms And Conditions page',
+                    pageUrl: '',
+                    riskLevel: 'moderate',
+                    triggerOn:
+                      'Alert this when the website does not provide a Terms and Conditions (T&C) page, which is crucial for setting clear expectations and legal agreements with customers. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.',
+                    description: 'The website does not have a Terms and Conditions page',
+                    pageContext: 'Terms And Conditions',
+                    minRiskScore: 40,
+                    baseRiskScore: 40,
+                    fullViolation: {
+                      id: 'website-structure-missing-terms-and-conditions-(t&c)',
+                      name: 'Missing Terms and Conditions (T&C)',
+                      domain: 'website structure',
+                      riskLevel: 'moderate',
+                      triggerOn:
+                        'Alert this when the website does not provide a Terms and Conditions (T&C) page, which is crucial for setting clear expectations and legal agreements with customers. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.',
+                      minRiskScore: 40,
+                      baseRiskScore: 40,
+                      riskTypeLevels: {
+                        legalRisk: 'moderate',
+                        chargebackRisk: 'moderate',
+                        reputationRisk: 'moderate',
+                        transactionLaunderingRisk: 'moderate',
+                      },
+                      recommendations: [],
+                      additionRiskScore: 1,
+                      maxRiskScoreForAddition: 98,
+                    },
+                    riskTypeLevels: {
+                      legalRisk: 'moderate',
+                      chargebackRisk: 'moderate',
+                      reputationRisk: 'moderate',
+                      transactionLaunderingRisk: 'moderate',
+                    },
+                    recommendations: [],
+                    additionRiskScore: 1,
+                    maxRiskScoreForAddition: 98,
+                  },
+                  {
+                    id: 'website-structure-missing-privacy-policy',
+                    name: 'Missing Privacy Policy',
+                    domain: 'website structure',
+                    reason: 'The website does not have a Privacy Policy page',
+                    pageUrl: '',
+                    riskLevel: 'moderate',
+                    triggerOn:
+                      'Alert this when the website lacks a Privacy Policy page, potentially putting customer data privacy at risk and violating legal requirements. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.',
+                    description: 'The website does not have a Privacy Policy page',
+                    pageContext: 'Privacy Policy',
+                    minRiskScore: 40,
+                    baseRiskScore: 40,
+                    fullViolation: {
+                      id: 'website-structure-missing-privacy-policy',
+                      name: 'Missing Privacy Policy',
+                      domain: 'website structure',
+                      riskLevel: 'moderate',
+                      triggerOn:
+                        'Alert this when the website lacks a Privacy Policy page, potentially putting customer data privacy at risk and violating legal requirements. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.',
+                      minRiskScore: 40,
+                      baseRiskScore: 40,
+                      riskTypeLevels: {
+                        legalRisk: 'moderate',
+                        chargebackRisk: 'moderate',
+                        reputationRisk: 'moderate',
+                        transactionLaunderingRisk: 'moderate',
+                      },
+                      recommendations: [],
+                      additionRiskScore: 1,
+                      maxRiskScoreForAddition: 98,
+                    },
+                    riskTypeLevels: {
+                      legalRisk: 'moderate',
+                      chargebackRisk: 'moderate',
+                      reputationRisk: 'moderate',
+                      transactionLaunderingRisk: 'moderate',
+                    },
+                    recommendations: [],
+                    additionRiskScore: 1,
+                    maxRiskScoreForAddition: 98,
+                  },
+                  {
+                    id: 'website-structure-missing-about-us',
+                    name: 'Missing About Us',
+                    domain: 'website structure',
+                    reason: 'The website does not have an About Us page',
+                    pageUrl: '',
+                    riskLevel: 'moderate',
+                    triggerOn:
+                      'Alert this when the website does not have an about us page or offer general information surrounding the business',
+                    description: 'The website does not have an About Us page',
+                    pageContext: 'About Us',
+                    minRiskScore: 40,
+                    baseRiskScore: 40,
+                    fullViolation: {
+                      id: 'website-structure-missing-about-us',
+                      name: 'Missing About Us',
+                      domain: 'website structure',
+                      riskLevel: 'moderate',
+                      triggerOn:
+                        'Alert this when the website does not have an about us page or offer general information surrounding the business',
+                      minRiskScore: 40,
+                      baseRiskScore: 40,
+                      riskTypeLevels: {
+                        legalRisk: 'moderate',
+                        chargebackRisk: 'moderate',
+                        reputationRisk: 'moderate',
+                        transactionLaunderingRisk: 'moderate',
+                      },
+                      recommendations: [],
+                      additionRiskScore: 1,
+                      maxRiskScoreForAddition: 98,
+                    },
+                    riskTypeLevels: {
+                      legalRisk: 'moderate',
+                      chargebackRisk: 'moderate',
+                      reputationRisk: 'moderate',
+                      transactionLaunderingRisk: 'moderate',
+                    },
+                    recommendations: [],
+                    additionRiskScore: 1,
+                    maxRiskScoreForAddition: 98,
+                  },
+                  {
+                    id: 'website-structure-missing-contact-us',
+                    name: 'Missing Contact Us',
+                    domain: 'website structure',
+                    reason: 'The website does not have a Contact Us page',
+                    pageUrl: '',
+                    riskLevel: 'moderate',
+                    triggerOn:
+                      'Alert this when the website does not offer a Contact Us page, which is essential for customer trust and satisfaction. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.',
+                    description: 'The website does not have a Contact Us page',
+                    pageContext: 'Contact Us',
+                    minRiskScore: 40,
+                    baseRiskScore: 40,
+                    fullViolation: {
+                      id: 'website-structure-missing-contact-us',
+                      name: 'Missing Contact Us',
+                      domain: 'website structure',
+                      riskLevel: 'moderate',
+                      triggerOn:
+                        'Alert this when the website does not offer a Contact Us page, which is essential for customer trust and satisfaction. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.',
+                      minRiskScore: 40,
+                      baseRiskScore: 40,
+                      riskTypeLevels: {
+                        legalRisk: 'moderate',
+                        chargebackRisk: 'moderate',
+                        reputationRisk: 'moderate',
+                        transactionLaunderingRisk: 'moderate',
+                      },
+                      recommendations: [],
+                      additionRiskScore: 1,
+                      maxRiskScoreForAddition: 98,
+                    },
+                    riskTypeLevels: {
+                      legalRisk: 'moderate',
+                      chargebackRisk: 'moderate',
+                      reputationRisk: 'moderate',
+                      transactionLaunderingRisk: 'moderate',
+                    },
+                    recommendations: [],
+                    additionRiskScore: 1,
+                    maxRiskScoreForAddition: 98,
+                  },
+                ],
+                ecosystemViolations: [],
+                companyNameViolations: [],
+                adsAndSocialViolations: [],
+                lineOfBusinessViolations: [],
+              },
+            },
+            ecosystem: {
+              domains: [],
+              website: {
+                url: 'https://www.thusrdayboots.com/',
+              },
+            },
+            socialMedia: {
+              ads: null,
+              website: {
+                url: 'https://www.thusrdayboots.com/',
+              },
+              pickedAds: [],
+              relatedAds: {
+                summary:
+                  "No advertisements related to the merchant's social media presence were provided for assessment. Therefore, no content summary can be generated, and no potential risks can be identified from social media advertisements.",
+                violations: [],
+              },
+              facebookData: {
+                id: null,
+                name: null,
+                email: null,
+                address: null,
+                pageUrl: null,
+                pageName: null,
+                likesCount: null,
+                phoneNumber: null,
+                creationDate: null,
+                numberOfLikes: null,
+                screenshotUrl: null,
+                pageCategories: null,
+                facebookAdsLink: null,
+                facebookAboutUsLink: null,
+              },
+              instagramData: {
+                id: null,
+                pageUrl: null,
+                pageName: null,
+                username: null,
+                biography: null,
+                isVerified: null,
+                postsCount: null,
+                followsCount: null,
+                screenshotUrl: null,
+                pageCategories: null,
+                isBusinessAccount: null,
+                numberOfFollowers: null,
+              },
+              socialRawData: {},
+              riskIndicators: [],
+            },
+            lineOfBusiness: {
+              mcc: null,
+              website: {
+                url: 'https://www.thusrdayboots.com/',
+              },
+              mccProvided: null,
+              formattedMcc: null,
+              lobDescription: 'Custom software solutions provider.',
+              riskIndicators: [],
+            },
+            homepageScreenshot: null,
+            transactionLaundering: {
+              website: {
+                url: 'https://www.thusrdayboots.com/',
+              },
+              reputation: null,
+              scamOrFraud: {
+                summary:
+                  'No definitive evidence was found to classify thusrdayboots.com as a scam or involved in fraudulent activities.',
+                blacklist: false,
+                indicators: [],
+              },
+              riskIndicators: [
+                {
+                  id: 'website-structure-missing-terms-and-conditions-(t&c)',
+                  name: 'Missing Terms and Conditions (T&C)',
+                  domain: 'website structure',
+                  reason: 'The website does not have a Terms And Conditions page',
+                  pageUrl: '',
+                  riskLevel: 'moderate',
+                  triggerOn:
+                    'Alert this when the website does not provide a Terms and Conditions (T&C) page, which is crucial for setting clear expectations and legal agreements with customers. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.',
+                  description: 'The website does not have a Terms and Conditions page',
+                  pageContext: 'Terms And Conditions',
+                  minRiskScore: 40,
+                  baseRiskScore: 40,
+                  fullViolation: {
+                    id: 'website-structure-missing-terms-and-conditions-(t&c)',
+                    name: 'Missing Terms and Conditions (T&C)',
+                    domain: 'website structure',
+                    riskLevel: 'moderate',
+                    triggerOn:
+                      'Alert this when the website does not provide a Terms and Conditions (T&C) page, which is crucial for setting clear expectations and legal agreements with customers. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.',
+                    minRiskScore: 40,
+                    baseRiskScore: 40,
+                    riskTypeLevels: {
+                      legalRisk: 'moderate',
+                      chargebackRisk: 'moderate',
+                      reputationRisk: 'moderate',
+                      transactionLaunderingRisk: 'moderate',
+                    },
+                    recommendations: [],
+                    additionRiskScore: 1,
+                    maxRiskScoreForAddition: 98,
+                  },
+                  riskTypeLevels: {
+                    legalRisk: 'moderate',
+                    chargebackRisk: 'moderate',
+                    reputationRisk: 'moderate',
+                    transactionLaunderingRisk: 'moderate',
+                  },
+                  recommendations: [],
+                  additionRiskScore: 1,
+                  maxRiskScoreForAddition: 98,
+                },
+                {
+                  id: 'website-structure-missing-privacy-policy',
+                  name: 'Missing Privacy Policy',
+                  domain: 'website structure',
+                  reason: 'The website does not have a Privacy Policy page',
+                  pageUrl: '',
+                  riskLevel: 'moderate',
+                  triggerOn:
+                    'Alert this when the website lacks a Privacy Policy page, potentially putting customer data privacy at risk and violating legal requirements. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.',
+                  description: 'The website does not have a Privacy Policy page',
+                  pageContext: 'Privacy Policy',
+                  minRiskScore: 40,
+                  baseRiskScore: 40,
+                  fullViolation: {
+                    id: 'website-structure-missing-privacy-policy',
+                    name: 'Missing Privacy Policy',
+                    domain: 'website structure',
+                    riskLevel: 'moderate',
+                    triggerOn:
+                      'Alert this when the website lacks a Privacy Policy page, potentially putting customer data privacy at risk and violating legal requirements. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.',
+                    minRiskScore: 40,
+                    baseRiskScore: 40,
+                    riskTypeLevels: {
+                      legalRisk: 'moderate',
+                      chargebackRisk: 'moderate',
+                      reputationRisk: 'moderate',
+                      transactionLaunderingRisk: 'moderate',
+                    },
+                    recommendations: [],
+                    additionRiskScore: 1,
+                    maxRiskScoreForAddition: 98,
+                  },
+                  riskTypeLevels: {
+                    legalRisk: 'moderate',
+                    chargebackRisk: 'moderate',
+                    reputationRisk: 'moderate',
+                    transactionLaunderingRisk: 'moderate',
+                  },
+                  recommendations: [],
+                  additionRiskScore: 1,
+                  maxRiskScoreForAddition: 98,
+                },
+                {
+                  id: 'website-structure-missing-about-us',
+                  name: 'Missing About Us',
+                  domain: 'website structure',
+                  reason: 'The website does not have an About Us page',
+                  pageUrl: '',
+                  riskLevel: 'moderate',
+                  triggerOn:
+                    'Alert this when the website does not have an about us page or offer general information surrounding the business',
+                  description: 'The website does not have an About Us page',
+                  pageContext: 'About Us',
+                  minRiskScore: 40,
+                  baseRiskScore: 40,
+                  fullViolation: {
+                    id: 'website-structure-missing-about-us',
+                    name: 'Missing About Us',
+                    domain: 'website structure',
+                    riskLevel: 'moderate',
+                    triggerOn:
+                      'Alert this when the website does not have an about us page or offer general information surrounding the business',
+                    minRiskScore: 40,
+                    baseRiskScore: 40,
+                    riskTypeLevels: {
+                      legalRisk: 'moderate',
+                      chargebackRisk: 'moderate',
+                      reputationRisk: 'moderate',
+                      transactionLaunderingRisk: 'moderate',
+                    },
+                    recommendations: [],
+                    additionRiskScore: 1,
+                    maxRiskScoreForAddition: 98,
+                  },
+                  riskTypeLevels: {
+                    legalRisk: 'moderate',
+                    chargebackRisk: 'moderate',
+                    reputationRisk: 'moderate',
+                    transactionLaunderingRisk: 'moderate',
+                  },
+                  recommendations: [],
+                  additionRiskScore: 1,
+                  maxRiskScoreForAddition: 98,
+                },
+                {
+                  id: 'website-structure-missing-contact-us',
+                  name: 'Missing Contact Us',
+                  domain: 'website structure',
+                  reason: 'The website does not have a Contact Us page',
+                  pageUrl: '',
+                  riskLevel: 'moderate',
+                  triggerOn:
+                    'Alert this when the website does not offer a Contact Us page, which is essential for customer trust and satisfaction. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.',
+                  description: 'The website does not have a Contact Us page',
+                  pageContext: 'Contact Us',
+                  minRiskScore: 40,
+                  baseRiskScore: 40,
+                  fullViolation: {
+                    id: 'website-structure-missing-contact-us',
+                    name: 'Missing Contact Us',
+                    domain: 'website structure',
+                    riskLevel: 'moderate',
+                    triggerOn:
+                      'Alert this when the website does not offer a Contact Us page, which is essential for customer trust and satisfaction. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.',
+                    minRiskScore: 40,
+                    baseRiskScore: 40,
+                    riskTypeLevels: {
+                      legalRisk: 'moderate',
+                      chargebackRisk: 'moderate',
+                      reputationRisk: 'moderate',
+                      transactionLaunderingRisk: 'moderate',
+                    },
+                    recommendations: [],
+                    additionRiskScore: 1,
+                    maxRiskScoreForAddition: 98,
+                  },
+                  riskTypeLevels: {
+                    legalRisk: 'moderate',
+                    chargebackRisk: 'moderate',
+                    reputationRisk: 'moderate',
+                    transactionLaunderingRisk: 'moderate',
+                  },
+                  recommendations: [],
+                  additionRiskScore: 1,
+                  maxRiskScoreForAddition: 98,
+                },
+              ],
+              pricingAnalysis: {
+                summary:
+                  'No products were provided for pricing analysis, therefore no pricing violations or risks have been detected.',
+                indicators: [],
+              },
+              trafficAnalysis: {
+                engagements: [],
+                trafficSources: [],
+                montlyVisitsIndicators: [],
+              },
+              businessConsitency: {
+                summary: 'No inconsistency found',
+                indicators: [],
+              },
+              transactionAnalysis: null,
+              websiteStructureEvaluation: {
+                summary:
+                  "The website is missing several critical pages including 'Terms and Conditions', 'Privacy Policy', 'About Us', 'Contact Us', and 'Return Policy'. The absence of these pages indicates a lack of transparency and could lead to legal and reputation risks, as well as potential non-compliance with various regulations.",
+                indicators: [
+                  'The website does not have a Terms And Conditions page',
+                  'The website does not have a Privacy Policy page',
+                  'The website does not have an About Us page',
+                  'The website does not have a Contact Us page',
+                ],
+              },
+            },
+            websiteCompanyAnalysis: {
+              website: {
+                url: 'https://www.thusrdayboots.com/',
+              },
+              companyName: 'Thursday Boot Company',
+              scamOrFraud: {
+                summary:
+                  'No definitive evidence was found to classify Thursday Boot Company as a scam or involved in fraudulent activities.',
+                indicators: [],
+              },
+              companyAnalysis: {
+                indicators: [],
+              },
+              businessConsistency: {
+                summary: '',
+                indicators: [],
+              },
+            },
+          },
+          name: 'merchantMonitoring',
+          status: 'SUCCESS',
+          reportId: 'm6tces5a3f5ex8hmrttih3hb',
+          invokedAt: 1729672000635,
+        },
+        merchantScreening: {
+          raw: {
+            TerminationInquiry: {
+              Ref: 'https://sandbox.api.mastercard.com/fraud/merchant/v3/termination-inquiry/19962024090205928',
+              PageOffset: 0,
+              PossibleInquiryMatches: [
+                {
+                  TotalLength: 7,
+                  InquiredMerchant: [
+                    {
+                      Merchant: {
+                        Name: 'BALLERINE',
+                        Address: {
+                          City: 'NYC',
+                          Line1: 'OLS TEST STUFF 123',
+                          Country: 'SGP',
+                          PostalCode: '85392',
+                        },
+                        Principal: [
+                          {
+                            Address: {
+                              City: 'NYC',
+                              Line1: 'OLS TEST STUFF 123',
+                              Country: 'SGP',
+                              PostalCode: '85392',
+                            },
+                            LastName: 'PERETZ',
+                            FirstName: 'ALON',
+                            DriversLicense: {},
+                          },
+                        ],
+                        AddedOnDate: '09/02/2024',
+                        MerchantMatch: {
+                          Name: 'M01',
+                          Address: 'M01',
+                          PhoneNumber: 'M00',
+                          NationalTaxId: 'M00',
+                          AltPhoneNumber: 'M00',
+                          PrincipalMatch: [
+                            {
+                              Name: 'M01',
+                              Address: 'M01',
+                              NationalId: 'M00',
+                              PhoneNumber: 'M00',
+                              AltPhoneNumber: 'M00',
+                              DriversLicense: 'M00',
+                            },
+                          ],
+                          ServiceProvDBA: 'M00',
+                          ServiceProvLegal: 'M00',
+                          DoingBusinessAsName: 'M00',
+                          CountrySubdivisionTaxId: 'M00',
+                        },
+                      },
+                    },
+                    {
+                      Merchant: {
+                        Name: 'BALLERINE',
+                        Address: {
+                          City: 'NYC',
+                          Line1: 'OLS TEST STUFF 123',
+                          Country: 'SGP',
+                          PostalCode: '85392',
+                        },
+                        Principal: [
+                          {
+                            Address: {
+                              City: 'NYC',
+                              Line1: 'OLS TEST STUFF 123',
+                              Country: 'SGP',
+                              PostalCode: '85392',
+                            },
+                            LastName: 'PERETZ',
+                            FirstName: 'ALON',
+                            DriversLicense: {},
+                          },
+                        ],
+                        AddedOnDate: '09/02/2024',
+                        MerchantMatch: {
+                          Name: 'M01',
+                          Address: 'M01',
+                          PhoneNumber: 'M00',
+                          NationalTaxId: 'M00',
+                          AltPhoneNumber: 'M00',
+                          PrincipalMatch: [
+                            {
+                              Name: 'M01',
+                              Address: 'M01',
+                              NationalId: 'M00',
+                              PhoneNumber: 'M00',
+                              AltPhoneNumber: 'M00',
+                              DriversLicense: 'M00',
+                            },
+                          ],
+                          ServiceProvDBA: 'M00',
+                          ServiceProvLegal: 'M00',
+                          DoingBusinessAsName: 'M00',
+                          CountrySubdivisionTaxId: 'M00',
+                        },
+                      },
+                    },
+                    {
+                      Merchant: {
+                        Name: 'BALLERINE',
+                        Address: {
+                          City: 'NYC',
+                          Line1: 'OLS TEST STUFF 123',
+                          Country: 'SGP',
+                          PostalCode: '85392',
+                        },
+                        Principal: [
+                          {
+                            Address: {
+                              City: 'NYC',
+                              Line1: 'OLS TEST STUFF 123',
+                              Country: 'SGP',
+                              PostalCode: '85392',
+                            },
+                            LastName: 'PERETZ',
+                            FirstName: 'ALON',
+                            DriversLicense: {},
+                          },
+                        ],
+                        AddedOnDate: '09/02/2024',
+                        MerchantMatch: {
+                          Name: 'M01',
+                          Address: 'M01',
+                          PhoneNumber: 'M00',
+                          NationalTaxId: 'M00',
+                          AltPhoneNumber: 'M00',
+                          PrincipalMatch: [
+                            {
+                              Name: 'M01',
+                              Address: 'M01',
+                              NationalId: 'M00',
+                              PhoneNumber: 'M00',
+                              AltPhoneNumber: 'M00',
+                              DriversLicense: 'M00',
+                            },
+                          ],
+                          ServiceProvDBA: 'M00',
+                          ServiceProvLegal: 'M00',
+                          DoingBusinessAsName: 'M00',
+                          CountrySubdivisionTaxId: 'M00',
+                        },
+                      },
+                    },
+                    {
+                      Merchant: {
+                        Name: 'BALLERINE',
+                        Address: {
+                          City: 'NYC',
+                          Line1: 'OLS TEST STUFF 123',
+                          Country: 'SGP',
+                          PostalCode: '85392',
+                        },
+                        Principal: [
+                          {
+                            Address: {
+                              City: 'NYC',
+                              Line1: 'OLS TEST STUFF 123',
+                              Country: 'SGP',
+                              PostalCode: '85392',
+                            },
+                            LastName: 'PERETZ',
+                            FirstName: 'ALON',
+                            DriversLicense: {},
+                          },
+                        ],
+                        AddedOnDate: '09/02/2024',
+                        MerchantMatch: {
+                          Name: 'M01',
+                          Address: 'M01',
+                          PhoneNumber: 'M00',
+                          NationalTaxId: 'M00',
+                          AltPhoneNumber: 'M00',
+                          PrincipalMatch: [
+                            {
+                              Name: 'M01',
+                              Address: 'M01',
+                              NationalId: 'M00',
+                              PhoneNumber: 'M00',
+                              AltPhoneNumber: 'M00',
+                              DriversLicense: 'M00',
+                            },
+                          ],
+                          ServiceProvDBA: 'M00',
+                          ServiceProvLegal: 'M00',
+                          DoingBusinessAsName: 'M00',
+                          CountrySubdivisionTaxId: 'M00',
+                        },
+                      },
+                    },
+                    {
+                      Merchant: {
+                        Name: 'BALLERINE',
+                        Address: {
+                          City: 'NYC',
+                          Line1: 'OLS TEST STUFF 123',
+                          Country: 'SGP',
+                          PostalCode: '85392',
+                        },
+                        Principal: [
+                          {
+                            Address: {
+                              City: 'NYC',
+                              Line1: 'OLS TEST STUFF 123',
+                              Country: 'SGP',
+                              PostalCode: '85392',
+                            },
+                            LastName: 'PERETZ',
+                            FirstName: 'ALON',
+                            DriversLicense: {},
+                          },
+                        ],
+                        AddedOnDate: '09/02/2024',
+                        MerchantMatch: {
+                          Name: 'M01',
+                          Address: 'M01',
+                          PhoneNumber: 'M00',
+                          NationalTaxId: 'M00',
+                          AltPhoneNumber: 'M00',
+                          PrincipalMatch: [
+                            {
+                              Name: 'M01',
+                              Address: 'M01',
+                              NationalId: 'M00',
+                              PhoneNumber: 'M00',
+                              AltPhoneNumber: 'M00',
+                              DriversLicense: 'M00',
+                            },
+                          ],
+                          ServiceProvDBA: 'M00',
+                          ServiceProvLegal: 'M00',
+                          DoingBusinessAsName: 'M00',
+                          CountrySubdivisionTaxId: 'M00',
+                        },
+                      },
+                    },
+                    {
+                      Merchant: {
+                        Name: 'BALLERINE',
+                        Address: {
+                          City: 'NYC',
+                          Line1: 'OLS TEST STUFF 123',
+                          Country: 'SGP',
+                          PostalCode: '85392',
+                        },
+                        Principal: [
+                          {
+                            Address: {
+                              City: 'NYC',
+                              Line1: 'OLS TEST STUFF 123',
+                              Country: 'SGP',
+                              PostalCode: '85392',
+                            },
+                            LastName: 'PERETZ',
+                            FirstName: 'ALON',
+                            DriversLicense: {},
+                          },
+                        ],
+                        AddedOnDate: '09/02/2024',
+                        MerchantMatch: {
+                          Name: 'M01',
+                          Address: 'M01',
+                          PhoneNumber: 'M00',
+                          NationalTaxId: 'M00',
+                          AltPhoneNumber: 'M00',
+                          PrincipalMatch: [
+                            {
+                              Name: 'M01',
+                              Address: 'M01',
+                              NationalId: 'M00',
+                              PhoneNumber: 'M00',
+                              AltPhoneNumber: 'M00',
+                              DriversLicense: 'M00',
+                            },
+                          ],
+                          ServiceProvDBA: 'M00',
+                          ServiceProvLegal: 'M00',
+                          DoingBusinessAsName: 'M00',
+                          CountrySubdivisionTaxId: 'M00',
+                        },
+                      },
+                    },
+                    {
+                      Merchant: {
+                        Name: 'BALLERINE',
+                        Address: {
+                          City: 'SHIBOLIM',
+                          Line1: 'SHIBOLIM 137',
+                          Country: 'SGP',
+                          PostalCode: '85392',
+                        },
+                        Principal: [
+                          {
+                            Address: {
+                              City: 'SHIBOLIM',
+                              Line1: 'SHIBOLIM 137',
+                              Country: 'SGP',
+                              PostalCode: '85392',
+                            },
+                            LastName: 'PERETZ',
+                            FirstName: 'ALON',
+                            DriversLicense: {},
+                          },
+                        ],
+                        AddedOnDate: '09/02/2024',
+                        MerchantMatch: {
+                          Name: 'M01',
+                          Address: 'M00',
+                          PhoneNumber: 'M00',
+                          NationalTaxId: 'M00',
+                          AltPhoneNumber: 'M00',
+                          PrincipalMatch: [
+                            {
+                              Name: 'M01',
+                              Address: 'M00',
+                              NationalId: 'M00',
+                              PhoneNumber: 'M00',
+                              AltPhoneNumber: 'M00',
+                              DriversLicense: 'M00',
+                            },
+                          ],
+                          ServiceProvDBA: 'M00',
+                          ServiceProvLegal: 'M00',
+                          DoingBusinessAsName: 'M00',
+                          CountrySubdivisionTaxId: 'M00',
+                        },
+                      },
+                    },
+                  ],
+                },
+              ],
+              PossibleMerchantMatches: [
+                {
+                  TotalLength: 0,
+                  TerminatedMerchant: [],
+                },
+              ],
+              TransactionReferenceNumber: '',
+            },
+          },
+          name: 'merchantScreening',
+          status: 'SUCCESS',
+          vendor: 'mastercard',
+          logoUrl: 'https://cdn.ballerine.io/logos/Mastercard%20logo.svg',
+          invokedAt: 1725307701422,
+          processed: {
+            checkDate: '9/2/2024',
+            inquiredMatchedMerchants: [
+              {
+                raw: {
+                  Merchant: {
+                    Name: 'BALLERINE',
+                    Address: {
+                      City: 'NYC',
+                      Line1: 'OLS TEST STUFF 123',
+                      Country: 'SGP',
+                      PostalCode: '85392',
+                    },
+                    Principal: [
+                      {
+                        Address: {
+                          City: 'NYC',
+                          Line1: 'OLS TEST STUFF 123',
+                          Country: 'SGP',
+                          PostalCode: '85392',
+                        },
+                        LastName: 'PERETZ',
+                        FirstName: 'ALON',
+                        DriversLicense: {},
+                      },
+                    ],
+                    AddedOnDate: '09/02/2024',
+                    MerchantMatch: {
+                      Name: 'M01',
+                      Address: 'M01',
+                      PhoneNumber: 'M00',
+                      NationalTaxId: 'M00',
+                      AltPhoneNumber: 'M00',
+                      PrincipalMatch: [
+                        {
+                          Name: 'M01',
+                          Address: 'M01',
+                          NationalId: 'M00',
+                          PhoneNumber: 'M00',
+                          AltPhoneNumber: 'M00',
+                          DriversLicense: 'M00',
+                        },
+                      ],
+                      ServiceProvDBA: 'M00',
+                      ServiceProvLegal: 'M00',
+                      DoingBusinessAsName: 'M00',
+                      CountrySubdivisionTaxId: 'M00',
+                    },
+                  },
+                },
+                name: 'BALLERINE',
+                urls: [],
+                dateAdded: '09/02/2024',
+                principals: [
+                  {
+                    exactMatches: {
+                      address: {
+                        City: 'NYC',
+                        Line1: 'OLS TEST STUFF 123',
+                        Country: 'SGP',
+                        PostalCode: '85392',
+                      },
+                    },
+                    partialMatches: {},
+                  },
+                ],
+                exactMatches: {
+                  name: 'BALLERINE',
+                  address: {
+                    City: 'NYC',
+                    Line1: 'OLS TEST STUFF 123',
+                    Country: 'SGP',
+                    PostalCode: '85392',
+                  },
+                },
+                partialMatches: {},
+                exactMatchesAmount: 3,
+                partialMatchesAmount: 0,
+              },
+              {
+                raw: {
+                  Merchant: {
+                    Name: 'BALLERINE',
+                    Address: {
+                      City: 'NYC',
+                      Line1: 'OLS TEST STUFF 123',
+                      Country: 'SGP',
+                      PostalCode: '85392',
+                    },
+                    Principal: [
+                      {
+                        Address: {
+                          City: 'NYC',
+                          Line1: 'OLS TEST STUFF 123',
+                          Country: 'SGP',
+                          PostalCode: '85392',
+                        },
+                        LastName: 'PERETZ',
+                        FirstName: 'ALON',
+                        DriversLicense: {},
+                      },
+                    ],
+                    AddedOnDate: '09/02/2024',
+                    MerchantMatch: {
+                      Name: 'M01',
+                      Address: 'M01',
+                      PhoneNumber: 'M00',
+                      NationalTaxId: 'M00',
+                      AltPhoneNumber: 'M00',
+                      PrincipalMatch: [
+                        {
+                          Name: 'M01',
+                          Address: 'M01',
+                          NationalId: 'M00',
+                          PhoneNumber: 'M00',
+                          AltPhoneNumber: 'M00',
+                          DriversLicense: 'M00',
+                        },
+                      ],
+                      ServiceProvDBA: 'M00',
+                      ServiceProvLegal: 'M00',
+                      DoingBusinessAsName: 'M00',
+                      CountrySubdivisionTaxId: 'M00',
+                    },
+                  },
+                },
+                name: 'BALLERINE',
+                urls: [],
+                dateAdded: '09/02/2024',
+                principals: [
+                  {
+                    exactMatches: {
+                      address: {
+                        City: 'NYC',
+                        Line1: 'OLS TEST STUFF 123',
+                        Country: 'SGP',
+                        PostalCode: '85392',
+                      },
+                    },
+                    partialMatches: {},
+                  },
+                ],
+                exactMatches: {
+                  name: 'BALLERINE',
+                  address: {
+                    City: 'NYC',
+                    Line1: 'OLS TEST STUFF 123',
+                    Country: 'SGP',
+                    PostalCode: '85392',
+                  },
+                },
+                partialMatches: {},
+                exactMatchesAmount: 3,
+                partialMatchesAmount: 0,
+              },
+              {
+                raw: {
+                  Merchant: {
+                    Name: 'BALLERINE',
+                    Address: {
+                      City: 'NYC',
+                      Line1: 'OLS TEST STUFF 123',
+                      Country: 'SGP',
+                      PostalCode: '85392',
+                    },
+                    Principal: [
+                      {
+                        Address: {
+                          City: 'NYC',
+                          Line1: 'OLS TEST STUFF 123',
+                          Country: 'SGP',
+                          PostalCode: '85392',
+                        },
+                        LastName: 'PERETZ',
+                        FirstName: 'ALON',
+                        DriversLicense: {},
+                      },
+                    ],
+                    AddedOnDate: '09/02/2024',
+                    MerchantMatch: {
+                      Name: 'M01',
+                      Address: 'M01',
+                      PhoneNumber: 'M00',
+                      NationalTaxId: 'M00',
+                      AltPhoneNumber: 'M00',
+                      PrincipalMatch: [
+                        {
+                          Name: 'M01',
+                          Address: 'M01',
+                          NationalId: 'M00',
+                          PhoneNumber: 'M00',
+                          AltPhoneNumber: 'M00',
+                          DriversLicense: 'M00',
+                        },
+                      ],
+                      ServiceProvDBA: 'M00',
+                      ServiceProvLegal: 'M00',
+                      DoingBusinessAsName: 'M00',
+                      CountrySubdivisionTaxId: 'M00',
+                    },
+                  },
+                },
+                name: 'BALLERINE',
+                urls: [],
+                dateAdded: '09/02/2024',
+                principals: [
+                  {
+                    exactMatches: {
+                      address: {
+                        City: 'NYC',
+                        Line1: 'OLS TEST STUFF 123',
+                        Country: 'SGP',
+                        PostalCode: '85392',
+                      },
+                    },
+                    partialMatches: {},
+                  },
+                ],
+                exactMatches: {
+                  name: 'BALLERINE',
+                  address: {
+                    City: 'NYC',
+                    Line1: 'OLS TEST STUFF 123',
+                    Country: 'SGP',
+                    PostalCode: '85392',
+                  },
+                },
+                partialMatches: {},
+                exactMatchesAmount: 3,
+                partialMatchesAmount: 0,
+              },
+              {
+                raw: {
+                  Merchant: {
+                    Name: 'BALLERINE',
+                    Address: {
+                      City: 'NYC',
+                      Line1: 'OLS TEST STUFF 123',
+                      Country: 'SGP',
+                      PostalCode: '85392',
+                    },
+                    Principal: [
+                      {
+                        Address: {
+                          City: 'NYC',
+                          Line1: 'OLS TEST STUFF 123',
+                          Country: 'SGP',
+                          PostalCode: '85392',
+                        },
+                        LastName: 'PERETZ',
+                        FirstName: 'ALON',
+                        DriversLicense: {},
+                      },
+                    ],
+                    AddedOnDate: '09/02/2024',
+                    MerchantMatch: {
+                      Name: 'M01',
+                      Address: 'M01',
+                      PhoneNumber: 'M00',
+                      NationalTaxId: 'M00',
+                      AltPhoneNumber: 'M00',
+                      PrincipalMatch: [
+                        {
+                          Name: 'M01',
+                          Address: 'M01',
+                          NationalId: 'M00',
+                          PhoneNumber: 'M00',
+                          AltPhoneNumber: 'M00',
+                          DriversLicense: 'M00',
+                        },
+                      ],
+                      ServiceProvDBA: 'M00',
+                      ServiceProvLegal: 'M00',
+                      DoingBusinessAsName: 'M00',
+                      CountrySubdivisionTaxId: 'M00',
+                    },
+                  },
+                },
+                name: 'BALLERINE',
+                urls: [],
+                dateAdded: '09/02/2024',
+                principals: [
+                  {
+                    exactMatches: {
+                      address: {
+                        City: 'NYC',
+                        Line1: 'OLS TEST STUFF 123',
+                        Country: 'SGP',
+                        PostalCode: '85392',
+                      },
+                    },
+                    partialMatches: {},
+                  },
+                ],
+                exactMatches: {
+                  name: 'BALLERINE',
+                  address: {
+                    City: 'NYC',
+                    Line1: 'OLS TEST STUFF 123',
+                    Country: 'SGP',
+                    PostalCode: '85392',
+                  },
+                },
+                partialMatches: {},
+                exactMatchesAmount: 3,
+                partialMatchesAmount: 0,
+              },
+              {
+                raw: {
+                  Merchant: {
+                    Name: 'BALLERINE',
+                    Address: {
+                      City: 'NYC',
+                      Line1: 'OLS TEST STUFF 123',
+                      Country: 'SGP',
+                      PostalCode: '85392',
+                    },
+                    Principal: [
+                      {
+                        Address: {
+                          City: 'NYC',
+                          Line1: 'OLS TEST STUFF 123',
+                          Country: 'SGP',
+                          PostalCode: '85392',
+                        },
+                        LastName: 'PERETZ',
+                        FirstName: 'ALON',
+                        DriversLicense: {},
+                      },
+                    ],
+                    AddedOnDate: '09/02/2024',
+                    MerchantMatch: {
+                      Name: 'M01',
+                      Address: 'M01',
+                      PhoneNumber: 'M00',
+                      NationalTaxId: 'M00',
+                      AltPhoneNumber: 'M00',
+                      PrincipalMatch: [
+                        {
+                          Name: 'M01',
+                          Address: 'M01',
+                          NationalId: 'M00',
+                          PhoneNumber: 'M00',
+                          AltPhoneNumber: 'M00',
+                          DriversLicense: 'M00',
+                        },
+                      ],
+                      ServiceProvDBA: 'M00',
+                      ServiceProvLegal: 'M00',
+                      DoingBusinessAsName: 'M00',
+                      CountrySubdivisionTaxId: 'M00',
+                    },
+                  },
+                },
+                name: 'BALLERINE',
+                urls: [],
+                dateAdded: '09/02/2024',
+                principals: [
+                  {
+                    exactMatches: {
+                      address: {
+                        City: 'NYC',
+                        Line1: 'OLS TEST STUFF 123',
+                        Country: 'SGP',
+                        PostalCode: '85392',
+                      },
+                    },
+                    partialMatches: {},
+                  },
+                ],
+                exactMatches: {
+                  name: 'BALLERINE',
+                  address: {
+                    City: 'NYC',
+                    Line1: 'OLS TEST STUFF 123',
+                    Country: 'SGP',
+                    PostalCode: '85392',
+                  },
+                },
+                partialMatches: {},
+                exactMatchesAmount: 3,
+                partialMatchesAmount: 0,
+              },
+              {
+                raw: {
+                  Merchant: {
+                    Name: 'BALLERINE',
+                    Address: {
+                      City: 'NYC',
+                      Line1: 'OLS TEST STUFF 123',
+                      Country: 'SGP',
+                      PostalCode: '85392',
+                    },
+                    Principal: [
+                      {
+                        Address: {
+                          City: 'NYC',
+                          Line1: 'OLS TEST STUFF 123',
+                          Country: 'SGP',
+                          PostalCode: '85392',
+                        },
+                        LastName: 'PERETZ',
+                        FirstName: 'ALON',
+                        DriversLicense: {},
+                      },
+                    ],
+                    AddedOnDate: '09/02/2024',
+                    MerchantMatch: {
+                      Name: 'M01',
+                      Address: 'M01',
+                      PhoneNumber: 'M00',
+                      NationalTaxId: 'M00',
+                      AltPhoneNumber: 'M00',
+                      PrincipalMatch: [
+                        {
+                          Name: 'M01',
+                          Address: 'M01',
+                          NationalId: 'M00',
+                          PhoneNumber: 'M00',
+                          AltPhoneNumber: 'M00',
+                          DriversLicense: 'M00',
+                        },
+                      ],
+                      ServiceProvDBA: 'M00',
+                      ServiceProvLegal: 'M00',
+                      DoingBusinessAsName: 'M00',
+                      CountrySubdivisionTaxId: 'M00',
+                    },
+                  },
+                },
+                name: 'BALLERINE',
+                urls: [],
+                dateAdded: '09/02/2024',
+                principals: [
+                  {
+                    exactMatches: {
+                      address: {
+                        City: 'NYC',
+                        Line1: 'OLS TEST STUFF 123',
+                        Country: 'SGP',
+                        PostalCode: '85392',
+                      },
+                    },
+                    partialMatches: {},
+                  },
+                ],
+                exactMatches: {
+                  name: 'BALLERINE',
+                  address: {
+                    City: 'NYC',
+                    Line1: 'OLS TEST STUFF 123',
+                    Country: 'SGP',
+                    PostalCode: '85392',
+                  },
+                },
+                partialMatches: {},
+                exactMatchesAmount: 3,
+                partialMatchesAmount: 0,
+              },
+              {
+                raw: {
+                  Merchant: {
+                    Name: 'BALLERINE',
+                    Address: {
+                      City: 'SHIBOLIM',
+                      Line1: 'SHIBOLIM 137',
+                      Country: 'SGP',
+                      PostalCode: '85392',
+                    },
+                    Principal: [
+                      {
+                        Address: {
+                          City: 'SHIBOLIM',
+                          Line1: 'SHIBOLIM 137',
+                          Country: 'SGP',
+                          PostalCode: '85392',
+                        },
+                        LastName: 'PERETZ',
+                        FirstName: 'ALON',
+                        DriversLicense: {},
+                      },
+                    ],
+                    AddedOnDate: '09/02/2024',
+                    MerchantMatch: {
+                      Name: 'M01',
+                      Address: 'M00',
+                      PhoneNumber: 'M00',
+                      NationalTaxId: 'M00',
+                      AltPhoneNumber: 'M00',
+                      PrincipalMatch: [
+                        {
+                          Name: 'M01',
+                          Address: 'M00',
+                          NationalId: 'M00',
+                          PhoneNumber: 'M00',
+                          AltPhoneNumber: 'M00',
+                          DriversLicense: 'M00',
+                        },
+                      ],
+                      ServiceProvDBA: 'M00',
+                      ServiceProvLegal: 'M00',
+                      DoingBusinessAsName: 'M00',
+                      CountrySubdivisionTaxId: 'M00',
+                    },
+                  },
+                },
+                name: 'BALLERINE',
+                urls: [],
+                dateAdded: '09/02/2024',
+                principals: [
+                  {
+                    exactMatches: {},
+                    partialMatches: {},
+                  },
+                ],
+                exactMatches: {
+                  name: 'BALLERINE',
+                },
+                partialMatches: {},
+                exactMatchesAmount: 1,
+                partialMatchesAmount: 0,
+              },
+            ],
+            terminatedMatchedMerchants: [],
+          },
+        },
+        businessInformation: {
+          data: [
+            {
+              type: 'COM',
+              number: '202400701R',
+              shares: [
+                {
+                  shareType: 'Ordinary',
+                  issuedCapital: '100000',
+                  paidUpCapital: '100000',
+                  shareAllotted: '100000',
+                  shareCurrency: 'GBP',
+                },
+              ],
+              status: 'Live Company',
+              expiryDate: '2034-01-04',
+              statusDate: '2024-01-04',
+              companyName: 'Tech Solutions Ltd',
+              companyType: 'Private Limited Company',
+              lastUpdated: '2024-10-23 16:26:54',
+              historyNames: ['Tech Solutions Ltd', 'Tech Innovations Ltd'],
+              businessScope: {
+                code: '62020',
+                description: 'Information Technology Consultancy Activities',
+                otherDescription: 'Software development and digital services',
+              },
+              establishDate: '2010-01-01',
+              lastFinancialDate: '2024-01-04',
+              registeredAddress: {
+                postalCode: 'SW1A 1AA',
+                streetName: 'Tech Street',
+                unitNumber: '1',
+                levelNumber: '08',
+                buildingName: 'Tech Plaza',
+                blockHouseNumber: '1',
+              },
+              lastAnnualReturnDate: '2023-12-31',
+              lastAnnualGeneralMeetingDate: '2024-01-05',
+            },
+          ],
+          name: 'businessInformation',
+          status: 'SUCCESS',
+          orderId: 'av202410231626431206512666',
+          invokedAt: 1729672014266,
+        },
+      },
+      childWorkflows: {
+        kyc_email_session_example: {
+          [randomUUID()]: {
+            tags: ['manual_review'],
+            state: 'kyc_manual_review',
+            result: {
+              childEntity: {
+                email: 'nitzan+testco1289971932@ballerine.com',
+                lastName: 'guy',
+                firstName: 'nitzan',
+                additionalInfo: {
+                  role: 'CPO',
+                  companyName: '1618 AIR CONDITIONING PTE. LTD.',
+                  dateOfBirth: '1986-12-11T22:00:00.000Z',
+                  customerCompany: 'Ballerine Demo',
+                  __isGeneratedAutomatically: true,
+                },
+              },
+              vendorResult: {
+                aml: {
+                  id: '93620665-15ca-4408-ab2c-42024e4d74d7',
+                  hits: [],
+                  clientId: '7a5a10eb-e01d-4896-a717-9017ab3f84d1',
+                  checkType: 'initial_result',
+                  createdAt: '2024-10-10T13:59:16.639Z',
+                  endUserId: 'cm23d4npc00wyu530tstxtbp0',
+                  matchStatus: 'no_match',
+                },
+                entity: {
+                  data: {
+                    lastName: 'GUY GELBARD',
+                    firstName: 'NITZAN',
+                    dateOfBirth: '1986-02-12',
+                    additionalInfo: {
+                      gender: 'M',
+                      nationality: 'IL',
+                    },
+                  },
+                  type: 'individual',
+                },
+                decision: {
+                  status: 'approved',
+                  decisionScore: 1,
+                },
+                metadata: {
+                  id: '93620665-15ca-4408-ab2c-42024e4d74d7',
+                  url: 'https://alchemy.veriff.com/v/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3Mjg1Njg2MjYsInNlc3Npb25faWQiOiI5MzYyMDY2NS0xNWNhLTQ0MDgtYWIyYy00MjAyNGU0ZDc0ZDciLCJpaWQiOiI5ZTEzOGE1OC0xZWU4LTQzNzctYjE1Yy0xMzNmNDZiNDU0ZmIifQ.5Z1VDgc8hDJv5xR6rH0hh1Ti3Zn_gQYp92i_is30NPE',
+                },
+              },
+            },
+            status: 'active',
+          },
+        },
+      },
+      workflowRuntimeId: '1',
+    },
+  ];
+};
