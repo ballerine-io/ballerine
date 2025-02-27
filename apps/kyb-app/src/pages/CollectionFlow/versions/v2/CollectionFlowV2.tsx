@@ -177,11 +177,11 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                       ) : null}
                                     </div>
                                     <div>
-                                      {themeDefinition.settings.contactInformation ? (
+                                      {themeDefinition.settings?.contactInformation ? (
                                         <div
                                           className="text-sm"
                                           dangerouslySetInnerHTML={{
-                                            __html: themeDefinition.settings.contactInformation,
+                                            __html: themeDefinition.settings?.contactInformation,
                                           }}
                                         />
                                       ) : customer?.displayName ? (
