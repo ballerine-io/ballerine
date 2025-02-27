@@ -186,6 +186,7 @@ export class MerchantMonitoringClient {
     findings,
     isAlert,
     withoutUnpublishedOngoingReports,
+    withoutExampleReports,
     searchQuery,
   }: {
     customerId: string;
@@ -200,6 +201,7 @@ export class MerchantMonitoringClient {
     findings?: string[];
     isAlert?: boolean;
     withoutUnpublishedOngoingReports?: boolean;
+    withoutExampleReports?: boolean;
     searchQuery?: string;
   }) {
     const response = await axios.get(`${env.UNIFIED_API_URL}/external/tld`, {
@@ -215,6 +217,7 @@ export class MerchantMonitoringClient {
         findings,
         isAlert,
         withoutUnpublishedOngoingReports,
+        withoutExampleReports,
         ...(searchQuery && { searchQuery }),
         ...(reportType && { reportType }),
       },
@@ -226,8 +229,13 @@ export class MerchantMonitoringClient {
     return FindManyReportsResponseSchema.parse(response.data);
   }
 
-  public async count({ customerId }: { customerId: string }) {
-    const response = await this.findMany({ customerId, limit: 1, page: 1 });
+  public async count({ customerId, noExample }: { customerId: string; noExample?: boolean }) {
+    const response = await this.findMany({
+      customerId,
+      limit: 1,
+      page: 1,
+      withoutExampleReports: noExample,
+    });
 
     return response.totalItems;
   }
