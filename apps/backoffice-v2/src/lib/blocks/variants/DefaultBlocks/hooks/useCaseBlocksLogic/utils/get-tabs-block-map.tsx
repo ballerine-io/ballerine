@@ -57,6 +57,7 @@ export const getTabsToBlocksMap = ({
     manageUbosBlock,
     bankAccountVerificationBlock,
     commercialCreditCheckBlock,
+    aiSummaryBlock,
   ] = blocks;
 
   const defaultTabsMap = {
@@ -65,6 +66,7 @@ export const getTabsToBlocksMap = ({
         ? caseOverviewBlock
         : []),
       ...websiteMonitoringBlock,
+      ...(aiSummaryBlock ? aiSummaryBlock : []),
       ...entityInfoBlock,
       ...(blocksCreationParams?.workflow?.context?.pluginsOutput?.merchantScreening
         ? merchantScreeningBlock
