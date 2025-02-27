@@ -6,7 +6,7 @@ import { GetWorkflowDefinitionListDto } from '@/workflow-defintion/dtos/get-work
 import { validateDefinitionLogic } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient, WorkflowDefinition } from '@prisma/client';
-import { createDemoWorkflow } from '../../prisma/data-migrations/shared/create-demo-workflow';
+import { createDemoWorkflow } from './demo-workflow/create-demo-workflow';
 
 @Injectable()
 export class WorkflowDefinitionRepository {
