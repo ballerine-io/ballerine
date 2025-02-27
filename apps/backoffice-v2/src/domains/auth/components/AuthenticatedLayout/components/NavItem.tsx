@@ -56,9 +56,9 @@ const PremiumNavItemHoverCard = ({
 
         <p className="text-xs text-slate-600 2xl:text-sm">{caption}</p>
         <div className="space-y-2">
-          {checkList.map((checkListItem, index) => (
+          {checkList.map(checkListItem => (
             <div
-              key={index}
+              key={checkListItem}
               className="flex items-center gap-x-1 text-xs text-slate-800 2xl:text-sm"
             >
               <CircleCheckIcon className="stroke-slate-500 d-4" />

@@ -62,7 +62,8 @@ export const usePortfolioRiskStatisticsLogic = ({
   });
 
   const alertedReports = businessReports?.totalItems ?? 0;
-  const isMerchantMonitoringEnabled = customer?.config?.isMerchantMonitoringEnabled ?? false;
+  const isMerchantMonitoringEnabled =
+    (customer?.config?.isMerchantMonitoringEnabled && !customer?.config?.isDemoAccount) ?? false;
 
   return {
     riskLevelToFillColor,

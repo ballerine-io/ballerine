@@ -257,6 +257,6 @@ export const useMerchantMonitoringLogic = () => {
     avatarUrl,
     open,
     toggleOpen,
-    isDemoAccount: customer?.config?.isDemoAccount || false,
+    isDemoAccount: customer?.config?.isDemoAccount ?? false,
   };
 };
