@@ -25,23 +25,6 @@ import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { CreateMerchantReportDialog } from '../../components/CreateMerchantReportDialog/CreateMerchantReportDialog';
 import { getDemoStateErrorText } from '@/common/components/molecules/DemoAccessCards/getDemoStateErrorText';
 
-const useDefaultDateRange = () => {
-  const [{ from, to }, setSearchParams] = useZodSearchParams(MerchantMonitoringSearchSchema, {
-    replace: true,
-  });
-
-  useEffect(() => {
-    if (from || to) {
-      return;
-    }
-
-    setSearchParams({
-      from: dayjs().subtract(30, 'day').format('YYYY-MM-DD'),
-      to: dayjs().format('YYYY-MM-DD'),
-    });
-  }, []);
-};
-
 export const useMerchantMonitoringLogic = () => {
   const locale = useLocale();
   const { data: customer } = useCustomerQuery();
@@ -82,21 +65,19 @@ export const useMerchantMonitoringLogic = () => {
     setSearchParams,
   ] = useZodSearchParams(MerchantMonitoringSearchSchema, { replace: true });
 
-  const [open, toggleOpenBase] = useToggle(isCreating ?? false);
-  const toggleOpen = () => {
-    toggleOpenBase();
-
-    // Just remove it as it's only intended to be used once for the links that include it explicitly
-    if (isCreating) {
-      setSearchParams({ isCreating: undefined });
-    }
-  };
-
   useEffect(() => {
-    if (isCreating) {
-      toggleOpenBase();
+    if (from || to) {
+      return;
     }
-  }, [isCreating, toggleOpenBase]);
+
+    setSearchParams({
+      from: dayjs().subtract(30, 'day').format('YYYY-MM-DD'),
+      to: dayjs().format('YYYY-MM-DD'),
+    });
+  }, [from, to, setSearchParams]);
+
+  const open = isCreating ?? false;
+  const toggleOpen = (value?: boolean) => setSearchParams({ isCreating: value });
 
   const { findings: findingsOptions, isLoading: isLoadingFindings } = useFindings();
 
@@ -213,8 +194,6 @@ export const useMerchantMonitoringLogic = () => {
     }),
     [findingsOptions],
   );
-
-  useDefaultDateRange();
 
   return {
     totalPages: data?.totalPages || 0,

@@ -7,7 +7,7 @@ import {
 } from '@ballerine/ui';
 import { ChevronRightIcon, CircleCheckIcon, CrownIcon } from 'lucide-react';
 import { forwardRef, type ReactNode } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 
 import { SidebarMenuButton } from '@/common/components/organisms/Sidebar/Sidebar';
 import { ctw } from '@/common/utils/ctw/ctw';
@@ -81,11 +81,16 @@ const NavItemWrapper = ({
   children: ReactNode;
   className?: string;
 }) => {
+  const location = useLocation();
+  const isCurrent = 'href' in navItem && navItem.href ? location.pathname === navItem.href : false;
+
   let NavItemElement = (
-    <div className={ctw(baseNavItemWrapperClassName, className)}>{children}</div>
+    <div className={ctw(baseNavItemWrapperClassName, isCurrent && 'cursor-pointer', className)}>
+      {children}
+    </div>
   );
 
-  if ('href' in navItem && navItem.href) {
+  if ('href' in navItem && navItem.href && !isCurrent) {
     NavItemElement = (
       <NavLink
         to={navItem.href}

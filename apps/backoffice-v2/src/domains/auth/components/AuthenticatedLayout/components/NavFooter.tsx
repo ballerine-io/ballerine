@@ -51,7 +51,7 @@ export const NavFooter = () => {
                 },
                 key: 'nav-item-documents-verifications',
               }}
-              className="mb-6 group-data-[collapsible=icon]:!px-0"
+              className="mb-6 cursor-default group-data-[collapsible=icon]:!px-0"
             />
           </SidebarMenuButton>
         </SidebarMenuItem>
