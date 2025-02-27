@@ -18,12 +18,14 @@ import { BusinessReportsLeftCard } from '@/domains/business-reports/components/B
 type CreateMerchantReportDialogProps = {
   open?: boolean;
   toggleOpen?: () => void;
+  disabled?: boolean;
   children: React.ReactNode;
 };
 
 export const CreateMerchantReportDialog = ({
   open,
   toggleOpen,
+  disabled,
   children,
 }: CreateMerchantReportDialogProps) => {
   const { form, showSuccess, isSubmitting, onSubmit, reportsLeft, demoDaysLeft } =
@@ -31,7 +33,9 @@ export const CreateMerchantReportDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={toggleOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger disabled={disabled} asChild>
+        {children}
+      </DialogTrigger>
       <DialogContent className="px-0 sm:max-w-xl">
         <DialogHeader className="block font-medium sm:text-center">
           <h2 className={`text-2xl font-bold`}>Create a Web Presence Report</h2>

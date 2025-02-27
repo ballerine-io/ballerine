@@ -72,7 +72,7 @@ const PremiumNavItemHoverCard = ({
   );
 };
 
-const baseNavItemWrapperClassName = 'flex items-center gap-x-2 w-full cursor-default';
+const baseNavItemWrapperClassName = 'flex items-center gap-x-2 w-full cursor-default h-full';
 const NavItemWrapper = ({
   navItem,
   children,
@@ -131,45 +131,36 @@ const NavItem = forwardRef<
   const { text, premium } = navItem;
 
   return (
-    <ContentTooltip
-      description={navItem.text}
-      props={{
-        tooltipContent: {
-          className: ctw(
-            'p-1 mb-1 group-data-[collapsible=icon]:block hidden',
-            premium && '!hidden',
-          ),
+    <SidebarMenuButton
+      ref={ref}
+      className={ctw(
+        'flex h-auto w-full items-center gap-x-2 rounded-md text-sm font-bold capitalize text-slate-400 2xl:text-base',
+        'group-data-[collapsible=icon]:h-9 group-data-[collapsible=icon]:!p-0',
+        'duration-50 transition-colors hover:bg-slate-200 hover:text-primary',
+        {
+          'active:bg-primary-foreground active:text-primary': !premium,
+          'group-data-[collapsible=icon]:hidden': 'children' in navItem,
         },
-        tooltipTrigger: { asChild: true, className: 'pr-0 text-sm' },
-      }}
+        className,
+      )}
+      tooltip={!premium ? text : undefined}
+      {...props}
     >
-      <SidebarMenuButton
-        ref={ref}
-        className={ctw(
-          'flex h-auto w-full items-center gap-x-2 rounded-md text-sm font-bold capitalize text-slate-400 2xl:text-base',
-          'group-data-[collapsible=icon]:h-9',
-          'duration-50 transition-colors hover:bg-slate-200 hover:text-primary',
-          {
-            'active:bg-primary-foreground active:text-primary': !premium,
-            'group-data-[collapsible=icon]:hidden': 'children' in navItem,
-          },
-          className,
-        )}
-        {...props}
+      <NavItemWrapper
+        navItem={navItem}
+        className={ctw('group-data-[collapsible=icon]:!px-2', linkClassName)}
       >
-        <NavItemWrapper navItem={navItem} className={linkClassName}>
-          {'icon' in navItem && navItem.icon && (
-            <navItem.icon className="shrink-0 d-5 group-data-[collapsible=icon]:-ml-0.5" />
-          )}
-          {text}
-          {'children' in navItem && (
-            <ChevronRightIcon className="ml-auto transition-transform duration-200 d-4 group-data-[state=open]/collapsible:rotate-90" />
-          )}
+        {'icon' in navItem && navItem.icon && (
+          <navItem.icon className="shrink-0 d-5 group-data-[collapsible=icon]:-ml-0.5" />
+        )}
+        {text}
+        {'children' in navItem && (
+          <ChevronRightIcon className="ml-auto transition-transform duration-200 d-4 group-data-[state=open]/collapsible:rotate-90" />
+        )}
 
-          {premium && <CrownIcon className="ml-auto stroke-[#968FDE] d-4 2xl:d-5" />}
-        </NavItemWrapper>
-      </SidebarMenuButton>
-    </ContentTooltip>
+        {premium && <CrownIcon className="ml-auto stroke-[#968FDE] d-4 2xl:d-5" />}
+      </NavItemWrapper>
+    </SidebarMenuButton>
   );
 });
 NavItem.displayName = 'NavItem';

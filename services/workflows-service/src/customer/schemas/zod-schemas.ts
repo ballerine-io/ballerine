@@ -27,13 +27,20 @@ export const DemoAccessDetailsSchema = z
     maxBusinessReports: z.number().optional(),
   })
   .transform(data => {
-    const { totalReports, expiresAt, maxBusinessReports = 10, seenWelcomeModal = true } = data;
+    const {
+      totalReports,
+      expiresAt: expiresAtUnix,
+      maxBusinessReports = 10,
+      seenWelcomeModal = true,
+    } = data;
     const reportsLeft = maxBusinessReports - totalReports;
-    const demoDaysLeft = dayjs(expiresAt * 1000).diff(dayjs(), 'days');
+    const now = dayjs();
+    const expiresAt = dayjs(expiresAtUnix * 1000);
+    const demoDaysLeft = now.isAfter(expiresAt) ? 0 : expiresAt.diff(now, 'days') + 1;
 
     return {
       totalReports,
-      expiresAt,
+      expiresAt: expiresAtUnix,
       maxBusinessReports,
       seenWelcomeModal,
       reportsLeft,

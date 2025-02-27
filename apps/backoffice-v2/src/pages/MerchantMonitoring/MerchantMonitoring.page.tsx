@@ -26,6 +26,7 @@ import { DemoAccessWrapper } from '@/common/components/organisms/DemoAccessWrapp
 import { MerchantMonitoringTable } from '@/pages/MerchantMonitoring/components/MerchantMonitoringTable/MerchantMonitoringTable';
 import { NoBusinessReports } from '@/pages/MerchantMonitoring/components/NoBusinessReports/NoBusinessReports';
 import { useMerchantMonitoringLogic } from '@/pages/MerchantMonitoring/hooks/useMerchantMonitoringLogic/useMerchantMonitoringLogic';
+import { CreateMerchantReportDialog } from './components/CreateMerchantReportDialog/CreateMerchantReportDialog';
 
 export const MerchantMonitoring: FunctionComponent = () => {
   const {
@@ -67,7 +68,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
     firstName,
     fullName,
     avatarUrl,
-    CreateReportButtonWrapper,
+    open,
     toggleOpen,
     isDemoAccount,
   } = useMerchantMonitoringLogic();
@@ -93,6 +94,11 @@ export const MerchantMonitoring: FunctionComponent = () => {
                         className:
                           'flex items-center justify-start gap-2 font-semibold aria-disabled:pointer-events-none aria-disabled:opacity-50',
                       })}
+                      onClick={e => {
+                        if (!createBusinessReportBatch?.enabled || isDemoAccount) {
+                          e.preventDefault();
+                        }
+                      }}
                       to={`/${locale}/merchant-monitoring/upload-multiple-merchants`}
                       aria-disabled={!createBusinessReportBatch?.enabled || isDemoAccount}
                     >
@@ -118,16 +124,20 @@ export const MerchantMonitoring: FunctionComponent = () => {
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger className={`flex items-center`}>
-                  <CreateReportButtonWrapper>
+                  <CreateMerchantReportDialog
+                    open={open}
+                    toggleOpen={toggleOpen}
+                    disabled={!createBusinessReport.enabled}
+                  >
                     <Button
                       variant="wp-primary"
-                      className={`flex items-center gap-2 font-semibold text-white aria-disabled:pointer-events-none aria-disabled:opacity-50`}
-                      aria-disabled={!createBusinessReport?.enabled}
+                      className="flex items-center gap-2 font-semibold"
+                      aria-disabled={!createBusinessReport.enabled}
                     >
                       <Plus />
                       <span>Create a report</span>
                     </Button>
-                  </CreateReportButtonWrapper>
+                  </CreateMerchantReportDialog>
                 </TooltipTrigger>
                 {!createBusinessReport?.enabled && (
                   <TooltipContent side={'left'} align={'start'}>

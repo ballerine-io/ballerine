@@ -216,14 +216,6 @@ export const useMerchantMonitoringLogic = () => {
 
   useDefaultDateRange();
 
-  const CreateReportButtonWrapper = customer?.features?.createBusinessReport?.enabled
-    ? ({ children }: { children: ReactNode }) => (
-        <CreateMerchantReportDialog open={open} toggleOpen={toggleOpen}>
-          {children}
-        </CreateMerchantReportDialog>
-      )
-    : ({ children }: { children: ReactNode }) => <>{children}</>;
-
   return {
     totalPages: data?.totalPages || 0,
     totalItems: Intl.NumberFormat(locale).format(data?.totalItems || 0),
@@ -263,7 +255,7 @@ export const useMerchantMonitoringLogic = () => {
     firstName,
     fullName,
     avatarUrl,
-    CreateReportButtonWrapper,
+    open,
     toggleOpen,
     isDemoAccount: customer?.config?.isDemoAccount || false,
   };
