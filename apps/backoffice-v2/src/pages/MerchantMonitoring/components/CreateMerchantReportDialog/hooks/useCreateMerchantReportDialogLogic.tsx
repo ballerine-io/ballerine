@@ -12,7 +12,7 @@ import { useToggle } from '@/common/hooks/useToggle/useToggle';
 
 type UseCreateMerchantReportDialogLogicProps = {
   open?: boolean;
-  toggleOpen?: () => void;
+  toggleOpen?: (next?: boolean) => void;
 };
 export const useCreateMerchantReportDialogLogic = ({
   open: propsOpen,
@@ -30,11 +30,16 @@ export const useCreateMerchantReportDialogLogic = ({
     resolver: zodResolver(CreateBusinessReportDialogSchema),
   });
   const [open, toggleOpenBase] = useToggle(propsOpen ?? false);
-  const toggleOpen = () => {
-    toggleOpenBase();
+  const toggleOpen = (next?: boolean) => {
+    toggleOpenBase(next);
 
     if (propsToggleOpen) {
-      propsToggleOpen();
+      propsToggleOpen(next);
+    }
+
+    if (!next) {
+      setShowSuccess(false);
+      form.reset();
     }
   };
   const [showSuccess, setShowSuccess] = useState(false);
@@ -47,13 +52,6 @@ export const useCreateMerchantReportDialogLogic = ({
       },
     });
   };
-
-  useEffect(() => {
-    if (!open) {
-      form.reset();
-      setShowSuccess(false);
-    }
-  }, [open, form]);
 
   return {
     form,

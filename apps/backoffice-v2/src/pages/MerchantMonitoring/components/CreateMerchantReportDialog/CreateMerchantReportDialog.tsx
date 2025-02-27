@@ -23,13 +23,12 @@ type CreateMerchantReportDialogProps = {
 };
 
 export const CreateMerchantReportDialog = ({
-  open,
-  toggleOpen,
   disabled,
   children,
+  ...toggleOpenProps
 }: CreateMerchantReportDialogProps) => {
-  const { form, showSuccess, isSubmitting, onSubmit, reportsLeft, demoDaysLeft } =
-    useCreateMerchantReportDialogLogic({ open, toggleOpen });
+  const { open, toggleOpen, form, showSuccess, isSubmitting, onSubmit, reportsLeft, demoDaysLeft } =
+    useCreateMerchantReportDialogLogic(toggleOpenProps);
 
   return (
     <Dialog open={open} onOpenChange={toggleOpen}>

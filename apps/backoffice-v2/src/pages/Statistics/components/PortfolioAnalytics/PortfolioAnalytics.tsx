@@ -5,14 +5,18 @@ import { Card } from '@/common/components/atoms/Card/Card';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
+import { REPORT_TYPE_TO_DISPLAY_TEXT } from '@/pages/MerchantMonitoring/schemas';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { Link } from 'react-router-dom';
 
 const MerchantsStatsCard: FunctionComponent<{
   prefix?: string;
+  href?: string;
   count: number;
   title: string;
   description: string;
-}> = ({ prefix = '', count, title, description }) => (
-  <Card>
+}> = ({ prefix = '', count, title, description, href }) => {
+  const Content = (
     <CardContent className="pt-6">
       <div className="space-y-2">
         <h2 className="text-xl font-semibold">{title}</h2>
@@ -22,8 +26,18 @@ const MerchantsStatsCard: FunctionComponent<{
         <p className="text-sm text-muted-foreground">{description}</p>
       </div>
     </CardContent>
-  </Card>
-);
+  );
+
+  if (href) {
+    return (
+      <Card>
+        <Link to={href}>{Content}</Link>
+      </Card>
+    );
+  }
+
+  return <Card>{Content}</Card>;
+};
 
 const PortfolioAnalyticsContent: FunctionComponent<ComponentProps<typeof PortfolioAnalytics>> = ({
   totalActiveMerchants,
@@ -31,11 +45,13 @@ const PortfolioAnalyticsContent: FunctionComponent<ComponentProps<typeof Portfol
   removedMerchantsCount,
 }) => {
   const { data: customer } = useCustomerQuery();
+  const locale = useLocale();
 
   if (!customer?.config?.isMerchantMonitoringEnabled) {
     return (
       <MerchantsStatsCard
         prefix="+"
+        href={`/${locale}/merchant-monitoring?reportType=${REPORT_TYPE_TO_DISPLAY_TEXT.MERCHANT_REPORT_T1}`}
         count={addedMerchantsCount}
         title="New Merchants"
         description="Merchants added within the selected time range"
@@ -53,6 +69,7 @@ const PortfolioAnalyticsContent: FunctionComponent<ComponentProps<typeof Portfol
 
       <MerchantsStatsCard
         prefix="+"
+        href={`/${locale}/merchant-monitoring?reportType=${REPORT_TYPE_TO_DISPLAY_TEXT.MERCHANT_REPORT_T1}`}
         count={addedMerchantsCount}
         title="New Merchants"
         description="Merchants added within the selected time range"
