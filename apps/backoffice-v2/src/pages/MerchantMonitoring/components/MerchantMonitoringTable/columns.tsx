@@ -53,11 +53,17 @@ export const useColumns = ({ isDemoAccount = false }) => {
       columnHelper.accessor('companyName', {
         cell: info => {
           const companyName = info.getValue();
+          const isExample = info.row.original.isExample;
 
           return (
-            <TextWithNAFallback className="ms-4 inline-block w-32 truncate font-semibold">
-              {companyName}
-            </TextWithNAFallback>
+            <div className="ms-4 flex flex-col">
+              <TextWithNAFallback className="font-semibold">{companyName}</TextWithNAFallback>
+              {isExample && (
+                <Badge className="py-0.7 mt-2 w-fit rounded-[5px] bg-black/10 px-2 text-xs text-black/60">
+                  example
+                </Badge>
+              )}
+            </div>
           );
         },
         header: 'Company Name',
