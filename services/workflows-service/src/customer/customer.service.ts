@@ -1,12 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { CustomerRepository } from '@/customer/customer.repository';
 import { Prisma } from '@prisma/client';
-import { TCustomerWithFeatures } from '@/customer/types';
+import dayjs from 'dayjs';
+
+import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import { ApiKeyService } from '@/customer/api-key/api-key.service';
 import { generateHashedKey } from '@/customer/api-key/utils';
-import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
-import { PrismaService } from '@/prisma/prisma.service';
+import { CustomerRepository } from '@/customer/customer.repository';
+import { TCustomerWithFeatures } from '@/customer/types';
 import { env } from '@/env';
+import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
+import { PrismaService } from '@/prisma/prisma.service';
+import {
+  DemoAccessDetailsSchema,
+  TDemoAccessDetails,
+  TDemoAccessDetailsInput,
+} from './schemas/zod-schemas';
 
 @Injectable()
 export class CustomerService {
@@ -14,7 +22,38 @@ export class CustomerService {
     protected readonly repository: CustomerRepository,
     protected readonly apiKeyService: ApiKeyService,
     private readonly prisma: PrismaService,
+    private readonly merchantMonitoringClient: MerchantMonitoringClient,
   ) {}
+
+  async getDemoAccessDetails(customer: TCustomerWithFeatures): Promise<TDemoAccessDetails | null> {
+    const { id: customerId, config } = customer;
+
+    if (!config || !config.isDemoAccount) {
+      return null;
+    }
+
+    const businessReportsCount = await this.merchantMonitoringClient.count({
+      customerId,
+      noExample: true,
+    });
+
+    const demoDetails: TDemoAccessDetailsInput = {
+      totalReports: businessReportsCount,
+      maxBusinessReports: config.maxBusinessReports ?? 10,
+      expiresAt: config.expiresAt,
+    };
+
+    if (!demoDetails.expiresAt) {
+      const expiresAt = dayjs().add(env.DEFAULT_DEMO_DURATION_DAYS, 'days').unix();
+      await this.updateById(customerId, { data: { config: { ...config, expiresAt } } });
+
+      demoDetails.seenWelcomeModal = false;
+      demoDetails.expiresAt = expiresAt;
+    }
+
+    return DemoAccessDetailsSchema.parse(demoDetails);
+  }
+
   async create(args: Parameters<CustomerRepository['create']>[0]) {
     // @ts-expect-error - prisma json not updated
     const authValue = args.data?.authenticationConfiguration?.authValue;
@@ -58,10 +97,7 @@ export class CustomerService {
   }
 
   async getByProjectId(projectId: string, args?: Omit<Prisma.CustomerFindFirstArgsBase, 'where'>) {
-    return (await this.repository.findByProjectId(
-      projectId,
-      args,
-    )) as unknown as TCustomerWithFeatures;
+    return (await this.repository.findByProjectId(projectId, args)) as TCustomerWithFeatures;
   }
 
   async updateById(id: string, args: Parameters<CustomerRepository['updateById']>[1]) {

@@ -1,7 +1,8 @@
-import { z } from 'zod';
-import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
-import { TBusinessReport } from '@/domains/business-reports/fetchers';
 import { BooleanishRecordSchema } from '@ballerine/ui';
+import { z } from 'zod';
+
+import { URL_REGEX } from '@/common/constants';
+import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 
 export const REPORT_TYPE_TO_DISPLAY_TEXT = {
   All: 'All',
@@ -92,15 +93,7 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
       'riskLevel',
       'status',
       'reportType',
-    ] as const satisfies ReadonlyArray<
-      | Extract<
-          keyof NonNullable<TBusinessReport>,
-          'createdAt' | 'updatedAt' | 'riskLevel' | 'status' | 'reportType'
-        >
-      | 'business.website'
-      | 'business.companyName'
-      | 'business.country'
-    >)
+    ])
     .catch('createdAt'),
   selected: BooleanishRecordSchema.optional(),
   reportType: z
@@ -132,4 +125,27 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
     .catch('All'),
   from: z.string().date().optional(),
   to: z.string().date().optional(),
+  isCreating: z
+    .string()
+    .transform(value => (value === 'true' ? true : false))
+    .optional(),
+});
+
+export type CreateBusinessReportDialogInput = z.input<typeof CreateBusinessReportDialogSchema>;
+export const CreateBusinessReportDialogSchema = z.object({
+  websiteUrl: z.string().regex(URL_REGEX, {
+    message: 'Invalid website URL',
+  }),
+  companyName: z
+    .string({
+      invalid_type_error: 'Company name must be a string',
+    })
+    .max(255)
+    .optional(),
+  businessCorrelationId: z
+    .string({
+      invalid_type_error: 'Business ID must be a string',
+    })
+    .max(255)
+    .optional(),
 });

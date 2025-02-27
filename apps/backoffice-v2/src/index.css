@@ -31,9 +31,6 @@
   #root {
     height: 100%;
   }
-  body {
-    @apply overflow-hidden;
-  }
 
   .tooltip::before {
     @apply bg-base-100 text-base-content shadow !important;
@@ -75,6 +72,9 @@
 
     --warning: 25 100% 71%;
     --warning-foreground: 25 100% 71%;
+
+    --web-presence-primary: 245 51% 54%; /* #584ec5 */
+    --web-presence-primary-foreground: 100 100% 100%; /* #ffffff */
 
     --ring: 215 20.2% 65.1%;
 
@@ -152,6 +152,15 @@
 
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
+
+    --success: 148 100% 37%;
+    --success-foreground: 148 100% 37%;
+
+    --warning: 25 100% 71%;
+    --warning-foreground: 25 100% 71%;
+
+    --web-presence-primary: 245 51% 54%; /* #584ec5 */
+    --web-presence-primary-foreground: 100 100% 100%; /* #ffffff */
 
     --ring: 216 34% 17%;
 

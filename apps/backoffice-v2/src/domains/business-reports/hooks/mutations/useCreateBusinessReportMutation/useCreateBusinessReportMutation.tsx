@@ -6,11 +6,12 @@ import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQu
 import { HttpError } from '@/common/errors/http-error';
 import { isObject } from '@ballerine/common';
 
-export const useCreateBusinessReportMutation = ({
-  onSuccess,
-}: {
+export const useCreateBusinessReportMutation = (options?: {
   onSuccess?: <TData>(data: TData) => void;
+  disableToast?: boolean;
 }) => {
+  const { onSuccess, disableToast } = options ?? {};
+
   const queryClient = useQueryClient();
   const { data: customer } = useCustomerQuery();
 
@@ -23,17 +24,12 @@ export const useCreateBusinessReportMutation = ({
       operatingCountry,
       companyName,
       businessCorrelationId,
-    }:
-      | {
-          websiteUrl: string;
-          operatingCountry?: string;
-          companyName: string;
-        }
-      | {
-          websiteUrl: string;
-          operatingCountry: string;
-          businessCorrelationId: string;
-        }) => {
+    }: {
+      websiteUrl: string;
+      companyName?: string;
+      operatingCountry?: string;
+      businessCorrelationId?: string;
+    }) => {
       await createBusinessReport({
         websiteUrl,
         operatingCountry,
@@ -51,7 +47,10 @@ export const useCreateBusinessReportMutation = ({
 
       void queryClient.invalidateQueries();
 
-      toast.success(t(`toast:business_report_creation.success`));
+      if (!disableToast) {
+        toast.success(t(`toast:business_report_creation.success`));
+      }
+
       onSuccess?.(data);
     },
     onError: (error: unknown) => {

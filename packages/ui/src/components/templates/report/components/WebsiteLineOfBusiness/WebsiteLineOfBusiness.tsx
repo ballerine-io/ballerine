@@ -1,10 +1,11 @@
-import React, { FunctionComponent } from 'react';
+import { RiskIndicatorSchema } from '@ballerine/common';
+import { FunctionComponent } from 'react';
+import { z } from 'zod';
+
 import { ctw } from '@/common';
-import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
 import { Card, CardContent, CardHeader } from '@/components';
 import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
-import { RiskIndicatorSchema } from '@ballerine/common';
-import { z } from 'zod';
+import { RiskIndicators } from '@/components/molecules/RiskIndicators/RiskIndicators';
 
 export const WebsiteLineOfBusiness: FunctionComponent<{
   riskIndicators: Array<z.infer<typeof RiskIndicatorSchema>>;
@@ -13,20 +14,7 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
   mccDescription: string | null;
 }> = ({ riskIndicators, lineOfBusinessDescription, mcc, mccDescription }) => {
   return (
-    <div className={'space-y-8'}>
-      <div>
-        <ContentTooltip
-          description={<p>Reviews the company&apos;s industry and market segment.</p>}
-          props={{
-            tooltipContent: {
-              align: 'center',
-            },
-          }}
-        >
-          <h3 className={'col-span-full text-lg font-bold'}>Website Line of Business Analysis</h3>
-        </ContentTooltip>
-      </div>
-
+    <div className={'space-y-6'}>
       <RiskIndicators riskIndicators={riskIndicators} />
       <Card>
         <CardHeader className={'pt-4 font-bold'}>Line of Business Summary</CardHeader>
@@ -90,54 +78,81 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
                 },
               }}
             >
-              <CardHeader className={'p-0 py-6 pl-6 font-bold'}>
+              <CardHeader className={'p-0 pt-6 pb-4 pl-6 font-bold text-lg'}>
                 Content Violations Summary
               </CardHeader>
             </ContentTooltip>
           </div>
           <CardContent className={'flex flex-col space-y-4'}>
             <h4 className={'font-semibold'}>Findings</h4>
-            {riskIndicators.map(riskIndicator => (
-              <div key={riskIndicator.name} className={'flex flex-col space-y-2'}>
-                <h5 className={'font-semibold'}>{riskIndicator.name}</h5>
-                {riskIndicator.explanation && <p>{riskIndicator.explanation}</p>}
-                {typeof riskIndicator.screenshot?.screenshotUrl === 'string' && (
-                  <a
-                    href={riskIndicator.screenshot.screenshotUrl}
-                    target={'_blank'}
-                    rel={'noreferrer'}
-                    className={'relative w-1/2'}
-                    title={'Click to view full screenshot'}
-                  >
-                    <img
-                      src={riskIndicator.screenshot.screenshotUrl}
-                      alt={`${riskIndicator.name} screenshot of the website`}
-                      className={'h-auto max-h-[400px] w-full object-cover object-top'}
-                    />
-                    <div
-                      className={
-                        'absolute bottom-4 right-4 rounded border border-white bg-black p-1 text-xs text-white'
-                      }
-                    >
-                      Click to view full screenshot
-                    </div>
-                  </a>
-                )}
-                {riskIndicator.sourceUrl && (
-                  <div className={'text-sm italic'}>
-                    Source:{' '}
-                    <a
-                      href={riskIndicator.sourceUrl}
-                      target={'_blank'}
-                      rel={'noreferrer'}
-                      className={'link text-blue-500'}
-                    >
-                      {riskIndicator.sourceUrl}
-                    </a>
-                  </div>
-                )}
-              </div>
-            ))}
+            {riskIndicators
+              .filter(i => i.riskLevel !== 'positive')
+              .map(riskIndicator => {
+                const screenshotUrl = riskIndicator.screenshot?.screenshotUrl ?? null;
+
+                return (
+                  <Card key={riskIndicator.name}>
+                    <CardContent className="py-6">
+                      <h4 className={'font-semibold text-lg mb-2'}>{riskIndicator.name}</h4>
+
+                      <div className="flex justify-between items-center gap-8">
+                        <div
+                          className={ctw(
+                            'w-full flex justify-between gap-8 leading-6',
+                            screenshotUrl !== null && 'w-3/4',
+                          )}
+                        >
+                          <div className="w-1/2">
+                            <p className="font-medium">Description</p>
+                            <p>{riskIndicator.explanation}</p>
+                          </div>
+
+                          <div className="w-1/2 space-y-2">
+                            <div>
+                              <p className="font-medium">Why Our AI Flagged This?</p>
+                              <p>{riskIndicator.reason}</p>
+                            </div>
+
+                            <div className="leading-5">
+                              <p className="font-medium">Source</p>
+                              <p className="italic">&quot;{riskIndicator.quoteFromSource}&quot;</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {screenshotUrl !== null && (
+                          <div className="w-1/4 truncate">
+                            <a
+                              href={screenshotUrl}
+                              target={'_blank'}
+                              rel={'noreferrer'}
+                              className={'relative w-1/2'}
+                              title={'Click to view full screenshot'}
+                            >
+                              <img
+                                src={screenshotUrl}
+                                alt={`${riskIndicator.name} screenshot of the website`}
+                                className={'h-auto max-h-[400px] w-full object-cover object-top'}
+                              />
+                            </a>
+
+                            {riskIndicator.sourceUrl && (
+                              <a
+                                href={riskIndicator.sourceUrl}
+                                className="whitespace-nowrap mt-2"
+                                rel={'noreferrer'}
+                                target={'_blank'}
+                              >
+                                {riskIndicator.sourceUrl}
+                              </a>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
           </CardContent>
         </Card>
       )}

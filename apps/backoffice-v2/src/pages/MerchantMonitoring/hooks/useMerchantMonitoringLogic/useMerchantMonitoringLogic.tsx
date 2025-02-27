@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { SlidersHorizontal } from 'lucide-react';
-import { ComponentProps, useCallback, useEffect, useMemo } from 'react';
+import { ComponentProps, ReactNode, useCallback, useEffect, useMemo } from 'react';
 
 import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
@@ -20,25 +20,30 @@ import {
   RISK_LEVEL_FILTER,
   STATUS_LEVEL_FILTER,
 } from '@/pages/MerchantMonitoring/schemas';
-
-const useDefaultDateRange = () => {
-  const [{ from, to }, setSearchParams] = useZodSearchParams(MerchantMonitoringSearchSchema);
-
-  useEffect(() => {
-    if (from || to) {
-      return;
-    }
-
-    setSearchParams({
-      from: dayjs().subtract(30, 'day').format('YYYY-MM-DD'),
-      to: dayjs().format('YYYY-MM-DD'),
-    });
-  }, []);
-};
+import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useToggle } from '@/common/hooks/useToggle/useToggle';
+import { CreateMerchantReportDialog } from '../../components/CreateMerchantReportDialog/CreateMerchantReportDialog';
+import { getDemoStateErrorText } from '@/common/components/molecules/DemoAccessCards/getDemoStateErrorText';
 
 export const useMerchantMonitoringLogic = () => {
   const locale = useLocale();
   const { data: customer } = useCustomerQuery();
+
+  const demoError = getDemoStateErrorText({
+    reportsLeft: customer?.config?.demoAccessDetails?.reportsLeft,
+    demoDaysLeft: customer?.config?.demoAccessDetails?.demoDaysLeft,
+  });
+  const createBusinessReport = {
+    ...customer?.features?.createBusinessReport,
+    enabled: customer?.features?.createBusinessReport?.enabled && !demoError,
+  };
+  const createBusinessReportBatch = {
+    ...customer?.features?.createBusinessReportBatch,
+    enabled: customer?.features?.createBusinessReportBatch?.enabled && !demoError,
+  };
+
+  const { data: session } = useAuthenticatedUserQuery();
+  const { firstName, fullName, avatarUrl } = session?.user || {};
 
   const { search, debouncedSearch, onSearch } = useSearch();
 
@@ -55,9 +60,24 @@ export const useMerchantMonitoringLogic = () => {
       to,
       findings,
       isAlert,
+      isCreating,
     },
     setSearchParams,
   ] = useZodSearchParams(MerchantMonitoringSearchSchema, { replace: true });
+
+  useEffect(() => {
+    if (from || to) {
+      return;
+    }
+
+    setSearchParams({
+      from: dayjs().subtract(30, 'day').format('YYYY-MM-DD'),
+      to: dayjs().format('YYYY-MM-DD'),
+    });
+  }, [from, to, setSearchParams]);
+
+  const open = isCreating ?? false;
+  const toggleOpen = (value?: boolean) => setSearchParams({ isCreating: value });
 
   const { findings: findingsOptions, isLoading: isLoadingFindings } = useFindings();
 
@@ -75,6 +95,7 @@ export const useMerchantMonitoringLogic = () => {
     sortDir,
     findings,
     riskLevels: riskLevels ?? [],
+    // TODO: fix type
     statuses: statuses
       ?.map(status => REPORT_STATUS_LABEL_TO_VALUE_MAP[status])
       .flatMap(status =>
@@ -174,13 +195,11 @@ export const useMerchantMonitoringLogic = () => {
     [findingsOptions],
   );
 
-  useDefaultDateRange();
-
   return {
     totalPages: data?.totalPages || 0,
     totalItems: Intl.NumberFormat(locale).format(data?.totalItems || 0),
-    createBusinessReport: customer?.features?.createBusinessReport,
-    createBusinessReportBatch: customer?.features?.createBusinessReportBatch,
+    createBusinessReport,
+    createBusinessReportBatch,
     businessReports: data?.data || [],
     isLoadingBusinessReports,
     isLoadingFindings,
@@ -212,5 +231,11 @@ export const useMerchantMonitoringLogic = () => {
     onDatesChange,
     onIsAlertChange,
     onClearAllFilters,
+    firstName,
+    fullName,
+    avatarUrl,
+    open,
+    toggleOpen,
+    isDemoAccount: customer?.config?.isDemoAccount ?? false,
   };
 };

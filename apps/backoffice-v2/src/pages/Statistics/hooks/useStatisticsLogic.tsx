@@ -16,7 +16,7 @@ export const StatisticsSearchSchema = z.object({
 });
 
 export const useStatisticsLogic = () => {
-  const [{ from }, setSearchParams] = useZodSearchParams(StatisticsSearchSchema);
+  const [{ from }, setSearchParams] = useZodSearchParams(StatisticsSearchSchema, { replace: true });
 
   const { data, isLoading, error } = useBusinessReportMetricsQuery({
     from,
