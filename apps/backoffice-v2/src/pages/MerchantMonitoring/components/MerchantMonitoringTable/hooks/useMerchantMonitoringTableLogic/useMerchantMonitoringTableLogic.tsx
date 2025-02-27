@@ -29,7 +29,7 @@ export const useMerchantMonitoringTableLogic = () => {
         {children}
       </Link>
     ) : (
-      children
+      <div className={`d-full flex p-1 opacity-50`}>{children}</div>
     );
   };
 
