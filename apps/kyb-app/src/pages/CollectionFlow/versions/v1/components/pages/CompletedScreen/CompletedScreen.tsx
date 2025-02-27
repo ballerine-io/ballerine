@@ -3,25 +3,14 @@ import { useTranslation } from 'react-i18next';
 
 import { useCustomer } from '@/components/providers/CustomerProvider';
 import { useAppExit } from '@/hooks/useAppExit/useAppExit';
-import { useFlowTracking } from '@/hooks/useFlowTracking';
-import { CollectionFlowEvents } from '@/hooks/useFlowTracking/enums';
 import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
-import { useUIOptionsRedirect } from '@/hooks/useUIOptionsRedirect';
 import { Button, Card } from '@ballerine/ui';
-import { useEffect } from 'react';
 
 export const CompletedScreen = withSessionProtected(() => {
   const { t } = useTranslation();
   const { customer } = useCustomer();
-  const { trackEvent } = useFlowTracking();
 
   const { exit, isExitAvailable } = useAppExit();
-
-  useEffect(() => {
-    trackEvent(CollectionFlowEvents.FLOW_COMPLETED);
-  }, [trackEvent]);
-
-  useUIOptionsRedirect('success');
 
   return (
     <div className="flex h-full items-center justify-center">
