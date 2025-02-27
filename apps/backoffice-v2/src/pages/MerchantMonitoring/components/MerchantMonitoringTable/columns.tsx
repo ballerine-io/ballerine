@@ -220,25 +220,6 @@ export const useColumns = ({ isDemoAccount = false }) => {
         },
         header: 'Created At',
       }),
-      // columnHelper.accessor('merchantId', {
-      //   cell: info => {
-      //     // eslint-disable-next-line react-hooks/rules-of-hooks -- ESLint doesn't like `cell` not being `Cell`.
-      //     const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
-      //
-      //     const id = info.getValue();
-      //
-      //     return (
-      //       <div className={`flex w-full max-w-[12ch] items-center space-x-2`}>
-      //         <TextWithNAFallback style={{ ...styles, width: '70%' }} ref={ref}>
-      //           {id}
-      //         </TextWithNAFallback>
-      //
-      //         <CopyToClipboardButton textToCopy={id ?? ''} />
-      //       </div>
-      //     );
-      //   },
-      //   header: 'Merchant ID',
-      // }),
       columnHelper.accessor('id', {
         cell: info => {
           // eslint-disable-next-line react-hooks/rules-of-hooks -- ESLint doesn't like `cell` not being `Cell`.

@@ -16,7 +16,9 @@ export const useAppSync = () => {
     async (context: CollectionFlowContext) => {
       const collectionFlow = getCollectionFlowState(context);
 
-      if (!collectionFlow) return;
+      if (!collectionFlow) {
+        return;
+      }
 
       try {
         setIsSyncing(true);
@@ -34,5 +36,22 @@ export const useAppSync = () => {
     [state],
   );
 
-  return { isSyncing, sync };
+  const syncStateless = useCallback(async (context: CollectionFlowContext) => {
+    const collectionFlow = getCollectionFlowState(context);
+
+    if (!collectionFlow) {
+      return;
+    }
+
+    try {
+      updateCollectionFlowState(context, state);
+
+      await syncContext(context);
+    } catch (error) {
+      toast.error('Failed to sync.');
+      console.error(error);
+    }
+  }, []);
+
+  return { isSyncing, sync, syncStateless, setIsSyncing };
 };
