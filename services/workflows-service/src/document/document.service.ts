@@ -997,7 +997,6 @@ export class DocumentService {
           type: document.type,
           category: document.category,
           issuingCountry: document.issuingCountry,
-          version: document.version,
         },
         false,
       );
