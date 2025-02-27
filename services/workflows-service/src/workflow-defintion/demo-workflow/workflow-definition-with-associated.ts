@@ -1,12 +1,12 @@
 import { defaultContextSchema, StateTag } from '@ballerine/common';
-import { kycEmailSessionDefinition } from 'prisma/data-migrations/templates/creation/common/generate-kyc-email-process';
+import { kycEmailSessionDefinition } from './generate-kyc-email-process';
 import {
   BUSINESS_UBO_AND_SANCTIONS_DONE_OR_ERRORED,
   CHILD_KYB_DONE_RULE,
   KYC_DONE_RULE,
   kycAndVendorDone,
   WEBSITE_ANALYSIS_DONE,
-} from 'prisma/data-migrations/templates/utils/rules';
+} from './rules';
 import { sharedInputSchema } from './shared.idle.schema';
 
 export const generateWorkflowDefinitionWithAssociated = ({
