@@ -251,5 +251,8 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     isFetchingBusinessReport,
     locale,
     isDemoAccount: customer?.config?.isDemoAccount ?? false,
+    reportRef,
+    generateCustomPDF,
+    isGeneratingPDF,
   };
 };

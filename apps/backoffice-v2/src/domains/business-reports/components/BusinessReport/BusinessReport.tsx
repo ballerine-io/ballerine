@@ -1,5 +1,5 @@
 import { ReportSchema } from '@ballerine/common';
-import { ContentTooltip, useReportSections } from '@ballerine/ui';
+import { Button, ContentTooltip, ctw, useReportSections } from '@ballerine/ui';
 import { AlertTriangle, ArrowLeftToLine, ArrowRightToLine, Crown } from 'lucide-react';
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';

@@ -16,10 +16,6 @@ export type DemoAccessWrapperProps = {
 export const DemoAccessWrapper = ({ children, ...props }: DemoAccessWrapperProps) => {
   const { data: customer } = useCustomerQuery();
 
-  if (!['production', 'development', 'local'].includes(env.VITE_ENVIRONMENT_NAME)) {
-    return <div className="mt-6 space-y-10">{children}</div>;
-  }
-
   return (
     <div className={ctw('space-y-10', { 'pt-6': !customer?.config?.isDemoAccount })}>
       {customer?.config?.isDemoAccount && (
