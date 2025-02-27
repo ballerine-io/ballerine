@@ -11,17 +11,18 @@ import { createColumnHelper } from '@tanstack/react-table';
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
+import { Minus } from 'lucide-react';
+import { useMemo } from 'react';
 import { titleCase } from 'string-ts';
 
 import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
 import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
+import { NO_VIOLATION_DETECTED_RISK_INDICATOR_ID } from '@/common/constants';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { TBusinessReport } from '@/domains/business-reports/fetchers';
 import { MerchantMonitoringReportStatus } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringReportStatus';
 import { statusToData } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringStatusBadge';
-import { Minus } from 'lucide-react';
-import { useMemo } from 'react';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -148,7 +149,9 @@ export const useColumns = ({ isDemoAccount = false }) => {
       }),
       columnHelper.accessor('data.contentViolations', {
         cell: ({ row }) => {
-          const violations = row.original.data?.contentViolations ?? [];
+          const violations = (row.original.data?.contentViolations ?? []).filter(
+            el => el.id !== NO_VIOLATION_DETECTED_RISK_INDICATOR_ID && el.riskLevel === 'critical',
+          );
 
           if (!violations?.length) {
             return null;

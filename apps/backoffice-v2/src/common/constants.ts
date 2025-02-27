@@ -9,3 +9,5 @@ export const BALLERINE_CALENDLY_LINK = 'https://calendly.com/d/cp53-ryw-4s3/ball
 
 export const URL_REGEX =
   /((https?):\/\/)?([a-zA-Z0-9-_]+\.)+[a-zA-Z0-9]+(\.[a-z]{2})?(\/[a-zA-Z0-9_#-]+)*(\/)?(\?[a-zA-Z0-9_-]+=[a-zA-Z0-9_-]+(&[a-zA-Z0-9_-]+=[a-zA-Z0-9_-]+)*)?(#[a-zA-Z0-9_-]+)?/;
+
+export const NO_VIOLATION_DETECTED_RISK_INDICATOR_ID = 'no-violation-detected';
