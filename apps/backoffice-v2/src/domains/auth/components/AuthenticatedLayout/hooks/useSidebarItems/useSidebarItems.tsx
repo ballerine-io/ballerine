@@ -56,6 +56,12 @@ export const useSidebarItems = () => {
           key: 'nav-item-web-presence',
         },
         {
+          text: 'Full Onboarding (Example)',
+          icon: MonitorDotIcon,
+          href: `/${locale}/case-management/entities`,
+          key: 'nav-item-full-onboarding',
+        },
+        {
           text: 'KYB & UBOs',
           icon: BuildingIcon,
           premium: {
@@ -106,12 +112,6 @@ export const useSidebarItems = () => {
             ],
           },
           key: 'nav-item-documents-verifications',
-        },
-        {
-          text: 'Full Onboarding (Example)',
-          icon: MonitorDotIcon,
-          href: `/${locale}/case-management/entities`,
-          key: 'nav-item-full-onboarding',
         },
       ]
     : [
