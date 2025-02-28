@@ -4,6 +4,7 @@ import {
   GavelIcon,
   GoalIcon,
   HomeIcon,
+  LayersIcon,
   MonitorDotIcon,
   UserRoundSearchIcon,
   UsersIcon,
@@ -57,7 +58,7 @@ export const useSidebarItems = () => {
         },
         {
           text: 'Full Onboarding (Example)',
-          icon: MonitorDotIcon,
+          icon: LayersIcon,
           href: `/${locale}/case-management/entities`,
           key: 'nav-item-full-onboarding',
         },

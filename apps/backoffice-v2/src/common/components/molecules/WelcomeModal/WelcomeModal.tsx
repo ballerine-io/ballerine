@@ -67,7 +67,7 @@ export const WelcomeModal = () => {
 
         <DialogFooter className="px-6">
           <DialogClose asChild>
-            <Link to={`${locale}/merchant-monitoring?isCreating=true`}>
+            <Link to={`${locale}/merchant-monitoring`}>
               <Button className="text-md rounded-lg font-bold">Get Started</Button>
             </Link>
           </DialogClose>
