@@ -20,6 +20,7 @@ import {
 import { useBankingDetailsBlock } from '@/lib/blocks/hooks/useBankingDetailsBlock/useBankingDetailsBlock';
 import { useCaseInfoBlock } from '@/lib/blocks/hooks/useCaseInfoBlock/useCaseInfoBlock';
 import { useCaseOverviewBlock } from '@/lib/blocks/hooks/useCaseOverviewBlock/useCaseOverviewBlock';
+import { useAISummaryBlock } from '@/lib/blocks/hooks/useAISummaryBlock/useAISummaryBlock';
 import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctionsBlock/useCompanySanctionsBlock';
 import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
 import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
@@ -59,6 +60,7 @@ import { directorAdapter } from '@/lib/blocks/components/DirectorBlock/hooks/use
 import { createDirectorsBlocks } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/create-directors-blocks';
 import { useBankAccountVerificationBlock } from '@/lib/blocks/hooks/useBankAccountVerificationBlock/useBankAccountVerificationBlock';
 import { useCommercialCreditCheckBlock } from '@/lib/blocks/hooks/useCommercialCreditCheckBlock/useCommercialCreditCheckBlock';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 
@@ -66,6 +68,7 @@ export const useDefaultBlocksLogic = () => {
   const [{ activeTab }] = useSearchParamsByEntity();
   const { search } = useLocation();
   const { data: workflow, isLoading } = useCurrentCaseQuery();
+  const { data: customer } = useCustomerQuery();
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
   const { noAction } = useCaseDecision();
@@ -522,6 +525,10 @@ export const useDefaultBlocksLogic = () => {
     checkDate: workflow?.context?.pluginsOutput?.merchantScreening?.processed?.checkDate,
   });
 
+  const aiSummaryBlock = useAISummaryBlock({
+    isDemoAccount: customer?.config?.isDemoAccount ?? false,
+  });
+
   const allBlocks = useMemo(() => {
     if (!workflow?.context?.entity) {
       return [];
@@ -559,6 +566,7 @@ export const useDefaultBlocksLogic = () => {
       manageUbosBlock,
       bankAccountVerificationBlock,
       commercialCreditCheckBlock,
+      aiSummaryBlock,
     ];
   }, [
     associatedCompaniesBlock,
@@ -593,6 +601,7 @@ export const useDefaultBlocksLogic = () => {
     manageUbosBlock,
     bankAccountVerificationBlock,
     commercialCreditCheckBlock,
+    aiSummaryBlock,
   ]);
 
   const { blocks, tabs } = useCaseBlocks({
