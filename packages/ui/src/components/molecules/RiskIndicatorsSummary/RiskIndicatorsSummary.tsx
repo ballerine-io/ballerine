@@ -8,7 +8,7 @@ export const RiskIndicatorsSummary: FunctionComponent<{
   sections: ReadonlyArray<{
     title: string;
     search?: string;
-    indicators: Array<z.infer<typeof RiskIndicatorSchema>> | null;
+    riskIndicators: Array<z.infer<typeof RiskIndicatorSchema>> | null;
   }>;
   Link?: ComponentProps<typeof RiskIndicator>['Link'];
 }> = ({ sections = [], Link }) => {
@@ -21,7 +21,7 @@ export const RiskIndicatorsSummary: FunctionComponent<{
             key={section.title}
             title={section.title}
             search={section.search}
-            riskIndicators={section.indicators}
+            riskIndicators={section.riskIndicators}
             Link={Link}
           />
         ))}
