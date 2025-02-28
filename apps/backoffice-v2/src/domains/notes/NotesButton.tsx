@@ -14,12 +14,7 @@ export const NotesButton = ({ numberOfNotes = 0 }: INotesButtonProps) => {
   return (
     <div className={`flex items-center space-x-2`}>
       <span className={`me-2 text-sm leading-6`}>Notes</span>
-      <Link
-        className={`relative`}
-        to={{
-          search: updateIsNotesOpen(),
-        }}
-      >
+      <Link className={`relative`} to={{ search: updateIsNotesOpen() }} replace>
         <SquarePen className={`d-5`} />
         {numberOfNotes > 0 && (
           <div

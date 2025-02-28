@@ -1,24 +1,26 @@
+import { StateTag } from '@ballerine/common';
 import { Badge } from '@ballerine/ui';
 import { FunctionComponent, useMemo } from 'react';
-import { StateTag } from '@ballerine/common';
 
-import { tagToBadgeData } from './consts';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { IActionsProps } from './interfaces';
-import { NotesButton } from '@/common/components/molecules/NotesButton/NotesButton';
-import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
 import { AssignDropdown } from '@/common/components/atoms/AssignDropdown/AssignDropdown';
-import { CaseOptions } from '@/pages/Entity/components/Case/components/CaseOptions/CaseOptions';
-import { ActionsVariant } from '@/pages/Entity/components/Case/actions-variants/ActionsVariant/ActionsVariant';
 import { Avatar } from '@/common/components/atoms/Avatar';
-import { stringToRGB } from '@/common/utils/string-to-rgb/string-to-rgb';
 import { createInitials } from '@/common/utils/create-initials/create-initials';
+import { ctw } from '@/common/utils/ctw/ctw';
+import { stringToRGB } from '@/common/utils/string-to-rgb/string-to-rgb';
+import { NotesButton } from '@/domains/notes/NotesButton';
+import { NotesSheet } from '@/domains/notes/NotesSheet';
+import { ActionsVariant } from '@/pages/Entity/components/Case/actions-variants/ActionsVariant/ActionsVariant';
+import { CaseOptions } from '@/pages/Entity/components/Case/components/CaseOptions/CaseOptions';
+import { tagToBadgeData } from './consts';
+import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
+import { IActionsProps } from './interfaces';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
  *
  * @param props
  * @param props.id - The id of the entity, passed into the reject/approve mutation.
+ * @param props.entityId - The id of the selected entity to be used in the notes.
  * @param props.fullName - The full name of the entity.
  * @param props.showResolutionButtons - Whether to show the reject/approve buttons.
  *
@@ -28,8 +30,8 @@ import { createInitials } from '@/common/utils/create-initials/create-initials';
  */
 export const Actions: FunctionComponent<IActionsProps> = ({
   id,
+  entityId,
   fullName,
-  numberOfNotes,
   showResolutionButtons,
 }) => {
   const {
@@ -42,6 +44,9 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     workflowDefinition,
     isWorkflowCompleted,
     avatarUrl,
+    notes,
+    isNotesOpen,
+    setIsNotesOpen,
   } = useCaseActionsLogic({ workflowId: id, fullName });
 
   const entityInitials = createInitials(fullName);
@@ -102,7 +107,20 @@ export const Actions: FunctionComponent<IActionsProps> = ({
                 </Badge>
               </div>
             )}
-            <NotesButton numberOfNotes={numberOfNotes} />
+            <NotesSheet
+              open={isNotesOpen}
+              onOpenChange={setIsNotesOpen}
+              modal={false}
+              notes={notes ?? []}
+              noteData={{
+                entityId,
+                entityType: `Business`,
+                noteableId: id,
+                noteableType: `Workflow`,
+              }}
+            >
+              <NotesButton numberOfNotes={notes?.length ?? 0} />
+            </NotesSheet>
           </div>
         </div>
         {showResolutionButtons && workflowDefinition && (
