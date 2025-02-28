@@ -12,12 +12,12 @@ import { FormField } from '@/common/components/organisms/Form/Form.Field';
 import { FormItem } from '@/common/components/organisms/Form/Form.Item';
 import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
 import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
-import { useCreateMerchantReportDialogLogic } from './hooks/useCreateMerchantReportDialogLogic';
 import { BusinessReportsLeftCard } from '@/domains/business-reports/components/BusinessReportsLeftCard/BusinessReportsLeftCard';
+import { useCreateMerchantReportDialogLogic } from './hooks/useCreateMerchantReportDialogLogic';
 
 type CreateMerchantReportDialogProps = {
-  open?: boolean;
-  toggleOpen?: () => void;
+  open: boolean;
+  toggleOpen: (val?: boolean) => void;
   disabled?: boolean;
   children: React.ReactNode;
 };
@@ -26,10 +26,10 @@ export const CreateMerchantReportDialog = ({
   disabled,
   children,
   open,
-  toggleOpen,
+  toggleOpen: toggleOpenProps,
 }: CreateMerchantReportDialogProps) => {
-  const { form, showSuccess, isSubmitting, onSubmit, reportsLeft, demoDaysLeft } =
-    useCreateMerchantReportDialogLogic();
+  const { form, showSuccess, isSubmitting, onSubmit, reportsLeft, demoDaysLeft, toggleOpen } =
+    useCreateMerchantReportDialogLogic({ toggleOpen: toggleOpenProps });
 
   return (
     <Dialog open={open} onOpenChange={toggleOpen}>

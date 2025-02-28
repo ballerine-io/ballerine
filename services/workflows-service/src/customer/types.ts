@@ -1,6 +1,6 @@
 import { Customer } from '@prisma/client';
 import { MerchantReportVersion } from '@ballerine/common';
-import { TDemoAccessDetails } from './schemas/zod-schemas';
+import { TAccessDetails } from './schemas/zod-schemas';
 
 export type TAuthenticationConfiguration = {
   apiType: 'API_KEY' | 'OAUTH2' | 'BASIC_AUTH';
@@ -64,5 +64,5 @@ export type TCustomerWithFeatures = Customer & {
 };
 
 export type TDemoCustomer = Omit<TCustomerWithFeatures, 'config'> & {
-  config: { demoAccessDetails?: TDemoAccessDetails };
+  config: { demoAccessDetails?: TAccessDetails };
 };

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { useCreateBusinessReportMutation } from '@/domains/business-reports/hooks/mutations/useCreateBusinessReportMutation/useCreateBusinessReportMutation';
@@ -9,7 +9,11 @@ import {
   CreateBusinessReportDialogSchema,
 } from '../../../schemas';
 
-export const useCreateMerchantReportDialogLogic = () => {
+export const useCreateMerchantReportDialogLogic = ({
+  toggleOpen: toggleOpenProps,
+}: {
+  toggleOpen: (val?: boolean) => void;
+}) => {
   const { data: customer } = useCustomerQuery();
   const { reportsLeft, demoDaysLeft } = customer?.config?.demoAccessDetails ?? {};
 
@@ -32,6 +36,18 @@ export const useCreateMerchantReportDialogLogic = () => {
     });
   };
 
+  const toggleOpen = useCallback(
+    (val?: boolean) => {
+      toggleOpenProps(val);
+
+      if (!val) {
+        setShowSuccess(false);
+        form.reset();
+      }
+    },
+    [toggleOpenProps, setShowSuccess, form],
+  );
+
   return {
     form,
     showSuccess,
@@ -39,5 +55,6 @@ export const useCreateMerchantReportDialogLogic = () => {
     onSubmit,
     reportsLeft,
     demoDaysLeft,
+    toggleOpen,
   };
 };
