@@ -19,7 +19,7 @@ const CustomerConfigSchema = z.object({
 
 export type TCustomerConfig = z.infer<typeof CustomerConfigSchema>;
 
-export const DemoAccessDetailsSchema = z
+export const AccessDetailsSchema = z
   .object({
     totalReports: z.number(),
     expiresAt: z.number(),
@@ -48,5 +48,5 @@ export const DemoAccessDetailsSchema = z
     };
   });
 
-export type TDemoAccessDetailsInput = z.input<typeof DemoAccessDetailsSchema>;
-export type TDemoAccessDetails = z.output<typeof DemoAccessDetailsSchema>;
+export type TAccessDetailsInput = z.input<typeof AccessDetailsSchema>;
+export type TAccessDetails = z.output<typeof AccessDetailsSchema>;

@@ -10,11 +10,7 @@ import { TCustomerWithFeatures } from '@/customer/types';
 import { env } from '@/env';
 import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 import { PrismaService } from '@/prisma/prisma.service';
-import {
-  DemoAccessDetailsSchema,
-  TDemoAccessDetails,
-  TDemoAccessDetailsInput,
-} from './schemas/zod-schemas';
+import { AccessDetailsSchema, TAccessDetails, TAccessDetailsInput } from './schemas/zod-schemas';
 
 @Injectable()
 export class CustomerService {
@@ -25,19 +21,15 @@ export class CustomerService {
     private readonly merchantMonitoringClient: MerchantMonitoringClient,
   ) {}
 
-  async getDemoAccessDetails(customer: TCustomerWithFeatures): Promise<TDemoAccessDetails | null> {
+  async getAccessDetails(customer: TCustomerWithFeatures): Promise<TAccessDetails> {
     const { id: customerId, config } = customer;
-
-    if (!config || !config.isDemoAccount) {
-      return null;
-    }
 
     const businessReportsCount = await this.merchantMonitoringClient.count({
       customerId,
       noExample: true,
     });
 
-    const demoDetails: TDemoAccessDetailsInput = {
+    const demoDetails: TAccessDetailsInput = {
       totalReports: businessReportsCount,
       maxBusinessReports: config.maxBusinessReports ?? 10,
       expiresAt: config.expiresAt,
@@ -51,7 +43,7 @@ export class CustomerService {
       demoDetails.expiresAt = expiresAt;
     }
 
-    return DemoAccessDetailsSchema.parse(demoDetails);
+    return AccessDetailsSchema.parse(demoDetails);
   }
 
   async create(args: Parameters<CustomerRepository['create']>[0]) {

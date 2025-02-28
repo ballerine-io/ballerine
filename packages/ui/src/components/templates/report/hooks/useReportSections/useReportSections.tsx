@@ -109,7 +109,10 @@ export const useReportSections = (report: z.infer<typeof ReportSchema>) => {
           description:
             "Evaluates the company's reputation using customer feedback, reviews, and media coverage. Identifies trust issues and potential red flags.",
           Icon: BuildingIcon,
-          hasViolations: getUniqueRiskIndicators(companyReputationRiskIndicators ?? []).length > 0,
+          hasViolations:
+            getUniqueRiskIndicators(companyReputationRiskIndicators ?? []).filter(
+              i => i.riskLevel !== 'positive',
+            ).length > 0,
           Component: <WebsitesCompany riskIndicators={companyReputationRiskIndicators ?? []} />,
         },
         {
@@ -117,7 +120,10 @@ export const useReportSections = (report: z.infer<typeof ReportSchema>) => {
           title: 'Line of Business',
           description: "Reviews the company's industry and market segment.",
           Icon: FactoryIcon,
-          hasViolations: getUniqueRiskIndicators(contentRiskIndicators ?? []).length > 0,
+          hasViolations:
+            getUniqueRiskIndicators(contentRiskIndicators ?? []).filter(
+              i => i.riskLevel !== 'positive',
+            ).length > 0,
           Component: (
             <WebsiteLineOfBusiness
               lineOfBusinessDescription={lineOfBusiness ?? null}
@@ -139,7 +145,7 @@ export const useReportSections = (report: z.infer<typeof ReportSchema>) => {
               ...(pricingRiskIndicators ?? []),
               ...(websiteStructureRiskIndicators ?? []),
               ...(trafficRiskIndicators ?? []),
-            ]).length > 0,
+            ]).filter(i => i.riskLevel !== 'positive').length > 0,
           Component: (
             <WebsiteCredibility
               trafficData={{
@@ -181,6 +187,7 @@ export const useReportSections = (report: z.infer<typeof ReportSchema>) => {
           isPremium: true,
         },
       ] as BusinessReportSection[],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [report.data],
   );
 

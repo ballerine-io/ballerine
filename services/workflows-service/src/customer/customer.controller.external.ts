@@ -82,12 +82,10 @@ export class CustomerControllerExternal {
       throw new BadRequestException('Customer not found');
     }
 
-    const demoAccessDetails = await this.service.getDemoAccessDetails(customer);
-
-    if (demoAccessDetails) {
+    if (customer.config?.isDemoAccount) {
       customer.config = {
         ...customer.config,
-        demoAccessDetails,
+        demoAccessDetails: await this.service.getAccessDetails(customer),
       };
     }
 
