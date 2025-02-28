@@ -295,21 +295,7 @@ export class BusinessReportControllerExternal {
     @CurrentProject() currentProjectId: TProjectId,
   ) {
     const customer = await this.customerService.getByProjectId(currentProjectId);
-    const { id: customerId, config } = customer;
-    const demoDetails = await this.customerService.getDemoAccessDetails(customer);
-
-    if (demoDetails) {
-      if (demoDetails.demoDaysLeft <= 0) {
-        throw new BadRequestException('Your demo account has expired');
-      }
-
-      if (demoDetails.reportsLeft <= 0) {
-        throw new BadRequestException('You have reached the maximum number of reports');
-      }
-    }
-
-    const { maxBusinessReports, withQualityControl } = config || {};
-    await this.businessReportService.checkBusinessReportsLimit(maxBusinessReports, customerId);
+    await this.businessReportService.checkBusinessReportsLimit(customer);
 
     let business: Pick<Business, 'id' | 'correlationId'> | undefined;
 
@@ -352,8 +338,8 @@ export class BusinessReportControllerExternal {
       countryCode,
       merchantName,
       workflowVersion,
-      withQualityControl,
-      customerId,
+      withQualityControl: customer.config?.withQualityControl ?? false,
+      customerId: customer.id,
     });
   }
 
@@ -435,19 +421,19 @@ export class BusinessReportControllerExternal {
     @Res() res: Response,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const { id: customerId, config } = await this.customerService.getByProjectId(currentProjectId);
+    const customer = await this.customerService.getByProjectId(currentProjectId);
+    const { maxBusinessReports, withQualityControl, isDemoAccount } = customer.config ?? {};
 
-    if (config?.isDemoAccount) {
+    if (isDemoAccount) {
       throw new BadRequestException("You don't have access to this feature");
     }
 
-    const { maxBusinessReports, withQualityControl } = config || {};
-    await this.businessReportService.checkBusinessReportsLimit(maxBusinessReports, customerId);
+    await this.businessReportService.checkBusinessReportsLimit(customer);
 
     const result = await this.businessReportService.processBatchFile({
       type,
       workflowVersion,
-      customerId,
+      customerId: customer.id,
       maxBusinessReports,
       merchantSheet: file,
       projectId: currentProjectId,
