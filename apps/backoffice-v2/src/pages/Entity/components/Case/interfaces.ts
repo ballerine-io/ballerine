@@ -25,8 +25,8 @@ export interface IInfoProps {
 
 export interface IActionsProps {
   id: string;
+  entityId: string;
   fullName: string;
-  numberOfNotes: number;
   showResolutionButtons?: boolean;
 }
 

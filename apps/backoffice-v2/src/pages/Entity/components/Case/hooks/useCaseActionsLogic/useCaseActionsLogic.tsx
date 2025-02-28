@@ -1,16 +1,19 @@
 import { useCallback, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 
-import { IUseActions } from './interfaces';
-import { tagToBadgeData } from '../../consts';
-import { useCaseState } from '../useCaseState/useCaseState';
-import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
 import { useDebounce } from '@/common/hooks/useDebounce/useDebounce';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
+import { useSerializedSearchParams } from '@/common/hooks/useSerializedSearchParams/useSerializedSearchParams';
 import { createInitials } from '@/common/utils/create-initials/create-initials';
-import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUsersQuery';
-import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
+import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUsersQuery';
 import { useAssignWorkflowMutation } from '@/domains/workflows/hooks/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
+import { tagToBadgeData } from '../../consts';
+import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
+import { useCaseState } from '../useCaseState/useCaseState';
+import { IUseActions } from './interfaces';
 
 export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const filterId = useFilterId();
@@ -18,6 +21,12 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     workflowId,
     filterId,
   });
+
+  const { entityId } = useParams();
+  const { data: notes } = useNotesByNoteable({ noteableId: entityId, noteableType: 'Workflow' });
+
+  const [{ isNotesOpen }, setSearchParams] = useSerializedSearchParams();
+  const setIsNotesOpen = (open: boolean) => setSearchParams({ isNotesOpen: open });
 
   const { mutate: mutateAssignWorkflow, isLoading: isLoadingAssignWorkflow } =
     useAssignWorkflowMutation({ workflowRuntimeId: workflowId });
@@ -79,5 +88,8 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     workflowDefinition: workflow?.workflowDefinition,
     isWorkflowCompleted,
     avatarUrl: workflow?.entity?.avatarUrl || '',
+    notes,
+    isNotesOpen: isNotesOpen === 'true',
+    setIsNotesOpen,
   };
 };
