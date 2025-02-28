@@ -1,3 +1,4 @@
+import { MERCHANT_REPORT_STATUSES_MAP, UPDATEABLE_REPORT_STATUSES } from '@ballerine/common';
 import {
   Dialog,
   DialogContent,
@@ -7,27 +8,25 @@ import {
   TextWithNAFallback,
 } from '@ballerine/ui';
 import dayjs from 'dayjs';
-import { Link } from 'react-router-dom';
-import React, { forwardRef, FunctionComponent } from 'react';
 import { ArrowLeft, ArrowRightIcon, ChevronLeft, FileQuestion } from 'lucide-react';
-import { MERCHANT_REPORT_STATUSES_MAP, UPDATEABLE_REPORT_STATUSES } from '@ballerine/common';
+import React, { forwardRef, FunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
 
-import { ctw } from '@/common/utils/ctw/ctw';
-import { Notes } from '@/domains/notes/Notes';
-import { Card } from '@/common/components/atoms/Card/Card';
-import { BALLERINE_CALENDLY_LINK } from '@/common/constants';
 import { Button } from '@/common/components/atoms/Button/Button';
-import { CardTitle } from '@/common/components/atoms/Card/Card.Title';
+import { Card } from '@/common/components/atoms/Card/Card';
+import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { CardFooter } from '@/common/components/atoms/Card/Card.Footer';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
-import { CardContent } from '@/common/components/atoms/Card/Card.Content';
+import { CardTitle } from '@/common/components/atoms/Card/Card.Title';
 import { Separator } from '@/common/components/atoms/Separator/Separator';
-import { BusinessReportOptionsDropdown } from './BusinessReportOptionsDropdown';
-import { NotesButton } from '@/common/components/molecules/NotesButton/NotesButton';
-import { SidebarInset, SidebarProvider } from '@/common/components/organisms/Sidebar/Sidebar';
+import { BALLERINE_CALENDLY_LINK } from '@/common/constants';
+import { ctw } from '@/common/utils/ctw/ctw';
 import { BusinessReport } from '@/domains/business-reports/components/BusinessReport/BusinessReport';
+import { NotesButton } from '@/domains/notes/NotesButton';
+import { NotesSheet } from '@/domains/notes/NotesSheet';
 import { MerchantMonitoringReportStatus } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringReportStatus';
 import { useMerchantMonitoringBusinessReportLogic } from '@/pages/MerchantMonitoringBusinessReport/hooks/useMerchantMonitoringBusinessReportLogic/useMerchantMonitoringBusinessReportLogic';
+import { BusinessReportOptionsDropdown } from './BusinessReportOptionsDropdown';
 
 export const DialogDropdownItem = forwardRef<
   React.ElementRef<typeof DropdownMenuItem>,
@@ -68,6 +67,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     businessReport,
     notes,
     isNotesOpen,
+    setIsNotesOpen,
     isFetchingBusinessReport,
     locale,
     isDemoAccount,
@@ -122,35 +122,49 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
   }
 
   return (
-    <SidebarProvider
-      open={isNotesOpen}
-      style={{
-        '--sidebar-width': '25rem',
-        '--sidebar-width-mobile': '20rem',
-      }}
-    >
-      <SidebarInset>
-        <section className="flex h-full flex-col px-6 pt-4">
-          <div className={`flex justify-between pb-4`}>
-            <Button
-              variant={'ghost'}
-              onClick={onNavigateBack}
-              className={'flex items-center space-x-px pe-3 ps-1 font-semibold'}
-            >
-              <ChevronLeft size={18} /> <span>View All Reports</span>
-            </Button>
+    <section className="flex h-full flex-col px-6 pt-4">
+      <div className={`flex justify-between pb-4`}>
+        <Button
+          variant={'ghost'}
+          onClick={onNavigateBack}
+          className={'flex items-center space-x-px pe-3 ps-1 font-semibold'}
+        >
+          <ChevronLeft size={18} /> <span>View All Reports</span>
+        </Button>
 
-            {isDemoAccount ? (
-              <div className="space-x-6 text-sm">
-                <span>Get a guided walkthrough of the report</span>
-                <Button asChild variant="wp-primary" className="justify-start space-x-2" size="sm">
-                  <a href={BALLERINE_CALENDLY_LINK} target="_blank" rel="noreferrer">
-                    <span>Book a quick call</span>
-                    <ArrowRightIcon className="d-4" />
-                  </a>
-                </Button>
-              </div>
-            ) : (
+        {isDemoAccount ? (
+          <div className="space-x-6 text-sm">
+            <span>Get a guided walkthrough of the report</span>
+            <Button asChild variant="wp-primary" className="justify-start space-x-2" size="sm">
+              <a href={BALLERINE_CALENDLY_LINK} target="_blank" rel="noreferrer">
+                <span>Book a quick call</span>
+                <ArrowRightIcon className="d-4" />
+              </a>
+            </Button>
+          </div>
+        ) : (
+          <BusinessReportOptionsDropdown
+            {...dropdownProps}
+            businessReport={businessReport}
+            isDemoAccount={isDemoAccount}
+          />
+        )}
+      </div>
+
+      {/* This ignores parent's padding and covers the whole width. Since we know that padding-x is 6 (1.5rem * 2),
+          we can easily determine negative margin and width required to properly display the separator. */}
+      <Separator className="-ml-6 mb-4 w-[calc(100%+3rem)]" />
+
+      <div ref={reportRef}>
+        {isFetchingBusinessReport ? (
+          <Skeleton className="h-6 w-32" />
+        ) : (
+          <div className="flex items-center justify-between">
+            <TextWithNAFallback as={'h2'} className="pb-4 text-2xl font-bold">
+              {websiteWithNoProtocol}
+            </TextWithNAFallback>
+
+            {isDemoAccount && (
               <BusinessReportOptionsDropdown
                 {...dropdownProps}
                 businessReport={businessReport}
@@ -158,86 +172,66 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
               />
             )}
           </div>
-
-          {/* This ignores parent's padding and covers the whole width. Since we know that padding-x is 6 (1.5rem * 2),
-          we can easily determine negative margin and width required to properly display the separator. */}
-          <Separator className="-ml-6 mb-4 w-[calc(100%+3rem)]" />
-
-          <div ref={reportRef}>
-            {isFetchingBusinessReport ? (
-              <Skeleton className="h-6 w-32" />
-            ) : (
-              <div className="flex items-center justify-between">
-                <TextWithNAFallback as={'h2'} className="pb-4 text-2xl font-bold">
-                  {websiteWithNoProtocol}
-                </TextWithNAFallback>
-
-                {isDemoAccount && (
-                  <BusinessReportOptionsDropdown
-                    {...dropdownProps}
-                    businessReport={businessReport}
-                    isDemoAccount={isDemoAccount}
-                  />
-                )}
-              </div>
-            )}
-            {isFetchingBusinessReport ? (
-              <Skeleton className="my-6 h-6 w-2/3" />
-            ) : (
-              <div className={`flex items-center space-x-8 pb-4`}>
-                <div className={`flex items-center`}>
-                  <span className={`me-4 text-sm leading-6 text-slate-400`}>Status</span>
-                  <MerchantMonitoringReportStatus
-                    reportId={businessReport?.id}
-                    status={businessReport?.status}
-                    businessId={businessReport?.business.id}
-                  />
-                </div>
-                <div className={`text-sm`}>
-                  <span className={`me-2 leading-6 text-slate-400`}>Created at</span>
-                  {businessReport?.displayDate &&
-                    dayjs(new Date(businessReport?.displayDate)).format('HH:mm MMM Do, YYYY')}
-                </div>
-                <div className={`flex items-center space-x-2 text-sm`}>
-                  <span className={`text-slate-400`}>Monitoring Status</span>
-                  <span
-                    className={ctw('select-none rounded-full d-3', {
-                      'bg-success': businessReport?.monitoringStatus,
-                      'bg-slate-400': !businessReport?.monitoringStatus,
-                    })}
-                  >
-                    &nbsp;
-                  </span>
-                </div>
-                <NotesButton numberOfNotes={notes?.length} />
-              </div>
-            )}
-            {isFetchingBusinessReport || !businessReport ? (
-              <>
-                <Skeleton className="h-6 w-72" />
-                <Skeleton className="mt-6 h-4 w-40" />
-
-                <div className="mt-6 flex h-[24rem] w-full flex-nowrap gap-8">
-                  <Skeleton className="w-2/3" />
-                  <Skeleton className="w-1/3" />
-                </div>
-                <Skeleton className="mt-6 h-[16rem]" />
-              </>
-            ) : (
-              <BusinessReport report={businessReport} />
-            )}
+        )}
+        {isFetchingBusinessReport ? (
+          <Skeleton className="my-6 h-6 w-2/3" />
+        ) : (
+          <div className={`flex items-center space-x-8 pb-4`}>
+            <div className={`flex items-center`}>
+              <span className={`me-4 text-sm leading-6 text-slate-400`}>Status</span>
+              <MerchantMonitoringReportStatus
+                reportId={businessReport?.id}
+                status={businessReport?.status}
+                businessId={businessReport?.business.id}
+              />
+            </div>
+            <div className={`text-sm`}>
+              <span className={`me-2 leading-6 text-slate-400`}>Created at</span>
+              {businessReport?.displayDate &&
+                dayjs(new Date(businessReport?.displayDate)).format('HH:mm MMM Do, YYYY')}
+            </div>
+            <div className={`flex items-center space-x-2 text-sm`}>
+              <span className={`text-slate-400`}>Monitoring Status</span>
+              <span
+                className={ctw('select-none rounded-full d-3', {
+                  'bg-success': businessReport?.monitoringStatus,
+                  'bg-slate-400': !businessReport?.monitoringStatus,
+                })}
+              >
+                &nbsp;
+              </span>
+            </div>
+            <NotesSheet
+              open={isNotesOpen}
+              onOpenChange={setIsNotesOpen}
+              modal={false}
+              notes={notes ?? []}
+              noteData={{
+                entityId: businessReport?.business.id || '',
+                entityType: `Business`,
+                noteableId: businessReport?.id || '',
+                noteableType: `Report`,
+              }}
+            >
+              <NotesButton numberOfNotes={notes?.length} />
+            </NotesSheet>
           </div>
-        </section>
-      </SidebarInset>
-      <Notes
-        notes={notes ?? []}
-        noteData={{
-          entityId: businessReport?.business.id || '',
-          entityType: `Business`,
-          noteableId: businessReport?.id || '',
-          noteableType: `Report`,
-        }}
-      />
-    </SidebarProvider>
+        )}
+        {isFetchingBusinessReport || !businessReport ? (
+          <>
+            <Skeleton className="h-6 w-72" />
+            <Skeleton className="mt-6 h-4 w-40" />
+
+            <div className="mt-6 flex h-[24rem] w-full flex-nowrap gap-8">
+              <Skeleton className="w-2/3" />
+              <Skeleton className="w-1/3" />
+            </div>
+            <Skeleton className="mt-6 h-[16rem]" />
+          </>
+        ) : (
+          <BusinessReport report={businessReport} />
+        )}
+      </div>
+    </section>
   );
 };
