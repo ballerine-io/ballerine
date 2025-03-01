@@ -1,11 +1,15 @@
 import { FunctionComponent, lazy, useState } from 'react';
-import { Providers } from '../../common/components/templates/Providers/Providers';
-import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
-import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
-import Chatbot from '@/domains/chat/chatbot-opengpt';
-import { env } from '@/common/env/env';
 import { Outlet } from 'react-router-dom';
 import { PostHogPageView } from './components/PostHogRootEvents';
+
+import { BallerineLogo } from '@/common/components/atoms/icons';
+import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
+import { WelcomeModal } from '@/common/components/molecules/WelcomeModal/WelcomeModal';
+import { Providers } from '@/common/components/templates/Providers/Providers';
+import { env } from '@/common/env/env';
+import { useMobileBreakpoint } from '@/common/hooks/useMobileBreakpoint/useMobileBreakpoint';
+import Chatbot from '@/domains/chat/chatbot-opengpt';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
@@ -42,14 +46,23 @@ const ChatbotLayout: FunctionComponent = () => {
 };
 
 export const Root: FunctionComponent = () => {
+  const { isMobile } = useMobileBreakpoint();
+
+  if (isMobile) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-8 text-center">
+        <BallerineLogo />
+        <h2>If you’re on a mobile device, please switch to a desktop for the best experience.</h2>
+      </div>
+    );
+  }
+
   return (
     <Providers>
       <Outlet />
       <PostHogPageView />
       <ChatbotLayout />
-      {/*<Suspense>*/}
-      {/*  <ReactQueryDevtools  />*/}
-      {/*</Suspense>*/}
+      <WelcomeModal />
     </Providers>
   );
 };

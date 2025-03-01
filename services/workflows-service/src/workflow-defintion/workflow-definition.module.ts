@@ -8,10 +8,11 @@ import { WorkflowDefinitionController } from '@/workflow-defintion/workflow-defi
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { Module } from '@nestjs/common';
+import { WorkflowControllerInternal } from '@/workflow-defintion/workflow-definition.controller.internal';
 
 @Module({
   imports: [PrismaModule, FilterModule, CustomerModule],
-  controllers: [WorkflowDefinitionController],
+  controllers: [WorkflowDefinitionController, WorkflowControllerInternal],
   providers: [
     WorkflowDefinitionRepository,
     FilterService,

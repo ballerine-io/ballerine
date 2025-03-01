@@ -1,5 +1,27 @@
 # @ballerine/ui
 
+## 0.5.80
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.78
+
+## 0.5.79
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.76
+
+## 0.5.78
+
+### Patch Changes
+
+- add empty state to risk indicators
+
 ## 0.5.77
 
 ### Patch Changes
