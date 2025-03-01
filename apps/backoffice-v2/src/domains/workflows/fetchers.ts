@@ -176,6 +176,7 @@ export const BaseWorkflowByIdSchema = z.object({
     lastName: z.string(),
     avatarUrl: z.string().nullable().optional(),
   }).nullable(),
+  config: z.record(z.string(), z.unknown()).optional(),
 });
 
 export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
