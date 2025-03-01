@@ -67,18 +67,18 @@ export const getTabsToBlocksMap = ({
         : []),
       ...websiteMonitoringBlock,
       ...(aiSummaryBlock ? aiSummaryBlock : []),
-      ...entityInfoBlock,
       ...(blocksCreationParams?.workflow?.context?.pluginsOutput?.merchantScreening
         ? merchantScreeningBlock
         : []),
     ],
-    [Tab.COMPANY_INFORMATION]: [
+    [Tab.KYB]: [
+      ...kybRegistryInfoBlock,
+      ...ubosRegistryProvidedBlock,
+      ...companySanctionsBlock,
       ...entityInfoBlock,
+      ...registryInfoBlock,
       // ...mapBlock,
       ...addressWithContainerBlock,
-      ...registryInfoBlock,
-      ...kybRegistryInfoBlock,
-      ...companySanctionsBlock,
       ...bankingDetailsBlock,
       ...bankAccountVerificationBlock,
       ...commercialCreditCheckBlock,
@@ -89,9 +89,8 @@ export const getTabsToBlocksMap = ({
       ...websiteBasicRequirementBlock,
     ],
     [Tab.DOCUMENTS]: [...parentDocumentBlocks],
-    [Tab.UBOS]: [
+    [Tab.UBOS_KYC]: [
       ...ubosUserProvidedBlock,
-      ...ubosRegistryProvidedBlock,
       ...amlWithContainerBlock,
       ...manageUbosBlock,
       ...(createKycBlocks(blocksCreationParams?.workflow as TWorkflowById) || []),
