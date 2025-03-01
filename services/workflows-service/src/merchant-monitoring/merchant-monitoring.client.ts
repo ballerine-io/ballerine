@@ -64,6 +64,7 @@ export class MerchantMonitoringClient {
     compareToReportId,
     withQualityControl,
     workflowRuntimeDataId,
+    requestedByUserId,
   }: {
     websiteUrl: string;
     countryCode?: CountryCode;
@@ -75,6 +76,7 @@ export class MerchantMonitoringClient {
     compareToReportId?: string;
     withQualityControl?: boolean;
     workflowRuntimeDataId?: string;
+    requestedByUserId?: string;
   }) {
     const response = await this.axios.post(`merchants/analysis`, {
       websiteUrl,
@@ -85,9 +87,11 @@ export class MerchantMonitoringClient {
       ...(compareToReportId && { compareToReportId }),
       withQualityControl,
       merchantId: businessId,
+      // TODO: Check if we can depreacte it, as we get the report infomration from the unified api - we dont need to ge this callback with the data.
       callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${businessId}`,
       metadata: {
         ...(workflowRuntimeDataId && { workflowRuntimeDataId }),
+        requestedByUserId,
       },
       customerId,
     });
