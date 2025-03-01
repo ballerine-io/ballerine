@@ -1,6 +1,6 @@
 import { checkIsIsoDate, checkIsUrl, isNullish, isObject, valueOrNA } from '@ballerine/common';
 import { checkIsDate, JsonDialog } from '@ballerine/ui';
-import { FileJson2 } from 'lucide-react';
+import { Check, Copy, FileJson2 } from 'lucide-react';
 import {
   ChangeEvent,
   ComponentProps,
@@ -34,7 +34,12 @@ import { IEditableDetails } from './interfaces';
 import { isValidDatetime } from '../../../../common/utils/is-valid-datetime';
 import dayjs from 'dayjs';
 
-const useInitialCategorySetValue = ({ form, data }) => {
+interface UseInitialCategorySetValueProps {
+  form: ReturnType<typeof useForm<Record<string, any>>>;
+  data: any[];
+}
+
+const useInitialCategorySetValue = ({ form, data }: UseInitialCategorySetValueProps) => {
   useEffect(() => {
     const categoryValue = form.getValues('category');
 
@@ -59,31 +64,31 @@ export const Detail: FunctionComponent<IDetailProps> = ({
   className,
   ...props
 }) => {
-  const getValue = (value: unknown) => {
+  const getValue = (value: unknown): string => {
     if (type === 'datetime-local') {
-      return dayjs(value).utc().format('DD/MM/YYYY HH:mm');
+      return dayjs(String(value)).utc().format('DD/MM/YYYY HH:mm');
     }
 
     if (checkIsDate(value, { isStrict: false }) || checkIsIsoDate(value)) {
-      return dayjs(value).format('DD/MM/YYYY');
+      return dayjs(String(value)).format('DD/MM/YYYY');
     }
 
     if (typeof value === 'boolean') {
       return value.toString();
     }
 
-    return value;
+    return String(value || '');
   };
   const value = getValue(children);
 
   return (
     <div
       tabIndex={0}
-      role={'textbox'}
+      role="textbox"
       aria-readonly={true}
       {...props}
       className={ctw(
-        'flex w-full max-w-[30ch] items-center break-all rounded-md p-1 pl-[0.3rem] pt-1.5 text-sm',
+        'flex w-full items-center rounded-md p-1.5 text-sm',
         {
           'font-bold text-success': isDecisionPositive(isDecisionComponent, value),
           'font-bold text-destructive': isDecisionNegative(isDecisionComponent, value),
@@ -110,6 +115,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   onSubmit: onSubmitCallback,
 }) => {
   const [formData, setFormData] = useState(data);
+  const [copyStatus, setCopyStatus] = useState<Record<string, boolean>>({});
   const POSITIVE_VALUE_INDICATOR = ['approved'];
   const NEGATIVE_VALUE_INDICATOR = ['revision', 'rejected', 'declined'];
   const isDecisionPositive = (isDecisionComponent: boolean, value: string) => {
@@ -127,14 +133,14 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     return isDecisionComponent && !!value && NEGATIVE_VALUE_INDICATOR.includes(value.toLowerCase());
   };
   const formValues = useMemo(() => {
-    return data?.reduce((acc, curr) => {
+    return data?.reduce((acc: Record<string, any>, curr) => {
       acc[curr.title] = curr.value;
 
       return acc;
     }, {});
   }, [data]);
 
-  const form = useForm({
+  const form = useForm<Record<string, any>>({
     values: formValues,
   });
   const { mutate: mutateUpdateWorkflowById } = useUpdateDocumentByIdMutation({
@@ -159,11 +165,11 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = formData => {
     const document = documents?.find(document => document?.id === valueId);
     const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
-      (acc, curr) => {
+      (acc: Record<string, any>, curr) => {
         let propertyValue = formData?.[curr];
-        const isDateTimeProperty =
-          document?.propertiesSchema?.properties?.[curr]?.format === 'date-time';
-        const isDateProperty = document?.propertiesSchema?.properties?.[curr]?.format === 'date';
+        const propertiesMap = (document?.propertiesSchema?.properties as Record<string, any>) || {};
+        const isDateTimeProperty = propertiesMap[curr]?.format === 'date-time';
+        const isDateProperty = propertiesMap[curr]?.format === 'date';
         const isDateOrDateTimeProperty = isDateTimeProperty || isDateProperty;
 
         if (isNullish(propertyValue) || (isDateOrDateTimeProperty && propertyValue === '')) {
@@ -253,15 +259,32 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     data,
   });
 
+  const handleCopy = (text: string, fieldId: string) => {
+    navigator.clipboard.writeText(text).catch(err => {
+      console.error('Failed to copy to clipboard:', err);
+    });
+    setCopyStatus(prev => ({ ...prev, [fieldId]: true }));
+
+    setTimeout(() => {
+      setCopyStatus(prev => ({ ...prev, [fieldId]: false }));
+    }, 2000);
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className={`flex h-full flex-col`}>
-        <legend className={ctw({ 'sr-only': id !== 'visible-title' }, 'mb-2 font-bold')}>
+        <legend
+          className={ctw(
+            { 'sr-only': id !== 'visible-title' },
+            'mb-4 text-lg font-bold text-gray-800',
+          )}
+        >
           {title}
         </legend>
         <div
-          className={ctw(`grid grid-cols-2 gap-4 gap-y-6`, {
-            'grid-cols-3': id === 'entity-details',
+          className={ctw(`grid gap-4`, {
+            'grid-cols-1 md:grid-cols-2 xl:grid-cols-3': id === 'entity-details',
+            'grid-cols-1 sm:grid-cols-2': id !== 'entity-details',
           })}
         >
           {formData?.map(
@@ -294,6 +317,8 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                 form.setValue(title, inputValue === 'N/A' ? '' : inputValue);
               };
 
+              const fieldId = `${valueId}-${title}`;
+
               return (
                 <FormField
                   key={keyFactory(valueId, title, `form-field`)}
@@ -301,7 +326,12 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                   name={title}
                   render={({ field }) => {
                     if (isDecisionComponent && !value) {
-                      return null;
+                      return (
+                        <FormItem className="hidden">
+                          <FormLabel className="sr-only">{toTitleCase(title)}</FormLabel>
+                          <div className="hidden" />
+                        </FormItem>
+                      );
                     }
 
                     const isInput = [
@@ -316,114 +346,173 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                       value,
                     });
 
+                    const displayableValue =
+                      typeof value === 'string' || typeof value === 'number'
+                        ? String(value || '')
+                        : typeof value === 'boolean'
+                        ? String(value)
+                        : '';
+
                     return (
-                      <FormItem>
-                        <FormLabel>{toTitleCase(title)}</FormLabel>
-                        {(isObject(value) || Array.isArray(value)) && (
-                          <div
-                            className={`flex items-end justify-start`}
-                            key={keyFactory(valueId, title, `form-field`)}
-                          >
-                            <JsonDialog
-                              buttonProps={{
-                                variant: 'link',
-                                className: 'p-0 text-blue-500',
-                              }}
-                              rightIcon={<FileJson2 size={`16`} />}
-                              dialogButtonText={`View Information`}
-                              json={JSON.stringify(value)}
-                            />
-                          </div>
-                        )}
-                        {checkIsUrl(value) && !isEditable && (
-                          <a
-                            key={keyFactory(valueId, title, `form-field`)}
-                            className={buttonVariants({
-                              variant: 'link',
-                              className: '!block cursor-pointer !p-0 !text-blue-500',
-                            })}
-                            target={'_blank'}
-                            rel={'noopener noreferrer'}
-                            href={value}
-                          >
-                            {(valueAlias as string) ?? value}
-                          </a>
-                        )}
-                        {isSelect && (
-                          <Select
-                            key={keyFactory(field.value, title, `select`, id)}
-                            disabled={!isEditable}
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger className="w-full">
-                                <SelectValue />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {dropdownOptions?.map(({ label, value }, index) => {
-                                return (
-                                  <SelectItem
-                                    key={keyFactory(
-                                      id,
-                                      valueId,
-                                      label,
-                                      index?.toString(),
-                                      `select-item`,
-                                    )}
-                                    value={value}
-                                  >
-                                    {label}
-                                  </SelectItem>
-                                );
-                              })}
-                            </SelectContent>
-                          </Select>
-                        )}
-                        {!isEditable && inputType !== 'checkbox' && isInput && !isSelect && (
-                          <Detail
-                            type={inputType}
-                            isDecisionComponent={isDecisionComponent}
-                            isDecisionPositive={isDecisionPositive}
-                            isDecisionNegative={isDecisionNegative}
-                          >
-                            {value}
-                          </Detail>
-                        )}
-                        {(isEditable || inputType === 'checkbox') && isInput && !isSelect && (
-                          <FormControl>
-                            <Input
-                              {...field}
-                              type={inputType}
-                              {...(inputType === 'datetime-local' && { step: '1' })}
-                              {...(minimum && { min: minimum })}
-                              {...(maximum && { max: maximum })}
-                              disabled={!isEditable}
-                              className={ctw(
-                                `p-1 disabled:cursor-auto disabled:border-none disabled:bg-transparent disabled:opacity-100`,
-                                {
-                                  '!h-[unset] !p-0': !isEditable,
-                                  'font-bold text-success': isDecisionPositive(
-                                    isDecisionComponent,
-                                    field.value,
-                                  ),
-                                  'font-bold text-destructive': isDecisionNegative(
-                                    isDecisionComponent,
-                                    field.value,
-                                  ),
-                                  'text-slate-400': isNullish(field.value) || field.value === '',
-                                },
+                      <FormItem className="relative h-full overflow-hidden rounded-md border border-gray-100 bg-white shadow-sm transition-colors duration-200 hover:border-gray-200">
+                        <div className="flex h-full">
+                          <div className="flex h-full w-full items-center gap-2 p-2.5">
+                            <FormLabel className="w-[30%] flex-shrink-0 truncate text-sm font-medium text-gray-600">
+                              {toTitleCase(title)}
+                            </FormLabel>
+
+                            <div className="flex flex-1 items-center justify-end gap-2">
+                              {/* JSON Object display */}
+                              {(isObject(value) || Array.isArray(value)) && (
+                                <div className="flex w-full justify-end">
+                                  <JsonDialog
+                                    buttonProps={{
+                                      variant: 'link',
+                                      className: 'text-blue-500 hover:text-blue-600 ml-auto',
+                                    }}
+                                    rightIcon={<FileJson2 size={16} className="ml-1" />}
+                                    dialogButtonText="View Information"
+                                    json={JSON.stringify(value)}
+                                  />
+                                </div>
                               )}
-                              {...(pattern && { pattern })}
-                              autoComplete={'off'}
-                              value={displayValue(originalValue)}
-                              checked={originalValue}
-                              onChange={handleInputChange}
-                            />
-                          </FormControl>
-                        )}
-                        <FormMessage />
+
+                              {/* URL links */}
+                              {checkIsUrl(value) && !isEditable && (
+                                <div className="flex w-full justify-end">
+                                  <a
+                                    key={keyFactory(valueId, title, `form-field`)}
+                                    className={buttonVariants({
+                                      variant: 'link',
+                                      className: 'ml-auto text-blue-500 hover:text-blue-600',
+                                    })}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    href={value}
+                                  >
+                                    {(valueAlias as string) ?? value}
+                                  </a>
+                                </div>
+                              )}
+
+                              {/* Select dropdown */}
+                              {isSelect && (
+                                <Select
+                                  key={keyFactory(field.value, title, `select`, id)}
+                                  disabled={!isEditable}
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger className="w-full rounded-md border-gray-200 bg-white text-right focus:border-primary focus:ring-1 focus:ring-primary">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {dropdownOptions?.map(({ label, value }, index) => (
+                                      <SelectItem
+                                        key={keyFactory(
+                                          id,
+                                          valueId,
+                                          label,
+                                          index?.toString(),
+                                          `select-item`,
+                                        )}
+                                        value={value}
+                                      >
+                                        {label}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              )}
+
+                              {/* Read-only text values */}
+                              {!isEditable && inputType !== 'checkbox' && isInput && !isSelect && (
+                                <div className="flex w-full items-center justify-end gap-2">
+                                  <div className="ml-auto flex items-center gap-2">
+                                    <Detail
+                                      type={inputType}
+                                      isDecisionComponent={isDecisionComponent}
+                                      isDecisionPositive={isDecisionPositive}
+                                      isDecisionNegative={isDecisionNegative}
+                                      className="truncate text-right"
+                                    >
+                                      {String(value || '')}
+                                    </Detail>
+                                    {displayableValue && (
+                                      <button
+                                        type="button"
+                                        onClick={() => handleCopy(displayableValue, fieldId)}
+                                        className="flex-shrink-0 rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 focus:outline-none"
+                                        title="Copy to clipboard"
+                                      >
+                                        {copyStatus[fieldId] ? (
+                                          <Check size={14} className="text-green-500" />
+                                        ) : (
+                                          <Copy size={14} />
+                                        )}
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Editable inputs */}
+                              {(isEditable || inputType === 'checkbox') && isInput && !isSelect && (
+                                <FormControl className="flex w-full justify-end">
+                                  <div className="flex w-full items-center justify-end gap-2">
+                                    <Input
+                                      {...field}
+                                      type={inputType}
+                                      {...(inputType === 'datetime-local' && { step: '1' })}
+                                      {...(minimum && { min: minimum })}
+                                      {...(maximum && { max: maximum })}
+                                      disabled={!isEditable}
+                                      className={ctw(
+                                        inputType === 'checkbox' ? 'w-auto' : 'w-full',
+                                        `rounded-md border-gray-200 p-2 text-right focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-auto disabled:border-none disabled:bg-transparent disabled:opacity-100`,
+                                        {
+                                          '!h-[unset] !p-0': !isEditable,
+                                          'font-bold text-success': isDecisionPositive(
+                                            isDecisionComponent,
+                                            field.value,
+                                          ),
+                                          'font-bold text-destructive': isDecisionNegative(
+                                            isDecisionComponent,
+                                            field.value,
+                                          ),
+                                          'text-slate-400':
+                                            isNullish(field.value) || field.value === '',
+                                        },
+                                      )}
+                                      {...(pattern && { pattern })}
+                                      autoComplete="off"
+                                      value={displayValue(originalValue)}
+                                      checked={originalValue}
+                                      onChange={handleInputChange}
+                                    />
+                                    {isEditable && displayableValue && inputType !== 'checkbox' && (
+                                      <button
+                                        type="button"
+                                        onClick={() => handleCopy(displayableValue, fieldId)}
+                                        className="flex-shrink-0 rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 focus:outline-none"
+                                        title="Copy to clipboard"
+                                      >
+                                        {copyStatus[fieldId] ? (
+                                          <Check size={14} className="text-green-500" />
+                                        ) : (
+                                          <Copy size={14} />
+                                        )}
+                                      </button>
+                                    )}
+                                  </div>
+                                </FormControl>
+                              )}
+                            </div>
+                            <FormMessage className="text-xs" />
+                          </div>
+                        </div>
                       </FormItem>
                     );
                   }}
@@ -432,14 +521,14 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
             },
           )}
         </div>
-        <div className={`flex justify-end`}>
+        <div className={`mt-8 flex justify-end`}>
           {data?.some(({ isEditable }) => isEditable) && (
             <Button
               type="submit"
-              className={`ms-auto mt-3 enabled:bg-primary enabled:hover:bg-primary/90 aria-disabled:pointer-events-none aria-disabled:opacity-50`}
+              className={`ms-auto rounded-md bg-primary px-8 py-2 text-white shadow-sm transition-all duration-200 hover:bg-primary/90 hover:shadow-md aria-disabled:pointer-events-none aria-disabled:opacity-50`}
               aria-disabled={isSaveDisabled}
             >
-              Save
+              Save Changes
             </Button>
           )}
         </div>
