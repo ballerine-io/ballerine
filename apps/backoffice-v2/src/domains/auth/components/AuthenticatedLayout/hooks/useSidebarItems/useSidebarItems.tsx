@@ -102,7 +102,7 @@ export const useSidebarItems = () => {
           key: 'nav-item-sanctions-screening',
         },
         {
-          text: 'Documents Verifications',
+          text: 'Documents Verification',
           icon: FileCheck2Icon,
           premium: {
             caption: 'Extract data, classify, validate and verify documents.',

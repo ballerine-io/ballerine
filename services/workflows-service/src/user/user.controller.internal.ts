@@ -43,6 +43,28 @@ export class UserControllerInternal {
     );
   }
 
+  @common.Get(':id')
+  @UseGuards(AdminAuthGuard)
+  @swagger.ApiParam({ name: 'id', type: String, description: 'User ID' })
+  @swagger.ApiOkResponse({ type: UserModel })
+  @swagger.ApiNotFoundResponse({ description: 'User not found' })
+  @swagger.ApiForbiddenResponse()
+  async getById(@common.Param('id') id: string): Promise<UserModel> {
+    return this.service.getByIdUnscoped(id, {
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        avatarUrl: true,
+        updatedAt: true,
+        createdAt: true,
+        roles: true,
+      },
+    });
+  }
+
   @common.Post()
   @swagger.ApiCreatedResponse({ type: [UserModel] })
   @UseGuards(AdminAuthGuard)
