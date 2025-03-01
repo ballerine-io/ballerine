@@ -14,6 +14,7 @@ import { DialogTitle } from '@/common/components/organisms/Dialog/Dialog.Title';
 import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { BusinessReportsLeftCard } from '@/domains/business-reports/components/BusinessReportsLeftCard/BusinessReportsLeftCard';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
+import { Skeleton } from '@ballerine/ui';
 
 const benefits = [
   'Spot potential risks and violations',
@@ -41,8 +42,23 @@ export const WelcomeModal = () => {
             Welcome to Ballerine’s Web Presence Free Trial! 🚀
           </DialogDescription>
         </DialogHeader>
-
-        {/* Video element */}
+        <div className="px-6">
+          <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+            <Skeleton className="absolute inset-0 size-full" />
+            <iframe
+              src="https://www.loom.com/embed/7cd69b5e2db24e81ace760cc38b3d7dc?sid=69a0ffbf-bd57-4e88-b9db-cbf819da21d3&hideEmbedTopBar=true"
+              frameBorder="0"
+              allowFullScreen
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+              }}
+            />
+          </div>
+        </div>
 
         <BusinessReportsLeftCard
           reportsLeft={reportsLeft}
