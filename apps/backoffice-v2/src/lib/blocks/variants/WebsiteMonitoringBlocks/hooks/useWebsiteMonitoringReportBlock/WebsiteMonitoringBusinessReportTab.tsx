@@ -31,7 +31,7 @@ export const WebsiteMonitoringBusinessReportTab = ({
       <BusinessReportSummary
         summary={businessReport.data!.summary!}
         ongoingMonitoringSummary={businessReport.data!.ongoingMonitoringSummary!}
-        sections={riskIndicators}
+        riskIndicators={riskIndicators}
         riskLevel={businessReport.data!.riskLevel!}
         homepageScreenshotUrl={businessReport.data!.homepageScreenshotUrl}
         Link={RiskIndicatorLink}
