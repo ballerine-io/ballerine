@@ -951,30 +951,40 @@ export const getMockWorkflowContext = async (
             },
           ],
           riskIndicatorsByDomain: {
-            'Store Info': [
+            KYB: [
               {
-                name: 'Forbidden MCC provided',
-                domain: 'Store Info',
+                name: 'Business Name Mismatch',
+                domain: 'KYB',
               },
               {
-                name: 'High risk sector',
-                domain: 'Store Info',
-              },
-            ],
-            'Website Analysis': [
-              {
-                name: 'Website has content violations',
-                domain: 'Website Analysis',
-              },
-              {
-                name: 'Website missing policy pages',
-                domain: 'Website Analysis',
+                name: 'Undeclared UBOs',
+                domain: 'KYB',
               },
             ],
-            'Company Information': [
+            Store: [
               {
-                name: 'Registered in high-risk country',
-                domain: 'Company Information',
+                name: 'Line of Business Mismatch',
+                domain: 'Store',
+              },
+            ],
+            'Web Presence': [
+              {
+                name: 'Prostitution',
+                domain: 'Web Presence',
+              },
+              {
+                name: 'Regulatory Compliance Risk',
+                domain: 'Web Presence',
+              },
+              {
+                name: 'Chargeback Fraud Risk',
+                domain: 'Web Presence',
+              },
+            ],
+            KYC: [
+              {
+                name: 'UBO has Adverse Media',
+                domain: 'KYC',
               },
             ],
           },
