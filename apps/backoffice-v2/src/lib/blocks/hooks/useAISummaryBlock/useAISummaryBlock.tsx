@@ -782,46 +782,6 @@ const AISummaryContent = ({
 
   return (
     <div className="space-y-4 text-sm">
-      <div className="flex flex-col space-y-2 rounded-md border border-gray-200 bg-white p-3 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-amber-500" />
-            <div>
-              <h3 className="font-semibold text-gray-800">
-                Case Risk Summary: {summaryData.companyName}
-              </h3>
-            </div>
-          </div>
-          <RiskIndicator score={summaryData.riskScore} />
-        </div>
-
-        <div className="text-[10px] text-gray-500">
-          <div className="flex items-center gap-1">
-            <span>Analysis completed on</span>
-            <span className="font-medium text-gray-700">{analysisDate}</span>
-          </div>
-        </div>
-
-        <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
-          <div className="rounded-md bg-gray-50 p-2 shadow-sm">
-            <span className="text-gray-500">Business Type</span>
-            <p className="font-medium">{summaryData.businessInfo.claimedType}</p>
-          </div>
-          <div className="rounded-md bg-gray-50 p-2 shadow-sm">
-            <span className="text-gray-500">Actual Business</span>
-            <p className="font-medium text-red-600">{summaryData.businessInfo.actualType}</p>
-          </div>
-          <div className="rounded-md bg-gray-50 p-2 shadow-sm">
-            <span className="text-gray-500">Chargeback Ratio</span>
-            <p className="font-medium text-red-600">{summaryData.businessInfo.chargebackRatio}</p>
-          </div>
-          <div className="rounded-md bg-gray-50 p-2 shadow-sm">
-            <span className="text-gray-500">UBO Check</span>
-            <p className="font-medium text-red-600">{summaryData.businessInfo.uboStatus}</p>
-          </div>
-        </div>
-      </div>
-
       <div className="space-y-2 rounded-md border border-gray-200 bg-white p-3 shadow-sm">
         {sections.map((section, sectionIndex) => {
           if (section.type === 'paragraph' || section.type === 'heading') {

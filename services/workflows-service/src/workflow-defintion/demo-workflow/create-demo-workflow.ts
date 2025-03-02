@@ -3,7 +3,6 @@ import { composeChildAssociatedCompanyDefinition } from './compose-child-associa
 import { generateWorkflowDefinitionWithAssociated } from './workflow-definition-with-associated';
 import { generateBusinessesFilter } from './generate-businesses-filter';
 import { randomUUID } from 'crypto';
-import { faker } from '@faker-js/faker';
 import { PrismaTransactionClient } from '@/types';
 import { kycEmailSessionDefinition } from './generate-kyc-email-process';
 import { seedTransactionsAlerts } from '../../../scripts/alerts/generate-alerts';
@@ -42,7 +41,7 @@ const generateBusiness = ({
 
   return {
     id,
-    companyName: faker.company.name(),
+    companyName: 'GreenTech Solutions Ltd.',
     workflowRuntimeData: {
       create: {
         workflowDefinitionId,
@@ -56,6 +55,7 @@ const generateBusiness = ({
         config: {
           example: true,
         },
+        tags: ['manual_review'],
       },
     },
     project: {

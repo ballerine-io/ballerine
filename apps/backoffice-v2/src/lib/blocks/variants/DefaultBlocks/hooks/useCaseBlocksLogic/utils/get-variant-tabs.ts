@@ -44,7 +44,7 @@ export const getVariantTabs = (
       },
       {
         name: Tab.MONITORING_REPORTS,
-        displayName: 'Monitoring Reports',
+        displayName: 'Web Presence',
         disabled: !tabBlocks[Tab.MONITORING_REPORTS]?.length,
       },
       {
