@@ -152,20 +152,14 @@ export class BusinessReportControllerExternal {
       ...(search ? { searchQuery: search } : {}),
     });
 
-    const reports = await Promise.all(
-      data.map(async report => {
-        return {
-          ...report,
-          monitoringStatus:
-            report.customer.ongoingMonitoringEnabled && !report.business.unsubscribedMonitoringAt,
-        };
-      }),
-    );
-
     return {
       totalPages,
       totalItems,
-      data: reports,
+      data: data.map(report => ({
+        ...report,
+        monitoringStatus:
+          report.customer.ongoingMonitoringEnabled && !report.business.unsubscribedMonitoringAt,
+      })),
     };
   }
 
