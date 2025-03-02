@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { SlidersHorizontal } from 'lucide-react';
-import { ComponentProps, ReactNode, useCallback, useEffect, useMemo } from 'react';
+import { ComponentProps, useCallback, useEffect, useMemo } from 'react';
 
 import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
@@ -21,8 +21,6 @@ import {
   STATUS_LEVEL_FILTER,
 } from '@/pages/MerchantMonitoring/schemas';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useToggle } from '@/common/hooks/useToggle/useToggle';
-import { CreateMerchantReportDialog } from '../../components/CreateMerchantReportDialog/CreateMerchantReportDialog';
 import { getDemoStateErrorText } from '@/common/components/molecules/DemoAccessCards/getDemoStateErrorText';
 
 export const useMerchantMonitoringLogic = () => {
