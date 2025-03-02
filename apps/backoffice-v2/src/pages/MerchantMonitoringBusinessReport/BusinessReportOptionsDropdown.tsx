@@ -82,18 +82,41 @@ export const BusinessReportOptionsDropdown: FunctionComponent<
           }
         }}
       >
-        <DropdownMenuItem
-          className={'p-0'}
-          onClick={async () => {
-            await generateCustomPDF();
-            setIsDropdownOpen(false);
+        <ContentTooltip
+          description={
+            <p>
+              This feature is not available for trial accounts.
+              <br />
+              Talk to us to get full access
+            </p>
+          }
+          props={{
+            tooltipTrigger: {
+              className: 'w-full',
+            },
+            tooltipContent: {
+              className: ctw({ hidden: !isDemoAccount }),
+            },
           }}
         >
-          <Button variant={'ghost'} className="flex w-full items-center justify-start gap-x-2">
-            <FileText className={'d-4'} />
-            Export PDF
-          </Button>
-        </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={isDemoAccount}
+            className={'w-full p-0 data-[disabled]:!opacity-100'}
+            onClick={async () => {
+              await generateCustomPDF();
+              setIsDropdownOpen(false);
+            }}
+          >
+            <Button
+              disabled={isDemoAccount}
+              variant={'ghost'}
+              className="flex w-full items-center justify-start gap-x-2"
+            >
+              <FileText className={'d-4'} />
+              Export PDF
+            </Button>
+          </DropdownMenuItem>
+        </ContentTooltip>
         <ContentTooltip
           description={
             <p>
