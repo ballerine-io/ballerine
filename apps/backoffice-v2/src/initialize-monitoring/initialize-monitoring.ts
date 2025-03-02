@@ -1,5 +1,4 @@
 import { env } from '@/common/env/env';
-import posthog from 'posthog-js';
 import * as Sentry from '@sentry/react';
 import { useEffect } from 'react';
 import {
