@@ -306,6 +306,27 @@ export const getMockWorkflowContext = async (
       },
       documents: [
         {
+          id: 'document-proof-of-address',
+          type: 'water_bill',
+          pages: [
+            await generateDocumentPage({
+              uri: 'https://cdn.ballerine.io/merch-ss/utility%20bill2.jpeg',
+            }),
+          ],
+          issuer: {
+            country: 'GH',
+          },
+          version: '1',
+          category: 'proof_of_address',
+          decision: {},
+          properties: {},
+          issuingVersion: 1,
+          propertiesSchema: {
+            type: 'object',
+            properties: {},
+          },
+        },
+        {
           id: 'document-certificate-of-registration',
           type: 'bank_statement',
           pages: [
@@ -392,27 +413,6 @@ export const getMockWorkflowContext = async (
                 pattern: '^$|^GB-\\d{9}-\\d{1}$',
               },
             },
-          },
-        },
-        {
-          id: 'document-proof-of-address',
-          type: 'water_bill',
-          pages: [
-            await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/utility%20bill2.jpeg',
-            }),
-          ],
-          issuer: {
-            country: 'GH',
-          },
-          version: '1',
-          category: 'proof_of_address',
-          decision: {},
-          properties: {},
-          issuingVersion: 1,
-          propertiesSchema: {
-            type: 'object',
-            properties: {},
           },
         },
       ],
