@@ -15,6 +15,7 @@ const getKybWorkflowContexts = async ({
   client,
   projectId,
   customerName,
+  workflowOverrides,
 }: {
   client: PrismaTransactionClient | PrismaClient;
   projectId: string;
@@ -25,7 +26,7 @@ const getKybWorkflowContexts = async ({
     projectId,
   });
 
-  return await getMockWorkflowContext(customerName, generateDocumentPage);
+  return await getMockWorkflowContext(customerName, generateDocumentPage, workflowOverrides);
 };
 
 const generateBusiness = ({
@@ -128,6 +129,9 @@ export const createDemoWorkflow = async (
   },
   demoEnv: TDemoEnv,
   transaction: PrismaTransactionClient,
+  workflowOverrides?: Array<{
+    webPresenceReportId?: string;
+  }>,
 ) => {
   const demoOngoingMonitoringChildAssociatedCompanyDefinition =
     composeChildAssociatedCompanyDefinition({
@@ -175,6 +179,7 @@ export const createDemoWorkflow = async (
     client: transaction,
     projectId: demoEnv.project.id,
     customerName: customer.name,
+    workflowOverrides,
   });
   const kycWorkflowContexts = await generateKycChildWorkflowMockData({
     client: transaction as PrismaClient,

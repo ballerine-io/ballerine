@@ -21,7 +21,10 @@ export const getMockWorkflowContext = async (
     ballerineFileId: string;
     metadata: { side?: string | undefined; pageNumber?: string | undefined } | undefined;
   }>,
+  workflowOverrides?: Array<{ webPresenceReportId?: string }>,
 ) => {
+  const reportId = workflowOverrides?.[0]?.webPresenceReportId;
+
   return [
     {
       customData: {
@@ -43,8 +46,7 @@ export const getMockWorkflowContext = async (
         paymentReliabilityScore: 85,
         cashFlowStability: 'Moderate',
         profitabilityTrend: 'Increasing',
-        [`${customerName}InternalNotes`]:
-          'Customer has shown improved compliance practices over the last quarter.',
+        InternalNotes: 'Customer has shown improved compliance practices over the last quarter.',
       },
       id: 'e7869864213',
       data: {
@@ -1529,7 +1531,7 @@ export const getMockWorkflowContext = async (
           },
           name: 'merchantMonitoring',
           status: 'SUCCESS',
-          reportId: 'm6tces5a3f5ex8hmrttih3hb',
+          reportId,
           invokedAt: 1729672000635,
         },
         merchantScreening: {
