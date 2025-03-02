@@ -46,7 +46,7 @@ export const WelcomeModal = () => {
           <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
             <Skeleton className="absolute inset-0 size-full" />
             <iframe
-              src="https://www.loom.com/embed/7cd69b5e2db24e81ace760cc38b3d7dc?sid=69a0ffbf-bd57-4e88-b9db-cbf819da21d3&hideEmbedTopBar=true"
+              src="https://www.loom.com/embed/7cd69b5e2db24e81ace760cc38b3d7dc?sid=69a0ffbf-bd57-4e88-b9db-cbf819da21d3"
               frameBorder="0"
               allowFullScreen
               style={{
