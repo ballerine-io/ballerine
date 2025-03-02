@@ -41,7 +41,7 @@ export const getMockWorkflowContext = async (
       },
       id: 'e7869864213',
       data: {
-        companyName: 'Tech Solutions Ltd',
+        companyName: 'GreenTech Solutions Ltd.',
         additionalInfo: {
           mainRepresentative: {
             email: 'david+98429862f@ballerine.com',
@@ -444,90 +444,45 @@ export const getMockWorkflowContext = async (
           data: {
             edges: [
               {
-                id: 'TechSolutions->OffshoreHoldings',
-                data: { sharePercentage: 60 },
-                source: 'TechSolutions',
-                target: 'OffshoreHoldings',
+                id: 'GreenTechSolutions->JohnathanReed',
+                data: { sharePercentage: 30 },
+                source: 'GreenTechSolutions',
+                target: 'JohnathanReed',
               },
               {
-                id: 'TechSolutions->VentureCapital',
+                id: 'GreenTechSolutions->EmilyCarter',
+                data: { sharePercentage: 30 },
+                source: 'GreenTechSolutions',
+                target: 'EmilyCarter',
+              },
+              {
+                id: 'GreenTechSolutions->CaymanHoldings',
                 data: { sharePercentage: 40 },
-                source: 'TechSolutions',
-                target: 'VentureCapital',
+                source: 'GreenTechSolutions',
+                target: 'CaymanHoldings',
               },
               {
-                id: 'OffshoreHoldings->CaymanFinancial',
-                data: { sharePercentage: 75 },
-                source: 'OffshoreHoldings',
-                target: 'CaymanFinancial',
-              },
-              {
-                id: 'OffshoreHoldings->JohnDoe',
-                data: { sharePercentage: 25 },
-                source: 'OffshoreHoldings',
-                target: 'JohnDoe',
-              },
-              {
-                id: 'VentureCapital->AliceSmith',
+                id: 'CaymanHoldings->CarltonEllingtonCushnie',
                 data: { sharePercentage: 100 },
-                source: 'VentureCapital',
-                target: 'AliceSmith',
-              },
-              {
-                id: 'CaymanFinancial->ShellInvestments',
-                data: { sharePercentage: 50 },
-                source: 'CaymanFinancial',
-                target: 'ShellInvestments',
-              },
-              {
-                id: 'CaymanFinancial->ViktorOrlov',
-                data: { sharePercentage: 50 },
-                source: 'CaymanFinancial',
-                target: 'ViktorOrlov',
-              },
-              {
-                id: 'ShellInvestments->SamsonBartoletti',
-                data: { sharePercentage: 100 },
-                source: 'ShellInvestments',
-                target: 'SamsonBartoletti',
-              },
-              {
-                id: 'ShellInvestments->DaynaHoppe',
-                data: { sharePercentage: 100 },
-                source: 'ShellInvestments',
-                target: 'DaynaHoppe',
-              },
-              {
-                id: 'ShellInvestments->ValerieHowe',
-                data: { sharePercentage: 100 },
-                source: 'ShellInvestments',
-                target: 'ValerieHowe',
+                source: 'CaymanHoldings',
+                target: 'CarltonEllingtonCushnie',
               },
             ],
             nodes: [
-              { id: 'TechSolutions', data: { name: 'Tech Solutions Ltd', type: 'COMPANY' } },
               {
-                id: 'OffshoreHoldings',
-                data: { name: 'Offshore Holdings Ltd', type: 'COMPANY' },
+                id: 'GreenTechSolutions',
+                data: { name: 'GreenTech Solutions Ltd', type: 'COMPANY' },
+              },
+              { id: 'JohnathanReed', data: { name: 'Johnathan Reed', type: 'PERSON' } },
+              { id: 'EmilyCarter', data: { name: 'Emily Carter', type: 'PERSON' } },
+              {
+                id: 'CaymanHoldings',
+                data: { name: 'Cayman Holdings Ltd.', type: 'COMPANY' },
               },
               {
-                id: 'VentureCapital',
-                data: { name: 'Venture Capital Partners', type: 'COMPANY' },
+                id: 'CarltonEllingtonCushnie',
+                data: { name: 'Carlton Ellington Cushnie', type: 'PERSON' },
               },
-              {
-                id: 'CaymanFinancial',
-                data: { name: 'Cayman Financial Services', type: 'COMPANY' },
-              },
-              { id: 'JohnDoe', data: { name: 'John Doe', type: 'PERSON' } },
-              { id: 'AliceSmith', data: { name: 'Alice Smith', type: 'PERSON' } },
-              {
-                id: 'ShellInvestments',
-                data: { name: 'Shell Investments LLC', type: 'COMPANY' },
-              },
-              { id: 'ViktorOrlov', data: { name: 'Viktor Orlov', type: 'PERSON' } },
-              { id: 'SamsonBartoletti', data: { name: 'Samson Bartoletti', type: 'PERSON' } },
-              { id: 'DaynaHoppe', data: { name: 'Dayna Hoppe', type: 'PERSON' } },
-              { id: 'ValerieHowe', data: { name: 'Valerie Howe', type: 'PERSON' } },
             ],
           },
           name: 'ubo',
@@ -969,7 +924,7 @@ export const getMockWorkflowContext = async (
             ],
             'Web Presence': [
               {
-                name: 'Prostitution',
+                name: 'Cryptocurrency',
                 domain: 'Web Presence',
               },
               {
@@ -993,6 +948,9 @@ export const getMockWorkflowContext = async (
           data: [
             {
               entity: {
+                additionalInfo: {
+                  declaredMCC: '5111 – Stationery, Office Supplies, and Printing Paper',
+                },
                 name: 'Tech Solutions Ltd',
                 places: [
                   {
@@ -2450,7 +2408,7 @@ export const getMockWorkflowContext = async (
                 },
               ],
               status: 'Live Company',
-              expiryDate: '2034-01-04',
+              expiryDate: '2026-01-04',
               statusDate: '2024-01-04',
               companyName: 'Tech Solutions Ltd',
               companyType: 'Private Limited Company',
