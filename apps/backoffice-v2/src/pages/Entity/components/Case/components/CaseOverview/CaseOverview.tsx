@@ -34,7 +34,7 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
       const domainTitle = domain ?? '';
       const tabEntry = Object.entries(TabToLabel).find(([_, label]) => label === domainTitle);
       const tab = tabEntry ? tabEntry[0] : camelCase(domainTitle.toLowerCase());
-      const isValidCaseTab = CaseTabs.includes(tab as any);
+      const isValidCaseTab = CaseTabs.includes(tab as keyof typeof CaseTabs);
 
       return {
         title: domain,
