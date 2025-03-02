@@ -28,16 +28,18 @@ export class BusinessReportService {
   async checkBusinessReportsLimit(customer: TCustomerWithFeatures) {
     const accessDetails = await this.customerService.getAccessDetails(customer);
 
-    if (customer.config?.isDemoAccount && accessDetails.demoDaysLeft <= 0) {
-      throw new BadRequestException(
-        'Your demo account has expired. Talk to us to unlock additional features and continue effective risk management with Ballerine.',
-      );
-    }
+    if (customer.config?.isDemoAccount) {
+      if (accessDetails.demoDaysLeft <= 0) {
+        throw new BadRequestException(
+          'Your demo account has expired. Talk to us to unlock additional features and continue effective risk management with Ballerine.',
+        );
+      }
 
-    if (accessDetails.reportsLeft <= 0) {
-      throw new BadRequestException(
-        "You've hit your reports limit. Talk to us to unlock additional features and continue effective risk management with Ballerine.",
-      );
+      if (accessDetails.reportsLeft <= 0) {
+        throw new BadRequestException(
+          "You've hit your reports limit. Talk to us to unlock additional features and continue effective risk management with Ballerine.",
+        );
+      }
     }
   }
 

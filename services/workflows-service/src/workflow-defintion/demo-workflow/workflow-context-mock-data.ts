@@ -25,19 +25,26 @@ export const getMockWorkflowContext = async (
   return [
     {
       customData: {
-        [`${customerName}RiskAssessmentScore`]: 82,
-        verificationStatus: 'Pending',
-        riskCategory: 'High',
-        lastReviewDate: '2024-10-31',
-        nextReviewDue: '2025-10-31',
-        notes: `Risk assessment was conducted under ${customerName}'s audit guidelines.`,
-        amlChecksPassed: false,
-        fraudRisk: 'High',
-        complianceOfficer: 'Jane Smith',
-        remarks: `Further checks are required as per ${customerName}'s compliance framework.`,
-        annualRevenue: '20M USD',
-        debtToEquityRatio: 0.7,
-        [`${customerName}DebtReview`]: 'Moderate',
+        averageMonthlyTransactionVolume: '250K USD',
+        largestTransactionAmount: '45K USD',
+        highRiskTransactionsCount: 3,
+        internationalTransactionsRatio: 0.35,
+        accountAge: '4 years',
+        supportTicketsCount: 4,
+        escalationCount: 1,
+        loginIpAddress: '192.168.1.1',
+        lastInteractionDate: '2024-05-15',
+        previousAlertsCount: 5,
+        internalRiskScore: 68,
+        enhancedDueDiligenceRequired: true,
+        lastScreeningDate: '2024-04-20',
+        creditScore: 720,
+        outstandingLoans: '150K USD',
+        paymentReliabilityScore: 85,
+        cashFlowStability: 'Moderate',
+        profitabilityTrend: 'Increasing',
+        [`${customerName}InternalNotes`]:
+          'Customer has shown improved compliance practices over the last quarter.',
       },
       id: 'e7869864213',
       data: {
@@ -56,7 +63,7 @@ export const getMockWorkflowContext = async (
         id: 'e7869864213',
         data: {
           country: 'UK',
-          companyName: 'Tech Solutions Ltd',
+          companyName: 'GreenTech Solutions Ltd.',
           businessType: 'Local Company - PRIVATE LIMITED COMPANY',
           additionalInfo: {
             associatedCompanies: [
@@ -73,7 +80,7 @@ export const getMockWorkflowContext = async (
                   },
                   headquarters: {
                     streetAddress: '123 Innovation Drive',
-                    city: 'Silicon Valley',
+                    city: 'San Francisco',
                     state: 'CA',
                     postalCode: '94043',
                   },
@@ -119,7 +126,7 @@ export const getMockWorkflowContext = async (
             ],
             directors: [
               {
-                email: 'ballerine@mailsac.com',
+                email: 'kian.mueller@green-tech-solutions.com',
                 lastName: 'Mueller',
                 firstName: 'Kian',
                 nationalId: '9204469328432',
@@ -140,7 +147,12 @@ export const getMockWorkflowContext = async (
                       version: '1',
                       category: 'proof_of_identity',
                       decision: {},
-                      properties: {},
+                      properties: {
+                        idNumber: '1234567890',
+                        validFrom: '2024-01-01',
+                        expiryDate: '2025-01-01',
+                        validUntil: '2025-01-01',
+                      },
                       issuingVersion: 1,
                       propertiesSchema: {
                         type: 'object',
@@ -172,7 +184,12 @@ export const getMockWorkflowContext = async (
                       version: '1',
                       category: 'proof_of_identity_ownership',
                       decision: {},
-                      properties: {},
+                      properties: {
+                        idNumber: '1234567890',
+                        validFrom: '2024-01-01',
+                        expiryDate: '2025-01-01',
+                        validUntil: '2025-01-01',
+                      },
                       issuingVersion: 1,
                       propertiesSchema: {
                         type: 'object',
@@ -205,9 +222,8 @@ export const getMockWorkflowContext = async (
                 firstName: 'david',
                 additionalInfo: {
                   role: 'CEO',
-                  companyName: 'Tech Solutions Ltd',
                   dateOfBirth: '1990-01-01T22:00:00.000Z',
-                  customerCompany: 'Tech Solutions Ltd',
+                  companyName: 'GreenTech Solutions Ltd.',
                   __isGeneratedAutomatically: true,
                 },
               },
@@ -236,32 +252,31 @@ export const getMockWorkflowContext = async (
             bank: {
               name: 'Tech Bank',
               country: 'UK',
-              holderName: 'Tech Solutions Ltd',
+              holderName: 'GreenTech Solutions Ltd.',
               accountNumber: '74231865',
             },
             store: {
-              dba: 'asdasd',
+              dba: 'GreenTech Solutions',
               website: {
-                mainWebsite: 'https://google.com',
-                productPrice: 98,
-                contactDetails: '17 Frishman',
+                mainWebsite: 'https://green-tech-solutions.com',
+                averageProductPrice: '$25',
+                contactDetails: '17 Frishman St, London, UK',
                 productQuantity: 100,
-                websiteLanguage: 'hebrew',
-                productDescription: 'We offer E-Books',
+                websiteLanguage: 'english',
+                productDescription: 'We offer eco conscious products',
               },
-              industry: 'Digital Downloads',
-              products: 'E-Books',
+              industry: 'eco consulting',
+              products: 'Eco-friendly products',
               established: '2023-08-31T21:00:00.000Z',
-              websiteUrls: 'https://google.com',
+              websiteUrls: 'https://green-tech-solutions.com',
               hasMobileApp: false,
               hasActiveWebsite: true,
               processingDetails: {
-                mainCategory: ['B2C'],
-                businessModel: ['Direct Purchase'],
-                isSpikeInSales: false,
-                monthlySalesVolume: 5000000,
-                averageTicketAmount: 25,
-                monthlyTransactions: 500,
+                mainCategory: 'B2C',
+                businessModel: 'Direct Purchase',
+                monthlySalesVolume: '$5000000',
+                averageTicketAmount: '$25',
+                monthlyTransactions: '$500',
               },
             },
             transactionValue: 10000,
@@ -437,7 +452,7 @@ export const getMockWorkflowContext = async (
           customerCompany: 'Ballerine Demo',
         },
       },
-      customerName: 'Tech Solutions Ltd',
+      customerName: 'GreenTech Solutions Ltd.',
       pluginsOutput: {
         ubo: {
           code: 200,
@@ -450,10 +465,10 @@ export const getMockWorkflowContext = async (
                 target: 'JohnathanReed',
               },
               {
-                id: 'GreenTechSolutions->EmilyCarter',
+                id: 'GreenTechSolutions->RobertCarter',
                 data: { sharePercentage: 30 },
                 source: 'GreenTechSolutions',
-                target: 'EmilyCarter',
+                target: 'RobertCarter',
               },
               {
                 id: 'GreenTechSolutions->CaymanHoldings',
@@ -474,7 +489,7 @@ export const getMockWorkflowContext = async (
                 data: { name: 'GreenTech Solutions Ltd', type: 'COMPANY' },
               },
               { id: 'JohnathanReed', data: { name: 'Johnathan Reed', type: 'PERSON' } },
-              { id: 'EmilyCarter', data: { name: 'Emily Carter', type: 'PERSON' } },
+              { id: 'RobertCarter', data: { name: 'Robert Carter', type: 'PERSON' } },
               {
                 id: 'CaymanHoldings',
                 data: { name: 'Cayman Holdings Ltd.', type: 'COMPANY' },
@@ -971,26 +986,26 @@ export const getMockWorkflowContext = async (
                 category: 'Information Technology',
                 countries: ['UK', 'Germany'],
                 enterDate: '2024-02-01',
-                categories: ['software', 'consulting'],
+                categories: ['OFAC'],
                 identities: ['Legal', 'Financial'],
                 otherNames: [
                   {
-                    name: 'Tech Innovations Ltd',
+                    name: 'GreenTech Solutions Ltd',
                     type: 'Former Name',
                   },
                 ],
                 generalInfo: {
-                  website: 'https://techsolutions.com',
+                  website: 'https://green-tech-solutions.com',
                   nationality: 'British',
-                  alternateTitle: 'Tech Solutions Global',
-                  businessDescription: 'Software development and IT consulting services',
+                  alternateTitle: 'GreenTech Solutions Global',
+                  businessDescription: 'Eco-friendly products and services',
                 },
-                subcategory: 'Software Development',
+                subcategory: 'Eco Consulting',
                 descriptions: [
                   {
-                    description1: 'Leading provider of software solutions in Europe.',
-                    description2: 'Specializes in B2B software products and services.',
-                    description3: 'Known for high standards in security and innovation.',
+                    description1: 'Leading provider of eco consulting solutions in Europe.',
+                    description2: 'Specializes in eco-friendly products and services.',
+                    description3: 'Known for high standards in sustainability and innovation.',
                   },
                 ],
                 lastReviewed: '2024-10-31',
@@ -998,35 +1013,33 @@ export const getMockWorkflowContext = async (
                   {
                     keyword: 'Sanctioned',
                     isCurrent: 'true',
-                    description: 'Listed for due diligence and compliance monitoring',
+                    description:
+                      'OFAC - Specially Designated Nationals and Blocked Persons List (SDN List)',
                   },
                 ],
                 linkedCompanies: [
                   {
-                    name: 'Tech Innovations Subsidiary Ltd.',
-                    categories: ['software development'],
-                    description: 'Subsidiary focusing on cloud solutions',
-                    subcategories: ['cloud computing'],
+                    name: 'GreenTech Solutions Ltd.',
+                    categories: ['eco consulting'],
+                    description: 'Subsidiary focusing on eco-friendly products',
+                    subcategories: ['eco consulting'],
                   },
                 ],
                 primaryLocation: 'London, UK',
                 linkedIndividuals: [
                   {
-                    lastName: 'Smith',
-                    firstName: 'Alice',
-                    middleName: 'Marie',
+                    lastName: 'Cushnie',
+                    firstName: 'Carlton',
+                    middleName: 'Ellington',
                     description: 'CEO and primary shareholder',
-                    subcategories: ['executive team', 'board'],
+                    subcategories: ['eco consulting'],
                     otherCategories: ['leadership', 'ownership'],
                   },
                 ],
-                furtherInformation: [
-                  'Connected with other leading tech firms in Europe',
-                  'Subject to regular compliance checks in financial markets',
-                ],
-                originalScriptNames: ['Tech Solutions Ltd'],
+                furtherInformation: [],
+                originalScriptNames: ['GreenTech Solutions Ltd'],
               },
-              matchedFields: ['name', 'countries', 'category'],
+              matchedFields: ['name'],
             },
           ],
           name: 'companySanctions',
@@ -1037,9 +1050,9 @@ export const getMockWorkflowContext = async (
           data: {
             summary: {
               summary:
-                "Tech Solutions Ltd's website has been assigned a risk score of 63, indicating moderate risk. This assessment is primarily due to significant structural deficiencies identified on the website, including the absence of critical pages such as Terms and Conditions, Privacy Policy, About Us, and Contact Us. These omissions suggest a lack of transparency and potential non-compliance with regulations, which are considerable risk factors for transaction laundering by indicating the possibility of a shell company set up for illicit activities. Despite these concerns, there is no evidence to classify the company as involved in fraudulent activities, and no violations were found in the social analysis and ads, company name analysis, or ecosystem analysis. The absence of product information or reputation data limits a comprehensive risk analysis, but the structural issues alone are sufficient to warrant a moderate risk rating.",
+                "GreenTech Solutions Ltd's website has been assigned a risk score of 63, indicating moderate risk. This assessment is primarily due to significant structural deficiencies identified on the website, including the absence of critical pages such as Terms and Conditions, Privacy Policy, About Us, and Contact Us. These omissions suggest a lack of transparency and potential non-compliance with regulations, which are considerable risk factors for transaction laundering by indicating the possibility of a shell company set up for illicit activities. Despite these concerns, there is no evidence to classify the company as involved in fraudulent activities, and no violations were found in the social analysis and ads, company name analysis, or ecosystem analysis. The absence of product information or reputation data limits a comprehensive risk analysis, but the structural issues alone are sufficient to warrant a moderate risk rating.",
               website: {
-                url: 'https://www.techsolutions.com/',
+                url: 'https://www.green-tech-solutions.com/',
               },
               riskScore: 63,
               riskLevels: {
@@ -1526,317 +1539,42 @@ export const getMockWorkflowContext = async (
               PageOffset: 0,
               PossibleInquiryMatches: [
                 {
-                  TotalLength: 7,
+                  TotalLength: 1,
                   InquiredMerchant: [
                     {
                       Merchant: {
-                        Name: 'BALLERINE',
+                        Name: 'Green-Tech Solutions Ltd',
                         Address: {
-                          City: 'NYC',
-                          Line1: 'OLS TEST STUFF 123',
-                          Country: 'SGP',
-                          PostalCode: '85392',
+                          City: 'London',
+                          Line1: '23 Tech Street',
+
+                          Country: 'GBR',
+                          PostalCode: 'SW1A 1AA',
                         },
                         Principal: [
                           {
                             Address: {
-                              City: 'NYC',
-                              Line1: 'OLS TEST STUFF 123',
-                              Country: 'SGP',
-                              PostalCode: '85392',
+                              City: 'London',
+                              Line1: '23 Tech Street',
+                              Country: 'GBR',
+                              PostalCode: 'SW1A 1AA',
                             },
-                            LastName: 'PERETZ',
-                            FirstName: 'ALON',
+                            LastName: 'Smith',
+                            FirstName: 'John',
                             DriversLicense: {},
                           },
                         ],
                         AddedOnDate: '09/02/2024',
                         MerchantMatch: {
-                          Name: 'M01',
+                          Name: 'M02',
                           Address: 'M01',
                           PhoneNumber: 'M00',
                           NationalTaxId: 'M00',
                           AltPhoneNumber: 'M00',
                           PrincipalMatch: [
                             {
-                              Name: 'M01',
+                              Name: 'M02',
                               Address: 'M01',
-                              NationalId: 'M00',
-                              PhoneNumber: 'M00',
-                              AltPhoneNumber: 'M00',
-                              DriversLicense: 'M00',
-                            },
-                          ],
-                          ServiceProvDBA: 'M00',
-                          ServiceProvLegal: 'M00',
-                          DoingBusinessAsName: 'M00',
-                          CountrySubdivisionTaxId: 'M00',
-                        },
-                      },
-                    },
-                    {
-                      Merchant: {
-                        Name: 'BALLERINE',
-                        Address: {
-                          City: 'NYC',
-                          Line1: 'OLS TEST STUFF 123',
-                          Country: 'SGP',
-                          PostalCode: '85392',
-                        },
-                        Principal: [
-                          {
-                            Address: {
-                              City: 'NYC',
-                              Line1: 'OLS TEST STUFF 123',
-                              Country: 'SGP',
-                              PostalCode: '85392',
-                            },
-                            LastName: 'PERETZ',
-                            FirstName: 'ALON',
-                            DriversLicense: {},
-                          },
-                        ],
-                        AddedOnDate: '09/02/2024',
-                        MerchantMatch: {
-                          Name: 'M01',
-                          Address: 'M01',
-                          PhoneNumber: 'M00',
-                          NationalTaxId: 'M00',
-                          AltPhoneNumber: 'M00',
-                          PrincipalMatch: [
-                            {
-                              Name: 'M01',
-                              Address: 'M01',
-                              NationalId: 'M00',
-                              PhoneNumber: 'M00',
-                              AltPhoneNumber: 'M00',
-                              DriversLicense: 'M00',
-                            },
-                          ],
-                          ServiceProvDBA: 'M00',
-                          ServiceProvLegal: 'M00',
-                          DoingBusinessAsName: 'M00',
-                          CountrySubdivisionTaxId: 'M00',
-                        },
-                      },
-                    },
-                    {
-                      Merchant: {
-                        Name: 'BALLERINE',
-                        Address: {
-                          City: 'NYC',
-                          Line1: 'OLS TEST STUFF 123',
-                          Country: 'SGP',
-                          PostalCode: '85392',
-                        },
-                        Principal: [
-                          {
-                            Address: {
-                              City: 'NYC',
-                              Line1: 'OLS TEST STUFF 123',
-                              Country: 'SGP',
-                              PostalCode: '85392',
-                            },
-                            LastName: 'PERETZ',
-                            FirstName: 'ALON',
-                            DriversLicense: {},
-                          },
-                        ],
-                        AddedOnDate: '09/02/2024',
-                        MerchantMatch: {
-                          Name: 'M01',
-                          Address: 'M01',
-                          PhoneNumber: 'M00',
-                          NationalTaxId: 'M00',
-                          AltPhoneNumber: 'M00',
-                          PrincipalMatch: [
-                            {
-                              Name: 'M01',
-                              Address: 'M01',
-                              NationalId: 'M00',
-                              PhoneNumber: 'M00',
-                              AltPhoneNumber: 'M00',
-                              DriversLicense: 'M00',
-                            },
-                          ],
-                          ServiceProvDBA: 'M00',
-                          ServiceProvLegal: 'M00',
-                          DoingBusinessAsName: 'M00',
-                          CountrySubdivisionTaxId: 'M00',
-                        },
-                      },
-                    },
-                    {
-                      Merchant: {
-                        Name: 'BALLERINE',
-                        Address: {
-                          City: 'NYC',
-                          Line1: 'OLS TEST STUFF 123',
-                          Country: 'SGP',
-                          PostalCode: '85392',
-                        },
-                        Principal: [
-                          {
-                            Address: {
-                              City: 'NYC',
-                              Line1: 'OLS TEST STUFF 123',
-                              Country: 'SGP',
-                              PostalCode: '85392',
-                            },
-                            LastName: 'PERETZ',
-                            FirstName: 'ALON',
-                            DriversLicense: {},
-                          },
-                        ],
-                        AddedOnDate: '09/02/2024',
-                        MerchantMatch: {
-                          Name: 'M01',
-                          Address: 'M01',
-                          PhoneNumber: 'M00',
-                          NationalTaxId: 'M00',
-                          AltPhoneNumber: 'M00',
-                          PrincipalMatch: [
-                            {
-                              Name: 'M01',
-                              Address: 'M01',
-                              NationalId: 'M00',
-                              PhoneNumber: 'M00',
-                              AltPhoneNumber: 'M00',
-                              DriversLicense: 'M00',
-                            },
-                          ],
-                          ServiceProvDBA: 'M00',
-                          ServiceProvLegal: 'M00',
-                          DoingBusinessAsName: 'M00',
-                          CountrySubdivisionTaxId: 'M00',
-                        },
-                      },
-                    },
-                    {
-                      Merchant: {
-                        Name: 'BALLERINE',
-                        Address: {
-                          City: 'NYC',
-                          Line1: 'OLS TEST STUFF 123',
-                          Country: 'SGP',
-                          PostalCode: '85392',
-                        },
-                        Principal: [
-                          {
-                            Address: {
-                              City: 'NYC',
-                              Line1: 'OLS TEST STUFF 123',
-                              Country: 'SGP',
-                              PostalCode: '85392',
-                            },
-                            LastName: 'PERETZ',
-                            FirstName: 'ALON',
-                            DriversLicense: {},
-                          },
-                        ],
-                        AddedOnDate: '09/02/2024',
-                        MerchantMatch: {
-                          Name: 'M01',
-                          Address: 'M01',
-                          PhoneNumber: 'M00',
-                          NationalTaxId: 'M00',
-                          AltPhoneNumber: 'M00',
-                          PrincipalMatch: [
-                            {
-                              Name: 'M01',
-                              Address: 'M01',
-                              NationalId: 'M00',
-                              PhoneNumber: 'M00',
-                              AltPhoneNumber: 'M00',
-                              DriversLicense: 'M00',
-                            },
-                          ],
-                          ServiceProvDBA: 'M00',
-                          ServiceProvLegal: 'M00',
-                          DoingBusinessAsName: 'M00',
-                          CountrySubdivisionTaxId: 'M00',
-                        },
-                      },
-                    },
-                    {
-                      Merchant: {
-                        Name: 'BALLERINE',
-                        Address: {
-                          City: 'NYC',
-                          Line1: 'OLS TEST STUFF 123',
-                          Country: 'SGP',
-                          PostalCode: '85392',
-                        },
-                        Principal: [
-                          {
-                            Address: {
-                              City: 'NYC',
-                              Line1: 'OLS TEST STUFF 123',
-                              Country: 'SGP',
-                              PostalCode: '85392',
-                            },
-                            LastName: 'PERETZ',
-                            FirstName: 'ALON',
-                            DriversLicense: {},
-                          },
-                        ],
-                        AddedOnDate: '09/02/2024',
-                        MerchantMatch: {
-                          Name: 'M01',
-                          Address: 'M01',
-                          PhoneNumber: 'M00',
-                          NationalTaxId: 'M00',
-                          AltPhoneNumber: 'M00',
-                          PrincipalMatch: [
-                            {
-                              Name: 'M01',
-                              Address: 'M01',
-                              NationalId: 'M00',
-                              PhoneNumber: 'M00',
-                              AltPhoneNumber: 'M00',
-                              DriversLicense: 'M00',
-                            },
-                          ],
-                          ServiceProvDBA: 'M00',
-                          ServiceProvLegal: 'M00',
-                          DoingBusinessAsName: 'M00',
-                          CountrySubdivisionTaxId: 'M00',
-                        },
-                      },
-                    },
-                    {
-                      Merchant: {
-                        Name: 'BALLERINE',
-                        Address: {
-                          City: 'SHIBOLIM',
-                          Line1: 'SHIBOLIM 137',
-                          Country: 'SGP',
-                          PostalCode: '85392',
-                        },
-                        Principal: [
-                          {
-                            Address: {
-                              City: 'SHIBOLIM',
-                              Line1: 'SHIBOLIM 137',
-                              Country: 'SGP',
-                              PostalCode: '85392',
-                            },
-                            LastName: 'PERETZ',
-                            FirstName: 'ALON',
-                            DriversLicense: {},
-                          },
-                        ],
-                        AddedOnDate: '09/02/2024',
-                        MerchantMatch: {
-                          Name: 'M01',
-                          Address: 'M00',
-                          PhoneNumber: 'M00',
-                          NationalTaxId: 'M00',
-                          AltPhoneNumber: 'M00',
-                          PrincipalMatch: [
-                            {
-                              Name: 'M01',
-                              Address: 'M00',
                               NationalId: 'M00',
                               PhoneNumber: 'M00',
                               AltPhoneNumber: 'M00',
@@ -1873,29 +1611,29 @@ export const getMockWorkflowContext = async (
               {
                 raw: {
                   Merchant: {
-                    Name: 'BALLERINE',
+                    Name: 'Green-Tech Solutions Ltd',
                     Address: {
-                      City: 'NYC',
-                      Line1: 'OLS TEST STUFF 123',
-                      Country: 'SGP',
-                      PostalCode: '85392',
+                      City: 'London',
+                      Line1: '23 Tech Street',
+                      Country: 'GBR',
+                      PostalCode: 'SW1A 1AA',
                     },
                     Principal: [
                       {
                         Address: {
-                          City: 'NYC',
-                          Line1: 'OLS TEST STUFF 123',
-                          Country: 'SGP',
-                          PostalCode: '85392',
+                          City: 'London',
+                          Line1: '23 Tech Street',
+                          Country: 'GBR',
+                          PostalCode: 'SW1A 1AA',
                         },
-                        LastName: 'PERETZ',
-                        FirstName: 'ALON',
+                        LastName: 'Smith',
+                        FirstName: 'John',
                         DriversLicense: {},
                       },
                     ],
                     AddedOnDate: '09/02/2024',
                     MerchantMatch: {
-                      Name: 'M01',
+                      Name: 'M02',
                       Address: 'M01',
                       PhoneNumber: 'M00',
                       NationalTaxId: 'M00',
@@ -1917,477 +1655,37 @@ export const getMockWorkflowContext = async (
                     },
                   },
                 },
-                name: 'BALLERINE',
+                name: 'Green-Tech Solutions Ltd',
                 urls: [],
                 dateAdded: '09/02/2024',
                 principals: [
                   {
                     exactMatches: {
                       address: {
-                        City: 'NYC',
-                        Line1: 'OLS TEST STUFF 123',
-                        Country: 'SGP',
-                        PostalCode: '85392',
+                        City: 'London',
+                        Line1: '23 Tech Street',
+                        Country: 'GBR',
+                        PostalCode: 'SW1A 1AA',
                       },
                     },
-                    partialMatches: {},
+                    partialMatches: {
+                      name: 'Green-Tech Solutions Ltd',
+                    },
                   },
                 ],
                 exactMatches: {
-                  name: 'BALLERINE',
                   address: {
-                    City: 'NYC',
-                    Line1: 'OLS TEST STUFF 123',
-                    Country: 'SGP',
-                    PostalCode: '85392',
+                    City: 'London',
+                    Line1: '23 Tech Street',
+                    Country: 'GBR',
+                    PostalCode: 'SW1A 1AA',
                   },
                 },
-                partialMatches: {},
-                exactMatchesAmount: 3,
-                partialMatchesAmount: 0,
-              },
-              {
-                raw: {
-                  Merchant: {
-                    Name: 'BALLERINE',
-                    Address: {
-                      City: 'NYC',
-                      Line1: 'OLS TEST STUFF 123',
-                      Country: 'SGP',
-                      PostalCode: '85392',
-                    },
-                    Principal: [
-                      {
-                        Address: {
-                          City: 'NYC',
-                          Line1: 'OLS TEST STUFF 123',
-                          Country: 'SGP',
-                          PostalCode: '85392',
-                        },
-                        LastName: 'PERETZ',
-                        FirstName: 'ALON',
-                        DriversLicense: {},
-                      },
-                    ],
-                    AddedOnDate: '09/02/2024',
-                    MerchantMatch: {
-                      Name: 'M01',
-                      Address: 'M01',
-                      PhoneNumber: 'M00',
-                      NationalTaxId: 'M00',
-                      AltPhoneNumber: 'M00',
-                      PrincipalMatch: [
-                        {
-                          Name: 'M01',
-                          Address: 'M01',
-                          NationalId: 'M00',
-                          PhoneNumber: 'M00',
-                          AltPhoneNumber: 'M00',
-                          DriversLicense: 'M00',
-                        },
-                      ],
-                      ServiceProvDBA: 'M00',
-                      ServiceProvLegal: 'M00',
-                      DoingBusinessAsName: 'M00',
-                      CountrySubdivisionTaxId: 'M00',
-                    },
-                  },
+                partialMatches: {
+                  name: 'Green Tech Solutions Ltd.',
                 },
-                name: 'BALLERINE',
-                urls: [],
-                dateAdded: '09/02/2024',
-                principals: [
-                  {
-                    exactMatches: {
-                      address: {
-                        City: 'NYC',
-                        Line1: 'OLS TEST STUFF 123',
-                        Country: 'SGP',
-                        PostalCode: '85392',
-                      },
-                    },
-                    partialMatches: {},
-                  },
-                ],
-                exactMatches: {
-                  name: 'BALLERINE',
-                  address: {
-                    City: 'NYC',
-                    Line1: 'OLS TEST STUFF 123',
-                    Country: 'SGP',
-                    PostalCode: '85392',
-                  },
-                },
-                partialMatches: {},
-                exactMatchesAmount: 3,
-                partialMatchesAmount: 0,
-              },
-              {
-                raw: {
-                  Merchant: {
-                    Name: 'BALLERINE',
-                    Address: {
-                      City: 'NYC',
-                      Line1: 'OLS TEST STUFF 123',
-                      Country: 'SGP',
-                      PostalCode: '85392',
-                    },
-                    Principal: [
-                      {
-                        Address: {
-                          City: 'NYC',
-                          Line1: 'OLS TEST STUFF 123',
-                          Country: 'SGP',
-                          PostalCode: '85392',
-                        },
-                        LastName: 'PERETZ',
-                        FirstName: 'ALON',
-                        DriversLicense: {},
-                      },
-                    ],
-                    AddedOnDate: '09/02/2024',
-                    MerchantMatch: {
-                      Name: 'M01',
-                      Address: 'M01',
-                      PhoneNumber: 'M00',
-                      NationalTaxId: 'M00',
-                      AltPhoneNumber: 'M00',
-                      PrincipalMatch: [
-                        {
-                          Name: 'M01',
-                          Address: 'M01',
-                          NationalId: 'M00',
-                          PhoneNumber: 'M00',
-                          AltPhoneNumber: 'M00',
-                          DriversLicense: 'M00',
-                        },
-                      ],
-                      ServiceProvDBA: 'M00',
-                      ServiceProvLegal: 'M00',
-                      DoingBusinessAsName: 'M00',
-                      CountrySubdivisionTaxId: 'M00',
-                    },
-                  },
-                },
-                name: 'BALLERINE',
-                urls: [],
-                dateAdded: '09/02/2024',
-                principals: [
-                  {
-                    exactMatches: {
-                      address: {
-                        City: 'NYC',
-                        Line1: 'OLS TEST STUFF 123',
-                        Country: 'SGP',
-                        PostalCode: '85392',
-                      },
-                    },
-                    partialMatches: {},
-                  },
-                ],
-                exactMatches: {
-                  name: 'BALLERINE',
-                  address: {
-                    City: 'NYC',
-                    Line1: 'OLS TEST STUFF 123',
-                    Country: 'SGP',
-                    PostalCode: '85392',
-                  },
-                },
-                partialMatches: {},
-                exactMatchesAmount: 3,
-                partialMatchesAmount: 0,
-              },
-              {
-                raw: {
-                  Merchant: {
-                    Name: 'BALLERINE',
-                    Address: {
-                      City: 'NYC',
-                      Line1: 'OLS TEST STUFF 123',
-                      Country: 'SGP',
-                      PostalCode: '85392',
-                    },
-                    Principal: [
-                      {
-                        Address: {
-                          City: 'NYC',
-                          Line1: 'OLS TEST STUFF 123',
-                          Country: 'SGP',
-                          PostalCode: '85392',
-                        },
-                        LastName: 'PERETZ',
-                        FirstName: 'ALON',
-                        DriversLicense: {},
-                      },
-                    ],
-                    AddedOnDate: '09/02/2024',
-                    MerchantMatch: {
-                      Name: 'M01',
-                      Address: 'M01',
-                      PhoneNumber: 'M00',
-                      NationalTaxId: 'M00',
-                      AltPhoneNumber: 'M00',
-                      PrincipalMatch: [
-                        {
-                          Name: 'M01',
-                          Address: 'M01',
-                          NationalId: 'M00',
-                          PhoneNumber: 'M00',
-                          AltPhoneNumber: 'M00',
-                          DriversLicense: 'M00',
-                        },
-                      ],
-                      ServiceProvDBA: 'M00',
-                      ServiceProvLegal: 'M00',
-                      DoingBusinessAsName: 'M00',
-                      CountrySubdivisionTaxId: 'M00',
-                    },
-                  },
-                },
-                name: 'BALLERINE',
-                urls: [],
-                dateAdded: '09/02/2024',
-                principals: [
-                  {
-                    exactMatches: {
-                      address: {
-                        City: 'NYC',
-                        Line1: 'OLS TEST STUFF 123',
-                        Country: 'SGP',
-                        PostalCode: '85392',
-                      },
-                    },
-                    partialMatches: {},
-                  },
-                ],
-                exactMatches: {
-                  name: 'BALLERINE',
-                  address: {
-                    City: 'NYC',
-                    Line1: 'OLS TEST STUFF 123',
-                    Country: 'SGP',
-                    PostalCode: '85392',
-                  },
-                },
-                partialMatches: {},
-                exactMatchesAmount: 3,
-                partialMatchesAmount: 0,
-              },
-              {
-                raw: {
-                  Merchant: {
-                    Name: 'BALLERINE',
-                    Address: {
-                      City: 'NYC',
-                      Line1: 'OLS TEST STUFF 123',
-                      Country: 'SGP',
-                      PostalCode: '85392',
-                    },
-                    Principal: [
-                      {
-                        Address: {
-                          City: 'NYC',
-                          Line1: 'OLS TEST STUFF 123',
-                          Country: 'SGP',
-                          PostalCode: '85392',
-                        },
-                        LastName: 'PERETZ',
-                        FirstName: 'ALON',
-                        DriversLicense: {},
-                      },
-                    ],
-                    AddedOnDate: '09/02/2024',
-                    MerchantMatch: {
-                      Name: 'M01',
-                      Address: 'M01',
-                      PhoneNumber: 'M00',
-                      NationalTaxId: 'M00',
-                      AltPhoneNumber: 'M00',
-                      PrincipalMatch: [
-                        {
-                          Name: 'M01',
-                          Address: 'M01',
-                          NationalId: 'M00',
-                          PhoneNumber: 'M00',
-                          AltPhoneNumber: 'M00',
-                          DriversLicense: 'M00',
-                        },
-                      ],
-                      ServiceProvDBA: 'M00',
-                      ServiceProvLegal: 'M00',
-                      DoingBusinessAsName: 'M00',
-                      CountrySubdivisionTaxId: 'M00',
-                    },
-                  },
-                },
-                name: 'BALLERINE',
-                urls: [],
-                dateAdded: '09/02/2024',
-                principals: [
-                  {
-                    exactMatches: {
-                      address: {
-                        City: 'NYC',
-                        Line1: 'OLS TEST STUFF 123',
-                        Country: 'SGP',
-                        PostalCode: '85392',
-                      },
-                    },
-                    partialMatches: {},
-                  },
-                ],
-                exactMatches: {
-                  name: 'BALLERINE',
-                  address: {
-                    City: 'NYC',
-                    Line1: 'OLS TEST STUFF 123',
-                    Country: 'SGP',
-                    PostalCode: '85392',
-                  },
-                },
-                partialMatches: {},
-                exactMatchesAmount: 3,
-                partialMatchesAmount: 0,
-              },
-              {
-                raw: {
-                  Merchant: {
-                    Name: 'BALLERINE',
-                    Address: {
-                      City: 'NYC',
-                      Line1: 'OLS TEST STUFF 123',
-                      Country: 'SGP',
-                      PostalCode: '85392',
-                    },
-                    Principal: [
-                      {
-                        Address: {
-                          City: 'NYC',
-                          Line1: 'OLS TEST STUFF 123',
-                          Country: 'SGP',
-                          PostalCode: '85392',
-                        },
-                        LastName: 'PERETZ',
-                        FirstName: 'ALON',
-                        DriversLicense: {},
-                      },
-                    ],
-                    AddedOnDate: '09/02/2024',
-                    MerchantMatch: {
-                      Name: 'M01',
-                      Address: 'M01',
-                      PhoneNumber: 'M00',
-                      NationalTaxId: 'M00',
-                      AltPhoneNumber: 'M00',
-                      PrincipalMatch: [
-                        {
-                          Name: 'M01',
-                          Address: 'M01',
-                          NationalId: 'M00',
-                          PhoneNumber: 'M00',
-                          AltPhoneNumber: 'M00',
-                          DriversLicense: 'M00',
-                        },
-                      ],
-                      ServiceProvDBA: 'M00',
-                      ServiceProvLegal: 'M00',
-                      DoingBusinessAsName: 'M00',
-                      CountrySubdivisionTaxId: 'M00',
-                    },
-                  },
-                },
-                name: 'BALLERINE',
-                urls: [],
-                dateAdded: '09/02/2024',
-                principals: [
-                  {
-                    exactMatches: {
-                      address: {
-                        City: 'NYC',
-                        Line1: 'OLS TEST STUFF 123',
-                        Country: 'SGP',
-                        PostalCode: '85392',
-                      },
-                    },
-                    partialMatches: {},
-                  },
-                ],
-                exactMatches: {
-                  name: 'BALLERINE',
-                  address: {
-                    City: 'NYC',
-                    Line1: 'OLS TEST STUFF 123',
-                    Country: 'SGP',
-                    PostalCode: '85392',
-                  },
-                },
-                partialMatches: {},
-                exactMatchesAmount: 3,
-                partialMatchesAmount: 0,
-              },
-              {
-                raw: {
-                  Merchant: {
-                    Name: 'BALLERINE',
-                    Address: {
-                      City: 'SHIBOLIM',
-                      Line1: 'SHIBOLIM 137',
-                      Country: 'SGP',
-                      PostalCode: '85392',
-                    },
-                    Principal: [
-                      {
-                        Address: {
-                          City: 'SHIBOLIM',
-                          Line1: 'SHIBOLIM 137',
-                          Country: 'SGP',
-                          PostalCode: '85392',
-                        },
-                        LastName: 'PERETZ',
-                        FirstName: 'ALON',
-                        DriversLicense: {},
-                      },
-                    ],
-                    AddedOnDate: '09/02/2024',
-                    MerchantMatch: {
-                      Name: 'M01',
-                      Address: 'M00',
-                      PhoneNumber: 'M00',
-                      NationalTaxId: 'M00',
-                      AltPhoneNumber: 'M00',
-                      PrincipalMatch: [
-                        {
-                          Name: 'M01',
-                          Address: 'M00',
-                          NationalId: 'M00',
-                          PhoneNumber: 'M00',
-                          AltPhoneNumber: 'M00',
-                          DriversLicense: 'M00',
-                        },
-                      ],
-                      ServiceProvDBA: 'M00',
-                      ServiceProvLegal: 'M00',
-                      DoingBusinessAsName: 'M00',
-                      CountrySubdivisionTaxId: 'M00',
-                    },
-                  },
-                },
-                name: 'BALLERINE',
-                urls: [],
-                dateAdded: '09/02/2024',
-                principals: [
-                  {
-                    exactMatches: {},
-                    partialMatches: {},
-                  },
-                ],
-                exactMatches: {
-                  name: 'BALLERINE',
-                },
-                partialMatches: {},
-                exactMatchesAmount: 1,
-                partialMatchesAmount: 0,
+                exactMatchesAmount: 2,
+                partialMatchesAmount: 1,
               },
             ],
             terminatedMatchedMerchants: [],
@@ -2410,10 +1708,11 @@ export const getMockWorkflowContext = async (
               status: 'Live Company',
               expiryDate: '2026-01-04',
               statusDate: '2024-01-04',
-              companyName: 'Tech Solutions Ltd',
+              companyName: 'GreenTech Solutions Ltd.',
               companyType: 'Private Limited Company',
               lastUpdated: '2024-10-23 16:26:54',
-              historyNames: ['Tech Solutions Ltd', 'Tech Innovations Ltd'],
+              historyNames: ['GreenTech Solutions Ltd.', 'GreenTech Solutions Ltd'],
+
               businessScope: {
                 code: '62020',
                 description: 'Information Technology Consultancy Activities',
