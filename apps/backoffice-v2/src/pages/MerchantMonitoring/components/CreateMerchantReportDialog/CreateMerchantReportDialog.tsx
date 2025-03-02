@@ -14,6 +14,7 @@ import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
 import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
 import { BusinessReportsLeftCard } from '@/domains/business-reports/components/BusinessReportsLeftCard/BusinessReportsLeftCard';
 import { useCreateMerchantReportDialogLogic } from './hooks/useCreateMerchantReportDialogLogic';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 
 type CreateMerchantReportDialogProps = {
   open: boolean;
@@ -30,6 +31,8 @@ export const CreateMerchantReportDialog = ({
 }: CreateMerchantReportDialogProps) => {
   const { form, showSuccess, isSubmitting, onSubmit, reportsLeft, demoDaysLeft, toggleOpen } =
     useCreateMerchantReportDialogLogic({ toggleOpen: toggleOpenProps });
+  const { data: customer } = useCustomerQuery();
+  const isDemoAccount = customer?.config?.isDemoAccount || customer?.config?.isDemo;
 
   return (
     <Dialog open={open} onOpenChange={toggleOpen}>
@@ -39,7 +42,7 @@ export const CreateMerchantReportDialog = ({
       <DialogContent className="px-0 sm:max-w-xl">
         <DialogHeader className="block font-medium sm:text-center">
           <h2 className={`text-2xl font-bold`}>Create a Web Presence Report</h2>
-          <p>Try out Ballerine&apos;s Web Presence Report!</p>
+          {isDemoAccount && <p>Try out Ballerine&apos;s Web Presence Report!</p>}
         </DialogHeader>
 
         {showSuccess ? (
@@ -59,6 +62,9 @@ export const CreateMerchantReportDialog = ({
 };
 
 const CreateMerchantReportDialogSuccessContent = () => {
+  const { data: customer } = useCustomerQuery();
+  const isDemoAccount = customer?.config?.isDemoAccount || customer?.config?.isDemo;
+
   return (
     <div className="mx-6 text-center">
       <div className="my-12 space-y-2">
@@ -70,7 +76,7 @@ const CreateMerchantReportDialogSuccessContent = () => {
       </div>
 
       <div className="mb-16 rounded-md border border-gray-200 bg-gray-50 px-1 py-2">
-        <p className="font-semibold">Ready in up to 24 hours</p>
+        {isDemoAccount && <p className="font-semibold">Ready in up to 24 hours</p>}
         <span>You will receive an email alert once the report is ready.</span>
       </div>
     </div>
@@ -90,14 +96,18 @@ const CreateMerchantReportDialogFormContent = ({
 }: CreateMerchantReportDialogFormContentProps) => {
   const shouldDisableForm =
     (reportsLeft && reportsLeft <= 0) || (demoDaysLeft && demoDaysLeft <= 0);
+  const { data: customer } = useCustomerQuery();
+  const isDemoAccount = customer?.config?.isDemoAccount || customer?.config?.isDemo;
 
   return (
     <div>
-      <BusinessReportsLeftCard
-        reportsLeft={reportsLeft}
-        demoDaysLeft={demoDaysLeft}
-        className="mx-6 mt-6"
-      />
+      {isDemoAccount && (
+        <BusinessReportsLeftCard
+          reportsLeft={reportsLeft}
+          demoDaysLeft={demoDaysLeft}
+          className="mx-6 mt-6"
+        />
+      )}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="relative">
           {shouldDisableForm && (
