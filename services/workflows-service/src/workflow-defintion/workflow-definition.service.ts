@@ -251,14 +251,17 @@ export class WorkflowDefinitionService {
   }
 
   async createDemoWorkflowDefinition({
-    customer,
+    customerId,
+    userId,
     workflowOverrides,
   }: {
-    customer: string;
+    customerId: string;
+    userId?: string;
     workflowOverrides?: Array<{ webPresenceReportId?: string }>;
   }) {
     return await this.workflowDefinitionRepository.createDemoWorkflowDefinition(
-      customer,
+      customerId,
+      userId,
       workflowOverrides,
     );
   }

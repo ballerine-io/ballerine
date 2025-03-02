@@ -20,6 +20,9 @@ const getKybWorkflowContexts = async ({
   client: PrismaTransactionClient | PrismaClient;
   projectId: string;
   customerName: string;
+  workflowOverrides?: Array<{
+    webPresenceReportId?: string;
+  }>;
 }) => {
   const generateDocumentPage = generateDocumentPageFactory({
     client,
@@ -33,10 +36,12 @@ const generateBusiness = ({
   projectId,
   workflowDefinitionId,
   context,
+  userId,
 }: {
   projectId: string;
   workflowDefinitionId: string;
   context: Record<string, any>;
+  userId: string;
 }) => {
   const id = randomUUID();
 
@@ -57,6 +62,8 @@ const generateBusiness = ({
           example: true,
         },
         tags: ['manual_review'],
+        assigneeId: userId,
+        assignedAt: new Date(),
       },
     },
     project: {
@@ -122,17 +129,21 @@ type TDemoEnv = {
       };
 };
 
-export const createDemoWorkflow = async (
-  customer: {
-    displayName: string;
-    name: string;
-  },
-  demoEnv: TDemoEnv,
-  transaction: PrismaTransactionClient,
+export const createDemoWorkflow = async ({
+  customer,
+  demoEnv,
+  transaction,
+  workflowOverrides,
+  userId,
+}: {
+  customer: Customer;
+  demoEnv: TDemoEnv;
+  transaction: PrismaTransactionClient;
   workflowOverrides?: Array<{
     webPresenceReportId?: string;
-  }>,
-) => {
+  }>;
+  userId?: string;
+}) => {
   const demoOngoingMonitoringChildAssociatedCompanyDefinition =
     composeChildAssociatedCompanyDefinition({
       definitionId: `${customer.name}_demo_ongoing_monitoring_child_associated_company`,
@@ -206,6 +217,7 @@ export const createDemoWorkflow = async (
         projectId: demoEnv.project.id,
         workflowDefinitionId: demoOngoingMonitoringKybDefinition.id,
         context: kybWorkflowContext,
+        userId: userId ?? '',
       }),
       select: {
         workflowRuntimeData: {
