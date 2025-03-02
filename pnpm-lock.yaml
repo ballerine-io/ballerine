@@ -103,7 +103,7 @@ importers:
         specifier: ^1.2.80
         version: link:../../packages/react-pdf-toolkit
       '@ballerine/ui':
-        specifier: ^0.5.80
+        specifier: ^0.5.81
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.6.99
