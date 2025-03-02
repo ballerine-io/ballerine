@@ -47,6 +47,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     notes,
     isNotesOpen,
     setIsNotesOpen,
+    workflow,
   } = useCaseActionsLogic({ workflowId: id, fullName });
 
   const entityInitials = createInitials(fullName);
@@ -67,7 +68,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
         />
         <CaseOptions />
       </div>
-      <div className={`min-h-20 flex justify-between gap-4`}>
+      <div className={`flex min-h-20 justify-between gap-4`}>
         <div className={`flex flex-col space-y-3`}>
           <div className={`flex space-x-4`}>
             <Avatar
@@ -81,12 +82,20 @@ export const Actions: FunctionComponent<IActionsProps> = ({
               }}
             />
             <h2
-              className={ctw(`w-full max-w-[35ch] break-all text-2xl font-semibold leading-9`, {
-                'h-8 w-full max-w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
-                  isLoadingCase,
-              })}
+              className={ctw(
+                `flex w-full max-w-[35ch] items-center break-all text-2xl font-semibold leading-9`,
+                {
+                  'h-8 w-full max-w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
+                    isLoadingCase,
+                },
+              )}
             >
               {fullName}
+              {workflow?.config?.example === true && (
+                <Badge className="ml-2 rounded-full bg-gray-100 px-1 py-0.5 text-xs text-gray-600">
+                  Sample Data
+                </Badge>
+              )}
             </h2>
           </div>
           <div className={`flex items-center space-x-6`}>

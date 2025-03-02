@@ -19,6 +19,7 @@ export const generateBusinessesFilter = ({
         context: true,
         state: true,
         tags: true,
+        config: true,
         workflowDefinition: {
           select: {
             id: true,

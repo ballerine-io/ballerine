@@ -53,6 +53,9 @@ const generateBusiness = ({
         },
         workflowDefinitionVersion: 1,
         projectId,
+        config: {
+          example: true,
+        },
       },
     },
     project: {

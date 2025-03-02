@@ -16,10 +16,12 @@ import { TRouteWithOptionalIcon, TRouteWithoutChildren } from '../types';
 const PremiumNavItemHoverCard = ({
   premiumProps,
   navItemTitle,
+  navItemText,
   children,
 }: {
   premiumProps: NonNullable<TRouteWithoutChildren['premium']>;
   navItemTitle?: string;
+  navItemText?: string;
   children: ReactNode;
 }) => {
   const { caption, checkList, videoLink } = premiumProps;
@@ -35,9 +37,27 @@ const PremiumNavItemHoverCard = ({
       >
         <div className="relative">
           {videoLink ? (
-            <video src={videoLink} className="h-36 w-full" />
+            <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+              <Skeleton className="absolute inset-0 size-full" />
+              <iframe
+                src={videoLink}
+                frameBorder="0"
+                allowFullScreen
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                }}
+              />
+            </div>
           ) : (
-            <Skeleton className="h-36 w-full" />
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="text-sm font-medium text-slate-800 2xl:text-base">
+                {navItemText || 'Premium Feature'}
+              </h3>
+            </div>
           )}
 
           <CrownIcon className="absolute right-0 top-0 -translate-y-1/3 translate-x-1/3 rounded-full bg-[#584EC5] stroke-primary-foreground p-1.5 d-8" />
@@ -119,7 +139,11 @@ const NavItemWrapper = ({
 
   if (navItem.premium) {
     return (
-      <PremiumNavItemHoverCard premiumProps={navItem.premium} navItemTitle={navItem.text}>
+      <PremiumNavItemHoverCard
+        premiumProps={navItem.premium}
+        navItemTitle={navItem.text}
+        navItemText={navItem.text}
+      >
         {NavItemElement}
       </PremiumNavItemHoverCard>
     );

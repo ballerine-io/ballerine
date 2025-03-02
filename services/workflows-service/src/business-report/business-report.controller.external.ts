@@ -16,7 +16,7 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CustomerService } from '@/customer/customer.service';
 import { BusinessService } from '@/business/business.service';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
-import type { TProjectId } from '@/types';
+import type { AuthenticatedEntity, TProjectId } from '@/types';
 import { GetLatestBusinessReportDto } from '@/business-report/get-latest-business-report.dto';
 import {
   BusinessReportListRequestParamDto,
@@ -41,6 +41,7 @@ import {
 } from '@/business-report/dtos/business-report-metrics.dto';
 import { BusinessReportMetricsDto } from './dtos/business-report-metrics-dto';
 import { BusinessReportStatusUpdateRequestParamsDto } from '@/business-report/dtos/business-report-status-update.dto';
+import { UserData } from '@/user/user-data.decorator';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Business Reports')
@@ -263,6 +264,7 @@ export class BusinessReportControllerExternal {
     };
   }
 
+  @common.Post()
   @swagger.ApiOperation({
     summary: 'Create business report',
     description: 'Create a new business report for a merchant',
@@ -271,7 +273,6 @@ export class BusinessReportControllerExternal {
     type: CreateBusinessReportDto,
     description: 'Business report creation parameters',
   })
-  @common.Post()
   @swagger.ApiOkResponse({
     description: 'Business report created successfully',
   })
@@ -293,6 +294,7 @@ export class BusinessReportControllerExternal {
       workflowVersion,
     }: CreateBusinessReportDto,
     @CurrentProject() currentProjectId: TProjectId,
+    @UserData() user: AuthenticatedEntity,
   ) {
     const customer = await this.customerService.getByProjectId(currentProjectId);
     await this.businessReportService.checkBusinessReportsLimit(customer);
@@ -340,6 +342,7 @@ export class BusinessReportControllerExternal {
       workflowVersion,
       withQualityControl: customer.config?.withQualityControl ?? false,
       customerId: customer.id,
+      requestedByUserId: user.user?.id,
     });
   }
 
