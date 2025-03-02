@@ -29,25 +29,29 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
     workflow?.context?.pluginsOutput?.riskEvaluation?.riskIndicatorsByDomain ??
       workflow?.context?.pluginsOutput?.risk_evaluation?.riskIndicatorsByDomain ??
       {},
-  )?.map(([domain, riskIndicators]) => {
-    const tab = camelCase(domain.toLowerCase());
-    const isValidCaseTab = CaseTabs.includes(tab);
+  )
+    ?.map(([domain, riskIndicators]) => {
+      const domainTitle = domain ?? '';
+      const tabEntry = Object.entries(TabToLabel).find(([_, label]) => label === domainTitle);
+      const tab = tabEntry ? tabEntry[0] : camelCase(domainTitle.toLowerCase());
+      const isValidCaseTab = CaseTabs.includes(tab as keyof typeof CaseTabs);
 
-    return {
-      title: TabToLabel[tab as keyof typeof TabToLabel] ?? titleCase(domain ?? ''),
-      search: isValidCaseTab
-        ? getUpdatedSearchParamsWithActiveTab({
-            tab: tab,
-          })
-        : undefined,
-      riskIndicators:
-        riskIndicators && Array.isArray(riskIndicators)
-          ? riskIndicators.map((riskIndicator: z.infer<typeof RiskIndicatorSchema>) => ({
-              name: riskIndicator.name,
-            }))
-          : [],
-    };
-  });
+      return {
+        title: domain,
+        search: isValidCaseTab
+          ? getUpdatedSearchParamsWithActiveTab({
+              tab: tab,
+            })
+          : undefined,
+        indicators:
+          riskIndicators && Array.isArray(riskIndicators)
+            ? riskIndicators.map(riskIndicator => ({
+                name: riskIndicator.name,
+              }))
+            : [],
+      };
+    })
+    .sort((a, b) => b.indicators.length - a.indicators.length);
 
   if (!workflow?.workflowDefinition?.config?.isCaseOverviewEnabled) {
     return;

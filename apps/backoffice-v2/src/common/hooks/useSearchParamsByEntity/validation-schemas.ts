@@ -52,12 +52,12 @@ export const CaseTabs = [
 export const TabToLabel = {
   summary: 'Summary',
   kyb: 'KYB',
-  storeInformation: 'Store',
+  storeInfo: 'Store',
   documents: 'Documents',
-  ubosKyc: 'UBOs',
+  ubosKyc: 'KYC',
   associatedCompanies: 'Associated Companies',
   directors: 'Directors',
-  monitoringReports: 'Monitoring Reports',
+  monitoringReports: 'Web Presence',
   customData: 'Custom Data',
 } as const;
 
