@@ -160,31 +160,24 @@ export const AdsAndSocialMedia = (pages: {
                 <div className="mt-8 flex gap-6">
                   <div className="flex flex-col gap-4">
                     {Object.entries(socialMediaMapper[provider].fields).map(
-                      ([, { icon, label }]) => (
-                        <div key={label} className="flex items-center gap-4 whitespace-nowrap">
-                          {icon}
-                          <span className="font-semibold">{label}</span>
-                        </div>
-                      ),
-                    )}
-                  </div>
-
-                  <div className="flex min-w-0 flex-col gap-4">
-                    {Object.entries(socialMediaMapper[provider].fields).map(
-                      ([field, { label, toDisplay }]) => {
+                      ([field, { icon, label, toDisplay }]) => {
                         const value = rest[field as keyof typeof rest];
 
                         return (
-                          <TextWithNAFallback
-                            key={label}
-                            className={ctw(
-                              'max-w-full overflow-hidden text-ellipsis',
-                              !value && 'text-gray-400',
-                              label !== 'Biography' && 'whitespace-nowrap',
-                            )}
-                          >
-                            {toDisplay?.(value) ?? value}
-                          </TextWithNAFallback>
+                          <div key={label} className="flex items-center gap-4">
+                            <div className="flex w-[15ch] items-center gap-4 whitespace-nowrap">
+                              {icon}
+                              <span className="font-semibold">{label}</span>
+                            </div>
+                            <TextWithNAFallback
+                              key={label}
+                              className={ctw('max-w-[50ch] break-words', {
+                                'text-gray-400': !value,
+                              })}
+                            >
+                              {toDisplay?.(value) ?? value}
+                            </TextWithNAFallback>
+                          </div>
                         );
                       },
                     )}
