@@ -42,65 +42,6 @@ const SCAN_TYPES = {
   MONITORING: 'Monitoring',
 } as const;
 
-const WEBSITE_STRUCTURE_VIOLATIONS: Record<string, { name: string; riskLevel: string }> = {
-  'website-structure-generic-contact-details': {
-    name: 'Generic Contact Details',
-    riskLevel: 'critical',
-  },
-  'website-structure-invalid-ssl-certificate': {
-    name: 'Invalid SSL Certificate',
-    riskLevel: 'critical',
-  },
-  'website-structure-incomplete-website-structure': {
-    name: 'Incomplete Website Structure',
-    riskLevel: 'moderate',
-  },
-  'website-structure-missing-terms-and-conditions-(t&c)': {
-    name: 'Missing Terms and Conditions (T&C)',
-    riskLevel: 'moderate',
-  },
-  'website-structure-missing-privacy-policy': {
-    name: 'Missing Privacy Policy',
-    riskLevel: 'moderate',
-  },
-  'website-structure-missing-returns-policy': {
-    name: 'Missing Returns Policy',
-    riskLevel: 'moderate',
-  },
-  'website-structure-missing-contact-us': {
-    name: 'Missing Contact Us',
-    riskLevel: 'moderate',
-  },
-  'website-structure-affiliate-program': {
-    name: 'Affiliate Program',
-    riskLevel: 'moderate',
-  },
-  'website-structure-generic-or-copied-content-in-essential-pages': {
-    name: 'Generic or Copied Content in Essential Pages',
-    riskLevel: 'critical',
-  },
-  'website-structure-broken-social-links': {
-    name: 'Broken Social Links',
-    riskLevel: 'critical',
-  },
-  'website-structure-company-information-displayed-as-a-picture': {
-    name: 'Company Information Displayed as a Picture',
-    riskLevel: 'critical',
-  },
-  'website-structure-generic-placeholder-text': {
-    name: 'Generic Placeholder Text',
-    riskLevel: 'moderate',
-  },
-  'website-structure-missing-about-us': {
-    name: 'Missing About Us',
-    riskLevel: 'moderate',
-  },
-  'website-structure-placeholder-contact-details': {
-    name: 'Placeholder Contact Details',
-    riskLevel: 'positive',
-  },
-} as const;
-
 const REPORT_TYPE_TO_SCAN_TYPE = {
   [MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1]: SCAN_TYPES.ONBOARDING,
   [MERCHANT_REPORT_TYPES_MAP.ONGOING_MERCHANT_REPORT_T1]: SCAN_TYPES.MONITORING,
@@ -219,21 +160,12 @@ export const useColumns = ({ isDemoAccount = false }) => {
         cell: ({ row }) => {
           const violations = (row.original.data?.allViolations ?? [])
             .filter(el => el.id !== NO_VIOLATION_DETECTED_RISK_INDICATOR_ID)
-            .map(violation => {
-              const websiteStructureViolation = WEBSITE_STRUCTURE_VIOLATIONS[violation.id];
-
-              return {
-                ...violation,
-                name: websiteStructureViolation?.name ?? violation.name ?? '',
-                riskLevel: websiteStructureViolation?.riskLevel ?? violation.riskLevel ?? '',
-              };
-            })
             .sort((a, b) => {
               if (a.riskLevel === b.riskLevel) {
-                return a.name.localeCompare(b.name);
+                return (a.name ?? '').localeCompare(b.name ?? '');
               }
 
-              return a.riskLevel.localeCompare(b.riskLevel);
+              return (a.riskLevel ?? '').localeCompare(b.riskLevel ?? '');
             });
 
           if (!violations?.length) {
@@ -246,18 +178,24 @@ export const useColumns = ({ isDemoAccount = false }) => {
                 <>
                   <p className="mb-4 text-base font-bold">Findings</p>
 
-                  {violations.map((violation, index) => (
+                  {violations.slice(0, 4).map((violation, index) => (
                     <div key={index} className="space-x-1 text-sm">
                       <WarningFilledSvg
                         className={ctw('inline-block d-5', {
-                          'text-error': violation.riskLevel === 'critical',
-                          'text-warning': violation.riskLevel === 'moderate',
-                          'text-slate-500': !violation.riskLevel,
+                          'text-warning': violation.riskLevel === 'critical',
+                          'text-slate-500':
+                            violation.riskLevel === 'moderate' || !violation.riskLevel,
                         })}
                       />
                       <span className="text-slate-500">{violation.name}</span>
                     </div>
                   ))}
+                  {violations.length > 4 && (
+                    <div className="mt-2 text-sm text-slate-500">
+                      + {violations.length - 4} additional finding
+                      {violations.length - 4 > 1 ? 's' : ''}
+                    </div>
+                  )}
                 </>
               }
               props={{
@@ -269,7 +207,17 @@ export const useColumns = ({ isDemoAccount = false }) => {
                 },
               }}
             >
-              <div className="flex items-center justify-center rounded-full bg-warning/20 text-xs font-bold text-warning d-5">
+              <div
+                className={ctw(
+                  'flex items-center justify-center rounded-full text-xs font-bold d-5',
+                  {
+                    'bg-warning/20 text-warning': violations.some(v => v.riskLevel === 'critical'),
+                    'bg-slate-500/20 text-slate-500': !violations.some(
+                      v => v.riskLevel === 'critical',
+                    ),
+                  },
+                )}
+              >
                 {violations.length}
               </div>
             </ContentTooltip>
