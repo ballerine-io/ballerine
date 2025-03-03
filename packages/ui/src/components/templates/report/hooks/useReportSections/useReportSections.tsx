@@ -60,7 +60,7 @@ export const useReportSections = (report: z.infer<typeof ReportSchema>) => {
     bounceRate,
 
     ecosystem,
-
+    companyName,
     facebookPage,
     instagramPage,
   } = report.data ?? {};
@@ -104,7 +104,7 @@ export const useReportSections = (report: z.infer<typeof ReportSchema>) => {
         },
         {
           id: 'company',
-          title: 'Company Analysis',
+          title: `Company Analysis${companyName ? ` - ${companyName}` : ''}`,
           label: 'Company',
           description:
             "Evaluates the company's reputation using customer feedback, reviews, and media coverage. Identifies trust issues and potential red flags.",
