@@ -754,12 +754,12 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             transformer: 'jmespath',
             mapping: `{
               ${options.dataMapping || ''}
-              kybCompanyName: entity.data.additionalInfo.companyName,
-              customerCompanyName: entity.data.additionalInfo.customerCompany,
+              kybCompanyName: entity.data.additionalInfo.companyName || entity.data.companyName,
+              customerCompanyName: entity.data.additionalInfo.customerCompany || entity.data.customerCompany,
               firstName: entity.data.firstName,
               kycLink: pluginsOutput.kyc_session.kyc_session_1.result.metadata.url,
               from: 'no-reply@ballerine.com',
-              name: join(' ',[entity.data.additionalInfo.customerCompany,'Team']),
+              name: join(' ',[entity.data.additionalInfo.customerCompany || entity.data.customerCompany,'Team']),
               receivers: [entity.data.email],
               subject: '{customerCompanyName} activation, Action needed.',
               templateId: ${
@@ -769,7 +769,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               },
               revisionReason: documents[].decision[].revisionReason | [0],
               language: workflowRuntimeConfig.language,
-              supportEmail: join('',['support@',entity.data.additionalInfo.customerCompany,'.com']),
+              supportEmail: join('',['support@',entity.data.additionalInfo.customerCompany || entity.data.customerCompany,'.com']),
               adapter: '{secret.MAIL_ADAPTER}'
             }`, // jmespath
           },
@@ -830,6 +830,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             transformer: 'jmespath',
             mapping: `{
               ${options.dataMapping || ''}
+              context: @,
               companyName: data.companyName,
               customerName: metadata.customerName,
               collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),

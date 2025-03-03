@@ -46,6 +46,28 @@ export const updateDocumentDecisionById = async ({
   return handleZodError(error, documents);
 };
 
+export const updateDocumentsDecisionByIds = async ({
+  ids,
+  data,
+}: {
+  ids: string[];
+  data: {
+    decision: 'approve' | 'reject' | 'revision' | null;
+  };
+}) => {
+  const [documents, error] = await apiClient({
+    endpoint: `../external/documents/decision`,
+    method: Method.PATCH,
+    body: {
+      ids,
+      decision: data.decision,
+    },
+    schema: z.any(),
+  });
+
+  return handleZodError(error, documents);
+};
+
 export const updateDocumentById = async ({
   documentId,
   data,

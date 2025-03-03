@@ -148,3 +148,23 @@ export const fetchDocumentsByIds = async (ids: string[]) => {
 
   return result.json<IDocumentRecord[]>();
 };
+
+export const finalSubmissionRequest = async () => {
+  const result = await request.post('collection-flow/final-submission', {
+    json: {
+      eventName: 'COLLECTION_FLOW_FINISHED',
+    },
+  });
+
+  return result.json();
+};
+
+export const fetchDocumentsByIds = async (ids: string[]) => {
+  const result = await request.get('collection-flow/files', {
+    searchParams: {
+      ids: ids.join(','),
+    },
+  });
+
+  return result.json<IDocumentRecord[]>();
+};

@@ -35,7 +35,7 @@ import {
 import { PrismaService } from '@/prisma/prisma.service';
 import { BusinessService } from '@/business/business.service';
 import { BusinessRepository } from '@/business/business.repository';
-import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
+import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 import { DataInvestigationService } from '@/data-analytics/data-investigation.service';
 import { TIME_UNITS } from '@/data-analytics/consts';
 

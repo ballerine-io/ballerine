@@ -96,6 +96,7 @@ export class CollectionFlowNoUserController {
           email: payload.email,
           firstName: payload.firstName,
           lastName: payload.lastName,
+          additionalInfo,
         };
 
         set(contextClone, 'entity.data.additionalInfo.mainRepresentative', {

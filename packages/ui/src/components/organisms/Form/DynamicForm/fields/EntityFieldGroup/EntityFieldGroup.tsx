@@ -1,9 +1,9 @@
 import { AnyObject } from '@/common';
 import { IHttpParams, useHttp } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';
+import clsx from 'clsx';
 import get from 'lodash/get';
 import set from 'lodash/set';
-import { Trash2Icon } from 'lucide-react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Toaster } from 'sonner';
 import { useDynamicForm } from '../../context';
@@ -73,7 +73,11 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
   const { stack } = useStack();
   const { id: fieldId, hidden } = useElement(element, stack);
   const { disabled, value, onChange } = useField<IEntity[]>(element, stack);
-  const { addButtonLabel = 'Add Item' } = element.params || {};
+  const {
+    addButtonLabel = 'Add Item',
+    removeButtonLabel = 'Remove',
+    itemIndexLabel = 'ITEM {INDEX}',
+  } = element.params || {};
   const { items, isRemovingEntity, addItem, removeItem } = useEntityFieldGroupList({ element });
   const { run: createEntity, isLoading: isCreatingEntity } = useHttp(
     element.params!.httpParams?.createEntity.httpParams,
@@ -181,6 +185,23 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
             isSyncing={isCreatingEntity || isUpdatingEntity}
           >
             <div className="flex flex-col gap-4">
+              <div className="flex flex-row items-center justify-between">
+                <span className="text-sm font-bold">
+                  {itemIndexLabel.replace('{INDEX}', (index + 1).toString())}
+                </span>
+                <span
+                  role="button"
+                  tabIndex={0}
+                  aria-disabled={isRemovingEntity}
+                  className={clsx('cursor-pointer text-sm font-bold', {
+                    'pointer-events-none opacity-50': isRemovingEntity,
+                  })}
+                  data-testid={`${fieldId}-fieldlist-item-remove-${entity.__id}`}
+                  onClick={isRemovingEntity ? undefined : () => removeItem(entity.__id!)}
+                >
+                  {removeButtonLabel}
+                </span>
+              </div>
               <EntityFields
                 entityId={entity.__id!}
                 index={index}
@@ -189,19 +210,6 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
                 element={element}
                 elementsOverride={elementsOverride as AnyObject}
               />
-              <div className="flex flex-row justify-start">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  disabled={isRemovingEntity}
-                  onClick={isRemovingEntity ? undefined : () => removeItem(entity.__id!)}
-                >
-                  <Trash2Icon
-                    className="h-4 w-4 cursor-pointer font-bold"
-                    data-testid={`${fieldId}-fieldlist-item-remove-${entity.__id}`}
-                  />
-                </Button>
-              </div>
             </div>
           </EntityFieldProvider>
         );
@@ -210,9 +218,9 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
         <Button
           onClick={addItem}
           disabled={disabled}
-          className="border border-gray-200 bg-white text-[hsl(var(--muted-foreground))] shadow-sm hover:bg-gray-50"
+          className="border border-gray-200 bg-white text-[hsl(var(--muted-foreground))] shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:bg-gray-50 hover:shadow-[0_1px_2px_0_rgb(0_0_0_/_0.1)]"
         >
-          {addButtonLabel}
+          {`+ ${addButtonLabel}`}
         </Button>
       </div>
       <FieldDescription element={element} />

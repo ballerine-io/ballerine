@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
@@ -39,16 +39,28 @@ export const useCaseCallToActionLegacyLogic = ({
     workflowId: parentWorkflowId,
     filterId,
   });
+  const childWorkflow = parentWorkflow?.childWorkflows?.find(
+    workflow => workflow.id === childWorkflowId,
+  );
+  const nonIdentificationDocumentsIds = useMemo(() => {
+    return (
+      childWorkflow?.context?.documents
+        ?.filter(document => document.type !== 'identification_document')
+        ?.map(document => document.id) ?? []
+    );
+  }, [childWorkflow?.context?.documents]);
   // /Queries
 
   // Mutations
   const { mutate: mutateApproveCase, isLoading: isLoadingApproveCase } =
     useApproveCaseAndDocumentsMutation({
       workflowId: childWorkflowId,
+      ids: nonIdentificationDocumentsIds,
     });
   const { mutate: mutateRevisionCase, isLoading: isLoadingRevisionCase } =
     useRevisionCaseAndDocumentsMutation({
       workflowId: childWorkflowId,
+      ids: nonIdentificationDocumentsIds,
     });
   // /Mutations
 

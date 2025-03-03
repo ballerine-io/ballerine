@@ -88,6 +88,7 @@ export const ReportSchema = z
     }),
     business: z.object({
       id: z.string(),
+      correlationId: z.string().nullish(),
       unsubscribedMonitoringAt: z.string().datetime().nullable(),
     }),
     metadata: z.record(z.string(), z.unknown()).nullish(),
@@ -121,6 +122,9 @@ export const ReportSchema = z
         riskScore: z.coerce.number().nullish(),
         riskLevel: z.enum(MERCHANT_REPORT_RISK_LEVELS).nullish(),
         isWebsiteOffline: z.boolean().nullish(),
+        contentViolations: z
+          .array(RiskIndicatorSchema.pick({ id: true, name: true, riskLevel: true }))
+          .nullish(),
       })
       .passthrough()
       .nullable()

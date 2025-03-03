@@ -1,15 +1,15 @@
+import { AnyObject } from '@ballerine/ui';
+import ajvErrors from 'ajv-errors';
+import addFormats, { FormatName } from 'ajv-formats';
+import Ajv, { ErrorObject } from 'ajv/dist/2019';
 import dayjs from 'dayjs';
 import uniqBy from 'lodash/uniqBy';
-import ajvErrors from 'ajv-errors';
-import { AnyObject } from '@ballerine/ui';
-import Ajv, { ErrorObject } from 'ajv/dist/2019';
-import addFormats, { FormatName } from 'ajv-formats';
 
-import { Rule, UIElement } from '@/domains/collection-flow';
 import {
   ErrorField,
   RuleEngine,
 } from '@/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
+import { Rule, UIElement } from '@/domains/collection-flow';
 
 const addCustomFormats = (validator: Ajv) => {
   validator.addFormat('non-past-date', {
@@ -22,6 +22,33 @@ const addCustomFormats = (validator: Ajv) => {
       }
 
       return inputDate.startOf('day').valueOf() >= dayjs().startOf('day').valueOf();
+    },
+  });
+
+  validator.addFormat('minAge', {
+    type: 'string',
+    validate: (dateString: string, schema?: { minAge?: number }) => {
+      const inputDate = dayjs(dateString);
+
+      if (!inputDate.isValid()) {
+        return false;
+      }
+
+      // Default to 18 if not specified
+      const requiredAge = schema?.minAge || 18;
+      const today = dayjs();
+      const birthDate = dayjs(dateString);
+
+      // Calculate age
+      let age = today.year() - birthDate.year();
+      const monthDiff = today.month() - birthDate.month();
+
+      // Adjust age if birthday hasn't occurred yet this year
+      if (monthDiff < 0 || (monthDiff === 0 && today.date() < birthDate.date())) {
+        age--;
+      }
+
+      return age >= requiredAge;
     },
   });
 };

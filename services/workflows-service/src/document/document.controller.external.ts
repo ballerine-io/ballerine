@@ -269,6 +269,37 @@ export class DocumentControllerExternal {
     return await this.documentService.updateDocumentDecisionById(documentId, [projectId], data);
   }
 
+  @Patch('/decision')
+  @ApiResponse({
+    status: 200,
+    description: 'Document decision updated successfully',
+    schema: Type.Array(Type.Record(Type.String(), Type.Any())),
+  })
+  @Validate({
+    request: [
+      {
+        type: 'body',
+        schema: Type.Object({
+          ids: Type.Array(Type.String()),
+          decision: Type.Index(UpdateDocumentDecisionSchema, ['decision']),
+        }),
+      },
+    ],
+    response: Type.Any(),
+  })
+  async updateDocumentsDecisionByIds(
+    @Body()
+    data: {
+      ids: string[];
+      decision: Static<typeof UpdateDocumentDecisionSchema>['decision'];
+    },
+    @CurrentProject() projectId: string,
+  ) {
+    await this.documentService.updateDocumentsDecisionByIds(data.ids, [projectId], {
+      decision: data.decision,
+    });
+  }
+
   @UseInterceptors(
     FileInterceptor('file', {
       storage: getDiskStorage(),

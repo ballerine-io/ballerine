@@ -21,11 +21,13 @@ describe('RuleEngineService', () => {
           key: 'single',
           operator: 'IN_CASE_INSENSITIVE',
           value: ['sole'],
+          isPathComparison: false,
         },
         {
           key: 'array',
           operator: 'IN_CASE_INSENSITIVE',
           value: ['ownership'],
+          isPathComparison: false,
         },
       ],
     };

@@ -1,11 +1,10 @@
-import { TBusinessReport } from '@/domains/business-reports/fetchers';
-import { useCallback } from 'react';
-import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
-import { useLocation } from 'react-router-dom';
 import { useReportTabs } from '@ballerine/ui';
+import { useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
+
+import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
-import { UnknownRecord } from 'type-fest';
-import { MERCHANT_REPORT_TYPES_MAP } from '@ballerine/common';
+import { TBusinessReport } from '@/domains/business-reports/fetchers';
 
 export const useWebsiteMonitoringBusinessReportTab = ({
   businessReport,

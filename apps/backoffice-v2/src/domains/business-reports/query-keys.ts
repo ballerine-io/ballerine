@@ -1,3 +1,4 @@
+import { MerchantReportType } from '@ballerine/common';
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
 import {
@@ -5,7 +6,6 @@ import {
   fetchBusinessReports,
   fetchLatestBusinessReport,
 } from '@/domains/business-reports/fetchers';
-import { MerchantReportType } from '@/domains/business-reports/constants';
 import { TReportStatusValue, TRiskLevel } from '@/pages/MerchantMonitoring/schemas';
 
 export const businessReportsQueryKey = createQueryKeys('business-reports', {

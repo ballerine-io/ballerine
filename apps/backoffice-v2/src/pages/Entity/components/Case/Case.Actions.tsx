@@ -1,24 +1,26 @@
+import { StateTag } from '@ballerine/common';
 import { Badge } from '@ballerine/ui';
 import { FunctionComponent, useMemo } from 'react';
-import { StateTag } from '@ballerine/common';
 
-import { tagToBadgeData } from './consts';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { IActionsProps } from './interfaces';
-import { NotesButton } from '@/common/components/molecules/NotesButton/NotesButton';
-import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
 import { AssignDropdown } from '@/common/components/atoms/AssignDropdown/AssignDropdown';
-import { CaseOptions } from '@/pages/Entity/components/Case/components/CaseOptions/CaseOptions';
-import { ActionsVariant } from '@/pages/Entity/components/Case/actions-variants/ActionsVariant/ActionsVariant';
 import { Avatar } from '@/common/components/atoms/Avatar';
-import { stringToRGB } from '@/common/utils/string-to-rgb/string-to-rgb';
 import { createInitials } from '@/common/utils/create-initials/create-initials';
+import { ctw } from '@/common/utils/ctw/ctw';
+import { stringToRGB } from '@/common/utils/string-to-rgb/string-to-rgb';
+import { NotesButton } from '@/domains/notes/NotesButton';
+import { NotesSheet } from '@/domains/notes/NotesSheet';
+import { ActionsVariant } from '@/pages/Entity/components/Case/actions-variants/ActionsVariant/ActionsVariant';
+import { CaseOptions } from '@/pages/Entity/components/Case/components/CaseOptions/CaseOptions';
+import { tagToBadgeData } from './consts';
+import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
+import { IActionsProps } from './interfaces';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
  *
  * @param props
  * @param props.id - The id of the entity, passed into the reject/approve mutation.
+ * @param props.entityId - The id of the selected entity to be used in the notes.
  * @param props.fullName - The full name of the entity.
  * @param props.showResolutionButtons - Whether to show the reject/approve buttons.
  *
@@ -28,8 +30,8 @@ import { createInitials } from '@/common/utils/create-initials/create-initials';
  */
 export const Actions: FunctionComponent<IActionsProps> = ({
   id,
+  entityId,
   fullName,
-  numberOfNotes,
   showResolutionButtons,
 }) => {
   const {
@@ -42,6 +44,10 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     workflowDefinition,
     isWorkflowCompleted,
     avatarUrl,
+    notes,
+    isNotesOpen,
+    setIsNotesOpen,
+    workflow,
   } = useCaseActionsLogic({ workflowId: id, fullName });
 
   const entityInitials = createInitials(fullName);
@@ -62,7 +68,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
         />
         <CaseOptions />
       </div>
-      <div className={`min-h-20 flex justify-between gap-4`}>
+      <div className={`flex min-h-20 justify-between gap-4`}>
         <div className={`flex flex-col space-y-3`}>
           <div className={`flex space-x-4`}>
             <Avatar
@@ -76,12 +82,20 @@ export const Actions: FunctionComponent<IActionsProps> = ({
               }}
             />
             <h2
-              className={ctw(`w-full max-w-[35ch] break-all text-2xl font-semibold leading-9`, {
-                'h-8 w-full max-w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
-                  isLoadingCase,
-              })}
+              className={ctw(
+                `flex w-full max-w-[35ch] items-center break-all text-2xl font-semibold leading-9`,
+                {
+                  'h-8 w-full max-w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
+                    isLoadingCase,
+                },
+              )}
             >
               {fullName}
+              {workflow?.config?.example === true && (
+                <Badge className="ml-2 max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full bg-gray-100 px-1 py-0.5 text-xs text-gray-600">
+                  Sample Data
+                </Badge>
+              )}
             </h2>
           </div>
           <div className={`flex items-center space-x-6`}>
@@ -102,7 +116,20 @@ export const Actions: FunctionComponent<IActionsProps> = ({
                 </Badge>
               </div>
             )}
-            <NotesButton numberOfNotes={numberOfNotes} />
+            <NotesSheet
+              open={isNotesOpen}
+              onOpenChange={setIsNotesOpen}
+              modal={false}
+              notes={notes ?? []}
+              noteData={{
+                entityId,
+                entityType: `Business`,
+                noteableId: id,
+                noteableType: `Workflow`,
+              }}
+            >
+              <NotesButton numberOfNotes={notes?.length ?? 0} />
+            </NotesSheet>
           </div>
         </div>
         {showResolutionButtons && workflowDefinition && (

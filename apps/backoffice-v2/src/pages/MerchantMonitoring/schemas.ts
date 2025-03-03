@@ -1,8 +1,8 @@
-import { z } from 'zod';
-import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
-import { TBusinessReport } from '@/domains/business-reports/fetchers';
 import { BooleanishRecordSchema } from '@ballerine/ui';
-import dayjs from 'dayjs';
+import { z } from 'zod';
+
+import { URL_REGEX } from '@/common/constants';
+import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 
 export const REPORT_TYPE_TO_DISPLAY_TEXT = {
   All: 'All',
@@ -52,11 +52,18 @@ export const RISK_LEVEL_FILTER = {
   })),
 };
 
-export const REPORT_STATUS_LABELS = ['In Progress', 'Ready for Review'] as const;
+export const REPORT_STATUS_LABELS = [
+  'In Progress',
+  'Pending Review',
+  'Under Review',
+  'Completed',
+] as const;
 
 export const REPORT_STATUS_LABEL_TO_VALUE_MAP = {
   'In Progress': 'in-progress',
-  'Ready for Review': 'completed',
+  'Pending Review': 'pending-review',
+  'Under Review': 'under-review',
+  Completed: 'completed',
 } as const;
 
 export type TReportStatusLabel = (typeof REPORT_STATUS_LABELS)[number];
@@ -83,18 +90,10 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
       'business.website',
       'business.companyName',
       'business.country',
-      'riskScore',
+      'riskLevel',
       'status',
       'reportType',
-    ] as const satisfies ReadonlyArray<
-      | Extract<
-          keyof NonNullable<TBusinessReport>,
-          'createdAt' | 'updatedAt' | 'riskScore' | 'status' | 'reportType'
-        >
-      | 'business.website'
-      | 'business.companyName'
-      | 'business.country'
-    >)
+    ])
     .catch('createdAt'),
   selected: BooleanishRecordSchema.optional(),
   reportType: z
@@ -126,4 +125,27 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
     .catch('All'),
   from: z.string().date().optional(),
   to: z.string().date().optional(),
+  isCreating: z
+    .string()
+    .transform(value => (value === 'true' ? true : false))
+    .optional(),
+});
+
+export type CreateBusinessReportDialogInput = z.input<typeof CreateBusinessReportDialogSchema>;
+export const CreateBusinessReportDialogSchema = z.object({
+  websiteUrl: z.string().regex(URL_REGEX, {
+    message: 'Invalid website URL',
+  }),
+  companyName: z
+    .string({
+      invalid_type_error: 'Company name must be a string',
+    })
+    .max(255)
+    .optional(),
+  businessCorrelationId: z
+    .string({
+      invalid_type_error: 'Business ID must be a string',
+    })
+    .max(255)
+    .optional(),
 });
