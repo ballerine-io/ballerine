@@ -21,7 +21,10 @@ export const getMockWorkflowContext = async (
     ballerineFileId: string;
     metadata: { side?: string | undefined; pageNumber?: string | undefined } | undefined;
   }>,
+  workflowOverrides?: Array<{ webPresenceReportId?: string }>,
 ) => {
+  const reportId = workflowOverrides?.[0]?.webPresenceReportId;
+
   return [
     {
       customData: {
@@ -43,8 +46,7 @@ export const getMockWorkflowContext = async (
         paymentReliabilityScore: 85,
         cashFlowStability: 'Moderate',
         profitabilityTrend: 'Increasing',
-        [`${customerName}InternalNotes`]:
-          'Customer has shown improved compliance practices over the last quarter.',
+        InternalNotes: 'Customer has shown improved compliance practices over the last quarter.',
       },
       id: 'e7869864213',
       data: {
@@ -304,6 +306,27 @@ export const getMockWorkflowContext = async (
       },
       documents: [
         {
+          id: 'document-proof-of-address',
+          type: 'water_bill',
+          pages: [
+            await generateDocumentPage({
+              uri: 'https://cdn.ballerine.io/merch-ss/utility%20bill2.jpeg',
+            }),
+          ],
+          issuer: {
+            country: 'GH',
+          },
+          version: '1',
+          category: 'proof_of_address',
+          decision: {},
+          properties: {},
+          issuingVersion: 1,
+          propertiesSchema: {
+            type: 'object',
+            properties: {},
+          },
+        },
+        {
           id: 'document-certificate-of-registration',
           type: 'bank_statement',
           pages: [
@@ -390,27 +413,6 @@ export const getMockWorkflowContext = async (
                 pattern: '^$|^GB-\\d{9}-\\d{1}$',
               },
             },
-          },
-        },
-        {
-          id: 'document-proof-of-address',
-          type: 'water_bill',
-          pages: [
-            await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/utility%20bill2.jpeg',
-            }),
-          ],
-          issuer: {
-            country: 'GH',
-          },
-          version: '1',
-          category: 'proof_of_address',
-          decision: {},
-          properties: {},
-          issuingVersion: 1,
-          propertiesSchema: {
-            type: 'object',
-            properties: {},
           },
         },
       ],
@@ -1529,7 +1531,7 @@ export const getMockWorkflowContext = async (
           },
           name: 'merchantMonitoring',
           status: 'SUCCESS',
-          reportId: 'm6tces5a3f5ex8hmrttih3hb',
+          reportId,
           invokedAt: 1729672000635,
         },
         merchantScreening: {
