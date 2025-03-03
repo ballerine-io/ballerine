@@ -159,7 +159,9 @@ export const useColumns = ({ isDemoAccount = false }) => {
       columnHelper.accessor('data.allViolations', {
         cell: ({ row }) => {
           const violations = (row.original.data?.allViolations ?? [])
-            .filter(el => el.id !== NO_VIOLATION_DETECTED_RISK_INDICATOR_ID)
+            .filter(
+              el => el.id !== NO_VIOLATION_DETECTED_RISK_INDICATOR_ID && el.name && el.riskLevel,
+            )
             .sort((a, b) => {
               if (a.riskLevel === b.riskLevel) {
                 return (a.name ?? '').localeCompare(b.name ?? '');
