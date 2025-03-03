@@ -1059,6 +1059,7 @@ export class DocumentService {
 
       return {
         ...document,
+        decision: document.decision,
         files: files.map(({ file, ...fileData }) => ({
           ...fileData,
           fileName: file.fileName,
@@ -1075,7 +1076,6 @@ export class DocumentService {
           type: document.type,
           category: document.category,
           issuingCountry: document.issuingCountry,
-          version: document.version,
         },
         false,
       );

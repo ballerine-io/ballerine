@@ -1,6 +1,9 @@
 import { IFormElement } from '../../../../types';
 import { IDocumentFieldParams, IDocumentTemplate } from '../../DocumentField';
-import { checkIfDocumentRequested } from '../../hooks/useDocumentUpload/helpers/check-if-document-requested';
+import {
+  checkIfDocumentInRevision,
+  checkIfDocumentRequested,
+} from '../../hooks/useDocumentUpload/helpers/check-if-document-requested';
 
 export const buildDocumentFormData = (
   element: IFormElement<'documentfield', IDocumentFieldParams>,
@@ -26,7 +29,11 @@ export const buildDocumentFormData = (
   payload.append('decisionReason', '');
 
   if (checkIfDocumentRequested(document)) {
-    payload.append('documentId', document._id);
+    payload.append('documentId', document._document?.id as string);
+  }
+
+  if (checkIfDocumentInRevision(document)) {
+    payload.append('documentId', document._document?.id as string);
   }
 
   if (entityId) {

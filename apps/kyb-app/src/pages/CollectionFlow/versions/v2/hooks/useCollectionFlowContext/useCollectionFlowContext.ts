@@ -1,8 +1,8 @@
 import { fetchDocumentsByIds, UISchema } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { useEffect, useState } from 'react';
-import { assignDocumentStatusesAndDecisionToDocumentsInContext } from './helpers/assign-document-statuses-and-decision-to-documents-in-context';
 import { getDocumentIdsFromContext } from './helpers/get-document-ids-from-context';
+import { mapDocumentRecordsToContextDocuments } from './helpers/map-document-records-to-context-documents';
 
 export const useCollectionFlowContext = (context: CollectionFlowContext, uiSchema: UISchema) => {
   const [documentsState, setDocumentsState] = useState({ isLoading: false, documentIds: [] });
@@ -23,9 +23,7 @@ export const useCollectionFlowContext = (context: CollectionFlowContext, uiSchem
 
         const documents = await fetchDocumentsByIds(documentIds);
 
-        setFinalContext(
-          assignDocumentStatusesAndDecisionToDocumentsInContext(context, uiSchema, documents),
-        );
+        setFinalContext(mapDocumentRecordsToContextDocuments(context, uiSchema, documents));
       } catch (error) {
         setDocumentsState({ isLoading: false, documentIds: [] });
         setFinalContext(context);

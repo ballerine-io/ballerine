@@ -19,16 +19,24 @@ export const parseDocumentDefinition = (element: IFormElement<{ template: IDocum
       issuingVersion: z.number(),
       version: z.string(),
       entityType: z.enum(['business', 'ubo', 'director']).default('business'),
+      _document: z
+        .object({
+          id: z.string(),
+        })
+        .optional(),
     })
-    .transform(({ entityType, type, id, category, issuer, issuingVersion, version }) => ({
-      entityType,
-      type,
-      templateId: id,
-      category,
-      issuingCountry: issuer.country,
-      issuingVersion: issuingVersion.toString(),
-      version,
-    }))
+    .transform(
+      ({ entityType, type, id, category, issuer, issuingVersion, version, _document }) => ({
+        entityType,
+        type,
+        templateId: id,
+        category,
+        issuingCountry: issuer.country,
+        issuingVersion: issuingVersion.toString(),
+        version,
+        ...(_document ? { _document } : {}),
+      }),
+    )
     .safeParse(template);
 
   if (!parsedDocument.success) {

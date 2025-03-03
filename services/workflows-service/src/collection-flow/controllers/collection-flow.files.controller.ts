@@ -1,4 +1,3 @@
-import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
 import { TokenScope, type ITokenScope } from '@/common/decorators/token-scope.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
@@ -10,6 +9,7 @@ import { FILE_MAX_SIZE_IN_BYTE, FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/sto
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { StorageService } from '@/storage/storage.service';
 import { WorkflowService } from '@/workflow/workflow.service';
+import { isObject } from '@ballerine/common';
 import {
   Body,
   Controller,
@@ -27,6 +27,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiExcludeController, ApiResponse } from '@nestjs/swagger';
+import { DocumentDecision, DocumentStatus } from '@prisma/client';
 import { Type, type Static } from '@sinclair/typebox';
 import type { Response } from 'express';
 import * as z from 'zod';
@@ -34,8 +35,6 @@ import * as errors from '../../errors';
 import { CollectionFlowDocumentSchema } from '../dto/create-collection-flow-document.schema';
 import { GetDocumentsByIdsDto } from '../dto/get-documents-by-ids.dto';
 import { UpdateCollectionFlowDocumentSchema } from '../dto/update-collection-flow-document.schema';
-import { DocumentDecision, DocumentStatus } from '@prisma/client';
-import { isObject } from '@ballerine/common';
 
 @UseTokenAuthGuard()
 @ApiExcludeController()
@@ -168,11 +167,14 @@ export class CollectionFlowFilesController {
       }, z.record(z.string(), z.unknown()))
       .parse(data.properties);
 
-    const document = await this.documentService.getDocumentById(data.id, tokenScope.projectId);
+    const document = await this.documentService.getDocumentById(
+      data.documentId,
+      tokenScope.projectId,
+    );
 
-    if (document?.decision === DocumentDecision.revisions) {
-      const newDocument = await this.documentService.create({
-        type: document.type,
+    if (document && document?.decision === DocumentDecision.revisions) {
+      const createdDocuments = await this.documentService.create({
+        type: data.type,
         category: document.category,
         issuingVersion: document.issuingVersion,
         issuingCountry: document.issuingCountry,
@@ -188,7 +190,7 @@ export class CollectionFlowFilesController {
         ...(document.endUserId && { endUserId: document.endUserId }),
       });
 
-      return newDocument;
+      return createdDocuments.at(-1);
     }
 
     const documentsUpdateResults = await this.documentService.updateByIdWithFile({

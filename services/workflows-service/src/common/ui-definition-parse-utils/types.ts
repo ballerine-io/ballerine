@@ -16,6 +16,7 @@ export interface IFormElement<TParams = object> {
 export type TDeepthLevelStack = number[];
 
 export interface IDocumentTemplate {
+  // Id of document template
   id: string;
   category: string;
   type: string;
@@ -28,6 +29,7 @@ export interface IDocumentTemplate {
   pages: AnyRecord[];
   status?: Document['status'];
   decision?: Document['decision'];
-  // Id of an document without file.
-  _id: string;
+  _document?: {
+    id: string;
+  };
 }

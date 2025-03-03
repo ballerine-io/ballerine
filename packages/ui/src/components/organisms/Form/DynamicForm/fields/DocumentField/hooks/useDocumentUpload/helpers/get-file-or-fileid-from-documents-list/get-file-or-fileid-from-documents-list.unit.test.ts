@@ -57,6 +57,9 @@ describe('getFileOrFileIdFromDocumentsList', () => {
         pages: [],
         issuingVersion: 1,
         properties: {},
+        _document: {
+          id: 'different-doc',
+        },
       },
     ];
     const result = getFileOrFileIdFromDocumentsList(documentsList, mockElement);
@@ -80,6 +83,9 @@ describe('getFileOrFileIdFromDocumentsList', () => {
           },
         ],
         properties: {},
+        _document: {
+          id: 'doc-1',
+        },
       },
     ];
     const result = getFileOrFileIdFromDocumentsList(documentsList, mockElement);
@@ -116,6 +122,9 @@ describe('getFileOrFileIdFromDocumentsList', () => {
             ballerineFileId: 'file-123',
           },
         ],
+        _document: {
+          id: 'doc-1',
+        },
       },
     ];
 
@@ -158,6 +167,9 @@ describe('getFileOrFileIdFromDocumentsList', () => {
         issuingVersion: 1,
         properties: {},
         pages: [{ customFileId: 'file-1' }, { customFileId: 'file-2' }],
+        _document: {
+          id: 'doc-1',
+        },
       },
     ];
 
