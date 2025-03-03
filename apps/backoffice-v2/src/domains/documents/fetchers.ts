@@ -68,7 +68,6 @@ export const updateDocumentsDecisionByIds = async ({
   return handleZodError(error, documents);
 };
 
-
 export const updateDocumentById = async ({
   documentId,
   data,

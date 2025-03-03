@@ -432,7 +432,6 @@ export class DocumentService {
     args?: Prisma.DocumentUpdateManyArgs,
     transaction?: PrismaTransactionClient,
   ) {
-
     if (!Array.isArray(ids) || !ids.length) {
       throw new BadRequestException('Document ids are required');
     }
@@ -454,25 +453,27 @@ export class DocumentService {
       addPropertiesSchemaToDocument(
         // @ts-expect-error -- the function expects properties not used by the function.
         document,
-        (document as typeof document & { workflowRuntimeData: { workflowDefinition: WorkflowDefinition } }).workflowRuntimeData.workflowDefinition.documentsSchema,
+        (
+          document as typeof document & {
+            workflowRuntimeData: { workflowDefinition: WorkflowDefinition };
+          }
+        ).workflowRuntimeData.workflowDefinition.documentsSchema,
       ),
     );
-    
+
     documentsWithPropertiesSchema.forEach(document => {
       const propertiesSchema = document.propertiesSchema ?? {};
       const shouldValidateDocument =
         data.decision === 'approve' && Object.keys(propertiesSchema)?.length;
 
-    if (shouldValidateDocument) {
-      const validatePropertiesSchema = ajv.compile(propertiesSchema);
-      const isValidPropertiesSchema = validatePropertiesSchema(
-        document?.properties,
-      );
+      if (shouldValidateDocument) {
+        const validatePropertiesSchema = ajv.compile(propertiesSchema);
+        const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
 
-      if (!isValidPropertiesSchema) {
-        throw ValidationError.fromAjvError(validatePropertiesSchema.errors ?? []);
+        if (!isValidPropertiesSchema) {
+          throw ValidationError.fromAjvError(validatePropertiesSchema.errors ?? []);
+        }
       }
-    }
     });
 
     const Status = {
@@ -483,16 +484,14 @@ export class DocumentService {
 
     const decision = data.decision ? Status[data.decision] : null;
 
-    await this.repository.updateMany(
-      projectIds,
-      {
-        where: {
-          id: { in: ids },
-        },
-        data: {
-          decision,
-        },
-      });
+    await this.repository.updateMany(projectIds, {
+      where: {
+        id: { in: ids },
+      },
+      data: {
+        decision,
+      },
+    });
 
     const documentsWithFiles = await this.repository.findManyWithFiles(projectIds);
 

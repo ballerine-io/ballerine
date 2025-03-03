@@ -288,7 +288,8 @@ export class DocumentControllerExternal {
     response: Type.Any(),
   })
   async updateDocumentsDecisionByIds(
-    @Body() data: {
+    @Body()
+    data: {
       ids: string[];
       decision: Static<typeof UpdateDocumentDecisionSchema>['decision'];
     },

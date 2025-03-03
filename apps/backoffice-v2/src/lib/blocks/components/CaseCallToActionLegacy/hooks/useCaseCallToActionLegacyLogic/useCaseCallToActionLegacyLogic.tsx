@@ -39,9 +39,15 @@ export const useCaseCallToActionLegacyLogic = ({
     workflowId: parentWorkflowId,
     filterId,
   });
-  const childWorkflow = parentWorkflow?.childWorkflows?.find(workflow => workflow.id === childWorkflowId);
+  const childWorkflow = parentWorkflow?.childWorkflows?.find(
+    workflow => workflow.id === childWorkflowId,
+  );
   const nonIdentificationDocumentsIds = useMemo(() => {
-    return childWorkflow?.context?.documents?.filter(document => document.type !== 'identification_document')?.map(document => document.id) ?? [];
+    return (
+      childWorkflow?.context?.documents
+        ?.filter(document => document.type !== 'identification_document')
+        ?.map(document => document.id) ?? []
+    );
   }, [childWorkflow?.context?.documents]);
   // /Queries
 

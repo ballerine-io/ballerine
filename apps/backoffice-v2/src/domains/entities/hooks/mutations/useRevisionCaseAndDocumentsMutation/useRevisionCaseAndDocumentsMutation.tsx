@@ -8,7 +8,13 @@ import { updateDocumentsDecisionByIds } from '@/domains/documents/fetchers';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 
-export const useRevisionCaseAndDocumentsMutation = ({ workflowId, ids }: { workflowId: string, ids: string[] }) => {
+export const useRevisionCaseAndDocumentsMutation = ({
+  workflowId,
+  ids,
+}: {
+  workflowId: string;
+  ids: string[];
+}) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
   const { data: workflow } = useWorkflowByIdQuery({
@@ -18,7 +24,6 @@ export const useRevisionCaseAndDocumentsMutation = ({ workflowId, ids }: { workf
 
   return useMutation({
     mutationFn: async ({ revisionReason }: { revisionReason: string }) => {
-
       if (workflow?.workflowDefinition?.config?.isDocumentsV2) {
         await updateDocumentsDecisionByIds({
           ids,

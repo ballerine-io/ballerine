@@ -763,7 +763,10 @@ export class WorkflowService {
         approve: 'approved',
         reject: 'rejected',
         revision: 'revision',
-      } as const satisfies Record<Exclude<typeof name, null>, NonNullable<DefaultContextSchema['documents'][number]['decision']>['status']>;
+      } as const satisfies Record<
+        Exclude<typeof name, null>,
+        NonNullable<DefaultContextSchema['documents'][number]['decision']>['status']
+      >;
       const status = Status[name as keyof typeof Status];
       const decision = (() => {
         if (status === 'approved') {
@@ -864,7 +867,10 @@ export class WorkflowService {
         reject: 'rejected',
         revision: 'revision',
         revised: 'revised',
-      } as const satisfies Record<Exclude<typeof decision.status, null>, NonNullable<DefaultContextSchema['documents'][number]['decision']>['status']>;
+      } as const satisfies Record<
+        Exclude<typeof decision.status, null>,
+        NonNullable<DefaultContextSchema['documents'][number]['decision']>['status']
+      >;
       const status = decision.status ? Status[decision.status] : null;
       const newDecision = (() => {
         if (!status || status === 'approved') {

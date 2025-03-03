@@ -173,7 +173,11 @@ export const useKycBlock = ({
     : [];
 
   const nonIdentificationDocumentsIds = useMemo(() => {
-    return documents?.filter(document => document.type !== 'identification_document')?.map(document => document.id) ?? [];
+    return (
+      documents
+        ?.filter(document => document.type !== 'identification_document')
+        ?.map(document => document.id) ?? []
+    );
   }, [documents]);
 
   const { mutate: mutateApproveCase, isLoading: isLoadingApproveCase } =

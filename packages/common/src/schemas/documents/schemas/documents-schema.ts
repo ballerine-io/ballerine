@@ -289,10 +289,7 @@ export const DocumentsSchema = Type.Array(
       ),
       issuer: issuerSchema,
       issuingVersion: issuingVersionSchema,
-      decisionReason: Type.Optional(Type.Union([
-        Type.String(),
-        Type.Null(),
-      ])),
+      decisionReason: Type.Optional(Type.Union([Type.String(), Type.Null()])),
       decision: Type.Optional(
         Type.Object(
           {

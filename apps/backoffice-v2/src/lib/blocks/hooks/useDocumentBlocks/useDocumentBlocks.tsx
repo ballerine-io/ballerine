@@ -78,19 +78,13 @@ export const useDocumentsAdapter = ({
   });
   const { isDocumentsV2 } = workflow?.workflowDefinition?.config ?? {};
   const generateDocumentTitle = useCallback(
-    ({
-      category,
-      type,
-      variant,
-  }: {
-    category: string;
-    type: string;
-    variant: string;
-  }) => {
-    return [valueOrNA(titleCase(category ?? '')), valueOrNA(titleCase(type ?? '')), variant].join(
-      ' - ',
-    );
-  }, []);
+    ({ category, type, variant }: { category: string; type: string; variant: string }) => {
+      return [valueOrNA(titleCase(category ?? '')), valueOrNA(titleCase(type ?? '')), variant].join(
+        ' - ',
+      );
+    },
+    [],
+  );
   const identificationDocuments = useMemo(
     () => passedDocuments?.filter(({ type }) => type === 'identification_document'),
     [passedDocuments],
@@ -163,14 +157,13 @@ export const useDocumentsAdapter = ({
 
       return [
         ...adaptedDocumentsV2,
-        ...(identificationDocuments
-          ?.map((document, documentIndex) => ({
-            ...document,
-            details: documentPagesToDetailsAdapter({
-              document,
-              documentIndex,
-            }),
-          })) ?? []),
+        ...(identificationDocuments?.map((document, documentIndex) => ({
+          ...document,
+          details: documentPagesToDetailsAdapter({
+            document,
+            documentIndex,
+          }),
+        })) ?? []),
       ];
     }
 

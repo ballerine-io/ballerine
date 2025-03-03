@@ -8,7 +8,13 @@ import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkf
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { updateDocumentsDecisionByIds } from '@/domains/documents/fetchers';
 
-export const useApproveCaseAndDocumentsMutation = ({ workflowId, ids }: { workflowId: string, ids: string[] }) => {
+export const useApproveCaseAndDocumentsMutation = ({
+  workflowId,
+  ids,
+}: {
+  workflowId: string;
+  ids: string[];
+}) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
   const { data: workflow } = useWorkflowByIdQuery({
