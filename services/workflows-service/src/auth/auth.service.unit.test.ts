@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from '../user/user.service';
+import { UserService } from '@/user/user.service';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dtos/login';
 import { PasswordService } from './password/password.service';
@@ -73,7 +73,7 @@ describe('AuthService', () => {
   describe('Testing the authService.validateUser()', () => {
     it('should validate a valid user', async () => {
       await expect(
-        service.validateUser(VALID_CREDENTIALS.email, VALID_CREDENTIALS.password),
+        service.authenticateUserByPassword(VALID_CREDENTIALS.email, VALID_CREDENTIALS.password),
       ).resolves.toEqual({
         email: USER.email,
         roles: USER.roles,
@@ -83,7 +83,7 @@ describe('AuthService', () => {
 
     it('should not validate a invalid user', async () => {
       await expect(
-        service.validateUser(INVALID_CREDENTIALS.email, INVALID_CREDENTIALS.password),
+        service.authenticateUserByPassword(INVALID_CREDENTIALS.email, INVALID_CREDENTIALS.password),
       ).resolves.toBe(null);
     });
 
@@ -94,8 +94,7 @@ describe('AuthService', () => {
 
       it('it throws an UnauthorizedException', async () => {
         await expect(
-          async () =>
-            await service.validateUser(VALID_CREDENTIALS.email, VALID_CREDENTIALS.password),
+          service.authenticateUserByPassword(VALID_CREDENTIALS.email, VALID_CREDENTIALS.password),
         ).rejects.toThrowError('Unauthorized');
       });
     });

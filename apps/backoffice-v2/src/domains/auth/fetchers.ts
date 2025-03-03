@@ -6,7 +6,7 @@ import { Method } from '@/common/enums';
 import { AuthenticatedUserSchema } from './validation-schemas';
 import posthog from 'posthog-js';
 
-export const fetchSignOut = async ({ callbackUrl }: ISignInProps) => {
+export const signOut = async ({ callbackUrl }: ISignInProps) => {
   const [session, error] = await apiClient({
     endpoint: `auth/logout`,
     method: Method.POST,
@@ -26,7 +26,7 @@ export const fetchSignOut = async ({ callbackUrl }: ISignInProps) => {
   return handleZodError(error, session);
 };
 
-export const fetchSignIn = async ({ callbackUrl, body }: ISignInProps) => {
+export const signIn = async ({ callbackUrl, body }: ISignInProps) => {
   const [session, error] = await apiClient({
     endpoint: 'auth/login',
     method: Method.POST,
@@ -51,7 +51,7 @@ export const fetchSignIn = async ({ callbackUrl, body }: ISignInProps) => {
   return handleZodError(error, session);
 };
 
-export const fetchMagicLinkSignIn = async ({ token }: { token: string }) => {
+export const magicLinkSignIn = async ({ token }: { token: string }) => {
   const [session, error] = await apiClient({
     endpoint: 'auth/magic-link-login',
     method: Method.POST,

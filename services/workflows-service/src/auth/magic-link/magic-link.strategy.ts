@@ -13,13 +13,18 @@ export class MagicLinkStrategy
 {
   constructor(protected readonly authService: AuthService) {
     super({
-      secretOrKey: env.MAGIC_LINK_JWT,
+      secretOrKey: env.MAGIC_LINK_AUTH_JWT_SECRET,
       jwtFromRequest: ExtractJwt.fromBodyField('token'),
     });
   }
 
-  async validate(payload: { sub: string }): Promise<UserInfo> {
-    const user = await this.authService.validateUserById(payload.sub);
+  async validate(payload: { sub?: string } = {}): Promise<UserInfo> {
+    // Fail-fast as we can't have users with empty/null id
+    if (!payload.sub) {
+      throw new UnauthorizedException('Empty user id');
+    }
+
+    const user = await this.authService.authenticateUserById(payload.sub);
 
     if (!user) {
       throw new UnauthorizedException();

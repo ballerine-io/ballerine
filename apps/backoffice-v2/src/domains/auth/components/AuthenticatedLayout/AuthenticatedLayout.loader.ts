@@ -1,7 +1,7 @@
 import { LoaderFunction, redirect } from 'react-router-dom';
 import { env } from '@/common/env/env';
 import { queryClient } from '@/lib/react-query/query-client';
-import { fetchMagicLinkSignIn } from '@/domains/auth/fetchers';
+import { magicLinkSignIn } from '@/domains/auth/fetchers';
 import { authQueryKeys } from '../../query-keys';
 import { filtersQueryKeys } from '../../../filters/query-keys';
 
@@ -14,7 +14,7 @@ export const authenticatedLayoutLoader: LoaderFunction = async ({ request }) => 
   if (token) {
     try {
       await queryClient.fetchQuery(['magic-link-auth', token], ({ queryKey }) =>
-        fetchMagicLinkSignIn({ token: queryKey[1]! }),
+        magicLinkSignIn({ token: queryKey[1]! }),
       );
     } catch (e) {
       console.error('Error using magic link', e);

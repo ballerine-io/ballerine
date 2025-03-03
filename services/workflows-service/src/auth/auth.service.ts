@@ -12,7 +12,7 @@ export class AuthService {
     private readonly passwordService: PasswordService,
   ) {}
 
-  async validateUserById(userId: string): Promise<UserInfo | null> {
+  async authenticateUserById(userId: string): Promise<UserInfo | null> {
     const user = await this.userService.getByIdUnscoped(userId, {
       select: {
         email: true,
@@ -25,23 +25,23 @@ export class AuthService {
     });
 
     if (user) {
-      return this.createUserInfo(user, user.email);
+      return this.processUserAuthentication(user, user.email);
     }
 
     return null;
   }
 
-  async validateUser(email: string, password: string): Promise<UserInfo | null> {
+  async authenticateUserByPassword(email: string, password: string): Promise<UserInfo | null> {
     const user = await this.userService.getByEmailUnscoped(email);
 
     if (user && (await this.passwordService.compare(password, user.password))) {
-      return this.createUserInfo(user, email);
+      return this.processUserAuthentication(user, email);
     }
 
     return null;
   }
 
-  private createUserInfo = (
+  private processUserAuthentication = (
     user: { status: UserStatus; id: string; firstName: string; lastName: string; roles: JsonValue },
     email: string,
   ) => {

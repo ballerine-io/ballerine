@@ -11,12 +11,12 @@ describe('Testing the magicLinkStrategy.validate()', () => {
   const magicLinkStrategy = new MagicLinkStrategy(authService);
 
   beforeEach(() => {
-    authService.validateUser.mockClear();
+    authService.authenticateUserById.mockClear();
   });
 
   it('should return the user', async () => {
     //ARRANGE
-    authService.validateUserById
+    authService.authenticateUserById
       .calledWith(TEST_USER_ID)
       .mockReturnValue(Promise.resolve(TEST_USER));
     //ACT
@@ -27,7 +27,7 @@ describe('Testing the magicLinkStrategy.validate()', () => {
 
   it('should throw error if there is not valid user', async () => {
     //ARRANGE
-    authService.validateUser.mockReturnValue(Promise.resolve(null));
+    authService.authenticateUserById.mockReturnValue(Promise.resolve(null));
     //ACT
     const result = magicLinkStrategy.validate({ sub: 'bad-id' });
 
