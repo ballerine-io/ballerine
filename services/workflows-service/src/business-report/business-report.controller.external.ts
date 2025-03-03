@@ -55,6 +55,7 @@ export class BusinessReportControllerExternal {
     private readonly merchantMonitoringClient: MerchantMonitoringClient,
   ) {}
 
+  @common.Get('/latest')
   @swagger.ApiOperation({
     summary: 'Get latest business report',
     description:
@@ -70,7 +71,6 @@ export class BusinessReportControllerExternal {
     required: true,
     description: 'Type of report to retrieve',
   })
-  @common.Get('/latest')
   @swagger.ApiOkResponse({
     description: 'Latest report retrieved successfully',
     type: [String],
@@ -152,20 +152,14 @@ export class BusinessReportControllerExternal {
       ...(search ? { searchQuery: search } : {}),
     });
 
-    const reports = await Promise.all(
-      data.map(async report => {
-        return {
-          ...report,
-          monitoringStatus:
-            report.customer.ongoingMonitoringEnabled && !report.business.unsubscribedMonitoringAt,
-        };
-      }),
-    );
-
     return {
       totalPages,
       totalItems,
-      data: reports,
+      data: data.map(report => ({
+        ...report,
+        monitoringStatus:
+          report.customer.ongoingMonitoringEnabled && !report.business.unsubscribedMonitoringAt,
+      })),
     };
   }
 

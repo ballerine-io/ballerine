@@ -49,7 +49,7 @@ export const NavFooter = () => {
                     'Request new categories',
                   ],
                   videoLink:
-                    'https://www.loom.com/embed/aa86729a657140c1988f0769ce8a29f8?sid=b22db479-b6c8-46e9-93be-c4e00751d8a8&hideEmbedTopBar=true',
+                    'https://www.loom.com/embed/aa86729a657140c1988f0769ce8a29f8?sid=b22db479-b6c8-46e9-93be-c4e00751d8a8',
                 },
                 key: 'nav-item-documents-verifications',
               }}
