@@ -10,6 +10,7 @@ import {
 import { NavFooter } from './NavFooter';
 import { NavLogo } from './NavLogo';
 import { NavMain } from './NavMain';
+import { NavIntroduction } from './NavIntroduction';
 
 export const AppSidebar = ({ ...props }: ComponentProps<typeof Sidebar>) => {
   return (
@@ -29,6 +30,8 @@ export const AppSidebar = ({ ...props }: ComponentProps<typeof Sidebar>) => {
       </SidebarContent>
 
       <SidebarFooter>
+        <NavIntroduction />
+
         <NavFooter />
       </SidebarFooter>
     </Sidebar>
