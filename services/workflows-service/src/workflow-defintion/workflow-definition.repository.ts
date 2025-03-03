@@ -252,6 +252,7 @@ export class WorkflowDefinitionRepository {
 
   async createDemoWorkflowDefinition(
     customerId: string,
+    userId?: string,
     workflowOverrides?: Array<{ webPresenceReportId?: string }>,
   ) {
     return await this.prisma.$transaction(async transaction => {
@@ -277,7 +278,7 @@ export class WorkflowDefinitionRepository {
         user: project.userToProjects[0]?.user,
       };
 
-      await createDemoWorkflow(customer, demoEnv, transaction, workflowOverrides);
+      await createDemoWorkflow({ customer, demoEnv, transaction, workflowOverrides, userId });
     });
   }
 }
