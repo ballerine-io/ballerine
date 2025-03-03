@@ -4,6 +4,7 @@ import { useRouteError } from 'react-router-dom';
 import { AppErrorScreen } from '../../molecules/AppErrorScreen';
 import { InvalidAccessTokenErrorScreen } from './InvalidAccessToken';
 import { MissingTokenErrorScreen } from './MissingTokenErrorScreen';
+import { NetworkErrorScreen } from './NetworkErrorScreen';
 
 export const ErrorScreen = () => {
   const error = useRouteError();
@@ -14,6 +15,11 @@ export const ErrorScreen = () => {
 
   if (error instanceof InvalidAccessTokenError) {
     return <InvalidAccessTokenErrorScreen />;
+  }
+
+  // Network error or server down
+  if (error instanceof TypeError) {
+    return <NetworkErrorScreen />;
   }
 
   return (

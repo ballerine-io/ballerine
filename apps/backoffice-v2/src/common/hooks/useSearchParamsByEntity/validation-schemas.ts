@@ -39,10 +39,10 @@ export const MonitoringReportsTabs = [
 
 export const CaseTabs = [
   'summary',
-  'companyInformation',
+  'kyb',
   'storeInfo',
   'documents',
-  'ubos',
+  'ubosKyc',
   'associatedCompanies',
   'directors',
   'monitoringReports',
@@ -51,13 +51,13 @@ export const CaseTabs = [
 
 export const TabToLabel = {
   summary: 'Summary',
-  companyInformation: 'Company',
-  storeInformation: 'Store',
+  kyb: 'KYB',
+  storeInfo: 'Store',
   documents: 'Documents',
-  ubos: 'UBOs',
+  ubosKyc: 'KYC',
   associatedCompanies: 'Associated Companies',
   directors: 'Directors',
-  monitoringReports: 'Monitoring Reports',
+  monitoringReports: 'Web Presence',
   customData: 'Custom Data',
 } as const;
 

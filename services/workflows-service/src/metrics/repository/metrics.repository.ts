@@ -249,7 +249,7 @@ export class MetricsRepository {
         FROM
           "BusinessReport"
         WHERE
-          "status"::text = ${BusinessReportStatus.completed}
+          "status"::text IN (${BusinessReportStatus.completed}, ${BusinessReportStatus.under_review}, ${BusinessReportStatus.pending_review})
           AND "BusinessReport"."projectId" = ${projectId}
         GROUP BY
           "riskLevel";`;

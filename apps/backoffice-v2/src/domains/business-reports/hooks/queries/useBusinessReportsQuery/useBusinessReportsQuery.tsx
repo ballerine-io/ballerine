@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
+import { MerchantReportType } from '@ballerine/common';
 
-import { MerchantReportType } from '@/domains/business-reports/constants';
 import { businessReportsQueryKey } from '@/domains/business-reports/query-keys';
 import { TReportStatusValue, TRiskLevel } from '@/pages/MerchantMonitoring/schemas';
 import { useIsAuthenticated } from '@/domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
