@@ -10,28 +10,33 @@ import { randomUUID } from 'crypto';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isNumber } from 'lodash';
 import { CountryCode } from '@/common/countries';
-import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
+import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 import { MerchantReportType, MerchantReportVersion } from '@ballerine/common';
+import { TCustomerWithFeatures } from '@/customer/types';
+import { CustomerService } from '@/customer/customer.service';
 
 @Injectable()
 export class BusinessReportService {
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly businessService: BusinessService,
+    protected readonly customerService: CustomerService,
     protected readonly logger: AppLoggerService,
     private readonly merchantMonitoringClient: MerchantMonitoringClient,
   ) {}
 
-  async checkBusinessReportsLimit(maxBusinessReports: number | undefined, customerId: string) {
-    if (!isNumber(maxBusinessReports) || maxBusinessReports <= 0) {
-      return;
+  async checkBusinessReportsLimit(customer: TCustomerWithFeatures) {
+    const accessDetails = await this.customerService.getAccessDetails(customer);
+
+    if (customer.config?.isDemoAccount && accessDetails.demoDaysLeft <= 0) {
+      throw new BadRequestException(
+        'Your demo account has expired. Talk to us to unlock additional features and continue effective risk management with Ballerine.',
+      );
     }
 
-    const businessReportsCount = await this.merchantMonitoringClient.count({ customerId });
-
-    if (businessReportsCount >= maxBusinessReports) {
+    if (accessDetails.reportsLeft <= 0) {
       throw new BadRequestException(
-        `You've hit your reports limit. Talk to us to unlock additional features and continue effective risk management with Ballerine.`,
+        "You've hit your reports limit. Talk to us to unlock additional features and continue effective risk management with Ballerine.",
       );
     }
   }
@@ -50,6 +55,7 @@ export class BusinessReportService {
     compareToReportId,
     withQualityControl,
     customerId,
+    requestedByUserId,
   }: {
     reportType: MerchantReportType;
     business: Pick<Business, 'id' | 'correlationId'>;
@@ -60,6 +66,7 @@ export class BusinessReportService {
     workflowVersion: MerchantReportVersion;
     withQualityControl: boolean;
     customerId: string;
+    requestedByUserId: string | undefined;
   }) {
     await this.merchantMonitoringClient.create({
       reportType,
@@ -71,6 +78,7 @@ export class BusinessReportService {
       parentCompanyName: merchantName,
       ...(countryCode && { countryCode }),
       ...(compareToReportId && { compareToReportId }),
+      requestedByUserId,
     });
   }
 

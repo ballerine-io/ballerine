@@ -15,6 +15,7 @@ import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
 import { ClsService } from 'nestjs-cls';
 import { ApiKeyService } from '@/customer/api-key/api-key.service';
 import { ApiKeyRepository } from '@/customer/api-key/api-key.repository';
+import { MerchantMonitoringModule } from '@/merchant-monitoring/merchant-monitoring.module';
 
 const buildWorkflowDefinition = (sequenceNum: number, projectId?: string, isPublic = false) => {
   return {
@@ -56,6 +57,7 @@ describe('WorkflowDefinitionService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [MerchantMonitoringModule],
       providers: [
         WorkflowDefinitionService,
         FilterRepository,

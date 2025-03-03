@@ -31,6 +31,7 @@ export interface ITheme {
       styles?: CSSProperties;
     };
   };
+  settings: Partial<ISettings>;
 }
 
 export interface ISettings {

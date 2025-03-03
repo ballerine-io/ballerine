@@ -8,7 +8,7 @@ export const Search: FunctionComponent<{
 }> = ({ value, placeholder, onChange }) => {
   return (
     <div className="relative flex flex-col gap-1">
-      <div className="input-group flex h-[32px] w-[250px] items-center rounded-[44px] border border-[#E5E7EB] shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)]">
+      <div className="input-group flex h-8 w-48 items-center rounded-[44px] border border-[#E5E7EB] shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)]">
         <div className={`btn btn-square btn-ghost pointer-events-none -ms-2`}>
           <LucideSearch size={13} />
         </div>

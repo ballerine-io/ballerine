@@ -250,6 +250,10 @@ export class WorkflowDefinitionService {
     return await this.workflowDefinitionRepository.updateById(id, args, projectIds, true);
   }
 
+  async createDemoWorkflowDefinition({ customer }: { customer: string }) {
+    return await this.workflowDefinitionRepository.createDemoWorkflowDefinition(customer);
+  }
+
   async getByWorkflowRuntimeDataId(workflowRuntimeDataId: string, projectIds: TProjectIds) {
     return await this.workflowDefinitionRepository.findByWorkflowRuntimeDataId(
       workflowRuntimeDataId,

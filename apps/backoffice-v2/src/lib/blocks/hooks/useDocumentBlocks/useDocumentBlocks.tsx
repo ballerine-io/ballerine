@@ -77,10 +77,11 @@ export const useDocumentsAdapter = ({
     entityId,
   });
   const { isDocumentsV2 } = workflow?.workflowDefinition?.config ?? {};
-  const generateDocumentTitle = ({
-    category,
-    type,
-    variant,
+  const generateDocumentTitle = useCallback(
+    ({
+      category,
+      type,
+      variant,
   }: {
     category: string;
     type: string;
@@ -89,53 +90,28 @@ export const useDocumentsAdapter = ({
     return [valueOrNA(titleCase(category ?? '')), valueOrNA(titleCase(type ?? '')), variant].join(
       ' - ',
     );
-  };
+  }, []);
+  const identificationDocuments = useMemo(
+    () => passedDocuments?.filter(({ type }) => type === 'identification_document'),
+    [passedDocuments],
+  );
+  const getDocumentPagesBallerineFileIds = useCallback((documents: TDocument[]) => {
+    return (
+      documents?.flatMap(({ pages }) => pages?.map(({ ballerineFileId }) => ballerineFileId)) ?? []
+    );
+  }, []);
   const documentPages = useMemo(() => {
     if (isDocumentsV2) {
-      return [];
+      return getDocumentPagesBallerineFileIds(identificationDocuments);
     }
 
-    return (
-      passedDocuments?.flatMap(({ pages }) =>
-        pages?.map(({ ballerineFileId }) => ballerineFileId),
-      ) ?? []
-    );
+    return getDocumentPagesBallerineFileIds(passedDocuments);
   }, [passedDocuments, isDocumentsV2]);
   const storageFilesQueryResult = useStorageFilesQuery(documentPages);
   const documentPagesResults = useDocumentPageImages(passedDocuments, storageFilesQueryResult);
-  const getDocuments = () => {
-    if (isDocumentsV2) {
-      return documentsV2?.map(({ decision, decisionReason, issuingCountry, ...document }) => ({
-        ...document,
-        decision: {
-          status: decision === 'revisions' ? 'revision' : decision,
-          reason: decisionReason,
-        },
-        issuer: {
-          country: issuingCountry,
-        },
-        details:
-          document?.files?.map(({ mimeType, fileName, variant, fileId, imageUrl }) => {
-            const title = generateDocumentTitle({
-              category: document?.category ?? '',
-              type: document?.type ?? '',
-              variant,
-            });
-
-            return {
-              id: fileId,
-              title,
-              fileType: mimeType,
-              fileName,
-              imageUrl,
-            };
-          }) ?? [],
-      }));
-    }
-
-    return passedDocuments?.map((document, documentIndex) => ({
-      ...document,
-      details:
+  const documentPagesToDetailsAdapter = useCallback(
+    ({ document, documentIndex }: { document: TDocument; documentIndex: number }) => {
+      return (
         document?.pages?.map(({ type, fileName, metadata, ballerineFileId }, pageIndex) => {
           const title = generateDocumentTitle({
             category: document?.category ?? '',
@@ -150,7 +126,60 @@ export const useDocumentsAdapter = ({
             fileName,
             imageUrl: documentPagesResults?.[documentIndex]?.[pageIndex],
           };
-        }) ?? [],
+        }) ?? []
+      );
+    },
+    [documentPagesResults, generateDocumentTitle],
+  );
+  const getDocuments = () => {
+    if (isDocumentsV2) {
+      const adaptedDocumentsV2 =
+        documentsV2?.map(({ decision, decisionReason, issuingCountry, ...document }) => ({
+          ...document,
+          decision: {
+            status: decision === 'revisions' ? 'revision' : decision,
+            reason: decisionReason,
+          },
+          issuer: {
+            country: issuingCountry,
+          },
+          details:
+            document?.files?.map(({ mimeType, fileName, variant, fileId, imageUrl }) => {
+              const title = generateDocumentTitle({
+                category: document?.category ?? '',
+                type: document?.type ?? '',
+                variant,
+              });
+
+              return {
+                id: fileId,
+                title,
+                fileType: mimeType,
+                fileName,
+                imageUrl,
+              };
+            }) ?? [],
+        })) ?? [];
+
+      return [
+        ...adaptedDocumentsV2,
+        ...(identificationDocuments
+          ?.map((document, documentIndex) => ({
+            ...document,
+            details: documentPagesToDetailsAdapter({
+              document,
+              documentIndex,
+            }),
+          })) ?? []),
+      ];
+    }
+
+    return passedDocuments?.map((document, documentIndex) => ({
+      ...document,
+      details: documentPagesToDetailsAdapter({
+        document,
+        documentIndex,
+      }),
     }));
   };
 

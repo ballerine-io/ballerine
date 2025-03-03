@@ -27,6 +27,7 @@ import {
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   Document,
+  DocumentDecision,
   DocumentFile,
   DocumentStatus,
   File,
@@ -399,7 +400,7 @@ export class DocumentService {
       approve: 'approved',
       reject: 'rejected',
       revision: 'revisions',
-    } as const;
+    } as const satisfies Record<Exclude<typeof data.decision, null>, DocumentDecision>;
 
     const decision = data.decision ? Status[data.decision] : null;
 
@@ -419,6 +420,85 @@ export class DocumentService {
     return this.formatDocuments({
       documents,
       documentSchema: workflowDefinition.documentsSchema,
+    });
+  }
+
+  async updateDocumentsDecisionByIds(
+    ids: string[],
+    projectIds: TProjectId[],
+    data: {
+      decision: 'approve' | 'reject' | 'revision' | null;
+    },
+    args?: Prisma.DocumentUpdateManyArgs,
+    transaction?: PrismaTransactionClient,
+  ) {
+
+    if (!Array.isArray(ids) || !ids.length) {
+      throw new BadRequestException('Document ids are required');
+    }
+
+    const documents = await this.repository.findMany(projectIds, {
+      where: {
+        id: { in: ids },
+      },
+      include: {
+        workflowRuntimeData: {
+          include: {
+            workflowDefinition: true,
+          },
+        },
+      },
+    });
+
+    const documentsWithPropertiesSchema = documents?.map(document =>
+      addPropertiesSchemaToDocument(
+        // @ts-expect-error -- the function expects properties not used by the function.
+        document,
+        (document as typeof document & { workflowRuntimeData: { workflowDefinition: WorkflowDefinition } }).workflowRuntimeData.workflowDefinition.documentsSchema,
+      ),
+    );
+    
+    documentsWithPropertiesSchema.forEach(document => {
+      const propertiesSchema = document.propertiesSchema ?? {};
+      const shouldValidateDocument =
+        data.decision === 'approve' && Object.keys(propertiesSchema)?.length;
+
+    if (shouldValidateDocument) {
+      const validatePropertiesSchema = ajv.compile(propertiesSchema);
+      const isValidPropertiesSchema = validatePropertiesSchema(
+        document?.properties,
+      );
+
+      if (!isValidPropertiesSchema) {
+        throw ValidationError.fromAjvError(validatePropertiesSchema.errors ?? []);
+      }
+    }
+    });
+
+    const Status = {
+      approve: 'approved',
+      reject: 'rejected',
+      revision: 'revisions',
+    } as const satisfies Record<Exclude<typeof data.decision, null>, DocumentDecision>;
+
+    const decision = data.decision ? Status[data.decision] : null;
+
+    await this.repository.updateMany(
+      projectIds,
+      {
+        where: {
+          id: { in: ids },
+        },
+        data: {
+          decision,
+        },
+      });
+
+    const documentsWithFiles = await this.repository.findManyWithFiles(projectIds);
+
+    return this.formatDocuments({
+      documents: documentsWithFiles,
+      documentSchema: null,
     });
   }
 
