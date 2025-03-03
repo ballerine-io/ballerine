@@ -1,0 +1,8 @@
+---
+description: How to write comments
+globs: 
+---
+Write comments thoughtfully:
+- Do NOT write comments that explain obvious code.
+- Always provide clear documentation for functions (purpose, inputs, outputs).
+- Write comments only for complex, non-intuitive logic or when explicitly requested.

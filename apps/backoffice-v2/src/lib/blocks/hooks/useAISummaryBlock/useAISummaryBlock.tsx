@@ -67,38 +67,6 @@ const defaultModelInfo: AIModelInfo = {
   lastUpdated: '2 hours ago',
 };
 
-// Enhanced confidence indicator with better visual representation
-const ConfidenceIndicator = ({ score }: { score: number }) => {
-  let color = 'bg-emerald-500';
-  let textColor = 'text-emerald-700';
-  let label = 'Very High';
-
-  if (score < 60) {
-    color = 'bg-red-500';
-    textColor = 'text-red-700';
-    label = 'Low';
-  } else if (score < 75) {
-    color = 'bg-amber-500';
-    textColor = 'text-amber-700';
-    label = 'Moderate';
-  } else if (score < 90) {
-    color = 'bg-green-500';
-    textColor = 'text-green-700';
-    label = 'High';
-  }
-
-  return (
-    <div className="flex items-center gap-1.5">
-      <div className="flex h-4 w-16 overflow-hidden rounded-full bg-gray-200">
-        <div className={`${color} transition-all duration-300`} style={{ width: `${score}%` }} />
-      </div>
-      <span className={`text-xs font-medium ${textColor}`}>
-        {label} ({score}%)
-      </span>
-    </div>
-  );
-};
-
 // Enhanced Ask AI Component connected to actions
 const AskAIPanel = ({
   actions = [],
@@ -429,7 +397,6 @@ const NeuralConnectionDot = () => {
 // Enhanced finding component with confidence indicators
 const FindingWithSource = ({ finding }: { finding: Finding }) => {
   const [showTooltip, setShowTooltip] = useState(false);
-  const confidence = finding.confidence || Math.floor(Math.random() * 11) + 90; // Default high confidence if not specified
 
   if (!finding.source) {
     return <span>{finding.text}</span>;
@@ -446,11 +413,6 @@ const FindingWithSource = ({ finding }: { finding: Finding }) => {
         <span className="font-medium">· Source</span>
         <Info className="ml-0.5 h-3 w-3 text-indigo-500" />
 
-        {/* Confidence pill indicator on hover */}
-        <div className="invisible absolute -top-5 right-0 whitespace-nowrap rounded-full bg-indigo-100 px-1.5 py-0.5 text-[10px] text-indigo-700 opacity-0 transition-opacity group-hover:visible group-hover:opacity-100">
-          {confidence}% confidence
-        </div>
-
         {showTooltip && (
           <div className="absolute -right-2 top-0 z-50 mt-6 w-80 rounded-md border border-indigo-100 bg-white p-3 text-xs shadow-lg">
             <div className="space-y-2">
@@ -461,22 +423,9 @@ const FindingWithSource = ({ finding }: { finding: Finding }) => {
                 <div>
                   <div className="flex items-center justify-between">
                     <p className="font-medium text-indigo-700">AI Analysis</p>
-                    <ConfidenceIndicator score={confidence} />
                   </div>
                   <p className="mt-1.5 text-gray-700">{finding.source.tooltip}</p>
                 </div>
-              </div>
-
-              {/* Data points analyzed indicator */}
-              <div className="mt-2 flex items-center gap-1.5 rounded-md bg-gray-50 p-1.5 text-[10px] text-gray-600">
-                <Database className="h-3 w-3 text-gray-500" />
-                <span>
-                  {finding.source.dataPoints || Math.floor(Math.random() * 10000) + 5000} data
-                  points analyzed
-                </span>
-                <span className="mx-1.5">•</span>
-                <Shield className="h-3 w-3 text-gray-500" />
-                <span>Verified against 6 sources</span>
               </div>
 
               <p className="mt-1 border-t border-gray-100 pt-1.5 text-[10px] italic text-gray-500">
@@ -491,53 +440,22 @@ const FindingWithSource = ({ finding }: { finding: Finding }) => {
   );
 };
 
-// Simplified AIHeader with non-technical info
-const AIHeader = ({ modelInfo = defaultModelInfo }: { modelInfo?: AIModelInfo }) => {
-  return (
-    <div className="rounded-md bg-gradient-to-r from-indigo-50 to-purple-50 p-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <AITechIcon />
-          <div>
-            <h3 className="flex items-center gap-1 font-medium text-gray-800">
-              <span className="bg-gradient-to-r from-purple-700 to-indigo-700 bg-clip-text text-transparent">
-                {modelInfo.name}
-              </span>
-              <span className="rounded-full bg-indigo-100 px-1.5 py-0.5 text-[10px] text-indigo-700">
-                v{modelInfo.version}
-              </span>
-            </h3>
-            <p className="text-[10px] text-gray-500">Advanced AI Risk Analysis Engine</p>
-          </div>
-        </div>
-
-        <div className="flex flex-col items-end text-xs">
-          <span className="font-medium text-indigo-700">
-            {modelInfo.confidenceScore}% confidence
-          </span>
-          <span className="text-[10px] text-gray-500">Updated {modelInfo.lastUpdated}</span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const defaultSections: Section[] = [
   {
     type: 'paragraph',
     content:
-      'Based on comprehensive analysis of GreenTech Solutions Ltd case, this entity presents critical risk factors requiring immediate attention:',
+      'Based on comprehensive analysis of GreenTech Solutions Ltd, this entity presents critical risk factors requiring immediate attention:',
   },
-  { type: 'heading', content: '1) Risk Assessment: High (🔴 98/100)' },
+  { type: 'heading', content: '1) Risk Assessment' },
   {
     type: 'bullets',
     content: [
       {
-        text: 'Severe business activity mismatch: Claims to sell eco-friendly office supplies but operates a massage parlor with traits of a prostitution business',
+        text: 'Severe business activity mismatch: The business is declared as operating in the business of eco-friendly office supplies but web presence indicates the operation of a crypto trading platform',
         confidence: 99.2,
         source: {
           tooltip:
-            'On-site verification revealed massage parlor operation instead of claimed eco-friendly retail business.',
+            'Onsite text mentions "crypto-trading", "copy-trading features" and other elements likely to be associated with a crypto-trading platform.',
           dataPoints: 7834,
         },
       },
@@ -546,17 +464,8 @@ const defaultSections: Section[] = [
         confidence: 97.8,
         source: {
           tooltip:
-            'MCC classification does not match declared business activity. Website and social media content inconsistent with claimed business model.',
+            'MCC classification does not match declared business activity. Website and social media content are inconsistent with the claimed business model.',
           dataPoints: 12405,
-        },
-      },
-      {
-        text: 'Excessive chargeback history with payment processors',
-        confidence: 99.5,
-        source: {
-          tooltip:
-            'Chargeback ratio of 8.3% over the past 6 months, exceeding industry threshold by 4x.',
-          dataPoints: 31762,
         },
       },
     ],
@@ -569,17 +478,16 @@ const defaultSections: Section[] = [
         text: 'Concealed UBO Carlton Ellington Cushnie (40%) identified through OSINT investigation',
         confidence: 96.7,
         source: {
-          tooltip:
-            'UBO not declared in official documents but confirmed through 3 independent OSINT sources and property records.',
+          tooltip: 'Undeclared UBO was found in registry check.',
           dataPoints: 8412,
         },
       },
       {
-        text: 'UBO linked to high-risk jurisdiction and past fraudulent payment scheme',
+        text: 'UBO linked to high-risk jurisdiction',
         confidence: 94.3,
         source: {
           tooltip:
-            'Subject has connections to entities in 3 high-risk jurisdictions. Past association with a fraudulent payment scheme involving £5.8M.',
+            'OSINT reveals connections between the UBO Carlton Ellington Cushnie and a high-risk jurisdiction (Cayman Islands).',
           dataPoints: 15692,
         },
       },
@@ -588,22 +496,21 @@ const defaultSections: Section[] = [
         confidence: 98.1,
         source: {
           tooltip:
-            'No massage establishment license, health department certification, or professional service permits found.',
+            'No evidence of a valid license for the operation of a crypto-trading platform was found to be associated with the entity.',
           dataPoints: 4231,
         },
       },
     ],
   },
-  { type: 'heading', content: '3) Customer & Operational Issues:' },
+  { type: 'heading', content: 'Customer & Operational Issues:' },
   {
     type: 'bullets',
     content: [
       {
-        text: 'Multiple customer complaints about non-delivery of advertised products',
+        text: 'Multiple customer complaints about inability to withdraw funds',
         confidence: 97.9,
         source: {
-          tooltip:
-            '27 formal complaints filed with consumer protection agencies regarding non-delivery of paid items.',
+          tooltip: '23 complaints were recovered relating to withdrawal of funds from account.',
           dataPoints: 9871,
         },
       },
@@ -612,17 +519,8 @@ const defaultSections: Section[] = [
         confidence: 96.5,
         source: {
           tooltip:
-            'Analysis of 43 online reviews reveals pattern of refund denial and customer service avoidance.',
+            'Analysis of online reviews reveals pattern of refund denial and customer service avoidance.',
           dataPoints: 14387,
-        },
-      },
-      {
-        text: 'Website and marketing materials misrepresent actual business operations',
-        confidence: 98.7,
-        source: {
-          tooltip:
-            'Website inspection shows stock photos of eco-products never delivered, with no actual product inventory system.',
-          dataPoints: 6754,
         },
       },
     ],
@@ -636,17 +534,8 @@ const defaultSections: Section[] = [
         confidence: 99.8,
         source: {
           tooltip:
-            'Clear evidence of intentional misrepresentation of business activities and potential illegal operations.',
+            'Clear evidence of misrepresentation of business activities and potential illicit operations.',
           dataPoints: 21543,
-        },
-      },
-      {
-        text: 'Report to regulatory authorities for potential fraud investigation',
-        confidence: 97.2,
-        source: {
-          tooltip:
-            'Pattern of activity meets reporting threshold for suspected fraud under regulatory guidelines section 4.2.3.',
-          dataPoints: 18763,
         },
       },
       {
@@ -654,7 +543,7 @@ const defaultSections: Section[] = [
         confidence: 98.9,
         source: {
           tooltip:
-            'Add to internal watchlist to identify potential future applications through different entities.',
+            'Add associated UBO information to internal watchlists to prevent potential future merchant onboarding through different entities.',
           dataPoints: 7698,
         },
       },
@@ -782,46 +671,6 @@ const AISummaryContent = ({
 
   return (
     <div className="space-y-4 text-sm">
-      <div className="flex flex-col space-y-2 rounded-md border border-gray-200 bg-white p-3 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-amber-500" />
-            <div>
-              <h3 className="font-semibold text-gray-800">
-                Case Risk Summary: {summaryData.companyName}
-              </h3>
-            </div>
-          </div>
-          <RiskIndicator score={summaryData.riskScore} />
-        </div>
-
-        <div className="text-[10px] text-gray-500">
-          <div className="flex items-center gap-1">
-            <span>Analysis completed on</span>
-            <span className="font-medium text-gray-700">{analysisDate}</span>
-          </div>
-        </div>
-
-        <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
-          <div className="rounded-md bg-gray-50 p-2 shadow-sm">
-            <span className="text-gray-500">Business Type</span>
-            <p className="font-medium">{summaryData.businessInfo.claimedType}</p>
-          </div>
-          <div className="rounded-md bg-gray-50 p-2 shadow-sm">
-            <span className="text-gray-500">Actual Business</span>
-            <p className="font-medium text-red-600">{summaryData.businessInfo.actualType}</p>
-          </div>
-          <div className="rounded-md bg-gray-50 p-2 shadow-sm">
-            <span className="text-gray-500">Chargeback Ratio</span>
-            <p className="font-medium text-red-600">{summaryData.businessInfo.chargebackRatio}</p>
-          </div>
-          <div className="rounded-md bg-gray-50 p-2 shadow-sm">
-            <span className="text-gray-500">UBO Check</span>
-            <p className="font-medium text-red-600">{summaryData.businessInfo.uboStatus}</p>
-          </div>
-        </div>
-      </div>
-
       <div className="space-y-2 rounded-md border border-gray-200 bg-white p-3 shadow-sm">
         {sections.map((section, sectionIndex) => {
           if (section.type === 'paragraph' || section.type === 'heading') {

@@ -158,3 +158,13 @@ export const finalSubmissionRequest = async () => {
 
   return result.json();
 };
+
+export const fetchDocumentsByIds = async (ids: string[]) => {
+  const result = await request.get('collection-flow/files', {
+    searchParams: {
+      ids: ids.join(','),
+    },
+  });
+
+  return result.json<IDocumentRecord[]>();
+};

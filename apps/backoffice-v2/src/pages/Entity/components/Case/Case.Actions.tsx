@@ -68,7 +68,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
         />
         <CaseOptions />
       </div>
-      <div className={`min-h-20 flex justify-between gap-4`}>
+      <div className={`flex min-h-20 justify-between gap-4`}>
         <div className={`flex flex-col space-y-3`}>
           <div className={`flex space-x-4`}>
             <Avatar
@@ -92,7 +92,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
             >
               {fullName}
               {workflow?.config?.example === true && (
-                <Badge className="ml-2 rounded-full bg-gray-100 px-1 py-0.5 text-xs text-gray-600">
+                <Badge className="ml-2 max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full bg-gray-100 px-1 py-0.5 text-xs text-gray-600">
                   Sample Data
                 </Badge>
               )}

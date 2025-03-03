@@ -44,7 +44,7 @@ export const getVariantTabs = (
       },
       {
         name: Tab.MONITORING_REPORTS,
-        displayName: 'Monitoring Reports',
+        displayName: 'Web Presence',
         disabled: !tabBlocks[Tab.MONITORING_REPORTS]?.length,
       },
       {
@@ -68,6 +68,8 @@ export const getVariantTabs = (
         name: Tab.CUSTOM_DATA,
         displayName: 'Custom Data',
         disabled: !tabBlocks[Tab.CUSTOM_DATA]?.length,
+        tooltip:
+          'This tab displays customer data provided by API, allowing Ballerine AI to enrich its analysis.',
       },
     ];
 
