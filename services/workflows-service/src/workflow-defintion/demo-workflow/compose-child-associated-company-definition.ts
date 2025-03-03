@@ -94,6 +94,7 @@ export const composeChildAssociatedCompanyDefinition = ({
     },
     config: {
       createCollectionFlowToken: true,
+      isCaseOverviewEnabled: true,
     },
     isPublic: !projectId,
     ...(projectId && { projectId }),
