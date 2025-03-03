@@ -163,11 +163,9 @@ export const useColumns = ({ isDemoAccount = false }) => {
               el => el.id !== NO_VIOLATION_DETECTED_RISK_INDICATOR_ID && el.name && el.riskLevel,
             )
             .sort((a, b) => {
-              if (a.riskLevel === b.riskLevel) {
-                return (a.name ?? '').localeCompare(b.name ?? '');
-              }
-
-              return (a.riskLevel ?? '').localeCompare(b.riskLevel ?? '');
+              return a.riskLevel === b.riskLevel
+                ? (a.name ?? '').localeCompare(b.name ?? '')
+                : (a.riskLevel ?? '').localeCompare(b.riskLevel ?? '');
             });
 
           if (!violations?.length) {
