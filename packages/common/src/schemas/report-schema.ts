@@ -122,7 +122,7 @@ export const ReportSchema = z
         riskScore: z.coerce.number().nullish(),
         riskLevel: z.enum(MERCHANT_REPORT_RISK_LEVELS).nullish(),
         isWebsiteOffline: z.boolean().nullish(),
-        contentViolations: z
+        allViolations: z
           .array(RiskIndicatorSchema.pick({ id: true, name: true, riskLevel: true }))
           .nullish(),
       })

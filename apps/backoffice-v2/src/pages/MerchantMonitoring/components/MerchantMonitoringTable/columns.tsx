@@ -156,11 +156,17 @@ export const useColumns = ({ isDemoAccount = false }) => {
         },
         header: 'Scan Type',
       }),
-      columnHelper.accessor('data.contentViolations', {
+      columnHelper.accessor('data.allViolations', {
         cell: ({ row }) => {
-          const violations = (row.original.data?.contentViolations ?? []).filter(
-            el => el.id !== NO_VIOLATION_DETECTED_RISK_INDICATOR_ID && el.riskLevel === 'critical',
-          );
+          const violations = (row.original.data?.allViolations ?? [])
+            .filter(
+              el => el.id !== NO_VIOLATION_DETECTED_RISK_INDICATOR_ID && el.name && el.riskLevel,
+            )
+            .sort((a, b) => {
+              return a.riskLevel === b.riskLevel
+                ? (a.name ?? '').localeCompare(b.name ?? '')
+                : (a.riskLevel ?? '').localeCompare(b.riskLevel ?? '');
+            });
 
           if (!violations?.length) {
             return null;
@@ -170,14 +176,26 @@ export const useColumns = ({ isDemoAccount = false }) => {
             <ContentTooltip
               description={
                 <>
-                  <p className="mb-4 text-base font-bold">Violations</p>
+                  <p className="mb-4 text-base font-bold">Findings</p>
 
-                  {violations.map((violation, index) => (
+                  {violations.slice(0, 4).map((violation, index) => (
                     <div key={index} className="space-x-1 text-sm">
-                      <WarningFilledSvg className="inline-block d-5" />
+                      <WarningFilledSvg
+                        className={ctw('inline-block d-5', {
+                          'text-warning': violation.riskLevel === 'critical',
+                          'text-slate-500':
+                            violation.riskLevel === 'moderate' || !violation.riskLevel,
+                        })}
+                      />
                       <span className="text-slate-500">{violation.name}</span>
                     </div>
                   ))}
+                  {violations.length > 4 && (
+                    <div className="mt-2 text-sm text-slate-500">
+                      + {violations.length - 4} additional finding
+                      {violations.length - 4 > 1 ? 's' : ''}
+                    </div>
+                  )}
                 </>
               }
               props={{
@@ -189,13 +207,23 @@ export const useColumns = ({ isDemoAccount = false }) => {
                 },
               }}
             >
-              <div className="flex items-center justify-center rounded-full bg-warning/20 text-xs font-bold text-warning d-5">
+              <div
+                className={ctw(
+                  'flex items-center justify-center rounded-full text-xs font-bold d-5',
+                  {
+                    'bg-warning/20 text-warning': violations.some(v => v.riskLevel === 'critical'),
+                    'bg-slate-500/20 text-slate-500': !violations.some(
+                      v => v.riskLevel === 'critical',
+                    ),
+                  },
+                )}
+              >
                 {violations.length}
               </div>
             </ContentTooltip>
           );
         },
-        header: 'Violations',
+        header: 'Findings',
       }),
       columnHelper.accessor('isAlert', {
         cell: ({ getValue }) => {
