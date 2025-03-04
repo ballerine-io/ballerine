@@ -70,7 +70,7 @@ describe('AuthService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('Testing the authService.validateUser()', () => {
+  describe('Testing the authService.authenticateUserByPassword()', () => {
     it('should validate a valid user', async () => {
       await expect(
         service.authenticateUserByPassword(VALID_CREDENTIALS.email, VALID_CREDENTIALS.password),

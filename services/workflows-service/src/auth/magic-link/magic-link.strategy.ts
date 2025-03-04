@@ -15,6 +15,7 @@ export class MagicLinkStrategy
     super({
       secretOrKey: env.MAGIC_LINK_AUTH_JWT_SECRET,
       jwtFromRequest: ExtractJwt.fromBodyField('token'),
+      algorithms: env.MAGIC_LINK_AUTH_JWT_ALGORITHMS.split(','),
     });
   }
 
