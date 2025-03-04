@@ -162,6 +162,9 @@ export const useColumns = ({ isDemoAccount = false }) => {
             .filter(
               el => el.id !== NO_VIOLATION_DETECTED_RISK_INDICATOR_ID && el.name && el.riskLevel,
             )
+            .filter(
+              (violation, index, self) => index === self.findIndex(t => t.id === violation.id),
+            )
             .sort((a, b) => {
               return a.riskLevel === b.riskLevel
                 ? (a.name ?? '').localeCompare(b.name ?? '')
