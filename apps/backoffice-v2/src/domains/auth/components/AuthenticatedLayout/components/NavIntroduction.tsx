@@ -11,7 +11,7 @@ export const NavIntroduction = () => {
   }
 
   return (
-    <div className="mb-6 px-2">
+    <div className="mb-6 px-2 transition-opacity group-data-[collapsible=icon]:opacity-0">
       <div className="rounded-lg border bg-white p-3 shadow-sm">
         <div className="flex items-center gap-2">
           <div className="w-2/3">
@@ -64,7 +64,7 @@ export const NavIntroduction = () => {
                   display: 'none',
                 }}
               >
-                <Skeleton className="absolute inset-0 size-full" />
+                <Skeleton className="size-full absolute inset-0" />
                 <iframe
                   src="https://www.loom.com/embed/7cd69b5e2db24e81ace760cc38b3d7dc?sid=69a0ffbf-bd57-4e88-b9db-cbf819da21d3&hideEmbedTopBar=true"
                   frameBorder="0"
