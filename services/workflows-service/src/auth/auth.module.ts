@@ -11,6 +11,7 @@ import { UserService } from '@/user/user.service';
 import { UserRepository } from '@/user/user.repository';
 import { PassportModule } from '@nestjs/passport';
 import { ProjectModule } from '@/project/project.module';
+import { MagicLinkStrategy } from '@/auth/magic-link/magic-link.strategy';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ProjectModule } from '@/project/project.module';
       provide: 'USER_SERVICE',
       useClass: UserService,
     },
+    MagicLinkStrategy,
     BasicStrategy,
     LocalStrategy,
     SessionSerializer,

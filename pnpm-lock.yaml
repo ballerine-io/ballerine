@@ -2897,6 +2897,9 @@ importers:
       passport-http:
         specifier: 0.3.0
         version: 0.3.0
+      passport-jwt:
+        specifier: 4.0.1
+        version: 4.0.1
       passport-local:
         specifier: ^1.0.0
         version: 1.0.0
@@ -2991,6 +2994,9 @@ importers:
       '@types/passport-http':
         specifier: 0.3.9
         version: 0.3.9
+      '@types/passport-jwt':
+        specifier: 4.0.1
+        version: 4.0.1
       '@types/passport-local':
         specifier: ^1.0.35
         version: 1.0.38
@@ -9276,6 +9282,9 @@ packages:
 
   '@types/passport-http@0.3.9':
     resolution: {integrity: sha512-uQ4vyRdvM0jdWuKpLmi6Q6ri9Nwt8YnHmF7kE6snbthxPrsMWcjRCVc5WcPaQ356ODSZTDgiRYURMPIspCkn3Q==}
+
+  '@types/passport-jwt@4.0.1':
+    resolution: {integrity: sha512-Y0Ykz6nWP4jpxgEUYq8NoVZeCQPo1ZndJLfapI249g1jHChvRfZRO/LS3tqu26YgAS/laI1qx98sYGz0IalRXQ==}
 
   '@types/passport-local@1.0.38':
     resolution: {integrity: sha512-nsrW4A963lYE7lNTv9cr5WmiUD1ibYJvWrpE13oxApFsRt77b0RdtZvKbCdNIY4v/QZ6TRQWaDDEwV1kCTmcXg==}
@@ -15587,6 +15596,9 @@ packages:
   passport-http@0.3.0:
     resolution: {integrity: sha512-OwK9DkqGVlJfO8oD0Bz1VDIo+ijD3c1ZbGGozIZw+joIP0U60pXY7goB+8wiDWtNqHpkTaQiJ9Ux1jE3Ykmpuw==}
     engines: {node: '>= 0.4.0'}
+
+  passport-jwt@4.0.1:
+    resolution: {integrity: sha512-UCKMDYhNuGOBE9/9Ycuoyh7vP6jpeTp/+sfMJl7nLff/t6dps+iaeE0hhNkKN8/HZHcJ7lCdOyDxHdDoxoSvdQ==}
 
   passport-local@1.0.0:
     resolution: {integrity: sha512-9wCE6qKznvf9mQYYbgJ3sVOHmCWoUNMVFoZzNoznmISbhnNNPhN9xfY3sLmScHMetEJeoY7CXwfhCe7argfQow==}
@@ -28144,6 +28156,11 @@ snapshots:
       '@types/express': 4.17.9
       '@types/passport': 1.0.17
 
+  '@types/passport-jwt@4.0.1':
+    dependencies:
+      '@types/jsonwebtoken': 9.0.1
+      '@types/passport-strategy': 0.2.38
+
   '@types/passport-local@1.0.38':
     dependencies:
       '@types/express': 4.17.9
@@ -37461,6 +37478,11 @@ snapshots:
 
   passport-http@0.3.0:
     dependencies:
+      passport-strategy: 1.0.0
+
+  passport-jwt@4.0.1:
+    dependencies:
+      jsonwebtoken: 9.0.0
       passport-strategy: 1.0.0
 
   passport-local@1.0.0:
