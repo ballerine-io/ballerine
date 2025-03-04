@@ -5,17 +5,17 @@ import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-
 import { camelCase } from 'string-ts';
 
 export const useEnsureActiveTabIsInTheme = ({
-  tabBlocks,
+  blocksMap,
   activeTab,
 }: {
-  tabBlocks: Record<string, Blocks>;
+  blocksMap: Record<string, Blocks>;
   activeTab: string;
 }) => {
   const { search } = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const tabBlocksKeys = Object.keys(tabBlocks);
+    const tabBlocksKeys = Object.keys(blocksMap);
 
     if (tabBlocksKeys.includes(toScreamingSnakeCase(activeTab)) || !tabBlocksKeys[0]) {
       return;
@@ -28,5 +28,5 @@ export const useEnsureActiveTabIsInTheme = ({
     navigate({
       search: searchParams.toString(),
     });
-  }, [activeTab, navigate, search, tabBlocks]);
+  }, [activeTab, navigate, search, blocksMap]);
 };
