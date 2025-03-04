@@ -33,38 +33,29 @@ export const useCaseBlocks = ({
   config,
   activeTab,
 }: TCaseBlocksLogicParams) => {
-  const tabBlocks = useMemo(
-    () =>
-      getTabsToBlocksMap({
-        blocks,
-        blocksCreationParams: { workflow, onReuploadNeeded, isLoadingReuploadNeeded },
-        theme: config?.theme,
-      }),
-    [workflow, blocks, onReuploadNeeded, isLoadingReuploadNeeded, config?.theme],
-  );
+  const blocksMap = useMemo(() => {
+    return getTabsToBlocksMap({
+      blocks,
+      blocksCreationParams: { workflow, onReuploadNeeded, isLoadingReuploadNeeded },
+      theme: config?.theme,
+    });
+  }, [workflow, blocks, onReuploadNeeded, isLoadingReuploadNeeded, config?.theme]);
+
   const tabs = useMemo(() => {
     if (!config?.theme) {
       return [];
     }
 
-    return getVariantTabs(config.theme, tabBlocks);
-  }, [tabBlocks, config?.theme]);
-  const themeBlocks = useMemo(() => {
-    if (!config?.theme) {
-      return [];
-    }
-
-    return tabBlocks[toScreamingSnakeCase(activeTab)] ?? [];
-  }, [config?.theme, activeTab, tabBlocks]);
+    return getVariantTabs(config.theme, blocksMap);
+  }, [blocksMap, config?.theme]);
 
   useEnsureActiveTabIsInTheme({
-    tabBlocks,
+    blocksMap,
     activeTab,
   });
 
   return {
-    activeTab,
-    blocks: themeBlocks,
+    blocksMap,
     tabs,
   };
 };
