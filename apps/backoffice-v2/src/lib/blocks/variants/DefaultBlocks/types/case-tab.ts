@@ -3,4 +3,5 @@ export type TCaseTabDefinition = {
   displayName: string;
   disabled?: boolean;
   hidden?: boolean;
+  tooltip?: string;
 };

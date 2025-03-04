@@ -7,7 +7,7 @@ import {
 } from '@ballerine/ui';
 import { ChevronRightIcon, CircleCheckIcon, CrownIcon } from 'lucide-react';
 import { forwardRef, type ReactNode } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 import { SidebarMenuButton } from '@/common/components/organisms/Sidebar/Sidebar';
 import { ctw } from '@/common/utils/ctw/ctw';
@@ -38,7 +38,7 @@ const PremiumNavItemHoverCard = ({
         <div className="relative">
           {videoLink ? (
             <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
-              <Skeleton className="absolute inset-0 size-full" />
+              <Skeleton className="size-full absolute inset-0" />
               <iframe
                 src={videoLink}
                 frameBorder="0"
@@ -60,7 +60,7 @@ const PremiumNavItemHoverCard = ({
             </div>
           )}
 
-          <CrownIcon className="absolute right-0 top-0 -translate-y-1/3 translate-x-1/3 rounded-full bg-[#584EC5] stroke-primary-foreground p-1.5 d-8" />
+          <CrownIcon className="absolute right-1 top-1 -translate-y-1/3 translate-x-1/3 rounded-full bg-[#584EC5] stroke-primary-foreground p-1.5 d-8" />
         </div>
 
         {navItemTitle && (
