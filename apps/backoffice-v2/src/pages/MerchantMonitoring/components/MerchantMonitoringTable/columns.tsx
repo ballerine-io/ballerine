@@ -17,7 +17,10 @@ import { titleCase } from 'string-ts';
 
 import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
 import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
-import { NO_VIOLATION_DETECTED_RISK_INDICATOR_ID } from '@/common/constants';
+import {
+  NO_VIOLATION_DETECTED_RISK_INDICATOR_ID,
+  POSITIVE_RISK_LEVEL_ID,
+} from '@/common/constants';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { TBusinessReport } from '@/domains/business-reports/fetchers';
@@ -160,10 +163,12 @@ export const useColumns = ({ isDemoAccount = false }) => {
         cell: ({ row }) => {
           const violations = (row.original.data?.allViolations ?? [])
             .filter(
-              el => el.id !== NO_VIOLATION_DETECTED_RISK_INDICATOR_ID && el.name && el.riskLevel,
-            )
-            .filter(
-              (violation, index, self) => index === self.findIndex(t => t.id === violation.id),
+              (violation, index, self) =>
+                violation.id !== NO_VIOLATION_DETECTED_RISK_INDICATOR_ID &&
+                violation.name &&
+                violation.riskLevel &&
+                violation.riskLevel !== POSITIVE_RISK_LEVEL_ID &&
+                index === self.findIndex(t => t.id === violation.id),
             )
             .sort((a, b) => {
               return a.riskLevel === b.riskLevel
