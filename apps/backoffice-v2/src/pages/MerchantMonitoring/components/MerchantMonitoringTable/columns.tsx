@@ -26,6 +26,7 @@ import { ctw } from '@/common/utils/ctw/ctw';
 import { TBusinessReport } from '@/domains/business-reports/fetchers';
 import { MerchantMonitoringReportStatus } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringReportStatus';
 import { statusToData } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringStatusBadge';
+import { uniqBy } from 'lodash-es';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -161,20 +162,21 @@ export const useColumns = ({ isDemoAccount = false }) => {
       }),
       columnHelper.accessor('data.allViolations', {
         cell: ({ row }) => {
-          const violations = (row.original.data?.allViolations ?? [])
+          let violations = (row.original.data?.allViolations ?? [])
             .filter(
-              (violation, index, self) =>
+              violation =>
                 violation.id !== NO_VIOLATION_DETECTED_RISK_INDICATOR_ID &&
                 violation.name &&
                 violation.riskLevel &&
-                violation.riskLevel !== POSITIVE_RISK_LEVEL_ID &&
-                index === self.findIndex(t => t.id === violation.id),
+                violation.riskLevel !== POSITIVE_RISK_LEVEL_ID,
             )
             .sort((a, b) => {
               return a.riskLevel === b.riskLevel
                 ? (a.name ?? '').localeCompare(b.name ?? '')
                 : (a.riskLevel ?? '').localeCompare(b.riskLevel ?? '');
             });
+
+          violations = uniqBy(violations, 'id');
 
           if (!violations?.length) {
             return null;
