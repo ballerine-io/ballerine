@@ -92,42 +92,44 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
 
                 return (
                   <Card key={riskIndicator.name}>
-                    <CardContent className="py-6">
+                    <CardContent className={'py-6'}>
                       <h4 className={'font-semibold text-lg mb-2'}>{riskIndicator.name}</h4>
 
-                      <div className="flex justify-between items-center gap-8">
+                      <div className={'flex justify-between items-start gap-8'}>
                         <div
                           className={ctw(
-                            'w-full flex justify-between gap-8 leading-6',
-                            screenshotUrl !== null && 'w-3/4',
+                            'w-3/4 flex justify-between gap-8 leading-6',
+                            !screenshotUrl && 'w-full',
                           )}
                         >
-                          <div className="w-1/2">
-                            <p className="font-medium">Description</p>
+                          <div className={'basis-1/2 grow-0'}>
+                            <p className={'font-medium'}>Description</p>
                             <p>{riskIndicator.explanation}</p>
                           </div>
 
-                          <div className="w-1/2 space-y-2">
+                          <div className={'basis-1/2 grow-0 space-y-2'}>
                             <div>
-                              <p className="font-medium">Why Our AI Flagged This?</p>
+                              <p className={'font-medium'}>Why Our AI Flagged This?</p>
                               <p>{riskIndicator.reason}</p>
                             </div>
 
-                            <div className="leading-5">
-                              <p className="font-medium">Source</p>
-                              <p className="italic">&quot;{riskIndicator.quoteFromSource}&quot;</p>
+                            <div className={'leading-5'}>
+                              <p className={'font-medium'}>Source</p>
+                              <p className={'italic'}>
+                                &quot;{riskIndicator.quoteFromSource}&quot;
+                              </p>
                             </div>
                           </div>
                         </div>
 
                         {screenshotUrl !== null && (
-                          <div className="w-1/4 truncate">
+                          <div className={'w-1/4 flex flex-col gap-y-2'}>
                             <a
                               href={screenshotUrl}
                               target={'_blank'}
                               rel={'noreferrer'}
-                              className={'relative w-1/2'}
                               title={'Click to view full screenshot'}
+                              className={'relative w-full'}
                             >
                               <img
                                 src={screenshotUrl}
@@ -139,9 +141,9 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
                             {riskIndicator.sourceUrl && (
                               <a
                                 href={riskIndicator.sourceUrl}
-                                className="whitespace-nowrap mt-2"
-                                rel={'noreferrer'}
                                 target={'_blank'}
+                                rel={'noreferrer'}
+                                className={'mt-2 truncate max-w-[20rem] block'}
                               >
                                 {riskIndicator.sourceUrl}
                               </a>

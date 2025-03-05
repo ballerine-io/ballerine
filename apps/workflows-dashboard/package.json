@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflows-dashboard",
   "private": false,
-  "version": "0.2.33",
+  "version": "0.2.34",
   "type": "module",
   "scripts": {
     "spellcheck": "cspell \"*\"",
@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@ballerine/common": "^0.9.78",
-    "@ballerine/ui": "^0.5.80",
+    "@ballerine/ui": "^0.7.109",
     "@lukemorales/query-key-factory": "^1.0.3",
     "@radix-ui/react-avatar": "^1.0.3",
     "@radix-ui/react-dialog": "1.0.4",
