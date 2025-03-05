@@ -28,6 +28,7 @@ export const getDocumentIdsFromContext = (context: CollectionFlowContext, uiSche
         }
 
         const documentId =
+          // @ts-expect-error -- wrong type
           getFileOrFileIdFromDocumentsList(documents || [], element) || document._document.id;
 
         if (!documentId || documentId instanceof File) {
