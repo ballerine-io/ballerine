@@ -56,11 +56,13 @@ export const useCaseCallToActionLegacyLogic = ({
     useApproveCaseAndDocumentsMutation({
       workflowId: childWorkflowId,
       ids: nonIdentificationDocumentsIds,
+      isDocumentsV2: !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
     });
   const { mutate: mutateRevisionCase, isLoading: isLoadingRevisionCase } =
     useRevisionCaseAndDocumentsMutation({
       workflowId: childWorkflowId,
       ids: nonIdentificationDocumentsIds,
+      isDocumentsV2: !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
     });
   // /Mutations
 

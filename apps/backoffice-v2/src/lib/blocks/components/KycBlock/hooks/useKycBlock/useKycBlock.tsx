@@ -184,10 +184,12 @@ export const useKycBlock = ({
     useApproveCaseAndDocumentsMutation({
       workflowId: childWorkflow?.id,
       ids: nonIdentificationDocumentsIds,
+      isDocumentsV2: !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
     });
   const { isLoading: isLoadingRevisionCase } = useRevisionCaseAndDocumentsMutation({
     workflowId: childWorkflow?.id,
     ids: nonIdentificationDocumentsIds,
+    isDocumentsV2: !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
   });
   const onMutateApproveCase = useCallback(() => mutateApproveCase(), [mutateApproveCase]);
   const { data: session } = useAuthenticatedUserQuery();

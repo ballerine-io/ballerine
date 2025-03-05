@@ -12,21 +12,18 @@ export const useRejectCaseAndDocumentsMutation = ({
   workflowId,
   rejectionReason,
   ids,
+  isDocumentsV2,
 }: {
   workflowId: string;
   rejectionReason: string;
   ids: string[];
+  isDocumentsV2: boolean;
 }) => {
   const queryClient = useQueryClient();
-  const filterId = useFilterId();
-  const { data: workflow } = useWorkflowByIdQuery({
-    workflowId,
-    filterId: filterId ?? '',
-  });
 
   return useMutation({
     mutationFn: async () => {
-      if (workflow?.workflowDefinition?.config?.isDocumentsV2) {
+      if (isDocumentsV2) {
         await updateDocumentsDecisionByIds({
           ids,
           data: {

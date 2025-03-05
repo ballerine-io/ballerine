@@ -278,6 +278,7 @@ export const DocumentsSchema = Type.Array(
     {
       id: Type.Optional(Type.String()),
       _id: Type.Optional(Type.String()),
+      _document: Type.Optional(Type.Record(Type.String(), Type.Any())),
       category: categorySchema,
       type: typeSchema,
       status: Type.Optional(

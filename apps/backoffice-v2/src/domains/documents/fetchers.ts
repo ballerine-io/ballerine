@@ -56,7 +56,7 @@ export const updateDocumentsDecisionByIds = async ({
   };
 }) => {
   const [documents, error] = await apiClient({
-    endpoint: `../external/documents/decision`,
+    endpoint: `../external/documents/test/decision-batch`,
     method: Method.PATCH,
     body: {
       ids,

@@ -43,7 +43,9 @@ export const generatePriorityFields = (
         const priorityFieldComment = [
           document?._document?.decisionReason,
           document?._document?.comment,
-        ].join(' - ');
+        ]
+          .filter(Boolean)
+          .join(' - ');
 
         priorityFields.push({
           id: formatId(element.id, stack),

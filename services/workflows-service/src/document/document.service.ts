@@ -429,8 +429,6 @@ export class DocumentService {
     data: {
       decision: 'approve' | 'reject' | 'revision' | null;
     },
-    args?: Prisma.DocumentUpdateManyArgs,
-    transaction?: PrismaTransactionClient,
   ) {
     if (!Array.isArray(ids) || !ids.length) {
       throw new BadRequestException('Document ids are required');

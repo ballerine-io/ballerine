@@ -4,27 +4,22 @@ import { t } from 'i18next';
 import { fetchWorkflowEventDecision } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 import { Action } from '../../../../../common/enums';
-import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
-import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { updateDocumentsDecisionByIds } from '@/domains/documents/fetchers';
 
 export const useApproveCaseAndDocumentsMutation = ({
   workflowId,
   ids,
+  isDocumentsV2,
 }: {
   workflowId: string;
   ids: string[];
+  isDocumentsV2: boolean;
 }) => {
   const queryClient = useQueryClient();
-  const filterId = useFilterId();
-  const { data: workflow } = useWorkflowByIdQuery({
-    workflowId,
-    filterId: filterId ?? '',
-  });
 
   return useMutation({
     mutationFn: async () => {
-      if (workflow?.workflowDefinition?.config?.isDocumentsV2) {
+      if (isDocumentsV2) {
         await updateDocumentsDecisionByIds({
           ids,
           data: {
