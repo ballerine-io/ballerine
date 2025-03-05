@@ -14,7 +14,7 @@ import { WorkflowDefinitionModule } from '@/workflow-defintion/workflow-definiti
     PrismaModule,
     DocumentFileModule,
     FileModule,
-    forwardRef(() => WorkflowModule),
+    WorkflowModule,
     UiDefinitionModule,
     WorkflowDefinitionModule,
   ],

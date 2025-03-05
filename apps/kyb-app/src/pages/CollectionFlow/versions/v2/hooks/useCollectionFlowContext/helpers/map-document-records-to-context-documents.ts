@@ -83,7 +83,5 @@ export const mapDocumentRecordsToContextDocuments = (
     },
   );
 
-  console.log('updated contaxto', context);
-
   return context;
 };
