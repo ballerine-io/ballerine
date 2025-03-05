@@ -77,7 +77,9 @@ export const addRequestedDocumentToIndividualDocuments = (
           pages: [],
           status: createdDocument.status,
           decision: createdDocument.decision,
-          _id: createdDocument.id,
+          _document: {
+            id: createdDocument.id,
+          },
         };
 
         entityDocuments.push(documentTemplate);

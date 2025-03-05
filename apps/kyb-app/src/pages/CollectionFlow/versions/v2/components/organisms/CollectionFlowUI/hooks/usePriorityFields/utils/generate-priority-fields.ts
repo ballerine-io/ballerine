@@ -1,3 +1,4 @@
+import { IDocumentRecord } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import {
   formatId,
@@ -26,20 +27,29 @@ export const generatePriorityFields = (
         const documents = get(
           context,
           formatValueDestination(element.valueDestination, stack),
-        ) as IDocumentTemplate[];
+        ) as Array<IDocumentTemplate<IDocumentRecord>>;
         const document = documents?.find(
           (doc: IDocumentTemplate) => doc.id === element.params?.template?.id,
         );
 
-        const reason = document?.decisionReason;
+        const isRevisionOrRequested =
+          document?._document?.status === 'requested' ||
+          document?._document?.decision === 'revisions';
 
-        if (!reason) {
+        if (!isRevisionOrRequested) {
           continue;
         }
 
+        const priorityFieldComment = [
+          document?._document?.decisionReason,
+          document?._document?.comment,
+        ]
+          .filter(Boolean)
+          .join(' - ');
+
         priorityFields.push({
           id: formatId(element.id, stack),
-          reason,
+          reason: priorityFieldComment,
         });
       }
 

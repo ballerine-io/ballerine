@@ -1,4 +1,3 @@
-import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
 import { TokenScope, type ITokenScope } from '@/common/decorators/token-scope.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
@@ -10,9 +9,9 @@ import { FILE_MAX_SIZE_IN_BYTE, FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/sto
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { StorageService } from '@/storage/storage.service';
 import { WorkflowService } from '@/workflow/workflow.service';
+import { isObject } from '@ballerine/common';
 import {
   Body,
-  BadRequestException,
   Controller,
   Delete,
   Get,
@@ -28,6 +27,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiExcludeController, ApiResponse } from '@nestjs/swagger';
+import { DocumentDecision, DocumentStatus } from '@prisma/client';
 import { Type, type Static } from '@sinclair/typebox';
 import type { Response } from 'express';
 import * as z from 'zod';
@@ -42,7 +42,6 @@ import { UpdateCollectionFlowDocumentSchema } from '../dto/update-collection-flo
 export class CollectionFlowFilesController {
   constructor(
     protected readonly storageService: StorageService,
-    protected readonly collectionFlowService: CollectionFlowService,
     protected readonly fileService: FileService,
     protected readonly workflowService: WorkflowService,
     protected readonly documentService: DocumentService,
@@ -167,6 +166,32 @@ export class CollectionFlowFilesController {
         return JSON.parse(value);
       }, z.record(z.string(), z.unknown()))
       .parse(data.properties);
+
+    const document = await this.documentService.getDocumentById(
+      data.documentId,
+      tokenScope.projectId,
+    );
+
+    if (document && document?.decision === DocumentDecision.revisions) {
+      const createdDocuments = await this.documentService.create({
+        type: data.type,
+        category: document.category,
+        issuingVersion: document.issuingVersion,
+        issuingCountry: document.issuingCountry,
+        version: document.version + 1,
+        status: DocumentStatus.provided,
+        properties: isObject(document.properties) ? document.properties : {},
+        metadata,
+        comment: document.comment ?? undefined,
+        file,
+        projectId: tokenScope.projectId,
+        workflowRuntimeDataId: tokenScope.workflowRuntimeDataId,
+        ...(document.businessId && { businessId: document.businessId }),
+        ...(document.endUserId && { endUserId: document.endUserId }),
+      });
+
+      return createdDocuments.at(-1);
+    }
 
     const documentsUpdateResults = await this.documentService.updateByIdWithFile({
       ...data,

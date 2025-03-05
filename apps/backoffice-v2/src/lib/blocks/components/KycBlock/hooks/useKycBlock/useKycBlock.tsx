@@ -172,12 +172,24 @@ export const useKycBlock = ({
       ) ?? []
     : [];
 
+  const nonIdentificationDocumentsIds = useMemo(() => {
+    return (
+      documents
+        ?.filter(document => document.type !== 'identification_document')
+        ?.map(document => document.id) ?? []
+    );
+  }, [documents]);
+
   const { mutate: mutateApproveCase, isLoading: isLoadingApproveCase } =
     useApproveCaseAndDocumentsMutation({
       workflowId: childWorkflow?.id,
+      ids: nonIdentificationDocumentsIds,
+      isDocumentsV2: !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
     });
   const { isLoading: isLoadingRevisionCase } = useRevisionCaseAndDocumentsMutation({
     workflowId: childWorkflow?.id,
+    ids: nonIdentificationDocumentsIds,
+    isDocumentsV2: !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
   });
   const onMutateApproveCase = useCallback(() => mutateApproveCase(), [mutateApproveCase]);
   const { data: session } = useAuthenticatedUserQuery();

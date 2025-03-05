@@ -52,7 +52,7 @@ export const buildDocumentsCreationPayload = (
       const document = getDocumentObjectFromDocumentsList(documentsList, documentElement);
 
       // Document already created
-      if (document?._id) {
+      if (document?._document?.id) {
         continue;
       }
 

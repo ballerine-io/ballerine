@@ -12,7 +12,7 @@ import {
 } from '@ballerine/ui';
 import get from 'lodash/get';
 
-export const assignDocumentStatusesAndDecisionToDocumentsInContext = (
+export const mapDocumentRecordsToContextDocuments = (
   context: CollectionFlowContext,
   uiSchema: UISchema,
   createdDocuments: IDocumentRecord[],
@@ -27,26 +27,43 @@ export const assignDocumentStatusesAndDecisionToDocumentsInContext = (
     for (const element of elements) {
       if (isDocumentFieldDefinition(element)) {
         const documents = get(context, formatValueDestination(element.valueDestination, stack));
+
+        // @ts-expect-error -- wrong type
         const document = getDocumentObjectFromDocumentsList(documents || [], element);
 
         if (!document) {
           continue;
         }
 
+        // @ts-expect-error -- wrong type
         const fileOrFileId = getFileOrFileIdFromDocumentsList(documents || [], element);
 
         if (fileOrFileId instanceof File) {
           continue;
         }
 
+        // Explanation of document handling:
+        //
+        // Context:
+        // When a user uploads a document using the input, the document ID is saved at the document value destination.
+        // This approach allows us to indicate that a file exists and was successfully uploaded.
+        //
+        // Problem:
+        // When a document is requested from the Backoffice, we create an empty document, but we cannot assign its ID
+        // to the document destination because it would incorrectly appear as if the document already exists.
+        //
+        // Solution:
+        // On document request, we store the document record ID in _document.id.
+        // When the user attempts to upload this document, we use _document.id to update the existing document
+        // rather than creating a new one.
+
         const documentFileId = fileOrFileId as string;
 
-        document.status = documentFileId
-          ? documentsMap?.[documentFileId]?.status
-          : documentsMap?.[document._id!]?.status;
-        document.decisionReason = documentFileId
-          ? documentsMap?.[documentFileId]?.decisionReason
-          : documentsMap?.[document._id!]?.decisionReason;
+        const documentRecord = documentFileId
+          ? documentsMap?.[documentFileId]
+          : documentsMap?.[document._document.id!];
+
+        document._document = documentRecord;
       }
 
       if (Array.isArray(element.children) && element.children.length > 0) {

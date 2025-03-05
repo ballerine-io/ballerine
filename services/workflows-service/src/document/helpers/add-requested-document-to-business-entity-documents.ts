@@ -49,7 +49,9 @@ export const addRequestedDocumentToBusinessEntityDocuments = (
     pages: [],
     status: createdDocument.status,
     decision: createdDocument.decision,
-    _id: createdDocument.id,
+    _document: {
+      id: createdDocument.id,
+    },
   };
   documents.push(documentTemplate);
 

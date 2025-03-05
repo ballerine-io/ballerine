@@ -36,6 +36,7 @@ import { AlertDefinitionModule } from '@/alert-definition/alert-definition.modul
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
 import { SentryService } from '@/sentry/sentry.service';
 import { WorkflowModule } from '@/workflow/workflow.module';
+import { DocumentModule } from '@/document/document.module';
 
 @Module({
   controllers: [WebhooksController],
@@ -53,6 +54,7 @@ import { WorkflowModule } from '@/workflow/workflow.module';
     AlertDefinitionModule,
     RuleEngineModule,
     WorkflowModule,
+    DocumentModule,
   ],
   providers: [
     WorkflowRuntimeDataRepository,

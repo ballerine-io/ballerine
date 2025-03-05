@@ -47,6 +47,9 @@ describe('getDocumentObjectFromDocumentsList', () => {
         issuingVersion: 1,
         properties: {},
         pages: [],
+        _document: {
+          id: 'doc1',
+        },
       },
       documentType: 'passport',
       documentVariant: 'front',

@@ -89,6 +89,7 @@ import {
   ApprovalState,
   BusinessPosition,
   Customer,
+  DocumentDecision,
   EndUser,
   Prisma,
   PrismaClient,
@@ -742,14 +743,18 @@ export class WorkflowService {
     projectId,
   }: {
     id: string;
-    name: string;
+    name: 'approve' | 'reject' | 'revision';
     reason?: string;
     projectId: TProjectId;
   }) {
     return await this.prismaService.$transaction(async transaction => {
       const runtimeData = await this.workflowRuntimeDataRepository.findByIdAndLock(
         id,
-        {},
+        {
+          include: {
+            workflowDefinition: true,
+          },
+        },
         [projectId],
         transaction,
       );
@@ -758,7 +763,10 @@ export class WorkflowService {
         approve: 'approved',
         reject: 'rejected',
         revision: 'revision',
-      } as const;
+      } as const satisfies Record<
+        Exclude<typeof name, null>,
+        NonNullable<DefaultContextSchema['documents'][number]['decision']>['status']
+      >;
       const status = Status[name as keyof typeof Status];
       const decision = (() => {
         if (status === 'approved') {
@@ -859,7 +867,10 @@ export class WorkflowService {
         reject: 'rejected',
         revision: 'revision',
         revised: 'revised',
-      } as const;
+      } as const satisfies Record<
+        Exclude<typeof decision.status, null>,
+        NonNullable<DefaultContextSchema['documents'][number]['decision']>['status']
+      >;
       const status = decision.status ? Status[decision.status] : null;
       const newDecision = (() => {
         if (!status || status === 'approved') {

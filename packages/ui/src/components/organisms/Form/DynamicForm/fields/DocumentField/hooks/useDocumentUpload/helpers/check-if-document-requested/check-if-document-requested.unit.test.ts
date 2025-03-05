@@ -3,12 +3,14 @@ import { IDocumentTemplate } from '../../../..';
 import { checkIfDocumentRequested } from './check-if-document-requested';
 
 describe('checkIfDocumentRequested', () => {
-  it('should return true when document is requested and has _id', () => {
+  it('should return true when document is requested and has id', () => {
     // arrange
     const document: IDocumentTemplate = {
-      status: 'requested',
-      _id: '123',
-    } as IDocumentTemplate;
+      _document: {
+        id: '123',
+        status: 'requested',
+      },
+    } as unknown as IDocumentTemplate;
 
     // act
     const result = checkIfDocumentRequested(document);
@@ -21,8 +23,10 @@ describe('checkIfDocumentRequested', () => {
     // arrange
     const document: IDocumentTemplate = {
       status: 'provided',
-      _id: '123',
-    } as IDocumentTemplate;
+      _document: {
+        id: '123',
+      },
+    } as unknown as IDocumentTemplate;
 
     // act
     const result = checkIfDocumentRequested(document);
@@ -31,11 +35,13 @@ describe('checkIfDocumentRequested', () => {
     expect(result).toBe(false);
   });
 
-  it('should return false when document has no _id', () => {
+  it('should return false when document has no id', () => {
     // arrange
     const document: IDocumentTemplate = {
-      status: 'requested',
-    } as IDocumentTemplate;
+      _document: {
+        status: 'requested',
+      },
+    } as unknown as IDocumentTemplate;
 
     // act
     const result = checkIfDocumentRequested(document);
@@ -44,9 +50,9 @@ describe('checkIfDocumentRequested', () => {
     expect(result).toBe(false);
   });
 
-  it('should return false when document has neither status nor _id', () => {
+  it('should return false when document has neither status nor id', () => {
     // arrange
-    const document: IDocumentTemplate = {} as IDocumentTemplate;
+    const document: IDocumentTemplate = {} as unknown as IDocumentTemplate<any>;
 
     // act
     const result = checkIfDocumentRequested(document);

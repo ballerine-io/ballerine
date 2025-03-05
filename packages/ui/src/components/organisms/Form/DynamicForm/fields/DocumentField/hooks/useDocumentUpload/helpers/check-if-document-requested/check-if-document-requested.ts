@@ -1,12 +1,22 @@
 import { IDocumentTemplate } from '../../../..';
 
-export const checkIfDocumentRequested = (
-  document?: IDocumentTemplate,
-): document is IDocumentTemplate & { _id: string } =>
-  Boolean(document?.status === 'requested' && document?._id);
+export const checkIfDocumentRequested = <
+  TResultDocument extends { id: string; status: string; decision: string } = {
+    id: string;
+    status: string;
+    decision: string;
+  },
+>(
+  document?: IDocumentTemplate<any> | undefined,
+): document is IDocumentTemplate<TResultDocument> =>
+  Boolean(document?._document?.status === 'requested' && document?._document?.id);
 
-export const checkIfDocumentInRevision = (
-  document?: IDocumentTemplate,
-): document is IDocumentTemplate & { _id: string } =>
-  //@ts-expect-error TODO: Add revision status
-  Boolean(document?.status === 'revision' && document?._id);
+export const checkIfDocumentInRevision = <
+  TResultDocument extends { id: string; decision: string } = {
+    id: string;
+    decision: string;
+  },
+>(
+  document?: IDocumentTemplate<any> | undefined,
+): document is IDocumentTemplate<TResultDocument> =>
+  Boolean(document?._document?.decision === 'revisions' && document?._document?.id);

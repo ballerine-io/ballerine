@@ -179,4 +179,5 @@ export interface IDocumentRecord {
   type: string;
   category: string;
   decisionReason?: string;
+  comment?: string;
 }

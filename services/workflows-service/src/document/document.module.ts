@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { DocumentService } from './document.service';
 import { DocumentRepository } from './document.repository';
 import { DocumentControllerExternal } from './document.controller.external';

@@ -26,7 +26,8 @@ import { removeDocumentFromListByTemplateId } from './hooks/useDocumentUpload/he
 
 export type TDocumentStatus = 'requested' | 'provided' | 'unprovided';
 export type TDocumentDecision = 'approved' | 'rejected' | 'revisions';
-export interface IDocumentTemplate {
+export interface IDocumentTemplate<TDocument extends { id: string } = { id: string }> {
+  // Document id from the template
   id: string;
   category: string;
   type: string;
@@ -37,12 +38,7 @@ export interface IDocumentTemplate {
   issuingVersion: number;
   properties: AnyObject;
   pages: AnyObject[];
-  status?: TDocumentStatus;
-  decision?: TDocumentDecision;
-  decisionReason?: string;
-
-  // Document ID from the backend
-  _id?: string;
+  _document?: TDocument;
 }
 
 export interface IDocumentFieldParams extends Omit<IFileFieldParams, 'httpParams'> {

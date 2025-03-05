@@ -175,9 +175,7 @@ export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
           return;
         }
 
-        if (reason) {
-          identifiers.document.decisionReason = reason;
-        }
+        identifiers.document.decisionReason = reason || 'Document requested';
 
         return setSelectedIdsToRequest(prev => [...prev, identifiers]);
       };
