@@ -129,7 +129,7 @@ describe('FieldList', () => {
   it('should render add button with custom label', () => {
     render(<FieldList element={mockElement} />);
 
-    screen.getByText('Custom Add');
+    screen.getByText('+ Custom Add');
   });
 
   it('should use default labels when not provided', () => {
@@ -150,7 +150,7 @@ describe('FieldList', () => {
   it('should call addItem when add button is clicked', () => {
     render(<FieldList element={mockElement} />);
 
-    const addButton = screen.getByText('Custom Add');
+    const addButton = screen.getByText('+ Custom Add');
     fireEvent.click(addButton);
 
     expect(mockAddItem).toHaveBeenCalledTimes(1);
@@ -163,7 +163,7 @@ describe('FieldList', () => {
 
     render(<FieldList element={mockElement} />);
 
-    const addButton = screen.getByText('Custom Add');
+    const addButton = screen.getByText('+ Custom Add');
     fireEvent.click(addButton);
 
     expect(mockAddItem).not.toHaveBeenCalled();
@@ -176,7 +176,7 @@ describe('FieldList', () => {
 
     render(<FieldList element={mockElement} />);
 
-    const addButton = screen.getByText('Custom Add');
+    const addButton = screen.getByText('+ Custom Add');
     expect(addButton).toBeDisabled();
   });
 
