@@ -143,7 +143,7 @@ describe('FieldList', () => {
 
     render(<FieldList element={elementWithoutLabels} />);
 
-    screen.getByText('Add Item');
+    screen.getByText('+ Add Item');
     screen.getAllByText('Remove');
   });
 
