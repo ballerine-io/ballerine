@@ -15,7 +15,7 @@ import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Conten
 import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provider';
 
 export const DefaultBlocks = () => {
-  const { blocksMap, tabs, activeTab, getUpdatedSearchParamsWithActiveTab, isLoading } =
+  const { blocks, tabs, activeTab, getUpdatedSearchParamsWithActiveTab, isLoading } =
     useDefaultBlocksLogic();
 
   return (
@@ -69,10 +69,10 @@ export const DefaultBlocks = () => {
               return (
                 <TabsContent key={tabName} value={tabName}>
                   <div className="flex h-full flex-col gap-4">
-                    <BlocksComponent blocks={blocksMap[tab.name]} cells={cells}>
+                    <BlocksComponent blocks={blocks} cells={cells}>
                       {(Cell, cell) => <Cell {...cell} />}
                     </BlocksComponent>
-                    {!isLoading && !Object.keys(blocksMap).length && <NoBlocks />}
+                    {!isLoading && !blocks?.length && <NoBlocks />}
                   </div>
                 </TabsContent>
               );
@@ -82,10 +82,10 @@ export const DefaultBlocks = () => {
       )}
       {!tabs.length && (
         <div className="flex h-full flex-col gap-4">
-          <BlocksComponent blocks={blocksMap[tab.name]} cells={cells}>
+          <BlocksComponent blocks={blocks} cells={cells}>
             {(Cell, cell) => <Cell {...cell} />}
           </BlocksComponent>
-          {!isLoading && !Object.keys(blocksMap).length && <NoBlocks />}
+          {!isLoading && !blocks?.length && <NoBlocks />}
         </div>
       )}
     </div>

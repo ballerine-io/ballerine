@@ -363,7 +363,6 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                             </FormControl>
                             <SelectContent>
                               {dropdownOptions?.map(({ label, value }, index) => {
-                                // FIXME: Issue with this render function, causes really bad performance
                                 return (
                                   <SelectItem
                                     key={keyFactory(
