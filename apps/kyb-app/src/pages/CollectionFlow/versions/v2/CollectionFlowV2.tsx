@@ -80,23 +80,29 @@ export const CollectionFlowV2 = withSessionProtected(() => {
   const [isLogoLoaded, setLogoLoaded] = useState(customer?.logoImageUri ? false : true);
 
   useEffect(() => {
-    if (!customer?.logoImageUri) return;
+    if (!customer?.logoImageUri) {
+      return;
+    }
 
     // Resseting loaded state in case of logo change
     setLogoLoaded(false);
   }, [customer?.logoImageUri]);
 
-  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.approved)
+  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.approved) {
     return <Approved />;
+  }
 
-  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.rejected)
+  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.rejected) {
     return <Rejected />;
+  }
 
-  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.completed)
+  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.completed) {
     return <CompletedScreen />;
+  }
 
-  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.failed)
+  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.failed) {
     return <FailedScreen />;
+  }
 
   return definition && collectionFlowData ? (
     <DynamicUI initialState={initialUIState}>
@@ -118,12 +124,17 @@ export const CollectionFlowV2 = withSessionProtected(() => {
               }}
             >
               {() => {
-                // Temp state, has to be resolved to success or failure by plugins
-                if (state === 'done') return <LoadingScreen />;
+                if (state === 'done') {
+                  return <LoadingScreen />;
+                }
 
-                if (isCompleted(state)) return <CompletedScreen />;
+                if (isCompleted(state)) {
+                  return <CompletedScreen />;
+                }
 
-                if (isFailed(state)) return <FailedScreen />;
+                if (isFailed(state)) {
+                  return <FailedScreen />;
+                }
 
                 return (
                   <DynamicUI.PageResolver
@@ -143,9 +154,11 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                   <div className="flex h-full flex-1 flex-col">
                                     <div className="flex justify-between gap-8 pb-10">
                                       <AppShell.Navigation />
-                                      <div className="flex w-full justify-end">
-                                        <AppShell.LanguagePicker />
-                                      </div>
+                                      {schema?.uiOptions?.disableLanguageSelection ? null : (
+                                        <div className="flex w-full justify-end">
+                                          <AppShell.LanguagePicker />
+                                        </div>
+                                      )}
                                     </div>
                                     <div className="pb-10">
                                       {customer?.logoImageUri && (
@@ -164,7 +177,14 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                       ) : null}
                                     </div>
                                     <div>
-                                      {customer?.displayName && (
+                                      {themeDefinition.settings?.contactInformation ? (
+                                        <div
+                                          className="text-sm"
+                                          dangerouslySetInnerHTML={{
+                                            __html: themeDefinition.settings?.contactInformation,
+                                          }}
+                                        />
+                                      ) : customer?.displayName ? (
                                         <div>
                                           {
                                             t('contact', {
@@ -172,7 +192,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                             }) as string
                                           }
                                         </div>
-                                      )}
+                                      ) : null}
                                       {themeDefinition.ui?.poweredBy !== false && (
                                         <div className="flex flex-col">
                                           <div className="border-b pb-12" />

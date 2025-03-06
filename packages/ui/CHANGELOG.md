@@ -1,5 +1,31 @@
 # @ballerine/ui
 
+## 0.7.109
+
+### Patch Changes
+
+- Fixed text overflow in lob section
+
+## 0.5.82
+
+### Patch Changes
+
+- Bump
+
+## 0.5.81
+
+### Patch Changes
+
+- version bump
+
+## 0.5.80
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.78
+
 ## 0.5.79
 
 ### Patch Changes

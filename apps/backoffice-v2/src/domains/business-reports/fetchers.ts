@@ -13,6 +13,7 @@ import {
   MerchantReportType,
   MerchantReportVersion,
   ReportSchema,
+  UPDATEABLE_REPORT_STATUSES,
 } from '@ballerine/common';
 
 const statusOverrides = {
@@ -20,13 +21,18 @@ const statusOverrides = {
   [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: MERCHANT_REPORT_STATUSES_MAP['in-progress'],
 } as const satisfies Partial<Record<MerchantReportStatus, MerchantReportStatus>>;
 
-export const BusinessReportSchema = ReportSchema.transform(data => ({
-  ...data,
-  status: data.status in statusOverrides ? statusOverrides[data.status] : data.status,
-  website: data.website.url,
-  riskLevel: data.status === MERCHANT_REPORT_STATUSES_MAP.completed ? data.riskLevel : null,
-  data: data.status === MERCHANT_REPORT_STATUSES_MAP.completed ? data?.data : null,
-}));
+export const BusinessReportSchema = ReportSchema.transform(data => {
+  const isReportReady = UPDATEABLE_REPORT_STATUSES.includes(data.status);
+
+  return {
+    ...data,
+    status: data.status in statusOverrides ? statusOverrides[data.status] : data.status,
+    website: data.website.url,
+    riskLevel: isReportReady ? data.riskLevel : null,
+    data: isReportReady ? data?.data : null,
+    isExample: data.metadata?.isExample ?? false,
+  };
+});
 
 export const BusinessReportsSchema = z.object({
   data: z.array(BusinessReportSchema),

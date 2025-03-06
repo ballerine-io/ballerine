@@ -5,10 +5,10 @@ import { WorkflowDefinitionConfigThemeEnum } from '@ballerine/common';
 
 export const Tab = {
   SUMMARY: 'SUMMARY',
-  COMPANY_INFORMATION: 'COMPANY_INFORMATION',
+  KYB: 'KYB',
   STORE_INFO: 'STORE_INFO',
   DOCUMENTS: 'DOCUMENTS',
-  UBOS: 'UBOS',
+  UBOS_KYC: 'UBOS_KYC',
   ASSOCIATED_COMPANIES: 'ASSOCIATED_COMPANIES',
   DIRECTORS: 'DIRECTORS',
   MONITORING_REPORTS: 'MONITORING_REPORTS',
@@ -28,14 +28,14 @@ export const getVariantTabs = (
         disabled: !tabBlocks[Tab.SUMMARY]?.length,
       },
       {
-        name: Tab.COMPANY_INFORMATION,
-        displayName: 'Company',
-        disabled: !tabBlocks[Tab.COMPANY_INFORMATION]?.length,
+        name: Tab.KYB,
+        displayName: 'KYB',
+        disabled: !tabBlocks[Tab.KYB]?.length,
       },
       {
-        name: Tab.STORE_INFO,
-        displayName: 'Store',
-        disabled: !tabBlocks[Tab.STORE_INFO]?.length,
+        name: Tab.UBOS_KYC,
+        displayName: 'KYC',
+        disabled: !tabBlocks[Tab.UBOS_KYC]?.length,
       },
       {
         name: Tab.DOCUMENTS,
@@ -43,10 +43,16 @@ export const getVariantTabs = (
         disabled: !tabBlocks[Tab.DOCUMENTS]?.length,
       },
       {
-        name: Tab.UBOS,
-        displayName: 'UBOs',
-        disabled: !tabBlocks[Tab.UBOS]?.length,
+        name: Tab.MONITORING_REPORTS,
+        displayName: 'Web Presence',
+        disabled: !tabBlocks[Tab.MONITORING_REPORTS]?.length,
       },
+      {
+        name: Tab.STORE_INFO,
+        displayName: 'Store',
+        disabled: !tabBlocks[Tab.STORE_INFO]?.length,
+      },
+
       {
         name: Tab.ASSOCIATED_COMPANIES,
         displayName: 'Associated Companies',
@@ -57,15 +63,13 @@ export const getVariantTabs = (
         displayName: 'Directors',
         disabled: !tabBlocks[Tab.DIRECTORS]?.length,
       },
-      {
-        name: Tab.MONITORING_REPORTS,
-        displayName: 'Monitoring Reports',
-        disabled: !tabBlocks[Tab.MONITORING_REPORTS]?.length,
-      },
+
       {
         name: Tab.CUSTOM_DATA,
         displayName: 'Custom Data',
         disabled: !tabBlocks[Tab.CUSTOM_DATA]?.length,
+        tooltip:
+          'This tab displays customer data provided by API, allowing Ballerine AI to enrich its analysis.',
       },
     ];
 

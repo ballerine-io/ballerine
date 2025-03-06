@@ -13,6 +13,7 @@ import dayjs from 'dayjs';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { StatisticsSearchSchema } from '@/pages/Statistics/hooks/useStatisticsLogic';
 import { useBusinessReportsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportsQuery/useBusinessReportsQuery';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 
 export const usePortfolioRiskStatisticsLogic = ({
   violationCounts,
@@ -26,6 +27,7 @@ export const usePortfolioRiskStatisticsLogic = ({
     },
     [],
   );
+  const { data: customer } = useCustomerQuery();
 
   const filteredRiskIndicators = useMemo(
     () =>
@@ -60,6 +62,8 @@ export const usePortfolioRiskStatisticsLogic = ({
   });
 
   const alertedReports = businessReports?.totalItems ?? 0;
+  const isMerchantMonitoringEnabled =
+    (customer?.config?.isMerchantMonitoringEnabled && !customer?.config?.isDemoAccount) ?? false;
 
   return {
     riskLevelToFillColor,
@@ -74,5 +78,6 @@ export const usePortfolioRiskStatisticsLogic = ({
     from,
     to,
     alertedReports,
+    isMerchantMonitoringEnabled,
   };
 };

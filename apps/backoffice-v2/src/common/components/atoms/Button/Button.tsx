@@ -4,7 +4,7 @@ import { cva, VariantProps } from 'class-variance-authority';
 import { ctw } from '../../../utils/ctw/ctw';
 
 export const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:text-primary-foreground disabled:bg-slate-400 disabled:opacity-50 disabled:pointer-events-none disabled:shadow-none ring-offset-background',
+  'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-30 disabled:pointer-events-none disabled:shadow-none ring-offset-background',
   {
     variants: {
       variant: {
@@ -18,8 +18,12 @@ export const buttonVariants = cva(
         outline: 'border border-input hover:bg-accent hover:text-accent-foreground',
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
-        link: 'underline-offset-4 hover:underline text-primary',
         status: 'focus-visible:ring-0 focus-visible:ring-offset-0 focus:!bg-[#F4F6FD] bg-[#F4F6FD]',
+        link: 'underline-offset-4 hover:underline text-primary',
+        'wp-primary':
+          'bg-wp-primary text-wp-primary-foreground hover:bg-wp-primary/90 disabled:text-wp-primary-foreground disabled:bg-wp-primary',
+        'wp-outline':
+          'border border-wp-primary text-wp-primary hover:bg-wp-primary hover:text-wp-primary-foreground',
       },
       size: {
         default: 'h-10 py-2 px-4',
