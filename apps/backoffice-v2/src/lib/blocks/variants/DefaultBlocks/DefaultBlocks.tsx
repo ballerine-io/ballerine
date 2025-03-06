@@ -13,6 +13,7 @@ import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
 import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
 import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provider';
+import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-screaming-snake-case';
 
 export const DefaultBlocks = () => {
   const { blocksMap, tabs, activeTab, getUpdatedSearchParamsWithActiveTab, isLoading } =
@@ -69,7 +70,10 @@ export const DefaultBlocks = () => {
               return (
                 <TabsContent key={tabName} value={tabName}>
                   <div className="flex h-full flex-col gap-4">
-                    <BlocksComponent blocks={blocksMap[tab.name]} cells={cells}>
+                    <BlocksComponent
+                      blocks={blocksMap[tab.name as keyof typeof blocksMap]}
+                      cells={cells}
+                    >
                       {(Cell, cell) => <Cell {...cell} />}
                     </BlocksComponent>
                     {!isLoading && !Object.keys(blocksMap).length && <NoBlocks />}
@@ -82,7 +86,10 @@ export const DefaultBlocks = () => {
       )}
       {!tabs.length && (
         <div className="flex h-full flex-col gap-4">
-          <BlocksComponent blocks={blocksMap[tab.name]} cells={cells}>
+          <BlocksComponent
+            blocks={blocksMap[toScreamingSnakeCase(activeTab) as keyof typeof blocksMap]}
+            cells={cells}
+          >
             {(Cell, cell) => <Cell {...cell} />}
           </BlocksComponent>
           {!isLoading && !Object.keys(blocksMap).length && <NoBlocks />}
