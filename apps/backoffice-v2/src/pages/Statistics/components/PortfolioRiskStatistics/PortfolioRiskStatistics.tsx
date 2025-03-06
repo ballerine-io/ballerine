@@ -36,6 +36,7 @@ export const PortfolioRiskStatistics: FunctionComponent<
     alertedReports,
     from,
     to,
+    isMerchantMonitoringEnabled,
   } = usePortfolioRiskStatisticsLogic({
     userSelectedDate,
     violationCounts,
@@ -158,32 +159,34 @@ export const PortfolioRiskStatistics: FunctionComponent<
             </CardContent>
           </Card>
         </div>
-        <div className={'self-start rounded-xl bg-[#F6F6F6] p-2'}>
-          <Card className={'flex h-full flex-col px-3'}>
-            <CardHeader className={'pb-2 font-bold'}>Unresolved Monitoring Alerts</CardHeader>
-            <CardContent>
-              <div className={'flex justify-between'}>
-                <div className={'flex items-center space-x-1'}>
-                  <WarningFilledSvg className={'mt-1 d-10'} />
-                  <span className={'text-3xl font-semibold'}>
-                    {Intl.NumberFormat().format(alertedReports)}
-                  </span>
+        {isMerchantMonitoringEnabled && (
+          <div className={'self-start rounded-xl bg-[#F6F6F6] p-2'}>
+            <Card className={'flex h-full flex-col px-3'}>
+              <CardHeader className={'pb-2 font-bold'}>Unresolved Monitoring Alerts</CardHeader>
+              <CardContent>
+                <div className={'flex justify-between'}>
+                  <div className={'flex items-center space-x-1'}>
+                    <WarningFilledSvg className={'mt-1 d-10'} />
+                    <span className={'text-3xl font-semibold'}>
+                      {Intl.NumberFormat().format(alertedReports)}
+                    </span>
+                  </div>
+                  <Link
+                    to={`/${locale}/merchant-monitoring?from=${from}&to=${to}&isAlert=Alerted`}
+                    className={ctw(
+                      buttonVariants({
+                        variant: 'link',
+                      }),
+                      'h-[unset] cursor-pointer !p-0 !text-blue-500',
+                    )}
+                  >
+                    View
+                  </Link>
                 </div>
-                <Link
-                  to={`/${locale}/merchant-monitoring?from=${from}&to=${to}&isAlert=Alerted`}
-                  className={ctw(
-                    buttonVariants({
-                      variant: 'link',
-                    }),
-                    'h-[unset] cursor-pointer !p-0 !text-blue-500',
-                  )}
-                >
-                  View
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );

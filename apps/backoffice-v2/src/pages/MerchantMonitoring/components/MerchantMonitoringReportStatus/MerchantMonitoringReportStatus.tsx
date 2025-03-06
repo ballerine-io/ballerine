@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { MERCHANT_REPORT_STATUSES_MAP, UPDATEABLE_REPORT_STATUSES } from '@ballerine/common';
 import {
+  ctw,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -40,9 +41,11 @@ const MerchantMonitoringCompletedStatusFormSchema = z.object({
 export const MerchantMonitoringReportStatus = ({
   status,
   reportId,
+  className,
   businessId,
 }: {
   reportId?: string;
+  className?: string;
   businessId?: string;
   status?: keyof typeof statusToData;
 }) => {
@@ -68,7 +71,12 @@ export const MerchantMonitoringReportStatus = ({
   > = async ({ text }) => {
     mutateUpdateReportStatus({ reportId, status: MERCHANT_REPORT_STATUSES_MAP.completed, text });
 
-    const content = `Status changed to 'Review Completed' ${text ? ` with details: ${text}` : ''}`;
+    const content = `
+      <div class="flex flex-col">
+        <span class="text-xs leading-6 text-slate-500">Status changed to <span class="font-semibold">'Review Completed'</span>
+        ${text ? ` with details:</span><div class="text-sm">${text}</div>` : '</span>'}
+      </div>
+    `;
 
     void mutateCreateNote({
       content,
@@ -104,7 +112,7 @@ export const MerchantMonitoringReportStatus = ({
       <DropdownMenu open={isStatusDropdownOpen} onOpenChange={toggleStatusDropdownOpen}>
         <DropdownMenuTrigger
           disabled={disabled}
-          className={`flex items-center focus-visible:outline-none`}
+          className={ctw(`flex items-center pr-1 focus-visible:outline-none`, className)}
         >
           <MerchantMonitoringStatusBadge disabled={disabled} status={status} />
         </DropdownMenuTrigger>
@@ -169,7 +177,10 @@ export const MerchantMonitoringReportStatus = ({
                   <FormLabel>Additional details</FormLabel>
 
                   <FormControl>
-                    <TextArea {...field} />
+                    <TextArea
+                      {...field}
+                      placeholder="Add additional details that will be saved in the report's notes section"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -180,9 +191,7 @@ export const MerchantMonitoringReportStatus = ({
               <Button type="button" onClick={closeCompleteReviewModal} variant="ghost">
                 Cancel
               </Button>
-              <Button type="submit" variant="destructive">
-                Complete Review
-              </Button>
+              <Button type="submit">Complete Review</Button>
             </DialogFooter>
           </form>
         </Form>

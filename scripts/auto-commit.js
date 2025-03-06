@@ -74,8 +74,13 @@ async function generateCommitMessage(diff) {
 
 async function main() {
   try {
+    // Get specific file from cmd line arg
+    const targetPath = process.argv[2];
+
     // Get git diff
-    const diff = execSync('git diff --cached -- . ":(exclude)pnpm-lock.yaml"').toString();
+    const targetPattern = targetPath ? `"${targetPath}"` : '.';
+    const excludePattern = ':(exclude)pnpm-lock.yaml';
+    const diff = execSync(`git diff --cached -- ${targetPattern} "${excludePattern}"`);
 
     if (!diff) {
       console.error('No staged changes found. Please stage your changes using git add');
@@ -100,7 +105,9 @@ async function main() {
     const noVerify = process.argv.includes('-n') ? ' -n' : '';
 
     // Create commit with edited message
-    execSync(`git commit -m "${editedMessage}"${noVerify}`, { stdio: 'inherit' });
+    execSync(`git commit -m "${editedMessage}"${noVerify} -- ${targetPattern}`, {
+      stdio: 'inherit',
+    });
 
     console.log('Successfully created commit with message:', editedMessage);
   } catch (error) {

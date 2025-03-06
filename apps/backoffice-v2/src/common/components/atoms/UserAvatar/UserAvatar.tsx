@@ -4,8 +4,8 @@ import { ctw } from '../../../utils/ctw/ctw';
 import React, { ComponentProps } from 'react';
 
 interface IUserAvatarProps extends Omit<ComponentProps<typeof Avatar>, 'src' | 'alt'> {
-  fullName: string;
-  avatarUrl: string | undefined;
+  fullName?: string | null;
+  avatarUrl?: string | null;
 }
 
 export const UserAvatar: React.FC<IUserAvatarProps> = ({

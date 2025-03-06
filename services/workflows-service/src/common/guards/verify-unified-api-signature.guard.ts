@@ -17,8 +17,8 @@ export class VerifyUnifiedApiSignatureGuard implements CanActivate {
     if (
       !verifySignature({
         payload: request.body,
-        signature,
         key: env.UNIFIED_API_SHARED_SECRET ?? '',
+        signature,
       })
     ) {
       throw new UnauthorizedException('Invalid signature');
