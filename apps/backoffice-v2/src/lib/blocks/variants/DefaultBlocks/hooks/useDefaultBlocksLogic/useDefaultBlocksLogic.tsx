@@ -604,7 +604,7 @@ export const useDefaultBlocksLogic = () => {
     aiSummaryBlock,
   ]);
 
-  const { blocksMap, tabs } = useCaseBlocks({
+  const { blocks, tabs } = useCaseBlocks({
     workflow,
     config: workflow?.workflowDefinition?.config,
     blocks: allBlocks,
@@ -625,7 +625,7 @@ export const useDefaultBlocksLogic = () => {
   );
 
   return {
-    blocksMap,
+    blocks,
     onReuploadNeeded,
     isLoadingReuploadNeeded,
     isLoading,
