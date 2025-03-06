@@ -1,4 +1,5 @@
 import { TokenScope, type ITokenScope } from '@/common/decorators/token-scope.decorator';
+import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
 import { DocumentFileJsonSchema } from '@/document-file/dtos/document-file.dto';
@@ -32,6 +33,7 @@ import { Type, type Static } from '@sinclair/typebox';
 import type { Response } from 'express';
 import * as z from 'zod';
 import * as errors from '../../errors';
+import { CollectionFlowService } from '../collection-flow.service';
 import { CollectionFlowDocumentSchema } from '../dto/create-collection-flow-document.schema';
 import { GetDocumentsByIdsDto } from '../dto/get-documents-by-ids.dto';
 import { UpdateCollectionFlowDocumentSchema } from '../dto/update-collection-flow-document.schema';
@@ -45,6 +47,7 @@ export class CollectionFlowFilesController {
     protected readonly fileService: FileService,
     protected readonly workflowService: WorkflowService,
     protected readonly documentService: DocumentService,
+    protected readonly collectionFlowService: CollectionFlowService,
   ) {}
 
   @Get()
@@ -240,5 +243,50 @@ export class CollectionFlowFilesController {
     }
 
     return res.send(persistedFile);
+  }
+
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: getDiskStorage(),
+      limits: {
+        files: 1,
+      },
+      fileFilter,
+    }),
+    RemoveTempFileInterceptor,
+  )
+  @Post('/old')
+  async uploadFile(
+    @UploadedFile(
+      new ParseFilePipeBuilder().addMaxSizeValidator({ maxSize: FILE_MAX_SIZE_IN_BYTE }).build({
+        fileIsRequired: true,
+        exceptionFactory: (error: string) => {
+          if (error.includes('expected size')) {
+            throw new UnprocessableEntityException(FILE_SIZE_EXCEEDED_MSG);
+          }
+
+          throw new UnprocessableEntityException(error);
+        },
+      }),
+    )
+    file: Express.Multer.File,
+    @TokenScope() tokenScope: ITokenScope,
+  ) {
+    return this.collectionFlowService.uploadNewFile(
+      tokenScope.projectId,
+      tokenScope.workflowRuntimeDataId,
+      {
+        ...file,
+        mimetype:
+          file.mimetype ||
+          (
+            await getFileMetadata({
+              file: file.originalname || '',
+              fileName: file.originalname || '',
+            })
+          )?.mimeType ||
+          '',
+      },
+    );
   }
 }
