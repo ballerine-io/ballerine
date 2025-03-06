@@ -36,19 +36,13 @@ jobs:
           CLEAN_BRANCH_NAME=${BRANCH_NAME#refs/heads/}
           echo "ref=$CLEAN_BRANCH_NAME" >> $GITHUB_OUTPUT
 
-      - name: Checkout the Tool and actions
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ steps.clean-ref.outputs.ref }}
-          fetch-depth: 1
-
       - name: "Sanitize ENV name"
         id: sanitize_env
         shell: bash
         run: |
           SANITIZED_BRANCH_NAME=$(echo -n ${{ steps.clean-ref.outputs.ref }} | tr "/" "-")
           echo "Sanitized branch name: $SANITIZED_BRANCH_NAME"
-          TRIMMED_BRANCH_NAME=$(echo -n "$SANITIZED_BRANCH_NAME" | cut -c 1-7)
+          TRIMMED_BRANCH_NAME=$(echo -n "$SANITIZED_BRANCH_NAME" | cut -c 1-18 | sed 's/[-/]$//')
           echo "sanitized_env_name=$SANITIZED_BRANCH_NAME" >> $GITHUB_OUTPUT;
           echo "trimmed_env_name=$TRIMMED_BRANCH_NAME" >> $GITHUB_OUTPUT;
         
