@@ -139,7 +139,7 @@ export const getMockWorkflowContext = async (
                       type: 'passport',
                       pages: [
                         await generateDocumentPage({
-                          uri: 'https://cdn.ballerine.io/merch-ss/canada%20license%20front.png',
+                          uri: 'https://cdn.ballerine.io/merch-ss/canada-license-front.jpg',
                           metadata: { side: 'front' },
                         }),
                       ],
@@ -176,7 +176,7 @@ export const getMockWorkflowContext = async (
                       type: 'selfie',
                       pages: [
                         await generateDocumentPage({
-                          uri: 'https://cdn.ballerine.io/merch-ss/Armenia_selfie.png',
+                          uri: 'https://cdn.ballerine.io/merch-ss/Armenia_selfie.jpg',
                           metadata: { side: 'face' },
                         }),
                       ],

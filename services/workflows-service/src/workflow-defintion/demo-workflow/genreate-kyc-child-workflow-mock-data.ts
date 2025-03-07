@@ -88,20 +88,13 @@ export const generateKycChildWorkflowMockData = async ({
           type: 'identification_document',
           pages: [
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/Armenia_selfie.png',
+              uri: 'https://cdn.ballerine.io/merch-ss/Armenia_selfie.jpg',
               metadata: { side: 'face' },
             }),
+
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/Armenia_selfie.png',
-              metadata: { side: 'face-pre' },
-            }),
-            await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/canada%20license%20front.png',
+              uri: 'https://cdn.ballerine.io/merch-ss/canada-license-front.jpg',
               metadata: { side: 'front' },
-            }),
-            await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/canada%20license%20front.png',
-              metadata: { side: 'front-pre' },
             }),
           ],
           issuer: {
@@ -272,20 +265,12 @@ export const generateKycChildWorkflowMockData = async ({
           type: 'identification_document',
           pages: [
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/us_green_card%20selfie.png',
-              metadata: { side: 'face' },
-            }),
-            await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/us_green_card%20selfie.png',
+              uri: 'https://cdn.ballerine.io/merch-ss/us_green_card-selfie.jpg',
               metadata: { side: 'face-pre' },
             }),
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/us_green_card%20copy.png',
+              uri: 'https://cdn.ballerine.io/merch-ss/us_green_card.jpg',
               metadata: { side: 'front' },
-            }),
-            await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/us_green_card%20copy.png',
-              metadata: { side: 'front-pre' },
             }),
           ],
           issuer: {
@@ -457,20 +442,13 @@ export const generateKycChildWorkflowMockData = async ({
           type: 'identification_document',
           pages: [
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/USA_Passport%20Selfie.png',
+              uri: 'https://cdn.ballerine.io/merch-ss/USA_Passport-Selfie.jpg',
               metadata: { side: 'face' },
             }),
+
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/USA_Passport%20Selfie.png',
-              metadata: { side: 'face-pre' },
-            }),
-            await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/USA_Passport-12313.png',
+              uri: 'https://cdn.ballerine.io/merch-ss/USA_Passport-12313.jpg',
               metadata: { side: 'front' },
-            }),
-            await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/USA_Passport-12313.png',
-              metadata: { side: 'front-pre' },
             }),
           ],
           issuer: {
