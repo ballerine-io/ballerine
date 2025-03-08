@@ -68,7 +68,7 @@ export class CustomerService {
         transaction,
       );
 
-      if (env.SYNC_UNIFIED_API === 'true') {
+      if (env.SYNC_UNIFIED_API) {
         await retry(() => new UnifiedApiClient().createCustomer(customer));
       }
 
@@ -108,7 +108,7 @@ export class CustomerService {
         transaction,
       )) as unknown as TCustomerWithFeatures;
 
-      if (env.SYNC_UNIFIED_API === 'true') {
+      if (env.SYNC_UNIFIED_API) {
         await retry(() => new UnifiedApiClient().updateCustomer(id, customer));
       }
 
