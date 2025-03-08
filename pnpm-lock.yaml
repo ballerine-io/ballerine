@@ -79,10 +79,10 @@ importers:
         specifier: 0.9.78
         version: link:../../packages/common
       '@ballerine/react-pdf-toolkit':
-        specifier: ^1.2.80
+        specifier: ^1.2.83
         version: link:../../packages/react-pdf-toolkit
       '@ballerine/ui':
-        specifier: 0.5.82
+        specifier: 0.7.109
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.6.99
@@ -542,7 +542,7 @@ importers:
         specifier: ^0.9.78
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.5.82
+        specifier: 0.7.109
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.6.99
@@ -792,7 +792,7 @@ importers:
         specifier: ^0.9.78
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: ^0.5.80
+        specifier: ^0.7.109
         version: link:../../packages/ui
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -846,8 +846,8 @@ importers:
         specifier: ^3.2.2
         version: 3.2.2(@types/react@18.3.18)(react@18.3.1)(xstate@4.38.3)
       axios:
-        specifier: ^1.4.0
-        version: 1.8.1(debug@4.4.0)
+        specifier: ^1.8.2
+        version: 1.8.2(debug@4.4.0)
       class-variance-authority:
         specifier: ^0.6.0
         version: 0.6.1
@@ -1525,7 +1525,7 @@ importers:
         specifier: ^1.1.33
         version: link:../config
       '@ballerine/ui':
-        specifier: 0.5.82
+        specifier: 0.7.109
         version: link:../ui
       '@react-pdf/renderer':
         specifier: ^3.1.14
@@ -1824,8 +1824,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1(ajv@8.17.1)
       axios:
-        specifier: ^1.7.9
-        version: 1.8.1(debug@4.4.0)
+        specifier: ^1.8.2
+        version: 1.8.2(debug@4.4.0)
       class-variance-authority:
         specifier: ^0.6.1
         version: 0.6.1
@@ -2659,7 +2659,7 @@ importers:
         version: 9.3.0(@swc/core@1.11.5(@swc/helpers@0.5.15))
       '@nestjs/schematics':
         specifier: ^9.0.0
-        version: 9.2.0(chokidar@3.6.0)(typescript@4.9.5)
+        version: 9.2.0(chokidar@3.5.3)(typescript@4.9.5)
       '@nestjs/testing':
         specifier: ^9.3.12
         version: 9.4.3(@nestjs/common@9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@9.4.3)(@nestjs/platform-express@9.4.3)
@@ -2749,7 +2749,7 @@ importers:
         version: 7.6.0
       '@nestjs/axios':
         specifier: ^2.0.0
-        version: 2.0.0(@nestjs/common@9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.2))(axios@1.8.1)(reflect-metadata@0.1.13)(rxjs@7.8.2)
+        version: 2.0.0(@nestjs/common@9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.2))(axios@1.8.2)(reflect-metadata@0.1.13)(rxjs@7.8.2)
       '@nestjs/common':
         specifier: ^9.3.12
         version: 9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.2)
@@ -2814,11 +2814,11 @@ importers:
         specifier: 3.0.2
         version: 3.0.2
       axios:
-        specifier: ^1.6.8
-        version: 1.8.1(debug@4.4.0)
+        specifier: ^1.8.2
+        version: 1.8.2(debug@4.4.0)
       axios-retry:
         specifier: ^4.0.0
-        version: 4.5.0(axios@1.8.1)
+        version: 4.5.0(axios@1.8.2)
       ballerine-nestjs-typebox:
         specifier: 3.0.2-next.11
         version: 3.0.2-next.11(@nestjs/common@9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@9.4.3)(@nestjs/swagger@7.4.0(@nestjs/common@9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@9.4.3)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13))(@sinclair/typebox@0.32.15)(ajv-formats@2.1.1(ajv@8.17.1))(ajv@8.17.1)(rxjs@7.8.2)
@@ -10260,8 +10260,8 @@ packages:
   axios@1.2.5:
     resolution: {integrity: sha512-9pU/8mmjSSOb4CXVsvGIevN+MlO/t9OWtKadTaLuN85Gge3HGorUckgp8A/2FH4V4hJ7JuQ3LIeI7KAV9ITZrQ==}
 
-  axios@1.8.1:
-    resolution: {integrity: sha512-NN+fvwH/kV01dYUQ3PTOZns4LWtWhOFCAhQ/pHb88WQ1hNe5V/dvFwc4VJcDL11LT9xSX0QtsR8sWUuyOuOq7g==}
+  axios@1.8.2:
+    resolution: {integrity: sha512-ls4GYBm5aig9vWx8AWDSGLpnpDQRtWAfrjU+EuytuODrFBkqesN2RkOQCBzrA1RQNHw1SmRMSDDDSwzNAYQ6Rg==}
 
   b4a@1.6.7:
     resolution: {integrity: sha512-OnAYlL5b7LEkALw87fUVafQw5rVR9RjwGd4KUwNQ6DrrNmaVaUCgLipfVlzrPQ4tWOR9P0IXGNOx50jYCCdSJg==}
@@ -19234,16 +19234,6 @@ snapshots:
     optionalDependencies:
       chokidar: 3.5.3
 
-  '@angular-devkit/core@16.0.1(chokidar@3.6.0)':
-    dependencies:
-      ajv: 8.12.0
-      ajv-formats: 2.1.1(ajv@8.12.0)
-      jsonc-parser: 3.2.0
-      rxjs: 7.8.1
-      source-map: 0.7.4
-    optionalDependencies:
-      chokidar: 3.6.0
-
   '@angular-devkit/schematics-cli@15.2.4(chokidar@3.5.3)':
     dependencies:
       '@angular-devkit/core': 15.2.4(chokidar@3.5.3)
@@ -19268,16 +19258,6 @@ snapshots:
   '@angular-devkit/schematics@16.0.1(chokidar@3.5.3)':
     dependencies:
       '@angular-devkit/core': 16.0.1(chokidar@3.5.3)
-      jsonc-parser: 3.2.0
-      magic-string: 0.30.0
-      ora: 5.4.1
-      rxjs: 7.8.1
-    transitivePeerDependencies:
-      - chokidar
-
-  '@angular-devkit/schematics@16.0.1(chokidar@3.6.0)':
-    dependencies:
-      '@angular-devkit/core': 16.0.1(chokidar@3.6.0)
       jsonc-parser: 3.2.0
       magic-string: 0.30.0
       ora: 5.4.1
@@ -24060,10 +24040,10 @@ snapshots:
       pump: 3.0.2
       tar-fs: 2.1.2
 
-  '@nestjs/axios@2.0.0(@nestjs/common@9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.2))(axios@1.8.1)(reflect-metadata@0.1.13)(rxjs@7.8.2)':
+  '@nestjs/axios@2.0.0(@nestjs/common@9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.2))(axios@1.8.2)(reflect-metadata@0.1.13)(rxjs@7.8.2)':
     dependencies:
       '@nestjs/common': 9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.2)
-      axios: 1.8.1(debug@4.4.0)
+      axios: 1.8.2(debug@4.4.0)
       reflect-metadata: 0.1.13
       rxjs: 7.8.2
 
@@ -24195,16 +24175,6 @@ snapshots:
     dependencies:
       '@angular-devkit/core': 16.0.1(chokidar@3.5.3)
       '@angular-devkit/schematics': 16.0.1(chokidar@3.5.3)
-      jsonc-parser: 3.2.0
-      pluralize: 8.0.0
-      typescript: 4.9.5
-    transitivePeerDependencies:
-      - chokidar
-
-  '@nestjs/schematics@9.2.0(chokidar@3.6.0)(typescript@4.9.5)':
-    dependencies:
-      '@angular-devkit/core': 16.0.1(chokidar@3.6.0)
-      '@angular-devkit/schematics': 16.0.1(chokidar@3.6.0)
       jsonc-parser: 3.2.0
       pluralize: 8.0.0
       typescript: 4.9.5
@@ -27716,7 +27686,7 @@ snapshots:
 
   '@types/axios@0.14.4':
     dependencies:
-      axios: 1.8.1(debug@4.4.0)
+      axios: 1.8.2(debug@4.4.0)
     transitivePeerDependencies:
       - debug
 
@@ -29859,9 +29829,9 @@ snapshots:
 
   axe-core@4.10.2: {}
 
-  axios-retry@4.5.0(axios@1.8.1):
+  axios-retry@4.5.0(axios@1.8.2):
     dependencies:
-      axios: 1.8.1(debug@4.4.0)
+      axios: 1.8.2(debug@4.4.0)
       is-retry-allowed: 2.2.0
 
   axios@0.19.2:
@@ -29878,7 +29848,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  axios@1.8.1(debug@4.4.0):
+  axios@1.8.2(debug@4.4.0):
     dependencies:
       follow-redirects: 1.15.9(debug@4.4.0)
       form-data: 4.0.2
@@ -32337,7 +32307,7 @@ snapshots:
       '@typescript-eslint/parser': 5.62.0(eslint@8.57.1)(typescript@5.8.2)
       eslint: 8.57.1
       eslint-config-standard: 17.1.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint-plugin-n@16.6.2(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.5))(eslint-import-resolver-typescript@3.8.3)(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.3))(eslint-import-resolver-typescript@3.8.3)(eslint@8.57.1)
       eslint-plugin-n: 16.6.2(eslint@8.57.1)
       eslint-plugin-promise: 6.6.0(eslint@8.57.1)
       typescript: 5.8.2
@@ -32347,7 +32317,7 @@ snapshots:
   eslint-config-standard@17.1.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint-plugin-n@16.6.2(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1):
     dependencies:
       eslint: 8.57.1
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.5))(eslint-import-resolver-typescript@3.8.3)(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.3))(eslint-import-resolver-typescript@3.8.3)(eslint@8.57.1)
       eslint-plugin-n: 16.6.2(eslint@8.57.1)
       eslint-plugin-promise: 6.6.0(eslint@8.57.1)
 
@@ -32370,7 +32340,7 @@ snapshots:
       stable-hash: 0.0.4
       tinyglobby: 0.2.12
     optionalDependencies:
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.3))(eslint-import-resolver-typescript@3.8.3)(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.5))(eslint-import-resolver-typescript@3.8.3)(eslint@8.57.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -37099,7 +37069,7 @@ snapshots:
       '@yarnpkg/lockfile': 1.1.0
       '@yarnpkg/parsers': 3.0.2
       '@zkochan/js-yaml': 0.0.6
-      axios: 1.8.1(debug@4.4.0)
+      axios: 1.8.2(debug@4.4.0)
       chalk: 4.1.0
       chokidar: 3.6.0
       cli-cursor: 3.1.0
@@ -41396,7 +41366,7 @@ snapshots:
 
   vite-plugin-mkcert@1.17.7(vite@5.4.14(@types/node@18.17.19)(sass@1.85.1)(terser@5.39.0)):
     dependencies:
-      axios: 1.8.1(debug@4.4.0)
+      axios: 1.8.2(debug@4.4.0)
       debug: 4.4.0(supports-color@8.1.1)
       picocolors: 1.1.1
       vite: 5.4.14(@types/node@18.17.19)(sass@1.85.1)(terser@5.39.0)
@@ -41809,7 +41779,7 @@ snapshots:
 
   wait-on@7.2.0:
     dependencies:
-      axios: 1.8.1(debug@4.4.0)
+      axios: 1.8.2(debug@4.4.0)
       joi: 17.13.3
       lodash: 4.17.21
       minimist: 1.2.8
