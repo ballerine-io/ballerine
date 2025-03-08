@@ -26,11 +26,7 @@ export const checkIfRequired = (
             ]).every(result => result.result)
           : true;
 
-        if (!shouldValidate) {
-          return false;
-        }
-
-        return true;
+        return shouldValidate;
       })
     : false;
 

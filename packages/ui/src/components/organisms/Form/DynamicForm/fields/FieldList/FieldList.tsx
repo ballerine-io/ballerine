@@ -32,7 +32,7 @@ export const FieldList: TDynamicFormField<IFieldListParams> = props => {
   const {
     addButtonLabel = 'Add Item',
     removeButtonLabel = 'Remove',
-    itemIndexLabel = 'ITEM {INDEX}',
+    itemIndexLabel = 'Item {INDEX}',
   } = element.params || {};
   const { items, addItem, removeItem } = useFieldList({ element });
 
@@ -84,7 +84,7 @@ export const FieldList: TDynamicFormField<IFieldListParams> = props => {
           disabled={disabled}
           className="border border-gray-200 bg-white text-[hsl(var(--muted-foreground))] shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:bg-gray-50 hover:shadow-[0_1px_2px_0_rgb(0_0_0_/_0.1)]"
         >
-          {`+ ${addButtonLabel}`}
+          {addButtonLabel}
         </Button>
       </div>
       <FieldDescription element={element} />

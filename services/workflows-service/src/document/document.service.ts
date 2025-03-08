@@ -49,6 +49,7 @@ import {
   EntitySchema,
   TParsedDocuments,
 } from './types';
+import { getEntityId } from '@/common/utils/get-entity-id/get-entity-id';
 
 @Injectable()
 export class DocumentService {
@@ -91,7 +92,7 @@ export class DocumentService {
       throw new BadRequestException('Workflow runtime data id is required');
     }
 
-    const entityId = this.getEntityId(data);
+    const entityId = getEntityId(data);
 
     const uploadedFile = await this.fileService.uploadNewFile(projectId, entityId, {
       ...file,
@@ -236,7 +237,7 @@ export class DocumentService {
 
     const { documentId, ...documentData } = data;
 
-    const entityId = this.getEntityId(data);
+    const entityId = getEntityId(data);
 
     const uploadedFile = await this.fileService.uploadNewFile(projectId, entityId, {
       ...file,
@@ -1012,18 +1013,6 @@ export class DocumentService {
     });
 
     return result;
-  }
-
-  private getEntityId(data: { businessId?: string; endUserId?: string }) {
-    if (data.businessId) {
-      return data.businessId;
-    }
-
-    if (data.endUserId) {
-      return data.endUserId;
-    }
-
-    throw new BadRequestException('Business or end user id is required');
   }
 
   async formatDocuments({

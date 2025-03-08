@@ -88,3 +88,19 @@ export const updateDocumentById = async ({
 
   return handleZodError(error, documents);
 };
+export const getDocuments = async ({
+  entityId,
+  workflowId,
+}: {
+  entityId: string;
+  workflowId: string;
+}) => {
+  const [documents, error] = await apiClient({
+    method: Method.GET,
+    endpoint: `../external/documents/${entityId}/${workflowId}`,
+    schema: z.any(),
+    timeout: 40000,
+  });
+
+  return handleZodError(error, documents);
+};

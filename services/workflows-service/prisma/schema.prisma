@@ -1002,7 +1002,6 @@ model Document {
 }
 
 enum DocumentStatus {
-  unprovided
   provided
   requested
 }
@@ -1039,6 +1038,9 @@ model DocumentFile {
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([documentId])
   @@index([fileId])

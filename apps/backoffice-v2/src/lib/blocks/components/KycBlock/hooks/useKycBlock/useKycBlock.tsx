@@ -23,7 +23,7 @@ import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { generateEditableDetailsV2Fields } from '@/common/components/organisms/EditableDetailsV2/utils/generate-editable-details-v2-fields';
 import { useUpdateContextAndSyncEntityMutation } from '@/domains/workflows/hooks/mutations/useUpdateContextAndSyncEntity/useUpdateContextAndSyncEntity';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
-import { useDocumentsAdapter } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
+import { useDocumentsAdapter } from '@/domains/documents/hooks/useDocumentsAdapter/useDocumentsAdapter';
 
 const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -175,6 +175,7 @@ export const useKycBlock = ({
   const nonIdentificationDocumentsIds = useMemo(() => {
     return (
       documents
+        // 'identification_document' is exclusive to Veriff
         ?.filter(document => document.type !== 'identification_document')
         ?.map(document => document.id) ?? []
     );

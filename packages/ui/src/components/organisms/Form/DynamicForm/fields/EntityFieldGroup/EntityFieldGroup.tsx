@@ -76,7 +76,7 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
   const {
     addButtonLabel = 'Add Item',
     removeButtonLabel = 'Remove',
-    itemIndexLabel = 'ITEM {INDEX}',
+    itemIndexLabel = 'Item {INDEX}',
   } = element.params || {};
   const { items, isRemovingEntity, addItem, removeItem } = useEntityFieldGroupList({ element });
   const { run: createEntity, isLoading: isCreatingEntity } = useHttp(
@@ -220,7 +220,7 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
           disabled={disabled}
           className="border border-gray-200 bg-white text-[hsl(var(--muted-foreground))] shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:bg-gray-50 hover:shadow-[0_1px_2px_0_rgb(0_0_0_/_0.1)]"
         >
-          {`+ ${addButtonLabel}`}
+          {addButtonLabel}
         </Button>
       </div>
       <FieldDescription element={element} />

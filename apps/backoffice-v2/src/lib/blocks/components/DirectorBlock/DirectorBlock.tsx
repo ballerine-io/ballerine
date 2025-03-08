@@ -2,7 +2,7 @@ import { BlocksComponent } from '@ballerine/blocks';
 import { cells } from '../../create-blocks-typed/create-blocks-typed';
 import { useEndUserByIdQuery } from '@/domains/individuals/queries/useEndUserByIdQuery/useEndUserByIdQuery';
 import { useDirectorBlock } from './hooks/useDirectorBlock/useDirectorBlock';
-import { useDocumentsAdapter } from '../../hooks/useDocumentBlocks/useDocumentBlocks';
+import { useDocumentsAdapter } from '@/domains/documents/hooks/useDocumentsAdapter/useDocumentsAdapter';
 import { extractCountryCodeFromDocuments } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { getDocumentsByCountry } from '@ballerine/common';
 
