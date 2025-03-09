@@ -400,7 +400,7 @@ export const useDocumentBlocks = ({
                 : [],
             },
             workflowId: workflow?.id,
-            documents,
+            documents: documents?.map(({ details: _details, ...document }) => document),
             isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
           })
           .cellAt(0, 0);
@@ -508,7 +508,7 @@ export const useDocumentBlocks = ({
                 },
                 workflowId: workflow?.id,
                 isSaveDisabled: isLoadingOCRDocument,
-                documents,
+                documents: documents?.map(({ details: _details, ...document }) => document),
                 isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
               })
               .addCell(decisionCell)

@@ -55,7 +55,7 @@ export const useRegistryInfoBlock = ({
                   })),
                 },
                 workflowId,
-                documents,
+                documents: documents?.map(({ details: _details, ...document }) => document),
                 isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
               })
               .build()

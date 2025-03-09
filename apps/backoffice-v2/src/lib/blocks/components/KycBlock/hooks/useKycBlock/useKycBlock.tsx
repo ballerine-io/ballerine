@@ -165,7 +165,7 @@ export const useKycBlock = ({
               })),
             },
             workflowId: childWorkflow?.id,
-            documents,
+            documents: documents?.map(({ details: _details, ...document }) => document),
             isDocumentsV2: !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
           })
           .cellAt(0, 0),
@@ -460,7 +460,7 @@ export const useKycBlock = ({
           ),
         },
         workflowId: childWorkflow?.id,
-        documents,
+        documents: documents?.map(({ details: _details, ...document }) => document),
         isDocumentsV2: !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
       })
       .build()
@@ -577,7 +577,9 @@ export const useKycBlock = ({
                             data: decision,
                           },
                           workflowId: childWorkflow?.id,
-                          documents,
+                          documents: documents?.map(
+                            ({ details: _details, ...document }) => document,
+                          ),
                           isDocumentsV2:
                             !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
                         })

@@ -83,7 +83,9 @@ export const useCaseInfoBlock = ({
             },
             props: { config: { sort: { predefinedOrder } } },
             workflowId: workflow?.id,
-            documents: workflow?.context?.documents,
+            documents: workflow?.context?.documents?.map(
+              ({ details: _details, ...document }) => document,
+            ),
             isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
           })
           .build()

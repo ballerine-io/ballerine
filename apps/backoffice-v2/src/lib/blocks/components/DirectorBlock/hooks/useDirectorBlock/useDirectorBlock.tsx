@@ -104,7 +104,7 @@ export const useDirectorBlock = ({
   const blocks = useMemo(() => {
     const { documents } = director;
     const documentsWithoutImageUrl = isDocumentsV2
-      ? documents
+      ? documents?.map(({ details: _details, ...document }) => document)
       : documents?.map(({ details: _details, ...document }) => ({
           ...document,
           pages: document?.pages?.map(({ imageUrl: _imageUrl, ...page }) => page),
