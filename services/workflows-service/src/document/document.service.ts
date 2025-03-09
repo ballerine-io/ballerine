@@ -690,15 +690,21 @@ export class DocumentService {
     const entitiesWithDocuments = {
       business: {
         ...entities.business,
-        documents: allDocuments.filter(doc => doc.businessId === entities.business.id),
+        documents: this.getLatestDocumentVersions(
+          allDocuments.filter(doc => doc.businessId === entities.business.id),
+        ),
       },
       ubos: entities.ubos.map(ubo => ({
         ...ubo,
-        documents: allDocuments.filter(doc => doc.endUserId === ubo.id),
+        documents: this.getLatestDocumentVersions(
+          allDocuments.filter(doc => doc.endUserId === ubo.id),
+        ),
       })),
       directors: entities.directors.map(director => ({
         ...director,
-        documents: allDocuments.filter(doc => doc.endUserId === director.id),
+        documents: this.getLatestDocumentVersions(
+          allDocuments.filter(doc => doc.endUserId === director.id),
+        ),
       })),
     };
 
@@ -711,7 +717,6 @@ export class DocumentService {
           type: expectedDoc.type,
           category: expectedDoc.category,
           issuer: { country: expectedDoc.issuingCountry },
-          version: expectedDoc.version,
         },
         false,
       );
@@ -720,7 +725,6 @@ export class DocumentService {
           type: doc.type,
           category: doc.category,
           issuer: { country: doc.issuingCountry },
-          version: doc.version,
         },
         false,
       );
@@ -1056,7 +1060,7 @@ export class DocumentService {
     });
   }
 
-  async getLatestDocumentVersions(documents: Array<Document & { files: DocumentFile[] }>) {
+  getLatestDocumentVersions(documents: Document[]) {
     const documentsByType = documents.reduce((acc, document) => {
       const documentId = getDocumentId(
         {

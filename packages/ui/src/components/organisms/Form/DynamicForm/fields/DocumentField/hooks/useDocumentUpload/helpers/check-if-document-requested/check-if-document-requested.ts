@@ -18,5 +18,12 @@ export const checkIfDocumentInRevision = <
   },
 >(
   document?: IDocumentTemplate<any> | undefined,
-): document is IDocumentTemplate<TResultDocument> =>
-  Boolean(document?._document?.decision === 'revisions' && document?._document?.id);
+): document is IDocumentTemplate<TResultDocument> => {
+  const revisionStatuses = ['revisions', 'revision'];
+  const isDocumentInRevision =
+    revisionStatuses.includes(document?._document?.decision) ||
+    // @ts-expect-error -- wrong type in use
+    revisionStatuses.includes(document?.decision?.status);
+
+  return isDocumentInRevision && document?._document?.id;
+};
