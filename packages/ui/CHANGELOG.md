@@ -1,5 +1,17 @@
 # @ballerine/ui
 
+## 0.7.109
+
+### Patch Changes
+
+- Fixed text overflow in lob section
+
+## 0.5.82
+
+### Patch Changes
+
+- Bump
+
 ## 0.5.81
 
 ### Patch Changes

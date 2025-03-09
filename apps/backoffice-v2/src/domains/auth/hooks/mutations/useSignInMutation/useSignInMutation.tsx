@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ISignInProps } from './interfaces';
-import { fetchSignIn } from '../../../fetchers';
+import { signIn } from '../../../fetchers';
 import { authQueryKeys } from '../../../query-keys';
 
 export const useSignInMutation = () => {
@@ -12,7 +12,7 @@ export const useSignInMutation = () => {
 
   return useMutation({
     mutationFn: ({ callbackUrl, body }: ISignInProps) =>
-      fetchSignIn({
+      signIn({
         callbackUrl,
         body,
       }),

@@ -15,7 +15,7 @@ export const useCaseCreationLogic = () => {
     setOpen,
     isLoading,
     workflowDefinition,
-    isDemo: customer?.config?.isDemo || customer?.config?.isDemoAccount,
+    isDemo: customer?.config?.isDemoAccount,
     workflowDefinitionName:
       workflowDefinition?.displayName || titleCase(workflowDefinition?.name ?? ''),
   };

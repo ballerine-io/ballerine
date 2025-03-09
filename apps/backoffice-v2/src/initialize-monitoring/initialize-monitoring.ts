@@ -26,6 +26,7 @@ export const initializeMonitoring = () => {
         }),
         Sentry.browserProfilingIntegration(),
         Sentry.replayIntegration(),
+        Sentry.captureConsoleIntegration(),
       ],
 
       tracesSampleRate: 1.0,
