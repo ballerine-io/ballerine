@@ -49,6 +49,7 @@ import {
   EntitySchema,
   TParsedDocuments,
 } from './types';
+import { getEntityId } from '@/common/utils/get-entity-id/get-entity-id';
 
 @Injectable()
 export class DocumentService {
@@ -91,7 +92,7 @@ export class DocumentService {
       throw new BadRequestException('Workflow runtime data id is required');
     }
 
-    const entityId = this.getEntityId(data);
+    const entityId = getEntityId(data);
 
     const uploadedFile = await this.fileService.uploadNewFile(projectId, entityId, {
       ...file,
@@ -236,7 +237,7 @@ export class DocumentService {
 
     const { documentId, ...documentData } = data;
 
-    const entityId = this.getEntityId(data);
+    const entityId = getEntityId(data);
 
     const uploadedFile = await this.fileService.uploadNewFile(projectId, entityId, {
       ...file,
@@ -689,15 +690,21 @@ export class DocumentService {
     const entitiesWithDocuments = {
       business: {
         ...entities.business,
-        documents: allDocuments.filter(doc => doc.businessId === entities.business.id),
+        documents: this.getLatestDocumentVersions(
+          allDocuments.filter(doc => doc.businessId === entities.business.id),
+        ),
       },
       ubos: entities.ubos.map(ubo => ({
         ...ubo,
-        documents: allDocuments.filter(doc => doc.endUserId === ubo.id),
+        documents: this.getLatestDocumentVersions(
+          allDocuments.filter(doc => doc.endUserId === ubo.id),
+        ),
       })),
       directors: entities.directors.map(director => ({
         ...director,
-        documents: allDocuments.filter(doc => doc.endUserId === director.id),
+        documents: this.getLatestDocumentVersions(
+          allDocuments.filter(doc => doc.endUserId === director.id),
+        ),
       })),
     };
 
@@ -710,7 +717,6 @@ export class DocumentService {
           type: expectedDoc.type,
           category: expectedDoc.category,
           issuer: { country: expectedDoc.issuingCountry },
-          version: expectedDoc.version,
         },
         false,
       );
@@ -719,7 +725,6 @@ export class DocumentService {
           type: doc.type,
           category: doc.category,
           issuer: { country: doc.issuingCountry },
-          version: doc.version,
         },
         false,
       );
@@ -1014,18 +1019,6 @@ export class DocumentService {
     return result;
   }
 
-  private getEntityId(data: { businessId?: string; endUserId?: string }) {
-    if (data.businessId) {
-      return data.businessId;
-    }
-
-    if (data.endUserId) {
-      return data.endUserId;
-    }
-
-    throw new BadRequestException('Business or end user id is required');
-  }
-
   async formatDocuments({
     documents,
     documentSchema,
@@ -1067,7 +1060,7 @@ export class DocumentService {
     });
   }
 
-  async getLatestDocumentVersions(documents: Array<Document & { files: DocumentFile[] }>) {
+  getLatestDocumentVersions(documents: Document[]) {
     const documentsByType = documents.reduce((acc, document) => {
       const documentId = getDocumentId(
         {

@@ -56,7 +56,7 @@ export const updateDocumentsDecisionByIds = async ({
   };
 }) => {
   const [documents, error] = await apiClient({
-    endpoint: `../external/documents/test/decision-batch`,
+    endpoint: `../external/documents/decision/batch`,
     method: Method.PATCH,
     body: {
       ids,
@@ -84,6 +84,22 @@ export const updateDocumentById = async ({
     method: Method.PATCH,
     body: data,
     schema: z.any(),
+  });
+
+  return handleZodError(error, documents);
+};
+export const getDocuments = async ({
+  entityId,
+  workflowId,
+}: {
+  entityId: string;
+  workflowId: string;
+}) => {
+  const [documents, error] = await apiClient({
+    method: Method.GET,
+    endpoint: `../external/documents/${entityId}/${workflowId}`,
+    schema: z.any(),
+    timeout: 30000,
   });
 
   return handleZodError(error, documents);

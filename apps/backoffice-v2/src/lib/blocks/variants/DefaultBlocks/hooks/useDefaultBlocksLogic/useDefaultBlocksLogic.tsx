@@ -23,10 +23,7 @@ import { useAISummaryBlock } from '@/lib/blocks/hooks/useAISummaryBlock/useAISum
 import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctionsBlock/useCompanySanctionsBlock';
 import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
 import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
-import {
-  useDocumentBlocks,
-  useDocumentsAdapter,
-} from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
+import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
 import { useDocumentReviewBlocks } from '@/lib/blocks/hooks/useDocumentReviewBlocks/useDocumentReviewBlocks';
 import { useKYCBusinessInformationBlock } from '@/lib/blocks/hooks/useKYCBusinessInformationBlock/useKYCBusinessInformationBlock';
 import { useKybRegistryInfoBlock } from '@/lib/blocks/hooks/useKybRegistryInfoBlock/useKybRegistryInfoBlock';
@@ -64,6 +61,7 @@ import { useReviseDocumentByIdMutation } from '@/domains/documents/hooks/mutatio
 import { useApproveDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useApproveDocumentByIdMutation/useApproveDocumentByIdMutation';
 import { useRemoveDocumentDecisionByIdMutation } from '@/domains/documents/hooks/mutations/useRemoveDocumentDecisionByIdMutation/useRemoveDocumentDecisionByIdMutation';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
+import { useDocumentsAdapter } from '@/domains/documents/hooks/useDocumentsAdapter/useDocumentsAdapter';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 

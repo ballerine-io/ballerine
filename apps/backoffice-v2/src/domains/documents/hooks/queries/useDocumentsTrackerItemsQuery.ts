@@ -39,7 +39,7 @@ export const useDocumentsTrackerItemsQuery = ({ workflowId }: { workflowId: stri
         business: data?.business.map(item => ({
           ...item,
           url: generateUrlToDocument({
-            tab: 'business',
+            tab: 'documents',
             search,
             category: item?.identifiers?.document?.category,
             type: item?.identifiers?.document?.type,
@@ -49,7 +49,7 @@ export const useDocumentsTrackerItemsQuery = ({ workflowId }: { workflowId: stri
           ubos: data?.individuals.ubos.map(item => ({
             ...item,
             url: generateUrlToDocument({
-              tab: 'individuals',
+              tab: 'ubosKyc',
               search,
               category: item?.identifiers?.document?.category,
               type: item?.identifiers?.document?.type,
@@ -58,7 +58,7 @@ export const useDocumentsTrackerItemsQuery = ({ workflowId }: { workflowId: stri
           directors: data?.individuals.directors.map(item => ({
             ...item,
             url: generateUrlToDocument({
-              tab: 'individuals',
+              tab: 'directors',
               search,
               category: item?.identifiers?.document?.category,
               type: item?.identifiers?.document?.type,

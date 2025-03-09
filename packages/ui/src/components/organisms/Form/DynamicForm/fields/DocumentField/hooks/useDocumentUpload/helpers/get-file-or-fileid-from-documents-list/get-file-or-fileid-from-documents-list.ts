@@ -16,7 +16,6 @@ export const getFileOrFileIdFromDocumentsList = (
   }
 
   const filePath = composePathToFileId(documentIndex, pageProperty, pageIndex);
-  console.log('filePath', filePath);
   const fileOrFileId = get(documentsList, filePath, undefined);
 
   return fileOrFileId;

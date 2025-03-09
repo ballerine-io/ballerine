@@ -44,6 +44,7 @@ export const useCaseCallToActionLegacyLogic = ({
   );
   const nonIdentificationDocumentsIds = useMemo(() => {
     return (
+      // 'identification_document' is exclusive to Veriff
       childWorkflow?.context?.documents
         ?.filter(document => document.type !== 'identification_document')
         ?.map(document => document.id) ?? []

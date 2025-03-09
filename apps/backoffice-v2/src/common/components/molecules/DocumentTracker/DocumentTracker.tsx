@@ -1,34 +1,33 @@
 import {
   AccordionCard,
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from '@ballerine/ui';
-import { HelpCircle, Loader2, SendIcon } from 'lucide-react';
-import { FunctionComponent, memo, useMemo } from 'react';
+import { HelpCircle, SendIcon } from 'lucide-react';
+import { FunctionComponent } from 'react';
 
-import { TDocumentsTrackerItem, TrackedDocument } from '@/domains/documents/schemas';
 import { Icon } from './constants';
 import { useDocumentTracker } from './hooks/useDocumentTracker';
+import { DocumentTrackerItems } from './components/DocumentTrackerItems/DocumentTrackerItems';
+import { Dialog } from '@/common/components/organisms/Dialog/Dialog';
+import { DialogContent } from '@/common/components/organisms/Dialog/Dialog.Content';
+import { DialogDescription } from '@/common/components/organisms/Dialog/Dialog.Description';
+import { DialogFooter } from '@/common/components/organisms/Dialog/Dialog.Footer';
+import { DialogHeader } from '@/common/components/organisms/Dialog/Dialog.Header';
+import { DialogTitle } from '@/common/components/organisms/Dialog/Dialog.Title';
+import { DialogTrigger } from '@/common/components/organisms/Dialog/Dialog.Trigger';
 
 export const DocumentTracker: FunctionComponent<{ workflowId: string }> = ({ workflowId }) => {
   const {
-    documentTrackerItems,
-    isLoadingDocuments,
     getSubItems,
     selectedIdsToRequest,
     onRequestDocuments,
     open,
     onOpenChange,
     isRequestButtonDisabled,
+    documentTrackerItems,
   } = useDocumentTracker({ workflowId });
 
   return (
@@ -108,7 +107,6 @@ export const DocumentTracker: FunctionComponent<{ workflowId: string }> = ({ wor
         <AccordionCard.Content>
           <DocumentTrackerItems
             documentTrackerItems={documentTrackerItems}
-            isLoading={isLoadingDocuments}
             getSubItems={getSubItems}
           />
         </AccordionCard.Content>
@@ -117,72 +115,4 @@ export const DocumentTracker: FunctionComponent<{ workflowId: string }> = ({ wor
   );
 };
 
-type AccordionContentProps = {
-  documentTrackerItems: TDocumentsTrackerItem | null | undefined;
-  isLoading: boolean;
-  getSubItems: (
-    doc: TrackedDocument,
-  ) => Parameters<typeof AccordionCard.Item>[number]['subitems'][number];
-};
-const DocumentTrackerItems = memo(
-  ({ documentTrackerItems, isLoading, getSubItems }: AccordionContentProps) => {
-    const businessSubitems = useMemo(
-      () => documentTrackerItems?.business.map(getSubItems).filter(Boolean) ?? [],
-      [documentTrackerItems?.business, getSubItems],
-    );
-    const individualsSubitems = useMemo(
-      () =>
-        [
-          ...(documentTrackerItems?.individuals.ubos ?? []),
-          ...(documentTrackerItems?.individuals.directors ?? []),
-        ]
-          .map(getSubItems)
-          .filter(Boolean),
-      [
-        documentTrackerItems?.individuals.ubos,
-        documentTrackerItems?.individuals.directors,
-        getSubItems,
-      ],
-    );
-
-    if (isLoading) {
-      return (
-        <div className="flex h-20 animate-spin items-center justify-center">
-          <Loader2 className="d-6" />
-        </div>
-      );
-    }
-
-    if (
-      !documentTrackerItems ||
-      [
-        !documentTrackerItems.business.length,
-        !documentTrackerItems.individuals.ubos.length,
-        !documentTrackerItems.individuals.directors.length,
-      ].every(Boolean)
-    ) {
-      return (
-        <div className="flex h-20 items-center justify-center text-sm">No documents available</div>
-      );
-    }
-
-    return (
-      <>
-        <AccordionCard.Item
-          title="Company documents"
-          value="company-documents"
-          liProps={{ className: 'py-0 pe-4 group' }}
-          subitems={businessSubitems}
-        />
-
-        <AccordionCard.Item
-          title="Individual's documents"
-          value="individual-documents"
-          liProps={{ className: 'py-0 pe-4 group' }}
-          subitems={individualsSubitems}
-        />
-      </>
-    );
-  },
-);
-DocumentTrackerItems.displayName = 'DocumentTrackerItems';
+DocumentTracker.displayName = 'DocumentTracker';

@@ -28,12 +28,14 @@ export const mapDocumentRecordsToContextDocuments = (
       if (isDocumentFieldDefinition(element)) {
         const documents = get(context, formatValueDestination(element.valueDestination, stack));
 
+        // @ts-expect-error -- wrong type
         const document = getDocumentObjectFromDocumentsList(documents || [], element);
 
         if (!document) {
           continue;
         }
 
+        // @ts-expect-error -- wrong type
         const fileOrFileId = getFileOrFileIdFromDocumentsList(documents || [], element);
 
         if (fileOrFileId instanceof File) {

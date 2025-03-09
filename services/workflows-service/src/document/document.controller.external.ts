@@ -348,7 +348,7 @@ export class DocumentControllerExternal {
     return await this.documentService.deleteByIds(ids, [projectId]);
   }
 
-  @Patch('/test/decision-batch')
+  @Patch('/decision/batch')
   @ApiResponse({
     status: 200,
     description: 'Document decision updated successfully',

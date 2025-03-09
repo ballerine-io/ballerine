@@ -1,34 +1,9 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import { DocumentFile, Document, Prisma, File } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { PrismaTransactionClient, TProjectId } from '@/types';
-import { z } from 'zod';
-import { isType, LoggerInterface } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions -- assert functions are expected to be function expressions
-function assertIsDocumentWithFiles(
-  documents: Document[],
-  logger: LoggerInterface,
-): asserts documents is Array<Document & { files: Array<DocumentFile & { file: File }> }> {
-  const DocumentsWithFilesSchema = z.array(
-    z.object({
-      files: z.array(
-        z.object({
-          file: z.record(z.union([z.string(), z.number(), z.symbol()]), z.unknown()),
-        }),
-      ),
-    }),
-  );
-
-  if (isType(DocumentsWithFilesSchema)(documents)) {
-    return;
-  }
-
-  logger.error('Documents do not have files. Did you forget to specify `include` or `select`?');
-
-  throw new InternalServerErrorException();
-}
+import { assertIsDocumentWithFiles } from './helpers/assert-is-document-with-files';
 
 @Injectable()
 export class DocumentRepository {
