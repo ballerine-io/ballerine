@@ -9,9 +9,15 @@ import {
   RuleSchema,
   ValidationFailedError,
   isObject,
+  OPERATORS_WITH_THRESHOLD,
 } from '@ballerine/common';
+import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 
-export const validateRule = (rule: Rule, data: any): RuleResult => {
+export const validateRule = (
+  rule: Rule,
+  data: any,
+  options: { unifiedApiClient: UnifiedApiClient },
+): RuleResult => {
   const result = RuleSchema.safeParse(rule);
 
   if (!result.success) {
@@ -33,8 +39,18 @@ export const validateRule = (rule: Rule, data: any): RuleResult => {
     ? extractedValue
     : { value: extractedValue, comparisonValue: rule.value };
 
+  const ruleThresholdValue =
+    OPERATORS_WITH_THRESHOLD.includes(rule.operator as (typeof OPERATORS_WITH_THRESHOLD)[number]) &&
+    'threshold' in rule
+      ? rule.threshold
+      : undefined;
+
   try {
-    const result = operator.execute(value, comparisonValue);
+    const result = operator.execute(value, comparisonValue, {
+      unifiedApiClient: options.unifiedApiClient,
+      threshold: ruleThresholdValue,
+    });
+    console.log('rule', rule, 'result', result);
 
     return { status: result ? 'PASSED' : 'FAILED', error: undefined };
   } catch (error) {
@@ -46,11 +62,17 @@ export const validateRule = (rule: Rule, data: any): RuleResult => {
   }
 };
 
-export const runRuleSet = (ruleSet: RuleSet, data: any): RuleResultSet => {
+export const runRuleSet = (
+  ruleSet: RuleSet,
+  data: any,
+  options: { unifiedApiClient: UnifiedApiClient },
+): RuleResultSet => {
   return ruleSet.rules.map(rule => {
     if ('rules' in rule) {
       // RuleSet
-      const nestedResults = runRuleSet(rule, data);
+      const nestedResults = runRuleSet(rule, data, {
+        unifiedApiClient: options.unifiedApiClient,
+      });
 
       const passed =
         rule.operator === OPERATOR.AND
@@ -66,7 +88,10 @@ export const runRuleSet = (ruleSet: RuleSet, data: any): RuleResultSet => {
     } else {
       // Rule
       try {
-        return { ...validateRule(rule, data), rule };
+        return {
+          ...validateRule(rule, data, { unifiedApiClient: options.unifiedApiClient }),
+          rule,
+        };
       } catch (error) {
         // TODO: Would we want to throw when error instanceof OperationNotFoundError?
         if (error instanceof Error) {
@@ -87,9 +112,10 @@ export const runRuleSet = (ruleSet: RuleSet, data: any): RuleResultSet => {
 export const RuleEngine = (ruleSets: RuleSet, helpers?: typeof OperationHelpers) => {
   // TODO: inject helpers
   const allHelpers = { ...(helpers || {}), ...OperationHelpers };
+  const unifiedApiClient = new UnifiedApiClient();
 
   const run = (data: object) => {
-    return runRuleSet(ruleSets, data);
+    return runRuleSet(ruleSets, data, { unifiedApiClient });
   };
 
   return {

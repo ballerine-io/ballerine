@@ -17,8 +17,13 @@ import { ValidationFailedError, DataValueNotFoundError } from '../errors';
 import { OperationHelpers, OPERATORS_WITHOUT_PATH_COMPARISON } from './constants';
 import { Rule } from '@/rule-engine';
 import { EndUserAmlHitsSchema } from '@/schemas';
+import type { TUnifiedApiClient } from './constants';
 
-export abstract class BaseOperator<TDataValue = Primitive, TConditionValue = Primitive> {
+export abstract class BaseOperator<
+  TDataValue = Primitive,
+  TConditionValue = Primitive,
+  TEvaluate = boolean | Promise<boolean>,
+> {
   operator: string;
   conditionValueSchema?: ZodSchema<any>;
   dataValueSchema?: ZodSchema<any>;
@@ -35,7 +40,14 @@ export abstract class BaseOperator<TDataValue = Primitive, TConditionValue = Pri
     this.dataValueSchema = dataValueSchema;
   }
 
-  abstract evaluate(dataValue: TDataValue, conditionValue: TConditionValue): boolean;
+  abstract evaluate(
+    dataValue: TDataValue,
+    conditionValue: TConditionValue,
+    options?: {
+      unifiedApiClient?: TUnifiedApiClient;
+      threshold?: number;
+    },
+  ): TEvaluate;
 
   extractValue(data: unknown, rule: Rule) {
     const value = get(data, rule.key);
@@ -66,10 +78,17 @@ export abstract class BaseOperator<TDataValue = Primitive, TConditionValue = Pri
     return { value, comparisonValue: evaluatedComparisonValue };
   }
 
-  execute(dataValue: TDataValue, conditionValue: TConditionValue) {
+  execute(
+    dataValue: TDataValue,
+    conditionValue: TConditionValue,
+    options?: {
+      unifiedApiClient?: TUnifiedApiClient;
+      threshold?: number;
+    },
+  ) {
     this.validate({ dataValue, conditionValue });
 
-    return this.evaluate(dataValue, conditionValue);
+    return this.evaluate(dataValue, conditionValue, options);
   }
 
   validate(args: { dataValue: unknown; conditionValue: unknown }) {
@@ -397,6 +416,41 @@ class AmlCheck extends BaseOperator<any, AmlCheckParams> {
   };
 }
 
+class FuzzyMatchScoreLt extends BaseOperator<Primitive, Primitive, Promise<boolean>> {
+  constructor() {
+    super({
+      operator: 'FUZZY_MATCH_SCORE_LT',
+      conditionValueSchema: PrimitiveSchema,
+      dataValueSchema: PrimitiveSchema,
+    });
+  }
+
+  evaluate = async (
+    dataValue: Primitive,
+    conditionValue: Primitive,
+    options: {
+      unifiedApiClient: TUnifiedApiClient;
+      threshold: number;
+    },
+  ) => {
+    if (!options?.unifiedApiClient) {
+      throw new Error('Unified API client is required');
+    }
+
+    if (!options.threshold) {
+      throw new Error('Threshold is required');
+    }
+
+    const response = await options.unifiedApiClient.runEntityMatchingAi({
+      entity1: dataValue.toString(),
+      entity2: conditionValue.toString(),
+      includeAnalysis: false,
+    });
+
+    return response.data.similarityScore < options.threshold;
+  };
+}
+
 export const EQUALS = new Equals();
 export const NOT_EQUALS = new NotEquals();
 export const EXISTS = new Exists();
@@ -410,3 +464,4 @@ export const IN = new In();
 export const IN_CASE_INSENSITIVE = new InCaseInsensitive();
 export const NOT_IN = new NotIn();
 export const AML_CHECK = new AmlCheck();
+export const FUZZY_MATCH_SCORE_LT = new FuzzyMatchScoreLt();
