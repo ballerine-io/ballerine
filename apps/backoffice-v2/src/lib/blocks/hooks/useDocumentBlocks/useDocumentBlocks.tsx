@@ -147,7 +147,7 @@ export const useDocumentBlocks = ({
 
   return (
     documents?.flatMap(
-      ({ id, type: docType, category, properties, propertiesSchema, decision }) => {
+      ({ id, type: docType, category, properties, propertiesSchema, decision, details }) => {
         const additionalProperties = isExistingSchemaForDocument(documentsSchemas ?? [])
           ? composePickableCategoryType(
               category,
@@ -526,7 +526,7 @@ export const useDocumentBlocks = ({
               onOcrPressed: () => mutateOCRDocument({ documentId: id }),
               isDocumentEditable: caseState.writeEnabled,
               isLoadingOCR: isLoadingOCRDocument,
-              data: documents?.flatMap(document => document?.details),
+              data: details,
             },
           })
           .cellAt(0, 0);
