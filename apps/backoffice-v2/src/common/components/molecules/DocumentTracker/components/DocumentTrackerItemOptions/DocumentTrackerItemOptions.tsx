@@ -54,12 +54,6 @@ export const DocumentTrackerItemOptions = ({
               </Button>
             </DialogTrigger>
           </DropdownMenuItem>
-          <DropdownMenuItem className={`w-full px-8 py-1`} asChild>
-            <Button type="button" variant={'ghost'} className="justify-start px-2">
-              <Upload size={16} className="me-2" />
-              Upload
-            </Button>
-          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       <DialogContent className="px-16 py-12 sm:max-w-2xl">
