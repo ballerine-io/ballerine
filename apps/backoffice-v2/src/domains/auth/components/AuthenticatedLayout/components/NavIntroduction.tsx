@@ -11,7 +11,7 @@ export const NavIntroduction = () => {
   }
 
   return (
-    <div className="mb-6 px-2">
+    <div className="mb-6 px-2 transition-opacity group-data-[collapsible=icon]:opacity-0">
       <div className="rounded-lg border bg-white p-3 shadow-sm">
         <div className="flex items-center gap-2">
           <div className="w-2/3">

@@ -7,6 +7,7 @@ import { LoginDto } from './dtos/login';
 import { UserModel } from '@/user/user.model';
 import type { Request, Response } from 'express';
 import { LocalAuthGuard } from '@/auth/local/local-auth.guard';
+import { MagicLinkGuard } from '@/auth/magic-link/magic-link.guard';
 import util from 'util';
 import { Public } from '@/common/decorators/public.decorator';
 import type { AuthenticatedEntity } from '@/types';
@@ -18,10 +19,18 @@ import { User } from '@prisma/client';
 @swagger.ApiExcludeController()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
   @common.UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(200)
   login(@Req() req: Request, @Body() body: LoginDto): { user: Express.User | undefined } {
+    return { user: req.user };
+  }
+
+  @common.UseGuards(MagicLinkGuard)
+  @Post('magic-link-login')
+  @HttpCode(200)
+  loginViaMagicLink(@Req() req: Request): { user: Express.User | undefined } {
     return { user: req.user };
   }
 

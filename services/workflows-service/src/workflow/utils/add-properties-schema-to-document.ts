@@ -78,7 +78,7 @@ const getPropertiesFromDefinition = (
   );
 
   if (!documentSchemaForDocument) {
-    console.info(`No document schema in definition found for document ${JSON.stringify(document)}`);
+    // console.info(`No document schema in definition found for document ${JSON.stringify(document)}`);
 
     return;
   }

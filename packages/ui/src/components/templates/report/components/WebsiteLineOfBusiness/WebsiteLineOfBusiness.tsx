@@ -78,7 +78,7 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
                 },
               }}
             >
-              <CardHeader className={'p-0 pt-6 pb-4 pl-6 font-bold text-lg'}>
+              <CardHeader className={'p-0 pb-4 pl-6 pt-6 text-lg font-bold'}>
                 Content Violations Summary
               </CardHeader>
             </ContentTooltip>
@@ -92,42 +92,44 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
 
                 return (
                   <Card key={riskIndicator.name}>
-                    <CardContent className="py-6">
-                      <h4 className={'font-semibold text-lg mb-2'}>{riskIndicator.name}</h4>
+                    <CardContent className={'py-6'}>
+                      <h4 className={'mb-2 text-lg font-semibold'}>{riskIndicator.name}</h4>
 
-                      <div className="flex justify-between items-center gap-8">
+                      <div className={'flex items-start justify-between gap-8'}>
                         <div
                           className={ctw(
-                            'w-full flex justify-between gap-8 leading-6',
-                            screenshotUrl !== null && 'w-3/4',
+                            'flex w-3/4 justify-between gap-8 leading-6',
+                            !screenshotUrl && 'w-full',
                           )}
                         >
-                          <div className="w-1/2">
-                            <p className="font-medium">Description</p>
+                          <div className={'grow-0 basis-1/2'}>
+                            <p className={'font-medium'}>Description</p>
                             <p>{riskIndicator.explanation}</p>
                           </div>
 
-                          <div className="w-1/2 space-y-2">
+                          <div className={'grow-0 basis-1/2 space-y-2'}>
                             <div>
-                              <p className="font-medium">Why Our AI Flagged This?</p>
+                              <p className={'font-medium'}>Why Our AI Flagged This?</p>
                               <p>{riskIndicator.reason}</p>
                             </div>
 
-                            <div className="leading-5">
-                              <p className="font-medium">Source</p>
-                              <p className="italic">&quot;{riskIndicator.quoteFromSource}&quot;</p>
+                            <div className={'leading-5'}>
+                              <p className={'font-medium'}>Source</p>
+                              <p className={'italic'}>
+                                &quot;{riskIndicator.quoteFromSource}&quot;
+                              </p>
                             </div>
                           </div>
                         </div>
 
                         {screenshotUrl !== null && (
-                          <div className="w-1/4 truncate">
+                          <div className={'flex w-1/4 flex-col gap-y-2'}>
                             <a
                               href={screenshotUrl}
                               target={'_blank'}
                               rel={'noreferrer'}
-                              className={'relative w-1/2'}
                               title={'Click to view full screenshot'}
+                              className={'relative w-full'}
                             >
                               <img
                                 src={screenshotUrl}
@@ -139,9 +141,9 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
                             {riskIndicator.sourceUrl && (
                               <a
                                 href={riskIndicator.sourceUrl}
-                                className="whitespace-nowrap mt-2"
-                                rel={'noreferrer'}
                                 target={'_blank'}
+                                rel={'noreferrer'}
+                                className={'mt-2 block max-w-[20rem] truncate'}
                               >
                                 {riskIndicator.sourceUrl}
                               </a>
