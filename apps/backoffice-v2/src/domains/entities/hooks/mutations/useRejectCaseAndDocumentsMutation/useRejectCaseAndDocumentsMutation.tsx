@@ -4,25 +4,42 @@ import { t } from 'i18next';
 import { fetchWorkflowEventDecision } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 import { Action } from '../../../../../common/enums';
+import { updateDocumentsDecisionByIds } from '@/domains/documents/fetchers';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
+import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 
 export const useRejectCaseAndDocumentsMutation = ({
   workflowId,
   rejectionReason,
+  ids,
+  isDocumentsV2,
 }: {
   workflowId: string;
   rejectionReason: string;
+  ids: string[];
+  isDocumentsV2: boolean;
 }) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () =>
-      fetchWorkflowEventDecision({
+    mutationFn: async () => {
+      if (isDocumentsV2) {
+        await updateDocumentsDecisionByIds({
+          ids,
+          data: {
+            decision: Action.REJECT,
+          },
+        });
+      }
+
+      return fetchWorkflowEventDecision({
         workflowId,
         body: {
           name: Action.REJECT,
           reason: rejectionReason,
         },
-      }),
+      });
+    },
     onSuccess: () => {
       // workflowsQueryKeys._def is the base key for all workflows queries
       void queryClient.invalidateQueries(workflowsQueryKeys._def);

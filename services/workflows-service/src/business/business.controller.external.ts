@@ -57,7 +57,6 @@ export class BusinessControllerExternal {
         countryOfIncorporation: 'US',
         address: 'addess',
         industry: 'telecom',
-        documents: 's',
         projectId: currentProjectId,
       },
       select: {
@@ -126,7 +125,6 @@ export class BusinessControllerExternal {
         address: data.address,
         registrationNumber: data.registrationNumber,
         website: data.website,
-        documents: data.documents ? JSON.stringify(data.documents) : undefined,
         shareholderStructure:
           data.shareholderStructure && data.shareholderStructure.length
             ? JSON.stringify(data.shareholderStructure)
@@ -218,7 +216,6 @@ export class BusinessControllerExternal {
           {
             data: {
               ...restOfData,
-              documents: documents ? JSON.stringify(documents) : undefined,
               additionalInfo: additionalInfo ? JSON.stringify(additionalInfo) : undefined,
               bankInformation: bankInformation ? JSON.stringify(bankInformation) : undefined,
               address: address ? JSON.stringify(address) : undefined,

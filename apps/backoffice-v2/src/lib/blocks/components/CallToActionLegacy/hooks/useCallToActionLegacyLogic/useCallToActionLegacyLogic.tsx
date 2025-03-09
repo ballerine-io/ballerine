@@ -3,6 +3,8 @@ import { toast } from 'sonner';
 import { useApproveTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRejectTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
+import { useRejectDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useRejectDocumentByIdMutation/useRejectDocumentByIdMutation';
+import { useApproveDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useApproveDocumentByIdMutation/useApproveDocumentByIdMutation';
 
 export interface IUseCallToActionLogicParams {
   contextUpdateMethod?: 'base' | 'director';
@@ -41,11 +43,21 @@ export const useCallToActionLegacyLogic = ({
 }: IUseCallToActionLogicParams) => {
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id);
+  const { mutate: mutateApproveDocumentById, isLoading: isLoadingApproveDocumentById } =
+    useApproveDocumentByIdMutation();
+
   const { mutate: mutateRejectTaskById, isLoading: isLoadingRejectTaskById } =
     useRejectTaskByIdMutation(workflow?.id);
+  const { mutate: mutateRejectDocumentById, isLoading: isLoadingRejectDocumentById } =
+    useRejectDocumentByIdMutation();
 
-  const isLoadingTaskDecisionById =
-    isLoadingApproveTaskById || isLoadingRejectTaskById || isLoadingReuploadNeeded;
+  const isLoadingDecisionByIdV1 = isLoadingApproveTaskById || isLoadingRejectTaskById;
+  const isLoadingDecisionByIdV2 = isLoadingApproveDocumentById || isLoadingRejectDocumentById;
+  const isLoadingTaskDecisionById = [
+    isLoadingDecisionByIdV1,
+    isLoadingDecisionByIdV2,
+    isLoadingReuploadNeeded,
+  ].some(Boolean);
 
   const actions = [
     {
@@ -73,19 +85,88 @@ export const useCallToActionLegacyLogic = ({
   const onActionChange = useCallback((value: typeof action) => setAction(value), [setAction]);
   const onCommentChange = useCallback((value: string) => setComment(value), [setComment]);
 
+  const onMutateDecisionByIdV1 = useCallback(
+    (payload: {
+      id: string;
+      decision: 'approve' | 'reject' | 'revision';
+      comment?: string;
+      reason?: string;
+    }) => {
+      if (payload?.decision === 'approve') {
+        return mutateApproveTaskById({
+          documentId: payload?.id,
+          contextUpdateMethod,
+        });
+      }
+
+      if (payload?.decision === 'reject') {
+        return mutateRejectTaskById({
+          documentId: payload?.id,
+          reason: payload?.reason,
+        });
+      }
+
+      if (payload?.decision === 'revision') {
+        return onReuploadNeeded({
+          workflowId: workflow?.id,
+          documentId: payload?.id,
+          reason: payload?.reason,
+        })();
+      }
+
+      toast.error('Invalid decision');
+    },
+    [
+      contextUpdateMethod,
+      mutateApproveTaskById,
+      mutateRejectTaskById,
+      onReuploadNeeded,
+      workflow?.id,
+    ],
+  );
+  const onMutateDecisionByIdV2 = useCallback(
+    (payload: {
+      id: string;
+      decision: 'approve' | 'reject' | 'revision';
+      comment?: string;
+      reason?: string;
+    }) => {
+      if (payload?.decision === 'approve') {
+        return mutateApproveDocumentById({
+          documentId: payload?.id,
+          decisionReason: payload?.reason ?? '',
+          comment,
+        });
+      }
+
+      if (payload?.decision === 'reject') {
+        return mutateRejectDocumentById({
+          documentId: payload?.id,
+          decisionReason: payload?.reason,
+          comment,
+        });
+      }
+
+      if (payload?.decision === 'revision') {
+        return onReuploadNeeded({
+          workflowId: workflow?.id,
+          documentId: payload?.id,
+          reason: payload?.reason,
+          comment,
+        })();
+      }
+
+      toast.error('Invalid decision');
+    },
+    [comment, mutateApproveDocumentById, mutateRejectDocumentById, onReuploadNeeded, workflow?.id],
+  );
   const onMutateTaskDecisionById = useCallback(
-    (
-        payload:
-          | {
-              id: string;
-              decision: 'approve';
-            }
-          | {
-              id: string;
-              decision: 'reject' | 'revision' | 'revised';
-              reason?: string;
-            },
-      ) =>
+    (payload: {
+        id: string;
+        decision: 'approve' | 'reject' | 'revision';
+        comment?: string;
+        reason?: string;
+      }) =>
       () => {
         if (!payload?.id) {
           toast.error('Invalid task id');
@@ -93,42 +174,16 @@ export const useCallToActionLegacyLogic = ({
           return;
         }
 
-        if (payload?.decision === 'approve') {
-          return mutateApproveTaskById({
-            documentId: payload?.id,
-            contextUpdateMethod,
-          });
+        if (workflow?.workflowDefinition?.config?.isDocumentsV2) {
+          return onMutateDecisionByIdV2(payload);
         }
 
-        if (payload?.decision === null) {
-          return mutateRejectTaskById({
-            documentId: payload?.id,
-          });
-        }
-
-        if (payload?.decision === 'reject') {
-          return mutateRejectTaskById({
-            documentId: payload?.id,
-            reason: payload?.reason,
-          });
-        }
-
-        if (payload?.decision === 'revision') {
-          return onReuploadNeeded({
-            workflowId: workflow?.id,
-            documentId: payload?.id,
-            reason: payload?.reason,
-          })();
-        }
-
-        toast.error('Invalid decision');
+        return onMutateDecisionByIdV1(payload);
       },
     [
-      contextUpdateMethod,
-      mutateApproveTaskById,
-      mutateRejectTaskById,
-      onReuploadNeeded,
-      workflow?.id,
+      onMutateDecisionByIdV1,
+      onMutateDecisionByIdV2,
+      workflow?.workflowDefinition?.config?.isDocumentsV2,
     ],
   );
   const workflowLevelResolution =

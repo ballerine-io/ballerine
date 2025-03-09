@@ -95,6 +95,7 @@ export class CollectionFlowController {
       workflow.context,
       params.language,
       [tokenScope.projectId],
+      tokenScope,
       workflow.uiDefinitionId ? { where: { id: workflow.uiDefinitionId } } : {},
     );
   }
@@ -154,7 +155,17 @@ export class CollectionFlowController {
 
       const directors = await Promise.all(
         workflowRuntimeData.context.entity.data.additionalInfo.directors?.map(
-          async (director: { firstName: string; lastName: string; email: string }) => {
+          async (director: {
+            ballerineEntityId?: string;
+            firstName: string;
+            lastName: string;
+            email: string;
+          }) => {
+            // If ID is present then entity been created in KYB
+            if (director.ballerineEntityId) {
+              return director;
+            }
+
             const { id } = await this.endUserService.create({
               data: {
                 firstName: director.firstName,
@@ -174,7 +185,17 @@ export class CollectionFlowController {
 
       const ubos = await Promise.all(
         workflowRuntimeData.context.entity.data.additionalInfo.ubos?.map(
-          async (ubo: { firstName: string; lastName: string; email: string }) => {
+          async (ubo: {
+            ballerineEntityId?: string;
+            firstName: string;
+            lastName: string;
+            email: string;
+          }) => {
+            // If ID is present then entity been created in KYB
+            if (ubo.ballerineEntityId) {
+              return ubo;
+            }
+
             const { id } = await this.endUserService.create({
               data: {
                 firstName: ubo.firstName,

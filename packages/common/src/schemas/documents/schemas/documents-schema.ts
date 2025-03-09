@@ -277,10 +277,20 @@ export const DocumentsSchema = Type.Array(
   Type.Object(
     {
       id: Type.Optional(Type.String()),
+      _id: Type.Optional(Type.String()),
+      _document: Type.Optional(Type.Record(Type.String(), Type.Any())),
       category: categorySchema,
       type: typeSchema,
+      status: Type.Optional(
+        Type.Union([
+          Type.String({
+            enum: ['requested', 'provided'],
+          }),
+        ]),
+      ),
       issuer: issuerSchema,
       issuingVersion: issuingVersionSchema,
+      decisionReason: Type.Optional(Type.Union([Type.String(), Type.Null()])),
       decision: Type.Optional(
         Type.Object(
           {

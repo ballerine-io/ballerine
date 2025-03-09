@@ -38,7 +38,7 @@ const PremiumNavItemHoverCard = ({
         <div className="relative">
           {videoLink ? (
             <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
-              <Skeleton className="size-full absolute inset-0" />
+              <Skeleton className="absolute inset-0 size-full" />
               <iframe
                 src={videoLink}
                 frameBorder="0"

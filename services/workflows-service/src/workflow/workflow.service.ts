@@ -22,6 +22,7 @@ import {
   defaultPrismaTransactionOptions,
 } from '@/prisma/prisma.util';
 import { ProjectScopeService } from '@/project/project-scope.service';
+// eslint-disable-next-line import/no-cycle
 import { FileService } from '@/providers/file/file.service';
 import { RiskRuleService, TFindAllRulesOptions } from '@/rule-engine/risk-rule.service';
 import { RuleEngineService } from '@/rule-engine/rule-engine.service';
@@ -88,6 +89,7 @@ import {
   ApprovalState,
   BusinessPosition,
   Customer,
+  DocumentDecision,
   EndUser,
   Prisma,
   PrismaClient,
@@ -741,14 +743,18 @@ export class WorkflowService {
     projectId,
   }: {
     id: string;
-    name: string;
+    name: 'approve' | 'reject' | 'revision';
     reason?: string;
     projectId: TProjectId;
   }) {
     return await this.prismaService.$transaction(async transaction => {
       const runtimeData = await this.workflowRuntimeDataRepository.findByIdAndLock(
         id,
-        {},
+        {
+          include: {
+            workflowDefinition: true,
+          },
+        },
         [projectId],
         transaction,
       );
@@ -757,7 +763,10 @@ export class WorkflowService {
         approve: 'approved',
         reject: 'rejected',
         revision: 'revision',
-      } as const;
+      } as const satisfies Record<
+        Exclude<typeof name, null>,
+        NonNullable<DefaultContextSchema['documents'][number]['decision']>['status']
+      >;
       const status = Status[name as keyof typeof Status];
       const decision = (() => {
         if (status === 'approved') {
@@ -858,7 +867,10 @@ export class WorkflowService {
         reject: 'rejected',
         revision: 'revision',
         revised: 'revised',
-      } as const;
+      } as const satisfies Record<
+        Exclude<typeof decision.status, null>,
+        NonNullable<DefaultContextSchema['documents'][number]['decision']>['status']
+      >;
       const status = decision.status ? Status[decision.status] : null;
       const newDecision = (() => {
         if (!status || status === 'approved') {
@@ -995,15 +1007,20 @@ export class WorkflowService {
         id: documentId,
       };
 
-      const documentSchema = addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);
-      const propertiesSchema = documentSchema?.propertiesSchema ?? {};
+      const documentWithPropertiesSchema = addPropertiesSchemaToDocument(
+        document,
+        workflowDef.documentsSchema,
+      );
+      const propertiesSchema = documentWithPropertiesSchema?.propertiesSchema ?? {};
 
       if (Object.keys(propertiesSchema)?.length && validateDocumentSchema) {
         const propertiesSchemaForValidation = propertiesSchema;
 
         const validatePropertiesSchema = ajv.compile(propertiesSchemaForValidation);
 
-        const isValidPropertiesSchema = validatePropertiesSchema(documentSchema?.properties);
+        const isValidPropertiesSchema = validatePropertiesSchema(
+          documentWithPropertiesSchema?.properties,
+        );
 
         if (!isValidPropertiesSchema && document.type === documentToUpdate.type) {
           throw ValidationError.fromAjvError(validatePropertiesSchema.errors!);
@@ -1017,7 +1034,7 @@ export class WorkflowService {
           payload: {
             newContext: this.updateDocumentInContext(
               runtimeData.context,
-              documentSchema,
+              documentWithPropertiesSchema,
               documentsUpdateContextMethod,
               directorId,
             ),

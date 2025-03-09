@@ -71,10 +71,6 @@ export const generateBusiness = ({
       ownershipPercentage: Number(faker.finance.amount(0, 100, 2)),
     },
   ],
-  documents = {
-    registrationDocument: faker.system.filePath(),
-    financialStatement: faker.system.filePath(),
-  },
   workflow,
   projectId,
 }: {
@@ -98,10 +94,6 @@ export const generateBusiness = ({
     name: string;
     ownershipPercentage: number;
   }>;
-  documents?: {
-    registrationDocument: string;
-    financialStatement: string;
-  };
   workflow?: {
     runtimeId?: string;
     workflowDefinitionId: string;
@@ -128,7 +120,6 @@ export const generateBusiness = ({
     vatNumber,
     numberOfEmployees,
     businessPurpose,
-    documents: JSON.stringify(documents),
     shareholderStructure: JSON.stringify(shareholderStructure),
     project: { connect: { id: projectId } },
     approvalState: 'PROCESSING',
