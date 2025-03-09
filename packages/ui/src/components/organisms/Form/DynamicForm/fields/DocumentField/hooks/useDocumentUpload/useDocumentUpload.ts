@@ -1,29 +1,41 @@
 import { AnyObject } from '@/common';
+import { IHttpParams, useHttp } from '@/common/hooks/useHttp';
 import get from 'lodash/get';
 import set from 'lodash/set';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useDynamicForm } from '../../../../context';
-import { uploadFile } from '../../../../helpers/upload-file';
-import { useElement, useField } from '../../../../hooks/external';
+import { useElementId, useField } from '../../../../hooks/external';
 import { useTaskRunner } from '../../../../providers/TaskRunner/hooks/useTaskRunner';
 import { ITask } from '../../../../providers/TaskRunner/types';
 import { IFormElement } from '../../../../types';
-import { formatHeaders } from '../../../../utils/format-headers';
-import { formatString } from '../../../../utils/format-string';
 import { useStack } from '../../../FieldList/providers/StackProvider';
+import { DEFAULT_CREATION_PARAMS, DEFAULT_UPDATE_PARAMS } from '../../defaults';
 import { IDocumentFieldParams } from '../../DocumentField';
+import { buildDocumentFormData } from '../../helpers/build-document-form-data';
+import {
+  checkIfDocumentInRevision,
+  checkIfDocumentRequested,
+} from './helpers/check-if-document-requested';
 import { createOrUpdateFileIdOrFileInDocuments } from './helpers/create-or-update-fileid-or-file-in-documents';
+import { getDocumentObjectFromDocumentsList } from './helpers/get-document-object-from-documents-list';
 
 export const useDocumentUpload = (
   element: IFormElement<'documentfield', IDocumentFieldParams>,
-  params: IDocumentFieldParams<any>,
+  params: IDocumentFieldParams,
 ) => {
   const { uploadOn = 'change' } = params;
   const { stack } = useStack();
-  const { id } = useElement(element, stack);
+  const id = useElementId(element, stack);
   const { addTask, removeTask } = useTaskRunner();
-  const [isUploading, setIsUploading] = useState(false);
   const { metadata, values } = useDynamicForm();
+  const { run: uploadDocument, isLoading: isUploading } = useHttp(
+    (element.params?.httpParams?.createDocument || DEFAULT_CREATION_PARAMS) as IHttpParams,
+    metadata,
+  );
+  const { run: updateDocument, isLoading: isUpdating } = useHttp(
+    (element.params?.httpParams?.updateDocument || DEFAULT_UPDATE_PARAMS) as IHttpParams,
+    metadata,
+  );
 
   const { onChange } = useField(element, stack);
 
@@ -37,31 +49,31 @@ export const useDocumentUpload = (
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       removeTask(id);
 
-      const { uploadSettings } = params;
-
-      if (!uploadSettings) {
-        console.warn('Upload settings are missing on element', element, 'Upload will be skipped.');
+      if (!metadata.entityId) {
+        console.warn('Entity ID is missing on element', element, 'Upload will be skipped.');
 
         return;
       }
 
-      const uploadParams = {
-        ...uploadSettings,
-        method: uploadSettings?.method || 'POST',
-        headers: formatHeaders(uploadSettings?.headers || {}, metadata),
-        url: formatString(uploadSettings?.url || '', metadata),
-      };
-
       if (uploadOn === 'change') {
         try {
-          setIsUploading(true);
+          const documents = get(valuesRef.current, element.valueDestination);
+          const document = getDocumentObjectFromDocumentsList(documents, element);
 
-          const result = await uploadFile(
+          const isDocumentRequested = checkIfDocumentRequested(document);
+          const isDocumentInRevision = checkIfDocumentInRevision(document);
+          const isDocumentRequestedOrInRevision = isDocumentRequested || isDocumentInRevision;
+          const documentUploadPayload = buildDocumentFormData(
+            element,
+            { businessId: metadata.businessId as string },
             e.target?.files?.[0] as File,
-            uploadParams as IDocumentFieldParams['uploadSettings'],
+            document,
           );
 
-          const documents = get(valuesRef.current, element.valueDestination);
+          const result = isDocumentRequestedOrInRevision
+            ? await updateDocument(documentUploadPayload)
+            : await uploadDocument(documentUploadPayload);
+
           const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
             documents,
             element,
@@ -70,8 +82,6 @@ export const useDocumentUpload = (
           onChange(updatedDocuments);
         } catch (error) {
           console.error('Failed to upload file.', error);
-        } finally {
-          setIsUploading(false);
         }
       }
 
@@ -87,13 +97,23 @@ export const useDocumentUpload = (
 
         const taskRun = async (context: AnyObject) => {
           try {
-            const documents = get(context, element.valueDestination);
+            const documents = get(valuesRef.current, element.valueDestination);
 
-            setIsUploading(true);
-            const result = await uploadFile(
+            const document = getDocumentObjectFromDocumentsList(documents, element);
+
+            const isDocumentRequested = checkIfDocumentRequested(document);
+            const isDocumentInRevision = checkIfDocumentInRevision(document);
+            const isDocumentRequestedOrInRevision = isDocumentRequested || isDocumentInRevision;
+            const documentUploadPayload = buildDocumentFormData(
+              element,
+              { businessId: metadata.businessId as string },
               e.target?.files?.[0] as File,
-              uploadParams as IDocumentFieldParams['uploadSettings'],
+              document,
             );
+
+            const result = isDocumentRequestedOrInRevision
+              ? await updateDocument(documentUploadPayload)
+              : await uploadDocument(documentUploadPayload);
 
             const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
               documents,
@@ -108,8 +128,6 @@ export const useDocumentUpload = (
             console.error('Failed to upload file.', error, element);
 
             return context;
-          } finally {
-            setIsUploading(false);
           }
         };
 
@@ -121,11 +139,22 @@ export const useDocumentUpload = (
         addTask(task);
       }
     },
-    [uploadOn, params, metadata, addTask, removeTask, onChange, id, element, valuesRef],
+    [
+      uploadOn,
+      metadata,
+      addTask,
+      removeTask,
+      onChange,
+      uploadDocument,
+      id,
+      element,
+      valuesRef,
+      updateDocument,
+    ],
   );
 
   return {
-    isUploading,
+    isUploading: isUploading || isUpdating,
     handleChange,
   };
 };

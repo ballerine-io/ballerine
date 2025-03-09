@@ -58,6 +58,7 @@ export const useAssociatedCompaniesInformationBlock = (workflows: TWorkflowById[
                   value,
                 })),
               },
+              isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
             })
             .build()
             .flat(1),

@@ -7,7 +7,7 @@ export class WorkflowEventDecisionInput {
     type: String,
   })
   @IsString()
-  name!: string;
+  name!: 'approve' | 'reject' | 'revision';
 
   /**
    * The reason for the decision.
