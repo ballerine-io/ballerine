@@ -34,7 +34,7 @@ export const DocumentTracker: FunctionComponent<{ workflowId: string }> = ({ wor
     <div className={`max-w-xs`}>
       <AccordionCard className={`h-full`}>
         <AccordionCard.Title
-          className={`flex-row items-center justify-between`}
+          className={`flex-row items-center justify-between space-x-2`}
           rightChildren={
             selectedIdsToRequest.length > 0 ? (
               <Dialog open={open} onOpenChange={onOpenChange}>
