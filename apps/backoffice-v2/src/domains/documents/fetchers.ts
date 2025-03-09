@@ -19,7 +19,10 @@ export const requestDocumentsUpload = async (body: z.infer<typeof RequestDocumen
     endpoint: '../external/documents/request-upload',
     method: Method.POST,
     body,
-    schema: RequestDocumentsSchema,
+    schema: z.object({
+      message: z.string(),
+      count: z.number(),
+    }),
   });
 
   return handleZodError(error, documentsTrackerItems);

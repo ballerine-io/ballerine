@@ -54,7 +54,12 @@ export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
   );
 
   const getSubItems = useCallback(
-    (documentTrackerItem: TDocumentsTrackerItem['business'][number]) => {
+    (
+      documentTrackerItem:
+        | TDocumentsTrackerItem['business'][number]
+        | TDocumentsTrackerItem['individuals']['ubos'][number]
+        | TDocumentsTrackerItem['individuals']['directors'][number],
+    ) => {
       const { identifiers, status } = documentTrackerItem;
       const compareIdentifiers = (
         identifiersA: z.infer<typeof DocumentTrackerItemSchema>['identifiers'],
@@ -107,6 +112,16 @@ export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
         ),
         text: (
           <div className="flex flex-col space-y-0.5">
+            {documentTrackerItem.identifiers.entity.entityType !== 'business' && (
+              <span className="font-bold text-gray-900">
+                {[
+                  documentTrackerItem.identifiers.entity.firstName,
+                  documentTrackerItem.identifiers.entity.lastName,
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+              </span>
+            )}
             <span className="text-sm font-medium text-gray-900">
               {titleCase(documentTrackerItem.identifiers.document.category ?? 'N/A')}
             </span>
