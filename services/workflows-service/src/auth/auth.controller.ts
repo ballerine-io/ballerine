@@ -10,7 +10,7 @@ import util from 'util';
 import { Public } from '@/common/decorators/public.decorator';
 import type { AuthenticatedEntity, TProjectId } from '@/types';
 import type { User } from '@prisma/client';
-import { AnalyticsService, EventNames } from '@/common/analytics-logger/analytics.service';
+import { AnalyticsService, EventNamesMap } from '@/common/analytics-logger/analytics.service';
 import { UserData } from '@/user/user-data.decorator';
 import { CustomerService } from '@/customer/customer.service';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
@@ -48,7 +48,7 @@ export class AuthController {
     );
 
     this.analyticsService.track({
-      event: EventNames.USER_LOGIN,
+      event: EventNamesMap.USER_LOGIN,
       distinctId: authenticatedEntity.id,
       properties: {
         customerId,
@@ -72,7 +72,7 @@ export class AuthController {
     });
 
     this.analyticsService.track({
-      event: EventNames.USER_MAGIC_LINK_LOGIN,
+      event: EventNamesMap.USER_MAGIC_LINK_LOGIN,
       distinctId: authenticatedEntity.id,
       properties: {
         customerId,
