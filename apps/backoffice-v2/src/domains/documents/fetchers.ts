@@ -99,7 +99,7 @@ export const getDocuments = async ({
     method: Method.GET,
     endpoint: `../external/documents/${entityId}/${workflowId}`,
     schema: z.any(),
-    timeout: 40000,
+    timeout: 30000,
   });
 
   return handleZodError(error, documents);

@@ -2,7 +2,7 @@ import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/us
 import { extractCountryCodeFromDocuments } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { useMemo } from 'react';
 import { useCallback } from 'react';
-import { useDocumentsQuery } from '../queries/useDocumentsQuery/domains:useDocumentsQuery';
+import { useDocumentsQuery } from '../queries/useDocumentsQuery/useDocumentsQuery';
 import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
 import { titleCase } from 'string-ts';
 import { TDocument, valueOrNA } from '@ballerine/common';
