@@ -15,7 +15,9 @@ export const usePluginsHandler = () => {
       const runners = getPluginRunner(eventName, element);
       const context = stateApi.getContext();
 
-      if (!runners?.length) return;
+      if (!runners?.length) {
+        return;
+      }
 
       console.log(`Found plugins ${JSON.stringify(runners)} for event ${eventName}`);
 

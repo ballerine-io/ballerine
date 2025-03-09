@@ -1,3 +1,5 @@
+import { isObject } from '@ballerine/common';
+import get from 'lodash/get';
 import set from 'lodash/set';
 import { useCallback, useState } from 'react';
 
@@ -26,7 +28,24 @@ export const useValues = <TValues extends object>({
     (fieldName: string, valueDestination: string, newValue: unknown) => {
       setValuesState(prev => {
         const newValues = { ...prev };
+        const parentValueDestination = valueDestination.split('.').slice(0, -1).join('.');
+
         set(newValues, valueDestination, newValue);
+
+        if (parentValueDestination) {
+          const parentValue = get(prev, parentValueDestination);
+          let newParentValue: any;
+
+          if (Array.isArray(parentValue)) {
+            newParentValue = [...parentValue];
+          }
+
+          if (isObject(parentValue)) {
+            newParentValue = { ...parentValue };
+          }
+
+          set(newValues, parentValueDestination, newParentValue);
+        }
 
         onFieldChange?.(fieldName, newValue, newValues);
         onChange?.(newValues);

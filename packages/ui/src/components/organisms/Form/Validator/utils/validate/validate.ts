@@ -31,7 +31,14 @@ export const validate = <
     stack: TDeepthLevelStack = [],
   ) => {
     for (let i = 0; i < schema.length; i++) {
-      const { validators = [], children, valueDestination, id } = schema[i]!;
+      const {
+        validators = [],
+        children,
+        valueDestination,
+        id,
+        metadata = {},
+        getThisContext,
+      } = schema[i]!;
       const formattedValueDestination = valueDestination
         ? formatValueDestination(valueDestination, stack)
         : '';
@@ -44,7 +51,10 @@ export const validate = <
             validator.applyWhen &&
             !isShouldApplyValidation(
               replaceTagsWithIndexesInRule([validator.applyWhen], stack)[0],
-              context,
+              {
+                ...context,
+                ...(getThisContext?.(context, metadata, stack) || {}),
+              },
             )
           ) {
             continue;

@@ -18,7 +18,7 @@ import { DefaultContextSchema, TCollectionFlowConfig } from '@ballerine/common';
 import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
 import { EndUser, Prisma, WorkflowRuntimeData } from '@prisma/client';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 
 @Injectable()
 export class CollectionFlowService {
@@ -46,6 +46,7 @@ export class CollectionFlowService {
     context: WorkflowRuntimeData['context'],
     language: string,
     projectIds: TProjectIds,
+    tokenScope: ITokenScope,
     args?: Prisma.UiDefinitionFindFirstOrThrowArgs,
   ): Promise<FlowConfigurationModel> {
     const workflowDefinition = await this.workflowService.getWorkflowDefinitionById(
@@ -59,6 +60,12 @@ export class CollectionFlowService {
       'collection_flow' as const,
       projectIds,
       args,
+    );
+
+    const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
+      tokenScope.workflowRuntimeDataId,
+      {},
+      projectIds,
     );
 
     const translationService = new TranslationService(
@@ -86,6 +93,10 @@ export class CollectionFlowService {
         ? (uiDefinition.definition as unknown as UiDefDefinition)
         : undefined,
       version: uiDefinition.version,
+      metadata: {
+        businessId: workflowRuntimeData.businessId,
+        entityId: tokenScope.endUserId,
+      },
     };
   }
 
@@ -207,6 +218,21 @@ export class CollectionFlowService {
     );
   }
 
+  async getCollectionFlowContext(
+    tokenScope: ITokenScope,
+  ): Promise<{ context: DefaultContextSchema; config: TCollectionFlowConfig }> {
+    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
+      tokenScope.workflowRuntimeDataId,
+      { select: { context: true, state: true, config: true } },
+      [tokenScope.projectId],
+    );
+
+    return {
+      context: workflowRuntimeData.context,
+      config: workflowRuntimeData.config,
+    };
+  }
+
   async uploadNewFile(projectId: string, workflowRuntimeDataId: string, file: Express.Multer.File) {
     // upload file into a customer folder
     const customer = await this.customerService.getByProjectId(projectId);
@@ -240,20 +266,5 @@ export class CollectionFlowService {
       customer.name,
       { shouldDownloadFromSource: false },
     );
-  }
-
-  async getCollectionFlowContext(
-    tokenScope: ITokenScope,
-  ): Promise<{ context: DefaultContextSchema; config: TCollectionFlowConfig }> {
-    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
-      tokenScope.workflowRuntimeDataId,
-      { select: { context: true, state: true, config: true } },
-      [tokenScope.projectId],
-    );
-
-    return {
-      context: workflowRuntimeData.context,
-      config: workflowRuntimeData.config,
-    };
   }
 }

@@ -6,9 +6,11 @@ import { WarningFilledSvg } from '@ballerine/ui';
 export const useBankAccountVerificationBlock = ({
   workflowId,
   pluginsOutput,
+  isDocumentsV2,
 }: {
   workflowId: string;
   pluginsOutput: any;
+  isDocumentsV2: boolean;
 }) => {
   return useMemo(() => {
     if (!pluginsOutput?.bankAccountVerification) {
@@ -102,14 +104,10 @@ export const useBankAccountVerificationBlock = ({
                 sort: { predefinedOrder: ['decision', 'decisionText'] },
               },
             },
-          } satisfies Extract<
-            Parameters<ReturnType<typeof createBlocksTyped>['addCell']>[0],
-            {
-              type: 'details';
-            }
-          >)
+            isDocumentsV2,
+          })
           .buildFlat(),
       })
       .build();
-  }, [pluginsOutput.bankAccountVerification, workflowId]);
+  }, [isDocumentsV2, pluginsOutput.bankAccountVerification, workflowId]);
 };

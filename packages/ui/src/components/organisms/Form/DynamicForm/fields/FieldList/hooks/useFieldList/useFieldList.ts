@@ -34,7 +34,9 @@ export const useFieldList = ({ element }: IUseFieldListProps) => {
 
   const removeItem = useCallback(
     (index: number) => {
-      if (!Array.isArray(value)) return;
+      if (!Array.isArray(value)) {
+        return;
+      }
 
       const newValue = value.filter((_, i) => i !== index);
       onChange(newValue);

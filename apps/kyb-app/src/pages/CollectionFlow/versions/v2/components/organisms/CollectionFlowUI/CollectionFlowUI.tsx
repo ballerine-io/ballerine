@@ -1,6 +1,7 @@
 import './validator';
 
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider/hooks/useStateManagerContext';
+import { UISchema } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { DynamicFormV2, IDynamicFormValidationParams, IFormElement, IFormRef } from '@ballerine/ui';
 import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
@@ -19,6 +20,7 @@ interface ICollectionFlowUIProps<TValues = CollectionFlowContext> {
   elements: Array<IFormElement<any, any>>;
   context: TValues;
   isRevision?: boolean;
+  metadata: UISchema['metadata'];
 }
 
 const validationParams: IDynamicFormValidationParams = {
@@ -33,6 +35,7 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
   elements,
   context,
   isRevision,
+  metadata: _uiSchemaMetadata,
 }) => {
   const { stateApi, state } = useStateManagerContext();
   const { handleEvent } = usePluginsHandler();
@@ -61,8 +64,9 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
       _appState: {
         isSyncing,
       },
+      ..._uiSchemaMetadata,
     }),
-    [appMetadata, pluginStatuses, isSyncing],
+    [appMetadata, pluginStatuses, isSyncing, _uiSchemaMetadata],
   );
 
   const handleChange = useCallback(

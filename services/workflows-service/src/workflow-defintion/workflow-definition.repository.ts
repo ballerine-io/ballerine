@@ -281,4 +281,17 @@ export class WorkflowDefinitionRepository {
       await createDemoWorkflow({ customer, demoEnv, transaction, workflowOverrides, userId });
     });
   }
+
+  async findByWorkflowRuntimeDataId(workflowRuntimeDataId: string, projectIds: TProjectIds) {
+    return await this.prisma.workflowDefinition.findFirst({
+      where: {
+        workflowRuntimeData: {
+          some: {
+            id: workflowRuntimeDataId,
+          },
+        },
+        projectId: { in: projectIds },
+      },
+    });
+  }
 }

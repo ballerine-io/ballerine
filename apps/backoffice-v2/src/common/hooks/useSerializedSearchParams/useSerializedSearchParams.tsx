@@ -5,7 +5,7 @@ import { defaultSerializer } from '@/common/hooks/useZodSearchParams/utils/defau
 import { ISerializedSearchParams } from '@/common/hooks/useZodSearchParams/interfaces';
 
 export const useSerializedSearchParams = (options: ISerializedSearchParams = {}) => {
-  const { search, pathname, state } = useLocation();
+  const { search, pathname, state, hash } = useLocation();
   const {
     serializer = defaultSerializer,
     deserializer = defaultDeserializer,
@@ -20,11 +20,11 @@ export const useSerializedSearchParams = (options: ISerializedSearchParams = {})
         `${pathname}${serializer({
           ...searchParamsAsObject,
           ...searchParams,
-        })}`,
+        })}${hash}`,
         { state, replace },
       );
     },
-    [navigate, pathname, searchParamsAsObject, serializer, state],
+    [navigate, pathname, searchParamsAsObject, serializer, state, hash],
   );
 
   return [searchParamsAsObject, setSearchParams] as const;

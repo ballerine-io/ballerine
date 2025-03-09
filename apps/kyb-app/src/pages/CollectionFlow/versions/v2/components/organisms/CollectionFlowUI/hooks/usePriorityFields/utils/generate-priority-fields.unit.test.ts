@@ -6,12 +6,16 @@ describe('generatePriorityFields', () => {
     documents: [
       {
         id: 'doc1',
-        decision: {
-          revisionReason: 'needs_review',
+        _document: {
+          id: 'doc1',
+          status: 'requested',
+          decision: 'revisions',
+          decisionReason: 'needs_review',
+          comment: 'please fix this',
         },
       },
     ],
-  } as CollectionFlowContext;
+  } as unknown as CollectionFlowContext;
 
   const mockElements = [
     {
@@ -37,7 +41,7 @@ describe('generatePriorityFields', () => {
     expect(result).toEqual([
       {
         id: 'document-1',
-        reason: 'needs_review',
+        reason: 'needs_review - please fix this',
       },
     ]);
   });
@@ -49,8 +53,12 @@ describe('generatePriorityFields', () => {
           documents: [
             {
               id: 'nested-doc-1',
-              decision: {
-                revisionReason: 'needs_review',
+              _document: {
+                id: 'nested-doc-1',
+                status: 'requested',
+                decision: 'revisions',
+                decisionReason: 'needs_review',
+                comment: 'fix this issue',
               },
             },
           ],
@@ -88,21 +96,26 @@ describe('generatePriorityFields', () => {
     expect(result).toEqual([
       {
         id: 'document-0',
-        reason: 'needs_review',
+        reason: 'needs_review - fix this issue',
       },
     ]);
   });
 
-  it('should generate priority document field only if document has revision reason', () => {
+  it('should not generate priority fields if document is not in revision or requested status', () => {
     const context = {
-      ...mockContext,
       documents: [
         {
           id: 'doc1',
-          decision: {}, // No revision reason
+          _document: {
+            id: 'doc1',
+            status: 'approved',
+            decision: 'approved',
+            decisionReason: 'all good',
+            comment: 'no issues',
+          },
         },
       ],
-    } as CollectionFlowContext;
+    } as unknown as CollectionFlowContext;
 
     const result = generatePriorityFields(mockElements, context);
 

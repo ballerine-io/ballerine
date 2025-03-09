@@ -166,7 +166,11 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
             onClick={onMutateTaskDecisionById({
               id,
               decision: action,
-              reason: comment ? `${reason} - ${comment}` : reason,
+              reason:
+                comment && !workflow?.workflowDefinition?.config?.isDocumentsV2
+                  ? `${reason} - ${comment}`
+                  : reason,
+              comment,
             })}
           >
             Confirm
@@ -266,7 +270,11 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
               workflowId: workflow?.id,
               directorId,
               documentId: id,
-              reason: comment ? `${reason} - ${comment}` : reason,
+              reason:
+                comment && !workflow?.workflowDefinition?.config?.isDocumentsV2
+                  ? `${reason} - ${comment}`
+                  : reason,
+              comment,
             })}
           >
             {workflowLevelResolution && 'Confirm'}

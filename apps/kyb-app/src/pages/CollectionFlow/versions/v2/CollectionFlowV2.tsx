@@ -9,7 +9,7 @@ import { PoweredByLogo } from '@/components/molecules/PoweredByLogo';
 import { DynamicUI, State } from '@/components/organisms/DynamicUI';
 import { StepperUI } from '@/components/organisms/UIRenderer/elements/StepperUI';
 import { useCustomer } from '@/components/providers/CustomerProvider';
-import { UIPage } from '@/domains/collection-flow';
+import { UIPage, UISchema } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { prepareInitialUIState } from '@/helpers/prepareInitialUIState';
 import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
@@ -26,6 +26,7 @@ import { Rejected } from '../v1/components/pages/Rejected';
 import { useAdditionalWorkflowContext } from '../v1/hooks/useAdditionalWorkflowContext';
 import { CollectionFlowUI } from './components/organisms/CollectionFlowUI';
 import { PluginsRunner } from './components/organisms/CollectionFlowUI/components/utility/PluginsRunner';
+import { useCollectionFlowContext } from './hooks/useCollectionFlowContext/useCollectionFlowContext';
 import { useRevisionStates } from './hooks/useRevisionStates';
 
 const isCompleted = (state: string) => state === 'completed' || state === 'finish';
@@ -35,6 +36,10 @@ export const CollectionFlowV2 = withSessionProtected(() => {
   const { language } = useLanguageParam();
   const { data: schema } = useUISchemasQuery(language);
   const { data: collectionFlowData } = useFlowContextQuery();
+  const collectionFlowContext = useCollectionFlowContext(
+    collectionFlowData?.context as CollectionFlowContext,
+    schema as UISchema,
+  );
   const { customer } = useCustomer();
   const { t } = useTranslation();
   const { themeDefinition } = useTheme();
@@ -45,7 +50,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
 
   const { initialRevisionState, revisionStateNames } = useRevisionStates(
     elements || [],
-    collectionFlowData?.context ?? ({} as CollectionFlowContext),
+    collectionFlowContext ?? ({} as CollectionFlowContext),
   );
 
   const isRevision = useMemo(
@@ -56,7 +61,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
   );
 
   const initialContext: CollectionFlowContext = useMemo(() => {
-    const contextCopy = { ...collectionFlowData?.context };
+    const contextCopy = { ...collectionFlowContext };
     const collectionFlow = getCollectionFlowState(contextCopy);
 
     if (isRevision && collectionFlow) {
@@ -64,7 +69,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
     }
 
     return contextCopy as CollectionFlowContext;
-  }, [isRevision, collectionFlowData?.context, initialRevisionState]);
+  }, [isRevision, collectionFlowContext, initialRevisionState]);
 
   const initialUIState = useMemo(() => {
     return prepareInitialUIState(
@@ -104,7 +109,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
     return <FailedScreen />;
   }
 
-  return definition && collectionFlowData ? (
+  return definition && collectionFlowContext ? (
     <DynamicUI initialState={initialUIState}>
       <DynamicUI.StateManager
         initialContext={initialContext}
@@ -271,6 +276,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                           }
                                           context={payload}
                                           isRevision={isRevision}
+                                          metadata={schema?.metadata}
                                         />
                                       </PluginsRunner>
                                     </div>

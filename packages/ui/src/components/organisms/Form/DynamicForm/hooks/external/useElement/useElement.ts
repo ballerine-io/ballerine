@@ -1,3 +1,4 @@
+import { AnyObject } from '@/common';
 import { useRuleEngine } from '@/components/organisms/Form/hooks/useRuleEngine';
 import { TDeepthLevelStack } from '@/components/organisms/Form/Validator';
 import { useMemo } from 'react';
@@ -11,9 +12,13 @@ import { useClearValueOnUnmount } from './hooks/useClearValueOnUnmount';
 export const useElement = <TElements extends string, TParams>(
   element: IFormElement<TElements, TParams>,
   stack?: TDeepthLevelStack,
+  elementState?: AnyObject,
 ) => {
   const { values, metadata } = useDynamicForm();
-  const valuesAndMetadata = useMemo(() => ({ ...values, ...metadata }), [values, metadata]);
+  const valuesAndMetadata = useMemo(
+    () => ({ ...values, ...metadata, $this: elementState }),
+    [values, metadata, elementState],
+  );
   const hiddenRulesResult = useRuleEngine(valuesAndMetadata, {
     rules: useRules(element.hidden, stack),
     runOnInitialize: true,
@@ -21,7 +26,9 @@ export const useElement = <TElements extends string, TParams>(
   });
 
   const isHidden = useMemo(() => {
-    if (!hiddenRulesResult.length) return false;
+    if (!hiddenRulesResult.length) {
+      return false;
+    }
 
     return hiddenRulesResult.some(result => result.result === true);
   }, [hiddenRulesResult]);

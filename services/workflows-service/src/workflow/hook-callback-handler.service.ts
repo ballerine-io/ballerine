@@ -358,7 +358,7 @@ export class HookCallbackHandlerService {
     // @ts-expect-error - we don't validate `context` is an object
     context.documents = [
       // @ts-expect-error - we don't validate `context` is an object
-      ...context.documents,
+      ...(context.documents?.filter(document => document.type !== 'identification_document') ?? []),
       ...persistedDocuments,
     ];
 

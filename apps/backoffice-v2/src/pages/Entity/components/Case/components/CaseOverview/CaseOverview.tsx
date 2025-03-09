@@ -1,12 +1,14 @@
+import { RiskIndicatorsSummary } from '@ballerine/ui';
+import { useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
-import { useCallback } from 'react';
 import { CaseTabs, TabToLabel } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 import { camelCase } from 'string-ts';
+
+import { DocumentTracker } from '@/common/components/molecules/DocumentTracker/DocumentTracker';
 import { OverallRiskLevel } from '@/common/components/molecules/OverallRiskLevel/OverallRiskLevel';
 import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
-import { RiskIndicatorsSummary } from '@ballerine/ui';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
 import { CaseVideoGuide } from '@/common/components/molecules/CaseVideoGuide/CaseVideoGuide';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
@@ -71,6 +73,9 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
         />
       )}
       <ProcessTracker workflow={workflow} plugins={plugins} processes={processes} />
+      {workflow?.workflowDefinition?.config?.isDocumentTrackerEnabled && (
+        <DocumentTracker workflowId={workflow?.id} />
+      )}
       {isDemoOnly && (
         <CaseVideoGuide
           title="Onboarding Introduction"

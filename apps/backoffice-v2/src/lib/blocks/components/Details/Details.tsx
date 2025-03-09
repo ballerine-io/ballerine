@@ -16,6 +16,7 @@ export const Details: FunctionComponent<ExtractCellProps<'details'>> = ({
   onSubmit,
   isSaveDisabled,
   props,
+  isDocumentsV2,
 }) => {
   if (!value.data?.length) {
     return null;
@@ -44,6 +45,7 @@ export const Details: FunctionComponent<ExtractCellProps<'details'>> = ({
         isSaveDisabled={isSaveDisabled}
         contextUpdateMethod={contextUpdateMethod}
         onSubmit={onSubmit}
+        isDocumentsV2={isDocumentsV2}
       />
       {!hideSeparator && <Separator className={`my-2`} />}
     </div>

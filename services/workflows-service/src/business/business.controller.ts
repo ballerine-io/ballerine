@@ -40,7 +40,6 @@ export class BusinessControllerExternal {
         countryOfIncorporation: 'US',
         address: 'addess',
         industry: 'telecom',
-        documents: 's',
         projectId: currentProjectId,
       },
       select: {

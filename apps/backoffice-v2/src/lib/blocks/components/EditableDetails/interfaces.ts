@@ -29,4 +29,5 @@ export interface IEditableDetails {
   isSaveDisabled?: boolean;
   contextUpdateMethod?: 'base' | 'director';
   onSubmit?: (document: AnyObject) => void;
+  isDocumentsV2: boolean;
 }

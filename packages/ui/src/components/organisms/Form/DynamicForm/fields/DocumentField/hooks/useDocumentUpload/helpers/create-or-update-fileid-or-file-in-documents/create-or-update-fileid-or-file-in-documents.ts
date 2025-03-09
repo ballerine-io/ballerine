@@ -28,7 +28,7 @@ export const createOrUpdateFileIdOrFileInDocuments = (
     return documents;
   } else {
     const existingDocumentIndex = documents.findIndex(document => document.id === template?.id);
-    documents[existingDocumentIndex] = structuredClone(template);
+    documents[existingDocumentIndex] = { ...documents[existingDocumentIndex], ...template };
     const pathToFileId = composePathToFileId(existingDocumentIndex, pageProperty, pageIndex);
 
     set(documents, pathToFileId, fileIdOrFile);

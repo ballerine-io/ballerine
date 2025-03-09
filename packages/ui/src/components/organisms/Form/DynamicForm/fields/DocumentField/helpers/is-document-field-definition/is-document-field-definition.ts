@@ -1,8 +1,8 @@
 import { IDocumentFieldParams } from '../../..';
-import { IFormElement, TBaseFields } from '../../../../types';
+import { IFormElement } from '../../../../types';
 
 export const isDocumentFieldDefinition = (
   element: IFormElement<any, any>,
-): element is IFormElement<TBaseFields, IDocumentFieldParams> => {
+): element is IFormElement<'documentfield', IDocumentFieldParams> => {
   return element.element === 'documentfield';
 };

@@ -5,7 +5,7 @@ import * as common from '@nestjs/common';
 import { HttpStatus, NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { ApiOkResponse, ApiResponse } from '@nestjs/swagger';
-import type { WorkflowRuntimeData } from '@prisma/client';
+import type { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { putPluginsExampleResponse } from '@/workflow/workflow-controller-examples';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
@@ -539,19 +539,21 @@ export class WorkflowControllerExternal {
           currentProjectId: workflowRuntime.projectId,
         });
 
-        await this.workflowService.event(
-          {
-            id: params.id,
-            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
-            payload: {
-              newContext: context,
-              arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
+        if (params.event !== BUILT_IN_EVENT.NO_OP) {
+          await this.workflowService.event(
+            {
+              id: params.id,
+              name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+              payload: {
+                newContext: context,
+                arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
+              },
             },
-          },
-          [workflowRuntime.projectId],
-          workflowRuntime.projectId,
-          transaction,
-        );
+            [workflowRuntime.projectId],
+            workflowRuntime.projectId,
+            transaction,
+          );
+        }
 
         await this.workflowService.event(
           {

@@ -20,9 +20,18 @@ export const TaskRunner = ({ children }: ITaskRunnerProps) => {
     setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
   }, []);
 
+  const getTaskById = useCallback(
+    (id: string) => {
+      return tasks.find(task => task.id === id);
+    },
+    [tasks],
+  );
+
   const runTasks = useCallback(
     async <TContext extends AnyObject>(context: TContext) => {
-      if (isRunning) return context;
+      if (isRunning) {
+        return context;
+      }
 
       setIsRunning(true);
 
@@ -31,6 +40,8 @@ export const TaskRunner = ({ children }: ITaskRunnerProps) => {
       await tasksCompose(context);
 
       setIsRunning(false);
+
+      setTasks([]);
 
       return context;
     },
@@ -44,8 +55,9 @@ export const TaskRunner = ({ children }: ITaskRunnerProps) => {
       addTask,
       removeTask,
       runTasks,
+      getTaskById,
     }),
-    [tasks, isRunning, addTask, removeTask, runTasks],
+    [tasks, isRunning, addTask, removeTask, runTasks, getTaskById],
   );
 
   return (

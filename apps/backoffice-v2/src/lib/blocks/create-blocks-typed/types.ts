@@ -142,6 +142,7 @@ export type TDetailsCell = {
     };
   };
   onSubmit?: (document: AnyObject) => void;
+  isDocumentsV2: boolean;
 };
 
 export type TNestedDetailsCell = {

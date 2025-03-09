@@ -43,7 +43,7 @@ describe('FieldPriorityReason', () => {
     const priorityReason = screen.getByTestId('test-field-id-priority-reason');
     expect(priorityReason).toBeInTheDocument();
     expect(priorityReason).toHaveTextContent('This is a priority field');
-    expect(priorityReason).toHaveClass('text-amber-400');
+    expect(priorityReason).toHaveClass('text-warning');
   });
 
   it('should not render when priorityField is null', () => {

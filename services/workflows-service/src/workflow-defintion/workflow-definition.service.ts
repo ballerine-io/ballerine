@@ -265,4 +265,11 @@ export class WorkflowDefinitionService {
       workflowOverrides,
     );
   }
+
+  async getByWorkflowRuntimeDataId(workflowRuntimeDataId: string, projectIds: TProjectIds) {
+    return await this.workflowDefinitionRepository.findByWorkflowRuntimeDataId(
+      workflowRuntimeDataId,
+      projectIds,
+    );
+  }
 }

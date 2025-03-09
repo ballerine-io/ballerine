@@ -88,7 +88,8 @@ export const CollectionFlowV1 = withSessionProtected(() => {
   );
   const isRevision = useMemo(
     () =>
-      getCollectionFlowState(collectionFlowData)?.status === CollectionFlowStatusesEnum.revision,
+      getCollectionFlowState(collectionFlowData?.context || {})?.status ===
+      CollectionFlowStatusesEnum.revision,
     [collectionFlowData],
   );
 

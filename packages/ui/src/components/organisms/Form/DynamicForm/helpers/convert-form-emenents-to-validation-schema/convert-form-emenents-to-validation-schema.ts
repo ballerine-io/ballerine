@@ -1,5 +1,11 @@
-import { IValidationSchema } from '../../../Validator';
+import { AnyObject } from '@/common';
+import { IValidationSchema, TDeepthLevelStack } from '../../../Validator';
+import { contextBuilders } from '../../context-builders';
 import { IFormElement } from '../../types';
+
+export interface IContextBuildersMap {
+  [key: string]: (context: AnyObject, metadata: AnyObject, stack: TDeepthLevelStack) => AnyObject;
+}
 
 export const convertFormElementsToValidationSchema = (
   elements: Array<IFormElement<any>>,
@@ -16,6 +22,10 @@ export const convertFormElementsToValidationSchema = (
       const schemaElement = {
         id: element.id,
         valueDestination: element.valueDestination,
+        metadata: {
+          element,
+        } as AnyObject,
+        getThisContext: contextBuilders[element.element],
       } as IValidationSchema;
 
       if (element.validate) {

@@ -45,6 +45,7 @@ export class CollectionFlowNoUserController {
       workflow.context,
       params.language,
       [tokenScope.projectId],
+      tokenScope,
       workflow.uiDefinitionId ? { where: { id: workflow.uiDefinitionId } } : {},
     );
   }

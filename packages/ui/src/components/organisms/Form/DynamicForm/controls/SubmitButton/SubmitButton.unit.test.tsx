@@ -74,6 +74,7 @@ describe('SubmitButton', () => {
       addTask: vi.fn(),
       removeTask: vi.fn(),
       runTasks: vi.fn(),
+      getTaskById: vi.fn(),
     } as ITaskRunnerContext);
     vi.mocked(useValidator).mockReturnValue({
       isValid: true,
@@ -144,6 +145,7 @@ describe('SubmitButton', () => {
       addTask: vi.fn(),
       removeTask: vi.fn(),
       runTasks: mockRunTasks,
+      getTaskById: vi.fn(),
     });
     vi.mocked(useValidator).mockReturnValue({
       isValid: true,
@@ -183,6 +185,7 @@ describe('SubmitButton', () => {
       addTask: vi.fn(),
       removeTask: vi.fn(),
       runTasks: mockRunTasks,
+      getTaskById: vi.fn(),
     });
     vi.mocked(useValidator).mockReturnValue({
       isValid: false,
@@ -239,6 +242,7 @@ describe('SubmitButton', () => {
       addTask: vi.fn(),
       removeTask: vi.fn(),
       runTasks: mockRunTasks,
+      getTaskById: vi.fn(),
     });
     vi.mocked(useValidator).mockReturnValue({
       isValid: true,
