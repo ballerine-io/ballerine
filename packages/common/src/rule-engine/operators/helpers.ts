@@ -78,7 +78,7 @@ export abstract class BaseOperator<
     return { value, comparisonValue: evaluatedComparisonValue };
   }
 
-  execute(
+  async execute(
     dataValue: TDataValue,
     conditionValue: TConditionValue,
     options?: {
@@ -86,14 +86,14 @@ export abstract class BaseOperator<
       threshold?: number;
     },
   ) {
-    this.validate({ dataValue, conditionValue });
+    await this.validate({ dataValue, conditionValue });
 
-    return this.evaluate(dataValue, conditionValue, options);
+    return await this.evaluate(dataValue, conditionValue, options);
   }
 
-  validate(args: { dataValue: unknown; conditionValue: unknown }) {
+  async validate(args: { dataValue: unknown; conditionValue: unknown }) {
     if (this.conditionValueSchema) {
-      this.validateSchema(
+      await this.validateSchema(
         this.conditionValueSchema,
         args.conditionValue,
         `Invalid condition value`,
@@ -101,11 +101,11 @@ export abstract class BaseOperator<
     }
 
     if (this.dataValueSchema) {
-      this.validateSchema(this.dataValueSchema, args.dataValue, `Invalid data value`);
+      await this.validateSchema(this.dataValueSchema, args.dataValue, `Invalid data value`);
     }
   }
 
-  validateSchema(schema: ZodSchema<any>, value: unknown, message: string) {
+  async validateSchema(schema: ZodSchema<any>, value: unknown, message: string) {
     const result = schema.safeParse(value);
 
     if (!result.success) {
@@ -251,10 +251,10 @@ class GreaterThanOrEqual extends BaseOperator {
     this.greaterThan = new GreaterThan();
   }
 
-  evaluate = (dataValue: Primitive, conditionValue: Primitive) => {
+  evaluate = async (dataValue: Primitive, conditionValue: Primitive) => {
     return (
-      this.equals.execute(dataValue, conditionValue) ||
-      this.greaterThan.execute(dataValue, conditionValue)
+      (await this.equals.execute(dataValue, conditionValue)) ||
+      (await this.greaterThan.execute(dataValue, conditionValue))
     );
   };
 }
@@ -274,10 +274,10 @@ class LessThanOrEqual extends BaseOperator {
     this.lessThan = new LessThan();
   }
 
-  evaluate = (dataValue: Primitive, conditionValue: Primitive) => {
+  evaluate = async (dataValue: Primitive, conditionValue: Primitive) => {
     return (
-      this.equals.execute(dataValue, conditionValue) ||
-      this.lessThan.execute(dataValue, conditionValue)
+      (await this.equals.execute(dataValue, conditionValue)) ||
+      (await this.lessThan.execute(dataValue, conditionValue))
     );
   };
 }
@@ -296,10 +296,10 @@ class Between extends BaseOperator<Primitive, BetweenParams> {
     this.lte = new LessThanOrEqual();
   }
 
-  evaluate = (dataValue: Primitive, conditionValue: BetweenParams) => {
+  evaluate = async (dataValue: Primitive, conditionValue: BetweenParams) => {
     return (
-      this.gte.execute(dataValue, conditionValue.min) &&
-      this.lte.execute(dataValue, conditionValue.max)
+      (await this.gte.execute(dataValue, conditionValue.min)) &&
+      (await this.lte.execute(dataValue, conditionValue.max))
     );
   };
 }
@@ -389,7 +389,7 @@ class AmlCheck extends BaseOperator<any, AmlCheckParams> {
     return hits.map(hit => get(hit, rule.key)).filter(Boolean);
   }
 
-  evaluate = (dataValue: any, conditionValue: AmlCheckParams) => {
+  evaluate = async (dataValue: any, conditionValue: AmlCheckParams) => {
     const amlOperator = OperationHelpers[conditionValue.operator];
 
     const evaluateOperatorCheck = (data: any) => {
