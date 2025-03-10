@@ -13,11 +13,11 @@ import {
 } from '@ballerine/common';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 
-export const validateRule = (
+export const validateRule = async (
   rule: Rule,
   data: any,
   options: { unifiedApiClient: UnifiedApiClient },
-): RuleResult => {
+): Promise<RuleResult> => {
   const result = RuleSchema.safeParse(rule);
 
   if (!result.success) {
@@ -46,11 +46,10 @@ export const validateRule = (
       : undefined;
 
   try {
-    const result = operator.execute(value, comparisonValue, {
+    const result = await operator.execute(value, comparisonValue, {
       unifiedApiClient: options.unifiedApiClient,
-      threshold: ruleThresholdValue,
+      threshold: ruleThresholdValue ?? 0,
     });
-    console.log('rule', rule, 'result', result);
 
     return { status: result ? 'PASSED' : 'FAILED', error: undefined };
   } catch (error) {
@@ -66,59 +65,66 @@ export const runRuleSet = (
   ruleSet: RuleSet,
   data: any,
   options: { unifiedApiClient: UnifiedApiClient },
-): RuleResultSet => {
-  return ruleSet.rules.map(rule => {
-    if ('rules' in rule) {
-      // RuleSet
-      const nestedResults = runRuleSet(rule, data, {
-        unifiedApiClient: options.unifiedApiClient,
-      });
+): Promise<RuleResultSet> => {
+  return Promise.all(
+    ruleSet.rules.map(async rule => {
+      if ('rules' in rule) {
+        // RuleSet
+        const nestedResults = await runRuleSet(rule, data, {
+          unifiedApiClient: options.unifiedApiClient,
+        });
 
-      const passed =
-        rule.operator === OPERATOR.AND
-          ? nestedResults.every(r => r.status === 'PASSED')
-          : nestedResults.some(r => r.status === 'PASSED');
+        const passed =
+          rule.operator === OPERATOR.AND
+            ? nestedResults.every(r => r.status === 'PASSED')
+            : nestedResults.some(r => r.status === 'PASSED');
 
-      const status = passed ? 'PASSED' : 'SKIPPED';
+        const status = passed ? 'PASSED' : 'SKIPPED';
 
-      return {
-        status,
-        rule,
-      };
-    } else {
-      // Rule
-      try {
         return {
-          ...validateRule(rule, data, { unifiedApiClient: options.unifiedApiClient }),
+          status,
           rule,
         };
-      } catch (error) {
-        // TODO: Would we want to throw when error instanceof OperationNotFoundError?
-        if (error instanceof Error) {
+      } else {
+        // Rule
+        try {
           return {
-            status: 'FAILED',
-            message: error.message,
-            error,
+            ...(await validateRule(rule, data, { unifiedApiClient: options.unifiedApiClient })),
             rule,
           };
-        } else {
-          throw error;
+        } catch (error) {
+          // TODO: Would we want to throw when error instanceof OperationNotFoundError?
+          if (error instanceof Error) {
+            return {
+              status: 'FAILED',
+              message: error.message,
+              error,
+              rule,
+            };
+          } else {
+            throw error;
+          }
         }
       }
-    }
-  });
+    }),
+  );
 };
 
-export const RuleEngine = (ruleSets: RuleSet, helpers?: typeof OperationHelpers) => {
+export const createRuleEngine = (
+  ruleSets: RuleSet,
+  options?: {
+    helpers?: typeof OperationHelpers;
+    unifiedApiClient?: UnifiedApiClient;
+  },
+) => {
   // TODO: inject helpers
-  const allHelpers = { ...(helpers || {}), ...OperationHelpers };
-  const unifiedApiClient = new UnifiedApiClient();
+  const allHelpers = { ...(options?.helpers || {}), ...OperationHelpers };
 
-  const run = (data: object) => {
-    return runRuleSet(ruleSets, data, { unifiedApiClient });
+  const unifiedApiClient = options?.unifiedApiClient || new UnifiedApiClient();
+
+  const run = async (data: object): Promise<RuleResultSet> => {
+    return await runRuleSet(ruleSets, data, { unifiedApiClient });
   };
 
-  return {
-    run,
-  };
+  return { run };
 };

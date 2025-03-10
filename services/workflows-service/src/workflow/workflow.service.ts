@@ -2052,23 +2052,25 @@ export class WorkflowService {
         ) => {
           const rules = await this.riskRuleService.findAll(ruleStoreServiceOptions);
 
-          return rules.map(rule => {
-            try {
-              return {
-                result: this.ruleEngineService.run(rule.ruleSet, context),
-                ...rule,
-              } as const;
-            } catch (ex) {
-              return {
-                ...rule,
-                result: {
-                  status: 'FAILED',
-                  message: isErrorWithMessage(ex) ? ex.message : undefined,
-                  error: ex,
-                },
-              } as const;
-            }
-          });
+          return Promise.all(
+            rules.map(async rule => {
+              try {
+                return {
+                  result: await this.ruleEngineService.run(rule.ruleSet, context),
+                  ...rule,
+                } as const;
+              } catch (ex) {
+                return {
+                  ...rule,
+                  result: {
+                    status: 'FAILED',
+                    message: isErrorWithMessage(ex) ? ex.message : undefined,
+                    error: ex,
+                  },
+                } as const;
+              }
+            }),
+          );
         },
         invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
           const runnableChildWorkflow = await this.persistChildEvent(
