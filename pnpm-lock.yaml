@@ -3126,7 +3126,7 @@ importers:
         version: 0.28.0(eslint@8.57.1)
       eslint-plugin-unused-imports:
         specifier: ^3.0.0
-        version: 3.2.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.8.2))(eslint@8.57.1)(typescript@5.8.2))(eslint@8.57.1)
+        version: 3.2.0(eslint@8.57.1)
       prettier:
         specifier: ^3.0.1
         version: 3.5.2
@@ -32888,6 +32888,11 @@ snapshots:
       eslint-rule-composer: 0.3.0
     optionalDependencies:
       '@typescript-eslint/eslint-plugin': 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.8.2))(eslint@8.57.1)(typescript@5.8.2)
+
+  eslint-plugin-unused-imports@3.2.0(eslint@8.57.1):
+    dependencies:
+      eslint: 8.57.1
+      eslint-rule-composer: 0.3.0
 
   eslint-rule-composer@0.3.0: {}
 
