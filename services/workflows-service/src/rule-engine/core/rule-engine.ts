@@ -18,10 +18,10 @@ export const validateRule = async (
   data: any,
   options: { unifiedApiClient: UnifiedApiClient },
 ): Promise<RuleResult> => {
-  const result = RuleSchema.safeParse(rule);
+  const validateRuleResult = RuleSchema.safeParse(rule);
 
-  if (!result.success) {
-    throw new ValidationFailedError('rule', 'parsing failed', result.error);
+  if (!validateRuleResult.success) {
+    throw new ValidationFailedError('rule', 'parsing failed', validateRuleResult.error);
   }
 
   const operator = OperationHelpers[rule.operator as keyof typeof OperationHelpers];
@@ -30,25 +30,14 @@ export const validateRule = async (
     throw new OperatorNotFoundError(rule.operator);
   }
 
-  const extractedValue = operator.extractValue(data, rule);
+  const { value, comparisonValue } = extractValuesForComparison(operator, data, rule);
 
-  const isPathComparison =
-    isObject(extractedValue) && 'value' in extractedValue && 'comparisonValue' in extractedValue;
-
-  const { value, comparisonValue } = isPathComparison
-    ? extractedValue
-    : { value: extractedValue, comparisonValue: rule.value };
-
-  const ruleThresholdValue =
-    OPERATORS_WITH_THRESHOLD.includes(rule.operator as (typeof OPERATORS_WITH_THRESHOLD)[number]) &&
-    'threshold' in rule
-      ? rule.threshold
-      : undefined;
+  const thresholdValue = getThresholdIfRequired(rule);
 
   try {
     const result = await operator.execute(value, comparisonValue, {
       unifiedApiClient: options.unifiedApiClient,
-      threshold: ruleThresholdValue ?? 0,
+      threshold: thresholdValue ?? 0,
     });
 
     return { status: result ? 'PASSED' : 'FAILED', error: undefined };
@@ -59,6 +48,23 @@ export const validateRule = async (
 
     throw error;
   }
+};
+
+const extractValuesForComparison = (operator: any, data: any, rule: Rule) => {
+  const extractedValue = operator.extractValue(data, rule);
+
+  const isPathComparison =
+    isObject(extractedValue) && 'value' in extractedValue && 'comparisonValue' in extractedValue;
+
+  return isPathComparison ? extractedValue : { value: extractedValue, comparisonValue: rule.value };
+};
+
+const getThresholdIfRequired = (rule: Rule) => {
+  return OPERATORS_WITH_THRESHOLD.includes(
+    rule.operator as (typeof OPERATORS_WITH_THRESHOLD)[number],
+  ) && 'threshold' in rule
+    ? rule.threshold
+    : undefined;
 };
 
 export const runRuleSet = (
