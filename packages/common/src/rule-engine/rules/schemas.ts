@@ -104,7 +104,7 @@ export const RuleSchema = z.discriminatedUnion('operator', [
     operator: z.literal(OPERATION.FUZZY_MATCH_SCORE_LT),
     value: PrimitiveSchema,
     isPathComparison: z.boolean().default(false),
-    threshold: z.number().min(0).max(100).default(70),
+    threshold: z.number().min(0).max(100).default(80),
   }),
 ]);
 

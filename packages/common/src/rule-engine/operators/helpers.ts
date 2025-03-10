@@ -88,7 +88,9 @@ export abstract class BaseOperator<
   ) {
     await this.validate({ dataValue, conditionValue });
 
-    return await this.evaluate(dataValue, conditionValue, options);
+    const result = await this.evaluate(dataValue, conditionValue, options);
+
+    return result instanceof Promise ? await result : result;
   }
 
   async validate(args: { dataValue: unknown; conditionValue: unknown }) {
@@ -433,12 +435,10 @@ class FuzzyMatchScoreLt extends BaseOperator<Primitive, Primitive, Promise<boole
       threshold: number;
     },
   ) => {
-    if (!options?.unifiedApiClient) {
-      throw new Error('Unified API client is required');
-    }
+    const threshold = options.threshold ?? 0;
 
-    if (!options.threshold) {
-      throw new Error('Threshold is required');
+    if (typeof threshold !== 'number' || threshold < 0 || threshold > 100) {
+      throw new Error(`${this.operator}: Threshold must be a number between 0 and 100`);
     }
 
     const response = await options.unifiedApiClient.runEntityMatchingAi({
@@ -447,7 +447,11 @@ class FuzzyMatchScoreLt extends BaseOperator<Primitive, Primitive, Promise<boole
       includeAnalysis: false,
     });
 
-    return response.data.similarityScore < options.threshold;
+    if (!response?.data?.similarityScore && response?.data?.similarityScore !== 0) {
+      throw new Error(`${this.operator}: Missing similarity score in response`);
+    }
+
+    return response.data.similarityScore < threshold;
   };
 }
 

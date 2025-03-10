@@ -24,15 +24,17 @@ export const validateRule = async (
     throw new ValidationFailedError('rule', 'parsing failed', validateRuleResult.error);
   }
 
-  const operator = OperationHelpers[rule.operator as keyof typeof OperationHelpers];
+  const validRule = validateRuleResult.data;
+
+  const operator = OperationHelpers[validRule.operator as keyof typeof OperationHelpers];
 
   if (!operator) {
     throw new OperatorNotFoundError(rule.operator);
   }
 
-  const { value, comparisonValue } = extractValuesForComparison(operator, data, rule);
+  const { value, comparisonValue } = extractValuesForComparison(operator, data, validRule);
 
-  const thresholdValue = getThresholdIfRequired(rule);
+  const thresholdValue = getThresholdIfRequired(validRule);
 
   try {
     const result = await operator.execute(value, comparisonValue, {
