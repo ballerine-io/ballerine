@@ -64,6 +64,7 @@ export const ConfigSchema = z
     hasUboOngoingMonitoring: z.boolean().optional(),
     maxBusinessReports: z.number().nonnegative().optional(),
     isMerchantMonitoringEnabled: z.boolean().optional(),
+    isOngoingMonitoringEnabled: z.boolean().optional(),
     isDemoAccount: z.boolean().optional(),
     withQualityControl: z.boolean().optional(),
     disableBusinessSyncToUnifiedApi: z.boolean().optional(),
@@ -106,6 +107,8 @@ export const CustomerConfigSchema = z.object({
   hideCreateMerchantMonitoringButton: z.boolean().optional(),
   isExample: z.boolean().optional(),
   isMerchantMonitoringEnabled: z.boolean().optional(),
+  isOngoingMonitoringEnabled: z.boolean().optional(),
+  isDemo: z.boolean().optional(),
   maxBusinessReports: z.number().optional(),
 });
 

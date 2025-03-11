@@ -1,34 +1,10 @@
 # @ballerine/common
 
-## 0.9.84
-
-### Patch Changes
-
-- bump
-
-## 0.9.83
-
-### Patch Changes
-
-- version bump
-
-## 0.9.82
-
-### Patch Changes
-
-- version bump
-
-## 0.9.81
-
-### Patch Changes
-
-- bump
-
 ## 0.9.80
 
 ### Patch Changes
 
-- version bump
+- workflow config
 
 ## 0.9.79
 
