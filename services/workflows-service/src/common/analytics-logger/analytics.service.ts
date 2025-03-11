@@ -15,7 +15,7 @@ type AnalyticsEvents = {
   [EventNamesMap.USER_SIGNUP]: { username: string; email: string };
   [EventNamesMap.USER_LOGIN]: { email: string; customerId: string };
   [EventNamesMap.USER_MAGIC_LINK_LOGIN]: { email: string; customerId: string };
-  [EventNamesMap.CUSTOMER_CREATED]: undefined;
+  [EventNamesMap.CUSTOMER_CREATED]: { isDemoAccount: boolean };
   [EventNamesMap.USER_CREATED]: { email: string; fullName: string };
 };
 

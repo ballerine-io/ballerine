@@ -75,6 +75,9 @@ export class CustomerService {
       this.analyticsService.track({
         event: EventNamesMap.CUSTOMER_CREATED,
         distinctId: customer.id,
+        properties: {
+          isDemoAccount: customer.config?.isDemo || customer.config?.isDemoAccount,
+        },
       });
 
       return customer;
