@@ -97,6 +97,8 @@ export const serverEnvSchema = {
   DEFAULT_DEMO_DURATION_DAYS: z.number().optional().default(14),
   MAGIC_LINK_AUTH_JWT_SECRET: z.string(),
   MAGIC_LINK_AUTH_JWT_ALGORITHMS: z.string().default('HS256'),
+  POSTHOG_HOST: z.string().optional(),
+  POSTHOG_KEY: z.string().optional(),
 };
 
 if (!process.env['ENVIRONMENT_NAME'] || process.env['ENVIRONMENT_NAME'] === 'local') {

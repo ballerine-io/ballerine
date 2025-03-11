@@ -1,5 +1,6 @@
 import { FunctionComponent, lazy, useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import { PostHogPageView } from './components/PostHogRootEvents';
 
 import { BallerineLogo } from '@/common/components/atoms/icons';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
@@ -59,6 +60,7 @@ export const Root: FunctionComponent = () => {
   return (
     <Providers>
       <Outlet />
+      <PostHogPageView />
       <ChatbotLayout />
       <WelcomeModal />
     </Providers>

@@ -38,10 +38,15 @@ import { noop } from 'lodash';
 import { CollectionFlowService } from './collection-flow.service';
 import { env } from '@/env';
 import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
+import { AnalyticsService } from '@/common/analytics-logger/analytics.service';
 
 const deps: Provider[] = [
   {
     provide: AppLoggerService,
+    useValue: noop,
+  },
+  {
+    provide: AnalyticsService,
     useValue: noop,
   },
   {

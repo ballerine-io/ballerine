@@ -16,6 +16,7 @@ import { ClsService } from 'nestjs-cls';
 import { ApiKeyService } from '@/customer/api-key/api-key.service';
 import { ApiKeyRepository } from '@/customer/api-key/api-key.repository';
 import { MerchantMonitoringModule } from '@/merchant-monitoring/merchant-monitoring.module';
+import { AnalyticsService } from '@/common/analytics-logger/analytics.service';
 
 const buildWorkflowDefinition = (sequenceNum: number, projectId?: string, isPublic = false) => {
   return {
@@ -49,7 +50,6 @@ const buildWorkflowDefinition = (sequenceNum: number, projectId?: string, isPubl
 
 describe('WorkflowDefinitionService', () => {
   let workflowDefinitionService: WorkflowDefinitionService;
-  let workflowDefinitionRepository: WorkflowDefinitionRepository;
   let filterService: FilterService;
   let prismaService: PrismaService;
   let project: Project;
@@ -68,6 +68,7 @@ describe('WorkflowDefinitionService', () => {
         { useClass: WinstonLogger, provide: 'LOGGER' },
         ClsService,
         AppLoggerService,
+        AnalyticsService,
         FilterService,
         ProjectScopeService,
         CustomerService,
@@ -76,9 +77,6 @@ describe('WorkflowDefinitionService', () => {
     }).compile();
 
     workflowDefinitionService = module.get<WorkflowDefinitionService>(WorkflowDefinitionService);
-    workflowDefinitionRepository = module.get<WorkflowDefinitionRepository>(
-      WorkflowDefinitionRepository,
-    );
     filterService = module.get<FilterService>(FilterService);
     prismaService = module.get<PrismaService>(PrismaService);
   });
