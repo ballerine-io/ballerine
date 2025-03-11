@@ -131,4 +131,15 @@ describe('minimumAgeValueValidator', () => {
       '18',
     );
   });
+
+  it('should return true if age is valid', () => {
+    // Arrange
+    const params = {
+      type: 'minimumAge' as any,
+      value: { minimumAge: 18 },
+    } as ICommonValidator<IMinimumAgeValidatorParams>;
+
+    // Act & Assert
+    expect(minimumAgeValueValidator('2000-01-01', params)).toBe(true);
+  });
 });

@@ -8,13 +8,11 @@ export const minimumAgeValueValidator: TValidator<string, IMinimumAgeValidatorPa
   params,
 ) => {
   const { message = 'Minimum age is {minimumAge}.' } = params;
-  const isValid = dayjs(value).isValid();
 
-  if (!isValid) {
+  if (!dayjs(value).isValid()) {
     throw new Error('Invalid date.');
   }
 
-  // Default to 18 if not specified
   const requiredAge = params?.value?.minimumAge;
 
   if (!requiredAge) {
@@ -24,9 +22,11 @@ export const minimumAgeValueValidator: TValidator<string, IMinimumAgeValidatorPa
   const today = dayjs();
   const birthDate = dayjs(value);
 
+  // Calculate age considering month and day
   let age = today.year() - birthDate.year();
   const monthDiff = today.month() - birthDate.month();
 
+  // Adjust age if birthday hasn't occurred yet this year
   if (monthDiff < 0 || (monthDiff === 0 && today.date() < birthDate.date())) {
     age--;
   }
@@ -34,4 +34,6 @@ export const minimumAgeValueValidator: TValidator<string, IMinimumAgeValidatorPa
   if (age < requiredAge) {
     throw new Error(formatErrorMessage(message, 'minimumAge', requiredAge.toString()));
   }
+
+  return true;
 };
