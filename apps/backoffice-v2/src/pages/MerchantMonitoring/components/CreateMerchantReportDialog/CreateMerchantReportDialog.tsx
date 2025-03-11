@@ -32,7 +32,7 @@ export const CreateMerchantReportDialog = ({
   const { form, showSuccess, isSubmitting, onSubmit, reportsLeft, demoDaysLeft, toggleOpen } =
     useCreateMerchantReportDialogLogic({ toggleOpen: toggleOpenProps });
   const { data: customer } = useCustomerQuery();
-  const isDemoAccount = customer?.config?.isDemoAccount || customer?.config?.isDemo;
+  const isDemoAccount = customer?.config?.isDemoAccount;
 
   return (
     <Dialog open={open} onOpenChange={toggleOpen}>
@@ -63,7 +63,7 @@ export const CreateMerchantReportDialog = ({
 
 const CreateMerchantReportDialogSuccessContent = () => {
   const { data: customer } = useCustomerQuery();
-  const isDemoAccount = customer?.config?.isDemoAccount || customer?.config?.isDemo;
+  const isDemoAccount = customer?.config?.isDemoAccount;
 
   return (
     <div className="mx-6 text-center">
@@ -97,7 +97,7 @@ const CreateMerchantReportDialogFormContent = ({
   const shouldDisableForm =
     (reportsLeft && reportsLeft <= 0) || (demoDaysLeft && demoDaysLeft <= 0);
   const { data: customer } = useCustomerQuery();
-  const isDemoAccount = customer?.config?.isDemoAccount || customer?.config?.isDemo;
+  const isDemoAccount = customer?.config?.isDemoAccount;
 
   return (
     <div>

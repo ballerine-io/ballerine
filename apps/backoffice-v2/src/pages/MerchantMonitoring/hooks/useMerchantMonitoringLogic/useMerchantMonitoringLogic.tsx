@@ -27,10 +27,12 @@ export const useMerchantMonitoringLogic = () => {
   const locale = useLocale();
   const { data: customer } = useCustomerQuery();
 
-  const demoError = getDemoStateErrorText({
-    reportsLeft: customer?.config?.demoAccessDetails?.reportsLeft,
-    demoDaysLeft: customer?.config?.demoAccessDetails?.demoDaysLeft,
-  });
+  const demoError = customer?.config?.demoAccessDetails
+    ? getDemoStateErrorText({
+        reportsLeft: customer.config.demoAccessDetails.reportsLeft,
+        demoDaysLeft: customer.config.demoAccessDetails.demoDaysLeft,
+      })
+    : null;
   const createBusinessReport = {
     ...customer?.features?.createBusinessReport,
     enabled: customer?.features?.createBusinessReport?.enabled && !demoError,
