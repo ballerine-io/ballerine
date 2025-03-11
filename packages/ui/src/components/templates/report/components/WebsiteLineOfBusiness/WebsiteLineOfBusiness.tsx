@@ -78,7 +78,7 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
                 },
               }}
             >
-              <CardHeader className={'p-0 pt-6 pb-4 pl-6 font-bold text-lg'}>
+              <CardHeader className={'p-0 pb-4 pl-6 pt-6 text-lg font-bold'}>
                 Content Violations Summary
               </CardHeader>
             </ContentTooltip>
@@ -93,21 +93,21 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
                 return (
                   <Card key={riskIndicator.name}>
                     <CardContent className={'py-6'}>
-                      <h4 className={'font-semibold text-lg mb-2'}>{riskIndicator.name}</h4>
+                      <h4 className={'mb-2 text-lg font-semibold'}>{riskIndicator.name}</h4>
 
-                      <div className={'flex justify-between items-start gap-8'}>
+                      <div className={'flex items-start justify-between gap-8'}>
                         <div
                           className={ctw(
-                            'w-3/4 flex justify-between gap-8 leading-6',
+                            'flex w-3/4 justify-between gap-8 leading-6',
                             !screenshotUrl && 'w-full',
                           )}
                         >
-                          <div className={'basis-1/2 grow-0'}>
+                          <div className={'grow-0 basis-1/2'}>
                             <p className={'font-medium'}>Description</p>
                             <p>{riskIndicator.explanation}</p>
                           </div>
 
-                          <div className={'basis-1/2 grow-0 space-y-2'}>
+                          <div className={'grow-0 basis-1/2 space-y-2'}>
                             <div>
                               <p className={'font-medium'}>Why Our AI Flagged This?</p>
                               <p>{riskIndicator.reason}</p>
@@ -123,7 +123,7 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
                         </div>
 
                         {screenshotUrl !== null && (
-                          <div className={'w-1/4 flex flex-col gap-y-2'}>
+                          <div className={'flex w-1/4 flex-col gap-y-2'}>
                             <a
                               href={screenshotUrl}
                               target={'_blank'}
@@ -143,7 +143,7 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
                                 href={riskIndicator.sourceUrl}
                                 target={'_blank'}
                                 rel={'noreferrer'}
-                                className={'mt-2 truncate max-w-[20rem] block'}
+                                className={'mt-2 block max-w-[20rem] truncate'}
                               >
                                 {riskIndicator.sourceUrl}
                               </a>

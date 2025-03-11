@@ -1,0 +1,25 @@
+import { forwardRef, Module } from '@nestjs/common';
+import { DocumentService } from './document.service';
+import { DocumentRepository } from './document.repository';
+import { DocumentControllerExternal } from './document.controller.external';
+import { PrismaModule } from '@/prisma/prisma.module';
+import { DocumentFileModule } from '@/document-file/document-file.module';
+import { FileModule } from '@/providers/file/file.module';
+import { WorkflowModule } from '@/workflow/workflow.module';
+import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
+import { WorkflowDefinitionModule } from '@/workflow-defintion/workflow-definition.module';
+
+@Module({
+  imports: [
+    PrismaModule,
+    DocumentFileModule,
+    FileModule,
+    WorkflowModule,
+    UiDefinitionModule,
+    WorkflowDefinitionModule,
+  ],
+  controllers: [DocumentControllerExternal],
+  providers: [DocumentService, DocumentRepository],
+  exports: [DocumentService],
+})
+export class DocumentModule {}
