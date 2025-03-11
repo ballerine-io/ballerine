@@ -8,7 +8,8 @@ import {
 } from '@ballerine/common';
 import z from 'zod';
 import { amlContext, context } from './data-helper';
-import { RuleEngine, runRuleSet } from '../rule-engine';
+import { createRuleEngine, runRuleSet } from '../rule-engine';
+import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 
 const mockData = {
   country: 'US',
@@ -17,8 +18,10 @@ const mockData = {
   createdAt: new Date().toISOString(),
 };
 
+const unifiedApiClient = new UnifiedApiClient();
+
 describe('Rule Engine', () => {
-  it('should validate a simple rule set', () => {
+  it('should validate a simple rule set', async () => {
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.OR,
       rules: [
@@ -59,7 +62,7 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = runRuleSet(ruleSetExample, mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSetExample).run(mockData);
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(2);
@@ -69,7 +72,7 @@ describe('Rule Engine', () => {
     expect(validationResults[1]!.status).toBe('PASSED');
   });
 
-  it('should handle missing key in rule', () => {
+  it('should handle missing key in rule', async () => {
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.OR,
       rules: [
@@ -82,7 +85,7 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = runRuleSet(ruleSetExample, mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSetExample).run(mockData);
     expect(validationResults[0]!.status).toBe('FAILED');
     expect((validationResults[0] as RuleResult).message).toBe(
       'Field nonexistent is missing or null',
@@ -90,7 +93,7 @@ describe('Rule Engine', () => {
     expect((validationResults[0] as RuleResult).error).toBeInstanceOf(DataValueNotFoundError);
   });
 
-  it('should throw an error for unknown operator', () => {
+  it('should throw an error for unknown operator', async () => {
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.OR,
       rules: [
@@ -105,7 +108,7 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const result = runRuleSet(ruleSetExample, mockData);
+    const result = await createRuleEngine(ruleSetExample).run(mockData);
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
     expect(result[0]?.message).toMatchInlineSnapshot(`
@@ -126,12 +129,13 @@ describe('Rule Engine', () => {
               "EXISTS",
               "IN",
               "IN_CASE_INSENSITIVE",
-              "NOT_IN"
+              "NOT_IN",
+              "FUZZY_MATCH_SCORE_LT"
             ],
             "path": [
               "operator"
             ],
-            "message": "Invalid discriminator value. Expected 'LAST_YEAR' | 'AML_CHECK' | 'EQUALS' | 'NOT_EQUALS' | 'BETWEEN' | 'GT' | 'LT' | 'GTE' | 'LTE' | 'EXISTS' | 'IN' | 'IN_CASE_INSENSITIVE' | 'NOT_IN'"
+            "message": "Invalid discriminator value. Expected 'LAST_YEAR' | 'AML_CHECK' | 'EQUALS' | 'NOT_EQUALS' | 'BETWEEN' | 'GT' | 'LT' | 'GTE' | 'LTE' | 'EXISTS' | 'IN' | 'IN_CASE_INSENSITIVE' | 'NOT_IN' | 'FUZZY_MATCH_SCORE_LT'"
           }
         ],
         "name": "ZodError"
@@ -139,7 +143,7 @@ describe('Rule Engine', () => {
     `);
   });
 
-  it('should fail for incorrect value', () => {
+  it('should fail for incorrect value', async () => {
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.OR,
       rules: [
@@ -152,12 +156,12 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = runRuleSet(ruleSetExample, mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSetExample).run(mockData);
     expect(validationResults[0]!.status).toBe('FAILED');
     expect((validationResults[0] as RuleResult).error).toBe(undefined);
   });
 
-  it('should validate custom operator with additional params', () => {
+  it('should validate custom operator with additional params', async () => {
     // TODO: should spy Date.now() to return a fixed date
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.AND,
@@ -170,7 +174,7 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = runRuleSet(ruleSetExample, mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSetExample).run(mockData);
     expect(validationResults[0]).toMatchInlineSnapshot(`
       {
         "error": undefined,
@@ -186,7 +190,7 @@ describe('Rule Engine', () => {
     `);
   });
 
-  it('should fail custom operator with missing additional params', () => {
+  it('should fail custom operator with missing additional params', async () => {
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.OR,
       rules: [
@@ -199,7 +203,7 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = runRuleSet(ruleSetExample, mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSetExample).run(mockData);
     expect(validationResults[0]?.message).toMatchInlineSnapshot(`
       "Validation failed for 'rule', message: parsing failed, error: {
         "issues": [
@@ -219,7 +223,7 @@ describe('Rule Engine', () => {
     `);
   });
 
-  it('should throw DataValueNotFoundError when rule is missing key field', () => {
+  it('should throw DataValueNotFoundError when rule is missing key field', async () => {
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.OR,
       rules: [
@@ -232,7 +236,7 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const result = runRuleSet(ruleSetExample, mockData);
+    const result = await createRuleEngine(ruleSetExample).run(mockData);
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
     expect(result[0]).toMatchInlineSnapshot(`
@@ -250,7 +254,7 @@ describe('Rule Engine', () => {
     `);
   });
 
-  it('should resolve a nested property from context', () => {
+  it('should resolve a nested property from context', async () => {
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.AND,
       rules: [
@@ -262,7 +266,7 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const engine = RuleEngine(ruleSetExample);
+    const engine = createRuleEngine(ruleSetExample);
     const today = new Date();
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(today.getMonth() - 6);
@@ -273,7 +277,7 @@ describe('Rule Engine', () => {
         .split('T')[0] as string;
     }
 
-    let result = engine.run(context);
+    let result = await engine.run(context);
 
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
@@ -296,7 +300,7 @@ describe('Rule Engine', () => {
     // @ts-ignore
     context2.pluginsOutput.businessInformation.data[0].establishDate = '2020-01-01';
 
-    result = engine.run(context2 as any);
+    result = await engine.run(context2 as any);
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
     expect(result[0]).toMatchInlineSnapshot(`
@@ -314,7 +318,7 @@ describe('Rule Engine', () => {
     `);
   });
 
-  it('should evaluate to true if establishDate is within the last year', () => {
+  it('should evaluate to true if establishDate is within the last year', async () => {
     const ruleSetExample: RuleSet = {
       operator: OPERATOR.AND,
       rules: [
@@ -326,7 +330,7 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const engine = RuleEngine(ruleSetExample);
+    const engine = createRuleEngine(ruleSetExample);
 
     // Test with a date from 6 months ago
     const sixMonthsAgo = new Date();
@@ -340,7 +344,7 @@ describe('Rule Engine', () => {
       },
     };
 
-    let result = engine.run(context1);
+    let result = await engine.run(context1);
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
     expect(result[0]?.status).toBe('PASSED');
@@ -356,7 +360,7 @@ describe('Rule Engine', () => {
       },
     };
 
-    result = engine.run(context2);
+    result = await engine.run(context2);
     expect(result).toHaveLength(1);
     expect(result[0]?.status).toBe('PASSED');
 
@@ -371,7 +375,7 @@ describe('Rule Engine', () => {
       },
     };
 
-    result = engine.run(context3);
+    result = await engine.run(context3);
     expect(result).toHaveLength(1);
     expect(result[0]?.status).toBe('PASSED');
 
@@ -386,13 +390,13 @@ describe('Rule Engine', () => {
       },
     };
 
-    result = engine.run(context4);
+    result = await engine.run(context4);
     expect(result).toHaveLength(1);
     expect(result[0]?.status).toBe('FAILED');
   });
 
   describe('EXISTS operator - not in use', () => {
-    it('should resolve a nested property from context', () => {
+    it('should resolve a nested property from context', async () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
@@ -406,8 +410,8 @@ describe('Rule Engine', () => {
         ],
       };
 
-      const engine = RuleEngine(ruleSetExample);
-      let result = engine.run(context);
+      const engine = createRuleEngine(ruleSetExample);
+      let result = await engine.run(context);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -420,7 +424,7 @@ describe('Rule Engine', () => {
 
       context2.pluginsOutput.businessInformation.data[0].shares = [];
 
-      result = engine.run(context2 as any);
+      result = await engine.run(context2 as any);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
       expect(result[0]?.status).toMatchInlineSnapshot(`"FAILED"`);
@@ -429,7 +433,7 @@ describe('Rule Engine', () => {
 
       context2.pluginsOutput.businessInformation.data[0].shares = {};
 
-      result = engine.run(context2 as any);
+      result = await engine.run(context2 as any);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
       expect(result[0]?.status).toMatchInlineSnapshot(`"FAILED"`);
@@ -438,7 +442,7 @@ describe('Rule Engine', () => {
 
       context2.pluginsOutput.businessInformation.data[0].shares = { item: 1 };
 
-      result = engine.run(context2 as any);
+      result = await engine.run(context2 as any);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
       expect(result[0]?.status).toMatchInlineSnapshot(`"PASSED"`);
@@ -446,7 +450,7 @@ describe('Rule Engine', () => {
       expect(result[0]?.error).toMatchInlineSnapshot(`undefined`);
     });
 
-    it('should check with schema', () => {
+    it('should check with schema', async () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
@@ -464,9 +468,9 @@ describe('Rule Engine', () => {
 
       const context2 = JSON.parse(JSON.stringify(context));
 
-      const engine = RuleEngine(ruleSetExample);
+      const engine = createRuleEngine(ruleSetExample);
 
-      let result = engine.run(context2 as any);
+      let result = await engine.run(context2 as any);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -475,7 +479,7 @@ describe('Rule Engine', () => {
       // @ts-ignore
       context2.pluginsOutput.businessInformation.data[0].shares = { item: 1 };
 
-      result = engine.run(context2 as any);
+      result = await engine.run(context2 as any);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -484,7 +488,7 @@ describe('Rule Engine', () => {
       // @ts-ignore
       context2.pluginsOutput.businessInformation.data[0].shares = {};
 
-      result = engine.run(context2 as any);
+      result = await engine.run(context2 as any);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -494,7 +498,7 @@ describe('Rule Engine', () => {
   });
 
   describe('NOT_EQUALS operator', () => {
-    it('should resolve a nested property from context', () => {
+    it('should resolve a nested property from context', async () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
@@ -507,8 +511,8 @@ describe('Rule Engine', () => {
         ],
       };
 
-      const engine = RuleEngine(ruleSetExample);
-      let result = engine.run(context);
+      const engine = createRuleEngine(ruleSetExample);
+      let result = await engine.run(context);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -530,7 +534,7 @@ describe('Rule Engine', () => {
       // @ts-ignore
       context2.pluginsOutput.companySanctions.data = [];
 
-      result = engine.run(context2 as any);
+      result = await engine.run(context2 as any);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
       expect(result[0]).toMatchInlineSnapshot(`
@@ -549,7 +553,7 @@ describe('Rule Engine', () => {
   });
 
   describe('IN operator', () => {
-    it('should resolve a nested property from context', () => {
+    it('should resolve a nested property from context', async () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
@@ -562,8 +566,8 @@ describe('Rule Engine', () => {
         ],
       };
 
-      const engine = RuleEngine(ruleSetExample);
-      let result = engine.run(context);
+      const engine = createRuleEngine(ruleSetExample);
+      let result = await engine.run(context);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -590,7 +594,7 @@ describe('Rule Engine', () => {
       // @ts-ignore
       context2.entity.data.country = 'CA';
 
-      result = engine.run(context2 as any);
+      result = await engine.run(context2 as any);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
       expect(result[0]).toMatchInlineSnapshot(`
@@ -614,7 +618,7 @@ describe('Rule Engine', () => {
   });
 
   describe('IN_CASE_INSENSITIVE operator', () => {
-    it('should correctly evaluate when using a string property', () => {
+    it('should correctly evaluate when using a string property', async () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
@@ -629,19 +633,25 @@ describe('Rule Engine', () => {
 
       const data = { country: 'US' };
 
-      let validationResults = runRuleSet(ruleSetExample, data);
+      let validationResults = await runRuleSet(ruleSetExample, data, {
+        unifiedApiClient,
+      });
       expect(validationResults[0]!.status).toBe('PASSED');
 
       data.country = 'Ca';
-      validationResults = runRuleSet(ruleSetExample, data);
+      validationResults = await runRuleSet(ruleSetExample, data, {
+        unifiedApiClient,
+      });
       expect(validationResults[0]!.status).toBe('PASSED');
 
       data.country = 'GB';
-      validationResults = runRuleSet(ruleSetExample, data);
+      validationResults = await runRuleSet(ruleSetExample, data, {
+        unifiedApiClient,
+      });
       expect(validationResults[0]!.status).toBe('FAILED');
     });
 
-    it('should correctly evaluate when using a string array property', () => {
+    it('should correctly evaluate when using a string array property', async () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
@@ -656,21 +666,27 @@ describe('Rule Engine', () => {
 
       const data = { countries: ['US'] };
 
-      let validationResults = runRuleSet(ruleSetExample, data);
+      let validationResults = await runRuleSet(ruleSetExample, data, {
+        unifiedApiClient,
+      });
       expect(validationResults[0]!.status).toBe('PASSED');
 
       data.countries = ['Ca'];
-      validationResults = runRuleSet(ruleSetExample, data);
+      validationResults = await runRuleSet(ruleSetExample, data, {
+        unifiedApiClient,
+      });
       expect(validationResults[0]!.status).toBe('PASSED');
 
       data.countries = ['GB'];
-      validationResults = runRuleSet(ruleSetExample, data);
+      validationResults = await runRuleSet(ruleSetExample, data, {
+        unifiedApiClient,
+      });
       expect(validationResults[0]!.status).toBe('FAILED');
     });
   });
 
   describe('not_in operator', () => {
-    it('should resolve a nested property from context', () => {
+    it('should resolve a nested property from context', async () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
@@ -683,8 +699,8 @@ describe('Rule Engine', () => {
         ],
       };
 
-      const engine = RuleEngine(ruleSetExample);
-      let result = engine.run(context);
+      const engine = createRuleEngine(ruleSetExample);
+      let result = await engine.run(context);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -711,7 +727,7 @@ describe('Rule Engine', () => {
       // @ts-ignore
       context2.entity.data.country = 'CA';
 
-      result = engine.run(context2 as any);
+      result = await engine.run(context2 as any);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
       expect(result[0]).toMatchInlineSnapshot(`
@@ -736,7 +752,7 @@ describe('Rule Engine', () => {
 
   describe('aml operator', () => {
     describe('warning section', () => {
-      it('should resolve a nested property from context', () => {
+      it('should resolve a nested property from context', async () => {
         const amlContextHasData = {
           ...(JSON.parse(JSON.stringify(context)) as any),
           ...(JSON.parse(JSON.stringify(amlContext)) as any),
@@ -760,14 +776,14 @@ describe('Rule Engine', () => {
           ],
         };
 
-        const engine = RuleEngine(warningRule);
+        const engine = createRuleEngine(warningRule);
 
         amlContextHasData.childWorkflows.kyc_email_session_example.example_id_001.result.vendorResult.aml =
           {
             hits: [],
           };
 
-        const result = engine.run(amlContextHasData);
+        const result = await engine.run(amlContextHasData);
 
         expect(result).toBeDefined();
         expect(result[0]).toMatchInlineSnapshot(`
@@ -788,7 +804,7 @@ describe('Rule Engine', () => {
         `);
       });
 
-      it('should failed when no data', () => {
+      it('should failed when no data', async () => {
         const amlContextHasData = {
           ...(JSON.parse(JSON.stringify(context)) as any),
           ...(JSON.parse(JSON.stringify(amlContext)) as any),
@@ -809,8 +825,8 @@ describe('Rule Engine', () => {
           ],
         };
 
-        const engine = RuleEngine(warningRule);
-        const result = engine.run(amlContextHasData);
+        const engine = createRuleEngine(warningRule);
+        const result = await engine.run(amlContextHasData);
 
         expect(result).toBeDefined();
         expect(result).toHaveLength(1);
@@ -832,7 +848,7 @@ describe('Rule Engine', () => {
       });
     });
 
-    it('should resolve fitness probity', () => {
+    it('should resolve fitness probity', async () => {
       const amlContextHasData = {
         ...(JSON.parse(JSON.stringify(context)) as any),
         ...(JSON.parse(JSON.stringify(amlContext)) as any),
@@ -869,8 +885,8 @@ describe('Rule Engine', () => {
           ],
         };
 
-      const engine = RuleEngine(fitnessProbityRule);
-      const result = engine.run(amlContextHasData);
+      const engine = createRuleEngine(fitnessProbityRule);
+      const result = await engine.run(amlContextHasData);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -891,7 +907,7 @@ describe('Rule Engine', () => {
       `);
     });
 
-    it('should resolve a nested property from context', () => {
+    it('should resolve a nested property from context', async () => {
       const amlContext2 = {
         ...(JSON.parse(JSON.stringify(context)) as any),
         ...(JSON.parse(JSON.stringify(amlContext)) as any),
@@ -928,8 +944,8 @@ describe('Rule Engine', () => {
           ],
         };
 
-      let engine = RuleEngine(warningRule);
-      let result = engine.run(amlContext2);
+      let engine = createRuleEngine(warningRule);
+      let result = await engine.run(amlContext2);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -964,8 +980,8 @@ describe('Rule Engine', () => {
         ],
       };
 
-      engine = RuleEngine(adverseMediaRule);
-      result = engine.run(amlContext2);
+      engine = createRuleEngine(adverseMediaRule);
+      result = await engine.run(amlContext2);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -1000,8 +1016,8 @@ describe('Rule Engine', () => {
         ],
       };
 
-      engine = RuleEngine(fitnessProbityRule);
-      result = engine.run(amlContext2);
+      engine = createRuleEngine(fitnessProbityRule);
+      result = await engine.run(amlContext2);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -1036,8 +1052,8 @@ describe('Rule Engine', () => {
         ],
       };
 
-      engine = RuleEngine(pepRule);
-      result = engine.run(amlContext2);
+      engine = createRuleEngine(pepRule);
+      result = await engine.run(amlContext2);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -1060,7 +1076,7 @@ describe('Rule Engine', () => {
   });
 
   describe('Path comparison', () => {
-    it('should compare values from two different paths', () => {
+    it('should compare values from two different paths', async () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
@@ -1073,8 +1089,8 @@ describe('Rule Engine', () => {
         ],
       };
 
-      const engine = RuleEngine(ruleSetExample);
-      const result = engine.run(context);
+      const engine = createRuleEngine(ruleSetExample);
+      const result = await engine.run(context);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
       expect(result[0]).toMatchInlineSnapshot(`
@@ -1091,7 +1107,7 @@ describe('Rule Engine', () => {
       `);
     });
 
-    it('should handle invalid paths', () => {
+    it('should handle invalid paths', async () => {
       const ruleSetExample: RuleSet = {
         operator: OPERATOR.AND,
         rules: [
@@ -1104,8 +1120,8 @@ describe('Rule Engine', () => {
         ],
       };
 
-      const engine = RuleEngine(ruleSetExample);
-      const result = engine.run(context);
+      const engine = createRuleEngine(ruleSetExample);
+      const result = await engine.run(context);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
       expect(result[0]).toMatchInlineSnapshot(`
