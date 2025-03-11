@@ -48,7 +48,7 @@ export const useKycBlock = ({
   const kycSessionKeys = Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {});
 
   const { documents, isLoading: isLoadingDocuments } = useDocumentsAdapter({
-    entityId: childWorkflow?.context?.entity?.ballerineEntityId ?? '',
+    entityIds: [childWorkflow?.context?.entity?.ballerineEntityId ?? ''],
     documents: childWorkflow?.context?.documents ?? [],
   });
 

@@ -203,6 +203,40 @@ export class DocumentService {
     return this.getLatestDocumentVersions(formattedDocuments);
   }
 
+  async getByEntityIdsAndWorkflowId(
+    entityIds: string[],
+    workflowRuntimeDataId: string,
+    projectIds: TProjectId[],
+    args?: Omit<Prisma.DocumentFindManyArgs, 'where'>,
+    transaction?: PrismaTransactionClient,
+  ) {
+    const documents = await this.repository.findByEntityIdsAndWorkflowIdWithFiles(
+      entityIds,
+      workflowRuntimeDataId,
+      projectIds,
+      args,
+      transaction,
+    );
+
+    const workflowDefinition = await this.workflowDefinitionService.getByWorkflowRuntimeDataId(
+      workflowRuntimeDataId,
+      projectIds,
+    );
+
+    if (!workflowDefinition) {
+      throw new BadRequestException(
+        `Workflow definition for a workflow with an id of "${workflowRuntimeDataId}" not found`,
+      );
+    }
+
+    const formattedDocuments = await this.formatDocuments({
+      documents,
+      documentSchema: workflowDefinition.documentsSchema,
+    });
+
+    return this.getLatestDocumentVersions(formattedDocuments);
+  }
+
   async updateByIdWithFile(
     {
       file,

@@ -178,6 +178,36 @@ export class DocumentRepository {
     return documentsWithFiles;
   }
 
+  async findByEntityIdsAndWorkflowIdWithFiles(
+    entityIds: string[],
+    workflowRuntimeDataId: string,
+    projectIds: TProjectId[],
+    args?: Prisma.DocumentFindManyArgs,
+    transaction: PrismaTransactionClient = this.prismaService,
+  ) {
+    const documentsWithFiles = await transaction.document.findMany({
+      ...args,
+      where: {
+        ...args?.where,
+        OR: [{ businessId: { in: entityIds } }, { endUserId: { in: entityIds } }],
+        workflowRuntimeDataId,
+        projectId: { in: projectIds },
+      },
+      include: {
+        ...args?.include,
+        files: {
+          include: {
+            file: true,
+          },
+        },
+      },
+    });
+
+    assertIsDocumentWithFiles(documentsWithFiles, this.logger);
+
+    return documentsWithFiles;
+  }
+
   async findManyWithFiles(
     projectIds: TProjectId[],
     args?: Prisma.DocumentFindManyArgs,
