@@ -9,7 +9,6 @@ export const minimumAgeValueValidator: TValidator<string, IMinimumAgeValidatorPa
 ) => {
   const { message = 'Minimum age is {minimumAge}.' } = params;
   const isValid = dayjs(value).isValid();
-  console.log('isValid', isValid);
 
   if (!isValid) {
     throw new Error('Invalid date.');
@@ -31,9 +30,6 @@ export const minimumAgeValueValidator: TValidator<string, IMinimumAgeValidatorPa
   if (monthDiff < 0 || (monthDiff === 0 && today.date() < birthDate.date())) {
     age--;
   }
-
-  console.log('age', age);
-  console.log('requiredAge', requiredAge);
 
   if (age < requiredAge) {
     throw new Error(formatErrorMessage(message, 'minimumAge', requiredAge.toString()));
