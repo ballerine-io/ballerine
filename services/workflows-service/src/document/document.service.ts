@@ -7,6 +7,7 @@ import {
   IUIDefinitionPage,
   TDeepthLevelStack,
 } from '@/common/ui-definition-parse-utils/types';
+import { getEntityId } from '@/common/utils/get-entity-id/get-entity-id';
 import { DocumentFileService } from '@/document-file/document-file.service';
 import { CreateDocumentFileSchema } from '@/document-file/dtos/document-file.dto';
 import { ValidationError } from '@/errors';
@@ -37,11 +38,14 @@ import {
 } from '@prisma/client';
 import { Static } from '@sinclair/typebox';
 import { get } from 'lodash';
+import set from 'lodash/set';
 import * as z from 'zod';
 import { DocumentRepository } from './document.repository';
 import { CreateDocumentSchema, UpdateDocumentSchema } from './dtos/document.dto';
 import { addRequestedDocumentToBusinessEntityDocuments } from './helpers/add-requested-document-to-business-entity-documents';
 import { addRequestedDocumentToIndividualDocuments } from './helpers/add-requested-document-to-individuals-documents';
+import { findBusinessDocuments } from './helpers/find-business-documents';
+import { findUboDocuments } from './helpers/find-ubo-documents';
 import { parseDocumentDefinition } from './helpers/parse-document-definition';
 import {
   DocumentTrackerDocumentSchema,
@@ -49,7 +53,6 @@ import {
   EntitySchema,
   TParsedDocuments,
 } from './types';
-import { getEntityId } from '@/common/utils/get-entity-id/get-entity-id';
 
 @Injectable()
 export class DocumentService {
@@ -469,7 +472,7 @@ export class DocumentService {
       throw new BadRequestException('Document ids are required');
     }
 
-    const documents = await this.repository.findMany(projectIds, {
+    let documents = await this.repository.findMany(projectIds, {
       where: {
         id: { in: ids },
       },
@@ -526,12 +529,109 @@ export class DocumentService {
       },
     });
 
+    documents = await this.repository.findMany(projectIds, {
+      where: {
+        id: { in: ids },
+      },
+      include: {
+        workflowRuntimeData: {
+          include: {
+            workflowDefinition: true,
+          },
+        },
+      },
+    });
+
     const documentsWithFiles = await this.repository.findManyWithFiles(projectIds);
+
+    await Promise.all(
+      documents.map(document => this.syncContextWithDocument(document, projectIds[0]!)),
+    );
 
     return this.formatDocuments({
       documents: documentsWithFiles,
       documentSchema: null,
     });
+  }
+
+  async syncContextWithDocument(document: Document, projectId: TProjectId) {
+    if (!document.workflowRuntimeDataId) {
+      throw new BadRequestException(
+        `Document with id ${document.id} has no workflow runtime data id`,
+      );
+    }
+
+    const workflowRuntime = await this.workflowService.getWorkflowRuntimeDataById(
+      document.workflowRuntimeDataId,
+      {
+        select: {
+          context: true,
+          parentRuntimeDataId: true,
+        },
+      },
+      [projectId],
+    );
+
+    if (!workflowRuntime) {
+      throw new BadRequestException(
+        `Workflow runtime data not found for document with id ${document.id}`,
+      );
+    }
+
+    const isBusinessDocument = document.businessId ? true : false;
+
+    if (isBusinessDocument) {
+      const businessDocuments = findBusinessDocuments(workflowRuntime.context);
+      const matchingDocumentIndex = businessDocuments.findIndex(
+        businessDocument =>
+          businessDocument.type === document.type &&
+          businessDocument.category === document.category,
+      );
+      const matchingDocument = businessDocuments[matchingDocumentIndex];
+
+      if (!matchingDocument) {
+        throw new BadRequestException(`Document with id ${document.id} is not a business document`);
+      }
+
+      set(matchingDocument, '_document', document);
+
+      // TODO: This is templorary until document structure is reworked
+      // TODO: Remove this
+      set(matchingDocument, 'pages[0].ballerineFileId', document.id);
+
+      await this.workflowService.updateWorkflowRuntimeData(
+        workflowRuntime.id,
+        { context: workflowRuntime.context },
+        projectId,
+      );
+    } else {
+      const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
+        workflowRuntime.workflowDefinitionId,
+        'collection_flow',
+        [projectId],
+      );
+
+      const uboDocuments = findUboDocuments(workflowRuntime.context, uiDefinition);
+
+      uboDocuments.forEach(uboDocument => {
+        if (
+          uboDocument.ballerineEntityId === document.endUserId &&
+          uboDocument.type === document.type &&
+          uboDocument.category === document.category
+        ) {
+          set(uboDocument, '_document', document);
+          set(uboDocument, 'pages[0].ballerineFileId', document.id);
+
+          delete uboDocument.ballerineEntityId;
+        }
+      });
+
+      await this.workflowService.updateWorkflowRuntimeData(
+        workflowRuntime.id,
+        { context: workflowRuntime.context },
+        projectId,
+      );
+    }
   }
 
   async deleteByIds(
