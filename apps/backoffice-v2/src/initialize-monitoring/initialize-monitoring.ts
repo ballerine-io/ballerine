@@ -1,5 +1,4 @@
 import { env } from '@/common/env/env';
-import posthog from 'posthog-js';
 import * as Sentry from '@sentry/react';
 import { useEffect } from 'react';
 import {
@@ -12,16 +11,6 @@ import {
 export const initializeMonitoring = () => {
   if (window.location.host.includes('127.0.0.1') || window.location.host.includes('localhost')) {
     return;
-  }
-
-  if (env.VITE_POSTHOG_KEY && env.VITE_POSTHOG_HOST) {
-    posthog.init(env.VITE_POSTHOG_KEY, {
-      api_host: env.VITE_POSTHOG_HOST,
-      person_profiles: 'identified_only',
-      loaded: ph => {
-        ph.register_for_session({ environment: env.VITE_ENVIRONMENT_NAME });
-      },
-    });
   }
 
   if (env.VITE_SENTRY_DSN) {

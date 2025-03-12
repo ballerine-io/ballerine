@@ -2927,6 +2927,9 @@ importers:
       passport-local:
         specifier: ^1.0.0
         version: 1.0.0
+      posthog-node:
+        specifier: ^4.10.1
+        version: 4.10.1
       reflect-metadata:
         specifier: 0.1.13
         version: 0.1.13
@@ -35836,6 +35839,15 @@ packages:
       fflate: 0.4.8
       preact: 10.23.1
       web-vitals: 4.2.2
+    dev: false
+
+  /posthog-node@4.10.1:
+    resolution: {integrity: sha512-rEzVszfaOkUFTjEabDcRLJNRqMwTOeU1WpqKgQEDV3x82O4ODifkvkoCERaPxl/ossi1NtqKXBOZ+XnhQ19pNQ==}
+    engines: {node: '>=15.0.0'}
+    dependencies:
+      axios: 1.7.9
+    transitivePeerDependencies:
+      - debug
     dev: false
 
   /preact@10.23.1:
