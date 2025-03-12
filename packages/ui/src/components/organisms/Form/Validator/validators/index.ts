@@ -5,6 +5,7 @@ import { maxLengthValidator } from './max-length';
 import { maximumValueValidator } from './maximum';
 import { minLengthValidator } from './min-length';
 import { minimumValueValidator } from './minimum';
+import { minimumAgeValueValidator } from './minimum-age';
 import { patternValueValidator } from './pattern';
 import { requiredValueValidator } from './required/required-validator';
 
@@ -17,6 +18,7 @@ export const baseValidatorsMap: Record<TBaseValidators, TValidator<any, any>> = 
   maximum: maximumValueValidator,
   format: formatValidator,
   document: documentValidator,
+  minimumAge: minimumAgeValueValidator,
 };
 
 export const validatorsExtends: Record<string, TValidator<any, any>> = {};

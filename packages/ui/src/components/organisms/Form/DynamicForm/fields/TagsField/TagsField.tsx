@@ -21,6 +21,7 @@ export const TagsField: TDynamicFormField<ITagsFieldParams> = ({ element }) => {
     <FieldLayout element={element}>
       <TagsInput
         value={value}
+        placeholder={element.params?.placeholder}
         testId={createTestId(element, stack)}
         onChange={onChange}
         onBlur={onBlur}

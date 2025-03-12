@@ -21,7 +21,9 @@ export const TagsInput: FunctionComponent<ITagsInputProps> = ({
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
   const tags = useMemo(() => {
-    if (!Array.isArray(value)) return [];
+    if (!Array.isArray(value)) {
+      return [];
+    }
 
     return value.map((tag, index) => {
       return {

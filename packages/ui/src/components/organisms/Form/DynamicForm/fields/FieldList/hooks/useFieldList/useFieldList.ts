@@ -39,7 +39,7 @@ export const useFieldList = ({ element }: IUseFieldListProps) => {
       }
 
       const newValue = value.filter((_, i) => i !== index);
-      onChange(newValue);
+      onChange(newValue.length ? newValue : undefined);
     },
     [value, onChange],
   );

@@ -53,7 +53,7 @@ export const CheckboxListField: TDynamicFormField<ICheckboxListFieldParams> = ({
                   val.push(option.value);
                 }
 
-                onChange(val);
+                onChange(val.length ? val : undefined);
               }}
             />
             <span className="font-inter text-sm">{option.label}</span>

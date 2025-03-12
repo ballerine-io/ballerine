@@ -27,8 +27,8 @@ describe('serializeTextFieldValue', () => {
       expect(serializeTextFieldValue('test', 'string')).toBe('test');
     });
 
-    it('should return empty string as is', () => {
-      expect(serializeTextFieldValue('', 'string')).toBe('');
+    it('should return undefined if string is empty', () => {
+      expect(serializeTextFieldValue('', 'string')).toBeUndefined();
     });
   });
 });

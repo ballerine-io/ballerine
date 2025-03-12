@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.7.111
+
+### Patch Changes
+
+- Added minimumAge validator
+
 ## 0.7.110
 
 ### Patch Changes
