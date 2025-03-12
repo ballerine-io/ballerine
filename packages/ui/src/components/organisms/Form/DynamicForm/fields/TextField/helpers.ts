@@ -8,5 +8,5 @@ export const serializeTextFieldValue = (
     return value ? Number(value) : undefined;
   }
 
-  return value;
+  return !value ? undefined : value;
 };
