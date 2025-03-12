@@ -17,8 +17,8 @@ import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import { initializeMonitoring } from '@/initialize-monitoring/initialize-monitoring';
 import { initializeSessionRecording } from '@/initialize-session-recording/initialize-session-recording';
-initializeMonitoring();
 
+initializeMonitoring();
 initializeSessionRecording();
 
 dayjs.extend(advancedFormat);

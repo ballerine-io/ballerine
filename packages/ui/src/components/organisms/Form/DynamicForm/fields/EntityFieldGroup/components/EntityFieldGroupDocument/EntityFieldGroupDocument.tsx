@@ -22,6 +22,7 @@ import { ITask } from '../../../../providers/TaskRunner/types';
 import { IFormElement, TDynamicFormElement } from '../../../../types';
 import { getDocumentObjectFromDocumentsList, IDocumentFieldParams } from '../../../DocumentField';
 import { buildDocumentFormData } from '../../../DocumentField/helpers/build-document-form-data';
+import { useDocumentLabelElement } from '../../../DocumentField/hooks/useDocumentLabelElement';
 import { useDocumentState } from '../../../DocumentField/hooks/useDocumentState/useDocumentState';
 import {
   checkIfDocumentInRevision,
@@ -288,7 +289,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
   );
 
   return (
-    <FieldLayout element={element} elementState={documentState}>
+    <FieldLayout element={useDocumentLabelElement(element)} elementState={documentState}>
       <div
         className={ctw(
           'relative flex h-[56px] flex-row items-center gap-3 rounded-[16px] border bg-white px-4',
