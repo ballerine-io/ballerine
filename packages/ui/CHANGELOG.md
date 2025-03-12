@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.7.112
+
+### Patch Changes
+
+- Bump UI & KYB
+
 ## 0.7.111
 
 ### Patch Changes
