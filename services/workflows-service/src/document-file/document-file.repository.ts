@@ -2,10 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { PrismaTransactionClient, TProjectId } from '@/types';
+import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Injectable()
 export class DocumentFileRepository {
-  constructor(protected readonly prismaService: PrismaService) {}
+  constructor(
+    protected readonly prismaService: PrismaService,
+    protected readonly projectScopeService: ProjectScopeService,
+  ) {}
 
   async create(
     data: Prisma.DocumentFileUncheckedCreateInput,
@@ -35,30 +39,40 @@ export class DocumentFileRepository {
     args?: Prisma.DocumentFileFindManyArgs,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
-    return transaction.documentFile.findMany({
-      ...args,
-      where: {
-        ...args?.where,
-        documentId,
-        projectId: { in: projectIds },
-      },
-    });
+    return transaction.documentFile.findMany(
+      this.projectScopeService.scopeFindMany(
+        {
+          ...args,
+          where: {
+            ...args?.where,
+            documentId,
+          },
+        },
+        projectIds,
+      ),
+    );
   }
 
   async updateById(
     id: string,
     data: Prisma.DocumentFileUpdateInput,
+    projectIds: TProjectId[],
     args?: Prisma.DocumentFileUpdateArgs,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
-    return transaction.documentFile.update({
-      ...args,
-      where: {
-        ...args?.where,
-        id,
-      },
-      data,
-    });
+    return transaction.documentFile.update(
+      this.projectScopeService.scopeUpdate(
+        {
+          ...args,
+          data,
+          where: {
+            ...args?.where,
+            id,
+          },
+        },
+        projectIds,
+      ),
+    );
   }
 
   async deleteById(
@@ -67,14 +81,18 @@ export class DocumentFileRepository {
     args?: Prisma.DocumentFileDeleteManyArgs,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
-    return transaction.documentFile.deleteMany({
-      ...args,
-      where: {
-        ...args?.where,
-        id,
-        projectId: { in: projectIds },
-      },
-    });
+    return transaction.documentFile.deleteMany(
+      this.projectScopeService.scopeDelete(
+        {
+          ...args,
+          where: {
+            ...args?.where,
+            id,
+          },
+        },
+        projectIds,
+      ),
+    );
   }
 
   async deleteByDocumentId(
@@ -83,13 +101,17 @@ export class DocumentFileRepository {
     args?: Prisma.DocumentFileDeleteManyArgs,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
-    return transaction.documentFile.deleteMany({
-      ...args,
-      where: {
-        ...args?.where,
-        documentId,
-        projectId: { in: projectIds },
-      },
-    });
+    return transaction.documentFile.deleteMany(
+      this.projectScopeService.scopeDelete(
+        {
+          ...args,
+          where: {
+            ...args?.where,
+            documentId,
+          },
+        },
+        projectIds,
+      ),
+    );
   }
 }

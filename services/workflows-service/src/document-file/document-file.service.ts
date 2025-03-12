@@ -35,10 +35,11 @@ export class DocumentFileService {
   async updateById(
     id: string,
     data: Prisma.DocumentFileUpdateInput,
+    projectIds: TProjectId[],
     args?: Prisma.DocumentFileUpdateArgs,
     transaction?: PrismaTransactionClient,
   ) {
-    return await this.repository.updateById(id, data, args, transaction);
+    return await this.repository.updateById(id, data, projectIds, args, transaction);
   }
 
   async deleteById(

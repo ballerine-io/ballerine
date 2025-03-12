@@ -619,11 +619,15 @@ export class DocumentService {
         '',
     });
 
-    await this.documentFileService.updateById(fileId, {
-      file: {
-        connect: { id: uploadedFile.id },
+    await this.documentFileService.updateById(
+      fileId,
+      {
+        file: {
+          connect: { id: uploadedFile.id },
+        },
       },
-    });
+      projectIds,
+    );
 
     const documents = await this.repository.findManyWithFiles(projectIds);
 
