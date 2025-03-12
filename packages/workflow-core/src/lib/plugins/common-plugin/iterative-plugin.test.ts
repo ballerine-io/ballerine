@@ -10,10 +10,10 @@ describe('IterativePlugin', () => {
           data: {
             additionalInfo: {
               directors: [
-                { id: '1', name: 'Director 1', isAuthoritativeSignatory: true },
-                { id: '2', name: 'Director 2', isAuthoritativeSignatory: false },
-                { id: '3', name: 'Director 3', isAuthoritativeSignatory: true },
-                { id: '4', name: 'Director 4', isAuthoritativeSignatory: false },
+                { id: '1', name: 'Director 1', isAuthorizedSignatory: true },
+                { id: '2', name: 'Director 2', isAuthorizedSignatory: false },
+                { id: '3', name: 'Director 3', isAuthorizedSignatory: true },
+                { id: '4', name: 'Director 4', isAuthorizedSignatory: false },
               ],
             },
           },
@@ -32,7 +32,7 @@ describe('IterativePlugin', () => {
         filter: [
           {
             strategy: 'json-logic',
-            value: { '==': [{ var: 'isAuthoritativeSignatory' }, true] },
+            value: { '==': [{ var: 'isAuthorizedSignatory' }, true] },
           },
         ],
         successAction: 'SUCCESS',
@@ -47,12 +47,12 @@ describe('IterativePlugin', () => {
       expect(filteredIterationParams[0]).toMatchObject({
         id: '1',
         name: 'Director 1',
-        isAuthoritativeSignatory: true,
+        isAuthorizedSignatory: true,
       });
       expect(filteredIterationParams[1]).toMatchObject({
         id: '3',
         name: 'Director 3',
-        isAuthoritativeSignatory: true,
+        isAuthorizedSignatory: true,
       });
 
       const result = await iterativePlugin.invoke(mockContext);
@@ -65,8 +65,8 @@ describe('IterativePlugin', () => {
           data: {
             additionalInfo: {
               directors: [
-                { id: '1', name: 'Director 1', isAuthoritativeSignatory: true },
-                { id: '2', name: 'Director 2', isAuthoritativeSignatory: false },
+                { id: '1', name: 'Director 1', isAuthorizedSignatory: true },
+                { id: '2', name: 'Director 2', isAuthorizedSignatory: false },
               ],
             },
           },
@@ -103,10 +103,10 @@ describe('IterativePlugin', () => {
           data: {
             additionalInfo: {
               directors: [
-                { id: '1', name: 'Director 1', isAuthoritativeSignatory: true, age: 35 },
-                { id: '2', name: 'Director 2', isAuthoritativeSignatory: false, age: 40 },
-                { id: '3', name: 'Director 3', isAuthoritativeSignatory: true, age: 25 },
-                { id: '4', name: 'Director 4', isAuthoritativeSignatory: false, age: 30 },
+                { id: '1', name: 'Director 1', isAuthorizedSignatory: true, age: 35 },
+                { id: '2', name: 'Director 2', isAuthorizedSignatory: false, age: 40 },
+                { id: '3', name: 'Director 3', isAuthorizedSignatory: true, age: 25 },
+                { id: '4', name: 'Director 4', isAuthorizedSignatory: false, age: 30 },
               ],
             },
           },
@@ -125,7 +125,7 @@ describe('IterativePlugin', () => {
         filter: [
           {
             strategy: 'json-logic',
-            value: { '==': [{ var: 'isAuthoritativeSignatory' }, true] },
+            value: { '==': [{ var: 'isAuthorizedSignatory' }, true] },
           },
           {
             strategy: 'json-logic',
@@ -144,7 +144,7 @@ describe('IterativePlugin', () => {
       expect(filteredIterationParams[0]).toMatchObject({
         id: '1',
         name: 'Director 1',
-        isAuthoritativeSignatory: true,
+        isAuthorizedSignatory: true,
         age: 35,
       });
 
@@ -207,9 +207,9 @@ describe('IterativePlugin', () => {
           data: {
             additionalInfo: {
               directors: [
-                { id: '1', name: 'Director 1', isAuthoritativeSignatory: true },
-                { id: '2', name: 'Director 2', isAuthoritativeSignatory: false },
-                { id: '3', name: 'Director 3', isAuthoritativeSignatory: true },
+                { id: '1', name: 'Director 1', isAuthorizedSignatory: true },
+                { id: '2', name: 'Director 2', isAuthorizedSignatory: false },
+                { id: '3', name: 'Director 3', isAuthorizedSignatory: true },
               ],
             },
           },
@@ -227,7 +227,7 @@ describe('IterativePlugin', () => {
         filter: [
           {
             strategy: 'json-logic',
-            value: { '==': [{ var: 'isAuthoritativeSignatory' }, true] },
+            value: { '==': [{ var: 'isAuthorizedSignatory' }, true] },
           },
         ],
         successAction: 'SUCCESS',
@@ -241,12 +241,12 @@ describe('IterativePlugin', () => {
       expect(actionSpy).toHaveBeenCalledWith({
         id: '1',
         name: 'Director 1',
-        isAuthoritativeSignatory: true,
+        isAuthorizedSignatory: true,
       });
       expect(actionSpy).toHaveBeenCalledWith({
         id: '3',
         name: 'Director 3',
-        isAuthoritativeSignatory: true,
+        isAuthorizedSignatory: true,
       });
     });
   });
