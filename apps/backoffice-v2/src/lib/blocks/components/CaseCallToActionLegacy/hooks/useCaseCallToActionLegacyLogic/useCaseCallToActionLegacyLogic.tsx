@@ -1,11 +1,12 @@
-import { useCallback, useMemo, useState } from 'react';
-import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useDocumentsByEntityIdsAndWorkflowIdQuery } from '@/domains/documents/hooks/queries/useDocumentsByEntityIdsAndWorkflowIdQuery/useDocumentsByEntityIdsAndWorkflowIdQuery';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
+import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
+import { useCallback, useMemo, useState } from 'react';
 import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
-import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
+import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useApproveCaseAndDocumentsMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveCaseAndDocumentsMutation/useApproveCaseAndDocumentsMutation';
 import { useRevisionCaseAndDocumentsMutation } from '../../../../../../domains/entities/hooks/mutations/useRevisionCaseAndDocumentsMutation/useRevisionCaseAndDocumentsMutation';
-import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
+import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 
 export const useCaseCallToActionLegacyLogic = ({
   parentWorkflowId,
@@ -24,12 +25,13 @@ export const useCaseCallToActionLegacyLogic = ({
   const revisionReasons =
     childWorkflowContextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
       ({ enum: enum_ }) => !!enum_,
-    )?.enum as Array<string>;
+    )?.enum as string[];
 
   const noReasons = !revisionReasons?.length;
   const [reason, setReason] = useState(revisionReasons?.[0] ?? '');
   const [comment, setComment] = useState('');
   const reasonWithComment = comment ? `${reason} - ${comment}` : reason;
+
   // /State
 
   // Queries
@@ -39,17 +41,24 @@ export const useCaseCallToActionLegacyLogic = ({
     workflowId: parentWorkflowId,
     filterId,
   });
+
   const childWorkflow = parentWorkflow?.childWorkflows?.find(
     workflow => workflow.id === childWorkflowId,
   );
+  const { data: documents, isLoading: isLoadingDocumentsV2 } =
+    useDocumentsByEntityIdsAndWorkflowIdQuery({
+      workflowId: parentWorkflowId,
+      entityIds: [childWorkflow?.context?.entity?.ballerineEntityId ?? ''],
+    });
+
   const nonIdentificationDocumentsIds = useMemo(() => {
     return (
       // 'identification_document' is exclusive to Veriff
-      childWorkflow?.context?.documents
+      documents
         ?.filter(document => document.type !== 'identification_document')
         ?.map(document => document.id) ?? []
     );
-  }, [childWorkflow?.context?.documents]);
+  }, [documents]);
   // /Queries
 
   // Mutations
