@@ -99,6 +99,13 @@ export const RuleSchema = z.discriminatedUnion('operator', [
     value: PrimitiveArraySchema,
     isPathComparison: z.boolean().default(false),
   }),
+  z.object({
+    key: z.string(),
+    operator: z.literal(OPERATION.FUZZY_MATCH_SCORE_LT),
+    value: PrimitiveSchema,
+    isPathComparison: z.boolean().default(false),
+    threshold: z.number().min(0).max(100).default(80),
+  }),
 ]);
 
 // @ts-ignore - cycle zod types are not correct

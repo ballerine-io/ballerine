@@ -106,7 +106,7 @@ describe('TextField', () => {
       hidden: false,
     } as any);
     vi.mocked(createTestId).mockReturnValue('test-id');
-    vi.mocked(serializeTextFieldValue).mockImplementation(value => value);
+    vi.mocked(serializeTextFieldValue).mockImplementation(value => value as any);
     vi.mocked(useEvents).mockReturnValue({
       sendEvent: vi.fn(),
       sendEventAsync: vi.fn(),

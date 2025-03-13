@@ -44,7 +44,13 @@ export const AutocompleteField: TDynamicFormField<IAutocompleteFieldParams> = ({
         options={options}
         data-testid={createTestId(element, stack)}
         placeholder={placeholder}
-        onChange={event => onChange(event.target.value || '')}
+        onChange={event =>
+          onChange(
+            Array.isArray(event.target.value) && !event.target.value.length
+              ? undefined
+              : event.target.value,
+          )
+        }
         onBlur={onBlur}
         onFocus={onFocus}
       />
