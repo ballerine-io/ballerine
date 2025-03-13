@@ -201,6 +201,13 @@ export class CollectionFlowFilesController {
         ...(document.endUserId && { endUserId: document.endUserId }),
       });
 
+      const createdDocument: Document & { documentFile?: DocumentFile } = createdDocuments.at(-1)!;
+      const documentFiles = await this.documentService.getDocumentFiles(createdDocument.id, [
+        tokenScope.projectId,
+      ]);
+
+      createdDocument.documentFile = documentFiles.at(-1);
+
       return createdDocuments.at(-1);
     }
 
