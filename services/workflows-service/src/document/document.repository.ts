@@ -1,10 +1,10 @@
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { PrismaService } from '@/prisma/prisma.service';
+import { ProjectScopeService } from '@/project/project-scope.service';
 import { PrismaTransactionClient, TProjectId } from '@/types';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { assertIsDocumentWithFiles } from './helpers/assert-is-document-with-files';
-import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Injectable()
 export class DocumentRepository {
