@@ -43,7 +43,7 @@ export const MultiselectField: TDynamicFormField<IMultiselectFieldParams> = ({ e
 
   const handleChange = useCallback(
     (value: MultiSelectValue[]) => {
-      onChange(value);
+      onChange(value.length ? value : undefined);
     },
     [onChange],
   );
