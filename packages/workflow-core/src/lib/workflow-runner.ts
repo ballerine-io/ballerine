@@ -312,7 +312,7 @@ export class WorkflowRunner {
       };
     }
 
-    const iterarivePluginParams = params as IterativePluginParams;
+    const iterativePluginParams = params as IterativePluginParams;
     const actionPlugin = actionPlugins.find(
       //@ts-ignore
       actionPlugin => actionPlugin.name === params?.actionPluginName,
@@ -325,19 +325,19 @@ export class WorkflowRunner {
     );
 
     return {
-      name: iterarivePluginParams.name,
-      stateNames: iterarivePluginParams.stateNames,
+      name: iterativePluginParams.name,
+      stateNames: iterativePluginParams.stateNames,
       //@ts-ignore
-      iterateOn: fetchTransformers(iterarivePluginParams.iterateOn),
+      iterateOn: fetchTransformers(iterativePluginParams.iterateOn),
       action: (context: TContext) =>
         actionPlugin!.invoke({
           ...context,
           workflowRuntimeConfig: this.#__config,
           workflowRuntimeId: this.#__runtimeId,
         }),
-      successAction: iterarivePluginParams.successAction,
-      errorAction: iterarivePluginParams.errorAction,
-      filter: iterarivePluginParams.filter,
+      successAction: iterativePluginParams.successAction,
+      errorAction: iterativePluginParams.errorAction,
+      filter: iterativePluginParams.filter,
     };
   }
 
