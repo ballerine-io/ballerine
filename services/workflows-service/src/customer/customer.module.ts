@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ACLModule } from '@/common/access-control/acl.module';
 import { CustomerControllerInternal } from '@/customer/customer.controller.internal';
 import { CustomerRepository } from '@/customer/customer.repository';
