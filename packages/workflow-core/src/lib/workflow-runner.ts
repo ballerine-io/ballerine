@@ -337,6 +337,7 @@ export class WorkflowRunner {
         }),
       successAction: iterarivePluginParams.successAction,
       errorAction: iterarivePluginParams.errorAction,
+      filter: iterarivePluginParams.filter,
     };
   }
 

@@ -92,10 +92,6 @@ export class IterativePlugin {
       return [];
     }
 
-    if (!this.filter || this.filter.length === 0) {
-      return items;
-    }
-
     return items.filter(item => this.doesItemPassFilter(item));
   }
 

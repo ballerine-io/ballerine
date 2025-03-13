@@ -362,4 +362,166 @@ describe('IterativePlugin', () => {
       expect(actionSpy).not.toHaveBeenCalled(); // Action should not be called for empty array
     });
   });
+
+  describe('advanced filter functionality', () => {
+    const complexMockContext = {
+      entity: {
+        data: {
+          additionalInfo: {
+            directors: [
+              {
+                id: '1',
+                name: 'Director 1',
+                isAuthorizedSignatory: true,
+                age: 35,
+                tags: ['executive', 'founder'],
+                contact: { email: 'director1@example.com', phone: '+1234567890' },
+                joinDate: '2020-01-15',
+                performance: { rating: 4.5, reviews: 12 },
+                active: true,
+              },
+              {
+                id: '2',
+                name: 'Director 2',
+                isAuthorizedSignatory: false,
+                age: 42,
+                tags: ['non-executive', 'investor'],
+                contact: { email: 'director2@example.com', phone: '+0987654321' },
+                joinDate: '2018-06-22',
+                performance: { rating: 4.2, reviews: 8 },
+                active: true,
+              },
+              {
+                id: '3',
+                name: 'Director 3',
+                isAuthorizedSignatory: true,
+                age: 29,
+                tags: ['executive', 'legal'],
+                contact: { email: 'director3@example.com', phone: null },
+                joinDate: '2021-11-05',
+                performance: { rating: 3.8, reviews: 5 },
+                active: true,
+              },
+              {
+                id: '4',
+                name: 'Director 4',
+                isAuthorizedSignatory: false,
+                age: 51,
+                tags: ['non-executive'],
+                contact: { email: 'director4@example.com', phone: '+5559876543' },
+                joinDate: '2016-03-10',
+                performance: { rating: 4.0, reviews: 15 },
+                active: false,
+              },
+            ],
+          },
+        },
+      },
+    };
+
+    const jmespathTransformer = new JmespathTransformer('entity.data.additionalInfo.directors');
+
+    it('should filter using complex logical OR conditions', async () => {
+      const iterativePlugin = new IterativePlugin({
+        name: 'test_complex_or_filters',
+        stateNames: ['test_state'],
+        iterateOn: [jmespathTransformer],
+        action: async context => {
+          return { result: 'success' };
+        },
+        filter: [
+          {
+            strategy: 'json-logic',
+            value: {
+              or: [
+                {
+                  and: [
+                    { '==': [{ var: 'isAuthorizedSignatory' }, true] },
+                    { '<': [{ var: 'age' }, 30] },
+                  ],
+                },
+                {
+                  and: [
+                    { '==': [{ var: 'active' }, true] },
+                    { '>=': [{ var: 'performance.rating' }, 4.3] },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+        successAction: 'SUCCESS',
+        errorAction: 'ERROR',
+      });
+
+      const filteredItems = iterativePlugin.filterItems(
+        complexMockContext.entity.data.additionalInfo.directors,
+      );
+
+      // Should match Director 1 (rating >= 4.3) and Director 3 (auth signatory and age < 30)
+      expect(filteredItems).toHaveLength(2);
+      expect(filteredItems.map(item => item.id)).toContain('1');
+      expect(filteredItems.map(item => item.id)).toContain('3');
+    });
+
+    it('should filter using array operations', async () => {
+      const iterativePlugin = new IterativePlugin({
+        name: 'test_array_operations',
+        stateNames: ['test_state'],
+        iterateOn: [jmespathTransformer],
+        action: async context => {
+          return { result: 'success' };
+        },
+        filter: [
+          {
+            strategy: 'json-logic',
+            value: {
+              in: ['executive', { var: 'tags' }],
+            },
+          },
+        ],
+        successAction: 'SUCCESS',
+        errorAction: 'ERROR',
+      });
+
+      const filteredItems = iterativePlugin.filterItems(
+        complexMockContext.entity.data.additionalInfo.directors,
+      );
+
+      // Should match Director 1 and Director 3 who are tagged as 'executive'
+      expect(filteredItems).toHaveLength(2);
+      expect(filteredItems.map(item => item.id)).toContain('1');
+      expect(filteredItems.map(item => item.id)).toContain('3');
+    });
+
+    it('should filter using date comparison', async () => {
+      const iterativePlugin = new IterativePlugin({
+        name: 'test_date_comparison',
+        stateNames: ['test_state'],
+        iterateOn: [jmespathTransformer],
+        action: async context => {
+          return { result: 'success' };
+        },
+        filter: [
+          {
+            strategy: 'json-logic',
+            value: {
+              '>': [{ var: 'joinDate' }, '2020-01-01'],
+            },
+          },
+        ],
+        successAction: 'SUCCESS',
+        errorAction: 'ERROR',
+      });
+
+      const filteredItems = iterativePlugin.filterItems(
+        complexMockContext.entity.data.additionalInfo.directors,
+      );
+
+      // Should match Director 1 and Director 3 who joined after 2020-01-01
+      expect(filteredItems).toHaveLength(2);
+      expect(filteredItems.map(item => item.id)).toContain('1');
+      expect(filteredItems.map(item => item.id)).toContain('3');
+    });
+  });
 });
