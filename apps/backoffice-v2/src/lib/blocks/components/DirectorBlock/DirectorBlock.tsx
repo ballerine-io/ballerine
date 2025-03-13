@@ -26,7 +26,7 @@ export const DirectorBlock = ({
   const { data: endUser } = useEndUserByIdQuery({ id: director.id });
   const { documents: directorsDocuments, isLoading: isLoadingDocuments } = useDocumentsAdapter({
     documents: director.documents,
-    entityId: director.id,
+    entityIds: [director.id],
   });
   const directorWithAml = {
     ...director,

@@ -91,7 +91,7 @@ export const updateDocumentById = async ({
 
   return handleZodError(error, documents);
 };
-export const getDocuments = async ({
+export const getDocumentsByEntityIdAndWorkflowId = async ({
   entityId,
   workflowId,
 }: {
@@ -103,6 +103,22 @@ export const getDocuments = async ({
     endpoint: `../external/documents/${entityId}/${workflowId}`,
     schema: z.any(),
     timeout: 30000,
+  });
+
+  return handleZodError(error, documents);
+};
+
+export const fetchDocumentsByEntityIdsAndWorkflowId = async ({
+  entityIds,
+  workflowId,
+}: {
+  entityIds: string[];
+  workflowId: string;
+}) => {
+  const [documents, error] = await apiClient({
+    method: Method.GET,
+    endpoint: `../external/documents/by-entity-ids/${entityIds.join(',')}/${workflowId}`,
+    schema: z.any(),
   });
 
   return handleZodError(error, documents);

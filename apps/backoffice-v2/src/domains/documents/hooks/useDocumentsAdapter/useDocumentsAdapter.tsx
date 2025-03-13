@@ -2,25 +2,26 @@ import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/us
 import { extractCountryCodeFromDocuments } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { useMemo } from 'react';
 import { useCallback } from 'react';
-import { useDocumentsQuery } from '../queries/useDocumentsQuery/useDocumentsQuery';
 import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
 import { titleCase } from 'string-ts';
 import { TDocument, valueOrNA } from '@ballerine/common';
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages/useDocumentPageImages';
+import { useDocumentsByEntityIdsAndWorkflowIdQuery } from '../queries/useDocumentsByEntityIdsAndWorkflowIdQuery/useDocumentsByEntityIdsAndWorkflowIdQuery';
 
 export const useDocumentsAdapter = ({
-  entityId,
+  entityIds,
   documents: passedDocuments,
 }: {
-  entityId: string;
+  entityIds: string[];
   documents: TDocument[];
 }) => {
   const { data: workflow } = useCurrentCaseQuery();
-  const { data: documentsV2, isLoading: isLoadingDocumentsV2 } = useDocumentsQuery({
-    workflowId: workflow?.id ?? '',
-    entityId,
-  });
+  const { data: documentsV2, isLoading: isLoadingDocumentsV2 } =
+    useDocumentsByEntityIdsAndWorkflowIdQuery({
+      workflowId: workflow?.id ?? '',
+      entityIds,
+    });
   const { isDocumentsV2 } = workflow?.workflowDefinition?.config ?? {};
   const generateDocumentTitle = useCallback(
     ({ category, type, variant }: { category: string; type: string; variant: string }) => {

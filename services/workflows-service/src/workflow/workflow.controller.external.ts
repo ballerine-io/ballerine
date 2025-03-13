@@ -5,7 +5,7 @@ import * as common from '@nestjs/common';
 import { HttpStatus, NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { ApiOkResponse, ApiResponse } from '@nestjs/swagger';
-import type { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
+import type { WorkflowRuntimeData } from '@prisma/client';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { putPluginsExampleResponse } from '@/workflow/workflow-controller-examples';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';

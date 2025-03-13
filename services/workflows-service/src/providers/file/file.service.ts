@@ -21,7 +21,6 @@ import { TFileServiceProvider } from './types';
 import { TLocalFilePath, TRemoteFileConfig, TS3BucketConfig } from './types/files-types';
 import { IStreamableFileProvider } from './types/interfaces';
 import { CustomerService } from '@/customer/customer.service';
-import { WorkflowRuntimeData } from '@prisma/client';
 
 @Injectable()
 export class FileService {

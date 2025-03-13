@@ -1,10 +1,30 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
-import { fetchDocumentsTrackerItems, getDocuments } from '@/domains/documents/fetchers';
+import {
+  fetchDocumentsByEntityIdsAndWorkflowId,
+  fetchDocumentsTrackerItems,
+  getDocumentsByEntityIdAndWorkflowId,
+} from '@/domains/documents/fetchers';
 
 export const documentsQueryKeys = createQueryKeys('documents', {
-  list: ({ entityId, workflowId }: { entityId: string; workflowId: string }) => ({
+  listByEntityIdAndWorkflowId: ({
+    entityId,
+    workflowId,
+  }: {
+    entityId: string;
+    workflowId: string;
+  }) => ({
     queryKey: [{ entityId, workflowId }],
-    queryFn: () => getDocuments({ entityId, workflowId }),
+    queryFn: () => getDocumentsByEntityIdAndWorkflowId({ entityId, workflowId }),
+  }),
+  listByEntityIdsAndWorkflowId: ({
+    entityIds,
+    workflowId,
+  }: {
+    entityIds: string[];
+    workflowId: string;
+  }) => ({
+    queryKey: [{ entityIds, workflowId }],
+    queryFn: () => fetchDocumentsByEntityIdsAndWorkflowId({ entityIds, workflowId }),
   }),
   trackerItems: ({ workflowId }: { workflowId: string }) => ({
     queryKey: ['documents-tracker-items', workflowId],

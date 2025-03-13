@@ -97,7 +97,7 @@ export const useDocumentUpload = (
 
         const taskRun = async (context: AnyObject) => {
           try {
-            const documents = get(valuesRef.current, element.valueDestination);
+            const documents = get(context, element.valueDestination);
 
             const document = getDocumentObjectFromDocumentsList(documents, element);
 

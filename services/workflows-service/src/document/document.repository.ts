@@ -4,12 +4,14 @@ import { Prisma } from '@prisma/client';
 import { PrismaTransactionClient, TProjectId } from '@/types';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { assertIsDocumentWithFiles } from './helpers/assert-is-document-with-files';
+import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Injectable()
 export class DocumentRepository {
   constructor(
     protected readonly prismaService: PrismaService,
     protected readonly logger: AppLoggerService,
+    protected readonly projectScopeService: ProjectScopeService,
   ) {}
 
   async create(
@@ -36,13 +38,9 @@ export class DocumentRepository {
     args?: Prisma.DocumentFindManyArgs,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
-    return await transaction.document.findMany({
-      ...args,
-      where: {
-        ...args?.where,
-        projectId: { in: projectIds },
-      },
-    });
+    return await transaction.document.findMany(
+      this.projectScopeService.scopeFindMany(args, projectIds),
+    );
   }
 
   async findById(
@@ -51,14 +49,19 @@ export class DocumentRepository {
     args?: Prisma.DocumentFindFirstArgs,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
-    return await transaction.document.findFirst({
-      ...args,
-      where: {
-        ...args?.where,
-        id,
-        projectId: { in: projectIds },
-      },
-    });
+    return await transaction.document.findFirst(
+      this.projectScopeService.scopeFindOne(
+        // @ts-expect-error - dynamically typed for all queries
+        {
+          ...args,
+          where: {
+            ...args?.where,
+            id,
+          },
+        },
+        projectIds,
+      ),
+    );
   }
 
   async findByEntityIdAndWorkflowId(
@@ -68,15 +71,19 @@ export class DocumentRepository {
     args?: Prisma.DocumentFindManyArgs,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
-    return transaction.document.findMany({
-      ...args,
-      where: {
-        ...args?.where,
-        OR: [{ businessId: entityId }, { endUserId: entityId }],
-        workflowRuntimeDataId,
-        projectId: { in: projectIds },
-      },
-    });
+    return transaction.document.findMany(
+      this.projectScopeService.scopeFindMany(
+        {
+          ...args,
+          where: {
+            ...args?.where,
+            OR: [{ businessId: entityId }, { endUserId: entityId }],
+            workflowRuntimeDataId,
+          },
+        },
+        projectIds,
+      ),
+    );
   }
 
   async updateMany(
@@ -84,13 +91,9 @@ export class DocumentRepository {
     args: { data: Prisma.DocumentUpdateManyArgs['data'] } & Partial<Prisma.DocumentUpdateManyArgs>,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
-    return await transaction.document.updateMany({
-      ...args,
-      where: {
-        ...args?.where,
-        projectId: { in: projectIds },
-      },
-    });
+    return await transaction.document.updateMany(
+      this.projectScopeService.scopeUpdateMany(args, projectIds),
+    );
   }
 
   async updateById(
@@ -100,15 +103,19 @@ export class DocumentRepository {
     args?: Prisma.DocumentUpdateManyArgs,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
-    return await transaction.document.updateMany({
-      ...args,
-      where: {
-        ...args?.where,
-        id,
-        projectId: { in: projectIds },
-      },
-      data,
-    });
+    return await transaction.document.updateMany(
+      this.projectScopeService.scopeUpdateMany(
+        {
+          ...args,
+          data,
+          where: {
+            ...args?.where,
+            id,
+          },
+        },
+        projectIds,
+      ),
+    );
   }
 
   async findByIdWithFiles(
@@ -121,21 +128,26 @@ export class DocumentRepository {
       throw new BadRequestException('Document ID is required');
     }
 
-    const documentWithFiles = await transaction.document.findFirst({
-      ...args,
-      where: {
-        ...args?.where,
-        id,
-        projectId: { in: projectIds },
-      },
-      include: {
-        files: {
+    const documentWithFiles = await transaction.document.findFirst(
+      this.projectScopeService.scopeFindOne(
+        // @ts-expect-error - dynamically typed for all queries
+        {
+          ...args,
+          where: {
+            ...args?.where,
+            id,
+          },
           include: {
-            file: true,
+            files: {
+              include: {
+                file: true,
+              },
+            },
           },
         },
-      },
-    });
+        projectIds,
+      ),
+    );
 
     if (!documentWithFiles) {
       return null;
@@ -155,23 +167,61 @@ export class DocumentRepository {
     args?: Prisma.DocumentFindManyArgs,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
-    const documentsWithFiles = await transaction.document.findMany({
-      ...args,
-      where: {
-        ...args?.where,
-        OR: [{ businessId: entityId }, { endUserId: entityId }],
-        workflowRuntimeDataId,
-        projectId: { in: projectIds },
-      },
-      include: {
-        ...args?.include,
-        files: {
+    const documentsWithFiles = await transaction.document.findMany(
+      this.projectScopeService.scopeFindMany(
+        {
+          ...args,
+          where: {
+            ...args?.where,
+            OR: [{ businessId: entityId }, { endUserId: entityId }],
+            workflowRuntimeDataId,
+          },
           include: {
-            file: true,
+            ...args?.include,
+            files: {
+              include: {
+                file: true,
+              },
+            },
           },
         },
-      },
-    });
+        projectIds,
+      ),
+    );
+
+    assertIsDocumentWithFiles(documentsWithFiles, this.logger);
+
+    return documentsWithFiles;
+  }
+
+  async findByEntityIdsAndWorkflowIdWithFiles(
+    entityIds: string[],
+    workflowRuntimeDataId: string,
+    projectIds: TProjectId[],
+    args?: Prisma.DocumentFindManyArgs,
+    transaction: PrismaTransactionClient = this.prismaService,
+  ) {
+    const documentsWithFiles = await transaction.document.findMany(
+      this.projectScopeService.scopeFindMany(
+        {
+          ...args,
+          where: {
+            ...args?.where,
+            OR: [{ businessId: { in: entityIds } }, { endUserId: { in: entityIds } }],
+            workflowRuntimeDataId,
+          },
+          include: {
+            ...args?.include,
+            files: {
+              include: {
+                file: true,
+              },
+            },
+          },
+        },
+        projectIds,
+      ),
+    );
 
     assertIsDocumentWithFiles(documentsWithFiles, this.logger);
 
@@ -183,20 +233,24 @@ export class DocumentRepository {
     args?: Prisma.DocumentFindManyArgs,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
-    const documentsWithFiles = await transaction.document.findMany({
-      ...args,
-      where: {
-        ...args?.where,
-        projectId: { in: projectIds },
-      },
-      include: {
-        files: {
+    const documentsWithFiles = await transaction.document.findMany(
+      this.projectScopeService.scopeFindMany(
+        {
+          ...args,
+          where: {
+            ...args?.where,
+          },
           include: {
-            file: true,
+            files: {
+              include: {
+                file: true,
+              },
+            },
           },
         },
-      },
-    });
+        projectIds,
+      ),
+    );
 
     assertIsDocumentWithFiles(documentsWithFiles, this.logger);
 
@@ -209,13 +263,17 @@ export class DocumentRepository {
     args?: Prisma.DocumentDeleteManyArgs,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
-    return await transaction.document.deleteMany({
-      ...args,
-      where: {
-        ...args?.where,
-        id: { in: ids },
-        projectId: { in: projectIds },
-      },
-    });
+    return await transaction.document.deleteMany(
+      this.projectScopeService.scopeDelete(
+        {
+          ...args,
+          where: {
+            ...args?.where,
+            id: { in: ids },
+          },
+        },
+        projectIds,
+      ),
+    );
   }
 }
