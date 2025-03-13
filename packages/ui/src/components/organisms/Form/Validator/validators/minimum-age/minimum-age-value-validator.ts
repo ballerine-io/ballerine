@@ -3,36 +3,51 @@ import { TValidator } from '../../types';
 import { formatErrorMessage } from '../../utils/format-error-message/format-error-message';
 import { IMinimumAgeValidatorParams } from './types';
 
+const validateStrict = (value: string, requiredAge: number) => {
+  const today = dayjs();
+  const birthDate = dayjs(value);
+
+  // Calculate age using dayjs diff
+  const age = today.diff(birthDate, 'year');
+
+  if (age < requiredAge) {
+    return false;
+  }
+
+  return true;
+};
+
+const validateNonStrict = (value: string, requiredAge: number) => {
+  const currentYear = dayjs().year();
+  const birthYear = dayjs(value).year();
+
+  if (currentYear - birthYear < requiredAge) {
+    return false;
+  }
+
+  return true;
+};
+
 export const minimumAgeValueValidator: TValidator<string, IMinimumAgeValidatorParams> = (
   value,
   params,
 ) => {
+  const { minimumAge, strict = true } = params?.value || {};
   const { message = 'Minimum age is {minimumAge}.' } = params;
 
   if (!dayjs(value).isValid()) {
     throw new Error('Invalid date.');
   }
 
-  const requiredAge = params?.value?.minimumAge;
-
-  if (!requiredAge) {
+  if (!minimumAge) {
     throw new Error('Minimum age is not specified.');
   }
 
-  const today = dayjs();
-  const birthDate = dayjs(value);
+  // Calculate age using dayjs diff
+  const isValid = strict ? validateStrict(value, minimumAge) : validateNonStrict(value, minimumAge);
 
-  // Calculate age considering month and day
-  let age = today.year() - birthDate.year();
-  const monthDiff = today.month() - birthDate.month();
-
-  // Adjust age if birthday hasn't occurred yet this year
-  if (monthDiff < 0 || (monthDiff === 0 && today.date() < birthDate.date())) {
-    age--;
-  }
-
-  if (age < requiredAge) {
-    throw new Error(formatErrorMessage(message, 'minimumAge', requiredAge.toString()));
+  if (!isValid) {
+    throw new Error(formatErrorMessage(message, 'minimumAge', minimumAge.toString()));
   }
 
   return true;

@@ -31,7 +31,7 @@ export const FieldLayout: FunctionComponent<IFieldLayoutProps> = ({
   }
 
   return (
-    <div data-testid={`${id}-field-layout`}>
+    <div data-testid={`${id}-field-layout`} className="w-full">
       <div
         className={ctw('flex py-2', {
           'gap-2': Boolean(label),

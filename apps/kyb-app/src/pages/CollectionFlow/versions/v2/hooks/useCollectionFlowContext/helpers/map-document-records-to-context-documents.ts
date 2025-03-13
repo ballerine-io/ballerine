@@ -55,11 +55,7 @@ export const mapDocumentRecordsToContextDocuments = (
         // When the user attempts to upload this document, we use _document.id to update the existing document
         // rather than creating a new one.
 
-        const documentFileId = fileOrFileId as string;
-
-        const documentRecord = documentFileId
-          ? documentsMap?.[documentFileId]
-          : documentsMap?.[document._document.id!];
+        const documentRecord = documentsMap?.[document._document.id!];
 
         document._document = documentRecord;
       }

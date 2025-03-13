@@ -28,7 +28,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiExcludeController, ApiResponse } from '@nestjs/swagger';
-import { DocumentDecision, DocumentStatus } from '@prisma/client';
+import { Document, DocumentDecision, DocumentFile, DocumentStatus } from '@prisma/client';
 import { Type, type Static } from '@sinclair/typebox';
 import type { Response } from 'express';
 import * as z from 'zod';
@@ -119,7 +119,15 @@ export class CollectionFlowFilesController {
       projectId: tokenScope.projectId,
     });
 
-    return documentsCreationResults.at(-1);
+    const createdDocument: Document & { documentFile?: DocumentFile } =
+      documentsCreationResults.at(-1)!;
+    const documentFiles = await this.documentService.getDocumentFiles(createdDocument.id, [
+      tokenScope.projectId,
+    ]);
+
+    createdDocument.documentFile = documentFiles.at(-1);
+
+    return createdDocument;
   }
 
   @UseInterceptors(
@@ -193,6 +201,13 @@ export class CollectionFlowFilesController {
         ...(document.endUserId && { endUserId: document.endUserId }),
       });
 
+      const createdDocument: Document & { documentFile?: DocumentFile } = createdDocuments.at(-1)!;
+      const documentFiles = await this.documentService.getDocumentFiles(createdDocument.id, [
+        tokenScope.projectId,
+      ]);
+
+      createdDocument.documentFile = documentFiles.at(-1);
+
       return createdDocuments.at(-1);
     }
 
@@ -208,7 +223,15 @@ export class CollectionFlowFilesController {
       projectId: tokenScope.projectId,
     });
 
-    return documentsUpdateResults.at(-1);
+    const updatedDocument: Document & { documentFile?: DocumentFile } =
+      documentsUpdateResults.at(-1)!;
+    const documentFiles = await this.documentService.getDocumentFiles(updatedDocument.id, [
+      tokenScope.projectId,
+    ]);
+
+    updatedDocument.documentFile = documentFiles.at(-1);
+
+    return updatedDocument;
   }
 
   @Delete()

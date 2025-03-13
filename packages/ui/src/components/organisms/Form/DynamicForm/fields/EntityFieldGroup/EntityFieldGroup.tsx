@@ -16,7 +16,7 @@ import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { useTaskRunner } from '../../providers/TaskRunner/hooks/useTaskRunner';
 import { ITask } from '../../providers/TaskRunner/types';
 import { TDynamicFormField } from '../../types';
-import { createOrUpdateFileIdOrFileInDocuments } from '../DocumentField/hooks/useDocumentUpload/helpers/create-or-update-fileid-or-file-in-documents';
+import { createOrUpdateDocumentInList } from '../DocumentField/hooks/useDocumentUpload/helpers/create-or-update-document-in-list';
 import { IFieldListParams, useStack } from '../FieldList';
 import { EntityFieldGroupDocument } from './components/EntityFieldGroupDocument';
 import { EntityFields } from './components/EntityFields';
@@ -132,17 +132,17 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
 
         await Promise.all(
           documentsCreationPayload.map(async documentData => {
-            const documentId = await uploadDocument(documentData.payload);
+            const uploadedDocument = await uploadDocument(documentData.payload);
 
-            const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
+            const updatedDocuments = createOrUpdateDocumentInList(
               get(context, documentData.valueDestination, []),
               documentData.documentDefinition,
-              documentId,
+              uploadedDocument,
             );
 
             set(context, documentData.valueDestination, updatedDocuments);
 
-            return documentId;
+            return uploadedDocument;
           }),
         );
 

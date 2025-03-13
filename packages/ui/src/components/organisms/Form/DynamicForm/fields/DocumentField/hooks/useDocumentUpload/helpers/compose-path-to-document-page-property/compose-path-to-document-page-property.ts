@@ -1,4 +1,4 @@
-export const composePathToFileId = (
+export const composePathToDocumentPageProperty = (
   documentIndex: number,
   pageProperty = 'ballerineFileId',
   pageIndex = 0,

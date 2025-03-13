@@ -1,10 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
-import { PrismaTransactionClient, TProjectId } from '@/types';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { assertIsDocumentWithFiles } from './helpers/assert-is-document-with-files';
+import { PrismaService } from '@/prisma/prisma.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
+import { PrismaTransactionClient, TProjectId } from '@/types';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { assertIsDocumentWithFiles } from './helpers/assert-is-document-with-files';
 
 @Injectable()
 export class DocumentRepository {
@@ -275,5 +275,21 @@ export class DocumentRepository {
         projectIds,
       ),
     );
+  }
+
+  async findDocumentFiles(
+    id: string,
+    projectIds: TProjectId[],
+    args?: Prisma.DocumentFileFindManyArgs,
+    transaction: PrismaTransactionClient = this.prismaService,
+  ) {
+    return await transaction.documentFile.findMany({
+      ...args,
+      where: {
+        ...args?.where,
+        documentId: id,
+        projectId: { in: projectIds },
+      },
+    });
   }
 }
