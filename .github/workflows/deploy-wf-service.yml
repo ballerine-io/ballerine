@@ -16,7 +16,7 @@ on:
       # Run this pipeline only if there are changes in specified path
       - 'services/workflows-service/**'
     branches:
-    - "cicd-auto-run-promote-with-sync-secrets"
+    # - "cicd-auto-run-promote-with-sync-secrets"
     - "sb"
     - "prod"
         
@@ -261,47 +261,6 @@ jobs:
                 "dataSync.image.tag": "${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ env.ENVIRONMENT }}"
               }
             }
-  
-  sync-eks-secrets:
-    runs-on: ubuntu-latest
-    needs: [update-helm-chart]
-    environment: ${{ github.env.ENVIRONMENT }}
-    permissions:
-      contents: read
-    steps:
-      - name: Configure Twingate
-        uses: twingate/github-action@v1
-        with:
-          service-key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
-
-      - name: Install kubectl
-        uses: azure/setup-kubectl@v1
-  
-      - name: Install Helm
-        uses: azure/setup-helm@v3
-        with:
-          version: 'latest'
-      
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: ${{ secrets.AWS_REGION }}
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE }}
-          role-session-name: RoleSession
-
-      - name: Update Kubeconfig for EKS Cluster
-        run: |
-          aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
-
-      - name: "Annotate new secrets in the operator"
-        id: annotate_secrets
-        shell: bash
-        env:
-          NAMESPACE: 'default'
-        run: |
-          echo "Annotating workflow secrets in  namespace: $NAMESPACE"
-          kubectl annotate es wf-${{ env.ENVIRONMENT }}-external-secret -n "$NAMESPACE" force-sync=$(date +%s) --overwrite
-          echo "All deployments in namespace '$NAMESPACE' have been restarted."
 
   send-to-slack:
     runs-on: ubuntu-latest
