@@ -7,6 +7,7 @@ import {
   IUIDefinitionPage,
   TDeepthLevelStack,
 } from '@/common/ui-definition-parse-utils/types';
+import { getEntityId } from '@/common/utils/get-entity-id/get-entity-id';
 import { DocumentFileService } from '@/document-file/document-file.service';
 import { CreateDocumentFileSchema } from '@/document-file/dtos/document-file.dto';
 import { ValidationError } from '@/errors';
@@ -49,7 +50,6 @@ import {
   EntitySchema,
   TParsedDocuments,
 } from './types';
-import { getEntityId } from '@/common/utils/get-entity-id/get-entity-id';
 
 @Injectable()
 export class DocumentService {
@@ -1089,5 +1089,9 @@ export class DocumentService {
         return (curr.version || 0) > (acc.version || 0) ? curr : acc;
       });
     });
+  }
+
+  async getDocumentFiles(documentId: string, projectIds: TProjectId[]) {
+    return this.repository.findDocumentFiles(documentId, projectIds, { include: { file: true } });
   }
 }
