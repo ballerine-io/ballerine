@@ -16,7 +16,7 @@ import {
   checkIfDocumentInRevision,
   checkIfDocumentRequested,
 } from './helpers/check-if-document-requested';
-import { createOrUpdateFileIdOrFileInDocuments } from './helpers/create-or-update-fileid-or-file-in-documents';
+import { createOrUpdateDocumentInList } from './helpers/create-or-update-document-in-list';
 import { getDocumentObjectFromDocumentsList } from './helpers/get-document-object-from-documents-list';
 
 export const useDocumentUpload = (
@@ -74,11 +74,7 @@ export const useDocumentUpload = (
             ? await updateDocument(documentUploadPayload)
             : await uploadDocument(documentUploadPayload);
 
-          const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
-            documents,
-            element,
-            result,
-          );
+          const updatedDocuments = createOrUpdateDocumentInList(documents, element, result);
           onChange(updatedDocuments);
         } catch (error) {
           console.error('Failed to upload file.', error);
@@ -87,7 +83,7 @@ export const useDocumentUpload = (
 
       if (uploadOn === 'submit') {
         const documents = get(valuesRef.current, element.valueDestination);
-        const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
+        const updatedDocuments = createOrUpdateDocumentInList(
           documents,
           element,
           e.target?.files?.[0] as File,
@@ -115,11 +111,7 @@ export const useDocumentUpload = (
               ? await updateDocument(documentUploadPayload)
               : await uploadDocument(documentUploadPayload);
 
-            const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
-              documents,
-              element,
-              result,
-            );
+            const updatedDocuments = createOrUpdateDocumentInList(documents, element, result);
 
             set(context, element.valueDestination, updatedDocuments);
 

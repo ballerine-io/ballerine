@@ -1,9 +1,14 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { IDocumentFieldParams } from '../../../..';
 import { IFormElement } from '../../../../../../..';
-import { createOrUpdateFileIdOrFileInDocuments } from './create-or-update-fileid-or-file-in-documents';
+import { createOrUpdateDocumentInList, TDocument } from './create-or-update-document-in-list';
 
-describe('createOrUpdateFileIdOrFileInDocuments', () => {
+describe('createOrUpdateDocumentInList', () => {
+  beforeEach(() => {
+    // Reset mocks before each test
+    vi.resetAllMocks();
+  });
+
   const mockTemplate = {
     id: 'test-doc',
     type: 'id_card',
@@ -21,17 +26,32 @@ describe('createOrUpdateFileIdOrFileInDocuments', () => {
     } as unknown as IDocumentFieldParams,
   };
 
-  it('should create new document when documents array is empty', () => {
-    const result = createOrUpdateFileIdOrFileInDocuments([], mockElement, 'test-file-id');
+  const mockDocumentResponse: TDocument = {
+    id: 'doc-123',
+    documentFile: {
+      id: 'docfile-123',
+      file: {
+        id: 'file-123',
+        mimeType: 'image/jpeg',
+        fileName: 'test.jpg',
+      },
+    },
+  };
 
+  it('should create new document when documents array is empty', () => {
+    // Arrange
+    const emptyDocuments: Array<IDocumentFieldParams['template']> = [];
+
+    // Act
+    const result = createOrUpdateDocumentInList(emptyDocuments, mockElement, mockDocumentResponse);
+
+    // Assert
     expect(result).toHaveLength(1);
     expect(result[0]?.id).toBe('test-doc');
-
-    //@ts-ignore
-    expect(result[0]?.pages[0].ballerineFileId).toBe('test-file-id');
   });
 
   it('should create new document when document with template id does not exist', () => {
+    // Arrange
     const existingDocs = [
       {
         id: 'different-doc',
@@ -40,15 +60,16 @@ describe('createOrUpdateFileIdOrFileInDocuments', () => {
       },
     ] as unknown as Array<IDocumentFieldParams['template']>;
 
-    const result = createOrUpdateFileIdOrFileInDocuments(existingDocs, mockElement, 'test-file-id');
+    // Act
+    const result = createOrUpdateDocumentInList(existingDocs, mockElement, mockDocumentResponse);
 
+    // Assert
     expect(result).toHaveLength(2);
     expect(result[1]?.id).toBe('test-doc');
-    //@ts-ignore
-    expect(result[1]?.pages[0].ballerineFileId).toBe('test-file-id');
   });
 
   it('should update existing document when document with template id exists', () => {
+    // Arrange
     const existingDocs = [
       {
         id: 'test-doc',
@@ -57,25 +78,28 @@ describe('createOrUpdateFileIdOrFileInDocuments', () => {
       },
     ] as unknown as Array<IDocumentFieldParams['template']>;
 
-    const result = createOrUpdateFileIdOrFileInDocuments(existingDocs, mockElement, 'new-file-id');
+    // Act
+    const result = createOrUpdateDocumentInList(existingDocs, mockElement, mockDocumentResponse);
 
+    // Assert
     expect(result).toHaveLength(1);
     expect(result[0]?.id).toBe('test-doc');
-    //@ts-ignore
-    expect(result[0]?.pages[0].ballerineFileId).toBe('new-file-id');
+    expect(result[0]?._document).toBe(mockDocumentResponse);
   });
 
-  it('should handle File object as fileIdOrFile parameter', () => {
+  it('should handle File object as document parameter', () => {
+    // Arrange
     const mockFile = new File([''], 'test.jpg', { type: 'image/jpeg' });
 
-    const result = createOrUpdateFileIdOrFileInDocuments([], mockElement, mockFile);
+    // Act
+    const result = createOrUpdateDocumentInList([], mockElement, mockFile);
 
+    // Assert
     expect(result).toHaveLength(1);
-    //@ts-ignore
-    expect(result[0]?.pages[0].ballerineFileId).toBe(mockFile);
   });
 
   it('should return original documents when template is missing', () => {
+    // Arrange
     const elementWithoutTemplate = {
       ...mockElement,
       params: {},
@@ -89,16 +113,26 @@ describe('createOrUpdateFileIdOrFileInDocuments', () => {
       },
     ] as unknown as Array<IDocumentFieldParams['template']>;
 
-    const result = createOrUpdateFileIdOrFileInDocuments(
+    // Mock console.error
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    // Act
+    const result = createOrUpdateDocumentInList(
       existingDocs,
       elementWithoutTemplate,
-      'new-file-id',
+      mockDocumentResponse,
     );
 
+    // Assert
     expect(result).toBe(existingDocs);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Document template is missing on element',
+      elementWithoutTemplate,
+    );
   });
 
   it('should use default values for pageIndex and pageProperty when not provided', () => {
+    // Arrange
     const elementWithoutPageParams = {
       ...mockElement,
       params: {
@@ -106,14 +140,12 @@ describe('createOrUpdateFileIdOrFileInDocuments', () => {
       },
     } as unknown as IFormElement<'documentfield', IDocumentFieldParams>;
 
-    const result = createOrUpdateFileIdOrFileInDocuments(
-      [],
-      elementWithoutPageParams,
-      'test-file-id',
-    );
+    // Act
+    const result = createOrUpdateDocumentInList([], elementWithoutPageParams, mockDocumentResponse);
 
+    // Assert
     expect(result).toHaveLength(1);
-    //@ts-ignore
-    expect(result[0]?.pages[0].ballerineFileId).toBe('test-file-id');
+    console.log(result[0]);
+    expect(result[0]?._document).toBe(mockDocumentResponse);
   });
 });
