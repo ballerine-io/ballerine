@@ -22,7 +22,6 @@ export const useEntitiesDocuments = (
     [workflow, filter],
   );
 
-  console.log('DIRECTORS', directors);
   const entityIds = useMemo(
     () =>
       [
@@ -60,8 +59,6 @@ export const useEntitiesDocuments = (
     [directors, ubos, workflow?.context?.entity?.ballerineEntityId],
   );
 
-  console.log('ubos', ubos);
-
   const getDocumentEntity = useCallback(
     (document: TDocument) => {
       if (document.businessId === workflow?.context?.entity?.ballerineEntityId) {
@@ -81,8 +78,39 @@ export const useEntitiesDocuments = (
     [directors, ubos, workflow?.context?.entity, getDocumentEntityType],
   );
 
+  // Documents are sorted in following order: business, ubo, director
+  const sortedDocuments = useMemo(() => {
+    if (!documents?.length) {
+      return [];
+    }
+
+    return [...documents].sort((a, b) => {
+      const typeA = getDocumentEntityType(a);
+      const typeB = getDocumentEntityType(b);
+
+      // Order: business, ubo, director
+      if (typeA === 'business' && typeB !== 'business') {
+        return -1;
+      }
+
+      if (typeA !== 'business' && typeB === 'business') {
+        return 1;
+      }
+
+      if (typeA === 'ubo' && typeB !== 'ubo') {
+        return -1;
+      }
+
+      if (typeA !== 'ubo' && typeB === 'ubo') {
+        return 1;
+      }
+
+      return 0;
+    });
+  }, [documents, getDocumentEntityType]);
+
   return {
-    documents,
+    documents: sortedDocuments,
     documentsSchemas,
     isLoading,
     getDocumentEntityType,
