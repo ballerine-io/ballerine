@@ -49,12 +49,6 @@ export const useDocumentUpload = (
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       removeTask(id);
 
-      if (!metadata.entityId) {
-        console.warn('Entity ID is missing on element', element, 'Upload will be skipped.');
-
-        return;
-      }
-
       if (uploadOn === 'change') {
         try {
           const documents = get(valuesRef.current, element.valueDestination);
