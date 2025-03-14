@@ -4,7 +4,6 @@ export const DEFAULT_CREATION_PARAMS = {
   headers: {
     Authorization: 'Bearer {_app.accessToken}',
   },
-  resultPath: 'id',
 } as const;
 
 export const DEFAULT_UPDATE_PARAMS = {
@@ -13,7 +12,6 @@ export const DEFAULT_UPDATE_PARAMS = {
   headers: {
     Authorization: 'Bearer {_app.accessToken}',
   },
-  resultPath: 'id',
 } as const;
 
 export const DEFAULT_DELETION_PARAMS = {

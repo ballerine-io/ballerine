@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/ui",
   "private": false,
-  "version": "0.7.110",
+  "version": "0.7.114",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -74,7 +74,7 @@
     "react-phone-input-2": "^2.15.1",
     "recharts": "^2.7.2",
     "sonner": "^1.4.3",
-    "string-ts": "^1.2.0",
+    "string-ts": "1.2.0",
     "tailwind-merge": "^1.10.0",
     "zod": "^3.23.4"
   },

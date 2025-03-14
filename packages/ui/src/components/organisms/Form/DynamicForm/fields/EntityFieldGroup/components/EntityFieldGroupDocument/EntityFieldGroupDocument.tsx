@@ -21,12 +21,13 @@ import { ITask } from '../../../../providers/TaskRunner/types';
 import { IFormElement, TDynamicFormElement } from '../../../../types';
 import { getDocumentObjectFromDocumentsList, IDocumentFieldParams } from '../../../DocumentField';
 import { buildDocumentFormData } from '../../../DocumentField/helpers/build-document-form-data';
+import { useDocumentLabelElement } from '../../../DocumentField/hooks/useDocumentLabelElement';
 import { useDocumentState } from '../../../DocumentField/hooks/useDocumentState/useDocumentState';
 import {
   checkIfDocumentInRevision,
   checkIfDocumentRequested,
 } from '../../../DocumentField/hooks/useDocumentUpload/helpers/check-if-document-requested';
-import { createOrUpdateFileIdOrFileInDocuments } from '../../../DocumentField/hooks/useDocumentUpload/helpers/create-or-update-fileid-or-file-in-documents';
+import { createOrUpdateDocumentInList } from '../../../DocumentField/hooks/useDocumentUpload/helpers/create-or-update-document-in-list';
 import { getFileOrFileIdFromDocumentsList } from '../../../DocumentField/hooks/useDocumentUpload/helpers/get-file-or-fileid-from-documents-list';
 import { removeDocumentFromListByTemplateId } from '../../../DocumentField/hooks/useDocumentUpload/helpers/remove-document-from-list-by-template-id';
 import { useStack } from '../../../FieldList';
@@ -192,11 +193,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
               ? await updateDocument(documentUploadPayload)
               : await createDocument(documentUploadPayload);
 
-            const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
-              documents,
-              element,
-              result,
-            );
+            const updatedDocuments = createOrUpdateDocumentInList(documents, element, result);
             onChange(updatedDocuments);
           } catch (error) {
             console.error('Failed to upload file.', error);
@@ -205,7 +202,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
 
         if (uploadOn === 'submit') {
           const documents = get(valuesRef.current, element.valueDestination);
-          const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
+          const updatedDocuments = createOrUpdateDocumentInList(
             documents,
             element,
             e.target?.files?.[0] as File,
@@ -230,11 +227,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
                 ? await updateDocument(documentUploadPayload)
                 : await createDocument(documentUploadPayload);
 
-              const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
-                documents,
-                element,
-                result,
-              );
+              const updatedDocuments = createOrUpdateDocumentInList(documents, element, result);
 
               set(context, element.valueDestination, updatedDocuments);
 
@@ -255,7 +248,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
         }
       } else {
         const documents = get(valuesRef.current, element.valueDestination);
-        const updatedDocuments = createOrUpdateFileIdOrFileInDocuments(
+        const updatedDocuments = createOrUpdateDocumentInList(
           documents,
           element,
           e.target?.files?.[0] as File,
@@ -265,7 +258,6 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
     },
     [
       uploadOn,
-      metadata,
       addTask,
       removeTask,
       onChange,
@@ -279,7 +271,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
   );
 
   return (
-    <FieldLayout element={element} elementState={documentState}>
+    <FieldLayout element={useDocumentLabelElement(element)} elementState={documentState}>
       <div
         className={ctw(
           'relative flex h-[56px] flex-row items-center gap-3 rounded-[16px] border bg-white px-4',

@@ -16,8 +16,8 @@ export type TBaseValidators =
   | 'minimum'
   | 'maximum'
   | 'format'
-  | 'document';
-
+  | 'document'
+  | 'minimumAge';
 export interface ICommonValidator<T = object, TValidatorType extends string = TBaseValidators> {
   type: TValidatorType;
   value: T;

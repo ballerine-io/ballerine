@@ -1,5 +1,29 @@
 # @ballerine/ui
 
+## 0.7.114
+
+### Patch Changes
+
+- Bump
+
+## 0.7.113
+
+### Patch Changes
+
+- Bump
+
+## 0.7.112
+
+### Patch Changes
+
+- Bump UI & KYB
+
+## 0.7.111
+
+### Patch Changes
+
+- Added minimumAge validator
+
 ## 0.7.110
 
 ### Patch Changes

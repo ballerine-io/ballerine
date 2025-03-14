@@ -1228,4 +1228,8 @@ export class DocumentService {
       });
     });
   }
+
+  async getDocumentFiles(documentId: string, projectIds: TProjectId[]) {
+    return this.repository.findDocumentFiles(documentId, projectIds, { include: { file: true } });
+  }
 }
