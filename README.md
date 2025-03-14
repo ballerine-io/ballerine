@@ -74,6 +74,7 @@ We believe in enabling companies to manage user  identity  and risk according to
 **Parts of the system you might look for but are not in THIS demo:**
 - Our Rule Engine is still under construction and will soon be released.
 
+
 **Getting started**
 To set up a local environment, follow these steps:
 1. #### Install prerequisites:
@@ -127,7 +128,7 @@ Once the process is complete,  _2 tabs_   will open in your browser:
    - The Back Office case will update as you progress
 
 3. **Review & Process**
-   - Once complete, the case status changes to "manual review" 
+   - Once complete, the case status changes to "manual review"
    - Assign the case to yourself
    - Choose to: Approve, Reject, or Request Resubmission
 
