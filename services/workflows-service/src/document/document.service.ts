@@ -1200,14 +1200,16 @@ export class DocumentService {
 
   getLatestDocumentVersions(documents: Document[]) {
     const documentsByType = documents.reduce((acc, document) => {
-      const documentId = getDocumentId(
-        {
-          type: document.type,
-          category: document.category,
-          issuingCountry: document.issuingCountry,
-        },
-        false,
-      );
+      const documentId = document.businessId
+        ? getDocumentId(
+            {
+              type: document.type,
+              category: document.category,
+              issuingCountry: document.issuingCountry,
+            },
+            false,
+          )
+        : `${document.endUserId}-${document.type}-${document.category}-${document.issuingCountry}`;
 
       if (!acc[documentId]) {
         acc[documentId] = [];
