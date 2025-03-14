@@ -1,12 +1,11 @@
-import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
-import { extractCountryCodeFromDocuments } from '@/pages/Entity/hooks/useEntityLogic/utils';
-import { useMemo } from 'react';
-import { useCallback } from 'react';
-import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
-import { titleCase } from 'string-ts';
-import { TDocument, valueOrNA } from '@ballerine/common';
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages/useDocumentPageImages';
+import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
+import { extractCountryCodeFromDocuments } from '@/pages/Entity/hooks/useEntityLogic/utils';
+import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
+import { TDocument, valueOrNA } from '@ballerine/common';
+import { useCallback, useMemo } from 'react';
+import { titleCase } from 'string-ts';
 import { useDocumentsByEntityIdsAndWorkflowIdQuery } from '../queries/useDocumentsByEntityIdsAndWorkflowIdQuery/useDocumentsByEntityIdsAndWorkflowIdQuery';
 
 export const useDocumentsAdapter = ({
@@ -123,7 +122,14 @@ export const useDocumentsAdapter = ({
     }));
   };
 
-  const documents = getDocuments();
+  const documents = useMemo(getDocuments, [
+    documentsV2,
+    passedDocuments,
+    documentPagesToDetailsAdapter,
+    generateDocumentTitle,
+    identificationDocuments,
+    isDocumentsV2,
+  ]);
 
   const issuerCountryCode = extractCountryCodeFromDocuments(documents ?? []);
   const documentsSchemas = getDocumentsSchemas(issuerCountryCode, workflow);
