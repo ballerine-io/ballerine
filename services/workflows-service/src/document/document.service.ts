@@ -109,7 +109,7 @@ export class DocumentService {
         )?.mimeType ||
         '',
     });
-    const document = await this.repository.create(
+    const createdDocument = await this.repository.create(
       {
         ...data,
         ...(data.businessId && { businessId: data.businessId }),
@@ -122,7 +122,7 @@ export class DocumentService {
 
     await this.documentFileService.create(
       {
-        documentId: document.id,
+        documentId: createdDocument.id,
         fileId: uploadedFile.id,
         projectId,
         ...metadata,
@@ -131,7 +131,17 @@ export class DocumentService {
       transaction,
     );
 
-    return await this.getByEntityIdAndWorkflowId(entityId, data.workflowRuntimeDataId, [projectId]);
+    const documents = await this.getByEntityIdAndWorkflowId(entityId, data.workflowRuntimeDataId, [
+      projectId,
+    ]);
+
+    const createdAndFormattedDocument = documents.find(doc => createdDocument.id === doc.id);
+
+    if (!createdAndFormattedDocument) {
+      throw new BadRequestException(`Document with an id of "${createdDocument.id}" was not found`);
+    }
+
+    return createdAndFormattedDocument;
   }
 
   async getDocumentById(documentId: string, projectId: TProjectId) {
