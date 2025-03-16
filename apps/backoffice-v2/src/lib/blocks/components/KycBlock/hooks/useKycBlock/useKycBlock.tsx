@@ -283,6 +283,7 @@ export const useKycBlock = ({
           childWorkflowId: childWorkflow?.id,
           childWorkflowContextSchema: childWorkflow?.workflowDefinition?.contextSchema,
           disabled: isDisabled,
+          documentsType: 'kyc',
         },
       })
       .addCell({

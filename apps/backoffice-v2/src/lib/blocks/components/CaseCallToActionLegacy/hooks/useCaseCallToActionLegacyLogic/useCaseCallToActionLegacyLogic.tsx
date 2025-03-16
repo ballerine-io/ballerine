@@ -12,12 +12,14 @@ export const useCaseCallToActionLegacyLogic = ({
   parentWorkflowId,
   childWorkflowId,
   childWorkflowContextSchema,
+  documentsType = 'kyb',
 }: {
   parentWorkflowId: string;
   childWorkflowId: string;
   childWorkflowContextSchema: NonNullable<
     TWorkflowById['childWorkflows']
   >[number]['workflowDefinition']['contextSchema'];
+  documentsType: 'kyb' | 'kyc';
 }) => {
   const filterId = useFilterId();
 
@@ -45,34 +47,47 @@ export const useCaseCallToActionLegacyLogic = ({
   const childWorkflow = parentWorkflow?.childWorkflows?.find(
     workflow => workflow.id === childWorkflowId,
   );
-  const { data: documents, isLoading: isLoadingDocumentsV2 } =
-    useDocumentsByEntityIdsAndWorkflowIdQuery({
-      workflowId: parentWorkflowId,
-      entityIds: [childWorkflow?.context?.entity?.ballerineEntityId ?? ''],
-    });
+  const { data: documents } = useDocumentsByEntityIdsAndWorkflowIdQuery({
+    workflowId: parentWorkflowId,
+    entityIds: [childWorkflow?.context?.entity?.ballerineEntityId ?? ''],
+  });
 
-  const nonIdentificationDocumentsIds = useMemo(() => {
+  const documentIds = useMemo(() => {
+    if (documentsType === 'kyc') {
+      return (
+        documents
+          ?.filter(document => document.type === 'identification_document')
+          ?.map(document => document.id) ?? []
+      );
+    }
+
     return (
       // 'identification_document' is exclusive to Veriff
       documents
         ?.filter(document => document.type !== 'identification_document')
         ?.map(document => document.id) ?? []
     );
-  }, [documents]);
+  }, [documents, documentsType]);
   // /Queries
 
   // Mutations
   const { mutate: mutateApproveCase, isLoading: isLoadingApproveCase } =
     useApproveCaseAndDocumentsMutation({
       workflowId: childWorkflowId,
-      ids: nonIdentificationDocumentsIds,
-      isDocumentsV2: !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
+      ids: documentIds,
+      isDocumentsV2:
+        documentsType === 'kyc'
+          ? false
+          : !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
     });
   const { mutate: mutateRevisionCase, isLoading: isLoadingRevisionCase } =
     useRevisionCaseAndDocumentsMutation({
       workflowId: childWorkflowId,
-      ids: nonIdentificationDocumentsIds,
-      isDocumentsV2: !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
+      ids: documentIds,
+      isDocumentsV2:
+        documentsType === 'kyc'
+          ? false
+          : !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
     });
   // /Mutations
 
