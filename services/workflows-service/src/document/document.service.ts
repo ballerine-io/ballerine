@@ -7,6 +7,7 @@ import {
   IUIDefinitionPage,
   TDeepthLevelStack,
 } from '@/common/ui-definition-parse-utils/types';
+import { getEntityId } from '@/common/utils/get-entity-id/get-entity-id';
 import { DocumentFileService } from '@/document-file/document-file.service';
 import { CreateDocumentFileSchema } from '@/document-file/dtos/document-file.dto';
 import { ValidationError } from '@/errors';
@@ -49,7 +50,6 @@ import {
   EntitySchema,
   TParsedDocuments,
 } from './types';
-import { getEntityId } from '@/common/utils/get-entity-id/get-entity-id';
 
 @Injectable()
 export class DocumentService {
@@ -178,6 +178,40 @@ export class DocumentService {
   ) {
     const documents = await this.repository.findByEntityIdAndWorkflowIdWithFiles(
       entityId,
+      workflowRuntimeDataId,
+      projectIds,
+      args,
+      transaction,
+    );
+
+    const workflowDefinition = await this.workflowDefinitionService.getByWorkflowRuntimeDataId(
+      workflowRuntimeDataId,
+      projectIds,
+    );
+
+    if (!workflowDefinition) {
+      throw new BadRequestException(
+        `Workflow definition for a workflow with an id of "${workflowRuntimeDataId}" not found`,
+      );
+    }
+
+    const formattedDocuments = await this.formatDocuments({
+      documents,
+      documentSchema: workflowDefinition.documentsSchema,
+    });
+
+    return this.getLatestDocumentVersions(formattedDocuments);
+  }
+
+  async getByEntityIdsAndWorkflowId(
+    entityIds: string[],
+    workflowRuntimeDataId: string,
+    projectIds: TProjectId[],
+    args?: Omit<Prisma.DocumentFindManyArgs, 'where'>,
+    transaction?: PrismaTransactionClient,
+  ) {
+    const documents = await this.repository.findByEntityIdsAndWorkflowIdWithFiles(
+      entityIds,
       workflowRuntimeDataId,
       projectIds,
       args,
@@ -585,11 +619,15 @@ export class DocumentService {
         '',
     });
 
-    await this.documentFileService.updateById(fileId, {
-      file: {
-        connect: { id: uploadedFile.id },
+    await this.documentFileService.updateById(
+      fileId,
+      {
+        file: {
+          connect: { id: uploadedFile.id },
+        },
       },
-    });
+      projectIds,
+    );
 
     const documents = await this.repository.findManyWithFiles(projectIds);
 
@@ -1089,5 +1127,9 @@ export class DocumentService {
         return (curr.version || 0) > (acc.version || 0) ? curr : acc;
       });
     });
+  }
+
+  async getDocumentFiles(documentId: string, projectIds: TProjectId[]) {
+    return this.repository.findDocumentFiles(documentId, projectIds, { include: { file: true } });
   }
 }

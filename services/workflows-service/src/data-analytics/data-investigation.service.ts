@@ -1,4 +1,3 @@
-import { AggregateType } from '@/data-analytics/consts';
 import { ALERT_DEFINITIONS } from './../../scripts/alerts/generate-alerts';
 import { SubjectRecord, TExecutionDetails } from '@/alert/types';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
