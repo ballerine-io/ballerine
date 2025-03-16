@@ -441,7 +441,7 @@ class FuzzyMatchScoreLt extends BaseOperator<Primitive, Primitive, Promise<boole
       throw new Error(`${this.operator}: Threshold must be a number between 0 and 100`);
     }
 
-    const response = await options.unifiedApiClient.runEntityMatchingAi({
+    const response = await options.unifiedApiClient.runEntityMatchingV2({
       entity1: dataValue.toString(),
       entity2: conditionValue.toString(),
       includeAnalysis: false,
