@@ -15,7 +15,9 @@ export const updateDocuments = (
   }
 
   existingDocuments?.forEach(document => {
-    if (!document) return;
+    if (!document) {
+      return;
+    }
 
     updatedDocumentsMap.set(document.id!, document);
   });

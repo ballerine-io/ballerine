@@ -1,5 +1,203 @@
 # @ballerine/workflow-core
 
+## 0.6.101
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.80
+
+## 0.6.100
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.79
+
+## 0.6.99
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.78
+
+## 0.6.98
+
+### Patch Changes
+
+- Bump
+
+## 0.6.97
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.77
+
+## 0.6.96
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.76
+
+## 0.6.95
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.75
+
+## 0.6.94
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.74
+
+## 0.6.93
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.73
+
+## 0.6.92
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.72
+
+## 0.6.91
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.71
+
+## 0.6.90
+
+### Patch Changes
+
+- versio bump
+
+## 0.6.89
+
+### Patch Changes
+
+- updated packages
+- Updated dependencies
+  - @ballerine/common@0.9.70
+
+## 0.6.88
+
+### Patch Changes
+
+- updated common and core
+- Updated dependencies
+  - @ballerine/common@0.9.69
+
+## 0.6.87
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.68
+
+## 0.6.86
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.67
+
+## 0.6.85
+
+### Patch Changes
+
+- version bump
+  s Please enter a summary for your changes.
+- Updated dependencies
+  - @ballerine/common@0.9.66
+
+## 0.6.84
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.65
+
+## 0.6.83
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.64
+
+## 0.6.82
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.63
+
+## 0.6.81
+
+### Patch Changes
+
+- bump
+
+## 0.6.80
+
+### Patch Changes
+
+- Fixed withQualityControl in plugins
+- Updated dependencies
+  - @ballerine/common@0.9.61
+
+## 0.6.79
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.60
+
+## 0.6.78
+
+### Patch Changes
+
+- core
+- Updated dependencies
+  - @ballerine/common@0.9.59
+
+## 0.6.77
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.58
+
+## 0.6.76
+
+### Patch Changes
+
+- Added no op event to workflow runner
+
+## 0.6.75
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.57
+
 ## 0.6.74
 
 ### Patch Changes

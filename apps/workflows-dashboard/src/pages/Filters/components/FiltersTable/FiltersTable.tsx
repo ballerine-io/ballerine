@@ -21,6 +21,7 @@ interface Props {
   onSort?: (key: string, direction: 'asc' | 'desc') => void;
 }
 
+// eslint-disable-next-line react/display-name
 export const FiltersTable = memo(({ items, isFetching, sorting, onSort }: Props) => {
   const table = useReactTable({
     columns: filtersTableColumns,

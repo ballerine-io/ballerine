@@ -5,8 +5,9 @@ import { useIsMobile } from '@/common/components/organisms/Sidebar/hooks/useIsMo
 import { TSidebarContext } from './types';
 import { SidebarContext } from './Sidebar.Context';
 
-const SIDEBAR_WIDTH = '25rem';
 const SIDEBAR_WIDTH_ICON = '3rem';
+const SIDEBAR_WIDTH = '20rem';
+const SIDEBAR_WIDTH_XL = '25rem';
 const SIDEBAR_KEYBOARD_SHORTCUT = 'b';
 const SIDEBAR_COOKIE_NAME = 'sidebar:state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -14,6 +15,11 @@ const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 export const SidebarProvider = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'> & {
+    style?: React.CSSProperties & {
+      '--sidebar-width'?: string;
+      '--sidebar-width-mobile'?: string;
+      '--sidebar-width-xl'?: string;
+    };
     defaultOpen?: boolean;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
@@ -96,13 +102,14 @@ export const SidebarProvider = React.forwardRef<
           <div
             style={
               {
-                '--sidebar-width': SIDEBAR_WIDTH,
                 '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
+                '--sidebar-width': SIDEBAR_WIDTH,
+                '--sidebar-width-xl': SIDEBAR_WIDTH_XL,
                 ...style,
               } as React.CSSProperties
             }
             className={ctw(
-              'group/sidebar-wrapper min-h-svh has-[[data-variant=inset]]:bg-sidebar flex w-full',
+              'group/sidebar-wrapper has-[[data-variant=inset]]:bg-sidebar min-h-svh flex w-full',
               className,
             )}
             ref={ref}

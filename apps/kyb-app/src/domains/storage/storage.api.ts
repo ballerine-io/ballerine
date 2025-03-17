@@ -6,7 +6,7 @@ export const uploadFile = async (dto: UploadFileDto): Promise<{ id: string }> =>
   formData.append('file', dto.file);
 
   const { id: fileId } = await request
-    .post('collection-flow/files', {
+    .post('collection-flow/files/old', {
       body: formData,
     })
     .json<{

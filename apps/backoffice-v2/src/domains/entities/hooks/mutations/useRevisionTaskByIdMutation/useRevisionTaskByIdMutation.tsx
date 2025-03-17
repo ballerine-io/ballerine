@@ -15,11 +15,13 @@ export const useRevisionTaskByIdMutation = () => {
       workflowId,
       documentId,
       reason,
+      directorId,
       contextUpdateMethod,
     }: {
       workflowId: string;
       documentId: string;
       reason?: string;
+      directorId?: string;
       contextUpdateMethod?: 'base' | 'director';
     }) =>
       updateWorkflowDecision({
@@ -27,6 +29,7 @@ export const useRevisionTaskByIdMutation = () => {
         documentId,
         contextUpdateMethod,
         body: {
+          directorId,
           decision: Action.REVISION,
           reason,
         },

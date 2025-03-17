@@ -52,6 +52,7 @@ export class SessionSerializer extends PassportSerializer {
       });
 
       const { userToProjects, ...userData } = userResult;
+
       const authenticatedEntity = {
         user: userData,
         projectIds: userToProjects?.map(userToProject => userToProject.projectId) || null,
@@ -60,7 +61,9 @@ export class SessionSerializer extends PassportSerializer {
 
       return done(null, authenticatedEntity);
     } catch (err) {
-      if (!isRecordNotFoundError(err)) throw err;
+      if (!isRecordNotFoundError(err)) {
+        throw err;
+      }
 
       return done(null, null);
     }

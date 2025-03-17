@@ -23,10 +23,12 @@ export type WorkflowDefinitionConfigTheme = z.infer<typeof WorkflowDefinitionCon
 export const WorkflowDefinitionConfigSchema = z
   .object({
     enableManualCreation: z.boolean().default(false),
+    isDocumentsV2: z.boolean().default(false),
     isManualCreation: z.boolean().default(false),
     isAssociatedCompanyKybEnabled: z.boolean().default(false),
     isCaseOverviewEnabled: z.boolean().default(false),
     isCaseRiskOverviewEnabled: z.boolean().default(false),
+    isDocumentTrackerEnabled: z.boolean().default(false),
     theme: WorkflowDefinitionConfigThemeSchema.default({
       type: WorkflowDefinitionConfigThemeEnum.KYB,
     }),
@@ -43,6 +45,24 @@ export const WorkflowDefinitionConfigSchema = z
                   .optional(),
               })
               .optional(),
+          })
+          .optional(),
+      })
+      .optional(),
+    editableContext: z
+      .object({
+        kyc: z
+          .object({
+            entity: z.boolean().optional(),
+          })
+          .optional(),
+      })
+      .optional(),
+    ubos: z
+      .object({
+        create: z
+          .object({
+            enabled: z.boolean().optional(),
           })
           .optional(),
       })
@@ -66,6 +86,10 @@ export const WorkflowDefinitionByIdSchema = ObjectWithIdSchema.extend({
       commonPlugins: z.array(PluginSchema).optional(),
       childWorkflowPlugins: z.array(PluginSchema).optional(),
     })
+    .optional()
+    .nullable(),
+  uiDefinitions: z
+    .array(z.object({ id: z.string(), uiContext: z.string() }))
     .optional()
     .nullable(),
 });

@@ -39,6 +39,12 @@ import { isInstanceOfFunction, SortDirection } from '@ballerine/common';
 import { checkIsBooleanishRecord } from '@/common/utils/check-is-booleanish-record/check-is-booleanish-record';
 import { ChevronDown } from 'lucide-react';
 
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    useWrapper?: boolean;
+  }
+}
+
 export interface IDataTableProps<TData, TValue = any> {
   data: TData[];
   columns: Array<ColumnDef<TData, TValue>>;
@@ -73,19 +79,26 @@ export interface IDataTableProps<TData, TValue = any> {
     onSelect: (ids: Record<string, boolean>) => void;
     selected: Record<string, boolean>;
   };
+
+  scrollRef?: React.RefObject<HTMLDivElement>;
+  handleScroll?: (event: React.UIEvent<HTMLDivElement>) => void;
 }
 
-export const DataTable = <TData extends RowData, TValue = any>({
-  data,
-  props,
-  caption,
-  columns,
-  CellContentWrapper,
-  options = {},
-  CollapsibleContent,
-  sort,
-  select,
-}: IDataTableProps<TData, TValue>) => {
+const DataTableBase = <TData extends RowData, TValue = any>(
+  {
+    data,
+    props,
+    caption,
+    columns,
+    CellContentWrapper,
+    options = {},
+    CollapsibleContent,
+    sort,
+    select,
+    handleScroll,
+  }: IDataTableProps<TData, TValue>,
+  ref: React.ForwardedRef<HTMLDivElement>,
+) => {
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const { enableSorting = false } = options;
@@ -156,7 +169,9 @@ export const DataTable = <TData extends RowData, TValue = any>({
   );
 
   useEffect(() => {
-    if (Object.keys(ids ?? {}).length > 0) return;
+    if (Object.keys(ids ?? {}).length > 0) {
+      return;
+    }
 
     setRowSelection({});
   }, [ids]);
@@ -204,7 +219,7 @@ export const DataTable = <TData extends RowData, TValue = any>({
 
   return (
     <div className="relative overflow-auto rounded-md border bg-white shadow">
-      <ScrollArea orientation="both" {...props?.scroll}>
+      <ScrollArea orientation="both" {...props?.scroll} onScrollCapture={handleScroll} ref={ref}>
         <Table {...props?.table}>
           {caption && (
             <TableCaption
@@ -284,7 +299,7 @@ export const DataTable = <TData extends RowData, TValue = any>({
                         {...props?.cell}
                         className={ctw('!py-px !pl-3.5', props?.cell?.className)}
                       >
-                        {CellContentWrapper ? (
+                        {CellContentWrapper && !cell.column.columnDef.meta?.useWrapper ? (
                           <CellContentWrapper cell={cell}>
                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                           </CellContentWrapper>
@@ -327,3 +342,8 @@ export const DataTable = <TData extends RowData, TValue = any>({
     </div>
   );
 };
+
+const forward = React.forwardRef as <T, P = NonNullable<unknown>>(
+  render: (props: P, ref: React.Ref<T>) => React.ReactNode,
+) => (props: P & React.RefAttributes<T>) => React.ReactNode;
+export const DataTable = forward(DataTableBase);

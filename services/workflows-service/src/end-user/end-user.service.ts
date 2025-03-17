@@ -94,23 +94,23 @@ export class EndUserService {
     );
   }
 
-  async updateById(id: string, endUser: Omit<Prisma.EndUserUpdateArgs, 'where'>) {
+  async updateById(id: string, args: Parameters<EndUserRepository['updateById']>[1]) {
     let activeMonitorings;
 
-    if (endUser.data.activeMonitorings !== undefined) {
-      activeMonitorings = EndUserActiveMonitoringsSchema.parse(endUser.data.activeMonitorings);
+    if (args.data.activeMonitorings !== undefined) {
+      activeMonitorings = EndUserActiveMonitoringsSchema.parse(args.data.activeMonitorings);
     }
 
     let amlHits;
 
-    if (endUser.data.amlHits !== undefined) {
-      amlHits = EndUserAmlHitsSchema.parse(endUser.data.amlHits);
+    if (args.data.amlHits !== undefined) {
+      amlHits = EndUserAmlHitsSchema.parse(args.data.amlHits);
     }
 
     return await this.repository.updateById(id, {
-      ...endUser,
+      ...args,
       data: {
-        ...endUser.data,
+        ...args.data,
         activeMonitorings,
         amlHits,
       },

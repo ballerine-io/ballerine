@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ISignInProps } from '../useSignInMutation/interfaces';
 import { authQueryKeys } from '../../../query-keys';
-import { fetchSignOut } from '../../../fetchers';
+import { signOut } from '../../../fetchers';
 import { customerQueryKeys } from '@/domains/customer/query-keys';
 
 export const useSignOutMutation = () => {
@@ -14,7 +14,7 @@ export const useSignOutMutation = () => {
 
   return useMutation({
     mutationFn: ({ callbackUrl }: ISignInProps) =>
-      fetchSignOut({
+      signOut({
         callbackUrl,
       }),
     onMutate: () => {

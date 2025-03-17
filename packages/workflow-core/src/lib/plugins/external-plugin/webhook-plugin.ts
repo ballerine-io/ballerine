@@ -1,7 +1,7 @@
 import { AnyRecord, isErrorWithMessage, sign } from '@ballerine/common';
 import { logger } from '../../logger';
 import { TContext } from '../../utils/types';
-import { IBallerineApiPluginParams } from './ballerine-plugin';
+import { IBallerineApiPluginParams } from './ballerine-api-plugin';
 import { IApiPluginParams } from './types';
 import { ApiPlugin } from '.';
 

@@ -22,16 +22,6 @@ import { AlertService } from '@/alert/alert.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { z } from 'zod';
 
-export const ReportWithRiskScoreSchema = z
-  .object({
-    summary: z
-      .object({
-        riskScore: z.number(),
-      })
-      .passthrough(),
-  })
-  .passthrough();
-
 const removeLastKeyFromPath = (path: string) => {
   return path?.split('.')?.slice(0, -1)?.join('.');
 };
@@ -189,14 +179,15 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
 
     const { context } = workflowRuntime;
-    const { reportData: unvalidatedReportData, base64Pdf, reportId, reportType } = data;
-    const reportData = ReportWithRiskScoreSchema.parse(unvalidatedReportData);
+    const { reportData, base64Pdf, reportId, reportType } = data;
 
     const business = await this.businessService.getByCorrelationId(context.entity.id, [
       currentProjectId,
     ]);
 
-    if (!business) throw new BadRequestException('Business not found.');
+    if (!business) {
+      throw new BadRequestException('Business not found.');
+    }
 
     // const currentReportId = reportId as string;
     //
@@ -215,7 +206,7 @@ export class HookCallbackHandlerService {
     return setPluginStatus({
       resultDestinationPath,
       context: workflowRuntime.context,
-      data: reportData,
+      data: reportData as Record<string, unknown>,
       ignoreLastKey: false,
       status: ProcessStatus.SUCCESS,
     });
@@ -313,7 +304,9 @@ export class HookCallbackHandlerService {
         documentPage => documentPage.uri === base64PDFString,
       );
 
-      if (!pdfReportDocument?.ballerineFileId) return;
+      if (!pdfReportDocument?.ballerineFileId) {
+        return;
+      }
 
       pdfReportBallerineFileId = pdfReportDocument.ballerineFileId;
     });
@@ -363,7 +356,11 @@ export class HookCallbackHandlerService {
     // @ts-expect-error - we don't validate `context` is an object
     this.setNestedProperty(context, attributePath, result);
     // @ts-expect-error - we don't validate `context` is an object
-    context.documents = persistedDocuments;
+    context.documents = [
+      // @ts-expect-error - we don't validate `context` is an object
+      ...(context.documents?.filter(document => document.type !== 'identification_document') ?? []),
+      ...persistedDocuments,
+    ];
 
     return context;
   }

@@ -1,1 +1,12 @@
+node_modules
+dist
+
+# Eslint config file itself
+.eslintrc.cjs
+
+# Config files
+rollup.config.js
+babel.config.js
+
+# Config pkg
 packages/config

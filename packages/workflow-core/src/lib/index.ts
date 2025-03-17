@@ -50,5 +50,7 @@ export { HttpError } from './errors';
 export { createWorkflow } from './create-workflow';
 export { BUILT_IN_EVENT } from './built-in-event';
 export type { BuiltInEvent } from './built-in-event';
+export { BUILT_IN_ACTION } from './built-in-action';
+export { type BuiltInAction } from './built-in-action';
 export { ARRAY_MERGE_OPTION } from './utils/deep-merge-with-options';
 export type { ArrayMergeOption } from './utils/deep-merge-with-options';

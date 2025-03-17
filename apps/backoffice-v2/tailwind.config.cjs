@@ -4,7 +4,13 @@ const { fontFamily } = require('tailwindcss/defaultTheme');
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ['class'],
-  content: ['./*.html', './src/**/*.css', './src/**/*.ts', './src/**/*.tsx'],
+  content: [
+    './*.html',
+    './src/**/*.css',
+    './src/**/*.ts',
+    './src/**/*.tsx',
+    './node_modules/@ballerine/ui/src/**/*.js',
+  ],
   theme: {
     container: {
       center: true,
@@ -62,6 +68,10 @@ module.exports = {
         card: {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
+        },
+        'wp-primary': {
+          DEFAULT: 'hsl(var(--web-presence-primary))',
+          foreground: 'hsl(var(--web-presence-primary-foreground))',
         },
       },
       borderRadius: {

@@ -354,6 +354,7 @@ describe('initiateApiPlugins #unit', () => {
           {
             pluginKind: 'iterative',
             name: 'TestPlugin1',
+            actionPluginName: 'actionPluginName1',
             stateNames: ['state1', 'state2'],
             iterateOn: [
               {
@@ -373,7 +374,17 @@ describe('initiateApiPlugins #unit', () => {
         ];
 
         // Act
-        const result = workflow.initiateCommonPlugins(commonPluginSchemas, []);
+        const result = workflow.initiateCommonPlugins(commonPluginSchemas, [
+          {
+            name: 'actionPluginName1',
+            displayName: 'Action Plugin Name 1',
+            pluginKind: 'api',
+            stateNames: [],
+            successAction: 'SUCCESS',
+            errorAction: 'ERROR',
+            persistResponseDestination: 'pluginsOutput.actionPluginName1',
+          },
+        ]);
 
         // Assert
         expect(result).toHaveLength(commonPluginSchemas.length);

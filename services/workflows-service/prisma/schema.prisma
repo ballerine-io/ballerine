@@ -54,6 +54,12 @@ enum ApprovalState {
   NEW
 }
 
+enum Gender {
+  male
+  female
+  other
+}
+
 model EndUser {
   id              String  @id @default(cuid())
   isContactPerson Boolean @default(false)
@@ -72,6 +78,10 @@ model EndUser {
   dateOfBirth       DateTime?
   avatarUrl         String?
   nationalId        String?   @db.VarChar
+  gender            Gender?
+  nationality       String?   @db.VarChar
+  passportNumber    String?   @db.VarChar
+  address           Json?
   additionalInfo    Json?
   activeMonitorings Json      @default("[]")
   amlHits           Json      @default("[]")
@@ -88,6 +98,7 @@ model EndUser {
   project                  Project                    @relation(fields: [projectId], references: [id])
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
   Counterparty             Counterparty[]
+  documents                Document[]
 
   @@unique([projectId, correlationId])
   @@index([endUserType])
@@ -139,7 +150,7 @@ model Business {
   shareholderStructure    Json? // Information about the ownership structure, including shareholders and their ownership percentages
   numberOfEmployees       Int? // Number of employees working for the business entity
   businessPurpose         String? // Brief description of the business entity's purpose or main activities
-  documents               Json? // Collection of documents required for the KYB process, e.g., registration documents, financial statements
+  documents               Document[] // Collection of documents required for the KYB process, e.g., registration documents, financial statements
   avatarUrl               String?
   additionalInfo          Json?
   bankInformation         Json?
@@ -273,9 +284,13 @@ model WorkflowRuntimeData {
   childWorkflowsRuntimeData WorkflowRuntimeData[]      @relation("ParentChild")
   WorkflowRuntimeDataToken  WorkflowRuntimeDataToken[]
   alerts                    Alert[]
+  documents                 Document[]
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
+
+  deletedAt DateTime?
+  deletedBy String?
 
   @@index([assigneeId, status])
   @@index([endUserId, status])
@@ -286,6 +301,7 @@ model WorkflowRuntimeData {
   @@index([projectId])
   @@index([uiDefinitionId])
   @@index([tags(ops: JsonbPathOps)], type: Gin)
+  @@index([deletedAt])
 }
 
 model File {
@@ -298,6 +314,8 @@ model File {
   fileNameInBucket String?
   createdAt        DateTime @default(now())
   createdBy        String   @default("SYSTEM")
+
+  documentFiles DocumentFile[]
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
@@ -406,6 +424,8 @@ model Project {
   SalesforceIntegration    SalesforceIntegration?
   workflowDefinitions      WorkflowDefinition[]
   uiDefinitions            UiDefinition[]
+  documents                Document[]
+  documentFiles            DocumentFile[]
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
   TransactionRecord        TransactionRecord[]
   AlertDefinition          AlertDefinition[]
@@ -475,6 +495,8 @@ model UiDefinition {
   project              Project               @relation(fields: [projectId], references: [id])
   workflowDefinition   WorkflowDefinition    @relation(fields: [workflowDefinitionId], references: [id])
   workflowRuntimeDatas WorkflowRuntimeData[]
+
+  version Int @default(1)
 
   @@index([name, projectId])
 }
@@ -819,8 +841,8 @@ model Alert {
   tags          String[]
   severity      AlertSeverity?
 
-  state         AlertState
-  decisionAt    DateTime?
+  state      AlertState
+  decisionAt DateTime?
 
   executionDetails Json
   additionalInfo   Json?
@@ -830,14 +852,20 @@ model Alert {
   assignedAt DateTime?
 
   dedupedAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   workflowRuntimeDataId String?
   workflowRuntimeData   WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
+  // TODO: Remove this field after data migration
   counterpartyId String?
   counterparty   Counterparty? @relation(fields: [counterpartyId], references: [id])
+
+  counterpartyOriginatorId  String?
+  counterpartyBeneficiaryId String?
+  counterpartyOriginator    Counterparty? @relation(name: "counterpartyAlertOriginator", fields: [counterpartyOriginatorId], references: [id])
+  counterpartyBeneficiary   Counterparty? @relation(name: "counterpartyAlertBeneficiary", fields: [counterpartyBeneficiaryId], references: [id])
 
   businessId String?
   business   Business? @relation(fields: [businessId], references: [id])
@@ -847,6 +875,8 @@ model Alert {
   @@index([alertDefinitionId])
   @@index([counterpartyId])
   @@index([createdAt(sort: Desc)])
+  @@index([counterpartyOriginatorId])
+  @@index([counterpartyBeneficiaryId])
 }
 
 enum RiskCategory {
@@ -890,6 +920,9 @@ model Counterparty {
   benefitingTransactions  TransactionRecord[] @relation("BenefitingCounterparty")
   alerts                  Alert[]
 
+  alertsBenefiting  Alert[] @relation("counterpartyAlertBeneficiary")
+  alertsOriginating Alert[] @relation("counterpartyAlertOriginator")
+
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
 
@@ -901,6 +934,8 @@ model Counterparty {
 enum BusinessReportStatus {
   new
   in_progress
+  under_review
+  pending_review
   completed
 }
 
@@ -928,4 +963,86 @@ model BusinessReport {
   @@index([riskScore])
   @@index([type])
   @@index([batchId])
+}
+
+model Document {
+  id String @id @default(cuid())
+
+  category String
+  type     String
+
+  issuingVersion String
+  issuingCountry String
+  version        Int
+  status         DocumentStatus
+  decision       DocumentDecision?
+  decisionReason String?
+  comment        String?
+  properties     Json
+
+  files DocumentFile[]
+
+  businessId String?
+  business   Business? @relation(fields: [businessId], references: [id])
+
+  endUserId String?
+  endUser   EndUser? @relation(fields: [endUserId], references: [id])
+
+  workflowRuntimeDataId String?
+  workflowRuntimeData   WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id])
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([businessId])
+  @@index([endUserId])
+  @@index([workflowRuntimeDataId])
+}
+
+enum DocumentStatus {
+  provided
+  requested
+}
+
+enum DocumentDecision {
+  approved
+  rejected
+  revisions
+}
+
+enum DocumentFileType {
+  selfie
+  document
+  other
+}
+
+enum DocumentFileVariant {
+  front
+  back
+  other
+}
+
+model DocumentFile {
+  id      String              @id @default(cuid())
+  type    DocumentFileType
+  variant DocumentFileVariant
+  page    Int
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  fileId String
+  file   File   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([documentId])
+  @@index([fileId])
 }

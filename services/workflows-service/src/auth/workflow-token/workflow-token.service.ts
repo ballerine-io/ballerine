@@ -41,32 +41,43 @@ export class WorkflowTokenService {
         transaction,
       );
 
-      const [uiDefinition, customer] = await Promise.all([
-        this.uiDefinitionService.getByWorkflowDefinitionId(
-          workflowDefinitionId,
-          UiDefinitionContext.collection_flow,
-          [projectId],
-        ),
-        this.customerService.getByProjectId(projectId),
-      ]);
+      let collectionFlow;
+      try {
+        const [uiDefinition, customer] = await Promise.all([
+          this.uiDefinitionService.getByWorkflowDefinitionId(
+            workflowDefinitionId,
+            UiDefinitionContext.collection_flow,
+            [projectId],
+          ),
+          this.customerService.getByProjectId(projectId),
+        ]);
 
-      const collectionFlow = buildCollectionFlowState({
-        apiUrl: env.APP_API_URL,
-        steps: uiDefinition?.definition
-          ? getOrderedSteps(
-              (uiDefinition?.definition as Prisma.JsonObject)?.definition as Record<
-                string,
-                Record<string, unknown>
-              >,
-              { finalStates: [...WORKFLOW_FINAL_STATES] },
-            ).map(stepName => ({
-              stateName: stepName,
-            }))
-          : [],
-        additionalInformation: {
-          customerCompany: customer.displayName,
-        },
-      });
+        collectionFlow = buildCollectionFlowState({
+          apiUrl: env.APP_API_URL,
+          steps: uiDefinition?.definition
+            ? getOrderedSteps(
+                (uiDefinition?.definition as Prisma.JsonObject)?.definition as Record<
+                  string,
+                  Record<string, unknown>
+                >,
+                { finalStates: [...WORKFLOW_FINAL_STATES] },
+              ).map(stepName => ({
+                stateName: stepName,
+              }))
+            : [],
+          additionalInformation: {
+            customerCompany: customer.displayName,
+          },
+        });
+      } catch (error) {
+        collectionFlow = buildCollectionFlowState({
+          apiUrl: env.APP_API_URL,
+          steps: [],
+          additionalInformation: {
+            customerCompany: '',
+          },
+        });
+      }
 
       await this.workflowRuntimeDataRepository.updateStateById(
         workflowRuntimeDataId,
@@ -96,8 +107,8 @@ export class WorkflowTokenService {
     return await this.workflowTokenRepository.findByTokenUnscoped(token);
   }
 
-  async findFirstByWorkflowruntimeDataIdUnscoped(token: string) {
-    return await this.workflowTokenRepository.findFirstByWorkflowruntimeDataIdUnscoped(token);
+  async findFirstByWorkflowRuntimeDataIdUnscoped(token: string) {
+    return await this.workflowTokenRepository.findFirstByWorkflowRuntimeDataIdUnscoped(token);
   }
 
   async findByTokenWithExpiredUnscoped(token: string) {

@@ -1,5 +1,6 @@
 import { ARRAY_VALUE_INDEX_PLACEHOLDER } from '@/common/consts/consts';
 import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
+import { useEventEmitterLogic } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { findDefinitionByName } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
@@ -8,11 +9,10 @@ import { useUIElementHandlers } from '@/components/organisms/UIRenderer/hooks/us
 import { useUIElementProps } from '@/components/organisms/UIRenderer/hooks/useUIElementProps';
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
 import { UIElement } from '@/domains/collection-flow';
+import { useRefValue } from '@/hooks/useRefValue';
 import { AnyObject, ErrorsList, RJSFInputAdapter, RJSFInputProps } from '@ballerine/ui';
 import get from 'lodash/get';
 import { useCallback, useEffect, useMemo } from 'react';
-import { useEventEmitterLogic } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler';
-import { useRefValue } from '@/hooks/useRefValue';
 
 const findLastDigit = (str: string) => {
   const digitRegex = /_(\d+)_/g;
@@ -30,7 +30,10 @@ const findLastDigit = (str: string) => {
 
 export const getInputIndex = (inputId: string) => findLastDigit(inputId);
 
-const injectIndexToDestinationIfNeeded = (destination: string, index: number | null): string => {
+export const injectIndexToDestinationIfNeeded = (
+  destination: string,
+  index: number | null,
+): string => {
   if (index === null) return destination;
 
   const result = destination.replace(ARRAY_VALUE_INDEX_PLACEHOLDER, `${index}`);

@@ -22,6 +22,7 @@ import { Test } from '@nestjs/testing';
 import { ClsModule } from 'nestjs-cls';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
+import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
 
 export const createTransactionRecord = async (
   prisma: PrismaClient,
@@ -122,7 +123,7 @@ export const createTransactionRecord = async (
       brand: faker.helpers.arrayElement(['Visa', 'Mastercard', 'Amex']),
       expiryMonth: faker.date.future().getMonth().toString().padStart(2, '0'),
       expiryYear: faker.date.future().getFullYear().toString(),
-      holderName: faker.name.findName(),
+      holderName: faker.name.fullName(),
       tokenized: faker.random.alphaNumeric(24),
       cardBin: parseInt(faker.finance.creditCardNumber().slice(0, 6)),
     },
@@ -131,10 +132,30 @@ export const createTransactionRecord = async (
   };
 
   // Use createBulk to create the transaction
-  const createdTransactions = await transactionService.createBulk({
+  const createdTransactions = (await transactionService.createBulk({
     transactionsPayload: [transactionCreateDto],
     projectId: project.id,
+  })) satisfies Array<
+    | TransactionCreatedDto
+    | {
+        errorMessage: string;
+        correlationId: string;
+      }
+  >;
+
+  const result = await prisma.transactionRecord.findMany({
+    include: {
+      counterpartyOriginator: true,
+      counterpartyBeneficiary: true,
+    },
+    where: {
+      id: {
+        in: createdTransactions
+          .map(transaction => 'id' in transaction && transaction.id)
+          .filter(Boolean),
+      },
+    },
   });
 
-  return createdTransactions;
+  return result;
 };

@@ -295,16 +295,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               "merge({ name: 'businessInformation', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || jurisdictionCode == 'HK' && 'IN_PROGRESS' || 'SUCCESS' }, @)",
             transformer: 'jmespath',
           },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
-          },
         ],
       },
     }),
@@ -344,16 +334,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               "merge({ name: 'businessInformation', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || jurisdictionCode == 'HK' && 'IN_PROGRESS' || 'SUCCESS' }, @)",
             transformer: 'jmespath',
           },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
-          },
         ],
       },
     }),
@@ -388,16 +368,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             mapping:
               "merge({ name: 'businessInformation', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || jurisdictionCode == 'HK' && 'IN_PROGRESS' || 'SUCCESS' }, @)",
             transformer: 'jmespath',
-          },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
           },
         ],
       },
@@ -436,16 +406,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               "merge({ name: 'sanctionsScreening', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
             transformer: 'jmespath',
           },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
-          },
         ],
       } as SerializableValidatableTransformer,
     }),
@@ -477,16 +437,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             mapping:
               "merge({ name: 'sanctions_screening', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
             transformer: 'jmespath',
-          },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
           },
         ],
       } as SerializableValidatableTransformer,
@@ -522,16 +472,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               "merge({ name: 'companySanctions', status: contains(['NOT_IMPLEMENTED', 'NOT_AVAILABLE'], reason) && 'CANCELED' || error != `null` && 'ERROR' || 'SUCCESS'  }, @)",
             transformer: 'jmespath',
           },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
-          },
         ],
       },
     }),
@@ -564,16 +504,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               "merge({ name: 'companySanctions', status: contains(['NOT_IMPLEMENTED', 'NOT_AVAILABLE'], reason) && 'CANCELED' || error != `null` && 'ERROR' || 'SUCCESS'  }, @)",
             transformer: 'jmespath',
           },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
-          },
         ],
       },
     }),
@@ -594,10 +524,12 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             mapping: `{
               ${options.dataMapping || ''}
               reportType: '${options.reportType || 'MERCHANT_REPORT_T1'}',
-              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.merchantMonitoring&processName=website-monitoring'])
-              withQualityControl: ${
-                options.merchantMonitoringQualityControl ?? true ? 'true' : 'false'
-              }
+              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.merchantMonitoring&processName=website-monitoring']),
+              withQualityControl: \`${
+                typeof options.merchantMonitoringQualityControl === 'boolean'
+                  ? options.merchantMonitoringQualityControl
+                  : true
+              }\`
             }`, // jmespath
           },
         ],
@@ -608,16 +540,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             mapping:
               "merge({ name: 'merchantMonitoring', status: contains(['NOT_IMPLEMENTED', 'NOT_AVAILABLE'], reason) && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS'  }, @)",
             transformer: 'jmespath',
-          },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
           },
         ],
       },
@@ -656,16 +578,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               "merge({ name: 'ubo', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
             transformer: 'jmespath',
           },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
-          },
         ],
       },
     }),
@@ -701,16 +613,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               "merge({ name: 'ubo', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
             transformer: 'jmespath',
           },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
-          },
         ],
       },
     }),
@@ -745,16 +647,6 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             mapping:
               "merge({ name: 'ubo', status: reason == 'NOT_IMPLEMENTED' && 'CANCELED' || error != `null` && 'ERROR' || 'IN_PROGRESS' }, @)",
             transformer: 'jmespath',
-          },
-          {
-            mapping: [
-              {
-                method: 'setTimeToRecordUTC',
-                source: 'invokedAt',
-                target: 'invokedAt',
-              },
-            ],
-            transformer: 'helper',
           },
         ],
       },
@@ -862,12 +754,12 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             transformer: 'jmespath',
             mapping: `{
               ${options.dataMapping || ''}
-              kybCompanyName: entity.data.additionalInfo.companyName,
-              customerCompanyName: entity.data.additionalInfo.customerCompany,
+              kybCompanyName: entity.data.additionalInfo.companyName || entity.data.companyName,
+              customerCompanyName: entity.data.additionalInfo.customerCompany || entity.data.customerCompany,
               firstName: entity.data.firstName,
               kycLink: pluginsOutput.kyc_session.kyc_session_1.result.metadata.url,
               from: 'no-reply@ballerine.com',
-              name: join(' ',[entity.data.additionalInfo.customerCompany,'Team']),
+              name: join(' ',[entity.data.additionalInfo.customerCompany || entity.data.customerCompany,'Team']),
               receivers: [entity.data.email],
               subject: '{customerCompanyName} activation, Action needed.',
               templateId: ${
@@ -877,7 +769,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               },
               revisionReason: documents[].decision[].revisionReason | [0],
               language: workflowRuntimeConfig.language,
-              supportEmail: join('',['support@',entity.data.additionalInfo.customerCompany,'.com']),
+              supportEmail: join('',['support@',entity.data.additionalInfo.customerCompany || entity.data.customerCompany,'.com']),
               adapter: '{secret.MAIL_ADAPTER}'
             }`, // jmespath
           },
@@ -938,12 +830,13 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             transformer: 'jmespath',
             mapping: `{
               ${options.dataMapping || ''}
+              context: @,
               companyName: data.companyName,
               customerName: metadata.customerName,
               collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
               from: 'no-reply@ballerine.com',
               name: join(' ',[metadata.customerName,'Onboarding']),
-              receivers: [data.additionalInfo.bdEmail],
+              receivers: [entity.data.additionalInfo.bdEmail],
               language: workflowRuntimeConfig.language,
               templateId: ${
                 options.templateId

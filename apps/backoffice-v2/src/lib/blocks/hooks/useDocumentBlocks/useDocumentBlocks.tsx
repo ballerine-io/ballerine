@@ -1,11 +1,14 @@
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { checkIsIndividual } from '@/common/utils/check-is-individual/check-is-individual';
 import { ctw } from '@/common/utils/ctw/ctw';
+import { useApproveDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useApproveDocumentByIdMutation/useApproveDocumentByIdMutation';
+import { useRejectDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useRejectDocumentByIdMutation/useRejectDocumentByIdMutation';
+import { useRemoveDocumentDecisionByIdMutation } from '@/domains/documents/hooks/mutations/useRemoveDocumentDecisionByIdMutation/useRemoveDocumentDecisionByIdMutation';
+import { useDocumentsAdapter } from '@/domains/documents/hooks/useDocumentsAdapter/useDocumentsAdapter';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useDocumentOcr } from '@/domains/entities/hooks/mutations/useDocumentOcr/useDocumentOcr';
 import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
-import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
-import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
+import { useRemoveTaskDecisionByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveTaskDecisionByIdMutation/useRemoveTaskDecisionByIdMutation';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
@@ -13,21 +16,17 @@ import { useCommentInputLogic } from '@/lib/blocks/hooks/useDocumentBlocks/hooks
 import { checkCanApprove } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-approve/check-can-approve';
 import { checkCanReject } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-reject/check-can-reject';
 import { checkCanRevision } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-revision/check-can-revision';
-import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
 import { motionBadgeProps } from '@/lib/blocks/motion-badge-props';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import {
   composePickableCategoryType,
-  extractCountryCodeFromWorkflow,
   isExistingSchemaForDocument,
 } from '@/pages/Entity/hooks/useEntityLogic/utils';
-import { selectWorkflowDocuments } from '@/pages/Entity/selectors/selectWorkflowDocuments';
-import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
 import { CommonWorkflowStates, StateTag, valueOrNA } from '@ballerine/common';
 import { Button, TextArea } from '@ballerine/ui';
 import { X } from 'lucide-react';
 import * as React from 'react';
-import { FunctionComponent, useCallback, useMemo } from 'react';
+import { FunctionComponent, useCallback } from 'react';
 import { toTitleCase } from 'string-ts';
 
 export const useDocumentBlocks = ({
@@ -67,18 +66,19 @@ export const useDocumentBlocks = ({
     };
   };
 }) => {
-  const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
-  const documentsSchemas = getDocumentsSchemas(issuerCountryCode, workflow);
-  const documents = useMemo(() => selectWorkflowDocuments(workflow), [workflow]);
-  const documentPages = useMemo(
-    () => documents.flatMap(({ pages }) => pages?.map(({ ballerineFileId }) => ballerineFileId)),
-    [documents],
-  );
-  const storageFilesQueryResult = useStorageFilesQuery(documentPages);
-  const documentPagesResults = useDocumentPageImages(documents, storageFilesQueryResult);
+  const {
+    documents,
+    documentsSchemas,
+    isLoading: isLoadingDocuments,
+  } = useDocumentsAdapter({
+    documents: workflow?.context?.documents ?? [],
+    entityIds: [workflow?.context?.entity?.ballerineEntityId ?? ''],
+  });
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id);
+  const { mutate: mutateApproveDocumentById, isLoading: isLoadingApproveDocumentById } =
+    useApproveDocumentByIdMutation();
   const {
     mutate: mutateOCRDocument,
     isLoading: isLoadingOCRDocument,
@@ -88,6 +88,7 @@ export const useDocumentBlocks = ({
   });
 
   const { isLoading: isLoadingRejectTaskById } = useRejectTaskByIdMutation(workflow?.id);
+  const { isLoading: isLoadingRejectDocumentById } = useRejectDocumentByIdMutation();
 
   const { comment, onClearComment, onCommentChange } = useCommentInputLogic();
   const onMutateApproveTaskById = useCallback(
@@ -101,16 +102,52 @@ export const useDocumentBlocks = ({
         comment?: string;
       }) =>
       () => {
-        mutateApproveTaskById({ documentId: taskId, contextUpdateMethod, comment });
+        if (!workflow?.workflowDefinition?.config?.isDocumentsV2) {
+          mutateApproveTaskById({ documentId: taskId, contextUpdateMethod, comment });
+        }
+
+        if (workflow?.workflowDefinition?.config?.isDocumentsV2) {
+          mutateApproveDocumentById({ documentId: taskId, decisionReason: '', comment });
+        }
+
         onClearComment();
       },
-    [mutateApproveTaskById, onClearComment],
+    [
+      mutateApproveDocumentById,
+      mutateApproveTaskById,
+      onClearComment,
+      workflow?.workflowDefinition?.config?.isDocumentsV2,
+    ],
   );
-  const { mutate: onMutateRemoveDecisionById } = useRemoveDecisionTaskByIdMutation(workflow?.id);
+  const { mutate: mutateRemoveTaskDecisionById } = useRemoveTaskDecisionByIdMutation(workflow?.id);
+  const { mutate: mutateRemoveDocumentDecisionById } = useRemoveDocumentDecisionByIdMutation();
+
+  const onMutateRemoveDecisionById = useCallback(
+    ({
+      documentId,
+      contextUpdateMethod,
+    }: {
+      documentId: string;
+      contextUpdateMethod: 'base' | 'director';
+    }) => {
+      if (workflow?.workflowDefinition?.config?.isDocumentsV2) {
+        mutateRemoveDocumentDecisionById({ documentId });
+
+        return;
+      }
+
+      mutateRemoveTaskDecisionById({ documentId, contextUpdateMethod });
+    },
+    [
+      mutateRemoveDocumentDecisionById,
+      mutateRemoveTaskDecisionById,
+      workflow?.workflowDefinition?.config?.isDocumentsV2,
+    ],
+  );
 
   return (
     documents?.flatMap(
-      ({ id, type: docType, category, properties, propertiesSchema, decision }, docIndex) => {
+      ({ id, type: docType, category, properties, propertiesSchema, decision, details }) => {
         const additionalProperties = isExistingSchemaForDocument(documentsSchemas ?? [])
           ? composePickableCategoryType(
               category,
@@ -137,14 +174,14 @@ export const useDocumentBlocks = ({
           noAction,
           workflow,
           decision,
-          isLoadingReject: isLoadingRejectTaskById,
+          isLoadingReject: isLoadingRejectTaskById || isLoadingRejectDocumentById,
         });
         const canApprove = checkCanApprove({
           caseState,
           noAction,
           workflow,
           decision,
-          isLoadingApprove: isLoadingApproveTaskById,
+          isLoadingApprove: isLoadingApproveTaskById || isLoadingApproveDocumentById,
         });
         const getDecisionStatusOrAction = (isDocumentRevision: boolean) => {
           const badgeClassNames = 'text-sm font-bold';
@@ -175,7 +212,7 @@ export const useDocumentBlocks = ({
                     Re-upload needed
                     {!isLegacyReject && (
                       <X
-                        className="h-4 w-4 cursor-pointer"
+                        className="size-4 cursor-pointer"
                         onClick={() =>
                           onMutateRemoveDecisionById({
                             documentId: id,
@@ -272,6 +309,7 @@ export const useDocumentBlocks = ({
                     disabled={!canApprove}
                     size={'wide'}
                     variant={'success'}
+                    className={'enabled:bg-success enabled:hover:bg-success/90'}
                   >
                     Approve
                   </MotionButton>
@@ -362,7 +400,8 @@ export const useDocumentBlocks = ({
                 : [],
             },
             workflowId: workflow?.id,
-            documents: workflow?.context?.documents,
+            documents: documents?.map(({ details: _details, ...document }) => document),
+            isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
           })
           .cellAt(0, 0);
 
@@ -439,14 +478,12 @@ export const useDocumentBlocks = ({
                       const fieldValue = getFieldValue();
                       const isEditableDecision = isDoneWithRevision || !decision?.status;
                       const isIndividual = checkIsIndividual(workflow);
-                      const isEditableType = (title === 'type' && isIndividual) || title !== 'type';
                       const isEditableCategory =
                         (title === 'category' && isIndividual) || title !== 'category';
                       const isEditableField = [
                         isEditableDecision,
                         isEditable,
                         caseState.writeEnabled,
-                        isEditableType,
                         isEditableCategory,
                       ].every(Boolean);
 
@@ -471,7 +508,8 @@ export const useDocumentBlocks = ({
                 },
                 workflowId: workflow?.id,
                 isSaveDisabled: isLoadingOCRDocument,
-                documents: workflow?.context?.documents,
+                documents: documents?.map(({ details: _details, ...document }) => document),
+                isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
               })
               .addCell(decisionCell)
               .build()
@@ -484,22 +522,11 @@ export const useDocumentBlocks = ({
           .addCell({
             type: 'multiDocuments',
             value: {
-              isLoading: storageFilesQueryResult?.some(({ isLoading }) => isLoading),
+              isLoading: isLoadingDocuments,
               onOcrPressed: () => mutateOCRDocument({ documentId: id }),
               isDocumentEditable: caseState.writeEnabled,
               isLoadingOCR: isLoadingOCRDocument,
-              data:
-                documents?.[docIndex]?.pages?.map(
-                  ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({
-                    id: ballerineFileId,
-                    title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
-                      toTitleCase(docType ?? ''),
-                    )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                    imageUrl: documentPagesResults?.[docIndex]?.[pageIndex],
-                    fileType: type,
-                    fileName,
-                  }),
-                ) ?? [],
+              data: details,
             },
           })
           .cellAt(0, 0);

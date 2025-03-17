@@ -15,7 +15,7 @@ export const isPageCompleted = (page: UIPage, context: CollectionFlowContext) =>
 };
 
 export const prepareInitialUIState = (
-  pages: UIPage[],
+  pages: Array<UIPage<any>>,
   context: CollectionFlowContext,
   isRevision?: boolean,
 ): UIState => {
@@ -24,8 +24,6 @@ export const prepareInitialUIState = (
     isRevision,
     elements: {},
   };
-
-  if (pages[0]?.stateName === context.collectionFlow?.state?.currentStep) return initialUIState;
 
   pages.forEach(page => {
     initialUIState.elements[page.stateName] = {

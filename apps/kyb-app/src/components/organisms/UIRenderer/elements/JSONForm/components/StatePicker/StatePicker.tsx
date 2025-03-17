@@ -2,8 +2,9 @@ import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateMa
 import { UIElement } from '@/domains/collection-flow';
 import { getCountryStates } from '@/helpers/countries-data';
 import { RJSFInputProps, TextInputAdapter } from '@ballerine/ui';
-import { useMemo } from 'react';
 import get from 'lodash/get';
+import { useMemo } from 'react';
+import { injectIndexToDestinationIfNeeded } from '../../hocs/withDynamicUIInput';
 
 export interface StatePickerParams {
   countryCodePath: string;
@@ -18,12 +19,15 @@ export const StatePicker = (
 
   const { payload } = useStateManagerContext();
   const options = useMemo(() => {
-    const countryCode = get(payload, countryCodePath) as string | null;
+    const countryCode = get(
+      payload,
+      injectIndexToDestinationIfNeeded(countryCodePath, props.inputIndex),
+    ) as string | null;
 
     return countryCode
       ? getCountryStates(countryCode).map(state => ({ title: state.name, const: state.isoCode }))
       : [];
-  }, [payload, countryCodePath]);
+  }, [payload, countryCodePath, props.inputIndex]);
 
   const schema = useMemo(() => {
     return {

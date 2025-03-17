@@ -7,27 +7,43 @@ import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/
 import { useCaseState } from '../useCaseState/useCaseState';
 import { useMemo } from 'react';
 import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
+import { useDocumentsAdapter } from '@/domains/documents/hooks/useDocumentsAdapter/useDocumentsAdapter';
 
 export const useCaseDecision = () => {
   const filterId = useFilterId();
   const { entityId: workflowId } = useParams();
   const { data: workflow } = useWorkflowByIdQuery({ workflowId, filterId });
-  const childDocuments = useMemo(() => {
-    return (
-      workflow?.childWorkflows
-        ?.filter(childWorkflow => childWorkflow?.context?.entity?.type === 'business')
-        ?.flatMap(childWorkflow => childWorkflow?.context?.documents) || []
-    );
+  const childWorkflows = useMemo(
+    () =>
+      workflow?.childWorkflows?.filter(
+        childWorkflow => childWorkflow?.context?.entity?.type === 'business',
+      ),
+    [workflow?.childWorkflows],
+  );
+  const childEntityIds = useMemo(() => {
+    return childWorkflows?.map(childWorkflow => childWorkflow?.context?.entity?.ballerineEntityId);
   }, [workflow?.childWorkflows]);
-  const parentDocuments = workflow?.context?.documents || [];
-  const directorsDocuments = selectDirectorsDocuments(workflow) || [];
+  const { documents: childDocuments } = useDocumentsAdapter({
+    entityIds: childEntityIds ?? [],
+    documents: childWorkflows?.flatMap(childWorkflow => childWorkflow?.context?.documents) ?? [],
+  });
+  const { documents: parentDocuments } = useDocumentsAdapter({
+    entityIds: [workflow?.context?.entity?.ballerineEntityId ?? ''],
+    documents: workflow?.context?.documents ?? [],
+  });
+  const directorsIds = useMemo(() => {
+    return workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
+      director => director.ballerineEntityId,
+    );
+  }, [workflow?.context?.entity?.data?.additionalInfo?.directors]);
+  const { documents: directorsDocuments } = useDocumentsAdapter({
+    entityIds: directorsIds ?? [],
+    documents: selectDirectorsDocuments(workflow),
+  });
   const { data: session } = useAuthenticatedUserQuery();
   const authenticatedUser = session?.user;
   const caseState = useCaseState(authenticatedUser, workflow);
-  const hasDecision = safeEvery(
-    workflow?.context?.documents,
-    document => !!document?.decision?.status,
-  );
+  const hasDecision = safeEvery(parentDocuments, document => !!document?.decision?.status);
   const canTakeAction = caseState.actionButtonsEnabled && hasDecision;
   // Disable the reject/approve buttons if the end user is not ready to be rejected/approved.
   // Based on `workflowDefinition` - ['APPROVE', 'REJECT', 'RECOLLECT'].

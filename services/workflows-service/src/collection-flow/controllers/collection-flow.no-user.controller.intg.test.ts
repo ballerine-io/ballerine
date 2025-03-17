@@ -8,7 +8,7 @@ import request from 'supertest';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { BusinessReportService } from '@/business-report/business-report.service';
-import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
+import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
@@ -40,6 +40,7 @@ import { CollectionFlowNoUserController } from './collection-flow.no-user.contro
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { ApiKeyService } from '@/customer/api-key/api-key.service';
 import { ApiKeyRepository } from '@/customer/api-key/api-key.repository';
+import { AnalyticsService } from '@/common/analytics-logger/analytics.service';
 
 describe('CollectionFlowSignupController', () => {
   let app: INestApplication;
@@ -71,6 +72,7 @@ describe('CollectionFlowSignupController', () => {
         { provide: UserService, useValue: noop },
         { provide: EventEmitter2, useValue: noop },
         { provide: AppLoggerService, useValue: { log: noop } },
+        { provide: AnalyticsService, useValue: { log: noop } },
         { provide: WorkflowEventEmitterService, useValue: { emit: noop } },
         WorkflowService,
         EndUserService,

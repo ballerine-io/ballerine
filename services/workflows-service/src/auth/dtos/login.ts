@@ -8,6 +8,7 @@ export class LoginDto {
   })
   @IsString()
   email!: string;
+
   @ApiProperty({
     required: true,
     type: String,

@@ -1,5 +1,271 @@
 # @ballerine/ui
 
+## 0.7.115
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.80
+
+## 0.7.114
+
+### Patch Changes
+
+- Bump
+
+## 0.7.113
+
+### Patch Changes
+
+- Bump
+
+## 0.7.112
+
+### Patch Changes
+
+- Bump UI & KYB
+
+## 0.7.111
+
+### Patch Changes
+
+- Added minimumAge validator
+
+## 0.7.110
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.79
+
+## 0.7.109
+
+### Patch Changes
+
+- Fixed text overflow in lob section
+
+## 0.5.82
+
+### Patch Changes
+
+- Bump
+
+## 0.5.81
+
+### Patch Changes
+
+- version bump
+
+## 0.5.80
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.78
+
+## 0.5.79
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.76
+
+## 0.5.78
+
+### Patch Changes
+
+- add empty state to risk indicators
+
+## 0.5.77
+
+### Patch Changes
+
+- RiskIndicatorsSummary default value
+
+## 0.5.76
+
+### Patch Changes
+
+- used only one constant from common
+- Updated dependencies
+  - @ballerine/common@0.9.74
+
+## 0.5.75
+
+### Patch Changes
+
+- Uses the new report shape
+- Updated dependencies
+  - @ballerine/common@0.9.71
+
+## 0.5.74
+
+### Patch Changes
+
+- Removed isOnboarding prop in favor of using ongoing monitoring summary presence as an indicator to the conditional merchant risk summary heading
+
+## 0.5.73
+
+### Patch Changes
+
+- Trim number values in traffic sources piechart
+
+## 0.5.72
+
+### Patch Changes
+
+- Bump
+
+## 0.5.71
+
+### Patch Changes
+
+- Bump
+
+## 0.5.70
+
+### Patch Changes
+
+- Param adjustmetns & bugfixes
+- Format ongoing summary in the UI
+
+## 0.5.69
+
+### Patch Changes
+
+- Fixed options mapping at Multiselect
+
+## 0.5.68
+
+### Patch Changes
+
+- Added Dynamic Form V2 & Validator
+
+## 0.5.67
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.68
+
+## 0.5.66
+
+### Patch Changes
+
+- Fixed Date Picker popup flickering
+
+## 0.5.65
+
+### Patch Changes
+
+- Added scroll persistence on data table
+
+## 0.5.64
+
+### Patch Changes
+
+- Fixed graph cut off issue
+
+## 0.5.63
+
+### Patch Changes
+
+- Export ContentTooltip component
+
+## 0.5.62
+
+### Patch Changes
+
+- version bump
+  s Please enter a summary for your changes.
+- Updated dependencies
+  - @ballerine/common@0.9.66
+
+## 0.5.61
+
+### Patch Changes
+
+- Fix display when traffic sources list is empty
+
+## 0.5.60
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.65
+
+## 0.5.59
+
+### Patch Changes
+
+- Adds interactivity to the homepage charts
+
+## 0.5.58
+
+### Patch Changes
+
+- adds scrollable view for partner website
+
+## 0.5.57
+
+### Patch Changes
+
+- Updated traffic-related stats in the "Website credibility" tab.
+
+## 0.5.56
+
+### Patch Changes
+
+- Updated user-facing social media view
+
+## 0.5.55
+
+### Patch Changes
+
+- Fixed phone input styling
+
+## 0.5.54
+
+### Patch Changes
+
+- Updated button with disabled state
+- Updated dependencies
+  - @ballerine/common@0.9.60
+
+## 0.5.53
+
+### Patch Changes
+
+- added command.loading
+
+## 0.5.52
+
+### Patch Changes
+
+- add href attribute to anchor-if-url component
+
+## 0.5.51
+
+### Patch Changes
+
+- core
+- Updated dependencies
+  - @ballerine/common@0.9.59
+
+## 0.5.50
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.58
+
 ## 0.5.49
 
 ### Patch Changes

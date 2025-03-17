@@ -1,0 +1,115 @@
+---
+description: Rules and best practices for kyb-app React TypeScript development
+globs: ["apps/kyb-app/**/*.{ts,tsx}"]
+---
+
+# KYB App Development Rules
+
+## Component Structure
+- Use functional components with TypeScript
+- Export components as named exports
+- Place components in feature-based directories
+- Use `FunctionComponent` type for React components
+
+```typescript
+export const MyComponent: FunctionComponent<Props> = () => {
+  return <div>...</div>;
+};
+```
+
+## Hooks
+- Place hooks in a `hooks` directory within the feature directory
+- Export hooks as named exports
+- Use the `use` prefix for all hooks
+- Prefer custom hooks for reusable logic
+- Keep hooks focused and single-purpose
+
+```typescript
+export const useMyHook = () => {
+  // Hook logic
+};
+```
+
+## State Management
+- Use React Query for server state
+- Use React Context for global UI state
+- Use local state for component-specific state
+- Prefer `useState` for simple state
+- Use `useReducer` for complex state logic
+
+## TypeScript
+- Use strict TypeScript configuration
+- Define interfaces for all props
+- Use type inference where possible
+- Export types and interfaces from separate files
+- Use discriminated unions for complex state
+
+## Styling
+- Use Tailwind CSS for styling
+- Follow utility-first approach
+- Use `ctw` utility for conditional classes
+- Keep styles close to components
+- Use CSS modules for complex styling needs
+
+## File Organization
+- Group related files in feature directories
+- Use index files for clean exports
+- Keep files focused and single-purpose
+- Follow consistent naming conventions
+- Use barrel exports for cleaner imports
+
+## Error Handling
+- Use error boundaries for component errors
+- Implement proper error states
+- Handle async errors gracefully
+- Show user-friendly error messages
+- Log errors appropriately
+
+## Performance
+- Use React.memo for expensive renders
+- Implement proper dependency arrays in hooks
+- Avoid unnecessary re-renders
+- Use lazy loading for routes
+- Implement proper code splitting
+
+## Testing
+- Write unit tests for components
+- Test custom hooks independently
+- Use React Testing Library
+- Follow testing best practices
+- Maintain good test coverage
+
+## Forms
+- Use React Hook Form for form handling
+- Implement proper form validation
+- Handle form submission states
+- Show validation feedback
+- Use controlled components when needed
+
+## API Integration
+- Use React Query for data fetching
+- Implement proper loading states
+- Handle error states gracefully
+- Cache responses appropriately
+- Use TypeScript for API types
+
+## Accessibility
+- Follow WCAG guidelines
+- Use semantic HTML
+- Implement proper ARIA attributes
+- Ensure keyboard navigation
+- Test with screen readers
+
+## Code Quality
+- Use ESLint for code quality
+- Follow consistent code style
+- Write clear documentation
+- Use meaningful variable names
+- Keep functions pure when possible
+
+## Best Practices
+- Follow React best practices
+- Keep components small and focused
+- Use proper prop types
+- Implement proper loading states
+- Handle edge cases appropriately 

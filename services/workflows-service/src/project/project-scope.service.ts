@@ -1,6 +1,8 @@
-import { Prisma } from '@prisma/client';
 import type { TProjectIds } from '@/types';
-import { Injectable } from '@nestjs/common';
+import { isType } from '@ballerine/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import z from 'zod';
 
 export interface PrismaGeneralQueryArgs {
   select?: Record<string, unknown> | null;
@@ -23,6 +25,19 @@ export interface PrismaGeneralUpsertArgs extends PrismaGeneralQueryArgs {
   where: Record<string, unknown> | null;
 }
 
+const assertIsValidProjectIds = (projectIds: unknown): asserts projectIds is TProjectIds => {
+  const nonEmptyArrayOfNonEmptyStringsSchema = z.array(z.string().min(1));
+  const checkIsNonEmptyArrayOfNonEmptyStrings = isType(nonEmptyArrayOfNonEmptyStringsSchema);
+
+  if (checkIsNonEmptyArrayOfNonEmptyStrings(projectIds)) {
+    return;
+  }
+
+  throw new InternalServerErrorException(
+    'Project IDs must be a non-empty array of non-empty strings',
+  );
+};
+
 @Injectable()
 export class ProjectScopeService {
   scopeFindMany<T>(
@@ -30,14 +45,18 @@ export class ProjectScopeService {
     projectIds?: TProjectIds,
   ): T {
     // @ts-expect-error - dynamically typed for all queries
+    assertIsValidProjectIds(projectIds);
+
+    // @ts-expect-error - dynamically typed for all queries
     args ||= {};
     // @ts-expect-error - dynamically typed for all queries
     args!.where = {
       // @ts-expect-error - dynamically typed for all queries
       ...args?.where,
-      project: {
-        id: { in: projectIds },
-      },
+      project:
+        typeof projectIds === 'string'
+          ? { id: projectIds } // Single ID
+          : { id: { in: projectIds } }, // Array of IDs
     };
 
     return args!;
@@ -47,6 +66,9 @@ export class ProjectScopeService {
     args: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,
     projectIds: TProjectIds,
   ): T {
+    // @ts-expect-error - dynamically typed for all queries
+    assertIsValidProjectIds(projectIds);
+
     // @ts-expect-error
     args.where = {
       // @ts-expect-error
@@ -64,6 +86,8 @@ export class ProjectScopeService {
     projectIds: TProjectIds,
   ): T {
     // @ts-expect-error - dynamically typed for all queries
+    assertIsValidProjectIds(projectIds);
+    // @ts-expect-error - dynamically typed for all queries
     args.where = {
       // @ts-expect-error - dynamically typed for all queries
       ...args.where,
@@ -75,7 +99,31 @@ export class ProjectScopeService {
     return args as T;
   }
 
+  scopeUpdate<T>(
+    args: Prisma.SelectSubset<T, Prisma.FilterUpdateArgs>,
+    projectIds: TProjectIds,
+  ): T {
+    // @ts-expect-error - dynamically typed for all queries
+    assertIsValidProjectIds(projectIds);
+
+    // @ts-expect-error - dynamically typed for all queries
+    args.where = {
+      // @ts-expect-error - dynamically typed for all queries
+      ...args.where,
+      project: {
+        id: {
+          in: projectIds,
+        },
+      },
+    };
+
+    return args as T;
+  }
+
   scopeFindFirst<T>(args: any, projectIds?: TProjectIds): any {
+    // @ts-expect-error - dynamically typed for all queries
+    assertIsValidProjectIds(projectIds);
+
     args.where = {
       ...args.where,
       project: {
@@ -89,6 +137,9 @@ export class ProjectScopeService {
   }
 
   scopeDelete<T>(args: Prisma.SelectSubset<T, Prisma.FilterDeleteArgs>, projectIds?: TProjectIds) {
+    // @ts-expect-error - dynamically typed for all queries
+    assertIsValidProjectIds(projectIds);
+
     // @ts-expect-error - dynamically typed for all queries
     args.where = {
       // @ts-expect-error - dynamically typed for all queries
@@ -111,6 +162,9 @@ export class ProjectScopeService {
     args: Prisma.SubsetIntersection<T, Prisma.WorkflowRuntimeDataGroupByArgs, any>,
     projectIds?: TProjectIds,
   ): Prisma.SubsetIntersection<T, Prisma.WorkflowRuntimeDataGroupByArgs, any> {
+    // @ts-expect-error - dynamically typed for all queries
+    assertIsValidProjectIds(projectIds);
+
     args.where = {
       ...args.where,
       project: {

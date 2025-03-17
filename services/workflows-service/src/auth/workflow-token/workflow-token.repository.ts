@@ -30,7 +30,7 @@ export class WorkflowTokenRepository {
     });
   }
 
-  async findFirstByWorkflowruntimeDataIdUnscoped(workflowRuntimeDataId: string) {
+  async findFirstByWorkflowRuntimeDataIdUnscoped(workflowRuntimeDataId: string) {
     return await this.prismaService.workflowRuntimeDataToken.findFirst({
       select: {
         token: true,

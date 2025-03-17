@@ -13,6 +13,23 @@ import { z } from 'zod';
 import { IWorkflowId } from './interfaces';
 import { zPropertyKey } from '@/lib/zod/utils/z-property-key/z-property-key';
 
+export const updateContextAndSyncEntity = async ({
+  workflowId,
+  data,
+}: {
+  workflowId: string;
+  data: Partial<TWorkflowById['context']>;
+}) => {
+  const [workflow, error] = await apiClient({
+    endpoint: `../external/workflows/${workflowId}/sync-entity`,
+    method: Method.PATCH,
+    body: data,
+    schema: z.undefined(),
+  });
+
+  return handleZodError(error, workflow);
+};
+
 export const fetchWorkflows = async (params: {
   filterId: string;
   orderBy: string;
@@ -116,6 +133,17 @@ export const BaseWorkflowByIdSchema = z.object({
       })
       .passthrough()
       .optional(),
+    pluginsInput: z
+      .object({
+        merchantScreening: z
+          .object({
+            requestPayload: z.record(z.string(), z.unknown()).optional(),
+          })
+          .passthrough()
+          .optional(),
+      })
+      .passthrough()
+      .optional(),
     metadata: z
       .object({
         collectionFlowUrl: z.string().url().optional(),
@@ -148,6 +176,7 @@ export const BaseWorkflowByIdSchema = z.object({
     lastName: z.string(),
     avatarUrl: z.string().nullable().optional(),
   }).nullable(),
+  config: z.record(z.string(), z.unknown()).optional(),
 });
 
 export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
@@ -283,6 +312,7 @@ export const updateWorkflowDecision = async ({
   documentId: string;
   body: {
     decision: string | null;
+    directorId?: string;
     reason?: string;
     comment?: string;
   };

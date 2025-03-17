@@ -4,8 +4,10 @@ import { z } from 'zod';
 
 export const ConfigSchema = z
   .object({
+    isDocumentsV2: z.boolean().optional(),
     isAssociatedCompanyKybEnabled: z.boolean().optional(),
     isCaseOverviewEnabled: z.boolean().optional(),
+    isDocumentTrackerEnabled: z.boolean().optional(),
     isCaseRiskOverviewEnabled: z.boolean().optional(),
     isLegacyReject: z.boolean().optional(),
     isLockedDocumentCategoryAndType: z.boolean().optional(),
@@ -62,12 +64,33 @@ export const ConfigSchema = z
     hasUboOngoingMonitoring: z.boolean().optional(),
     maxBusinessReports: z.number().nonnegative().optional(),
     isMerchantMonitoringEnabled: z.boolean().optional(),
+    isDemoAccount: z.boolean().optional(),
+    withQualityControl: z.boolean().optional(),
+    disableBusinessSyncToUnifiedApi: z.boolean().optional(),
     uiOptions: z
       .object({
         redirectUrls: z
           .object({
             success: z.string().url().optional(),
             failure: z.string().url().optional(),
+          })
+          .optional(),
+      })
+      .optional(),
+    editableContext: z
+      .object({
+        kyc: z
+          .object({
+            entity: z.boolean().optional(),
+          })
+          .optional(),
+      })
+      .optional(),
+    ubos: z
+      .object({
+        create: z
+          .object({
+            enabled: z.boolean().optional(),
           })
           .optional(),
       })

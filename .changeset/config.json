@@ -3,7 +3,7 @@
   "changelog": "@changesets/changelog-git",
   "commit": false,
   "fixed": [],
-  "linked": [],
+  "linked": [["@ballerine/ui", "@ballerine/backoffice-v2"]],
   "access": "public",
   "baseBranch": "dev",
   "updateInternalDependencies": "patch",

@@ -80,7 +80,7 @@ jobs:
 
       - name: Cache Docker layers
         id: cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
@@ -111,6 +111,7 @@ jobs:
             docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-sb ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-${{ inputs.environment }}
             docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-sb ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ inputs.environment }}
             docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-sb ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:latest
+            docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:latest
           else
             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-dev
             docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-dev ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.SHORT_HASH }}-${{ inputs.environment }}
@@ -156,7 +157,7 @@ jobs:
       
       - name: Cache Docker layers
         id: cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
@@ -256,6 +257,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [update-helm-chart,build-and-push-ee-image]
     if: ${{ needs.update-helm-chart.result == 'success' }}
+    environment: ${{ inputs.environment }}
     permissions:
       contents: read
       packages: write

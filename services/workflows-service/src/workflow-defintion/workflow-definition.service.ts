@@ -111,6 +111,8 @@ export class WorkflowDefinitionService {
       merge(restArgs, {
         name,
         displayName,
+        projectId,
+        isPublic: false,
         version: 1,
       }),
     ) as Prisma.WorkflowDefinitionCreateArgs['data'];
@@ -246,5 +248,28 @@ export class WorkflowDefinitionService {
     projectIds: TProjectIds,
   ) {
     return await this.workflowDefinitionRepository.updateById(id, args, projectIds, true);
+  }
+
+  async createDemoWorkflowDefinition({
+    customerId,
+    userId,
+    workflowOverrides,
+  }: {
+    customerId: string;
+    userId?: string;
+    workflowOverrides?: Array<{ webPresenceReportId?: string }>;
+  }) {
+    return await this.workflowDefinitionRepository.createDemoWorkflowDefinition(
+      customerId,
+      userId,
+      workflowOverrides,
+    );
+  }
+
+  async getByWorkflowRuntimeDataId(workflowRuntimeDataId: string, projectIds: TProjectIds) {
+    return await this.workflowDefinitionRepository.findByWorkflowRuntimeDataId(
+      workflowRuntimeDataId,
+      projectIds,
+    );
   }
 }

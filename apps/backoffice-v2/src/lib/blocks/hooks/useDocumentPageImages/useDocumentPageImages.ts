@@ -11,7 +11,7 @@ export const useDocumentPageImages = (
   const results = useMemo(() => {
     const filesCopy = [...files];
 
-    const result = documents.reduce((list: DocumentPageImagesResult, document, documentIndex) => {
+    const result = documents?.reduce((list: DocumentPageImagesResult, document, documentIndex) => {
       (document?.pages as AnyObject[])?.forEach((_, pageIndex: number) => {
         if (!list[documentIndex]) {
           list[documentIndex] = [];

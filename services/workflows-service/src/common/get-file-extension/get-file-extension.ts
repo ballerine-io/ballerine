@@ -1,7 +1,9 @@
 export const getFileExtension = (fileName: string) => {
   const parts = fileName?.split('.');
 
-  if (!parts?.length) return;
+  if (!parts?.length) {
+    return;
+  }
 
   const extension = parts?.[parts?.length - 1];
   // For Handling URLs

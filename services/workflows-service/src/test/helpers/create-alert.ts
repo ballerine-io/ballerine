@@ -1,51 +1,27 @@
-import { AppLoggerService } from '../../common/app-logger/app-logger.service';
-import { PrismaService } from '../../prisma/prisma.service';
-import { AlertDefinition } from '@prisma/client';
-import { Test } from '@nestjs/testing';
 import { AlertService } from '@/alert/alert.service';
-import { AlertRepository } from '@/alert/alert.repository';
-import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
-import { ClsService } from 'nestjs-cls';
-import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
-import { ProjectScopeService } from '@/project/project-scope.service';
+import { AlertDefinition } from '@prisma/client';
+import { createTransactionRecord } from './create-transaction-record';
+import { InlineRule } from '@/data-analytics/types';
 
-export const createAlert = async (projectId: string, AlertDefinition: AlertDefinition) => {
-  const moduleRef = await Test.createTestingModule({
-    providers: [
-      AlertService,
-      ClsService,
-      PrismaService,
-      DataAnalyticsService,
-      AlertDefinitionRepository,
-      ProjectScopeService,
-      AppLoggerService,
-      {
-        provide: AlertRepository,
-        useClass: AlertRepository,
-      },
-      {
-        provide: 'LOGGER',
-        useValue: {
-          setContext: jest.fn(),
-          log: jest.fn(),
-          error: jest.fn(),
-          warn: jest.fn(),
-          debug: jest.fn(),
-        },
-      },
-    ],
-  }).compile();
+export const createAlert = async (
+  projectId: string,
+  alertDefinition: AlertDefinition,
+  alertService: AlertService,
+  transactions: Awaited<ReturnType<typeof createTransactionRecord>>,
+) => {
+  const subject = (alertDefinition.inlineRule as InlineRule).subjects[0] as
+    | 'counterpartyBeneficiaryId'
+    | 'counterpartyOriginatorId';
 
-  const alertService = moduleRef.get<AlertService>(AlertService);
+  const subjectValue = transactions[0]?.[subject];
 
   // Accessing private method for testing purposes while maintaining types
   return await alertService.createAlert(
     {
-      id: AlertDefinition.id,
-      projectId: AlertDefinition.projectId,
-      defaultSeverity: AlertDefinition.defaultSeverity,
+      ...alertDefinition,
+      projectId,
     },
-    [],
+    [{ [subject]: subjectValue }],
     {},
     {},
   );

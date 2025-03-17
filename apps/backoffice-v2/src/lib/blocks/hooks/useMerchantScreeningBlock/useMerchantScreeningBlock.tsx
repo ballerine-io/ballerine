@@ -1,29 +1,31 @@
-import React, { useMemo } from 'react';
-import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
 import { ReadOnlyDetail } from '@/common/components/atoms/ReadOnlyDetail/ReadOnlyDetail';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { useMemo } from 'react';
 
-import { IMerchantScreening } from '@/lib/blocks/hooks/useMerchantScreeningBlock/interfaces';
+import { ctw } from '@/common/utils/ctw/ctw';
 import {
   inquiredMatchedMerchantsColumns,
   terminatedMatchedMerchantsColumns,
   terminatedMatchedMerchantsSummaryColumns,
 } from '@/lib/blocks/hooks/useMerchantScreeningBlock/columns';
-import { toTitleCase } from 'string-ts';
 import { formatValue } from '@/lib/blocks/hooks/useMerchantScreeningBlock/format-value';
+import { IMerchantScreening } from '@/lib/blocks/hooks/useMerchantScreeningBlock/interfaces';
 import { isObject, safeEvery } from '@ballerine/common';
-import { ctw } from '@/common/utils/ctw/ctw';
 import { JsonDialog } from '@ballerine/ui';
+import { toTitleCase } from 'string-ts';
 
 export const useMerchantScreeningBlock = ({
   terminatedMatchedMerchants,
   inquiredMatchedMerchants,
+  merchantScreeningInput,
   logoUrl = 'https://cdn.ballerine.io/logos/Mastercard%20logo.svg',
   rawData,
   checkDate,
 }: {
   terminatedMatchedMerchants: IMerchantScreening[];
   inquiredMatchedMerchants: IMerchantScreening[];
+  merchantScreeningInput: Record<PropertyKey, unknown>;
   logoUrl: string;
   rawData: Record<PropertyKey, unknown>;
   checkDate: string;
@@ -73,6 +75,7 @@ export const useMerchantScreeningBlock = ({
                       terminatedMatches: terminatedMatchedMerchants?.length ?? 0,
                       numberOfInquiries: inquiredMatchedMerchants?.length ?? 0,
                       checkDate,
+                      merchantScreeningInput: merchantScreeningInput ?? {},
                       fullJsonData: rawData ?? {},
                     },
                   ],

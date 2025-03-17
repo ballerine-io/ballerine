@@ -15,7 +15,7 @@ export const RiskEvaluationPluginSchema = Type.Optional(
                 rule: Type.Optional(
                   Type.Object({
                     key: Type.Optional(Type.String()),
-                    value: Type.Optional(Type.Array(Type.String())),
+                    value: Type.Optional(Type.Any()),
                     operator: Type.Optional(Type.String()),
                   }),
                 ),
@@ -29,7 +29,7 @@ export const RiskEvaluationPluginSchema = Type.Optional(
                 Type.Array(
                   Type.Object({
                     key: Type.Optional(Type.String()),
-                    value: Type.Optional(Type.Array(Type.String())),
+                    value: Type.Optional(Type.Any()),
                     operator: Type.Optional(Type.String()),
                   }),
                 ),

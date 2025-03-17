@@ -8,6 +8,7 @@ import {
   useCallback,
   useEffect,
   useState,
+  useMemo,
 } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toTitleCase } from 'string-ts';
@@ -32,6 +33,7 @@ import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
 import { IEditableDetails } from './interfaces';
 import { isValidDatetime } from '../../../../common/utils/is-valid-datetime';
 import dayjs from 'dayjs';
+import { useUpdateDocumentByIdMutation as useUpdateDocumentByIdV2Mutation } from '@/domains/documents/hooks/mutations/useUpdateDocumentById/useUpdateDocumentById';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
@@ -100,12 +102,14 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   data,
   valueId,
   id,
+  directorId,
   documents,
   title,
   workflowId,
   isSaveDisabled,
   contextUpdateMethod = 'base',
   onSubmit: onSubmitCallback,
+  isDocumentsV2,
 }) => {
   const [formData, setFormData] = useState(data);
   const POSITIVE_VALUE_INDICATOR = ['approved'];
@@ -124,19 +128,24 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
 
     return isDecisionComponent && !!value && NEGATIVE_VALUE_INDICATOR.includes(value.toLowerCase());
   };
-  const defaultValues = data?.reduce((acc, curr) => {
-    acc[curr.title] = curr.value;
+  const formValues = useMemo(() => {
+    return data?.reduce((acc, curr) => {
+      acc[curr.title] = curr.value;
 
-    return acc;
-  }, {});
+      return acc;
+    }, {});
+  }, [data]);
+
   const form = useForm({
-    defaultValues,
+    values: formValues,
   });
   const { mutate: mutateUpdateWorkflowById } = useUpdateDocumentByIdMutation({
+    directorId,
     workflowId,
     documentId: valueId,
   });
-  const onMutateTaskDecisionById = ({
+  const { mutate: mutateUpdateDocumentByIdV2 } = useUpdateDocumentByIdV2Mutation();
+  const onMutateDocumentPropertiesById = ({
     document,
     action,
     contextUpdateMethod,
@@ -144,12 +153,26 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     document: AnyRecord;
     action: Parameters<typeof mutateUpdateWorkflowById>[0]['action'];
     contextUpdateMethod: 'base' | 'director';
-  }) =>
+  }) => {
+    if (isDocumentsV2) {
+      mutateUpdateDocumentByIdV2({
+        documentId: valueId,
+        data: {
+          type: document.type,
+          category: document.category,
+          properties: document.properties,
+        },
+      });
+
+      return;
+    }
+
     mutateUpdateWorkflowById({
       document,
       action,
       contextUpdateMethod,
     });
+  };
   const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = formData => {
     const document = documents?.find(document => document?.id === valueId);
     const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
@@ -190,12 +213,12 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
       ...document,
       type: formData.type,
       category: formData.category,
-      properties: properties,
+      properties,
     };
 
-    onSubmitCallback && onSubmitCallback(newDocument);
+    onSubmitCallback?.(newDocument);
 
-    return onMutateTaskDecisionById({
+    return onMutateDocumentPropertiesById({
       document: newDocument,
       action: 'update_document_properties',
       contextUpdateMethod,
@@ -247,11 +270,6 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     data,
   });
 
-  // Ensures that the form is reset when the data changes from other instances of `useUpdateWorkflowByIdMutation` i.e. in `useCaseCallToActionLogic`.
-  useEffect(() => {
-    form.reset(defaultValues);
-  }, [form.reset, data]);
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className={`flex h-full flex-col`}>
@@ -279,7 +297,9 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
               const originalValue = form.watch(title);
 
               const displayValue = (value: unknown) => {
-                if (isEditable) return originalValue;
+                if (isEditable) {
+                  return originalValue;
+                }
 
                 return isNullish(value) || value === '' ? 'N/A' : value;
               };
@@ -297,7 +317,9 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                   control={form.control}
                   name={title}
                   render={({ field }) => {
-                    if (isDecisionComponent && !value) return null;
+                    if (isDecisionComponent && !value) {
+                      return null;
+                    }
 
                     const isInput = [
                       !checkIsUrl(value) || isEditable,
@@ -431,7 +453,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
           {data?.some(({ isEditable }) => isEditable) && (
             <Button
               type="submit"
-              className={`ms-auto mt-3 aria-disabled:pointer-events-none aria-disabled:opacity-50`}
+              className={`ms-auto mt-3 enabled:bg-primary enabled:hover:bg-primary/90 aria-disabled:pointer-events-none aria-disabled:opacity-50`}
               aria-disabled={isSaveDisabled}
             >
               Save

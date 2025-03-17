@@ -1,0 +1,158 @@
+{
+  "raw": {
+    "TerminationInquiry": {
+      "Ref": "https://sandbox.api.mastercard.com/fraud/merchant/v3/termination-inquiry/19962024090205928",
+      "PageOffset": 0,
+      "PossibleInquiryMatches": [
+        {
+          "TotalLength": 1,
+          "InquiredMerchant": [
+            {
+              "Merchant": {
+                "Name": "Green-Tech Solutions Ltd",
+                "Address": {
+                  "City": "London",
+                  "Line1": "23 Tech Street",
+                  "Country": "GBR",
+                  "PostalCode": "SW1A 1AA"
+                },
+                "Principal": [
+                  {
+                    "Address": {
+                      "City": "London",
+                      "Line1": "23 Tech Street",
+                      "Country": "GBR",
+                      "PostalCode": "SW1A 1AA"
+                    },
+                    "LastName": "Smith",
+                    "FirstName": "John",
+                    "DriversLicense": {}
+                  }
+                ],
+                "AddedOnDate": "09/02/2024",
+                "MerchantMatch": {
+                  "Name": "M02",
+                  "Address": "M01",
+                  "PhoneNumber": "M00",
+                  "NationalTaxId": "M00",
+                  "AltPhoneNumber": "M00",
+                  "PrincipalMatch": [
+                    {
+                      "Name": "M02",
+                      "Address": "M01",
+                      "NationalId": "M00",
+                      "PhoneNumber": "M00",
+                      "AltPhoneNumber": "M00",
+                      "DriversLicense": "M00"
+                    }
+                  ],
+                  "ServiceProvDBA": "M00",
+                  "ServiceProvLegal": "M00",
+                  "DoingBusinessAsName": "M00",
+                  "CountrySubdivisionTaxId": "M00"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "PossibleMerchantMatches": [
+        {
+          "TotalLength": 0,
+          "TerminatedMerchant": []
+        }
+      ],
+      "TransactionReferenceNumber": ""
+    }
+  },
+  "name": "merchantScreening",
+  "status": "SUCCESS",
+  "vendor": "mastercard",
+  "logoUrl": "https://cdn.ballerine.io/logos/Mastercard%20logo.svg",
+  "invokedAt": 1725307701422,
+  "processed": {
+    "checkDate": "9/2/2024",
+    "inquiredMatchedMerchants": [
+      {
+        "raw": {
+          "Merchant": {
+            "Name": "Green-Tech Solutions Ltd",
+            "Address": {
+              "City": "London",
+              "Line1": "23 Tech Street",
+              "Country": "GBR",
+              "PostalCode": "SW1A 1AA"
+            },
+            "Principal": [
+              {
+                "Address": {
+                  "City": "London",
+                  "Line1": "23 Tech Street",
+                  "Country": "GBR",
+                  "PostalCode": "SW1A 1AA"
+                },
+                "LastName": "Smith",
+                "FirstName": "John",
+                "DriversLicense": {}
+              }
+            ],
+            "AddedOnDate": "09/02/2024",
+            "MerchantMatch": {
+              "Name": "M02",
+              "Address": "M01",
+              "PhoneNumber": "M00",
+              "NationalTaxId": "M00",
+              "AltPhoneNumber": "M00",
+              "PrincipalMatch": [
+                {
+                  "Name": "M01",
+                  "Address": "M01",
+                  "NationalId": "M00",
+                  "PhoneNumber": "M00",
+                  "AltPhoneNumber": "M00",
+                  "DriversLicense": "M00"
+                }
+              ],
+              "ServiceProvDBA": "M00",
+              "ServiceProvLegal": "M00",
+              "DoingBusinessAsName": "M00",
+              "CountrySubdivisionTaxId": "M00"
+            }
+          }
+        },
+        "name": "Green-Tech Solutions Ltd",
+        "urls": [],
+        "dateAdded": "09/02/2024",
+        "principals": [
+          {
+            "exactMatches": {
+              "address": {
+                "City": "London",
+                "Line1": "23 Tech Street",
+                "Country": "GBR",
+                "PostalCode": "SW1A 1AA"
+              }
+            },
+            "partialMatches": {
+              "name": "Green-Tech Solutions Ltd"
+            }
+          }
+        ],
+        "exactMatches": {
+          "address": {
+            "City": "London",
+            "Line1": "23 Tech Street",
+            "Country": "GBR",
+            "PostalCode": "SW1A 1AA"
+          }
+        },
+        "partialMatches": {
+          "name": "Green Tech Solutions Ltd."
+        },
+        "exactMatchesAmount": 2,
+        "partialMatchesAmount": 1
+      }
+    ],
+    "terminatedMatchedMerchants": []
+  }
+}

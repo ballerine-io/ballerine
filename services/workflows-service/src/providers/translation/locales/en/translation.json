@@ -612,7 +612,12 @@
       "companyRegistrationNumber": "Company registration number is required.",
       "role": "Title is required.",
       "estimatedAnnualSales": "Estimated annual sales is required.",
-      "cardPresentPercentage": "Card present percentage is required."
+      "cardPresentPercentage": "Card present percentage is required.",
+      "state": "State is required.",
+      "averageTransactionValueInput": "Average transaction value is required.",
+      "annualVolumeAmountInput": "Annual volume amount is required.",
+      "transactionValue": "Transaction value is required.",
+      "annualVolume": "Annual volume is required."
     },
     "minLength": {
       "firstName": "First name must be at least 2 characters long.",
@@ -646,7 +651,10 @@
       "shippingPolicyUrl": "Shipping Policy URL should not be empty.",
       "aboutUsUrl": "About Us URL should not be empty.",
       "termsOfUseUrl": "Terms of Use URL should not be empty.",
-      "privacyPolicyUrl": "Privacy Policy URL should not be empty."
+      "privacyPolicyUrl": "Privacy Policy URL should not be empty.",
+      "state": "State is required.",
+      "postalCode": "Postal code should be minimum 3 characters.",
+      "businessModel": "Business model should be minimum 2 characters."
     },
     "maxLength": {
       "firstName": "First name should not exceed 50 characters.",
@@ -671,7 +679,12 @@
       "routeNumber": "Route Number should not exceed 10 characters.",
       "bankName": "Bank name should not exceed 100 characters.",
       "bankCode": "Bank Code should not exceed 13 characters.",
-      "bankAddress": "Bank address should not exceed 200 characters."
+      "bankAddress": "Bank address should not exceed 200 characters.",
+      "state": "State should not exceed 100 characters.",
+      "postalCode": "Postal code should not exceed 10 characters.",
+      "businessModel": "Business model should not exceed 100 characters.",
+      "companyWebsite": "Company Website should not exceed 255 characters.",
+      "jobTitle": "Job title should not exceed 100 characters."
     },
     "minItems": {
       "ubos": "UBOs are required."
@@ -704,13 +717,19 @@
       "numberOfEmployees": "Number of employees must be at least 1.",
       "percentageOfOwnership": "Percentage of ownership must be 25 or greater.",
       "estimatedAnnualSales": "Minimum value is 1.",
-      "cardPresentPercentage": "Minimum value is 1."
+      "cardPresentPercentage": "Minimum value is 1.",
+      "averageTransactionValueInput": "Minimum value is 1.",
+      "transactionValue": "Minimum value is 1.",
+      "annualVolume": "Minimum value is 1."
     },
     "maximum": {
       "numberOfEmployees": "Number of employees cannot exceed 100,000.",
       "percentageOfOwnership": "Percentage of ownership must not exceed 100.",
       "estimatedAnnualSales": "Maximum value is 10 000 000 000",
-      "cardPresentPercentage": "Maximum value is 100."
+      "cardPresentPercentage": "Maximum value is 100.",
+      "averageTransactionValueInput": "Maximum value is 1000 000 000",
+      "transactionValue": "Maximum value is 1000000000",
+      "annualVolume": "Maximum value is 1000000000"
     }
   }
 }

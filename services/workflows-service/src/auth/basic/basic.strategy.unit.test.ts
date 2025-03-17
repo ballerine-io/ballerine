@@ -9,11 +9,11 @@ describe('Testing the basicStrategyBase.validate()', () => {
   const authService = mock<AuthService>();
   const basicStrategy = new BasicStrategy(authService);
   beforeEach(() => {
-    authService.validateUser.mockClear();
+    authService.authenticateUserByPassword.mockClear();
   });
   beforeAll(() => {
     //ARRANGE
-    authService.validateUser
+    authService.authenticateUserByPassword
       .calledWith(TEST_USER.email, TEST_PASSWORD)
       .mockReturnValue(Promise.resolve(TEST_USER));
   });
@@ -25,7 +25,7 @@ describe('Testing the basicStrategyBase.validate()', () => {
   });
   it('should throw error if there is not valid user', async () => {
     //ARRANGE
-    authService.validateUser.mockReturnValue(Promise.resolve(null));
+    authService.authenticateUserByPassword.mockReturnValue(Promise.resolve(null));
     //ACT
     const result = basicStrategy.validate('noUsername', TEST_PASSWORD);
 

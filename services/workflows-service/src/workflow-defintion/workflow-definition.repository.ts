@@ -6,6 +6,7 @@ import { GetWorkflowDefinitionListDto } from '@/workflow-defintion/dtos/get-work
 import { validateDefinitionLogic } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient, WorkflowDefinition } from '@prisma/client';
+import { createDemoWorkflow } from './demo-workflow/create-demo-workflow';
 
 @Injectable()
 export class WorkflowDefinitionRepository {
@@ -159,6 +160,7 @@ export class WorkflowDefinitionRepository {
     if (workflowDefinition?.isPublic) {
       throw new Error('Cannot delete public workflow definition templates');
     }
+
     return await this.prisma.workflowDefinition.delete(
       this.scopeService.scopeDelete(
         {
@@ -246,5 +248,50 @@ export class WorkflowDefinitionRepository {
         OFFSET ${dto.limit * (dto.page - 1)}
     `,
     );
+  }
+
+  async createDemoWorkflowDefinition(
+    customerId: string,
+    userId?: string,
+    workflowOverrides?: Array<{ webPresenceReportId?: string }>,
+  ) {
+    return await this.prisma.$transaction(async transaction => {
+      const customer = await transaction.customer.findUniqueOrThrow({
+        where: {
+          id: customerId,
+        },
+      });
+      const project = await transaction.project.findFirstOrThrow({
+        where: { customerId },
+        include: {
+          userToProjects: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      });
+
+      const demoEnv = {
+        customer,
+        project,
+        user: project.userToProjects[0]?.user,
+      };
+
+      await createDemoWorkflow({ customer, demoEnv, transaction, workflowOverrides, userId });
+    });
+  }
+
+  async findByWorkflowRuntimeDataId(workflowRuntimeDataId: string, projectIds: TProjectIds) {
+    return await this.prisma.workflowDefinition.findFirst({
+      where: {
+        workflowRuntimeData: {
+          some: {
+            id: workflowRuntimeDataId,
+          },
+        },
+        projectId: { in: projectIds },
+      },
+    });
   }
 }

@@ -245,6 +245,7 @@ export class WorkflowControllerInternal {
     return await this.service.updateDocumentById(
       {
         workflowId: params?.id,
+        directorId: data?.directorId,
         documentId: params?.documentId,
         validateDocumentSchema: false,
         documentsUpdateContextMethod: query.contextUpdateMethod,
@@ -291,6 +292,7 @@ export class WorkflowControllerInternal {
       const workflowData = await this.service.updateDocumentDecisionById(
         {
           workflowId: params?.id,
+          directorId: data?.directorId,
           documentId: params?.documentId,
           documentsUpdateContextMethod: query.contextUpdateMethod,
         },

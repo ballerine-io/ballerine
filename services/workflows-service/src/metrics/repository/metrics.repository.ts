@@ -173,7 +173,9 @@ export class MetricsRepository {
       buildAggregateDailyCasesResolvedQuery(params.fromDate, params.userId, projectIds),
     );
 
-    if (!results.length) return [];
+    if (!results.length) {
+      return [];
+    }
 
     return results.map(result =>
       plainToClass(CasesResolvedInDay, {
@@ -247,7 +249,7 @@ export class MetricsRepository {
         FROM
           "BusinessReport"
         WHERE
-          "status"::text = ${BusinessReportStatus.completed}
+          "status"::text IN (${BusinessReportStatus.completed}, ${BusinessReportStatus.under_review}, ${BusinessReportStatus.pending_review})
           AND "BusinessReport"."projectId" = ${projectId}
         GROUP BY
           "riskLevel";`;

@@ -4,6 +4,7 @@ import {
   TCompanyInformation,
 } from '@/business/types/business-information';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { TCustomerWithFeatures } from '@/customer/types';
 import { env } from '@/env';
 import type { PrismaTransaction, TProjectIds } from '@/types';
 import { HttpService } from '@nestjs/axios';
@@ -14,17 +15,64 @@ import { AxiosError } from 'axios';
 import { plainToClass } from 'class-transformer';
 import { lastValueFrom } from 'rxjs';
 import { BusinessRepository } from './business.repository';
-import { TCustomerWithFeatures } from '@/customer/types';
+import { CustomerService } from '@/customer/customer.service';
+import {
+  BusinessPayload,
+  UnifiedApiClient,
+} from '@/common/utils/unified-api-client/unified-api-client';
+import { PrismaService } from '@/prisma/prisma.service';
+import { beginTransactionIfNotExistCurry } from '@/prisma/prisma.util';
 
 @Injectable()
 export class BusinessService {
+  private readonly unifiedApiClient = new UnifiedApiClient();
+
   constructor(
     protected readonly repository: BusinessRepository,
     protected readonly logger: AppLoggerService,
     protected readonly httpService: HttpService,
+    protected readonly customerService: CustomerService,
+    private readonly prisma: PrismaService,
   ) {}
+
   async create(args: Parameters<BusinessRepository['create']>[0], transaction?: PrismaTransaction) {
-    return await this.repository.create(args, transaction);
+    return await beginTransactionIfNotExistCurry({
+      transaction,
+      prismaService: this.prisma,
+    })(async tx => {
+      const business = await this.repository.create(args, tx);
+
+      const businessPayload = (await this.repository.findByIdUnscoped(
+        business.id,
+        {
+          select: {
+            id: true,
+            correlationId: true,
+            companyName: true,
+            metadata: true,
+            createdAt: true,
+            updatedAt: true,
+            project: {
+              select: {
+                customer: {
+                  select: {
+                    id: true,
+                    config: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        tx,
+      )) as unknown as BusinessPayload;
+
+      if (env.SYNC_UNIFIED_API === 'true') {
+        await retry(() => this.unifiedApiClient.createOrUpdateBusiness(businessPayload));
+      }
+
+      return business;
+    });
   }
 
   async list(args: Parameters<BusinessRepository['findMany']>[0], projectIds: TProjectIds) {
@@ -63,7 +111,43 @@ export class BusinessService {
     args: Parameters<BusinessRepository['updateById']>[1],
     transaction?: PrismaTransaction,
   ) {
-    return await this.repository.updateById(id, args, transaction);
+    return await beginTransactionIfNotExistCurry({
+      transaction,
+      prismaService: this.prisma,
+    })(async tx => {
+      const business = await this.repository.updateById(id, args, tx);
+
+      const businessPayload = (await this.repository.findByIdUnscoped(
+        business.id,
+        {
+          select: {
+            id: true,
+            correlationId: true,
+            companyName: true,
+            metadata: true,
+            createdAt: true,
+            updatedAt: true,
+            project: {
+              select: {
+                customer: {
+                  select: {
+                    id: true,
+                    config: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        tx,
+      )) as unknown as BusinessPayload;
+
+      if (env.SYNC_UNIFIED_API === 'true') {
+        await retry(() => this.unifiedApiClient.createOrUpdateBusiness(businessPayload));
+      }
+
+      return business;
+    });
   }
 
   async fetchCompanyInformation({
@@ -120,3 +204,14 @@ export class BusinessService {
     }
   }
 }
+
+const retry = async (fn: () => Promise<unknown>) => {
+  const { default: pRetry } = await import('p-retry');
+
+  return await pRetry(fn, {
+    retries: 5,
+    randomize: true,
+    minTimeout: 100,
+    maxTimeout: 10_000,
+  });
+};

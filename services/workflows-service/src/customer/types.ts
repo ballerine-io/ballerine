@@ -1,5 +1,6 @@
 import { Customer } from '@prisma/client';
-import { MerchantReportVersion } from '@/business-report/constants';
+import { MerchantReportVersion } from '@ballerine/common';
+import { TAccessDetails } from './schemas/zod-schemas';
 
 export type TAuthenticationConfiguration = {
   apiType: 'API_KEY' | 'OAUTH2' | 'BASIC_AUTH';
@@ -38,6 +39,7 @@ export type TCustomerFeaturesConfig = {
   name: keyof typeof FEATURE_LIST;
   enabled: boolean;
   options: FeaturesOptions;
+  disabledAt?: string;
 };
 
 export const CUSTOMER_FEATURES = {
@@ -59,4 +61,8 @@ export type TCustomerWithFeatures = Customer & {
   features?: Partial<
     Record<(typeof FEATURE_LIST)[keyof typeof FEATURE_LIST], TCustomerFeaturesConfig>
   > | null;
+};
+
+export type TDemoCustomer = Omit<TCustomerWithFeatures, 'config'> & {
+  config: { demoAccessDetails?: TAccessDetails };
 };

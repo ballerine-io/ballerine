@@ -1,27 +1,85 @@
 import * as common from '@nestjs/common';
-import { Body, Controller, HttpCode, Post, Req, Res } from '@nestjs/common';
+import { Controller, HttpCode, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthService } from './auth.service';
-import { LoginDto } from './dtos/login';
 import { UserModel } from '@/user/user.model';
 import type { Request, Response } from 'express';
 import { LocalAuthGuard } from '@/auth/local/local-auth.guard';
+import { MagicLinkGuard } from '@/auth/magic-link/magic-link.guard';
 import util from 'util';
 import { Public } from '@/common/decorators/public.decorator';
-import type { AuthenticatedEntity } from '@/types';
-import { User } from '@prisma/client';
+import type { AuthenticatedEntity, TProjectId } from '@/types';
+import type { User } from '@prisma/client';
+import { AnalyticsService, EventNamesMap } from '@/common/analytics-logger/analytics.service';
+import { UserData } from '@/user/user-data.decorator';
+import { CustomerService } from '@/customer/customer.service';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { UserService } from '@/user/user.service';
 
 @Public()
 @ApiTags('Auth')
 @Controller('internal/auth')
 @swagger.ApiExcludeController()
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly analyticsService: AnalyticsService,
+    private readonly customerService: CustomerService,
+    private readonly userService: UserService,
+  ) {}
+
   @common.UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(200)
-  login(@Req() req: Request, @Body() body: LoginDto): { user: Express.User | undefined } {
+  async login(
+    @Req() req: Request,
+    @UserData() authenticatedEntity: User,
+  ): Promise<{ user: Express.User | undefined }> {
+    const { userToProjects } = await this.userService.getByIdUnscoped(authenticatedEntity.id, {
+      select: { userToProjects: { select: { projectId: true } } },
+    });
+
+    if (!userToProjects || !userToProjects.length || !userToProjects[0]?.projectId) {
+      throw new UnauthorizedException();
+    }
+
+    const { id: customerId } = await this.customerService.getByProjectId(
+      userToProjects[0].projectId,
+      { select: { id: true } },
+    );
+
+    this.analyticsService.track({
+      event: EventNamesMap.USER_LOGIN,
+      distinctId: authenticatedEntity.id,
+      properties: {
+        customerId,
+        email: authenticatedEntity.email,
+      },
+    });
+
+    return { user: req.user };
+  }
+
+  @common.UseGuards(MagicLinkGuard)
+  @Post('magic-link-login')
+  @HttpCode(200)
+  async loginViaMagicLink(
+    @Req() req: Request,
+    @UserData() authenticatedEntity: User,
+    @CurrentProject() projectId: TProjectId,
+  ): Promise<{ user: Express.User | undefined }> {
+    const { id: customerId } = await this.customerService.getByProjectId(projectId, {
+      select: { id: true },
+    });
+
+    this.analyticsService.track({
+      event: EventNamesMap.USER_MAGIC_LINK_LOGIN,
+      distinctId: authenticatedEntity.id,
+      properties: {
+        customerId,
+        email: authenticatedEntity.email,
+      },
+    });
+
     return { user: req.user };
   }
 
