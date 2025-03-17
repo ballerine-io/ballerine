@@ -1,0 +1,106 @@
+import dayjs from 'dayjs';
+import { toast } from 'sonner';
+
+/**
+ * Formats a value for CSV export
+ * - Handles Date objects by converting to ISO format in local timezone
+ * - Handles arrays by joining with semicolons
+ * - Handles objects by converting to JSON strings
+ * - Handles primitive values directly
+ *
+ * @param value - The value to format
+ * @returns Formatted string value
+ */
+const formatValueForCsv = (value: any): string => {
+  if (value === null || value === undefined) {
+    return '';
+  }
+
+  // Handle Date objects - convert to ISO format in local timezone
+  if (value instanceof Date) {
+    return dayjs(value).format('YYYY-MM-DDTHH:mm:ssZ');
+  }
+
+  // Handle arrays - join with semicolons
+  if (Array.isArray(value)) {
+    return value.map(item => formatValueForCsv(item)).join('; ');
+  }
+
+  // Handle objects - convert to JSON
+  if (typeof value === 'object') {
+    return JSON.stringify(value).replace(/"/g, '""');
+  }
+
+  // Handle primitive values
+  return String(value).replace(/"/g, '""');
+};
+
+/**
+ * Converts an array of objects to a CSV string
+ * @param data Array of objects to convert to CSV
+ * @returns CSV string
+ */
+export const convertToCSV = (data: Record<string, any>[]) => {
+  if (!data || data.length === 0) return '';
+
+  // Extract column headers from the first item
+  const headers = Object.keys(data[0] || {});
+  const csvRows = [headers.join(',')]; // Headers row
+
+  // Create CSV rows
+  for (const item of data) {
+    const values = headers.map(header => {
+      const value = item[header];
+      // Format the value using our helper function
+      const formattedValue = formatValueForCsv(value);
+
+      // Wrap in quotes if contains commas, quotes, or newlines
+      return formattedValue.includes(',') ||
+        formattedValue.includes('"') ||
+        formattedValue.includes('\n')
+        ? `"${formattedValue}"`
+        : formattedValue;
+    });
+    csvRows.push(values.join(','));
+  }
+
+  return csvRows.join('\n');
+};
+
+/**
+ * Exports data to a CSV file and triggers a download
+ * @param data Array of objects to export
+ * @param filename Name of the file to download (without extension)
+ */
+export const exportToCSV = (data: Record<string, any>[], filename: string) => {
+  try {
+    if (!data || data.length === 0) {
+      toast.error('No data to export');
+      return false;
+    }
+
+    // Generate CSV and trigger download
+    const csv = convertToCSV(data);
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    const fullFilename = `${filename}.csv`;
+    link.setAttribute('download', fullFilename);
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Clean up the URL object
+    URL.revokeObjectURL(url);
+
+    toast.success('Export completed');
+    return true;
+  } catch (error) {
+    console.error('Export failed:', error);
+    toast.error('Failed to export data');
+    return false;
+  }
+};
