@@ -3,8 +3,8 @@ import dayjs from 'dayjs';
 import jsPDF from 'jspdf';
 import { t } from 'i18next';
 import { toast } from 'sonner';
-import html2canvas from 'html2canvas';
 import { capitalize } from 'lodash-es';
+import html2canvas from 'html2canvas-pro';
 import { isObject } from '@ballerine/common';
 import { ParsedBooleanSchema } from '@ballerine/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -189,9 +189,10 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
   const [isGeneratingPDF, toggleIsGeneratingPDF] = useToggle(false);
 
   const reportRef = useRef<HTMLDivElement>(null);
+  const reportPDFContainerRef = useRef<HTMLDivElement>(null);
 
-  const generateCustomPDF = useCallback(async () => {
-    if (!reportRef.current) {
+  const generatePDF = useCallback(async () => {
+    if (!reportRef.current || !reportPDFContainerRef.current) {
       return;
     }
 
@@ -199,28 +200,31 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
 
     try {
       const element = reportRef.current;
+      const container = reportPDFContainerRef.current;
 
-      const wrapper = document.createElement('div');
-      wrapper.style.padding = '0 20px';
-      wrapper.style.boxSizing = 'border-box';
+      const contentContainer = container.querySelector('.pdf-content');
 
-      wrapper.appendChild(element.cloneNode(true));
-      document.body.appendChild(wrapper);
+      if (!contentContainer) {
+        throw new Error('PDF content container not found');
+      }
 
-      wrapper.style.width = `${element.scrollWidth}px`;
+      const clone = element.cloneNode(true) as HTMLElement;
+      clone.style.width = `${element.scrollWidth}px`;
 
-      const canvas = await html2canvas(wrapper, {
+      contentContainer.innerHTML = '';
+      contentContainer.appendChild(clone);
+
+      const canvas = await html2canvas(container, {
         scale: 2,
         useCORS: true,
         logging: false,
-        windowWidth: wrapper.scrollWidth,
-        windowHeight: wrapper.scrollHeight,
+        windowWidth: container.scrollWidth,
+        windowHeight: container.scrollHeight,
       });
 
-      document.body.removeChild(wrapper);
+      contentContainer.innerHTML = '';
 
       const imageData = canvas.toDataURL('image/jpeg', 0.8); // Use JPEG with 80% quality for smaller file size
-
       const aspectRatio = canvas.height / canvas.width;
       const pdfWidth = 210; // A4 width in mm
       const pdfHeight = pdfWidth * aspectRatio;
@@ -231,9 +235,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
         format: [pdfWidth, pdfHeight],
       });
 
-      // Add the image to cover entire page
       pdf.addImage(imageData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-
       pdf.save(`${websiteWithNoProtocol || 'business'}-report-${dayjs().format('YYYY-MM-DD')}.pdf`);
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -261,7 +263,8 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     locale,
     isDemoAccount: customer?.config?.isDemoAccount ?? false,
     reportRef,
-    generateCustomPDF,
+    reportPDFContainerRef,
+    generatePDF,
     isGeneratingPDF,
   };
 };
