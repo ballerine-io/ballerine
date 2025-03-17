@@ -5,15 +5,14 @@ import { useTransactionsQuery } from '@/domains/transactions/hooks/queries/useTr
 import { useCallback } from 'react';
 
 export const useTransactionMonitoringAlertsAnalysisPageLogic = () => {
-  const [{ businessId, counterpartyId }] = useSerializedSearchParams();
+  const [{ counterpartyId }] = useSerializedSearchParams();
   const { alertId } = useParams();
   const { data: alertDefinition, isLoading: isLoadingAlertDefinition } =
     useAlertDefinitionByAlertIdQuery({
       alertId: alertId ?? '',
     });
   const { data: transactions } = useTransactionsQuery({
-    alertId: alertId ?? '',
-    businessId: businessId ?? '',
+    alertId: alertId?.toString() ?? '',
     // @TODO: Remove
     counterpartyId: counterpartyId ?? '',
     page: 1,

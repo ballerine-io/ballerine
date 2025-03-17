@@ -5,9 +5,12 @@ import { defaultSerializer } from '@/common/hooks/useZodSearchParams/utils/defau
 import { ISerializedSearchParams } from '@/common/hooks/useZodSearchParams/interfaces';
 
 export const useSerializedSearchParams = (options: ISerializedSearchParams = {}) => {
-  const { search, pathname, state } = useLocation();
-  const serializer = options.serializer ?? defaultSerializer;
-  const deserializer = options.deserializer ?? defaultDeserializer;
+  const { search, pathname, state, hash } = useLocation();
+  const {
+    serializer = defaultSerializer,
+    deserializer = defaultDeserializer,
+    replace = false,
+  } = options;
   const searchParamsAsObject = useMemo(() => deserializer(search), [deserializer, search]);
   const navigate = useNavigate();
 
@@ -17,13 +20,11 @@ export const useSerializedSearchParams = (options: ISerializedSearchParams = {})
         `${pathname}${serializer({
           ...searchParamsAsObject,
           ...searchParams,
-        })}`,
-        {
-          state,
-        },
+        })}${hash}`,
+        { state, replace },
       );
     },
-    [navigate, pathname, searchParamsAsObject, serializer, state],
+    [navigate, pathname, searchParamsAsObject, serializer, state, hash],
   );
 
   return [searchParamsAsObject, setSearchParams] as const;

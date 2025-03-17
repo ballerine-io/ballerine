@@ -1,46 +1,167 @@
 import { z } from 'zod';
-import { useCallback, useMemo } from 'react';
+import dayjs from 'dayjs';
+import jsPDF from 'jspdf';
+import { t } from 'i18next';
+import { toast } from 'sonner';
+import html2canvas from 'html2canvas';
+import { capitalize } from 'lodash-es';
+import { isObject } from '@ballerine/common';
+import { ParsedBooleanSchema } from '@ballerine/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useCallback, useEffect, useRef } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ParsedBooleanSchema, useReportTabs } from '@ballerine/ui';
 
 import { safeUrl } from '@/common/utils/safe-url/safe-url';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
-import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
+import { useCreateNoteMutation } from '@/domains/notes/hooks/mutations/useCreateNoteMutation/useCreateNoteMutation';
 import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
-import { MERCHANT_REPORT_STATUSES_MAP } from '@/domains/business-reports/constants';
+import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
+
+const ZodDeboardingSchema = z
+  .object({
+    reason: z.string().optional(),
+    userReason: z.string().optional(),
+  })
+  .refine(
+    ({ reason, userReason }) => {
+      if (reason === 'other') {
+        return !!userReason && userReason.length >= 5;
+      }
+
+      return true;
+    },
+    ({ reason }) => {
+      if (reason === 'other') {
+        return {
+          message: 'Please provide a reason of at least 5 characters',
+          path: ['userReason'],
+        };
+      }
+
+      return { message: 'Invalid Input' };
+    },
+  );
+
+const deboardingReasonOptions = [
+  'Fraudulent Activity Detected',
+  'Non-Compliance with Regulations',
+  'Excessive Chargebacks or Disputes',
+  'Business Relationship Ended',
+  'Other',
+] as const;
 
 export const useMerchantMonitoringBusinessReportLogic = () => {
   const { businessReportId } = useParams();
-  const { data: businessReport } = useBusinessReportByIdQuery({
-    id: businessReportId ?? '',
-  });
+  const { data: customer } = useCustomerQuery();
+  const { data: businessReport, isFetching: isFetchingBusinessReport } = useBusinessReportByIdQuery(
+    { id: businessReportId ?? '' },
+  );
 
   const { data: notes } = useNotesByNoteable({
     noteableId: businessReportId,
     noteableType: 'Report',
   });
 
-  const { tabs } = useReportTabs({
-    reportVersion: businessReport?.workflowVersion,
-    report: businessReport?.data ?? {},
-    companyName: businessReport?.companyName,
-    Link: RiskIndicatorLink,
+  const [isDeboardModalOpen, setIsDeboardModalOpen] = useToggle(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useToggle(false);
+
+  const formDefaultValues = {
+    reason: undefined,
+    userReason: '',
+  } satisfies z.infer<typeof ZodDeboardingSchema>;
+
+  const form = useForm({
+    resolver: zodResolver(ZodDeboardingSchema),
+    defaultValues: formDefaultValues,
   });
-  const tabsValues = useMemo(() => tabs.map(tab => tab.value), [tabs]);
+
+  const onSubmit: SubmitHandler<z.infer<typeof ZodDeboardingSchema>> = async () => {
+    if (!businessReport?.business.id) {
+      throw new Error('Business ID is missing');
+    }
+
+    return turnOffMonitoringMutation.mutate(businessReport.business.id);
+  };
+
+  const { mutateAsync: mutateCreateNote } = useCreateNoteMutation({ disableToast: true });
+  const turnOnMonitoringMutation = useToggleMonitoringMutation({
+    state: 'on',
+    onSuccess: () => {
+      void mutateCreateNote({
+        content: 'Monitoring turned on',
+        entityId: businessReport?.business.id ?? '',
+        entityType: 'Business',
+        noteableId: businessReport?.id ?? '',
+        noteableType: 'Report',
+        parentNoteId: null,
+      });
+      toast.success(t(`toast:business_monitoring_on.success`));
+    },
+    onError: error => {
+      toast.error(
+        t(`toast:business_monitoring_on.error`, {
+          errorMessage: isObject(error) && 'message' in error ? error.message : error,
+        }),
+      );
+    },
+  });
+
+  const turnOffMonitoringMutation = useToggleMonitoringMutation({
+    state: 'off',
+    onSuccess: () => {
+      const { reason, userReason } = form.getValues();
+      const content = [
+        'Monitoring turned off',
+        reason ? `with reason: ${capitalize(reason)}` : null,
+        userReason ? `(${userReason})` : '',
+      ]
+        .filter(Boolean)
+        .join(' ');
+      void mutateCreateNote({
+        content,
+        entityId: businessReport?.business.id ?? '',
+        entityType: 'Business',
+        noteableId: businessReport?.id ?? '',
+        noteableType: 'Report',
+        parentNoteId: null,
+      });
+      setIsDeboardModalOpen(false);
+      setIsDropdownOpen(false);
+      form.reset();
+      toast.success(t(`toast:business_monitoring_off.success`));
+    },
+    onError: error => {
+      toast.error(
+        t(`toast:business_monitoring_off.error`, {
+          errorMessage: isObject(error) && 'message' in error ? error.message : error,
+        }),
+      );
+    },
+  });
+
   const MerchantMonitoringBusinessReportSearchSchema = z.object({
     isNotesOpen: ParsedBooleanSchema.catch(false),
-    activeTab: z
-      .enum(
-        // @ts-expect-error - zod doesn't like we are using `Array.prototype.map`
-        tabsValues,
-      )
-      .catch(tabsValues[0]!),
   });
-  const [{ activeTab, isNotesOpen }] = useZodSearchParams(
+
+  const [{ isNotesOpen }, setSearchParams] = useZodSearchParams(
     MerchantMonitoringBusinessReportSearchSchema,
+    { replace: true },
   );
+
+  const setIsNotesOpen = useCallback(
+    (value: boolean) => {
+      setSearchParams({ isNotesOpen: value });
+    },
+    [setSearchParams],
+  );
+
   const navigate = useNavigate();
+
   const onNavigateBack = useCallback(() => {
     const previousPath = sessionStorage.getItem(
       'merchant-monitoring:business-report:previous-path',
@@ -55,26 +176,92 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     navigate(previousPath);
     sessionStorage.removeItem('merchant-monitoring:business-report:previous-path');
   }, [navigate]);
-  const statusToBadgeData = {
-    [MERCHANT_REPORT_STATUSES_MAP.completed]: { variant: 'info', text: 'Manual Review' },
-    [MERCHANT_REPORT_STATUSES_MAP['in-progress']]: { variant: 'violet', text: 'In-progress' },
-    [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: {
-      variant: 'violet',
-      text: 'Quality Control',
-    },
-    [MERCHANT_REPORT_STATUSES_MAP['failed']]: { variant: 'destructive', text: 'Failed' },
-  } as const;
 
   const websiteWithNoProtocol = safeUrl(businessReport?.website)?.hostname;
+  const locale = useLocale();
+
+  // Default SPA behavior preserves scroll position on navigation (react-router-dom)
+  // We want the business report page to always scroll to the top on navigation to avoid confusing the user
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
+  const [isGeneratingPDF, toggleIsGeneratingPDF] = useToggle(false);
+
+  const reportRef = useRef<HTMLDivElement>(null);
+
+  const generateCustomPDF = useCallback(async () => {
+    if (!reportRef.current) {
+      return;
+    }
+
+    toggleIsGeneratingPDF();
+
+    try {
+      const element = reportRef.current;
+
+      const wrapper = document.createElement('div');
+      wrapper.style.padding = '0 20px';
+      wrapper.style.boxSizing = 'border-box';
+
+      wrapper.appendChild(element.cloneNode(true));
+      document.body.appendChild(wrapper);
+
+      wrapper.style.width = `${element.scrollWidth}px`;
+
+      const canvas = await html2canvas(wrapper, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        windowWidth: wrapper.scrollWidth,
+        windowHeight: wrapper.scrollHeight,
+      });
+
+      document.body.removeChild(wrapper);
+
+      const imageData = canvas.toDataURL('image/jpeg', 0.8); // Use JPEG with 80% quality for smaller file size
+
+      const aspectRatio = canvas.height / canvas.width;
+      const pdfWidth = 210; // A4 width in mm
+      const pdfHeight = pdfWidth * aspectRatio;
+
+      const pdf = new jsPDF({
+        unit: 'mm',
+        orientation: 'portrait',
+        format: [pdfWidth, pdfHeight],
+      });
+
+      // Add the image to cover entire page
+      pdf.addImage(imageData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+
+      pdf.save(`${websiteWithNoProtocol || 'business'}-report-${dayjs().format('YYYY-MM-DD')}.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
+
+    toggleIsGeneratingPDF();
+  }, [toggleIsGeneratingPDF, websiteWithNoProtocol]);
 
   return {
     onNavigateBack,
     websiteWithNoProtocol,
     businessReport,
-    statusToBadgeData,
-    tabs,
     notes,
-    activeTab,
     isNotesOpen,
+    setIsNotesOpen,
+    turnOngoingMonitoringOn: turnOnMonitoringMutation.mutate,
+    isDeboardModalOpen,
+    setIsDeboardModalOpen,
+    isDropdownOpen,
+    setIsDropdownOpen,
+    form,
+    onSubmit,
+    deboardingReasonOptions,
+    isFetchingBusinessReport,
+    locale,
+    isDemoAccount: customer?.config?.isDemoAccount ?? false,
+    reportRef,
+    generateCustomPDF,
+    isGeneratingPDF,
   };
 };

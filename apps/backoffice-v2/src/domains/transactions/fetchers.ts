@@ -178,7 +178,7 @@ export const TransactionsListSchema = z.array(
 export type TTransactionsList = z.output<typeof TransactionsListSchema>;
 
 export const fetchTransactions = async (params: {
-  counterpartyId: string;
+  counterpartyId?: string;
   page: {
     number: number;
     size: number;

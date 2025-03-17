@@ -22,6 +22,7 @@ import {
   defaultPrismaTransactionOptions,
 } from '@/prisma/prisma.util';
 import { ProjectScopeService } from '@/project/project-scope.service';
+// eslint-disable-next-line import/no-cycle
 import { FileService } from '@/providers/file/file.service';
 import { RiskRuleService, TFindAllRulesOptions } from '@/rule-engine/risk-rule.service';
 import { RuleEngineService } from '@/rule-engine/rule-engine.service';
@@ -53,10 +54,12 @@ import {
 import {
   AnyRecord,
   buildCollectionFlowState,
+  BusinessDataSchema,
   CollectionFlowStatusesEnum,
   DefaultContextSchema,
   getDocumentId,
   getOrderedSteps,
+  IndividualDataSchema,
   isErrorWithMessage,
   isObject,
   ProcessStatus,
@@ -116,6 +119,7 @@ import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-
 import { entitiesUpdate } from './utils/entities-update';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
+import { PartialDeep } from 'type-fest';
 
 type TEntityId = string;
 
@@ -252,6 +256,10 @@ export class WorkflowService {
     const childWorkflowSelectArgs = {
       select: { ...args?.select, ...allEntities },
       include: args?.include,
+      where: {
+        // @ts-expect-error - dynamically typed for all queries
+        deletedAt: args?.where?.deletedAt ?? null,
+      },
     };
     const workflow = (await this.workflowRuntimeDataRepository.findById(
       id,
@@ -669,7 +677,9 @@ export class WorkflowService {
     orderBy: string | undefined,
     orderDirection: SortOrder | undefined,
   ): object {
-    if (!orderBy && !orderDirection) return {};
+    if (!orderBy && !orderDirection) {
+      return {};
+    }
 
     if (orderBy === 'assignee') {
       return {
@@ -732,14 +742,18 @@ export class WorkflowService {
     projectId,
   }: {
     id: string;
-    name: string;
+    name: 'approve' | 'reject' | 'revision';
     reason?: string;
     projectId: TProjectId;
   }) {
     return await this.prismaService.$transaction(async transaction => {
       const runtimeData = await this.workflowRuntimeDataRepository.findByIdAndLock(
         id,
-        {},
+        {
+          include: {
+            workflowDefinition: true,
+          },
+        },
         [projectId],
         transaction,
       );
@@ -748,7 +762,10 @@ export class WorkflowService {
         approve: 'approved',
         reject: 'rejected',
         revision: 'revision',
-      } as const;
+      } as const satisfies Record<
+        Exclude<typeof name, null>,
+        NonNullable<DefaultContextSchema['documents'][number]['decision']>['status']
+      >;
       const status = Status[name as keyof typeof Status];
       const decision = (() => {
         if (status === 'approved') {
@@ -813,10 +830,12 @@ export class WorkflowService {
   async updateDocumentDecisionById(
     {
       workflowId,
+      directorId,
       documentId,
       documentsUpdateContextMethod,
     }: {
       workflowId: string;
+      directorId?: string;
       documentId: string;
       documentsUpdateContextMethod?: 'base' | 'director';
     },
@@ -847,7 +866,10 @@ export class WorkflowService {
         reject: 'rejected',
         revision: 'revision',
         revised: 'revised',
-      } as const;
+      } as const satisfies Record<
+        Exclude<typeof decision.status, null>,
+        NonNullable<DefaultContextSchema['documents'][number]['decision']>['status']
+      >;
       const status = decision.status ? Status[decision.status] : null;
       const newDecision = (() => {
         if (!status || status === 'approved') {
@@ -896,6 +918,7 @@ export class WorkflowService {
               : document?.type,
         },
         documentsUpdateContextMethod,
+        directorId,
       );
 
       document = this.getDocuments(updatedContext, documentsUpdateContextMethod)?.find(
@@ -917,6 +940,7 @@ export class WorkflowService {
       const updatedWorkflow = await this.updateDocumentById(
         {
           workflowId,
+          directorId,
           documentId,
           validateDocumentSchema,
           documentsUpdateContextMethod: documentsUpdateContextMethod,
@@ -942,11 +966,13 @@ export class WorkflowService {
       documentId,
       validateDocumentSchema = true,
       documentsUpdateContextMethod,
+      directorId,
     }: {
       workflowId: string;
       documentId: string;
       validateDocumentSchema?: boolean;
       documentsUpdateContextMethod?: 'base' | 'director';
+      directorId?: string;
     },
     data: DefaultContextSchema['documents'][number] & { propertiesSchema?: object },
     projectId: TProjectId,
@@ -980,15 +1006,20 @@ export class WorkflowService {
         id: documentId,
       };
 
-      const documentSchema = addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);
-      const propertiesSchema = documentSchema?.propertiesSchema ?? {};
+      const documentWithPropertiesSchema = addPropertiesSchemaToDocument(
+        document,
+        workflowDef.documentsSchema,
+      );
+      const propertiesSchema = documentWithPropertiesSchema?.propertiesSchema ?? {};
 
       if (Object.keys(propertiesSchema)?.length && validateDocumentSchema) {
         const propertiesSchemaForValidation = propertiesSchema;
 
         const validatePropertiesSchema = ajv.compile(propertiesSchemaForValidation);
 
-        const isValidPropertiesSchema = validatePropertiesSchema(documentSchema?.properties);
+        const isValidPropertiesSchema = validatePropertiesSchema(
+          documentWithPropertiesSchema?.properties,
+        );
 
         if (!isValidPropertiesSchema && document.type === documentToUpdate.type) {
           throw ValidationError.fromAjvError(validatePropertiesSchema.errors!);
@@ -1002,8 +1033,9 @@ export class WorkflowService {
           payload: {
             newContext: this.updateDocumentInContext(
               runtimeData.context,
-              documentSchema,
+              documentWithPropertiesSchema,
               documentsUpdateContextMethod,
+              directorId,
             ),
             arrayMergeOption:
               documentsUpdateContextMethod === 'director'
@@ -1072,6 +1104,7 @@ export class WorkflowService {
     context: WorkflowRuntimeData['context'],
     updatePayload: any,
     method: 'base' | 'director' = 'base',
+    directorId?: string,
   ): WorkflowRuntimeData['context'] {
     switch (method) {
       case 'base':
@@ -1081,7 +1114,7 @@ export class WorkflowService {
         };
 
       case 'director':
-        return this.updateDirectorDocument(context, updatePayload);
+        return this.updateDirectorDocument(context, updatePayload, directorId);
 
       default:
         return context;
@@ -1105,8 +1138,15 @@ export class WorkflowService {
   private updateDirectorDocument(
     context: WorkflowRuntimeData['context'],
     documentUpdatePayload: any,
+    directorId: string | undefined,
   ): WorkflowRuntimeData['context'] {
-    const directorsDocuments = this.getDirectorsDocuments(context);
+    if (!directorId) {
+      throw new BadRequestException('Attempted to update director document without a director id');
+    }
+
+    const directorsDocuments = this.getDirectorsDocuments(context, directorId);
+
+    this.logger.log('directorsDocuments', { directorsDocuments });
 
     directorsDocuments.forEach(document => {
       if (document?.id === documentUpdatePayload?.id) {
@@ -1119,9 +1159,19 @@ export class WorkflowService {
     return context;
   }
 
-  private getDirectorsDocuments(context: WorkflowRuntimeData['context']): any[] {
+  private getDirectorsDocuments(
+    context: WorkflowRuntimeData['context'],
+    directorId?: string,
+  ): any[] {
     return (
       this.getDirectors(context)
+        .filter(director => {
+          if (!directorId) {
+            return true;
+          }
+
+          return director.ballerineEntityId === directorId;
+        })
         .map(director => director.additionalInfo?.documents)
         .filter(Boolean)
         .flat() || ([] as any[])
@@ -1190,9 +1240,13 @@ export class WorkflowService {
 
         // @ts-ignore
         data?.context?.documents?.forEach(({ propertiesSchema, ...document }) => {
-          if (document?.decision?.status !== 'approve') return;
+          if (document?.decision?.status !== 'approve') {
+            return;
+          }
 
-          if (!Object.keys(propertiesSchema ?? {})?.length) return;
+          if (!Object.keys(propertiesSchema ?? {})?.length) {
+            return;
+          }
 
           const validatePropertiesSchema = ajv.compile(propertiesSchema ?? {}); // we shouldn't rely on schema from the client, add to tech debt
           const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
@@ -1551,15 +1605,25 @@ export class WorkflowService {
           }
 
           const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-          const workflowToken = await this.workflowTokenService.create(
-            currentProjectId,
-            {
+          let workflowToken;
+          try {
+            workflowToken = await this.workflowTokenService.create(
+              currentProjectId,
+              {
+                workflowRuntimeDataId: workflowRuntimeData.id,
+                endUserId: endUserId ?? null,
+                expiresAt: nowPlus30Days,
+              },
+              transaction,
+            );
+          } catch (error) {
+            this.logger.error('Failed to create workflow token', {
+              error,
               workflowRuntimeDataId: workflowRuntimeData.id,
-              endUserId: endUserId ?? null,
-              expiresAt: nowPlus30Days,
-            },
-            transaction,
-          );
+              endUserId,
+            });
+            this.sentry.captureException(error as Error);
+          }
 
           const collectionFlow = buildCollectionFlowState({
             apiUrl: env.APP_API_URL,
@@ -1588,7 +1652,7 @@ export class WorkflowService {
                   collectionFlow,
                   metadata: {
                     ...(workflowRuntimeData.context.metadata ?? {}),
-                    token: workflowToken.token,
+                    token: workflowToken?.token,
                     collectionFlowUrl: env.COLLECTION_FLOW_URL,
                     webUiSDKUrl: env.WEB_UI_SDK_URL,
                   },
@@ -1743,7 +1807,9 @@ export class WorkflowService {
   ) {
     return await Promise.all(
       document?.pages?.map(async documentPage => {
-        if (documentPage.ballerineFileId) return documentPage;
+        if (documentPage.ballerineFileId) {
+          return documentPage;
+        }
 
         const documentId = document.id! || getDocumentId(document, false);
 
@@ -1903,14 +1969,16 @@ export class WorkflowService {
     workflowDefinition: WorkflowDefinition,
     context: DefaultContextSchema,
   ) {
-    if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) return;
+    if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) {
+      return;
+    }
 
     // @ts-expect-error - error from Prisma types fix
     const validate = ajv.compile(workflowDefinition?.contextSchema?.schema); // TODO: fix type
     const isValid = validate({
       ...context,
       // Validation should not include the documents' 'propertiesSchema' prop.
-      documents: context?.documents?.map(
+      documents: (context?.documents || []).map(
         ({
           // @ts-ignore
           propertiesSchema: _propertiesSchema,
@@ -1919,7 +1987,9 @@ export class WorkflowService {
       ),
     });
 
-    if (isValid) return;
+    if (isValid) {
+      return;
+    }
 
     this.sentry.captureException(new Error('Workflow definition context validation failed'));
     this.logger.error('Workflow definition context validation failed', {
@@ -1998,23 +2068,25 @@ export class WorkflowService {
         ) => {
           const rules = await this.riskRuleService.findAll(ruleStoreServiceOptions);
 
-          return rules.map(rule => {
-            try {
-              return {
-                result: this.ruleEngineService.run(rule.ruleSet, context),
-                ...rule,
-              } as const;
-            } catch (ex) {
-              return {
-                ...rule,
-                result: {
-                  status: 'FAILED',
-                  message: isErrorWithMessage(ex) ? ex.message : undefined,
-                  error: ex,
-                },
-              } as const;
-            }
-          });
+          return Promise.all(
+            rules.map(async rule => {
+              try {
+                return {
+                  result: await this.ruleEngineService.run(rule.ruleSet, context),
+                  ...rule,
+                } as const;
+              } catch (ex) {
+                return {
+                  ...rule,
+                  result: {
+                    status: 'FAILED',
+                    message: isErrorWithMessage(ex) ? ex.message : undefined,
+                    error: ex,
+                  },
+                } as const;
+              }
+            }),
+          );
         },
         invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
           const runnableChildWorkflow = await this.persistChildEvent(
@@ -2096,6 +2168,24 @@ export class WorkflowService {
             transaction,
           );
 
+          const collectionFlow = buildCollectionFlowState({
+            apiUrl: env.APP_API_URL,
+            steps: uiDefinition?.definition
+              ? getOrderedSteps(
+                  (uiDefinition?.definition as Prisma.JsonObject)?.definition as Record<
+                    string,
+                    Record<string, unknown>
+                  >,
+                  { finalStates: [...WORKFLOW_FINAL_STATES] },
+                ).map(stepName => ({
+                  stateName: stepName,
+                }))
+              : [],
+            additionalInformation: {
+              customerCompany: customer.displayName,
+            },
+          });
+
           await this.workflowRuntimeDataRepository.updateById(
             workflowRuntimeId,
             {
@@ -2107,10 +2197,13 @@ export class WorkflowService {
           );
 
           return {
-            token: token,
-            customerName: customer.displayName,
-            collectionFlowUrl: env.COLLECTION_FLOW_URL!,
-            customerNormalizedName: customer.name,
+            collectionFlow,
+            metadata: {
+              token: token,
+              customerName: customer.displayName,
+              collectionFlowUrl: env.COLLECTION_FLOW_URL!,
+              customerNormalizedName: customer.name,
+            },
           };
         },
       });
@@ -2342,7 +2435,9 @@ export class WorkflowService {
             childWorkflowCallback.persistenceStates.includes(childRuntimeState)
           ) || isFinal;
 
-        if (!isPersistableState) return;
+        if (!isPersistableState) {
+          return;
+        }
 
         const parentContext = await this.generateParentContextWithInjectedChildContext(
           childrenOfSameDefinition,
@@ -2390,7 +2485,9 @@ export class WorkflowService {
         }
       });
 
-    if (!callbackTransformations?.length) return;
+    if (!callbackTransformations?.length) {
+      return;
+    }
 
     await Promise.all(callbackTransformations);
   }
@@ -2436,11 +2533,13 @@ export class WorkflowService {
   }
 
   private initiateTransformer(transformer: SerializableTransformer): Transformer {
-    if (transformer.transformer === 'jmespath')
+    if (transformer.transformer === 'jmespath') {
       return new JmespathTransformer(transformer.mapping as string);
+    }
 
-    if (transformer.transformer === 'helper')
+    if (transformer.transformer === 'helper') {
       return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
+    }
 
     throw new Error(`No transformer found for ${transformer.transformer}`);
   }
@@ -2468,7 +2567,9 @@ export class WorkflowService {
     projectId: TProjectId,
     customerName: string,
   ) {
-    if (!documents?.length) return documents;
+    if (!documents?.length) {
+      return documents;
+    }
 
     const documentsWithPersistedImages = await Promise.all(
       documents?.map(async document => {
@@ -2647,5 +2748,80 @@ export class WorkflowService {
         timeout: 180_000,
       },
     );
+  }
+
+  async updateContextAndSyncEntity({
+    workflowRuntimeDataId,
+    context,
+    projectId,
+  }: {
+    workflowRuntimeDataId: string;
+    context: PartialDeep<DefaultContextSchema>;
+    projectId: string;
+  }) {
+    await this.prismaService.$transaction(async transaction => {
+      await this.event(
+        {
+          id: workflowRuntimeDataId,
+          name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+          payload: {
+            newContext: context,
+            arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
+          },
+        },
+        [projectId],
+        projectId,
+        transaction,
+      );
+
+      const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
+        workflowRuntimeDataId,
+        {},
+        [projectId],
+        transaction,
+      );
+
+      const endUserContextToEntityAdapter = ({
+        firstName,
+        lastName,
+        dateOfBirth,
+        country,
+        phone,
+        email,
+        additionalInfo,
+        ...rest
+      }: Static<typeof IndividualDataSchema>) =>
+        ({
+          firstName,
+          lastName,
+          dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
+          country,
+          phone,
+          email,
+          additionalInfo: {
+            ...rest,
+            ...additionalInfo,
+          },
+        } satisfies Parameters<typeof this.entityRepository.endUser.updateById>[1]['data']);
+
+      const businessContextToEntityAdapter = (data: Static<typeof BusinessDataSchema>) =>
+        ({
+          companyName: data.companyName,
+        } satisfies Parameters<typeof this.businessService.updateById>[1]['data']);
+
+      if (workflowRuntimeData.businessId && context.entity?.data) {
+        await this.businessService.updateById(workflowRuntimeData.businessId, {
+          data: businessContextToEntityAdapter(
+            context.entity.data as Static<typeof BusinessDataSchema>,
+          ),
+        });
+      }
+
+      if (workflowRuntimeData.endUserId && context.entity?.data) {
+        await this.entityRepository.endUser.updateById(workflowRuntimeData.endUserId, {
+          data: endUserContextToEntityAdapter(context.entity.data),
+        });
+      }
+    });
   }
 }

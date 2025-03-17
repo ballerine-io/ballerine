@@ -54,7 +54,7 @@ const Sidebar = React.forwardRef<
       return (
         <div
           className={ctw(
-            'bg-sidebar text-sidebar-foreground flex h-full w-[--sidebar-width] flex-col',
+            'bg-sidebar text-sidebar-foreground flex h-full w-[--sidebar-width] flex-col xl:w-[--sidebar-width-xl]',
             className,
           )}
           ref={ref}
@@ -71,7 +71,7 @@ const Sidebar = React.forwardRef<
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
-            className="bg-sidebar text-sidebar-foreground w-[--sidebar-width] p-0 [&>button]:hidden"
+            className="bg-sidebar text-sidebar-foreground w-[--sidebar-width] p-0 xl:w-[--sidebar-width-xl] [&>button]:hidden"
             style={
               {
                 '--sidebar-width': SIDEBAR_WIDTH_MOBILE,
@@ -97,7 +97,7 @@ const Sidebar = React.forwardRef<
         {/* This is what handles the sidebar gap on desktop */}
         <div
           className={ctw(
-            'h-svh relative w-[--sidebar-width] bg-transparent transition-[width] duration-200 ease-linear',
+            'h-svh relative w-[--sidebar-width] bg-transparent transition-[width] duration-200 ease-linear 2xl:w-[--sidebar-width-xl]',
             'group-data-[collapsible=offcanvas]:w-0',
             'group-data-[side=right]:rotate-180',
             variant === 'floating' || variant === 'inset'
@@ -107,7 +107,7 @@ const Sidebar = React.forwardRef<
         />
         <div
           className={ctw(
-            'h-svh fixed inset-y-0 z-10 hidden w-[--sidebar-width] transition-[left,right,width] duration-200 ease-linear md:flex',
+            'h-svh fixed inset-y-0 z-10 hidden w-[--sidebar-width] transition-[left,right,width] duration-200 ease-linear md:flex 2xl:w-[--sidebar-width-xl]',
             side === 'left'
               ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
               : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',

@@ -14,11 +14,16 @@ import { z, ZodSchema } from 'zod';
 import { BetweenSchema, LastYearsSchema, PrimitiveArraySchema, PrimitiveSchema } from './schemas';
 
 import { ValidationFailedError, DataValueNotFoundError } from '../errors';
-import { OperationHelpers } from './constants';
+import { OperationHelpers, OPERATORS_WITHOUT_PATH_COMPARISON } from './constants';
 import { Rule } from '@/rule-engine';
 import { EndUserAmlHitsSchema } from '@/schemas';
+import type { TUnifiedApiClient } from './constants';
 
-export abstract class BaseOperator<TDataValue = Primitive, TConditionValue = Primitive> {
+export abstract class BaseOperator<
+  TDataValue = Primitive,
+  TConditionValue = Primitive,
+  TEvaluate = boolean | Promise<boolean>,
+> {
   operator: string;
   conditionValueSchema?: ZodSchema<any>;
   dataValueSchema?: ZodSchema<any>;
@@ -35,27 +40,62 @@ export abstract class BaseOperator<TDataValue = Primitive, TConditionValue = Pri
     this.dataValueSchema = dataValueSchema;
   }
 
-  abstract evaluate(dataValue: TDataValue, conditionValue: TConditionValue): boolean;
+  abstract evaluate(
+    dataValue: TDataValue,
+    conditionValue: TConditionValue,
+    options?: {
+      unifiedApiClient?: TUnifiedApiClient;
+      threshold?: number;
+    },
+  ): TEvaluate;
 
   extractValue(data: unknown, rule: Rule) {
     const value = get(data, rule.key);
 
-    if (value === undefined || value === null) {
-      throw new DataValueNotFoundError(rule.key);
+    const isPathComparison =
+      !OPERATORS_WITHOUT_PATH_COMPARISON.includes(
+        rule.operator as (typeof OPERATORS_WITHOUT_PATH_COMPARISON)[number],
+      ) &&
+      'isPathComparison' in rule &&
+      rule.isPathComparison;
+
+    if (!isPathComparison) {
+      if (value === undefined || value === null) {
+        throw new DataValueNotFoundError(rule.key);
+      }
+
+      return value;
     }
 
-    return value;
+    const comparisonValueAsPath = rule.value as string;
+
+    const evaluatedComparisonValue = get(data, comparisonValueAsPath);
+
+    if (evaluatedComparisonValue === undefined || evaluatedComparisonValue === null) {
+      throw new DataValueNotFoundError(comparisonValueAsPath);
+    }
+
+    return { value, comparisonValue: evaluatedComparisonValue };
   }
 
-  execute(dataValue: TDataValue, conditionValue: TConditionValue) {
-    this.validate({ dataValue, conditionValue });
+  async execute(
+    dataValue: TDataValue,
+    conditionValue: TConditionValue,
+    options?: {
+      unifiedApiClient?: TUnifiedApiClient;
+      threshold?: number;
+    },
+  ) {
+    await this.validate({ dataValue, conditionValue });
 
-    return this.evaluate(dataValue, conditionValue);
+    const result = await this.evaluate(dataValue, conditionValue, options);
+
+    return result instanceof Promise ? await result : result;
   }
 
-  validate(args: { dataValue: unknown; conditionValue: unknown }) {
+  async validate(args: { dataValue: unknown; conditionValue: unknown }) {
     if (this.conditionValueSchema) {
-      this.validateSchema(
+      await this.validateSchema(
         this.conditionValueSchema,
         args.conditionValue,
         `Invalid condition value`,
@@ -63,11 +103,11 @@ export abstract class BaseOperator<TDataValue = Primitive, TConditionValue = Pri
     }
 
     if (this.dataValueSchema) {
-      this.validateSchema(this.dataValueSchema, args.dataValue, `Invalid data value`);
+      await this.validateSchema(this.dataValueSchema, args.dataValue, `Invalid data value`);
     }
   }
 
-  validateSchema(schema: ZodSchema<any>, value: unknown, message: string) {
+  async validateSchema(schema: ZodSchema<any>, value: unknown, message: string) {
     const result = schema.safeParse(value);
 
     if (!result.success) {
@@ -213,10 +253,10 @@ class GreaterThanOrEqual extends BaseOperator {
     this.greaterThan = new GreaterThan();
   }
 
-  evaluate = (dataValue: Primitive, conditionValue: Primitive) => {
+  evaluate = async (dataValue: Primitive, conditionValue: Primitive) => {
     return (
-      this.equals.execute(dataValue, conditionValue) ||
-      this.greaterThan.execute(dataValue, conditionValue)
+      (await this.equals.execute(dataValue, conditionValue)) ||
+      (await this.greaterThan.execute(dataValue, conditionValue))
     );
   };
 }
@@ -236,10 +276,10 @@ class LessThanOrEqual extends BaseOperator {
     this.lessThan = new LessThan();
   }
 
-  evaluate = (dataValue: Primitive, conditionValue: Primitive) => {
+  evaluate = async (dataValue: Primitive, conditionValue: Primitive) => {
     return (
-      this.equals.execute(dataValue, conditionValue) ||
-      this.lessThan.execute(dataValue, conditionValue)
+      (await this.equals.execute(dataValue, conditionValue)) ||
+      (await this.lessThan.execute(dataValue, conditionValue))
     );
   };
 }
@@ -258,10 +298,10 @@ class Between extends BaseOperator<Primitive, BetweenParams> {
     this.lte = new LessThanOrEqual();
   }
 
-  evaluate = (dataValue: Primitive, conditionValue: BetweenParams) => {
+  evaluate = async (dataValue: Primitive, conditionValue: BetweenParams) => {
     return (
-      this.gte.execute(dataValue, conditionValue.min) &&
-      this.lte.execute(dataValue, conditionValue.max)
+      (await this.gte.execute(dataValue, conditionValue.min)) &&
+      (await this.lte.execute(dataValue, conditionValue.max))
     );
   };
 }
@@ -351,7 +391,7 @@ class AmlCheck extends BaseOperator<any, AmlCheckParams> {
     return hits.map(hit => get(hit, rule.key)).filter(Boolean);
   }
 
-  evaluate = (dataValue: any, conditionValue: AmlCheckParams) => {
+  evaluate = async (dataValue: any, conditionValue: AmlCheckParams) => {
     const amlOperator = OperationHelpers[conditionValue.operator];
 
     const evaluateOperatorCheck = (data: any) => {
@@ -378,6 +418,43 @@ class AmlCheck extends BaseOperator<any, AmlCheckParams> {
   };
 }
 
+class FuzzyMatchScoreLt extends BaseOperator<Primitive, Primitive, Promise<boolean>> {
+  constructor() {
+    super({
+      operator: 'FUZZY_MATCH_SCORE_LT',
+      conditionValueSchema: PrimitiveSchema,
+      dataValueSchema: PrimitiveSchema,
+    });
+  }
+
+  evaluate = async (
+    dataValue: Primitive,
+    conditionValue: Primitive,
+    options: {
+      unifiedApiClient: TUnifiedApiClient;
+      threshold: number;
+    },
+  ) => {
+    const threshold = options.threshold ?? 0;
+
+    if (typeof threshold !== 'number' || threshold < 0 || threshold > 100) {
+      throw new Error(`${this.operator}: Threshold must be a number between 0 and 100`);
+    }
+
+    const response = await options.unifiedApiClient.runEntityMatchingV2({
+      entity1: dataValue.toString(),
+      entity2: conditionValue.toString(),
+      includeAnalysis: false,
+    });
+
+    if (!response?.data?.similarityScore && response?.data?.similarityScore !== 0) {
+      throw new Error(`${this.operator}: Missing similarity score in response`);
+    }
+
+    return response.data.similarityScore < threshold;
+  };
+}
+
 export const EQUALS = new Equals();
 export const NOT_EQUALS = new NotEquals();
 export const EXISTS = new Exists();
@@ -391,3 +468,4 @@ export const IN = new In();
 export const IN_CASE_INSENSITIVE = new InCaseInsensitive();
 export const NOT_IN = new NotIn();
 export const AML_CHECK = new AmlCheck();
+export const FUZZY_MATCH_SCORE_LT = new FuzzyMatchScoreLt();

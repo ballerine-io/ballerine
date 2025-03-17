@@ -35,7 +35,7 @@ export const OverallRiskLevel: FunctionComponent<{
             className={ctw(
               {
                 [severityToTextClassName[
-                  (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
+                  (severity as keyof typeof severityToClassName) ?? 'DEFAULT'
                 ]]: riskScore || riskScore === 0,
               },
               {
@@ -45,14 +45,14 @@ export const OverallRiskLevel: FunctionComponent<{
             )}
             checkFalsy={false}
           >
-            {riskScore}
+            {typeof riskScore === 'number' && !Number.isNaN(riskScore)
+              ? Math.min(riskScore, 100)
+              : null}
           </TextWithNAFallback>
           {(riskScore || riskScore === 0) && (
             <Badge
               className={ctw(
-                severityToClassName[
-                  (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
-                ],
+                severityToClassName[(severity as keyof typeof severityToClassName) ?? 'DEFAULT'],
                 {
                   'text-background': severity === Severity.CRITICAL,
                 },

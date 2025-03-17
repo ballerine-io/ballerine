@@ -14,14 +14,20 @@ import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
 import { CustomerModule } from '@/customer/customer.module';
 import { HttpModule } from '@nestjs/axios';
 import { ApiKeyService } from '@/customer/api-key/api-key.service';
+import { ConfigModule } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { AnalyticsModule } from '@/common/analytics-logger/analytics.module';
 
 export const commonTestingModules = [
   ClsModule.forRoot({
     global: true,
   }),
   AppLoggerModule,
+  AnalyticsModule,
   CustomerModule,
   HttpModule,
+  ConfigModule.forRoot({ isGlobal: true }),
+  EventEmitterModule.forRoot(),
 ];
 
 export const fetchServiceFromModule = async <T>(

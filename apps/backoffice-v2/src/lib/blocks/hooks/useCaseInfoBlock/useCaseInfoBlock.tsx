@@ -1,7 +1,7 @@
-import { valueOrNA } from '@ballerine/common';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
+import { valueOrNA } from '@ballerine/common';
 import { useMemo } from 'react';
 import { toTitleCase } from 'string-ts';
 
@@ -16,10 +16,10 @@ export const useCaseInfoBlock = ({
 }) => {
   const predefinedOrder = useMemo(
     () =>
-      workflow.workflowDefinition.config?.uiOptions?.backoffice?.blocks?.businessInformation
+      workflow?.workflowDefinition?.config?.uiOptions?.backoffice?.blocks?.businessInformation
         ?.predefinedOrder ?? [],
     [
-      workflow.workflowDefinition.config?.uiOptions?.backoffice?.blocks?.businessInformation
+      workflow?.workflowDefinition?.config?.uiOptions?.backoffice?.blocks?.businessInformation
         ?.predefinedOrder,
     ],
   );
@@ -27,7 +27,13 @@ export const useCaseInfoBlock = ({
   return useMemo(() => {
     const entityDetails = [
       ...Object.entries(omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {}),
+      ...Object.entries(
+        Object.keys(entity?.data?.additionalInfo?.mainRepresentative ?? {}).length
+          ? { entity: entity?.data?.additionalInfo?.mainRepresentative }
+          : {},
+      ),
       ...Object.entries(omitPropsFromObject(entityDataAdditionalInfo ?? {}, 'ubos')),
+      ...Object.entries(entity?.data?.address ? { address: entity?.data?.address } : {}),
     ];
 
     if (Object.keys(entityDetails ?? {}).length === 0) {
@@ -77,7 +83,10 @@ export const useCaseInfoBlock = ({
             },
             props: { config: { sort: { predefinedOrder } } },
             workflowId: workflow?.id,
-            documents: workflow?.context?.documents,
+            documents: workflow?.context?.documents?.map(
+              ({ details: _details, ...document }) => document,
+            ),
+            isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
           })
           .build()
           .flat(1),

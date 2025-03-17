@@ -13,7 +13,7 @@ describe('RuleEngineService', () => {
     service = module.get<RuleEngineService>(RuleEngineService);
   });
 
-  it('should run the IN_CASE_INSENSITIVE rule successfully', () => {
+  it('should run the IN_CASE_INSENSITIVE rule successfully', async () => {
     const rules: RuleSet = {
       operator: 'and',
       rules: [
@@ -21,11 +21,13 @@ describe('RuleEngineService', () => {
           key: 'single',
           operator: 'IN_CASE_INSENSITIVE',
           value: ['sole'],
+          isPathComparison: false,
         },
         {
           key: 'array',
           operator: 'IN_CASE_INSENSITIVE',
           value: ['ownership'],
+          isPathComparison: false,
         },
       ],
     };
@@ -35,7 +37,7 @@ describe('RuleEngineService', () => {
       array: ['THIS IS AN OWNERSHIP COMPANY'],
     };
 
-    const result = service.run(rules, formData);
+    const result = await service.run(rules, formData);
 
     result.forEach(r => {
       expect(r.status).toEqual('PASSED');

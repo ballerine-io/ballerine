@@ -6,11 +6,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { HttpError } from '@/common/errors/http-error';
 import { createNote } from '@/domains/notes/hooks/fetchers';
 import { TNoteableType } from '@/domains/notes/types';
+import { notesQueryKey } from '../../query-keys';
 
 export const useCreateNoteMutation = ({
   onSuccess,
+  disableToast = false,
 }: {
   onSuccess?: <TData>(data: TData) => void;
+  disableToast?: boolean;
 }) => {
   const queryClient = useQueryClient();
 
@@ -38,10 +41,14 @@ export const useCreateNoteMutation = ({
         content,
         parentNoteId,
       }),
-    onSuccess: data => {
-      void queryClient.invalidateQueries();
+    onSuccess: (data, { noteableId, noteableType }) => {
+      void queryClient.invalidateQueries(
+        notesQueryKey.byNoteable({ noteableId, noteableType }).queryKey,
+      );
 
-      toast.success(t(`toast:note_created.success`));
+      if (!disableToast) {
+        toast.success(t(`toast:note_created.success`));
+      }
 
       onSuccess?.(data);
     },

@@ -1,6 +1,12 @@
 import { CustomerSubscriptionSchema } from './schemas/zod-schemas';
 import * as common from '@nestjs/common';
-import { NotFoundException, Request, UseGuards, UsePipes } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  Request,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { CustomerService } from '@/customer/customer.service';
 import { Customer } from '@prisma/client';
@@ -10,7 +16,7 @@ import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { CustomerSubscriptionDto } from './dtos/customer-config-create.dto';
 import { ValidationError } from '@/errors';
-import { TCustomerWithFeatures } from '@/customer/types';
+import { TDemoCustomer } from '@/customer/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @swagger.ApiTags('Customers')
@@ -51,10 +57,12 @@ export class CustomerControllerExternal {
   @swagger.ApiForbiddenResponse()
   async getByCurrentProjectId(
     @CurrentProject() currentProjectId: TProjectId,
-  ): Promise<TCustomerWithFeatures | null> {
-    if (!currentProjectId) throw new NotFoundException('Customer not found');
+  ): Promise<TDemoCustomer> {
+    if (!currentProjectId) {
+      throw new NotFoundException('Customer not found');
+    }
 
-    return this.service.getByProjectId(currentProjectId, {
+    const customer = await this.service.getByProjectId(currentProjectId, {
       select: {
         id: true,
         name: true,
@@ -66,7 +74,21 @@ export class CustomerControllerExternal {
         customerStatus: true,
         config: true,
         features: true,
+        createdAt: true,
       },
     });
+
+    if (!customer) {
+      throw new BadRequestException('Customer not found');
+    }
+
+    if (customer.config?.isDemoAccount) {
+      customer.config = {
+        ...customer.config,
+        demoAccessDetails: await this.service.getAccessDetails(customer),
+      };
+    }
+
+    return customer;
   }
 }

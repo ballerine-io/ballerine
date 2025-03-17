@@ -6,21 +6,26 @@ export interface ICallToActionLegacyProps {
     text: string;
     props: {
       id: string;
+      directorId?: string;
       workflow: TWorkflowById;
       disabled: boolean;
-      decision: 'reject' | 'approve' | 'revision' | 'revised';
+      decision: 'reject' | 'approve' | 'revision';
       contextUpdateMethod?: 'base' | 'director';
       revisionReasons?: string[];
       rejectionReasons?: string[];
       onReuploadReset?: () => void;
       onReuploadNeeded: ({
         workflowId,
+        directorId,
         documentId,
         reason,
+        comment,
       }: {
         workflowId: string;
+        directorId?: string;
         documentId: string;
         reason?: string;
+        comment?: string;
       }) => () => void;
       isLoadingReuploadNeeded: boolean;
       onDialogClose?: () => void;

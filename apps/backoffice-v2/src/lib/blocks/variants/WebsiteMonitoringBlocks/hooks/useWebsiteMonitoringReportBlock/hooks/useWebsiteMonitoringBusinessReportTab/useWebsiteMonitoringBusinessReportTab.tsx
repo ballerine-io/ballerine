@@ -1,29 +1,20 @@
-import { TBusinessReport } from '@/domains/business-reports/fetchers';
+import { useReportTabs } from '@ballerine/ui';
 import { useCallback } from 'react';
-import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { useLocation } from 'react-router-dom';
-import { createReportAdapter, useReportTabs } from '@ballerine/ui';
+
+import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { RiskIndicatorLink } from '@/domains/business-reports/components/RiskIndicatorLink/RiskIndicatorLink';
-import { UnknownRecord } from 'type-fest';
+import { TBusinessReport } from '@/domains/business-reports/fetchers';
 
 export const useWebsiteMonitoringBusinessReportTab = ({
   businessReport,
 }: {
   businessReport: TBusinessReport;
 }) => {
-  const { tabs: tabsWithSummary, riskIndicators: originalRiskIndicators } = useReportTabs({
-    reportVersion: businessReport?.workflowVersion,
-    report: businessReport?.data ?? {},
-    companyName:
-      (businessReport?.data?.websiteCompanyAnalysis as UnknownRecord | undefined)?.companyName ??
-      '',
+  const { tabs: tabsWithSummary, sectionsSummary: originalSectionsSummary } = useReportTabs({
+    report: businessReport ?? {},
     Link: RiskIndicatorLink,
   });
-  const adapter = createReportAdapter({
-    reportVersion: businessReport?.workflowVersion,
-  });
-  const { riskLevels, riskScore, summary, ongoingMonitoringSummary, homepageScreenshotUrl } =
-    adapter(businessReport?.data ?? {});
   const tabs = tabsWithSummary?.filter(tab => tab.value !== 'summary');
   const [{ activeMonitoringTab }] = useSearchParamsByEntity();
   const { search } = useLocation();
@@ -37,10 +28,10 @@ export const useWebsiteMonitoringBusinessReportTab = ({
     },
     [],
   );
-  const riskIndicators = originalRiskIndicators?.map(riskIndicator => ({
-    ...riskIndicator,
+  const riskIndicators = originalSectionsSummary?.map(section => ({
+    ...section,
     search: getUpdatedSearchParamsWithActiveMonitoringTab({
-      tab: riskIndicator.search.split('=')[1] ?? '',
+      tab: section.search.split('=')[1] ?? '',
       search,
     }),
   }));
@@ -48,13 +39,8 @@ export const useWebsiteMonitoringBusinessReportTab = ({
   return {
     activeMonitoringTab,
     riskIndicators,
-    riskLevels,
-    riskScore,
     tabs,
-    summary,
-    ongoingMonitoringSummary,
     getUpdatedSearchParamsWithActiveMonitoringTab,
     search,
-    homepageScreenshotUrl,
   };
 };

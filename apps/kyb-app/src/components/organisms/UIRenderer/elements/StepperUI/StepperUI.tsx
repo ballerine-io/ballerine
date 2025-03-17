@@ -4,7 +4,6 @@ import {
   Breadcrumbs,
 } from '@/components/atoms/Stepper/components/atoms/Breadcrumbs';
 import { VerticalLayout } from '@/components/atoms/Stepper/layouts/Vertical';
-import { usePageContext } from '@/components/organisms/DynamicUI/Page';
 import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
@@ -14,16 +13,18 @@ import { UIPage } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { isPageCompleted } from '@/helpers/prepareInitialUIState';
 import { ScrollArea, ScrollBar } from '@ballerine/ui';
-import { useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useEffect, useMemo, useState } from 'react';
 
-export const StepperUI = () => {
+interface IStepperUIProps {
+  revisionStateNames: string[];
+}
+
+export const StepperUI: FunctionComponent<IStepperUIProps> = ({ revisionStateNames }) => {
   const { state: uiState } = useDynamicUIContext();
   const { pages, currentPage } = usePageResolverContext();
   const { payload } = useStateManagerContext();
-  const { pageErrors } = usePageContext();
 
   const computeStepStatus = ({
-    pageError,
     page,
     context,
     uiElementState,
@@ -34,7 +35,7 @@ export const StepperUI = () => {
     currentPage: UIPage;
     context: CollectionFlowContext;
   }) => {
-    if (Object.values(pageError || {}).some(error => error.type === 'warning')) return 'warning';
+    if (revisionStateNames?.includes(page.stateName)) return 'warning';
 
     if (isPageCompleted(page, context) || uiElementState?.isCompleted) return 'completed';
 
@@ -48,8 +49,6 @@ export const StepperUI = () => {
       const stepStatus = computeStepStatus({
         // @ts-ignore
         uiElementState: uiState.elements[page.stateName],
-        // @ts-ignore
-        pageError: pageErrors?.[page.stateName],
         page,
         context: initialContext,
         currentPage: currentPage as UIPage,
@@ -63,7 +62,7 @@ export const StepperUI = () => {
 
       return step;
     });
-  }, [pages, uiState, pageErrors, initialContext, currentPage]);
+  }, [pages, uiState, initialContext, currentPage]);
 
   const activeStep = useMemo(() => {
     const activeStep = steps.find(step => step.id === currentPage?.stateName);

@@ -1,5 +1,54 @@
 # @ballerine/websocket-service
 
+## 0.1.34
+
+### Patch Changes
+
+- version bump
+
+## 0.1.33
+
+### Patch Changes
+
+- bump
+
+## 0.1.32
+
+### Patch Changes
+
+- version bump
+
+## 0.1.31
+
+### Patch Changes
+
+- version bump
+
+## 0.1.30
+
+### Patch Changes
+
+- version bump
+  s Please enter a summary for your changes.
+
+## 0.1.29
+
+### Patch Changes
+
+- bump
+
+## 0.1.28
+
+### Patch Changes
+
+- core
+
+## 0.1.27
+
+### Patch Changes
+
+- Bump
+
 ## 0.1.26
 
 ### Patch Changes

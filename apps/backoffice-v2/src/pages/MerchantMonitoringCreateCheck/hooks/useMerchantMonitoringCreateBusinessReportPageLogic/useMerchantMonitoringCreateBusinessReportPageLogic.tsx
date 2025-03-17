@@ -233,7 +233,7 @@ export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
         ],
       },
       {
-        label: 'Ads and Social Media Analysis',
+        label: 'Social Media Analysis',
         options: [
           {
             label: 'Social Media Presence',

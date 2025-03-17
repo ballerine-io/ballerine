@@ -8,8 +8,11 @@ import { NoBlocks } from '@/lib/blocks/components/NoBlocks/NoBlocks';
 import { Link } from 'react-router-dom';
 import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
 import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
-import React from 'react';
 import { camelCase } from 'string-ts';
+import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
+import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
+import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
+import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provider';
 
 export const DefaultBlocks = () => {
   const { blocks, tabs, activeTab, getUpdatedSearchParamsWithActiveTab, isLoading } =
@@ -23,7 +26,28 @@ export const DefaultBlocks = () => {
             {tabs.map(tab => {
               const tabName = camelCase(tab.name);
 
-              return (
+              return tab.tooltip ? (
+                <TooltipProvider key={tabName} delayDuration={100}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <TabsTrigger value={tabName} asChild>
+                        <Link
+                          to={{
+                            search: getUpdatedSearchParamsWithActiveTab({ tab: tabName }),
+                          }}
+                          className={'aria-disabled:pointer-events-none aria-disabled:opacity-50'}
+                          aria-disabled={tab.disabled}
+                        >
+                          {tab.displayName}
+                        </Link>
+                      </TabsTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" align="center">
+                      {tab.tooltip}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
                 <TabsTrigger key={tabName} value={tabName} asChild>
                   <Link
                     to={{
@@ -38,7 +62,7 @@ export const DefaultBlocks = () => {
               );
             })}
           </TabsList>
-          <ScrollArea orientation={'vertical'} className={'h-[73vh]'}>
+          <ScrollArea orientation={'vertical'} className={'h-[73vh] pe-4'}>
             {tabs.map(tab => {
               const tabName = camelCase(tab.name);
 

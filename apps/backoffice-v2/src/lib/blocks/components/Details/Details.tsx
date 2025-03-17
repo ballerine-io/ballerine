@@ -10,11 +10,13 @@ export const Details: FunctionComponent<ExtractCellProps<'details'>> = ({
   value,
   hideSeparator,
   contextUpdateMethod,
+  directorId,
   workflowId,
   documents = [],
   onSubmit,
   isSaveDisabled,
   props,
+  isDocumentsV2,
 }) => {
   if (!value.data?.length) {
     return null;
@@ -34,14 +36,16 @@ export const Details: FunctionComponent<ExtractCellProps<'details'>> = ({
     >
       <EditableDetails
         workflowId={workflowId}
+        directorId={directorId}
         id={id}
-        valueId={value?.id}
+        valueId={value.id}
         documents={documents}
-        title={value?.title}
+        title={value.title}
         data={sortedData}
         isSaveDisabled={isSaveDisabled}
         contextUpdateMethod={contextUpdateMethod}
         onSubmit={onSubmit}
+        isDocumentsV2={isDocumentsV2}
       />
       {!hideSeparator && <Separator className={`my-2`} />}
     </div>

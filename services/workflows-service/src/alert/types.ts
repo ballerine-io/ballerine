@@ -1,16 +1,31 @@
-import { Alert, AlertDefinition, Business, EndUser, User } from '@prisma/client';
+import { TIME_UNITS } from '@/data-analytics/consts';
+import { Alert, AlertDefinition, Business, EndUser, Prisma, User } from '@prisma/client';
+
+// TODO: Remove counterpartyId from SubjectRecord
+export type Subject = 'counterpartyOriginatorId' | 'counterpartyBeneficiaryId' | 'counterpartyId';
+
+export type SubjectRecord = {
+  [key in Subject]?: string;
+} & ({ counterpartyOriginatorId: string } | { counterpartyBeneficiaryId: string });
 
 export type TExecutionDetails = {
   checkpoint: {
     hash: string;
   };
-  subject: Array<Record<string, unknown>>;
+  subject: SubjectRecord;
+  filters: Prisma.TransactionRecordWhereInput;
   executionRow: unknown;
 };
 
 export type TDedupeStrategy = {
   mute: boolean;
   cooldownTimeframeInMinutes: number;
+  dedupeWindow: DedupeWindow;
+};
+
+export type DedupeWindow = {
+  timeAmount: number;
+  timeUnit: (typeof TIME_UNITS)[keyof typeof TIME_UNITS];
 };
 
 export const BulkStatus = {
@@ -27,6 +42,14 @@ export type TAlertResponse = Alert & {
 
 export type TAlertTransactionResponse = TAlertResponse & {
   counterparty: {
+    business: Pick<Business, 'id' | 'companyName' | 'correlationId'>;
+    endUser: Pick<EndUser, 'id' | 'firstName' | 'lastName' | 'correlationId'>;
+  };
+  counterpartyBeneficiary: {
+    business: Pick<Business, 'id' | 'companyName' | 'correlationId'>;
+    endUser: Pick<EndUser, 'id' | 'firstName' | 'lastName' | 'correlationId'>;
+  };
+  counterpartyOriginator: {
     business: Pick<Business, 'id' | 'companyName' | 'correlationId'>;
     endUser: Pick<EndUser, 'id' | 'firstName' | 'lastName' | 'correlationId'>;
   };

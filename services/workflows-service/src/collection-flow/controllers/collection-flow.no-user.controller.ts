@@ -45,6 +45,7 @@ export class CollectionFlowNoUserController {
       workflow.context,
       params.language,
       [tokenScope.projectId],
+      tokenScope,
       workflow.uiDefinitionId ? { where: { id: workflow.uiDefinitionId } } : {},
     );
   }
@@ -95,6 +96,7 @@ export class CollectionFlowNoUserController {
           email: payload.email,
           firstName: payload.firstName,
           lastName: payload.lastName,
+          additionalInfo,
         };
 
         set(contextClone, 'entity.data.additionalInfo.mainRepresentative', {

@@ -12,6 +12,7 @@ import { WorkflowRuntimeData } from '@prisma/client';
 import { sign, StateTag } from '@ballerine/common';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
+import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 
 @Injectable()
 export class WorkflowCompletedWebhookCaller {
@@ -24,6 +25,7 @@ export class WorkflowCompletedWebhookCaller {
     private readonly logger: AppLoggerService,
     private readonly workflowService: WorkflowService,
     private readonly customerService: CustomerService,
+    private readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
   ) {
     this.#__axios = this.httpService.axiosRef;
 
@@ -40,30 +42,46 @@ export class WorkflowCompletedWebhookCaller {
   }
 
   async handleWorkflowEvent(data: ExtractWorkflowEventData<'workflow.completed'>) {
-    this.logger.log('handleWorkflowEvent:: ', {
-      state: data.state,
-      entityId: data.entityId,
-      correlationId: data.correlationId,
-      id: data.runtimeData.id,
-    });
-
-    const webhooks = getWebhooks(
-      data.runtimeData.config,
-      this.configService.get('ENVIRONMENT_NAME'),
-      'workflow.completed',
-    );
-
     const customer = await this.customerService.getByProjectId(data.runtimeData.projectId, {
       select: {
         authenticationConfiguration: true,
+        subscriptions: true,
       },
+    });
+
+    const webhooks = getWebhooks({
+      workflowConfig: data.runtimeData.config,
+      customerSubscriptions: customer.subscriptions,
+      envName: this.configService.get('ENVIRONMENT_NAME'),
+      event: 'workflow.completed',
     });
 
     const { webhookSharedSecret } =
       customer.authenticationConfiguration as TAuthenticationConfiguration;
 
     for (const webhook of webhooks) {
-      await this.sendWebhook({ data, webhook, webhookSharedSecret });
+      let childWorkflowsRuntimeData;
+
+      if (webhook.config?.withChildWorkflows) {
+        childWorkflowsRuntimeData = await this.workflowRuntimeDataRepository.findMany(
+          {
+            where: {
+              parentRuntimeDataId: data.runtimeData.id,
+              deletedAt: null,
+            },
+          },
+          [data.runtimeData.projectId],
+        );
+      }
+
+      await this.sendWebhook({
+        data: {
+          ...data,
+          ...(webhook.config?.withChildWorkflows ? { childWorkflowsRuntimeData } : {}),
+        },
+        webhook,
+        webhookSharedSecret,
+      });
     }
   }
 
@@ -80,7 +98,7 @@ export class WorkflowCompletedWebhookCaller {
 
     try {
       // Omit from data properties already sent as part of the webhook payload
-      const { runtimeData, correlationId, entityId, ...restData } = data;
+      const { runtimeData, correlationId, entityId, childWorkflowsRuntimeData, ...restData } = data;
       const {
         createdAt,
         resolvedAt,
@@ -104,6 +122,7 @@ export class WorkflowCompletedWebhookCaller {
         environment,
         data: {
           ...restRuntimeData.context,
+          childWorkflowsRuntimeData,
         },
       };
 

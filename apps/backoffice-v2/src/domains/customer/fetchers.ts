@@ -38,6 +38,17 @@ const CustomerSchema = z.object({
       isMerchantMonitoringEnabled: z.boolean().default(false),
       isExample: z.boolean().default(false),
       isDemo: z.boolean().default(false),
+      isDemoAccount: z.boolean().default(false),
+      demoAccessDetails: z
+        .object({
+          totalReports: z.number(),
+          expiresAt: z.number().nullish(),
+          maxBusinessReports: z.number().default(10).nullish(),
+          seenWelcomeModal: z.boolean().default(true).optional(),
+          reportsLeft: z.number().nullish(),
+          demoDaysLeft: z.number().nullish(),
+        })
+        .optional(),
     })
     .nullable()
     .default({

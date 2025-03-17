@@ -11,6 +11,7 @@ import { useJSONFormDefinition } from '@/components/organisms/UIRenderer/element
 import { useUIElementProps } from '@/components/organisms/UIRenderer/hooks/useUIElementProps';
 import { UIElement } from '@/domains/collection-flow';
 import { AnyObject, FieldLayout } from '@ballerine/ui';
+import { useClearValueOnHide } from '../../hooks/useClearValueOnHide/useClearValueOnHide';
 
 export const FieldTemplate = (props: FieldTemplateProps) => {
   const { t } = useTranslation();
@@ -20,6 +21,7 @@ export const FieldTemplate = (props: FieldTemplateProps) => {
   const { state } = useDynamicUIContext();
   const { payload } = useStateManagerContext();
   const { definition } = useJSONFormDefinition();
+
   const inputIndex = useMemo(() => {
     const index = getInputIndex(props.id || '');
 
@@ -47,6 +49,8 @@ export const FieldTemplate = (props: FieldTemplateProps) => {
       props.required,
     [rulesResults, props.required],
   );
+
+  useClearValueOnHide(fieldDefinition, inputIndex);
 
   if (hidden) return null;
 

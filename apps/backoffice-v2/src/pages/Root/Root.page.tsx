@@ -1,13 +1,15 @@
-import React, { FunctionComponent, lazy, useState } from 'react';
+import { FunctionComponent, lazy, useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import { Providers } from '../../common/components/templates/Providers/Providers';
-import { ServerDownLayout } from './ServerDown.layout';
-import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
+import { PostHogPageView } from './components/PostHogRootEvents';
+
+import { BallerineLogo } from '@/common/components/atoms/icons';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
-import Chatbot from '@/domains/chat/chatbot-opengpt';
-import { RenderChildrenInIFrame } from '@/common/components/organisms/RenderChildrenInIFrame/RenderChildrenInIFrame';
-import { ctw } from '@/common/utils/ctw/ctw';
+import { WelcomeModal } from '@/common/components/molecules/WelcomeModal/WelcomeModal';
+import { Providers } from '@/common/components/templates/Providers/Providers';
 import { env } from '@/common/env/env';
+import { useMobileBreakpoint } from '@/common/hooks/useMobileBreakpoint/useMobileBreakpoint';
+import Chatbot from '@/domains/chat/chatbot-opengpt';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
@@ -35,31 +37,32 @@ const ChatbotLayout: FunctionComponent = () => {
   const botpressClientId = customer?.features?.chatbot?.clientId || env.VITE_BOTPRESS_CLIENT_ID;
 
   return (
-    <RenderChildrenInIFrame
-      className={ctw('fixed bottom-right-0', {
-        'h-[700px] w-[400px]': isWebchatOpen,
-        'd-[80px]': !isWebchatOpen,
-      })}
-    >
-      <Chatbot
-        isWebchatOpen={isWebchatOpen}
-        toggleIsWebchatOpen={toggleIsWebchatOpen}
-        botpressClientId={botpressClientId}
-      />
-    </RenderChildrenInIFrame>
+    <Chatbot
+      isWebchatOpen={isWebchatOpen}
+      toggleIsWebchatOpen={toggleIsWebchatOpen}
+      botpressClientId={botpressClientId}
+    />
   );
 };
 
 export const Root: FunctionComponent = () => {
+  const { isMobile } = useMobileBreakpoint();
+
+  if (isMobile) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-8 text-center">
+        <BallerineLogo />
+        <h2>If you’re on a mobile device, please switch to a desktop for the best experience.</h2>
+      </div>
+    );
+  }
+
   return (
     <Providers>
-      <ServerDownLayout>
-        <Outlet />
-      </ServerDownLayout>
+      <Outlet />
+      <PostHogPageView />
       <ChatbotLayout />
-      {/*<Suspense>*/}
-      {/*  <ReactQueryDevtools  />*/}
-      {/*</Suspense>*/}
+      <WelcomeModal />
     </Providers>
   );
 };

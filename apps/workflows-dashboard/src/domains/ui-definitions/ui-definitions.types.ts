@@ -13,6 +13,8 @@ export interface IUIDefinition {
   uiSchema: IUISchema;
   locales?: object;
   createdAt: string;
+  name: string;
+  theme?: object;
 }
 
 export interface UpdateUIDefinitionDto {
@@ -23,6 +25,7 @@ export interface UpdateUIDefinitionDto {
 
 export interface CopyUIDefinitionDto {
   uiDefinitionId: string;
+  name: string;
 }
 export interface GetUIDefinitionByIdDto {
   uiDefinitionId: string;

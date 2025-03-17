@@ -4,6 +4,6 @@ import { useImageProps } from 'react-image';
 export interface ImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'src'> {
   src: useImageProps['srcList'];
   useImageProps?: Omit<useImageProps, 'srcList'>;
-  width: CSSProperties['width'];
-  height: CSSProperties['height'];
+  width?: CSSProperties['width'];
+  height?: CSSProperties['height'];
 }

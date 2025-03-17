@@ -5,6 +5,7 @@ import { DownloadFile } from '@/common/components/molecules/DownloadFile/Downloa
 import { ImageEditor } from '@/common/components/molecules/ImageEditor/ImageEditor';
 import { ImageViewer } from '@/common/components/organisms/ImageViewer/ImageViewer';
 import { ctw } from '@/common/utils/ctw/ctw';
+import { isCsv } from '@/common/utils/is-csv/is-csv';
 import { keyFactory } from '@/common/utils/key-factory/key-factory';
 import { DocumentsToolbar } from '@/pages/Entity/components/Case/Case.Documents.Toolbar';
 import { useDocumentsLogic } from './hooks/useDocuments/useDocumentsLogic';
@@ -100,17 +101,21 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
           ? skeletons.map(index => (
               <ImageViewer.SkeletonItem key={`image-viewer-skeleton-${index}`} />
             ))
-          : documents?.map(({ imageUrl, title, fileType, fileName, id }) => (
-              <ImageViewer.Item
-                id={id}
-                key={keyFactory(id, title, fileName, fileType, imageUrl)}
-                src={imageUrl}
-                fileType={fileType}
-                fileName={fileName}
-                alt={title}
-                caption={title}
-              />
-            ))}
+          : documents?.map(document => {
+              const { imageUrl, title, fileType, fileName, id } = document;
+
+              return !isCsv(document) ? (
+                <ImageViewer.Item
+                  id={id}
+                  key={keyFactory(id, title, fileName, fileType, imageUrl)}
+                  src={imageUrl}
+                  fileType={fileType}
+                  fileName={fileName}
+                  alt={title}
+                  caption={title}
+                />
+              ) : null;
+            })}
       </ImageViewer.List>
       <ImageViewer.ZoomModal />
     </ImageViewer>

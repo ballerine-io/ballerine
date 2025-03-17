@@ -60,18 +60,9 @@ export class DocumentChangedWebhookCaller {
     const oldDocuments = data.oldRuntimeData.context['documents'] || [];
     const newDocuments = data.updatedRuntimeData.context?.['documents'] || [];
 
-    this.logger.log('handleWorkflowEvent:: ', {
-      state: data.state,
-      entityId: data.entityId,
-      correlationId: data.correlationId,
-      id: data.updatedRuntimeData.id,
-    });
-
     const newDocumentsByIdentifier = newDocuments.reduce((accumulator: any, doc: any) => {
       const id = getDocumentId(doc, false);
-      this.logger.log('handleWorkflowEvent::newDocumentsByIdentifier::getDocumentId::  ', {
-        idDoc: id,
-      });
+
       accumulator[id] = doc;
 
       return accumulator;
@@ -80,9 +71,6 @@ export class DocumentChangedWebhookCaller {
     const anyDocumentStatusChanged =
       oldDocuments.some((oldDocument: any) => {
         const id = getDocumentId(oldDocument, false);
-        this.logger.log('handleWorkflowEvent::anyDocumentStatusChanged::getDocumentId::  ', {
-          idDoc: id,
-        });
 
         return (
           (!oldDocument.decision && newDocumentsByIdentifier[id]?.decision) ||
@@ -94,18 +82,22 @@ export class DocumentChangedWebhookCaller {
       }) || config.forceEmit;
 
     if (!anyDocumentStatusChanged) {
-      this.logger.log('handleWorkflowEvent:: Skipped, ', {
-        anyDocumentStatusChanged,
-      });
-
       return;
     }
 
-    const webhooks = getWebhooks(
-      data.updatedRuntimeData.config,
-      this.configService.get('ENVIRONMENT_NAME'),
-      'workflow.context.document.changed',
-    );
+    const customer = await this.customerService.getByProjectId(data.updatedRuntimeData.projectId, {
+      select: {
+        authenticationConfiguration: true,
+        subscriptions: true,
+      },
+    });
+
+    const webhooks = getWebhooks({
+      workflowConfig: data.updatedRuntimeData.config,
+      customerSubscriptions: customer.subscriptions,
+      envName: this.configService.get('ENVIRONMENT_NAME'),
+      event: 'workflow.context.document.changed',
+    });
 
     data.updatedRuntimeData.context.documents.forEach((doc: any) => {
       delete doc.propertiesSchema;
@@ -135,12 +127,6 @@ export class DocumentChangedWebhookCaller {
         // delete mime from mime type and rename jpeg to jpg / should be removed after deprecation period (BAL-703)
         page.type = formattedType;
       });
-    });
-
-    const customer = await this.customerService.getByProjectId(data.updatedRuntimeData.projectId, {
-      select: {
-        authenticationConfiguration: true,
-      },
     });
 
     const { webhookSharedSecret } =

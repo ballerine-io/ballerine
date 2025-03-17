@@ -40,11 +40,12 @@ import { WorkflowService } from './workflow.service';
 import { Validate } from 'ballerine-nestjs-typebox';
 import { PutWorkflowExtensionSchema, WorkflowExtensionSchema } from './schemas/extensions.schemas';
 import { type Static, Type } from '@sinclair/typebox';
-import { defaultContextSchema } from '@ballerine/common';
+import { DefaultContextSchema, defaultContextSchema, isObject } from '@ballerine/common';
 import { WorkflowRunSchema } from './schemas/workflow-run';
 import { ValidationError } from '@/errors';
 import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
 import { CreateTokenDto } from '@/workflow/dtos/create-token.dto';
+import { type PartialDeep } from 'type-fest';
 
 export const WORKFLOW_TAG = 'Workflows';
 @swagger.ApiBearerAuth()
@@ -342,19 +343,35 @@ export class WorkflowControllerExternal {
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<unknown> {
     const { workflowId, context, config } = body;
-    const { entity } = context;
 
-    if (!('id' in entity) && !('ballerineEntityId' in entity)) {
+    if (!context || !isObject(context)) {
+      throw new common.BadRequestException('Context is required');
+    }
+
+    if (
+      !isObject(context.entity) ||
+      (!('id' in context.entity) && !('ballerineEntityId' in context.entity))
+    ) {
       throw new common.BadRequestException('Entity id is required');
+    }
+
+    if (!workflowId) {
+      throw new common.BadRequestException('Workflow id is required');
     }
 
     const hasSalesforceRecord =
       Boolean(body.salesforceObjectName) && Boolean(body.salesforceRecordId);
 
-    const latestDefinitionVersion = await this.workflowDefinitionService.getLatestVersion(
-      workflowId,
-      projectIds,
-    );
+    let latestDefinitionVersion;
+
+    try {
+      latestDefinitionVersion = await this.workflowDefinitionService.getLatestVersion(
+        workflowId,
+        projectIds,
+      );
+    } catch (e) {
+      throw new common.BadRequestException(`Workflow Definition ${workflowId} was not found`);
+    }
 
     const actionResult = await this.workflowService.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: latestDefinitionVersion.id,
@@ -382,10 +399,9 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createCollectionFlowUrl(
-    @common.Body()
-    { workflowRuntimeDataId }: CreateCollectionFlowUrlDto,
+    @common.Body() { workflowRuntimeDataId }: CreateCollectionFlowUrlDto,
   ) {
-    const result = await this.workflowTokenService.findFirstByWorkflowruntimeDataIdUnscoped(
+    const result = await this.workflowTokenService.findFirstByWorkflowRuntimeDataIdUnscoped(
       workflowRuntimeDataId,
     );
 
@@ -523,19 +539,21 @@ export class WorkflowControllerExternal {
           currentProjectId: workflowRuntime.projectId,
         });
 
-        await this.workflowService.event(
-          {
-            id: params.id,
-            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
-            payload: {
-              newContext: context,
-              arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
+        if (params.event !== BUILT_IN_EVENT.NO_OP) {
+          await this.workflowService.event(
+            {
+              id: params.id,
+              name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+              payload: {
+                newContext: context,
+                arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
+              },
             },
-          },
-          [workflowRuntime.projectId],
-          workflowRuntime.projectId,
-          transaction,
-        );
+            [workflowRuntime.projectId],
+            workflowRuntime.projectId,
+            transaction,
+          );
+        }
 
         await this.workflowService.event(
           {
@@ -558,5 +576,48 @@ export class WorkflowControllerExternal {
     }
 
     return;
+  }
+
+  @common.Patch('/:workflowRuntimeDataId/sync-entity')
+  @ApiResponse({
+    status: 400,
+    description: 'Validation error',
+    schema: Type.Object({
+      message: Type.String(),
+      statusCode: Type.Literal(400),
+      timestamp: Type.String({
+        format: 'date-time',
+      }),
+      path: Type.String(),
+      errors: Type.Array(Type.Object({ message: Type.String(), path: Type.String() })),
+    }),
+  })
+  @Validate({
+    request: [
+      {
+        type: 'param',
+        name: 'workflowRuntimeDataId',
+        description: `The id of the workflow runtime data to update`,
+        schema: Type.String(),
+        example: '123e4567-e89b-12d3-a456-426614174000',
+      },
+      {
+        type: 'body',
+        schema: Type.Any(),
+      },
+    ],
+    response: Type.Any(),
+  })
+  async updateContextAndSyncEntity(
+    @common.Param('workflowRuntimeDataId')
+    workflowRuntimeDataId: string,
+    @common.Body() body: PartialDeep<DefaultContextSchema>,
+    @CurrentProject() projectId: TProjectId,
+  ) {
+    return await this.workflowService.updateContextAndSyncEntity({
+      workflowRuntimeDataId,
+      context: body,
+      projectId,
+    });
   }
 }

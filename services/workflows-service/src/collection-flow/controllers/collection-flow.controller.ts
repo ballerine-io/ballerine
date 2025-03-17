@@ -13,6 +13,7 @@ import {
   TokenScope,
 } from '@/common/decorators/token-scope.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
+import { EndUserService } from '@/end-user/end-user.service';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { CollectionFlowStatusesEnum, getCollectionFlowState } from '@ballerine/common';
 import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
@@ -29,6 +30,7 @@ export class CollectionFlowController {
     protected readonly workflowService: WorkflowService,
     protected readonly adapterManager: WorkflowAdapterManager,
     protected readonly collectionFlowService: CollectionFlowService,
+    protected readonly endUserService: EndUserService,
   ) {}
 
   @common.Get('/customer')
@@ -48,7 +50,9 @@ export class CollectionFlowController {
       [tokenScope.projectId],
     );
 
-    if (!activeWorkflow) throw new common.InternalServerErrorException('Workflow not found.');
+    if (!activeWorkflow) {
+      throw new common.InternalServerErrorException('Workflow not found.');
+    }
 
     try {
       const adapter = this.adapterManager.getAdapter(activeWorkflow.workflowDefinitionId);
@@ -91,6 +95,7 @@ export class CollectionFlowController {
       workflow.context,
       params.language,
       [tokenScope.projectId],
+      tokenScope,
       workflow.uiDefinitionId ? { where: { id: workflow.uiDefinitionId } } : {},
     );
   }
@@ -142,7 +147,95 @@ export class CollectionFlowController {
   @common.Post('/final-submission')
   async finalSubmission(@TokenScope() tokenScope: ITokenScope, @common.Body() body: FinishFlowDto) {
     try {
-      const event = await this.workflowService.event(
+      const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
+        tokenScope.workflowRuntimeDataId,
+        {},
+        [tokenScope.projectId],
+      );
+
+      const directors = await Promise.all(
+        workflowRuntimeData.context.entity.data.additionalInfo.directors?.map(
+          async (director: {
+            ballerineEntityId?: string;
+            firstName: string;
+            lastName: string;
+            email: string;
+          }) => {
+            // If ID is present then entity been created in KYB
+            if (director.ballerineEntityId) {
+              return director;
+            }
+
+            const { id } = await this.endUserService.create({
+              data: {
+                firstName: director.firstName,
+                lastName: director.lastName,
+                email: director.email,
+                projectId: tokenScope.projectId,
+              },
+            });
+
+            return {
+              ballerineEntityId: id,
+              ...director,
+            };
+          },
+        ) || [],
+      );
+
+      const ubos = await Promise.all(
+        workflowRuntimeData.context.entity.data.additionalInfo.ubos?.map(
+          async (ubo: {
+            ballerineEntityId?: string;
+            firstName: string;
+            lastName: string;
+            email: string;
+          }) => {
+            // If ID is present then entity been created in KYB
+            if (ubo.ballerineEntityId) {
+              return ubo;
+            }
+
+            const { id } = await this.endUserService.create({
+              data: {
+                firstName: ubo.firstName,
+                lastName: ubo.lastName,
+                email: ubo.email,
+                projectId: tokenScope.projectId,
+              },
+            });
+
+            return {
+              ballerineEntityId: id,
+              ...ubo,
+            };
+          },
+        ) || [],
+      );
+
+      await this.workflowService.event(
+        {
+          id: tokenScope.workflowRuntimeDataId,
+          name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+          payload: {
+            newContext: {
+              entity: {
+                data: {
+                  additionalInfo: {
+                    directors: directors?.length ? directors : undefined,
+                    ubos: ubos?.length ? ubos : undefined,
+                  },
+                },
+              },
+            },
+            arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
+          },
+        },
+        [tokenScope.projectId],
+        tokenScope.projectId,
+      );
+
+      const updatedWorkflowRuntimeData = await this.workflowService.event(
         {
           id: tokenScope.workflowRuntimeDataId,
           name: body.eventName,
@@ -151,7 +244,7 @@ export class CollectionFlowController {
         tokenScope.projectId,
       );
 
-      const collectionFlowState = getCollectionFlowState(event.context);
+      const collectionFlowState = getCollectionFlowState(updatedWorkflowRuntimeData.context);
 
       if (!collectionFlowState) {
         throw new CollectionFlowMissingException();

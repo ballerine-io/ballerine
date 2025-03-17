@@ -1,7 +1,9 @@
+import { useCallback } from 'react';
+import { IDataTableProps } from '@ballerine/ui';
 import { Link, useLocation } from 'react-router-dom';
+import { UPDATEABLE_REPORT_STATUSES } from '@ballerine/common';
+
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
-import React, { useCallback } from 'react';
-import { IDataTableProps } from '@/common/components/organisms/DataTable/DataTable';
 import { TBusinessReports } from '@/domains/business-reports/fetchers';
 
 export const useMerchantMonitoringTableLogic = () => {
@@ -13,19 +15,19 @@ export const useMerchantMonitoringTableLogic = () => {
       `${pathname}${search}`,
     );
   }, [pathname, search]);
-  const Cell: IDataTableProps<TBusinessReports>['CellContentWrapper'] = ({ cell, children }) => {
-    return (
-      <Link
-        to={`/${locale}/merchant-monitoring/${cell.row.id}`}
-        className={`d-full flex p-4`}
-        onClick={onClick}
-      >
+
+  const Cell: IDataTableProps<TBusinessReports['data'][number]>['CellContentWrapper'] = ({
+    cell,
+    children,
+  }) => {
+    return UPDATEABLE_REPORT_STATUSES.includes(cell.row.original.status) ? (
+      <Link to={`/${locale}/merchant-monitoring/${cell.row.id}`} onClick={onClick}>
         {children}
       </Link>
+    ) : (
+      <div className="opacity-50">{children}</div>
     );
   };
 
-  return {
-    Cell,
-  };
+  return { Cell };
 };

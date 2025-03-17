@@ -5,35 +5,41 @@ import { parseCsv } from '@/common/utils/parse-csv/parse-csv';
 import { BusinessReportRequestSchema } from '@/common/schemas';
 import { PrismaService } from '@/prisma/prisma.service';
 import { BusinessService } from '@/business/business.service';
-import { TReportRequest } from '@/common/utils/unified-api-client/unified-api-client';
 import { env } from '@/env';
 import { randomUUID } from 'crypto';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isNumber } from 'lodash';
 import { CountryCode } from '@/common/countries';
-import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
-import { MerchantReportType, MerchantReportVersion } from '@/business-report/constants';
+import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
+import { MerchantReportType, MerchantReportVersion } from '@ballerine/common';
+import { TCustomerWithFeatures } from '@/customer/types';
+import { CustomerService } from '@/customer/customer.service';
 
 @Injectable()
 export class BusinessReportService {
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly businessService: BusinessService,
+    protected readonly customerService: CustomerService,
     protected readonly logger: AppLoggerService,
     private readonly merchantMonitoringClient: MerchantMonitoringClient,
   ) {}
 
-  async checkBusinessReportsLimit(maxBusinessReports: number | undefined, customerId: string) {
-    if (!isNumber(maxBusinessReports) || maxBusinessReports <= 0) {
-      return;
-    }
+  async checkBusinessReportsLimit(customer: TCustomerWithFeatures) {
+    const accessDetails = await this.customerService.getAccessDetails(customer);
 
-    const businessReportsCount = await this.merchantMonitoringClient.count({ customerId });
+    if (customer.config?.isDemoAccount) {
+      if (accessDetails.demoDaysLeft <= 0) {
+        throw new BadRequestException(
+          'Your demo account has expired. Talk to us to unlock additional features and continue effective risk management with Ballerine.',
+        );
+      }
 
-    if (businessReportsCount >= maxBusinessReports) {
-      throw new BadRequestException(
-        `You have reached the maximum number of business reports allowed (${maxBusinessReports}).`,
-      );
+      if (accessDetails.reportsLeft <= 0) {
+        throw new BadRequestException(
+          "You've hit your reports limit. Talk to us to unlock additional features and continue effective risk management with Ballerine.",
+        );
+      }
     }
   }
 
@@ -51,6 +57,7 @@ export class BusinessReportService {
     compareToReportId,
     withQualityControl,
     customerId,
+    requestedByUserId,
   }: {
     reportType: MerchantReportType;
     business: Pick<Business, 'id' | 'correlationId'>;
@@ -61,6 +68,7 @@ export class BusinessReportService {
     workflowVersion: MerchantReportVersion;
     withQualityControl: boolean;
     customerId: string;
+    requestedByUserId: string | undefined;
   }) {
     await this.merchantMonitoringClient.create({
       reportType,
@@ -72,6 +80,7 @@ export class BusinessReportService {
       parentCompanyName: merchantName,
       ...(countryCode && { countryCode }),
       ...(compareToReportId && { compareToReportId }),
+      requestedByUserId,
     });
   }
 
@@ -112,18 +121,22 @@ export class BusinessReportService {
 
     const businessReportsCount = await this.count({ customerId });
 
-    if (businessReportsCount + businessReportsRequests.length > maxBusinessReports) {
+    if (
+      isNumber(maxBusinessReports) &&
+      maxBusinessReports > 0 &&
+      businessReportsCount + businessReportsRequests.length > maxBusinessReports
+    ) {
       const reportsLeft = maxBusinessReports - businessReportsCount;
 
-      throw new UnprocessableEntityException(
-        `Batch size is too large, there are too many reports (${reportsLeft} report${
+      throw new BadRequestException(
+        `This batch will exceed your reports limit. You have ${reportsLeft} report${
           reportsLeft > 1 ? 's' : ''
-        } left from a qouta of ${maxBusinessReports})`,
+        } remaining from a quota of ${maxBusinessReports}. Talk to us to unlock additional features and continue effective risk management with Ballerine.`,
       );
     }
 
-    if (businessReportsRequests.length > 100) {
-      throw new UnprocessableEntityException('Batch size is too large');
+    if (businessReportsRequests.length > 1_000) {
+      throw new UnprocessableEntityException('Batch size is too large, the maximum is 1,000');
     }
 
     const batchId = randomUUID();
@@ -160,26 +173,18 @@ export class BusinessReportService {
 
         const businessWithRequests = await Promise.all(businessCreatePromises);
 
-        const businessReportRequests = businessWithRequests.map(
-          ({ businessReportRequest, businessId }) => {
-            return {
-              withQualityControl,
-              websiteUrl: businessReportRequest.websiteUrl,
-              lineOfBusiness: businessReportRequest.lineOfBusiness,
-              parentCompanyName: businessReportRequest.parentCompanyName,
-              callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${businessId}`,
-              merchantId: businessId,
-              customerId,
-            };
-          },
-        ) satisfies TReportRequest;
-
         await this.merchantMonitoringClient.createBatch({
-          reportRequests: businessReportRequests,
-          clientName: 'merchant',
-          reportType: type,
-          withQualityControl,
+          customerId,
           workflowVersion,
+          withQualityControl,
+          reportType: type,
+          reports: businessWithRequests.map(({ businessReportRequest, businessId }) => ({
+            businessId,
+            websiteUrl: businessReportRequest.websiteUrl,
+            countryCode: businessReportRequest.countryCode,
+            parentCompanyName: businessReportRequest.parentCompanyName,
+            callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${businessId}`,
+          })),
         });
       },
       {

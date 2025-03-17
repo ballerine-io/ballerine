@@ -39,11 +39,13 @@ export const RuleSchema = z.discriminatedUnion('operator', [
     key: z.string(),
     operator: z.literal(OPERATION.EQUALS),
     value: PrimitiveSchema,
+    isPathComparison: z.boolean().default(false),
   }),
   z.object({
     key: z.string(),
     operator: z.literal(OPERATION.NOT_EQUALS),
     value: PrimitiveSchema,
+    isPathComparison: z.boolean().default(false),
   }),
   z.object({
     key: z.string(),
@@ -54,21 +56,25 @@ export const RuleSchema = z.discriminatedUnion('operator', [
     key: z.string(),
     operator: z.literal(OPERATION.GT),
     value: PrimitiveSchema,
+    isPathComparison: z.boolean().default(false),
   }),
   z.object({
     key: z.string(),
     operator: z.literal(OPERATION.LT),
     value: PrimitiveSchema,
+    isPathComparison: z.boolean().default(false),
   }),
   z.object({
     key: z.string(),
     operator: z.literal(OPERATION.GTE),
     value: PrimitiveSchema,
+    isPathComparison: z.boolean().default(false),
   }),
   z.object({
     key: z.string(),
     operator: z.literal(OPERATION.LTE),
     value: PrimitiveSchema,
+    isPathComparison: z.boolean().default(false),
   }),
   z.object({
     key: z.string(),
@@ -79,16 +85,26 @@ export const RuleSchema = z.discriminatedUnion('operator', [
     key: z.string(),
     operator: z.literal(OPERATION.IN),
     value: PrimitiveArraySchema,
+    isPathComparison: z.boolean().default(false),
   }),
   z.object({
     key: z.string(),
     operator: z.literal(OPERATION.IN_CASE_INSENSITIVE),
     value: PrimitiveArraySchema,
+    isPathComparison: z.boolean().default(false),
   }),
   z.object({
     key: z.string(),
     operator: z.literal(OPERATION.NOT_IN),
     value: PrimitiveArraySchema,
+    isPathComparison: z.boolean().default(false),
+  }),
+  z.object({
+    key: z.string(),
+    operator: z.literal(OPERATION.FUZZY_MATCH_SCORE_LT),
+    value: PrimitiveSchema,
+    isPathComparison: z.boolean().default(false),
+    threshold: z.number().min(0).max(100).default(80),
   }),
 ]);
 

@@ -9,7 +9,7 @@ import '@fontsource/inter';
 import { Toaster } from '@/common/components/organisms/Toaster/Toaster';
 // Uncomment once react-pdf is back in use
 // import { Font } from '@react-pdf/renderer';
-import { Router } from './Router/Router';
+import { Router } from './router';
 import { env } from './common/env/env';
 import './i18n';
 import './index.css';
@@ -19,7 +19,6 @@ import { initializeMonitoring } from '@/initialize-monitoring/initialize-monitor
 import { initializeSessionRecording } from '@/initialize-session-recording/initialize-session-recording';
 
 initializeMonitoring();
-
 initializeSessionRecording();
 
 dayjs.extend(advancedFormat);

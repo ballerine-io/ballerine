@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsObject } from 'class-validator';
+import { IsObject, IsOptional, IsString } from 'class-validator';
 
 export class DocumentUpdateInput {
   @ApiProperty({
@@ -8,4 +8,12 @@ export class DocumentUpdateInput {
   })
   @IsObject()
   document!: any;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
+  @IsString()
+  directorId?: string;
 }

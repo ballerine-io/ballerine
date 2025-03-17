@@ -49,6 +49,8 @@ import { RuleEngineModule } from './rule-engine/rule-engine.module';
 import { NotionModule } from '@/notion/notion.module';
 import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
 import { NoteModule } from '@/note/note.module';
+import { MerchantMonitoringModule } from './merchant-monitoring/merchant-monitoring.module';
+import { AnalyticsModule } from '@/common/analytics-logger/analytics.module';
 
 export const validate = async (config: Record<string, unknown>) => {
   const zodEnvSchema = z
@@ -77,6 +79,11 @@ export const validate = async (config: Record<string, unknown>) => {
 @Module({
   controllers: [SwaggerController],
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [`.env.${process.env.ENVIRONMENT_NAME}`, '.env'],
+      cache: true,
+    }),
     SentryModule,
     MulterModule.registerAsync({
       imports: [ConfigModule],
@@ -85,6 +92,7 @@ export const validate = async (config: Record<string, unknown>) => {
     }),
     EventEmitterModule.forRoot(),
     UserModule,
+    MerchantMonitoringModule,
     WorkflowModule,
     WebhooksModule,
     NoteModule,
@@ -117,6 +125,7 @@ export const validate = async (config: Record<string, unknown>) => {
       global: true,
     }),
     AppLoggerModule,
+    AnalyticsModule,
     FiltersModule,
     MetricsModule,
     CollectionFlowModule,
