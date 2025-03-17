@@ -42,7 +42,7 @@ export const BusinessReportOptionsDropdown: FunctionComponent<
     | 'form'
     | 'onSubmit'
     | 'deboardingReasonOptions'
-    | 'generateCustomPDF'
+    | 'generatePDF'
     | 'isGeneratingPDF'
   >
 > = ({
@@ -56,7 +56,7 @@ export const BusinessReportOptionsDropdown: FunctionComponent<
   form,
   onSubmit,
   deboardingReasonOptions,
-  generateCustomPDF,
+  generatePDF,
   isGeneratingPDF,
 }) => {
   return (
@@ -103,7 +103,7 @@ export const BusinessReportOptionsDropdown: FunctionComponent<
             disabled={isDemoAccount}
             className={'w-full p-0 data-[disabled]:!opacity-100'}
             onClick={async () => {
-              await generateCustomPDF();
+              await generatePDF();
               setIsDropdownOpen(false);
             }}
           >

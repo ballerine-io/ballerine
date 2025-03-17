@@ -1,5 +1,11 @@
 # @ballerine/rules-engine-lib
 
+## 0.5.35
+
+### Patch Changes
+
+- bump
+
 ## 0.5.34
 
 ### Patch Changes
