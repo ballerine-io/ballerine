@@ -27,6 +27,7 @@ import { NotesSheet } from '@/domains/notes/NotesSheet';
 import { MerchantMonitoringReportStatus } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringReportStatus';
 import { useMerchantMonitoringBusinessReportLogic } from '@/pages/MerchantMonitoringBusinessReport/hooks/useMerchantMonitoringBusinessReportLogic/useMerchantMonitoringBusinessReportLogic';
 import { BusinessReportOptionsDropdown } from './BusinessReportOptionsDropdown';
+import { ReportPDFContainer } from './ReportPDFContainer';
 
 export const DialogDropdownItem = forwardRef<
   React.ElementRef<typeof DropdownMenuItem>,
@@ -72,6 +73,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     locale,
     isDemoAccount,
     reportRef,
+    reportPDFContainerRef,
     ...dropdownProps
   } = useMerchantMonitoringBusinessReportLogic();
 
@@ -155,83 +157,87 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
           we can easily determine negative margin and width required to properly display the separator. */}
       <Separator className="-ml-6 mb-4 w-[calc(100%+3rem)]" />
 
-      <div ref={reportRef}>
-        {isFetchingBusinessReport ? (
-          <Skeleton className="h-6 w-32" />
-        ) : (
-          <div className="flex items-center justify-between">
-            <TextWithNAFallback as={'h2'} className="pb-4 text-2xl font-bold">
-              {websiteWithNoProtocol}
-            </TextWithNAFallback>
+      {isFetchingBusinessReport ? (
+        <Skeleton className="h-6 w-32" />
+      ) : (
+        <div className="flex items-center justify-between">
+          <TextWithNAFallback as={'h2'} className="pb-4 text-2xl font-bold">
+            {websiteWithNoProtocol}
+          </TextWithNAFallback>
 
-            {isDemoAccount && (
-              <BusinessReportOptionsDropdown
-                {...dropdownProps}
-                businessReport={businessReport}
-                isDemoAccount={isDemoAccount}
-              />
-            )}
+          {isDemoAccount && (
+            <BusinessReportOptionsDropdown
+              {...dropdownProps}
+              businessReport={businessReport}
+              isDemoAccount={isDemoAccount}
+            />
+          )}
+        </div>
+      )}
+      {isFetchingBusinessReport ? (
+        <Skeleton className="my-6 h-6 w-2/3" />
+      ) : (
+        <div className={`flex items-center space-x-8 pb-4`}>
+          <div className={`flex items-center`}>
+            <span className={`me-4 text-sm leading-6 text-slate-400`}>Status</span>
+            <MerchantMonitoringReportStatus
+              reportId={businessReport?.id}
+              status={businessReport?.status}
+              businessId={businessReport?.business.id}
+            />
           </div>
-        )}
-        {isFetchingBusinessReport ? (
-          <Skeleton className="my-6 h-6 w-2/3" />
-        ) : (
-          <div className={`flex items-center space-x-8 pb-4`}>
-            <div className={`flex items-center`}>
-              <span className={`me-4 text-sm leading-6 text-slate-400`}>Status</span>
-              <MerchantMonitoringReportStatus
-                reportId={businessReport?.id}
-                status={businessReport?.status}
-                businessId={businessReport?.business.id}
-              />
-            </div>
-            <div className={`text-sm`}>
-              <span className={`me-2 leading-6 text-slate-400`}>Created at</span>
-              {businessReport?.displayDate &&
-                dayjs(new Date(businessReport?.displayDate)).format('HH:mm MMM Do, YYYY')}
-            </div>
-            <div className={`flex items-center space-x-2 text-sm`}>
-              <span className={`text-slate-400`}>Monitoring Status</span>
-              <span
-                className={ctw('select-none rounded-full d-3', {
-                  'bg-success': businessReport?.monitoringStatus,
-                  'bg-slate-400': !businessReport?.monitoringStatus,
-                })}
-              >
-                &nbsp;
-              </span>
-            </div>
-            <NotesSheet
-              open={isNotesOpen}
-              onOpenChange={setIsNotesOpen}
-              modal={false}
-              notes={notes ?? []}
-              noteData={{
-                entityId: businessReport?.business.id || '',
-                entityType: `Business`,
-                noteableId: businessReport?.id || '',
-                noteableType: `Report`,
-              }}
+          <div className={`text-sm`}>
+            <span className={`me-2 leading-6 text-slate-400`}>Created at</span>
+            {businessReport?.displayDate &&
+              dayjs(new Date(businessReport?.displayDate)).format('MMM Do, YYYY HH:mm')}
+          </div>
+          <div className={`flex items-center space-x-2 text-sm`}>
+            <span className={`text-slate-400`}>Monitoring Status</span>
+            <span
+              className={ctw('select-none rounded-full d-3', {
+                'bg-success': businessReport?.monitoringStatus,
+                'bg-slate-400': !businessReport?.monitoringStatus,
+              })}
             >
-              <NotesButton numberOfNotes={notes?.length} />
-            </NotesSheet>
+              &nbsp;
+            </span>
           </div>
-        )}
-        {isFetchingBusinessReport || !businessReport ? (
-          <>
-            <Skeleton className="h-6 w-72" />
-            <Skeleton className="mt-6 h-4 w-40" />
+          <NotesSheet
+            open={isNotesOpen}
+            onOpenChange={setIsNotesOpen}
+            modal={false}
+            notes={notes ?? []}
+            noteData={{
+              entityId: businessReport?.business.id || '',
+              entityType: `Business`,
+              noteableId: businessReport?.id || '',
+              noteableType: `Report`,
+            }}
+          >
+            <NotesButton numberOfNotes={notes?.length} />
+          </NotesSheet>
+        </div>
+      )}
+      {isFetchingBusinessReport || !businessReport ? (
+        <>
+          <Skeleton className="h-6 w-72" />
+          <Skeleton className="mt-6 h-4 w-40" />
 
-            <div className="mt-6 flex h-[24rem] w-full flex-nowrap gap-8">
-              <Skeleton className="w-2/3" />
-              <Skeleton className="w-1/3" />
-            </div>
-            <Skeleton className="mt-6 h-[16rem]" />
-          </>
-        ) : (
-          <BusinessReport report={businessReport} />
-        )}
-      </div>
+          <div className="mt-6 flex h-[24rem] w-full flex-nowrap gap-8">
+            <Skeleton className="w-2/3" />
+            <Skeleton className="w-1/3" />
+          </div>
+          <Skeleton className="mt-6 h-[16rem]" />
+        </>
+      ) : (
+        <BusinessReport report={businessReport} ref={reportRef} />
+      )}
+
+      <ReportPDFContainer
+        ref={reportPDFContainerRef}
+        businessReport={businessReport}
+        websiteWithNoProtocol={websiteWithNoProtocol}
+      />
     </section>
   );
 };
