@@ -637,7 +637,7 @@
       "holderName": "Holder name should be at least 5 characters long.",
       "companyAccountHolderName": "Company account holder name should be at least 5 characters long.",
       "holderFullAddress": "Holder full address should be at least 10 characters long.",
-      "accountNumber": "Account number should be at least 6 characters long.",
+      "accountNumber": "Account number should be at least 3 characters long.",
       "iban": "IBAN should be at least 15 characters long.",
       "swiftCode": "SWIFT code should be at least 8 characters long.",
       "routeNumber": "Route Number should be at least 8 characters long.",
