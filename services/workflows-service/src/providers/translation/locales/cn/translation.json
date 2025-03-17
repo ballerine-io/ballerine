@@ -614,7 +614,7 @@
       "holderName": "持卡人姓名必须至少为5个字符。",
       "companyAccountHolderName": "公司帐户持有人姓名必须至少包含 5 个字符。",
       "holderFullAddress": "持卡人完整地址必须至少为10个字符。",
-      "accountNumber": "帐号必须至少为6个字符。",
+      "accountNumber": "帐号必须至少为3个字符。",
       "iban": "IBAN必须至少为15个字符。",
       "swiftCode": "SWIFT代码必须至少为8个字符。",
       "routeNumber": "路由号码必须至少为8个字符。",
