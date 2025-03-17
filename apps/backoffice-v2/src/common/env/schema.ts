@@ -5,14 +5,22 @@ export const EnvSchema = z.object({
   VITE_ENVIRONMENT_NAME: z.enum(['development', 'production', 'sandbox', 'local']),
   VITE_API_URL: z.string().url().default('https://api-dev.ballerine.io/v2'),
   VITE_API_KEY: z.string(),
-  VITE_AUTH_ENABLED: z.preprocess(
-    value => (typeof value === 'string' ? JSON.parse(value) : value),
-    z.boolean().default(true),
-  ),
-  VITE_MOCK_SERVER: z.preprocess(
-    value => (typeof value === 'string' ? JSON.parse(value) : value),
-    z.boolean().default(true),
-  ),
+  VITE_AUTH_ENABLED: z.preprocess(value => {
+    try {
+      return typeof value === 'string' ? JSON.parse(value) : value;
+    } catch (error) {
+      console.warn('Failed to parse VITE_AUTH_ENABLED, defaulting to true', error);
+      return true;
+    }
+  }, z.boolean().default(true)),
+  VITE_MOCK_SERVER: z.preprocess(value => {
+    try {
+      return typeof value === 'string' ? JSON.parse(value) : value;
+    } catch (error) {
+      console.warn('Failed to parse VITE_MOCK_SERVER, defaulting to true', error);
+      return true;
+    }
+  }, z.boolean().default(true)),
   VITE_POLLING_INTERVAL: z.coerce
     .number()
     .transform(v => v * 1000)
@@ -24,10 +32,14 @@ export const EnvSchema = z.object({
     .or(z.literal(false))
     .catch(undefined),
   VITE_IMAGE_LOGO_URL: z.string().optional(),
-  VITE_FETCH_SIGNED_URL: z.preprocess(
-    value => (typeof value === 'string' ? JSON.parse(value) : value),
-    z.boolean().default(true),
-  ),
+  VITE_FETCH_SIGNED_URL: z.preprocess(value => {
+    try {
+      return typeof value === 'string' ? JSON.parse(value) : value;
+    } catch (error) {
+      console.warn('Failed to parse VITE_FETCH_SIGNED_URL, defaulting to true', error);
+      return true;
+    }
+  }, z.boolean().default(true)),
   VITE_POSTHOG_KEY: z.string().optional(),
   VITE_POSTHOG_HOST: z.string().optional(),
   VITE_SENTRY_DSN: z.string().optional(),
