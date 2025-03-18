@@ -869,14 +869,9 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             transformer: 'jmespath',
             mapping: `{
               ${options.dataMapping || ''}
-              context: @,
-              companyName: entity.data.companyName,
-              customerName: metadata.customerName,
-              reviewUrl: join('',['{secret.BACKOFFICE_URL}','/case/',workflowRuntimeId]),
               from: 'no-reply@ballerine.com',
               name: join(' ',[metadata.customerName,'Onboarding']),
-              receivers: [metadata.reviewerEmail || '{secret.DEFAULT_REVIEWER_EMAIL}'],
-              language: workflowRuntimeConfig.language,
+              receivers: [entity.data.additionalInfo.underwriterEmail],
               templateId: ${
                 options.templateId
                   ? `'${options.templateId}'`
