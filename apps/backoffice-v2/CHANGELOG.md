@@ -17,6 +17,9 @@
 
 ### Patch Changes
 
+- Updated dependencies
+  - @ballerine/ui@0.7.116
+  - @ballerine/react-pdf-toolkit@1.2.90
 - bump
 - Updated dependencies
   - @ballerine/blocks@0.2.37

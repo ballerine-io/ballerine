@@ -13,6 +13,7 @@
 
 ### Patch Changes
 
+- Updated dependencies
 - bump
 - Updated dependencies
   - @ballerine/config@1.1.35
