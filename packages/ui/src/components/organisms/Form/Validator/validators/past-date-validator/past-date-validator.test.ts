@@ -48,4 +48,15 @@ describe('pastDateValidator', () => {
     // Assert
     expect(result).toBe(true);
   });
+
+  it('current date should be accepted', () => {
+    // Arrange
+    const currentDate = dayjs().format('YYYY-MM-DD');
+
+    // Act
+    const result = pastDateValidator(currentDate, params);
+
+    // Assert
+    expect(result).toBe(true);
+  });
 });

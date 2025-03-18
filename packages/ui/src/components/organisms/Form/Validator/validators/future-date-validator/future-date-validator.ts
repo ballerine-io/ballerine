@@ -16,9 +16,9 @@ export const futureDateValidator: TValidator<string, unknown, TBaseValidators | 
     throw new Error('Invalid date.');
   }
 
-  const isFutureDate = dayjs(value).isAfter(dayjs());
+  const isFutureOrCurrentDate = dayjs(value).isSameOrAfter(dayjs(), 'day');
 
-  if (!isFutureDate) {
+  if (!isFutureOrCurrentDate) {
     throw new Error(message);
   }
 

@@ -16,9 +16,9 @@ export const pastDateValidator: TValidator<string, unknown, TBaseValidators | 'd
     throw new Error('Invalid date.');
   }
 
-  const isPastDate = dayjs(value).isBefore(dayjs());
+  const isPastOrCurrentDate = dayjs(value).isSameOrBefore(dayjs(), 'day');
 
-  if (!isPastDate) {
+  if (!isPastOrCurrentDate) {
     throw new Error(message);
   }
 
