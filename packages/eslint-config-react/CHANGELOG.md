@@ -1,5 +1,21 @@
 # @ballerine/eslint-config-react
 
+## 2.0.35
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.35
+
+## 2.0.34
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.34
+
 ## 2.0.33
 
 ### Patch Changes
