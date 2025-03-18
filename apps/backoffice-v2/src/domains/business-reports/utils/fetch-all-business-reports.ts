@@ -7,7 +7,7 @@ import {
 } from '../fetchers';
 import { fetchAllPages, PaginatedResponse } from '@/common/utils/fetch-all-pages';
 
-const EXPORT_PAGE_SIZE = 100; // Server denies more than 100 records per page
+const EXPORT_PAGE_SIZE = 1000; // Server denies more than 100 records per page
 
 // Type-safe wrapper around fetchBusinessReports to match our pagination utility interface
 const fetchBusinessReportsPage = async (
