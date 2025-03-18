@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/ui",
   "private": false,
-  "version": "0.7.117",
+  "version": "0.7.118",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -63,6 +63,7 @@
     "i18n-iso-countries": "^7.6.0",
     "json-logic-js": "^2.0.2",
     "jsonata": "^2.0.6",
+    "libphonenumber-js": "^1.10.49",
     "lodash": "^4.17.21",
     "lucide-react": "^0.245.0",
     "react": "^18.0.37",

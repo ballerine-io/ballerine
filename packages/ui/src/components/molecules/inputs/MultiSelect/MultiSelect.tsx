@@ -158,12 +158,12 @@ export const MultiSelect = ({
           <PopoverTrigger asChild>
             <div
               className={ctw(
-                'border-input ring-offset-background focus-within:ring-ring min-10 group flex items-center rounded-md border py-2 text-sm focus-within:ring-1 focus-within:ring-offset-1',
+                'border-input ring-offset-background focus-within:ring-ring min-10 group flex items-center rounded-md border py-2 text-sm focus-within:ring-1 focus-within:ring-offset-1 w-full',
                 { 'pointer-events-none opacity-50': disabled },
               )}
             >
               <div
-                className="flex flex-wrap gap-2 px-2"
+                className="flex flex-wrap gap-2 px-2 w-full"
                 tabIndex={0}
                 onFocus={onFocus as FocusEventHandler<HTMLDivElement>}
                 onBlur={onBlur as FocusEventHandler<HTMLDivElement>}
