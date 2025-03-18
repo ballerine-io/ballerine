@@ -72,7 +72,7 @@ export const useDocumentBlocks = ({
     isLoading: isLoadingDocuments,
   } = useDocumentsAdapter({
     documents: workflow?.context?.documents ?? [],
-    entityId: workflow?.context?.entity?.ballerineEntityId ?? '',
+    entityIds: [workflow?.context?.entity?.ballerineEntityId ?? ''],
   });
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =

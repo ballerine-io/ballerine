@@ -18,6 +18,7 @@ import { IFormElement, TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { IFileFieldParams } from '../FileField';
 import { DEFAULT_DELETION_PARAMS } from './defaults';
+import { useDocumentLabelElement } from './hooks/useDocumentLabelElement';
 import { useDocumentState } from './hooks/useDocumentState';
 import { useDocumentUpload } from './hooks/useDocumentUpload';
 import { getDocumentObjectFromDocumentsList } from './hooks/useDocumentUpload/helpers/get-document-object-from-documents-list';
@@ -156,7 +157,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
   }, [documentsList, element, onChange, id, removeTask, value, deleteDocument]);
 
   return (
-    <FieldLayout element={element} elementState={documentState}>
+    <FieldLayout element={useDocumentLabelElement(element)} elementState={documentState}>
       <div
         className={ctw(
           'relative flex h-[56px] flex-row items-center gap-3 rounded-[16px] border bg-white px-4',

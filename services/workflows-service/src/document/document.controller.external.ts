@@ -213,6 +213,41 @@ export class DocumentControllerExternal {
     ]);
   }
 
+  @Get('/by-entity-ids/:entityIds/:workflowRuntimeDataId')
+  @ApiResponse({
+    status: 200,
+    description: 'Documents retrieved successfully',
+    schema: Type.Array(Type.Record(Type.String(), Type.Any())),
+  })
+  @Validate({
+    request: [
+      {
+        type: 'param',
+        name: 'entityIds',
+        schema: Type.String(),
+      },
+      {
+        type: 'param',
+        name: 'workflowRuntimeDataId',
+        schema: Type.String(),
+      },
+    ],
+    response: Type.Any(),
+  })
+  async getDocumentsByEntityIdsAndWorkflowId(
+    @Param('entityIds') entityIds: string,
+    @Param('workflowRuntimeDataId') workflowRuntimeDataId: string,
+    @CurrentProject() projectId: string,
+  ) {
+    const entityIdsArray = entityIds.split(',');
+
+    return await this.documentService.getByEntityIdsAndWorkflowId(
+      entityIdsArray,
+      workflowRuntimeDataId,
+      [projectId],
+    );
+  }
+
   @Patch('/:documentId')
   @ApiResponse({
     status: 200,
