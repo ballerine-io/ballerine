@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { documentsQueryKeys } from '../../query-keys';
 
-export const useDocumentsQuery = ({
+export const useDocumentsByEntityIdAndWorkflowIdQuery = ({
   workflowId,
   entityId,
 }: {
@@ -9,7 +9,7 @@ export const useDocumentsQuery = ({
   entityId: string;
 }) => {
   return useQuery({
-    ...documentsQueryKeys.list({ workflowId, entityId }),
+    ...documentsQueryKeys.listByEntityIdAndWorkflowId({ workflowId, entityId }),
     enabled: !!workflowId && !!entityId,
   });
 };

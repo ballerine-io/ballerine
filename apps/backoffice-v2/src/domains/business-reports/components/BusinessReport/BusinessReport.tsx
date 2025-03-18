@@ -1,7 +1,7 @@
 import { ReportSchema } from '@ballerine/common';
 import { Button, ContentTooltip, ctw, useReportSections } from '@ballerine/ui';
 import { AlertTriangle, ArrowLeftToLine, ArrowRightToLine, Crown } from 'lucide-react';
-import { MutableRefObject, useEffect, useRef, useState } from 'react';
+import React, { forwardRef, MutableRefObject, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 
 type BusinessReportProps = {
@@ -32,7 +32,11 @@ const BusinessReportSectionsObserver = ({
     const determineActiveSection = () => {
       // Throttle updates
       const now = Date.now();
-      if (now - lastScrollTime.current < 100) return;
+
+      if (now - lastScrollTime.current < 100) {
+        return;
+      }
+
       lastScrollTime.current = now;
 
       const viewportHeight = window.innerHeight;
@@ -43,6 +47,7 @@ const BusinessReportSectionsObserver = ({
 
       // Handle bottom of page (bottom 15%)
       const isNearBottom = (scrollPosition + viewportHeight) / documentHeight > 0.85;
+
       if (isNearBottom) {
         // Find visible sections
         const visibleSections = sectionEntries
@@ -75,9 +80,11 @@ const BusinessReportSectionsObserver = ({
                 Math.abs(viewportHeight - b.bottomPosition),
             );
             const newId = bottomSections.at(0)?.id;
+
             if (newId) {
               setActiveSection(newId);
             }
+
             return;
           }
         }
@@ -85,9 +92,11 @@ const BusinessReportSectionsObserver = ({
         // At very bottom with no visible sections
         if (scrollPosition + viewportHeight >= documentHeight - 50 && sections.length > 0) {
           const newActive = sections[sections.length - 1]?.id;
+
           if (newActive) {
             setActiveSection(newActive);
           }
+
           return;
         }
       }
@@ -107,9 +116,11 @@ const BusinessReportSectionsObserver = ({
 
       if (topSections.length > 0) {
         const newId = topSections.at(0)?.id;
+
         if (newId) {
           setActiveSection(newId);
         }
+
         return;
       }
 
@@ -129,15 +140,18 @@ const BusinessReportSectionsObserver = ({
 
       if (visibleSections.length > 0) {
         const newId = visibleSections.at(0)?.id;
+
         if (newId) {
           setActiveSection(newId);
         }
+
         return;
       }
 
       // At top of page
       if (scrollPosition < 50 && sections.length > 0) {
         const newId = sections.at(0)?.id;
+
         if (newId) {
           setActiveSection(newId);
         }
@@ -147,6 +161,7 @@ const BusinessReportSectionsObserver = ({
     // Run once on mount and whenever scroll happens
     determineActiveSection();
     window.addEventListener('scroll', determineActiveSection, { passive: true });
+
     return () => window.removeEventListener('scroll', determineActiveSection);
   }, [sections, sectionRefs]);
 
@@ -221,13 +236,13 @@ const BusinessReportSectionsObserver = ({
   );
 };
 
-export const BusinessReport = ({ report }: BusinessReportProps) => {
+export const BusinessReport = forwardRef<HTMLDivElement, BusinessReportProps>(({ report }, ref) => {
   const { sections } = useReportSections(report);
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   return (
     <div className={`flex transition-all duration-300`}>
-      <div className={`flex-1 overflow-y-visible transition-all duration-300`}>
+      <div className={`flex-1 overflow-y-visible transition-all duration-300`} ref={ref}>
         {sections.map(section => {
           const titleContent = (
             <div className="mb-6 mt-8 flex items-center gap-2 text-lg font-bold">
@@ -258,4 +273,6 @@ export const BusinessReport = ({ report }: BusinessReportProps) => {
       <BusinessReportSectionsObserver sections={sections} sectionRefs={sectionRefs} />
     </div>
   );
-};
+});
+
+BusinessReport.displayName = 'BusinessReport';

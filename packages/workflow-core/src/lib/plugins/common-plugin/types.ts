@@ -49,6 +49,11 @@ export interface ISerializableWorkflowTokenPlugin {
   invoke?(...args: any[]): ReturnType<WorkflowTokenPluginParams['action']>;
 }
 
+export interface FilterOptions {
+  strategy: 'json-logic';
+  value: Record<string, any>;
+}
+
 export interface IterativePluginParams {
   name: string;
   stateNames: string[];
@@ -56,6 +61,7 @@ export interface IterativePluginParams {
   action: (context: TContext) => Promise<any>;
   successAction?: string;
   errorAction?: string;
+  filter?: FilterOptions[];
 }
 
 export interface RiskRulesPluginParams {

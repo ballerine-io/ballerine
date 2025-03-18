@@ -172,7 +172,7 @@ export const useDefaultBlocksLogic = () => {
 
   const { documents } = useDocumentsAdapter({
     documents: workflow?.context?.documents ?? [],
-    entityId: workflow?.context?.entity?.ballerineEntityId ?? '',
+    entityIds: [workflow?.context?.entity?.ballerineEntityId ?? ''],
   });
 
   const registryInfoBlock = useRegistryInfoBlock({

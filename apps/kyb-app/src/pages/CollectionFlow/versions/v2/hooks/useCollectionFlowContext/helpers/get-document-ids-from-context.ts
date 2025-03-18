@@ -4,7 +4,6 @@ import { TDocument } from '@ballerine/common';
 import {
   formatValueDestination,
   getFieldDefinitionsFromSchema,
-  getFileOrFileIdFromDocumentsList,
   IFormElement,
   isDocumentFieldDefinition,
   TBaseFields,
@@ -27,8 +26,7 @@ export const getDocumentIdsFromContext = (context: CollectionFlowContext, uiSche
           continue;
         }
 
-        const documentId =
-          getFileOrFileIdFromDocumentsList(documents || [], element) || document._document.id;
+        const documentId = document._document.id;
 
         if (!documentId || documentId instanceof File) {
           continue;

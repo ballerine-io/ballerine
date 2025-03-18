@@ -9,15 +9,17 @@ import { useRevisionCaseMutation } from '@/domains/workflows/hooks/mutations/use
 import { useAssignWorkflowMutation } from '@/domains/workflows/hooks/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
 import { useCallback, useMemo } from 'react';
 import { usePendingRevisionEvents } from '@/pages/Entity/components/Case/hooks/usePendingRevisionEvents/usePendingRevisionEvents';
-import { CommonWorkflowEvent } from '@ballerine/common';
 import { useDebounce } from '@/common/hooks/useDebounce/useDebounce';
+import { useDocumentsAdapter } from '@/domains/documents/hooks/useDocumentsAdapter/useDocumentsAdapter';
+import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
+import { StateTag } from '@ballerine/common';
 
 export const useDefaultActionsLogic = () => {
-  const { entityId } = useParams();
+  const { entityId: workflowId } = useParams();
   const filterId = useFilterId();
 
   const { data: workflow } = useWorkflowByIdQuery({
-    workflowId: entityId ?? '',
+    workflowId: workflowId ?? '',
     filterId: filterId ?? '',
   });
 
@@ -48,17 +50,27 @@ export const useDefaultActionsLogic = () => {
   const onMutateApproveCase = useCallback(() => mutateApproveCase(), [mutateApproveCase]);
   const onMutateRejectCase = useCallback(() => mutateRejectCase(), [mutateRejectCase]);
 
-  const { onMutateRevisionCase, pendingWorkflowEvents } = usePendingRevisionEvents(
-    mutateRevisionCase,
-    workflow,
-  );
+  const { onMutateRevisionCase } = usePendingRevisionEvents(mutateRevisionCase, workflow);
+
+  const directorsIds =
+    workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
+      director => director.ballerineEntityId,
+    ) ?? [];
+  const { documents } = useDocumentsAdapter({
+    entityIds: [workflow?.context?.entity?.ballerineEntityId ?? ''],
+    documents: workflow?.context?.documents ?? [],
+  });
+  const { documents: directorsDocuments } = useDocumentsAdapter({
+    entityIds: directorsIds,
+    documents: selectDirectorsDocuments(workflow),
+  });
 
   const documentsToReviseCount = useMemo(
     () =>
-      pendingWorkflowEvents?.filter(
-        pendingEvent => pendingEvent.eventName === CommonWorkflowEvent.REVISION,
-      )?.length,
-    [pendingWorkflowEvents],
+      [...documents, ...directorsDocuments].filter(
+        document => document?.decision?.status === 'revision',
+      ).length,
+    [documents, directorsDocuments],
   );
 
   // Only display the button spinners if the request is longer than 300ms
@@ -68,7 +80,9 @@ export const useDefaultActionsLogic = () => {
 
   return {
     isLoadingActions,
-    canRevision,
+    canRevision:
+      canRevision &&
+      workflow?.tags?.some(tag => [StateTag.MANUAL_REVIEW, StateTag.PENDING_PROCESS].includes(tag)),
     debouncedIsLoadingRejectCase,
     documentsToReviseCount,
     debouncedIsLoadingRevisionCase,
