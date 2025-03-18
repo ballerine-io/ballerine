@@ -26,7 +26,7 @@ export const formatValidator: TValidator<unknown, IFormatValueValidatorParams> =
 
   if (params.value.format === 'phone') {
     try {
-      const parsedPhoneNumber = parsePhoneNumber(`+${value}`);
+      const parsedPhoneNumber = parsePhoneNumber(value?.startsWith('+') ? value : `+${value}`);
 
       const isValid = parsedPhoneNumber.isValid();
 
