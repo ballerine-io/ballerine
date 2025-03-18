@@ -8,7 +8,7 @@ import {
   Skeleton,
 } from '@ballerine/ui';
 import { t } from 'i18next';
-import { Layers, Loader2, LucideDownload, Plus, SlidersHorizontal } from 'lucide-react';
+import { Layers, Loader2, Download, Plus, SlidersHorizontal } from 'lucide-react';
 import { FunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -283,7 +283,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
             className={`h-8 space-x-2.5 p-2 font-normal`}
             onClick={onExport}
           >
-            <LucideDownload className="d-4" />
+            <Download className="d-4" />
             <span>Export</span>
           </Button>
         </div>

@@ -11,7 +11,7 @@ import { toast } from 'sonner';
  * @param value - The value to format
  * @returns Formatted string value
  */
-const formatValueForCsv = (value: any): string => {
+const formatValueForCsv = (value: unknown): string => {
   if (value === null || value === undefined) {
     return '';
   }
@@ -40,18 +40,18 @@ const formatValueForCsv = (value: any): string => {
  * @param data Array of objects to convert to CSV
  * @returns CSV string
  */
-export const convertToCSV = (data: Record<string, any>[]) => {
-  if (!data || data.length === 0) return '';
+const convertToCSV = (data: Array<Record<string, unknown>>) => {
+  if (!data || data.length === 0) {
+    return '';
+  }
 
   // Extract column headers from the first item
   const headers = Object.keys(data[0] || {});
-  const csvRows = [headers.join(',')]; // Headers row
+  const csvRows = [headers.join(',')];
 
-  // Create CSV rows
   for (const item of data) {
     const values = headers.map(header => {
       const value = item[header];
-      // Format the value using our helper function
       const formattedValue = formatValueForCsv(value);
 
       // Wrap in quotes if contains commas, quotes, or newlines
@@ -72,10 +72,11 @@ export const convertToCSV = (data: Record<string, any>[]) => {
  * @param data Array of objects to export
  * @param filename Name of the file to download (without extension)
  */
-export const exportToCSV = (data: Record<string, any>[], filename: string) => {
+export const exportToCSV = (data: Array<Record<string, unknown>>, filename: string) => {
   try {
     if (!data || data.length === 0) {
       toast.error('No data to export');
+
       return false;
     }
 
@@ -97,10 +98,12 @@ export const exportToCSV = (data: Record<string, any>[], filename: string) => {
     URL.revokeObjectURL(url);
 
     toast.success('Export completed');
+
     return true;
   } catch (error) {
     console.error('Export failed:', error);
     toast.error('Failed to export data');
+
     return false;
   }
 };

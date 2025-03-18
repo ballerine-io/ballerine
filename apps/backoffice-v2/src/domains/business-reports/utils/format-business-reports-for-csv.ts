@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { TBusinessReport } from '../fetchers';
-import { MERCHANT_REPORT_TYPES_MAP } from '@ballerine/common';
+import { REPORT_TYPE_TO_DISPLAY_TEXT } from '@/pages/MerchantMonitoring/schemas';
 
 // Define violation domains as enum
 enum ViolationDomain {
@@ -11,12 +11,6 @@ enum ViolationDomain {
   PRICING = 'pricing',
   WEBSITE_STRUCTURE = 'website structure',
 }
-
-// Map for report types to display names
-const REPORT_TYPE_TO_SCAN_TYPE = {
-  [MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1]: 'Onboarding',
-  [MERCHANT_REPORT_TYPES_MAP.ONGOING_MERCHANT_REPORT_T1]: 'Monitoring',
-} as const;
 
 export interface BusinessReportCsvData {
   'Merchant ID': string | null;
@@ -72,8 +66,10 @@ const getViolationsByDomain = (
   property: string,
 ): string[] => {
   return violations
-    .filter(v => v.domain?.toLowerCase() === domain.toLowerCase() && v[property])
-    .map(v => v[property]);
+    .filter(
+      violation => violation.domain?.toLowerCase() === domain.toLowerCase() && violation[property],
+    )
+    .map(violation => violation[property]);
 };
 
 /**
@@ -217,7 +213,7 @@ export const formatBusinessReportsForCsv = (
       'Merchant Name': report.companyName || null,
       'Merchant URL': report.website,
       'Risk Level': report.riskLevel || null,
-      'Scan Type': REPORT_TYPE_TO_SCAN_TYPE[report.reportType] || report.reportType,
+      'Scan Type': REPORT_TYPE_TO_DISPLAY_TEXT[report.reportType] || report.reportType,
       'Monitoring Alert': report.isAlert ? 'Yes' : 'No',
       ...companyAnalysisViolations,
       'Website LOB': report.data?.lineOfBusiness || null,

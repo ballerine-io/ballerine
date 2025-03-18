@@ -28,12 +28,12 @@ export interface PaginationParams {
  * @param onProgress - Optional callback for progress updates
  * @returns All data from all pages combined in correct page order
  */
-export async function fetchAllPages<T, P extends PaginationParams>(
+export const fetchAllPages = async <T, P extends PaginationParams>(
   fetchFunction: (params: P) => Promise<PaginatedResponse<T> | undefined>,
   baseParams: Omit<P, keyof PaginationParams>,
   pageSize = DEFAULT_PAGE_SIZE,
   onProgress?: (current: number, total: number, items: number) => void,
-): Promise<T[]> {
+): Promise<T[]> => {
   try {
     // Create params for the first page
     const firstPageParams = {
@@ -57,11 +57,8 @@ export async function fetchAllPages<T, P extends PaginationParams>(
     if (totalPages > 1) {
       onProgress?.(1, totalPages, totalItems);
 
-      // Create an array of promises with their corresponding page numbers
-      const pagePromises: Array<{
-        pageNum: number;
-        promise: Promise<PaginatedResponse<T> | undefined>;
-      }> = [];
+      // Create an array of just the promises
+      const pagePromises: Array<Promise<PaginatedResponse<T> | undefined>> = [];
 
       for (let pageNum = 2; pageNum <= totalPages; pageNum++) {
         const pageParams = {
@@ -69,31 +66,19 @@ export async function fetchAllPages<T, P extends PaginationParams>(
           page: { number: pageNum, size: pageSize },
         } as P;
 
-        // Store the page number with its promise
-        pagePromises.push({
-          pageNum,
-          promise: fetchFunction(pageParams),
-        });
+        pagePromises.push(fetchFunction(pageParams));
       }
 
       // Wait for all promises to complete
-      const pageResultsPromises = pagePromises.map(async ({ pageNum, promise }) => {
-        const result = await promise;
-        return { pageNum, result };
-      });
+      const results = await Promise.all(pagePromises);
 
-      const pageResults = await Promise.all(pageResultsPromises);
-
-      // Sort results by page number to ensure proper order
-      pageResults.sort((a, b) => a.pageNum - b.pageNum);
-
-      // Add each page's data in the correct order
-      for (const { pageNum, result } of pageResults) {
+      // Add each page's data - results already in correct order
+      results.forEach((result, index) => {
         if (result?.data) {
           allData = [...allData, ...result.data];
-          onProgress?.(pageNum, totalPages, totalItems);
+          onProgress?.(index + 2, totalPages, totalItems); // pageNum = index + 2
         }
-      }
+      });
 
       // Final progress update
       onProgress?.(totalPages, totalPages, totalItems);
@@ -104,4 +89,4 @@ export async function fetchAllPages<T, P extends PaginationParams>(
     console.error('Error fetching all pages:', error);
     throw error;
   }
-}
+};
