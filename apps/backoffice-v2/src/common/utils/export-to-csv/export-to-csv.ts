@@ -40,7 +40,7 @@ const formatValueForCsv = (value: unknown): string => {
  * @param data Array of objects to convert to CSV
  * @returns CSV string
  */
-const convertToCSV = (data: Array<Record<string, unknown>>) => {
+export const convertToCSV = (data: Array<Record<string, unknown>>) => {
   if (!data || data.length === 0) {
     return '';
   }
