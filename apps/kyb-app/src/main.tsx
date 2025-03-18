@@ -1,7 +1,6 @@
 import '@total-typescript/ts-reset';
 
 import { initializeMonitoring } from '@/initialize-monitoring/initialize-monitoring';
-import { initializeSessionRecording } from '@/initialize-session-recording/initialize-session-recording';
 import '@ballerine/ui/dist/style.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
@@ -14,12 +13,6 @@ try {
   initializeMonitoring();
 } catch (error) {
   console.error('Failed to initialize monitoring:', error);
-}
-
-try {
-  initializeSessionRecording();
-} catch (error) {
-  console.error('Failed to initialize session recording:', error);
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
