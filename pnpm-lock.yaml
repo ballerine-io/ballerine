@@ -189,9 +189,6 @@ importers:
       '@rjsf/utils':
         specifier: ^5.9.0
         version: 5.14.2(react@18.2.0)
-      '@saola.ai/browser':
-        specifier: ^1.1.7
-        version: 1.1.7
       '@sentry/react':
         specifier: ^7.77.0
         version: 7.118.0(react@18.2.0)
@@ -583,9 +580,6 @@ importers:
       '@rjsf/validator-ajv8':
         specifier: ^5.9.0
         version: 5.14.2(@rjsf/utils@5.14.2)
-      '@saola.ai/browser':
-        specifier: ^1.1.7
-        version: 1.1.7
       '@sentry/react':
         specifier: ^7.77.0
         version: 7.118.0(react@18.2.0)
@@ -15776,10 +15770,6 @@ packages:
     transitivePeerDependencies:
       - '@types/node'
     dev: true
-
-  /@saola.ai/browser@1.1.7:
-    resolution: {integrity: sha512-HNN8ITtnjnxzQJdEzLrC1T8qcx01itx/KQLtHL4LDUiF3bz/r+AW0F2LuG+/fzNcNf6m7x3mkyi8zUWPnKj0+w==}
-    dev: false
 
   /@sentry-internal/feedback@7.118.0:
     resolution: {integrity: sha512-IYOGRcqIqKJJpMwBBv+0JTu0FPpXnakJYvOx/XEa/SNyF5+l7b9gGEjUVWh1ok50kTLW/XPnpnXNAGQcoKHg+w==}
