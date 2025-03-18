@@ -1,7 +1,6 @@
 import { expect, describe, test, vi, beforeEach, afterEach } from 'vitest';
 import { convertToCSV, exportToCSV } from './export-to-csv';
 import { toast } from 'sonner';
-import dayjs from 'dayjs';
 
 // Mock dependencies
 vi.mock('sonner', () => ({
@@ -14,7 +13,7 @@ vi.mock('sonner', () => ({
 // Mock dayjs globally for all tests
 vi.mock('dayjs', () => {
   return {
-    default: (date?: string | Date | number) => ({
+    default: () => ({
       format: () => '2023-01-01T12:00:00+0000',
     }),
   };
@@ -49,9 +48,9 @@ describe('CSV Export Utils', () => {
       // Verify it contains the correct data without being strict about quotes
       expect(actual).toContain('name,hobbies');
       expect(actual).toContain('John');
-      expect(actual).toContain('reading; swimming');
+      expect(actual).toContain('"reading,\nswimming"');
       expect(actual).toContain('Jane');
-      expect(actual).toContain('hiking; music');
+      expect(actual).toContain('"hiking,\nmusic"');
     });
 
     test('should handle objects in values', () => {
@@ -61,14 +60,9 @@ describe('CSV Export Utils', () => {
       ];
 
       const actual = convertToCSV(data);
-
-      // Verify it contains the JSON string representation of objects
-      expect(actual).toContain('name,details');
-      expect(actual).toContain('John');
-      expect(actual).toContain('city');
-      expect(actual).toContain('New York');
-      expect(actual).toContain('Jane');
-      expect(actual).toContain('London');
+      expect(actual).toEqual(
+        'name,details\nJohn,"city: New York,\ncountry: USA"\nJane,"city: London,\ncountry: UK"',
+      );
     });
 
     test('should handle Date objects', () => {

@@ -183,7 +183,60 @@
           },
           "recommendations": []
         }
-      ]
+      ],
+      "lineOfBusiness": "Risk Management Platform",
+      "mcc": "6012",
+      "mccDescription": "Risk Management Platform",
+      "monthlyVisits": {
+        "2024-08-01": 5353,
+        "2024-09-01": 2900,
+        "2024-10-01": 3987,
+        "2024-11-01": 3220,
+        "2024-12-01": 6623,
+        "2025-01-01": 11895
+      },
+      "trafficSources": {
+        "direct": 0.48233798536743344,
+        "search / organic": 0.35351515572529957
+      },
+      "timeOnSite": 78.2998703996644,
+      "pagesPerVisit": 1.7024018210768974,
+      "bounceRate": 0.5807437490057886,
+      "ecosystem": [
+        {
+          "domain": "ballerine.com",
+          "relatedNode": "Node",
+          "relatedNodeType": "Node"
+        }
+      ],
+      "facebookPage": {
+        "id": "85409903065",
+        "url": "https://facebook.com/IKEAUSA",
+        "pageName": "IKEA",
+        "name": "IKEA",
+        "email": "a@a.com",
+        "address": "Some",
+        "phoneNumber": "052525252",
+        "creationDate": "April 16, 2009",
+        "numberOfLikes": 32688703,
+        "pageCategories": "Furniture",
+        "likesCount": 32688703,
+        "facebookAdsLink": "https://www.facebook.com/ads/library/?view_all_page_id=1005952763995521",
+        "facebookAboutUsLink": "https://facebook.com/IKEAUSA/about"
+      },
+      "instagramPage": {
+        "id": "306227404",
+        "url": "https://www.instagram.com/ikeausa",
+        "pageName": "IKEA USA",
+        "username": "ikeausa",
+        "isVerified": true,
+        "biography": "Design ideas & solutions to make life at home easier. Share your photos using #MyIKEAUSA \n© Inter IKEA Systems B.V. 2013-2024\nShop our photos:",
+        "postsCount": 4023,
+        "followsCount": 68,
+        "isBusinessAccount": true,
+        "numberOfFollowers": 2543351,
+        "pageCategories": "Home Goods Stores"
+      }
     },
     "websiteId": "nz4g1bum1a7g8jczaxetgyc1",
     "customerId": "cm1dilwt90033s0314nfikhbl",

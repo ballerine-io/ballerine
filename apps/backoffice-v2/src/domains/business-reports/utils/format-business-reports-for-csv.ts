@@ -73,25 +73,6 @@ const getViolationsByDomain = (
 };
 
 /**
- * Formats traffic sources object into a readable string
- * @param trafficSources Traffic sources object
- * @returns Formatted traffic sources string
- */
-const formatTrafficSources = (trafficSources: any): string => {
-  if (!trafficSources) return '';
-
-  if (typeof trafficSources === 'string') return trafficSources;
-
-  if (typeof trafficSources === 'object') {
-    return Object.entries(trafficSources)
-      .map(([source, percentage]) => `${source}: ${percentage}%`)
-      .join(', ');
-  }
-
-  return String(trafficSources);
-};
-
-/**
  * Formats business reports data for CSV export
  *
  * @param businessReports - Array of business reports to format
@@ -117,32 +98,13 @@ export const formatBusinessReportsForCsv = (
     // Format Facebook details
     const facebook = {
       'Facebook Link': report.data?.facebookPage?.url || null,
-      'Facebook Details': report.data?.facebookPage
-        ? Object.entries(report.data.facebookPage)
-            .filter(([key, value]) => value && key !== 'url')
-            .map(([key, value]) => `${key}: ${value}`)
-            .join(', ')
-        : '',
+      'Facebook Details': report.data?.facebookPage || null,
     };
 
     const instagram = {
       'Instagram Link': report.data?.instagramPage?.url || null,
-      'Instagram Details': report.data?.instagramPage
-        ? Object.entries(report.data.instagramPage)
-            .filter(([key, value]) => value && key !== 'url')
-            .map(([key, value]) => `${key}: ${value}`)
-            .join(', ')
-        : '',
+      'Instagram Details': report.data?.instagramPage || null,
     };
-
-    // Format ecosystem as array
-    const ecosystem =
-      report.data?.ecosystem && Array.isArray(report.data.ecosystem)
-        ? report.data.ecosystem.map(item => {
-            if (typeof item === 'string') return item;
-            return item.domain || item.relatedNode || JSON.stringify(item);
-          })
-        : [];
 
     const pricingViolations = {
       'Pricing Findings': getViolationsByDomain(violations, ViolationDomain.PRICING, 'name'),
@@ -221,18 +183,18 @@ export const formatBusinessReportsForCsv = (
       ...contentViolations,
       ...scamOrFraudViolations,
       'Traffic Findings': getViolationsByDomain(violations, ViolationDomain.TRAFFIC, 'name'),
-      'Estimated Monthly Visits': report.data?.monthlyVisits?.toString() || null,
-      'Traffic Sources': formatTrafficSources(report.data?.trafficSources),
-      'Time on site': report.data?.timeOnSite?.toString() || null,
-      'Pages per visit': report.data?.pagesPerVisit?.toString() || null,
-      'Bounce rate': report.data?.bounceRate?.toString() || null,
+      'Estimated Monthly Visits': report.data?.monthlyVisits || null,
+      'Traffic Sources': report.data?.trafficSources || null,
+      'Time on site': report.data?.timeOnSite || null,
+      'Pages per visit': report.data?.pagesPerVisit || null,
+      'Bounce rate': report.data?.bounceRate || null,
       ...pricingViolations,
       'Website Structure Findings': getViolationsByDomain(
         violations,
         ViolationDomain.WEBSITE_STRUCTURE,
         'name',
       ),
-      Ecosystem: ecosystem,
+      Ecosystem: report.data?.ecosystem || [],
       ...facebook,
       ...instagram,
       'Scan Creation Date': creationDate,

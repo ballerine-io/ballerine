@@ -11,10 +11,12 @@ import mccReport from './__fixtures__/mcc-report.json';
 import statusNotesReport from './__fixtures__/status-notes-report.json';
 import sandboxReport from './__fixtures__/sandbox-report.json';
 import exampleReport from './__fixtures__/example-report.json';
+import { TBusinessReport } from '../fetchers';
+import { convertToCSV } from '@/common/utils/export-to-csv/export-to-csv';
 
 // Mock dayjs for consistent date output
 vi.mock('dayjs', () => {
-  const mockDayjs = vi.fn(date => ({
+  const mockDayjs = vi.fn(() => ({
     utc: vi.fn().mockReturnThis(),
     local: vi.fn().mockReturnThis(),
     toDate: vi.fn().mockImplementation(() => new Date('2023-01-01T12:00:00Z')),
@@ -43,17 +45,18 @@ const fixtureMapping = [
 ];
 
 // Helper function to handle date objects in serialization
-function serializeWithDates(data: any): any {
+const serializeWithDates = (data: any): any => {
   return JSON.parse(
     JSON.stringify(data, (key, value) => {
       if (value instanceof Date) {
         // For testing, replace with a consistent date string
         return value.toISOString();
       }
+
       return value;
     }),
   );
-}
+};
 
 describe('formatBusinessReportsForCsv Snapshot Tests', () => {
   beforeEach(() => {
@@ -69,7 +72,7 @@ describe('formatBusinessReportsForCsv Snapshot Tests', () => {
   fixtureMapping.forEach(({ fixture, name }) => {
     test(`should format ${name} correctly`, () => {
       // Format the input data
-      const result = formatBusinessReportsForCsv([fixture as any]);
+      const result = formatBusinessReportsForCsv(fixture as unknown as TBusinessReport[]);
 
       // Serialize dates for comparison
       const serializedResult = serializeWithDates(result);
@@ -81,7 +84,7 @@ describe('formatBusinessReportsForCsv Snapshot Tests', () => {
 
   test('should format multiple reports correctly', () => {
     // Test with multiple different reports
-    const fixtures = [minimalReport, violationsReport, trafficReport] as any[];
+    const fixtures = [minimalReport[0], violationsReport[0], trafficReport[0]] as any[];
 
     const result = formatBusinessReportsForCsv(fixtures);
 
@@ -91,10 +94,23 @@ describe('formatBusinessReportsForCsv Snapshot Tests', () => {
     // Verify report properties without using direct array indexing for safety
     expect(result).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ 'Merchant Name': minimalReport.companyName }),
-        expect.objectContaining({ 'Merchant Name': violationsReport.companyName }),
-        expect.objectContaining({ 'Merchant Name': trafficReport.companyName }),
+        expect.objectContaining({ 'Merchant Name': minimalReport[0]?.companyName }),
+        expect.objectContaining({ 'Merchant Name': violationsReport[0]?.companyName }),
+        expect.objectContaining({ 'Merchant Name': trafficReport[0]?.companyName }),
       ]),
     );
+  });
+});
+
+describe('formatBusinessReports as CSV Tests', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+  test('should format sandbox report correctly', () => {
+    const formattedData = formatBusinessReportsForCsv(
+      sandboxReport as unknown as TBusinessReport[],
+    );
+    const result = convertToCSV(formattedData as unknown as Array<Record<string, unknown>>);
+    expect(result).toMatchSnapshot();
   });
 });

@@ -23,12 +23,14 @@ const formatValueForCsv = (value: unknown): string => {
 
   // Handle arrays - join with semicolons
   if (Array.isArray(value)) {
-    return value.map(item => formatValueForCsv(item)).join('; ');
+    return value.map(item => formatValueForCsv(item)).join(',\n');
   }
 
   // Handle objects - convert to JSON
   if (typeof value === 'object') {
-    return JSON.stringify(value).replace(/"/g, '""');
+    return Object.entries(value)
+      .map(([key, val]) => `${key}: ${formatValueForCsv(val)}`)
+      .join(',\n');
   }
 
   // Handle primitive values
