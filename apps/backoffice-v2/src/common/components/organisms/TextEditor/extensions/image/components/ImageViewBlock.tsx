@@ -221,7 +221,7 @@ export const ImageViewBlock: React.FC<NodeViewProps> = ({
             },
           )}
         >
-          <div className="h-full contain-paint">
+          <div className="contain-paint h-full">
             <div className="relative h-full">
               {!imageState.imageLoaded && !imageState.error && (
                 <div className="absolute inset-0 flex items-center justify-center">

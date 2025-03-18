@@ -1,0 +1,35 @@
+{
+  "id": "report-123",
+  "companyName": "Test Company",
+  "website": "https://example.com",
+  "reportType": "MERCHANT_REPORT_T1",
+  "riskLevel": "low",
+  "isAlert": false,
+  "isExample": false,
+  "status": "completed",
+  "createdAt": "2023-01-01T00:00:00Z",
+  "updatedAt": "2023-01-02T00:00:00Z",
+  "displayDate": "2023-01-01T00:00:00Z",
+  "publishedAt": "2023-01-01T00:00:00Z",
+  "customer": {
+    "id": "customer-123",
+    "displayName": "Customer Name"
+  },
+  "business": {
+    "id": "business-123"
+  },
+  "data": {
+    "ecosystem": [
+      {
+        "name": "Partner 1",
+        "url": "https://partner1.example.com",
+        "relationship": "Supplier"
+      },
+      {
+        "name": "Partner 2",
+        "url": "https://partner2.example.com",
+        "relationship": "Customer"
+      }
+    ]
+  }
+}
