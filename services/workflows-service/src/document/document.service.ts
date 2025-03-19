@@ -588,7 +588,7 @@ export class DocumentService {
       );
     }
 
-    const isBusinessDocument = document.businessId ? true : false;
+    const isBusinessDocument = !!document.businessId;
 
     if (isBusinessDocument) {
       const businessDocuments = findBusinessDocuments(workflowRuntime.context);
