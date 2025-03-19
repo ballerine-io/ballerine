@@ -8,7 +8,7 @@ import {
   Skeleton,
 } from '@ballerine/ui';
 import { t } from 'i18next';
-import { Layers, Loader2, Plus, SlidersHorizontal } from 'lucide-react';
+import { Layers, Loader2, Download, Plus, SlidersHorizontal } from 'lucide-react';
 import { FunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -45,6 +45,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
     isLastPage,
     dates,
     onDatesChange,
+    onExport,
     locale,
     createBusinessReport,
     createBusinessReportBatch,
@@ -268,7 +269,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
             </Button>
           )}
         </div>
-        <div>
+        <div className="flex items-center justify-between">
           {!isLoadingBusinessReports && (
             <Badge
               variant="secondary"
@@ -277,6 +278,23 @@ export const MerchantMonitoring: FunctionComponent = () => {
               {totalItems} results
             </Badge>
           )}
+          <TooltipProvider delayDuration={0.15}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={`h-8 space-x-2.5 p-2 font-normal`}
+                  onClick={onExport}
+                >
+                  <Download className="d-4" />
+                  <span>Export</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side={'bottom'} align={'end'}>
+                <span>Export reports to a CSV file (filters applied)</span>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <div className="space-y-6">
           {isLoadingBusinessReports && (

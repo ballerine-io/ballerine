@@ -1,0 +1,46 @@
+[
+  {
+    "id": "report-123",
+    "companyName": "Test Company",
+    "website": "https://example.com",
+    "reportType": "MERCHANT_REPORT_T1",
+    "riskLevel": "medium",
+    "isAlert": true,
+    "isExample": false,
+    "status": "completed",
+    "createdAt": "2023-01-01T00:00:00Z",
+    "updatedAt": "2023-01-02T00:00:00Z",
+    "displayDate": "2023-01-01T00:00:00Z",
+    "publishedAt": "2023-01-01T00:00:00Z",
+    "customer": {
+      "id": "customer-123",
+      "displayName": "Customer Name"
+    },
+    "business": {
+      "id": "business-123"
+    },
+    "data": {
+      "allViolations": [
+        {
+          "domain": "company analysis",
+          "name": "Company Issue 1",
+          "reason": "Found issue with company registration",
+          "sourceUrl": "https://company-registry.example.com"
+        },
+        {
+          "domain": "content",
+          "name": "Content Issue 1",
+          "reason": "Found prohibited content",
+          "quoteFromSource": "Prohibited text example",
+          "sourceUrl": "https://content.example.com"
+        },
+        {
+          "domain": "scam or fraud",
+          "name": "Scam Warning",
+          "reason": "Signs of potential fraud",
+          "sourceUrl": "https://scam-alerts.example.com"
+        }
+      ]
+    }
+  }
+]
