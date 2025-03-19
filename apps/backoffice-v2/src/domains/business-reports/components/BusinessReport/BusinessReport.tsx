@@ -1,11 +1,12 @@
 import { ReportSchema } from '@ballerine/common';
 import { Button, ContentTooltip, ctw, useReportSections } from '@ballerine/ui';
 import { AlertTriangle, ArrowLeftToLine, ArrowRightToLine, Crown } from 'lucide-react';
-import React, { forwardRef, MutableRefObject, useEffect, useRef, useState } from 'react';
+import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 
 type BusinessReportProps = {
   report: z.infer<typeof ReportSchema>;
+  disableSectionObserver?: boolean;
 };
 
 const BusinessReportSectionsObserver = ({
@@ -236,13 +237,13 @@ const BusinessReportSectionsObserver = ({
   );
 };
 
-export const BusinessReport = forwardRef<HTMLDivElement, BusinessReportProps>(({ report }, ref) => {
+export const BusinessReport = ({ report, disableSectionObserver = false }: BusinessReportProps) => {
   const { sections } = useReportSections(report);
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   return (
     <div className={`flex transition-all duration-300`}>
-      <div className={`flex-1 overflow-y-visible transition-all duration-300`} ref={ref}>
+      <div className={`flex-1 overflow-y-visible transition-all duration-300`}>
         {sections.map(section => {
           const titleContent = (
             <div className="mb-6 mt-8 flex items-center gap-2 text-lg font-bold">
@@ -270,9 +271,9 @@ export const BusinessReport = forwardRef<HTMLDivElement, BusinessReportProps>(({
         })}
       </div>
 
-      <BusinessReportSectionsObserver sections={sections} sectionRefs={sectionRefs} />
+      {!disableSectionObserver && (
+        <BusinessReportSectionsObserver sections={sections} sectionRefs={sectionRefs} />
+      )}
     </div>
   );
-});
-
-BusinessReport.displayName = 'BusinessReport';
+};

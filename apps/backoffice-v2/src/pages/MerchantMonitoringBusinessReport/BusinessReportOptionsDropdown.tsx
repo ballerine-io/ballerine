@@ -42,8 +42,8 @@ export const BusinessReportOptionsDropdown: FunctionComponent<
     | 'form'
     | 'onSubmit'
     | 'deboardingReasonOptions'
-    | 'generatePDF'
     | 'isGeneratingPDF'
+    | 'toggleIsGeneratingPDF'
   >
 > = ({
   isDropdownOpen,
@@ -56,8 +56,8 @@ export const BusinessReportOptionsDropdown: FunctionComponent<
   form,
   onSubmit,
   deboardingReasonOptions,
-  generatePDF,
   isGeneratingPDF,
+  toggleIsGeneratingPDF,
 }) => {
   return (
     <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
@@ -102,9 +102,8 @@ export const BusinessReportOptionsDropdown: FunctionComponent<
           <DropdownMenuItem
             disabled={isDemoAccount}
             className={'w-full p-0 data-[disabled]:!opacity-100'}
-            onClick={async () => {
-              await generatePDF();
-              setIsDropdownOpen(false);
+            onClick={() => {
+              toggleIsGeneratingPDF();
             }}
           >
             <Button
