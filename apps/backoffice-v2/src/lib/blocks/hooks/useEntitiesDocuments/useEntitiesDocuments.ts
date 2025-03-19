@@ -84,7 +84,7 @@ export const useEntitiesDocuments = (
       return [];
     }
 
-    return [...documents].sort((a, b) => {
+    return documents.toSorted((a, b) => {
       const typeA = getDocumentEntityType(a);
       const typeB = getDocumentEntityType(b);
 
