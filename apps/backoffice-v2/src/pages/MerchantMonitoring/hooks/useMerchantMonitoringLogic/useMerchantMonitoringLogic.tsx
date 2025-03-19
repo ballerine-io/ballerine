@@ -19,9 +19,16 @@ import {
   REPORT_TYPE_TO_DISPLAY_TEXT,
   RISK_LEVEL_FILTER,
   STATUS_LEVEL_FILTER,
+  TReportStatusValue,
 } from '@/pages/MerchantMonitoring/schemas';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { getDemoStateErrorText } from '@/common/components/molecules/DemoAccessCards/getDemoStateErrorText';
+import { toast } from 'sonner';
+import { exportToCSV } from '@/common/utils/export-to-csv';
+import {
+  fetchAllBusinessReports,
+  formatBusinessReportsForCsv,
+} from '@/domains/business-reports/utils';
 
 export const useMerchantMonitoringLogic = () => {
   const locale = useLocale();
@@ -81,7 +88,7 @@ export const useMerchantMonitoringLogic = () => {
 
   const { findings: findingsOptions, isLoading: isLoadingFindings } = useFindings();
 
-  const { data, isLoading: isLoadingBusinessReports } = useBusinessReportsQuery({
+  const reportQuery = {
     ...(reportType !== 'All' && {
       reportType:
         DISPLAY_TEXT_TO_MERCHANT_REPORT_TYPE[
@@ -100,11 +107,13 @@ export const useMerchantMonitoringLogic = () => {
       ?.map(status => REPORT_STATUS_LABEL_TO_VALUE_MAP[status])
       .flatMap(status =>
         status === 'in-progress' ? ['in-progress', 'quality-control', 'failed'] : [status],
-      ),
+      ) as TReportStatusValue[],
     from,
     to: to ? dayjs(to).add(1, 'day').format('YYYY-MM-DD') : undefined,
     ...(isAlert !== 'All' && { isAlert: DISPLAY_TEXT_TO_IS_ALERT[isAlert] }),
-  });
+  };
+
+  const { data, isLoading: isLoadingBusinessReports } = useBusinessReportsQuery(reportQuery);
 
   const isClearAllButtonVisible = useMemo(
     () =>
@@ -195,6 +204,37 @@ export const useMerchantMonitoringLogic = () => {
     [findingsOptions],
   );
 
+  const onExport = useCallback(async () => {
+    try {
+      // Use the new utility to fetch all pages with the current filters
+      const allData = await fetchAllBusinessReports(reportQuery);
+
+      // Use the formatter utility to format data for CSV export
+      const csvData = formatBusinessReportsForCsv(allData);
+
+      // Export the formatted data to CSV with metadata for tracking
+      const clientName = customer?.displayName || 'Unknown';
+      const username = fullName || firstName || 'Unknown';
+      const now = dayjs().format('YYYY-MM-DDTHH-mm-ss');
+      exportToCSV(csvData, `merchant-monitoring-export-${clientName}-${username}-${now}`);
+    } catch (error) {
+      console.error('Export failed:', error);
+      toast.error('Failed to export data');
+    }
+  }, [
+    reportType,
+    debouncedSearch,
+    findings,
+    riskLevels,
+    statuses,
+    from,
+    to,
+    isAlert,
+    customer?.displayName,
+    firstName,
+    fullName,
+  ]);
+
   return {
     totalPages: data?.totalPages || 0,
     totalItems: Intl.NumberFormat(locale).format(data?.totalItems || 0),
@@ -237,5 +277,6 @@ export const useMerchantMonitoringLogic = () => {
     open,
     toggleOpen,
     isDemoAccount: customer?.config?.isDemoAccount ?? false,
+    onExport,
   };
 };

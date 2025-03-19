@@ -11,6 +11,8 @@ import {
 } from '@ballerine/common';
 import { BusinessReportDto } from '@/business-report/dtos/business-report.dto';
 
+const MAX_REPORT_LIST_PAGE_SIZE = 1000;
+
 export class BusinessReportListRequestParamDto {
   @IsOptional()
   @IsString()
@@ -88,7 +90,7 @@ export const ListBusinessReportsSchema = z.object({
   page: z
     .object({
       number: z.coerce.number().int().positive(),
-      size: z.coerce.number().int().positive().max(100),
+      size: z.coerce.number().int().positive().max(MAX_REPORT_LIST_PAGE_SIZE),
     })
     .optional(),
 });
