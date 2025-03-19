@@ -278,14 +278,23 @@ export const MerchantMonitoring: FunctionComponent = () => {
               {totalItems} results
             </Badge>
           )}
-          <Button
-            variant="outline"
-            className={`h-8 space-x-2.5 p-2 font-normal`}
-            onClick={onExport}
-          >
-            <Download className="d-4" />
-            <span>Export</span>
-          </Button>
+          <TooltipProvider delayDuration={0.15}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={`h-8 space-x-2.5 p-2 font-normal`}
+                  onClick={onExport}
+                >
+                  <Download className="d-4" />
+                  <span>Export</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side={'bottom'} align={'end'}>
+                <span>Download reports based on applied filters</span>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <div className="space-y-6">
           {isLoadingBusinessReports && (

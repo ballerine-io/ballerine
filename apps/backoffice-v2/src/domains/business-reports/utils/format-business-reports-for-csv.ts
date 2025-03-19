@@ -87,9 +87,6 @@ export const formatBusinessReportsForCsv = (
     // Convert creation date to local time (keep as Date object)
     const creationDate = report.createdAt ? dayjs.utc(report.createdAt).local().toDate() : null;
 
-    // Convert update date to local time (keep as Date object)
-    const updateDate = report.updatedAt ? dayjs.utc(report.updatedAt).local().toDate() : null;
-
     // Format MCC
     const mcc = report.data?.mcc
       ? `${report.data.mcc} - ${report.data.mccDescription || ''}`
@@ -166,8 +163,6 @@ export const formatBusinessReportsForCsv = (
         'sourceUrl',
       ),
     };
-    // Format notes to status change
-    const statusNotes = report.data?.statusNotes ? String(report.data.statusNotes) : null;
 
     return {
       'Merchant ID': report.business?.correlationId || report.business?.id || null,
@@ -199,8 +194,6 @@ export const formatBusinessReportsForCsv = (
       ...instagram,
       'Scan Creation Date': creationDate,
       'Report Status': report.status,
-      'Status Change Date': updateDate,
-      'Notes to Status Change': statusNotes,
     };
   });
 };
