@@ -96,7 +96,7 @@ async function createCustomer(
       faviconImageUri,
       country: 'GB',
       language: 'en',
-      config: { isDemo: true, withQualityControl: true, isMerchantMonitoringEnabled: true },
+      config: { withQualityControl: true, isMerchantMonitoringEnabled: true },
       features: {
         createBusinessReport: {
           enabled: true,
