@@ -27,7 +27,7 @@ import { NotesSheet } from '@/domains/notes/NotesSheet';
 import { MerchantMonitoringReportStatus } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringReportStatus';
 import { useMerchantMonitoringBusinessReportLogic } from '@/pages/MerchantMonitoringBusinessReport/hooks/useMerchantMonitoringBusinessReportLogic/useMerchantMonitoringBusinessReportLogic';
 import { BusinessReportOptionsDropdown } from './BusinessReportOptionsDropdown';
-import { ReportPDFContainer } from './ReportPDFContainer';
+import { ReportPDFContainer } from '@/pages/MerchantMonitoringBusinessReport/ReportPDFContainer';
 
 export const DialogDropdownItem = forwardRef<
   React.ElementRef<typeof DropdownMenuItem>,
@@ -72,8 +72,11 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     isFetchingBusinessReport,
     locale,
     isDemoAccount,
-    reportRef,
+    isGeneratingPDF,
+    toggleIsGeneratingPDF,
+    generatePDF,
     reportPDFContainerRef,
+    setIsDropdownOpen,
     ...dropdownProps
   } = useMerchantMonitoringBusinessReportLogic();
 
@@ -147,8 +150,11 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
         ) : (
           <BusinessReportOptionsDropdown
             {...dropdownProps}
+            isGeneratingPDF={isGeneratingPDF}
             businessReport={businessReport}
             isDemoAccount={isDemoAccount}
+            setIsDropdownOpen={setIsDropdownOpen}
+            toggleIsGeneratingPDF={toggleIsGeneratingPDF}
           />
         )}
       </div>
@@ -168,8 +174,11 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
           {isDemoAccount && (
             <BusinessReportOptionsDropdown
               {...dropdownProps}
+              isGeneratingPDF={isGeneratingPDF}
               businessReport={businessReport}
               isDemoAccount={isDemoAccount}
+              setIsDropdownOpen={setIsDropdownOpen}
+              toggleIsGeneratingPDF={toggleIsGeneratingPDF}
             />
           )}
         </div>
@@ -230,12 +239,16 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
           <Skeleton className="mt-6 h-[16rem]" />
         </>
       ) : (
-        <BusinessReport report={businessReport} ref={reportRef} />
+        <BusinessReport report={businessReport} />
       )}
 
       <ReportPDFContainer
         ref={reportPDFContainerRef}
         businessReport={businessReport}
+        generatePDF={generatePDF}
+        setIsDropdownOpen={setIsDropdownOpen}
+        toggleIsGeneratingPDF={toggleIsGeneratingPDF}
+        isGeneratingPDF={isGeneratingPDF}
         websiteWithNoProtocol={websiteWithNoProtocol}
       />
     </section>

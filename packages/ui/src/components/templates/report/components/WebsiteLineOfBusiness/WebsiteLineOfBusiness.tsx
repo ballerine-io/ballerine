@@ -132,8 +132,6 @@ export const WebsiteLineOfBusiness: FunctionComponent<{
                               className={'relative w-full'}
                             >
                               <img
-                                crossOrigin="anonymous"
-                                key={screenshotUrl}
                                 src={screenshotUrl}
                                 alt={`${riskIndicator.name} screenshot of the website`}
                                 className={'h-auto max-h-[400px] w-full object-cover object-top'}

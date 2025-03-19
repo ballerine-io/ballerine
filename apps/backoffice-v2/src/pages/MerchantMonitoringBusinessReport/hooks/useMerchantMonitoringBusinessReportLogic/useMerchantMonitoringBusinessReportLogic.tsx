@@ -188,31 +188,15 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
 
   const [isGeneratingPDF, toggleIsGeneratingPDF] = useToggle(false);
 
-  const reportRef = useRef<HTMLDivElement>(null);
   const reportPDFContainerRef = useRef<HTMLDivElement>(null);
 
   const generatePDF = useCallback(async () => {
-    if (!reportRef.current || !reportPDFContainerRef.current) {
+    if (!reportPDFContainerRef.current) {
       return;
     }
 
-    toggleIsGeneratingPDF();
-
     try {
-      const element = reportRef.current;
       const container = reportPDFContainerRef.current;
-
-      const contentContainer = container.querySelector('.pdf-content');
-
-      if (!contentContainer) {
-        throw new Error('PDF content container not found');
-      }
-
-      const clone = element.cloneNode(true) as HTMLElement;
-      clone.style.width = `${element.scrollWidth}px`;
-
-      contentContainer.innerHTML = '';
-      contentContainer.appendChild(clone);
 
       const canvas = await html2canvas(container, {
         scale: 2,
@@ -221,8 +205,6 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
         windowWidth: container.scrollWidth,
         windowHeight: container.scrollHeight,
       });
-
-      contentContainer.innerHTML = '';
 
       const imageData = canvas.toDataURL('image/jpeg', 0.8); // Use JPEG with 80% quality for smaller file size
       const aspectRatio = canvas.height / canvas.width;
@@ -240,9 +222,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     } catch (error) {
       console.error('Error generating PDF:', error);
     }
-
-    toggleIsGeneratingPDF();
-  }, [toggleIsGeneratingPDF, websiteWithNoProtocol]);
+  }, [websiteWithNoProtocol]);
 
   return {
     onNavigateBack,
@@ -262,9 +242,9 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     isFetchingBusinessReport,
     locale,
     isDemoAccount: customer?.config?.isDemoAccount ?? false,
-    reportRef,
     reportPDFContainerRef,
     generatePDF,
     isGeneratingPDF,
+    toggleIsGeneratingPDF,
   };
 };
