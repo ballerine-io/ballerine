@@ -12,7 +12,7 @@ export const useCaseCallToActionLegacyLogic = ({
   parentWorkflowId,
   childWorkflowId,
   childWorkflowContextSchema,
-  documentsType = 'kyb',
+  documentsType,
 }: {
   parentWorkflowId: string;
   childWorkflowId: string;
