@@ -70,6 +70,7 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
     <Button
       data-testid={`${id}-submit-button`}
       variant="default"
+      disabled={!isValid && disableWhenFormIsInvalid}
       onClick={isShouldRenderLoader ? undefined : handleSubmit}
       className="bg-[#1f2937] text-[#f8fafc] hover:bg-[#1f2937]/90 transition-all duration-300"
     >
