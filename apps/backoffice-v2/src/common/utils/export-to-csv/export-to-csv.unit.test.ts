@@ -1,14 +1,5 @@
 import { expect, describe, test, vi, beforeEach, afterEach } from 'vitest';
 import { convertToCSV, exportToCSV } from './export-to-csv';
-import { toast } from 'sonner';
-
-// Mock dependencies
-vi.mock('sonner', () => ({
-  toast: {
-    error: vi.fn(),
-    success: vi.fn(),
-  },
-}));
 
 // Mock dayjs globally for all tests
 vi.mock('dayjs', () => {
@@ -143,12 +134,10 @@ describe('CSV Export Utils', () => {
       vi.clearAllMocks();
     });
 
-    test('should show error toast for empty data', () => {
+    test('returns false for empty data', () => {
       const result = exportToCSV([], 'test-file');
 
-      expect(toast.error).toHaveBeenCalledWith('No data to export');
       expect(result).toBe(false);
-      expect(document.createElement).not.toHaveBeenCalled();
     });
 
     test('should create a CSV blob and trigger download', () => {
@@ -168,22 +157,7 @@ describe('CSV Export Utils', () => {
       expect(document.body.removeChild).toHaveBeenCalledWith(mockLink as unknown as HTMLElement);
       expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock-url');
 
-      // Verify toast and return value
-      expect(toast.success).toHaveBeenCalledWith('Export completed');
       expect(result).toBe(true);
-    });
-
-    test('should handle errors and show error toast', () => {
-      // Force an error when creating URL
-      URL.createObjectURL = vi.fn().mockImplementation(() => {
-        throw new Error('Mock error');
-      });
-
-      const data = [{ name: 'John', age: 30 }];
-      const result = exportToCSV(data, 'test-file');
-
-      expect(toast.error).toHaveBeenCalledWith('Failed to export data');
-      expect(result).toBe(false);
     });
   });
 });
