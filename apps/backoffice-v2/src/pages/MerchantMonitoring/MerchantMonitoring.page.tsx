@@ -1,6 +1,7 @@
 import { isNonEmptyArray } from '@ballerine/common';
 import {
   Badge,
+  ContentTooltip,
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
@@ -72,6 +73,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
     open,
     toggleOpen,
     isDemoAccount,
+    isExportingReport,
   } = useMerchantMonitoringLogic();
 
   return (
@@ -278,23 +280,23 @@ export const MerchantMonitoring: FunctionComponent = () => {
               {totalItems} results
             </Badge>
           )}
-          <TooltipProvider delayDuration={0.15}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={`h-8 space-x-2.5 p-2 font-normal`}
-                  onClick={onExport}
-                >
-                  <Download className="d-4" />
-                  <span>Export</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side={'bottom'} align={'end'}>
-                <span>Export reports to a CSV file (filters applied)</span>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <ContentTooltip
+            description="Export reports to a CSV file (filters applied)"
+            props={{ tooltipContent: { align: 'center' }, tooltipTrigger: { className: 'pr-0' } }}
+          >
+            <Button
+              variant="outline"
+              className={`h-8 space-x-2.5 p-2 font-normal`}
+              onClick={onExport}
+            >
+              {isExportingReport ? (
+                <Loader2 className="animate-spin d-4" />
+              ) : (
+                <Download className="d-4" />
+              )}
+              <span>Export</span>
+            </Button>
+          </ContentTooltip>
         </div>
         <div className="space-y-6">
           {isLoadingBusinessReports && (

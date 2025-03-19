@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { SlidersHorizontal } from 'lucide-react';
-import { ComponentProps, useCallback, useEffect, useMemo } from 'react';
+import { ComponentProps, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
@@ -129,6 +129,8 @@ export const useMerchantMonitoringLogic = () => {
     [findings.length, from, reportType, riskLevels.length, search, statuses.length, to],
   );
 
+  const [isExportingReport, setIsExportingReport] = useState(false);
+
   const onReportTypeChange = (reportType: keyof typeof REPORT_TYPE_TO_DISPLAY_TEXT) => {
     setSearchParams({ reportType: REPORT_TYPE_TO_DISPLAY_TEXT[reportType] });
   };
@@ -206,6 +208,7 @@ export const useMerchantMonitoringLogic = () => {
 
   const onExport = useCallback(async () => {
     try {
+      setIsExportingReport(true);
       // Use the new utility to fetch all pages with the current filters
       const allData = await fetchAllBusinessReports(reportQuery);
 
@@ -216,10 +219,15 @@ export const useMerchantMonitoringLogic = () => {
       const clientName = customer?.displayName || 'Unknown';
       const username = fullName || firstName || 'Unknown';
       const now = dayjs().format('YYYY-MM-DDTHH-mm-ss');
-      exportToCSV(csvData, `merchant-monitoring-export-${clientName}-${username}-${now}`);
+      exportToCSV(
+        csvData as unknown as Record<string, unknown>[],
+        `merchant-monitoring-export-${clientName}-${username}-${now}`,
+      );
     } catch (error) {
       console.error('Export failed:', error);
       toast.error('Failed to export data');
+    } finally {
+      setIsExportingReport(false);
     }
   }, [
     reportType,
@@ -278,5 +286,6 @@ export const useMerchantMonitoringLogic = () => {
     toggleOpen,
     isDemoAccount: customer?.config?.isDemoAccount ?? false,
     onExport,
+    isExportingReport,
   };
 };
