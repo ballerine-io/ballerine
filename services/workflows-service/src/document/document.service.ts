@@ -44,8 +44,8 @@ import { DocumentRepository } from './document.repository';
 import { CreateDocumentSchema, UpdateDocumentSchema } from './dtos/document.dto';
 import { addRequestedDocumentToBusinessEntityDocuments } from './helpers/add-requested-document-to-business-entity-documents';
 import { addRequestedDocumentToIndividualDocuments } from './helpers/add-requested-document-to-individuals-documents';
-import { findBusinessDocuments } from './helpers/find-business-documents';
-import { findUboDocuments } from './helpers/find-ubo-documents';
+import { findBusinessDocumentsInContext } from './helpers/find-business-documents-in-context';
+import { findUboDocumentsInUIDefinition } from './helpers/find-ubo-documents-in-ui-definition';
 import { parseDocumentDefinition } from './helpers/parse-document-definition';
 import {
   DocumentTrackerDocumentSchema,
@@ -554,9 +554,9 @@ export class DocumentService {
 
     const documentsWithFiles = await this.repository.findManyWithFiles(projectIds);
 
-    await Promise.all(
-      documents.map(document => this.syncContextWithDocument(document, projectIds[0]!)),
-    );
+    for (const document of documentsWithFiles) {
+      await this.persistDocumentDecisionInToContext(document, projectIds[0]!);
+    }
 
     return this.formatDocuments({
       documents: documentsWithFiles,
@@ -564,7 +564,7 @@ export class DocumentService {
     });
   }
 
-  async syncContextWithDocument(document: Document, projectId: TProjectId) {
+  private async persistDocumentDecisionInToContext(document: Document, projectId: TProjectId) {
     if (!document.workflowRuntimeDataId) {
       throw new BadRequestException(
         `Document with id ${document.id} has no workflow runtime data id`,
@@ -591,7 +591,7 @@ export class DocumentService {
     const isBusinessDocument = !!document.businessId;
 
     if (isBusinessDocument) {
-      const businessDocuments = findBusinessDocuments(workflowRuntime.context);
+      const businessDocuments = findBusinessDocumentsInContext(workflowRuntime.context);
       const matchingDocumentIndex = businessDocuments.findIndex(
         businessDocument =>
           businessDocument.type === document.type &&
@@ -621,7 +621,7 @@ export class DocumentService {
         [projectId],
       );
 
-      const uboDocuments = findUboDocuments(workflowRuntime.context, uiDefinition);
+      const uboDocuments = findUboDocumentsInUIDefinition(workflowRuntime.context, uiDefinition);
 
       uboDocuments.forEach(uboDocument => {
         if (

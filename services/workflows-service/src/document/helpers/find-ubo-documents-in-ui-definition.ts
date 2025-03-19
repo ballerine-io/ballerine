@@ -9,14 +9,14 @@ import { AnyRecord } from '@ballerine/common';
 import { UiDefinition } from '@prisma/client';
 import get from 'lodash/get';
 
-export const findUboDocuments = (
+export const findUboDocumentsInUIDefinition = (
   context: AnyRecord,
   uiDefinition: UiDefinition,
 ): Array<IDocumentTemplate & { ballerineEntityId?: string }> => {
   const documents: Array<IDocumentTemplate & { ballerineEntityId?: string }> = [];
   const pages = (uiDefinition.uiSchema as unknown as { elements: IUIDefinitionPage[] }).elements;
 
-  const run = (
+  const findUboDocumentsRecursively = (
     elements: Array<IFormElement<{ template: IDocumentTemplate }>>,
     parent: IFormElement<any> | null,
     stack: TDeepthLevelStack = [],
@@ -52,7 +52,7 @@ export const findUboDocuments = (
       }
 
       if (element?.children) {
-        run(
+        findUboDocumentsRecursively(
           element.children as Array<IFormElement<{ template: IDocumentTemplate }>>,
           element || null,
           [...stack, i],
@@ -62,7 +62,10 @@ export const findUboDocuments = (
   };
 
   pages.forEach(page => {
-    run(page.elements as Array<IFormElement<{ template: IDocumentTemplate }>>, null);
+    findUboDocumentsRecursively(
+      page.elements as Array<IFormElement<{ template: IDocumentTemplate }>>,
+      null,
+    );
   });
 
   return documents;
