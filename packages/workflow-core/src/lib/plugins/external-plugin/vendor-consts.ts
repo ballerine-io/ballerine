@@ -870,6 +870,9 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             mapping: `{
               ${options.dataMapping || ''}
               from: 'no-reply@ballerine.com',
+              underwriterFirstName: entity.data.additionalInfo.underwriterFirstName,
+              merchantName: entity.data.companyName,
+              backofficeLink: 'https://backoffice-sb.eu.ballerine.app',
               name: join(' ',[metadata.customerName,'Onboarding']),
               receivers: [entity.data.additionalInfo.underwriterEmail],
               templateId: ${
