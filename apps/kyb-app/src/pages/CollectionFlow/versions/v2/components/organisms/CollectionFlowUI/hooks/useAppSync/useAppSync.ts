@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { syncContext } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
@@ -11,6 +12,8 @@ import { updateCollectionFlowState } from '../../helpers/update-collection-flow-
 export const useAppSync = () => {
   const [isSyncing, setIsSyncing] = useState(false);
   const { state } = useStateManagerContext();
+  const { helpers } = useDynamicUIContext();
+  const { setLoading } = helpers;
 
   const sync = useCallback(
     async (context: CollectionFlowContext) => {
@@ -21,8 +24,8 @@ export const useAppSync = () => {
       }
 
       try {
+        setLoading(true);
         setIsSyncing(true);
-
         updateCollectionFlowState(context, state);
 
         await syncContext(context);
@@ -31,6 +34,7 @@ export const useAppSync = () => {
         console.error(error);
       } finally {
         setIsSyncing(false);
+        setLoading(false);
       }
     },
     [state],
