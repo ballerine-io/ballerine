@@ -71,7 +71,8 @@ export const useDocumentsAdapter = ({
     },
     [documentPagesResults, generateDocumentTitle],
   );
-  const getDocuments = () => {
+
+  const documents = useMemo(() => {
     if (isDocumentsV2) {
       const adaptedDocumentsV2 =
         documentsV2?.map(({ decision, decisionReason, issuingCountry, ...document }) => ({
@@ -120,9 +121,7 @@ export const useDocumentsAdapter = ({
         documentIndex,
       }),
     }));
-  };
-
-  const documents = useMemo(getDocuments, [
+  }, [
     documentsV2,
     passedDocuments,
     documentPagesToDetailsAdapter,

@@ -52,14 +52,6 @@ export const useDefaultActionsLogic = () => {
 
   const { onMutateRevisionCase } = usePendingRevisionEvents(mutateRevisionCase, workflow);
 
-  const directorsIds = useMemo(() => {
-    return (
-      workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
-        (director: { ballerineEntityId: string }) => director.ballerineEntityId,
-      ) ?? []
-    );
-  }, [workflow?.context?.entity?.data?.additionalInfo?.directors]);
-
   const { documents } = useEntitiesDocuments(workflow as TWorkflowById);
 
   const documentsToReviseCount = useMemo(
