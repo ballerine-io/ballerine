@@ -195,6 +195,7 @@ export const AdsAndSocialMedia = (pages: {
               >
                 {screenshotUrl && (
                   <Image
+                    crossOrigin="anonymous"
                     key={screenshotUrl}
                     src={screenshotUrl}
                     alt={`${capitalize(provider)} image`}
