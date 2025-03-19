@@ -291,7 +291,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
                 </Button>
               </TooltipTrigger>
               <TooltipContent side={'bottom'} align={'end'}>
-                <span>Download reports based on applied filters</span>
+                <span>Export reports to CSV (filtered)</span>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
