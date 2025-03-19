@@ -10,14 +10,7 @@ export const AdExample: FunctionComponent<{
     <div className={'flex h-full flex-col justify-between'}>
       <div>
         <h4 className={'mb-4 font-semibold'}>Ad Example</h4>
-        <Image
-          crossOrigin="anonymous"
-          key={src}
-          src={src}
-          alt={alt}
-          width={'369px'}
-          height={'369px'}
-        />
+        <Image key={src} src={src} alt={alt} width={'369px'} height={'369px'} />
       </div>
       <a
         className={buttonVariants({
