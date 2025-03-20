@@ -288,6 +288,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
               variant="outline"
               className={`h-8 space-x-2.5 p-2 font-normal`}
               onClick={onExport}
+              disabled={isExportingReport}
             >
               {isExportingReport ? (
                 <Loader2 className="animate-spin d-4" />
