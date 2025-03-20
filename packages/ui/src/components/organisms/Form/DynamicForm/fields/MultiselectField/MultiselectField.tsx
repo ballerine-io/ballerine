@@ -19,6 +19,7 @@ export interface MultiselectFieldOption {
 
 export interface IMultiselectFieldParams {
   options: MultiselectFieldOption[];
+  placeholder?: string;
 }
 
 export const MultiselectField: TDynamicFormField<IMultiselectFieldParams> = ({ element }) => {
@@ -53,6 +54,7 @@ export const MultiselectField: TDynamicFormField<IMultiselectFieldParams> = ({ e
       <MultiSelect
         value={value}
         disabled={disabled}
+        searchPlaceholder={element.params?.placeholder}
         onChange={handleChange}
         onBlur={onBlur}
         onFocus={onFocus}

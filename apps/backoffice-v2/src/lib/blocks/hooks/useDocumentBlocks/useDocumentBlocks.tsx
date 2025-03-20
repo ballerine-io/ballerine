@@ -301,7 +301,6 @@ export const useDocumentBlocks = ({
                 isLoadingReuploadNeeded,
                 decision: 'reject',
                 dialog,
-                documentsType: 'kyb',
               },
             },
           })

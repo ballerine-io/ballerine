@@ -43,7 +43,7 @@ export const OPERATORS_WITHOUT_PATH_COMPARISON = [
 export const OPERATORS_WITH_THRESHOLD = [OPERATION.FUZZY_MATCH_SCORE_LT] as const;
 
 export type TUnifiedApiClient = {
-  runEntityMatchingAi: (payload: {
+  runEntityMatchingV2: (payload: {
     entity1: string;
     entity2: string;
     includeAnalysis: boolean;
