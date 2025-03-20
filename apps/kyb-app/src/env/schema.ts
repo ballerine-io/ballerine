@@ -17,5 +17,4 @@ export const EnvSchema = z.object({
 
     return new RegExp(value);
   }, z.custom<RegExp>(value => value instanceof RegExp).optional()),
-  VITE_SAOLA_API_KEY: z.string().optional(),
 });

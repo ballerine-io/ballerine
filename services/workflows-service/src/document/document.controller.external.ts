@@ -22,6 +22,8 @@ import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-fil
 import { DocumentFileJsonSchema } from '@/document-file/dtos/document-file.dto';
 import { FILE_MAX_SIZE_IN_BYTE, FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/storage/file-filter';
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
+import type { TProjectId } from '@/types';
+import * as z from 'zod';
 import { DocumentService } from './document.service';
 import {
   CreateDocumentSchema,
@@ -29,8 +31,6 @@ import {
   UpdateDocumentDecisionSchema,
   UpdateDocumentSchema,
 } from './dtos/document.dto';
-import * as z from 'zod';
-import type { TProjectId } from '@/types';
 
 const RequestUploadSchema = Type.Object({
   workflowId: Type.String(),
@@ -241,11 +241,9 @@ export class DocumentControllerExternal {
   ) {
     const entityIdsArray = entityIds.split(',');
 
-    return await this.documentService.getByEntityIdsAndWorkflowId(
-      entityIdsArray,
-      workflowRuntimeDataId,
-      [projectId],
-    );
+    return this.documentService.getByEntityIdsAndWorkflowId(entityIdsArray, workflowRuntimeDataId, [
+      projectId,
+    ]);
   }
 
   @Patch('/:documentId')

@@ -19,6 +19,7 @@ import { TDynamicFormField } from '../../types';
 import { createOrUpdateDocumentInList } from '../DocumentField/hooks/useDocumentUpload/helpers/create-or-update-document-in-list';
 import { IFieldListParams, useStack } from '../FieldList';
 import { EntityFieldGroupDocument } from './components/EntityFieldGroupDocument';
+import { DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_CREATION_PARAMS } from './components/EntityFieldGroupDocument/defaults';
 import { EntityFields } from './components/EntityFields';
 import { buildDocumentsCreationPayload } from './components/EntityFields/helpers/build-documents-creation-payload';
 import { buildEntityCreationPayload } from './components/EntityFields/helpers/build-entity-for-creation';
@@ -88,7 +89,11 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
     metadata,
   );
 
-  const { run: uploadDocument } = useHttp(element.params!.httpParams?.uploadDocument, metadata);
+  const { run: uploadDocument } = useHttp(
+    element.params!.httpParams?.uploadDocument ||
+      DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_CREATION_PARAMS,
+    metadata,
+  );
   const { addTask, removeTask } = useTaskRunner();
   const elementsOverride = useMemo(
     () => ({

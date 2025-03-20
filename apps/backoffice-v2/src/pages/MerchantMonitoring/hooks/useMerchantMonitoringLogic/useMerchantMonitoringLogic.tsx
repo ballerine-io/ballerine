@@ -19,9 +19,51 @@ import {
   REPORT_TYPE_TO_DISPLAY_TEXT,
   RISK_LEVEL_FILTER,
   STATUS_LEVEL_FILTER,
+  TReportStatusValue,
 } from '@/pages/MerchantMonitoring/schemas';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { getDemoStateErrorText } from '@/common/components/molecules/DemoAccessCards/getDemoStateErrorText';
+import { toast } from 'sonner';
+import { exportToCSV } from '@/common/utils/export-to-csv';
+import {
+  fetchAllBusinessReports,
+  formatBusinessReportsForCsv,
+} from '@/domains/business-reports/utils';
+import { useMutation } from '@tanstack/react-query';
+import { BusinessReportsFilterParams } from '@/domains/business-reports/fetchers';
+import { TCustomer } from '@/domains/customer/fetchers';
+
+const useExportCSVMutation = ({
+  reportQuery,
+  customer,
+  fullName,
+  firstName,
+}: {
+  reportQuery: BusinessReportsFilterParams;
+  customer: TCustomer | undefined | null;
+  fullName: string | undefined;
+  firstName: string | undefined;
+}) => {
+  return useMutation({
+    mutationFn: async () => {
+      const allData = await fetchAllBusinessReports(reportQuery);
+      const csvData = formatBusinessReportsForCsv(allData);
+
+      const clientName = customer?.displayName || 'Unknown';
+      const username = fullName || firstName || 'Unknown';
+      const now = dayjs().format('YYYY-MM-DDTHH-mm-ss');
+
+      exportToCSV(
+        csvData as unknown as Record<string, unknown>[],
+        `merchant-monitoring-export-${clientName}-${username}-${now}`,
+      );
+    },
+    onError: error => {
+      console.error('Export failed:', error);
+      toast.error('Failed to export data');
+    },
+  });
+};
 
 export const useMerchantMonitoringLogic = () => {
   const locale = useLocale();
@@ -81,7 +123,7 @@ export const useMerchantMonitoringLogic = () => {
 
   const { findings: findingsOptions, isLoading: isLoadingFindings } = useFindings();
 
-  const { data, isLoading: isLoadingBusinessReports } = useBusinessReportsQuery({
+  const reportQuery = {
     ...(reportType !== 'All' && {
       reportType:
         DISPLAY_TEXT_TO_MERCHANT_REPORT_TYPE[
@@ -100,10 +142,19 @@ export const useMerchantMonitoringLogic = () => {
       ?.map(status => REPORT_STATUS_LABEL_TO_VALUE_MAP[status])
       .flatMap(status =>
         status === 'in-progress' ? ['in-progress', 'quality-control', 'failed'] : [status],
-      ),
+      ) as TReportStatusValue[],
     from,
     to: to ? dayjs(to).add(1, 'day').format('YYYY-MM-DD') : undefined,
     ...(isAlert !== 'All' && { isAlert: DISPLAY_TEXT_TO_IS_ALERT[isAlert] }),
+  };
+
+  const { data, isLoading: isLoadingBusinessReports } = useBusinessReportsQuery(reportQuery);
+
+  const { mutate: onExportMautation, isLoading: isExportingReport } = useExportCSVMutation({
+    reportQuery,
+    customer,
+    fullName,
+    firstName,
   });
 
   const isClearAllButtonVisible = useMemo(
@@ -237,5 +288,7 @@ export const useMerchantMonitoringLogic = () => {
     open,
     toggleOpen,
     isDemoAccount: customer?.config?.isDemoAccount ?? false,
+    onExport: () => onExportMautation(),
+    isExportingReport,
   };
 };

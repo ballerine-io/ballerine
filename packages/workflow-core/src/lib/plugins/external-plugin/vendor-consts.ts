@@ -36,6 +36,7 @@ export const EMAIL_TEMPLATES = {
   invitation: 'invitation',
   'associated-company-email': 'associated-company-email',
   'assisted-invitation': 'assisted-invitation',
+  'case-ready-for-review': 'case-ready-for-review',
 } as const;
 
 export type ApiIndividualScreeningVendors =
@@ -842,6 +843,42 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
                 options.templateId
                   ? `'${options.templateId}'`
                   : `'d-1719b22f44ca42d589435f553ae02961'`
+              },
+              adapter: '{secret.MAIL_ADAPTER}'
+            }`, // jmespath
+          },
+        ],
+      },
+      response: {
+        transform: [],
+      },
+    }),
+    [EMAIL_TEMPLATES['case-ready-for-review']]: (options: EmailOptions) => ({
+      name: 'case_ready_for_review',
+      template: EMAIL_TEMPLATES['case-ready-for-review'],
+      pluginKind: 'template-email',
+      url: `{secret.EMAIL_API_URL}`,
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
+        'Content-Type': 'application/json',
+      },
+      request: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: `{
+              ${options.dataMapping || ''}
+              from: 'no-reply@ballerine.com',
+              underwriterFirstName: entity.data.additionalInfo.underwriterFirstName,
+              merchantName: entity.data.companyName,
+              backofficeLink: 'https://backoffice-sb.eu.ballerine.app',
+              name: join(' ',[metadata.customerName,'Onboarding']),
+              receivers: [entity.data.additionalInfo.underwriterEmail],
+              templateId: ${
+                options.templateId
+                  ? `'${options.templateId}'`
+                  : `'d-e1f90e29a14b48e184efd93c967a8232'`
               },
               adapter: '{secret.MAIL_ADAPTER}'
             }`, // jmespath

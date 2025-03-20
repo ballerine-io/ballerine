@@ -8,7 +8,6 @@ import { set } from 'lodash';
 import get from 'lodash/get';
 import { Upload, XCircle } from 'lucide-react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
-import { toast } from 'sonner';
 import { useDynamicForm } from '../../../../context';
 import { useElementId, useField } from '../../../../hooks/external';
 import { useMountEvent } from '../../../../hooks/internal/useMountEvent';
@@ -170,14 +169,6 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
   const handleChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       removeTask(id);
-
-      if (!entityId) {
-        toast.error('Entity ID is missing on element', {
-          description: 'Upload will be skipped.',
-        });
-
-        return;
-      }
 
       const documents = get(valuesRef.current, element.valueDestination);
       const document = getDocumentObjectFromDocumentsList(documents, element);

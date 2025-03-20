@@ -12,6 +12,7 @@ import { StorageService } from '@/storage/storage.service';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { isObject } from '@ballerine/common';
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -110,7 +111,7 @@ export class CollectionFlowFilesController {
     // Manually converting to number to avoid validation errors
     data.version = Number(data.version);
 
-    const documentsCreationResults = await this.documentService.create({
+    const createdDocument = await this.documentService.create({
       ...data,
       workflowRuntimeDataId: tokenScope.workflowRuntimeDataId,
       properties,
@@ -119,13 +120,13 @@ export class CollectionFlowFilesController {
       projectId: tokenScope.projectId,
     });
 
-    const createdDocument: Document & { documentFile?: DocumentFile } =
-      documentsCreationResults.at(-1)!;
+    const documentWithDocumentFile: Document & { documentFile?: DocumentFile } = createdDocument;
+
     const documentFiles = await this.documentService.getDocumentFiles(createdDocument.id, [
       tokenScope.projectId,
     ]);
 
-    createdDocument.documentFile = documentFiles.at(-1);
+    documentWithDocumentFile.documentFile = documentFiles.at(-1);
 
     return createdDocument;
   }
@@ -184,7 +185,7 @@ export class CollectionFlowFilesController {
     );
 
     if (document && document?.decision === DocumentDecision.revisions) {
-      const createdDocuments = await this.documentService.create({
+      const createdDocument = await this.documentService.create({
         type: data.type,
         category: document.category,
         issuingVersion: document.issuingVersion,
@@ -201,17 +202,17 @@ export class CollectionFlowFilesController {
         ...(document.endUserId && { endUserId: document.endUserId }),
       });
 
-      const createdDocument: Document & { documentFile?: DocumentFile } = createdDocuments.at(-1)!;
+      const documentWithDocumentFile: Document & { documentFile?: DocumentFile } = createdDocument;
       const documentFiles = await this.documentService.getDocumentFiles(createdDocument.id, [
         tokenScope.projectId,
       ]);
 
-      createdDocument.documentFile = documentFiles.at(-1);
+      documentWithDocumentFile.documentFile = documentFiles.at(-1);
 
-      return createdDocuments.at(-1);
+      return documentWithDocumentFile;
     }
 
-    const documentsUpdateResults = await this.documentService.updateByIdWithFile({
+    const updatedDocuments = await this.documentService.updateByIdWithFile({
       ...data,
       // FormData returns version as a string
       // Manually converting to number to avoid validation errors
@@ -223,15 +224,24 @@ export class CollectionFlowFilesController {
       projectId: tokenScope.projectId,
     });
 
-    const updatedDocument: Document & { documentFile?: DocumentFile } =
-      documentsUpdateResults.at(-1)!;
+    const updatedDocument = updatedDocuments.find(
+      updatedDocument => updatedDocument.id === data.documentId,
+    );
+
+    if (!updatedDocument) {
+      throw new BadRequestException(`Document with an id of "${data.documentId}" was not found`);
+    }
+
     const documentFiles = await this.documentService.getDocumentFiles(updatedDocument.id, [
       tokenScope.projectId,
     ]);
 
-    updatedDocument.documentFile = documentFiles.at(-1);
+    const updatedDocumentWithDocumentFile: Document & { documentFile?: DocumentFile } =
+      updatedDocument;
 
-    return updatedDocument;
+    updatedDocumentWithDocumentFile.documentFile = documentFiles.at(-1);
+
+    return updatedDocumentWithDocumentFile;
   }
 
   @Delete()

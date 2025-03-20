@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s !important;
+  -webkit-box-shadow: 0 0 0px 1000px var(--input-box-shadow-color, #ffffff00) inset !important;
+}
+
 @layer utilities {
   .ring-ballerine {
     @apply ring-primary outline-none ring-2;
@@ -16,6 +28,10 @@
 }
 
 @layer base {
+  * {
+    @apply border-border;
+  }
+
   html {
     @apply antialiased;
   }
@@ -23,22 +39,15 @@
   html,
   body,
   #root {
+    @apply bg-background text-foreground;
     height: 100%;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
   }
 
   .tooltip::before {
     @apply bg-base-100 text-base-content shadow !important;
   }
-}
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-    font-feature-settings: 'rlig' 1, 'calt' 1;
-  }
   a {
     @apply font-bold text-blue-500;
   }

@@ -3,7 +3,7 @@ import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-cont
 import { getCollectionFlowState } from '@ballerine/common';
 import { act, renderHook } from '@testing-library/react';
 import { toast } from 'sonner';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { updateCollectionFlowState } from '../../helpers/update-collection-flow-state';
 import { useAppSync } from './useAppSync';
 
@@ -23,6 +23,16 @@ vi.mock('@ballerine/common', () => ({
 
 vi.mock('../../helpers/update-collection-flow-state', () => ({
   updateCollectionFlowState: vi.fn(),
+}));
+
+const mockSetLoading = vi.fn();
+
+vi.mock('@/components/organisms/DynamicUI/hooks/useDynamicUIContext', () => ({
+  useDynamicUIContext: () => ({
+    helpers: {
+      setLoading: mockSetLoading,
+    },
+  }),
 }));
 
 vi.mock('@/components/organisms/DynamicUI/StateManager/components/StateProvider', () => ({
@@ -67,6 +77,7 @@ describe('useAppSync', () => {
     });
 
     expect(result.current.isSyncing).toBe(true);
+    expect(mockSetLoading).toHaveBeenCalledWith(true);
     expect(updateCollectionFlowState).toHaveBeenCalledWith(mockContext, 'test-state');
 
     await act(async () => {
@@ -74,6 +85,7 @@ describe('useAppSync', () => {
     });
 
     expect(result.current.isSyncing).toBe(false);
+    expect(mockSetLoading).toHaveBeenCalledWith(false);
   });
 
   it('should handle errors and show toast message', async () => {
@@ -89,10 +101,12 @@ describe('useAppSync', () => {
       await result.current.sync(mockContext);
     });
 
+    expect(mockSetLoading).toHaveBeenCalledWith(true);
     expect(updateCollectionFlowState).toHaveBeenCalledWith(mockContext, 'test-state');
     expect(toast.error).toHaveBeenCalledWith('Failed to sync.');
     expect(consoleSpy).toHaveBeenCalledWith(mockError);
     expect(result.current.isSyncing).toBe(false);
+    expect(mockSetLoading).toHaveBeenCalledWith(false);
   });
 
   it('should return early if no collection flow state', async () => {
@@ -105,7 +119,22 @@ describe('useAppSync', () => {
       await result.current.sync(mockContext);
     });
 
+    expect(mockSetLoading).not.toHaveBeenCalled();
     expect(updateCollectionFlowState).not.toHaveBeenCalled();
     expect(syncContext).not.toHaveBeenCalled();
+  });
+
+  it('should not call setLoading in syncStateless', async () => {
+    const mockContext = { someData: 'test' } as unknown as CollectionFlowContext;
+
+    const { result } = renderHook(() => useAppSync());
+
+    await act(async () => {
+      await result.current.syncStateless(mockContext);
+    });
+
+    expect(mockSetLoading).not.toHaveBeenCalled();
+    expect(updateCollectionFlowState).toHaveBeenCalledWith(mockContext, 'test-state');
+    expect(syncContext).toHaveBeenCalledWith(mockContext);
   });
 });

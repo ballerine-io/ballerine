@@ -1,0 +1,27 @@
+[
+  {
+    "id": "report-123",
+    "companyName": "Test Company",
+    "website": "https://example.com",
+    "reportType": "MERCHANT_REPORT_T1",
+    "riskLevel": "low",
+    "isAlert": false,
+    "isExample": false,
+    "status": "rejected",
+    "createdAt": "2023-01-01T00:00:00Z",
+    "updatedAt": "2023-01-02T00:00:00Z",
+    "displayDate": "2023-01-01T00:00:00Z",
+    "publishedAt": "2023-01-01T00:00:00Z",
+    "customer": {
+      "id": "customer-123",
+      "displayName": "Customer Name"
+    },
+    "business": {
+      "id": "business-123"
+    },
+    "statusNotes": {
+      "reason": "High risk business",
+      "additionalInfo": "Business operates in a restricted category"
+    }
+  }
+]

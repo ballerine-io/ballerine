@@ -3,8 +3,8 @@ import dayjs from 'dayjs';
 import jsPDF from 'jspdf';
 import { t } from 'i18next';
 import { toast } from 'sonner';
-import html2canvas from 'html2canvas';
 import { capitalize } from 'lodash-es';
+import html2canvas from 'html2canvas-pro';
 import { isObject } from '@ballerine/common';
 import { ParsedBooleanSchema } from '@ballerine/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -188,39 +188,25 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
 
   const [isGeneratingPDF, toggleIsGeneratingPDF] = useToggle(false);
 
-  const reportRef = useRef<HTMLDivElement>(null);
+  const reportPDFContainerRef = useRef<HTMLDivElement>(null);
 
-  const generateCustomPDF = useCallback(async () => {
-    if (!reportRef.current) {
+  const generatePDF = useCallback(async () => {
+    if (!reportPDFContainerRef.current) {
       return;
     }
 
-    toggleIsGeneratingPDF();
-
     try {
-      const element = reportRef.current;
+      const container = reportPDFContainerRef.current;
 
-      const wrapper = document.createElement('div');
-      wrapper.style.padding = '0 20px';
-      wrapper.style.boxSizing = 'border-box';
-
-      wrapper.appendChild(element.cloneNode(true));
-      document.body.appendChild(wrapper);
-
-      wrapper.style.width = `${element.scrollWidth}px`;
-
-      const canvas = await html2canvas(wrapper, {
+      const canvas = await html2canvas(container, {
         scale: 2,
         useCORS: true,
         logging: false,
-        windowWidth: wrapper.scrollWidth,
-        windowHeight: wrapper.scrollHeight,
+        windowWidth: container.scrollWidth,
+        windowHeight: container.scrollHeight,
       });
 
-      document.body.removeChild(wrapper);
-
       const imageData = canvas.toDataURL('image/jpeg', 0.8); // Use JPEG with 80% quality for smaller file size
-
       const aspectRatio = canvas.height / canvas.width;
       const pdfWidth = 210; // A4 width in mm
       const pdfHeight = pdfWidth * aspectRatio;
@@ -231,16 +217,12 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
         format: [pdfWidth, pdfHeight],
       });
 
-      // Add the image to cover entire page
       pdf.addImage(imageData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-
       pdf.save(`${websiteWithNoProtocol || 'business'}-report-${dayjs().format('YYYY-MM-DD')}.pdf`);
     } catch (error) {
       console.error('Error generating PDF:', error);
     }
-
-    toggleIsGeneratingPDF();
-  }, [toggleIsGeneratingPDF, websiteWithNoProtocol]);
+  }, [websiteWithNoProtocol]);
 
   return {
     onNavigateBack,
@@ -260,8 +242,9 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     isFetchingBusinessReport,
     locale,
     isDemoAccount: customer?.config?.isDemoAccount ?? false,
-    reportRef,
-    generateCustomPDF,
+    reportPDFContainerRef,
+    generatePDF,
     isGeneratingPDF,
+    toggleIsGeneratingPDF,
   };
 };

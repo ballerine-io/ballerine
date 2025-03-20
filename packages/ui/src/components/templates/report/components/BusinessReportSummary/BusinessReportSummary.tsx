@@ -82,6 +82,7 @@ export const BusinessReportSummary: FunctionComponent<{
               title={'Click to view full screenshot'}
             >
               <img
+                key={homepageScreenshotUrl}
                 src={homepageScreenshotUrl}
                 alt={'Homepage Screenshot'}
                 className={'absolute inset-0 h-auto w-full object-cover object-top'}

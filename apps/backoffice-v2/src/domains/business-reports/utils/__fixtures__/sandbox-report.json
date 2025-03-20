@@ -1,0 +1,1167 @@
+[
+  {
+    "id": "atb5c09dfqf78v1812mvdui8",
+    "reportType": "MERCHANT_REPORT_T1",
+    "createdAt": "2025-03-13T10:16:47.406Z",
+    "updatedAt": "2025-03-13T11:15:29.101Z",
+    "displayDate": "2025-03-13T10:16:47.406Z",
+    "publishedAt": "2025-03-13T11:15:29.101Z",
+    "status": "pending-review",
+    "website": {
+      "url": "https://ballerine.com/"
+    },
+    "customer": {
+      "id": "cm1dilwt90033s0314nfikhbl",
+      "displayName": "Risk-Team-SB",
+      "ongoingMonitoringEnabled": false
+    },
+    "business": {
+      "id": "cm8772isp04pcs00k8eccnakc",
+      "correlationId": null,
+      "unsubscribedMonitoringAt": null
+    },
+    "metadata": {
+      "requestedByUserId": "cm1dilx1l0036s031zdfjirq8"
+    },
+    "companyName": "ForOr",
+    "riskLevel": "high",
+    "isAlert": false,
+    "data": {
+      "companyName": "ForOr",
+      "isAlert": false,
+      "riskLevel": "high",
+      "allViolations": [
+        {
+          "id": "content-cryptocurrency",
+          "name": "Cryptocurrency",
+          "riskLevel": "moderate",
+          "domain": "content",
+          "reason": "The website is a trading platform that markets forex and CFD services and explicitly lists cryptocurrencies among its trading instruments. This directly aligns with the trigger conditions for both the 'content-cryptocurrency' violation (trading/sale of digital currencies) and the 'content-securities-trading' violation (offering FX, CFDs, and other asset trading services).",
+          "sourceUrl": "https://dollarsmarkets.com/",
+          "screenshot": {
+            "screenshotUrl": "https://merchant-analysis-bal-prod.s3.eu-central-1.amazonaws.com/screenshot/84ea1c67-11b8-4755-8a19-02193e7d04e1.jpeg"
+          },
+          "quoteFromSource": "Trading Instruments: Currency Pairs, Precious Metals, Indices, Cryptocurrencies (31 Cryptocurrencies), Share Stocks, Energy & ETFs",
+          "triggerOn": "Alert this when the trading or sale of cryptocurrency is detected on the website. Example 1: Detected Terms: \"Buy Bitcoin,\" \"Sell Ethereum,\" \"Cryptocurrency exchange\" Action: Trigger Example 2: Detected Terms: \"Trade crypto,\" \"Crypto trading platform,\" \"Purchase Litecoin\" Action: Trigger Example 3: Detected Terms: \"Bitcoin marketplace,\" \"Crypto to fiat trading,\" \"Digital currency trading\" Action: Trigger Example 4: Detected Terms: \"Crypto sales,\" \"Cryptocurrency investment,\" \"Altcoin trading\" Action: Trigger Example 5: Detected Terms: \"Buy and sell cryptocurrencies,\" \"Crypto brokerage services,\" \"Trade digital assets\" Action: Trigger",
+          "baseRiskScore": 70,
+          "additionRiskScore": 1,
+          "minRiskScore": 50,
+          "maxRiskScoreForAddition": 98,
+          "explanation": "Cryptocurrency websites are risky due to the volatile and largely unregulated nature of digital currencies. The potential for fraud, money laundering, and cyber threats complicates compliance and transaction security. Additionally, frequent value fluctuations and the potential for disputes increase the likelihood of chargebacks, posing significant financial and reputational risks for payment institutions.",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "positive",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "pricing-unusually-high-prices",
+          "name": "Unusually High Prices",
+          "riskLevel": "moderate",
+          "reason": "The listed price of the denim jacket is significantly higher than the typical market price for such items.",
+          "sourceUrl": "https://www.nigoo.store/NIGO-Washed-Old-Short-Vintage-Denim-Jacket-Men-and-Women-Fashion-Blue-Denim-Jacket-Ngvp-nigo6554-p23212559.html",
+          "triggerOn": "Alert this when the website presents Unusually High Prices for products compared to their reasonable market value.  For example, a simple and cheap item expected to cost less than $10 is offered for significantly more.",
+          "pricingViolationExamples": [
+            "US$ 250.00 for a denim jacket is unusually high compared to standard market prices."
+          ],
+          "baseRiskScore": 70,
+          "additionRiskScore": 3,
+          "minRiskScore": 40,
+          "maxRiskScoreForAddition": 98,
+          "domain": "pricing",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "critical",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "website-structure-missing-terms-and-conditions-(t&c)",
+          "name": "Missing Terms and Conditions (T&C)",
+          "riskLevel": "moderate",
+          "reason": "The website does not have a Terms and Conditions (T&C) page",
+          "pageUrl": "",
+          "triggerOn": "Alert this when the website does not provide a Terms and Conditions (T&C) page, which is crucial for setting clear expectations and legal agreements with customers. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.",
+          "pageContext": "Terms And Conditions (T&C)",
+          "baseRiskScore": 40,
+          "additionRiskScore": 1,
+          "minRiskScore": 30,
+          "maxRiskScoreForAddition": 98,
+          "domain": "website structure",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "website-structure-missing-about-us",
+          "name": "Missing About Us",
+          "riskLevel": "moderate",
+          "reason": "The website does not have a About Us page",
+          "pageUrl": "",
+          "triggerOn": "Alert this when the website does not have an about us page or offer general information surrounding the business",
+          "pageContext": "About Us",
+          "baseRiskScore": 40,
+          "additionRiskScore": 1,
+          "minRiskScore": 30,
+          "maxRiskScoreForAddition": 98,
+          "domain": "website structure",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "company-analysis-negative-company-reputation",
+          "name": "Negative Company Reputation",
+          "riskLevel": "critical",
+          "domain": "company analysis",
+          "reason": "Dollars Markets Ltd has a low trust score and is flagged for concerns regarding its regulatory status, customer complaints, and lack of transparency. The broker operates under a Mauritius FSC license, which is considered weak regulatory oversight.",
+          "sourceUrl": "https://www.wikifx.com/en/dealer/2749402775.html",
+          "triggerOn": "Alert this when there is negative reputation and reviews related to the operating company and its associated entities. Sources of negative reputation would include poor reviews on platforms like TrustPilot, BBB, consumer review forums or other sources with negative news surrounding the operating company and its business practices. ",
+          "baseRiskScore": 75,
+          "additionRiskScore": 2,
+          "minRiskScore": 50,
+          "maxRiskScoreForAddition": 98,
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "critical",
+            "chargebackRisk": "critical",
+            "legalRisk": "critical",
+            "reputationRisk": "critical"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "scam-or-fraud-listings-on-scam-reporting-websites",
+          "name": "Listings on Scam Reporting Websites",
+          "riskLevel": "critical",
+          "reason": "The website nigoo.store is featured on a scam reporting website with a review questioning its legitimacy.",
+          "highlight": "Is nigoo.store legit or a scam?",
+          "riskScore": 50,
+          "sourceUrl": "https://www.scam-detector.com/validator/nigoo-store-review/",
+          "searchEngine": "google",
+          "serpTextResult": "Is nigoo.store legit or a scam? Read reviews, company details, technical analysis, and more to help you decide if this site is trustworthy or fraudulent.",
+          "triggerOn": "Alert this when the website appears on the following platforms: ",
+          "baseRiskScore": 75,
+          "additionRiskScore": 2,
+          "minRiskScore": 50,
+          "maxRiskScoreForAddition": 98,
+          "domain": "scam or fraud",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "critical",
+            "chargebackRisk": "critical",
+            "legalRisk": "critical",
+            "reputationRisk": "critical"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "traffic-low-traffic-volumes",
+          "name": "Low Traffic Volumes",
+          "riskLevel": "moderate",
+          "triggerOn": "Alert this when the website consistently shows low traffic volumes, suggesting limited online presence or engagement, which could be a concern for business legitimacy or popularity",
+          "baseRiskScore": 50,
+          "additionRiskScore": 1,
+          "minRiskScore": 40,
+          "maxRiskScoreForAddition": 98,
+          "domain": "traffic",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "positive",
+            "legalRisk": "positive",
+            "reputationRisk": "positive"
+          },
+          "recommendations": []
+        }
+      ],
+      "lineOfBusiness": "Risk Management Platform",
+      "mcc": "6012",
+      "mccDescription": "Risk Management Platform",
+      "monthlyVisits": {
+        "2024-08-01": 5353,
+        "2024-09-01": 2900,
+        "2024-10-01": 3987,
+        "2024-11-01": 3220,
+        "2024-12-01": 6623,
+        "2025-01-01": 11895
+      },
+      "trafficSources": {
+        "direct": 0.48233798536743344,
+        "search / organic": 0.35351515572529957
+      },
+      "timeOnSite": 78.2998703996644,
+      "pagesPerVisit": 1.7024018210768974,
+      "bounceRate": 0.5807437490057886,
+      "ecosystem": [
+        {
+          "domain": "ballerine.com",
+          "relatedNode": "Node",
+          "relatedNodeType": "Node"
+        }
+      ],
+      "facebookPage": {
+        "id": "85409903065",
+        "url": "https://facebook.com/IKEAUSA",
+        "pageName": "IKEA",
+        "name": "IKEA",
+        "email": "a@a.com",
+        "address": "Some",
+        "phoneNumber": "052525252",
+        "creationDate": "April 16, 2009",
+        "numberOfLikes": 32688703,
+        "pageCategories": "Furniture",
+        "likesCount": 32688703,
+        "facebookAdsLink": "https://www.facebook.com/ads/library/?view_all_page_id=1005952763995521",
+        "facebookAboutUsLink": "https://facebook.com/IKEAUSA/about"
+      },
+      "instagramPage": {
+        "id": "306227404",
+        "url": "https://www.instagram.com/ikeausa",
+        "pageName": "IKEA USA",
+        "username": "ikeausa",
+        "isVerified": true,
+        "biography": "Design ideas & solutions to make life at home easier. Share your photos using #MyIKEAUSA \n© Inter IKEA Systems B.V. 2013-2024\nShop our photos:",
+        "postsCount": 4023,
+        "followsCount": 68,
+        "isBusinessAccount": true,
+        "numberOfFollowers": 2543351,
+        "pageCategories": "Home Goods Stores"
+      }
+    },
+    "websiteId": "nz4g1bum1a7g8jczaxetgyc1",
+    "customerId": "cm1dilwt90033s0314nfikhbl",
+    "merchantId": "cm8772isp04pcs00k8eccnakc",
+    "countryCode": "GB",
+    "workflowVersion": "2",
+    "parentCompanyName": "ForOr",
+    "base64": "",
+    "summary": null,
+    "version": 19,
+    "comparedToReportId": null,
+    "deletedAt": null,
+    "riskScore": "84",
+    "monitoringStatus": false
+  },
+  {
+    "id": "ayhbiklk97r37lld74wkig90",
+    "reportType": "MERCHANT_REPORT_T1",
+    "createdAt": "2025-03-02T16:01:37.747Z",
+    "updatedAt": "2025-03-13T09:57:47.403Z",
+    "displayDate": "2025-03-02T16:01:37.747Z",
+    "publishedAt": "2025-03-05T09:37:15.531Z",
+    "status": "completed",
+    "website": {
+      "url": "https://www.ebmarket.jp/"
+    },
+    "customer": {
+      "id": "cm1dilwt90033s0314nfikhbl",
+      "displayName": "Risk-Team-SB",
+      "ongoingMonitoringEnabled": false
+    },
+    "business": {
+      "id": "cm7rtjl1g0002u10km5qgpzlu",
+      "correlationId": null,
+      "unsubscribedMonitoringAt": null
+    },
+    "metadata": {
+      "requestedByUserId": "cm1dilx1l0036s031zdfjirq8"
+    },
+    "companyName": "",
+    "riskLevel": "critical",
+    "isAlert": false,
+    "data": {
+      "companyName": "",
+      "isAlert": false,
+      "riskLevel": "critical",
+      "allViolations": [
+        {
+          "id": "content-landing-page-without-active-content",
+          "name": "Landing Page Without Active Content",
+          "riskLevel": "critical",
+          "domain": "content",
+          "reason": "The website displays only a placeholder page, lacks interactive elements, functional navigation, or meaningful content beyond a basic design.",
+          "sourceUrl": "https://www.izi1.com/",
+          "screenshot": {
+            "screenshotUrl": "https://merchant-analysis-bal-sb.s3.eu-central-1.amazonaws.com/screenshot/9e46fb03-c09e-440e-bf8d-2be03827cfbd.jpeg"
+          },
+          "explanation": "The website lacks active content or functionality, suggesting it may be under development, temporarily inactive, or intentionally minimalistic. This status could indicate a parked domain awaiting future use, a project in its early stages, or a URL not intended for consumer access. Prolonged inactivity or an absence of content may raise concerns, especially if transactions are still being processed through the merchant associated with the domain.",
+          "minRiskScore": 85,
+          "baseRiskScore": 85,
+          "riskTypeLevels": {},
+          "quoteFromSource": "The webpage's body contains only a single <div> element with the class 'logo' and no additional content, interactive elements, or navigation links, indicating that the website is currently a placeholder or under construction.",
+          "recommendations": [],
+          "additionRiskScore": 3,
+          "maxRiskScoreForAddition": 98,
+          "triggerOn": "Alert this when a website displays only a placeholder page, lacks interactive elements, functional navigation, or meaningful content beyond a basic design. This includes cases where the site consists only of a logo, background image, or under-construction message without further engagement options."
+        },
+        {
+          "id": "website-structure-missing-terms-and-conditions-(t&c)",
+          "name": "Missing Terms and Conditions (T&C)",
+          "riskLevel": "moderate",
+          "reason": "Missing 'Terms And Conditions (T&C)' page indicates a critical legal risk as it fails to set clear expectations and legal agreements with customers.",
+          "pageUrl": "",
+          "triggerOn": "Alert this when the website does not provide a Terms and Conditions (T&C) page, which is crucial for setting clear expectations and legal agreements with customers. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.",
+          "pageContext": "Terms And Conditions (T&C)",
+          "baseRiskScore": 40,
+          "additionRiskScore": 1,
+          "minRiskScore": 30,
+          "maxRiskScoreForAddition": 98,
+          "domain": "website structure",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "website-structure-missing-privacy-policy",
+          "name": "Missing Privacy Policy",
+          "riskLevel": "moderate",
+          "reason": "Absence of a 'Privacy Policy' page presents a critical legal risk by potentially violating customer data privacy laws and regulations.",
+          "pageUrl": "",
+          "triggerOn": "Alert this when the website lacks a Privacy Policy page, potentially putting customer data privacy at risk and violating legal requirements. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.",
+          "pageContext": "Privacy Policy",
+          "baseRiskScore": 40,
+          "additionRiskScore": 1,
+          "minRiskScore": 30,
+          "maxRiskScoreForAddition": 98,
+          "domain": "website structure",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "website-structure-missing-about-us",
+          "name": "Missing About Us",
+          "riskLevel": "moderate",
+          "reason": "Lack of an 'About Us' page is a moderate risk, reducing transparency and potentially harming the website's credibility and reputation.",
+          "pageUrl": "",
+          "triggerOn": "Alert this when the website does not have an about us page or offer general information surrounding the business",
+          "pageContext": "About Us",
+          "baseRiskScore": 40,
+          "additionRiskScore": 1,
+          "minRiskScore": 30,
+          "maxRiskScoreForAddition": 98,
+          "domain": "website structure",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "website-structure-missing-contact-us",
+          "name": "Missing Contact Us",
+          "riskLevel": "moderate",
+          "reason": "Not having a 'Contact Us' page is a moderate risk, undermining customer trust and satisfaction by impeding direct communication.",
+          "pageUrl": "",
+          "triggerOn": "Alert this when the website does not offer a Contact Us page, which is essential for customer trust and satisfaction. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.",
+          "pageContext": "Contact Us",
+          "baseRiskScore": 40,
+          "additionRiskScore": 1,
+          "minRiskScore": 30,
+          "maxRiskScoreForAddition": 98,
+          "domain": "website structure",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "scam-or-fraud-negative-reputation",
+          "name": "Negative Reputation",
+          "riskLevel": "critical",
+          "reason": "The website ebmarket.jp has been flagged as high-risk on scam-detector.com due to deceptive practices and lack of transparency, including red flags such as unrealistic pricing, poor customer service, and unverified business credentials.",
+          "highlight": "ebmarket.jp has been flagged as a high-risk website",
+          "riskScore": 90,
+          "sourceUrl": "https://scam-detector.com/ebmarket-jp-review",
+          "searchEngine": "google",
+          "serpTextResult": "ebmarket.jp has been flagged as a high-risk website due to deceptive practices and lack of transparency. The site exhibits red flags such as unrealistic pricing, poor customer service, and unverified business credentials.",
+          "triggerOn": "Alert this when the website has a meaningful negative reputation in online reviews (more than 4 platforms/websites with negative reviews), such as being associated with scams, fraud, or other illegal activities. do not trigger this if the brand name is being targeted by fraudulent activities, but the company itself is legitimate.",
+          "baseRiskScore": 75,
+          "additionRiskScore": 2,
+          "minRiskScore": 40,
+          "maxRiskScoreForAddition": 98,
+          "domain": "scam or fraud",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "critical",
+            "legalRisk": "critical",
+            "reputationRisk": "critical"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "scam-or-fraud-complaints-for-unauthorized-charges",
+          "name": "Complaints for Unauthorized Charges",
+          "riskLevel": "critical",
+          "reason": "Users on Reddit have reported that ebmarket.jp engages in fraudulent activities, including unauthorized charges and failure to deliver products, alongside multiple complaints about its suspicious payment processing methods.",
+          "highlight": "ebmarket.jp engages in fraudulent activities, including unauthorized charges and failure to deliver products",
+          "riskScore": 95,
+          "sourceUrl": "https://www.reddit.com/r/scams/comments/xyz123/ebmarket_jp_scam/",
+          "searchEngine": "google",
+          "serpTextResult": "Users report that ebmarket.jp engages in fraudulent activities, including unauthorized charges and failure to deliver products. Multiple complaints highlight its suspicious payment processing methods.",
+          "triggerOn": "Alert this when information from online reviews or online reputation suggests that the website is associated with unauthorized credit card charges. Look for allegations of credit cards being charged without a purchase or complaints of unauthorized subscription charges. Attach the source link.",
+          "baseRiskScore": 70,
+          "additionRiskScore": 2,
+          "minRiskScore": 50,
+          "maxRiskScoreForAddition": 98,
+          "domain": "scam or fraud",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "critical",
+            "chargebackRisk": "critical",
+            "legalRisk": "critical",
+            "reputationRisk": "critical"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "traffic-low-traffic-volumes",
+          "name": "Low Traffic Volumes",
+          "riskLevel": "moderate",
+          "domain": "traffic",
+          "triggerOn": "Alert this when the website consistently shows low traffic volumes, suggesting limited online presence or engagement, which could be a concern for business legitimacy or popularity",
+          "minRiskScore": 40,
+          "baseRiskScore": 50,
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "positive",
+            "legalRisk": "positive",
+            "reputationRisk": "positive"
+          },
+          "recommendations": [],
+          "additionRiskScore": 1,
+          "maxRiskScoreForAddition": 98
+        }
+      ]
+    },
+    "websiteId": "a8i5774y9tcdy5dzjdcr52px",
+    "customerId": "cm1dilwt90033s0314nfikhbl",
+    "merchantId": "cm7rtjl1g0002u10km5qgpzlu",
+    "countryCode": "GB",
+    "workflowVersion": "2",
+    "parentCompanyName": "",
+    "base64": "",
+    "summary": null,
+    "version": 5,
+    "comparedToReportId": null,
+    "deletedAt": null,
+    "riskScore": "94",
+    "monitoringStatus": false
+  },
+  {
+    "id": "bix6dnbeui7kjk1d3gf66ggh",
+    "reportType": "MERCHANT_REPORT_T1",
+    "createdAt": "2025-02-28T08:14:42.475Z",
+    "updatedAt": "2025-02-28T08:18:46.673Z",
+    "displayDate": "2025-02-28T08:14:42.475Z",
+    "publishedAt": null,
+    "status": "quality-control",
+    "website": {
+      "url": "https://www.oreglory.com/"
+    },
+    "customer": {
+      "id": "cm1dilwt90033s0314nfikhbl",
+      "displayName": "Risk-Team-SB",
+      "ongoingMonitoringEnabled": false
+    },
+    "business": {
+      "id": "cm7ohzfoe026aw60kkjg439c4",
+      "correlationId": null,
+      "unsubscribedMonitoringAt": null
+    },
+    "metadata": {},
+    "companyName": null,
+    "riskLevel": "high",
+    "isAlert": false,
+    "data": {
+      "companyName": null,
+      "isAlert": false,
+      "riskLevel": "high",
+      "allViolations": [
+        {
+          "id": "content-medical-devices",
+          "name": "Medical Devices",
+          "riskLevel": "moderate",
+          "domain": "content",
+          "reason": "The website lists and promotes several health monitoring gadgets such as a 'Blood Glucose Monitoring Smartwatch' and other smartwatches that monitor blood sugar, blood pressure, and ECG. These products are categorized as medical devices, which trigger the violation for offering medical device sales.",
+          "sourceUrl": "https://www.oreglory.com/",
+          "triggerOn": "Trigger when the website is offering medical device sales, which may require regulatory approvals or be subject to strict advertising and efficacy claim regulations. Monitor for terms like \"medical devices\", \"FDA approved\", \"CE marked\", \"buy medical equipment\", \"clinical devices\", \"surgical instruments\", and specific device names like \"blood glucose monitors\", \"pacemakers\", \"MRI machines\", and \"ultrasound equipment\".",
+          "screenshot": {
+            "screenshotUrl": "https://merchant-analysis-bal-sb.s3.eu-central-1.amazonaws.com/screenshot/543f010a-5511-482d-916e-6ecc8ef0e3a4.jpeg"
+          },
+          "explanation": "The sale and distribution of medical devices are highly regulated due to their direct impact on human health. Websites selling medical devices must comply with strict regulatory standards, including obtaining necessary certifications and approvals from relevant health authorities. The risks involved include the potential for selling counterfeit or unapproved devices, which can pose serious health hazards to consumers.",
+          "minRiskScore": 70,
+          "baseRiskScore": 70,
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "positive",
+            "chargebackRisk": "moderate",
+            "legalRisk": "critical",
+            "reputationRisk": "moderate"
+          },
+          "quoteFromSource": "Blood Glucose Monitoring Smartwatch | Smart Watch for Non-Invasive Blood Glucose Testing",
+          "recommendations": [],
+          "additionRiskScore": 3,
+          "maxRiskScoreForAddition": 98
+        },
+        {
+          "id": "content-cosmetics",
+          "name": "Cosmetics",
+          "riskLevel": "moderate",
+          "domain": "content",
+          "reason": "The website’s beauty category features products such as the Make-Up Mirror, which is a beauty tool. Since the trigger for 'content-cosmetics' covers makeup, skincare products, and beauty tools, this product qualifies under that violation.",
+          "sourceUrl": "https://www.oreglory.com/product-category/beauty/",
+          "triggerOn": "Alert this when Cosmetics, including makeup, skincare products, beauty tools, or similar items, are detected. Example 1: Detected Terms: \"foundation,\" \"lipstick,\" \"eyeshadow\" Products: \"Liquid foundation,\" \"Matte lipstick,\" \"Eyeshadow palette\" Action: Trigger. Example 2: Detected Terms: \"skincare,\" \"moisturizer,\" \"serum\" Products: \"Hydrating moisturizer,\" \"Anti-aging serum,\" \"Skincare routine set\" Action: Trigger. Example 3: Detected Terms: \"beauty tools,\" \"makeup brushes,\" \"facial cleanser\" Products: \"Makeup brush set,\" \"Facial cleansing device,\" \"Beauty blender sponge\" Action: Trigger. Example 4: Detected Terms: \"fragrance,\" \"perfume,\" \"body lotion\" Products: \"Luxury perfume,\" \"Scented body lotion,\" \"Fragrance gift set\" Action: Trigger. Please use the provided examples as a guideline to identify and alert similar mentions of cosmetics.",
+          "screenshot": {
+            "screenshotUrl": "https://merchant-analysis-bal-sb.s3.eu-central-1.amazonaws.com/screenshot/345415fa-fe91-4ede-b338-03c76a892687.jpeg"
+          },
+          "explanation": "The website sells or promotes cosmetic products, which must comply with health and safety regulations to ensure they are safe for use.",
+          "minRiskScore": 40,
+          "baseRiskScore": 40,
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "positive",
+            "chargebackRisk": "positive",
+            "legalRisk": "moderate",
+            "reputationRisk": "positive"
+          },
+          "quoteFromSource": "Make-Up Mirror – Adjustable Brightness – Dual Magnification – Tri-Color Lighting – Rechargeable – Easy Installation – Ideal for Beauty Routine",
+          "recommendations": [],
+          "additionRiskScore": 1,
+          "maxRiskScoreForAddition": 98
+        },
+        {
+          "id": "website-structure-missing-terms-and-conditions-(t&c)",
+          "name": "Missing Terms and Conditions (T&C)",
+          "riskLevel": "moderate",
+          "reason": "The website does not have a Terms And Conditions (T&C) page",
+          "pageUrl": "",
+          "triggerOn": "Alert this when the website does not provide a Terms and Conditions (T&C) page, which is crucial for setting clear expectations and legal agreements with customers. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.",
+          "pageContext": "Terms And Conditions (T&C)",
+          "baseRiskScore": 40,
+          "additionRiskScore": 1,
+          "minRiskScore": 30,
+          "maxRiskScoreForAddition": 98,
+          "domain": "website structure",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "website-structure-missing-about-us",
+          "name": "Missing About Us",
+          "riskLevel": "moderate",
+          "reason": "The website does not have a About Us page",
+          "pageUrl": "",
+          "triggerOn": "Alert this when the website does not have an about us page or offer general information surrounding the business",
+          "pageContext": "About Us",
+          "baseRiskScore": 40,
+          "additionRiskScore": 1,
+          "minRiskScore": 30,
+          "maxRiskScoreForAddition": 98,
+          "domain": "website structure",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "traffic-traffic-shows-high-bounce-rate",
+          "name": "Traffic Shows High Bounce Rate",
+          "riskLevel": "moderate",
+          "domain": "traffic",
+          "triggerOn": "Alert this when the website experiences an unusually high bounce rate (over 60% bounce rate per traffic data collected)",
+          "minRiskScore": 30,
+          "baseRiskScore": 50,
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "positive",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": [],
+          "additionRiskScore": 1,
+          "maxRiskScoreForAddition": 98
+        }
+      ]
+    },
+    "websiteId": "et7vqgtvjocg1pcz0dxk4z68",
+    "customerId": "cm1dilwt90033s0314nfikhbl",
+    "merchantId": "cm7ohzfoe026aw60kkjg439c4",
+    "countryCode": "GB",
+    "workflowVersion": "2",
+    "parentCompanyName": "Oreglory",
+    "base64": "",
+    "summary": null,
+    "version": 1,
+    "comparedToReportId": null,
+    "deletedAt": null,
+    "riskScore": "74",
+    "monitoringStatus": false
+  },
+  {
+    "id": "r4czrf1kykffo9qukxtu4pgx",
+    "reportType": "MERCHANT_REPORT_T1",
+    "createdAt": "2025-02-25T09:20:49.697Z",
+    "updatedAt": "2025-02-25T09:23:08.644Z",
+    "displayDate": "2025-02-25T09:20:49.697Z",
+    "publishedAt": null,
+    "status": "quality-control",
+    "website": {
+      "url": "https://www.myballerine.sg/"
+    },
+    "customer": {
+      "id": "cm1dilwt90033s0314nfikhbl",
+      "displayName": "Risk-Team-SB",
+      "ongoingMonitoringEnabled": false
+    },
+    "business": {
+      "id": "cm7ka0wt902eout0kqf1j5266",
+      "correlationId": null,
+      "unsubscribedMonitoringAt": null
+    },
+    "metadata": {},
+    "companyName": "myballerine",
+    "riskLevel": "medium",
+    "isAlert": false,
+    "data": {
+      "companyName": "myballerine",
+      "isAlert": false,
+      "riskLevel": "medium",
+      "allViolations": [
+        {
+          "id": "website-structure-missing-terms-and-conditions-(t&c)",
+          "name": "Missing Terms and Conditions (T&C)",
+          "riskLevel": "moderate",
+          "reason": "The website does not have a Terms and Conditions (T&C) page",
+          "pageUrl": "",
+          "triggerOn": "Alert this when the website does not provide a Terms and Conditions (T&C) page, which is crucial for setting clear expectations and legal agreements with customers. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.",
+          "pageContext": "Terms And Conditions (T&C)",
+          "baseRiskScore": 40,
+          "additionRiskScore": 1,
+          "minRiskScore": 30,
+          "maxRiskScoreForAddition": 98,
+          "domain": "website structure",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "traffic-low-traffic-volumes",
+          "name": "Low Traffic Volumes",
+          "riskLevel": "moderate",
+          "domain": "traffic",
+          "triggerOn": "Alert this when the website consistently shows low traffic volumes, suggesting limited online presence or engagement, which could be a concern for business legitimacy or popularity",
+          "minRiskScore": 40,
+          "baseRiskScore": 50,
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "positive",
+            "legalRisk": "positive",
+            "reputationRisk": "positive"
+          },
+          "recommendations": [],
+          "additionRiskScore": 1,
+          "maxRiskScoreForAddition": 98
+        }
+      ]
+    },
+    "websiteId": "f9hg36nun85znuqt6omk7g6k",
+    "customerId": "cm1dilwt90033s0314nfikhbl",
+    "merchantId": "cm7ka0wt902eout0kqf1j5266",
+    "countryCode": "GB",
+    "workflowVersion": "2",
+    "parentCompanyName": "myballerine",
+    "base64": "",
+    "summary": null,
+    "version": 1,
+    "comparedToReportId": null,
+    "deletedAt": null,
+    "riskScore": "51",
+    "monitoringStatus": false
+  },
+  {
+    "id": "auso4n5q5qxb8u6kdi8vin3k",
+    "reportType": "MERCHANT_REPORT_T1",
+    "createdAt": "2025-02-23T15:22:44.421Z",
+    "updatedAt": "2025-02-23T15:23:14.959Z",
+    "displayDate": "2025-02-23T15:22:44.421Z",
+    "publishedAt": null,
+    "status": "quality-control",
+    "website": {
+      "url": "https://jp.nextcigar.com/"
+    },
+    "customer": {
+      "id": "cm1dilwt90033s0314nfikhbl",
+      "displayName": "Risk-Team-SB",
+      "ongoingMonitoringEnabled": false
+    },
+    "business": {
+      "id": "cm7hs2ne0002mub0kyvee7sc3",
+      "correlationId": null,
+      "unsubscribedMonitoringAt": null
+    },
+    "metadata": {},
+    "companyName": null,
+    "riskLevel": "high",
+    "isAlert": false,
+    "data": {
+      "companyName": null,
+      "isAlert": false,
+      "riskLevel": "high",
+      "allViolations": [
+        {
+          "id": "content-offline-website",
+          "name": "Offline Website",
+          "riskLevel": "critical",
+          "domain": "content",
+          "reason": "",
+          "triggerOn": "Alert this when Offline Websites, including websites that do not resolve, return a 404 error, are parked pages, or have domain names offered for sale, are detected. Example 1: Detected Terms: \"website not found,\" \"404 error,\" \"page not available\" Status: \"Website returns a 404 error,\" \"Page not found on server,\" \"Resource unavailable\" Action: Trigger. Example 2: Detected Terms: \"domain for sale,\" \"parked page,\" \"under construction\" Status: \"Domain name listed for sale,\" \"Parked page with placeholder content,\" \"Website under construction\" Action: Trigger. Example 3: Detected Terms: \"server not found,\" \"site cannot be reached,\" \"DNS error\" Status: \"Server not found error,\" \"Site cannot be reached due to DNS issues,\" \"Domain name system error\" Action: Trigger. Example 4: Detected Terms: \"inactive website,\" \"expired domain,\" \"site unavailable\" Status: \"Inactive or expired domain name,\" \"Website unavailable due to domain expiration,\" \"Site currently offline\" Action: Trigger. Please use the provided examples as a guideline to identify and alert similar mentions of offline websites.",
+          "explanation": "The website was offline at the time of scan. This may be a significant risk indicator - particularly if transactions continue to be processed under the merchant ID, despite an offline URL.",
+          "minRiskScore": 75,
+          "baseRiskScore": 75,
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "critical",
+            "chargebackRisk": "critical",
+            "legalRisk": "critical",
+            "reputationRisk": "critical"
+          },
+          "recommendations": [],
+          "additionRiskScore": 1,
+          "maxRiskScoreForAddition": 98
+        }
+      ]
+    },
+    "websiteId": "imzm6drw396p7cmkuxw2771l",
+    "customerId": "cm1dilwt90033s0314nfikhbl",
+    "merchantId": "cm7hs2ne0002mub0kyvee7sc3",
+    "countryCode": "GB",
+    "workflowVersion": "2",
+    "parentCompanyName": "Offline test",
+    "base64": "",
+    "summary": null,
+    "version": 1,
+    "comparedToReportId": null,
+    "deletedAt": null,
+    "riskScore": "75",
+    "monitoringStatus": false
+  },
+  {
+    "id": "iy8p3nt5tmrn523nsf0hbt4s",
+    "reportType": "MERCHANT_REPORT_T1",
+    "createdAt": "2025-02-23T14:02:28.451Z",
+    "updatedAt": "2025-02-23T14:04:14.466Z",
+    "displayDate": "2025-02-23T14:02:28.451Z",
+    "publishedAt": null,
+    "status": "quality-control",
+    "website": {
+      "url": "https://test2.com/"
+    },
+    "customer": {
+      "id": "cm1dilwt90033s0314nfikhbl",
+      "displayName": "Risk-Team-SB",
+      "ongoingMonitoringEnabled": false
+    },
+    "business": {
+      "id": "cm7hp7f9s0002ut0kbmpj6flv",
+      "correlationId": "MID123",
+      "unsubscribedMonitoringAt": null
+    },
+    "metadata": {},
+    "companyName": "Saffron Walden",
+    "riskLevel": "medium",
+    "isAlert": false,
+    "data": {
+      "companyName": "Saffron Walden",
+      "isAlert": false,
+      "riskLevel": "medium",
+      "allViolations": [
+        {
+          "id": "website-structure-missing-terms-and-conditions-(t&c)",
+          "name": "Missing Terms and Conditions (T&C)",
+          "riskLevel": "moderate",
+          "reason": "Missing 'Terms And Conditions (T&C)' page indicates a lack of clear expectations and legal agreements with customers, which is a moderate risk for transaction laundering and legal issues.",
+          "pageUrl": "",
+          "triggerOn": "Alert this when the website does not provide a Terms and Conditions (T&C) page, which is crucial for setting clear expectations and legal agreements with customers. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.",
+          "pageContext": "Terms And Conditions (T&C)",
+          "baseRiskScore": 40,
+          "additionRiskScore": 1,
+          "minRiskScore": 30,
+          "maxRiskScoreForAddition": 98,
+          "domain": "website structure",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "website-structure-missing-privacy-policy",
+          "name": "Missing Privacy Policy",
+          "riskLevel": "moderate",
+          "reason": "Missing 'Privacy Policy' page can put customer data privacy at risk and violate legal requirements, posing a moderate risk for legal and reputation issues.",
+          "pageUrl": "",
+          "triggerOn": "Alert this when the website lacks a Privacy Policy page, potentially putting customer data privacy at risk and violating legal requirements. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.",
+          "pageContext": "Privacy Policy",
+          "baseRiskScore": 40,
+          "additionRiskScore": 1,
+          "minRiskScore": 30,
+          "maxRiskScoreForAddition": 98,
+          "domain": "website structure",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "website-structure-missing-about-us",
+          "name": "Missing About Us",
+          "riskLevel": "moderate",
+          "reason": "Missing 'About Us' page reduces transparency about the business and can be a moderate risk for transaction laundering and reputation damage.",
+          "pageUrl": "",
+          "triggerOn": "Alert this when the website does not have an about us page or offer general information surrounding the business",
+          "pageContext": "About Us",
+          "baseRiskScore": 40,
+          "additionRiskScore": 1,
+          "minRiskScore": 30,
+          "maxRiskScoreForAddition": 98,
+          "domain": "website structure",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "website-structure-missing-contact-us",
+          "name": "Missing Contact Us",
+          "riskLevel": "moderate",
+          "reason": "Missing 'Contact Us' page is a moderate risk as it is essential for customer trust and satisfaction, and its absence may indicate potential fraudulent activity.",
+          "pageUrl": "",
+          "triggerOn": "Alert this when the website does not offer a Contact Us page, which is essential for customer trust and satisfaction. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.",
+          "pageContext": "Contact Us",
+          "baseRiskScore": 40,
+          "additionRiskScore": 1,
+          "minRiskScore": 30,
+          "maxRiskScoreForAddition": 98,
+          "domain": "website structure",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "traffic-low-traffic-volumes",
+          "name": "Low Traffic Volumes",
+          "riskLevel": "moderate",
+          "domain": "traffic",
+          "triggerOn": "Alert this when the website consistently shows low traffic volumes, suggesting limited online presence or engagement, which could be a concern for business legitimacy or popularity",
+          "minRiskScore": 40,
+          "baseRiskScore": 50,
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "positive",
+            "legalRisk": "positive",
+            "reputationRisk": "positive"
+          },
+          "recommendations": [],
+          "additionRiskScore": 1,
+          "maxRiskScoreForAddition": 98
+        }
+      ]
+    },
+    "websiteId": "yt6r4gu3hlcry9gcit90ww64",
+    "customerId": "cm1dilwt90033s0314nfikhbl",
+    "merchantId": "cm7hp7f9s0002ut0kbmpj6flv",
+    "countryCode": "GB",
+    "workflowVersion": "2",
+    "parentCompanyName": "Saffron Walden",
+    "base64": "",
+    "summary": null,
+    "version": 1,
+    "comparedToReportId": null,
+    "deletedAt": null,
+    "riskScore": "54",
+    "monitoringStatus": false
+  },
+  {
+    "id": "hugpgsfv0xnd4ybkf9c1ufus",
+    "reportType": "MERCHANT_REPORT_T1",
+    "createdAt": "2025-02-23T14:01:59.177Z",
+    "updatedAt": "2025-02-23T14:05:09.273Z",
+    "displayDate": "2025-02-23T14:01:59.177Z",
+    "publishedAt": null,
+    "status": "quality-control",
+    "website": {
+      "url": "https://test.com/"
+    },
+    "customer": {
+      "id": "cm1dilwt90033s0314nfikhbl",
+      "displayName": "Risk-Team-SB",
+      "ongoingMonitoringEnabled": false
+    },
+    "business": {
+      "id": "cm7hp6l0x0002sz0jo7f98h39",
+      "correlationId": "RobbieAdi",
+      "unsubscribedMonitoringAt": null
+    },
+    "metadata": {},
+    "companyName": null,
+    "riskLevel": "high",
+    "isAlert": false,
+    "data": {
+      "companyName": null,
+      "isAlert": false,
+      "riskLevel": "high",
+      "allViolations": [
+        {
+          "id": "content-offline-website",
+          "name": "Offline Website",
+          "riskLevel": "critical",
+          "domain": "content",
+          "reason": "",
+          "triggerOn": "Alert this when Offline Websites, including websites that do not resolve, return a 404 error, are parked pages, or have domain names offered for sale, are detected. Example 1: Detected Terms: \"website not found,\" \"404 error,\" \"page not available\" Status: \"Website returns a 404 error,\" \"Page not found on server,\" \"Resource unavailable\" Action: Trigger. Example 2: Detected Terms: \"domain for sale,\" \"parked page,\" \"under construction\" Status: \"Domain name listed for sale,\" \"Parked page with placeholder content,\" \"Website under construction\" Action: Trigger. Example 3: Detected Terms: \"server not found,\" \"site cannot be reached,\" \"DNS error\" Status: \"Server not found error,\" \"Site cannot be reached due to DNS issues,\" \"Domain name system error\" Action: Trigger. Example 4: Detected Terms: \"inactive website,\" \"expired domain,\" \"site unavailable\" Status: \"Inactive or expired domain name,\" \"Website unavailable due to domain expiration,\" \"Site currently offline\" Action: Trigger. Please use the provided examples as a guideline to identify and alert similar mentions of offline websites.",
+          "explanation": "The website was offline at the time of scan. This may be a significant risk indicator - particularly if transactions continue to be processed under the merchant ID, despite an offline URL.",
+          "minRiskScore": 75,
+          "baseRiskScore": 75,
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "critical",
+            "chargebackRisk": "critical",
+            "legalRisk": "critical",
+            "reputationRisk": "critical"
+          },
+          "recommendations": [],
+          "additionRiskScore": 1,
+          "maxRiskScoreForAddition": 98
+        }
+      ]
+    },
+    "websiteId": "c1twyg03rt6rssk7v3h5kc1h",
+    "customerId": "cm1dilwt90033s0314nfikhbl",
+    "merchantId": "cm7hp6l0x0002sz0jo7f98h39",
+    "countryCode": "GB",
+    "workflowVersion": "2",
+    "parentCompanyName": null,
+    "base64": "",
+    "summary": null,
+    "version": 1,
+    "comparedToReportId": null,
+    "deletedAt": null,
+    "riskScore": "75",
+    "monitoringStatus": false
+  },
+  {
+    "id": "mih1tz5dp8w1vyxdzhj9duwy",
+    "reportType": "MERCHANT_REPORT_T1",
+    "createdAt": "2025-02-22T11:59:35.427Z",
+    "updatedAt": "2025-02-22T12:02:32.257Z",
+    "displayDate": "2025-02-22T11:59:35.427Z",
+    "publishedAt": null,
+    "status": "quality-control",
+    "website": {
+      "url": "https://www.adorefolklore.com/"
+    },
+    "customer": {
+      "id": "cm1dilwt90033s0314nfikhbl",
+      "displayName": "Risk-Team-SB",
+      "ongoingMonitoringEnabled": false
+    },
+    "business": {
+      "id": "cm7g5divx00gcs10krqk2f6q6",
+      "correlationId": null,
+      "unsubscribedMonitoringAt": null
+    },
+    "metadata": {},
+    "companyName": "Folklore Event Rentals",
+    "riskLevel": "medium",
+    "isAlert": false,
+    "data": {
+      "companyName": "Folklore Event Rentals",
+      "isAlert": false,
+      "riskLevel": "medium",
+      "allViolations": [
+        {
+          "id": "website-structure-missing-terms-and-conditions-(t&c)",
+          "name": "Missing Terms and Conditions (T&C)",
+          "riskLevel": "moderate",
+          "reason": "Missing a Terms and Conditions (T&C) page is a moderate risk as it is crucial for setting clear expectations and legal agreements with customers.",
+          "pageUrl": "",
+          "triggerOn": "Alert this when the website does not provide a Terms and Conditions (T&C) page, which is crucial for setting clear expectations and legal agreements with customers. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.",
+          "pageContext": "Terms And Conditions (T&C)",
+          "baseRiskScore": 40,
+          "additionRiskScore": 1,
+          "minRiskScore": 30,
+          "maxRiskScoreForAddition": 98,
+          "domain": "website structure",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "website-structure-missing-privacy-policy",
+          "name": "Missing Privacy Policy",
+          "riskLevel": "moderate",
+          "reason": "Not having a Privacy Policy page poses a moderate risk by potentially putting customer data privacy at risk and violating legal requirements.",
+          "pageUrl": "",
+          "triggerOn": "Alert this when the website lacks a Privacy Policy page, potentially putting customer data privacy at risk and violating legal requirements. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.",
+          "pageContext": "Privacy Policy",
+          "baseRiskScore": 40,
+          "additionRiskScore": 1,
+          "minRiskScore": 30,
+          "maxRiskScoreForAddition": 98,
+          "domain": "website structure",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "traffic-low-traffic-volumes",
+          "name": "Low Traffic Volumes",
+          "riskLevel": "moderate",
+          "domain": "traffic",
+          "triggerOn": "Alert this when the website consistently shows low traffic volumes, suggesting limited online presence or engagement, which could be a concern for business legitimacy or popularity",
+          "minRiskScore": 40,
+          "baseRiskScore": 50,
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "positive",
+            "legalRisk": "positive",
+            "reputationRisk": "positive"
+          },
+          "recommendations": [],
+          "additionRiskScore": 1,
+          "maxRiskScoreForAddition": 98
+        }
+      ]
+    },
+    "websiteId": "aktyzu2dxwd3teaa80vfctzm",
+    "customerId": "cm1dilwt90033s0314nfikhbl",
+    "merchantId": "cm7g5divx00gcs10krqk2f6q6",
+    "countryCode": "GB",
+    "workflowVersion": "2",
+    "parentCompanyName": "Folklore Event Rentals",
+    "base64": "",
+    "summary": null,
+    "version": 1,
+    "comparedToReportId": null,
+    "deletedAt": null,
+    "riskScore": "52",
+    "monitoringStatus": false
+  },
+  {
+    "id": "k3kdprx5rxya6fah9oho4tqo",
+    "reportType": "MERCHANT_REPORT_T1",
+    "createdAt": "2025-02-18T10:03:16.150Z",
+    "updatedAt": "2025-02-18T10:05:27.927Z",
+    "displayDate": "2025-02-18T10:03:16.150Z",
+    "publishedAt": null,
+    "status": "quality-control",
+    "website": {
+      "url": "https://www.yuliiacouture.com/"
+    },
+    "customer": {
+      "id": "cm1dilwt90033s0314nfikhbl",
+      "displayName": "Risk-Team-SB",
+      "ongoingMonitoringEnabled": false
+    },
+    "business": {
+      "id": "cm7abgii201msqn0ksi44agfd",
+      "correlationId": null,
+      "unsubscribedMonitoringAt": null
+    },
+    "metadata": {},
+    "companyName": null,
+    "riskLevel": "medium",
+    "isAlert": false,
+    "data": {
+      "companyName": null,
+      "isAlert": false,
+      "riskLevel": "medium",
+      "allViolations": [
+        {
+          "id": "website-structure-missing-terms-and-conditions-(t&c)",
+          "name": "Missing Terms and Conditions (T&C)",
+          "riskLevel": "moderate",
+          "reason": "The website does not have a Terms and Conditions (T&C) page",
+          "pageUrl": "",
+          "triggerOn": "Alert this when the website does not provide a Terms and Conditions (T&C) page, which is crucial for setting clear expectations and legal agreements with customers. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.",
+          "pageContext": "Terms And Conditions (T&C)",
+          "baseRiskScore": 40,
+          "additionRiskScore": 1,
+          "minRiskScore": 30,
+          "maxRiskScoreForAddition": 98,
+          "domain": "website structure",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        }
+      ]
+    },
+    "websiteId": "jrpo4eok6s233j88adtnoylt",
+    "customerId": "cm1dilwt90033s0314nfikhbl",
+    "merchantId": "cm7abgii201msqn0ksi44agfd",
+    "countryCode": "GB",
+    "workflowVersion": "2",
+    "parentCompanyName": "",
+    "base64": "",
+    "summary": null,
+    "version": 1,
+    "comparedToReportId": null,
+    "deletedAt": null,
+    "riskScore": "40",
+    "monitoringStatus": false
+  }
+]
