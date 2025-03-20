@@ -4,7 +4,6 @@ export const DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_CREATION_PARAMS = {
   headers: {
     Authorization: 'Bearer {_app.accessToken}',
   },
-  resultPath: 'id',
 } as const;
 
 export const DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_REMOVAL_PARAMS = {
@@ -21,5 +20,4 @@ export const DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_UPDATE_PARAMS = {
   headers: {
     Authorization: 'Bearer {_app.accessToken}',
   },
-  resultPath: 'id',
 } as const;

@@ -38,11 +38,14 @@ import {
 } from '@prisma/client';
 import { Static } from '@sinclair/typebox';
 import { get } from 'lodash';
+import set from 'lodash/set';
 import * as z from 'zod';
 import { DocumentRepository } from './document.repository';
 import { CreateDocumentSchema, UpdateDocumentSchema } from './dtos/document.dto';
 import { addRequestedDocumentToBusinessEntityDocuments } from './helpers/add-requested-document-to-business-entity-documents';
 import { addRequestedDocumentToIndividualDocuments } from './helpers/add-requested-document-to-individuals-documents';
+import { findBusinessDocumentsInContext } from './helpers/find-business-documents-in-context';
+import { findUboDocumentsInUIDefinition } from './helpers/find-ubo-documents-in-ui-definition';
 import { parseDocumentDefinition } from './helpers/parse-document-definition';
 import {
   DocumentTrackerDocumentSchema,
@@ -106,7 +109,7 @@ export class DocumentService {
         )?.mimeType ||
         '',
     });
-    const document = await this.repository.create(
+    const createdDocument = await this.repository.create(
       {
         ...data,
         ...(data.businessId && { businessId: data.businessId }),
@@ -119,7 +122,7 @@ export class DocumentService {
 
     await this.documentFileService.create(
       {
-        documentId: document.id,
+        documentId: createdDocument.id,
         fileId: uploadedFile.id,
         projectId,
         ...metadata,
@@ -128,7 +131,17 @@ export class DocumentService {
       transaction,
     );
 
-    return await this.getByEntityIdAndWorkflowId(entityId, data.workflowRuntimeDataId, [projectId]);
+    const documents = await this.getByEntityIdAndWorkflowId(entityId, data.workflowRuntimeDataId, [
+      projectId,
+    ]);
+
+    const createdAndFormattedDocument = documents.find(doc => createdDocument.id === doc.id);
+
+    if (!createdAndFormattedDocument) {
+      throw new BadRequestException(`Document with an id of "${createdDocument.id}" was not found`);
+    }
+
+    return createdAndFormattedDocument;
   }
 
   async getDocumentById(documentId: string, projectId: TProjectId) {
@@ -469,7 +482,7 @@ export class DocumentService {
       throw new BadRequestException('Document ids are required');
     }
 
-    const documents = await this.repository.findMany(projectIds, {
+    let documents = await this.repository.findMany(projectIds, {
       where: {
         id: { in: ids },
       },
@@ -526,12 +539,109 @@ export class DocumentService {
       },
     });
 
+    documents = await this.repository.findMany(projectIds, {
+      where: {
+        id: { in: ids },
+      },
+      include: {
+        workflowRuntimeData: {
+          include: {
+            workflowDefinition: true,
+          },
+        },
+      },
+    });
+
     const documentsWithFiles = await this.repository.findManyWithFiles(projectIds);
+
+    for (const document of documentsWithFiles) {
+      await this.persistDocumentDecisionInToContext(document, projectIds[0]!);
+    }
 
     return this.formatDocuments({
       documents: documentsWithFiles,
       documentSchema: null,
     });
+  }
+
+  private async persistDocumentDecisionInToContext(document: Document, projectId: TProjectId) {
+    if (!document.workflowRuntimeDataId) {
+      throw new BadRequestException(
+        `Document with id ${document.id} has no workflow runtime data id`,
+      );
+    }
+
+    const workflowRuntime = await this.workflowService.getWorkflowRuntimeDataById(
+      document.workflowRuntimeDataId,
+      {
+        select: {
+          context: true,
+          parentRuntimeDataId: true,
+        },
+      },
+      [projectId],
+    );
+
+    if (!workflowRuntime) {
+      throw new BadRequestException(
+        `Workflow runtime data not found for document with id ${document.id}`,
+      );
+    }
+
+    const isBusinessDocument = !!document.businessId;
+
+    if (isBusinessDocument) {
+      const businessDocuments = findBusinessDocumentsInContext(workflowRuntime.context);
+      const matchingDocumentIndex = businessDocuments.findIndex(
+        businessDocument =>
+          businessDocument.type === document.type &&
+          businessDocument.category === document.category,
+      );
+      const matchingDocument = businessDocuments[matchingDocumentIndex];
+
+      if (!matchingDocument) {
+        throw new BadRequestException(`Document with id ${document.id} is not a business document`);
+      }
+
+      set(matchingDocument, '_document', document);
+
+      // TODO: This is templorary until document structure is reworked
+      // TODO: Remove this
+      set(matchingDocument, 'pages[0].ballerineFileId', document.id);
+
+      await this.workflowService.updateWorkflowRuntimeData(
+        workflowRuntime.id,
+        { context: workflowRuntime.context },
+        projectId,
+      );
+    } else {
+      const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
+        workflowRuntime.workflowDefinitionId,
+        'collection_flow',
+        [projectId],
+      );
+
+      const uboDocuments = findUboDocumentsInUIDefinition(workflowRuntime.context, uiDefinition);
+
+      uboDocuments.forEach(uboDocument => {
+        if (
+          uboDocument.ballerineEntityId === document.endUserId &&
+          uboDocument.type === document.type &&
+          uboDocument.category === document.category
+        ) {
+          set(uboDocument, '_document', document);
+          set(uboDocument, 'pages[0].ballerineFileId', document.id);
+
+          delete uboDocument.ballerineEntityId;
+        }
+      });
+
+      await this.workflowService.updateWorkflowRuntimeData(
+        workflowRuntime.id,
+        { context: workflowRuntime.context },
+        projectId,
+      );
+    }
   }
 
   async deleteByIds(
@@ -1100,14 +1210,16 @@ export class DocumentService {
 
   getLatestDocumentVersions(documents: Document[]) {
     const documentsByType = documents.reduce((acc, document) => {
-      const documentId = getDocumentId(
-        {
-          type: document.type,
-          category: document.category,
-          issuingCountry: document.issuingCountry,
-        },
-        false,
-      );
+      const documentId = document.businessId
+        ? getDocumentId(
+            {
+              type: document.type,
+              category: document.category,
+              issuingCountry: document.issuingCountry,
+            },
+            false,
+          )
+        : `${document.endUserId}-${document.type}-${document.category}-${document.issuingCountry}`;
 
       if (!acc[documentId]) {
         acc[documentId] = [];

@@ -1,18 +1,18 @@
-import { useParams } from 'react-router-dom';
+import { useDebounce } from '@/common/hooks/useDebounce/useDebounce';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
-import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
-import { useSelectNextCase } from '@/domains/entities/hooks/useSelectNextCase/useSelectNextCase';
 import { useApproveCaseMutation } from '@/domains/entities/hooks/mutations/useApproveCaseMutation/useApproveCaseMutation';
 import { useRejectCaseMutation } from '@/domains/entities/hooks/mutations/useRejectCaseMutation/useRejectCaseMutation';
-import { useRevisionCaseMutation } from '@/domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
+import { useSelectNextCase } from '@/domains/entities/hooks/useSelectNextCase/useSelectNextCase';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useAssignWorkflowMutation } from '@/domains/workflows/hooks/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
-import { useCallback, useMemo } from 'react';
+import { useRevisionCaseMutation } from '@/domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
+import { useDocuments } from '@/lib/blocks/hooks/useDocumentBlocks/hooks/useDocuments';
+import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { usePendingRevisionEvents } from '@/pages/Entity/components/Case/hooks/usePendingRevisionEvents/usePendingRevisionEvents';
-import { useDebounce } from '@/common/hooks/useDebounce/useDebounce';
-import { useDocumentsAdapter } from '@/domains/documents/hooks/useDocumentsAdapter/useDocumentsAdapter';
-import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 import { StateTag } from '@ballerine/common';
+import { useCallback, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 
 export const useDefaultActionsLogic = () => {
   const { entityId: workflowId } = useParams();
@@ -52,25 +52,11 @@ export const useDefaultActionsLogic = () => {
 
   const { onMutateRevisionCase } = usePendingRevisionEvents(mutateRevisionCase, workflow);
 
-  const directorsIds =
-    workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
-      director => director.ballerineEntityId,
-    ) ?? [];
-  const { documents } = useDocumentsAdapter({
-    entityIds: [workflow?.context?.entity?.ballerineEntityId ?? ''],
-    documents: workflow?.context?.documents ?? [],
-  });
-  const { documents: directorsDocuments } = useDocumentsAdapter({
-    entityIds: directorsIds,
-    documents: selectDirectorsDocuments(workflow),
-  });
+  const { documents } = useDocuments(workflow as TWorkflowById);
 
   const documentsToReviseCount = useMemo(
-    () =>
-      [...documents, ...directorsDocuments].filter(
-        document => document?.decision?.status === 'revision',
-      ).length,
-    [documents, directorsDocuments],
+    () => [...documents].filter(document => document?.decision?.status === 'revision').length,
+    [documents],
   );
 
   // Only display the button spinners if the request is longer than 300ms

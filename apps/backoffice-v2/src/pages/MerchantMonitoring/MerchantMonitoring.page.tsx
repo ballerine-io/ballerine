@@ -1,6 +1,7 @@
 import { isNonEmptyArray } from '@ballerine/common';
 import {
   Badge,
+  ContentTooltip,
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
@@ -8,7 +9,7 @@ import {
   Skeleton,
 } from '@ballerine/ui';
 import { t } from 'i18next';
-import { Layers, Loader2, Plus, SlidersHorizontal } from 'lucide-react';
+import { Layers, Loader2, Download, Plus, SlidersHorizontal } from 'lucide-react';
 import { FunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -45,6 +46,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
     isLastPage,
     dates,
     onDatesChange,
+    onExport,
     locale,
     createBusinessReport,
     createBusinessReportBatch,
@@ -71,6 +73,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
     open,
     toggleOpen,
     isDemoAccount,
+    isExportingReport,
   } = useMerchantMonitoringLogic();
 
   return (
@@ -268,7 +271,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
             </Button>
           )}
         </div>
-        <div>
+        <div className="flex items-center justify-between">
           {!isLoadingBusinessReports && (
             <Badge
               variant="secondary"
@@ -277,6 +280,24 @@ export const MerchantMonitoring: FunctionComponent = () => {
               {totalItems} results
             </Badge>
           )}
+          <ContentTooltip
+            description="Export reports to a CSV file (filters applied)"
+            props={{ tooltipContent: { align: 'center' }, tooltipTrigger: { className: 'pr-0' } }}
+          >
+            <Button
+              variant="outline"
+              className={`h-8 space-x-2.5 p-2 font-normal`}
+              onClick={onExport}
+              disabled={isExportingReport}
+            >
+              {isExportingReport ? (
+                <Loader2 className="animate-spin d-4" />
+              ) : (
+                <Download className="d-4" />
+              )}
+              <span>Export</span>
+            </Button>
+          </ContentTooltip>
         </div>
         <div className="space-y-6">
           {isLoadingBusinessReports && (

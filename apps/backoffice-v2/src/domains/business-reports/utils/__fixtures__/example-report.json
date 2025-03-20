@@ -1,0 +1,202 @@
+[
+  {
+    "id": "atb5c09dfqf78v1812mvdui8",
+    "reportType": "MERCHANT_REPORT_T1",
+    "createdAt": "2025-03-13T10:16:47.406Z",
+    "updatedAt": "2025-03-13T11:15:29.101Z",
+    "displayDate": "2025-03-13T10:16:47.406Z",
+    "publishedAt": "2025-03-13T11:15:29.101Z",
+    "status": "pending-review",
+    "website": {
+      "url": "https://ballerine.com/"
+    },
+    "customer": {
+      "id": "cm1dilwt90033s0314nfikhbl",
+      "displayName": "Risk-Team-SB",
+      "ongoingMonitoringEnabled": false
+    },
+    "business": {
+      "id": "cm8772isp04pcs00k8eccnakc",
+      "correlationId": null,
+      "unsubscribedMonitoringAt": null
+    },
+    "metadata": {
+      "requestedByUserId": "cm1dilx1l0036s031zdfjirq8"
+    },
+    "companyName": "ForOr",
+    "riskLevel": "high",
+    "isAlert": false,
+    "data": {
+      "companyName": "ForOr",
+      "isAlert": false,
+      "riskLevel": "high",
+      "allViolations": [
+        {
+          "id": "content-cryptocurrency",
+          "name": "Cryptocurrency",
+          "riskLevel": "moderate",
+          "domain": "content",
+          "reason": "The website is a trading platform that markets forex and CFD services and explicitly lists cryptocurrencies among its trading instruments. This directly aligns with the trigger conditions for both the 'content-cryptocurrency' violation (trading/sale of digital currencies) and the 'content-securities-trading' violation (offering FX, CFDs, and other asset trading services).",
+          "sourceUrl": "https://dollarsmarkets.com/",
+          "screenshot": {
+            "screenshotUrl": "https://merchant-analysis-bal-prod.s3.eu-central-1.amazonaws.com/screenshot/84ea1c67-11b8-4755-8a19-02193e7d04e1.jpeg"
+          },
+          "quoteFromSource": "Trading Instruments: Currency Pairs, Precious Metals, Indices, Cryptocurrencies (31 Cryptocurrencies), Share Stocks, Energy & ETFs",
+          "triggerOn": "Alert this when the trading or sale of cryptocurrency is detected on the website. Example 1: Detected Terms: \"Buy Bitcoin,\" \"Sell Ethereum,\" \"Cryptocurrency exchange\" Action: Trigger Example 2: Detected Terms: \"Trade crypto,\" \"Crypto trading platform,\" \"Purchase Litecoin\" Action: Trigger Example 3: Detected Terms: \"Bitcoin marketplace,\" \"Crypto to fiat trading,\" \"Digital currency trading\" Action: Trigger Example 4: Detected Terms: \"Crypto sales,\" \"Cryptocurrency investment,\" \"Altcoin trading\" Action: Trigger Example 5: Detected Terms: \"Buy and sell cryptocurrencies,\" \"Crypto brokerage services,\" \"Trade digital assets\" Action: Trigger",
+          "baseRiskScore": 70,
+          "additionRiskScore": 1,
+          "minRiskScore": 50,
+          "maxRiskScoreForAddition": 98,
+          "explanation": "Cryptocurrency websites are risky due to the volatile and largely unregulated nature of digital currencies. The potential for fraud, money laundering, and cyber threats complicates compliance and transaction security. Additionally, frequent value fluctuations and the potential for disputes increase the likelihood of chargebacks, posing significant financial and reputational risks for payment institutions.",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "positive",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "pricing-unusually-high-prices",
+          "name": "Unusually High Prices",
+          "riskLevel": "moderate",
+          "reason": "The listed price of the denim jacket is significantly higher than the typical market price for such items.",
+          "sourceUrl": "https://www.nigoo.store/NIGO-Washed-Old-Short-Vintage-Denim-Jacket-Men-and-Women-Fashion-Blue-Denim-Jacket-Ngvp-nigo6554-p23212559.html",
+          "triggerOn": "Alert this when the website presents Unusually High Prices for products compared to their reasonable market value.  For example, a simple and cheap item expected to cost less than $10 is offered for significantly more.",
+          "pricingViolationExamples": [
+            "US$ 250.00 for a denim jacket is unusually high compared to standard market prices."
+          ],
+          "baseRiskScore": 70,
+          "additionRiskScore": 3,
+          "minRiskScore": 40,
+          "maxRiskScoreForAddition": 98,
+          "domain": "pricing",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "critical",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "website-structure-missing-terms-and-conditions-(t&c)",
+          "name": "Missing Terms and Conditions (T&C)",
+          "riskLevel": "moderate",
+          "reason": "The website does not have a Terms and Conditions (T&C) page",
+          "pageUrl": "",
+          "triggerOn": "Alert this when the website does not provide a Terms and Conditions (T&C) page, which is crucial for setting clear expectations and legal agreements with customers. Do not trigger if the website does not offer any products or services for sale with an option to add them to a cart.",
+          "pageContext": "Terms And Conditions (T&C)",
+          "baseRiskScore": 40,
+          "additionRiskScore": 1,
+          "minRiskScore": 30,
+          "maxRiskScoreForAddition": 98,
+          "domain": "website structure",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "website-structure-missing-about-us",
+          "name": "Missing About Us",
+          "riskLevel": "moderate",
+          "reason": "The website does not have a About Us page",
+          "pageUrl": "",
+          "triggerOn": "Alert this when the website does not have an about us page or offer general information surrounding the business",
+          "pageContext": "About Us",
+          "baseRiskScore": 40,
+          "additionRiskScore": 1,
+          "minRiskScore": 30,
+          "maxRiskScoreForAddition": 98,
+          "domain": "website structure",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "moderate",
+            "legalRisk": "moderate",
+            "reputationRisk": "moderate"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "company-analysis-negative-company-reputation",
+          "name": "Negative Company Reputation",
+          "riskLevel": "critical",
+          "domain": "company analysis",
+          "reason": "Dollars Markets Ltd has a low trust score and is flagged for concerns regarding its regulatory status, customer complaints, and lack of transparency. The broker operates under a Mauritius FSC license, which is considered weak regulatory oversight.",
+          "sourceUrl": "https://www.wikifx.com/en/dealer/2749402775.html",
+          "triggerOn": "Alert this when there is negative reputation and reviews related to the operating company and its associated entities. Sources of negative reputation would include poor reviews on platforms like TrustPilot, BBB, consumer review forums or other sources with negative news surrounding the operating company and its business practices. ",
+          "baseRiskScore": 75,
+          "additionRiskScore": 2,
+          "minRiskScore": 50,
+          "maxRiskScoreForAddition": 98,
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "critical",
+            "chargebackRisk": "critical",
+            "legalRisk": "critical",
+            "reputationRisk": "critical"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "scam-or-fraud-listings-on-scam-reporting-websites",
+          "name": "Listings on Scam Reporting Websites",
+          "riskLevel": "critical",
+          "reason": "The website nigoo.store is featured on a scam reporting website with a review questioning its legitimacy.",
+          "highlight": "Is nigoo.store legit or a scam?",
+          "riskScore": 50,
+          "sourceUrl": "https://www.scam-detector.com/validator/nigoo-store-review/",
+          "searchEngine": "google",
+          "serpTextResult": "Is nigoo.store legit or a scam? Read reviews, company details, technical analysis, and more to help you decide if this site is trustworthy or fraudulent.",
+          "triggerOn": "Alert this when the website appears on the following platforms: ",
+          "baseRiskScore": 75,
+          "additionRiskScore": 2,
+          "minRiskScore": 50,
+          "maxRiskScoreForAddition": 98,
+          "domain": "scam or fraud",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "critical",
+            "chargebackRisk": "critical",
+            "legalRisk": "critical",
+            "reputationRisk": "critical"
+          },
+          "recommendations": []
+        },
+        {
+          "id": "traffic-low-traffic-volumes",
+          "name": "Low Traffic Volumes",
+          "riskLevel": "moderate",
+          "triggerOn": "Alert this when the website consistently shows low traffic volumes, suggesting limited online presence or engagement, which could be a concern for business legitimacy or popularity",
+          "baseRiskScore": 50,
+          "additionRiskScore": 1,
+          "minRiskScore": 40,
+          "maxRiskScoreForAddition": 98,
+          "domain": "traffic",
+          "riskTypeLevels": {
+            "transactionLaunderingRisk": "moderate",
+            "chargebackRisk": "positive",
+            "legalRisk": "positive",
+            "reputationRisk": "positive"
+          },
+          "recommendations": []
+        }
+      ]
+    },
+    "websiteId": "nz4g1bum1a7g8jczaxetgyc1",
+    "customerId": "cm1dilwt90033s0314nfikhbl",
+    "merchantId": "cm8772isp04pcs00k8eccnakc",
+    "countryCode": "GB",
+    "workflowVersion": "2",
+    "parentCompanyName": "ForOr",
+    "base64": "",
+    "summary": null,
+    "version": 19,
+    "comparedToReportId": null,
+    "deletedAt": null,
+    "riskScore": "84",
+    "monitoringStatus": false
+  }
+]

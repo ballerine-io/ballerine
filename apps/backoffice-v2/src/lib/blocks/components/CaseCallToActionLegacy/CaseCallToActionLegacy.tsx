@@ -1,25 +1,25 @@
-import React, { ComponentProps, FunctionComponent } from 'react';
-import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
-import { Button } from '../../../../common/components/atoms/Button/Button';
-import { ctw } from '../../../../common/utils/ctw/ctw';
-import { DialogContent } from '../../../../common/components/organisms/Dialog/Dialog.Content';
-import { Select } from '../../../../common/components/atoms/Select/Select';
-import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
-import { DialogClose } from '@radix-ui/react-dialog';
-import { ICaseCallToActionLegacyProps } from './interfaces';
-import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
-import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
-import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
-import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
-import { Input } from '../../../../common/components/atoms/Input/Input';
-import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
-import { capitalize } from '../../../../common/utils/capitalize/capitalize';
-import { Send } from 'lucide-react';
-import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
-import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
-import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dialog.Header';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { useCaseCallToActionLegacyLogic } from '@/lib/blocks/components/CaseCallToActionLegacy/hooks/useCaseCallToActionLegacyLogic/useCaseCallToActionLegacyLogic';
+import { DialogClose } from '@radix-ui/react-dialog';
+import { Send } from 'lucide-react';
+import { ComponentProps, FunctionComponent } from 'react';
+import { Button } from '../../../../common/components/atoms/Button/Button';
+import { Input } from '../../../../common/components/atoms/Input/Input';
+import { Select } from '../../../../common/components/atoms/Select/Select';
+import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
+import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
+import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
+import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
+import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
+import { DialogContent } from '../../../../common/components/organisms/Dialog/Dialog.Content';
+import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
+import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
+import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dialog.Header';
+import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
+import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
+import { capitalize } from '../../../../common/utils/capitalize/capitalize';
+import { ctw } from '../../../../common/utils/ctw/ctw';
+import { ICaseCallToActionLegacyProps } from './interfaces';
 
 const motionButtonProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -54,6 +54,7 @@ export const CaseCallToActionLegacy: FunctionComponent<ICaseCallToActionLegacyPr
     parentWorkflowId: data?.parentWorkflowId,
     childWorkflowId: data?.childWorkflowId,
     childWorkflowContextSchema: data?.childWorkflowContextSchema,
+    isKYC: data?.isKYC,
   });
 
   if (value === 'Re-upload needed') {

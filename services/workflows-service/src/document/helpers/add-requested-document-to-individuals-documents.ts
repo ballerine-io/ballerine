@@ -34,13 +34,10 @@ export const addRequestedDocumentToIndividualDocuments = (
 
   const pages = (uiDefinition.uiSchema as unknown as { elements: IUIDefinitionPage[] }).elements;
 
-  const run = (
+  const addRequestedDocumentsRecursively = (
     elements: Array<IFormElement<any>>,
     stack: TDeepthLevelStack,
-    {
-      entityType,
-      ballerineEntityId,
-    }: { entityType?: 'ubo' | 'director'; ballerineEntityId?: string },
+    { entityType }: { entityType?: 'ubo' | 'director'; ballerineEntityId?: string },
   ) => {
     for (const element of elements) {
       // Extracting revision reason fro documents isnt common so we handling it explicitly
@@ -103,10 +100,14 @@ export const addRequestedDocumentToIndividualDocuments = (
               return;
             }
 
-            run(element.children as Array<IFormElement<any>>, [...stack, index], {
-              entityType,
-              ballerineEntityId,
-            });
+            addRequestedDocumentsRecursively(
+              element.children as Array<IFormElement<any>>,
+              [...stack, index],
+              {
+                entityType,
+                ballerineEntityId,
+              },
+            );
           });
         }
       }
@@ -114,7 +115,7 @@ export const addRequestedDocumentToIndividualDocuments = (
   };
 
   pages?.forEach(page => {
-    run(
+    addRequestedDocumentsRecursively(
       getFieldDefinitionsFromSchema(page.elements) as Array<
         IFormElement<{ template: IDocumentTemplate }>
       >,
