@@ -29,6 +29,41 @@ import {
   fetchAllBusinessReports,
   formatBusinessReportsForCsv,
 } from '@/domains/business-reports/utils';
+import { useMutation } from '@tanstack/react-query';
+import { BusinessReportsFilterParams } from '@/domains/business-reports/fetchers';
+import { TCustomer } from '@/domains/customer/fetchers';
+
+const useExportCSVMutation = ({
+  reportQuery,
+  customer,
+  fullName,
+  firstName,
+}: {
+  reportQuery: BusinessReportsFilterParams;
+  customer: TCustomer | undefined | null;
+  fullName: string | undefined;
+  firstName: string | undefined;
+}) => {
+  return useMutation({
+    mutationFn: async () => {
+      const allData = await fetchAllBusinessReports(reportQuery);
+      const csvData = formatBusinessReportsForCsv(allData);
+
+      const clientName = customer?.displayName || 'Unknown';
+      const username = fullName || firstName || 'Unknown';
+      const now = dayjs().format('YYYY-MM-DDTHH-mm-ss');
+
+      exportToCSV(
+        csvData as unknown as Record<string, unknown>[],
+        `merchant-monitoring-export-${clientName}-${username}-${now}`,
+      );
+    },
+    onError: error => {
+      console.error('Export failed:', error);
+      toast.error('Failed to export data');
+    },
+  });
+};
 
 export const useMerchantMonitoringLogic = () => {
   const locale = useLocale();
@@ -114,6 +149,13 @@ export const useMerchantMonitoringLogic = () => {
   };
 
   const { data, isLoading: isLoadingBusinessReports } = useBusinessReportsQuery(reportQuery);
+
+  const { mutate: onExportMautation, isLoading: isExportingReport } = useExportCSVMutation({
+    reportQuery,
+    customer,
+    fullName,
+    firstName,
+  });
 
   const isClearAllButtonVisible = useMemo(
     () =>
@@ -204,37 +246,6 @@ export const useMerchantMonitoringLogic = () => {
     [findingsOptions],
   );
 
-  const onExport = useCallback(async () => {
-    try {
-      // Use the new utility to fetch all pages with the current filters
-      const allData = await fetchAllBusinessReports(reportQuery);
-
-      // Use the formatter utility to format data for CSV export
-      const csvData = formatBusinessReportsForCsv(allData);
-
-      // Export the formatted data to CSV with metadata for tracking
-      const clientName = customer?.displayName || 'Unknown';
-      const username = fullName || firstName || 'Unknown';
-      const now = dayjs().format('YYYY-MM-DDTHH-mm-ss');
-      exportToCSV(csvData, `merchant-monitoring-export-${clientName}-${username}-${now}`);
-    } catch (error) {
-      console.error('Export failed:', error);
-      toast.error('Failed to export data');
-    }
-  }, [
-    reportType,
-    debouncedSearch,
-    findings,
-    riskLevels,
-    statuses,
-    from,
-    to,
-    isAlert,
-    customer?.displayName,
-    firstName,
-    fullName,
-  ]);
-
   return {
     totalPages: data?.totalPages || 0,
     totalItems: Intl.NumberFormat(locale).format(data?.totalItems || 0),
@@ -277,6 +288,7 @@ export const useMerchantMonitoringLogic = () => {
     open,
     toggleOpen,
     isDemoAccount: customer?.config?.isDemoAccount ?? false,
-    onExport,
+    onExport: () => onExportMautation(),
+    isExportingReport,
   };
 };
