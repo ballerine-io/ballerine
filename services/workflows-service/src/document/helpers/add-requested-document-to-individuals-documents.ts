@@ -34,7 +34,7 @@ export const addRequestedDocumentToIndividualDocuments = (
 
   const pages = (uiDefinition.uiSchema as unknown as { elements: IUIDefinitionPage[] }).elements;
 
-  const addRequestedDocumentsRevursively = (
+  const addRequestedDocumentsRecursively = (
     elements: Array<IFormElement<any>>,
     stack: TDeepthLevelStack,
     { entityType }: { entityType?: 'ubo' | 'director'; ballerineEntityId?: string },
@@ -100,7 +100,7 @@ export const addRequestedDocumentToIndividualDocuments = (
               return;
             }
 
-            addRequestedDocumentsRevursively(
+            addRequestedDocumentsRecursively(
               element.children as Array<IFormElement<any>>,
               [...stack, index],
               {
@@ -115,7 +115,7 @@ export const addRequestedDocumentToIndividualDocuments = (
   };
 
   pages?.forEach(page => {
-    addRequestedDocumentsRevursively(
+    addRequestedDocumentsRecursively(
       getFieldDefinitionsFromSchema(page.elements) as Array<
         IFormElement<{ template: IDocumentTemplate }>
       >,
