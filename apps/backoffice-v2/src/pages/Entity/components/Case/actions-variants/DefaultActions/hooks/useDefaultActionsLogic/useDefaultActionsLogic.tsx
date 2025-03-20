@@ -7,7 +7,7 @@ import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useAssignWorkflowMutation } from '@/domains/workflows/hooks/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
 import { useRevisionCaseMutation } from '@/domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
-import { useEntitiesDocuments } from '@/lib/blocks/hooks/useEntitiesDocuments';
+import { useDocuments } from '@/lib/blocks/hooks/useDocumentBlocks/hooks/useDocuments';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { usePendingRevisionEvents } from '@/pages/Entity/components/Case/hooks/usePendingRevisionEvents/usePendingRevisionEvents';
 import { StateTag } from '@ballerine/common';
@@ -52,7 +52,7 @@ export const useDefaultActionsLogic = () => {
 
   const { onMutateRevisionCase } = usePendingRevisionEvents(mutateRevisionCase, workflow);
 
-  const { documents } = useEntitiesDocuments(workflow as TWorkflowById);
+  const { documents } = useDocuments(workflow as TWorkflowById);
 
   const documentsToReviseCount = useMemo(
     () => [...documents].filter(document => document?.decision?.status === 'revision').length,

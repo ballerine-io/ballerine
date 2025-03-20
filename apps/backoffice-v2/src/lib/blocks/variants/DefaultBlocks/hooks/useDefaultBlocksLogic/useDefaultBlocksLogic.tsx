@@ -33,9 +33,9 @@ import { useCommercialCreditCheckBlock } from '@/lib/blocks/hooks/useCommercialC
 import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctionsBlock/useCompanySanctionsBlock';
 import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
 import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
+import { useDocuments } from '@/lib/blocks/hooks/useDocumentBlocks/hooks/useDocuments';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
 import { useDocumentReviewBlocks } from '@/lib/blocks/hooks/useDocumentReviewBlocks/useDocumentReviewBlocks';
-import { useEntitiesDocuments } from '@/lib/blocks/hooks/useEntitiesDocuments';
 import { useKYCBusinessInformationBlock } from '@/lib/blocks/hooks/useKYCBusinessInformationBlock/useKYCBusinessInformationBlock';
 import { useKybRegistryInfoBlock } from '@/lib/blocks/hooks/useKybRegistryInfoBlock/useKybRegistryInfoBlock';
 import { useMainContactBlock } from '@/lib/blocks/hooks/useMainContactBlock/useMainContactBlock';
@@ -170,8 +170,7 @@ export const useDefaultBlocksLogic = () => {
     }),
   );
 
-  const { documents } = useEntitiesDocuments(workflow as TWorkflowById);
-
+  const { documents } = useDocuments(workflow as TWorkflowById);
   const registryInfoBlock = useRegistryInfoBlock({
     registryInfo,
     workflowId: workflow?.id || '',

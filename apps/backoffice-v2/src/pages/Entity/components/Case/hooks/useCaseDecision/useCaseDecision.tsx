@@ -1,6 +1,10 @@
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
-import { useEntitiesDocuments } from '@/lib/blocks/hooks/useEntitiesDocuments';
+import { useBusinessDocuments } from '@/lib/blocks/hooks/useBusinessDocuments';
+import { useDirectorsDocuments } from '@/lib/blocks/hooks/useDirectorsDocuments';
+import { useUbosDocuments } from '@/lib/blocks/hooks/useUbosDocuments';
 import { safeEvery, someDocumentDecisionStatus } from '@ballerine/common';
+import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Action } from '../../../../../../common/enums';
 import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
@@ -11,7 +15,20 @@ export const useCaseDecision = () => {
   const filterId = useFilterId();
   const { entityId: workflowId } = useParams();
   const { data: workflow } = useWorkflowByIdQuery({ workflowId, filterId });
-  const { documents } = useEntitiesDocuments(workflow);
+  const [
+    { documents: businessDocuments },
+    { documents: directorsDocuments },
+    { documents: ubosDocuments },
+  ] = [
+    useBusinessDocuments(workflow as TWorkflowById),
+    useDirectorsDocuments(workflow as TWorkflowById),
+    useUbosDocuments(workflow as TWorkflowById),
+  ];
+
+  const documents = useMemo(
+    () => [...businessDocuments, ...directorsDocuments, ...ubosDocuments],
+    [businessDocuments, directorsDocuments, ubosDocuments],
+  );
   const { data: session } = useAuthenticatedUserQuery();
   const authenticatedUser = session?.user;
   const caseState = useCaseState(authenticatedUser, workflow);

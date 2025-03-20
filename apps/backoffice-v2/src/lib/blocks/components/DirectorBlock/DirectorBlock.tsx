@@ -4,7 +4,7 @@ import { BlocksComponent } from '@ballerine/blocks';
 import { getDocumentsByCountry } from '@ballerine/common';
 import { useMemo } from 'react';
 import { cells } from '../../create-blocks-typed/create-blocks-typed';
-import { useEntitiesDocuments } from '../../hooks/useEntitiesDocuments';
+import { useDirectorsDocuments } from '../../hooks/useDirectorsDocuments';
 import { useDirectorBlock } from './hooks/useDirectorBlock/useDirectorBlock';
 
 export const DirectorBlock = ({
@@ -25,10 +25,8 @@ export const DirectorBlock = ({
   director: Omit<Parameters<typeof useDirectorBlock>[0]['director'], 'aml'>;
 }) => {
   const { data: endUser } = useEndUserByIdQuery({ id: director.id });
-  const { documents: directorsDocuments, isLoading: isLoadingDocuments } = useEntitiesDocuments(
-    workflow,
-    'directors',
-  );
+  const { documents: directorsDocuments, isLoading: isLoadingDocuments } =
+    useDirectorsDocuments(workflow);
   const directorWithAml = useMemo(
     () => ({
       ...director,

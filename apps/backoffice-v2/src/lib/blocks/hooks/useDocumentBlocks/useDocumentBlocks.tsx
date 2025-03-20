@@ -27,7 +27,8 @@ import { X } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useCallback } from 'react';
 import { toTitleCase } from 'string-ts';
-import { useEntitiesDocuments } from '../useEntitiesDocuments';
+import { isBusinessDocument } from './helpers/is-business-document';
+import { useDocuments } from './hooks/useDocuments';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -68,11 +69,10 @@ export const useDocumentBlocks = ({
 }) => {
   const {
     documents,
+    businessDocuments,
     documentsSchemas,
     isLoading: isLoadingDocuments,
-    getDocumentEntity,
-    getDocumentEntityType,
-  } = useEntitiesDocuments(workflow);
+  } = useDocuments(workflow);
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id);
@@ -372,7 +372,14 @@ export const useDocumentBlocks = ({
 
       let headerContentCell = createBlocksTyped().addBlock();
 
-      if (getDocumentEntityType(document) !== 'business') {
+      if (!isBusinessDocument(businessDocuments, document)) {
+        const documentType = document.entityType;
+        const documentEntity = document.entity;
+        const entityName =
+          documentEntity?.firstName && documentEntity?.lastName
+            ? `${documentEntity?.firstName} ${documentEntity?.lastName}`
+            : undefined;
+
         headerContentCell = headerContentCell.addCell({
           type: 'heading',
           value: (
@@ -380,13 +387,11 @@ export const useDocumentBlocks = ({
               <span>{documentNameOrNA}</span>
               <div className="mt-1 flex items-center gap-1.5">
                 <span className="rounded-md bg-gray-100 px-4 py-1 text-xs font-semibold text-gray-700">
-                  {getDocumentEntityType(document)?.toUpperCase()}
+                  {documentType}
                 </span>
-                <span className="text-sm text-gray-500">
-                  {`${toTitleCase(getDocumentEntity(document)?.firstName)} ${toTitleCase(
-                    getDocumentEntity(document)?.lastName,
-                  )}`}
-                </span>
+                {entityName && (
+                  <span className="text-sm text-gray-500">{`${toTitleCase(entityName)}`}</span>
+                )}
               </div>
             </div>
           ),
