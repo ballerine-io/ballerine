@@ -134,7 +134,7 @@ describe('CSV Export Utils', () => {
       vi.clearAllMocks();
     });
 
-    test('returns false for empty data', () => {
+    test('should return false for empty data', () => {
       const result = exportToCSV([], 'test-file');
 
       expect(result).toBe(false);
