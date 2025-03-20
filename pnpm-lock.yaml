@@ -349,8 +349,8 @@ importers:
         specifier: ^1.4.3
         version: 1.7.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       string-ts:
-        specifier: ^1.2.0
-        version: 1.3.3
+        specifier: 1.3.0
+        version: 1.3.0
       tailwind-merge:
         specifier: ^1.10.0
         version: 1.14.0
@@ -17338,6 +17338,9 @@ packages:
 
   string-ts@1.2.0:
     resolution: {integrity: sha512-4pRpax75q05wvh7HS3I3TgXM1R24NrS/x4yZ1Y46IOwavriZi5/cjC9OEn9BrJpjXV7VTcF1s/Wj6iEv2rlVvg==}
+
+  string-ts@1.3.0:
+    resolution: {integrity: sha512-v8hbud0DNxH8vdfm6MZ9SEt/25lk6ie4GCpzA9YFgBdXsZkXDENnKfWjv8Z3LpxvM4DKxgwdhcxnicWOvDsNdA==}
 
   string-ts@1.3.3:
     resolution: {integrity: sha512-0nU2RyF4+PMTA7K6TlL/Vzn2S+JGTI1OGonlgk/cfbVZ0zlzqg4dhXU74KunZKWf3KO5KPJhOalM1WHy2zag8Q==}
@@ -39537,6 +39540,8 @@ snapshots:
       strip-ansi: 6.0.1
 
   string-ts@1.2.0: {}
+
+  string-ts@1.3.0: {}
 
   string-ts@1.3.3: {}
 
