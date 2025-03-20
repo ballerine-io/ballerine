@@ -172,7 +172,6 @@ export const URL_PATTERN =
   /^(https?:\/\/)?((([\da-z]([\da-z-]*[\da-z])*)\.)+[a-z]{2,}|((25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.){3}(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})|localhost)(:\d{1,5})?(\/[\w!$%&'()*+,.:;=@~-]*)*(\?([\w!$%&'()*+,.:;=@~-]+=[\w!$%&'()*+,.:;=@~-]*(&[\w!$%&'()*+,.:;=@~-]+=[\w!$%&'()*+,.:;=@~-]*)*)?)?(#[\w!$%&'()*+,.:;=@~-]*)?$/i;
 
 export const MERCHANT_REPORT_STATUSES = [
-  'draft',
   'in-progress',
   'quality-control',
   'pending-review',
