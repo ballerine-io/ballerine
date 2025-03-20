@@ -1,3 +1,3 @@
 export interface IFormatValueValidatorParams {
-  format: 'email';
+  format: 'email' | 'phone';
 }

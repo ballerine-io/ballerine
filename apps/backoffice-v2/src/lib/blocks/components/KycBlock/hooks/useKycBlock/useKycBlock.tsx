@@ -3,11 +3,16 @@ import { ComponentProps, useCallback, useMemo } from 'react';
 
 import { Separator } from '@/common/components/atoms/Separator/Separator';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { generateEditableDetailsV2Fields } from '@/common/components/organisms/EditableDetailsV2/utils/generate-editable-details-v2-fields';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
+import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useDocumentsAdapter } from '@/domains/documents/hooks/useDocumentsAdapter/useDocumentsAdapter';
 import { useApproveCaseAndDocumentsMutation } from '@/domains/entities/hooks/mutations/useApproveCaseAndDocumentsMutation/useApproveCaseAndDocumentsMutation';
 import { useRevisionCaseAndDocumentsMutation } from '@/domains/entities/hooks/mutations/useRevisionCaseAndDocumentsMutation/useRevisionCaseAndDocumentsMutation';
+import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
+import { useUpdateContextAndSyncEntityMutation } from '@/domains/workflows/hooks/mutations/useUpdateContextAndSyncEntity/useUpdateContextAndSyncEntity';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
@@ -19,11 +24,6 @@ import { Button } from '@ballerine/ui';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
-import { useToggle } from '@/common/hooks/useToggle/useToggle';
-import { generateEditableDetailsV2Fields } from '@/common/components/organisms/EditableDetailsV2/utils/generate-editable-details-v2-fields';
-import { useUpdateContextAndSyncEntityMutation } from '@/domains/workflows/hooks/mutations/useUpdateContextAndSyncEntity/useUpdateContextAndSyncEntity';
-import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
-import { useDocumentsAdapter } from '@/domains/documents/hooks/useDocumentsAdapter/useDocumentsAdapter';
 
 const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -47,10 +47,14 @@ export const useKycBlock = ({
   const { noAction } = useCaseDecision();
   const kycSessionKeys = Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {});
 
-  const { documents, isLoading: isLoadingDocuments } = useDocumentsAdapter({
+  const { documents: allDocuments, isLoading: isLoadingDocuments } = useDocumentsAdapter({
     entityIds: [childWorkflow?.context?.entity?.ballerineEntityId ?? ''],
     documents: childWorkflow?.context?.documents ?? [],
   });
+
+  const documents = useMemo(() => {
+    return allDocuments?.filter(document => document.type === 'identification_document') ?? [];
+  }, [allDocuments]);
 
   const decision = kycSessionKeys?.length
     ? kycSessionKeys?.flatMap(key => [
@@ -279,6 +283,7 @@ export const useKycBlock = ({
           childWorkflowId: childWorkflow?.id,
           childWorkflowContextSchema: childWorkflow?.workflowDefinition?.contextSchema,
           disabled: isDisabled,
+          isKYC: true,
         },
       })
       .addCell({
