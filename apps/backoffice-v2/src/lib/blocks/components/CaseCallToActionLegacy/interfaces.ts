@@ -12,6 +12,6 @@ export interface ICaseCallToActionLegacyProps {
       | typeof CommonWorkflowStates.REJECTED
       | typeof CommonWorkflowStates.APPROVED
       | typeof CommonWorkflowStates.REVISION;
-    documentsType: 'kyb' | 'kyc';
+    isKYC: boolean;
   };
 }

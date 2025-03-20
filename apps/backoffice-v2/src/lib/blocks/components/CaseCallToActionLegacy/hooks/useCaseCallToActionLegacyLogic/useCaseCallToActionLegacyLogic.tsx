@@ -12,14 +12,14 @@ export const useCaseCallToActionLegacyLogic = ({
   parentWorkflowId,
   childWorkflowId,
   childWorkflowContextSchema,
-  documentsType,
+  isKYC,
 }: {
   parentWorkflowId: string;
   childWorkflowId: string;
   childWorkflowContextSchema: NonNullable<
     TWorkflowById['childWorkflows']
   >[number]['workflowDefinition']['contextSchema'];
-  documentsType: 'kyb' | 'kyc';
+  isKYC: boolean;
 }) => {
   const filterId = useFilterId();
 
@@ -53,7 +53,7 @@ export const useCaseCallToActionLegacyLogic = ({
   });
 
   const documentIds = useMemo(() => {
-    if (documentsType === 'kyc') {
+    if (isKYC) {
       return (
         documents
           ?.filter(document => document.type === 'identification_document')
@@ -67,7 +67,7 @@ export const useCaseCallToActionLegacyLogic = ({
         ?.filter(document => document.type !== 'identification_document')
         ?.map(document => document.id) ?? []
     );
-  }, [documents, documentsType]);
+  }, [documents, isKYC]);
   // /Queries
 
   // Mutations
@@ -75,19 +75,13 @@ export const useCaseCallToActionLegacyLogic = ({
     useApproveCaseAndDocumentsMutation({
       workflowId: childWorkflowId,
       ids: documentIds,
-      isDocumentsV2:
-        documentsType === 'kyc'
-          ? false
-          : !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
+      isDocumentsV2: isKYC ? false : !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
     });
   const { mutate: mutateRevisionCase, isLoading: isLoadingRevisionCase } =
     useRevisionCaseAndDocumentsMutation({
       workflowId: childWorkflowId,
       ids: documentIds,
-      isDocumentsV2:
-        documentsType === 'kyc'
-          ? false
-          : !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
+      isDocumentsV2: isKYC ? false : !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
     });
   // /Mutations
 

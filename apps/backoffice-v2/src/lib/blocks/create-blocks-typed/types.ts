@@ -193,7 +193,7 @@ export type TCaseCallToActionLegacyCell = {
       | typeof CommonWorkflowStates.REJECTED
       | typeof CommonWorkflowStates.APPROVED
       | typeof CommonWorkflowStates.REVISION;
-    documentsType: 'kyc' | 'kyb';
+    isKYC: boolean;
   };
 };
 

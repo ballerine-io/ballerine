@@ -373,11 +373,10 @@ export const useDocumentBlocks = ({
       let headerContentCell = createBlocksTyped().addBlock();
 
       if (!isBusinessDocument(businessDocuments, document)) {
-        const documentType = document.entityType;
-        const documentEntity = document.entity;
+        const { entityType, entity } = document;
         const entityName =
-          documentEntity?.firstName && documentEntity?.lastName
-            ? `${documentEntity?.firstName} ${documentEntity?.lastName}`
+          entity?.firstName && entity?.lastName
+            ? `${entity?.firstName} ${entity?.lastName}`
             : undefined;
 
         headerContentCell = headerContentCell.addCell({
@@ -387,7 +386,7 @@ export const useDocumentBlocks = ({
               <span>{documentNameOrNA}</span>
               <div className="mt-1 flex items-center gap-1.5">
                 <span className="rounded-md bg-gray-100 px-4 py-1 text-xs font-semibold text-gray-700">
-                  {documentType}
+                  {entityType}
                 </span>
                 {entityName && (
                   <span className="text-sm text-gray-500">{`${toTitleCase(entityName)}`}</span>

@@ -54,7 +54,7 @@ export const CaseCallToActionLegacy: FunctionComponent<ICaseCallToActionLegacyPr
     parentWorkflowId: data?.parentWorkflowId,
     childWorkflowId: data?.childWorkflowId,
     childWorkflowContextSchema: data?.childWorkflowContextSchema,
-    documentsType: data?.documentsType,
+    isKYC: data?.isKYC,
   });
 
   if (value === 'Re-upload needed') {
