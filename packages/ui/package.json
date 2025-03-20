@@ -60,6 +60,7 @@
     "dompurify": "^3.0.6",
     "email-validator": "^2.0.4",
     "emblor": "1.4.6",
+    "framer-motion": "^8.3.4",
     "i18n-iso-countries": "^7.6.0",
     "json-logic-js": "^2.0.2",
     "jsonata": "^2.0.6",

@@ -19,6 +19,7 @@
 
 ### Patch Changes
 
+- Bump
 - Updated dependencies
   - @ballerine/ui@0.7.119
 
