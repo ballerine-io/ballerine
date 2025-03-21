@@ -1,6 +1,7 @@
-import { useDocumentsByEntityIdsAndWorkflowIdQuery } from '@/domains/documents/hooks/queries/useDocumentsByEntityIdsAndWorkflowIdQuery/useDocumentsByEntityIdsAndWorkflowIdQuery';
+import { useKycDocumentsAdapter } from '@/domains/documents/hooks/adapters/useKycDocumentsAdapter/useKycDocumentsAdapter';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
+import { TDocument } from '@ballerine/common';
 import { useCallback, useMemo, useState } from 'react';
 import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
 import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
@@ -47,9 +48,11 @@ export const useCaseCallToActionLegacyLogic = ({
   const childWorkflow = parentWorkflow?.childWorkflows?.find(
     workflow => workflow.id === childWorkflowId,
   );
-  const { data: documents } = useDocumentsByEntityIdsAndWorkflowIdQuery({
-    workflowId: parentWorkflowId,
-    entityIds: [childWorkflow?.context?.entity?.ballerineEntityId ?? ''],
+  const childWorkflowDocuments = useMemo(() => {
+    return (childWorkflow?.context?.documents || []) as TDocument[];
+  }, [childWorkflow?.context?.documents]);
+  const { documents } = useKycDocumentsAdapter({
+    documents: childWorkflowDocuments,
   });
 
   const documentIds = useMemo(() => {
@@ -68,7 +71,6 @@ export const useCaseCallToActionLegacyLogic = ({
         ?.map(document => document.id) ?? []
     );
   }, [documents, isKYC]);
-  // /Queries
 
   // Mutations
   const { mutate: mutateApproveCase, isLoading: isLoadingApproveCase } =
@@ -88,7 +90,9 @@ export const useCaseCallToActionLegacyLogic = ({
   // Callbacks
   const onReasonChange = useCallback((value: string) => setReason(value), [setReason]);
   const onCommentChange = useCallback((value: string) => setComment(value), [setComment]);
-  const onMutateApproveCase = useCallback(() => mutateApproveCase(), [mutateApproveCase]);
+  const onMutateApproveCase = useCallback(() => {
+    mutateApproveCase();
+  }, [mutateApproveCase]);
   const onMutateRevisionCase = useCallback(
     (revisionReason: string) => () =>
       mutateRevisionCase({

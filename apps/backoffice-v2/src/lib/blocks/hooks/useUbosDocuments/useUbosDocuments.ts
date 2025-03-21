@@ -1,4 +1,4 @@
-import { useDocumentsAdapter } from '@/domains/documents/hooks/useDocumentsAdapter/useDocumentsAdapter';
+import { useWorkflowDocumentsAdapter } from '@/domains/documents/hooks/adapters/useWorkflowDocumentsAdapter/useWorkflowDocumentsAdapter';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { TDocument } from '@ballerine/common';
 import { useMemo } from 'react';
@@ -7,7 +7,7 @@ import { getUbosEntityIdsFromWorkflow } from './helpers/get-ubos-entity-ids-from
 export const useUbosDocuments = (workflow: TWorkflowById) => {
   const entityIds = useMemo(() => getUbosEntityIdsFromWorkflow(workflow), [workflow]);
 
-  const { documents, documentsSchemas, isLoading } = useDocumentsAdapter({
+  const { documents, documentsSchemas, isLoading } = useWorkflowDocumentsAdapter({
     entityIds,
     documents: workflow?.context?.documents as TDocument[],
   });
