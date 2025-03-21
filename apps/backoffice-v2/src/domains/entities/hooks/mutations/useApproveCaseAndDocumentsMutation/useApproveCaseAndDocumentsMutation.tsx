@@ -1,10 +1,10 @@
+import { updateDocumentsDecisionByIds } from '@/domains/documents/fetchers';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { t } from 'i18next';
+import { toast } from 'sonner';
+import { Action } from '../../../../../common/enums';
 import { fetchWorkflowEventDecision } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
-import { Action } from '../../../../../common/enums';
-import { updateDocumentsDecisionByIds } from '@/domains/documents/fetchers';
 
 export const useApproveCaseAndDocumentsMutation = ({
   workflowId,
