@@ -1,4 +1,4 @@
-import { useDocumentsAdapter } from '@/domains/documents/hooks/useDocumentsAdapter/useDocumentsAdapter';
+import { useWorkflowDocumentsAdapter } from '@/domains/documents/hooks/adapters/useWorkflowDocumentsAdapter/useWorkflowDocumentsAdapter';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { TDocument } from '@ballerine/common';
 import { useMemo } from 'react';
@@ -7,7 +7,7 @@ import { getDirectorsIdsFromWorkflow } from './helpers/get-directors-ids-from-wo
 export const useDirectorsDocuments = (workflow: TWorkflowById) => {
   const entityIds = useMemo(() => getDirectorsIdsFromWorkflow(workflow), [workflow]);
 
-  const { documents, documentsSchemas, isLoading } = useDocumentsAdapter({
+  const { documents, documentsSchemas, isLoading } = useWorkflowDocumentsAdapter({
     entityIds,
     documents: workflow?.context?.documents as TDocument[],
   });

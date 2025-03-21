@@ -8,7 +8,7 @@ import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useDocumentsAdapter } from '@/domains/documents/hooks/useDocumentsAdapter/useDocumentsAdapter';
+import { useKycDocumentsAdapter } from '@/domains/documents/hooks/adapters/useKycDocumentsAdapter/useKycDocumentsAdapter';
 import { useApproveCaseAndDocumentsMutation } from '@/domains/entities/hooks/mutations/useApproveCaseAndDocumentsMutation/useApproveCaseAndDocumentsMutation';
 import { useRevisionCaseAndDocumentsMutation } from '@/domains/entities/hooks/mutations/useRevisionCaseAndDocumentsMutation/useRevisionCaseAndDocumentsMutation';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
@@ -47,8 +47,7 @@ export const useKycBlock = ({
   const { noAction } = useCaseDecision();
   const kycSessionKeys = Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {});
 
-  const { documents: allDocuments, isLoading: isLoadingDocuments } = useDocumentsAdapter({
-    entityIds: [childWorkflow?.context?.entity?.ballerineEntityId ?? ''],
+  const { documents: allDocuments, isLoading: isLoadingDocuments } = useKycDocumentsAdapter({
     documents: childWorkflow?.context?.documents ?? [],
   });
 
@@ -189,12 +188,14 @@ export const useKycBlock = ({
     useApproveCaseAndDocumentsMutation({
       workflowId: childWorkflow?.id,
       ids: nonIdentificationDocumentsIds,
-      isDocumentsV2: !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
+      // Shouldnt be v2 for KYC
+      isDocumentsV2: false,
     });
   const { isLoading: isLoadingRevisionCase } = useRevisionCaseAndDocumentsMutation({
     workflowId: childWorkflow?.id,
     ids: nonIdentificationDocumentsIds,
-    isDocumentsV2: !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
+    // Shouldnt be v2 for KYC
+    isDocumentsV2: false,
   });
   const onMutateApproveCase = useCallback(() => mutateApproveCase(), [mutateApproveCase]);
   const { data: session } = useAuthenticatedUserQuery();
