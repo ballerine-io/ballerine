@@ -72,10 +72,10 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
       variant="default"
       disabled={!isValid && disableWhenFormIsInvalid}
       onClick={isShouldRenderLoader ? undefined : handleSubmit}
-      className="bg-[#1f2937] text-[#f8fafc] hover:bg-[#1f2937]/90 transition-all duration-300"
+      className="bg-[#1f2937] text-[#f8fafc] transition-all duration-300 hover:bg-[#1f2937]/90"
     >
       <motion.div
-        className="flex items-center justify-center min-w-[24px]"
+        className="flex min-w-[24px] items-center justify-center"
         initial={{ opacity: 1 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
@@ -87,7 +87,7 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="flex items-center justify-center"
           >
-            <Loader2 className="w-4 h-4 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin" />
           </motion.div>
         ) : (
           <motion.span
