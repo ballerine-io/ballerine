@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import { toast } from 'sonner';
 
 /**
  * Formats a value for CSV export
@@ -74,38 +73,27 @@ export const convertToCSV = (data: Array<Record<string, unknown>>) => {
  * @param data Array of objects to export
  * @param filename Name of the file to download (without extension)
  */
-export const exportToCSV = (data: Array<Record<string, unknown>>, filename: string) => {
-  try {
-    if (!data || data.length === 0) {
-      toast.error('No data to export');
-
-      return false;
-    }
-
-    // Generate CSV and trigger download
-    const csv = convertToCSV(data);
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-
-    link.href = url;
-    const fullFilename = `${filename}.csv`;
-    link.setAttribute('download', fullFilename);
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // Clean up the URL object
-    URL.revokeObjectURL(url);
-
-    toast.success('Export completed');
-
-    return true;
-  } catch (error) {
-    console.error('Export failed:', error);
-    toast.error('Failed to export data');
-
+export const exportToCSV = (data: Array<Record<string, unknown>>, filename: string): boolean => {
+  if (!data || data.length === 0) {
     return false;
   }
+
+  // Generate CSV and trigger download
+  const csv = convertToCSV(data);
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+
+  link.href = url;
+  const fullFilename = `${filename}.csv`;
+  link.setAttribute('download', fullFilename);
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  // Clean up the URL object
+  URL.revokeObjectURL(url);
+
+  return true;
 };

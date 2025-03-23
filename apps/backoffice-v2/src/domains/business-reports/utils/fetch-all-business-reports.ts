@@ -1,4 +1,3 @@
-import { toast } from 'sonner';
 import {
   BusinessReportsFilterParams,
   BusinessReportsParams,
@@ -14,9 +13,11 @@ const fetchBusinessReportsPage = async (
   params: BusinessReportsParams,
 ): Promise<PaginatedResponse<TBusinessReport>> => {
   const result = await fetchBusinessReports(params);
+
   if (!result) {
     throw new Error('Failed to fetch business reports');
   }
+
   return result;
 };
 
@@ -32,35 +33,13 @@ export const fetchAllBusinessReports = async (
   pageSize = EXPORT_PAGE_SIZE,
 ): Promise<TBusinessReport[]> => {
   try {
-    let progressToast: string | number | undefined;
-
     return await fetchAllPages<TBusinessReport, BusinessReportsParams>(
       fetchBusinessReportsPage,
       params,
       pageSize,
-      (current, total, items) => {
-        // Show first progress message
-        if (total > 1 && current === 1) {
-          progressToast = toast.loading(`Fetching ${items} records (page ${current}/${total})...`);
-        }
-        // Update progress
-        else if (progressToast && current > 1) {
-          toast.loading(`Fetching ${items} records (page ${current}/${total})...`, {
-            id: progressToast,
-          });
-        }
-
-        // Show completion message
-        if (current === total && progressToast) {
-          toast.success(`Successfully fetched all ${items} records`, {
-            id: progressToast,
-          });
-        }
-      },
     );
   } catch (error) {
     console.error('Failed to fetch all business reports:', error);
-    toast.error('Failed to fetch all business reports');
     throw error;
   }
 };

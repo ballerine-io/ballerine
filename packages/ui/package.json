@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/ui",
   "private": false,
-  "version": "0.7.119",
+  "version": "0.7.120",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -27,7 +27,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@ballerine/common": "^0.9.82",
+    "@ballerine/common": "^0.9.83",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.14.2",
@@ -60,6 +60,7 @@
     "dompurify": "^3.0.6",
     "email-validator": "^2.0.4",
     "emblor": "1.4.6",
+    "framer-motion": "^8.3.4",
     "i18n-iso-countries": "^7.6.0",
     "json-logic-js": "^2.0.2",
     "jsonata": "^2.0.6",

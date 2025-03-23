@@ -1,4 +1,6 @@
 import { Button } from '@/components/atoms';
+import { motion } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import { useValidator } from '../../../Validator';
 import { useDynamicForm } from '../../context';
@@ -60,15 +62,43 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
     sendEvent('onSubmit');
   }, [submit, touchAllFields, runTasks, sendEvent, onClick, values, fieldHelpers, validate]);
 
+  const isShouldRenderLoader = useMemo(() => {
+    return disabled || isRunning;
+  }, [disabled, isRunning]);
+
   return (
     <Button
       data-testid={`${id}-submit-button`}
       variant="default"
-      disabled={disabled || isRunning}
-      onClick={handleSubmit}
-      className="bg-[#1f2937] text-[#f8fafc] hover:bg-[#1f2937]/90"
+      disabled={!isValid && disableWhenFormIsInvalid}
+      onClick={isShouldRenderLoader ? undefined : handleSubmit}
+      className="bg-[#1f2937] text-[#f8fafc] transition-all duration-300 hover:bg-[#1f2937]/90"
     >
-      {text}
+      <motion.div
+        className="flex min-w-[24px] items-center justify-center"
+        initial={{ opacity: 1 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+      >
+        {isShouldRenderLoader ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="flex items-center justify-center"
+          >
+            <Loader2 className="h-4 w-4 animate-spin" />
+          </motion.div>
+        ) : (
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+          >
+            {text}
+          </motion.span>
+        )}
+      </motion.div>
     </Button>
   );
 };
