@@ -7,7 +7,14 @@ import { useHomeLogic } from '@/common/hooks/useHomeLogic/useHomeLogic';
 import { WelcomeCard } from '@/pages/Home/components/WelcomeCard/WelcomeCard';
 
 export const Home: FunctionComponent = () => {
-  const { firstName, fullName, avatarUrl, isLoadingCustomer, isExample, isDemo } = useHomeLogic();
+  const {
+    firstName,
+    fullName,
+    avatarUrl,
+    isLoadingCustomer,
+    isExample,
+    isMerchantMonitoringEnabled,
+  } = useHomeLogic();
 
   if (isLoadingCustomer) {
     return <FullScreenLoader />;
@@ -16,8 +23,8 @@ export const Home: FunctionComponent = () => {
   return (
     <DemoAccessWrapper firstName={firstName} fullName={fullName} avatarUrl={avatarUrl}>
       <div className={`p-10 pt-0`}>
-        {(isDemo || isExample) && <Outlet />}
-        {!isDemo && !isExample && <WelcomeCard />}
+        {(isMerchantMonitoringEnabled || isExample) && <Outlet />}
+        {!isMerchantMonitoringEnabled && !isExample && <WelcomeCard />}
       </div>
     </DemoAccessWrapper>
   );

@@ -11,7 +11,7 @@ import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
 
 export const CaseOptions = () => {
   const {
-    isDemo,
+    isDemoAccount,
     isGeneratingPDF,
     generateAndOpenPDFInNewTab,
     isCopyingCollectionFlowLink,
@@ -39,7 +39,7 @@ export const CaseOptions = () => {
                 <FileText size={18} className="mr-2" /> Open PDF Certificate
               </Button>
             </TooltipTrigger>
-            <TooltipContent align="center" side="top" hidden={!isDemo}>
+            <TooltipContent align="center" side="top" hidden={!isDemoAccount}>
               This feature is not available for trial accounts.
               <br />
               Talk to us to get full access.

@@ -14,8 +14,15 @@ import { withCaseCreation } from '@/pages/Entities/components/CaseCreation/conte
 import { useCaseCreationLogic } from '@/pages/Entities/components/CaseCreation/hooks/useCaseCreationLogic/useCaseCreationLogic';
 
 export const CaseCreation = withCaseCreation(() => {
-  const { isDemo, isOpen, setOpen, error, workflowDefinition, workflowDefinitionName, isLoading } =
-    useCaseCreationLogic();
+  const {
+    isDemoAccount,
+    isOpen,
+    setOpen,
+    error,
+    workflowDefinition,
+    workflowDefinitionName,
+    isLoading,
+  } = useCaseCreationLogic();
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
@@ -24,7 +31,7 @@ export const CaseCreation = withCaseCreation(() => {
           <TooltipTrigger asChild>
             <Button
               variant="outline"
-              disabled={isDemo}
+              disabled={isDemoAccount}
               className="flex w-full items-center justify-start gap-2 font-semibold disabled:!pointer-events-auto"
               onClick={() => setOpen(true)}
             >
@@ -32,7 +39,7 @@ export const CaseCreation = withCaseCreation(() => {
               <span>Add case manually</span>
             </Button>
           </TooltipTrigger>
-          <TooltipContent align="center" side="top" hidden={!isDemo}>
+          <TooltipContent align="center" side="top" hidden={!isDemoAccount}>
             This feature is not available for trial accounts.
             <br />
             Talk to us to get full access.
