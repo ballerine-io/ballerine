@@ -167,13 +167,28 @@ describe('useField', () => {
 
       expect(mockSendEventAsync).not.toHaveBeenCalled();
     });
+
+    it('should use sendEvent instead of sendEventAsync when syncEvents is true', () => {
+      const elementWithSyncEvents = {
+        ...mockElement,
+        params: { syncEvents: true },
+      };
+
+      const { result } = renderHook(() => useField(elementWithSyncEvents, mockStack));
+
+      result.current.onChange('new-value');
+
+      expect(mockSetValue).toHaveBeenCalledWith('test-field-1-2', 'test.path[1][2]', 'new-value');
+      expect(mockSendEvent).toHaveBeenCalledWith('onChange');
+      expect(mockSendEventAsync).not.toHaveBeenCalled();
+    });
   });
 
   describe('onBlur', () => {
-    it('should trigger blur event and validate when validateOnBlur is true', () => {
+    it('should trigger blur event and validate when validateOnBlur is true', async () => {
       const { result } = renderHook(() => useField(mockElement, mockStack));
 
-      result.current.onBlur();
+      await result.current.onBlur();
 
       expect(mockSendEvent).toHaveBeenCalledWith('onBlur');
       expect(mockValidate).toHaveBeenCalled();
