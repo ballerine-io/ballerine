@@ -50,10 +50,14 @@ export const useField = <TValue>(
       setValue(fieldId, valueDestination, value);
 
       if (!ignoreEvent) {
-        sendEventAsync('onChange');
+        if (element?.params?.syncEvents) {
+          sendEvent('onChange');
+        } else {
+          sendEventAsync('onChange');
+        }
       }
     },
-    [fieldId, valueDestination, setValue, sendEventAsync],
+    [fieldId, valueDestination, setValue, sendEventAsync, sendEvent, element],
   );
 
   const onBlur = useCallback(async () => {

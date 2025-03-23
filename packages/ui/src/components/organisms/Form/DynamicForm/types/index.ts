@@ -8,6 +8,7 @@ export interface ICommonFieldParams {
   label?: string;
   placeholder?: string;
   description?: string;
+  syncEvents?: boolean;
 }
 
 export interface IFormElement<TElements = string, TParams = object> {

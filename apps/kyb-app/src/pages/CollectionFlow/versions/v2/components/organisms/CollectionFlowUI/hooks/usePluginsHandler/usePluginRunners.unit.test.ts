@@ -106,4 +106,80 @@ describe('usePluginRunners', () => {
 
     expect(mockRunPlugin).toHaveBeenCalledTimes(1);
   });
+
+  it('should run plugin immediately when debounceTime is not set', () => {
+    const plugins = [
+      {
+        name: 'test-plugin',
+        runOn: [{ type: 'onChange' }],
+        // No debounceTime specified
+      },
+    ] as IPlugin[];
+
+    const { result } = renderHook(() => usePluginRunners(plugins));
+
+    const context = { testData: 'test' };
+    result.current.runners[0]?.run?.(context);
+
+    expect(mockRunPlugin).toHaveBeenCalledTimes(1);
+    expect(mockRunPlugin).toHaveBeenCalledWith(plugins[0], context);
+  });
+
+  it('should run plugin immediately when debounceTime is 0', () => {
+    const plugins = [
+      {
+        name: 'test-plugin',
+        runOn: [{ type: 'onChange' }],
+        commonParams: { debounceTime: 0 },
+      },
+    ] as IPlugin[];
+
+    const { result } = renderHook(() => usePluginRunners(plugins));
+
+    const context = { testData: 'test' };
+    result.current.runners[0]?.run?.(context);
+
+    expect(mockRunPlugin).toHaveBeenCalledTimes(1);
+    expect(mockRunPlugin).toHaveBeenCalledWith(plugins[0], context);
+  });
+
+  it('should run plugin immediately when commonParams is undefined', () => {
+    const plugins = [
+      {
+        name: 'test-plugin',
+        runOn: [{ type: 'onChange' }],
+        commonParams: undefined,
+      },
+    ] as IPlugin[];
+
+    const { result } = renderHook(() => usePluginRunners(plugins));
+
+    const context = { testData: 'test' };
+    result.current.runners[0]?.run?.(context);
+
+    expect(mockRunPlugin).toHaveBeenCalledTimes(1);
+    expect(mockRunPlugin).toHaveBeenCalledWith(plugins[0], context);
+  });
+
+  it('should run plugin multiple times immediately when debounceTime is not set', () => {
+    const plugins = [
+      {
+        name: 'test-plugin',
+        runOn: [{ type: 'onChange' }],
+        // No debounceTime
+      },
+    ] as IPlugin[];
+
+    const { result } = renderHook(() => usePluginRunners(plugins));
+
+    const context1 = { testData: 'test1' };
+    const context2 = { testData: 'test2' };
+
+    result.current.runners[0]?.run?.(context1);
+    result.current.runners[0]?.run?.(context2);
+
+    expect(mockRunPlugin).toHaveBeenCalledTimes(2);
+    expect(mockRunPlugin).toHaveBeenNthCalledWith(1, plugins[0], context1);
+    expect(mockRunPlugin).toHaveBeenNthCalledWith(2, plugins[0], context2);
+  });
 });

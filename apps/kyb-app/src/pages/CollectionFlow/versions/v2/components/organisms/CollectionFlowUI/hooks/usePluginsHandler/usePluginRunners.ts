@@ -13,9 +13,13 @@ export const usePluginRunners = (plugins: IPlugin[] = []) => {
   const runners = useMemo(() => {
     return plugins.map(plugin => ({
       name: plugin.name,
-      run: debounce((context: AnyObject) => {
-        void runPluginRef.current(plugin, context);
-      }, plugin.commonParams?.debounceTime || 0),
+      run: plugin.commonParams?.debounceTime
+        ? debounce((context: AnyObject) => {
+            void runPluginRef.current(plugin, context);
+          }, plugin.commonParams.debounceTime)
+        : (context: AnyObject) => {
+            void runPluginRef.current(plugin, context);
+          },
       runOn: plugin.runOn,
     }));
   }, [plugins, runPluginRef]);

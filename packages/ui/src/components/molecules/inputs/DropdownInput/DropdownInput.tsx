@@ -68,7 +68,7 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
   const [open, setOpen] = useState(false);
 
   const selectedOption = useMemo(
-    () => options.find(option => option.value === value),
+    () => options.find(option => option.value !== undefined && option.value === value),
     [options, value],
   );
 
@@ -114,7 +114,9 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
           data-testid={testId ? `${testId}-trigger` : undefined}
         >
           <span className="flex-1 truncate text-left">
-            {selectedOption ? selectedOption.label : placeholder}
+            {selectedOption && selectedOption.value !== undefined
+              ? selectedOption.label
+              : placeholder}
           </span>
           {props?.trigger?.icon ?? <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />}
         </Button>
