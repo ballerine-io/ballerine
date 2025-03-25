@@ -41,7 +41,7 @@ import { RiskRuleService } from '@/rule-engine/risk-rule.service';
 import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
 import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
-
+import { WorkflowLogService } from '@/workflow/workflow-log.service';
 describe('/api/v1/internal/workflows #api #integration', () => {
   let app: INestApplication;
   let workflowService: WorkflowService;
@@ -92,6 +92,7 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       SentryService,
       SecretsManagerFactory,
       MerchantMonitoringClient,
+      WorkflowLogService,
     ];
     workflowService = (await fetchServiceFromModule(WorkflowService, servicesProviders, [
       PrismaModule,
