@@ -307,10 +307,7 @@ export const CollectionFlowV1 = withSessionProtected(() => {
                                         <button
                                           onClick={() => {
                                             try {
-                                              console.log('Filling placeholders...');
-
                                               const filledPayload = { ...stateApi.getContext() };
-                                              console.log('Current context:', filledPayload);
 
                                               const allElements: Array<{
                                                 valueDestination?: string;
@@ -393,11 +390,6 @@ export const CollectionFlowV1 = withSessionProtected(() => {
                                                 findElementsWithPlaceholders(currentPage.elements);
                                               }
 
-                                              console.log(
-                                                'Found visible elements with placeholders:',
-                                                allElements,
-                                              );
-
                                               allElements.forEach(
                                                 ({ valueDestination, placeholder }) => {
                                                   if (!valueDestination || !placeholder) return;
@@ -432,13 +424,7 @@ export const CollectionFlowV1 = withSessionProtected(() => {
                                                 },
                                               );
 
-                                              console.log(
-                                                'Updated payload with visible field placeholders:',
-                                                filledPayload,
-                                              );
-
                                               stateApi.setContext(filledPayload);
-                                              console.log('Context updated successfully');
                                             } catch (error) {
                                               console.error('Error filling placeholders:', error);
                                             }
