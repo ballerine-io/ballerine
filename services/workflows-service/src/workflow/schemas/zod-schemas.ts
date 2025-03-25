@@ -106,7 +106,6 @@ export const CustomerConfigSchema = z.object({
   hideCreateMerchantMonitoringButton: z.boolean().optional(),
   isExample: z.boolean().optional(),
   isMerchantMonitoringEnabled: z.boolean().optional(),
-  isDemo: z.boolean().optional(),
   maxBusinessReports: z.number().optional(),
 });
 
