@@ -21,6 +21,21 @@ export const defaultInputContextSchema = Type.Object({
   documents: DocumentsSchema,
 });
 
+export const defaultPluginSchema = Type.Object({
+  name: Type.String(),
+  status: Type.String(),
+  orderId: Type.String(),
+  invokedAt: Type.Number(),
+  data: Type.Optional(Type.Any()),
+});
+
+const individualSanctionsPluginSchema = Type.Composite([
+  defaultPluginSchema,
+  Type.Object({
+    data: AmlSchema,
+  }),
+]);
+
 export const defaultContextSchema = Type.Composite([
   defaultInputContextSchema,
   Type.Object({
@@ -31,6 +46,7 @@ export const defaultContextSchema = Type.Composite([
           ubo: UboPluginSchema,
           kyc_session: KycSessionPluginSchema,
           companySanctions: CompanySanctionsPluginSchema,
+          individualSanctions: individualSanctionsPluginSchema,
           merchantMonitoring: MerchantMonitoringPluginSchema,
           businessInformation: BusinessInformationPluginSchema,
           merchantScreening: MerchantScreeningPluginSchema,

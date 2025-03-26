@@ -7,8 +7,36 @@ import { WorkflowTableColumnDef } from '@/components/molecules/WorkflowsTable/ty
 import { IWorkflow } from '@/domains/workflows/api/workflow';
 import { formatDate } from '@/utils/format-date';
 import { getWorkflowHealthStatus } from '@/utils/get-workflow-health-status';
-import { Eye } from 'lucide-react';
+import { Eye, ClipboardList } from 'lucide-react';
 import { toast } from 'sonner';
+import { useState } from 'react';
+import { Button } from '@/components/atoms/Button';
+import { WorkflowLogsModal } from '@/components/molecules/WorkflowLogsModal';
+
+// Component for the workflow logs button
+const WorkflowLogsButton = ({ workflowId }: { workflowId: string }) => {
+  const [showModal, setShowModal] = useState(false);
+
+  return (
+    <>
+      <Button
+        variant="outline"
+        size="sm"
+        className="flex items-center gap-1"
+        onClick={() => setShowModal(true)}
+      >
+        <ClipboardList className="h-4 w-4" />
+        <span>Logs</span>
+      </Button>
+
+      <WorkflowLogsModal
+        workflowId={workflowId}
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+      />
+    </>
+  );
+};
 
 export const defaultColumns: Array<WorkflowTableColumnDef<IWorkflow>> = [
   {
@@ -106,6 +134,12 @@ export const defaultColumns: Array<WorkflowTableColumnDef<IWorkflow>> = [
     accessorFn: row => row.id,
     cell: () => '-',
     header: () => <span className="font-semibold">Workflow</span>,
+  },
+  {
+    accessorKey: 'workflow-logs',
+    accessorFn: row => row.id,
+    cell: info => <WorkflowLogsButton workflowId={info.getValue<string>()} />,
+    header: () => <span className="font-semibold">Logs</span>,
   },
   {
     accessorKey: 'resolvedAt',
