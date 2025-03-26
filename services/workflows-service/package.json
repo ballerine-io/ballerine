@@ -10,7 +10,7 @@
     "format:check": "prettier --check . '!**/*.{md,hbs}'",
     "lint": "eslint . --fix --quiet",
     "start": "nest start",
-    "start:worker": "nest start --entryFile src/main.worker.ts",
+    "start:worker": "nest start --entryFile src/main.worker",
     "dev": "npm run start:watch",
     "start:prod": "node dist/src/main",
     "start:prod:worker": "node dist/src/main.worker",
