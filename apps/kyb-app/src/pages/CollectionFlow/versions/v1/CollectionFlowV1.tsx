@@ -304,6 +304,135 @@ export const CollectionFlowV1 = withSessionProtected(() => {
                                         >
                                           Next
                                         </button>
+                                        <button
+                                          onClick={() => {
+                                            try {
+                                              const filledPayload = { ...stateApi.getContext() };
+
+                                              const allElements: Array<{
+                                                valueDestination?: string;
+                                                placeholder?: string;
+                                              }> = [];
+
+                                              const findElementsWithPlaceholders = (
+                                                elements: Array<any>,
+                                              ) => {
+                                                if (!elements || !Array.isArray(elements)) return;
+
+                                                elements.forEach((element: any) => {
+                                                  const isHidden =
+                                                    element?.hidden === true ||
+                                                    element?.options?.hidden === true ||
+                                                    element?.visibleOn === false;
+
+                                                  let isVisible = true;
+                                                  if (
+                                                    element?.visibleOn &&
+                                                    Array.isArray(element.visibleOn)
+                                                  ) {
+                                                    isVisible = false;
+                                                  }
+
+                                                  if (
+                                                    !isHidden &&
+                                                    isVisible &&
+                                                    element?.valueDestination
+                                                  ) {
+                                                    const placeholder =
+                                                      element?.options?.uiSchema?.[
+                                                        'ui:placeholder'
+                                                      ] || element?.options?.hint;
+
+                                                    if (placeholder) {
+                                                      allElements.push({
+                                                        valueDestination: element.valueDestination,
+                                                        placeholder,
+                                                      });
+                                                    }
+                                                  }
+
+                                                  const hasVisibilityConditions =
+                                                    element?.visibleOn &&
+                                                    Array.isArray(element.visibleOn);
+
+                                                  if (
+                                                    element?.type === 'json-form' &&
+                                                    hasVisibilityConditions
+                                                  ) {
+                                                    const visibilityRules = element.visibleOn;
+                                                    return;
+                                                  }
+
+                                                  if (
+                                                    element?.elements &&
+                                                    Array.isArray(element.elements)
+                                                  ) {
+                                                    findElementsWithPlaceholders(element.elements);
+                                                  }
+
+                                                  if (
+                                                    element?.schema &&
+                                                    Array.isArray(element.schema)
+                                                  ) {
+                                                    findElementsWithPlaceholders(element.schema);
+                                                  }
+
+                                                  if (
+                                                    element?.children &&
+                                                    Array.isArray(element.children)
+                                                  ) {
+                                                    findElementsWithPlaceholders(element.children);
+                                                  }
+                                                });
+                                              };
+
+                                              if (currentPage?.elements) {
+                                                findElementsWithPlaceholders(currentPage.elements);
+                                              }
+
+                                              allElements.forEach(
+                                                ({ valueDestination, placeholder }) => {
+                                                  if (!valueDestination || !placeholder) return;
+
+                                                  const path = valueDestination.split('.');
+
+                                                  let current: any = filledPayload;
+
+                                                  for (let i = 0; i < path.length - 1; i++) {
+                                                    const key = path[i];
+                                                    if (!key) continue;
+
+                                                    if (!current[key]) {
+                                                      current[key] = {};
+                                                    }
+                                                    current = current[key];
+                                                  }
+
+                                                  const lastKey = path[path.length - 1];
+                                                  if (lastKey) {
+                                                    if (
+                                                      lastKey.toLowerCase().includes('date') ||
+                                                      valueDestination
+                                                        .toLowerCase()
+                                                        .includes('date')
+                                                    ) {
+                                                      current[lastKey] = '11/11/1990';
+                                                    } else {
+                                                      current[lastKey] = placeholder;
+                                                    }
+                                                  }
+                                                },
+                                              );
+
+                                              stateApi.setContext(filledPayload);
+                                            } catch (error) {
+                                              console.error('Error filling placeholders:', error);
+                                            }
+                                          }}
+                                          className="rounded bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-200"
+                                        >
+                                          Fill Placeholders
+                                        </button>
                                       </div>
                                     </div>
                                   ) : null}

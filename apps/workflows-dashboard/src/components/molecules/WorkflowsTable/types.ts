@@ -14,6 +14,7 @@ export type WorkflowTableColumnKeys =
   | 'assignee'
   | 'context'
   | 'view-workflow'
+  | 'workflow-logs'
   | 'resolvedAt'
   | 'createdBy'
   | 'createdAt'
