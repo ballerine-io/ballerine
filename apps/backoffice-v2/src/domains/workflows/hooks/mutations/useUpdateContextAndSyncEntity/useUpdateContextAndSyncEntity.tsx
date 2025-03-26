@@ -10,7 +10,7 @@ export const useUpdateContextAndSyncEntityMutation = ({
   onSuccess,
 }: {
   workflowId: string;
-  onSuccess: (data: null, variables: Partial<TWorkflowById['context']>, context: unknown) => void;
+  onSuccess?: (data: null, variables: Partial<TWorkflowById['context']>, context: unknown) => void;
 }) => {
   const queryClient = useQueryClient();
 
@@ -25,7 +25,7 @@ export const useUpdateContextAndSyncEntityMutation = ({
 
       toast.success(t('toast:update_details.success'));
 
-      onSuccess(...args);
+      onSuccess?.(...args);
     },
     onError: () => {
       toast.error(t('toast:update_details.error'));

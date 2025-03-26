@@ -5,16 +5,19 @@ import { isPathMatch } from '../../utils/is-path-match';
 import { isObject } from '@ballerine/common';
 import { get, set } from 'lodash-es';
 import { sortData } from '@/lib/blocks/utils/sort-data';
+import { useToggle } from '@/common/hooks/useToggle/useToggle';
 
 export const useEditableDetailsV2Logic = ({
   fields,
   onSubmit,
   onCancel,
+  onEnableIsEditable,
   config,
 }: Pick<
   ComponentProps<typeof EditableDetailsV2>,
-  'fields' | 'onSubmit' | 'onCancel' | 'config'
+  'fields' | 'onSubmit' | 'onCancel' | 'onEnableIsEditable' | 'config'
 >) => {
+  const [isEditable, _toggleIsEditable, toggleOnIsEditable, toggleOffIsEditable] = useToggle(false);
   const sortedFields = useMemo(
     () =>
       sortData({
@@ -132,20 +135,29 @@ export const useEditableDetailsV2Logic = ({
         return acc;
       }, {} as Record<string, any>);
 
-      onSubmit(updatedData);
+      onSubmit(updatedData, toggleOffIsEditable);
     },
     [fields, defaultValues, onSubmit],
   );
 
   const handleCancel = useCallback(() => {
     form.reset(defaultValues);
-    onCancel();
-  }, [defaultValues, form.reset, onCancel]);
+
+    onCancel(toggleOffIsEditable);
+  }, [defaultValues, form.reset, onCancel, toggleOffIsEditable]);
+
+  const handleEnableIsEditable = useCallback(() => {
+    onEnableIsEditable(toggleOnIsEditable);
+  }, [onEnableIsEditable, toggleOnIsEditable]);
 
   return {
     form,
     handleSubmit,
     handleCancel,
+    handleEnableIsEditable,
     filteredFields,
+    isEditable: !config.actions.editing.disabled && isEditable,
+    toggleOnIsEditable,
+    toggleOffIsEditable,
   };
 };
