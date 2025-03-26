@@ -28,7 +28,6 @@ export class RetryableQueue<T extends Record<string, unknown> = any> {
     this.queue = new Queue(queueName, { connection, defaultJobOptions });
     this.dlq = new Queue(`${queueName}-dlq`, { connection });
 
-    // Process jobs only if app is a worker instance
     if (env.IS_QUEUE_WORKER) {
       this.worker = new Worker(queueName, handlers.handleJob, { connection });
       this.dlqWorker = new Worker(`${queueName}-dlq`, handlers.handleDLQJob, { connection });
