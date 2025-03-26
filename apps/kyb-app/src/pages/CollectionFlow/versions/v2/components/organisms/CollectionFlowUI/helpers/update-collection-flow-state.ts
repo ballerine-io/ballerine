@@ -1,4 +1,4 @@
-import { setStepCompletionState } from '@ballerine/common';
+import { CollectionFlowStepStatesEnum, setStepState } from '@ballerine/common';
 
 import { setCollectionFlowStatus } from '@ballerine/common';
 
@@ -17,9 +17,9 @@ export const updateCollectionFlowState = (context: CollectionFlowContext, curren
   );
 
   if (currentStateIndex !== -1) {
-    setStepCompletionState(context, {
+    setStepState(context, {
       stepName: currentState,
-      completed: true,
+      state: CollectionFlowStepStatesEnum.completed,
     });
   }
 

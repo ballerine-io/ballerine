@@ -177,9 +177,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                       )}
                                     </div>
                                     <div className="min-h-0 flex-1 pb-10">
-                                      {isLogoLoaded ? (
-                                        <StepperUI revisionStateNames={revisionStateNames} />
-                                      ) : null}
+                                      {isLogoLoaded ? <StepperUI /> : null}
                                     </div>
                                     <div>
                                       {themeDefinition.settings?.contactInformation ? (
