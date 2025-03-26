@@ -47,8 +47,6 @@ import { BusinessReportService } from '@/business-report/business-report.service
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
 import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
-import { FileModule } from '@/providers/file/file.module';
-import { FileRepository } from '@/storage/storage.repository';
 import { WorkflowLogService } from '@/workflow/workflow-log.service';
 import { WorkflowLogRepository } from '@/workflow/workflow-log.repository';
 import { WorkflowLogController } from '@/workflow/workflow-log.controller';
@@ -62,6 +60,8 @@ import { KycModule } from '@/kyc/kyc.module';
 import { EndUserModule } from '@/end-user/end-user.module';
 // eslint-disable-next-line import/no-cycle
 import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
+import { FileModule } from '@/providers/file/file.module';
+import { FileRepository } from '@/storage/storage.repository';
 
 @Module({
   controllers: [
