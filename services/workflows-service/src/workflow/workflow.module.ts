@@ -50,6 +50,9 @@ import { WorkflowLogController } from '@/workflow/workflow-log.controller';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
 import { FileModule } from '@/providers/file/file.module';
 import { FileRepository } from '@/storage/storage.repository';
+import { WorkflowLogService } from './workflow-log.service';
+import { WorkflowLogRepository } from './workflow-log.repository';
+import { WorkflowLogController } from './workflow-log.controller';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal, WorkflowLogController],
