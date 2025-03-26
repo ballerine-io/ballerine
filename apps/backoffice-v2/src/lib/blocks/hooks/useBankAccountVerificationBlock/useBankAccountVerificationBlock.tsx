@@ -56,11 +56,11 @@ export const useBankAccountVerificationBlock = ({
     }
 
     const data = {
-      ...pluginsOutput.bankAccountVerification.data.responseHeader.overallResponse,
+      ...pluginsOutput?.bankAccountVerification.data.responseHeader.overallResponse,
       decisionElements:
-        pluginsOutput.bankAccountVerification.data.clientResponsePayload.decisionElements,
+        pluginsOutput?.bankAccountVerification.data.clientResponsePayload.decisionElements,
       orchestrationDecisions:
-        pluginsOutput.bankAccountVerification.data.clientResponsePayload.orchestrationDecisions,
+        pluginsOutput?.bankAccountVerification.data.clientResponsePayload.orchestrationDecisions,
     };
 
     return createBlocksTyped()
@@ -109,5 +109,5 @@ export const useBankAccountVerificationBlock = ({
           .buildFlat(),
       })
       .build();
-  }, [isDocumentsV2, pluginsOutput.bankAccountVerification, workflowId]);
+  }, [isDocumentsV2, pluginsOutput?.bankAccountVerification, workflowId]);
 };

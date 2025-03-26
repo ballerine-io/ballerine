@@ -93,12 +93,19 @@ export const serverEnvSchema = {
   IN_MEMORIES_SECRET_ACQUIRER_ID: z.string().optional(),
   IN_MEMORIES_SECRET_PRIVATE_KEY: z.string().optional(),
   IN_MEMORIES_SECRET_CONSUMER_KEY: z.string().optional(),
-  SYNC_UNIFIED_API: z.string().optional().default('true'),
+  SYNC_UNIFIED_API: z
+    .preprocess(val => val === 'true' || val === true, z.boolean())
+    .optional()
+    .default(true),
   DEFAULT_DEMO_DURATION_DAYS: z.number().optional().default(14),
   MAGIC_LINK_AUTH_JWT_SECRET: z.string(),
   MAGIC_LINK_AUTH_JWT_ALGORITHMS: z.string().default('HS256'),
   POSTHOG_HOST: z.string().optional(),
   POSTHOG_KEY: z.string().optional(),
+  WORKFLOW_LOGGING_ENABLED: z
+    .preprocess(val => val === 'true' || val === true, z.boolean())
+    .optional()
+    .default(false),
 };
 
 if (!process.env['ENVIRONMENT_NAME'] || process.env['ENVIRONMENT_NAME'] === 'local') {

@@ -26,6 +26,8 @@ export interface Workflow {
   getSnapshot: () => Record<PropertyKey, any>;
   invokePlugin: (pluginName: string, additionalContext?: AnyRecord) => Promise<void>;
   overrideContext: (context: any) => any;
+  getLogs: () => WorkflowLogEntry[];
+  clearLogs: () => void;
 }
 
 export interface WorkflowEvent {
@@ -97,6 +99,7 @@ export interface WorkflowRunnerArgs {
   invokeChildWorkflowAction?: ChildWorkflowPluginParams['action'];
   invokeWorkflowTokenAction?: WorkflowTokenPluginParams['action'];
   secretsManager?: SecretsManager;
+  enableLogging?: boolean;
 }
 
 export type WorkflowEventWithoutState = Omit<WorkflowEvent, 'state'>;
@@ -141,3 +144,23 @@ export const WorkflowEvents = {
 export type SecretsManager = {
   getAll: () => Promise<Record<string, string>>;
 };
+
+export enum WorkflowLogCategory {
+  EVENT_RECEIVED = 'EVENT_RECEIVED',
+  STATE_TRANSITION = 'STATE_TRANSITION',
+  PLUGIN_INVOCATION = 'PLUGIN_INVOCATION',
+  CONTEXT_CHANGED = 'CONTEXT_CHANGED',
+  ERROR = 'ERROR',
+  INFO = 'INFO',
+}
+
+export interface WorkflowLogEntry {
+  category: WorkflowLogCategory;
+  message: string;
+  timestamp: string;
+  metadata?: Record<string, any>;
+  previousState?: string;
+  newState?: string;
+  eventName?: string;
+  pluginName?: string;
+}

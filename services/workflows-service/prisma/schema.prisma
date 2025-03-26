@@ -284,6 +284,7 @@ model WorkflowRuntimeData {
   WorkflowRuntimeDataToken  WorkflowRuntimeDataToken[]
   alerts                    Alert[]
   documents                 Document[]
+  logs                      WorkflowLog[]              @relation("WorkflowLogs")
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
@@ -432,6 +433,7 @@ model Project {
   Counterparty             Counterparty[]
   BusinessReport           BusinessReport[]
   Note                     Note[]
+  workflowLogs             WorkflowLog[]
 
   @@unique([name, customerId])
   @@index(name)
@@ -1044,4 +1046,34 @@ model DocumentFile {
 
   @@index([documentId])
   @@index([fileId])
+}
+
+enum WorkflowLogType {
+  EVENT_RECEIVED
+  STATE_TRANSITION
+  PLUGIN_INVOCATION
+  CONTEXT_CHANGED
+  ERROR
+  INFO
+}
+
+model WorkflowLog {
+  id                    Int                 @id @default(autoincrement())
+  workflowRuntimeData   WorkflowRuntimeData @relation("WorkflowLogs", fields: [workflowRuntimeDataId], references: [id])
+  workflowRuntimeDataId String
+  type                  WorkflowLogType
+  metadata              Json?
+  fromState             String?
+  toState               String?
+  message               String?
+  eventName             String?
+  pluginName            String?
+  createdAt             DateTime            @default(now())
+  projectId             String
+  project               Project             @relation(fields: [projectId], references: [id])
+
+  @@index([workflowRuntimeDataId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([projectId])
 }
