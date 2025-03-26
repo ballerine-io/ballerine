@@ -37,7 +37,7 @@ import { CustomerControllerExternal } from './customer.controller.external';
 import { CustomerRepository } from './customer.repository';
 import { EndUserService } from '@/end-user/end-user.service';
 import { AllExceptionsFilter } from '@/common/filters/AllExceptions.filter';
-
+import { WorkflowLogService } from '@/workflow/workflow-log.service';
 const API_KEY = 'secret3';
 
 describe.skip('#CustomerControllerExternal', () => {
@@ -81,6 +81,7 @@ describe.skip('#CustomerControllerExternal', () => {
       WorkflowRuntimeDataRepository,
       UiDefinitionRepository,
       UiDefinitionService,
+      WorkflowLogService,
     ];
     customerService = (await fetchServiceFromModule(CustomerService, servicesProviders, [
       PrismaModule,

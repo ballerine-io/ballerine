@@ -38,6 +38,7 @@ import { BusinessRepository } from '@/business/business.repository';
 import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 import { DataInvestigationService } from '@/data-analytics/data-investigation.service';
 import { TIME_UNITS } from '@/data-analytics/consts';
+import { WorkflowLogService } from '@/workflow/workflow-log.service';
 
 type AsyncTransactionFactoryCallback = (
   transactionFactory: TransactionFactory,
@@ -105,6 +106,7 @@ describe('AlertService', () => {
         BusinessService,
         BusinessRepository,
         MerchantMonitoringClient,
+        WorkflowLogService,
       ],
     }).compile();
 

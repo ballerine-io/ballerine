@@ -4,8 +4,12 @@
 
 ### Patch Changes
 
+- bump
 - Updated dependencies
+  - @ballerine/blocks@0.2.39
+  - @ballerine/common@0.9.84
   - @ballerine/ui@0.7.123
+  - @ballerine/workflow-browser-sdk@0.6.106
 
 ## 0.3.151
 
