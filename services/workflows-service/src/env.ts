@@ -1,12 +1,10 @@
 import { config } from 'dotenv';
+const path = process.env.CI ? '.env.example' : '.env';
+config({ path });
+
 import { createEnv } from '@t3-oss/env-core';
 import { z } from 'zod';
 import { Base64 } from 'js-base64';
-import { hashKey } from './customer/api-key/utils';
-
-const path = process.env.CI ? '.env.example' : '.env';
-
-config({ path });
 
 const urlArrayTransformer = (value: string) => {
   const urlSchema = z.string().url();
@@ -174,6 +172,7 @@ export const validate = async (config: Record<string, unknown>) => {
   }
 
   // validate salt value
+  const { hashKey } = await import('./customer/api-key/utils.js');
   await hashKey('check salt value');
 
   return result.data;
