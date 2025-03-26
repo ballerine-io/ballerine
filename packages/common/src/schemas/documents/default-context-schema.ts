@@ -5,6 +5,7 @@ import { BusinessInformationPluginSchema } from '@/schemas/documents/schemas/bus
 import { CompanySanctionsPluginSchema } from '@/schemas/documents/schemas/company-sanctions-plugin-schema';
 import { MerchantMonitoringPluginSchema } from '@/schemas/documents/schemas/merchant-monitoring-plugin-schema';
 import { CollectionFlowStatusesEnum } from '@/utils/collection-flow';
+import { CollectionFlowStepStatesEnum } from '@/utils/collection-flow/enums/collection-flow-step-state-enum';
 import { AmlSchema } from './schemas/aml-schema';
 import { DocumentsSchema } from './schemas/documents-schema';
 import { EntitySchema } from './schemas/entity-schema';
@@ -56,6 +57,8 @@ export const defaultContextSchema = Type.Composite([
               Type.Array(
                 Type.Object({
                   stepName: Type.String(),
+                  state: Type.Optional(Type.Enum(CollectionFlowStepStatesEnum)),
+                  reason: Type.Optional(Type.String()),
                   isCompleted: Type.Boolean(),
                 }),
               ),

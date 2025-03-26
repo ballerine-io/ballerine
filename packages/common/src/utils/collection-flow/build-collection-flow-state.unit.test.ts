@@ -1,6 +1,7 @@
 import { describe, expect, it, test } from 'vitest';
 import { buildCollectionFlowState } from './build-collection-flow-state';
 import { CollectionFlowStatusesEnum } from './enums/collection-flow-status-enum';
+import { CollectionFlowStepStatesEnum } from './enums/collection-flow-step-state-enum';
 import { TCollectionFlowConfig } from './schemas/config-schema';
 
 describe('buildCollectionFlowState', () => {
@@ -43,8 +44,8 @@ describe('buildCollectionFlowState', () => {
             currentStep: 'step1',
             status: CollectionFlowStatusesEnum.pending,
             steps: [
-              { stepName: 'step1', isCompleted: false },
-              { stepName: 'step2', isCompleted: false },
+              { stepName: 'step1', isCompleted: false, state: CollectionFlowStepStatesEnum.idle },
+              { stepName: 'step2', isCompleted: false, state: CollectionFlowStepStatesEnum.idle },
             ],
           },
           additionalInformation: { customerCompany: 'Example Company' },

@@ -1,4 +1,5 @@
 import { CollectionFlowStatusesEnum } from './enums/collection-flow-status-enum';
+import { CollectionFlowStepStatesEnum } from './enums/collection-flow-step-state-enum';
 import { TCollectionFlowConfig } from './schemas/config-schema';
 import { TCollectionFlow } from './types';
 import { isCollectionFlowInputConfigValid } from './validators';
@@ -17,6 +18,7 @@ const initializeState = (inputConfig: TCollectionFlowConfig): TCollectionFlow['s
   const buildProgress = (steps: TCollectionFlowConfig['steps']) => {
     const progressState = steps.map(step => ({
       stepName: step.stateName,
+      state: CollectionFlowStepStatesEnum.idle,
       isCompleted: false,
     }));
 
