@@ -1,10 +1,11 @@
+import { env } from '@/env';
 import { ConnectionOptions, DefaultJobOptions, Job, Processor, Queue, Worker } from 'bullmq';
 
 export class RetryableQueue<T extends Record<string, unknown> = any> {
   public queue: Queue<T>;
-  public worker: Worker<T>;
+  public worker: Worker<T> | null = null;
   public dlq: Queue;
-  public dlqWorker: Worker;
+  public dlqWorker: Worker | null = null;
 
   constructor(
     queueName: string,
@@ -27,30 +28,33 @@ export class RetryableQueue<T extends Record<string, unknown> = any> {
     this.queue = new Queue(queueName, { connection, defaultJobOptions });
     this.dlq = new Queue(`${queueName}-dlq`, { connection });
 
-    this.worker = new Worker(queueName, handlers.handleJob, { connection });
-    this.dlqWorker = new Worker(`${queueName}-dlq`, handlers.handleDLQJob, { connection });
+    // Process jobs only if app is a worker instance
+    if (env.IS_QUEUE_WORKER) {
+      this.worker = new Worker(queueName, handlers.handleJob, { connection });
+      this.dlqWorker = new Worker(`${queueName}-dlq`, handlers.handleDLQJob, { connection });
 
-    this.worker.on('failed', async (job, error) => {
-      if (!job) {
-        return;
-      }
+      this.worker.on('failed', async (job, error) => {
+        if (!job) {
+          return;
+        }
 
-      const attemptsLeft = (job.opts.attempts ?? 1) - job.attemptsMade;
+        const attemptsLeft = (job.opts.attempts ?? 1) - job.attemptsMade;
 
-      if (attemptsLeft <= 0) {
-        return await this.dlq.add(job.id ?? `dlq-${Date.now()}`, { ...job.data, error });
-      }
+        if (attemptsLeft <= 0) {
+          return await this.dlq?.add(job.id ?? `dlq-${Date.now()}`, { ...job.data, error });
+        }
 
-      handlers.onRetry?.(job, error, attemptsLeft);
-    });
+        handlers.onRetry?.(job, error, attemptsLeft);
+      });
+    }
   }
 
   async shutdown(): Promise<void[]> {
     return Promise.all([
       this.queue.close(),
-      this.worker.close(),
+      this.worker?.close(),
       this.dlq.close(),
-      this.dlqWorker.close(),
+      this.dlqWorker?.close(),
     ]);
   }
 }

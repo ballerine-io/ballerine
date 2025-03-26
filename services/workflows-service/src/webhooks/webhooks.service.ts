@@ -65,7 +65,7 @@ export class WebhooksService {
   private setupQueues(redis: IORedis) {
     this.queue = new RetryableQueue<OutgoingWebhookJobData>('outgoing-webhooks', {
       connection: redis,
-      defaultJobOptions: { attempts: 2, backoff: { type: 'exponential', delay: 5_000 } },
+      defaultJobOptions: { attempts: 5, backoff: { type: 'exponential', delay: 5_000 } },
       handlers: {
         handleJob: async job => {
           try {

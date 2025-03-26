@@ -115,6 +115,10 @@ export const serverEnvSchema = {
   REDIS_HOST: z.string(),
   REDIS_PORT: z.coerce.number(),
   REDIS_PASSWORD: z.string().optional(),
+  IS_QUEUE_WORKER: z
+    .string()
+    .optional()
+    .transform(value => value === 'true'),
   QUEUE_SYSTEM_ENABLED: z
     .string()
     .optional()
