@@ -29,9 +29,10 @@ import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionPr
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import {
   CollectionFlowStatusesEnum,
+  CollectionFlowStepStatesEnum,
   getCollectionFlowState,
   setCollectionFlowStatus,
-  setStepCompletionState,
+  setStepState,
 } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 import { LoadingScreen } from './components/atoms/LoadingScreen';
@@ -171,9 +172,9 @@ export const CollectionFlowV1 = withSessionProtected(() => {
 
                   const isAnyStepCompleted = steps.some(step => step.isCompleted);
 
-                  setStepCompletionState(context, {
+                  setStepState(context, {
                     stepName: prevState,
-                    completed: true,
+                    state: CollectionFlowStepStatesEnum.completed,
                   });
 
                   collectionFlow.currentStep = currentState;
@@ -236,9 +237,7 @@ export const CollectionFlowV1 = withSessionProtected(() => {
                                       )}
                                     </div>
                                     <div className="min-h-0 flex-1 pb-10">
-                                      {isLogoLoaded ? (
-                                        <StepperUI revisionStateNames={revisionStateNames} />
-                                      ) : null}
+                                      {isLogoLoaded ? <StepperUI /> : null}
                                     </div>
                                     <div>
                                       {customer?.displayName && (
