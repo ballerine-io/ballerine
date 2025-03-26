@@ -44,12 +44,12 @@ import { BusinessReportService } from '@/business-report/business-report.service
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
 import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
-import { FileModule } from '@/providers/file/file.module';
-import { FileRepository } from '@/storage/storage.repository';
 import { WorkflowLogService } from '@/workflow/workflow-log.service';
 import { WorkflowLogRepository } from '@/workflow/workflow-log.repository';
 import { WorkflowLogController } from '@/workflow/workflow-log.controller';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
+import { FileModule } from '@/providers/file/file.module';
+import { FileRepository } from '@/storage/storage.repository';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal, WorkflowLogController],
