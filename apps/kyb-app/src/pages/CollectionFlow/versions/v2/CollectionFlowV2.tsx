@@ -191,11 +191,17 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                         />
                                       ) : customer?.displayName ? (
                                         <div>
-                                          {
-                                            t('contact', {
+                                          {themeDefinition.ui?.contactUsText ? (
+                                            <span
+                                              dangerouslySetInnerHTML={{
+                                                __html: themeDefinition.ui?.contactUsText,
+                                              }}
+                                            />
+                                          ) : (
+                                            (t('contact', {
                                               companyName: customer.displayName,
-                                            }) as string
-                                          }
+                                            }) as string)
+                                          )}
                                         </div>
                                       ) : null}
                                       {themeDefinition.ui?.poweredBy !== false && (
@@ -263,9 +269,11 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                               }> = [];
 
                                               const findElementsWithPlaceholders = (
-                                                elements: Array<any>,
+                                                elements: any[],
                                               ) => {
-                                                if (!elements || !Array.isArray(elements)) return;
+                                                if (!elements || !Array.isArray(elements)) {
+                                                  return;
+                                                }
 
                                                 elements.forEach((element: any) => {
                                                   const isHidden =
@@ -274,6 +282,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                                     element?.visibleOn === false;
 
                                                   let isVisible = true;
+
                                                   if (
                                                     element?.visibleOn &&
                                                     Array.isArray(element.visibleOn)
@@ -308,6 +317,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                                     hasVisibilityConditions
                                                   ) {
                                                     const visibilityRules = element.visibleOn;
+
                                                     return;
                                                   }
 
@@ -340,7 +350,9 @@ export const CollectionFlowV2 = withSessionProtected(() => {
 
                                               allElements.forEach(
                                                 ({ valueDestination, placeholder }) => {
-                                                  if (!valueDestination || !placeholder) return;
+                                                  if (!valueDestination || !placeholder) {
+                                                    return;
+                                                  }
 
                                                   const path = valueDestination.split('.');
 
@@ -348,15 +360,20 @@ export const CollectionFlowV2 = withSessionProtected(() => {
 
                                                   for (let i = 0; i < path.length - 1; i++) {
                                                     const key = path[i];
-                                                    if (!key) continue;
+
+                                                    if (!key) {
+                                                      continue;
+                                                    }
 
                                                     if (!current[key]) {
                                                       current[key] = {};
                                                     }
+
                                                     current = current[key];
                                                   }
 
                                                   const lastKey = path[path.length - 1];
+
                                                   if (lastKey) {
                                                     let value = placeholder;
 
