@@ -434,6 +434,7 @@ export const useKycBlock = ({
               },
               inputTypes: {
                 dateOfBirth: 'date',
+                country: 'country',
               },
             },
           },
