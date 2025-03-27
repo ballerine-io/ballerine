@@ -12,7 +12,6 @@ export const ConfigSchema = z
     isLegacyReject: z.boolean().optional(),
     isLockedDocumentCategoryAndType: z.boolean().optional(),
     isManualCreation: z.boolean().optional(),
-    isDemo: z.boolean().optional(),
     isExample: z.boolean().optional(), // OSS only
     language: z.string().optional(),
     supportedLanguages: z.array(z.string()).optional(),
@@ -64,6 +63,7 @@ export const ConfigSchema = z
     hasUboOngoingMonitoring: z.boolean().optional(),
     maxBusinessReports: z.number().nonnegative().optional(),
     isMerchantMonitoringEnabled: z.boolean().optional(),
+    isOngoingMonitoringEnabled: z.boolean().optional(),
     isDemoAccount: z.boolean().optional(),
     withQualityControl: z.boolean().optional(),
     disableBusinessSyncToUnifiedApi: z.boolean().optional(),
@@ -106,6 +106,8 @@ export const CustomerConfigSchema = z.object({
   hideCreateMerchantMonitoringButton: z.boolean().optional(),
   isExample: z.boolean().optional(),
   isMerchantMonitoringEnabled: z.boolean().optional(),
+  isOngoingMonitoringEnabled: z.boolean().optional(),
+  isDemo: z.boolean().optional(),
   maxBusinessReports: z.number().optional(),
 });
 
