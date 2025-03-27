@@ -3,6 +3,7 @@ export const CollectionFlowStepStatesEnum = {
   inProgress: 'inProgress',
   completed: 'completed',
   revision: 'revision',
+  revised: 'revised',
 } as const;
 
 export type CollectionFlowStepStates =
