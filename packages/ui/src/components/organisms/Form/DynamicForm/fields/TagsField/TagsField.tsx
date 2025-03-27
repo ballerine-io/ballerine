@@ -23,7 +23,7 @@ export const TagsField: TDynamicFormField<ITagsFieldParams> = ({ element }) => {
         value={value}
         placeholder={element.params?.placeholder}
         testId={createTestId(element, stack)}
-        onChange={onChange}
+        onChange={tags => onChange(tags.length ? tags : undefined)}
         onBlur={onBlur}
         onFocus={onFocus}
         disabled={disabled}
