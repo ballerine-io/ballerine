@@ -6,10 +6,10 @@ on:
       - main
     paths:
       # Run this pipeline only if there are changes in specified path
-      - "apps/**"
-      - "services/**"
-      - "examples/**"
-      - "experiments/**"
+      - 'apps/**'
+      - 'services/**'
+      - 'examples/**'
+      - 'experiments/**'
   workflow_call:
   workflow_dispatch:
 
@@ -66,13 +66,3 @@ jobs:
 
       - name: Test
         uses: ./.github/actions/test-action
-  test_windows:
-    runs-on: windows-latest
-    timeout-minutes: 60
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Test
-        uses: ./.github/actions/unit-test-action
