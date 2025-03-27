@@ -1,9 +1,14 @@
 import './validator';
 
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider/hooks/useStateManagerContext';
-import { UISchema } from '@/domains/collection-flow';
+import { UIPage, UISchema } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
-import { DynamicFormV2, IDynamicFormValidationParams, IFormElement, IFormRef } from '@ballerine/ui';
+import {
+  CollectionFlowStepStatesEnum,
+  getCollectionFlowState,
+  updateCollectionFlowStep,
+} from '@ballerine/common';
+import { DynamicFormV2, IDynamicFormValidationParams, IFormRef } from '@ballerine/ui';
 import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 import { toast } from 'sonner';
 import { usePluginsSubscribe } from './components/utility/PluginsRunner';
@@ -13,17 +18,17 @@ import { useAppMetadata } from './hooks/useAppMetadata';
 import { useAppSync } from './hooks/useAppSync';
 import { useFinalSubmission } from './hooks/useFinalSubmission/useFinalSubmission';
 import { usePluginsHandler } from './hooks/usePluginsHandler/usePluginsHandler';
-import { usePriorityFields } from './hooks/usePriorityFields';
+import { useRevisionFields } from './hooks/useRevisionFields';
 import { formElementsExtends } from './ui-elemenets.extends';
 
 interface ICollectionFlowUIProps<TValues = CollectionFlowContext> {
-  elements: Array<IFormElement<any, any>>;
+  page: UIPage<'v2'>;
+  pages: Array<UIPage<'v2'>>;
   context: TValues;
-  isRevision?: boolean;
   metadata: UISchema['metadata'];
 }
 
-const validationParams: IDynamicFormValidationParams = {
+const DEFAULT_VALIDATION_PARAMS: IDynamicFormValidationParams = {
   validateOnChange: true,
   validateOnBlur: true,
   abortEarly: false,
@@ -32,9 +37,9 @@ const validationParams: IDynamicFormValidationParams = {
 };
 
 export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
-  elements,
   context,
-  isRevision,
+  page,
+  pages,
   metadata: _uiSchemaMetadata,
 }) => {
   const { stateApi, state } = useStateManagerContext();
@@ -42,8 +47,12 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
   const { isSyncing, sync, syncStateless, setIsSyncing } = useAppSync();
   const appMetadata = useAppMetadata();
   const { pluginStatuses } = usePlugins();
-  const priorityFields = usePriorityFields(elements, context, !isRevision);
+  const revisionFields = useRevisionFields(pages, context);
   const { isFinalSubmissionAvailable, handleFinalSubmission } = useFinalSubmission(context, state);
+  const validationParams: IDynamicFormValidationParams = useMemo(
+    () => ({ ...DEFAULT_VALIDATION_PARAMS, globalValidationRules: page.globalValidate }),
+    [page.globalValidate],
+  );
 
   const formRef = useRef<IFormRef>(null);
   const handlePluginExecution: TPluginListener = useCallback(
@@ -64,9 +73,10 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
       _appState: {
         isSyncing,
       },
+      $page: getCollectionFlowState(context)?.steps?.find(step => step.stepName === page.stateName),
       ..._uiSchemaMetadata,
     }),
-    [appMetadata, pluginStatuses, isSyncing, _uiSchemaMetadata],
+    [appMetadata, pluginStatuses, isSyncing, _uiSchemaMetadata, page, context],
   );
 
   const handleChange = useCallback(
@@ -78,11 +88,24 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
 
   const handleSubmit = useCallback(
     async (values: CollectionFlowContext) => {
-      stateApi.setContext(values);
+      const steps = getCollectionFlowState(context)?.steps;
 
       if (isFinalSubmissionAvailable) {
         try {
           setIsSyncing(true);
+
+          const collectionFlowState = getCollectionFlowState(values);
+
+          // Completing all steps on last step before submission
+          if (collectionFlowState) {
+            collectionFlowState.steps = steps?.map(step => ({
+              ...step,
+              state: CollectionFlowStepStatesEnum.completed,
+            }));
+          }
+
+          stateApi.setContext(values);
+
           await syncStateless(values);
           await handleFinalSubmission();
         } catch (error) {
@@ -92,6 +115,27 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
           setIsSyncing(false);
         }
       } else {
+        const currentStep = getCollectionFlowState(context)?.steps?.find(
+          step => step.stepName === page.stateName,
+        );
+        const state = currentStep?.state;
+
+        // Transition to revised to avoid user visit same revision step again after revision
+        if (state === CollectionFlowStepStatesEnum.revision) {
+          updateCollectionFlowStep(values, page.stateName, {
+            state: CollectionFlowStepStatesEnum.revised,
+          });
+        }
+
+        // Completing step after submission
+        if (state === CollectionFlowStepStatesEnum.inProgress) {
+          updateCollectionFlowStep(values, page.stateName, {
+            state: CollectionFlowStepStatesEnum.completed,
+          });
+        }
+
+        stateApi.setContext(values);
+
         await sync(values);
       }
 
@@ -105,18 +149,20 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
       isFinalSubmissionAvailable,
       handleFinalSubmission,
       setIsSyncing,
+      page,
+      context,
     ],
   );
 
   return (
     <DynamicFormV2
       fieldExtends={formElementsExtends}
-      elements={elements}
+      elements={page.elements}
       values={context as CollectionFlowContext}
       onChange={handleChange as (newValues: object) => void}
       onEvent={handleEvent}
       onSubmit={handleSubmit as (values: object) => void}
-      priorityFields={priorityFields}
+      priorityFields={revisionFields}
       validationParams={validationParams}
       metadata={metadata}
       ref={formRef}
