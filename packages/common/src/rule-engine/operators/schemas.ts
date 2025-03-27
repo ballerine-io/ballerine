@@ -70,3 +70,7 @@ export const AmlCheckSchema = z
     childWorkflowName: z.string(),
   })
   .and(BaseOperationsValueSchema);
+
+export const IdvCheckSchema = z.object({
+  childWorkflowName: z.string(),
+});

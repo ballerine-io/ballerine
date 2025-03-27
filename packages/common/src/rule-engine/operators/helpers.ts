@@ -469,3 +469,22 @@ export const IN_CASE_INSENSITIVE = new InCaseInsensitive();
 export const NOT_IN = new NotIn();
 export const AML_CHECK = new AmlCheck();
 export const FUZZY_MATCH_SCORE_LT = new FuzzyMatchScoreLt();
+
+export { IDV_CHECK } from './idv-check';
+
+export {
+  Equals,
+  NotEquals,
+  In,
+  InCaseInsensitive,
+  NotIn,
+  Between,
+  LastYear,
+  Exists,
+  GreaterThan,
+  GreaterThanOrEqual,
+  LessThan,
+  LessThanOrEqual,
+  AmlCheck,
+  FuzzyMatchScoreLt,
+};
