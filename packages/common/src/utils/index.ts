@@ -33,3 +33,4 @@ export { getCountries } from './get-countries';
 export { getCountryStates } from './get-country-states';
 export { getFullCountryNameByCode } from './get-full-country-name-by-code';
 export { getNationalities } from './get-nationalities';
+export { checkIsCountry } from './check-is-country';

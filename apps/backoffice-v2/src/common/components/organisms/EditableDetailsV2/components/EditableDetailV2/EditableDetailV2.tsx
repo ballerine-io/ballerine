@@ -2,7 +2,7 @@ import { ChangeEvent, useCallback } from 'react';
 import { checkIsFormattedDatetime } from '@/common/utils/check-is-formatted-datetime';
 import { FileJson2 } from 'lucide-react';
 import { BallerineLink, CountrySelect, ctw, Input, JsonDialog } from '@ballerine/ui';
-import { checkIsUrl, isNullish, isObject } from '@ballerine/common';
+import { checkIsCountry, checkIsUrl, isNullish, isObject } from '@ballerine/common';
 import { Select } from '../../../../atoms/Select/Select';
 import { SelectTrigger } from '../../../../atoms/Select/Select.Trigger';
 import { SelectValue } from '../../../../atoms/Select/Select.Value';
@@ -62,6 +62,7 @@ export const EditableDetailV2 = ({
     boolean?: boolean;
     url?: boolean;
     nullish?: boolean;
+    country?: boolean;
   };
 }) => {
   const displayValue = getDisplayValue({ value, formValue, isEditable });
@@ -219,6 +220,10 @@ export const EditableDetailV2 = ({
 
   if (isNullish(value)) {
     return <ReadOnlyDetailV2 className={className}>{`${value}`}</ReadOnlyDetailV2>;
+  }
+
+  if (parse?.country && checkIsCountry('en', value)) {
+    return <ReadOnlyDetailV2 className={className}>{getName(value, 'en')}</ReadOnlyDetailV2>;
   }
 
   return <ReadOnlyDetailV2 className={className}>{value}</ReadOnlyDetailV2>;

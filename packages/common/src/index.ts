@@ -36,6 +36,7 @@ export {
   getCountryStates,
   getFullCountryNameByCode,
   getNationalities,
+  checkIsCountry,
 } from './utils';
 
 export * from './utils/collection-flow';

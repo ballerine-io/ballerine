@@ -413,6 +413,7 @@ export const useKycBlock = ({
                 boolean: true,
                 url: true,
                 nullish: true,
+                country: true,
               },
               blacklist: [],
               actions: {
