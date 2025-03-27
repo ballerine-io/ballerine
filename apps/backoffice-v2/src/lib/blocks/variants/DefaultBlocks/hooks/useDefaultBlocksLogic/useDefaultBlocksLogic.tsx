@@ -62,8 +62,9 @@ import { Send } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
-import { titleCase, toTitleCase } from 'string-ts';
+import { titleCase } from 'string-ts';
 import { valueOrNA } from '@ballerine/common';
+import { useEntityAdditionalInfoBlock } from '@/lib/blocks/hooks/useEntityAdditionalInfoBlock/useEntityAdditionalInfoBlock';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 
@@ -132,7 +133,6 @@ export const useDefaultBlocksLogic = () => {
     mainContact,
     openCorporate: _openCorporate,
     associatedCompanies: _associatedCompanies,
-    ...entityDataAdditionalInfo
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
   const { website: websiteBasicRequirement, processingDetails, ...storeInfo } = store ?? {};
 
@@ -235,8 +235,14 @@ export const useDefaultBlocksLogic = () => {
 
   const entityInfoBlock = useEntityInfoBlock({
     entity: workflow?.context?.entity,
-    entityDataAdditionalInfo,
     workflow,
+  });
+
+  const entityAdditionalInfoBlock = useEntityAdditionalInfoBlock({
+    entity: workflow?.context?.entity,
+    predefinedOrder:
+      workflow?.workflowDefinition?.config?.uiOptions?.backoffice?.blocks?.businessInformation
+        ?.predefinedOrder ?? [],
   });
 
   const mapBlock = useMapBlock({
@@ -635,6 +641,7 @@ export const useDefaultBlocksLogic = () => {
       commercialCreditCheckBlock,
       aiSummaryBlock,
       entityAddressWithContainerBlock,
+      entityAdditionalInfoBlock,
     ];
   }, [
     associatedCompaniesBlock,
@@ -671,6 +678,7 @@ export const useDefaultBlocksLogic = () => {
     commercialCreditCheckBlock,
     aiSummaryBlock,
     entityAddressWithContainerBlock,
+    entityAdditionalInfoBlock,
   ]);
 
   const { blocks, tabs } = useCaseBlocks({

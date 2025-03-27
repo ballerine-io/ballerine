@@ -5,24 +5,22 @@ import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMu
 import { useUpdateContextAndSyncEntityMutation } from '@/domains/workflows/hooks/mutations/useUpdateContextAndSyncEntity/useUpdateContextAndSyncEntity';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
-import { isObject, valueOrNA } from '@ballerine/common';
+import { valueOrNA } from '@ballerine/common';
 import { useCallback, useMemo } from 'react';
-import { titleCase, toTitleCase } from 'string-ts';
+import { titleCase } from 'string-ts';
 
 export const useEntityInfoBlock = ({
   entity,
   workflow,
-  entityDataAdditionalInfo,
 }: {
   entity: TWorkflowById['context']['entity'];
   workflow: TWorkflowById;
-  entityDataAdditionalInfo: TWorkflowById['context']['entity']['data']['additionalInfo'];
 }) => {
   const { mutate: mutateEvent } = useEventMutation();
   const onMutateEvent = useCallback(() => {
     mutateEvent({
       workflowId: workflow?.id,
-      event: 're_run_checks',
+      event: 're_run_entity_information_checks',
     });
   }, [mutateEvent, workflow?.id]);
   const { mutate: mutateUpdateContextAndSyncEntity } = useUpdateContextAndSyncEntityMutation({
@@ -72,7 +70,7 @@ export const useEntityInfoBlock = ({
               .addBlock()
               .addCell({
                 type: 'heading',
-                value: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Information`,
+                value: `${valueOrNA(titleCase(entity?.type ?? ''))} Information`,
               })
               .addCell({
                 type: 'subheading',
@@ -132,5 +130,5 @@ export const useEntityInfoBlock = ({
           .buildFlat(),
       })
       .build();
-  }, [entity, workflow, entityDataAdditionalInfo]);
+  }, [entity, workflow]);
 };

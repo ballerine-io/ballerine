@@ -59,6 +59,7 @@ export const getTabsToBlocksMap = ({
     commercialCreditCheckBlock,
     aiSummaryBlock,
     entityAddressWithContainerBlock,
+    entityAdditionalInfoBlock,
   ] = blocks;
 
   const defaultTabsMap = {
@@ -77,6 +78,7 @@ export const getTabsToBlocksMap = ({
       ...ubosRegistryProvidedBlock,
       ...companySanctionsBlock,
       ...entityInfoBlock,
+      ...entityAdditionalInfoBlock,
       ...registryInfoBlock,
       // ...mapBlock,
       ...addressWithContainerBlock,
