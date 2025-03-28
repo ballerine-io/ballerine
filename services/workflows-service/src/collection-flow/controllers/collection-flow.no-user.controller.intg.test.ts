@@ -41,7 +41,7 @@ import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository
 import { ApiKeyService } from '@/customer/api-key/api-key.service';
 import { ApiKeyRepository } from '@/customer/api-key/api-key.repository';
 import { AnalyticsService } from '@/common/analytics-logger/analytics.service';
-
+import { WorkflowLogService } from '@/workflow/workflow-log.service';
 describe('CollectionFlowSignupController', () => {
   let app: INestApplication;
   let prismaClient: PrismaService;
@@ -93,6 +93,7 @@ describe('CollectionFlowSignupController', () => {
         WorkflowRuntimeDataRepository,
         CustomerRepository,
         EndUserRepository,
+        WorkflowLogService,
       ],
     }).compile();
 

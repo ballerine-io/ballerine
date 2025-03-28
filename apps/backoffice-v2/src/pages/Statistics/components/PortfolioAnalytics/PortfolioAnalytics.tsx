@@ -47,7 +47,7 @@ const PortfolioAnalyticsContent: FunctionComponent<ComponentProps<typeof Portfol
   const { data: customer } = useCustomerQuery();
   const locale = useLocale();
 
-  if (!customer?.config?.isMerchantMonitoringEnabled) {
+  if (!customer?.config?.isOngoingMonitoringEnabled) {
     return (
       <MerchantsStatsCard
         prefix="+"

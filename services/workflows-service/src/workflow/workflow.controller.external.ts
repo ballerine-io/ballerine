@@ -555,15 +555,17 @@ export class WorkflowControllerExternal {
           );
         }
 
-        await this.workflowService.event(
-          {
-            id: params.id,
-            name: params.event,
-          },
-          [workflowRuntime.projectId],
-          workflowRuntime.projectId,
-          transaction,
-        );
+        if (params.event && params.event !== 'undefined') {
+          await this.workflowService.event(
+            {
+              id: params.id,
+              name: params.event,
+            },
+            [workflowRuntime.projectId],
+            workflowRuntime.projectId,
+            transaction,
+          );
+        }
       }, defaultPrismaTransactionOptions);
     } catch (error) {
       if (isRecordNotFoundError(error)) {

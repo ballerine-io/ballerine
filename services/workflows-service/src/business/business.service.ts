@@ -67,7 +67,7 @@ export class BusinessService {
         tx,
       )) as unknown as BusinessPayload;
 
-      if (env.SYNC_UNIFIED_API === 'true') {
+      if (env.SYNC_UNIFIED_API) {
         await retry(() => this.unifiedApiClient.createOrUpdateBusiness(businessPayload));
       }
 
@@ -142,7 +142,7 @@ export class BusinessService {
         tx,
       )) as unknown as BusinessPayload;
 
-      if (env.SYNC_UNIFIED_API === 'true') {
+      if (env.SYNC_UNIFIED_API) {
         await retry(() => this.unifiedApiClient.createOrUpdateBusiness(businessPayload));
       }
 

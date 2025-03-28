@@ -48,7 +48,7 @@ import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
-
+import { WorkflowLogService } from '@/workflow/workflow-log.service';
 describe('/api/v1/external/workflows #api #integration', () => {
   let app: INestApplication;
 
@@ -104,6 +104,7 @@ describe('/api/v1/external/workflows #api #integration', () => {
       WorkflowDefinitionRepository,
       WorkflowRuntimeDataRepository,
       SalesforceIntegrationRepository,
+      WorkflowLogService,
     ];
 
     const userAuthOverrideMiddleware = (req: Request, res: any, next: any) => {

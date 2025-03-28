@@ -45,12 +45,9 @@ import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-defi
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
+import { WorkflowLogService, WorkflowRunnerLogEntry } from '@/workflow/workflow-log.service';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 import { toPrismaWhere } from '@/workflow/utils/toPrismaWhere';
-import {
-  WorkflowAssignee,
-  WorkflowRuntimeListItemModel,
-} from '@/workflow/workflow-runtime-list-item.model';
 import {
   AnyRecord,
   buildCollectionFlowState,
@@ -101,7 +98,7 @@ import {
 import { Static, TSchema } from '@sinclair/typebox';
 import { plainToClass } from 'class-transformer';
 import dayjs from 'dayjs';
-import { isEqual, merge } from 'lodash';
+import { get, isEqual, merge } from 'lodash';
 import mime from 'mime';
 import { WORKFLOW_FINAL_STATES } from './consts';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
@@ -120,6 +117,8 @@ import { entitiesUpdate } from './utils/entities-update';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { PartialDeep } from 'type-fest';
+import { WorkflowAssignee } from './workflow-runtime-list-item.model';
+import { WorkflowRuntimeListItemModel } from './workflow-runtime-list-item.model';
 
 type TEntityId = string;
 
@@ -163,6 +162,7 @@ export class WorkflowService {
     private readonly sentry: SentryService,
     private readonly secretsManagerFactory: SecretsManagerFactory,
     private readonly storageService: StorageService,
+    private readonly workflowLogService: WorkflowLogService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -1655,6 +1655,7 @@ export class WorkflowService {
                     token: workflowToken?.token,
                     collectionFlowUrl: env.COLLECTION_FLOW_URL,
                     webUiSDKUrl: env.WEB_UI_SDK_URL,
+                    endUserId,
                   },
                 } as InputJsonValue,
                 projectId: currentProjectId,
@@ -1994,7 +1995,10 @@ export class WorkflowService {
     this.sentry.captureException(new Error('Workflow definition context validation failed'));
     this.logger.error('Workflow definition context validation failed', {
       errors: validate.errors,
-      context,
+      errorData: validate.errors?.map(error => ({
+        path: error.instancePath,
+        value: get(context, error.instancePath.split('/').filter(Boolean)),
+      })),
       workflowDefinitionId: workflowDefinition.id,
     });
   }
@@ -2257,11 +2261,28 @@ export class WorkflowService {
         );
       }
 
+      // Send the event to the workflow
       await service.sendEvent({
         type,
         ...(payload ? { payload } : {}),
       });
 
+      try {
+        const logs = (service as any).getLogs?.();
+        if (logs && Array.isArray(logs) && logs.length > 0) {
+          await this.workflowLogService.processWorkflowRunnerLogs(
+            workflowRuntimeData.id,
+            currentProjectId,
+            logs as WorkflowRunnerLogEntry[],
+            transaction,
+          );
+          (service as any).clearLogs?.();
+        }
+      } catch (error) {
+        this.logger.error('Failed to process workflow logs', { error });
+      }
+
+      // Get the snapshot after sending the event
       const snapshot = service.getSnapshot();
       const currentState = snapshot.value;
       const context = snapshot.machine?.context;

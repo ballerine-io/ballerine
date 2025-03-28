@@ -6,6 +6,7 @@ export interface ITheme {
   elements: Record<string, string | Record<string, string>>;
   ui?: {
     poweredBy?: boolean;
+    contactUsText?: string;
   };
   signup?: {
     showJobTitle?: boolean;

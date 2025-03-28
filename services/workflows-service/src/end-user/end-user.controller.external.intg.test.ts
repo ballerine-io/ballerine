@@ -42,6 +42,7 @@ import { NotionService } from '@/notion/notion.service';
 import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
 import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
+import { WorkflowLogService } from '@/workflow/workflow-log.service';
 
 const API_KEY = faker.datatype.uuid();
 
@@ -90,6 +91,7 @@ describe('#EndUserControllerExternal', () => {
       SentryService,
       SecretsManagerFactory,
       MerchantMonitoringClient,
+      WorkflowLogService,
     ];
     endUserService = (await fetchServiceFromModule(EndUserService, servicesProviders, [
       PrismaModule,

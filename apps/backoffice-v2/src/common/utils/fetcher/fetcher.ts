@@ -22,9 +22,14 @@ export const fetcher: IFetcher = async ({
 }) => {
   const controller = new AbortController();
   const { signal } = controller;
-  const timeoutRef = setTimeout(() => {
-    controller.abort(`Request timed out after ${timeout}ms`);
-  }, timeout);
+
+  const isDevelopment = import.meta.env.DEV;
+  const timeoutRef = !isDevelopment
+    ? setTimeout(() => {
+        controller.abort(`Request timed out after ${timeout}ms`);
+      }, timeout)
+    : null;
+
   const [res, fetchError] = await handlePromise(
     fetch(url, {
       ...options,
@@ -34,7 +39,8 @@ export const fetcher: IFetcher = async ({
       headers: isFormData ? undefined : headers,
     }),
   );
-  clearTimeout(timeoutRef);
+
+  if (timeoutRef) clearTimeout(timeoutRef);
 
   if (fetchError) {
     console.error(fetchError);
