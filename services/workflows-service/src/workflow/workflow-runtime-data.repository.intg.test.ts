@@ -38,7 +38,7 @@ import { NotionService } from '@/notion/notion.service';
 import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
 import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
-
+import { WorkflowLogService } from '@/workflow/workflow-log.service';
 describe('#Workflow Runtime Repository Integration Tests', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
   let userRepository: UserRepository;
@@ -82,6 +82,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       SentryService,
       SecretsManagerFactory,
       MerchantMonitoringClient,
+      WorkflowLogService,
     ];
 
     workflowRuntimeRepository = (await fetchServiceFromModule(
