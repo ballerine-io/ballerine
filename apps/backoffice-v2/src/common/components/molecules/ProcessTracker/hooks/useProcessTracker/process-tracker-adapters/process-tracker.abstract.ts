@@ -4,6 +4,7 @@ import { TWorkflowById } from '@/domains/workflows/fetchers';
 export interface ProcessTrackerItem {
   text: string | JSX.Element | undefined;
   leftIcon: JSX.Element | undefined;
+  rightIcon?: JSX.Element | undefined;
 }
 
 export abstract class IProcessTracker {

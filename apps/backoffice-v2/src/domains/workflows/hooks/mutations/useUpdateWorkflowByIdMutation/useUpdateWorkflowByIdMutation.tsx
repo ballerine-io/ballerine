@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { t } from 'i18next';
-import { fetchUpdateWorkflowById, TWorkflowById } from '../../../fetchers';
+import { toast } from 'sonner';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
+import { fetchUpdateWorkflowById, TWorkflowById } from '../../../fetchers';
 import { workflowsQueryKeys } from '../../../query-keys';
 
 export const useUpdateWorkflowByIdMutation = ({ workflowId }: { workflowId: string }) => {
@@ -19,7 +19,8 @@ export const useUpdateWorkflowByIdMutation = ({ workflowId }: { workflowId: stri
         | 'approve_document'
         | 'reject_document'
         | 'ask_revision_document'
-        | 'update_document_properties';
+        | 'update_document_properties'
+        | 'step_request';
     }) =>
       fetchUpdateWorkflowById({
         workflowId,
