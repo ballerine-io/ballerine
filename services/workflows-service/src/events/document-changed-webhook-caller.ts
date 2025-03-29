@@ -134,6 +134,7 @@ export class DocumentChangedWebhookCaller {
         oldDocuments,
         webhook,
         webhookSharedSecret,
+        forceDirect: !customer.features?.WEBHOOK_QUEUE_SYSTEM_ENABLED?.enabled,
       });
     }
   }
@@ -144,12 +145,14 @@ export class DocumentChangedWebhookCaller {
     oldDocuments,
     webhook: { id, url, environment, apiVersion },
     webhookSharedSecret,
+    forceDirect,
   }: {
     data: ExtractWorkflowEventData<'workflow.context.changed'>;
     newDocumentsByIdentifier: Record<string, DefaultContextSchema['documents'][number]>;
     oldDocuments: DefaultContextSchema['documents'];
     webhook: Webhook;
     webhookSharedSecret: string;
+    forceDirect?: boolean;
   }) {
     const payload = {
       id,
@@ -175,11 +178,10 @@ export class DocumentChangedWebhookCaller {
       data: data.updatedRuntimeData.context,
     } as const;
 
-    await this.webhooksService.invokeWebhook(payload.eventName, {
-      url,
-      method: 'POST',
-      data: payload,
-      secret: webhookSharedSecret,
-    });
+    await this.webhooksService.invokeWebhook(
+      payload.eventName,
+      { url, method: 'POST', data: payload, secret: webhookSharedSecret },
+      forceDirect,
+    );
   }
 }

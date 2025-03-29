@@ -120,6 +120,7 @@ export class WebhooksService {
   async invokeWebhook<T extends keyof OutgoingWebhookPayloads>(
     name: T,
     config: OutgoingWebhookJobData,
+    forceDirect?: boolean,
   ) {
     const { url, method, headers: argHeaders, data, secret, timeout } = config;
 
@@ -147,7 +148,7 @@ export class WebhooksService {
       timeout: timeout ?? 15_000,
     };
 
-    if (this.queue) {
+    if (this.queue && !forceDirect) {
       try {
         return await this.queue.queue.add(name, requestData);
       } catch (error) {
