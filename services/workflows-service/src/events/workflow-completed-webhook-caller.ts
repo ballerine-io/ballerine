@@ -76,6 +76,7 @@ export class WorkflowCompletedWebhookCaller {
         },
         webhook,
         webhookSharedSecret,
+        forceDirect: !customer.features?.WEBHOOK_QUEUE_SYSTEM_ENABLED?.enabled,
       });
     }
   }
@@ -84,10 +85,12 @@ export class WorkflowCompletedWebhookCaller {
     data,
     webhook: { id, url, environment, apiVersion },
     webhookSharedSecret,
+    forceDirect,
   }: {
     data: ExtractWorkflowEventData<'workflow.completed'>;
     webhook: Webhook;
     webhookSharedSecret: string;
+    forceDirect?: boolean;
   }) {
     // Omit from data properties already sent as part of the webhook payload
     const { runtimeData, correlationId, entityId, childWorkflowsRuntimeData, ...restData } = data;
@@ -118,12 +121,11 @@ export class WorkflowCompletedWebhookCaller {
       },
     } as const;
 
-    return this.webhooksService.invokeWebhook(payload.eventName, {
-      url,
-      method: 'POST',
-      data: payload,
-      secret: webhookSharedSecret,
-    });
+    return this.webhooksService.invokeWebhook(
+      payload.eventName,
+      { url, method: 'POST', data: payload, secret: webhookSharedSecret },
+      forceDirect,
+    );
   }
 
   private async updateSalesforceRecord(workflowRuntimeData: WorkflowRuntimeData) {

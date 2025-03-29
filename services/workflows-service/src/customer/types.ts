@@ -12,6 +12,7 @@ export type TAuthenticationConfiguration = {
 
 export const FEATURE_LIST = {
   ONGOING_MERCHANT_REPORT: 'ONGOING_MERCHANT_REPORT',
+  WEBHOOK_QUEUE_SYSTEM_ENABLED: 'WEBHOOK_QUEUE_SYSTEM_ENABLED',
   DOCUMENT_OCR: 'isDocumentOcrEnabled',
 } as const;
 
