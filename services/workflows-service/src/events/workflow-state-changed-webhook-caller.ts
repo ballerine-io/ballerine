@@ -47,7 +47,12 @@ export class WorkflowStateChangedWebhookCaller {
       customer.authenticationConfiguration as TAuthenticationConfiguration;
 
     for (const webhook of webhooks) {
-      await this.sendWebhook({ data, webhook, webhookSharedSecret });
+      await this.sendWebhook({
+        data,
+        webhook,
+        webhookSharedSecret,
+        forceDirect: !customer.features?.WEBHOOK_QUEUE_SYSTEM_ENABLED?.enabled,
+      });
     }
   }
 
@@ -55,10 +60,12 @@ export class WorkflowStateChangedWebhookCaller {
     data,
     webhook: { id, url, environment, apiVersion },
     webhookSharedSecret,
+    forceDirect,
   }: {
     data: ExtractWorkflowEventData<'workflow.state.changed'>;
     webhook: Webhook;
     webhookSharedSecret: string;
+    forceDirect?: boolean;
   }) {
     const payload = {
       id,
@@ -76,11 +83,10 @@ export class WorkflowStateChangedWebhookCaller {
       data: data.runtimeData.context,
     } as const;
 
-    await this.webhooksService.invokeWebhook(payload.eventName, {
-      url,
-      method: 'POST',
-      data: payload,
-      secret: webhookSharedSecret,
-    });
+    await this.webhooksService.invokeWebhook(
+      payload.eventName,
+      { url, method: 'POST', data: payload, secret: webhookSharedSecret },
+      forceDirect,
+    );
   }
 }
