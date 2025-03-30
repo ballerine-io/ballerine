@@ -132,5 +132,9 @@
   "step_request": {
     "success": "Step request sent successfully.",
     "error": "Error occurred while sending step request.\n\n{{errorMessage}}"
+  },
+  "step_cancel": {
+    "success": "Step request cancelled successfully.",
+    "error": "Error occurred while cancelling step request.\n\n{{errorMessage}}"
   }
 }

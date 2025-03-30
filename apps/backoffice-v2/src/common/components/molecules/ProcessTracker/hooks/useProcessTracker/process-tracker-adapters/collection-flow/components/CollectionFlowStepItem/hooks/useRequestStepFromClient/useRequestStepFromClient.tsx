@@ -42,7 +42,7 @@ export const useRequestStepFromClient = ({
 
     updateWorkflowById({
       context: updatedContext,
-      action: 'step_request',
+      action: 'step_cancel',
     });
   }, [workflow, step, updateWorkflowById]);
 

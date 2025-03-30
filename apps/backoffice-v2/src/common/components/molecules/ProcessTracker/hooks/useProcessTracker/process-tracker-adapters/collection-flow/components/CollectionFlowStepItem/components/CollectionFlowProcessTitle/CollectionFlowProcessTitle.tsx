@@ -11,15 +11,12 @@ interface ICollectionFlowProcessTitleProps {
 export const CollectionFlowProcessTitle = ({ workflow }: ICollectionFlowProcessTitleProps) => {
   const { stepsCountToRequest, isLoading, sendRequestedStepsToRevision } =
     useStepsRequesting(workflow);
-  const isShouldDisplayRequestButton = Number(stepsCountToRequest) > 0;
+  const isShouldDisplayRequestButton = stepsCountToRequest > 0;
 
   const isCanRequestSteps = useIsCanRequestSteps(workflow);
 
   return (
-    <div
-      className="flex w-full flex-row items-center justify-between gap-2 pr-2 !no-underline hover:no-underline"
-      onClick={e => e.stopPropagation()}
-    >
+    <div className="flex w-full flex-row items-center justify-between gap-2 pr-2 !no-underline hover:no-underline">
       <div
         className={ctw('whitespace-nowrap no-underline', {
           ['max-w-[60px] overflow-hidden text-ellipsis']: isShouldDisplayRequestButton,
@@ -28,12 +25,14 @@ export const CollectionFlowProcessTitle = ({ workflow }: ICollectionFlowProcessT
       >
         Collection Flow
       </div>
-      <RequestProcesses
-        requestCount={Number(stepsCountToRequest)}
-        isLoading={isLoading}
-        disabled={!isCanRequestSteps}
-        onConfirm={sendRequestedStepsToRevision}
-      />
+      {stepsCountToRequest > 0 && (
+        <RequestProcesses
+          requestCount={stepsCountToRequest}
+          isLoading={isLoading}
+          disabled={!isCanRequestSteps}
+          onConfirm={sendRequestedStepsToRevision}
+        />
+      )}
     </div>
   );
 };

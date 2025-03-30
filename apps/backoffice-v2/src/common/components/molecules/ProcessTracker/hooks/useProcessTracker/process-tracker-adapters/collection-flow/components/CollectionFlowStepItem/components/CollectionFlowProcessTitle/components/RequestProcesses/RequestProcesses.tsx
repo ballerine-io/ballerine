@@ -52,7 +52,14 @@ export const RequestProcesses = ({
         </DialogDescription>
 
         <DialogFooter>
-          <Button type="button" onClick={onConfirm}>
+          <Button
+            type="button"
+            onClick={() => {
+              onOpenChange(false);
+
+              onConfirm();
+            }}
+          >
             Send email
           </Button>
         </DialogFooter>
