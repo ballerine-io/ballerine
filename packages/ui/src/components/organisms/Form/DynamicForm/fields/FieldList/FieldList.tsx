@@ -1,3 +1,4 @@
+import { ctw } from '@/common';
 import { Button } from '@/components/atoms';
 import { Renderer, TRendererSchema } from '@/components/organisms/Renderer';
 import { FocusEventHandler } from 'react';
@@ -62,7 +63,9 @@ export const FieldList: TDynamicFormField<IFieldListParams> = props => {
               <span
                 role="button"
                 tabIndex={0}
-                className="cursor-pointer text-sm"
+                className={ctw('cursor-pointer text-sm', {
+                  'pointer-events-none opacity-50': disabled,
+                })}
                 onClick={() => removeItem(index)}
                 data-testid={`${fieldId}-fieldlist-item-remove-${index}`}
               >

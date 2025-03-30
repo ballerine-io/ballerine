@@ -9,8 +9,9 @@ import {
   updateCollectionFlowStep,
 } from '@ballerine/common';
 import { DynamicFormV2, IDynamicFormValidationParams, IFormRef } from '@ballerine/ui';
-import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useRef } from 'react';
 import { toast } from 'sonner';
+import { RevisionBlock } from './components/shared/RevisionBlock';
 import { usePluginsSubscribe } from './components/utility/PluginsRunner';
 import { usePlugins } from './components/utility/PluginsRunner/hooks/external/usePlugins';
 import { TPluginListener } from './components/utility/PluginsRunner/hooks/internal/usePluginsRunner/usePluginListeners';
@@ -78,6 +79,20 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
     }),
     [appMetadata, pluginStatuses, isSyncing, _uiSchemaMetadata, page, context],
   );
+
+  useEffect(() => {
+    const currentStep = getCollectionFlowState(context)?.steps?.find(
+      step => step.stepName === page.stateName,
+    );
+
+    if (currentStep?.state === CollectionFlowStepStatesEnum.idle) {
+      updateCollectionFlowStep(context, page.stateName, {
+        state: CollectionFlowStepStatesEnum.inProgress,
+      });
+
+      stateApi.setContext(context);
+    }
+  }, [page, context, stateApi]);
 
   const handleChange = useCallback(
     (values: CollectionFlowContext) => {
@@ -155,17 +170,20 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
   );
 
   return (
-    <DynamicFormV2
-      fieldExtends={formElementsExtends}
-      elements={page.elements}
-      values={context as CollectionFlowContext}
-      onChange={handleChange as (newValues: object) => void}
-      onEvent={handleEvent}
-      onSubmit={handleSubmit as (values: object) => void}
-      priorityFields={revisionFields}
-      validationParams={validationParams}
-      metadata={metadata}
-      ref={formRef}
-    />
+    <div className="flex flex-col gap-4">
+      <RevisionBlock page={page} context={context} />
+      <DynamicFormV2
+        fieldExtends={formElementsExtends}
+        elements={page.elements}
+        values={context as CollectionFlowContext}
+        onChange={handleChange as (newValues: object) => void}
+        onEvent={handleEvent}
+        onSubmit={handleSubmit as (values: object) => void}
+        priorityFields={revisionFields}
+        validationParams={validationParams}
+        metadata={metadata}
+        ref={formRef}
+      />
+    </div>
   );
 };
