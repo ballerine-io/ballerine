@@ -25,11 +25,26 @@ export const useStatisticsLogic = () => {
   const {
     data: metrics,
     isLoading: isLoadingMetrics,
-    error,
+    error: metricsQueryError,
   } = useBusinessReportMetricsQuery({
     from,
     to: dayjs(from).add(1, 'month').format('YYYY-MM-DD'),
   });
+
+  const {
+    data: caseMetrics,
+    isLoading: isLoadingCaseMetrics,
+    error: caseMetricsQueryError,
+  } = {
+    data: metrics,
+    isLoading: isLoadingMetrics,
+    error: metricsQueryError,
+  };
+
+  // = useCaseMetricsQuery({
+  //   from,
+  //   to: dayjs(from).add(1, 'month').format('YYYY-MM-DD'),
+  // });
 
   const handleDateChange = (newDate: Date) => {
     const formattedDate = dayjs(newDate).startOf('month').format('YYYY-MM-DD');
@@ -41,9 +56,11 @@ export const useStatisticsLogic = () => {
     locale,
     metrics,
     isLoadingMetrics,
+    caseMetrics,
+    isLoadingCaseMetrics,
     customer,
     isLoadingCustomer,
-    error,
+    error: metricsQueryError || caseMetricsQueryError,
     date: dayjs(from).toDate(),
     setDate: handleDateChange,
   };
