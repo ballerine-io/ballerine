@@ -10,7 +10,7 @@ export const useIsCanRequestSteps = (workflow: TWorkflowById) => {
   const caseState = useCaseState(session?.user || null, workflow);
 
   const isCanRequestSteps = useMemo(() => {
-    if (isLoading) {
+    if (!workflow?.workflowDefinition.config?.isCollectionFlowPageRevisionEnabled || isLoading) {
       return false;
     }
 
