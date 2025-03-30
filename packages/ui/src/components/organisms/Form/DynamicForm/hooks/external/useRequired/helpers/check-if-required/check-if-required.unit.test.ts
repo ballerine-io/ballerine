@@ -148,4 +148,24 @@ describe('checkIfRequired', () => {
       },
     ]);
   });
+
+  it('should return true only if globalValidationRules are present', () => {
+    const element: IFormElement = {
+      id: 'test',
+      element: 'test',
+      valueDestination: 'test',
+    };
+
+    const globalValidationRules = [
+      {
+        type: 'required',
+        value: {},
+        message: 'Field is required',
+      },
+    ];
+
+    const result = checkIfRequired(element, {}, [], globalValidationRules);
+
+    expect(result).toBe(true);
+  });
 });
