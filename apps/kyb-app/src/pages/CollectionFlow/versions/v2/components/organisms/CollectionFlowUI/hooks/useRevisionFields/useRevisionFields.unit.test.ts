@@ -63,7 +63,7 @@ describe('useRevisionFields', () => {
     expect(generateFieldsForRevision).toHaveBeenCalledTimes(1);
   });
 
-  it('should recalculate when pages change', () => {
+  it('should be calculated once per session', () => {
     // Arrange
     const newMockPages = [
       {
@@ -80,25 +80,6 @@ describe('useRevisionFields', () => {
     rerender({ pages: newMockPages, context: mockContext });
 
     // Assert
-    expect(generateFieldsForRevision).toHaveBeenCalledTimes(2);
-    expect(generateFieldsForRevision).toHaveBeenLastCalledWith(newMockPages, mockContext);
-  });
-
-  it('should recalculate when context changes', () => {
-    // Arrange
-    const newMockContext = {
-      documents: [{ id: 'doc1' }],
-    } as unknown as CollectionFlowContext;
-
-    // Act
-    const { rerender } = renderHook(({ pages, context }) => useRevisionFields(pages, context), {
-      initialProps: { pages: mockPages, context: mockContext },
-    });
-
-    rerender({ pages: mockPages, context: newMockContext });
-
-    // Assert
-    expect(generateFieldsForRevision).toHaveBeenCalledTimes(2);
-    expect(generateFieldsForRevision).toHaveBeenLastCalledWith(mockPages, newMockContext);
+    expect(generateFieldsForRevision).toHaveBeenCalledTimes(1);
   });
 });
