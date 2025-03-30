@@ -199,7 +199,7 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
                   tabIndex={0}
                   aria-disabled={isRemovingEntity}
                   className={clsx('cursor-pointer text-sm font-bold', {
-                    'pointer-events-none opacity-50': isRemovingEntity,
+                    'pointer-events-none opacity-50': isRemovingEntity || disabled,
                   })}
                   data-testid={`${fieldId}-fieldlist-item-remove-${entity.__id}`}
                   onClick={isRemovingEntity ? undefined : () => removeItem(entity.__id!)}
