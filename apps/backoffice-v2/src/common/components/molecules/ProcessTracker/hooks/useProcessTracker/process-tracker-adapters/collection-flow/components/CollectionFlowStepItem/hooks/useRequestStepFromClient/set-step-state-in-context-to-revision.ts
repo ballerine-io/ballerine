@@ -9,7 +9,7 @@ export const updateStepStateAndReasonInContext = (
   workflow: TWorkflowById,
   step: TCollectionFlowStep,
   state: keyof typeof CollectionFlowStepStatesEnum,
-  reason: string,
+  reason: string | undefined,
 ) => {
   const context = structuredClone(workflow.context);
 

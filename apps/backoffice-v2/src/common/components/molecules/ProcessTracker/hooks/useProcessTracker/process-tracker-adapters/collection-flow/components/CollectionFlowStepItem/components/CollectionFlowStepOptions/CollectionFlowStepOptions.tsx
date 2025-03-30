@@ -15,19 +15,22 @@ import { DialogFooter } from '@/common/components/organisms/Dialog/Dialog.Footer
 import { DialogHeader } from '@/common/components/organisms/Dialog/Dialog.Header';
 import { DialogTitle } from '@/common/components/organisms/Dialog/Dialog.Title';
 import { DialogTrigger } from '@/common/components/organisms/Dialog/Dialog.Trigger';
+import { CollectionFlowStepStatesEnum, TCollectionFlowStep } from '@ballerine/common';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { FilePlus2, MoreVertical } from 'lucide-react';
 import { useCallback } from 'react';
 import { useReasonInput } from './hooks/useReasonInput';
 
 export interface ICollectionFlowStepOptionsProps {
+  step: TCollectionFlowStep;
   onRequestStepFromClient: (reason: string) => void;
+  onCancelStep: () => void;
 }
 
 export const CollectionFlowStepOptions = ({
   step,
-  workflow,
   onRequestStepFromClient,
+  onCancelStep,
 }: ICollectionFlowStepOptionsProps) => {
   const { reason, setReason, clearReason } = useReasonInput();
 
@@ -49,25 +52,39 @@ export const CollectionFlowStepOptions = ({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="px-0">
-          <DropdownMenuItem className="w-full px-8 py-1" asChild>
-            <DialogTrigger asChild>
-              <Button type="button" variant={'ghost'} className="justify-start px-2">
+          {step.state !== CollectionFlowStepStatesEnum.revision ? (
+            <DropdownMenuItem className="w-full px-8 py-1" asChild>
+              <DialogTrigger asChild>
+                <Button type="button" variant={'ghost'} className="w-full justify-start pl-2">
+                  <FilePlus2 size={16} className="me-2" />
+                  Request from client
+                </Button>
+              </DialogTrigger>
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem className="w-full pl-0">
+              <Button
+                type="button"
+                variant={'ghost'}
+                className="w-full justify-start pl-2"
+                onClick={onCancelStep}
+              >
                 <FilePlus2 size={16} className="me-2" />
-                Request from client
+                Cancel request
               </Button>
-            </DialogTrigger>
-          </DropdownMenuItem>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
       <DialogContent className="px-16 py-12 sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="mb-4 text-2xl">Request document from the client</DialogTitle>
+          <DialogTitle className="mb-4 text-2xl">Request step resubmission from client</DialogTitle>
           <DialogDescription className="text-base text-primary">
-            By clicking the &quot;Mark for Request&quot;, the document will be marked as requested.
+            By clicking the &quot;Mark for Request&quot;, the step will be marked for resubmission.
             <br />
-            Once marked, you can use the &quot;Request&quot; button button at the top of the
-            documents list to send an email to the customer, asking to upload all of the documents
-            you have marked as needed.
+            Once marked, you can use the &quot;Request&quot; button at the top of the steps list to
+            send an email to the customer, asking them to resubmit all of the steps you have marked
+            as needed.
           </DialogDescription>
         </DialogHeader>
 
@@ -81,8 +98,9 @@ export const CollectionFlowStepOptions = ({
           placeholder="Add reason"
         />
         <p>
-          Use the reason input to tell the client why they are required to upload this document. The
-          reason will be visible to the client on the data collection flow on the document uploader
+          Use the reason input to tell the client why they are required to resubmit this step. The
+          reason will be visible to the client on the data collection flow during the resubmission
+          process
         </p>
 
         <DialogFooter>

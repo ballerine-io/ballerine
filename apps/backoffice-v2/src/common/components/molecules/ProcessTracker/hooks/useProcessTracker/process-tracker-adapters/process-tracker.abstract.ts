@@ -14,5 +14,7 @@ export abstract class IProcessTracker {
 
   abstract buildItems(): ProcessTrackerItem[];
 
-  abstract getReadableName(): string;
+  abstract getTitle(): string | JSX.Element;
+
+  abstract getItemParams(): object;
 }

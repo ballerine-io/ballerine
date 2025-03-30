@@ -32,5 +32,19 @@ export const useRequestStepFromClient = ({
     [updateWorkflowById, workflow, step],
   );
 
-  return { onRequestStepFromClient, isLoading };
+  const onCancelStepRequest = useCallback(() => {
+    const updatedContext = updateStepStateAndReasonInContext(
+      workflow,
+      step,
+      CollectionFlowStepStatesEnum.completed,
+      undefined,
+    );
+
+    updateWorkflowById({
+      context: updatedContext,
+      action: 'step_request',
+    });
+  }, [workflow, step, updateWorkflowById]);
+
+  return { onRequestStepFromClient, onCancelStepRequest, isLoading };
 };

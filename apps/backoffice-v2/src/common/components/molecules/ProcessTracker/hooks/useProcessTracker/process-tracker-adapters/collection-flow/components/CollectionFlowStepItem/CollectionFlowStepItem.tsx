@@ -1,11 +1,9 @@
-import { CaseState } from '@/common/enums';
-import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { TCollectionFlowStep } from '@ballerine/common';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@ballerine/ui';
 import { titleCase } from 'string-ts';
 import { CollectionFlowStepOptions } from './components/CollectionFlowStepOptions';
+import { useIsCanRequestStep } from './hooks/useIsCanRequestStep';
 import { useRequestStepFromClient } from './hooks/useRequestStepFromClient';
 
 export interface ICollectionFlowStepItemProps {
@@ -18,13 +16,11 @@ export const CollectionFlowStepItem = ({
   step,
   workflow,
 }: ICollectionFlowStepItemProps) => {
-  const { onRequestStepFromClient, isLoading } = useRequestStepFromClient({
+  const { onRequestStepFromClient, onCancelStepRequest, isLoading } = useRequestStepFromClient({
     workflow,
     step,
   });
-  const { data: session } = useAuthenticatedUserQuery();
-  const caseState = useCaseState(session?.user, workflow);
-  const isAssignedToMe = caseState === CaseState.ASSIGNED_TO_ME;
+  const isCanRequestStep = useIsCanRequestStep(workflow, step);
 
   return (
     <div className="group flex w-full flex-row justify-between">
@@ -43,17 +39,21 @@ export const CollectionFlowStepItem = ({
         </TooltipProvider>
         {titleCase(step.stepName)}
       </div>
-      {isAssignedToMe && (
+      {isCanRequestStep ? (
         <div className="invisible pr-3 group-hover:visible">
           {isLoading ? (
             <div className="flex items-center justify-center">
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-solid border-primary border-t-transparent"></div>
             </div>
           ) : (
-            <CollectionFlowStepOptions onRequestStepFromClient={onRequestStepFromClient} />
+            <CollectionFlowStepOptions
+              onRequestStepFromClient={onRequestStepFromClient}
+              onCancelStep={onCancelStepRequest}
+              step={step}
+            />
           )}
         </div>
-      )}
+      ) : null}
     </div>
   );
 };

@@ -7,6 +7,7 @@ import {
   TCollectionFlowStep,
 } from '@ballerine/common';
 import { CollectionFlowStepItem } from './components/CollectionFlowStepItem';
+import { CollectionFlowProcessTitle } from './components/CollectionFlowStepItem/components/CollectionFlowProcessTitle';
 
 export class CollectionFlowProcessTracker implements IProcessTracker {
   PROCESS_NAME = 'collection-flow';
@@ -28,8 +29,16 @@ export class CollectionFlowProcessTracker implements IProcessTracker {
     });
   }
 
-  getReadableName(): string {
-    return 'Collection Flow';
+  getTitle() {
+    return <CollectionFlowProcessTitle workflow={this.workflow} />;
+  }
+
+  getItemParams(): object {
+    return {
+      accordionTriggerProps: {
+        className: 'hover:no-underline',
+      },
+    };
   }
 
   private getSteps(): TCollectionFlowStep[] {
