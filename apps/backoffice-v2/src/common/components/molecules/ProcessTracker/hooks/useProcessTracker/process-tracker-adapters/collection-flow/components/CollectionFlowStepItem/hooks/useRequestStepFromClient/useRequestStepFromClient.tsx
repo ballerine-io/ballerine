@@ -5,20 +5,22 @@ import { useCallback } from 'react';
 import { updateStepStateAndReasonInContext } from './set-step-state-in-context-to-revision';
 
 export const useRequestStepFromClient = ({
-  workflow,
+  workflowId,
+  context,
   step,
 }: {
-  workflow: TWorkflowById;
+  workflowId: string;
+  context: TWorkflowById['context'];
   step: TCollectionFlowStep;
 }) => {
   const { isLoading, mutate: updateWorkflowById } = useUpdateWorkflowByIdMutation({
-    workflowId: workflow.id,
+    workflowId,
   });
 
   const onRequestStepFromClient = useCallback(
     (reason: string) => {
       const updatedContext = updateStepStateAndReasonInContext(
-        workflow,
+        context,
         step,
         CollectionFlowStepStatesEnum.revision,
         reason,
@@ -29,12 +31,12 @@ export const useRequestStepFromClient = ({
         action: 'step_request',
       });
     },
-    [updateWorkflowById, workflow, step],
+    [updateWorkflowById, context, step],
   );
 
   const onCancelStepRequest = useCallback(() => {
     const updatedContext = updateStepStateAndReasonInContext(
-      workflow,
+      context,
       step,
       CollectionFlowStepStatesEnum.completed,
       undefined,
@@ -44,7 +46,7 @@ export const useRequestStepFromClient = ({
       context: updatedContext,
       action: 'step_cancel',
     });
-  }, [workflow, step, updateWorkflowById]);
+  }, [context, step, updateWorkflowById]);
 
   return { onRequestStepFromClient, onCancelStepRequest, isLoading };
 };

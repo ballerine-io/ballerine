@@ -6,17 +6,17 @@ import {
 } from '@ballerine/common';
 
 export const updateStepStateAndReasonInContext = (
-  workflow: TWorkflowById,
+  context: TWorkflowById['context'],
   step: TCollectionFlowStep,
   state: keyof typeof CollectionFlowStepStatesEnum,
   reason: string | undefined,
 ) => {
-  const context = structuredClone(workflow.context);
+  const contextClone = structuredClone(context);
 
-  updateCollectionFlowStep(context, step.stepName, {
+  updateCollectionFlowStep(contextClone, step.stepName, {
     state,
     reason,
   });
 
-  return context;
+  return contextClone;
 };

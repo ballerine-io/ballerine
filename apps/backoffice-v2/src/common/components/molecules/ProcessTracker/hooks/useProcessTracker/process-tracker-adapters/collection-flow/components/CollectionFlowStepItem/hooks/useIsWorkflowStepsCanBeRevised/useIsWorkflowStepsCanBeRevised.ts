@@ -1,26 +1,39 @@
-import { CaseState } from '@/common/enums';
-import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { TAuthenticatedUser } from '@/domains/auth/types';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { StateTag } from '@ballerine/common';
 import { useMemo } from 'react';
 
-export const useIsWorkflowStepsCanBeRevised = (workflow: TWorkflowById) => {
-  const { data: session, isLoading } = useAuthenticatedUserQuery();
-  const caseState = useCaseState(session?.user || null, workflow);
+export interface IUseIsWorkflowStepsCanBeRevisedProps {
+  authenticatedUser: TAuthenticatedUser;
+  workflowAssigneeId: string | undefined;
+  workflowConfig?: TWorkflowById['workflowDefinition']['config'];
+  workflowTags: TWorkflowById['tags'];
+}
 
-  const isCanRequestSteps = useMemo(() => {
-    if (!workflow?.workflowDefinition.config?.isCollectionFlowPageRevisionEnabled || isLoading) {
+export const useIsWorkflowStepsCanBeRevised = ({
+  authenticatedUser,
+  workflowAssigneeId,
+  workflowConfig,
+  workflowTags,
+}: IUseIsWorkflowStepsCanBeRevisedProps) => {
+  const isAssignedToMe = useMemo(() => {
+    if (!authenticatedUser || !workflowAssigneeId) {
       return false;
     }
 
-    const isAssignedToMe = caseState === CaseState.ASSIGNED_TO_ME;
+    return workflowAssigneeId === authenticatedUser.id;
+  }, [authenticatedUser, workflowAssigneeId]);
+
+  const isCanRequestSteps = useMemo(() => {
+    if (!workflowConfig?.isCollectionFlowPageRevisionEnabled) {
+      return false;
+    }
 
     return (
       isAssignedToMe &&
-      workflow?.tags?.some(tag => [StateTag.MANUAL_REVIEW, StateTag.PENDING_PROCESS].includes(tag))
+      workflowTags?.some(tag => [StateTag.MANUAL_REVIEW, StateTag.PENDING_PROCESS].includes(tag))
     );
-  }, [caseState, workflow, isLoading]);
+  }, [isAssignedToMe, workflowTags, workflowConfig]);
 
   return isCanRequestSteps;
 };

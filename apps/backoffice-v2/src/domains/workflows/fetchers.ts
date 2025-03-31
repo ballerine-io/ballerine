@@ -75,6 +75,7 @@ export const fetchWorkflows = async (params: {
 
 export const BaseWorkflowByIdSchema = z.object({
   id: z.string(),
+  assigneeId: z.string().nullable().optional(),
   status: z.string(),
   state: z.string().nullable(),
   nextEvents: z.array(z.any()),

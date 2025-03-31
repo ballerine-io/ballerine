@@ -5,6 +5,7 @@ import { titleCase } from 'string-ts';
 import { CollectionFlowStepOptions } from './components/CollectionFlowStepOptions';
 import { useIsCurrentStepCanBeRevised } from './hooks/useIsCurrentStepCanBeRevised';
 import { useRequestStepFromClient } from './hooks/useRequestStepFromClient';
+import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 
 export interface ICollectionFlowStepItemProps {
   leftIcon: JSX.Element;
@@ -16,11 +17,22 @@ export const CollectionFlowStepItem = ({
   step,
   workflow,
 }: ICollectionFlowStepItemProps) => {
+  const { data: session } = useAuthenticatedUserQuery();
+  const authenticatedUser = session?.user || null;
+
   const { onRequestStepFromClient, onCancelStepRequest, isLoading } = useRequestStepFromClient({
-    workflow,
+    workflowId: workflow.id,
+    context: workflow.context,
     step,
   });
-  const isCanRequestStep = useIsCurrentStepCanBeRevised(workflow, step);
+
+  const isCanRequestStep = useIsCurrentStepCanBeRevised({
+    authenticatedUser: authenticatedUser,
+    workflowAssigneeId: workflow.assigneeId || workflow.assignee?.id,
+    workflowConfig: workflow.workflowDefinition.config,
+    workflowTags: workflow.tags,
+    step,
+  });
 
   return (
     <div className="group flex w-full flex-row justify-between">
