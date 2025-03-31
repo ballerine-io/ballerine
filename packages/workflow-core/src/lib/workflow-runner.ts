@@ -62,6 +62,8 @@ import {
   WorkflowEventWithoutState,
   WorkflowExtensions,
   WorkflowRunnerArgs,
+  WorkflowLogEntry,
+  WorkflowLogCategory,
 } from './types';
 import { ArrayMergeOption, deepMergeWithOptions, TContext } from './utils';
 import { hasPersistResponseDestination } from './utils/has-persistence-response-destination';
@@ -79,6 +81,8 @@ export class WorkflowRunner {
   #__runtimeId: string;
   events: any;
   #__secretsManager: SecretsManager | undefined;
+  #__enableLogging: boolean;
+  #__auditLogs: WorkflowLogEntry[] = [];
 
   public get workflow() {
     return this.#__workflow;
@@ -100,6 +104,7 @@ export class WorkflowRunner {
       invokeChildWorkflowAction,
       invokeWorkflowTokenAction,
       secretsManager,
+      enableLogging = true,
     }: WorkflowRunnerArgs,
     debugMode = false,
   ) {
@@ -109,6 +114,7 @@ export class WorkflowRunner {
     this.__extensions.statePlugins ??= [];
     this.#__debugMode = debugMode;
     this.#__secretsManager = secretsManager;
+    this.#__enableLogging = enableLogging;
 
     this.__extensions.dispatchEventPlugins = this.initiateDispatchEventPlugins(
       this.__extensions.dispatchEventPlugins ?? [],
@@ -579,6 +585,16 @@ export class WorkflowRunner {
   async sendEvent(event: WorkflowEventWithoutState, additionalContext?: AnyRecord) {
     const workflow = this.#__workflow.withContext(this.context);
 
+    // Log event received
+    this.auditLog({
+      category: WorkflowLogCategory.EVENT_RECEIVED,
+      message: `Received event: ${event.type}`,
+      eventName: event.type,
+      metadata: {
+        currentState: this.#__currentState,
+      },
+    });
+
     logger.log('WORKFLOW CORE:: Received event', {
       eventType: event.type,
       currentState: this.#__currentState,
@@ -590,13 +606,28 @@ export class WorkflowRunner {
       .start(this.#__currentState)
       .onTransition((state, context) => {
         if (state.changed) {
+          // Log state transition
+          this.auditLog({
+            category: WorkflowLogCategory.STATE_TRANSITION,
+            message: `State transitioned from ${previousState} to ${state.value}`,
+            metadata: {
+              tags: Array.from(state.tags),
+              isDone: state.done,
+              hasFailure: state.tags.has('failure'),
+            },
+            previousState: previousState as string,
+            newState: state.value as string,
+          });
+
           logger.log('WORKFLOW CORE:: State transitioned', {
             previousState,
             nextState: state.value,
           });
 
           if (state.done) {
-            logger.log('WORKFLOW CORE:: Reached final state');
+            logger.log('WORKFLOW CORE:: Reached final state', {
+              state: state.value,
+            });
           }
 
           if (state.tags.has('failure')) {
@@ -616,6 +647,13 @@ export class WorkflowRunner {
       })
       // .onEvent(event => {})
       .onChange(state => {
+        // Log context change
+        this.auditLog({
+          category: WorkflowLogCategory.CONTEXT_CHANGED,
+          message: 'Context/State changed',
+          metadata: {},
+        });
+
         logger.log('WORKFLOW CORE:: Context/State changed', { state });
       });
 
@@ -623,11 +661,21 @@ export class WorkflowRunner {
     service.start();
 
     if (!service.getSnapshot().nextEvents.includes(event.type)) {
-      throw new Error(
-        `Event ${event.type} is not allowed in the current state: ${JSON.stringify(
-          this.#__currentState,
-        )}`,
-      );
+      const errorMessage = `Event ${
+        event.type
+      } is not allowed in the current state: ${JSON.stringify(this.#__currentState)}`;
+
+      // Log error
+      this.auditLog({
+        category: WorkflowLogCategory.ERROR,
+        message: errorMessage,
+        metadata: {
+          eventType: event.type,
+          currentState: this.#__currentState,
+        },
+      });
+
+      throw new Error(errorMessage);
     }
 
     // Non-blocking plugins are executed as actions
@@ -643,6 +691,17 @@ export class WorkflowRunner {
     const snapshot = service.getSnapshot();
 
     for (const prePlugin of prePlugins) {
+      // Log plugin invocation
+      this.auditLog({
+        category: WorkflowLogCategory.PLUGIN_INVOCATION,
+        message: `Invoking pre-plugin: ${prePlugin.name}`,
+        pluginName: prePlugin.name,
+        metadata: {
+          pluginType: 'pre',
+          currentState: this.#__currentState,
+        },
+      });
+
       logger.log(
         'WORKFLOW CORE:: Pre plugins are about to be deprecated. Please contact the team for more info',
       );
@@ -660,6 +719,11 @@ export class WorkflowRunner {
     this.context = postSendSnapshot.context;
 
     if (previousState === postSendSnapshot.value) {
+      this.auditLog({
+        category: WorkflowLogCategory.INFO,
+        message: 'No transition occurred, skipping plugins',
+      });
+
       logger.log('WORKFLOW CORE:: No transition occurred, skipping plugins');
       return;
     }
@@ -682,24 +746,68 @@ export class WorkflowRunner {
 
     if (dispatchEventPlugins) {
       for (const dispatchEventPlugin of dispatchEventPlugins) {
+        // Log plugin invocation
+        this.auditLog({
+          category: WorkflowLogCategory.PLUGIN_INVOCATION,
+          message: `Invoking dispatch event plugin: ${dispatchEventPlugin.name}`,
+          pluginName: dispatchEventPlugin.name,
+          metadata: {
+            pluginType: 'dispatchEvent',
+            currentState: this.#__currentState,
+          },
+        });
+
         await this.__dispatchEvent(dispatchEventPlugin);
       }
     }
 
     if (childPlugins) {
       for (const childPlugin of childPlugins) {
+        // Log plugin invocation
+        this.auditLog({
+          category: WorkflowLogCategory.PLUGIN_INVOCATION,
+          message: `Invoking child plugin: ${childPlugin.name}`,
+          pluginName: childPlugin.name,
+          metadata: {
+            pluginType: 'child',
+            currentState: this.#__currentState,
+          },
+        });
+
         await this.__invokeChildPlugin(childPlugin);
       }
     }
 
     if (commonPlugins) {
       for (const commonPlugin of commonPlugins) {
+        // Log plugin invocation
+        this.auditLog({
+          category: WorkflowLogCategory.PLUGIN_INVOCATION,
+          message: `Invoking common plugin: ${commonPlugin.name}`,
+          pluginName: commonPlugin.name,
+          metadata: {
+            pluginType: 'common',
+            currentState: this.#__currentState,
+          },
+        });
+
         await this.__invokeCommonPlugin(commonPlugin);
       }
     }
 
     if (stateApiPlugins) {
       for (const apiPlugin of stateApiPlugins) {
+        // Log plugin invocation
+        this.auditLog({
+          category: WorkflowLogCategory.PLUGIN_INVOCATION,
+          message: `Invoking API plugin: ${apiPlugin.name}`,
+          pluginName: apiPlugin.name,
+          metadata: {
+            pluginType: 'api',
+            currentState: this.#__currentState,
+          },
+        });
+
         await this.__invokeApiPlugin(apiPlugin, additionalContext);
       }
     }
@@ -718,6 +826,17 @@ export class WorkflowRunner {
       ) ?? [];
 
     for (const postPlugin of postPlugins) {
+      // Log plugin invocation
+      this.auditLog({
+        category: WorkflowLogCategory.PLUGIN_INVOCATION,
+        message: `Invoking post-plugin: ${postPlugin.name}`,
+        metadata: {
+          pluginType: 'post',
+          pluginName: postPlugin.name,
+          currentState: this.#__currentState,
+        },
+      });
+
       await this.#__handleAction({
         type: 'STATE_ACTION_STATUS',
         plugin: postPlugin,
@@ -793,7 +912,6 @@ export class WorkflowRunner {
         error,
         stack: error instanceof Error ? error.stack : undefined,
         name: apiPlugin.name,
-        context: this.context,
       });
     }
 
@@ -801,6 +919,7 @@ export class WorkflowRunner {
       logger.log('WORKFLOW CORE:: Plugin does not have callback action', {
         name: apiPlugin.name,
       });
+
       return;
     }
 
@@ -991,5 +1110,47 @@ export class WorkflowRunner {
     }
 
     return output;
+  }
+
+  // Add new method to get logs
+  getLogs(): WorkflowLogEntry[] {
+    return [...this.#__auditLogs];
+  }
+
+  // Add new method to clear logs
+  clearLogs(): void {
+    this.#__auditLogs = [];
+  }
+
+  // Add log method
+  private auditLog({
+    category,
+    message,
+    metadata,
+    previousState,
+    newState,
+    eventName,
+    pluginName,
+  }: {
+    category: WorkflowLogCategory;
+    message: string;
+    metadata?: Record<string, any>;
+    previousState?: string;
+    newState?: string;
+    eventName?: string;
+    pluginName?: string;
+  }): void {
+    if (!this.#__enableLogging) return;
+
+    this.#__auditLogs.push({
+      category,
+      message,
+      timestamp: new Date().toISOString(),
+      metadata,
+      previousState,
+      newState,
+      eventName,
+      pluginName,
+    });
   }
 }

@@ -39,6 +39,7 @@ import { CollectionFlowService } from './collection-flow.service';
 import { env } from '@/env';
 import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 import { AnalyticsService } from '@/common/analytics-logger/analytics.service';
+import { WorkflowLogService } from '@/workflow/workflow-log.service';
 
 const deps: Provider[] = [
   {
@@ -152,6 +153,7 @@ describe('CollectionFlowService', () => {
         CustomerService,
         EndUserRepository,
         MerchantMonitoringClient,
+        WorkflowLogService,
       ],
     }).compile();
 

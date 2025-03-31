@@ -146,6 +146,11 @@ export class ApiPlugin {
         );
       }
     } catch (error) {
+      logger.error('API Plugin - Error', {
+        error: error,
+        outputRequestPayload: outputRequestPayload,
+      });
+
       return this.returnErrorResponse(
         isErrorWithMessage(error) ? error.message : '',
         outputRequestPayload,

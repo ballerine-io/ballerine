@@ -1,5 +1,7 @@
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { useBusinessReportMetricsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import dayjs from 'dayjs';
 import { z } from 'zod';
 
@@ -16,9 +18,15 @@ export const StatisticsSearchSchema = z.object({
 });
 
 export const useStatisticsLogic = () => {
+  const locale = useLocale();
   const [{ from }, setSearchParams] = useZodSearchParams(StatisticsSearchSchema, { replace: true });
 
-  const { data, isLoading, error } = useBusinessReportMetricsQuery({
+  const { data: customer, isLoading: isLoadingCustomer } = useCustomerQuery();
+  const {
+    data: metrics,
+    isLoading: isLoadingMetrics,
+    error,
+  } = useBusinessReportMetricsQuery({
     from,
     to: dayjs(from).add(1, 'month').format('YYYY-MM-DD'),
   });
@@ -30,8 +38,11 @@ export const useStatisticsLogic = () => {
   };
 
   return {
-    data,
-    isLoading,
+    locale,
+    metrics,
+    isLoadingMetrics,
+    customer,
+    isLoadingCustomer,
     error,
     date: dayjs(from).toDate(),
     setDate: handleDateChange,

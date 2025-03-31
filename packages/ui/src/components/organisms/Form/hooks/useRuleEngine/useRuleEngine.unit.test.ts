@@ -1,4 +1,5 @@
 import { renderHook } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { IRule, IRuleExecutionResult } from './types';
 import { useRuleEngine } from './useRuleEngine';
@@ -105,10 +106,13 @@ describe('useRuleEngine', () => {
     expect(result.current).toEqual([]);
 
     // Wait for custom delayed execution
-    await vi.advanceTimersByTimeAsync(1050);
+    await vi.advanceTimersByTimeAsync(customDelay);
 
-    // Assert after delay
-    expect(result.current).toEqual(expectedResults);
+    // Need to wait for the state update to be applied
+    await waitFor(() => {
+      expect(result.current).toEqual(expectedResults);
+    });
+
     expect(executeRules).toHaveBeenCalledWith(context, rules);
   });
 });
