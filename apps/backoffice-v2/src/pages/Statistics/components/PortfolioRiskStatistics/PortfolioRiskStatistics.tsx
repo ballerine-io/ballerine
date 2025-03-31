@@ -36,7 +36,7 @@ export const PortfolioRiskStatistics: FunctionComponent<
     alertedReports,
     from,
     to,
-    isMerchantMonitoringEnabled,
+    isOngoingMonitoringEnabled,
   } = usePortfolioRiskStatisticsLogic({
     userSelectedDate,
     violationCounts,
@@ -159,7 +159,7 @@ export const PortfolioRiskStatistics: FunctionComponent<
             </CardContent>
           </Card>
         </div>
-        {isMerchantMonitoringEnabled && (
+        {isOngoingMonitoringEnabled && (
           <div className={'self-start rounded-xl bg-[#F6F6F6] p-2'}>
             <Card className={'flex h-full flex-col px-3'}>
               <CardHeader className={'pb-2 font-bold'}>Unresolved Monitoring Alerts</CardHeader>
