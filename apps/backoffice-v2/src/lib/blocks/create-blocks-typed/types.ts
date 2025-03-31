@@ -145,6 +145,11 @@ export type TDetailsCell = {
   isDocumentsV2: boolean;
 };
 
+export type TKycDecision = Omit<TDetailsCell, 'value' | 'type'> & {
+  type: 'kycDecision';
+  value: TDetailsCell['value'] & { riskLabels: string[] };
+};
+
 export type TNestedDetailsCell = {
   type: 'nestedDetails';
   id?: string;
@@ -282,4 +287,5 @@ export type TCell =
   | TPDFViewerCell
   | TReadOnlyDetailsCell
   | TImageCell
-  | TEditableDetailsV2Cell;
+  | TEditableDetailsV2Cell
+  | TKycDecision;

@@ -55,46 +55,66 @@ export const useKycBlock = ({
     return allDocuments?.filter(document => document.type === 'identification_document') ?? [];
   }, [allDocuments]);
 
+  const riskLabels = kycSessionKeys?.length
+    ? kycSessionKeys.flatMap(key =>
+        key === 'invokedAt'
+          ? []
+          : childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision?.riskLabels
+              ?.length
+          ? childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision?.riskLabels
+          : 'none',
+      )
+    : [];
+
   const decision = kycSessionKeys?.length
-    ? kycSessionKeys?.flatMap(key => [
-        {
-          title: 'Verified With',
-          value: capitalize(childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.vendor),
-          pattern: '',
-          isEditable: false,
-          dropdownOptions: undefined,
-        },
-        {
-          title: 'Result',
-          value: childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision?.status,
-          pattern: '',
-          isEditable: false,
-          dropdownOptions: undefined,
-        },
-        {
-          title: 'Issues',
-          value: childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.decision?.riskLabels
-            ?.length
-            ? childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.decision?.riskLabels?.join(
-                ', ',
-              )
-            : 'none',
-          pattern: '',
-          isEditable: false,
-          dropdownOptions: undefined,
-        },
-        ...(isObject(childWorkflow?.context?.pluginsOutput?.kyc_session[key])
-          ? [
-              {
-                title: 'Full report',
-                value: childWorkflow?.context?.pluginsOutput?.kyc_session[key],
-                pattern: '',
-                isEditable: false,
-                dropdownOptions: undefined,
-              },
-            ]
-          : []),
-      ]) ?? []
+    ? kycSessionKeys
+        .flatMap(key =>
+          key === 'invokedAt'
+            ? []
+            : [
+                {
+                  title: 'Verified With',
+                  value: capitalize(
+                    childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.vendor,
+                  ),
+                  pattern: '',
+                  isEditable: false,
+                  dropdownOptions: undefined,
+                },
+                {
+                  title: 'Result',
+                  value:
+                    childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision
+                      ?.status,
+                  pattern: '',
+                  isEditable: false,
+                  dropdownOptions: undefined,
+                },
+                {
+                  title: 'Old Issues',
+                  value: childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision
+                    ?.riskLabels?.length
+                    ? childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision
+                        ?.riskLabels
+                    : 'none',
+                  pattern: '',
+                  isEditable: false,
+                  dropdownOptions: undefined,
+                },
+                ...(isObject(childWorkflow?.context?.pluginsOutput?.kyc_session[key])
+                  ? [
+                      {
+                        title: 'Full report',
+                        value: childWorkflow?.context?.pluginsOutput?.kyc_session[key],
+                        pattern: '',
+                        isEditable: false,
+                        dropdownOptions: undefined,
+                      },
+                    ]
+                  : []),
+              ],
+        )
+        .filter(x => Boolean(x)) ?? []
     : [];
 
   const amlData = useMemo(() => {
@@ -222,8 +242,7 @@ export const useKycBlock = ({
             className: badgeClassNames,
           },
         })
-        .build()
-        .flat(1);
+        .buildFlat();
     }
 
     if (tags?.includes(StateTag.APPROVED)) {
@@ -238,8 +257,7 @@ export const useKycBlock = ({
             className: `${badgeClassNames} bg-success/20`,
           },
         })
-        .build()
-        .flat(1);
+        .buildFlat();
     }
 
     if (tags?.includes(StateTag.REJECTED)) {
@@ -254,8 +272,7 @@ export const useKycBlock = ({
             className: badgeClassNames,
           },
         })
-        .build()
-        .flat(1);
+        .buildFlat();
     }
 
     if (tags?.includes(StateTag.PENDING_PROCESS)) {
@@ -270,8 +287,7 @@ export const useKycBlock = ({
             className: badgeClassNames,
           },
         })
-        .build()
-        .flat(1);
+        .buildFlat();
     }
 
     return createBlocksTyped()
@@ -327,8 +343,7 @@ export const useKycBlock = ({
           },
         },
       })
-      .build()
-      .flat(1);
+      .buildFlat();
   };
 
   const { mutate: mutateInitiateKyc } = useEventMutation();
@@ -369,8 +384,7 @@ export const useKycBlock = ({
             className: 'mt-0',
           },
         })
-        .build()
-        .flat(1),
+        .buildFlat(),
     })
     .cellAt(0, 0);
 
@@ -438,8 +452,7 @@ export const useKycBlock = ({
             },
           },
         })
-        .build()
-        .flat(1);
+        .buildFlat();
     }
 
     return createBlocksTyped()
@@ -469,8 +482,7 @@ export const useKycBlock = ({
         documents: documents?.map(({ details: _details, ...document }) => document),
         isDocumentsV2: !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
       })
-      .build()
-      .flat(1);
+      .buildFlat();
   };
 
   return createBlocksTyped()
@@ -506,8 +518,7 @@ export const useKycBlock = ({
               props: { className: 'space-x-4' },
               value: getDecisionStatusOrAction(childWorkflow?.tags),
             })
-            .build()
-            .flat(1),
+            .buildFlat(),
         })
         .addCell({
           id: 'kyc-block',
@@ -575,12 +586,20 @@ export const useKycBlock = ({
                         })
                         .addCell({
                           id: 'decision',
-                          type: 'details',
+                          type: 'kycDecision',
                           hideSeparator: true,
                           value: {
                             id: 1,
                             title: 'Decision',
                             data: decision,
+                            riskLabels,
+                          },
+                          props: {
+                            config: {
+                              sort: {
+                                predefinedOrder: ['Result', 'Verified With', 'Full report'],
+                              },
+                            },
                           },
                           workflowId: childWorkflow?.id,
                           documents: documents?.map(
@@ -589,8 +608,7 @@ export const useKycBlock = ({
                           isDocumentsV2:
                             !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
                         })
-                        .build()
-                        .flat(1)
+                        .buildFlat()
                     : createBlocksTyped()
                         .addBlock()
                         .addCell({
@@ -606,8 +624,7 @@ export const useKycBlock = ({
                         })
                         .buildFlat(),
                 })
-                .build()
-                .flat(1),
+                .buildFlat(),
             })
             .addCell({
               type: 'multiDocuments',
@@ -616,8 +633,7 @@ export const useKycBlock = ({
                 data: documents?.flatMap(document => document?.details),
               },
             })
-            .build()
-            .flat(1),
+            .buildFlat(),
         })
         .addCell({
           type: 'node',
@@ -627,8 +643,7 @@ export const useKycBlock = ({
           type: 'container',
           value: amlBlock,
         })
-        .build()
-        .flat(1),
+        .buildFlat(),
     })
     .build();
 };
