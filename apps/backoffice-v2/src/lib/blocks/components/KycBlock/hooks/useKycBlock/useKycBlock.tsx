@@ -217,69 +217,69 @@ export const useKycBlock = ({
   const getDecisionStatusOrAction = (tags?: TStateTags) => {
     const badgeClassNames = 'text-sm font-bold';
 
-    // if (tags?.includes(StateTag.REVISION)) {
-    //   return createBlocksTyped()
-    //     .addBlock()
-    //     .addCell({
-    //       type: 'badge',
-    //       value: 'Pending re-upload',
-    //       props: {
-    //         ...motionBadgeProps,
-    //         variant: 'warning',
-    //         className: badgeClassNames,
-    //       },
-    //     })
-    //     .build()
-    //     .flat(1);
-    // }
+    if (tags?.includes(StateTag.REVISION)) {
+      return createBlocksTyped()
+        .addBlock()
+        .addCell({
+          type: 'badge',
+          value: 'Pending re-upload',
+          props: {
+            ...motionBadgeProps,
+            variant: 'warning',
+            className: badgeClassNames,
+          },
+        })
+        .build()
+        .flat(1);
+    }
 
-    // if (tags?.includes(StateTag.APPROVED)) {
-    //   return createBlocksTyped()
-    //     .addBlock()
-    //     .addCell({
-    //       type: 'badge',
-    //       value: 'Approved',
-    //       props: {
-    //         ...motionBadgeProps,
-    //         variant: 'success',
-    //         className: `${badgeClassNames} bg-success/20`,
-    //       },
-    //     })
-    //     .build()
-    //     .flat(1);
-    // }
+    if (tags?.includes(StateTag.APPROVED)) {
+      return createBlocksTyped()
+        .addBlock()
+        .addCell({
+          type: 'badge',
+          value: 'Approved',
+          props: {
+            ...motionBadgeProps,
+            variant: 'success',
+            className: `${badgeClassNames} bg-success/20`,
+          },
+        })
+        .build()
+        .flat(1);
+    }
 
-    // if (tags?.includes(StateTag.REJECTED)) {
-    //   return createBlocksTyped()
-    //     .addBlock()
-    //     .addCell({
-    //       type: 'badge',
-    //       value: 'Rejected',
-    //       props: {
-    //         ...motionBadgeProps,
-    //         variant: 'destructive',
-    //         className: badgeClassNames,
-    //       },
-    //     })
-    //     .build()
-    //     .flat(1);
-    // }
+    if (tags?.includes(StateTag.REJECTED)) {
+      return createBlocksTyped()
+        .addBlock()
+        .addCell({
+          type: 'badge',
+          value: 'Rejected',
+          props: {
+            ...motionBadgeProps,
+            variant: 'destructive',
+            className: badgeClassNames,
+          },
+        })
+        .build()
+        .flat(1);
+    }
 
-    // if (tags?.includes(StateTag.PENDING_PROCESS)) {
-    //   return createBlocksTyped()
-    //     .addBlock()
-    //     .addCell({
-    //       type: 'badge',
-    //       value: 'Pending ID verification',
-    //       props: {
-    //         ...motionBadgeProps,
-    //         variant: 'warning',
-    //         className: badgeClassNames,
-    //       },
-    //     })
-    //     .build()
-    //     .flat(1);
-    // }
+    if (tags?.includes(StateTag.PENDING_PROCESS)) {
+      return createBlocksTyped()
+        .addBlock()
+        .addCell({
+          type: 'badge',
+          value: 'Pending ID verification',
+          props: {
+            ...motionBadgeProps,
+            variant: 'warning',
+            className: badgeClassNames,
+          },
+        })
+        .build()
+        .flat(1);
+    }
 
     return createBlocksTyped()
       .addBlock()
