@@ -41,17 +41,13 @@ export const CollectionFlowStepItem = ({
       </div>
       {isCanRequestStep ? (
         <div className="invisible pr-3 group-hover:visible">
-          {isLoading ? (
-            <div className="flex items-center justify-center">
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-solid border-primary border-t-transparent"></div>
-            </div>
-          ) : (
+          {!isLoading ? (
             <CollectionFlowStepOptions
               onRequestStepFromClient={onRequestStepFromClient}
               onCancelStep={onCancelStepRequest}
               step={step}
             />
-          )}
+          ) : null}
         </div>
       ) : null}
     </div>
