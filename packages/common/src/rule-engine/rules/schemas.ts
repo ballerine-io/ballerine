@@ -110,6 +110,7 @@ export const RuleSchema = z.discriminatedUnion('operator', [
     key: z.string().optional(),
     operator: z.literal(OPERATION.UBO_MATCH),
     value: PrimitiveSchema.optional(),
+    isPathComparison: z.boolean().default(false),
   }),
 ]);
 
