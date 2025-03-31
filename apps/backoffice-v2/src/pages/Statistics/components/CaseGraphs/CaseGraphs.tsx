@@ -1,189 +1,122 @@
-import { buttonVariants, WarningFilledSvg } from '@ballerine/ui';
 import { FunctionComponent } from 'react';
-import { Link } from 'react-router-dom';
-import { Cell, Pie, PieChart } from 'recharts';
-import { titleCase } from 'string-ts';
+import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import { z } from 'zod';
 
 import { Card } from '@/common/components/atoms/Card/Card';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/common/components/atoms/Table';
-import { ctw } from '@/common/utils/ctw/ctw';
 import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
-import { useCaseGraphsLogic } from '@/pages/Statistics/components/CaseGraphs/hooks/useCaseGraphsLogic/useCaseGraphsLogic';
 
 export const CaseGraphs: FunctionComponent<
   Pick<z.infer<typeof MetricsResponseSchema>, 'riskLevelCounts' | 'violationCounts'> & {
     userSelectedDate: Date;
   }
 > = ({ riskLevelCounts, violationCounts, userSelectedDate }) => {
-  const {
-    riskLevelToFillColor,
-    parent,
-    widths,
-    riskLevelToBackgroundColor,
-    filteredRiskIndicators,
-    locale,
-    navigate,
-    alertedReports,
-    from,
-    to,
-    isMerchantMonitoringEnabled,
-  } = useCaseGraphsLogic({ userSelectedDate, violationCounts });
+  // const {
+  //   riskLevelToFillColor,
+  //   parent,
+  //   widths,
+  //   riskLevelToBackgroundColor,
+  //   filteredRiskIndicators,
+  //   locale,
+  //   navigate,
+  //   alertedReports,
+  //   from,
+  //   to,
+  //   isMerchantMonitoringEnabled,
+  // } = useCaseGraphsLogic({ userSelectedDate, violationCounts });
+
+  // Mock data for live cases per day
+  const liveCasesData = [
+    { date: '01/08', cases: 12 },
+    { date: '02/08', cases: 19 },
+    { date: '03/08', cases: 15 },
+    { date: '04/08', cases: 22 },
+    { date: '05/08', cases: 28 },
+    { date: '06/08', cases: 23 },
+    { date: '07/08', cases: 17 },
+    { date: '08/08', cases: 20 },
+    { date: '09/08', cases: 25 },
+    { date: '10/08', cases: 30 },
+  ];
 
   return (
     <div>
       <h3 className={'mb-4 text-xl font-bold'}>Portfolio Risk Statistics</h3>
-      <div className={'grid grid-cols-3 gap-6'}>
+      <div className={'mb-6 grid grid-cols-1 gap-6'}>
         <div className={'min-h-[27.5rem] rounded-xl bg-[#F6F6F6] p-2'}>
           <Card className={'flex h-full flex-col px-3'}>
-            <CardHeader className={'pb-1 font-bold'}>Merchant Monitoring Risk</CardHeader>
+            <CardHeader className={'pb-1 font-bold'}>Amount Of Live Cases Per Day</CardHeader>
             <CardContent>
-              <p className={'mb-8 text-slate-400'}>
-                Risk levels of all merchant monitoring reports.
+              <p className={'mb-4 text-slate-400'}>
+                Data shown from case opening date to closing date
               </p>
-              <div className={'flex flex-col items-center space-y-4 pt-3'}>
-                <PieChart width={184} height={184}>
-                  <text
-                    x={92}
-                    y={82}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    className={'text-lg font-bold'}
-                  >
-                    {Object.values(riskLevelCounts).reduce((acc, curr) => acc + curr, 0)}
-                  </text>
-                  <text x={92} y={102} textAnchor="middle" dominantBaseline="middle">
-                    Reports
-                  </text>
-                  <Pie
-                    data={Object.entries(riskLevelCounts).map(([riskLevel, value]) => ({
-                      name: `${titleCase(riskLevel)} Risk`,
-                      value,
-                    }))}
-                    cx={87}
-                    cy={87}
-                    innerRadius={78}
-                    outerRadius={92}
-                    fill="#8884d8"
-                    paddingAngle={5}
-                    dataKey="value"
-                    cornerRadius={9999}
-                  >
-                    {Object.keys(riskLevelToFillColor).map(riskLevel => (
-                      <Cell
-                        key={riskLevel}
-                        className={ctw(
-                          riskLevelToFillColor[riskLevel as keyof typeof riskLevelToFillColor],
-                          'cursor-pointer outline-none',
-                        )}
-                        onClick={() =>
-                          navigate(
-                            `/${locale}/merchant-monitoring?riskLevels[0]=${riskLevel}&from=${from}&to=${to}`,
-                          )
-                        }
-                      />
-                    ))}
-                  </Pie>
-                </PieChart>
-                <ul className={'flex w-full max-w-sm flex-col space-y-2'}>
-                  {Object.entries(riskLevelCounts)
-                    .reverse()
-                    .map(([riskLevel, value]) => (
-                      <li
-                        key={riskLevel}
-                        className={'flex items-center space-x-4 border-b py-1 text-xs'}
-                      >
-                        <span
-                          className={ctw(
-                            'flex h-2 w-2 rounded-full',
-                            riskLevelToBackgroundColor[
-                              riskLevel as keyof typeof riskLevelToBackgroundColor
-                            ],
-                          )}
-                        />
-                        <div className={'flex w-full justify-between'}>
-                          <span className={'text-slate-500'}>{titleCase(riskLevel)} Risk</span>
-                          <span>{value}</span>
-                        </div>
-                      </li>
-                    ))}
-                </ul>
+              <div className={'flex h-72 w-full justify-center'}>
+                <BarChart
+                  width={800}
+                  height={300}
+                  data={liveCasesData}
+                  margin={{
+                    top: 20,
+                    right: 30,
+                    left: 20,
+                    bottom: 30,
+                  }}
+                  barSize={35}
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.5} />
+                  <XAxis
+                    dataKey="date"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#6B7280', fontSize: 12 }}
+                    padding={{ left: 10, right: 10 }}
+                    label={{
+                      value: 'Date',
+                      position: 'insideBottom',
+                      offset: -15,
+                      fill: '#4B5563',
+                      fontSize: 14,
+                      fontWeight: 500,
+                    }}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#6B7280', fontSize: 12 }}
+                    label={{
+                      value: 'Cases',
+                      angle: -90,
+                      position: 'insideLeft',
+                      offset: -5,
+                      fill: '#4B5563',
+                      fontSize: 14,
+                      fontWeight: 500,
+                    }}
+                  />
+                  <Tooltip
+                    cursor={{ fill: 'rgba(59, 130, 246, 0.1)' }}
+                    contentStyle={{
+                      borderRadius: '6px',
+                      border: 'none',
+                      boxShadow:
+                        '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                      padding: '8px 12px',
+                    }}
+                    labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
+                  />
+                  <Bar
+                    dataKey="cases"
+                    fill="#3B82F6"
+                    radius={[4, 4, 0, 0]}
+                    animationDuration={1500}
+                    fillOpacity={0.85}
+                  />
+                </BarChart>
               </div>
             </CardContent>
           </Card>
         </div>
-        <div className={'min-h-[10.125rem] rounded-xl bg-[#F6F6F6] p-2'}>
-          <Card className={'flex h-full flex-col px-3'}>
-            <CardHeader className={'pb-2 font-bold'}>Top 10 Content Violations</CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader className={'[&_tr]:border-b-0'}>
-                  <TableRow className={'hover:bg-[unset]'}>
-                    <TableHead className={'h-0 ps-0 font-bold text-foreground'}>
-                      Indicator
-                    </TableHead>
-                    <TableHead className={'h-0 px-0 font-bold text-foreground'}>Amount</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody ref={parent}>
-                  {filteredRiskIndicators.map(({ name, count, id }, index) => (
-                    <TableRow key={name} className={'border-b-0 hover:bg-[unset]'}>
-                      <TableCell className={ctw('pb-0 ps-0', index !== 0 && 'pt-2')}>
-                        <Link
-                          to={`/${locale}/merchant-monitoring?findings[0]=${id}&from=${from}&to=${to}`}
-                          className={`block h-full cursor-pointer rounded bg-blue-200 p-1 transition-all`}
-                          style={{ width: `${widths[index]}%` }}
-                        >
-                          {titleCase(name ?? '')}
-                        </Link>
-                      </TableCell>
-                      <TableCell className={'!px-0 pb-0'}>
-                        {Intl.NumberFormat().format(count)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </div>
-        {isMerchantMonitoringEnabled && (
-          <div className={'self-start rounded-xl bg-[#F6F6F6] p-2'}>
-            <Card className={'flex h-full flex-col px-3'}>
-              <CardHeader className={'pb-2 font-bold'}>Unresolved Monitoring Alerts</CardHeader>
-              <CardContent>
-                <div className={'flex justify-between'}>
-                  <div className={'flex items-center space-x-1'}>
-                    <WarningFilledSvg className={'mt-1 d-10'} />
-                    <span className={'text-3xl font-semibold'}>
-                      {Intl.NumberFormat().format(alertedReports)}
-                    </span>
-                  </div>
-                  <Link
-                    to={`/${locale}/merchant-monitoring?from=${from}&to=${to}&isAlert=Alerted`}
-                    className={ctw(
-                      buttonVariants({
-                        variant: 'link',
-                      }),
-                      'h-[unset] cursor-pointer !p-0 !text-blue-500',
-                    )}
-                  >
-                    View
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
       </div>
     </div>
   );
