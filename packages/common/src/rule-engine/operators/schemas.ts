@@ -70,3 +70,7 @@ export const AmlCheckSchema = z
     childWorkflowName: z.string(),
   })
   .and(BaseOperationsValueSchema);
+
+export const UboMatchSchema = z.object({
+  operator: z.literal(OPERATION.UBO_MATCH),
+});

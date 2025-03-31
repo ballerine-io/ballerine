@@ -106,6 +106,11 @@ export const RuleSchema = z.discriminatedUnion('operator', [
     isPathComparison: z.boolean().default(false),
     threshold: z.number().min(0).max(100).default(80),
   }),
+  z.object({
+    key: z.string().optional(),
+    operator: z.literal(OPERATION.UBO_MATCH),
+    value: PrimitiveSchema.optional(),
+  }),
 ]);
 
 // @ts-ignore - cycle zod types are not correct

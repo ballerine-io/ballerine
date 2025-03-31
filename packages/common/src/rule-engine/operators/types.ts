@@ -5,6 +5,7 @@ import {
   BetweenSchema,
   LastYearsSchema,
   PrimitiveSchema,
+  UboMatchSchema,
 } from '@/rule-engine/operators/schemas';
 
 import { OPERATION, OPERATOR } from './enums';
@@ -20,6 +21,8 @@ export type BetweenParams = z.infer<typeof BetweenSchema>;
 export type LastYearsParams = z.infer<typeof LastYearsSchema>;
 
 export type AmlCheckParams = z.infer<typeof AmlCheckSchema>;
+
+export type UboMatchParams = z.infer<typeof UboMatchSchema>;
 
 export type ExistsParams = {
   schema?: ZodSchema;
