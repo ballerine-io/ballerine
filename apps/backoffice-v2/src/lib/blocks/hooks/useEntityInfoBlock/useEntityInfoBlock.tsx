@@ -5,6 +5,7 @@ import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMu
 import { useUpdateContextAndSyncEntityMutation } from '@/domains/workflows/hooks/mutations/useUpdateContextAndSyncEntity/useUpdateContextAndSyncEntity';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
+import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { valueOrNA } from '@ballerine/common';
 import { useCallback, useMemo } from 'react';
 import { titleCase } from 'string-ts';
@@ -16,27 +17,6 @@ export const useEntityInfoBlock = ({
   entity: TWorkflowById['context']['entity'];
   workflow: TWorkflowById;
 }) => {
-  const { mutate: mutateEvent } = useEventMutation();
-  const onMutateEvent = useCallback(() => {
-    mutateEvent({
-      workflowId: workflow?.id,
-      event: 're_run_entity_information_checks',
-    });
-  }, [mutateEvent, workflow?.id]);
-  const { mutate: mutateUpdateContextAndSyncEntity } = useUpdateContextAndSyncEntityMutation({
-    workflowId: workflow?.id,
-  });
-
-  const onSubmit = useCallback(
-    (values: Record<PropertyKey, any>, toggleOffIsEditable: () => void) => {
-      mutateUpdateContextAndSyncEntity(values, {
-        onSuccess: () => {
-          toggleOffIsEditable();
-        },
-      });
-    },
-    [mutateUpdateContextAndSyncEntity],
-  );
   const predefinedOrder = useMemo(
     () =>
       workflow?.workflowDefinition?.config?.uiOptions?.backoffice?.blocks?.businessInformation
@@ -46,17 +26,13 @@ export const useEntityInfoBlock = ({
         ?.predefinedOrder,
     ],
   );
-  const { data: session } = useAuthenticatedUserQuery();
-  const caseState = useCaseState(session?.user ?? null, workflow);
 
   return useMemo(() => {
-    if (Object.keys(entity?.data ?? {}).length === 0) {
+    const entityData = omitPropsFromObject(entity?.data ?? {}, 'additionalInfo', 'address');
+
+    if (Object.keys(entityData ?? {}).length === 0) {
       return [];
     }
-
-    const fields = generateEditableDetailsV2Fields({ entity })({
-      path: 'entity.data',
-    });
 
     return createBlocksTyped()
       .addBlock()
@@ -76,58 +52,38 @@ export const useEntityInfoBlock = ({
                 type: 'subheading',
                 value: 'User-Provided Data',
               })
-              .buildFlat(),
+              .build()
+              .flat(1),
           })
           .addCell({
-            type: 'editableDetails',
-            value: fields,
-            props: {
-              config: {
-                sort: { predefinedOrder },
-                parse: {
-                  date: true,
-                  isoDate: true,
-                  datetime: true,
-                  boolean: true,
-                  url: true,
-                  nullish: true,
-                },
-                blacklist: ['address', 'additionalInfo'],
-                actions: {
-                  options: {
-                    disabled: !caseState.writeEnabled,
-                  },
-                  enableEditing: {
-                    disabled: false,
-                  },
-                  reRunChecks: {
-                    disabled: true,
-                  },
-                  editing: {
-                    disabled: !caseState.writeEnabled,
-                  },
-                  cancel: {
-                    disabled: false,
-                  },
-                  save: {
-                    disabled: !caseState.writeEnabled,
-                  },
-                },
-                inputTypes: {
-                  dateOfBirth: 'date',
-                },
-              },
-              onSubmit,
-              onEnableIsEditable: toggleOnIsEditable => {
-                toggleOnIsEditable();
-              },
-              onReRunChecks: () => {},
-              onCancel: toggleOffIsEditable => {
-                toggleOffIsEditable();
-              },
+            id: 'entity-details',
+            type: 'details',
+            hideSeparator: true,
+            value: {
+              id: 'entity-details-value',
+              title: `${valueOrNA(titleCase(entity?.type ?? ''))} Information`,
+              data: Object.entries(entityData)
+                ?.map(([title, value]) => ({
+                  title,
+                  value,
+                  type: 'string',
+                  isEditable: false,
+                }))
+                // removing private properties from list (__kyb_snapshot in this case)
+                // __kyb_snapshot is state of KYB,temp solution
+                // payload is not for users so removing it
+                // TO DO: Remove this as soon as BE updated
+                .filter(elem => !elem.title.startsWith('__')),
             },
+            props: { config: { sort: { predefinedOrder } } },
+            workflowId: workflow?.id,
+            documents: workflow?.context?.documents?.map(
+              ({ details: _details, ...document }) => document,
+            ),
+            isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
           })
-          .buildFlat(),
+          .build()
+          .flat(1),
       })
       .build();
   }, [entity, workflow]);
