@@ -163,8 +163,11 @@ export const BaseWorkflowByIdSchema = z.object({
           steps: z.array(
             z.object({
               stepName: z.string(),
-              isCompleted: z.boolean(),
-              state: z.enum(Object.values(CollectionFlowStepStatesEnum) as [string, ...string[]]),
+              // TODO: Deprecate `isCompleted` and use `state` instead.
+              isCompleted: z.boolean().optional(),
+              state: z
+                .enum(Object.values(CollectionFlowStepStatesEnum) as [string, ...string[]])
+                .optional(),
               reason: z.string().optional(),
             }),
           ),
