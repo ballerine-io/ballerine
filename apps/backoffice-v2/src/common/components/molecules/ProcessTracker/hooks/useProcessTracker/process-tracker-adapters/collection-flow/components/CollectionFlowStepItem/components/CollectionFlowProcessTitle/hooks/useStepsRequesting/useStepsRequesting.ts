@@ -4,9 +4,7 @@ import { CollectionFlowStepStatesEnum, getCollectionFlowState } from '@ballerine
 import { useCallback, useMemo } from 'react';
 
 export const useStepsRequesting = (workflow: TWorkflowById) => {
-  const { mutate: mutateRevisionCase, isLoading } = useRevisionCaseMutation({
-    onSelectNextCase: () => {},
-  });
+  const { mutate: mutateRevisionCase, isLoading } = useRevisionCaseMutation({});
 
   const stepsCountToRequest = useMemo(() => {
     const collectionFlowSteps = getCollectionFlowState(workflow?.context || {})?.steps;
