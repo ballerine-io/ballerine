@@ -43,7 +43,7 @@ const DECISION_CHECKS = [
   'documentImageQualitySufficient',
 ] as const;
 
-const ALL_KNOWN_CHECKS = [...IGNORED_DECISION_CHECKS, DECISION_CHECKS] as const;
+const ALL_KNOWN_CHECKS = [...IGNORED_DECISION_CHECKS, ...DECISION_CHECKS] as const;
 
 export const setPluginStatus = ({
   data,
