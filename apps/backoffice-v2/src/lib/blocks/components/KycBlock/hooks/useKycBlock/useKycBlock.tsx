@@ -56,14 +56,16 @@ export const useKycBlock = ({
   }, [allDocuments]);
 
   const riskLabels = kycSessionKeys?.length
-    ? kycSessionKeys.flatMap(key =>
-        key === 'invokedAt'
-          ? []
-          : childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision?.riskLabels
-              ?.length
+    ? kycSessionKeys.flatMap(key => {
+        if (key === 'invokedAt') {
+          return [];
+        }
+
+        return childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision?.riskLabels
+          ?.length
           ? childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision?.riskLabels
-          : 'none',
-      )
+          : 'none';
+      })
     : [];
 
   const decision = kycSessionKeys?.length
@@ -86,17 +88,6 @@ export const useKycBlock = ({
                   value:
                     childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision
                       ?.status,
-                  pattern: '',
-                  isEditable: false,
-                  dropdownOptions: undefined,
-                },
-                {
-                  title: 'Old Issues',
-                  value: childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision
-                    ?.riskLabels?.length
-                    ? childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision
-                        ?.riskLabels
-                    : 'none',
                   pattern: '',
                   isEditable: false,
                   dropdownOptions: undefined,
