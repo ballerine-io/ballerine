@@ -64,7 +64,7 @@ export class CollectionFlowProcessTracker implements IProcessTracker {
       CollectionFlowStepStatesEnum.completed,
     ];
 
-    if (completedStates.includes(stepItem?.state as keyof typeof CollectionFlowStepStatesEnum)) {
+    if (stepItem?.state && completedStates.includes(stepItem?.state)) {
       return stepStatusToIcon[CollectionFlowStepStatesEnum.completed];
     }
 
