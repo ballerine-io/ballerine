@@ -7,13 +7,14 @@ import { PortfolioRiskStatistics } from './components/PortfolioRiskStatistics/Po
 import { useStatisticsLogic } from './hooks/useStatisticsLogic';
 
 export const Statistics: FunctionComponent = () => {
-  const { data, isLoading, error, date, setDate } = useStatisticsLogic();
+  const { metrics, isLoadingMetrics, customer, isLoadingCustomer, error, date, setDate } =
+    useStatisticsLogic();
 
   if (error) {
     throw error;
   }
 
-  if (isLoading || !data) {
+  if (isLoadingMetrics || !metrics || isLoadingCustomer || !customer) {
     return <Loader2 className="w-4 animate-spin" />;
   }
 
@@ -24,18 +25,20 @@ export const Statistics: FunctionComponent = () => {
         <MonthPicker date={date} setDate={setDate} />
       </div>
 
-      <div className="flex flex-col space-y-8">
-        <PortfolioAnalytics
-          totalActiveMerchants={data.totalActiveMerchants}
-          addedMerchantsCount={data.addedMerchantsCount}
-          removedMerchantsCount={data.removedMerchantsCount}
-        />
-        <PortfolioRiskStatistics
-          userSelectedDate={date}
-          riskLevelCounts={data.riskLevelCounts}
-          violationCounts={data.violationCounts}
-        />
-      </div>
+      {customer?.config?.isMerchantMonitoringEnabled && (
+        <div className="flex flex-col space-y-8">
+          <PortfolioAnalytics
+            totalActiveMerchants={metrics.totalActiveMerchants}
+            addedMerchantsCount={metrics.addedMerchantsCount}
+            removedMerchantsCount={metrics.removedMerchantsCount}
+          />
+          <PortfolioRiskStatistics
+            userSelectedDate={date}
+            riskLevelCounts={metrics.riskLevelCounts}
+            violationCounts={metrics.violationCounts}
+          />
+        </div>
+      )}
     </div>
   );
 };

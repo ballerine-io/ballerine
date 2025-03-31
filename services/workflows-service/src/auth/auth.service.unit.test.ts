@@ -42,7 +42,6 @@ const passwordService = {
 };
 
 describe('AuthService', () => {
-  //ARRANGE
   beforeEach(() => {
     USER.status = 'Active';
   });

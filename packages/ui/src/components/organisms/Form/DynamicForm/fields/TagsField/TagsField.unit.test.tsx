@@ -1,4 +1,4 @@
-import { TagsInput } from '@/components/molecules';
+import { ITagsInputProps, TagsInput } from '@/components/molecules';
 import { render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TDeepthLevelStack } from '../../../Validator';
@@ -47,6 +47,7 @@ describe('TagsField', () => {
     valueDestination: 'tags',
     params: {
       label: 'Test Tags',
+      placeholder: 'Test Placeholder',
     },
   } as unknown as IFormElement;
 
@@ -80,20 +81,27 @@ describe('TagsField', () => {
     vi.clearAllMocks();
   });
 
-  it('renders TagsInput with correct props', () => {
+  it('renders TagsInput with correct props and calls onChange function', () => {
     render(<TagsField element={mockElement} />);
 
-    expect(TagsInput).toHaveBeenCalledWith(
-      expect.objectContaining({
-        value: mockFieldProps.value,
-        testId: `test-tags`,
-        onChange: mockFieldProps.onChange,
-        onBlur: mockFieldProps.onBlur,
-        onFocus: mockFieldProps.onFocus,
-        disabled: mockFieldProps.disabled,
-      }),
-      expect.anything(),
-    );
+    const tagsInputProps = vi.mocked(TagsInput).mock.calls?.[0]?.[0] as ITagsInputProps;
+
+    // Ensure tagsInputProps is defined before accessing properties
+    expect(tagsInputProps).toBeDefined();
+
+    expect(tagsInputProps.value).toEqual(mockFieldProps.value);
+    expect(tagsInputProps.testId).toEqual('test-tags');
+    expect(tagsInputProps.onBlur).toBe(mockFieldProps.onBlur);
+    expect(tagsInputProps.onFocus).toBe(mockFieldProps.onFocus);
+    expect(tagsInputProps.disabled).toBe(mockFieldProps.disabled);
+
+    // Test the onChange function by calling it with test data
+    tagsInputProps.onChange?.(['new-tag']);
+    expect(mockFieldProps.onChange).toHaveBeenCalledWith(['new-tag']);
+
+    // Test empty array case
+    tagsInputProps.onChange?.([]);
+    expect(mockFieldProps.onChange).toHaveBeenCalledWith(undefined);
   });
 
   it('passes undefined value correctly', () => {
