@@ -240,6 +240,7 @@ export const useDefaultBlocksLogic = () => {
 
   const entityAdditionalInfoBlock = useEntityAdditionalInfoBlock({
     entity: workflow?.context?.entity,
+    workflow,
     predefinedOrder:
       workflow?.workflowDefinition?.config?.uiOptions?.backoffice?.blocks?.businessInformation
         ?.predefinedOrder ?? [],

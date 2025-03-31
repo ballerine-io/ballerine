@@ -1,13 +1,8 @@
-import { generateEditableDetailsV2Fields } from '@/common/components/organisms/EditableDetailsV2/utils/generate-editable-details-v2-fields';
-import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
-import { useUpdateContextAndSyncEntityMutation } from '@/domains/workflows/hooks/mutations/useUpdateContextAndSyncEntity/useUpdateContextAndSyncEntity';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { valueOrNA } from '@ballerine/common';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { titleCase } from 'string-ts';
 
 export const useEntityInfoBlock = ({

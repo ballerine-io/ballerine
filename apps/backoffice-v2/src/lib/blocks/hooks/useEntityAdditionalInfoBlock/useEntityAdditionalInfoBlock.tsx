@@ -1,95 +1,87 @@
 import { titleCase } from 'string-ts';
 import { createBlocksTyped } from '../../create-blocks-typed/create-blocks-typed';
-import { generateEditableDetailsV2Fields } from '@/common/components/organisms/EditableDetailsV2/utils/generate-editable-details-v2-fields';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { valueOrNA } from '@ballerine/common';
+import { useMemo } from 'react';
+import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 
 export const useEntityAdditionalInfoBlock = ({
   entity,
+  workflow,
   predefinedOrder,
 }: {
   entity: TWorkflowById['context']['entity'];
+  workflow: TWorkflowById;
   predefinedOrder: string[];
 }) => {
-  const fields = generateEditableDetailsV2Fields({ entity })({
-    path: 'entity.data.additionalInfo',
-  });
+  return useMemo(() => {
+    const entityAdditionalInfo = omitPropsFromObject(
+      entity?.data?.additionalInfo ?? {},
+      'store',
+      'bank',
+      'mainContact',
+      'openCorporate',
+      'mainRepresentative',
+      'ubos',
+      'associatedCompanies',
+      'directors',
+    );
 
-  return createBlocksTyped()
-    .addBlock()
-    .addCell({
-      type: 'block',
-      value: createBlocksTyped()
-        .addBlock()
-        .addCell({
-          type: 'container',
-          value: createBlocksTyped()
-            .addBlock()
-            .addCell({
-              type: 'heading',
-              value: `Additional ${valueOrNA(titleCase(entity?.type ?? ''))} Information`,
-            })
-            .addCell({
-              type: 'subheading',
-              value: 'User-Provided Data',
-            })
-            .buildFlat(),
-        })
-        .addCell({
-          type: 'editableDetails',
-          value: fields,
-          props: {
-            config: {
-              sort: { predefinedOrder },
-              parse: {
-                date: true,
-                isoDate: true,
-                datetime: true,
-                boolean: true,
-                url: true,
-                nullish: true,
-              },
-              blacklist: [
-                'store',
-                'bank',
-                'mainContact',
-                'openCorporate',
-                'mainRepresentative',
-                'ubos',
-                'associatedCompanies',
-                'directors',
-              ],
-              actions: {
-                options: {
-                  disabled: true,
-                },
-                enableEditing: {
-                  disabled: true,
-                },
-                reRunChecks: {
-                  disabled: true,
-                },
-                editing: {
-                  disabled: true,
-                },
-                cancel: {
-                  disabled: true,
-                },
-                save: {
-                  disabled: true,
-                },
-              },
-              inputTypes: {
-                dateOfBirth: 'date',
-              },
+    if (Object.keys(entityAdditionalInfo ?? {}).length === 0) {
+      return [];
+    }
+
+    return createBlocksTyped()
+      .addBlock()
+      .addCell({
+        type: 'block',
+        value: createBlocksTyped()
+          .addBlock()
+          .addCell({
+            type: 'container',
+            value: createBlocksTyped()
+              .addBlock()
+              .addCell({
+                type: 'heading',
+                value: `Additional ${valueOrNA(titleCase(entity?.type ?? ''))} Information`,
+              })
+              .addCell({
+                type: 'subheading',
+                value: 'User-Provided Data',
+              })
+              .build()
+              .flat(1),
+          })
+          .addCell({
+            id: 'entity-details',
+            type: 'details',
+            hideSeparator: true,
+            value: {
+              id: 'entity-details-value',
+              title: `${valueOrNA(titleCase(entity?.type ?? ''))} Information`,
+              data: Object.entries(entityAdditionalInfo)
+                ?.map(([title, value]) => ({
+                  title,
+                  value,
+                  type: 'string',
+                  isEditable: false,
+                }))
+                // removing private properties from list (__kyb_snapshot in this case)
+                // __kyb_snapshot is state of KYB,temp solution
+                // payload is not for users so removing it
+                // TO DO: Remove this as soon as BE updated
+                .filter(elem => !elem.title.startsWith('__')),
             },
-            onSubmit: () => {},
-            onEnableIsEditable: toggleOnIsEditable => {},
-            onReRunChecks: () => {},
-            onCancel: toggleOffIsEditable => {},
-          },
-        })
-        .buildFlat(),
-    })
-    .build();
+            props: { config: { sort: { predefinedOrder } } },
+            workflowId: workflow?.id,
+            documents: workflow?.context?.documents?.map(
+              ({ details: _details, ...document }) => document,
+            ),
+            isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
+          })
+          .build()
+          .flat(1),
+      })
+      .build();
+  }, [entity, workflow]);
 };
