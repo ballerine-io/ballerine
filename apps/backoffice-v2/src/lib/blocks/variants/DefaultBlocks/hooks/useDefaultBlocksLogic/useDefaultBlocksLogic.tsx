@@ -48,7 +48,7 @@ import { useProcessingDetailsBlock } from '@/lib/blocks/hooks/useProcessingDetai
 import { useRegistryInfoBlock } from '@/lib/blocks/hooks/useRegistryInfoBlock/useRegistryInfoBlock';
 import { useStoreInfoBlock } from '@/lib/blocks/hooks/useStoreInfoBlock/useStoreInfoBlock';
 import { useUbosRegistryProvidedBlock } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/useUbosRegistryProvidedBlock';
-import { useUbosUserProvidedBlock } from '@/lib/blocks/hooks/useUbosUserProvidedBlock/useUbosUserProvidedBlock';
+import { useIndividualsUserProvidedBlock } from '@/lib/blocks/hooks/useIndividualsUserProvidedBlock/useIndividualsUserProvidedBlock';
 import { useWebsiteBasicRequirementBlock } from '@/lib/blocks/hooks/useWebsiteBasicRequirementBlock/useWebsiteBasicRequirementBlock';
 import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
 import { useCaseBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/useCaseBlocks';
@@ -160,13 +160,6 @@ export const useDefaultBlocksLogic = () => {
       furtherInformation: sanction?.entity?.furtherInformation,
       alternativeNames: sanction?.entity?.otherNames,
       places: sanction?.entity?.places,
-    }),
-  );
-
-  const directorsRegistryProvided = workflow?.context?.pluginsOutput?.directors?.data?.map(
-    ({ name, position }) => ({
-      name,
-      position,
     }),
   );
 
@@ -297,34 +290,52 @@ export const useDefaultBlocksLogic = () => {
 
   const companySanctionsBlock = useCompanySanctionsBlock(companySanctions);
 
-  const childWorkflowToUboAdapter = (childWorkflow: TWorkflowById) => {
+  const entityDataToIndividualAdapter = ({
+    additionalInfo,
+    ...entityData
+  }: TWorkflowById['context']['entity']['data']) => {
+    const {
+      firstName,
+      lastName,
+      role,
+      percentageOfOwnership,
+      ownershipPercentage,
+      ...collapsibleData
+    } = entityData;
+    const {
+      percentageOfOwnership: percentageOfOwnershipAdditionalInfo,
+      ownershipPercentage: ownershipPercentageAdditionalInfo,
+      ...collapsibleDataAdditionalInfo
+    } = additionalInfo ?? {};
+
     return {
-      name: [
-        childWorkflow?.context?.entity?.data?.firstName,
-        childWorkflow?.context?.entity?.data?.lastName,
-      ]
-        .filter(Boolean)
-        .join(' '),
-      nationality: childWorkflow?.context?.entity?.data?.additionalInfo?.nationality,
-      email: childWorkflow?.context?.entity?.data?.email,
-      identityNumber: childWorkflow?.context?.entity?.data?.nationalId,
+      name: [firstName, lastName].filter(Boolean).join(' '),
+      role,
       percentageOfOwnership:
-        childWorkflow?.context?.entity?.data?.percentageOfOwnership ??
-        childWorkflow?.context?.entity?.data?.ownershipPercentage ??
-        childWorkflow?.context?.entity?.data?.additionalInfo?.percentageOfOwnership ??
-        childWorkflow?.context?.entity?.data?.additionalInfo?.ownershipPercentage,
-      address: childWorkflow?.context?.entity?.data?.additionalInfo?.fullAddress,
-    } satisfies Parameters<typeof useUbosUserProvidedBlock>[0][number];
+        percentageOfOwnership ??
+        percentageOfOwnershipAdditionalInfo ??
+        ownershipPercentage ??
+        ownershipPercentageAdditionalInfo,
+      collapsibleData: {
+        ...collapsibleData,
+        additionalInfo: collapsibleDataAdditionalInfo,
+      },
+    } satisfies Parameters<typeof useIndividualsUserProvidedBlock>[0][number];
   };
 
   const ubosUserProvided = useMemo(() => {
-    return (
-      workflow?.childWorkflows
+    return [
+      ...(workflow?.childWorkflows
         ?.filter(childWorkflow => childWorkflow?.context?.entity?.variant === 'ubo')
-        ?.map(childWorkflowToUboAdapter) ?? []
-    );
-  }, [workflow?.childWorkflows]);
-  const ubosUserProvidedBlock = useUbosUserProvidedBlock(ubosUserProvided);
+        ?.map(childWorkflow =>
+          entityDataToIndividualAdapter(childWorkflow?.context?.entity?.data),
+        ) ?? []),
+      ...(workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
+        entityDataToIndividualAdapter,
+      ) ?? []),
+    ];
+  }, [workflow?.childWorkflows, workflow?.context?.entity?.data?.additionalInfo?.directors]);
+  const ubosUserProvidedBlock = useIndividualsUserProvidedBlock(ubosUserProvided);
 
   const ubosRegistryProvidedBlock = useUbosRegistryProvidedBlock({
     nodes: workflow?.context?.pluginsOutput?.ubo?.data?.nodes ?? [],
@@ -447,9 +458,6 @@ export const useDefaultBlocksLogic = () => {
     // Remove once callToActionLegacy is removed
     workflow,
   });
-
-  const directorsRegistryProvidedBlock =
-    useDirectorsRegistryProvidedBlock(directorsRegistryProvided);
 
   const websiteMonitoringBlock = useWebsiteMonitoringBlock({
     pluginsOutput: workflow?.context?.pluginsOutput,
@@ -588,7 +596,6 @@ export const useDefaultBlocksLogic = () => {
       ubosUserProvidedBlock,
       ubosRegistryProvidedBlock,
       directorsUserProvidedBlock,
-      directorsRegistryProvidedBlock,
       directorsDocumentsBlocks,
       storeInfoBlock,
       websiteBasicRequirementBlock,
@@ -619,7 +626,6 @@ export const useDefaultBlocksLogic = () => {
     bankingDetailsBlock,
     companySanctionsBlock,
     directorsDocumentsBlocks,
-    directorsRegistryProvidedBlock,
     directorsUserProvidedBlock,
     entityInfoBlock,
     kybRegistryInfoBlock,

@@ -1,6 +1,6 @@
 import { titleCase } from 'string-ts';
 import { ChevronDown } from 'lucide-react';
-import React, { ComponentProps, useMemo } from 'react';
+import { ComponentProps, useMemo } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
 
 import { Badge, TextWithNAFallback } from '@ballerine/ui';

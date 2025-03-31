@@ -34,7 +34,6 @@ export const getTabsToBlocksMap = ({
     ubosUserProvidedBlock,
     ubosRegistryProvidedBlock,
     directorsUserProvidedBlock,
-    directorsRegistryProvidedBlock,
     directorsDocumentsBlocks,
     storeInfoBlock,
     websiteBasicRequirementBlock,
@@ -89,21 +88,17 @@ export const getTabsToBlocksMap = ({
       ...websiteBasicRequirementBlock,
     ],
     [Tab.DOCUMENTS]: [...parentDocumentBlocks],
-    [Tab.UBOS_KYC]: [
+    [Tab.INDIVIDUALS]: [
       ...ubosUserProvidedBlock,
       ...amlWithContainerBlock,
       ...manageUbosBlock,
       ...(createKycBlocks(blocksCreationParams?.workflow as TWorkflowById) || []),
+      ...directorsDocumentsBlocks,
     ],
     [Tab.ASSOCIATED_COMPANIES]: [
       ...associatedCompaniesBlock,
       ...associatedCompaniesInformationBlock,
       ...createAssociatedCompanyDocumentBlocks(blocksCreationParams),
-    ],
-    [Tab.DIRECTORS]: [
-      ...directorsUserProvidedBlock,
-      ...directorsRegistryProvidedBlock,
-      ...directorsDocumentsBlocks,
     ],
     [Tab.MONITORING_REPORTS]: [...websiteMonitoringBlocks],
     [Tab.CUSTOM_DATA]: [...customDataBlock],

@@ -8,7 +8,7 @@ export const Tab = {
   KYB: 'KYB',
   STORE_INFO: 'STORE_INFO',
   DOCUMENTS: 'DOCUMENTS',
-  UBOS_KYC: 'UBOS_KYC',
+  INDIVIDUALS: 'INDIVIDUALS',
   ASSOCIATED_COMPANIES: 'ASSOCIATED_COMPANIES',
   DIRECTORS: 'DIRECTORS',
   MONITORING_REPORTS: 'MONITORING_REPORTS',
@@ -33,9 +33,9 @@ export const getVariantTabs = (
         disabled: !tabBlocks[Tab.KYB]?.length,
       },
       {
-        name: Tab.UBOS_KYC,
-        displayName: 'KYC',
-        disabled: !tabBlocks[Tab.UBOS_KYC]?.length,
+        name: Tab.INDIVIDUALS,
+        displayName: 'Individuals',
+        disabled: !tabBlocks[Tab.INDIVIDUALS]?.length,
       },
       {
         name: Tab.DOCUMENTS,
@@ -57,11 +57,6 @@ export const getVariantTabs = (
         name: Tab.ASSOCIATED_COMPANIES,
         displayName: 'Associated Companies',
         disabled: !tabBlocks[Tab.ASSOCIATED_COMPANIES]?.length,
-      },
-      {
-        name: Tab.DIRECTORS,
-        displayName: 'Directors',
-        disabled: !tabBlocks[Tab.DIRECTORS]?.length,
       },
 
       {

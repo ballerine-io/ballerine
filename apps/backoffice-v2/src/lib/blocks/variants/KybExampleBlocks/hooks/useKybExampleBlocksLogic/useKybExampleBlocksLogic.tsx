@@ -51,12 +51,6 @@ export const useKybExampleBlocksLogic = () => {
     openCorporate: _openCorporate,
     ...entityDataAdditionalInfo
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
-  const directorsRegistryProvided = useMemo(() => {
-    return workflow?.context?.pluginsOutput?.directors?.data?.map(({ name, position }) => ({
-      name,
-      position,
-    }));
-  }, [workflow?.context?.pluginsOutput?.directors?.data]);
 
   const { mutate: mutateEvent, isLoading: isLoadingEvent } = useEventMutation();
   const onClose = useCallback(
@@ -164,8 +158,6 @@ export const useKybExampleBlocksLogic = () => {
     mainRepresentative,
   });
 
-  const directorsRegistryProvidedBlock =
-    useDirectorsRegistryProvidedBlock(directorsRegistryProvided);
   const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
 
   const { mutate: mutateRemoveTaskDecisionById } = useRemoveTaskDecisionByIdMutation(workflow?.id);
@@ -353,7 +345,6 @@ export const useKybExampleBlocksLogic = () => {
       ...businessInformation,
       ...mainRepresentativeBlock,
       ...documentsBlocks,
-      ...directorsRegistryProvidedBlock,
       ...directorsUserProvidedBlock,
       ...directorsBlock,
       ...associatedCompaniesBlock,
@@ -363,7 +354,6 @@ export const useKybExampleBlocksLogic = () => {
     businessInformation,
     mainRepresentativeBlock,
     documentsBlocks,
-    directorsRegistryProvidedBlock,
     directorsUserProvidedBlock,
     directorsBlock,
     associatedCompaniesBlock,

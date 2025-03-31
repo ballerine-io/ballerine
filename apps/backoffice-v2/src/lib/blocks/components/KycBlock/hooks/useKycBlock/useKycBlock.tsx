@@ -20,10 +20,17 @@ import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlo
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
-import { Button } from '@ballerine/ui';
+import {
+  Button,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenu,
+  DropdownMenuItem,
+} from '@ballerine/ui';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
+import { PlayCircle } from 'lucide-react';
 
 const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -210,69 +217,69 @@ export const useKycBlock = ({
   const getDecisionStatusOrAction = (tags?: TStateTags) => {
     const badgeClassNames = 'text-sm font-bold';
 
-    if (tags?.includes(StateTag.REVISION)) {
-      return createBlocksTyped()
-        .addBlock()
-        .addCell({
-          type: 'badge',
-          value: 'Pending re-upload',
-          props: {
-            ...motionBadgeProps,
-            variant: 'warning',
-            className: badgeClassNames,
-          },
-        })
-        .build()
-        .flat(1);
-    }
+    // if (tags?.includes(StateTag.REVISION)) {
+    //   return createBlocksTyped()
+    //     .addBlock()
+    //     .addCell({
+    //       type: 'badge',
+    //       value: 'Pending re-upload',
+    //       props: {
+    //         ...motionBadgeProps,
+    //         variant: 'warning',
+    //         className: badgeClassNames,
+    //       },
+    //     })
+    //     .build()
+    //     .flat(1);
+    // }
 
-    if (tags?.includes(StateTag.APPROVED)) {
-      return createBlocksTyped()
-        .addBlock()
-        .addCell({
-          type: 'badge',
-          value: 'Approved',
-          props: {
-            ...motionBadgeProps,
-            variant: 'success',
-            className: `${badgeClassNames} bg-success/20`,
-          },
-        })
-        .build()
-        .flat(1);
-    }
+    // if (tags?.includes(StateTag.APPROVED)) {
+    //   return createBlocksTyped()
+    //     .addBlock()
+    //     .addCell({
+    //       type: 'badge',
+    //       value: 'Approved',
+    //       props: {
+    //         ...motionBadgeProps,
+    //         variant: 'success',
+    //         className: `${badgeClassNames} bg-success/20`,
+    //       },
+    //     })
+    //     .build()
+    //     .flat(1);
+    // }
 
-    if (tags?.includes(StateTag.REJECTED)) {
-      return createBlocksTyped()
-        .addBlock()
-        .addCell({
-          type: 'badge',
-          value: 'Rejected',
-          props: {
-            ...motionBadgeProps,
-            variant: 'destructive',
-            className: badgeClassNames,
-          },
-        })
-        .build()
-        .flat(1);
-    }
+    // if (tags?.includes(StateTag.REJECTED)) {
+    //   return createBlocksTyped()
+    //     .addBlock()
+    //     .addCell({
+    //       type: 'badge',
+    //       value: 'Rejected',
+    //       props: {
+    //         ...motionBadgeProps,
+    //         variant: 'destructive',
+    //         className: badgeClassNames,
+    //       },
+    //     })
+    //     .build()
+    //     .flat(1);
+    // }
 
-    if (tags?.includes(StateTag.PENDING_PROCESS)) {
-      return createBlocksTyped()
-        .addBlock()
-        .addCell({
-          type: 'badge',
-          value: 'Pending ID verification',
-          props: {
-            ...motionBadgeProps,
-            variant: 'warning',
-            className: badgeClassNames,
-          },
-        })
-        .build()
-        .flat(1);
-    }
+    // if (tags?.includes(StateTag.PENDING_PROCESS)) {
+    //   return createBlocksTyped()
+    //     .addBlock()
+    //     .addCell({
+    //       type: 'badge',
+    //       value: 'Pending ID verification',
+    //       props: {
+    //         ...motionBadgeProps,
+    //         variant: 'warning',
+    //         className: badgeClassNames,
+    //       },
+    //     })
+    //     .build()
+    //     .flat(1);
+    // }
 
     return createBlocksTyped()
       .addBlock()
@@ -331,24 +338,41 @@ export const useKycBlock = ({
       .flat(1);
   };
 
-  const { mutate: mutateInitiateKyc } = useEventMutation();
+  const { mutate: mutateEvent } = useEventMutation();
 
-  const getEvent = () => {
+  const getInitiateKycEvent = () => {
     if (childWorkflow?.nextEvents?.includes('start')) {
       return 'start';
     }
   };
-  const event = getEvent();
+  const getInitiateSanctionsScreeningEvent = () => {
+    if (childWorkflow?.nextEvents?.includes('temp')) {
+      return 'temp';
+    }
+  };
+  const initiateKycEvent = getInitiateKycEvent();
+  const initiateSanctionsScreeningEvent = getInitiateSanctionsScreeningEvent();
   const onInitiateKyc = useCallback(() => {
-    if (!event) {
+    if (!initiateKycEvent) {
       return;
     }
 
-    mutateInitiateKyc({
+    mutateEvent({
       workflowId: childWorkflow?.id,
-      event,
+      event: initiateKycEvent,
     });
-  }, [mutateInitiateKyc, event, childWorkflow?.id]);
+  }, [mutateEvent, initiateKycEvent, childWorkflow?.id]);
+
+  const onInitiateSanctionsScreening = useCallback(() => {
+    if (!initiateSanctionsScreeningEvent) {
+      return;
+    }
+
+    mutateEvent({
+      workflowId: childWorkflow?.id,
+      event: initiateSanctionsScreeningEvent,
+    });
+  }, [mutateEvent, initiateSanctionsScreeningEvent, childWorkflow?.id]);
 
   const headerCell = createBlocksTyped()
     .addBlock()
@@ -368,6 +392,45 @@ export const useKycBlock = ({
           props: {
             className: 'mt-0',
           },
+        })
+        .addCell({
+          type: 'node',
+          value: (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={
+                    'ms-auto px-2 py-0 text-xs aria-disabled:pointer-events-none aria-disabled:opacity-50'
+                  }
+                >
+                  Options
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem className={`h-6 w-full`} asChild>
+                  <Button
+                    variant={'ghost'}
+                    className="justify-start text-xs leading-tight aria-disabled:pointer-events-none aria-disabled:opacity-50"
+                    onClick={onInitiateKyc}
+                    disabled={!initiateKycEvent}
+                  >
+                    <PlayCircle size={16} className="me-2" /> Initiate KYC
+                  </Button>
+                </DropdownMenuItem>
+                <DropdownMenuItem className={`h-6 w-full`} asChild>
+                  <Button
+                    variant={'ghost'}
+                    className="justify-start text-xs leading-tight aria-disabled:pointer-events-none aria-disabled:opacity-50"
+                    onClick={onInitiateSanctionsScreening}
+                    disabled={!initiateSanctionsScreeningEvent}
+                  >
+                    <PlayCircle size={16} className="me-2" /> Initiate Sanctions Screening
+                  </Button>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ),
         })
         .build()
         .flat(1),
@@ -546,19 +609,6 @@ export const useKycBlock = ({
                           value: 'Initiate KYC for document extracted data to appear',
                           props: {
                             className: 'py-4 text-slate-500',
-                          },
-                        })
-                        .addCell({
-                          type: 'callToAction',
-                          value: {
-                            text: 'Initiate KYC',
-                            onClick: onInitiateKyc,
-                            props: {
-                              className:
-                                'px-2 py-0 text-xs aria-disabled:pointer-events-none aria-disabled:opacity-50 ms-3',
-                              variant: 'outline',
-                              disabled: !event,
-                            },
                           },
                         })
                         .buildFlat(),
