@@ -71,6 +71,6 @@ export const AmlCheckSchema = z
   })
   .and(BaseOperationsValueSchema);
 
-export const UboMatchSchema = z.object({
-  operator: z.literal(OPERATION.UBO_MATCH),
+export const UboMismatchSchema = z.object({
+  operator: z.literal(OPERATION.UBO_MISMATCH),
 });

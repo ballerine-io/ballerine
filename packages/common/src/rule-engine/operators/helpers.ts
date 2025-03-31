@@ -8,7 +8,7 @@ import {
   Primitive,
   TOperation,
   AmlCheckParams,
-  UboMatchParams,
+  UboMismatchParams,
 } from './types';
 
 import { z, ZodSchema } from 'zod';
@@ -456,10 +456,10 @@ class FuzzyMatchScoreLt extends BaseOperator<Primitive, Primitive, Promise<boole
   };
 }
 
-class UboMatch extends BaseOperator<any, UboMatchParams> {
+class UboMismatch extends BaseOperator<any, UboMismatchParams> {
   constructor() {
     super({
-      operator: 'UBO_MATCH',
+      operator: 'UBO_MISMATCH',
     });
   }
 
@@ -538,4 +538,4 @@ export const IN_CASE_INSENSITIVE = new InCaseInsensitive();
 export const NOT_IN = new NotIn();
 export const AML_CHECK = new AmlCheck();
 export const FUZZY_MATCH_SCORE_LT = new FuzzyMatchScoreLt();
-export const UBO_MATCH = new UboMatch();
+export const UBO_MISMATCH = new UboMismatch();

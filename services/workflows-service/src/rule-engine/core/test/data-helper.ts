@@ -241,7 +241,7 @@ export const amlContext = {
   },
 };
 
-export const ubosMatchContext = Object.freeze({
+export const ubosMismatchContext = Object.freeze({
   state: 'personal_details',
   entity: {
     id: '0067x00000OExFJAA1',
@@ -368,7 +368,7 @@ export const ubosMatchContext = Object.freeze({
           accountHolderName: '32311',
         },
         servicesOffered: 'fdas',
-        underwriterEmail: 'underwriting@nuvei.com.invalid',
+        underwriterEmail: 'underwriting@customer.com.invalid',
         incorporationDate: '2019-03-26',
         otherProviderInfo: 'ADS',
         processingDetails: {
@@ -421,12 +421,12 @@ export const ubosMatchContext = Object.freeze({
   metadata: {
     token: '7399db0d-8b60-400e-8f8d-aaff7fc6fb48',
     customerId: 'cm2iz3ql60003ptnpqnpor2d1',
-    customerName: 'Nuvei',
+    customerName: 'customer',
     collectionFlowUrl: 'https://collection-sb.ballerine.app',
-    customerNormalizedName: 'nuvei',
+    customerNormalizedName: 'customer',
   },
   documents: [],
-  customerName: 'Nuvei',
+  customerName: 'customer',
   pluginsInput: {
     ubo: {
       status: 'SUCCESS',
@@ -542,7 +542,7 @@ export const ubosMatchContext = Object.freeze({
       apiUrl: 'https://api-sb.ballerine.app',
     },
     additionalInformation: {
-      customerCompany: 'Nuvei',
+      customerCompany: 'customer',
     },
   },
 });

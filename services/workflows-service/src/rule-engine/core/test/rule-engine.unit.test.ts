@@ -7,7 +7,7 @@ import {
   RuleSet,
 } from '@ballerine/common';
 import z from 'zod';
-import { amlContext, context, ubosMatchContext } from './data-helper';
+import { amlContext, context, ubosMismatchContext } from './data-helper';
 import { createRuleEngine, runRuleSet } from '../rule-engine';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 
@@ -1118,16 +1118,17 @@ describe('Rule Engine', () => {
       operator: OPERATOR.AND,
       rules: [
         {
-          key: 'uboMatch',
-          operator: OPERATION.UBO_MATCH,
+          key: 'uboMismatch',
+          operator: OPERATION.UBO_MISMATCH,
           value: 1,
+          isPathComparison: false,
         },
       ],
     };
 
     const createRegistryUbo = (
       name: string,
-    ): (typeof ubosMatchContext)['pluginsOutput']['ubo']['data']['nodes'][0] => ({
+    ): (typeof ubosMismatchContext)['pluginsOutput']['ubo']['data']['nodes'][0] => ({
       id: 'random-id',
       data: {
         name,
@@ -1139,7 +1140,7 @@ describe('Rule Engine', () => {
     const createCollectionUbo = (
       firstName: string,
       lastName: string,
-    ): (typeof ubosMatchContext)['entity']['data']['additionalInfo']['ubos'][0] => ({
+    ): (typeof ubosMismatchContext)['entity']['data']['additionalInfo']['ubos'][0] => ({
       firstName,
       lastName,
       city: 'Tel-Aviv',
@@ -1155,11 +1156,13 @@ describe('Rule Engine', () => {
     });
 
     const adjustContext = (
-      registryUbos: (typeof ubosMatchContext)['pluginsOutput']['ubo']['data']['nodes'],
-      collectionUbos: (typeof ubosMatchContext)['entity']['data']['additionalInfo']['ubos'],
-    ): typeof ubosMatchContext => {
+      registryUbos: (typeof ubosMismatchContext)['pluginsOutput']['ubo']['data']['nodes'],
+      collectionUbos: (typeof ubosMismatchContext)['entity']['data']['additionalInfo']['ubos'],
+    ): typeof ubosMismatchContext => {
       // replace registry ubos with the new ones without changing the original context
-      const newContext = JSON.parse(JSON.stringify(ubosMatchContext)) as typeof ubosMatchContext;
+      const newContext = JSON.parse(
+        JSON.stringify(ubosMismatchContext),
+      ) as typeof ubosMismatchContext;
       newContext.pluginsOutput.ubo.data.nodes = registryUbos;
       newContext.entity.data.additionalInfo.ubos = collectionUbos;
 
@@ -1174,7 +1177,7 @@ describe('Rule Engine', () => {
 
     it('should extact-match happy flow', async () => {
       const engine = createRuleEngine(ruleSet);
-      const result = await engine.run(ubosMatchContext);
+      const result = await engine.run(ubosMismatchContext);
       expectResult(result, 'FAILED');
     });
 
