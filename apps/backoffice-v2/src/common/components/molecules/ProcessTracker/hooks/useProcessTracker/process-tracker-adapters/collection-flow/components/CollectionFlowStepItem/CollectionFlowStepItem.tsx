@@ -3,7 +3,7 @@ import { TCollectionFlowStep } from '@ballerine/common';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@ballerine/ui';
 import { titleCase } from 'string-ts';
 import { CollectionFlowStepOptions } from './components/CollectionFlowStepOptions';
-import { useIsCanRequestStep } from './hooks/useIsCanRequestStep';
+import { useIsCurrentStepCanBeRevised } from './hooks/useIsCurrentStepCanBeRevised';
 import { useRequestStepFromClient } from './hooks/useRequestStepFromClient';
 
 export interface ICollectionFlowStepItemProps {
@@ -20,7 +20,7 @@ export const CollectionFlowStepItem = ({
     workflow,
     step,
   });
-  const isCanRequestStep = useIsCanRequestStep(workflow, step);
+  const isCanRequestStep = useIsCurrentStepCanBeRevised(workflow, step);
 
   return (
     <div className="group flex w-full flex-row justify-between">

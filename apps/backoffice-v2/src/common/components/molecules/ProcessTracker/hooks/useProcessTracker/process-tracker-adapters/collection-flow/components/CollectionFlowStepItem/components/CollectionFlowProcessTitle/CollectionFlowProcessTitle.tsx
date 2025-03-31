@@ -1,6 +1,6 @@
 import { ctw } from '@/common/utils/ctw/ctw';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { useIsCanRequestSteps } from '../../hooks/useIsCanRequestSteps';
+import { useIsWorkflowStepsCanBeRevised } from '../../hooks/useIsWorkflowStepsCanBeRevised';
 import { RequestProcesses } from './components/RequestProcesses';
 import { useStepsRequesting } from './hooks/useStepsRequesting';
 
@@ -13,7 +13,7 @@ export const CollectionFlowProcessTitle = ({ workflow }: ICollectionFlowProcessT
     useStepsRequesting(workflow);
   const isShouldDisplayRequestButton = stepsCountToRequest > 0;
 
-  const isCanRequestSteps = useIsCanRequestSteps(workflow);
+  const isCanRequestSteps = useIsWorkflowStepsCanBeRevised(workflow);
 
   return (
     <div className="flex w-full flex-row items-center justify-between gap-2 pr-2 !no-underline hover:no-underline">

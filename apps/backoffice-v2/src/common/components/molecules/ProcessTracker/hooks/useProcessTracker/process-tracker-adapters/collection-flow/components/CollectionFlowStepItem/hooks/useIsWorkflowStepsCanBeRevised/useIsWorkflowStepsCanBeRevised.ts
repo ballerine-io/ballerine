@@ -5,7 +5,7 @@ import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/
 import { StateTag } from '@ballerine/common';
 import { useMemo } from 'react';
 
-export const useIsCanRequestSteps = (workflow: TWorkflowById) => {
+export const useIsWorkflowStepsCanBeRevised = (workflow: TWorkflowById) => {
   const { data: session, isLoading } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user || null, workflow);
 
